@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:폰트 프로토콜"
+				"description": "URL: fount 프로토콜",
+				"registerFailed": "fount:// 프로토콜 핸들러 등록 실패: ${message}",
+				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
 			},
 			"update": {
 				"skippingFountUpdate": ".noupdate 파일이 존재하므로 폰트 업데이트를 건너뜁니다.",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno 설치에 실패했습니다. Fount의 경로 폴더에 자동으로 설치하려고 합니다...",
 				"notWorking": "어떤 이유로 Deno가 작동하지 않는 경우 https://discord.gg/deno에 가입하여 지원을 받을 수 있습니다.",
 				"upgradeFailed": "경고: Deno 업그레이드가 실패했을 수 있습니다. 오류가 있는지 확인해주세요.",
-				"upgradeFailedTermux": "Deno 업그레이드 명령이 실패했습니다. Termux용 Deno를 다시 설치하는 중입니다..."
+				"upgradeFailedTermux": "Deno 업그레이드 명령이 실패했습니다. Termux용 Deno를 다시 설치하는 중입니다...",
+				"patchMissing": "오류: 패치 이전에는 Deno 실행 파일을 찾을 수 없습니다. 패치할 수 없습니다.",
+				"patchUnsupportedArch": "오류: 지원되지 않는 패치 아키텍처: ${arch}",
+				"patchFailed": "오류: patchelf를 사용하여 Deno 실행 파일을 패치하지 못했습니다."
 			},
 			"install": {
 				"installingDependencies": "종속성 설치 중...",
+				"packageFailed": "오류: ${package} 설치에 실패했습니다.",
+				"browserMissing": "기본 브라우저가 감지되지 않습니다. 설치를 시도 중입니다...",
 				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 요소 구성 요소를 설치하지 마십시오. 그들은 무엇이든 할 수 있습니다.",
 				"rootWarning1": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
 				"rootWarning2": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다."

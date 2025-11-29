@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL : protocole de fount"
+				"description": "URL : protocole de fount",
+				"registerFailed": "Échec de l'enregistrement du gestionnaire de protocole fount:// : ${message}",
+				"noUrl": "Erreur : L'URL du gestionnaire de protocole n'est pas fournie."
 			},
 			"update": {
 				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée",
@@ -116,7 +118,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Raccourci sur le bureau créé à ${path}",
 				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à ${path}",
-				"protocolHandlerRegistered": "gestionnaire de protocole font:// enregistré.",
+				"protocolHandlerRegistered": "gestionnaire de protocole fount:// enregistré.",
 				"shortcutNotSupported": "Avertissement : Votre système d'exploitation (${os}) ne prend pas en charge la création de raccourcis sur le bureau.",
 				"osacompileNotFound": "Erreur : « osacompile » introuvable. Impossible de créer l'application macOS.",
 				"lsregisterFailed": "Avertissement : L'utilisation de lsregister pour enregistrer une application auprès de LaunchServices a échoué.",
@@ -148,13 +150,18 @@
 				"installFailedFallback": "L'installation de Deno a échoué, tentative d'installation automatique dans le dossier de chemin de la fount...",
 				"notWorking": "Pour une raison quelconque, Deno ne fonctionne pas, vous souhaiterez peut-être rejoindre https://discord.gg/deno pour obtenir de l'aide.",
 				"upgradeFailed": "Avertissement : la mise à niveau de Deno a peut-être échoué. Veuillez vérifier les erreurs.",
-				"upgradeFailedTermux": "La commande de mise à niveau Deno a échoué, tentative de réinstallation de Deno pour Termux..."
+				"upgradeFailedTermux": "La commande de mise à niveau Deno a échoué, tentative de réinstallation de Deno pour Termux...",
+				"patchMissing": "Erreur : l'exécutable Deno est introuvable avant l'application du correctif. Ne peut pas être corrigé.",
+				"patchUnsupportedArch": "Erreur : Architecture de correctifs non prise en charge : ${arch}",
+				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de patchelf."
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
+				"packageFailed": "Erreur : L'installation de ${package} a échoué.",
+				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
 				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",
 				"rootWarning1": "Non recommandé : exécuter fount en tant qu'utilisateur root accorde un accès complet au système à tous les composants de fount.",
-				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter font en tant qu'utilisateur normal."
+				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal."
 			},
 			"clean": {
 				"removingCaches": "Suppression du cache...",
@@ -175,9 +182,9 @@
 				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
 				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
 				"removingFountFromPath": "Suppression de la fount de PATH...",
-				"removingProtocolHandler": "Suppression du gestionnaire de protocole font://...",
-				"protocolHandlerRemoved": "Le gestionnaire de protocole font:// a été supprimé.",
-				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole font:// : ${message}",
+				"removingProtocolHandler": "Suppression du gestionnaire de protocole fount://...",
+				"protocolHandlerRemoved": "Le gestionnaire de protocole fount:// a été supprimé.",
+				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole fount:// : ${message}",
 				"removingFountFromGitSafeDir": "Suppression de la fount de git safe.directory...",
 				"removingInstalledSystemPackages": "Suppression des packages système installés...",
 				"uninstallingDeno": "Désinstallation de Deno...",

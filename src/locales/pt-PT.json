@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:protocolo de fount"
+				"description": "URL:protocolo de fount",
+				"registerFailed": "Falha ao registar o manipulador de protocolo fount://: ${message}",
+				"noUrl": "Erro: URL para o manipulador de protocolo não fornecido."
 			},
 			"update": {
 				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada",
@@ -116,10 +118,10 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",
 				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em ${path}",
-				"protocolHandlerRegistered": "font:// manipulador de protocolo registrado.",
+				"protocolHandlerRegistered": "fount:// manipulador de protocolo registrado.",
 				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho.",
 				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar o aplicativo macOS.",
-				"lsregisterFailed": "Aviso: falha ao usar lsregister para registrar um aplicativo com LaunchServices.",
+				"lsregisterFailed": "Aviso: falha ao usar lsregister para registar um aplicativo com LaunchServices.",
 				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
 			},
 			"git": {
@@ -148,13 +150,18 @@
 				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
 				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://discord.gg/deno para obter suporte",
 				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros.",
-				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux..."
+				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
+				"patchMissing": "Erro: executável Deno não encontrado antes do patch. Não pode ser corrigido.",
+				"patchUnsupportedArch": "Erro: Arquitetura de patch não suportada: ${arch}",
+				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando patchelf."
 			},
 			"install": {
 				"installingDependencies": "Instalando dependências...",
+				"packageFailed": "Erro: Falha na instalação de ${package}.",
+				"browserMissing": "Navegador padrão não detectado, tentando instalar...",
 				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa.",
 				"rootWarning1": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
-				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o font como um usuário normal."
+				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o fount como um usuário normal."
 			},
 			"clean": {
 				"removingCaches": "Removendo cache...",
@@ -175,7 +182,7 @@
 				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
 				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
 				"removingFountFromPath": "Removendo fount do PATH...",
-				"removingProtocolHandler": "Removendo o manipulador de protocolo font://...",
+				"removingProtocolHandler": "Removendo o manipulador de protocolo fount://...",
 				"protocolHandlerRemoved": "O manipulador de protocolo fount:// foi removido.",
 				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo fount://: ${message}",
 				"removingFountFromGitSafeDir": "Removendo fount do git safe.directory...",

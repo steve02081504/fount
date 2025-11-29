@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount-Protokoll"
+				"description": "URL:fount-Protokoll",
+				"registerFailed": "Registrierung des fount://-Protokollhandlers fehlgeschlagen: ${message}",
+				"noUrl": "Fehler: URL für Protokoll-Handler nicht angegeben."
 			},
 			"update": {
 				"skippingFountUpdate": "Da die Datei .noupdate vorhanden ist, wird die Aktualisierung der fount übersprungen",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Die Deno-Installation ist fehlgeschlagen. Es wurde versucht, automatisch im Pfadordner des Quellcodes zu installieren.",
 				"notWorking": "Aus irgendeinem Grund funktioniert Deno nicht. Möglicherweise möchten Sie https://discord.gg/deno beitreten, um Unterstützung zu erhalten",
 				"upgradeFailed": "Warnung: Das Deno-Upgrade ist möglicherweise fehlgeschlagen. Bitte prüfen Sie, ob Fehler vorliegen.",
-				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ..."
+				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ...",
+				"patchMissing": "Fehler: Die ausführbare Deno-Datei wurde vor dem Patchen nicht gefunden. Kann nicht gepatcht werden.",
+				"patchUnsupportedArch": "Fehler: Nicht unterstützte Patch-Architektur: ${arch}",
+				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit patchelf gepatcht werden."
 			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
+				"packageFailed": "Fehler: Die Installation von ${package} ist fehlgeschlagen.",
+				"browserMissing": "Standardbrowser nicht erkannt, Installation wird versucht...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
 				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
 				"rootWarning2": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen."

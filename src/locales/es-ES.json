@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL: protocolo de fount"
+				"description": "URL: protocolo de fount",
+				"registerFailed": "No se pudo registrar el controlador de protocolo fount://: ${message}",
+				"noUrl": "Error: No se proporcionó la URL para el controlador de protocolo."
 			},
 			"update": {
 				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount",
@@ -116,7 +118,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Acceso directo de escritorio creado en ${path}",
 				"startMenuShortcutCreated": "Acceso directo al menú Inicio creado en ${path}",
-				"protocolHandlerRegistered": "font:// controlador de protocolo registrado.",
+				"protocolHandlerRegistered": "fount:// controlador de protocolo registrado.",
 				"shortcutNotSupported": "Advertencia: Su sistema operativo (${os}) no admite la creación de accesos directos en el escritorio.",
 				"osacompileNotFound": "Error: 'osacompile' no encontrado. No se puede crear la aplicación macOS.",
 				"lsregisterFailed": "Advertencia: Error al utilizar lsregister para registrar una aplicación con LaunchServices.",
@@ -148,13 +150,18 @@
 				"installFailedFallback": "La instalación de Deno falló, al intentar instalar automáticamente en la carpeta de ruta de la fount...",
 				"notWorking": "Por alguna razón, Deno no funciona, es posible que desees unirte a https://discord.gg/deno para obtener ayuda.",
 				"upgradeFailed": "Advertencia: Es posible que la actualización de Deno haya fallado. Por favor verifique si hay errores.",
-				"upgradeFailedTermux": "El comando de actualización de Deno falló al intentar reinstalar Deno para Termux..."
+				"upgradeFailedTermux": "El comando de actualización de Deno falló al intentar reinstalar Deno para Termux...",
+				"patchMissing": "Error: No se encontró el ejecutable de Deno antes de aplicar el parche. No se puede parchear.",
+				"patchUnsupportedArch": "Error: Arquitectura de parche no compatible: ${arch}",
+				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando patchelf."
 			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",
+				"packageFailed": "Error: La instalación de ${package} falló.",
+				"browserMissing": "Navegador predeterminado no detectado, intentando instalar...",
 				"untrustedPartsWarning": "No instale ningún componente fount que no sea de confianza en su sistema, pueden hacer cualquier cosa.",
-				"rootWarning1": "No recomendado: ejecutar font como root otorga acceso completo al sistema a todos los componentes de font.",
-				"rootWarning2": "A menos que sepa lo que está haciendo, se recomienda ejecutar font como usuario normal."
+				"rootWarning1": "No recomendado: ejecutar fount como root otorga acceso completo al sistema a todos los componentes de fount.",
+				"rootWarning2": "A menos que sepa lo que está haciendo, se recomienda ejecutar fount como usuario normal."
 			},
 			"clean": {
 				"removingCaches": "Eliminando caché...",
@@ -175,9 +182,9 @@
 				"removingFountInstallationDir": "Eliminando el directorio de instalación de founts...",
 				"fountInstallationDirRemoved": "Se ha eliminado el directorio de instalación de la fount.",
 				"removingFountFromPath": "Eliminando fount de PATH...",
-				"removingProtocolHandler": "Eliminando el controlador de protocolo font://...",
-				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo font://.",
-				"removeProtocolHandlerFailed": "No se pudo eliminar el controlador de protocolo font://: ${message}",
+				"removingProtocolHandler": "Eliminando el controlador de protocolo fount://...",
+				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo fount://.",
+				"removeProtocolHandlerFailed": "No se pudo eliminar el controlador de protocolo fount://: ${message}",
 				"removingFountFromGitSafeDir": "Eliminando la fount de git safe.directory...",
 				"removingInstalledSystemPackages": "Eliminando paquetes del sistema instalados...",
 				"uninstallingDeno": "Desinstalando Deno...",

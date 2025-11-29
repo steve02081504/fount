@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount 協議"
+				"description": "URL:fount 協議",
+				"registerFailed": "註冊 fount:// 協議處理器失敗：${message}",
+				"noUrl": "錯誤：未提供協議處理程式的 URL。"
 			},
 			"update": {
 				"skippingFountUpdate": "因 .noupdate 文件存在，跳過 fount 更新",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno 安裝失敗，嘗試自動安裝到 fount 的 path 文件夾...",
 				"notWorking": "由於某種原因 Deno 無法工作，您可能需要加入 https://discord.gg/deno 以獲取支持",
 				"upgradeFailed": "警告：Deno 升級可能已失敗。請檢查錯誤。",
-				"upgradeFailedTermux": "Deno 升級命令失敗，正在嘗試為 Termux 重新安裝 Deno..."
+				"upgradeFailedTermux": "Deno 升級命令失敗，正在嘗試為 Termux 重新安裝 Deno...",
+				"patchMissing": "錯誤：修補前未找到 Deno 可執行文件。無法修補。",
+				"patchUnsupportedArch": "錯誤：不支持的修補架構：${arch}",
+				"patchFailed": "錯誤：使用 patchelf 修補 Deno 可執行文件失敗。"
 			},
 			"install": {
 				"installingDependencies": "正在安裝依賴...",
+				"packageFailed": "錯誤：${package} 安裝失敗。",
+				"browserMissing": "未檢測到默認瀏覽器，正在嘗試安裝...",
 				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。",
 				"rootWarning1": "不推薦：以 root 身份運行 fount 會授予所有 fount 元件完全的系統訪問權限。",
 				"rootWarning2": "除非您清楚自己在做什麼，否則建議以普通用戶身份運行 fount。"

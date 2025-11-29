@@ -287,7 +287,7 @@ function Register-FountProtocol {
 		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
 	}
 	catch {
-		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
+		Write-Warning (Get-I18n -key 'protocol.registerFailed' -params @{message = $_.Exception.Message})
 	}
 }
 
@@ -449,7 +449,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
-		Write-Error "Error: No URL provided for protocolhandle."
+		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1
 	}
 	# 编码 URL 参数，防止特殊字符问题，确保传入的 URL 能正确作为查询参数
@@ -718,7 +718,7 @@ if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
 }
 if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
 	if ($IN_DOCKER) {
-		Write-Host "Skipping deno upgrade in Docker environment"
+		Write-Host (Get-I18n -key 'update.skippingDenoUpgradeDocker')
 	}
 	else {
 		deno_upgrade
@@ -756,8 +756,8 @@ function run {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 	if (isRoot) {
-		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
-		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
+		Write-Warning (Get-I18n -key 'install.rootWarning1')
+		Write-Warning (Get-I18n -key 'install.rootWarning2')
 	}
 	$v8Flags = "--expose-gc"
 	$heapSizeMB = 100 # Default to 100MB
