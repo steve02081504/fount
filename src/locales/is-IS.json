@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fundasamskiptareglur"
+				"description": "URL:fount samskiptareglur",
+				"registerFailed": "Mistókst að skrá fount:// samskiptareglur: ${message}",
+				"noUrl": "Villa: Vefslóð fyrir samskiptareglu (protocol handler) ekki gefin upp."
 			},
 			"update": {
 				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Uppsetning Deno mistókst, reynir að setja sjálfkrafa upp í slóðamöppuna á uppsprettu...",
 				"notWorking": "Af einhverjum ástæðum virkar Deno ekki, þú gætir viljað taka þátt https://discord.gg/deno til að fá stuðning",
 				"upgradeFailed": "Viðvörun: Deno uppfærsla gæti hafa mistekist. Vinsamlegast athugaðu hvort villur séu.",
-				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux..."
+				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux...",
+				"patchMissing": "Villa: Deno keyrsluskrá fannst ekki fyrir plástur. Ekki hægt að plástra.",
+				"patchUnsupportedArch": "Villa: Óstuddur plásturarkitektúr: ${arch}",
+				"patchFailed": "Villa: Mistókst að laga Deno executable með patchelf."
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
+				"packageFailed": "Villa: Uppsetning á ${package} mistókst.",
+				"browserMissing": "Sjálfgefinn vafri fannst ekki, reynir að setja upp...",
 				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",
 				"rootWarning1": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
 				"rootWarning2": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi."

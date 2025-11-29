@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL: protocollo del fount"
+				"description": "URL: protocollo del fount",
+				"registerFailed": "Impossibile registrare il gestore del protocollo fount://: ${message}",
+				"noUrl": "Errore: URL per il protocollo handle non fornito."
 			},
 			"update": {
 				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato",
@@ -116,14 +118,14 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in ${path}",
 				"startMenuShortcutCreated": "Collegamento al menu Start creato in ${path}",
-				"protocolHandlerRegistered": "gestore del protocollo font:// registrato.",
+				"protocolHandlerRegistered": "gestore del protocollo fount:// registrato.",
 				"shortcutNotSupported": "Avviso: il tuo sistema operativo (${os}) non supporta la creazione di collegamenti sul desktop.",
 				"osacompileNotFound": "Errore: 'osacompile' non trovato. Impossibile creare l'app macOS.",
 				"lsregisterFailed": "Avviso: l'utilizzo di lsregister per registrare un'applicazione con LaunchServices non è riuscito.",
 				"createDesktopAppFailed": "Errore: impossibile creare l'applicazione desktop."
 			},
 			"git": {
-				"repoNotFound": "Impossibile trovare il repository git del font. Inizializzandone uno nuovo...",
+				"repoNotFound": "Impossibile trovare il repository git del fount. Inizializzandone uno nuovo...",
 				"fetchingAndResetting": "Recupero dal repository remoto e ripristino del master...",
 				"localChangesDetected": "Rilevate modifiche locali, le differenze verranno salvate prima della sovrascrittura.",
 				"backupSavedTo": "Un backup delle modifiche locali è stato salvato in: ${path}",
@@ -145,15 +147,20 @@
 				"missing": "Deno non trovato, installazione automatica...",
 				"isRequired": "Deno non trovato, fount non può essere eseguita senza Deno",
 				"installingTermux": "Installazione di Deno per Termux...",
-				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella del percorso del font...",
+				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella del percorso del fount...",
 				"notWorking": "Per qualche motivo Deno non funziona, potresti voler iscriverti a https://discord.gg/deno per ricevere supporto",
 				"upgradeFailed": "Avvertenza: l'aggiornamento di Deno potrebbe non essere riuscito. Si prega di verificare la presenza di errori.",
-				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux..."
+				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux...",
+				"patchMissing": "Errore: eseguibile Deno non trovato prima dell'applicazione della patch. Non può essere patchato.",
+				"patchUnsupportedArch": "Errore: architettura della patch non supportata: ${arch}",
+				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando patchelf."
 			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
+				"packageFailed": "Errore: installazione di ${package} non riuscita.",
+				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
 				"untrustedPartsWarning": "Non installare componenti di font non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
-				"rootWarning1": "Non consigliato: l'esecuzione del font come root garantisce l'accesso completo al sistema a tutti i componenti del font.",
+				"rootWarning1": "Non consigliato: l'esecuzione del fount come root garantisce l'accesso completo al sistema a tutti i componenti del fount.",
 				"rootWarning2": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale."
 			},
 			"clean": {
@@ -167,7 +174,7 @@
 				"autoInitDisabled": "fount è stato riavviato più volte nell'ultimo breve periodo di tempo, ma la reinizializzazione automatica è stata disabilitata a causa della presenza del file .noautoinit. In uscita.",
 				"restartingTooFast": "La fonte è stata riavviata più volte in un breve periodo di tempo. Reinizializzazione forzata...",
 				"failedToStart": "Anche dopo i tentativi di riparazione automatica, la fontana non si avvia per un breve periodo di tempo. Si prega di verificare la presenza di errori nei log.",
-				"initFailed": "Inizializzazione del font non riuscita. In uscita."
+				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
 			"remove": {
 				"removingFount": "Rimozione di fount...",
@@ -175,9 +182,9 @@
 				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
 				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"removingFountFromPath": "Rimozione del fount dal PERCORSO...",
-				"removingProtocolHandler": "Rimozione del gestore del protocollo font:// in corso...",
-				"protocolHandlerRemoved": "Il gestore del protocollo font:// è stato rimosso.",
-				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo font://: ${message}",
+				"removingProtocolHandler": "Rimozione del gestore del protocollo fount:// in corso...",
+				"protocolHandlerRemoved": "Il gestore del protocollo fount:// è stato rimosso.",
+				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo fount://: ${message}",
 				"removingFountFromGitSafeDir": "Rimozione di font da git safe.directory...",
 				"removingInstalledSystemPackages": "Rimozione dei pacchetti di sistema installati...",
 				"uninstallingDeno": "Disinstallazione di Deno...",

@@ -270,6 +270,9 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
 		return None  # Return None as per original behavior for failed translations
 	if tgt_code_compat is None:
 		print(f"    - 错误: 目标语言代码 '{target_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
+		if source_lang.startswith("zh"):
+			print(f"      - 警告: 目标语言不支持，但源语言为中文，回退使用原文。")
+			return text
 		return None  # Return None
 	if src_code_compat == tgt_code_compat:
 		return text  # Return original if, after compatibility, codes are the same

@@ -413,7 +413,7 @@ test_browser() {
 		fi
 	fi
 
-	echo "Default web browser is not detected, attempting to install..."
+	get_i18n 'install.browserMissing'
 	install_package "google-chrome" "google-chrome google-chrome-stable"
 	if ! command -v google-chrome &>/dev/null; then
 		install_package "chromium-browser" "chromium-browser chromium"
@@ -442,7 +442,7 @@ patch_deno() {
 	deno_bin=$(command -v deno)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo -e "${C_RED}Error: Deno executable not found before patching. Cannot patch.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchMissing')${C_RESET}" >&2
 		return 1
 	fi
 
@@ -467,13 +467,13 @@ patch_deno() {
 		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
 		;;
 	*)
-		echo -e "${C_RED}Error: Unsupported architecture for patching: $arch${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchUnsupportedArch' 'arch' "$arch")${C_RESET}" >&2
 		return 1
 		;;
 	esac
 
 	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
-		echo -e "${C_RED}Error: Failed to patch Deno executable with patchelf.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchFailed')${C_RESET}" >&2
 		return 1
 	else
 		mkdir -p ~/.deno/bin
@@ -560,18 +560,18 @@ git_reset_and_clean() {
 
 handle_auto_reinitialization() {
 	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
-		echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'keepalive.autoInitDisabled')${C_RESET}" >&2
 		exit 1
 	fi
-	echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
+	echo -e "${C_YELLOW}$(get_i18n 'keepalive.restartingTooFast')${C_RESET}" >&2
 	restart_timestamps=()
 
 	if ! ("$0" init); then
-		echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'keepalive.initFailed')${C_RESET}" >&2
 		exit 1
 	fi
 	init_attempted=1
-	echo "Re-initialization complete. Attempting to restart fount..."
+	get_i18n 'keepalive.initComplete'
 }
 
 get_profile_files() {

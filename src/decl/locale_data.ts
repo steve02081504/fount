@@ -115,6 +115,8 @@ export type LocaleData = {
 		path: {
 			protocol: {
 				description: string
+				registerFailed: string
+				noUrl: string
 			}
 			update: {
 				skippingFountUpdate: string
@@ -156,9 +158,14 @@ export type LocaleData = {
 				notWorking: string
 				upgradeFailed: string
 				upgradeFailedTermux: string
+				patchMissing: string
+				patchUnsupportedArch: string
+				patchFailed: string
 			}
 			install: {
 				installingDependencies: string
+				packageFailed: string
+				browserMissing: string
 				untrustedPartsWarning: string
 				rootWarning1: string
 				rootWarning2: string
@@ -2231,8 +2238,11 @@ export type LocaleKeyParams = {
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
 	'fountConsole.partManager.partInited': { partname: string | number; parttype: string | number }
 	'fountConsole.partManager.partLoaded': { partname: string | number; parttype: string | number }
+	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number }
+	'fountConsole.path.install.packageFailed': { package: string | number }
+	'fountConsole.path.protocol.registerFailed': { message: string | number }
 	'fountConsole.path.remove.moduleRemoved': { module: string | number }
 	'fountConsole.path.remove.removeBackgroundRunnerFailed': { message: string | number }
 	'fountConsole.path.remove.removeDenoFailed': { message: string | number }
