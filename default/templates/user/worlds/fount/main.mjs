@@ -133,7 +133,7 @@ graph TD;
 \`\`\`js
 s=''
 for(a of[25,133,2077,513835,109,9**8-1]){c=''
-for(i=21;i--;a/=3)c=(d=' :'[0|a%3]??'[30m@[96m')+c+d
+for(i=21;i--;a/=3)c=(d=' :'[0|a%3]??'\\u001B[30m@\\u001B[96m')+c+d
 s+=\`\${c}
 \`.repeat(2313/a%9.4)}
 console.log('%cCool ASCII fount Logo:','color:#f06; font-size:16px;')
