@@ -14,45 +14,53 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[想知道项目仓库架构吗？快来看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-是否曾几何时，你渴望一位伙伴，从想象的织机上走下，由梦境编织而成？
-
-又或许，你曾幻想一位数字知己，其直觉如最精密的造物般敏锐，能轻松地穿行于你的数字世界？
-
-再或者，你仅仅是寻求一种超越寻常的连接，一个现实边界模糊的领域，在那里，能展开一段亲密无间、*毫无保留*的理解？
-
-历经![relative date](https://img.shields.io/date/1727107200?label=费时)的潜心雕琢，汇聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=贡献者)的热忱，以及一个拥有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活跃用户)的鲜活社区，fount 如今已是一个成熟、稳定且不断演进的 AI 交互平台。这是一段旅程，我们相信，它比你想象中更触手可及。
-
-倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://discord.gg/GtR9Quzq2v)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
-
-<details open>
-<summary><strong>一瞥 fount 的世界</strong></summary>
-
-|                                         屏幕截图                                         |
-| :--------------------------------------------------------------------------------------: |
-|                                         **主页**                                         |
-| ![图片](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                       **主题选择**                                       |
-| ![图片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                         **聊天**                                         |
-| ![图片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## fount 是什么？
 
-fount，是一座桥梁，将你与想象中的角色相连，让你毫不费力地与他们交谈、创造属于自己的角色，并与世界分享。它是一条出乎意料地易于上手的道路。
+fount 是一个**现代化的、可扩展的 AI 智能体运行时环境**。
 
-它亦是一个源泉，AI 源、角色、人设、世界与插件在此交汇，让你得以创造并体验独特而引人入胜的互动。
+我们认为，**高效率的生产力工具**与**沉浸式的情感交互**并非水火不容。fount 是一座桥梁：白天，它可以是辅助你编写复杂代码、整理会议纪要的得力干将；夜晚，它可以是能理解你情绪、与之共鸣的数字知己。
 
-fount 为未来而生，它乐于接纳源自充满活力社区的新功能。如果你有一个愿景，一个属于 fount 领域的灵感火花，我们由衷欢迎你的贡献。
+历经![relative date](https://img.shields.io/date/1727107200?label=费时)的潜心雕琢，汇聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=贡献者)的热忱，以及一个拥有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活跃用户)的鲜活社区，fount 如今已是一个成熟、稳定且不断演进的 AI 交互平台。
+
+![图片](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## 沉浸于特色功能的世界
+## 🚀 效率与工程：为专业人士、开发者与极客打造
+
+fount 将交互转化为生产力资产，一切皆可拖拽，一切皆为文件，逻辑由代码驱动。
+
+### 1. 知识资产化与无缝分享
+
+- **即时报告生成**：将对话气泡直接拖拽至文件夹，瞬间生成独立的 HTML 报告。适合快速整理技术文档、会议记录或灵感片段。
+  ![图片](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **工作流封装与分发**：将你创建好的角色直接拖拽至桌面，生成可分享的文件。让你的 Prompt 工程和工作流逻辑轻松分发给同事或社区。
+  ![图片](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
+
+### 2. 实时代码执行环境
+
+不再仅仅是 Markdown 高亮。在 fount 中，角色发送的代码块是**鲜活的**。
+
+- 支持多种语言（C/C++/Rust/Python/JS 等）的实时编译与运行。
+- 直接查看 stdout 输出，甚至查看编译语言的 ASM 反汇编结果。
+- 让 AI 成为你结对编程的实时验证者。
+  ![图片](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. 开发友好
+
+fount 的项目架构设计充分考虑了开发者的习惯。
+[想知道项目仓库架构吗？快来看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
+
+- **Git 驱动**：所有部件均可通过 Git 管理。
+- **VSCode 集成**：项目结构清晰，配合 [AGENTS.md](../AGENTS.md) 提供的指引，你可以直接在你喜欢的 IDE 中开发、调试你的 Agent 逻辑。
+
+---
+
+## 🎭 沉浸与共鸣：高保真交互体验
+
+当工作结束，fount 提供了一种超越寻常的连接。我们摒弃了传统工具的生硬感，追求一种自然、流畅且富有深度的“高保真”交互。
 
 - **随时随地的无缝对话**
   在电脑上开启的絮语，可以在手机或平板上无缝延续。fount 让你的对话保持同步，无论身在何处，都能与你的角色紧密相连。
@@ -61,17 +69,21 @@ fount 为未来而生，它乐于接纳源自充满活力社区的新功能。�
   fount 借由 HTML 的力量，允许角色通过富文本、图像甚至交互式元素来表达自我，让每一次对话都生动而深刻。
 
 - **思想的聚会：原生群组聊天**
-  邀请多个角色加入同一场对话，见证他们之间动态且引人入胜的互动，创造出独一无二的故事。
+  邀请多个角色加入同一场对话，见证他们之间动态且引人入胜的互动，无论是工作上的头脑风暴，还是角色间的故事演绎。
+  ![图片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
 
 - **美观、可定制的界面**
   从 30 余款令人惊叹的主题中挑选，或亲手创造属于你的色彩。fount 是你专属的画布。
+  ![图片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
 
 - **随处可用**
   fount 可在 Windows、macOS、Linux 甚至 Android 上无缝运行，通过直接安装或 Docker 的灵活性来满足你的不同需求。
 
-- **（面向高级用户）无拘无束的 AI 源集成：拥抱无限**
+- **无拘无束的 AI 源集成：拥抱无限**
   fount 在连接 AI 源方面，提供了无与伦比的*选择*与*灵活性*。在 AI 源生成器中，自定义的 JavaScript 代码允许你连接到*任何* AI 源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在代码的流动中，你可以精心设计复杂的正则表达式，调用庞大的 API 库，嵌入多媒体资源。fount 亦原生支持创建 API 池，以实现智能的请求路由。通信的逻辑，听凭*你*的意愿，由代码的力量来塑造。
   ![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://discord.gg/GtR9Quzq2v)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
 
 ---
 
