@@ -1,6 +1,9 @@
 {
 	"nodeModulesDir": "auto",
 	"lock": false,
+	"unstable": [
+		"npm-lazy-caching"
+	],
 	"imports": {
 		"npm:express": "npm:express@^5.1.0",
 		"npm:express-fileupload": "npm:express-fileupload@^1.5.0",
