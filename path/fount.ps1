@@ -115,6 +115,14 @@ if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
 }
 
+if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
+	Start-Job -ScriptBlock {
+		param($FOUNT_DIR)
+		Set-Location $FOUNT_DIR
+		compact.exe /c /s /q
+	} -ArgumentList $FOUNT_DIR | Out-Null
+}
+
 # Docker 检测
 $IN_DOCKER = $false
 
