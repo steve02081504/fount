@@ -466,6 +466,15 @@ function updateColors() {
 	// 使用 getComputedStyle 获取背景颜色的计算值 (即解析 var(--bc))
 	const computedStyle = getComputedStyle(document.documentElement)
 	const bcColor = computedStyle.getPropertyValue('background-color').trim()
+
+	let metaThemeColor = document.querySelector('meta[name="theme-color"]')
+	if (!metaThemeColor) {
+		metaThemeColor = document.createElement('meta')
+		metaThemeColor.name = 'theme-color'
+		document.head.appendChild(metaThemeColor)
+	}
+	metaThemeColor.content = bcColor
+
 	let lightness = null
 
 	if (bcColor) {

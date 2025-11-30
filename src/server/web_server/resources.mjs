@@ -11,7 +11,7 @@ import { watchFrontendChanges } from './watcher.mjs'
  */
 export function registerResources(router) {
 	router.use((req, res, next) => {
-		if (req.method != 'GET') return next()
+		if (req.method != 'GET' && req.method != 'HEAD') return next()
 		switch (req.path) {
 			case '/apple-touch-icon-precomposed.png':
 			case '/apple-touch-icon.png':

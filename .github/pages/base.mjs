@@ -147,6 +147,14 @@ export function setTheme(theme) {
 	if (theme === 'auto') theme = null
 	theme ||= window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
+	const bcColor = getComputedStyle(document.documentElement).getPropertyValue('background-color').trim()
+	let metaThemeColor = document.querySelector('meta[name="theme-color"]')
+	if (!metaThemeColor) {
+		metaThemeColor = document.createElement('meta')
+		metaThemeColor.name = 'theme-color'
+		document.head.appendChild(metaThemeColor)
+	}
+	metaThemeColor.content = bcColor
 }
 setTheme(localStorage.getItem('fountTheme') ?? 'dark')
 

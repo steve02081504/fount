@@ -1,0 +1,60 @@
+{
+	"name": "⛲ fount ✨ - Imagination, Given Voice.",
+	"short_name": "fount",
+	"description": "✨ Imagination, Given Voice. ⛲",
+	"start_url": "/",
+	"id": "/",
+	"display": "minimal-ui",
+	"background_color": "#0e3c5c",
+	"theme_color": "#0e3c5c",
+	"categories": [
+		"productivity",
+		"AI",
+		"chatbot",
+		"agent"
+	],
+	"protocol_handlers": [
+		{
+			"protocol": "web+fount",
+			"url": "/protocolhandler?url=%s"
+		}
+	],
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "148x148",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "192x192",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "512x512",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.svg",
+			"sizes": "2048x2048",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "2048x2048",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.ico",
+			"type": "image/vnd.microsoft.icon",
+			"sizes": "256x256",
+			"purpose": "any maskable"
+		}
+	]
+}
