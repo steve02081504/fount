@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "अधिक आइकन"
 				},
-				"delete": "हटाएँ",
+				"delete": {
+					"alt": "हटाएँ"
+				},
 				"deleteIcon": {
 					"alt": "हटाएँ आइकन"
 				},
-				"downloadHtml": "HTML डाउनलोड करें",
+				"downloadHtml": {
+					"alt": "HTML डाउनलोड करें"
+				},
 				"downloadHtmlIcon": {
 					"alt": "एचटीएमएल डाउनलोड आइकन"
 				}

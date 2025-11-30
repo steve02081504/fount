@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "Biểu tượng Thêm tùy chọn"
 				},
-				"delete": "Xóa",
+				"delete": {
+					"alt": "Xóa"
+				},
 				"deleteIcon": {
 					"alt": "Biểu tượng Xóa"
 				},
-				"downloadHtml": "Tải về HTML",
+				"downloadHtml": {
+					"alt": "Tải về HTML"
+				},
 				"downloadHtmlIcon": {
 					"alt": "Biểu tượng tải xuống HTML"
 				}

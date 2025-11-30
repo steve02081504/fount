@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "Meer pictogram"
 				},
-				"delete": "Verwijderen",
+				"delete": {
+					"alt": "Verwijderen"
+				},
 				"deleteIcon": {
 					"alt": "Verwijderpictogram"
 				},
-				"downloadHtml": "Download als html",
+				"downloadHtml": {
+					"alt": "Download als html"
+				},
 				"downloadHtmlIcon": {
 					"alt": "html-downloadpictogram"
 				}

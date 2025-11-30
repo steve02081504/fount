@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "أيقونة المزيد"
 				},
-				"delete": "حذف",
+				"delete": {
+					"alt": "حذف"
+				},
 				"deleteIcon": {
 					"alt": "أيقونة الحذف"
 				},
-				"downloadHtml": "تنزيل html",
+				"downloadHtml": {
+					"alt": "تنزيل html"
+				},
 				"downloadHtmlIcon": {
 					"alt": "أيقونة تنزيل html"
 				}

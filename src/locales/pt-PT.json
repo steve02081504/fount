@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "Ícone Mais Opções"
 				},
-				"delete": "Eliminar",
+				"delete": {
+					"alt": "Eliminar"
+				},
 				"deleteIcon": {
 					"alt": "Ícone Eliminar"
 				},
-				"downloadHtml": "Descarregar como HTML",
+				"downloadHtml": {
+					"alt": "Descarregar como HTML"
+				},
 				"downloadHtmlIcon": {
 					"alt": "Ícone de descarga HTML"
 				}

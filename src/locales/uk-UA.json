@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "Іконка 'Більше'"
 				},
-				"delete": "Видалити",
+				"delete": {
+					"alt": "Видалити"
+				},
 				"deleteIcon": {
 					"alt": "Іконка видалення"
 				},
-				"downloadHtml": "Завантажити як html",
+				"downloadHtml": {
+					"alt": "Завантажити як html"
+				},
 				"downloadHtmlIcon": {
 					"alt": "Піктограма завантаження html"
 				}

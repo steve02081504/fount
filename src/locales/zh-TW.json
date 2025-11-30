@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "更多圖示"
 				},
-				"delete": "刪除",
+				"delete": {
+					"alt": "刪除"
+				},
 				"deleteIcon": {
 					"alt": "刪除圖示"
 				},
-				"downloadHtml": "下載為html",
+				"downloadHtml": {
+					"alt": "下載為html"
+				},
 				"downloadHtmlIcon": {
 					"alt": "下載html圖示"
 				}

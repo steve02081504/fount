@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "Meira tákn"
 				},
-				"delete": "Eyða",
+				"delete": {
+					"alt": "Eyða"
+				},
 				"deleteIcon": {
 					"alt": "Eyðingartákn"
 				},
-				"downloadHtml": "Sæktu sem HTML",
+				"downloadHtml": {
+					"alt": "Sæktu sem HTML"
+				},
 				"downloadHtmlIcon": {
 					"alt": "Sæktu HTML táknmynd"
 				}

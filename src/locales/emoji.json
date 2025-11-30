@@ -710,11 +710,15 @@
 				"moreIcon": {
 					"alt": "➕"
 				},
-				"delete": "🗑️",
+				"delete": {
+					"alt": "🗑️"
+				},
 				"deleteIcon": {
 					"alt": "🗑️"
 				},
-				"downloadHtml": "💾🌐",
+				"downloadHtml": {
+					"alt": "💾🌐"
+				},
 				"downloadHtmlIcon": {
 					"alt": "💾🌐"
 				}
