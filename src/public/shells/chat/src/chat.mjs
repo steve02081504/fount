@@ -1214,19 +1214,14 @@ export async function modifyTimeLine(chatid, delta) {
 
 	// 4. 判断是否需要生成新消息 (索引超出范围)
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
-		// === 重新生成逻辑 ===
-
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
-		// 无法重新生成用户的消息，直接返回
-		if (!previousEntry || (!previousEntry.timeSlice.charname && !previousEntry.timeSlice.greeting_type))
-			return previousEntry
-
 		const timeSlice = previousEntry.timeSlice
 		const greeting_type = timeSlice.greeting_type
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID() // 必须生成新ID
 		newEntry.timeSlice = timeSlice.copy() // 复制上下文
+		newEntry.timeSlice.greeting_type = greeting_type
 
 		// 继承视觉信息保持UI稳定
 		newEntry.role = previousEntry.role
@@ -1256,7 +1251,6 @@ export async function modifyTimeLine(chatid, delta) {
 
 		// === 分支处理：开场白 vs 普通回复 ===
 		if (greeting_type)
-			// **恢复的开场白逻辑**
 			try {
 				const charname = timeSlice.charname
 				// 获取合适的 request 对象
@@ -1289,11 +1283,14 @@ export async function modifyTimeLine(chatid, delta) {
 				if (!result) throw new Error('No greeting result')
 
 				// 构建最终数据
+				const newTimeSlice = timeSlice.copy()
+				newTimeSlice.greeting_type = greeting_type
+
 				let finalEntry
 				if (greeting_type.startsWith('world_'))
-					finalEntry = await BuildChatLogEntryFromCharReply(result, timeSlice.copy(), null, undefined, chatMetadata.username)
+					finalEntry = await BuildChatLogEntryFromCharReply(result, newTimeSlice, null, undefined, chatMetadata.username)
 				else
-					finalEntry = await BuildChatLogEntryFromCharReply(result, timeSlice.copy(), char, charname, chatMetadata.username)
+					finalEntry = await BuildChatLogEntryFromCharReply(result, newTimeSlice, char, charname, chatMetadata.username)
 
 				// 填充并完成
 				Object.assign(newEntry, finalEntry)
