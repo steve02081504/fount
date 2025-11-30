@@ -61,13 +61,6 @@ export async function initializeApp() {
 
 	const initialPartType = homeRegistry.part_types.find(pt => pt.name === paramPartType) || homeRegistry.part_types[0]
 	setCurrentPartType(initialPartType)
-	if (paramPartName) {
-		const partdetails = await getpartDetails(paramPartType, paramPartName, true)
-		if (partdetails) {
-			const part = { parttype: paramPartType, partname: paramPartName, partdetails, partTypeConfig: initialPartType }
-			showItemModal(part)
-		}
-	}
 
 	if (query) {
 		document.getElementById('filter-input').value = query
