@@ -22,7 +22,8 @@ class StreamRenderer {
 			targetContent: initialContent || '',
 			displayedContent: initialContent || '',
 			lastRendered: null,
-			domElement: document.getElementById(id) // 缓存引用
+			domElement: document.getElementById(id), // 缓存引用
+			cache: {}
 		})
 		this.startLoop()
 	}
@@ -91,7 +92,7 @@ class StreamRenderer {
 			if (state.displayedContent !== state.lastRendered) {
 				const contentEl = state.domElement.querySelector('.message-content')
 				if (contentEl)
-					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent)
+					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent, state.cache)
 
 				state.lastRendered = state.displayedContent
 			}
