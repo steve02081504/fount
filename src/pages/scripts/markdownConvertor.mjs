@@ -14,6 +14,7 @@ import remarkRehype from 'https://esm.sh/remark-rehype'
 import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
+import { toHtml } from 'https://esm.sh/hast-util-to-html'
 
 import { geti18n } from './i18n.mjs'
 import { onThemeChange } from './theme.mjs'
@@ -663,6 +664,101 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	}
 }
 
+// --- 缓存插件 ---
+
+/**
+ * 读取缓存插件
+ */
+function rehypeCacheRead() {
+	return (tree, file) => {
+		const cache = file.data.cache
+		if (!cache) return
+
+		visit(tree, 'element', (node, index, parent) => {
+			// 1. 识别 Mermaid (pre > code.language-mermaid)
+			// 2. 识别 普通代码块 (pre > code) - 添加这个以优化 Shiki 高亮性能
+			if (node.tagName === 'pre' && node.children?.[0]?.tagName === 'code') {
+				const codeNode = node.children[0]
+				const className = codeNode.properties?.className || []
+				const content = codeNode.children?.[0]?.value || ''
+
+				// 区分 Mermaid 和普通代码
+				const isMermaid = className.includes('language-mermaid')
+				const lang = className.find(c => c.startsWith('language-')) || 'text'
+
+				// 生成 Cache Key (包含内容和语言)
+				const hash = md5(content + lang)
+				const cacheKey = isMermaid ? `mermaid-${hash}` : `code-${hash}`
+
+				if (cache[cacheKey]) {
+					// HIT: 使用缓存替换当前节点
+					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+					parent.children.splice(index, 1, ...cachedHast)
+					// 跳过刚插入的节点，避免重复访问
+					return index + cachedHast.length
+				} else {
+					// MISS: 包装节点以便后续插件处理后被 Write 插件捕获
+					const wrapper = {
+						type: 'element',
+						tagName: 'div',
+						// 使用通用属性，后续 Write 插件只需检查这个属性
+						properties: { 'data-cache-key': cacheKey, 'style': 'display: contents;' },
+						children: [node]
+					}
+					parent.children[index] = wrapper
+				}
+			}
+
+			// 3. 识别 Math (span.math-inline / div.math-display)
+			if (node.properties?.className?.some(c => c === 'math-inline' || c === 'math-display')) {
+				const content = node.children?.[0]?.value || ''
+				const hash = md5(content)
+				const cacheKey = `math-${hash}`
+
+				if (cache[cacheKey]) {
+					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+					parent.children.splice(index, 1, ...cachedHast)
+					return index + cachedHast.length
+				} else {
+					const wrapper = {
+						type: 'element',
+						tagName: 'div',
+						properties: { 'data-cache-key': cacheKey, 'style': 'display: contents;' },
+						children: [node]
+					}
+					parent.children[index] = wrapper
+				}
+			}
+		})
+	}
+}
+
+/**
+ * 写入缓存插件
+ */
+function rehypeCacheWrite() {
+	return (tree, file) => {
+		const cache = file.data.cache
+		if (!cache) return
+
+		visit(tree, 'element', (node, index, parent) => {
+			const key = node.properties?.['data-cache-key']
+
+			if (key) {
+				// 将处理后的子节点序列化为 HTML 字符串存入缓存
+				const html = toHtml(node.children)
+				cache[key] = html
+
+				// 解包：移除 wrapper div，将内容提升到父级
+				parent.children.splice(index, 1, ...node.children)
+
+				// 返回当前索引，以便继续正确遍历后续节点
+				return index
+			}
+		})
+	}
+}
+
 // --- Markdown 转换器 ---
 
 /**
@@ -679,6 +775,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkMath)
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
+		.use(rehypeCacheRead)
 		.use(rehypeMermaid, {
 			dark: true,
 			/**
@@ -752,6 +849,7 @@ ${diagram}`
 			}
 		})
 		.use(rehypeKatex)
+		.use(rehypeCacheWrite)
 		.use(rehypeAddDaisyuiClass)
 		.use(rehypeStringify, {
 			allowDangerousCharacters: true,
