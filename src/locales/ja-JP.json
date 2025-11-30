@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "その他アイコン"
+				},
+				"delete": {
+					"alt": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				},
+				"downloadHtml": {
+					"alt": "HTMLとしてダウンロード"
+				},
+				"downloadHtmlIcon": {
+					"alt": "HTMLダウンロードアイコン"
 				}
 			},
 			"dropdown": {

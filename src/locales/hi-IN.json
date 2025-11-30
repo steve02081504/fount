@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "अधिक आइकन"
+				},
+				"delete": {
+					"alt": "हटाएँ"
+				},
+				"deleteIcon": {
+					"alt": "हटाएँ आइकन"
+				},
+				"downloadHtml": {
+					"alt": "HTML डाउनलोड करें"
+				},
+				"downloadHtmlIcon": {
+					"alt": "एचटीएमएल डाउनलोड आइकन"
 				}
 			},
 			"dropdown": {

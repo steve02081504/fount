@@ -699,6 +699,18 @@ export type LocaleData = {
 				moreIcon: {
 					alt: string
 				}
+				delete: {
+					alt: string
+				}
+				deleteIcon: {
+					alt: string
+				}
+				downloadHtml: {
+					alt: string
+				}
+				downloadHtmlIcon: {
+					alt: string
+				}
 			}
 			dropdown: {
 				delete: string

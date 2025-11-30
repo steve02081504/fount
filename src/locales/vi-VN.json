@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "Biểu tượng Thêm tùy chọn"
+				},
+				"delete": {
+					"alt": "Xóa"
+				},
+				"deleteIcon": {
+					"alt": "Biểu tượng Xóa"
+				},
+				"downloadHtml": {
+					"alt": "Tải về HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Biểu tượng tải xuống HTML"
 				}
 			},
 			"dropdown": {

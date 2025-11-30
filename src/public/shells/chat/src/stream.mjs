@@ -124,7 +124,7 @@ export function defineInlineToolUses(toolDefs) {
 				if (cache[i] === undefined)
 					try {
 						const matchedContent = matches[i][1]
-						cache[i] = exec(matchedContent)
+						cache[i] = exec(matchedContent, args)
 					} catch (error) {
 						cache[i] = error
 					}
