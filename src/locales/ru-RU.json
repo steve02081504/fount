@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "Значок 'Ещё'"
+				},
+				"delete": {
+					"alt": "Удалить"
+				},
+				"deleteIcon": {
+					"alt": "Значок «Удалить»"
+				},
+				"downloadHtml": {
+					"alt": "Скачать как HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Значок скачивания HTML"
 				}
 			},
 			"dropdown": {

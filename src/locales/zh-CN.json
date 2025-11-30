@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "更多图标"
+				},
+				"delete": {
+					"alt": "删除"
+				},
+				"deleteIcon": {
+					"alt": "删除图标"
+				},
+				"downloadHtml": {
+					"alt": "下载为html"
+				},
+				"downloadHtmlIcon": {
+					"alt": "下载html图标"
 				}
 			},
 			"dropdown": {

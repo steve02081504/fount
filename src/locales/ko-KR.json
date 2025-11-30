@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "더 보기 아이콘"
+				},
+				"delete": {
+					"alt": "삭제"
+				},
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				},
+				"downloadHtml": {
+					"alt": "HTML로 다운로드"
+				},
+				"downloadHtmlIcon": {
+					"alt": "HTML 다운로드 아이콘"
 				}
 			},
 			"dropdown": {

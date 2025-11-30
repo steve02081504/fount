@@ -709,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "Icône Plus"
+				},
+				"delete": {
+					"alt": "Supprimer"
+				},
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				},
+				"downloadHtml": {
+					"alt": "Télécharger en HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Icône de téléchargement HTML"
 				}
 			},
 			"dropdown": {
