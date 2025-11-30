@@ -28,6 +28,15 @@
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)
+		if (!urlParams.get('cold_bootting')) try {
+			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
+		}
+		catch {
+			const iframe = document.createElement('iframe')
+			iframe.style.display = 'none'
+			iframe.src = 'fount://nop/'
+			document.body.appendChild(iframe)
+		}
 		if (urlParams.get('theme')) setTheme(urlParams.get('theme'))
 		if (urlParams.get('userPreferredLanguages'))
 			localStorage.setItem('userPreferredLanguages', urlParams.get('userPreferredLanguages'))
