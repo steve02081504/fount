@@ -145,9 +145,85 @@ export async function renderMessage(message) {
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')
 	deleteButton.addEventListener('click', () => {
-		if (confirmI18n('chat.messageList.confirmDeleteMessage')) {
+		// Count lines in the message content
+		const lineCount = messageMarkdownContent.split('\n').length
+		// Skip confirmation for messages with less than 30 lines
+		const needsConfirmation = lineCount >= 30
+
+		if (!needsConfirmation || confirmI18n('chat.messageList.confirmDeleteMessage')) {
 			deleteButton.disabled = true
 			enqueueDeletion(messageElement)
+		}
+	})
+
+	// --- Shift key detection for button visibility ---
+	const buttonGroup = messageElement.querySelector('.button-group')
+	const normalButtons = buttonGroup.querySelector('.normal-buttons')
+	const shiftButtons = buttonGroup.querySelector('.shift-buttons')
+
+	let isShiftPressed = false
+
+	/**
+	 * 更新按钮可见性
+	 */
+	const updateButtonVisibility = () => {
+		if (isShiftPressed) {
+			normalButtons.style.display = 'none'
+			shiftButtons.style.display = 'flex'
+		} else {
+			normalButtons.style.display = 'flex'
+			shiftButtons.style.display = 'none'
+		}
+	}
+
+	/**
+	 * 处理按下 Shift 键
+	 * @param {KeyboardEvent} e 事件
+	 */
+	const handleKeyDown = (e) => {
+		if (e.key === 'Shift' && !isShiftPressed) {
+			isShiftPressed = true
+			updateButtonVisibility()
+		}
+	}
+
+	/**
+	 * 处理松开 Shift 键
+	 * @param {KeyboardEvent} e 事件
+	 */
+	const handleKeyUp = (e) => {
+		if (e.key === 'Shift' && isShiftPressed) {
+			isShiftPressed = false
+			updateButtonVisibility()
+		}
+	}
+
+	// Add keyboard event listeners
+	document.addEventListener('keydown', handleKeyDown)
+	document.addEventListener('keyup', handleKeyUp)
+
+	// Clean up listeners when element is removed
+	onElementRemoved(messageElement, () => {
+		document.removeEventListener('keydown', handleKeyDown)
+		document.removeEventListener('keyup', handleKeyUp)
+	})
+
+	// Initialize button visibility
+	updateButtonVisibility()
+
+	// --- Direct Download HTML button (shift mode) ---
+	const downloadHtmlButtonDirect = messageElement.querySelector('.download-html-button-direct')
+	downloadHtmlButtonDirect.addEventListener('click', async () => {
+		try {
+			const a = document.createElement('a')
+			a.href = standaloneMessageUrl
+			a.download = `message-${message.id}.html`
+			document.body.appendChild(a)
+			a.click()
+			document.body.removeChild(a)
+		}
+		catch (error) {
+			showToast('error', error.stack || error.message || error)
 		}
 	})
 

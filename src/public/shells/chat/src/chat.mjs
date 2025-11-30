@@ -1313,6 +1313,8 @@ export async function modifyTimeLine(chatid, delta) {
 				console.error('Greeting generation failed:', e)
 				newEntry.content = `\`\`\`\nError generating greeting:\n${e.message}\n\`\`\``
 				newEntry.is_generating = false
+				newEntry.id = entry.id // 保持 ID 不变
+				newEntry.timeSlice = timeSlice //设置char信息便于刷新
 				broadcastChatEvent(chatid, {
 					type: 'message_replaced',
 					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },

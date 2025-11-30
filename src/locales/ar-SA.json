@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "أيقونة المزيد"
+				},
+				"delete": "حذف",
+				"deleteIcon": {
+					"alt": "أيقونة الحذف"
+				},
+				"downloadHtml": "تنزيل html",
+				"downloadHtmlIcon": {
+					"alt": "أيقونة تنزيل html"
 				}
 			},
 			"dropdown": {

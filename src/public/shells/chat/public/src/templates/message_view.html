@@ -7,13 +7,23 @@
 	<div class="chat-bubble relative p-[15px] min-w-[150px] ${
 		content.match(/<(?<tag>video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'w-full' : ''
 	}">
-		<div class="button-group join">
-			<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
-				<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />
-			</button>
-			<button class="btn btn-xs btn-ghost join-item" popovertarget="popover-${id}" style="anchor-name:--anchor-${id}" data-i18n="chat.messageView.buttons.more">
-				<img src="https://api.iconify.design/line-md/list-3.svg" data-i18n="chat.messageView.buttons.moreIcon" />
-			</button>
+		<div class="button-group">
+			<div class="normal-buttons join" style="display: flex;">
+				<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
+					<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />
+				</button>
+				<button class="btn btn-xs btn-ghost join-item" popovertarget="popover-${id}" style="anchor-name:--anchor-${id}" data-i18n="chat.messageView.buttons.more">
+					<img src="https://api.iconify.design/line-md/list-3.svg" data-i18n="chat.messageView.buttons.moreIcon" />
+				</button>
+			</div>
+			<div class="shift-buttons join" style="display: none;">
+				<button class="download-html-button-direct btn btn-xs btn-success join-item" data-i18n="chat.messageView.buttons.downloadHtml">
+					<img src="https://api.iconify.design/line-md/download.svg" data-i18n="chat.messageView.buttons.downloadHtmlIcon" />
+				</button>
+				<button class="delete-button btn btn-xs btn-error join-item" data-i18n="chat.messageView.buttons.delete">
+					<img src="https://api.iconify.design/line-md/remove.svg" data-i18n="chat.messageView.buttons.deleteIcon" />
+				</button>
+			</div>
 		</div>
 		<ul class="dropdown dropdown-end menu w-52 rounded-box bg-base-100 shadow-sm" popover id="popover-${id}" style="position-anchor:--anchor-${id}">
 			<li>

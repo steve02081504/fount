@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "Meira tákn"
+				},
+				"delete": "Eyða",
+				"deleteIcon": {
+					"alt": "Eyðingartákn"
+				},
+				"downloadHtml": "Sæktu sem HTML",
+				"downloadHtmlIcon": {
+					"alt": "Sæktu HTML táknmynd"
 				}
 			},
 			"dropdown": {

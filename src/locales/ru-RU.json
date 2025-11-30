@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "Значок 'Ещё'"
+				},
+				"delete": "Удалить",
+				"deleteIcon": {
+					"alt": "Значок «Удалить»"
+				},
+				"downloadHtml": "Скачать как HTML",
+				"downloadHtmlIcon": {
+					"alt": "Значок скачивания HTML"
 				}
 			},
 			"dropdown": {

@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "更多"
+				},
+				"delete": "刪",
+				"deleteIcon": {
+					"alt": "刪"
+				},
+				"downloadHtml": "下載為織文",
+				"downloadHtmlIcon": {
+					"alt": "下載織文圖示"
 				}
 			},
 			"dropdown": {

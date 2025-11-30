@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "Meer pictogram"
+				},
+				"delete": "Verwijderen",
+				"deleteIcon": {
+					"alt": "Verwijderpictogram"
+				},
+				"downloadHtml": "Download als html",
+				"downloadHtmlIcon": {
+					"alt": "html-downloadpictogram"
 				}
 			},
 			"dropdown": {

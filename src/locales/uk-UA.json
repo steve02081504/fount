@@ -709,6 +709,14 @@
 				},
 				"moreIcon": {
 					"alt": "Іконка 'Більше'"
+				},
+				"delete": "Видалити",
+				"deleteIcon": {
+					"alt": "Іконка видалення"
+				},
+				"downloadHtml": "Завантажити як html",
+				"downloadHtmlIcon": {
+					"alt": "Піктограма завантаження html"
 				}
 			},
 			"dropdown": {
