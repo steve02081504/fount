@@ -448,6 +448,11 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
+	if ($protocolUrl -eq 'fount://nop/') {
+		$runargs = $args[2..$args.Count]
+		fount.ps1 @runargs
+		exit $LastExitCode
+	}
 	if (-not $protocolUrl) {
 		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1

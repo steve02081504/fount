@@ -893,6 +893,10 @@ if [[ $# -gt 0 ]]; then
 		;;
 	protocolhandle)
 		protocolUrl="$2"
+		if [[ "$protocolUrl" == "fount://nop/" ]]; then
+			"$0" "${@:3}"
+			exit $?
+		fi
 		if [ -z "$protocolUrl" ]; then
 			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
