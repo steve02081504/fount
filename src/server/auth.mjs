@@ -49,20 +49,21 @@ const jwtCache = new Map()
 
 /**
  * 获取安全的 Cookie 选项，动态判断 'secure' 标志。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {object} Cookie 选项对象。
  */
-function getSecureCookieOptions(req) {
+export function getSecureCookieOptions(req) {
+	const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https'
 	return {
 		httpOnly: true,
-		secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+		secure: isSecure,
 		sameSite: 'Lax',
 	}
 }
 
 /**
  * 清除所有认证相关的 Cookies。
- * @param {import('express').Response} res - Express 响应对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
  * @param {object} options - Cookie 选项。
  */
 function clearAuthCookies(res, options) {
@@ -239,7 +240,7 @@ async function verifyToken(token) {
 /**
  * 通用的令牌刷新处理器。
  * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @param {object} options - 刷新逻辑的配置。
  * @returns {Promise<object>} 包含状态码、新令牌或错误消息的对象。
  */
@@ -297,7 +298,7 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 /**
  * 刷新访问令牌。
  * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refresh(refreshTokenValue, req) {
@@ -346,7 +347,7 @@ async function refresh(refreshTokenValue, req) {
 /**
  * 刷新 API 访问令牌。
  * @param {string} apiRefreshTokenValue - 客户端提供的 API 刷新令牌。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refreshApiToken(apiRefreshTokenValue, req) {
@@ -395,8 +396,8 @@ async function refreshApiToken(apiRefreshTokenValue, req) {
 
 /**
  * 用户登出。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
  * @returns {Promise<void>}
  */
 export async function logout(req, res) {
@@ -454,8 +455,8 @@ export async function verifyApiKey(apiKey) {
 
 /**
  * 尝试对请求进行身份验证，成功则填充 req.user。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
  * @throws {Error} 如果认证失败。
  * @returns {Promise<void>}
  */
@@ -533,8 +534,8 @@ export async function try_auth_request(req, res) {
 
 /**
  * try_auth_request 的 Promise 包装器。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
  * @returns {Promise<boolean>} 成功时为 true，失败时为 false。
  */
 export function auth_request(req, res) {
@@ -543,9 +544,9 @@ export function auth_request(req, res) {
 
 /**
  * 认证中间件。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
- * @param {import('express').NextFunction} next - Express 的 next 中间件函数。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @param {import('npm:express').NextFunction} next - Express 的 next 中间件函数。
  * @returns {Promise<void>}
  */
 export async function authenticate(req, res, next) {
@@ -873,7 +874,7 @@ export async function renameUser(currentUsername, newUsername, password) {
 
 /**
  * 从请求中获取用户信息。依赖于 authenticate 中间件已填充 req.user。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 用户对象。
  * @throws {Error} 如果请求未经过身份验证。
  */
@@ -904,7 +905,7 @@ let avgVerifyTime = 0
  * @param {string} username - 用户名。
  * @param {string} password - 密码。
  * @param {string} [deviceId='unknown'] - 设备标识符。
- * @param {import('express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
 export async function login(username, password, deviceId = 'unknown', req) {
@@ -1010,8 +1011,8 @@ export async function register(username, password) {
 /**
  * 使用 API 密钥设置认证 Cookies。
  * @param {string} apiKey - API 密钥。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
  * @returns {Promise<object>} 操作结果。
  */
 export async function setApiCookieResponse(apiKey, req, res) {

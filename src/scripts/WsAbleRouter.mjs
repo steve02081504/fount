@@ -3,9 +3,9 @@ import { WebSocketServer } from 'npm:ws'
 
 /**
  * 使用 WebSocket 功能增强 Express 路由器。
- * @param {import('express').Router} [router=express.Router()] - 要增强的 Express 路由器。
+ * @param {import('npm:express').Router} [router=express.Router()] - 要增强的 Express 路由器。
  * @param {import('http').Server} [httpServer=null] - 要绑定的 HTTP 服务器。
- * @returns {import('express').Router} 增强后的路由器。
+ * @returns {import('npm:express').Router} 增强后的路由器。
  */
 export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	/**
@@ -84,7 +84,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	 * 为给定的路径注册一个 WebSocket 处理器。
 	 * @param {string} path - 路由路径。
 	 * @param {...any} handlers - 中间件和 WebSocket 连接处理器。
-	 * @returns {import('express').Router} 增强后的路由器。
+	 * @returns {import('npm:express').Router} 增强后的路由器。
 	 */
 	router.ws = (path, ...handlers) => {
 		const wss = new WebSocketServer({
@@ -119,7 +119,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	/**
 	 * 将 WebSocket 升级处理器绑定到一个 HTTP 服务器。
 	 * @param {import('http').Server} server - 要绑定的 HTTP 服务器。
-	 * @returns {import('express').Router} 增强后的路由器。
+	 * @returns {import('npm:express').Router} 增强后的路由器。
 	 */
 	router.ws_bindServer = server => {
 		server.on('upgrade', router.ws_on_upgrade)
@@ -130,9 +130,9 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 }
 /**
  * 使用 WebSocket 功能增强 Express 应用程序。
- * @param {import('express').Application} [app=express()] - 要增强的 Express 应用程序。
+ * @param {import('npm:express').Application} [app=express()] - 要增强的 Express 应用程序。
  * @param {import('http').Server} [httpServer=null] - 要绑定的 HTTP 服务器。
- * @returns {import('express').Application} 增强后的应用程序。
+ * @returns {import('npm:express').Application} 增强后的应用程序。
  */
 export function WsAbleApp(app = express(), httpServer = null) {
 	return WsAbleRouter(app, httpServer)

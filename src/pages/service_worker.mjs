@@ -471,8 +471,18 @@ self.addEventListener('message', event => {
 const routes = [
 	// 忽略无缓存请求。
 	{
+		/**
+		 * 检查请求方法是否为 no-store。
+		 * @param {object} context - 上下文对象。
+		 * @param {Request} context.request - 请求对象。
+		 * @returns {boolean} 如果请求方法不是 no-store，则返回 true。
+		 */
 		condition: ({ request }) => request.cache === 'no-store',
-		handler: () => null,
+		/**
+		 * 处理无缓存请求。
+		 * @returns {null} 返回 null 以跳过处理。
+		 */
+		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
 	},
 	// 忽略所有非 GET 请求。
 	{
@@ -487,7 +497,7 @@ const routes = [
 		 * 处理非 GET 请求。
 		 * @returns {null} 返回 null 以跳过处理。
 		 */
-		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
+		handler: () => null,
 	},
 	// 忽略非 http/https 协议的请求（例如 chrome-extension://）。
 	{

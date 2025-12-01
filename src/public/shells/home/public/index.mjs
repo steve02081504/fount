@@ -7,7 +7,7 @@ import { showToast } from '../../scripts/toast.mjs'
 import { initializeApp, refreshApp } from './src/home.mjs'
 
 initializeApp().then(async () => {
-	if (navigator.serviceWorker.controller) {
+	if (navigator.serviceWorker?.controller) {
 		const channel = new MessageChannel()
 		navigator.serviceWorker.controller.postMessage({ type: 'EXIT_COLD_BOOT' }, [channel.port2])
 		/**

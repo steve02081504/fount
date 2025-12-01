@@ -4,7 +4,7 @@ import { config } from '../server.mjs'
 
 /**
  * 为应用程序注册 .well-known 路由。
- * @param {import('express').Router} router - 要在其上注册路由的 Express 路由器。
+ * @param {import('npm:express').Router} router - 要在其上注册路由的 Express 路由器。
  * @returns {void}
  */
 export function registerWellKnowns(router) {

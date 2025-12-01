@@ -1105,10 +1105,8 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		if (idx === -1) {
 			chatMetadata.chatLog.push(finalEntry)
 			idx = chatMetadata.chatLog.length - 1
-			if (!isError) {
-				chatMetadata.timeLines = [finalEntry]
-				chatMetadata.timeLineIndex = 0
-			}
+			chatMetadata.timeLines = [finalEntry]
+			chatMetadata.timeLineIndex = 0
 		}
 		else {
 			chatMetadata.chatLog[idx] = finalEntry
@@ -1117,7 +1115,7 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 				chatMetadata.timeLines[timelineIdx] = finalEntry
 		}
 
-		if (!isError) chatMetadata.LastTimeSlice = finalEntry.timeSlice
+		chatMetadata.LastTimeSlice = finalEntry.timeSlice
 
 		broadcastChatEvent(chatid, {
 			type: 'message_replaced',

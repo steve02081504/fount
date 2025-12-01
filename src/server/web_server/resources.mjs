@@ -1,6 +1,9 @@
+import fs from 'node:fs'
+
 import express from 'npm:express'
 
 import { __dirname } from '../base.mjs'
+import { skip_report } from '../server.mjs'
 
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -12,13 +15,17 @@ import { watchFrontendChanges } from './watcher.mjs'
 export function registerResources(router) {
 	router.use((req, res, next) => {
 		if (req.method != 'GET' && req.method != 'HEAD') return next()
-		switch (req.path) {
-			case '/apple-touch-icon-precomposed.png':
-			case '/apple-touch-icon.png':
-				return res.sendFile(__dirname + '/src/pages/favicon.png')
-			case '/favicon.svg':
-				return res.sendFile(__dirname + '/imgs/icon.svg')
-		}
+		try {
+			switch (req.path) {
+				case '/apple-touch-icon-precomposed.png':
+				case '/apple-touch-icon.png':
+					if (fs.existsSync(__dirname + '/src/pages/favicon.png'))
+						return res.sendFile(__dirname + '/src/pages/favicon.png')
+					break
+				case '/favicon.svg':
+					return res.sendFile(__dirname + '/imgs/icon.svg')
+			}
+		} catch (e) { throw skip_report(e) } // 抽象linux错误，关我屁事
 		return next()
 	})
 	watchFrontendChanges('/', __dirname + '/src/pages')

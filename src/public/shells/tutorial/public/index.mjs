@@ -187,6 +187,8 @@ function handleMobileClick() {
 	}
 }
 
+await initTranslations('tutorial')
+
 startTutorialBtn.addEventListener('click', () => {
 	tutorialModal.classList.add('hidden')
 	hideTutorialEnd()
@@ -218,5 +220,3 @@ endButton.addEventListener('click', () => {
 	unlockAchievement('shells', 'tutorial', 'complete_tutorial')
 	closeTutorial()
 })
-
-await initTranslations('tutorial')

@@ -219,7 +219,11 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'char',
-			content: \`<generate-char name="\${charname}">\\n\${code}\\n</generate-char>\`,
+			content: \`\\
+<generate-char name="\${charname}">
+\${code}
+</generate-char>
+\`,
 		})
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -233,16 +237,16 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: \`生成角色\${charname}成功！告知用户吧！\`,
 		})
 
 		return true
 	} catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: \`生成失败！\\n原因：\${e.stack}\`,
 		})
 		return true
@@ -475,7 +479,11 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'char',
-			content: `\`\`\`generate-char ${charname}\n${code}\n\`\`\``,
+			content: `\
+<generate-char name="${charname}">
+${code}
+</generate-char>
+`,
 		})
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -489,8 +497,8 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: `生成角色${charname}成功！告知用户吧！`,
 		})
 
@@ -498,8 +506,8 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 	}
 	catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
 		return true
@@ -516,8 +524,12 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 		charname = charname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
-			role: 'persona',
-			content: `\`\`\`generate-persona ${charname}\n${code}\n\`\`\``,
+			role: 'char',
+			content: `\
+<generate-persona name="${charname}">
+${code}
+</generate-persona>
+`,
 		})
 		const dir = path.join(import.meta.dirname, '..', '..', 'personas', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -531,8 +543,8 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'persona-generator',
+			role: 'tool',
 			content: `生成用户人设${charname}成功！告知用户吧！`,
 		})
 
@@ -540,8 +552,8 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 	}
 	catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'persona-generator',
+			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
 		return true

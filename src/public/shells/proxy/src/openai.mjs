@@ -6,8 +6,8 @@ import { getPartList } from '../../../../server/managers/index.mjs'
 
 /**
  * 处理补全请求。
- * @param {import('express').Request} req - 请求对象。
- * @param {import('express').Response} res - 响应对象。
+ * @param {import('npm:express').Request} req - 请求对象。
+ * @param {import('npm:express').Response} res - 响应对象。
  * @param {string} username - 用户名。
  * @param {string} model - 模型。
  * @returns {Promise<void>}
@@ -89,8 +89,8 @@ async function handleCompletionsRequest(req, res, username, model) {
 
 /**
  * 处理聊天补全请求。
- * @param {import('express').Request} req - 请求对象。
- * @param {import('express').Response} res - 响应对象。
+ * @param {import('npm:express').Request} req - 请求对象。
+ * @param {import('npm:express').Response} res - 响应对象。
  * @param {string} username - 用户名。
  * @param {string} model - 模型。
  * @returns {Promise<void>}
@@ -179,11 +179,10 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 			res.write(`data: ${JSON.stringify(finalChunkData)}\n\n`)
 			res.write('data: [DONE]\n\n')
 		} catch (error) {
-			if (error.name !== 'AbortError') 
+			if (error.name !== 'AbortError')
 				console.error('Error during streaming StructCall:', error)
 				// It's hard to send an error once the stream has started.
 				// We can try to send an error in the stream format if possible, but for now, just closing is fine.
-			
 		} finally {
 			res.end()
 		}
@@ -216,7 +215,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 
 /**
  * 设置OpenAI API端点。
- * @param {import('express').Router} router - 路由。
+ * @param {import('npm:express').Router} router - 路由。
  */
 export function setOpenAIAPIEndpoints(router) {
 	const basePath = '/api/shells/proxy/calling/openai'
@@ -249,8 +248,8 @@ export function setOpenAIAPIEndpoints(router) {
 
 	/**
 	 * 处理补全。
-	 * @param {import('express').Request} req - 请求对象。
-	 * @param {import('express').Response} res - 响应对象。
+	 * @param {import('npm:express').Request} req - 请求对象。
+	 * @param {import('npm:express').Response} res - 响应对象。
 	 * @returns {Promise<void>}
 	 */
 	const processCompletions = async (req, res) => {
@@ -277,8 +276,8 @@ export function setOpenAIAPIEndpoints(router) {
 
 	/**
 	 * 处理聊天补全。
-	 * @param {import('express').Request} req - 请求对象。
-	 * @param {import('express').Response} res - 响应对象。
+	 * @param {import('npm:express').Request} req - 请求对象。
+	 * @param {import('npm:express').Response} res - 响应对象。
 	 * @returns {Promise<void>}
 	 */
 	const processChatCompletions = async (req, res) => {
