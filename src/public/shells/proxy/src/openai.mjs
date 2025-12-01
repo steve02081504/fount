@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import { v4 as uuidv4 } from 'npm:uuid'
 
 import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
@@ -104,12 +106,61 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 	if (!messages || !Array.isArray(messages) || !messages.length)
 		return res.status(400).json({ error: { message: '\'messages\' is required and must be a non-empty array.', type: 'invalid_request_error', code: 'parameter_missing_or_invalid' } })
 
+	/**
+	 * 解析 OpenAI 格式的消息内容，提取文本和文件
+	 * @param {string | object[]} parts - OpenAI 格式的消息内容
+	 * @returns {{content: string, files: any[]}} 解析后的文本和文件
+	 */
+	const parseMessageContent = async (parts) => {
+		if (Object(parts) instanceof String) return { content: parts, files: [] }
+
+		let content = ''
+		const files = []
+
+		if (Array.isArray(parts)) for (const part of parts)
+			if (part.type === 'text') content += part.text || ''
+			else if (part.type === 'image_url') {
+				const url = part.image_url?.url || part.image_url
+				if (url) try {
+					const response = await fetch(url)
+					const buffer = await response.arrayBuffer()
+					const contentType = response.headers.get('content-type') || 'image/png'
+					files.push({
+						mime_type: contentType,
+						buffer: Buffer.from(buffer),
+						name: `image_${files.length}.${contentType.split('/')[1] || 'png'}`
+					})
+				} catch (e) {
+					console.error('Failed to fetch image:', url, e)
+				}
+			}
+			else if (part.type === 'input_audio') {
+				const audioData = part.input_audio?.data
+				const format = part.input_audio?.format || 'wav'
+				if (audioData) {
+					const mimeMap = {
+						wav: 'audio/wav',
+						mp3: 'audio/mpeg',
+						mp4: 'audio/mp4',
+						m4a: 'audio/m4a',
+						webm: 'audio/webm',
+						pcm: 'audio/pcm',
+					}
+					files.push({
+						mime_type: mimeMap[format] || 'audio/wav',
+						buffer: Buffer.from(audioData, 'base64'),
+						name: `audio_${files.length}.${format}`
+					})
+				}
+			}
+		return { content, files }
+	}
 
 	const AIsource = await loadAIsource(username, model)
-	const fountMessages = messages.map(message => ({
-		role: message.role === 'user' ? 'user' : message.role === 'assistant' ? 'char' : 'system', // Default to system if unknown? Consider erroring.
-		content: message.content
-	}))
+	const fountMessages = await Promise.all(messages.map(async message => ({
+		role: message.role === 'user' ? 'user' : message.role === 'assistant' ? 'char' : 'system',
+		...await parseMessageContent(message.content)
+	})))
 
 	const promptStruct = {
 		chat_log: fountMessages,
@@ -127,10 +178,13 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		res.setHeader('Content-Type', 'text/event-stream')
 		res.setHeader('Cache-Control', 'no-store')
 		res.setHeader('Connection', 'keep-alive')
+		res.setHeader('X-Accel-Buffering', 'no')
 		res.flushHeaders()
 
 		let lastContent = ''
 		let sentRole = false
+		let sentFiles = []
+
 		/**
 		 * 处理 AI 响应的进度更新。
 		 * @param {{content: string, files: any[]}} result - 包含内容和文件的结果对象。
@@ -139,6 +193,79 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		const replyPreviewUpdater = (result) => {
 			const contentDelta = result.content.substring(lastContent.length)
 			lastContent = result.content
+
+			// 处理新生成的文件
+			const newFiles = result.files?.slice(sentFiles.length) || []
+			if (newFiles.length) {
+				sentFiles = result.files
+				for (const file of newFiles)
+					// 忽略视频和其他文件，只处理音频和图片
+					if (file.mime_type.startsWith('audio/')) {
+						// 音频格式: { type: 'audio', audio: { data: '...', format: '...' } }
+						// 映射 MIME 到 OpenAI 格式
+						const formatMap = {
+							'audio/wav': 'wav', 'audio/wave': 'wav', 'audio/x-wav': 'wav',
+							'audio/mpeg': 'mp3', 'audio/mp3': 'mp3',
+							'audio/mp4': 'mp4', 'audio/m4a': 'm4a',
+							'audio/webm': 'webm', 'audio/ogg': 'webm',
+							'audio/pcm': 'pcm',
+						}
+						const format = formatMap[file.mime_type.toLowerCase()] || 'wav'
+
+						// 在流式传输中，通常通过 delta 发送
+						// 注意：OpenAI 流式音频通常使用 modalites: ['text', 'audio'] 并在 delta 中包含 audio 字段
+						// 这里我们模拟这种行为
+						const chunkData = {
+							id: chatId,
+							object: 'chat.completion.chunk',
+							created: createdTimestamp,
+							model,
+							choices: [{
+								index: 0,
+								delta: {
+									audio: {
+										id: `audio_${uuidv4()}`, // 音频块通常有 ID
+										data: file.buffer.toString('base64'),
+										format
+									}
+								},
+								finish_reason: null
+							}]
+						}
+						res.write(`data: ${JSON.stringify(chunkData)}\n\n`)
+					} else if (file.mime_type.startsWith('image/')) {
+						// 图片格式：虽然 Chat Completions 流式不常用图片输出，但我们可以尝试发送
+						// 或者使用 image_url 结构
+						const chunkData = {
+							id: chatId,
+							object: 'chat.completion.chunk',
+							created: createdTimestamp,
+							model,
+							choices: [{
+								index: 0,
+								delta: {
+									// 自定义扩展或尝试模拟 content part
+									content: [
+										{
+											type: 'image_url',
+											image_url: {
+												url: `data:${file.mime_type};base64,${file.buffer.toString('base64')}`
+											}
+										}
+									]
+								},
+								finish_reason: null
+							}]
+						}
+						// 注意：标准的 delta.content 通常是字符串。发送数组可能不兼容某些客户端。
+						// 但为了传出图片，这是最接近多模态 content 的方式。
+						// 如果客户端只期望字符串，这可能会报错。
+						// 另一种方式是使用自定义字段，但用户要求按 OpenAI 格式。
+						// 鉴于 OpenAI 目前主要在 Message 中支持多模态 Content，而在 Delta 中支持较少（除了 Audio），
+						// 我们这里尽量保持结构化。
+						res.write(`data: ${JSON.stringify(chunkData)}\n\n`)
+					}
+			}
 
 			if (contentDelta) {
 				const delta = { content: contentDelta }
@@ -181,8 +308,6 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		} catch (error) {
 			if (error.name !== 'AbortError')
 				console.error('Error during streaming StructCall:', error)
-				// It's hard to send an error once the stream has started.
-				// We can try to send an error in the stream format if possible, but for now, just closing is fine.
 		} finally {
 			res.end()
 		}
@@ -190,6 +315,43 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 	else {
 		const result = await AIsource.StructCall(promptStruct)
 		const text_result = result.content
+
+		// 构建多模态 content 数组
+		const contentParts = []
+		if (text_result) contentParts.push({ type: 'text', text: text_result })
+
+		if (result.files?.length) for (const file of result.files)
+			if (file.mime_type.startsWith('audio/')) {
+				const formatMap = {
+					'audio/wav': 'wav', 'audio/wave': 'wav', 'audio/x-wav': 'wav',
+					'audio/mpeg': 'mp3', 'audio/mp3': 'mp3',
+					'audio/mp4': 'mp4', 'audio/m4a': 'm4a',
+					'audio/webm': 'webm', 'audio/ogg': 'webm',
+					'audio/pcm': 'pcm',
+				}
+				const format = formatMap[file.mime_type.toLowerCase()] || 'wav'
+				contentParts.push({
+					type: 'audio',
+					audio: {
+						data: file.buffer.toString('base64'),
+						format
+					}
+				})
+			} else if (file.mime_type.startsWith('image/'))
+				contentParts.push({
+					type: 'image_url',
+					image_url: {
+						url: `data:${file.mime_type};base64,${file.buffer.toString('base64')}`
+					}
+				})
+			// 忽略其他文件类型
+
+		// 如果没有文件，content 可以直接是字符串（兼容旧客户端），也可以是数组
+		// 为了最大兼容性，如果只有文本且没有文件，返回字符串
+		const finalContent = contentParts.length === 1 && contentParts[0].type === 'text'
+			? contentParts[0].text
+			: contentParts
+
 		res.status(200).json({
 			id: chatId,
 			object: 'chat.completion',
@@ -199,7 +361,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 				index: 0,
 				message: {
 					role: 'assistant',
-					content: text_result,
+					content: finalContent,
 				},
 				finish_reason: 'stop',
 			}],
