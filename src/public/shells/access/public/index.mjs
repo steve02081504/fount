@@ -40,26 +40,25 @@ try {
 		showToast('error', reason || 'Credential transfer failed.')
 	}
 
-	const uuid_from_hash = hashParams.get('uuid')
+	const uuid = await ping().then(res => res.uuid)
 	// Get fileId and from from hash params for security (not sent to server)
 	const fileId = hashParams.get('fileId')
 	const from = hashParams.get('from')
 
 	let plaintextCredentials = null
-	if (uuid_from_hash) try {
-		plaintextCredentials = await retrieveAndDecryptCredentials(fileId, from, hashParams, uuid_from_hash)
+	if (fileId || from) try {
+		plaintextCredentials = await retrieveAndDecryptCredentials(fileId, from, hashParams, uuid)
 	} catch (e) {
 		console.error('Failed to retrieve credentials', e)
 	}
 
 	if (plaintextCredentials) {
 		const credentials = JSON.parse(plaintextCredentials)
-		const { uuid } = await ping()
 		const baseUrl = await hosturl_in_local_ip()
 
 		url = await generateLoginInfoUrl(credentials, uuid, baseUrl)
 	}
-	else if (uuid_from_hash) throw new Error('Failed to retrieve/decrypt credentials from transfer.')
+	else if (fileId || from) throw new Error('Failed to retrieve/decrypt credentials from transfer.')
 	else await redirectToLoginInfo(window.location.href)
 }
 catch (e) {

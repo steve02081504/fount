@@ -42,7 +42,6 @@
 				const targetUrl = new URL(decodeURIComponent(redirectUrl))
 				if (urlParams.has('forward')) {
 					const newHashParams = new URLSearchParams()
-					newHashParams.set('uuid', uuid)
 					if (fileId) newHashParams.set('fileId', fileId)
 					if (from) newHashParams.set('from', from)
 					targetUrl.hash = newHashParams.toString()
