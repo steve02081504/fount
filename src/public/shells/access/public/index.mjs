@@ -41,8 +41,9 @@ try {
 	}
 
 	const uuid_from_hash = hashParams.get('uuid')
-	const fileId = searchParams.get('fileId')
-	const from = searchParams.get('from')
+	// Get fileId and from from hash params for security (not sent to server)
+	const fileId = hashParams.get('fileId')
+	const from = hashParams.get('from')
 
 	let plaintextCredentials = null
 	if (uuid_from_hash) try {

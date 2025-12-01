@@ -284,6 +284,7 @@ async function initializeApp() {
 		hashParams.delete('uuid')
 		hashParams.delete('from')
 		hashParams.delete('fileId')
+		hashParams.delete('encrypted_creds')
 		window.location.hash = hashParams.toString()
 	}
 
