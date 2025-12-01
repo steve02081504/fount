@@ -1,4 +1,5 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
+import { toHtml } from 'https://esm.sh/hast-util-to-html'
 import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
@@ -14,7 +15,6 @@ import remarkRehype from 'https://esm.sh/remark-rehype'
 import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
-import { toHtml } from 'https://esm.sh/hast-util-to-html'
 
 import { geti18n } from './i18n.mjs'
 import { onThemeChange } from './theme.mjs'
@@ -702,7 +702,7 @@ function rehypeCacheRead() {
 						type: 'element',
 						tagName: 'div',
 						// 使用通用属性，后续 Write 插件只需检查这个属性
-						properties: { 'data-cache-key': cacheKey, 'style': 'display: contents;' },
+						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
 						children: [node]
 					}
 					parent.children[index] = wrapper
@@ -723,7 +723,7 @@ function rehypeCacheRead() {
 					const wrapper = {
 						type: 'element',
 						tagName: 'div',
-						properties: { 'data-cache-key': cacheKey, 'style': 'display: contents;' },
+						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
 						children: [node]
 					}
 					parent.children[index] = wrapper
