@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "عنوان URL:البروتوكول الموجود"
+				"description": "عنوان URL:البروتوكول الموجود",
+				"registerFailed": "فشل تسجيل معالج البروتوكول fount://: ${message}",
+				"noUrl": "خطأ: لم يتم توفير عنوان URL لمعالج البروتوكول."
 			},
 			"update": {
 				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ",
@@ -116,7 +118,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",
 				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في ${path}",
-				"protocolHandlerRegistered": "Found:// تم تسجيل معالج البروتوكول.",
+				"protocolHandlerRegistered": "fount:// تم تسجيل معالج البروتوكول.",
 				"shortcutNotSupported": "تحذير: نظام التشغيل لديك (${os}) لا يدعم إنشاء اختصارات لسطح المكتب.",
 				"osacompileNotFound": "خطأ: لم يتم العثور على 'osacompile'. غير قادر على إنشاء تطبيق macOS.",
 				"lsregisterFailed": "تحذير: فشل استخدام lsregister لتسجيل تطبيق في LaunchServices.",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
 				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://discord.gg/deno للحصول على الدعم",
 				"upgradeFailed": "تحذير: ربما فشلت ترقية Deno. يرجى التحقق من وجود أخطاء.",
-				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux..."
+				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux...",
+				"patchMissing": "خطأ: لم يتم العثور على الملف القابل للتنفيذ Deno قبل التصحيح. لا يمكن مصححتها.",
+				"patchUnsupportedArch": "خطأ: بنية التصحيح غير مدعومة: ${arch}",
+				"patchFailed": "خطأ: فشل تصحيح Deno القابل للتنفيذ باستخدام patchelf."
 			},
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",
+				"packageFailed": "خطأ: فشل تثبيت ${package}.",
+				"browserMissing": "لم يتم اكتشاف المتصفح الافتراضي، جاري محاولة التثبيت...",
 				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",
 				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات fount.",
 				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل fount كمستخدم عادي."
@@ -175,8 +182,8 @@
 				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
 				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
 				"removingFountFromPath": "إزالة fount من PATH...",
-				"removingProtocolHandler": "جارٍ إزالة Found:// معالج البروتوكول...",
-				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول Found://.",
+				"removingProtocolHandler": "جارٍ إزالة fount:// معالج البروتوكول...",
+				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول fount://.",
 				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول fount://: ${message}",
 				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
 				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "أيقونة المزيد"
+				},
+				"delete": {
+					"alt": "حذف"
+				},
+				"deleteIcon": {
+					"alt": "أيقونة الحذف"
+				},
+				"downloadHtml": {
+					"alt": "تنزيل html"
+				},
+				"downloadHtmlIcon": {
+					"alt": "أيقونة تنزيل html"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "جارٍ إنشاء الرابط...",
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "جارٍ استدعاء الأداة"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "أيقونة الرفع"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "إيقاف"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "هناك صور والحقيقة",
 				"description": "استخدم الصور لكسر جدار الأبعاد.",
 				"locked_description": "إرسال صورة في الدردشة."
+			},
+			"code_greeting": {
+				"name": "قُل مرحبًا باستخدام الكود",
+				"description": "\"مرحبا يا fount!\"",
+				"locked_description": "قم بتنفيذ كود برمجي يطبع 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {
@@ -1822,8 +1850,8 @@
 		"hostChange": {
 			"securityWarningTitle": "--- تحذير سلامة fount ---",
 			"message": "تحاول الصفحة الحالية (\"${origin}\") تغيير عنوان مضيف fount إلى:\n\n\"${newHost}\"\n\nتحذير: سيسمح الموافقة على هذا الإجراء للمضيف الجديد بالتحكم بالكامل في ميزات تكامل المتصفح ، مما قد يؤدي إلى تسرب حساس للمعلومات أو سرقة الحساب.\nيجب أن يتم الموافقة فقط إذا كنت متأكدًا من أن هذه هي عمليتك الخاصة (على سبيل المثال ، ترحيل خادم نافورة).\n\nهل أنت متأكد من أنك تريد السماح لهذا التغيير؟",
-			"uuidMismatchError": "خطأ أمان FOUNT: لا تتطابق هوية (UUID) للمضيف ${newHost}. تم إلغاء العملية.",
-			"verificationError": "خطأ أمان FOUNT: غير قادر على التحقق من مضيف جديد \"${newHost}\". يرجى التحقق مما إذا كان العنوان صحيحًا وما إذا كانت الخدمة قيد التشغيل."
+			"uuidMismatchError": "خطأ أمان fount: لا تتطابق هوية (UUID) للمضيف ${newHost}. تم إلغاء العملية.",
+			"verificationError": "خطأ أمان fount: غير قادر على التحقق من مضيف جديد \"${newHost}\". يرجى التحقق مما إذا كان العنوان صحيحًا وما إذا كانت الخدمة قيد التشغيل."
 		}
 	},
 	"terminal_assistant": {
@@ -1868,7 +1896,7 @@
 			"title": "تشغيل الحيوانات الأليفة",
 			"noPets": "لا يوجد حاليا أي حيوانات أليفة تعمل.",
 			"buttons": {
-				"stop": "قف"
+				"stop": "إيقاف"
 			}
 		},
 		"toasts": {

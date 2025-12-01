@@ -3,6 +3,9 @@ import path from 'node:path'
 
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
+
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -10,198 +13,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Access any OpenAI-compatible API endpoint.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utility'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'zh-CN': {
-			name: '代理',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '代理',
-			description_markdown: '访问任何与 OpenAI 兼容的 API 端点。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['代理', 'openai', 'api', '实用工具'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'ar-SA': {
-			name: 'بروكسي',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'بروكسي',
-			description_markdown: 'الوصول إلى أي نقطة نهاية API متوافقة مع OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['بروكسي', 'openai', 'api', 'أداة'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'de-DE': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Greifen Sie auf jeden OpenAI-kompatiblen API-Endpunkt zu.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'dienstprogramm'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		emoji: {
-			name: '🔌🌐',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '🔗🌍🤖',
-			description_markdown: '🌍🔌➡️🤖✨',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['🔌', '🌐', '🔗', '🛠️'],
-			home_page: 'https://github.com/steve02081504/fount'
-		},
-		'es-ES': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Acceda a cualquier punto final de API compatible con OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utilidad'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'fr-FR': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Accédez à n\'importe quel point de terminaison d\'API compatible avec OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utilitaire'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'hi-IN': {
-			name: 'प्रॉक्सी',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'प्रॉक्सी',
-			description_markdown: 'किसी भी OpenAI-संगत API समापन बिंदु तक पहुँचें।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['प्रॉक्सी', 'ओपनएआई', 'एपीआई', 'उपयोगिता'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'is-IS': {
-			name: 'Umboð',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Umboð',
-			description_markdown: 'Fáðu aðgang að hvaða OpenAI-samhæfðu API endapunkti sem er.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['umboð', 'openai', 'api', 'gagnsemi'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'it-IT': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Accedi a qualsiasi endpoint API compatibile con OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utilità'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'ja-JP': {
-			name: 'プロキシ',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'プロキシ',
-			description_markdown: 'OpenAI 互換の API エンドポイントにアクセスします。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['プロキシ', 'openai', 'api', 'ユーティリティ'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'ko-KR': {
-			name: '프록시',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '프록시',
-			description_markdown: 'OpenAI와 호환되는 모든 API 엔드포인트에 액세스합니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['프록시', 'openai', 'api', '유틸리티'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		lzh: {
-			name: '通靈中介',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '通靈中介',
-			description_markdown: '通 OpenAI 兼容之靈脈，以達彼岸。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['中介', 'openai', '靈脈', '器用'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'nl-NL': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Toegang tot elk OpenAI-compatibel API-eindpunt.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'hulpprogramma'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'pt-PT': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Aceda a qualquer ponto final de API compatível com OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utilitário'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'ru-RU': {
-			name: 'Прокси',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Прокси',
-			description_markdown: 'Доступ к любой конечной точке API, совместимой с OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['прокси', 'openai', 'api', 'утилита'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'uk-UA': {
-			name: 'Проксі',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Проксі',
-			description_markdown: 'Доступ до будь-якої кінцевої точки API, сумісної з OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['проксі', 'openai', 'api', 'утиліта'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'vi-VN': {
-			name: 'Proxy',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Truy cập bất kỳ điểm cuối API nào tương thích với OpenAI.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'tiện ích'],
-			home_page: 'https://github.com/steve02081504/fount',
-		},
-		'zh-TW': {
-			name: '代理',
-			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '代理',
-			description_markdown: '存取任何與 OpenAI 相容的 API 端點。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['代理', 'openai', 'api', '實用程式'],
-			home_page: 'https://github.com/steve02081504/fount',
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -233,7 +45,8 @@ const configTemplate = {
 	custom_headers: {},
 	convert_config: {
 		roleReminding: true
-	}
+	},
+	use_stream: true,
 }
 /**
  * 获取 AI 源。
@@ -243,63 +56,159 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config, { SaveConfig }) {
+	config.use_stream ??= true
 	/**
 	 * 调用基础模型。
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {object} config - 配置对象。
+	 * @param {object} options - 选项对象。
+	 * @param {AbortSignal} options.signal - 用于中止请求的 AbortSignal。
+	 * @param {(result: {content: string, files: any[]}) => void} options.previewUpdater - 处理部分结果的回调函数。
+	 * @param {{content: string, files: any[]}} options.result - 包含内容和文件的结果对象。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
-	async function callBase(messages, config) {
-		let text
-		let files = []
-		while (!text && !files.length) {
-			const result = await fetch(config.url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined,
-					'HTTP-Referer': 'https://steve02081504.github.io/fount/',
-					'X-Title': 'fount',
-					...config?.custom_headers
-				},
-				body: JSON.stringify({
-					model: config.model,
-					messages,
-					stream: false,
-					...config.model_arguments,
-				})
-			})
+	async function fetchChatCompletion(messages, config, {
+		signal, previewUpdater, result
+	}) {
+		let imgIndex = 0
+		const response = await fetch(config.url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined,
+				'HTTP-Referer': 'https://steve02081504.github.io/fount/',
+				'X-Title': 'fount',
+				...config?.custom_headers
+			},
+			body: JSON.stringify({
+				model: config.model,
+				messages,
+				stream: config.use_stream,
+				...config.model_arguments,
+			}),
+			signal
+		})
 
-			if (!result.ok)
-				throw result
+		if (!response.ok)
+			throw response
 
-			text = await result.text()
-			if (text.startsWith('data:'))
-				text = text.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map(json => json.choices[0].delta.content).join('')
-			else {
-				let json
-				try { json = JSON.parse(text) }
-				catch { json = await result.json() }
-				text = json.choices[0].message.content
-				let imgindex = 0
-				files = (await Promise.all(json.choices[0].message?.images?.map?.(async imageurl => ({
-					name: `image${imgindex++}.png`,
-					buffer: await (await fetch(imageurl)).arrayBuffer(),
-					mimetype: 'image/png'
-				})) || [])).filter(Boolean)
+		const reader = response.body.getReader()
+		const decoder = new TextDecoder()
+		let buffer = ''
+		let isSSE = false
+
+		const imageProcessingPromises = []
+
+		/**
+		 * 处理图片 URL 数组
+		 * @param {string[]} imageUrls - 图片 URL 数组。
+		 */
+		const processImages = (imageUrls) => {
+			if (!imageUrls || !Array.isArray(imageUrls)) return
+
+			const promise = (async () => {
+				const newFiles = await Promise.all(imageUrls.map(async (url) => {
+					try {
+						const resp = await fetch(url)
+						if (!resp.ok) return null
+						return {
+							name: `image${imgIndex++}.png`,
+							buffer: await resp.arrayBuffer(),
+							mimetype: 'image/png'
+						}
+					} catch (e) {
+						console.error('Failed to fetch image:', url, e)
+						return null
+					}
+				}))
+
+				const validFiles = newFiles.filter(Boolean)
+				if (validFiles.length > 0) {
+					result.files.push(...validFiles)
+					previewUpdater(result)
+				}
+			})()
+			imageProcessingPromises.push(promise)
+		}
+
+		try {
+			while (true) {
+				const { done, value } = await reader.read()
+				if (done) break
+
+				buffer += decoder.decode(value, { stream: true })
+
+				// Detect SSE format
+				if (!isSSE && /^data:/m.test(buffer))
+					isSSE = true
+
+
+				if (isSSE) {
+					const lines = buffer.split('\n')
+					buffer = lines.pop() // Keep incomplete line
+
+					for (const line of lines) {
+						const trimmed = line.trim()
+						if (!trimmed.startsWith('data:')) continue
+
+						const data = trimmed.slice(5).trim()
+						if (data === '[DONE]') continue
+
+						try {
+							const json = JSON.parse(data)
+							const delta = json.choices?.[0]?.delta
+							const message = json.choices?.[0]?.message // Some non-standard streams might send full message
+
+							const content = delta?.content || message?.content || ''
+							if (content) {
+								result.content += content
+								previewUpdater(result)
+							}
+
+							// Handle images if present in delta or message (Custom extension support)
+							const images = delta?.images || message?.images
+							if (images) processImages(images)
+						} catch (e) {
+							console.warn('Error parsing stream data:', e)
+						}
+					}
+				}
 			}
+
+			// If not SSE, try parsing as standard JSON
+			if (!isSSE && buffer.trim())
+				try {
+					const json = JSON.parse(buffer)
+					const message = json.choices?.[0]?.message
+					if (message) {
+						result.content = message.content || ''
+						if (message.images) processImages(message.images)
+					}
+				} catch (e) {
+					if (!result.content) console.error('Failed to parse response as JSON:', e) // Fix: Use result.content instead of undefined 'text'
+				}
+		} catch (e) {
+			if (e.name === 'AbortError') throw e
+			console.error('Stream reading error:', e)
+			throw e
+		} finally {
+			reader.releaseLock()
 		}
-		return {
-			content: text,
-			files,
-		}
+
+		// Wait for all image processing to complete
+		if (imageProcessingPromises.length > 0)
+			await Promise.allSettled(imageProcessingPromises)
+
+		return result
 	}
+
 	/**
 	 * 调用基础模型（带重试）。
 	 * @param {Array<object>} messages - 消息数组。
+	 * @param {{ signal?: AbortSignal, previewUpdater?: (result: {content: string, files: any[]}) => void, result: {content: string, files: any[]} }} options - 包含信号、预览更新器和结果的选项对象。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
-	async function callBaseEx(messages) {
+	async function fetchChatCompletionWithRetry(messages, options) {
 		const errors = []
 		let retryConfigs = [
 			{}, // 第一次尝试，使用原始配置
@@ -314,7 +223,7 @@ async function GetSource(config, { SaveConfig }) {
 			if (retryConfig.urlSuffix) currentConfig.url += retryConfig.urlSuffix
 
 			try {
-				const result = await callBase(messages, currentConfig)
+				const result = await fetchChatCompletion(messages, currentConfig, options)
 
 				if (retryConfig.urlSuffix)
 					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
@@ -325,224 +234,20 @@ async function GetSource(config, { SaveConfig }) {
 				}
 
 				return result
-			} catch (error) { errors.push(error) }
+			} catch (error) {
+				if (error.name === 'AbortError') throw error
+				errors.push(error)
+			}
 		}
 		throw errors.length == 1 ? errors[0] : errors
 	}
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Access any OpenAI-compatible API endpoint.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utility'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '代理',
-				description_markdown: '访问任何与 OpenAI 兼容的 API 端点。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['代理', 'openai', 'api', '实用工具'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'بروكسي',
-				description_markdown: 'الوصول إلى أي نقطة نهاية API متوافقة مع OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['بروكسي', 'openai', 'api', 'أداة'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Greifen Sie auf jeden OpenAI-kompatiblen API-Endpunkt zu.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'dienstprogramm'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			emoji: {
-				name: '🔌🌐',
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '🔗🌍🤖',
-				description_markdown: '🌍🔌➡️🤖✨',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['🔌', '🌐', '🔗', '🛠️'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Acceda a cualquier punto final de API compatible con OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utilidad'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Accédez à n\'importe quel point de terminaison d\'API compatible avec OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utilitaire'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'प्रॉक्सी',
-				description_markdown: 'किसी भी OpenAI-संगत API समापन बिंदु तक पहुँचें।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['प्रॉक्सी', 'ओपनएआई', 'एपीआई', 'उपयोगिता'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Umboð',
-				description_markdown: 'Fáðu aðgang að hvaða OpenAI-samhæfðu API endapunkti sem er.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['umboð', 'openai', 'api', 'gagnsemi'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Accedi a qualsiasi endpoint API compatibile con OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utilità'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'プロキシ',
-				description_markdown: 'OpenAI 互換の API エンドポイントにアクセスします。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['プロキシ', 'openai', 'api', 'ユーティリティ'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '프록시',
-				description_markdown: 'OpenAI와 호환되는 모든 API 엔드포인트에 액세스합니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['프록시', 'openai', 'api', '유틸리티'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '通靈中介',
-				description_markdown: '通 OpenAI 兼容之靈脈，以達彼岸。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['中介', 'openai', '靈脈', '器用'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Toegang tot elk OpenAI-compatibel API-eindpunt.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'hulpprogramma'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Aceda a qualquer ponto final de API compatível com OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utilitário'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Прокси',
-				description_markdown: 'Доступ к любой конечной точке API, совместимой с OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['прокси', 'openai', 'api', 'утилита'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Проксі',
-				description_markdown: 'Доступ до будь-якої кінцевої точки API, сумісної з OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['проксі', 'openai', 'api', 'утиліта'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Truy cập bất kỳ điểm cuối API nào tương thích với OpenAI.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'tiện ích'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '代理',
-				description_markdown: '存取任何與 OpenAI 相容的 API 端點。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['代理', 'openai', 'api', '實用程式'],
-				home_page: 'https://github.com/steve02081504/fount',
-				provider: 'fount'
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		is_paid: false,
 		extension: {},
 
@@ -552,7 +257,7 @@ async function GetSource(config, { SaveConfig }) {
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			return await callBaseEx([
+			return await fetchChatCompletionWithRetry([
 				{
 					role: 'system',
 					content: prompt
@@ -562,9 +267,12 @@ async function GetSource(config, { SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				const textContent = `\
@@ -622,27 +330,45 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const result = await callBaseEx(messages)
-
-			let text = result.content
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				...result,
-				content: text
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			await fetchChatCompletionWithRetry(messages, {
+				signal, previewUpdater, result
+			})
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: {
 			/**

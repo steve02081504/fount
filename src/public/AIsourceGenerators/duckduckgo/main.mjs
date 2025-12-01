@@ -2,6 +2,8 @@ import { escapeRegExp } from '../../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 
 /**
  * @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t
@@ -9,201 +11,10 @@ import { DuckDuckGoAPI } from './duckduckgo.mjs'
  */
 
 /**
- * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ *
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI Chat',
-			description_markdown: 'Privacy-focused AI chat from DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'privacy'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'zh-CN': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI 聊天',
-			description_markdown: '来自 DuckDuckGo 的注重隐私的 AI 聊天。',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', '隐私'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'ar-SA': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'دردشة DuckDuckGo AI',
-			description_markdown: 'دردشة ذكاء اصطناعي تركز على الخصوصية من DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'خصوصية'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'de-DE': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI-Chat',
-			description_markdown: 'Datenschutzorientierter KI-Chat von DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ki', 'datenschutz'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		emoji: {
-			name: '🦆🔒',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: '🦆💬🛡️',
-			description_markdown: '🦆🤐🛡️💬',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['🦆', '🛡️', '🤐'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'es-ES': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'Chat de IA de DuckDuckGo',
-			description_markdown: 'Chat de IA centrado en la privacidad de DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ia', 'privacidad'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'fr-FR': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'Chat IA de DuckDuckGo',
-			description_markdown: 'Chat IA axé sur la confidentialité de DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ia', 'confidentialité'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'hi-IN': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'डकडकगो एआई चैट',
-			description_markdown: 'डकडकगो से गोपनीयता-केंद्रित एआई चैट।',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['डकडकगो', 'एआई', 'गोपनीयता'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'is-IS': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo gervigreindarspjall',
-			description_markdown: 'Persónuverndarmiðað gervigreindarspjall frá DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'gervigreind', 'persónuvernd'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'it-IT': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'Chat AI di DuckDuckGo',
-			description_markdown: 'Chat AI incentrata sulla privacy di DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ia', 'privacy'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'ja-JP': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI チャット',
-			description_markdown: 'DuckDuckGo のプライバシーを重視した AI チャット。',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'プライバシー'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'ko-KR': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI 채팅',
-			description_markdown: 'DuckDuckGo의 개인 정보 보호 중심 AI 채팅입니다.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', '개인 정보 보호'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		lzh: {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo 智械談',
-			description_markdown: 'DuckDuckGo 之重隱私智械談。',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', '智械', '隱私'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'nl-NL': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI-chat',
-			description_markdown: 'Privacygerichte AI-chat van DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'privacy'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'pt-PT': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'Chat de IA do DuckDuckGo',
-			description_markdown: 'Chat de IA focado na privacidade do DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ia', 'privacidade'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'ru-RU': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI-чат',
-			description_markdown: 'Конфиденциальный AI-чат от DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ии', 'конфиденциальность'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'uk-UA': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI-чат',
-			description_markdown: 'Конфіденційний AI-чат від DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ші', 'конфіденційність'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'vi-VN': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'Trò chuyện AI của DuckDuckGo',
-			description_markdown: 'Trò chuyện AI tập trung vào quyền riêng tư của DuckDuckGo.',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'quyền riêng tư'],
-			home_page: 'https://duckduckgo.com/'
-		},
-		'zh-TW': {
-			name: 'DuckDuckGo',
-			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI 聊天',
-			description_markdown: '來自 DuckDuckGo 的注重隱私的 AI 聊天。',
-			version: '0.1.0',
-			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', '隱私'],
-			home_page: 'https://duckduckgo.com/'
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -219,6 +30,7 @@ export default {
 const configTemplate = {
 	name: 'DuckDuckGo',
 	model: 'gpt-4o-mini',
+	use_stream: true,
 	convert_config: {
 		roleReminding: true
 	}
@@ -237,217 +49,10 @@ async function GetSource(config) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI Chat',
-				description_markdown: 'Privacy-focused AI chat from DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'privacy'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI 聊天',
-				description_markdown: '来自 DuckDuckGo 的注重隐私的 AI 聊天。',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', '隐私'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'دردشة DuckDuckGo AI',
-				description_markdown: 'دردشة ذكاء اصطناعي تركز على الخصوصية من DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'خصوصية'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI-Chat',
-				description_markdown: 'Datenschutzorientierter KI-Chat von DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ki', 'datenschutz'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			emoji: {
-				name: '🦆🔒',
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: '🦆💬🛡️',
-				description_markdown: '🦆🤐🛡️💬',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['🦆', '🛡️', '🤐'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'Chat de IA de DuckDuckGo',
-				description_markdown: 'Chat de IA centrado en la privacidad de DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ia', 'privacidad'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'Chat IA de DuckDuckGo',
-				description_markdown: 'Chat IA axé sur la confidentialité de DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ia', 'confidentialité'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'डकडकगो एआई चैट',
-				description_markdown: 'डकडकगो से गोपनीयता-केंद्रित एआई चैट।',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['डकडकगो', 'एआई', 'गोपनीयता'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo gervigreindarspjall',
-				description_markdown: 'Persónuverndarmiðað gervigreindarspjall frá DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'gervigreind', 'persónuvernd'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'Chat AI di DuckDuckGo',
-				description_markdown: 'Chat AI incentrata sulla privacy di DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ia', 'privacy'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI チャット',
-				description_markdown: 'DuckDuckGo のプライバシーを重視した AI チャット。',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'プライバシー'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI 채팅',
-				description_markdown: 'DuckDuckGo의 개인 정보 보호 중심 AI 채팅입니다.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', '개인 정보 보호'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo 智械談',
-				description_markdown: 'DuckDuckGo 之重隱私智械談。',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', '智械', '隱私'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI-chat',
-				description_markdown: 'Privacygerichte AI-chat van DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'privacy'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'Chat de IA do DuckDuckGo',
-				description_markdown: 'Chat de IA focado na privacidade do DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ia', 'privacidade'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI-чат',
-				description_markdown: 'Конфиденциальный AI-чат от DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ии', 'конфиденциальность'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI-чат',
-				description_markdown: 'Конфіденційний AI-чат від DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ші', 'конфіденційність'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'Trò chuyện AI của DuckDuckGo',
-				description_markdown: 'Trò chuyện AI tập trung vào quyền riêng tư của DuckDuckGo.',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'quyền riêng tư'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI 聊天',
-				description_markdown: '來自 DuckDuckGo 的注重隱私的 AI 聊天。',
-				version: '0.1.0',
-				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', '隱私'],
-				provider: 'duckduckgo',
-				home_page: 'https://duckduckgo.com/'
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		is_paid: false,
 		extension: {},
 
@@ -476,9 +81,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
@@ -516,25 +124,106 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const model = config.model || 'gpt-4o-mini'
-			let text = await duckduckgo.call(messages, model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			const model = config.model || 'gpt-4o-mini'
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+			const response = await duckduckgo.call(messages, model, useStream, signal)
+
+			if (useStream) {
+				// Handle streaming response
+				const reader = response.body.getReader()
+				const decoder = new TextDecoder()
+
+				try {
+					while (true) {
+						if (signal?.aborted) {
+							reader.cancel()
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
+						}
+
+						const { done, value } = await reader.read()
+						if (done) break
+
+						const chunk = decoder.decode(value, { stream: true })
+						const lines = chunk.split('\n')
+
+						for (const line of lines)
+							if (line.startsWith('data: ')) {
+								const data = line.slice(6)
+								if (data === '[DONE]') continue
+
+								try {
+									const json = JSON.parse(data)
+									const content = json.choices?.[0]?.delta?.content
+									if (content) {
+										result.content += content
+										previewUpdater(result)
+									}
+								} catch (e) {
+									// Skip invalid JSON
+								}
+							}
+					}
+				} finally {
+					reader.releaseLock()
+				}
+			} else {
+				// Handle non-streaming response
+				const text = await response.text()
+				try {
+					const json = JSON.parse(text)
+					result.content = json.choices?.[0]?.message?.content || text
+				} catch {
+					result.content = text
+				}
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

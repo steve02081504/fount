@@ -9,8 +9,8 @@ C_GREEN='\033[0;32m'
 C_YELLOW='\033[0;33m'
 C_CYAN='\033[0;36m'
 
-# --- i18n functions ---
-# Get system locales
+# --- 国际化函数 ---
+# 获取系统区域设置
 get_system_locales() {
 	local locales=()
 	if [ -n "$LANG" ]; then locales+=("$(echo "$LANG" | cut -d. -f1 | sed 's/_/-/')"); fi
@@ -24,25 +24,25 @@ get_system_locales() {
 	if command -v locale >/dev/null; then
 		locales+=("$(locale -uU 2>/dev/null | cut -d. -f1 | sed 's/_/-/')")
 	fi
-	locales+=("en-UK") # Fallback
-	# deduplicate
+	locales+=("en-UK") # 备用
+	# 去重
 	# shellcheck disable=SC2207
 	locales=($(printf "%s\n" "${locales[@]}" | awk '!x[$0]++'))
 	echo "${locales[@]}"
 }
 
-# Get available locales from src/locales/list.csv
+# 从 src/locales/list.csv 获取可用区域设置
 get_available_locales() {
 	local locale_list_file="$FOUNT_DIR/src/locales/list.csv"
 	if [ -f "$locale_list_file" ]; then
-		# Skip header and get the first column
+		# 跳过标题并获取第一列
 		tail -n +2 "$locale_list_file" | cut -d, -f1
 	else
-		echo "en-UK" # Fallback
+		echo "en-UK" # 备用
 	fi
 }
 
-# Find the best locale to use
+# 寻找最合适的区域设置
 get_best_locale() {
 	local preferred_locales_str="$1"
 	local available_locales_str="$2"
@@ -71,10 +71,10 @@ get_best_locale() {
 		done
 	done
 
-	echo "en-UK" # Default
+	echo "en-UK" # 默认
 }
 
-# Load localization data
+# 加载本地化数据
 # shellcheck disable=SC2120
 load_locale_data() {
 	if [ -z "$FOUNT_LOCALE" ]; then
@@ -91,21 +91,21 @@ load_locale_data() {
 		export FOUNT_LOCALE
 		locale_file="$FOUNT_DIR/src/locales/en-UK.json"
 	fi
-	# Check for jq
+	# 检查 jq
 	if ! command -v jq &>/dev/null; then
-		# If install_package exists, use it, otherwise, we can't do much
+		# 如果 install_package 存在，则使用它，否则我们无能为力
 		if command -v install_package &>/dev/null; then
-			install_package "jq" "jq"
+			install_package "jq" "jq" >&2
 		fi
 	fi
 	if command -v jq &>/dev/null; then
 		cat "$locale_file"
 	else
-		echo "{}" # Return empty json if jq is not available
+		echo "{}" # 如果 jq 不可用，则返回空 json
 	fi
 }
 
-# Get a translated string
+# 获取翻译后的字符串
 get_i18n() {
 	local key="$1"
 	if [ -z "$FOUNT_LOCALE_DATA" ]; then
@@ -115,7 +115,7 @@ get_i18n() {
 	local translation
 	translation=$(echo "$FOUNT_LOCALE_DATA" | jq -r ".fountConsole.path.$key // .\"$key\" // \"$key\"")
 
-	# Simple interpolation
+	# 简单插值
 	shift
 	while [ $# -gt 0 ]; do
 		local param_name="$1"
@@ -413,7 +413,7 @@ test_browser() {
 		fi
 	fi
 
-	echo "Default web browser is not detected, attempting to install..."
+	get_i18n 'install.browserMissing'
 	install_package "google-chrome" "google-chrome google-chrome-stable"
 	if ! command -v google-chrome &>/dev/null; then
 		install_package "chromium-browser" "chromium-browser chromium"
@@ -442,7 +442,7 @@ patch_deno() {
 	deno_bin=$(command -v deno)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo -e "${C_RED}Error: Deno executable not found before patching. Cannot patch.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchMissing')${C_RESET}" >&2
 		return 1
 	fi
 
@@ -467,13 +467,13 @@ patch_deno() {
 		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
 		;;
 	*)
-		echo -e "${C_RED}Error: Unsupported architecture for patching: $arch${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchUnsupportedArch' 'arch' "$arch")${C_RESET}" >&2
 		return 1
 		;;
 	esac
 
 	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
-		echo -e "${C_RED}Error: Failed to patch Deno executable with patchelf.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchFailed')${C_RESET}" >&2
 		return 1
 	else
 		mkdir -p ~/.deno/bin
@@ -560,18 +560,18 @@ git_reset_and_clean() {
 
 handle_auto_reinitialization() {
 	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
-		echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'keepalive.autoInitDisabled')${C_RESET}" >&2
 		exit 1
 	fi
-	echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
+	echo -e "${C_YELLOW}$(get_i18n 'keepalive.restartingTooFast')${C_RESET}" >&2
 	restart_timestamps=()
 
 	if ! ("$0" init); then
-		echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'keepalive.initFailed')${C_RESET}" >&2
 		exit 1
 	fi
 	init_attempted=1
-	echo "Re-initialization complete. Attempting to restart fount..."
+	get_i18n 'keepalive.initComplete'
 }
 
 get_profile_files() {
@@ -893,6 +893,10 @@ if [[ $# -gt 0 ]]; then
 		;;
 	protocolhandle)
 		protocolUrl="$2"
+		if [[ "$protocolUrl" == "fount://nop/" ]]; then
+			"$0" "${@:3}"
+			exit $?
+		fi
 		if [ -z "$protocolUrl" ]; then
 			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
@@ -1191,10 +1195,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	get_i18n 'install.installingDependencies'
-	set +e # 禁用错误检测，因为第一次运行可能会失败
 	run_deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	run "shutdown" # 确保安装后服务能正常启动
-	set -e         # 重新启用严格模式
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
 	fi

@@ -393,7 +393,7 @@ async function fetchAndCache(request) {
  */
 async function handleCacheFirst(request) {
 	const cache = await caches.open(CACHE_NAME)
-	const cachedResponse = await cache.match(request)
+	const cachedResponse = await cache.match(request, { ignoreVary: true })
 
 	const now = Date.now()
 	const storedTimestamp = await getTimestamp(request.url)
@@ -438,7 +438,7 @@ async function handleNetworkFirst(request) {
 	catch (error) {
 		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${request.url}. Attempting to serve from cache.`)
 		const cache = await caches.open(CACHE_NAME)
-		const cachedResponse = await cache.match(request)
+		const cachedResponse = await cache.match(request, { ignoreVary: true })
 		if (cachedResponse) return cachedResponse
 		console.error(`[SW ${CACHE_NAME}] Cache miss after network failure for: ${request.url}.`)
 		throw error
@@ -469,6 +469,21 @@ self.addEventListener('message', event => {
  * @type {Array<{condition: (context: {event: FetchEvent, request: Request, url: URL}) => boolean, handler: (context: {event: FetchEvent, request: Request, url: URL}) => Promise<Response> | null}>}
  */
 const routes = [
+	// 忽略无缓存请求。
+	{
+		/**
+		 * 检查请求方法是否为 no-store。
+		 * @param {object} context - 上下文对象。
+		 * @param {Request} context.request - 请求对象。
+		 * @returns {boolean} 如果请求方法不是 no-store，则返回 true。
+		 */
+		condition: ({ request }) => request.cache === 'no-store',
+		/**
+		 * 处理无缓存请求。
+		 * @returns {null} 返回 null 以跳过处理。
+		 */
+		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
+	},
 	// 忽略所有非 GET 请求。
 	{
 		/**
@@ -482,7 +497,7 @@ const routes = [
 		 * 处理非 GET 请求。
 		 * @returns {null} 返回 null 以跳过处理。
 		 */
-		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
+		handler: () => null,
 	},
 	// 忽略非 http/https 协议的请求（例如 chrome-extension://）。
 	{
@@ -508,7 +523,8 @@ const routes = [
 		 * @returns {boolean} 如果处于冷启动模式，则返回 true。
 		 */
 		condition: ({ url }) => {
-			if (url.searchParams.get('cold_bootting') === 'true') coldBootMode = true
+			if (url.pathname === '/' || url.pathname === '/index.html') coldBootMode = true
+			else if (url.searchParams.get('cold_bootting') === 'true') coldBootMode = true
 			return coldBootMode
 		},
 		/**
@@ -527,6 +543,23 @@ const routes = [
 			}
 			return handleCacheFirst(event.request)
 		},
+	},
+	// 对 no-cache 请求使用网络优先策略。
+	{
+		/**
+		 * 检查请求是否为no-cache。
+		 * @param {object} context - 上下文对象。
+		 * @param {Request} context.request - 请求对象。
+		 * @returns {boolean} 如果请求缓存策略为 no-cache，则返回 true。
+		 */
+		condition: ({ request }) => request.cache === 'no-cache',
+		/**
+		 * 处理 no-cache 请求。
+		 * @param {object} context - 上下文对象。
+		 * @param {FetchEvent} context.event - Fetch 事件。
+		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
+		 */
+		handler: ({ event }) => handleNetworkFirst(event.request),
 	},
 	// 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
 	{
@@ -736,8 +769,6 @@ self.addEventListener('notificationclick', event => {
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)
 
-	if (event.request.cache === 'no-cache') return handleNetworkFirst(event.request)
-	if (event.request.cache === 'no-store') return
 	for (const route of routes)
 		if (route.condition({ event, request: event.request, url: requestUrl })) {
 			const handlerResult = route.handler({ event, request: event.request, url: requestUrl })

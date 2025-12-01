@@ -8,11 +8,9 @@ import { getDefaultParts } from '../../../scripts/parts.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
 
-import { getpartDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
 import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators, currentPartType } from './state.mjs'
-import { showItemModal } from './ui/itemModal.mjs'
 import {
 	setupPartTypeUI,
 	displayFunctionButtons,
@@ -61,13 +59,6 @@ export async function initializeApp() {
 
 	const initialPartType = homeRegistry.part_types.find(pt => pt.name === paramPartType) || homeRegistry.part_types[0]
 	setCurrentPartType(initialPartType)
-	if (paramPartName) {
-		const partdetails = await getpartDetails(paramPartType, paramPartName, true)
-		if (partdetails) {
-			const part = { parttype: paramPartType, partname: paramPartName, partdetails, partTypeConfig: initialPartType }
-			showItemModal(part)
-		}
-	}
 
 	if (query) {
 		document.getElementById('filter-input').value = query

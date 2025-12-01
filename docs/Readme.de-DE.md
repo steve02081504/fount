@@ -14,64 +14,76 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[Möchten Sie mehr über die Repository-Architektur erfahren? Schauen Sie bei DeepWiki vorbei!](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-Hast du dich jemals nach einer Reise an der Seite eines Charakters gesehnt, der den Seiten deiner Fantasie entsprungen ist, einem Gefährten, der aus den Fäden von Träumen gewoben wurde?
-
-Oder vielleicht hast du dir einen digitalen Vertrauten vorgestellt, einen KI-Assistenten, so intuitiv wie die fortschrittlichsten Kreationen, der mühelos deine digitale Welt orchestriert?
-
-Oder vielleicht, nur vielleicht, hast du eine Verbindung jenseits des Gewöhnlichen gesucht, eine Sphäre, in der die Grenzen der Realität verschwimmen und sich ein intimes, _ungefiltertes_ Verständnis entfaltet?
-
-Mit fast ![relative date](https://img.shields.io/date/1727107200?label=Verstrichene%20Zeit) engagierter Entwicklung, Beiträgen von über ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Mitwirkende) leidenschaftlichen Einzelpersonen und einer florierenden Community von über ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Aktive%20Benutzer) Nutzern ist fount eine ausgereifte, stabile und sich ständig weiterentwickelnde Plattform für KI-Interaktion. Es ist eine Reise, und wir glauben, dass sie zugänglicher ist, als du vielleicht denkst.
-
-Verlorene Charaktere, vergessene Geschichten? Unsere [**lebendige und einladende Community**](https://discord.gg/GtR9Quzq2v) erwartet dich – ein Hafen, in dem sich Geistesverwandte treffen, in dem Entwickler und Schöpfer gleichermaßen ihre Weisheit und Kreationen teilen.
-
-<details open>
-<summary><strong>Ein Blick in die Welt von fount</strong></summary>
-
-|                                        Screenshots                                        |
-| :---------------------------------------------------------------------------------------: |
-|                                       **Homepage**                                        |
-| ![Image](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                     **Themenauswahl**                                     |
-| ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                         **Chat**                                          |
-| ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## Was ist fount?
 
-fount ist eine Brücke, die dich mit den Charakteren deiner Fantasie verbindet und es dir ermöglicht, mühelos mit ihnen zu sprechen, deine eigenen zu erschaffen und sie mit der Welt zu teilen. Es ist ein Weg, der überraschend zugänglich gemacht wurde.
+fount ist eine **moderne, erweiterbare Laufzeitumgebung für AI-Agenten**.
 
-Es ist eine Quelle, in der KI-Quellen, Charaktere, Personas, Welten und Plugins zusammenfließen und es dir ermöglichen, einzigartige und fesselnde Interaktionen zu erschaffen und zu erleben.
+Wir glauben, dass **hocheffiziente Produktivitätswerkzeuge** und **immersive emotionale Interaktion** sich nicht ausschließen müssen. fount ist eine Brücke: Tagsüber kann es der zuverlässige Helfer sein, der Sie beim Schreiben komplexer Codes oder beim Organisieren von Besprechungsprotokollen unterstützt; nachts kann es der digitale Vertraute sein, der Ihre Emotionen versteht und mit Ihnen mitfühlt.
 
-fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die aus seiner lebendigen Community hervorgehen. Wenn du eine Vision hast, einen Funken einer Idee, der in founts Reich gehört, begrüßen wir deinen Beitrag.
+Nach ![relative date](https://img.shields.io/date/1727107200?label=Investierte%20Zeit) sorgfältiger Ausarbeitung, durch die Leidenschaft von ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Mitwirkende) und mit einer lebendigen Community von ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Aktive%20Benutzer) ist fount heute eine ausgereifte, stabile und sich ständig weiterentwickelnde AI-Interaktionsplattform.
+
+![Bild](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Tauche ein in eine Welt voller Funktionen
+## 🚀 Effizienz und Engineering: Gemacht für Büroangestellte, Entwickler und Geeks
 
-- **Nahtlose Gespräche, überall**
-  Ein auf deinem Computer begonnenes Flüstern kann nahtlos auf deinem Telefon oder Tablet fortgesetzt werden. fount hält deine Gespräche synchron und verbindet dich mit deinen Charakteren, wo immer du bist.
+fount verwandelt Interaktion in Produktivitäts-Assets. Alles ist ziehbar (Drag-and-Drop), alles ist eine Datei, die Logik wird durch Code angetrieben.
 
-- **Ausdrucksstarke, immersive Chats**
-  fount nutzt die volle Kraft von HTML und ermöglicht es Charakteren, sich mit Rich-Text, Bildern und sogar interaktiven Elementen auszudrücken, was jede Konversation lebendig und tiefgründig macht.
+### 1. Wissens-Asset-Erstellung und nahtloses Teilen
 
-- **Versammlungen von Geistern: Native Gruppenchats**
-  Lade mehrere Charaktere in ein einziges Gespräch ein und werde Zeuge ihrer dynamischen und fesselnden Interaktionen, die einzigartige Geschichten erschaffen.
+- **Sofortige Berichtserstellung**: Ziehen Sie eine Dialogblase direkt in einen Ordner, um sofort einen unabhängigen HTML-Bericht zu generieren. Ideal für die schnelle Organisation von technischen Dokumenten, Besprechungsprotokollen oder Ideenfragmenten.
+  ![Bild](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **Workflow-Kapselung und -Verteilung**: Ziehen Sie die von Ihnen erstellte Rolle direkt auf den Desktop, um eine teilbare Datei zu erzeugen. Verteilen Sie Ihr Prompt-Engineering und Ihre Workflow-Logik mühelos an Kollegen oder die Community.
+  ![Bild](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **Eine schöne, anpassbare Benutzeroberfläche**
-  Wähle aus über 30 atemberaubenden Themes oder erstelle dein eigenes. fount ist deine persönliche Leinwand.
+### 2. Echtzeit-Codeausführungsumgebung
 
-- **Funktioniert überall, wo du arbeitest**
-  fount läuft nahtlos unter Windows, macOS, Linux und sogar Android und passt sich deinen Bedürfnissen durch direkte Installation oder die Flexibilität von Docker an.
+Nicht mehr nur Markdown-Hervorhebung. In fount sind die vom Agenten gesendeten Codeblöcke **lebendig**.
 
-- **(Für fortgeschrittene Benutzer) Entfesselte KI-Quellenintegration: Umarme die Grenzenlosigkeit**
-  fount bietet unübertroffene _Auswahl_ und _Flexibilität_ bei der Anbindung an KI-Quellen. Benutzerdefinierter JavaScript-Code im KI-Quellengenerator ermöglicht es dir, dich mit _jeder_ KI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral und mehr. Erstelle komplexe reguläre Ausdrücke, greife auf riesige API-Bibliotheken zurück und bette Multimedia-Assets ein, alles im Fluss deines Codes. fount unterstützt auch nativ die Erstellung von API-Pools für intelligentes Anfrage-Routing. Die Logik der Kommunikation beugt sich _deinem_ Willen, geformt durch die Kraft des Codes.
-  ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+- Unterstützt Echtzeit-Kompilierung und -Ausführung für verschiedene Sprachen (C/C++/Rust/Python/JS usw.).
+- Direkte Anzeige der stdout-Ausgabe, und sogar der ASM-Disassemblierungsergebnisse für kompilierte Sprachen.
+- Lassen Sie die KI zum Echtzeit-Verifizierer für Ihre Pair-Programming-Sitzungen werden.
+  ![Bild](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Entwicklerfreundlich
+
+Die Projektarchitektur von fount wurde unter umfassender Berücksichtigung der Gewohnheiten von Entwicklern konzipiert.
+[Möchten Sie die Architektur des Projekt-Repositorys kennen? Werfen Sie einen Blick auf DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+- **Git-gesteuert**: Alle Komponenten können über Git verwaltet werden.
+- **VSCode-Integration**: Die Projektstruktur ist klar. In Verbindung mit den Anweisungen in [AGENTS.md](../AGENTS.md) können Sie Ihre Agent-Logik direkt in Ihrer bevorzugten IDE entwickeln und debuggen.
+
+---
+
+## 🎭 Immersion und Empathie: High-Fidelity-Interaktionserlebnis
+
+Nach Feierabend bietet fount eine Verbindung, die über das Übliche hinausgeht. Wir haben uns von der Steifheit traditioneller Werkzeuge verabschiedet und streben nach einer natürlichen, flüssigen und tiefgründigen "High-Fidelity"-Interaktion.
+
+- **Nahtlose Gespräche, jederzeit und überall**
+  Ein auf dem Computer begonnenes Gespräch kann nahtlos auf dem Handy oder Tablet fortgesetzt werden. fount hält Ihre Unterhaltungen synchron, sodass Sie überall eng mit Ihrem Agenten verbunden sind.
+
+- **Ausdrucksstarker, immersiver Chat**
+  Durch die Kraft von HTML ermöglicht fount dem Agenten, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken, wodurch jede Unterhaltung lebendig und tiefgründig wird.
+
+- **Treffpunkt der Ideen: Native Gruppenchats**
+  Laden Sie mehrere Agenten zu einem Gespräch ein und erleben Sie ihre dynamischen und fesselnden Interaktionen, sei es für ein Brainstorming im Beruf oder die Inszenierung einer Geschichte zwischen den Agenten.
+  ![Bild](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+- **Ästhetische, anpassbare Oberfläche**
+  Wählen Sie aus über 30 atemberaubenden Themen oder gestalten Sie Ihre eigenen Farben. fount ist Ihre exklusive Leinwand.
+  ![Bild](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+- **Überall einsetzbar**
+  fount läuft nahtlos auf Windows, macOS, Linux und sogar Android und erfüllt Ihre unterschiedlichen Anforderungen durch direkte Installation oder die Flexibilität von Docker.
+
+- **Fesselnde Integration von AI-Quellen: Umfassen Sie die Unendlichkeit**
+  fount bietet eine unvergleichliche _Auswahl_ und _Flexibilität_ bei der Verbindung mit AI-Quellen. Der benutzerdefinierte JavaScript-Code im AI-Quellengenerator ermöglicht es Ihnen, sich mit _jeder_ AI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Im Fluss des Codes können Sie komplexe reguläre Ausdrücke entwerfen, umfangreiche API-Bibliotheken aufrufen und Multimedia-Ressourcen einbetten. fount unterstützt auch nativ die Erstellung von API-Pools für intelligentes Request-Routing. Die Kommunikationslogik folgt _Ihrer_ Absicht und wird durch die Kraft des Codes geformt.
+  ![Bild](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Wenn Sie sich im Meer der Agenten verloren fühlen oder nach vergessenen Geschichten suchen, erwartet Sie unsere [**lebendige und freundliche Community**](https://discord.gg/GtR9Quzq2v). Es ist ein Hafen für Gleichgesinnte, in dem Entwickler und Kreative ihr Wissen und ihre Kreationen teilen.
 
 ---
 

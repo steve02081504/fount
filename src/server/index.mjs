@@ -116,9 +116,9 @@ if (command_obj) try {
 		}
 	}
 } catch (err) {
-	if (!(command_obj.type == 'shutdown' && String(err.message).endsWith('read ECONNRESET')))
-		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
-	else throw err
+	if (['shutdown', 'reboot'].includes(command_obj.type) && String(err.message).endsWith('read ECONNRESET')) process.exit(0)
+	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
+	throw err
 }
 // 如果初始化失败则退出。
 if (!okey) process.exit(0)

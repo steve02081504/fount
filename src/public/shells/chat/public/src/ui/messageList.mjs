@@ -1,7 +1,7 @@
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
-import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
+import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'
 import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
 import {
 	modifyTimeLine,
@@ -11,7 +11,7 @@ import {
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { getfile } from '../files.mjs'
 import { createShareLink } from '../share.mjs'
-import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION, arrayBufferToBase64 } from '../utils.mjs'
+import { SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION, arrayBufferToBase64 } from '../utils.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
@@ -89,7 +89,18 @@ export async function renderMessage(message) {
 		avatar: message.avatar || DEFAULT_AVATAR,
 		time_stamp: new Date(message.time_stamp).toLocaleString(),
 		content: await renderMarkdownAsString(message.content_for_show || message.content),
-		safeTimeStamp: processTimeStampForId(message.time_stamp)
+	}
+
+	if (message.is_generating) {
+		const messageElement = await renderTemplateNoScriptActivation('message_generating_view', preprocessedMessage)
+		// Add stop button listener
+		const stopButton = messageElement.querySelector('.stop-generating-button')
+		if (stopButton)
+			stopButton.addEventListener('click', () => {
+				import('../chat.mjs').then(({ stopGeneration }) => stopGeneration(message.id))
+			})
+
+		return messageElement
 	}
 
 	const messageElement = await renderTemplate('message_view', preprocessedMessage)
@@ -121,7 +132,7 @@ export async function renderMessage(message) {
 	messageElement.addEventListener('dragend', cleanupDraggable)
 
 	messageElement.addEventListener('dragstart', event => {
-		const fileName = `message-${preprocessedMessage.safeTimeStamp}.html`
+		const fileName = `message-${message.id}.html`
 
 		event.dataTransfer.setData('DownloadURL', `text/html:${fileName}:${standaloneMessageUrl}`)
 		event.dataTransfer.effectAllowed = 'copy'
@@ -134,9 +145,85 @@ export async function renderMessage(message) {
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')
 	deleteButton.addEventListener('click', () => {
-		if (confirmI18n('chat.messageList.confirmDeleteMessage')) {
+		// Count lines in the message content
+		const lineCount = messageMarkdownContent.split('\n').length
+		// Skip confirmation for messages with less than 30 lines
+		const needsConfirmation = lineCount >= 30
+
+		if (!needsConfirmation || confirmI18n('chat.messageList.confirmDeleteMessage')) {
 			deleteButton.disabled = true
 			enqueueDeletion(messageElement)
+		}
+	})
+
+	// --- Shift key detection for button visibility ---
+	const buttonGroup = messageElement.querySelector('.button-group')
+	const normalButtons = buttonGroup.querySelector('.normal-buttons')
+	const shiftButtons = buttonGroup.querySelector('.shift-buttons')
+
+	let isShiftPressed = false
+
+	/**
+	 * 更新按钮可见性
+	 */
+	const updateButtonVisibility = () => {
+		if (isShiftPressed) {
+			normalButtons.style.display = 'none'
+			shiftButtons.style.display = 'flex'
+		} else {
+			normalButtons.style.display = 'flex'
+			shiftButtons.style.display = 'none'
+		}
+	}
+
+	/**
+	 * 处理按下 Shift 键
+	 * @param {KeyboardEvent} e 事件
+	 */
+	const handleKeyDown = (e) => {
+		if (e.key === 'Shift' && !isShiftPressed) {
+			isShiftPressed = true
+			updateButtonVisibility()
+		}
+	}
+
+	/**
+	 * 处理松开 Shift 键
+	 * @param {KeyboardEvent} e 事件
+	 */
+	const handleKeyUp = (e) => {
+		if (e.key === 'Shift' && isShiftPressed) {
+			isShiftPressed = false
+			updateButtonVisibility()
+		}
+	}
+
+	// Add keyboard event listeners
+	document.addEventListener('keydown', handleKeyDown)
+	document.addEventListener('keyup', handleKeyUp)
+
+	// Clean up listeners when element is removed
+	onElementRemoved(messageElement, () => {
+		document.removeEventListener('keydown', handleKeyDown)
+		document.removeEventListener('keyup', handleKeyUp)
+	})
+
+	// Initialize button visibility
+	updateButtonVisibility()
+
+	// --- Direct Download HTML button (shift mode) ---
+	const downloadHtmlButtonDirect = messageElement.querySelector('.download-html-button-direct')
+	downloadHtmlButtonDirect.addEventListener('click', async () => {
+		try {
+			const a = document.createElement('a')
+			a.href = standaloneMessageUrl
+			a.download = `message-${message.id}.html`
+			document.body.appendChild(a)
+			a.click()
+			document.body.removeChild(a)
+		}
+		catch (error) {
+			showToast('error', error.stack || error.message || error)
 		}
 	})
 
@@ -171,7 +258,7 @@ export async function renderMessage(message) {
 		try {
 			const a = document.createElement('a')
 			a.href = standaloneMessageUrl
-			a.download = `message-${preprocessedMessage.safeTimeStamp}.html`
+			a.download = `message-${message.id}.html`
 			document.body.appendChild(a)
 			a.click()
 			document.body.removeChild(a)
@@ -190,7 +277,7 @@ export async function renderMessage(message) {
 				const time = button.dataset.time
 				showToast('info', geti18n('chat.messageView.share.uploading'))
 				const blob = new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' })
-				const link = await createShareLink(blob, `message-${preprocessedMessage.safeTimeStamp}.html`, time)
+				const link = await createShareLink(blob, `message-${message.id}.html`, time)
 
 				await navigator.clipboard.writeText(link)
 				showToastI18n('success', 'chat.messageView.share.success', {
@@ -249,7 +336,6 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 		avatar: message.avatar || DEFAULT_AVATAR,
 		time_stamp: new Date(message.time_stamp).toLocaleString(),
 		content_for_edit: message.content_for_edit || message.content, // 编辑专用内容
-		safeTimeStamp: processTimeStampForId(message.time_stamp),
 	}
 
 	const messageElement = await getMessageElementByQueueIndex(queueIndex)
@@ -265,12 +351,12 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	messageElement.innerHTML = editViewHtml
 
 	// 获取编辑视图元素
-	const fileEditInput = messageElement.querySelector(`#file-edit-input-${editRenderedMessage.safeTimeStamp}`)
-	const attachmentPreview = messageElement.querySelector(`#attachment-edit-preview-${editRenderedMessage.safeTimeStamp}`)
-	const editInput = messageElement.querySelector(`#edit-input-${editRenderedMessage.safeTimeStamp}`)
-	const confirmButton = messageElement.querySelector(`#confirm-button-${editRenderedMessage.safeTimeStamp}`)
-	const cancelButton = messageElement.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`)
-	const uploadButton = messageElement.querySelector(`#upload-edit-button-${editRenderedMessage.safeTimeStamp}`)
+	const fileEditInput = messageElement.querySelector(`#file-edit-input-${message.id}`)
+	const attachmentPreview = messageElement.querySelector(`#attachment-edit-preview-${message.id}`)
+	const editInput = messageElement.querySelector(`#edit-input-${message.id}`)
+	const confirmButton = messageElement.querySelector(`#confirm-button-${message.id}`)
+	const cancelButton = messageElement.querySelector(`#cancel-button-${message.id}`)
+	const uploadButton = messageElement.querySelector(`#upload-edit-button-${message.id}`)
 
 	// 添加拖拽上传支持
 	addDragAndDropSupport(editInput, selectedFiles, attachmentPreview)

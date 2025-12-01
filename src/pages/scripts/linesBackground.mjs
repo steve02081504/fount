@@ -211,7 +211,6 @@ function handlePointerDown(event) {
 			max: 20000,
 			type: event.pointerType
 		})
-
 }
 
 /**
@@ -258,7 +257,6 @@ function handlePointerEnd(event) {
 	const index = pointers.findIndex(p => p.id === event.pointerId)
 	if (index !== -1)
 		pointers.splice(index, 1) // 移除触摸点
-
 }
 
 /**

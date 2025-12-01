@@ -107,23 +107,25 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount protocol"
+				"description": "URL:fount protocol",
+				"registerFailed": "Kan fount:// protocolhandler niet registreren: ${message}",
+				"noUrl": "Fout: URL voor protocolhandler niet opgegeven."
 			},
 			"update": {
-				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de font-update overgeslagen",
+				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen",
 				"skippingDenoUpgradeDocker": "Sla de Deno-upgrade over in de Docker-omgeving"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",
 				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op ${path}",
-				"protocolHandlerRegistered": "font:// protocolhandler geregistreerd.",
+				"protocolHandlerRegistered": "fount:// protocolhandler geregistreerd.",
 				"shortcutNotSupported": "Waarschuwing: uw besturingssysteem (${os}) ondersteunt het maken van snelkoppelingen op het bureaublad niet.",
 				"osacompileNotFound": "Fout: 'osacompile' niet gevonden. Kan macOS-app niet maken.",
 				"lsregisterFailed": "Waarschuwing: het gebruik van lsregister om een ​​applicatie te registreren bij LaunchServices is mislukt.",
 				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken."
 			},
 			"git": {
-				"repoNotFound": "De git-repository van font is niet gevonden. Een nieuwe initialiseren...",
+				"repoNotFound": "De git-repository van fount is niet gevonden. Een nieuwe initialiseren...",
 				"fetchingAndResetting": "Ophalen uit externe opslagplaats en opnieuw instellen op master...",
 				"localChangesDetected": "Lokale wijzigingen gedetecteerd, verschillen worden opgeslagen voordat ze worden overschreven.",
 				"backupSavedTo": "Er is een back-up van uw lokale wijzigingen opgeslagen in: ${path}",
@@ -145,15 +147,20 @@
 				"missing": "Deno niet gevonden, automatisch geïnstalleerd...",
 				"isRequired": "Deno niet gevonden, bron kan niet worden uitgevoerd zonder Deno",
 				"installingTermux": "Deno voor Termux installeren...",
-				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de font...",
+				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de fount...",
 				"notWorking": "Om de een of andere reden werkt Deno niet. Misschien wil je lid worden van https://discord.gg/deno voor ondersteuning",
 				"upgradeFailed": "Waarschuwing: Deno-upgrade is mogelijk mislukt. Controleer op fouten.",
-				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren..."
+				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren...",
+				"patchMissing": "Fout: Het uitvoerbare bestand van Deno is niet gevonden vóór het patchen. Kan niet worden gepatcht.",
+				"patchUnsupportedArch": "Fout: Niet-ondersteunde patcharchitectuur: ${arch}",
+				"patchFailed": "Fout: Kan het uitvoerbare bestand van Deno niet patchen met patchelf."
 			},
 			"install": {
 				"installingDependencies": "Afhankelijkheden installeren...",
-				"untrustedPartsWarning": "Installeer geen onbetrouwbare fontcomponenten op uw systeem; deze kunnen alles doen.",
-				"rootWarning1": "Niet aanbevolen: het uitvoeren van font als root geeft volledige systeemtoegang tot alle fontcomponenten.",
+				"packageFailed": "Fout: Installatie van ${package} is mislukt.",
+				"browserMissing": "Standaardbrowser niet gedetecteerd, probeert te installeren...",
+				"untrustedPartsWarning": "Installeer geen onbetrouwbare fountcomponenten op uw systeem; deze kunnen alles doen.",
+				"rootWarning1": "Niet aanbevolen: het uitvoeren van fount als root geeft volledige systeemtoegang tot alle fountcomponenten.",
 				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren."
 			},
 			"clean": {
@@ -171,12 +178,12 @@
 			},
 			"remove": {
 				"removingFount": "fount verwijderen...",
-				"fountUninstallationComplete": "Het verwijderen van de font is voltooid.",
+				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
 				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
 				"removingFountFromPath": "Lettertype uit PATH verwijderen...",
 				"removingProtocolHandler": "Fot:// protocolhandler verwijderen...",
-				"protocolHandlerRemoved": "De protocolhandler font:// is verwijderd.",
+				"protocolHandlerRemoved": "De protocolhandler fount:// is verwijderd.",
 				"removeProtocolHandlerFailed": "Kan fount:// protocolhandler niet verwijderen: ${message}",
 				"removingFountFromGitSafeDir": "Font verwijderen uit git safe.directory...",
 				"removingInstalledSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
@@ -184,9 +191,9 @@
 				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
 				"removingFountPwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel...",
 				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
-				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van font-pwsh uit het profiel wordt overgeslagen.",
+				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van fount-pwsh uit het profiel wordt overgeslagen.",
 				"uninstallingFountPwsh": "Font-pwsh verwijderen...",
-				"uninstallFountPwshFailed": "Verwijderen van font-pwsh mislukt: ${message}",
+				"uninstallFountPwshFailed": "Verwijderen van fount-pwsh mislukt: ${message}",
 				"removingTerminalProfile": "Windows Terminal-profiel verwijderen...",
 				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
 				"terminalProfileNotFound": "Windows Terminal-profielmap niet gevonden.",
@@ -340,7 +347,7 @@
 	},
 	"tutorial": {
 		"title": "Een tutorial nodig?",
-		"description": "Laat ons met u meelopen door de wereld van font. Deze interactieve tutorial zal het pad belichten en je helpen de magie te ontdekken die in de kern ervan verweven is. Je avontuur begint met begrip.",
+		"description": "Laat ons met u meelopen door de wereld van fount. Deze interactieve tutorial zal het pad belichten en je helpen de magie te ontdekken die in de kern ervan verweven is. Je avontuur begint met begrip.",
 		"modal": {
 			"title": "Welkom bij fount!",
 			"instruction": "Wil je de tutorial voor beginners doorlopen?",
@@ -548,7 +555,7 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hallo, fontein!",
+				"name": "Hallo, fount!",
 				"description": "Op weg naar de nieuwe wereld, voor de eerste keer inloggen!",
 				"locked_description": "Log eenmalig in bij de fontein."
 			},
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "Meer pictogram"
+				},
+				"delete": {
+					"alt": "Verwijderen"
+				},
+				"deleteIcon": {
+					"alt": "Verwijderpictogram"
+				},
+				"downloadHtml": {
+					"alt": "Download als html"
+				},
+				"downloadHtmlIcon": {
+					"alt": "html-downloadpictogram"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "Link maken...",
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Tool aanroepen"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "Uploadpictogram"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Stop"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "Er zijn foto's en de waarheid",
 				"description": "Gebruik afbeeldingen om de dimensionale muur te doorbreken.",
 				"locked_description": "Stuur een foto in de chat."
+			},
+			"code_greeting": {
+				"name": "Zeg hallo met code",
+				"description": "\"Hallo, fount!\"",
+				"locked_description": "Voer een codeblok uit dat 'hello fount!' als uitvoer geeft."
 			}
 		},
 		"dragAndDrop": {
@@ -1868,7 +1896,7 @@
 			"title": "rennend huisdier",
 			"noPets": "Er lopen momenteel geen huisdieren.",
 			"buttons": {
-				"stop": "stop"
+				"stop": "Stop"
 			}
 		},
 		"toasts": {
@@ -1907,7 +1935,7 @@
 	},
 	"access": {
 		"title": "Toegang tot fount op andere apparaten",
-		"description": "Vergroot het bereik van de font tot voorbij een enkel scherm. Hier ligt de toegangspoort (een URL, een QR-code) om vanaf andere apparaten verbinding te maken met uw metgezellen, een eenvoudige brug over de lokale ether.",
+		"description": "Vergroot het bereik van de fount tot voorbij een enkel scherm. Hier ligt de toegangspoort (een URL, een QR-code) om vanaf andere apparaten verbinding te maken met uw metgezellen, een eenvoudige brug over de lokale ether.",
 		"heading": "Wil je fount op andere apparaten gebruiken?",
 		"instruction": {
 			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",

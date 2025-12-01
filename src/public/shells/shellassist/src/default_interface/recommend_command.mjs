@@ -1,3 +1,5 @@
+import { defineToolUseBlocks } from '../../../chat/src/stream.mjs'
+
 /**
  * @type {import('../../../../../../src/decl/pluginAPI.ts').PluginAPI_t}
  */
@@ -54,7 +56,10 @@ command_body
 
 				// Return false as this handler only modifies the result, doesn't fully handle the reply
 				return false
-			}
+			},
+			GetReplyPreviewUpdater: defineToolUseBlocks([
+				{ start: '<recommend_command>', end: '</recommend_command>' },
+			]),
 		}
 	}
 }

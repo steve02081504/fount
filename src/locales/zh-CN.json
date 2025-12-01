@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount 协议"
+				"description": "URL:fount 协议",
+				"registerFailed": "注册 fount:// 协议处理器失败：${message}",
+				"noUrl": "错误：未提供协议处理程序的 URL。"
 			},
 			"update": {
 				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno 安装失败，尝试自动安装到 fount 的 path 文件夹...",
 				"notWorking": "由于某种原因 Deno 无法工作，您可能需要加入 https://discord.gg/deno 以获取支持",
 				"upgradeFailed": "警告：Deno 升级可能已失败。请检查错误。",
-				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno..."
+				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno...",
+				"patchMissing": "错误：修补前未找到 Deno 可执行文件。无法修补。",
+				"patchUnsupportedArch": "错误：不支持的修补架构：${arch}",
+				"patchFailed": "错误：使用 patchelf 修补 Deno 可执行文件失败。"
 			},
 			"install": {
 				"installingDependencies": "正在安装依赖...",
+				"packageFailed": "错误：${package} 安装失败。",
+				"browserMissing": "未检测到默认浏览器，正在尝试安装...",
 				"untrustedPartsWarning": "不要在您的系统上安装任何不受信任的 fount 组件，它们可以做任何事情。",
 				"rootWarning1": "不推荐：以 root 身份运行 fount 会授予所有 fount 组件完全的系统访问权限。",
 				"rootWarning2": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。"
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "更多图标"
+				},
+				"delete": {
+					"alt": "删除"
+				},
+				"deleteIcon": {
+					"alt": "删除图标"
+				},
+				"downloadHtml": {
+					"alt": "下载为html"
+				},
+				"downloadHtmlIcon": {
+					"alt": "下载html图标"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "正在创建链接...",
 				"success": "分享成功！链接已复制到剪贴板。<br>此功能由 ${provider} 提供支持。<br>[赞助他们。](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "正在调用工具"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "上传图标"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "停止"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "有图有真相",
 				"description": "用图片打破了次元壁。",
 				"locked_description": "在聊天中发送一张图片。"
+			},
+			"code_greeting": {
+				"name": "用代码问好",
+				"description": "“你好，fount！”",
+				"locked_description": "通过执行代码块，成功输出 'hello fount!'。"
 			}
 		},
 		"dragAndDrop": {

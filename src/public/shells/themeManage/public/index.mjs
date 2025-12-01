@@ -46,7 +46,6 @@ async function fetchCustomThemes() {
 		styleTag.textContent = customThemes.map((t) => t.css).join('\n')
 	} else
 		customThemes = []
-
 }
 
 // --- List View Logic ---
@@ -73,6 +72,10 @@ async function renderList() {
 	const createBtn = document.getElementById('create-theme-btn')
 	if (createBtn && !createBtn.hasAttribute('data-bound')) {
 		createBtn.setAttribute('data-bound', 'true')
+		/**
+		 * 创建一个新的主题。
+		 * @returns {void}
+		 */
 		createBtn.onclick = () => openEditor(null) // New theme
 	}
 
@@ -174,7 +177,6 @@ async function handleThemeApply(id, isCustom) {
 		await setCustomTheme(id, url)
 	} else
 		setTheme(id)
-
 }
 
 /**
@@ -209,7 +211,6 @@ async function handleClone(id, isCustom) {
 			vars.push(`--color-${color}: ${hex};`)
 			if (DAISY_MAP[color])
 				vars.push(`--${DAISY_MAP[color]}: from ${hex} l c h;`)
-
 		})
 
 		// Try to read common variables
@@ -529,7 +530,6 @@ async function openEditor(themeData) {
 			blockContent = updateVar(blockContent, `--color-${colorName}`, hex)
 			if (DAISY_MAP[colorName])
 				blockContent = updateVar(blockContent, `--${DAISY_MAP[colorName]}`, `oklch(from ${hex} l c h)`)
-
 		})
 
 		listPanel.querySelectorAll('.css-slider').forEach((input) => {

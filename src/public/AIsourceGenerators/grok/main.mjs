@@ -1,211 +1,20 @@
-// main.mjs
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { GrokAPI } from './grokAPI.mjs'
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 
 /**
  * @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t
  * @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 
-
 /**
- * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ *
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok by xAI',
-			description_markdown: 'An AI chatbot developed by xAI, with a rebellious streak.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'zh-CN': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok by xAI',
-			description_markdown: '由 xAI 开发的人工智能聊天机器人，带有一点叛逆精神。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', '聊天机器人'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'ar-SA': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'جروك بواسطة xAI',
-			description_markdown: 'روبوت محادثة يعمل بالذكاء الاصطناعي تم تطويره بواسطة xAI، مع لمسة من التمرد.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['جروك', 'xai', 'ذكاء اصطناعي', 'روبوت محادثة'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'de-DE': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok von xAI',
-			description_markdown: 'Ein von xAI entwickelter KI-Chatbot mit einer rebellischen Ader.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ki', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		emoji: {
-			name: '❌🤖',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: '🌶️🤖🔥',
-			description_markdown: '🌶️😈🚀🌌',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['❌', '🌶️', '🤣', '🤖'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'es-ES': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok de xAI',
-			description_markdown: 'Un chatbot de IA desarrollado por xAI, con un toque rebelde.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ia', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'fr-FR': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok par xAI',
-			description_markdown: 'Un chatbot IA développé par xAI, avec un esprit rebelle.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ia', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'hi-IN': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'ग्रोक بذریعہ xAI',
-			description_markdown: 'xAI द्वारा विकसित एक एआई चैटबॉट, जिसमें विद्रोही भावना है।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['ग्रोक', 'xai', 'एआई', 'चैटबॉट'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'is-IS': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok frá xAI',
-			description_markdown: 'Gervigreindarspjallbátur þróaður af xAI, með uppreisnargjarnan blæ.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'gervigreind', 'spjallbátur'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'it-IT': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok di xAI',
-			description_markdown: 'Un chatbot di intelligenza artificiale sviluppato da xAI, con un tocco ribelle.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ia', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'ja-JP': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'xAI の Grok',
-			description_markdown: 'xAI によって開発された、反抗的な一面を持つ AI チャットボット。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', 'チャットボット'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'ko-KR': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'xAI의 Grok',
-			description_markdown: 'xAI에서 개발한 반항적인 성향의 AI 챗봇입니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', '챗봇'],
-			home_page: 'https://grok.x.ai/'
-		},
-		lzh: {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'xAI 之靈機',
-			description_markdown: 'xAI 所製之靈機，性帶叛逆，言辭犀利。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['靈機', 'xai', '智械', '清談'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'nl-NL': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok van xAI',
-			description_markdown: 'Een AI-chatbot ontwikkeld door xAI, met een rebels trekje.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'pt-PT': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok da xAI',
-			description_markdown: 'Um chatbot de IA desenvolvido pela xAI, com um toque rebelde.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ia', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'ru-RU': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok от xAI',
-			description_markdown: 'Чат-бот с искусственным интеллектом, разработанный xAI, с бунтарским характером.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ии', 'чат-бот'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'uk-UA': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok від xAI',
-			description_markdown: 'Чат-бот зі штучним інтелектом, розроблений xAI, з бунтарським характером.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ші', 'чат-бот'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'vi-VN': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok của xAI',
-			description_markdown: 'Một chatbot AI do xAI phát triển, có tính cách nổi loạn.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', 'chatbot'],
-			home_page: 'https://grok.x.ai/'
-		},
-		'zh-TW': {
-			name: 'Grok',
-			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok by xAI',
-			description_markdown: '由 xAI 開發的人工智慧聊天機器人，帶有一點叛逆精神。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', '聊天機器人'],
-			home_page: 'https://grok.x.ai/'
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -222,6 +31,7 @@ const configTemplate = {
 	name: 'Grok',
 	model: 'grok-3',
 	cookies: [],
+	use_stream: true,
 	convert_config: {
 		roleReminding: true
 	}
@@ -241,217 +51,10 @@ async function GetSource(config) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok by xAI',
-				description_markdown: 'An AI chatbot developed by xAI, with a rebellious streak.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok by xAI',
-				description_markdown: '由 xAI 开发的人工智能聊天机器人，带有一点叛逆精神。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', '聊天机器人'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'جروك بواسطة xAI',
-				description_markdown: 'روبوت محادثة يعمل بالذكاء الاصطناعي تم تطويره بواسطة xAI، مع لمسة من التمرد.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['جروك', 'xai', 'ذكاء اصطناعي', 'روبوت محادثة'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok von xAI',
-				description_markdown: 'Ein von xAI entwickelter KI-Chatbot mit einer rebellischen Ader.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ki', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			emoji: {
-				name: '❌🤖',
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: '🌶️🤖🔥',
-				description_markdown: '🌶️😈🚀🌌',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['❌', '🌶️', '🤣', '🤖'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok de xAI',
-				description_markdown: 'Un chatbot de IA desarrollado por xAI, con un toque rebelde.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ia', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok par xAI',
-				description_markdown: 'Un chatbot IA développé par xAI, avec un esprit rebelle.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ia', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'ग्रोक بذریعہ xAI',
-				description_markdown: 'xAI द्वारा विकसित एक एआई चैटबॉट, जिसमें विद्रोही भावना है।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['ग्रोक', 'xai', 'एआई', 'चैटबॉट'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok frá xAI',
-				description_markdown: 'Gervigreindarspjallbátur þróaður af xAI, með uppreisnargjarnan blæ.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'gervigreind', 'spjallbátur'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok di xAI',
-				description_markdown: 'Un chatbot di intelligenza artificiale sviluppato da xAI, con un tocco ribelle.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ia', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'xAI の Grok',
-				description_markdown: 'xAI によって開発された、反抗的な一面を持つ AI チャットボット。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', 'チャットボット'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'xAI의 Grok',
-				description_markdown: 'xAI에서 개발한 반항적인 성향의 AI 챗봇입니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', '챗봇'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'xAI 之靈機',
-				description_markdown: 'xAI 所製之靈機，性帶叛逆，言辭犀利。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['靈機', 'xai', '智械', '清談'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok van xAI',
-				description_markdown: 'Een AI-chatbot ontwikkeld door xAI, met een rebels trekje.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok da xAI',
-				description_markdown: 'Um chatbot de IA desenvolvido pela xAI, com um toque rebelde.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ia', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok от xAI',
-				description_markdown: 'Чат-бот с искусственным интеллектом, разработанный xAI, с бунтарским характером.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ии', 'чат-бот'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok від xAI',
-				description_markdown: 'Чат-бот зі штучним інтелектом, розроблений xAI, з бунтарським характером.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ші', 'чат-бот'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok của xAI',
-				description_markdown: 'Một chatbot AI do xAI phát triển, có tính cách nổi loạn.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', 'chatbot'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok by xAI',
-				description_markdown: '由 xAI 開發的人工智慧聊天機器人，帶有一點叛逆精神。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', '聊天機器人'],
-				provider: 'xai',
-				home_page: 'https://grok.x.ai/'
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		is_paid: false, // 根据实际情况设置
 		extension: {},
 
@@ -480,9 +83,11 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
 
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -490,13 +95,13 @@ async function GetSource(config) {
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
 					content: `\
-<message "${uid}">
-<sender>${chatLogEntry.name}</sender>
-<content>
-${chatLogEntry.content}
-</content>
-</message "${uid}">
-`
+		 <message "${uid}">
+		 <sender>${chatLogEntry.name}</sender>
+		 <content>
+		 ${chatLogEntry.content}
+		 </content>
+		 </message "${uid}">
+		 `
 				})
 			})
 
@@ -522,25 +127,68 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const model = config.model || 'grok-3'
-			let text = await grok.call(messages, model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			const model = config.model || 'grok-3'
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+
+			if (useStream) {
+				/**
+				 * 处理流式增量
+				 * @param {string} delta - 增量内容
+				 */
+				const onDelta = (delta) => {
+					result.content += delta
+					previewUpdater(result)
+				}
+				// Use grok's streaming support via the call method
+				await grok.call(messages, model, true, onDelta, signal)
+			} else {
+				// Use non-streaming mode
+				result.content = await grok.call(messages, model, false)
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

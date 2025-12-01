@@ -1,5 +1,9 @@
+
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
+
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -7,198 +11,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Language models for developers and enterprises.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', 'language-model'],
-			home_page: 'https://cohere.com/'
-		},
-		'zh-CN': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: '为开发者和企业打造的语言模型。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', '语言模型'],
-			home_page: 'https://cohere.com/'
-		},
-		'ar-SA': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'نماذج لغوية للمطورين والشركات.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', 'نموذج-لغوي'],
-			home_page: 'https://cohere.com/'
-		},
-		'de-DE': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Sprachmodelle für Entwickler und Unternehmen.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ki', 'sprachmodell'],
-			home_page: 'https://cohere.com/'
-		},
-		emoji: {
-			name: '🗣️🔗',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: '🗣️💼🚀',
-			description_markdown: '🏢🗣️🔗🚀',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['🗣️', '🔗', '🏢'],
-			home_page: 'https://cohere.com/'
-		},
-		'es-ES': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Modelos de lenguaje para desarrolladores y empresas.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ia', 'modelo-de-lenguaje'],
-			home_page: 'https://cohere.com/'
-		},
-		'fr-FR': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Modèles de langage pour les développeurs et les entreprises.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ia', 'modèle-de-langage'],
-			home_page: 'https://cohere.com/'
-		},
-		'hi-IN': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'कोहेरे',
-			description_markdown: 'डेवलपर्स और उद्यमों के लिए भाषा मॉडल।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['कोहेरे', 'एआई', 'भाषा-मॉडल'],
-			home_page: 'https://cohere.com/'
-		},
-		'is-IS': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Tungumálalíkön fyrir forritara og fyrirtæki.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'gervigreind', 'tungumálalíkan'],
-			home_page: 'https://cohere.com/'
-		},
-		'it-IT': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Modelli linguistici per sviluppatori e aziende.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ia', 'modello-linguistico'],
-			home_page: 'https://cohere.com/'
-		},
-		'ja-JP': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: '開発者および企業向けの言語モデル。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', '言語モデル'],
-			home_page: 'https://cohere.com/'
-		},
-		'ko-KR': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: '코히어',
-			description_markdown: '개발자와 기업을 위한 언어 모델입니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['코히어', 'ai', '언어-모델'],
-			home_page: 'https://cohere.com/'
-		},
-		lzh: {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: '合智',
-			description_markdown: '為開發者與商賈所製之語言模型。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['合智', '智械', '語言模型'],
-			home_page: 'https://cohere.com/'
-		},
-		'nl-NL': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Taalmodellen voor ontwikkelaars en ondernemingen.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', 'taalmodel'],
-			home_page: 'https://cohere.com/'
-		},
-		'pt-PT': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Modelos de linguagem para desenvolvedores e empresas.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ia', 'modelo-de-linguagem'],
-			home_page: 'https://cohere.com/'
-		},
-		'ru-RU': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Языковые модели для разработчиков и предприятий.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ии', 'языковая-модель'],
-			home_page: 'https://cohere.com/'
-		},
-		'uk-UA': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Мовні моделі для розробників та підприємств.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ші', 'мовна-модель'],
-			home_page: 'https://cohere.com/'
-		},
-		'vi-VN': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Các mô hình ngôn ngữ dành cho nhà phát triển và doanh nghiệp.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', 'mô-hình-ngôn-ngữ'],
-			home_page: 'https://cohere.com/'
-		},
-		'zh-TW': {
-			name: 'Cohere',
-			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: '為開發者和企業打造的語言模型。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['cohere', 'ai', '語言模型'],
-			home_page: 'https://cohere.com/'
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -215,6 +28,7 @@ const configTemplate = {
 	name: 'cohere-command-r-plus',
 	model: 'command-r-plus',
 	apikey: '',
+	use_stream: true,
 	convert_config: {
 		roleReminding: true
 	}
@@ -232,217 +46,10 @@ async function GetSource(config) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Language models for developers and enterprises.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', 'language-model'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: '为开发者和企业打造的语言模型。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', '语言模型'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'نماذج لغوية للمطورين والشركات.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', 'نموذج-لغوي'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Sprachmodelle für Entwickler und Unternehmen.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ki', 'sprachmodell'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			emoji: {
-				name: '🗣️🔗',
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: '🗣️💼🚀',
-				description_markdown: '🏢🗣️🔗🚀',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['🗣️', '🔗', '🏢'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Modelos de lenguaje para desarrolladores y empresas.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ia', 'modelo-de-lenguaje'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Modèles de langage pour les développeurs et les entreprises.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ia', 'modèle-de-langage'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'कोहेरे',
-				description_markdown: 'डेवलपर्स और उद्यमों के लिए भाषा मॉडल।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['कोहेरे', 'एआई', 'भाषा-मॉडल'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Tungumálalíkön fyrir forritara og fyrirtæki.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'gervigreind', 'tungumálalíkan'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Modelli linguistici per sviluppatori e aziende.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ia', 'modello-linguistico'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: '開発者および企業向けの言語モデル。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', '言語モデル'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: '코히어',
-				description_markdown: '개발자와 기업을 위한 언어 모델입니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['코히어', 'ai', '언어-모델'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: '合智',
-				description_markdown: '為開發者與商賈所製之語言模型。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['合智', '智械', '語言模型'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Taalmodellen voor ontwikkelaars en ondernemingen.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', 'taalmodel'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Modelos de linguagem para desenvolvedores e empresas.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ia', 'modelo-de-linguagem'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Языковые модели для разработчиков и предприятий.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ии', 'языковая-модель'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Мовні моделі для розробників та підприємств.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ші', 'мовна-модель'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Các mô hình ngôn ngữ dành cho nhà phát triển và doanh nghiệp.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', 'mô-hình-ngôn-ngữ'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: '為開發者和企業打造的語言模型。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['cohere', 'ai', '語言模型'],
-				provider: 'cohere',
-				home_page: 'https://cohere.com/'
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		is_paid: false,
 		extension: {},
 
@@ -460,9 +67,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 			const request = {
 				model: config.model,
@@ -495,30 +105,80 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const result = await cohere.chat(request)
-			let text = result?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
-			if (!text) throw result
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			const removeduplicate = [...new Set(text.split('\n'))].join('\n')
-			if (removeduplicate.length / text.length < 0.3)
-				text = removeduplicate
-
-			return {
-				content: text
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+			if (useStream) {
+				// Use cohere's streaming support
+				const stream = await cohere.chatStream(request)
+
+				for await (const chunk of stream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
+
+					if (chunk.eventType === 'text-generation') {
+						result.content += chunk.text || ''
+						previewUpdater(result)
+					}
+				}
+			} else {
+				// Use non-streaming mode
+				const apiResult = await cohere.chat(request)
+				let text = apiResult?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
+				if (!text) throw apiResult
+
+				const removeduplicate = [...new Set(text.split('\n'))].join('\n')
+				if (removeduplicate.length / text.length < 0.3)
+					text = removeduplicate
+
+				result.content = text
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: {
 			/**

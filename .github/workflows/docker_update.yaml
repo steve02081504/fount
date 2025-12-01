@@ -8,9 +8,16 @@ on:
   schedule:
     - cron: '0 8 * * *'
   workflow_dispatch:
+    inputs:
+      no-cache:
+        description: 'Clear build cache'
+        required: false
+        type: boolean
+        default: false
 jobs:
   build-and-push:
     runs-on: [ubuntu-latest]
+    timeout-minutes: ${{ inputs.no-cache == true && 360 || 13 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,6 +42,7 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          no-cache: ${{ inputs.no-cache || false }}
           tags: |
             steve02081504/fount:latest
             steve02081504/fount:${{ github.sha }}
@@ -52,6 +60,7 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          no-cache: ${{ inputs.no-cache || false }}
           tags: |
             ghcr.io/steve02081504/fount:latest
             ghcr.io/steve02081504/fount:${{ github.sha }}

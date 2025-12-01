@@ -67,8 +67,7 @@ export async function waitForFountService(host) {
 		const data = await response.json()
 		if (data?.client_name != 'fount') continue
 		return
-	}
-		catch { }
+	} catch { }
 }
 
 /**

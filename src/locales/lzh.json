@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount 協議"
+				"description": "URL:fount 協議",
+				"registerFailed": "註 fount:// 協定處置器未果：${message}",
+				"noUrl": "誤：未供協定處置器之 URL。"
 			},
 			"update": {
 				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno 安裝未果，嘗試安裝至 fount 之 path 目錄...",
 				"notWorking": "未知何故 Deno 不動，可往 https://discord.gg/deno 求助",
 				"upgradeFailed": "警：Deno 之晉級或已失利，請察其誤",
-				"upgradeFailedTermux": "Deno 晉級之命失利，嘗試為 Termux 重裝..."
+				"upgradeFailedTermux": "Deno 晉級之命失利，嘗試為 Termux 重裝...",
+				"patchMissing": "誤：補綴前未見 Deno 執行檔，無以補綴。",
+				"patchUnsupportedArch": "誤：未援之補綴架構：${arch}",
+				"patchFailed": "誤：以 patchelf 補綴 Deno 執行檔未果。"
 			},
 			"install": {
 				"installingDependencies": "正安裝其依賴...",
+				"packageFailed": "誤：${package} 安裝未果。",
+				"browserMissing": "未獲預設瀏覽器，試安裝之...",
 				"untrustedPartsWarning": "勿在系統安裝任何不受信之 fount 部件，其能行萬事",
 				"rootWarning1": "不宜：以 root 身份運行 fount，將授予其所有部件完全之系統權限",
 				"rootWarning2": "非明其所以者，宜以普通用戶身份運行 fount"
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "更多"
+				},
+				"delete": {
+					"alt": "刪"
+				},
+				"deleteIcon": {
+					"alt": "刪"
+				},
+				"downloadHtml": {
+					"alt": "下載為織文"
+				},
+				"downloadHtmlIcon": {
+					"alt": "下載織文圖示"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "鏈結正製...",
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "方召工具"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "傳"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "止"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "图以传意",
 				"description": "一图胜千言，意境自现。",
 				"locked_description": "宜以图传情一次。"
+			},
+			"code_greeting": {
+				"name": "以碼致候",
+				"description": "「泉君安否？」",
+				"locked_description": "令代碼塊出「hello fount!」字，功成。"
 			}
 		},
 		"dragAndDrop": {

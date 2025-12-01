@@ -1,4 +1,5 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
+import { toHtml } from 'https://esm.sh/hast-util-to-html'
 import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
@@ -420,20 +421,20 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
-			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
+						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
+						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
-			? 'alert(\'Failed to copy: \' + e.message)'
-			: 'const { showToastI18n } = await import(\'/scripts/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
+						? 'alert(\'Failed to copy: \' + e.message)'
+						: 'const { showToastI18n } = await import(\'/scripts/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copy.dataset.tip')}')`
-			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copy\')'
+						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copy.dataset.tip')}')`
+						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copy\')'
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
@@ -493,42 +494,42 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
-	result = result || {}
-	const { AnsiUp } = await import('https://esm.sh/ansi-up')
-	const ansi_up = new AnsiUp()
-	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
+const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
+const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
 
-	const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
-	const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
-
-	const createCopyBtn = (text) => {
-		const encoded = encodeURIComponent(text).replace(/'/g, '%27')
-		const copyAction = \`\\
+const createCopyBtn = (text) => {
+	const encoded = encodeURIComponent(text).replace(/'/g, '%27')
+	const copyAction = \`\\
 event.stopPropagation()
 const btn = this
 navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	btn.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-			? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
-			: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
+							? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
+							: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
 }
 }).catch(error => {
 	${isStandalone
-			? 'alert(\'Failed to copy: \' + error.message)'
-			: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+							? 'alert(\'Failed to copy: \' + error.message)'
+							: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`
 
-		return /* html */ \`\\
+	return /* html */ \`\\
 <button class="btn btn-ghost btn-square btn-xs absolute top-2 right-2 opacity-70 hover:opacity-100 z-10"
 		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="code_block.copy"'}
 		onclick="\${copyAction.replace(/"/g, '&quot;')}" >
 	\${copySvg}
 </button>\`
-	}
+}
+
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
+	result = result || {}
+	const { AnsiUp } = await import('https://esm.sh/ansi-up')
+	const ansi_up = new AnsiUp()
+	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
 
 	let alerts = []
 
@@ -594,6 +595,11 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 \`)
 
 	outputContainer.innerHTML = alerts.join('')
+	window.dispatchEvent(new CustomEvent('markdown-codeblock-execution-result', { detail: {
+		lang: '${lang}',
+		code: document.querySelector('#${uniqueId} pre').innerText,
+		...result
+	}}))
 }).catch(e => {
 	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
@@ -604,6 +610,11 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	</div>
 </div>
 \`
+	window.dispatchEvent(new CustomEvent('markdown-codeblock-execution-error', { detail: {
+		lang: '${lang}',
+		code: document.querySelector('#${uniqueId} pre').innerText,
+		error: e
+	}}))
 }).then(() => {
 	for (const child of [...outputContainer.children].reverse()) {
 		child.classList.add('${uniqueId}-execution-output')
@@ -653,6 +664,101 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	}
 }
 
+// --- 缓存插件 ---
+
+/**
+ * 读取缓存插件
+ */
+function rehypeCacheRead() {
+	return (tree, file) => {
+		const cache = file.data.cache
+		if (!cache) return
+
+		visit(tree, 'element', (node, index, parent) => {
+			// 1. 识别 Mermaid (pre > code.language-mermaid)
+			// 2. 识别 普通代码块 (pre > code) - 添加这个以优化 Shiki 高亮性能
+			if (node.tagName === 'pre' && node.children?.[0]?.tagName === 'code') {
+				const codeNode = node.children[0]
+				const className = codeNode.properties?.className || []
+				const content = codeNode.children?.[0]?.value || ''
+
+				// 区分 Mermaid 和普通代码
+				const isMermaid = className.includes('language-mermaid')
+				const lang = className.find(c => c.startsWith('language-')) || 'text'
+
+				// 生成 Cache Key (包含内容和语言)
+				const hash = md5(content + lang)
+				const cacheKey = isMermaid ? `mermaid-${hash}` : `code-${hash}`
+
+				if (cache[cacheKey]) {
+					// HIT: 使用缓存替换当前节点
+					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+					parent.children.splice(index, 1, ...cachedHast)
+					// 跳过刚插入的节点，避免重复访问
+					return index + cachedHast.length
+				} else {
+					// MISS: 包装节点以便后续插件处理后被 Write 插件捕获
+					const wrapper = {
+						type: 'element',
+						tagName: 'div',
+						// 使用通用属性，后续 Write 插件只需检查这个属性
+						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
+						children: [node]
+					}
+					parent.children[index] = wrapper
+				}
+			}
+
+			// 3. 识别 Math (span.math-inline / div.math-display)
+			if (node.properties?.className?.some(c => c === 'math-inline' || c === 'math-display')) {
+				const content = node.children?.[0]?.value || ''
+				const hash = md5(content)
+				const cacheKey = `math-${hash}`
+
+				if (cache[cacheKey]) {
+					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+					parent.children.splice(index, 1, ...cachedHast)
+					return index + cachedHast.length
+				} else {
+					const wrapper = {
+						type: 'element',
+						tagName: 'div',
+						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
+						children: [node]
+					}
+					parent.children[index] = wrapper
+				}
+			}
+		})
+	}
+}
+
+/**
+ * 写入缓存插件
+ */
+function rehypeCacheWrite() {
+	return (tree, file) => {
+		const cache = file.data.cache
+		if (!cache) return
+
+		visit(tree, 'element', (node, index, parent) => {
+			const key = node.properties?.['data-cache-key']
+
+			if (key) {
+				// 将处理后的子节点序列化为 HTML 字符串存入缓存
+				const html = toHtml(node.children)
+				cache[key] = html
+
+				// 解包：移除 wrapper div，将内容提升到父级
+				parent.children.splice(index, 1, ...node.children)
+
+				// 返回当前索引，以便继续正确遍历后续节点
+				return index
+			}
+		})
+	}
+}
+
 // --- Markdown 转换器 ---
 
 /**
@@ -669,6 +775,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkMath)
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
+		.use(rehypeCacheRead)
 		.use(rehypeMermaid, {
 			dark: true,
 			/**
@@ -742,6 +849,7 @@ ${diagram}`
 			}
 		})
 		.use(rehypeKatex)
+		.use(rehypeCacheWrite)
 		.use(rehypeAddDaisyuiClass)
 		.use(rehypeStringify, {
 			allowDangerousCharacters: true,

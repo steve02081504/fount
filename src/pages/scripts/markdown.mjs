@@ -1,4 +1,4 @@
-import { createDOMFromHtmlString } from './template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation, activateScripts } from './template.mjs'
 
 const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(error => {
 	/**
@@ -54,41 +54,56 @@ export async function getConvertor() {
 /**
  * 将 Markdown 渲染为字符串。
  * @param {string} markdown - Markdown 文本。
+ * @param {object} [cache] - 缓存对象。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
-export async function renderMarkdownAsString(markdown) {
+export async function renderMarkdownAsString(markdown, cache) {
 	convertor ??= await GetMarkdownConvertor()
-	const file = await convertor.process(markdown)
+	const file = await convertor.process({ value: markdown, data: { cache } })
 	return String(file)
 }
 
 /**
- * 将 Markdown 渲染为 DOM 元素。
+ * 将 Markdown 渲染为 DOM 元素（不激活脚本）。
  * @param {string} markdown - Markdown 文本。
+ * @param {object} [cache] - 缓存对象。
+ * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段（脚本未激活）。
+ */
+export async function renderMarkdownNoScriptActivation(markdown, cache) {
+	return createDocumentFragmentFromHtmlStringNoScriptActivation(await renderMarkdownAsString(markdown, cache))
+}
+
+/**
+ * 将 Markdown 渲染为 DOM 元素（并激活脚本）。
+ * @param {string} markdown - Markdown 文本。
+ * @param {object} [cache] - 缓存对象。
  * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段。
  */
-export async function renderMarkdown(markdown) {
-	return createDOMFromHtmlString(await renderMarkdownAsString(markdown))
+export async function renderMarkdown(markdown, cache) {
+	const fragment = await renderMarkdownNoScriptActivation(markdown, cache)
+	return activateScripts(fragment)
 }
 
 /**
  * 将 Markdown 渲染为独立的 HTML 字符串。
  * @param {string} markdown - Markdown 文本。
+ * @param {object} [cache] - 缓存对象。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
-export async function renderMarkdownAsStandAloneHtmlString(markdown) {
+export async function renderMarkdownAsStandAloneHtmlString(markdown, cache) {
 	standaloneConvertor ??= await GetMarkdownConvertor({ isStandalone: true })
-	const file = await standaloneConvertor.process(markdown)
+	const file = await standaloneConvertor.process({ value: markdown, data: { cache } })
 	return String(file)
 }
 
 /**
  * 将 Markdown 同步渲染为独立的 HTML 字符串。
  * @param {string} markdown - Markdown 文本。
+ * @param {object} [cache] - 缓存对象。
  * @returns {string} - 渲染后的 HTML 字符串。
  */
-export function renderMarkdownAsStandAloneHtmlStringSync(markdown) {
+export function renderMarkdownAsStandAloneHtmlStringSync(markdown, cache) {
 	if (!standaloneConvertor) throw new Error('Standalone markdown convertor not initialized')
-	const file = standaloneConvertor.processSync(markdown)
+	const file = standaloneConvertor.processSync({ value: markdown, data: { cache } })
 	return String(file)
 }

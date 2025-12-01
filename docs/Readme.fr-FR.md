@@ -14,64 +14,76 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[Envie d'en savoir plus sur l'architecture du dépôt ? Consultez DeepWiki !](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-Avez-vous déjà aspiré à un voyage aux côtés d'un personnage issu des pages de votre imagination, un compagnon tissé des fils de vos rêves ?
-
-Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi intuitif que les créations les plus avancées, orchestrant sans effort votre monde numérique ?
-
-Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et _non filtrée_ se déploie ?
-
-Avec près de ![relative date](https://img.shields.io/date/1727107200?label=Temps%20%C3%A9coul%C3%A9) de développement dédié, les contributions de plus de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributeurs) personnes passionnées et une communauté florissante de plus de ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Utilisateurs%20actifs) utilisateurs, fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
-
-Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante**](https://discord.gg/GtR9Quzq2v) vous attend – un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
-
-<details open>
-<summary><strong>Un Aperçu du Monde de fount</strong></summary>
-
-|                                     Captures d'écran                                      |
-| :---------------------------------------------------------------------------------------: |
-|                                    **Page d'accueil**                                     |
-| ![Image](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                  **Sélection de thème**                                   |
-| ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                         **Chat**                                          |
-| ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## Qu'est-ce que fount ?
 
-fount est un pont qui vous relie aux personnages de votre imagination, vous permettant de converser sans effort avec eux, de créer les vôtres et de les partager avec le monde. C'est un chemin rendu étonnamment accessible.
+fount est un **environnement d'exécution d'agent IA moderne et évolutif**.
 
-C'est une source, où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
+Nous pensons que les **outils de productivité très efficaces** et l'**interaction émotionnelle immersive** ne sont pas incompatibles. fount est un pont : le jour, il peut être l'assistant compétent vous aidant à écrire du code complexe et à organiser les comptes rendus de réunion ; la nuit, il peut être un confident numérique qui comprend vos émotions et résonne avec vous.
 
-fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalités nées de sa communauté dynamique. Si vous avez une vision, une étincelle d'idée qui appartient au royaume de fount, nous accueillons votre contribution.
+Après ![relative date](https://img.shields.io/date/1727107200?label=Temps%20Consacré) de raffinement dédié, intégrant la passion de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributeurs) et une communauté dynamique de ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Utilisateurs%20Actifs), fount est désormais une plateforme d'interaction IA mature, stable et en constante évolution.
+
+![Image](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Plongez dans un Monde de Fonctionnalités
+## 🚀 Efficacité et Ingénierie : Conçu pour les Professionnels, les Développeurs et les Geeks
 
-- **Conversations Fluides, Partout**
-  Un murmure commencé sur votre ordinateur peut être poursuivi de manière transparente sur votre téléphone ou votre tablette. fount maintient vos conversations synchronisées, vous connectant à vos personnages où que vous alliez.
+fount transforme l'interaction en actifs de productivité. Tout est glisser-déposer, tout est un fichier, et la logique est pilotée par le code.
 
-- **Chats Expressifs et Immersifs**
-  fount exploite toute la puissance du HTML, permettant aux personnages de s'exprimer avec du texte enrichi, des images et même des éléments interactifs, rendant chaque conversation vivante et profonde.
+### 1. Actifs de Connaissances et Partage Sans Couture
 
-- **Rassemblements d'Esprits : Chats de Groupe Natifs**
-  Invitez plusieurs personnages dans une seule conversation et assistez à leurs interactions dynamiques et engageantes, créant des histoires qui vous sont propres.
+- **Génération Instantanée de Rapports** : Faites glisser une bulle de conversation directement dans un dossier pour générer instantanément un rapport HTML indépendant. C'est idéal pour organiser rapidement des documents techniques, des comptes rendus de réunion ou des fragments d'inspiration.
+  ![Image](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **Encapsulation et Distribution de Flux de Travail** : Faites glisser le rôle (agent) que vous avez créé directement sur le bureau pour générer un fichier partageable. Distribuez facilement votre ingénierie de Prompt et votre logique de flux de travail à vos collègues ou à la communauté.
+  ![Image](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **Une Interface Magnifique et Personnalisable**
-  Choisissez parmi plus de 30 thèmes époustouflants, ou créez le vôtre. fount est votre toile personnelle.
+### 2. Environnement d'Exécution de Code en Temps Réel
 
-- **Fonctionne Partout où Vous Êtes**
-  fount fonctionne de manière transparente sur Windows, macOS, Linux et même Android, s'adaptant à vos besoins grâce à une installation directe ou à la flexibilité de Docker.
+Il ne s'agit plus seulement de surlignage Markdown. Dans fount, les blocs de code envoyés par le rôle (agent) sont **vivants**.
 
-- **(Pour les Utilisateurs Avancés) Intégration de Sources d'IA sans Entraves : Embrassez l'Illimité**
-  fount offre un _choix_ et une _flexibilité_ inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à _n'importe quelle_ source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à de vastes bibliothèques d'API, et intégrez des ressources multimédias, le tout dans le flux de votre code. fount prend également en charge nativement la création de pools d'API pour un routage intelligent des requêtes. La logique de la communication se plie à _votre_ volonté, façonnée par la puissance du code.
+- Prend en charge la compilation et l'exécution en temps réel pour plusieurs langages (C/C++/Rust/Python/JS, etc.).
+- Affichez directement la sortie stdout, et même les résultats de désassemblage ASM pour les langages compilés.
+- Laissez l'IA devenir votre vérificateur en temps réel pour le pair programming.
+  ![Image](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Convivial pour les Développeurs
+
+L'architecture du projet fount est conçue en tenant pleinement compte des habitudes des développeurs.
+[Vous voulez connaître l'architecture du dépôt de projet ? Jetez un œil à DeepWiki !](https://deepwiki.com/steve02081504/fount)
+
+- **Piloté par Git** : Tous les composants peuvent être gérés via Git.
+- **Intégration VSCode** : La structure du projet est claire. Combiné aux instructions fournies dans [AGENTS.md](../AGENTS.md), vous pouvez développer et déboguer la logique de votre Agent directement dans votre IDE préféré.
+
+---
+
+## 🎭 Immersion et Résonance : Expérience d'Interaction Haute Fidélité
+
+Une fois le travail terminé, fount offre une connexion qui transcende l'ordinaire. Nous abandonnons la rigidité des outils traditionnels, poursuivant une interaction "haute fidélité" naturelle, fluide et profonde.
+
+- **Conversations Sans Couture, Partout et à Tout Moment**
+  Une discussion commencée sur un ordinateur peut se poursuivre sans problème sur un téléphone mobile ou une tablette. fount maintient vos conversations synchronisées, vous assurant de rester étroitement connecté avec votre rôle, où que vous soyez.
+
+- **Chat Expressif et Immersif**
+  Exploitant la puissance du HTML, fount permet au rôle (agent) de s'exprimer à travers du texte enrichi, des images et même des éléments interactifs, rendant chaque conversation vivante et profonde.
+
+- **Un Rassemblement d'Esprits : Chat de Groupe Natif**
+  Invitez plusieurs rôles à rejoindre la même conversation et soyez témoin de leurs interactions dynamiques et engageantes, que ce soit pour un brainstorming professionnel ou la mise en scène d'une histoire entre les rôles.
+  ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+- **Interface Belle et Personnalisable**
+  Choisissez parmi plus de 30 thèmes époustouflants, ou créez vos propres couleurs. fount est votre toile exclusive.
+  ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+- **Disponible Partout**
+  fount fonctionne sans problème sur Windows, macOS, Linux, et même Android, répondant à vos différents besoins grâce à l'installation directe ou à la flexibilité de Docker.
+
+- **Intégration de Sources IA Sans Contrainte : Embrassez l'Infini**
+  fount offre un _choix_ et une _flexibilité_ inégalés pour la connexion aux sources d'IA. Le code JavaScript personnalisé dans le Générateur de Sources IA vous permet de vous connecter à _n'importe quelle_ source d'IA – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Dans le flux de code, vous pouvez concevoir soigneusement des expressions régulières complexes, appeler de vastes bibliothèques API et intégrer des ressources multimédias. fount prend également en charge nativement la création de pools d'API pour un routage intelligent des requêtes. La logique de la communication suit _votre_ volonté, façonnée par la puissance du code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Si vous vous sentez perdu dans la mer des agents, ou si vous recherchez des histoires oubliées, notre [**communauté dynamique et amicale**](https://discord.gg/GtR9Quzq2v) attend votre arrivée. C'est un refuge pour les personnes partageant les mêmes idées, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
 ---
 

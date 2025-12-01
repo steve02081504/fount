@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL:fount protocol"
+				"description": "URL:fount protocol",
+				"registerFailed": "Failed to register fount:// protocol handler: ${message}",
+				"noUrl": "Error: URL for protocol handler not provided."
 			},
 			"update": {
 				"skippingFountUpdate": "Because the .noupdate file exists, the fount update is skipped",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno installation failed, trying to automatically install to the path folder of fount...",
 				"notWorking": "For some reason Deno isn't working, you may want to join https://discord.gg/deno for support",
 				"upgradeFailed": "Warning: Deno upgrade may have failed. Please check for errors.",
-				"upgradeFailedTermux": "Deno upgrade command failed, trying to reinstall Deno for Termux..."
+				"upgradeFailedTermux": "Deno upgrade command failed, trying to reinstall Deno for Termux...",
+				"patchMissing": "Error: Deno executable not found before patching. Cannot be patched.",
+				"patchUnsupportedArch": "Error: Unsupported patch architecture: ${arch}",
+				"patchFailed": "Error: Failed to patch Deno executable using patchelf."
 			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",
+				"packageFailed": "Error: Installation of ${package} failed.",
+				"browserMissing": "Default browser not detected, trying to install...",
 				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything.",
 				"rootWarning1": "Not recommended: running fount as root grants full system access to all fount components.",
 				"rootWarning2": "Unless you know what you are doing, it is recommended to run fount as a normal user."
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "More Icon"
+				},
+				"delete": {
+					"alt": "Delete"
+				},
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				},
+				"downloadHtml": {
+					"alt": "Download as HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Download HTML icon"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "Creating link...",
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Calling tool"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "Upload Icon"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "stop"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "There are pictures and the truth",
 				"description": "Use pictures to break the dimensional wall.",
 				"locked_description": "Send a picture in chat."
+			},
+			"code_greeting": {
+				"name": "Say hello with code",
+				"description": "\"Hello, fount!\"",
+				"locked_description": "By executing the code block, 'hello fount!' is successfully output."
 			}
 		},
 		"dragAndDrop": {

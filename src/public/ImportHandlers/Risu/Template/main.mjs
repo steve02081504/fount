@@ -108,7 +108,6 @@ function buildCharInfo(charData) {
 		// 但更好的做法是让fount的locale匹配机制处理 '' 和 'en'
 	}
 
-
 	return info
 }
 
@@ -237,11 +236,16 @@ const charAPI_definition = {
 			 * @returns {Promise<{ content: any; content_for_show: any; files: any; extension: any; }>} 包含回复内容的对象
 			 */
 			GetReply: async args => {
-				if (!AIsource)
-					return {
-						// 此处的提示可以考虑根据 args.locales 进行 i18n，但属于模板细节优化
-						content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
-					}
+				if (!AIsource) return {
+					content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
+				}
+				const env = getMacroEnv(args.UserCharname)
+				/**
+				 * 解析并替换宏
+				 * @param {string} str 要解析的字符串
+				 * @returns {string} 解析后的字符串
+				 */
+				const parseMacro = str => evaluateMacros(str, env, args.chat_scoped_char_memory, args.chat_log)
 
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
@@ -268,29 +272,48 @@ const charAPI_definition = {
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
-				regen_loop: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = (result.files || []).concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.({
+					...r,
+					content: runRegex(chardata, parseMacro(r.content), e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
+				})
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-					// 插件处理逻辑 (如果你的fount系统有插件)
-					const plugins = args.plugins || {} // 从 fount 运行时获取
-					for (const plugin of Object.values(plugins))
-						if (plugin?.interfaces?.chat?.ReplyHandler) {
-							const handled = await plugin.interfaces.chat.ReplyHandler(result, { ...args, prompt_struct, AddLongTimeLog })
-							if (handled) continue regen_loop
-						}
+				/**
+				 * 更新回复预览。
+				 * @param {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
-					break // 正常结束
+				// 在重新生成循环中检查插件触发
+				regen: while (true) {
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					let continue_regen = false
+					for (const replyHandler of [
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+					].filter(Boolean))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+							continue_regen = true
+					if (continue_regen) continue regen
+					break
 				}
 
-				const env = getMacroEnv(args.UserCharname)
-				const finalContent = evaluateMacros(result.content, env, args.chat_scoped_char_memory, args.chat_log)
+				result.content = parseMacro(result.content)
 
 				return {
-					content: runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
-					content_for_show: formatRisuOutput(runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
+					content: runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
+					content_for_show: formatRisuOutput(runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
 					files: result.files,
 					extension: result.extension,
 				}

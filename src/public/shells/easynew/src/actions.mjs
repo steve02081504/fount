@@ -28,7 +28,6 @@ async function getTemplates(username) {
 				const templateMainPath = path.join(templatePath, 'main.mjs')
 				if ((await fs.stat(templatePath)).isDirectory() && (await fs.stat(templateMainPath)).isFile())
 					allTemplates[templateName] = true
-
 			}
 		}
 		catch (error) {

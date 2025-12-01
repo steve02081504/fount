@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "🔗⛲📜"
+				"description": "🔗⛲📜",
+				"registerFailed": "❌📝 fount:// 🔗👮: ${message}",
+				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
 				"skippingFountUpdate": "⏭️ ⛲ ⏫",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
 				"notWorking": "🦕❓➡️ discord.gg/deno",
 				"upgradeFailed": "⚠️ 🦕⏫❓",
-				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥"
+				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
+				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️. 🚫🩹.",
+				"patchUnsupportedArch": "❌: 🚫🤝 🏗️: ${arch}",
+				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (patchelf) 💥"
 			},
 			"install": {
 				"installingDependencies": "📥🧩...",
+				"packageFailed": "❌: ${package} 📥💥",
+				"browserMissing": "🚫🌐, 🔄📥...",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
 				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
 				"rootWarning2": "🙂👍 ⛲ ✅"
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "➕"
+				},
+				"delete": {
+					"alt": "🗑️"
+				},
+				"deleteIcon": {
+					"alt": "🗑️"
+				},
+				"downloadHtml": {
+					"alt": "💾🌐"
+				},
+				"downloadHtmlIcon": {
+					"alt": "💾🌐"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "⏳🔗...",
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "🛠️🔄"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "⬆️"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "⏹️"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "🖼️➡️✨",
 				"description": "💬➡️🏞️",
 				"locked_description": "🔒"
+			},
+			"code_greeting": {
+				"name": "👋💻",
+				"description": "💬💧",
+				"locked_description": "✅ 'hello fount!'"
 			}
 		},
 		"dragAndDrop": {

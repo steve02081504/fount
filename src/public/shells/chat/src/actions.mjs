@@ -42,7 +42,6 @@ export const actions = {
 			for (const char of chatInfo.chars)
 				await addchar(chatId, char)
 
-
 		return chatId
 	},
 	/**

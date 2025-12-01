@@ -112,6 +112,7 @@ export function registerEndpoints(router) {
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		if (!is_local_ip_from_req(req)) {
+			const { pow } = await import('../../scripts/pow.mjs')
 			const { powToken } = req.body
 			const { success } = powToken && await pow.validateToken(powToken)
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
@@ -136,6 +137,7 @@ export function registerEndpoints(router) {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
 		if (!is_local_ip(ip)) {
+			const { pow } = await import('../../scripts/pow.mjs')
 			const { powToken } = req.body
 			const { success } = powToken && await pow.validateToken(powToken)
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })

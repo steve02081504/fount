@@ -66,6 +66,15 @@ export function createVirtualList({
 	}
 
 	/**
+	 * 获取加载锁，确保只有一个请求在进行中。
+	 * @returns {Promise<void>} - 加载锁的 Promise。
+	 */
+	async function getMutex() {
+		while (state.isLoading) await new Promise((resolve) => setTimeout(resolve, 100))
+		return state.isLoading = true
+	}
+
+	/**
 	 * 更新动态缓冲区大小和平均项高度。
 	 */
 	function updateDynamicBufferSize() {
@@ -168,7 +177,7 @@ export function createVirtualList({
 	 */
 	async function prependItems() {
 		if (state.startIndex <= 0) return
-		state.isLoading = true
+		await getMutex()
 		try {
 			const itemsToFetch = Math.min(state.bufferSize, state.startIndex)
 			const newStartIndex = state.startIndex - itemsToFetch
@@ -214,7 +223,7 @@ export function createVirtualList({
 	async function appendItems() {
 		const currentCount = state.startIndex + state.queue.length
 		if (currentCount >= state.totalCount) return
-		state.isLoading = true
+		await getMutex()
 		try {
 			const itemsToFetch = Math.min(state.bufferSize, state.totalCount - currentCount)
 			const { items: newItems } = await fetchData(currentCount, itemsToFetch)
@@ -284,7 +293,7 @@ export function createVirtualList({
 	 * 强制刷新整个列表。
 	 */
 	async function refresh() {
-		state.isLoading = true
+		await getMutex()
 		try {
 			const { total } = await fetchData(0, 0)
 			state.totalCount = total || 0
@@ -333,7 +342,7 @@ export function createVirtualList({
 	 * @param {boolean} [scrollTo=true] - 是否滚动到新项目。
 	 */
 	async function appendItem(item, scrollTo = true) {
-		state.isLoading = true
+		await getMutex()
 		try {
 			state.totalCount++
 			const itemIndex = state.startIndex + state.queue.length
@@ -365,7 +374,7 @@ export function createVirtualList({
 			state.totalCount = Math.max(0, state.totalCount - 1)
 			return
 		}
-		state.isLoading = true
+		await getMutex()
 		try {
 			state.queue.splice(queueIndex, 1)
 			state.totalCount--
@@ -401,7 +410,7 @@ export function createVirtualList({
 			console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
 			return
 		}
-		state.isLoading = true
+		await getMutex()
 		try {
 			const oldElement = state.renderedElements.get(index)
 			if (!oldElement) return

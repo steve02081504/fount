@@ -1,13 +1,14 @@
 import { Buffer } from 'node:buffer'
 import { hash as calculateHash } from 'node:crypto'
-import fs from 'node:fs'
-import path from 'node:path'
 import process from 'node:process'
 
 import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
+
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -50,207 +51,9 @@ const supportedFileTypes = [
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini by Google',
-			description_markdown: 'Google\'s powerful and multimodal AI model.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', 'multimodal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'zh-CN': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: '谷歌 Gemini',
-			description_markdown: '谷歌强大且多模态的 AI 模型。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['谷歌', 'gemini', 'ai', '多模态'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'ar-SA': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'جيميني من جوجل',
-			description_markdown: 'نموذج الذكاء الاصطناعي القوي والمتعدد الوسائط من جوجل.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['جوجل', 'جيميني', 'ذكاء اصطناعي', 'متعدد الوسائط'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'de-DE': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini von Google',
-			description_markdown: 'Googles leistungsstarkes und multimodales KI-Modell.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ki', 'multimodal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		emoji: {
-			name: '♊✨',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: '🧠👁️👂',
-			description_markdown: '🖼️🎤📄➡️🧠✨',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['♊️', '🧠', '👁️', '🔗'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'es-ES': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini de Google',
-			description_markdown: 'El potente y multimodal modelo de IA de Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ia', 'multimodal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'fr-FR': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini par Google',
-			description_markdown: 'Le puissant modèle d\'IA multimodal de Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ia', 'multimodal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'hi-IN': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'गूगल द्वारा जेमिनी',
-			description_markdown: 'गूगल का शक्तिशाली और मल्टीमॉडल एआई मॉडल।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['गूगल', 'जेमिनी', 'एआई', 'मल्टीमॉडल'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'is-IS': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini frá Google',
-			description_markdown: 'Öflugt og fjölvirkt gervigreindarlíkan frá Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'gervigreind', 'fjölvirkt'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'it-IT': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini di Google',
-			description_markdown: 'Il potente e multimodale modello di intelligenza artificiale di Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ia', 'multimodale'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'ja-JP': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Google の Gemini',
-			description_markdown: 'Google の強力でマルチモーダルな AI モデル。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', 'マルチモーダル'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'ko-KR': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: '구글의 제미니',
-			description_markdown: '구글의 강력한 멀티모달 AI 모델입니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['구글', '제미니', 'ai', '멀티모달'],
-			home_page: 'https://gemini.google.com/'
-		},
-		lzh: {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: '谷歌之雙子',
-			description_markdown: '谷歌之強大多模態靈機。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['谷歌', '雙子', '靈機', '多模態'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'nl-NL': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini van Google',
-			description_markdown: 'Het krachtige en multimodale AI-model van Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', 'multimodaal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'pt-PT': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini do Google',
-			description_markdown: 'O poderoso e multimodal modelo de IA do Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ia', 'multimodal'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'ru-RU': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini от Google',
-			description_markdown: 'Мощная и мультимодальная модель ИИ от Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ии', 'мультимодальный'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'uk-UA': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini від Google',
-			description_markdown: 'Потужна та мультимодальна модель ШІ від Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ші', 'мультимодальний'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'vi-VN': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini của Google',
-			description_markdown: 'Mô hình AI đa phương thức và mạnh mẽ của Google.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', 'đa phương thức'],
-			home_page: 'https://gemini.google.com/'
-		},
-		'zh-TW': {
-			name: 'Gemini',
-			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Google 的 Gemini',
-			description_markdown: 'Google 強大且多模態的 AI 模型。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', '多模態'],
-			home_page: 'https://gemini.google.com/'
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
-			/**
-			 * 获取此 AI 源的配置显示内容。
-			 * @returns {Promise<object>} 配置显示内容。
-			 */
-			GetConfigDisplayContent: async () => ({
-				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
-			}),
 			/**
 			 * 获取此 AI 源的配置模板。
 			 * @returns {Promise<object>} 配置模板。
@@ -273,7 +76,7 @@ const configTemplate = {
 	disable_default_prompt: false,
 	system_prompt_at_depth: 10,
 	proxy_url: '',
-	use_stream: false,
+	use_stream: true,
 	keep_thought_signature: true,
 }
 
@@ -439,218 +242,11 @@ async function GetSource(config) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini by Google',
-				description_markdown: 'Google\'s powerful and multimodal AI model.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', 'multimodal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: '谷歌 Gemini',
-				description_markdown: '谷歌强大且多模态的 AI 模型。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['谷歌', 'gemini', 'ai', '多模态'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'جيميني من جوجل',
-				description_markdown: 'نموذج الذكاء الاصطناعي القوي والمتعدد الوسائط من جوجل.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['جوجل', 'جيميني', 'ذكاء اصطناعي', 'متعدد الوسائط'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini von Google',
-				description_markdown: 'Googles leistungsstarkes und multimodales KI-Modell.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ki', 'multimodal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			emoji: {
-				name: '♊✨',
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: '🧠👁️👂',
-				description_markdown: '🖼️🎤📄➡️🧠✨',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['♊️', '🧠', '👁️', '🔗'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini de Google',
-				description_markdown: 'El potente y multimodal modelo de IA de Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ia', 'multimodal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini par Google',
-				description_markdown: 'Le puissant modèle d\'IA multimodal de Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ia', 'multimodal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'गूगल द्वारा जेमिनी',
-				description_markdown: 'गूगल का शक्तिशाली और मल्टीमॉडल एआई मॉडल।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['गूगल', 'जेमिनी', 'एआई', 'मल्टीमॉडल'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini frá Google',
-				description_markdown: 'Öflugt og fjölvirkt gervigreindarlíkan frá Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'gervigreind', 'fjölvirkt'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini di Google',
-				description_markdown: 'Il potente e multimodale modello di intelligenza artificiale di Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ia', 'multimodale'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Google の Gemini',
-				description_markdown: 'Google の強力でマルチモーダルな AI モデル。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', 'マルチモーダル'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: '구글의 제미니',
-				description_markdown: '구글의 강력한 멀티모달 AI 모델입니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['구글', '제미니', 'ai', '멀티모달'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: '谷歌之雙子',
-				description_markdown: '谷歌之強大多模態靈機。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['谷歌', '雙子', '靈機', '多模態'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini van Google',
-				description_markdown: 'Het krachtige en multimodale AI-model van Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', 'multimodaal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini do Google',
-				description_markdown: 'O poderoso e multimodal modelo de IA do Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ia', 'multimodal'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini от Google',
-				description_markdown: 'Мощная и мультимодальная модель ИИ от Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ии', 'мультимодальный'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini від Google',
-				description_markdown: 'Потужна та мультимодальна модель ШІ від Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ші', 'мультимодальний'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini của Google',
-				description_markdown: 'Mô hình AI đa phương thức và mạnh mẽ của Google.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', 'đa phương thức'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Google 的 Gemini',
-				description_markdown: 'Google 強大且多模態的 AI 模型。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', '多模態'],
-				provider: 'google',
-				home_page: 'https://gemini.google.com/'
-			}
-		},
 		is_paid: false,
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		extension: {},
 
 		/**
@@ -697,9 +293,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项，包含基础结果、进度回调和中断信号。
+		 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[], extension?: object}>} - 包含内容和文件的响应。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const baseMessages = [
 				{
 					role: 'user',
@@ -719,7 +318,12 @@ system:
 
 			let totalFileTokens = 0 // 单独跟踪文件 token
 
-			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+			let chatHistory = margeStructPromptChatLog(prompt_struct)
+			if (base_result.extension?.gemini_API_data && chatHistory.length > 0) {
+				chatHistory[chatHistory.length - 1].extension ??= {}
+				chatHistory[chatHistory.length - 1].extension.gemini_API_data ??= base_result.extension.gemini_API_data
+			}
+			chatHistory = await Promise.all(chatHistory.map(async chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 
 				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
@@ -904,7 +508,6 @@ ${is_ImageGeneration
 						finalHistory.splice(insertIndex, 0, systemPromptMessage)
 					}
 					finalMessages = [...baseMessages, ...finalHistory, ...pauseDeclareMessages]
-
 				}
 				else
 					finalMessages = fullContents
@@ -923,9 +526,41 @@ ${is_ImageGeneration
 				},
 			}
 
-			let text = ''
 			let thoughtSignature = undefined
-			const files = []
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				// 清理 declare 标签
+				text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
+				res.content = text
+				return res
+			}
+
+			/**
+			 * 处理 AI 响应的进度更新
+			 * @param {object} r - 响应
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
 			/**
 			 * 处理部分。
 			 * @param {Array<object>} parts - 部分数组。
@@ -934,13 +569,13 @@ ${is_ImageGeneration
 				if (!parts) return
 				for (const part of parts) {
 					if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
-					if (part.text) text += part.text
+					if (part.text) result.content += part.text
 					else if (part.inlineData) try {
 						const { mime_type, data } = part.inlineData
 						const fileExtension = mime.extension(mime_type) || 'png'
-						const fileName = `${files.length}.${fileExtension}`
+						const fileName = `${result.files.length}.${fileExtension}`
 						const dataBuffer = Buffer.from(data, 'base64')
-						files.push({
+						result.files.push({
 							name: fileName,
 							mime_type,
 							buffer: dataBuffer
@@ -948,43 +583,39 @@ ${is_ImageGeneration
 					} catch (error) {
 						console.error('Error processing inline image data:', error)
 					}
+					previewUpdater(result)
 				}
 			}
 
 			if (config.use_stream) {
-				const result = await ai.models.generateContentStream(model_params)
-				for await (const chunk of result)
+				const resultStream = await ai.models.generateContentStream(model_params, { signal })
+				for await (const chunk of resultStream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
 					handle_parts(chunk.candidates?.[0]?.content?.parts)
+				}
 			}
 			else {
-				const response = await ai.models.generateContent(model_params)
+				if (signal?.aborted) {
+					const err = new Error('Aborted by user')
+					err.name = 'AbortError'
+					throw err
+				}
+				const response = await ai.models.generateContent(model_params, { signal })
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}
 
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-			text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '')
-
-			return {
-				content: text,
-				files,
+			return Object.assign(base_result, clearFormat(result), {
 				extension: {
 					gemini_API_data: {
 						char_id: prompt_struct.char_id,
 						text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),
 					}
 				}
-			}
+			})
 		},
 		tokenizer: {
 			/**

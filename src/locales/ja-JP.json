@@ -107,7 +107,9 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL: プロトコルを見つける"
+				"description": "URL: fount プロトコル",
+				"registerFailed": "fount:// プロトコル ハンドラーの登録に失敗しました: ${message}",
+				"noUrl": "エラー: プロトコルハンドラーの URL が指定されていません。"
 			},
 			"update": {
 				"skippingFountUpdate": ".noupdate ファイルが存在するため、カウントの更新はスキップされます",
@@ -148,10 +150,15 @@
 				"installFailedFallback": "Deno のインストールが失敗しました。見つかったパス フォルダーに自動的にインストールしようとしています...",
 				"notWorking": "何らかの理由で Deno が動作しない場合は、https://discord.gg/deno に参加してサポートを受けることをお勧めします。",
 				"upgradeFailed": "警告: Deno のアップグレードが失敗した可能性があります。エラーがないか確認してください。",
-				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Deno for Termux を再インストールしようとしています..."
+				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Deno for Termux を再インストールしようとしています...",
+				"patchMissing": "エラー: パッチ適用前に Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
+				"patchUnsupportedArch": "エラー: サポートされていないパッチ アーキテクチャ: ${arch}",
+				"patchFailed": "エラー: patchelf を使用して Deno 実行可能ファイルにパッチを適用できませんでした。"
 			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",
+				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
+				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
 				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",
 				"rootWarning1": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
 				"rootWarning2": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。"
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "その他アイコン"
+				},
+				"delete": {
+					"alt": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				},
+				"downloadHtml": {
+					"alt": "HTMLとしてダウンロード"
+				},
+				"downloadHtmlIcon": {
+					"alt": "HTMLダウンロードアイコン"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "リンクを作成中...",
 				"success": "共有に成功しました！リンクがクリップボードにコピーされました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "ツールを呼び出し中"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "アップロードアイコン"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "停止"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "写真と真実があります",
 				"description": "絵を使って次元の壁を壊しましょう。",
 				"locked_description": "チャットで写真を送信します。"
+			},
+			"code_greeting": {
+				"name": "コードで挨拶",
+				"description": "「こんにちは、fount！」",
+				"locked_description": "コードブロックを実行して、'hello fount!' と出力する。"
 			}
 		},
 		"dragAndDrop": {

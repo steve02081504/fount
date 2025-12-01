@@ -1,205 +1,17 @@
-// main.mjs
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { ClaudeAPI } from './claude_api.mjs'
+import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 /**
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude by Anthropic',
-			description_markdown: 'A powerful AI assistant from Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		'zh-CN': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Anthropic 的 Claude',
-			description_markdown: '来自 Anthropic 的强大 AI 助手。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		'ar-SA': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'كلود بواسطة الأنثروبيك',
-			description_markdown: 'مساعد ذكاء اصطناعي قوي من Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['كلود', 'أنثروبيك', 'ذكاء اصطناعي'],
-			home_page: 'https://claude.ai/'
-		},
-		'de-DE': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude von Anthropic',
-			description_markdown: 'Ein leistungsstarker KI-Assistent von Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ki'],
-			home_page: 'https://claude.ai/'
-		},
-		emoji: {
-			name: '🤖🧠',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: '🧠💬✨',
-			description_markdown: '🧠🤝📜➡️🤖🎩',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['🤖', '🧠', '📜'],
-			home_page: 'https://claude.ai/'
-		},
-		'es-ES': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude de Anthropic',
-			description_markdown: 'Un potente asistente de IA de Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ia'],
-			home_page: 'https://claude.ai/'
-		},
-		'fr-FR': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude par Anthropic',
-			description_markdown: 'Un puissant assistant IA d\'Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ia'],
-			home_page: 'https://claude.ai/'
-		},
-		'hi-IN': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'एंथ्रोपिक द्वारा क्लाउड',
-			description_markdown: 'एंथ्रोपिक का एक शक्तिशाली एआई सहायक।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['क्लाउड', 'एंथ्रोपिक', 'एआई'],
-			home_page: 'https://claude.ai/'
-		},
-		'is-IS': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude frá Anthropic',
-			description_markdown: 'Öflugur gervigreindaraðstoðarmaður frá Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'gervigreind'],
-			home_page: 'https://claude.ai/'
-		},
-		'it-IT': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude di Anthropic',
-			description_markdown: 'Un potente assistente AI di Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ia'],
-			home_page: 'https://claude.ai/'
-		},
-		'ja-JP': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'アンソロピックのクロード',
-			description_markdown: 'アンソロピックの強力な AI アシスタント。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['クロード', 'アンソロピック', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		'ko-KR': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: '앤트로픽의 클로드',
-			description_markdown: '앤트로픽의 강력한 AI 비서입니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['클로드', '앤트로픽', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		lzh: {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: '人擇之克勞德',
-			description_markdown: '人擇之強智械佐。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['克勞德', '人擇', '智械'],
-			home_page: 'https://claude.ai/'
-		},
-		'nl-NL': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude van Anthropic',
-			description_markdown: 'Een krachtige AI-assistent van Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		'pt-PT': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude da Anthropic',
-			description_markdown: 'Um poderoso assistente de IA da Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ia'],
-			home_page: 'https://claude.ai/'
-		},
-		'ru-RU': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Клод от Anthropic',
-			description_markdown: 'Мощный помощник ИИ от Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['клод', 'anthropic', 'ии'],
-			home_page: 'https://claude.ai/'
-		},
-		'uk-UA': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Клод від Anthropic',
-			description_markdown: 'Потужний помічник ШІ від Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['клод', 'anthropic', 'ші'],
-			home_page: 'https://claude.ai/'
-		},
-		'vi-VN': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude của Anthropic',
-			description_markdown: 'Một trợ lý AI mạnh mẽ của Anthropic.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
-			home_page: 'https://claude.ai/'
-		},
-		'zh-TW': {
-			name: 'Claude',
-			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Anthropic 的 Claude',
-			description_markdown: '來自 Anthropic 的強大 AI 助理。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
-			home_page: 'https://claude.ai/'
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -237,217 +49,10 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude by Anthropic',
-				description_markdown: 'A powerful AI assistant from Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'zh-CN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Anthropic 的 Claude',
-				description_markdown: '来自 Anthropic 的强大 AI 助手。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'ar-SA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'كلود بواسطة الأنثروبيك',
-				description_markdown: 'مساعد ذكاء اصطناعي قوي من Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['كلود', 'أنثروبيك', 'ذكاء اصطناعي'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'de-DE': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude von Anthropic',
-				description_markdown: 'Ein leistungsstarker KI-Assistent von Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ki'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			emoji: {
-				name: '🤖🧠',
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: '🧠💬✨',
-				description_markdown: '🧠🤝📜➡️🤖🎩',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['🤖', '🧠', '📜'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'es-ES': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude de Anthropic',
-				description_markdown: 'Un potente asistente de IA de Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ia'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'fr-FR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude par Anthropic',
-				description_markdown: 'Un puissant assistant IA d\'Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ia'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'hi-IN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'एंथ्रोपिक द्वारा क्लाउड',
-				description_markdown: 'एंथ्रोपिक का एक शक्तिशाली एआई सहायक।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['क्लाउड', 'एंथ्रोपिक', 'एआई'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'is-IS': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude frá Anthropic',
-				description_markdown: 'Öflugur gervigreindaraðstoðarmaður frá Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'gervigreind'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'it-IT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude di Anthropic',
-				description_markdown: 'Un potente assistente AI di Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ia'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'ja-JP': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'アンソロピックのクロード',
-				description_markdown: 'アンソロピックの強力な AI アシスタント。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['クロード', 'アンソロピック', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'ko-KR': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: '앤트로픽의 클로드',
-				description_markdown: '앤트로픽의 강력한 AI 비서입니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['클로드', '앤트로픽', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			lzh: {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: '人擇之克勞德',
-				description_markdown: '人擇之強智械佐。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['克勞德', '人擇', '智械'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'nl-NL': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude van Anthropic',
-				description_markdown: 'Een krachtige AI-assistent van Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'pt-PT': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude da Anthropic',
-				description_markdown: 'Um poderoso assistente de IA da Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ia'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'ru-RU': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Клод от Anthropic',
-				description_markdown: 'Мощный помощник ИИ от Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['клод', 'anthropic', 'ии'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'uk-UA': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Клод від Anthropic',
-				description_markdown: 'Потужний помічник ШІ від Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['клод', 'anthropic', 'ші'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'vi-VN': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude của Anthropic',
-				description_markdown: 'Một trợ lý AI mạnh mẽ của Anthropic.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			},
-			'zh-TW': {
-				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Anthropic 的 Claude',
-				description_markdown: '來自 Anthropic 的強大 AI 助理。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
-				provider: 'anthropic',
-				home_page: 'https://claude.ai/'
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name || config.model
+			return [k, v]
+		})),
 		is_paid: false,
 		extension: {},
 
@@ -469,11 +74,14 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 		},
 
 		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
-		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+	 * 使用结构化提示调用 AI 源。
+	 * @param {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+	 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+	 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+	 */
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = []
 			prompt_struct.chat_log.forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
@@ -498,25 +106,58 @@ ${chatLogEntry.content}
 					content: system_prompt
 				})
 
-
-			let text = await claudeAPI.callClaudeAPI(messages, config.model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			// Handle abort during call
+			if (signal)
+				signal.addEventListener('abort', () => {
+					// The claude call doesn't support abort, but we can at least stop waiting
+				})
+
+
+			result.content = await claudeAPI.callClaudeAPI(messages, config.model)
+			previewUpdater(result)
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

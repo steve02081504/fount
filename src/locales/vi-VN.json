@@ -107,10 +107,12 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL: giao thức fount"
+				"description": "URL: giao thức fount",
+				"registerFailed": "Không thể đăng ký trình xử lý giao thức fount://: ${message}",
+				"noUrl": "Lỗi: URL cho trình xử lý giao thức không được cung cấp."
 			},
 			"update": {
-				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật foun bị bỏ qua",
+				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua",
 				"skippingDenoUpgradeDocker": "Bỏ qua nâng cấp Deno trong môi trường Docker"
 			},
 			"shortcut": {
@@ -145,15 +147,20 @@
 				"missing": "Không tìm thấy Deno, cài đặt tự động...",
 				"isRequired": "Không tìm thấy Deno, không thể chạy được nếu không có Deno",
 				"installingTermux": "Đang cài đặt Deno cho Termux...",
-				"installFailedFallback": "Cài đặt Deno không thành công, cố gắng tự động cài đặt vào thư mục đường dẫn của phông chữ...",
+				"installFailedFallback": "Cài đặt Deno không thành công, cố gắng tự động cài đặt vào thư mục đường dẫn của fount...",
 				"notWorking": "Vì lý do nào đó Deno không hoạt động, bạn có thể tham gia https://discord.gg/deno để được hỗ trợ",
 				"upgradeFailed": "Cảnh báo: Nâng cấp Deno có thể không thành công. Vui lòng kiểm tra lỗi.",
-				"upgradeFailedTermux": "Lệnh nâng cấp Deno không thành công, đang cố cài đặt lại Deno cho Termux..."
+				"upgradeFailedTermux": "Lệnh nâng cấp Deno không thành công, đang cố cài đặt lại Deno cho Termux...",
+				"patchMissing": "Lỗi: Không tìm thấy tệp thực thi Deno trước khi vá. Không thể vá được.",
+				"patchUnsupportedArch": "Lỗi: Cấu trúc bản vá không được hỗ trợ: ${arch}",
+				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng patchelf."
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
+				"packageFailed": "Lỗi: Cài đặt ${package} không thành công.",
+				"browserMissing": "Không tìm thấy trình duyệt mặc định, đang cố gắng cài đặt...",
 				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì.",
-				"rootWarning1": "Không được khuyến nghị: chạy fount với quyền root cấp quyền truy cập toàn bộ hệ thống vào tất cả các thành phần của foun.",
+				"rootWarning1": "Không được khuyến nghị: chạy fount với quyền root cấp quyền truy cập toàn bộ hệ thống vào tất cả các thành phần của fount.",
 				"rootWarning2": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường."
 			},
 			"clean": {
@@ -167,7 +174,7 @@
 				"autoInitDisabled": "fount đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp .noautoinit. Đang thoát.",
 				"restartingTooFast": "fount đã được khởi động lại nhiều lần trong một khoảng thời gian ngắn. Buộc khởi động lại...",
 				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, fount vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
-				"initFailed": "Khởi tạo phông chữ không thành công. Đang thoát."
+				"initFailed": "Khởi tạo fount không thành công. Đang thoát."
 			},
 			"remove": {
 				"removingFount": "Đang xóa fount...",
@@ -702,6 +709,18 @@
 				},
 				"moreIcon": {
 					"alt": "Biểu tượng Thêm tùy chọn"
+				},
+				"delete": {
+					"alt": "Xóa"
+				},
+				"deleteIcon": {
+					"alt": "Biểu tượng Xóa"
+				},
+				"downloadHtml": {
+					"alt": "Tải về HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Biểu tượng tải xuống HTML"
 				}
 			},
 			"dropdown": {
@@ -739,7 +758,8 @@
 			"share": {
 				"uploading": "Đang tạo liên kết...",
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Tài trợ cho họ.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Đang gọi công cụ"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +785,9 @@
 					"alt": "Biểu tượng tải lên"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Dừng"
 		},
 		"attachment": {
 			"buttons": {
@@ -824,6 +847,11 @@
 				"name": "Có hình ảnh và sự thật",
 				"description": "Sử dụng hình ảnh để phá vỡ bức tường chiều.",
 				"locked_description": "Gửi ảnh trong cuộc trò chuyện."
+			},
+			"code_greeting": {
+				"name": "Nói xin chào bằng mã",
+				"description": "\"Xin chào, fount!\"",
+				"locked_description": "Chạy một đoạn mã để xuất ra 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {
@@ -1169,7 +1197,7 @@
 	},
 	"uninstall": {
 		"title": "Gỡ cài đặt",
-		"description": "Nếu bạn chọn chia tay, không gian này sẽ là nơi chào tạm biệt duyên dáng. Xác nhận việc loại bỏ các thành phần hoặc phông chữ của chính nó. Những con đường khác nhau, nhưng ký ức có thể vẫn còn.",
+		"description": "Nếu bạn chọn chia tay, không gian này sẽ là nơi chào tạm biệt duyên dáng. Xác nhận việc loại bỏ các thành phần hoặc fount của chính nó. Những con đường khác nhau, nhưng ký ức có thể vẫn còn.",
 		"titleWithName": "Gỡ cài đặt ${type}/${name}",
 		"confirmMessage": "Bạn có chắc chắn muốn gỡ cài đặt ${type}: ${name} không?",
 		"invalidParamsTitle": "Tham số không hợp lệ",
@@ -1320,7 +1348,7 @@
 	"languageSettings": {
 		"title": "Cài đặt ngôn ngữ",
 		"pageTitle": "Cài đặt ngôn ngữ",
-		"description": "Quản lý tùy chọn ngôn ngữ của bạn cho ứng dụng phông chữ. Tùy chỉnh trải nghiệm của bạn với các tùy chọn ngôn ngữ có sẵn.",
+		"description": "Quản lý tùy chọn ngôn ngữ của bạn cho ứng dụng fount. Tùy chỉnh trải nghiệm của bạn với các tùy chọn ngôn ngữ có sẵn.",
 		"pageDescription": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
 		"availableLanguages": "Ngôn ngữ có sẵn",
 		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
@@ -1349,7 +1377,7 @@
 	},
 	"themeManage": {
 		"title": "Quản lý chủ đề",
-		"description": "Chọn phong cách thẩm mỹ phản ánh tâm trạng hoặc câu chuyện của bạn. Xem trước và chọn từ bảng chủ đề, mỗi chủ đề mang lại bầu không khí khác nhau cho các tương tác với phông chữ của bạn. Thế giới của bạn, phong cách của bạn.",
+		"description": "Chọn phong cách thẩm mỹ phản ánh tâm trạng hoặc câu chuyện của bạn. Xem trước và chọn từ bảng chủ đề, mỗi chủ đề mang lại bầu không khí khác nhau cho các tương tác với fount của bạn. Thế giới của bạn, phong cách của bạn.",
 		"instruction": "Chọn một chủ đề!",
 		"search": {
 			"placeholder": "Tìm kiếm chủ đề...",
@@ -1851,7 +1879,7 @@
 	},
 	"deskpet": {
 		"title": "Thú cưng để bàn",
-		"description": "Khởi chạy các ký tự phông chữ của bạn dưới dạng thú cưng tương tác sống trên màn hình của bạn.",
+		"description": "Khởi chạy các ký tự fount của bạn dưới dạng thú cưng tương tác sống trên màn hình của bạn.",
 		"launcherCard": {
 			"title": "món khai vị thú cưng",
 			"buttons": {
@@ -1868,7 +1896,7 @@
 			"title": "thú cưng đang chạy",
 			"noPets": "Hiện tại không có thú cưng nào chạy.",
 			"buttons": {
-				"stop": "dừng lại"
+				"stop": "Dừng"
 			}
 		},
 		"toasts": {

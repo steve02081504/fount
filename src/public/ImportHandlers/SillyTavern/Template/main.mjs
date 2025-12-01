@@ -175,12 +175,33 @@ export default {
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.({
+					...r,
+					content: runRegex(chardata, r.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
+				})
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				/**
+				 * 更新回复预览。
+				 * @param {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
+
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
@@ -190,7 +211,7 @@ export default {
 					if (continue_regen) continue regen
 					break
 				}
-				// 返回构建好的回复
+
 				return {
 					content: runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
 					content_for_show: runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly),
