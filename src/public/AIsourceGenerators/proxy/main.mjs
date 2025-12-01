@@ -292,15 +292,42 @@ ${chatLogEntry.content}
 				if (chatLogEntry.files?.length) {
 					const contentParts = [{ type: 'text', text: textContent }]
 
-					for (const file of chatLogEntry.files)
-						if (file.mime_type && file.mime_type.startsWith('image/'))
+					for (const file of chatLogEntry.files) {
+						if (!file.mime_type) continue
+
+						// Handle image files
+						if (file.mime_type.startsWith('image/'))
 							contentParts.push({
 								type: 'image_url',
 								image_url: {
 									url: `data:${file.mime_type};base64,${file.buffer.toString('base64')}`,
 								},
 							})
+						// Handle audio files
+						else if (file.mime_type.startsWith('audio/')) {
+							// Map MIME types to OpenAI audio formats
+							const formatMap = {
+								'audio/wav': 'wav',
+								'audio/wave': 'wav',
+								'audio/x-wav': 'wav',
+								'audio/mpeg': 'mp3',
+								'audio/mp3': 'mp3',
+								'audio/mp4': 'mp4',
+								'audio/m4a': 'm4a',
+								'audio/webm': 'webm',
+								'audio/ogg': 'webm',
+							}
+							const format = formatMap[file.mime_type.toLowerCase()] || 'wav'
 
+							contentParts.push({
+								type: 'input_audio',
+								input_audio: {
+									data: file.buffer.toString('base64'),
+									format,
+								},
+							})
+						}
+					}
 
 					if (contentParts.length > 1)
 						message.content = contentParts
