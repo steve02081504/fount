@@ -1,18 +1,18 @@
-﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
-# --- i18n functions ---
-# Get system locales
+# --- 国际化函数 ---
+# 获取系统区域设置
 function Get-SystemLocales {
 	$locales = New-Object System.Collections.Generic.List[string]
 	$locales.Add((Get-Culture).Name)
 	if ($env:LANG) { $locales.Add($env:LANG.Split('.')[0].Replace('_', '-')) }
 	if ($env:LANGUAGE) { $locales.Add($env:LANGUAGE.Split('.')[0].Replace('_', '-')) }
 	if ($env:LC_ALL) { $locales.Add($env:LC_ALL.Split('.')[0].Replace('_', '-')) }
-	$locales.Add('en-UK') # Fallback
+	$locales.Add('en-UK') # 备用
 	return $locales | Select-Object -Unique
 }
 
-# Get available locales from src/locales/list.csv
+# 从 src/locales/list.csv 获取可用区域设置
 function Get-AvailableLocales {
 	$localeListFile = Join-Path $FOUNT_DIR 'src/locales/list.csv'
 	if (Test-Path $localeListFile) {
@@ -20,15 +20,15 @@ function Get-AvailableLocales {
 			return Import-Csv $localeListFile | Select-Object -ExpandProperty lang
 		}
 		catch {
-			return @('en-UK') # Fallback
+			return @('en-UK') # 备用
 		}
 	}
 	else {
-		return @('en-UK') # Fallback
+		return @('en-UK') # 备用
 	}
 }
 
-# Find the best locale to use
+# 寻找最合适的区域设置
 function Get-BestLocale {
 	param(
 		[string[]]$preferredLocales,
@@ -50,10 +50,10 @@ function Get-BestLocale {
 		}
 	}
 
-	return 'en-UK' # Default
+	return 'en-UK' # 默认
 }
 
-# Load localization data
+# 加载本地化数据
 function Import-LocaleData {
 	if (-not $env:FOUNT_LOCALE) {
 		$systemLocales = Get-SystemLocales
@@ -71,7 +71,7 @@ function Import-LocaleData {
 	} catch { $null }
 }
 
-# Get a translated string
+# 获取翻译后的字符串
 $Script:FountLocaleData = $null
 function Get-I18n {
 	param(
@@ -96,10 +96,10 @@ function Get-I18n {
 	}
 
 	if ($null -eq $translation) {
-		$translation = $key # Fallback to the key itself
+		$translation = $key # 降级为键本身
 	}
 
-	# Simple interpolation
+	# 简单插值
 	foreach ($paramName in $params.Keys) {
 		$paramValue = $params[$paramName]
 		$translation = $translation.Replace("`${$paramName}", $paramValue)
@@ -181,7 +181,7 @@ function Test-Winget {
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
 			RefreshPath
 		}
-	} catch { <# ignore #> }
+	} catch { <# 忽略 #> }
 }
 function Test-Browser {
 	$browser = try {
@@ -190,7 +190,7 @@ function Test-Browser {
 		if ($progId) {
 			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
 		}
-	} catch { <# ignore #> }
+	} catch { <# 忽略 #> }
 	try {
 		if (!$browser) {
 			Test-Winget
@@ -215,7 +215,7 @@ function Test-Browser {
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
 			RefreshPath
 		}
-	} catch { <# ignore #> }
+	} catch { <# 忽略 #> }
 }
 
 function New-InstallerDir {
@@ -252,7 +252,7 @@ function New-FountShortcut {
 	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
 	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
+		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # 在现有参数前添加 -p fount
 	}
 	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
 
