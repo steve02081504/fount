@@ -257,7 +257,7 @@ async function initializeApp() {
 
 	try {
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
-		const uuid = hashParams.get('uuid')
+		const uuid = await ping().then(res => res.uuid)
 		const from = hashParams.get('from')
 		const fileId = hashParams.get('fileId')
 
@@ -284,6 +284,7 @@ async function initializeApp() {
 		hashParams.delete('uuid')
 		hashParams.delete('from')
 		hashParams.delete('fileId')
+		hashParams.delete('encrypted_creds')
 		window.location.hash = hashParams.toString()
 	}
 

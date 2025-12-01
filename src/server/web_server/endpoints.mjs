@@ -6,7 +6,7 @@ import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partTypeList } from '../managers/base.mjs'
@@ -121,8 +121,9 @@ export function registerEndpoints(router) {
 		const result = await login(username, password, deviceid, req)
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
-			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
-			res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
+			const cookieOptions = getSecureCookieOptions(req)
+			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
+			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
 		}
 		res.status(result.status).json(result)
 	})
@@ -263,7 +264,8 @@ export function registerEndpoints(router) {
 			path += '/' + patharr.slice(3).join('/')
 			if (!fs.existsSync(path)) return next()
 			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
-			else return res.status(200).sendFile(path)
+			else try { return res.status(200).sendFile(path) }
+			catch (e) { throw skip_report(e) } // 抽象linux环境，关我屁事
 		})
 	}
 

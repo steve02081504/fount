@@ -8,11 +8,9 @@ import { getDefaultParts } from '../../../scripts/parts.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
 
-import { getpartDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
 import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators, currentPartType } from './state.mjs'
-import { showItemModal } from './ui/itemModal.mjs'
 import {
 	setupPartTypeUI,
 	displayFunctionButtons,

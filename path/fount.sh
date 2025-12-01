@@ -1046,6 +1046,8 @@ install_deno() {
 		add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
 		set +e
 		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		export PATH="$HOME/.deno/bin:$PATH"
+		hash -r
 		patch_deno
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	else

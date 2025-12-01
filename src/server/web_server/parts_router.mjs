@@ -7,7 +7,7 @@ import { loadPart } from '../managers/index.mjs'
 
 /**
  * 处理特定部件请求的主路由器。
- * @type {import('express').Router}
+ * @type {import('npm:express').Router}
  */
 export const PartsRouter = express.Router()
 
