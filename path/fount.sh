@@ -834,9 +834,9 @@ EOF
 
 # 参数处理: open, background, protocolhandle
 if [[ $# -gt 0 ]]; then
-	handle_docker_termux_passthrough "$@"
 	case "$1" in
 	open)
+		handle_docker_termux_passthrough "$@"
 		# 若 $FOUNT_DIR/data 是目录
 		if [ -d "$FOUNT_DIR/data" ]; then
 			ensure_dependencies "open" || exit 1
@@ -869,6 +869,7 @@ if [[ $# -gt 0 ]]; then
 		fi
 		;;
 	background)
+		handle_docker_termux_passthrough "$@"
 		if [ -f "$FOUNT_DIR/.nobackground" ]; then
 			if command -v xterm &>/dev/null; then
 				xterm -e "$0" "${@:2}" &
@@ -892,6 +893,7 @@ if [[ $# -gt 0 ]]; then
 		exit 0
 		;;
 	protocolhandle)
+		handle_docker_termux_passthrough "$@"
 		protocolUrl="$2"
 		if [[ "$protocolUrl" == "fount://nop/" ]]; then
 			"$0" "${@:3}"
