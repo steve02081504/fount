@@ -18,14 +18,8 @@ export function loadJsonFile(filename) {
  * @returns {any} 解析后的 JSON 数据或默认值。
  */
 export function loadJsonFileIfExists(filename, defaultvalue = {}) {
-	if (fs.existsSync(filename)) try {
+	if (fs.existsSync(filename))
 		return loadJsonFile(filename)
-	}
-	catch (error) {
-		console.error('Error loading JSON file:', filename, error)
-		console.error('Moving file to .error.bak and using default value.')
-		try { fs.renameSync(filename, filename + '.' + Date.now() + '.error.bak') } catch { /* fuck you >:( */ }
-	}
 	return defaultvalue
 }
 
