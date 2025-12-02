@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "⛲❗️",
-		"description": "🚪🌌⏳... ✨🗣️📚",
-		"newTabFailed": {
-			"title": "🆕📄❌",
-			"instruction": "⚠️➡️⏳",
-			"tryAllow": "🙏🔓➡️🚀❓",
-			"buttons": {
-				"retry": "🔄",
-				"skip": "⏭️",
-				"ignore": "🚫♾️"
-			},
-			"ignoreConfirm": {
-				"title": "🤔🚫♾️❓",
-				"instruction": "⏳➡️📆 💀",
-				"buttons": {
-					"confirm": "✅",
-					"cancel": "❌"
-				}
-			}
-		}
+		"description": "🚪🌌⏳... ✨🗣️📚"
 	},
 	"tutorial": {
 		"title": "🎓❓",
