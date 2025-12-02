@@ -143,17 +143,19 @@ export async function renderMessage(message) {
 	})
 
 	// --- 删除按钮 ---
-	const deleteButton = messageElement.querySelector('.delete-button')
-	deleteButton.addEventListener('click', () => {
-		// Count lines in the message content
-		const lineCount = messageMarkdownContent.split('\n').length
-		// Skip confirmation for messages with less than 30 lines
-		const needsConfirmation = lineCount >= 30
+	const deleteButtons = messageElement.querySelectorAll('.delete-button')
+	deleteButtons.forEach(deleteButton => {
+		deleteButton.addEventListener('click', () => {
+			// Count lines in the message content
+			const lineCount = messageMarkdownContent.split('\n').length
+			// Skip confirmation for messages with less than 30 lines
+			const needsConfirmation = lineCount >= 30
 
-		if (!needsConfirmation || confirmI18n('chat.messageList.confirmDeleteMessage')) {
-			deleteButton.disabled = true
-			enqueueDeletion(messageElement)
-		}
+			if (!needsConfirmation || confirmI18n('chat.messageList.confirmDeleteMessage')) {
+				deleteButtons.forEach(btn => btn.disabled = true)
+				enqueueDeletion(messageElement)
+			}
+		})
 	})
 
 	// --- Shift key detection for button visibility ---

@@ -206,14 +206,15 @@ export async function retrieveAndDecryptCredentials(fileId, from, hashParams, uu
  * @param {string} encryptedData 要传输的加密数据。
  * @param {URL} targetUrl 目标 URL 对象，将被修改。
  * @param {URLSearchParams} hashParams 哈希参数对象，将被修改。
- * @param {string} [clipboardFromValue='clipboard'] 剪贴板成功时“from”搜索参数的值。
+ * @param {string} [clipboardFromValue='clipboard'] 剪贴板成功时"from"参数的值。
  * @returns {Promise<boolean>} 如果发起了重定向（剪贴板/Catbox），则返回 `true`；否则返回 `false`（哈希回退）。
  */
 async function executeTransferStrategy(encryptedData, targetUrl, hashParams, clipboardFromValue = 'clipboard') {
 	// 1. Try to use clipboard
 	try {
 		await navigator.clipboard.writeText(encryptedData)
-		targetUrl.searchParams.set('from', clipboardFromValue)
+		// Put 'from' in hash params for security (not sent to server)
+		hashParams.set('from', clipboardFromValue)
 		console.log('Encrypted credentials copied to clipboard for transfer.')
 		targetUrl.hash = hashParams.toString()
 		window.location.href = targetUrl.href
@@ -226,8 +227,10 @@ async function executeTransferStrategy(encryptedData, targetUrl, hashParams, cli
 	// 2. Fallback to Catbox
 	try {
 		const fileId = await uploadToCatbox(encryptedData, '1h')
-		targetUrl.searchParams.set('fileId', fileId)
+		// Put fileId in hash params for security (not sent to server)
+		hashParams.set('fileId', fileId)
 		console.log(`Encrypted credentials uploaded to Catbox for transfer with fileId: ${fileId}`)
+		targetUrl.hash = hashParams.toString()
 		window.location.href = targetUrl.href
 		return true // Redirect initiated
 	}
@@ -340,7 +343,8 @@ export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 
 	try {
 		const fileId = await uploadToCatbox(encryptedData, '1h')
-		loginInfoUrl.searchParams.set('fileId', fileId)
+		// Put fileId in hash params for security (not sent to server)
+		hashParams.set('fileId', fileId)
 	}
 	catch (e) {
 		console.warn('Catbox upload failed, falling back to URL hash.', e)
