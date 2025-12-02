@@ -6,6 +6,16 @@ if (!$env:FOUNT_BRANCH) {
 	$env:FOUNT_BRANCH = "master"
 }
 
+if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+	Start-Job {
+		# 随手之劳之经验医学之clash的tun没开
+		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
+			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+		}
+	} | Out-Null
+}
+
 #_if PSScript
 if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
