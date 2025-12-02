@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Welkom op de drempel van de bron. Een kort moment van voorbereiding, voordat je midden in de gesprekken en verhalen stapt die wachten om zich te ontvouwen.",
-		"newTabFailed": {
-			"title": "Nieuw tabblad openen mislukt",
-			"instruction": "Het opstarten van fount is elke keer 1-2s langzamer zonder toestemming voor pop-ups",
-			"tryAllow": "Proberen om fount toestemming voor pop-ups te geven?",
-			"buttons": {
-				"retry": "Opnieuw proberen",
-				"skip": "Overslaan",
-				"ignore": "Permanent negeren"
-			},
-			"ignoreConfirm": {
-				"title": "Permanent negeren bevestigen?",
-				"instruction": "2s verspillen per start, een hele dag verspillen na vijftigduizend starts 💀",
-				"buttons": {
-					"confirm": "Bevestigen",
-					"cancel": "Annuleren"
-				}
-			}
-		}
+		"description": "Welkom op de drempel van de bron. Een kort moment van voorbereiding, voordat je midden in de gesprekken en verhalen stapt die wachten om zich te ontvouwen."
 	},
 	"tutorial": {
 		"title": "Een tutorial nodig?",

@@ -5,8 +5,9 @@
 import { getUserSetting, unlockAchievement } from '../../../scripts/endpoints.mjs'
 import { initTranslations, console } from '../../../scripts/i18n.mjs'
 import { getDefaultParts } from '../../../scripts/parts.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
+import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
+import { applyUrlParamsTransferStrategy } from '../../../scripts/urlDataTransfer.mjs'
 
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
@@ -36,6 +37,39 @@ export async function loadDataAndRender() {
 		showToast('error', 'Failed to load page data. Please try refreshing.')
 		throw error
 	}
+}
+
+/**
+ * 获取要传递给 GitHub 页面的通用 URL 参数。
+ * @returns {Promise<object>} - 参数对象。
+ */
+async function getCommonUrlParamsForGitHub() {
+	const themeData = serializeCurrentTheme()
+	const params = {
+		themeData: JSON.stringify(themeData),
+		hostUrl: window.location.origin,
+		userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined,
+	}
+	for (const key in params) if (params[key] === undefined) delete params[key]
+	return params
+}
+
+/**
+ * 通过 iframe 将设置同步到 GitHub Pages。
+ * @returns {Promise<HTMLIFrameElement>}
+ */
+async function syncSettingsToGitHubPages() {
+	const iframe = document.createElement('iframe')
+	iframe.ariaHidden = true
+	iframe.style.display = 'none'
+
+	const params = await getCommonUrlParamsForGitHub()
+	const targetUrl = new URL('https://steve02081504.github.io/fount/values_update')
+
+	await applyUrlParamsTransferStrategy(targetUrl, new URLSearchParams(params))
+
+	iframe.src = targetUrl.toString()
+	return document.body.appendChild(iframe)
 }
 
 /**
@@ -69,6 +103,12 @@ export async function initializeApp() {
 	setupServerEventListeners()
 
 	unlockAchievement('shells', 'home', 'first_login')
+
+	syncSettingsToGitHubPages().then(iframe => {
+		iframe.addEventListener('load', () => {
+			iframe.remove()
+		}, { once: true })
+	})
 }
 
 /**

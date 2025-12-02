@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount !",
-		"description": "Bienvenue au seuil de fount. Un bref moment de préparation, avant de plonger au cœur des conversations et des histoires à venir.",
-		"newTabFailed": {
-			"title": "L'ouverture du nouvel onglet a échoué",
-			"instruction": "Le démarrage de fount est plus lent de 1 à 2 secondes à chaque fois sans l'autorisation d'afficher des fenêtres pop-up.",
-			"tryAllow": "Essayer de donner à fount l'autorisation d'afficher des fenêtres pop-up ?",
-			"buttons": {
-				"retry": "Réessayer",
-				"skip": "Ignorer",
-				"ignore": "Toujours ignorer"
-			},
-			"ignoreConfirm": {
-				"title": "Confirmer l'ignorance permanente ?",
-				"instruction": "Perdre 2s à chaque démarrage, c'est perdre 1 jour entier pour cinquante mille démarrages ??",
-				"buttons": {
-					"confirm": "Confirmer",
-					"cancel": "Annuler"
-				}
-			}
-		}
+		"description": "Bienvenue au seuil de fount. Un bref moment de préparation, avant de plonger au cœur des conversations et des histoires à venir."
 	},
 	"tutorial": {
 		"title": "Un tutoriel ?",
