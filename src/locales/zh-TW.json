@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "歡迎來到fount的門檻。在進入等待展開的對話和故事的核心之前，先進行短暫的準備。",
-		"newTabFailed": {
-			"title": "新分頁開啟失敗",
-			"instruction": "fount的啟動在沒有視窗彈出權限時每次都會慢1-2s",
-			"tryAllow": "試試給fount新增視窗彈出權限？",
-			"buttons": {
-				"retry": "重試",
-				"skip": "跳過",
-				"ignore": "永久忽略"
-			},
-			"ignoreConfirm": {
-				"title": "確認永久忽略？",
-				"instruction": "啟動一次浪費2s，啟動五萬次浪費整整1天 💀",
-				"buttons": {
-					"confirm": "確認",
-					"cancel": "取消"
-				}
-			}
-		}
+		"description": "歡迎來到fount的門檻。在進入等待展開的對話和故事的核心之前，先進行短暫的準備。"
 	},
 	"tutorial": {
 		"title": "來點教學？",

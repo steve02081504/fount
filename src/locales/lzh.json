@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "客至泉源門，一步入玄境。清談妙語，待君啟卷。",
-		"newTabFailed": {
-			"title": "新頁開啟失利",
-			"instruction": "fount 啟時，若無彈窗之權，每次皆緩一二息，誠為憾事。",
-			"tryAllow": "試允 fount 彈窗之權，以求其速？",
-			"buttons": {
-				"retry": "重試",
-				"skip": "略過",
-				"ignore": "永不理會"
-			},
-			"ignoreConfirm": {
-				"title": "確欲永不理會乎？",
-				"instruction": "啟一次耗二息，五萬次耗一日也，人生幾何 💀",
-				"buttons": {
-					"confirm": "然",
-					"cancel": "否"
-				}
-			}
-		}
+		"description": "客至泉源門，一步入玄境。清談妙語，待君啟卷。"
 	},
 	"tutorial": {
 		"title": "欲習之乎？",

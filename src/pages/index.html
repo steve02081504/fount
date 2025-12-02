@@ -24,7 +24,7 @@
 		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
 		import { getAnyDefaultPart } from './scripts/parts.mjs'
-		import { setTheme, serializeCurrentTheme } from './scripts/theme.mjs'
+		import { setTheme } from './scripts/theme.mjs'
 		import { applyUrlParamsTransferStrategy } from './scripts/urlDataTransfer.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
@@ -34,117 +34,25 @@
 		}
 		catch {
 			const iframe = document.createElement('iframe')
+			iframe.ariaHidden = true
 			iframe.style.display = 'none'
 			iframe.src = 'fount://nop/'
 			document.body.appendChild(iframe)
 		}
-		if (urlParams.get('theme')) setTheme(urlParams.get('theme'))
 		if (urlParams.get('userPreferredLanguages'))
 			localStorage.setItem('userPreferredLanguages', urlParams.get('userPreferredLanguages'))
+		if (urlParams.get('theme')) await setTheme(urlParams.get('theme'))
 
-		/**
-		 * 获取通用 URL 参数。
-		 * @param {object} params - 其他参数。
-		 * @returns {Promise<string>} - URL 查询字符串。
-		 */
-		async function getCommonUrlParams(params = {}) {
-			const themeData = serializeCurrentTheme()
-
-			Object.assign(params, {
-				themeData: JSON.stringify(themeData),
-				hostUrl,
-				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
-			})
-
-			for (const key in params) if (params[key] === undefined) delete params[key]
-			const urlParams = new URLSearchParams(params)
-
-			// 使用传输策略处理所有 URL 参数
-			const targetUrl = new URL('https://steve02081504.github.io/fount/values_update')
-			await applyUrlParamsTransferStrategy(targetUrl, urlParams)
-
-			return targetUrl.search.substring(1) // 返回查询字符串（去掉开头的 ?）
-		}
-
-		document.getElementById('skipButton').addEventListener('click', async () => {
-			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + await getCommonUrlParams({ redirect: hostUrl + '/shells/home' })
-		})
-
-		let retry = 1
-		try {
-			const defaultShell = await getAnyDefaultPart('shells') || 'home'
-			setInterval(async () => {
-				if (!retry) return
-				retry = 0
-				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + await getCommonUrlParams(), '_blank')
-
-				if (newTab) {
-					newTab.blur()
-					window.focus()
-					window.location.href = `/shells/${defaultShell}`
-				}
-				else if (localStorage.getItem('startPage.NewTabWarning.ignore'))
-					document.getElementById('skipButton').click()
-				else
-					document.getElementById('newTabFailedModal').classList.add('modal-open')
-			}, 500)
-		}
-		catch (e) {
+		getAnyDefaultPart('shells').then(defaultShell => {
+			window.location.href = `/shells/${defaultShell || 'home'}`
+		}).catch(() => {
 			redirectToLoginInfo('/login')
-		}
-
-		document.getElementById('retryButton').addEventListener('click', () => {
-			document.getElementById('newTabFailedModal').classList.remove('modal-open')
-			retry = 1
-		})
-		document.getElementById('retryButton').click()
-
-		document.getElementById('ignoreButton').addEventListener('click', () => {
-			document.getElementById('newTabFailedModal').classList.remove('modal-open')
-			document.getElementById('ignoreConfirmModal').classList.add('modal-open')
-		})
-
-		document.getElementById('confirmIgnoreButton').addEventListener('click', () => {
-			localStorage.setItem('startPage.NewTabWarning.ignore', 'true')
-			document.getElementById('ignoreConfirmModal').classList.remove('modal-open')
-			document.getElementById('skipButton').click()
-		})
-
-		document.getElementById('cancelIgnoreButton').addEventListener('click', () => {
-			document.getElementById('ignoreConfirmModal').classList.remove('modal-open')
-			document.getElementById('newTabFailedModal').classList.add('modal-open')
 		})
 	</script>
 </head>
 
 <body class="flex justify-center items-center h-screen">
 	<span class="loading loading-ring loading-lg"></span>
-
-	<div id="newTabFailedModal" class="modal">
-		<div class="modal-box">
-			<h3 class="font-bold text-lg" data-i18n="startPage.newTabFailed.title"></h3>
-			<div class="py-4">
-				<div class="font-bold" data-i18n="startPage.newTabFailed.instruction"></div>
-				<div data-i18n="startPage.newTabFailed.tryAllow"></div>
-			</div>
-			<div class="modal-action">
-				<button id="retryButton" class="btn btn-primary" data-i18n="startPage.newTabFailed.buttons.retry"></button>
-				<button id="skipButton" class="btn btn-secondary" data-i18n="startPage.newTabFailed.buttons.skip"></button>
-				<button id="ignoreButton" class="btn" data-i18n="startPage.newTabFailed.buttons.ignore"></button>
-			</div>
-		</div>
-	</div>
-
-	<div id="ignoreConfirmModal" class="modal">
-		<div class="modal-box">
-			<h3 class="font-bold text-lg" data-i18n="startPage.newTabFailed.ignoreConfirm.title"></h3>
-			<p class="py-4" data-i18n="startPage.newTabFailed.ignoreConfirm.instruction"></p>
-			<div class="modal-action">
-				<button id="confirmIgnoreButton" class="btn btn-primary" data-i18n="startPage.newTabFailed.ignoreConfirm.buttons.confirm"></button>
-				<button id="cancelIgnoreButton" class="btn" data-i18n="startPage.newTabFailed.ignoreConfirm.buttons.cancel"></button>
-			</div>
-		</div>
-	</div>
 </body>
 
 </html>

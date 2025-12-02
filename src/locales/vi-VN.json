@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Chào mừng đến với ngưỡng của fount. Một khoảnh khắc chuẩn bị ngắn ngủi, trước khi bước vào tâm điểm của những cuộc trò chuyện và những câu chuyện đang chờ được hé mở.",
-		"newTabFailed": {
-			"title": "Không thể mở tab mới",
-			"instruction": "Việc khởi động fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
-			"tryAllow": "Thử cấp quyền mở cửa sổ pop-up cho fount?",
-			"buttons": {
-				"retry": "Thử lại",
-				"skip": "Bỏ qua",
-				"ignore": "Luôn bỏ qua"
-			},
-			"ignoreConfirm": {
-				"title": "Xác nhận bỏ qua vĩnh viễn?",
-				"instruction": "Lãng phí 2 giây mỗi lần khởi động tương đương với việc lãng phí cả một ngày cho năm mươi nghìn lần khởi động 💀",
-				"buttons": {
-					"confirm": "Xác nhận",
-					"cancel": "Hủy"
-				}
-			}
-		}
+		"description": "Chào mừng đến với ngưỡng của fount. Một khoảnh khắc chuẩn bị ngắn ngủi, trước khi bước vào tâm điểm của những cuộc trò chuyện và những câu chuyện đang chờ được hé mở."
 	},
 	"tutorial": {
 		"title": "Thử hướng dẫn nhé?",

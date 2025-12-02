@@ -315,24 +315,6 @@ export type LocaleData = {
 	startPage: {
 		title: string
 		description: string
-		newTabFailed: {
-			title: string
-			instruction: string
-			tryAllow: string
-			buttons: {
-				retry: string
-				skip: string
-				ignore: string
-			}
-			ignoreConfirm: {
-				title: string
-				instruction: string
-				buttons: {
-					confirm: string
-					cancel: string
-				}
-			}
-		}
 	}
 	tutorial: {
 		title: string

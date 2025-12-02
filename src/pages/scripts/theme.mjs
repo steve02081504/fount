@@ -284,7 +284,7 @@ function themeHeartbeat() {
  * 读取本地存储，恢复上次的主题设置（包括自定义主题），并启动后台检测任务。
  * @returns {Promise<void>}
  */
-export const applyTheme = async () => {
+export async function applyTheme() {
 	const storedTheme = localStorage.getItem(STORAGE_KEY_THEME)
 	const customCss = localStorage.getItem(STORAGE_KEY_CUSTOM_CSS)
 	const customUrl = localStorage.getItem(STORAGE_KEY_CUSTOM_URL)

@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "欢迎来到fount的门槛。在进入等待展开的对话和故事的核心之前，先进行短暂的准备。",
-		"newTabFailed": {
-			"title": "新标签页打开失败",
-			"instruction": "fount的启动在没有窗口弹出权限时每次都会慢1-2s",
-			"tryAllow": "试试给fount添加窗口弹出权限？",
-			"buttons": {
-				"retry": "重试",
-				"skip": "跳过",
-				"ignore": "永久忽略"
-			},
-			"ignoreConfirm": {
-				"title": "确认永久忽略？",
-				"instruction": "启动一次浪费2s，启动五万次浪费整整1天 💀",
-				"buttons": {
-					"confirm": "确认",
-					"cancel": "取消"
-				}
-			}
-		}
+		"description": "欢迎来到fount的门槛。在进入等待展开的对话和故事的核心之前，先进行短暂的准备。"
 	},
 	"tutorial": {
 		"title": "来点教程？",

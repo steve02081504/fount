@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Velkomin á þröskuld fontsins. Stutt stund til undirbúnings, áður en þú stígur inn í hjarta samræðna og sagna sem bíða eftir að þróast.",
-		"newTabFailed": {
-			"title": "Mistókst að opna nýjan flipa",
-			"instruction": "Ræsing fount er alltaf 1-2 sekúndum hægari án leyfis fyrir sprettiglugga",
-			"tryAllow": "Viltu prófa að gefa fount leyfi fyrir sprettiglugga?",
-			"buttons": {
-				"retry": "Reyna aftur",
-				"skip": "Sleppa",
-				"ignore": "Hunsa varanlega"
-			},
-			"ignoreConfirm": {
-				"title": "Ertu viss um að hunsa varanlega?",
-				"instruction": "Að sóa 2 sekúndum í hverri ræsingu, sóa heilum degi eftir fimmtíu þúsund ræsingar 💀",
-				"buttons": {
-					"confirm": "Staðfesta",
-					"cancel": "Hætta við"
-				}
-			}
-		}
+		"description": "Velkomin á þröskuld fontsins. Stutt stund til undirbúnings, áður en þú stígur inn í hjarta samræðna og sagna sem bíða eftir að þróast."
 	},
 	"tutorial": {
 		"title": "Viltu smá kennslu?",
