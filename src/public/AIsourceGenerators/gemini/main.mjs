@@ -210,13 +210,41 @@ async function GetSource(config) {
 
 		displayName += ''
 
-		const file = await ai.files.upload({
+		let file = await ai.files.upload({
 			file: new Blob([buffer], { type: mimeType }),
 			config: {
 				mimeType,
 				displayName,
 			},
 		})
+
+		// 等待文件状态变为 ACTIVE
+		if (file.state !== 'ACTIVE') {
+			const maxWaitTime = 60000
+			const pollInterval = 1000
+			const startTime = Date.now()
+
+			while (file.state !== 'ACTIVE') {
+				const elapsedTime = Date.now() - startTime
+				if (elapsedTime > maxWaitTime)
+					throw new Error(`File ${displayName} failed to become ACTIVE within ${maxWaitTime}ms. Current state: ${file.state}`)
+
+				// 等待一段时间后再次检查
+				await new Promise(resolve => setTimeout(resolve, pollInterval))
+
+				// 重新获取文件状态
+				file = await ai.files.get({ name: file.name })
+
+				// 如果文件处理失败，抛出错误
+				if (file.state === 'FAILED')
+					throw new Error(`File ${displayName} processing failed. Error: ${file.error?.message || 'Unknown error'}`)
+
+				// 每5秒输出一次进度
+				if (Math.floor(elapsedTime / 5000) !== Math.floor((elapsedTime - pollInterval) / 5000)) {
+					console.log(`Still waiting for file ${displayName}... (${Math.floor(elapsedTime / 1000)}s elapsed, state: ${file.state})`)
+				}
+			}
+		}
 
 		if (fileUploadMap.size > 4096) fileUploadMap.clear()
 		fileUploadMap.set(hashkey, file)
