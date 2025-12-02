@@ -355,62 +355,68 @@ system:
 				const uid = Math.random().toString(36).slice(2, 10)
 
 				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
-					const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
-					let bufferToUpload = file.buffer
-					const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
+					try {
+						const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
+						let bufferToUpload = file.buffer
+						const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
 
-					if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
-						const decodedString = bufferToUpload.toString(detectedCharset)
-						bufferToUpload = Buffer.from(decodedString, 'utf-8')
-					} catch { }
-					let mime_type = file.mime_type?.split?.(';')?.[0]
+						if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
+							const decodedString = bufferToUpload.toString(detectedCharset)
+							bufferToUpload = Buffer.from(decodedString, 'utf-8')
+						} catch { }
+						let mime_type = file.mime_type?.split?.(';')?.[0]
 
-					if (!supportedFileTypes.includes(mime_type)) {
-						const textMimeType = 'text/' + mime_type.split('/')[1]
-						if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
-						else if ([
-							'application/json',
-							'application/xml',
-							'application/yaml',
-							'application/rls-services+xml',
-						].includes(mime_type)) mime_type = 'text/plain'
-						else if ([
-							'audio/mpeg',
-						].includes(mime_type)) mime_type = 'audio/mp3'
-					}
-					if (!supportedFileTypes.includes(mime_type)) {
-						console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
-						return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
-					}
+						if (!supportedFileTypes.includes(mime_type)) {
+							const textMimeType = 'text/' + mime_type.split('/')[1]
+							if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
+							else if ([
+								'application/json',
+								'application/xml',
+								'application/yaml',
+								'application/rls-services+xml',
+							].includes(mime_type)) mime_type = 'text/plain'
+							else if ([
+								'audio/mpeg',
+							].includes(mime_type)) mime_type = 'audio/mp3'
+						}
+						if (!supportedFileTypes.includes(mime_type)) {
+							console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
+							return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
+						}
 
-					let fileTokenCost = 0
-					if (!is_cached(bufferToUpload)) try {
-						const filePartForCounting = createPartFromBase64(bufferToUpload.toString('base64'), mime_type)
-						const countResponse = await ai.models.countTokens({
-							model: config.model,
-							contents: [{ role: 'user', parts: [filePartForCounting] }]
-						})
-						fileTokenCost = countResponse.totalTokens
-						const tokenLimitForFile = config.max_input_tokens * 0.9
+						let fileTokenCost = 0
+						if (!is_cached(bufferToUpload)) try {
+							const filePartForCounting = createPartFromBase64(bufferToUpload.toString('base64'), mime_type)
+							const countResponse = await ai.models.countTokens({
+								model: config.model,
+								contents: [{ role: 'user', parts: [filePartForCounting] }]
+							})
+							fileTokenCost = countResponse.totalTokens
+							const tokenLimitForFile = config.max_input_tokens * 0.9
 
-						if (fileTokenCost > tokenLimitForFile) {
-							console.warn(`File '${file.name}' is too large (${fileTokenCost} tokens), exceeds 90% of limit (${tokenLimitForFile}). Replacing with text notice.`)
-							return { text: `[System Notice: can't show you about file '${file.name}' because its token count (${fileTokenCost}) is too high of the your's input limit, but you may be able to access it by using code tools if you have.]` }
+							if (fileTokenCost > tokenLimitForFile) {
+								console.warn(`File '${file.name}' is too large (${fileTokenCost} tokens), exceeds 90% of limit (${tokenLimitForFile}). Replacing with text notice.`)
+								return { text: `[System Notice: can't show you about file '${file.name}' because its token count (${fileTokenCost}) is too high of the your's input limit, but you may be able to access it by using code tools if you have.]` }
+							}
+						} catch (error) {
+							console.error(`Failed to count tokens for file ${file.name} for prompt:`, error)
+							return { text: `[System Error: can't show you about file '${file.name}' because failed to count tokens, but you may be able to access it by using code tools if you have.]` }
+						}
+
+						totalFileTokens += fileTokenCost // 累加文件 token
+
+						try {
+							const uploadedFile = await uploadToGemini(file.name, bufferToUpload, mime_type)
+							return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
+						}
+						catch (error) {
+							console.error(`Failed to process file ${file.name} for prompt:`, error)
+							return { text: `[System Error: can't show you about file '${file.name}' because ${error}, but you may be able to access it by using code tools if you have.]` }
 						}
 					} catch (error) {
-						console.error(`Failed to count tokens for file ${file.name} for prompt:`, error)
-						return { text: `[System Error: can't show you about file '${file.name}' because failed to count tokens, but you may be able to access it by using code tools if you have.]` }
-					}
-
-					totalFileTokens += fileTokenCost // 累加文件 token
-
-					try {
-						const uploadedFile = await uploadToGemini(file.name, bufferToUpload, mime_type)
-						return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
-					}
-					catch (error) {
-						console.error(`Failed to process file ${file.name} for prompt:`, error)
-						return { text: `[System Error: can't show you about file '${file.name}' because ${error}, but you may be able to access it by using code tools if you have.]` }
+						// Catch-all for any other errors during file processing to prevent crash
+						console.error(`Unexpected error processing file ${file?.name}:`, error)
+						return { text: `[System Error: can't show you about file '${file?.name || 'unknown'}' because an unexpected error occurred: ${error.message || error}, but you may be able to access it by using code tools if you have.]` }
 					}
 				}))
 
