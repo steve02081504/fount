@@ -187,6 +187,24 @@ save_installed_packages() {
 	fi
 }
 
+if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+(
+	TARGETS="github.com cdn.jsdelivr.net"
+	# 随手之劳之经验医学之clash的tun没开
+	for host in $TARGETS; do
+		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
+			curl -X PATCH "http://127.0.0.1:9090/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			curl -X PATCH "http://127.0.0.1:9097/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			break
+		fi
+	done
+) >/dev/null 2>&1 &
+fi
+
 # 首次载入
 load_installed_packages
 
