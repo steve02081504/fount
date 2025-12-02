@@ -137,7 +137,7 @@ if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
 $IN_DOCKER = $false
 
 # fount 路径设置
-if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
+if (!(Get-Command fount.ps1 -ErrorAction SilentlyContinue)) {
 	$path = $env:PATH -split ';'
 	if ($path -notcontains "$FOUNT_DIR\path") {
 		$path += "$FOUNT_DIR\path"
