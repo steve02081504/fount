@@ -380,10 +380,10 @@ function Update-FountAndDeno {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'nop') {
+if ($args[0] -eq 'nop') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
+elseif ($args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
@@ -429,7 +429,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		exit 1
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+elseif ($args[0] -eq 'background') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$runargs = $args[1..$args.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
@@ -453,7 +453,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	}
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
+elseif ($args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
 	if ($protocolUrl -eq 'fount://nop/') {
@@ -801,7 +801,7 @@ function run {
 }
 
 # 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
 			git -C "$FOUNT_DIR" config core.autocrlf false
@@ -871,7 +871,7 @@ public class ExplorerRefresher {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
+if ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		Write-Host (Get-I18n -key 'clean.removingCaches')
@@ -894,7 +894,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	}
 	Set-FountFileAttributes
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
+elseif ($args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
@@ -903,10 +903,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $exepath
 	exit $LastExitCode
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
+elseif ($args[0] -eq 'init') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
+elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
 		$runargs = $runargs[1..$runargs.Count]
@@ -957,7 +957,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		run
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
+elseif ($args[0] -eq 'remove') {
 	run shutdown
 	deno clean
 	Write-Host (Get-I18n -key 'remove.removingFount')

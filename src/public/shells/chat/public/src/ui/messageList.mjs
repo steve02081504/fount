@@ -27,6 +27,23 @@ const swipeListenersMap = new WeakMap()
 const deletionQueue = []
 
 /**
+ * 为每个消息对象存储其专属的 markdown 渲染缓存
+ * @type {WeakMap<object, object>}
+ */
+const messageRenderCacheMap = new WeakMap()
+
+/**
+ * 获取或创建消息的渲染缓存对象
+ * @param {object} message - 消息对象
+ * @returns {object} 缓存对象
+ */
+function getMessageCache(message) {
+	let cache = messageRenderCacheMap.get(message)
+	if (!cache) messageRenderCacheMap.set(message, cache = {})
+	return cache
+}
+
+/**
  * 按顺序处理删除队列。
  */
 async function processDeletionQueue() {
@@ -64,14 +81,14 @@ function enqueueDeletion(messageElement) {
  * 为消息生成完整的 HTML 文档，包括样式表和附件以正确呈现。
  * 如果消息内容包含 H1 标签，其文本将用作文档标题。
  * @param {object} message - 消息对象。
+ * @param {object} cache - 缓存对象（与普通渲染共享）。
  * @returns {Promise<string>} 完整的 HTML 字符串。
  */
-async function generateFullHtmlForMessage(message) {
+async function generateFullHtmlForMessage(message, cache) {
 	return renderTemplateAsHtmlString('standalone_message', {
 		main_locale,
 		message,
-		// helper functions
-		renderMarkdownAsStandAloneHtmlString,
+		renderMarkdownAsStandAloneHtmlString: markdown => renderMarkdownAsStandAloneHtmlString(markdown, cache),
 		geti18n,
 		getfile,
 		arrayBufferToBase64,
@@ -84,11 +101,13 @@ async function generateFullHtmlForMessage(message) {
  * @returns {Promise<HTMLElement>} - 渲染好的消息 DOM 元素。
  */
 export async function renderMessage(message) {
+	const cache = getMessageCache(message)
+
 	const preprocessedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		time_stamp: new Date(message.time_stamp).toLocaleString(),
-		content: await renderMarkdownAsString(message.content_for_show || message.content),
+		content: await renderMarkdownAsString(message.content_for_show || message.content, cache),
 	}
 
 	if (message.is_generating) {
@@ -108,7 +127,7 @@ export async function renderMessage(message) {
 	const messageMarkdownContent = message.content_for_show || message.content
 
 	// --- 拖放下载功能 ---
-	const standaloneMessageUrl = URL.createObjectURL(new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' }))
+	const standaloneMessageUrl = URL.createObjectURL(new Blob([await generateFullHtmlForMessage(message, cache)], { type: 'text/html' }))
 	onElementRemoved(messageElement, () => {
 		URL.revokeObjectURL(standaloneMessageUrl)
 	})
