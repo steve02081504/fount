@@ -115,23 +115,21 @@ if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
 }
 
-if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-	Start-Job {
+Start-Job -ScriptBlock {
+	param($FOUNT_DIR)
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 		# 随手之劳之经验医学之clash的tun没开
 		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
 			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 		}
-	} | Out-Null
-}
+	}
 
-if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
-	Start-Job -ScriptBlock {
-		param($FOUNT_DIR)
+	if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
 		Set-Location $FOUNT_DIR
 		compact.exe /c /s /q
-	} -ArgumentList $FOUNT_DIR | Out-Null
-}
+	}
+} -ArgumentList $FOUNT_DIR | Out-Null
 
 # Docker 检测
 $IN_DOCKER = $false
@@ -508,6 +506,9 @@ Start-Job -ScriptBlock {
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
 			if (!(Get-Module $_ -ListAvailable)) {
+				$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+				if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+				$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 				$auto_installed_pwsh_modules += $_
 				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
@@ -1048,6 +1049,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Remove Installed pwsh modules
 	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
+	$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+	if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+	$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {
