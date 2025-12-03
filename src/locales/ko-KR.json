@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "분수의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다.",
-		"newTabFailed": {
-			"title": "새 탭을 열지 못했습니다",
-			"instruction": "팝업 창 권한이 없으면 fount 시작이 매번 1-2초씩 느려집니다.",
-			"tryAllow": "fount에 팝업 창 권한을 부여하시겠습니까?",
-			"buttons": {
-				"retry": "재시도",
-				"skip": "건너뛰기",
-				"ignore": "항상 무시"
-			},
-			"ignoreConfirm": {
-				"title": "영구적으로 무시하시겠습니까?",
-				"instruction": "시작할 때마다 2초를 낭비하면 5만 번 시작 시 하루를 낭비하는 것과 같습니다 💀",
-				"buttons": {
-					"confirm": "확인",
-					"cancel": "취소"
-				}
-			}
-		}
+		"description": "분수의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다."
 	},
 	"tutorial": {
 		"title": "튜토리얼 어떠세요?",

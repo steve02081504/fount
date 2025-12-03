@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "泉の敷居へようこそ。展開を待つ会話や物語の核心に足を踏み入れる前の、短い準備の時間。",
-		"newTabFailed": {
-			"title": "新しいタブを開けませんでした",
-			"instruction": "ポップアップウィンドウの許可がない場合、fountの起動が毎回1〜2秒遅くなります。",
-			"tryAllow": "fountにポップアップウィンドウの許可を与えてみませんか？",
-			"buttons": {
-				"retry": "再試行",
-				"skip": "スキップ",
-				"ignore": "常に無視"
-			},
-			"ignoreConfirm": {
-				"title": "本当に無視しますか？",
-				"instruction": "起動ごとに2秒のロスは、5万回の起動で丸1日の無駄に相当します💀",
-				"buttons": {
-					"confirm": "確認",
-					"cancel": "キャンセル"
-				}
-			}
-		}
+		"description": "泉の敷居へようこそ。展開を待つ会話や物語の核心に足を踏み入れる前の、短い準備の時間。"
 	},
 	"tutorial": {
 		"title": "チュートリアルはいかがですか？",

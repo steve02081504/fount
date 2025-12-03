@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Welcome to the threshold of fount. A brief moment of preparation, before stepping into the heart of conversations and stories waiting to unfold.",
-		"newTabFailed": {
-			"title": "Failed to open new tab",
-			"instruction": "fount's startup is 1-2s slower each time without window pop-up permission.",
-			"tryAllow": "Try giving fount window pop-up permission?",
-			"buttons": {
-				"retry": "Retry",
-				"skip": "Skip",
-				"ignore": "Ignore forever"
-			},
-			"ignoreConfirm": {
-				"title": "Confirm permanent ignore?",
-				"instruction": "Wasting 2s on one start is wasting 1 whole day on fifty thousand starts 💀",
-				"buttons": {
-					"confirm": "Confirm",
-					"cancel": "Cancel"
-				}
-			}
-		}
+		"description": "Welcome to the threshold of fount. A brief moment of preparation, before stepping into the heart of conversations and stories waiting to unfold."
 	},
 	"tutorial": {
 		"title": "Tutorial?",

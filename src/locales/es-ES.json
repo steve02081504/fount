@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "¡fount!",
-		"description": "Bienvenidos al umbral de fount. Un breve momento de preparación, antes de adentrarse en el corazón de conversaciones e historias que esperan desarrollarse.",
-		"newTabFailed": {
-			"title": "No se pudo abrir una nueva pestaña",
-			"instruction": "El inicio de fount es 1-2 segundos más lento cada vez sin permiso para ventanas emergentes.",
-			"tryAllow": "¿Intentar dar permiso a fount para ventanas emergentes?",
-			"buttons": {
-				"retry": "Reintentar",
-				"skip": "Omitir",
-				"ignore": "Ignorar para siempre"
-			},
-			"ignoreConfirm": {
-				"title": "¿Confirmar ignorar para siempre?",
-				"instruction": "Perder 2 segundos en cada inicio es perder 1 día entero cada cincuenta mil inicios 💀",
-				"buttons": {
-					"confirm": "Confirmar",
-					"cancel": "Cancelar"
-				}
-			}
-		}
+		"description": "Bienvenidos al umbral de fount. Un breve momento de preparación, antes de adentrarse en el corazón de conversaciones e historias que esperan desarrollarse."
 	},
 	"tutorial": {
 		"title": "¿Un tutorial?",

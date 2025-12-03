@@ -325,25 +325,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Bem-vindo ao limiar da fonte. Um breve momento de preparação, antes de entrar no centro das conversas e histórias que aguardam para se desenrolar.",
-		"newTabFailed": {
-			"title": "Falha ao abrir novo separador",
-			"instruction": "O arranque do fount é 1-2s mais lento sempre que não há permissão para janelas de pop-up.",
-			"tryAllow": "Tentar dar permissão de pop-up ao fount?",
-			"buttons": {
-				"retry": "Tentar Novamente",
-				"skip": "Saltar",
-				"ignore": "Ignorar para sempre"
-			},
-			"ignoreConfirm": {
-				"title": "Confirmar ignorar para sempre?",
-				"instruction": "Desperdiçar 2s num arranque, é desperdiçar 1 dia inteiro em cinquenta mil arranques 💀",
-				"buttons": {
-					"confirm": "Confirmar",
-					"cancel": "Cancelar"
-				}
-			}
-		}
+		"description": "Bem-vindo ao limiar da fonte. Um breve momento de preparação, antes de entrar no centro das conversas e histórias que aguardam para se desenrolar."
 	},
 	"tutorial": {
 		"title": "Que tal um tutorial?",
