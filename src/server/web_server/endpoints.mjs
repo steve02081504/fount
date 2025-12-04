@@ -62,11 +62,15 @@ export function registerEndpoints(router) {
 	router.get('/api/ping', cors(), async (req, res) => {
 		const is_local_ip = is_local_ip_from_req(req)
 		let hosturl_in_local_ip
-		if (is_local_ip || await auth_request(req, res)) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
+		let ver
+		if (is_local_ip || await auth_request(req, res)) {
+			try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
+			ver = currentGitCommit
+		}
 		return res.status(200).json({
 			message: 'pong',
 			client_name: 'fount',
-			ver: currentGitCommit,
+			ver,
 			uuid: config.uuid,
 			is_local_ip,
 			hosturl_in_local_ip,
