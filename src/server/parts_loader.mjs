@@ -534,7 +534,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	await Uninstaller(part, pathGetter())
 	events.emit('part-uninstalled', { username, parttype, partname })
 	sendEventToUser(username, 'part-uninstalled', { parttype, partname })
-	delete parts_set[username][parttype][partname]
+	delete parts_set[username]?.[parttype]?.[partname]
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	parts_details_cache[parttype] ??= {}
 	delete parts_details_cache[parttype][partname]

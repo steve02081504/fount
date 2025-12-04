@@ -15,7 +15,11 @@ import { init } from './server.mjs'
 
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
-Sentry.init({
+/**
+ * 是否启用 Sentry 进行错误报告
+ */
+export const sentry_enabled = !existsSync(__dirname + '/.noerrorreport')
+if (sentry_enabled) Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 	/**
 	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。

@@ -115,23 +115,21 @@ if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
 }
 
-if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-	Start-Job {
+Start-Job -ScriptBlock {
+	param($FOUNT_DIR)
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 		# 随手之劳之经验医学之clash的tun没开
 		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
 			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 		}
-	} | Out-Null
-}
+	}
 
-if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
-	Start-Job -ScriptBlock {
-		param($FOUNT_DIR)
+	if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
 		Set-Location $FOUNT_DIR
 		compact.exe /c /s /q
-	} -ArgumentList $FOUNT_DIR | Out-Null
-}
+	}
+} -ArgumentList $FOUNT_DIR | Out-Null
 
 # Docker 检测
 $IN_DOCKER = $false
@@ -382,10 +380,10 @@ function Update-FountAndDeno {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'nop') {
+if ($args[0] -eq 'nop') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
+elseif ($args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
@@ -431,7 +429,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		exit 1
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+elseif ($args[0] -eq 'background') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$runargs = $args[1..$args.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
@@ -455,7 +453,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	}
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
+elseif ($args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
 	if ($protocolUrl -eq 'fount://nop/') {
@@ -508,6 +506,9 @@ Start-Job -ScriptBlock {
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
 			if (!(Get-Module $_ -ListAvailable)) {
+				$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+				if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+				$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 				$auto_installed_pwsh_modules += $_
 				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
@@ -800,7 +801,7 @@ function run {
 }
 
 # 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
 			git -C "$FOUNT_DIR" config core.autocrlf false
@@ -870,7 +871,7 @@ public class ExplorerRefresher {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
+if ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		Write-Host (Get-I18n -key 'clean.removingCaches')
@@ -893,7 +894,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	}
 	Set-FountFileAttributes
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
+elseif ($args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
@@ -902,10 +903,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $exepath
 	exit $LastExitCode
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
+elseif ($args[0] -eq 'init') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
+elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
 		$runargs = $runargs[1..$runargs.Count]
@@ -956,7 +957,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		run
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
+elseif ($args[0] -eq 'remove') {
 	run shutdown
 	deno clean
 	Write-Host (Get-I18n -key 'remove.removingFount')
@@ -1048,6 +1049,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Remove Installed pwsh modules
 	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
+	$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+	if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+	$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {

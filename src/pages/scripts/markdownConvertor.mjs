@@ -689,11 +689,15 @@ function rehypeCacheRead() {
 
 				// 生成 Cache Key (包含内容和语言)
 				const hash = md5(content + lang)
+
+				// Mermaid 渲染结果在 standalone 和普通模式下相同，使用 common 缓存
+				// 普通代码块包含交互按钮，在两种模式下不同，使用 specific 缓存
+				const cacheStore = isMermaid ? cache.common : cache.specific
 				const cacheKey = isMermaid ? `mermaid-${hash}` : `code-${hash}`
 
-				if (cache[cacheKey]) {
+				if (cacheStore && cacheStore[cacheKey]) {
 					// HIT: 使用缓存替换当前节点
-					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+					const cachedHast = fromHtml(cacheStore[cacheKey], { fragment: true }).children
 					parent.children.splice(index, 1, ...cachedHast)
 					// 跳过刚插入的节点，避免重复访问
 					return index + cachedHast.length
@@ -703,7 +707,11 @@ function rehypeCacheRead() {
 						type: 'element',
 						tagName: 'div',
 						// 使用通用属性，后续 Write 插件只需检查这个属性
-						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
+						properties: {
+							'data-cache-key': cacheKey,
+							'data-cache-store': isMermaid ? 'common' : 'specific',
+							style: 'display: contents;'
+						},
 						children: [node]
 					}
 					parent.children[index] = wrapper
@@ -711,20 +719,26 @@ function rehypeCacheRead() {
 			}
 
 			// 3. 识别 Math (span.math-inline / div.math-display)
+			// Math 渲染结果在 standalone 和普通模式下相同，使用 common 缓存
 			if (node.properties?.className?.some(c => c === 'math-inline' || c === 'math-display')) {
 				const content = node.children?.[0]?.value || ''
 				const hash = md5(content)
 				const cacheKey = `math-${hash}`
+				const cacheStore = cache.common
 
-				if (cache[cacheKey]) {
-					const cachedHast = fromHtml(cache[cacheKey], { fragment: true }).children
+				if (cacheStore && cacheStore[cacheKey]) {
+					const cachedHast = fromHtml(cacheStore[cacheKey], { fragment: true }).children
 					parent.children.splice(index, 1, ...cachedHast)
 					return index + cachedHast.length
 				} else {
 					const wrapper = {
 						type: 'element',
 						tagName: 'div',
-						properties: { 'data-cache-key': cacheKey, style: 'display: contents;' },
+						properties: {
+							'data-cache-key': cacheKey,
+							'data-cache-store': 'common',
+							style: 'display: contents;'
+						},
 						children: [node]
 					}
 					parent.children[index] = wrapper
@@ -745,11 +759,15 @@ function rehypeCacheWrite() {
 
 		visit(tree, 'element', (node, index, parent) => {
 			const key = node.properties?.['data-cache-key']
+			const storeType = node.properties?.['data-cache-store'] || 'specific'
 
 			if (key) {
+				// 根据 storeType 选择缓存存储位置
+				const targetStore = cache[storeType] ??= {}
+
 				// 将处理后的子节点序列化为 HTML 字符串存入缓存
 				const html = toHtml(node.children)
-				cache[key] = html
+				targetStore[key] = html
 
 				// 解包：移除 wrapper div，将内容提升到父级
 				parent.children.splice(index, 1, ...node.children)
