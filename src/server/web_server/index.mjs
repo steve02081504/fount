@@ -56,7 +56,7 @@ FinalRouter.use((req, res) => {
 const errorHandler = (err, req, res, next) => {
 	if (!err.skip_report) Sentry.captureException(err)
 	console.error(err)
-	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
+	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message || err.cause?.message || String(err) })
 }
 
 PartsRouter.use(errorHandler)
