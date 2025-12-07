@@ -3,6 +3,7 @@ import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '..
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'
 import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
+import { stopGeneration } from "../chat.mjs";
 import {
 	modifyTimeLine,
 	deleteMessage,
@@ -116,8 +117,20 @@ export async function renderMessage(message) {
 		const stopButton = messageElement.querySelector('.stop-generating-button')
 		if (stopButton)
 			stopButton.addEventListener('click', () => {
-				import('../chat.mjs').then(({ stopGeneration }) => stopGeneration(message.id))
+				stopGeneration(message.id)
 			})
+
+		const skeleton = messageElement.querySelector('.skeleton-loader')
+		const content = messageElement.querySelector('.message-content')
+		if (skeleton && content) {
+			if (!preprocessedMessage.content || !preprocessedMessage.content.trim()) {
+				skeleton.classList.remove('hidden')
+				content.classList.add('hidden')
+			} else {
+				skeleton.classList.add('hidden')
+				content.classList.remove('hidden')
+			}
+		}
 
 		return messageElement
 	}

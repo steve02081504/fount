@@ -12,10 +12,15 @@
 		<div class="message-content markdown-body mt-1">
 			${content}
 		</div>
+		<div class="skeleton-loader hidden flex flex-col gap-2 w-full mt-2">
+			<div class="skeleton h-4 w-28"></div>
+			<div class="skeleton h-4 w-full"></div>
+			<div class="skeleton h-4 w-3/4"></div>
+		</div>
 		<div class="mt-2 flex justify-end">
 			<button class="stop-generating-button btn btn-xs btn-error btn-outline gap-1">
 				<img src="https://api.iconify.design/line-md/close-circle.svg" data-i18n="chat.generating.stopIcon" />
-				<span data-i18n="chat.generating.stop"></span>
+				<span data-i18n="chat.messageGenerating.stop"></span>
 			</button>
 		</div>
 	</div>

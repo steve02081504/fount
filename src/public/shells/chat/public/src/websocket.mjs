@@ -12,7 +12,7 @@ import {
 	handlePluginAdded,
 	handlePluginRemoved,
 } from './ui/sidebar.mjs'
-import { handleCharTypingStart, handleCharTypingStop } from './ui/typingIndicator.mjs'
+import { handleTypingStatus } from './ui/typingIndicator.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handleStreamUpdate } from './ui/virtualQueue.mjs'
 
 let ws = null
@@ -114,11 +114,8 @@ async function handleBroadcastEvent(event) {
 		case 'plugin_removed':
 			await handlePluginRemoved(payload.pluginname)
 			break
-		case 'char_typing_start':
-			await handleCharTypingStart(payload.charname)
-			break
-		case 'char_typing_stop':
-			await handleCharTypingStop(payload.charname)
+		case 'typing_status':
+			await handleTypingStatus(payload.typingList)
 			break
 		case 'stream_start':
 			console.log('Stream started for message:', payload.messageId)

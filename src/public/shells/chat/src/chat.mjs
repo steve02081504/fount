@@ -130,8 +130,37 @@ const StreamManager = {
  */
 const chatMetadatas = new Map()
 const chatUiSockets = new Map()
+const typingStatus = new Map()
 const chatDeleteTimers = new Map()
 const CHAT_UNLOAD_TIMEOUT = ms('30m')
+
+/**
+ * 更新并广播输入状态。
+ * @param {string} chatid - 聊天ID。
+ * @param {string} charname - 角色名称。
+ * @param {number} delta - 变化量 (+1 或 -1)。
+ */
+function updateTypingStatus(chatid, charname, delta) {
+	if (!typingStatus.has(chatid)) typingStatus.set(chatid, new Map())
+	const chatMap = typingStatus.get(chatid)
+	const current = chatMap.get(charname) || 0
+	const next = current + delta
+	if (next <= 0) chatMap.delete(charname)
+	else chatMap.set(charname, next)
+
+	const typingList = Array.from(chatMap.keys())
+	broadcastChatEvent(chatid, { type: 'typing_status', payload: { typingList } })
+}
+
+/**
+ * 获取聊天的正在输入的角色列表。
+ * @param {string} chatid - 聊天ID。
+ * @returns {string[]} 角色列表。
+ */
+function getTypingList(chatid) {
+	const chatMap = typingStatus.get(chatid)
+	return chatMap ? Array.from(chatMap.keys()) : []
+}
 
 /**
  * 注册聊天UI WebSocket。
@@ -149,6 +178,11 @@ export function registerChatUiSocket(chatid, ws) {
 
 	const socketSet = chatUiSockets.get(chatid)
 	socketSet.add(ws)
+
+	// Send initial typing status
+	const typingList = getTypingList(chatid)
+	if (typingList.length > 0)
+		ws.send(JSON.stringify({ type: 'typing_status', payload: { typingList } }))
 
 	ws.on('message', (message) => {
 		try {
@@ -1182,7 +1216,7 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		}
 	}
 	finally {
-		broadcastChatEvent(chatid, { type: 'char_typing_stop', payload: { charname: request.char_id } })
+		updateTypingStatus(chatid, request.char_id, -1)
 	}
 }
 
@@ -1494,7 +1528,7 @@ export async function triggerCharReply(chatid, charname) {
 	const request = await getChatRequest(chatid, charname)
 	const stream = StreamManager.create(chatid, placeholder.id)
 
-	broadcastChatEvent(chatid, { type: 'char_typing_start', payload: { charname } })
+	updateTypingStatus(chatid, charname, 1)
 
 	// 4. Execute (don't await, let it run in background)
 	executeGeneration(chatid, request, stream, placeholder, chatMetadata)
