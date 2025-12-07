@@ -22,4 +22,7 @@ export default {
 	 * 卸载主题管理Shell。
 	 */
 	Unload: async () => { },
+	interfaces: {
+		web: {},
+	}
 }

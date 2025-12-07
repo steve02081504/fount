@@ -43,8 +43,8 @@ export default {
 		if (!loading_count)
 			clearInterval(cleanFilesInterval)
 	},
-
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数以执行各种聊天操作。

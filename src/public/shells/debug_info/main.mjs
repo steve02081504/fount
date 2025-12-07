@@ -16,4 +16,7 @@ export default {
 	 * 卸载 shell。
 	 */
 	Unload: () => { },
+	interfaces: {
+		web: {},
+	}
 }

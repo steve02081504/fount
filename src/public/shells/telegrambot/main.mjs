@@ -52,6 +52,7 @@ export default {
 	 * Shell的接口定义。
 	 */
 	interfaces: {
+		web: {},
 		/**
 		 * 调用接口的定义。
 		 */

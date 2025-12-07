@@ -36,8 +36,8 @@ export default {
 	 * @returns {Promise<void>}
 	 */
 	Unload: async () => { },
-
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数以执行Discord机器人操作。

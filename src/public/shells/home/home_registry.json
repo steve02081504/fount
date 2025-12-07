@@ -1,9 +1,10 @@
 {
-	"home_shell_interfaces": [
+	"home_common_interfaces": [
 		{
-			"info": "home.home_shell_interfaces.open",
+			"info": "home.home_common_interfaces.open",
+			"interface": "web",
 			"level": 0,
-			"url": "/shells/${name}",
+			"url": "/${type}/${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"
 		}
 	],

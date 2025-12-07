@@ -567,9 +567,9 @@
 			"dropError": "Error in drag and drop processing: ${error}",
 			"noHandler": "No suitable drag and drop handler found."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "access"
+				"title": "access"
 			}
 		},
 		"home_drag_out_generators": {

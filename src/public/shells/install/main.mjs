@@ -29,8 +29,8 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数以执行安装或卸载操作。

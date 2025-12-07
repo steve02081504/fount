@@ -567,9 +567,9 @@
 			"dropError": "Fehler bei der Drag-and-Drop-Verarbeitung: ${error}",
 			"noHandler": "Kein geeigneter Drag-and-Drop-Handler gefunden."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "Zugang"
+				"title": "Zugang"
 			}
 		},
 		"home_drag_out_generators": {

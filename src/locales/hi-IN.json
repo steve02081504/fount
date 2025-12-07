@@ -567,9 +567,9 @@
 			"dropError": "ड्रैग और ड्रॉप प्रोसेसिंग में त्रुटि: ${error}",
 			"noHandler": "कोई उपयुक्त ड्रैग और ड्रॉप हैंडलर नहीं मिला."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "पहुँच"
+				"title": "पहुँच"
 			}
 		},
 		"home_drag_out_generators": {

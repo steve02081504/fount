@@ -35,8 +35,8 @@ export default {
 	 * @returns {Promise<void>}
 	 */
 	Unload: async () => { },
-
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数以执行桌面宠物操作。

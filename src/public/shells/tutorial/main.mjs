@@ -20,4 +20,7 @@ export default {
 			 * 卸载 shell。
 	 */
 	Unload: async () => { },
+	interfaces: {
+		web: {},
+	}
 }

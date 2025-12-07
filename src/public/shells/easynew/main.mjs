@@ -29,8 +29,8 @@ export default {
 	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
-
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数以执行快速新建操作。

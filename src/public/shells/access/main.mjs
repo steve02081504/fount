@@ -32,6 +32,7 @@ export default {
 	 */
 	Unload: async () => { },
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数，显示用于在其他设备上访问的URL和二维码。
