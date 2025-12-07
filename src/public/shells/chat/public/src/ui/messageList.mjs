@@ -3,7 +3,7 @@ import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '..
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'
 import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
-import { stopGeneration } from "../chat.mjs";
+import { stopGeneration } from '../chat.mjs'
 import {
 	modifyTimeLine,
 	deleteMessage,
@@ -89,6 +89,11 @@ async function generateFullHtmlForMessage(message, cache) {
 	return renderTemplateAsHtmlString('standalone_message', {
 		main_locale,
 		message,
+		/**
+		 * 渲染 Markdown 为 HTML 字符串（带缓存复用）
+		 * @param {string} markdown - Markdown 文本
+		 * @returns {Promise<string>} HTML 字符串
+		 */
 		renderMarkdownAsStandAloneHtmlString: markdown => renderMarkdownAsStandAloneHtmlString(markdown, cache),
 		geti18n,
 		getfile,
@@ -122,7 +127,7 @@ export async function renderMessage(message) {
 
 		const skeleton = messageElement.querySelector('.skeleton-loader')
 		const content = messageElement.querySelector('.message-content')
-		if (skeleton && content) {
+		if (skeleton && content)
 			if (!preprocessedMessage.content || !preprocessedMessage.content.trim()) {
 				skeleton.classList.remove('hidden')
 				content.classList.add('hidden')
@@ -130,7 +135,6 @@ export async function renderMessage(message) {
 				skeleton.classList.add('hidden')
 				content.classList.remove('hidden')
 			}
-		}
 
 		return messageElement
 	}
