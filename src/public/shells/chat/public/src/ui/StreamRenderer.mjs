@@ -1,11 +1,11 @@
 import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
 
 /**
- *
+ * 用于实现流式渲染的类。
  */
 class StreamRenderer {
 	/**
-	 *
+	 * 创建一个新的 StreamRenderer 实例。
 	 */
 	constructor() {
 		this.streamingMessages = new Map()
@@ -52,9 +52,8 @@ class StreamRenderer {
 	 */
 	startLoop() {
 		if (this.animationFrameId || this.streamingMessages.size === 0) return
-
 		/**
-		 *
+		 * 一个帧的渲染逻辑
 		 */
 		const loop = async () => {
 			if (this.streamingMessages.size === 0) {
@@ -91,8 +90,15 @@ class StreamRenderer {
 			// 只有内容变化才操作 DOM
 			if (state.displayedContent !== state.lastRendered) {
 				const contentEl = state.domElement.querySelector('.message-content')
-				if (contentEl)
+				if (contentEl) {
 					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent, state.cache)
+
+					if (state.displayedContent.trim()) {
+						const skeletonEl = state.domElement.querySelector('.skeleton-loader')
+						skeletonEl.classList.add('hidden')
+						contentEl.classList.remove('hidden')
+					}
+				}
 
 				state.lastRendered = state.displayedContent
 			}
@@ -101,6 +107,6 @@ class StreamRenderer {
 }
 
 /**
- *
+ * 流式渲染器的单例
  */
 export const streamRenderer = new StreamRenderer()

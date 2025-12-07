@@ -2,7 +2,7 @@ import { geti18n, setLocalizeLogic } from '../../../../../scripts/i18n.mjs'
 import { getCharDetails } from '../../../../scripts/parts.mjs'
 
 const typingIndicatorElement = document.getElementById('typing-indicator')
-const typingChars = new Set()
+let typingChars = new Set()
 
 /**
  * 更新正在输入的指示器
@@ -43,21 +43,10 @@ async function updateTypingIndicator() {
 }
 
 /**
- * 处理一个正在输入的角色
- * @param {string} charname - 正在输入的角色的名称
+ * 处理输入状态列表更新
+ * @param {string[]} list - 正在输入的角色列表
  */
-export function handleCharTypingStart(charname) {
-	if (!charname) return
-	typingChars.add(charname)
-	updateTypingIndicator()
-}
-
-/**
- * 处理一个不再输入的角色
- * @param {string} charname - 不再输入的角色的名称
- */
-export function handleCharTypingStop(charname) {
-	if (!charname) return
-	typingChars.delete(charname)
+export function handleTypingStatus(list) {
+	typingChars = new Set(list)
 	updateTypingIndicator()
 }

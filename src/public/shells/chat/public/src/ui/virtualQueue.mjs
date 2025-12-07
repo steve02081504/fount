@@ -189,11 +189,21 @@ export async function handleMessageAdded(message) {
 		if (message.is_generating) {
 			// 如果是正在生成的消息，先不添加到列表（避免显示空气泡）
 			// 标记为 pendingRender，等待第一次 stream_update 或 message_replaced 时再渲染
-			streamingMessages.set(message.id, {
+			const itemState = {
 				messageData: message,
 				pendingRender: true
-			})
-			console.log('[Frontend] Message added (pending render):', message.id)
+			}
+			streamingMessages.set(message.id, itemState)
+
+			// 设置 200ms 超时，如果超时还没收到 stream_update，强制渲染骨架屏
+			setTimeout(async () => {
+				if (itemState.pendingRender) {
+					itemState.pendingRender = false
+					const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
+					await virtualList.appendItem(message, shouldScroll)
+					// 这里不注册 streamRenderer，因为内容为空，等待真正的 stream_update 更新内容
+				}
+			}, 200)
 		} else {
 			// 普通消息直接添加
 			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
