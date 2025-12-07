@@ -30,6 +30,7 @@ export default {
 		setEndpoints(router)
 	},
 	interfaces: {
+		web: {},
 		invokes: {
 			/**
 			 * 处理命令行参数。

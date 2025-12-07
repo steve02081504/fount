@@ -567,9 +567,9 @@
 			"dropError": "🚫👎: ${error}",
 			"noHandler": "🤷‍♀️🚫"
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "↗️"
+				"title": "↗️"
 			}
 		},
 		"home_drag_out_generators": {

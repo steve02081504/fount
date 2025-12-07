@@ -567,9 +567,9 @@
 			"dropError": "Fout bij het slepen en neerzetten: ${error}",
 			"noHandler": "Er is geen geschikte drag-and-drop-handler gevonden."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "toegang"
+				"title": "toegang"
 			}
 		},
 		"home_drag_out_generators": {

@@ -556,9 +556,9 @@ export type LocaleData = {
 			dropError: string
 			noHandler: string
 		}
-		home_shell_interfaces: {
+		home_common_interfaces: {
 			open: {
-				description: string
+				title: string
 			}
 		}
 		home_drag_out_generators: {

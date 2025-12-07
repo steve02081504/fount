@@ -26,4 +26,7 @@ export default {
 		events.off('part-installed', onPartInstalled)
 		events.off('part-uninstalled', onPartUninstalled)
 	},
+	interfaces: {
+		web: {}
+	}
 }

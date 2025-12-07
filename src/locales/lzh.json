@@ -567,9 +567,9 @@
 			"dropError": "置之有误：${error}",
 			"noHandler": "无以应之。"
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "啟"
+				"title": "啟"
 			}
 		},
 		"home_drag_out_generators": {

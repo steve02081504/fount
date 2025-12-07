@@ -13,5 +13,8 @@ export default {
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
+	},
+	interfaces: {
+		web: {},
 	}
 }

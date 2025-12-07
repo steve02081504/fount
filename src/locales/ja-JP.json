@@ -567,9 +567,9 @@
 			"dropError": "ドラッグ アンド ドロップ処理のエラー: ${error}",
 			"noHandler": "適切なドラッグ アンド ドロップ ハンドラーが見つかりません。"
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "アクセス"
+				"title": "アクセス"
 			}
 		},
 		"home_drag_out_generators": {

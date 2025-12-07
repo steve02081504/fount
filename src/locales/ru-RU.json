@@ -567,9 +567,9 @@
 			"dropError": "Ошибка при обработке перетаскивания: ${error}",
 			"noHandler": "Подходящего обработчика перетаскивания не найдено."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "доступ"
+				"title": "доступ"
 			}
 		},
 		"home_drag_out_generators": {

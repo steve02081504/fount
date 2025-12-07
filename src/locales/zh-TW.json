@@ -567,9 +567,9 @@
 			"dropError": "拖放處理出錯：${error}",
 			"noHandler": "沒有找到合適的拖放處理器。"
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "訪問"
+				"title": "訪問"
 			}
 		},
 		"home_drag_out_generators": {

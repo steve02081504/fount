@@ -567,9 +567,9 @@
 			"dropError": "Erreur lors du traitement par glisser-déposer : ${error}",
 			"noHandler": "Aucun gestionnaire de glisser-déposer approprié n'a été trouvé."
 		},
-		"home_shell_interfaces": {
+		"home_common_interfaces": {
 			"open": {
-				"description": "Accès"
+				"title": "Accès"
 			}
 		},
 		"home_drag_out_generators": {

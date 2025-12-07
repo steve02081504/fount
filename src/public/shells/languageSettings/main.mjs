@@ -4,4 +4,7 @@ import info from './info.json' with { type: 'json' }
  */
 export default {
 	info,
+	interfaces: {
+		web: {},
+	}
 }
