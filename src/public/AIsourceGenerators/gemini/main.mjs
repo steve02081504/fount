@@ -240,9 +240,8 @@ async function GetSource(config) {
 					throw new Error(`File ${displayName} processing failed. Error: ${file.error?.message || 'Unknown error'}`)
 
 				// 每5秒输出一次进度
-				if (Math.floor(elapsedTime / 5000) !== Math.floor((elapsedTime - pollInterval) / 5000)) {
+				if (Math.floor(elapsedTime / 5000) !== Math.floor((elapsedTime - pollInterval) / 5000))
 					console.log(`Still waiting for file ${displayName}... (${Math.floor(elapsedTime / 1000)}s elapsed, state: ${file.state})`)
-				}
 			}
 		}
 
