@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import url from 'node:url'
 
 import { FullProxy } from 'npm:full-proxy'
+import trash from 'npm:trash'
 
 import { run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
@@ -517,7 +518,13 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Uninstaller = async (part, path) => {
 		await part?.Uninstall?.(uninstallArgs)
-		fs.rmSync(path, { recursive: true, force: true })
+		try {
+			await trash(path)
+		}
+		catch (error) {
+			console.error(error)
+			fs.rmSync(path, { recursive: true, force: true })
+		}
 	}
 } = {}) {
 	parts_set[username][parttype] ??= {}
