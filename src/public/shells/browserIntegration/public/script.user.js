@@ -556,6 +556,9 @@ window.addEventListener('fount-host-info', async (e) => {
 
 	if (newHost !== storedHost) { // Host Change
 		if (blockedHosts.has(newHost) && (Date.now() - blockedHosts.get(newHost) < BLOCK_DURATION_MS)) return
+		try {
+			await makeApiRequest(newHost, newProtocol, '/api/whoami', { authType: 'session' })
+		} catch (error) { return }
 		const origin = window.location.hostname
 		const warningMessage = await geti18n('browser_integration_script.hostChange.securityWarningTitle') + '\n\n' + await geti18n('browser_integration_script.hostChange.message', { origin, newHost })
 		if (window.confirm(warningMessage)) try {
