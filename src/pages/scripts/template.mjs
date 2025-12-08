@@ -55,7 +55,7 @@ function escapeUnclosedTags(html) {
 
 	stack.forEach(item => indicesToEscape.add(item.index))
 
-	if (indicesToEscape.size === 0) return html
+	if (!indicesToEscape.size) return html
 
 	let result = ''
 	let lastCursor = 0
