@@ -8,7 +8,7 @@ let typingChars = new Set()
  * 更新正在输入的指示器
  */
 async function updateTypingIndicator() {
-	if (typingChars.size === 0) {
+	if (!typingChars.size) {
 		typingIndicatorElement.classList.add('hidden')
 		typingIndicatorElement.innerHTML = ''
 		return

@@ -314,7 +314,7 @@ export function createVirtualList({
 			const targetElement = state.renderedElements.get(targetIndex)
 			if (targetElement)
 				targetElement.scrollIntoView({
-					block: targetIndex === 0 ? 'start' : 'nearest',
+					block: targetIndex ? 'nearest' : 'start',
 					behavior: 'instant',
 				})
 			else

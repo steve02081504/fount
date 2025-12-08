@@ -51,12 +51,12 @@ class StreamRenderer {
 	 *
 	 */
 	startLoop() {
-		if (this.animationFrameId || this.streamingMessages.size === 0) return
+		if (this.animationFrameId || !this.streamingMessages.size) return
 		/**
 		 * 一个帧的渲染逻辑
 		 */
 		const loop = async () => {
-			if (this.streamingMessages.size === 0) {
+			if (!this.streamingMessages.size) {
 				this.animationFrameId = null
 				return
 			}

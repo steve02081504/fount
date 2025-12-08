@@ -56,7 +56,7 @@ export const handlePartUninstalled = async ({ parttype, partname }) => {
 	}
 	if (partDetailsCache[parttype]) {
 		delete partDetailsCache[parttype][partname]
-		if (Object.keys(partDetailsCache[parttype]).length === 0)
+		if (!Object.keys(partDetailsCache[parttype]).length)
 			delete partDetailsCache[parttype]
 	}
 

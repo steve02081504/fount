@@ -390,7 +390,7 @@ function findThemeBlockRange(css) {
 		if (css[i] === '{') openCount++
 		else if (css[i] === '}') openCount--
 
-		if (openCount === 0) {
+		if (!openCount) {
 			endIndex = i
 			break
 		}
