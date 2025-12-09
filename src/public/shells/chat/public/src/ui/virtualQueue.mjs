@@ -203,7 +203,7 @@ export async function handleMessageAdded(message) {
 					await virtualList.appendItem(message, shouldScroll)
 					// 这里不注册 streamRenderer，因为内容为空，等待真正的 stream_update 更新内容
 				}
-			}, 200)
+			}, 500)
 		} else {
 			// 普通消息直接添加
 			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
@@ -227,7 +227,7 @@ export async function handleMessageReplaced(index, message) {
 		// 如果消息处于 pendingRender 状态（说明是非流式角色，或者流式角色生成极快直接完成了）
 		// 此时直接作为新消息添加到列表底部
 		if (itemState?.pendingRender) {
-			console.log('[Frontend] Pending message replaced (rendering now):', message.id)
+			itemState.pendingRender = false
 			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
 			await virtualList.appendItem(message, shouldScroll)
 			streamingMessages.delete(message.id)
@@ -361,7 +361,6 @@ export async function handleStreamUpdate({ messageId, slices }) {
 		// 如果消息处于 pendingRender 状态，说明是第一次收到流更新
 		// 此时才将消息添加到列表（开始渲染）
 		if (itemState.pendingRender) {
-			console.log('[Frontend] First stream update (rendering now):', messageId)
 			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
 			await virtualList.appendItem(itemState.messageData, shouldScroll)
 			itemState.pendingRender = false
