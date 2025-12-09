@@ -80,17 +80,11 @@ usingTemplates('/shells/home/src/templates')
 export async function renderItemView(part) {
 	const { parttype, partname, partdetails } = part
 
-	const specificTemplateName = `${parttype.slice(0, -1)}_list_view`
-	const genericTemplateName = 'item_list_view'
-	let itemElement
-	const dataForTemplate = { ...partdetails, parttype, defaultIcon: defaultIcons[parttype] || genericDefaultIcon }
-
-	try {
-		itemElement = await renderTemplate(specificTemplateName, dataForTemplate)
-	} catch {
-		console.log(`Specific template '${specificTemplateName}' not found, falling back to generic.`)
-		itemElement = await renderTemplate(genericTemplateName, dataForTemplate)
-	}
+	const itemElement = await renderTemplate('item_list_view', {
+		...partdetails,
+		parttype,
+		defaultIcon: defaultIcons[parttype] || genericDefaultIcon
+	})
 
 	itemElement.dataset.name = partname
 	await attachCardEventListeners(itemElement, part)
