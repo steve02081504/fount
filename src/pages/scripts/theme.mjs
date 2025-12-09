@@ -1,6 +1,5 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { initLinesBackground, updateColors as updateLinesBackgroundColors } from './linesBackground.mjs'
 import { svgInliner } from './svgInliner.mjs'
 
 /**
@@ -294,7 +293,6 @@ export async function applyTheme() {
 	setTheme(storedTheme)
 
 	svgInliner(document)
-	setTimeout(initLinesBackground, 750)
 	setInterval(themeHeartbeat, 1000)
 
 	if (customUrl) try {
@@ -494,7 +492,6 @@ function updateColors() {
 
 	document.documentElement.setAttribute('color-scheme', is_dark ? 'dark' : 'light')
 
-	updateLinesBackgroundColors()
 	for (const func of functions) try {
 		func(theme_now, is_dark)
 	}

@@ -176,15 +176,7 @@ application consistency, reducing code duplication, and ensuring stability.
 - `showToastI18n(type, key, params, duration)`: Displays a toast notification
   with an internationalized message.
 
-### 5.5. Animated Lines Background (`linesBackground.mjs`)
-
-- `initLinesBackground(config)`: Initializes a dynamic, animated background with
-  lines connecting points.
-- `updateConfig(newConfig)`: Updates the configuration of the lines background.
-- `updateColors()`: Updates the colors of the lines background based on the
-  current theme.
-
-### 5.6. Search (`search.mjs`)
+### 5.5. Search (`search.mjs`)
 
 - `makeSearchable({ searchInput, items, dataAccessor })`: Binds a search input
   to a list of items for automatic, live filtering.
