@@ -680,8 +680,11 @@ function rehypeCacheRead() {
 			// 2. 识别 普通代码块 (pre > code) - 添加这个以优化 Shiki 高亮性能
 			if (node.tagName === 'pre' && node.children?.[0]?.tagName === 'code') {
 				const codeNode = node.children[0]
-				const className = codeNode.properties?.className || []
+				const className = codeNode.properties.className ??= []
 				const content = codeNode.children?.[0]?.value || ''
+
+				// 如果没有语言类，默认添加 language-text，这样 rehype-pretty-code 才会调用 transformer 添加复制按钮
+				if (!className.some(c => c.startsWith('language-'))) className.push('language-text')
 
 				// 区分 Mermaid 和普通代码
 				const isMermaid = className.includes('language-mermaid')
