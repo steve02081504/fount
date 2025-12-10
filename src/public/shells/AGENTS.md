@@ -182,32 +182,22 @@ Define the UI and connect it to the backend. For an interactive terminal, we use
 
 ```html
 <!DOCTYPE html>
-<html data-theme="dark">
+<html>
   <head>
     <meta charset="UTF-8" />
     <title>My New Shell</title>
     <!-- Standard fount includes -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link href="/base.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script blocking="render" type="module" src="/preload.mjs"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+    <link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
     <script type="module" src="/base.mjs"></script>
     <!-- Xterm.js styles for the terminal -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.min.css" />
   </head>
   <body class="flex flex-col h-screen items-center justify-center p-4">
     <!-- Container for the terminal -->
-    <div
-      id="terminal"
-      class="mockup-code border bg-base-content w-full h-full"
-    ></div>
+    <div id="terminal" class="mockup-code border bg-base-content w-full h-full"></div>
     <!-- Main script for this page -->
     <script type="module" src="./index.mjs"></script>
   </body>
