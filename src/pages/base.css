@@ -45,3 +45,33 @@
 [color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
 	color: var(--shiki-dark)
 }
+
+/* View Transitions for smooth page transitions */
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+	animation-duration: 0.3s;
+	animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(root) {
+	animation-name: fade-out;
+}
+
+::view-transition-new(root) {
+	animation-name: fade-in;
+}
+
+@keyframes fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+}
