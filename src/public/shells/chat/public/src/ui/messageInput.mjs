@@ -114,10 +114,10 @@ async function toggleVoiceRecording() {
  * 发送消息
  */
 async function sendMessage() {
+	if (isRecording) await toggleVoiceRecording()
+
 	const messageText = messageInputElement.value.trim()
 	if (!messageText && !SelectedFiles.length) return
-
-	if (isRecording) await toggleVoiceRecording()
 
 	try {
 		await addUserReply({ content: messageText, files: SelectedFiles })
