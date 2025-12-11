@@ -15,6 +15,7 @@ import { getDefaultParts, getPartDetails, setDefaultPart, unsetDefaultPart, getA
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
+import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
 /**
@@ -268,8 +269,7 @@ export function registerEndpoints(router) {
 			path += '/' + patharr.slice(3).join('/')
 			if (!fs.existsSync(path)) return next()
 			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
-			else try { return res.status(200).sendFile(path) }
-			catch (e) { throw skip_report(e) } // 抽象linux环境，关我屁事
+			else return betterSendFile(res, path)
 		})
 	}
 
