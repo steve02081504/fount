@@ -234,3 +234,70 @@ body {
 	margin: 0;
 	cursor: pointer;
 }
+
+/* View Transitions for tab switching */
+@keyframes slide-from-right {
+	from {
+		transform: translateX(30px);
+		opacity: 0;
+	}
+}
+
+@keyframes slide-to-left {
+	to {
+		transform: translateX(-30px);
+		opacity: 0;
+	}
+}
+
+@keyframes slide-from-left {
+	from {
+		transform: translateX(-30px);
+		opacity: 0;
+	}
+}
+
+@keyframes slide-to-right {
+	to {
+		transform: translateX(30px);
+		opacity: 0;
+	}
+}
+
+html[data-transition-direction="forward"]::view-transition-new(root) {
+	animation-name: slide-from-right;
+}
+
+html[data-transition-direction="forward"]::view-transition-old(root) {
+	animation-name: slide-to-left;
+}
+
+html[data-transition-direction="backward"]::view-transition-new(root) {
+	animation-name: slide-from-left;
+}
+
+html[data-transition-direction="backward"]::view-transition-old(root) {
+	animation-name: slide-to-right;
+}
+
+::view-transition-group(root) {
+	animation-timing-function: ease;
+}
+
+html[data-transition-direction]::view-transition-old(root),
+html[data-transition-direction]::view-transition-new(root) {
+	animation-duration: 0.2s;
+	animation-fill-mode: forwards;
+}
+
+[data-view-transition-name="navbar"] {
+	view-transition-name: navbar;
+}
+
+[data-view-transition-name="sidebar"] {
+	view-transition-name: sidebar;
+}
+
+[data-view-transition-name="filter-input"] {
+	view-transition-name: filter-input;
+}
