@@ -354,6 +354,10 @@ export async function updateTabContent(partTypeObject) {
 	pageTitle.dataset.i18n = `home.${partTypeName}.title;home.default.title`
 	instruction.dataset.i18n = `home.${partTypeName}.subtitle;home.default.subtitle`
 
+	/**
+	 * 更新当前选定选项卡的内容。
+	 * @returns {Promise<void>}
+	 */
 	const updateAndRender = async () => {
 		// 隐藏所有容器，然后显示当前的容器
 		if (partTypesContainers.childNodes.length) {

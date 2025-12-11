@@ -56,7 +56,7 @@ async function getCommonUrlParamsForGitHub() {
 
 /**
  * 通过 iframe 将设置同步到 GitHub Pages。
- * @returns {Promise<HTMLIFrameElement>}
+ * @returns {Promise<HTMLIFrameElement>} - 创建的 iframe 元素。
  */
 async function syncSettingsToGitHubPages() {
 	const iframe = document.createElement('iframe')
