@@ -4,7 +4,7 @@ import https from 'node:https'
 import path from 'node:path'
 import process from 'node:process'
 
-import { on_shutdown } from 'npm:on-shutdown'
+import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { StartRPC } from '../scripts/discordrpc.mjs'
@@ -170,6 +170,7 @@ export async function init(start_config) {
 		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
+		unset_shutdown_listener('error', 'unhandledRejection', 'uncaughtException')
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
 		process.on('uncaughtException', console.log)
