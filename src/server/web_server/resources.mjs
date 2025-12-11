@@ -10,6 +10,7 @@ import { watchFrontendChanges } from './watcher.mjs'
  * 用更鲁棒的方式发送文件
  * @param {import('npm:express').Response} res 要发送文件的响应
  * @param {string} path 文件路径
+ * @returns {import('npm:express').Response} 响应
  */
 export function betterSendFile(res, path) {
 	return res.sendFile(path, err => {

@@ -49,7 +49,7 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} 一个 Promise，解析为 AI 源。
  */
 async function GetSource(config, { username, SaveConfig }) {
-	let index = (config.random_start ?? true) ? Math.floor(Math.random() * config.sources.length) : -1
+	let index = config.random_start ?? true ? Math.floor(Math.random() * config.sources.length) : -1
 	const unnamedSources = []
 	const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
 		SaveConfig

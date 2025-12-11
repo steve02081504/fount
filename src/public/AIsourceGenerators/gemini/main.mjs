@@ -1,5 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { hash as calculateHash } from 'node:crypto'
+import fs from 'node:fs'
+import path from 'node:path'
 import process from 'node:process'
 
 import * as mime from 'npm:mime-types'
@@ -54,6 +56,13 @@ export default {
 	info,
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置显示内容。
+			 * @returns {Promise<object>} 配置显示内容。
+			 */
+			GetConfigDisplayContent: async () => ({
+				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
+			}),
 			/**
 			 * 获取此 AI 源的配置模板。
 			 * @returns {Promise<object>} 配置模板。
