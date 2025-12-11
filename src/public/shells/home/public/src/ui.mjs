@@ -340,6 +340,13 @@ export function updateDefaultPartDisplay() {
  * @returns {Promise<void>}
  */
 export async function updateTabContent(partTypeObject) {
+	const oldIndex = homeRegistry.part_types.findIndex(p => p.name === currentPartType?.name)
+	const newIndex = homeRegistry.part_types.findIndex(p => p.name === partTypeObject.name)
+	const isSameTab = oldIndex === newIndex
+	const isFirstLoad = oldIndex === -1
+
+	const direction = newIndex > oldIndex ? 'forward' : 'backward'
+
 	setCurrentPartType(partTypeObject)
 	const partTypeName = partTypeObject.name
 	sessionStorage.setItem('fount.home.lastTab', partTypeName)
@@ -347,42 +354,51 @@ export async function updateTabContent(partTypeObject) {
 	pageTitle.dataset.i18n = `home.${partTypeName}.title;home.default.title`
 	instruction.dataset.i18n = `home.${partTypeName}.subtitle;home.default.subtitle`
 
-	// 隐藏所有容器，然后显示当前的容器
-	if (partTypesContainers.childNodes.length) {
-		partTypesContainers.childNodes.forEach(container => container.classList.add('hidden'))
-		const currentContainer = partTypesContainers.querySelector(`#${partTypeName}-container`)
-		if (currentContainer) currentContainer.classList.remove('hidden')
+	const updateAndRender = async () => {
+		// 隐藏所有容器，然后显示当前的容器
+		if (partTypesContainers.childNodes.length) {
+			partTypesContainers.childNodes.forEach(container => container.classList.add('hidden'))
+			const currentContainer = partTypesContainers.querySelector(`#${partTypeName}-container`)
+			if (currentContainer) currentContainer.classList.remove('hidden')
+		}
+
+		const allpartNames = await getAllpartNames(partTypeName)
+
+		makeSearchable({
+			searchInput: filterInput,
+			data: allpartNames,
+			/**
+			 * 用于搜索的数据访问器。
+			 * @param {string} name - 项目名称。
+			 * @returns {any} 与项目关联的数据。
+			 */
+			dataAccessor: (name) => partDetailsCache[partTypeName]?.[name] || name, // Use new cache access
+			/**
+			 * 过滤后处理的回调函数。
+			 * @param {string[]} filteredNames - 过滤后的项目名称数组。
+			 * @returns {void}
+			 */
+			onUpdate: (filteredNames) => renderFilteredItems(partTypeObject, filteredNames),
+		})
+
+		itemDescription.innerHTML = geti18n('home.itemDescription') // 重置侧边栏
+
+		// 设置活动选项卡的UI
+		;[partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
+			if (container?.childNodes.length) {
+				container.querySelectorAll('div').forEach(tab => tab.classList.remove('active'))
+				const currentTab = container.querySelector(`[data-target="${partTypeName}-container"]`)
+				if (currentTab) currentTab.classList.add('active')
+			}
+		})
 	}
 
-	const allpartNames = await getAllpartNames(partTypeName)
-
-	makeSearchable({
-		searchInput: filterInput,
-		data: allpartNames,
-		/**
-		 * 用于搜索的数据访问器。
-		 * @param {string} name - 项目名称。
-		 * @returns {any} 与项目关联的数据。
-		 */
-		dataAccessor: (name) => partDetailsCache[partTypeName]?.[name] || name, // Use new cache access
-		/**
-		 * 过滤后处理的回调函数。
-		 * @param {string[]} filteredNames - 过滤后的项目名称数组。
-		 * @returns {void}
-		 */
-		onUpdate: (filteredNames) => renderFilteredItems(partTypeObject, filteredNames),
-	})
-
-	itemDescription.innerHTML = geti18n('home.itemDescription') // 重置侧边栏
-
-	// 设置活动选项卡的UI
-	;[partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
-		if (container?.childNodes.length) {
-			container.querySelectorAll('div').forEach(tab => tab.classList.remove('active'))
-			const currentTab = container.querySelector(`[data-target="${partTypeName}-container"]`)
-			if (currentTab) currentTab.classList.add('active')
-		}
-	})
+	if (document.startViewTransition && !isSameTab && !isFirstLoad) {
+		document.documentElement.dataset.transitionDirection = direction
+		const transition = document.startViewTransition(updateAndRender)
+		transition.finished.finally(() => delete document.documentElement.dataset.transitionDirection)
+	}
+	else await updateAndRender()
 }
 
 /**
@@ -409,6 +425,7 @@ export function setupPartTypeUI(partTypes) {
 			a.dataset.i18n = `home.part_types.${partType};'${partType}'`
 			a.addEventListener('click', e => {
 				e.preventDefault()
+				if (a.classList.contains('active')) return // Prevent clicking the active tab
 				updateTabContent(pt)
 			})
 			li.appendChild(a)
