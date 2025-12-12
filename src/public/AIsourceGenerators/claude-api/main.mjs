@@ -10,7 +10,7 @@ import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 // Claude 支持的图片 MIME 类型
-const supportedImageTypes = [
+const defaultSupportedImageTypes = [
 	'image/jpeg',
 	'image/png',
 	'image/gif',
@@ -44,6 +44,7 @@ const configTemplate = {
 	proxy_url: '', // 例如 'http://127.0.0.1:7890'
 	base_url: '', // 例如 'https://api.deepseek.com/anthropic'
 	use_stream: true,
+	allowed_mime_types: defaultSupportedImageTypes,
 }
 
 /**
@@ -53,6 +54,7 @@ const configTemplate = {
  */
 async function GetSource(config) {
 	const { default: Anthropic } = await import('npm:@anthropic-ai/sdk')
+	const supportedImageTypes = config.allowed_mime_types ?? defaultSupportedImageTypes
 	// 初始化 Anthropic 客户端
 	const clientOptions = {
 		apiKey: config.apikey,
