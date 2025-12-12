@@ -14,7 +14,7 @@ import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
-const supportedFileTypes = [
+const defaultSupportedFileTypes = [
 	'application/pdf',
 	'application/x-javascript',
 	'text/javascript',
@@ -87,6 +87,7 @@ const configTemplate = {
 	proxy_url: '',
 	use_stream: true,
 	keep_thought_signature: true,
+	allowed_mime_types: defaultSupportedFileTypes,
 }
 
 /**
@@ -188,6 +189,7 @@ async function GetSource(config) {
 	config.system_prompt_at_depth ??= configTemplate.system_prompt_at_depth
 	config.max_input_tokens ??= configTemplate.max_input_tokens
 	config.keep_thought_signature ??= configTemplate.keep_thought_signature
+	const supportedFileTypes = config.allowed_mime_types ?? defaultSupportedFileTypes
 
 	const ai = new GoogleGenAI({
 		apiKey: config.apikey,
