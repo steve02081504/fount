@@ -52,7 +52,7 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config) {
-	const Anthropic = await import('npm:@anthropic-ai/sdk')
+	const { default: Anthropic } = await import('npm:@anthropic-ai/sdk')
 	// 初始化 Anthropic 客户端
 	const clientOptions = {
 		apiKey: config.apikey,
