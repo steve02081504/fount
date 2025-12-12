@@ -71,14 +71,20 @@ if (HTMLScriptElement.supports?.('speculationrules')) {
 }
 
 /**
- * 当按下 "Escape" 键时，如果历史记录大于 1，则后退，否则关闭窗口。
+ * 处理键盘事件。
  * @param {KeyboardEvent} event - 键盘事件。
  * @returns {void}
  */
 document.addEventListener('keydown', event => {
-	if (event.key === 'Escape')
-		if (history.length > 1) history.back()
-		else window.close()
+	switch (event.key) {
+		case 'Escape':
+			if (history.length > 1) history.back()
+			else window.close()
+			break
+		case 'F1':
+			window.open('https://discord.gg/GtR9Quzq2v', '_blank')
+			break
+	}
 })
 
 let currentCommitId
