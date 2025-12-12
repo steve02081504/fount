@@ -1,0 +1,198 @@
+{
+  "en-UK": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Access DeepSeek's powerful models via their official API. Supports reasoning mode for enhanced problem-solving capabilities.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "reasoning"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "zh-CN": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "通过官方 API 访问 DeepSeek 强大的模型。支持推理模式，增强问题解决能力。",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "推理"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "ar-SA": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "الوصول إلى نماذج DeepSeek القوية عبر واجهة برمجة التطبيقات الرسمية. يدعم وضع الاستدلال لقدرات حل المشكلات المحسنة.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "الاستدلال"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "de-DE": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek-API",
+    "description_markdown": "Zugriff auf die leistungsstarken Modelle von DeepSeek über die offizielle API. Unterstützt den Reasoning-Modus für verbesserte Problemlösungsfähigkeiten.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ki", "api", "schlussfolgerung"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "emoji": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "🔍🤖💬",
+    "description_markdown": "🔍🤖➡️📄",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["🔍", "🤖", "💬"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "es-ES": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "API de DeepSeek",
+    "description_markdown": "Accede a los potentes modelos de DeepSeek a través de su API oficial. Admite el modo de razonamiento para una mayor capacidad de resolución de problemas.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ia", "api", "razonamiento"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "fr-FR": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "API DeepSeek",
+    "description_markdown": "Accédez aux puissants modèles de DeepSeek via leur API officielle. Prend en charge le mode de raisonnement pour des capacités de résolution de problèmes améliorées.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ia", "api", "raisonnement"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "hi-IN": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "डीपसीक एपीआई",
+    "description_markdown": "उनकी आधिकारिक एपीआई के माध्यम से डीपसीक के शक्तिशाली मॉडल तक पहुंचें। बेहतर समस्या समाधान क्षमताओं के लिए तर्क मोड का समर्थन करता है।",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "एआई", "एपीआई", "तर्क"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "is-IS": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Fáðu aðgang að öflugum DeepSeek líkönum í gegnum opinbert API þeirra. Styður röksemdafærsluham til að auka vandamámaleysni getu.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": [
+      "deepseek",
+      "anthropic-api",
+      "gervigreind",
+      "api",
+      "röksemdafærsla"
+    ],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "it-IT": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "API DeepSeek",
+    "description_markdown": "Accedi ai potenti modelli di DeepSeek tramite la loro API ufficiale. Supporta la modalità di ragionamento per capacità di risoluzione dei problemi migliorate.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ia", "api", "ragionamento"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "ja-JP": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "公式 API を介して DeepSeek の強力なモデルにアクセスします。高度な問題解決能力のための推論モードをサポートしています。",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "推論"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "ko-KR": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "공식 API를 통해 DeepSeek의 강력한 모델에 액세스하세요. 향상된 문제 해결 능력을 위한 추론 모드를 지원합니다.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "추론"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "lzh": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "深度求索接口",
+    "description_markdown": "由官接口直取深度求索之強模，兼推論之式。",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["深度求索", "人擇接口", "智械", "接口", "推論"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "nl-NL": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Toegang tot de krachtige modellen van DeepSeek via hun officiële API. Ondersteunt redeneermodus voor verbeterde probleemoplossende vaardigheden.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "redeneren"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "pt-PT": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "API DeepSeek",
+    "description_markdown": "Acesse os modelos poderosos da DeepSeek através de sua API oficial. Suporta o modo de raciocínio para capacidades aprimoradas de resolução de problemas.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ia", "api", "raciocínio"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "ru-RU": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Доступ к мощным моделям DeepSeek через их официальный API. Поддерживает режим рассуждения для улучшенных возможностей решения проблем.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ии", "api", "рассуждение"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "uk-UA": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Доступ до потужних моделей DeepSeek через їхній офіційний API. Підтримує режим міркування для покращених можливостей вирішення проблем.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ші", "api", "міркування"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "vi-VN": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "Truy cập các mô hình mạnh mẽ của DeepSeek thông qua API chính thức của họ. Hỗ trợ chế độ suy luận để nâng cao khả năng giải quyết vấn đề.",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "suy luận"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  },
+  "zh-TW": {
+    "avatar": "https://platform.deepseek.com/favicon.svg",
+    "description": "DeepSeek API",
+    "description_markdown": "透過官方 API 存取 DeepSeek 強大的模型。支援推理模式，增強問題解決能力。",
+    "version": "0.0.0",
+    "author": "conglinyizhi",
+    "tags": ["deepseek", "anthropic-api", "ai", "api", "推理"],
+    "provider": "deepseek",
+    "home_page": "https://www.deepseek.com"
+  }
+}
