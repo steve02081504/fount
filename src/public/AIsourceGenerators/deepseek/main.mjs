@@ -34,6 +34,7 @@ const configTemplate = {
 	proxy_url: '', // 例如 'http://127.0.0.1:7890'
 	base_url: 'https://api.deepseek.com/anthropic', // DeepSeek 的 Anthropic 兼容 API 地址
 	use_stream: true,
+	max_tokens: 4096, // Anthropic API 要求必须提供 max_tokens 参数
 }
 
 /**
@@ -83,6 +84,7 @@ async function GetSource(config) {
 			const params = {
 				model: config.model,
 				messages: [{ role: 'user', content: prompt }],
+				max_tokens: config.max_tokens,
 				...config.model_arguments,
 			}
 
@@ -158,6 +160,7 @@ ${chatLogEntry.content}
 				model: config.model,
 				system: system_prompt,
 				messages,
+				max_tokens: config.max_tokens,
 				...config.model_arguments,
 			}
 
