@@ -42,6 +42,7 @@ const configTemplate = {
 	model_arguments: {
 	},
 	proxy_url: '', // 例如 'http://127.0.0.1:7890'
+	base_url: '', // 例如 'https://api.deepseek.com/anthropic'
 	use_stream: true,
 }
 
@@ -57,7 +58,12 @@ async function GetSource(config) {
 		apiKey: config.apikey,
 	}
 
-	// 如果配置了代理 URL，则设置代理
+	// 如果配置了 base_url，则设置自定义API地址
+	if (config.base_url) {
+		clientOptions.baseURL = config.base_url
+	}
+
+	// 如果配置了代理 URL，则设置HTTP代理
 	if (config.proxy_url) {
 		const undici = await import('npm:undici')
 		clientOptions.fetchOptions = {
