@@ -197,6 +197,23 @@ if ('serviceWorker' in navigator)
 			console.error('Service Worker registration failed: ', error)
 		})
 
+/**
+ * 处理键盘事件。
+ * @param {KeyboardEvent} event - 键盘事件。
+ * @returns {void}
+ */
+document.addEventListener('keydown', event => {
+	switch (event.key) {
+		case 'Escape':
+			if (history.length > 1) history.back()
+			else window.close()
+			break
+		case 'F1':
+			window.open('https://discord.gg/GtR9Quzq2v', '_blank')
+			break
+	}
+})
+
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
 		console.noBreadcrumb.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
