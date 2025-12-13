@@ -33,18 +33,13 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 		extensions: {
 			talkativeness: 0.5, // ST 默认值
 			fav: false,
-			// world: '', // ST world 字段，CCv3 Lorebook 更复杂
-			// depth_prompt: {}, // ST depth_prompt
-			// regex_scripts: [], // ST regex_scripts
+			world: cardData.world || '',
+			depth_prompt: cardData.extensions?.depth_prompt,
+			regex_scripts: cardData.regex_scripts,
 			// --- Risu 特有或需要映射的 ---
 			source_url: cardData.source?.length ? cardData.source[0] : '',
-			// 用于存放处理过的 risu assets 列表，供模板高级使用
 			risu_assets: cardData.assets ? JSON.parse(JSON.stringify(cardData.assets)) : [],
-			// CCv3 group_only_greetings
 			group_greetings: cardData.group_only_greetings || [],
-			// CCv3 nickname for ST {{char}} macro
-			// ST 的 prompt_builder 使用 args.Charname, 我们在 main.mjs 中处理
-			// 这里可以存一个原始的 nickname 供参考或模板使用
 			ccv3_nickname: cardData.nickname || '',
 		},
 		character_book: { // ST 的 character_book 结构
@@ -53,7 +48,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 			scan_depth: cardData.character_book?.scan_depth, // ST WI 单条目有 scan_depth
 			token_budget: cardData.character_book?.token_budget, // ST 无全局token budget for WI
 			recursive_scanning: cardData.character_book?.recursive_scanning, // ST WI 单条目有 exclude_recursion
-			extensions: {}, // ST character_book.extensions
+			extensions: cardData.character_book?.extensions || {},
 			entries: [], // 将填充转换后的 LorebookEntry
 		},
 	}
@@ -65,7 +60,6 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 		stV2Data.creator_notes = cardData.creator_notes_multilingual['en']
 	else
 		stV2Data.creator_notes = cardData.creator_notes || ''
-
 
 	// 合并 Lorebook 条目 (来自 card.character_book 和 risuModule.lorebook)
 	let allLoreEntries = []
@@ -97,32 +91,31 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 			comment: ccv3Entry.comment || ccv3Entry.name || '',
 			content: ccv3Entry.content || '',
 			constant: ccv3Entry.constant || false,
-			selective: false, // 将基于 ccv3Entry.selective 和 secondary_keys 决定
+			selective: ccv3Entry.selective ?? false, // 将基于 ccv3Entry.selective 和 secondary_keys 决定
 			insertion_order: ccv3Entry.insertion_order || 0,
 			enabled: ccv3Entry.enabled !== false, // 默认为 true
 			position: ccv3Entry.position === 'after_char' ? 'after_char' : 'before_char', // ST v1 WI position
 			extensions: { // ST v2 WI extensions
-				position: ccv3Entry.position === 'after_char' ? world_info_position.after : world_info_position.before,
-				exclude_recursion: false, // 默认不排除
-				// display_index: 0, // ST UI 相关
-				probability: 100,
-				useProbability: false,
-				depth: 4, // ST WI 默认扫描深度 (atDepth 类型)
-				selectiveLogic: world_info_logic.AND_ANY, // 默认
-				// group: '',
-				// group_override: false,
-				prevent_recursion: false, // CCv3 recursive_scanning 全局设置，这里是单条目
+				position: ccv3Entry.extensions?.position ?? ccv3Entry.position === 'after_char' ? world_info_position.after : world_info_position.before,
+				exclude_recursion: ccv3Entry.extensions?.exclude_recursion ?? false, // 默认不排除
+				display_index: ccv3Entry.extensions?.display_index ?? 0, // ST UI 相关
+				probability: ccv3Entry.extensions?.priority ?? 100,
+				useProbability: ccv3Entry.extensions?.priority ?? false,
+				depth: ccv3Entry.extensions?.scan_depth ?? 4, // ST WI 默认扫描深度 (atDepth 类型)
+				selectiveLogic: ccv3Entry.extensions?.selective_logic ?? world_info_logic.AND_ANY, // 默认
+				group: ccv3Entry.extensions?.group ?? '',
+				group_override: ccv3Entry.extensions?.group_override ?? false,
+				prevent_recursion: ccv3Entry.extensions?.prevent_recursion ?? false, // CCv3 recursive_scanning 全局设置，这里是单条目
 				scan_depth: ccv3Entry.extensions?.scan_depth ?? cardData.character_book?.scan_depth, // 条目优先，否则用书的
-				match_whole_words: true, // ST WI 默认
+				match_whole_words: ccv3Entry.extensions?.match_whole_words ?? true, // ST WI 默认
 				case_sensitive: ccv3Entry.case_sensitive === true, // CCv3 case_sensitive
-				// automation_id: '',
-				role: extension_prompt_roles.SYSTEM, // 默认
-				// vectorized: false,
-				sticky: 0,
-				delay_until_recursion: 0,
-				cooldown: 0,
-				// -- Risu Specifics to map --
-				use_regex_from_ccv3: ccv3Entry.use_regex || false, // 标记一下，ST WI key 直接支持 /regex/
+				automation_id: ccv3Entry.extensions?.automation_id ?? '',
+				role: ccv3Entry.extensions?.role ?? extension_prompt_roles.SYSTEM, // 默认
+				vectorized: ccv3Entry.extensions?.vectorized ?? false,
+				sticky: ccv3Entry.extensions?.sticky ?? 0,
+				delay_until_recursion: ccv3Entry.extensions?.delay_until_recursion ?? 0,
+				cooldown: ccv3Entry.extensions?.cooldown ?? 0,
+				use_regex: ccv3Entry.use_regex ?? false, // 标记一下，ST WI key 直接支持 /regex/
 			},
 		}
 
@@ -142,7 +135,6 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 				decorators.push(line)
 			else
 				cleanContentLines.push(line)
-
 
 		stWiEntry.content = cleanContentLines.join('\n').trim()
 
