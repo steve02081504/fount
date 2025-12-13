@@ -613,7 +613,7 @@ ${is_ImageGeneration
 				if (!parts) return
 				for (const part of parts) {
 					if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
-					if (part.text) result.content += part.text
+					if (part.text && !part.thought) result.content += part.text
 					else if (part.inlineData) try {
 						const { mime_type, data } = part.inlineData
 						const fileExtension = mime.extension(mime_type) || 'png'
