@@ -6,8 +6,8 @@ on:
   push:
     paths:
       - '.github/pages/**'
-      - 'src/locales/**'
-      - 'src/pages/scripts/**'
+      - 'src/public/locales/**'
+      - 'src/public/pages/scripts/**'
       - 'imgs/**'
     branches: ['master']
 
@@ -38,9 +38,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Copy local files
         run: |
-          cp -r ./src/locales ./.github/pages/
+          cp -r ./src/public/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
-          cp -rn ./src/pages/scripts ./.github/pages/
+          cp -rn ./src/public/pages/scripts ./.github/pages/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

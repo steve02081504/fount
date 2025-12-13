@@ -184,7 +184,7 @@ export async function init(start_config) {
 		if (!await new IPCManager().startServer()) return false
 	}
 	let iconPromise
-	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
+	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) {
@@ -307,7 +307,7 @@ export async function init(start_config) {
 		})
 	}
 	if (starts.DiscordRPC) StartRPC()
-	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
+	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
 	return true
 }

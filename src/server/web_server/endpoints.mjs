@@ -259,7 +259,7 @@ export function registerEndpoints(router) {
 			const partName = patharr[2]
 			const realPath = part + '/' + partName + '/public'
 			const userPath = getUserDictionary(username) + '/' + realPath
-			const publicPath = __dirname + '/src/public/' + realPath
+			const publicPath = __dirname + '/src/public/parts/' + realPath
 			let path
 			if (fs.existsSync(userPath)) path = userPath
 			else if (fs.existsSync(publicPath)) path = publicPath

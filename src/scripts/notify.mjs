@@ -35,7 +35,7 @@ Add-Type -AssemblyName System.Windows.Forms
 	return new Promise((resolve, reject) => notifier.notify({
 		title,
 		message,
-		icon: __dirname + '/src/pages/favicon.ico',
+		icon: __dirname + '/src/public/pages/favicon.ico',
 		...options
 	}, function (err, response, metadata) {
 		if (err) reject(err)

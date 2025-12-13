@@ -168,7 +168,7 @@ export function GetPartPath(username, parttype, partname) {
 	const userPath = getUserDictionary(username) + '/' + parttype + '/' + partname
 	if (fs.existsSync(userPath + '/main.mjs'))
 		return userPath
-	return __dirname + '/src/public/' + parttype + '/' + partname
+	return __dirname + '/src/public/parts/' + parttype + '/' + partname
 }
 
 /**
@@ -574,7 +574,7 @@ export function getPartListBase(username, parttype, {
 	if (!fs.existsSync(part_dir) || !fs.statSync(part_dir).isDirectory()) return []
 	let partlist = fs.readdirSync(part_dir, { withFileTypes: true }).filter(PathFilter)
 	try {
-		const publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype, { withFileTypes: true }).filter(PathFilter)
+		const publiclist = fs.readdirSync(__dirname + '/src/public/parts/' + parttype, { withFileTypes: true }).filter(PathFilter)
 		partlist = [...new Set(partlist.concat(publiclist))]
 	} catch (e) { }
 	return partlist.map(ResultMapper)

@@ -14,9 +14,9 @@
 	},
 	"lint": {
 		"exclude": [
-			"src/pages/",
+			"src/public/pages/",
 			".github/pages/",
-			"src/public/shells/*/public/**"
+			"src/public/parts/shells/*/public/**"
 		]
 	}
 }

@@ -24,7 +24,7 @@ const console = baseConsole
  * 所有可用区域设置的列表。
  * @type {{id: string, name: string}[]}
  */
-export const fountLocaleList = fs.readFileSync(__dirname + '/src/locales/list.csv', 'utf8')
+export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/list.csv', 'utf8')
 	.trim()
 	.split('\n')
 	.slice(1) // Skip header
@@ -69,7 +69,7 @@ const fountLocaleCache = {}
 export async function getLocaleData(username, preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
 	const result = {
-		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
+		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
 	}
 	if (!username) return result
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
@@ -116,7 +116,7 @@ export const localhostLocales = [...new Set([
  */
 export let localhostLocaleData = await getLocaleData(null, localhostLocales)
 
-fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
+fs.watch(`${__dirname}/src/public/locales`, (_event, filename) => {
 	if (!filename?.endsWith('.json')) return
 	const locale = filename.slice(0, -5)
 	console.log(`Detected change in ${filename}.`)

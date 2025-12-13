@@ -12,9 +12,9 @@ function Get-SystemLocales {
 	return $locales | Select-Object -Unique
 }
 
-# 从 src/locales/list.csv 获取可用区域设置
+# 从 src/public/locales/list.csv 获取可用区域设置
 function Get-AvailableLocales {
-	$localeListFile = Join-Path $FOUNT_DIR 'src/locales/list.csv'
+	$localeListFile = Join-Path $FOUNT_DIR 'src/public/locales/list.csv'
 	if (Test-Path $localeListFile) {
 		try {
 			return Import-Csv $localeListFile | Select-Object -ExpandProperty lang
@@ -60,10 +60,10 @@ function Import-LocaleData {
 		$availableLocales = Get-AvailableLocales
 		$env:FOUNT_LOCALE = Get-BestLocale -preferredLocales $systemLocales -availableLocales $availableLocales
 	}
-	$localeFile = Join-Path $FOUNT_DIR "src/locales/$($env:FOUNT_LOCALE).json"
+	$localeFile = Join-Path $FOUNT_DIR "src/public/locales/$($env:FOUNT_LOCALE).json"
 	if (-not (Test-Path $localeFile)) {
 		$env:FOUNT_LOCALE = 'en-UK'
-		$localeFile = Join-Path $FOUNT_DIR "src/locales/en-UK.json"
+		$localeFile = Join-Path $FOUNT_DIR "src/public/locales/en-UK.json"
 	}
 
 	try {
