@@ -3,7 +3,7 @@ name: Verify Shells
 on:
   push:
     paths:
-      - 'src/public/shells/**/*.mjs'
+      - 'src/public/parts/shells/**/*.mjs'
     tags-ignore:
       - '*'
     branches:

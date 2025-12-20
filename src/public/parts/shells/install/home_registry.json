@@ -1,0 +1,45 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "component_related",
+			"info": "import.home_function_buttons.component_related",
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "import.home_function_buttons.component_related.sub_items.import",
+					"level": 0,
+					"url": "/parts/shells:install/",
+					"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	],
+	"home_drag_in_handlers": [
+		{
+			"id": "handleFileDrop",
+			"level": 0,
+			"type": "file",
+			"path": "/parts/shells:install/drag_handlers/file_drop_handler.mjs",
+			"info": "import.home_drag_in_handlers.handleFileDrop"
+		},
+		{
+			"id": "handleTextDrop",
+			"level": 0,
+			"type": "text/plain",
+			"path": "/parts/shells:install/drag_handlers/text_drop_handler.mjs",
+			"info": "import.home_drag_in_handlers.handleTextDrop"
+		}
+	],
+	"home_interfaces": {
+		"*": [
+			{
+				"info": "uninstall.home_common_interfaces.delete",
+				"level": 9,
+				"url": "/parts/shells:install/uninstall?partpath=${path}",
+				"button": "<img src=\"https://api.iconify.design/line-md/close-circle.svg\" class=\"text-icon\"/>",
+				"type": "error"
+			}
+		]
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "component_related",
+			"info": "part_config.home_function_buttons.component_related",
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "part_config.home_function_buttons.component_related.sub_items.componentConfigLink",
+					"level": 1,
+					"url": "/parts/shells:config/",
+					"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	],
+	"home_interfaces": {
+		"*": [
+			{
+				"info": "part_config.home_common_interfaces.main",
+				"level": 0,
+				"interface": "config",
+				"url": "/parts/shells:config/?partpath=${path}",
+				"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
+			}
+		]
+	}
+}

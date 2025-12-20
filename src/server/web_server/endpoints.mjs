@@ -9,9 +9,20 @@ import { generateVerificationCode, verifyVerificationCode } from '../../scripts/
 import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
-import { partTypeList } from '../managers/base.mjs'
-import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
-import { getDefaultParts, getPartDetails, setDefaultPart, unsetDefaultPart, getAnyDefaultPart, getAllDefaultParts as getAllDefaultPartsFromLoader, getAnyPreferredDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
+import {
+	getLoadedPartList,
+	getPartList,
+	loadPart,
+	getDefaultParts,
+	getPartDetails,
+	setDefaultPart,
+	unsetDefaultPart,
+	getAnyDefaultPart,
+	getAllDefaultParts as getAllDefaultPartsFromLoader,
+	getAnyPreferredDefaultPart,
+	getAllCachedPartDetails,
+	getPartBranches
+} from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -212,66 +223,83 @@ export function registerEndpoints(router) {
 		res.status(200).json({ message: 'Authenticated' })
 	})
 
-	router.get('/api/getparttypelist', authenticate, async (req, res) => {
-		res.status(200).json(partTypeList)
-	})
-
 	router.post('/api/runpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { parttype, partname, args } = req.body
-		await processIPCCommand('runpart', { username, parttype, partname, args })
+		const { partpath, args } = req.body
+		await processIPCCommand('runpart', { username, partpath, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
 	router.post('/api/loadpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		if (!parttype || !partname) return res.status(400).json({ success: false, error: 'Part type and name are required.' })
-		await loadPart(username, parttype, partname)
-		res.status(200).json({ success: true, message: `Part ${parttype}/${partname} loaded successfully.` })
+		const { partpath } = req.body
+		const normalized = partpath?.replace?.(/:/g, '/')
+		if (!normalized) return res.status(400).json({ success: false, error: 'Part path is required.' })
+		await loadPart(username, normalized)
+		res.status(200).json({ success: true, message: `Part ${normalized} loaded successfully.` })
 	})
 
-	for (const part of partTypeList) {
-		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			res.status(200).json(getPartList(username, part))
-		})
-		router.get('/api/getloadedlist/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			res.status(200).json(getLoadedPartList(username, part))
-		})
-		router.get('/api/getallcacheddetails/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			const details = await getAllCachedPartDetails(username, part)
-			res.status(200).json(details)
-		})
-		router.get('/api/getdetails/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			const { name, nocache } = req.query
-			const details = await getPartDetails(username, part, name, nocache)
-			res.status(200).json(details)
-		})
-		router.get(new RegExp('^/' + part + '/'), authenticate, async (req, res, next) => {
-			const { username } = await getUserByReq(req)
-			const oripath = decodeURIComponent(req.path)
-			const patharr = oripath.split('/')
-			patharr[patharr.length - 1] ||= 'index.html'
-			const partName = patharr[2]
-			const realPath = part + '/' + partName + '/public'
-			const userPath = getUserDictionary(username) + '/' + realPath
-			const publicPath = __dirname + '/src/public/' + realPath
-			let path
-			if (fs.existsSync(userPath)) path = userPath
-			else if (fs.existsSync(publicPath)) path = publicPath
-			else return next()
+	// Generic path handlers
+	// Capture remaining path as request param 0.
+	router.get(/^\/api\/getlist\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		res.status(200).json(getPartList(username, path))
+	})
+	router.get(/^\/api\/getloadedlist\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		res.status(200).json(getLoadedPartList(username, path))
+	})
+	router.get(/^\/api\/getallcacheddetails\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		const details = await getAllCachedPartDetails(username, path)
+		res.status(200).json(details)
+	})
+	router.get(/^\/api\/getdetails\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		// name param from query is optional override? Or should invalid?
+		// Usually details are for a specific part path.
+		// But previously it was /api/getdetails/SHELLS?name=CHAT
+		// Now it is likely /api/getdetails/shells/chat.
+		const { nocache } = req.query
+		const details = await getPartDetails(username, path, nocache)
+		res.status(200).json(details)
+	})
 
-			watchFrontendChanges(`/${part}/${partName}/`, path)
-			path += '/' + patharr.slice(3).join('/')
-			if (!fs.existsSync(path)) return next()
-			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
-			else return betterSendFile(res, path)
-		})
-	}
+	router.get('/api/getpartbranches', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		res.status(200).json(getPartBranches(username, { nocache }))
+	})
+
+	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
+	router.get(/^\/parts\/([^/]+)(.*)$/, authenticate, async (req, res, next) => {
+		const { username } = await getUserByReq(req)
+		const partpath = req.params[0]
+		const filepath = req.params[1].split('?')[0]
+		// Convert partpath colons to slashes for filesystem access
+		const realPath = partpath.replace(/:/g, '/') + '/public'
+		let finalPath
+		for (const directory of [
+			getUserDictionary(username) + '/' + realPath,
+			__dirname + '/src/public/parts/' + realPath,
+		]) {
+			const path = directory + '/' + filepath
+			if (fs.existsSync(path)) {
+				finalPath = path
+				if (fs.statSync(path).isDirectory())
+					if (req.path.endsWith('/')) finalPath += '/index.html'
+					else return res.redirect(301, req.url.replace(req.path, req.path + '/'))
+				watchFrontendChanges(`/parts/${partpath}/`, directory)
+				break
+			}
+		}
+		if (finalPath) return betterSendFile(res, finalPath)
+		return next()
+	})
 
 	router.get('/api/defaultpart/getall', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
@@ -280,34 +308,34 @@ export function registerEndpoints(router) {
 
 	router.post('/api/defaultpart/add', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		setDefaultPart(user, parttype, partname)
+		const { parent, child } = req.body
+		setDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
 	router.post('/api/defaultpart/unset', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		unsetDefaultPart(user, parttype, partname)
+		const { parent, child } = req.body
+		unsetDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
-	router.get('/api/defaultpart/getany/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getany\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAnyDefaultPart(user, parttype) || '')
+		const parent = req.params[0]
+		res.status(200).json(getAnyDefaultPart(user, parent) || '')
 	})
 
-	router.get('/api/defaultpart/getallbytype/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getallbytype\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAllDefaultPartsFromLoader(user, parttype))
+		const parent = req.params[0]
+		res.status(200).json(getAllDefaultPartsFromLoader(user, parent))
 	})
 
-	router.get('/api/defaultpart/getanypreferred/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getanypreferred\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAnyPreferredDefaultPart(user, parttype) || '')
+		const parent = req.params[0]
+		res.status(200).json(getAnyPreferredDefaultPart(user, parent) || '')
 	})
 
 	router.get('/api/getusersetting', authenticate, async (req, res) => {

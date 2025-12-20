@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Whispers of Creation: Shaping fount's AI Oracles" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Here, you conduct the symphony of AI voices. Add, sculpt, or silence the sources that give life to your fount companions—a delicate dance of code and imagination." />
+	<meta name="description" content="Here, you conduct the symphony of AI voices. Add, sculpt, or silence the sources that give life to your fount companions—a delicate dance of code and imagination." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="serviceSource_manager.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body>
+	<div class="container mx-auto p-4 flex flex-col md:flex-row min-h-screen">
+		<!-- 文件列表区域 -->
+		<div class="w-full md:w-1/4 mb-4 flex flex-col gap-3">
+			<div class="flex justify-between items-center m-2">
+				<h2 class="text-xl font-semibold" data-i18n="serviceSource_manager.fileList.title"></h2>
+				<button id="addFileButton" class="btn btn-sm btn-circle btn-primary" data-i18n="serviceSource_manager.fileList.addButton.title">+</button>
+			</div>
+			<div id="fileList" class="file-list bg-base-100 rounded-lg flex-grow overflow-y-auto">
+				<!-- 文件列表项将会动态生成 -->
+			</div>
+		</div>
+
+		<!-- 编辑区域 -->
+		<div class="w-full md:w-3/4 mb-4 relative">
+			<h2 class="text-xl font-semibold m-2" data-i18n="serviceSource_manager.configTitle"></h2>
+			<div class="mb-2">
+				<label class="label" for="generatorSubtypeSelect">
+					<span class="label-text" data-i18n="serviceSource_manager.subtypeSelect.label"></span>
+				</label>
+				<select id="generatorSubtypeSelect" class="select w-full">
+					<option disabled selected data-i18n="serviceSource_manager.subtypeSelect.placeholder"></option>
+				</select>
+			</div>
+			<div class="grid grid-cols-1 gap-4">
+				<div>
+					<label class="label" for="generatorSelect">
+						<span class="label-text" data-i18n="serviceSource_manager.generatorSelect.label"></span>
+					</label>
+					<select id="generatorSelect" class="select w-full">
+						<option disabled selected data-i18n="serviceSource_manager.generatorSelect.placeholder"></option>
+					</select>
+				</div>
+			</div>
+			<div id="generatorDisplay" class="mb-4"></div>
+			<!-- JSON 编辑器容器 -->
+			<div id="jsonEditor" class="jsoneditor-container relative" style="height: 400px; overflow: auto">
+				<div id="disabledIndicator" class="absolute inset-0 z-10 bg-base-200 opacity-80 flex justify-center items-center rounded-lg hidden">
+					<span class="text-lg text-error" data-i18n="serviceSource_manager.editor.disabledIndicator"></span>
+				</div>
+			</div>
+
+			<div class="mt-4 flex justify-end">
+				<button id="saveButton" class="btn btn-primary mr-2">
+					<img id="saveStatusIcon" src="" class="w-6 h-6 mr-2 hidden" />
+					<span id="saveStatusText" data-i18n="serviceSource_manager.buttons.save"></span>
+				</button>
+				<button id="deleteButton" class="btn btn-error ml-2" data-i18n="serviceSource_manager.buttons.delete"></button>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

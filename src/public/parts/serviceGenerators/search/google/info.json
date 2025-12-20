@@ -1,0 +1,268 @@
+{
+	"en-UK": {
+		"name": "Google Search",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google search using google-sr library",
+		"description_markdown": "Google search implementation based on google-sr library, no API key required.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"zh-CN": {
+		"name": "Google 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 google-sr 库的 Google 搜索",
+		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"ar-SA": {
+		"name": "بحث جوجل",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "بحث جوجل باستخدام مكتبة google-sr",
+		"description_markdown": "بحث Google يعتمد على مكتبة google-sr، ولا يلزم وجود مفتاح API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"جوجل",
+			"يبحث",
+			"البحث على شبكة الإنترنت"
+		],
+		"home_page": ""
+	},
+	"de-DE": {
+		"name": "Google-Suche",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google-Suche mit der Google-SR-Bibliothek",
+		"description_markdown": "Google-Suche basierend auf der google-sr-Bibliothek, kein API-Schlüssel erforderlich.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"suchen",
+			"Websuche"
+		],
+		"home_page": ""
+	},
+	"emoji": {
+		"name": "Google 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 google-sr 库的 Google 搜索",
+		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"es-ES": {
+		"name": "búsqueda de google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Búsqueda de Google usando la biblioteca google-sr",
+		"description_markdown": "Búsqueda de Google basada en la biblioteca google-sr, no se requiere clave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"buscar",
+			"búsqueda web"
+		],
+		"home_page": ""
+	},
+	"fr-FR": {
+		"name": "Recherche Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Recherche Google à l'aide de la bibliothèque google-sr",
+		"description_markdown": "Recherche Google basée sur la bibliothèque google-sr, aucune clé API requise.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"recherche",
+			"recherche sur le Web"
+		],
+		"home_page": ""
+	},
+	"hi-IN": {
+		"name": "गूगल खोज",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google-sr लाइब्रेरी का उपयोग करके Google खोज",
+		"description_markdown": "Google खोज google-sr लाइब्रेरी पर आधारित है, किसी API कुंजी की आवश्यकता नहीं है।",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"गूगल",
+			"खोज",
+			"वेब खोज"
+		],
+		"home_page": ""
+	},
+	"is-IS": {
+		"name": "Google leit",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google leit með því að nota google-sr bókasafnið",
+		"description_markdown": "Google leit byggt á google-sr bókasafninu, engin API lykil krafist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"leit",
+			"vefleit"
+		],
+		"home_page": ""
+	},
+	"it-IT": {
+		"name": "Ricerca su Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Cerca su Google utilizzando la libreria google-sr",
+		"description_markdown": "Ricerca Google basata sulla libreria google-sr, non è richiesta alcuna chiave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"ricerca",
+			"ricerca sul web"
+		],
+		"home_page": ""
+	},
+	"ja-JP": {
+		"name": "Google検索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "google-sr ライブラリを使用した Google 検索",
+		"description_markdown": "google-sr ライブラリに基づく Google 検索。API キーは必要ありません。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"グーグル",
+			"検索",
+			"ウェブ検索"
+		],
+		"home_page": ""
+	},
+	"ko-KR": {
+		"name": "구글 검색",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "google-sr 라이브러리를 사용한 Google 검색",
+		"description_markdown": "google-sr 라이브러리를 기반으로 한 Google 검색으로 API 키가 필요하지 않습니다.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"찾다",
+			"웹 검색"
+		],
+		"home_page": ""
+	},
+	"lzh": {
+		"name": "Google 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 google-sr 库的 Google 搜索",
+		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"nl-NL": {
+		"name": "Google-zoekopdracht",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google zoeken met behulp van de Google-sr-bibliotheek",
+		"description_markdown": "Google-zoekopdracht op basis van de Google-sr-bibliotheek, geen API-sleutel vereist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"googlen",
+			"zoekopdracht",
+			"web-zoeken"
+		],
+		"home_page": ""
+	},
+	"pt-PT": {
+		"name": "Pesquisa Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Pesquisa Google usando a biblioteca google-sr",
+		"description_markdown": "Pesquisa Google baseada na biblioteca google-sr, sem necessidade de chave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"procurar",
+			"pesquisa na web"
+		],
+		"home_page": ""
+	},
+	"ru-RU": {
+		"name": "поиск Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Поиск в Google с использованием библиотеки google-sr",
+		"description_markdown": "Поиск Google на основе библиотеки google-sr, ключ API не требуется.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"поиск",
+			"веб-поиск"
+		],
+		"home_page": ""
+	},
+	"uk-UA": {
+		"name": "Пошук Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Пошук Google за допомогою бібліотеки google-sr",
+		"description_markdown": "Пошук Google на основі бібліотеки google-sr, ключ API не потрібен.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"пошук",
+			"веб-пошук"
+		],
+		"home_page": ""
+	},
+	"vi-VN": {
+		"name": "tìm kiếm của Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Tìm kiếm trên Google bằng thư viện google-sr",
+		"description_markdown": "Tìm kiếm của Google dựa trên thư viện google-sr, không cần khóa API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"tìm kiếm",
+			"tìm kiếm trên web"
+		],
+		"home_page": ""
+	},
+	"zh-TW": {
+		"name": "Google 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 google-sr 庫的 Google 搜索",
+		"description_markdown": "基於 google-sr 庫實現的 Google 搜索，無需 API 密鑰。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	}
+}
