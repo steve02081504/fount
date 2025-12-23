@@ -92,11 +92,19 @@ export function getLocaleNames() {
 }
 
 /**
+ * 加载首选语言。
+ * @returns {string[]} 首选语言列表。
+ */
+export function loadPreferredLangs() {
+	return JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]').filter(Boolean)
+}
+
+/**
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid] - 当前页面的 ID。
  * @param {string[]} preferredlocales - 优先的语言环境列表。
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = /* TODO: remove this */ eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = loadPreferredLangs()) {
 	saved_pageid = pageid
 
 	try {

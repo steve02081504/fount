@@ -24,7 +24,7 @@ const console = baseConsole
  * 所有可用区域设置的列表。
  * @type {{id: string, name: string}[]}
  */
-export const fountLocaleList = fs.readFileSync(__dirname + '/src/locales/list.csv', 'utf8')
+export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/list.csv', 'utf8')
 	.trim()
 	.split('\n')
 	.slice(1) // Skip header
@@ -69,31 +69,30 @@ const fountLocaleCache = {}
 export async function getLocaleData(username, preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
 	const result = {
-		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
+		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
 	}
 	if (!username) return result
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	for (const parttype in partsLocaleLists) for (const partname in partsLocaleLists[parttype]) {
-		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[parttype][partname])
-		partsLocaleCache[parttype] ??= {}
-		partsLocaleCache[parttype][partname] ??= {}
-		const partdata = partsLocaleCache[parttype][partname][resultLocale] ??= await partsLocaleLoaders[parttype]?.[partname]?.(resultLocale)
+	for (const partpath in partsLocaleLists) {
+		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[partpath])
+		partsLocaleCache[partpath] ??= {}
+		const partdata = partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
 		Object.assign(result, partdata)
 	}
 	saveData(username, 'parts_locales_cache')
 	return result
 }
-events.on('part-loaded', ({ username, parttype, partname }) => {
-	delete loadData(username, 'parts_locales_cache')?.[parttype]?.[partname]
+events.on('part-loaded', ({ username, partpath }) => {
+	delete loadData(username, 'parts_locales_cache')?.[partpath]
 })
-events.on('part-uninstalled', ({ username, parttype, partname }) => {
-	delete loadData(username, 'parts_locales_cache')[parttype]?.[partname]
+events.on('part-uninstalled', ({ username, partpath }) => {
+	delete loadData(username, 'parts_locales_cache')?.[partpath]
 	saveData(username, 'parts_locales_cache')
-	delete loadData(username, 'parts_locale_lists_cache')[parttype]?.[partname]
+	delete loadData(username, 'parts_locale_lists_cache')?.[partpath]
 	saveData(username, 'parts_locale_lists_cache')
-	delete loadTempData(username, 'parts_locale_loaders')[parttype]?.[partname]
+	delete loadTempData(username, 'parts_locale_loaders')?.[partpath]
 })
 
 /**
@@ -116,7 +115,7 @@ export const localhostLocales = [...new Set([
  */
 export let localhostLocaleData = await getLocaleData(null, localhostLocales)
 
-fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
+fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	if (!filename?.endsWith('.json')) return
 	const locale = filename.slice(0, -5)
 	console.log(`Detected change in ${filename}.`)
@@ -140,17 +139,17 @@ if (localhostLocales[0] === 'zh-CN')
 /**
  * 为部件添加区域设置数据。
  * @param {string} username - 用户的用户名。
- * @param {string} parttype - 部件的类型。
- * @param {string} partname - 部件的名称。
+ * @param {string} partpath - 部件的路径（例如 'chars/GentianAphrodite'）。
  * @param {string[]} localeList - 部件的可用区域设置列表。
  * @param {Function} loader - 加载部件区域设置数据的函数。
  * @returns {void}
  */
-export function addPartLocaleData(username, parttype, partname, localeList, loader) {
+export function addPartLocaleData(username, partpath, localeList, loader) {
+	const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	; (partsLocaleLists[parttype] ??= {})[partname] = localeList
-	; (partsLocaleLoaders[parttype] ??= {})[partname] = loader
+	partsLocaleLists[normalizedPartpath] = localeList
+	partsLocaleLoaders[normalizedPartpath] = loader
 	saveData(username, 'parts_locale_lists_cache')
 }
 

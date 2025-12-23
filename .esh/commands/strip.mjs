@@ -17,13 +17,13 @@ class ProjectConfig {
 	static ENTRY_POINTS = [
 		'src/server/index.mjs',
 		'**/index.html',
-		'src/public/shells/*/main.mjs',
+		'src/public/parts/shells/*/main.mjs',
 	]
 	static PATH_MAPS = {
-		'.github/pages/scripts/': 'src/pages/scripts/',
-		'src/public/scripts/': 'src/pages/scripts/',
-		'src/public/shells/scripts/': 'src/pages/scripts/',
-		'/': 'src/pages/',
+		'.github/pages/scripts/': 'src/public/pages/scripts/',
+		'src/public/parts/scripts/': 'src/public/pages/scripts/',
+		'src/public/parts/shells/scripts/': 'src/public/pages/scripts/',
+		'/': 'src/public/pages/',
 	}
 	static IGNORED_IMPORT_PREFIXES = ['node:', 'npm:', 'https:']
 }
@@ -122,7 +122,7 @@ class PathResolver {
 		else if (importPath.startsWith('/'))
 			resolvedPath = join(this.#config.FOUNT_DIR, importPath.substring(1))
 		else {
-			const defaultPath = this.#config.PATH_MAPS['/'] || 'src/pages/'
+			const defaultPath = this.#config.PATH_MAPS['/'] || 'src/public/pages/'
 			resolvedPath = join(this.#config.FOUNT_DIR, defaultPath, importPath)
 		}
 		return this.#normalizeAndCheck(resolvedPath)

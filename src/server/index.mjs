@@ -80,13 +80,12 @@ if (args.length) {
 
 	if (command == 'run') {
 		const username = args[0]
-		const parttype = args[1]
-		const partname = args[2]
+		const partpath = args[1]
 		args = args.slice(3)
 
 		command_obj = {
 			type: 'runpart',
-			data: { username, parttype, partname, args },
+			data: { username, partpath, args },
 		}
 	}
 	else if (command == 'shutdown' || command == 'reboot') {
@@ -97,7 +96,7 @@ if (args.length) {
 			Base: false,
 			Web: false,
 			Tray: false,
-			DiscordIPC: false,
+			DiscordRPC: false,
 		}
 	}
 	else {

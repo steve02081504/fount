@@ -5,11 +5,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/shells/chat/src/stream.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
-import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
+import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
 import info from './info.json' with { type: 'json' }
 
@@ -52,9 +51,8 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
  * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
  */
 
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
-import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
+import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
 
 /**
  * AI源的实例
@@ -112,9 +110,9 @@ export default {
 			// 设置角色的配置数据
 			SetData: async data => {
 				// 如果传入了AI源的配置
-				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
-				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
-				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
+				if (data.AIsource)  AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
+				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -150,13 +148,13 @@ export default {
 			// 获取角色的回复
 			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
-				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)>' }
+				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)>' }
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -175,7 +173,7 @@ export default {
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
-				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
 				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
@@ -267,7 +265,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -286,7 +284,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
-				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
 				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
@@ -381,7 +379,7 @@ export default {
 
 最后，这里是一些API参考：
 \`\`\`ts
-${fs.readFileSync(path.join(__dirname, 'src/public/shells/chat/decl/chatLog.ts'), 'utf-8')}
+${fs.readFileSync(path.join(__dirname, 'src/public/parts/shells/chat/decl/chatLog.ts'), 'utf-8')}
 \`\`\`
 \`\`\`ts
 ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
@@ -623,9 +621,9 @@ export default {
 			 */
 			SetData: async data => {
 				// 如果传入了AI源的配置
-				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
-				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
-				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
+				if (data.AIsource) AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
+				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -767,41 +765,41 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 				if (!AIsource)
 					switch (args.locales[0].split('-')[0]) {
 						case 'zh':
-							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'de':
-							return { content: 'Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'es':
-							return { content: 'Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'fr':
-							return { content: 'Désolé, je n\'ai pas encore été configuré avec une source d\'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d\'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Désolé, je n\'ai pas encore été configuré avec une source d\'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d\'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'hi':
-							return { content: 'माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)।' }
+							return { content: 'माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)।' }
 						case 'ja':
-							return { content: '申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'ko':
-							return { content: '죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: '죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'pt':
-							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'ru':
-							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'it':
-							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'vi':
-							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'lzh':
-							return { content: '歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'emoji':
-							return { content: '😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)' }
+							return { content: '😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)' }
 						default:
 						case 'en':
-							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 					}
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -826,7 +824,7 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
-				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
 				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [

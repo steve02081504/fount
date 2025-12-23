@@ -5,6 +5,9 @@
 		],
 		"shells": [
 			"tutorial"
+		],
+		"serviceSources/search": [
+			"google-sr"
 		]
 	}
 }
