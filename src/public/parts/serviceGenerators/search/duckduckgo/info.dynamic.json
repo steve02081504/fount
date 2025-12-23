@@ -1,0 +1,59 @@
+{
+	"en-UK": {
+		"provider": "DuckDuckGo"
+	},
+	"zh-CN": {
+		"provider": "DuckDuckGo"
+	},
+	"ar-SA": {
+		"provider": "DuckDuckGo"
+	},
+	"de-DE": {
+		"provider": "DuckDuckGo"
+	},
+	"emoji": {
+		"provider": "DuckDuckGo"
+	},
+	"es-ES": {
+		"provider": "DuckDuckGo"
+	},
+	"fr-FR": {
+		"provider": "DuckDuckGo"
+	},
+	"hi-IN": {
+		"provider": "DuckDuckGo"
+	},
+	"is-IS": {
+		"provider": "DuckDuckGo"
+	},
+	"it-IT": {
+		"provider": "DuckDuckGo"
+	},
+	"ja-JP": {
+		"provider": "DuckDuckGo"
+	},
+	"ko-KR": {
+		"provider": "DuckDuckGo"
+	},
+	"lzh": {
+		"provider": "DuckDuckGo"
+	},
+	"nl-NL": {
+		"provider": "DuckDuckGo"
+	},
+	"pt-PT": {
+		"provider": "DuckDuckGo"
+	},
+	"ru-RU": {
+		"provider": "DuckDuckGo"
+	},
+	"uk-UA": {
+		"provider": "DuckDuckGo"
+	},
+	"vi-VN": {
+		"provider": "DuckDuckGo"
+	},
+	"zh-TW": {
+		"provider": "DuckDuckGo"
+	}
+}

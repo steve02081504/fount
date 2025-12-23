@@ -1,0 +1,287 @@
+{
+	"en-UK": {
+		"name": "Brave Search",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Search using Brave Search API",
+		"description_markdown": "Search implementation using Brave Search API, requires API key.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"brave",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"zh-CN": {
+		"name": "Brave 搜索",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "使用 Brave Search API 的搜索",
+		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"brave",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"ar-SA": {
+		"name": "بحث شجاع",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "ابحث باستخدام Brave Search API",
+		"description_markdown": "تتطلب عمليات البحث باستخدام واجهة برمجة تطبيقات Brave Search مفتاح واجهة برمجة التطبيقات.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"شجاع",
+			"واجهة برمجة التطبيقات",
+			"يبحث",
+			"البحث على شبكة الإنترنت"
+		],
+		"home_page": ""
+	},
+	"de-DE": {
+		"name": "Mutige Suche",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Suchen Sie mit der Brave Search API",
+		"description_markdown": "Für Suchen mit der Brave Search API ist ein API-Schlüssel erforderlich.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"mutig",
+			"API",
+			"suchen",
+			"Websuche"
+		],
+		"home_page": ""
+	},
+	"emoji": {
+		"name": "Brave 搜索",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "使用 Brave Search API 的搜索",
+		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"brave",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"es-ES": {
+		"name": "Búsqueda valiente",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Buscar usando Brave Search API",
+		"description_markdown": "Las búsquedas que utilizan Brave Search API requieren una clave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"corajudo",
+			"API",
+			"buscar",
+			"búsqueda web"
+		],
+		"home_page": ""
+	},
+	"fr-FR": {
+		"name": "Recherche courageuse",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Rechercher à l'aide de l'API Brave Search",
+		"description_markdown": "Les recherches utilisant l'API Brave Search nécessitent une clé API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"courageux",
+			"API",
+			"recherche",
+			"recherche sur le Web"
+		],
+		"home_page": ""
+	},
+	"hi-IN": {
+		"name": "बहादुर खोज",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "बहादुर खोज एपीआई का उपयोग करके खोजें",
+		"description_markdown": "ब्रेव सर्च एपीआई का उपयोग करने वाली खोजों के लिए एपीआई कुंजी की आवश्यकता होती है।",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"बहादुर",
+			"एपीआई",
+			"खोज",
+			"वेब खोज"
+		],
+		"home_page": ""
+	},
+	"is-IS": {
+		"name": "Hugrakkur leit",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Leitaðu með Brave Search API",
+		"description_markdown": "Leit sem notar Brave Search API þarf API lykil.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"hugrakkur",
+			"api",
+			"leit",
+			"vefleit"
+		],
+		"home_page": ""
+	},
+	"it-IT": {
+		"name": "Ricerca coraggiosa",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Cerca utilizzando l'API Brave Search",
+		"description_markdown": "Le ricerche che utilizzano l'API Brave Search richiedono una chiave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"coraggioso",
+			"API",
+			"ricerca",
+			"ricerca sul web"
+		],
+		"home_page": ""
+	},
+	"ja-JP": {
+		"name": "ブレイブサーチ",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Brave Search APIを使用して検索する",
+		"description_markdown": "Brave Search API を使用した検索には API キーが必要です。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"勇敢な",
+			"API",
+			"検索",
+			"ウェブ検索"
+		],
+		"home_page": ""
+	},
+	"ko-KR": {
+		"name": "용감한 검색",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Brave Search API를 사용하여 검색",
+		"description_markdown": "Brave Search API를 사용하여 검색하려면 API 키가 필요합니다.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"용감한",
+			"API",
+			"찾다",
+			"웹 검색"
+		],
+		"home_page": ""
+	},
+	"lzh": {
+		"name": "Brave 搜索",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "使用 Brave Search API 的搜索",
+		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"brave",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"nl-NL": {
+		"name": "Moedig zoeken",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Zoek met de Brave Search-API",
+		"description_markdown": "Voor zoekopdrachten met de Brave Search API is een API-sleutel vereist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"moedig",
+			"api",
+			"zoekopdracht",
+			"web-zoeken"
+		],
+		"home_page": ""
+	},
+	"pt-PT": {
+		"name": "Busca corajosa",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Pesquise usando a API Brave Search",
+		"description_markdown": "As pesquisas usando a API Brave Search requerem uma chave de API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"corajoso",
+			"API",
+			"procurar",
+			"pesquisa na web"
+		],
+		"home_page": ""
+	},
+	"ru-RU": {
+		"name": "Смелый поиск",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Поиск с использованием Brave Search API",
+		"description_markdown": "Для поиска с использованием Brave Search API требуется ключ API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"храбрый",
+			"API",
+			"поиск",
+			"веб-поиск"
+		],
+		"home_page": ""
+	},
+	"uk-UA": {
+		"name": "Відважний пошук",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Шукайте за допомогою Brave Search API",
+		"description_markdown": "Для пошуку за допомогою Brave Search API потрібен ключ API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"хоробрий",
+			"api",
+			"пошук",
+			"веб-пошук"
+		],
+		"home_page": ""
+	},
+	"vi-VN": {
+		"name": "Tìm kiếm dũng cảm",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Tìm kiếm bằng API tìm kiếm dũng cảm",
+		"description_markdown": "Các tìm kiếm sử dụng API tìm kiếm dũng cảm yêu cầu khóa API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"can đảm",
+			"API",
+			"tìm kiếm",
+			"tìm kiếm trên web"
+		],
+		"home_page": ""
+	},
+	"zh-TW": {
+		"name": "Brave 搜索",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "使用 Brave Search API 的搜索",
+		"description_markdown": "使用 Brave Search API 實現的搜索，需要 API 密鑰。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"brave",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	}
+}

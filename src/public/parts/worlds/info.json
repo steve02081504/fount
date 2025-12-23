@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Worlds",
+		"description": "Worlds manager"
+	},
+	"zh-CN": {
+		"name": "世界",
+		"description": "世界管理器"
+	},
+	"ar-SA": {
+		"name": "عوالم",
+		"description": "مدير العالمين"
+	},
+	"de-DE": {
+		"name": "Welten",
+		"description": "Weltmanager"
+	},
+	"emoji": {
+		"name": "世界",
+		"description": "世界管理器"
+	},
+	"es-ES": {
+		"name": "Mundos",
+		"description": "Gestor de mundos"
+	},
+	"fr-FR": {
+		"name": "Mondes",
+		"description": "Gestionnaire de mondes"
+	},
+	"hi-IN": {
+		"name": "संसारों",
+		"description": "विश्व प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Heimir",
+		"description": "Heimsstjóri"
+	},
+	"it-IT": {
+		"name": "Mondi",
+		"description": "Direttore dei mondi"
+	},
+	"ja-JP": {
+		"name": "世界",
+		"description": "ワールドマネージャー"
+	},
+	"ko-KR": {
+		"name": "세계",
+		"description": "월드 매니저"
+	},
+	"lzh": {
+		"name": "世界",
+		"description": "世界管理器"
+	},
+	"nl-NL": {
+		"name": "Werelden",
+		"description": "Wereldmanager"
+	},
+	"pt-PT": {
+		"name": "Mundos",
+		"description": "Gestor de mundos"
+	},
+	"ru-RU": {
+		"name": "Миры",
+		"description": "Менеджер миров"
+	},
+	"uk-UA": {
+		"name": "Світи",
+		"description": "Менеджер світів"
+	},
+	"vi-VN": {
+		"name": "thế giới",
+		"description": "Người quản lý thế giới"
+	},
+	"zh-TW": {
+		"name": "世界",
+		"description": "世界管理器"
+	}
+}

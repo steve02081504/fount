@@ -1,0 +1,287 @@
+{
+	"en-UK": {
+		"name": "Weighted Random",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Weighted Random",
+		"description_markdown": "Selects a source randomly based on configured weights.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"random",
+			"utility",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"zh-CN": {
+		"name": "加权随机",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "加权随机",
+		"description_markdown": "根据配置的权重随机选择一个源。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"随机",
+			"实用工具",
+			"元"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ar-SA": {
+		"name": "عشوائي مرجح",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "عشوائي مرجح",
+		"description_markdown": "يختار مصدرًا عشوائيًا بناءً على الأوزان المكونة.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"عشوائي",
+			"أداة",
+			"ميتا"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"de-DE": {
+		"name": "Gewichteter Zufall",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Gewichteter Zufall",
+		"description_markdown": "Wählt eine Quelle zufällig basierend auf konfigurierten Gewichten aus.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Zufall",
+			"Dienstprogramm",
+			"Meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"emoji": {
+		"name": "🎲❓",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "🎲⚖️🤞",
+		"description_markdown": "⚖️➡️🎲➡️🤖",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"🎲",
+			"⚖️",
+			"❓"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"es-ES": {
+		"name": "Aleatorio ponderado",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Aleatorio ponderado",
+		"description_markdown": "Selecciona una fuente al azar en función de los pesos configurados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"aleatorio",
+			"utilidad",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"fr-FR": {
+		"name": "Aléatoire pondéré",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Aléatoire pondéré",
+		"description_markdown": "Sélectionne une source au hasard en fonction des poids configurés.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"aléatoire",
+			"utilitaire",
+			"méta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"hi-IN": {
+		"name": "भारित यादृच्छिक",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "भारित यादृच्छिक",
+		"description_markdown": "कॉन्फ़िगर किए गए भार के आधार पर यादृच्छिक रूप से एक स्रोत का चयन करता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"यादृच्छिक",
+			"उपयोगिता",
+			"मेटा"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"is-IS": {
+		"name": "Vegið slembiúrtak",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Vegið slembiúrtak",
+		"description_markdown": "Velur heimild af handahófi miðað við stilltar þyngdir.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"slembiúrtak",
+			"gagnsemi",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"it-IT": {
+		"name": "Casuale ponderato",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Casuale ponderato",
+		"description_markdown": "Seleziona una fonte in modo casuale in base ai pesi configurati.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"casuale",
+			"utilità",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ja-JP": {
+		"name": "加重ランダム",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "加重ランダム",
+		"description_markdown": "設定された重みに基づいてソースをランダムに選択します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"ランダム",
+			"ユーティリティ",
+			"メタ"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ko-KR": {
+		"name": "가중 무작위",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "가중 무작위",
+		"description_markdown": "구성된 가중치에 따라 무작위로 소스를 선택합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"무작위",
+			"유틸리티",
+			"메타"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"lzh": {
+		"name": "權衡隨機",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "權衡隨機",
+		"description_markdown": "依權重之差，隨機取源，如探囊取物。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"隨機",
+			"器用",
+			"元"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"nl-NL": {
+		"name": "Gewogen willekeurig",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Gewogen willekeurig",
+		"description_markdown": "Selecteert willekeurig een bron op basis van geconfigureerde gewichten.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"willekeurig",
+			"hulpprogramma",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"pt-PT": {
+		"name": "Aleatório Ponderado",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Aleatório Ponderado",
+		"description_markdown": "Seleciona uma fonte aleatoriamente com base nos pesos configurados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"aleatório",
+			"utilitário",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ru-RU": {
+		"name": "Взвешенный случайный",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Взвешенный случайный",
+		"description_markdown": "Выбирает источник случайным образом на основе настроенных весов.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"случайный",
+			"утилита",
+			"мета"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"uk-UA": {
+		"name": "Зважений випадковий",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Зважений випадковий",
+		"description_markdown": "Вибирає джерело випадковим чином на основі налаштованих ваг.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"випадковий",
+			"утиліта",
+			"мета"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"vi-VN": {
+		"name": "Ngẫu nhiên có trọng số",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Ngẫu nhiên có trọng số",
+		"description_markdown": "Chọn một nguồn ngẫu nhiên dựa trên trọng số được định cấu hình.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"ngẫu nhiên",
+			"tiện ích",
+			"meta"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"zh-TW": {
+		"name": "加權隨機",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "加權隨機",
+		"description_markdown": "根據配置的權重隨機選擇一個來源。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"隨機",
+			"實用程式",
+			"元"
+		],
+		"provider": "fount",
+		"home_page": "https://github.com/steve02081504/fount"
+	}
+}

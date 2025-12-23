@@ -162,7 +162,7 @@ export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
-	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC']) starts[start] ??= true
 	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
@@ -184,7 +184,7 @@ export async function init(start_config) {
 		if (!await new IPCManager().startServer()) return false
 	}
 	let iconPromise
-	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
+	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) {
@@ -289,11 +289,13 @@ export async function init(start_config) {
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {
-		if (starts.Base.Jobs) setTimeout(() => { const Interval = setInterval(() => {
-			if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
-			clearInterval(Interval)
-			ReStartJobs()
-		}, 1000) }, 2000)
+		if (starts.Base.Jobs) setTimeout(() => {
+			const Interval = setInterval(() => {
+				if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
+				clearInterval(Interval)
+				ReStartJobs()
+			}, 1000)
+		}, 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
 		if (starts.Base.Idle) idleManager.start()
 		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
@@ -307,7 +309,7 @@ export async function init(start_config) {
 		})
 	}
 	if (starts.DiscordRPC) StartRPC()
-	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
+	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
 	return true
 }

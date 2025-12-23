@@ -14,7 +14,7 @@ async function main() {
 	const { default: pngToIco } = await import('npm:png-to-ico')
 	const svg = fs.readFileSync(__dirname + '/imgs/icon.svg', 'utf-8')
 	const favpngbuf = await resvg(svg).then(buffer => Buffer.from(buffer))
-	nicerWriteFileSync(__dirname + '/src/pages/favicon.png', favpngbuf)
+	nicerWriteFileSync(__dirname + '/src/public/pages/favicon.png', favpngbuf)
 	const favicobuf = await pngToIco(favpngbuf)
-	nicerWriteFileSync(__dirname + '/src/pages/favicon.ico', favicobuf)
+	nicerWriteFileSync(__dirname + '/src/public/pages/favicon.ico', favicobuf)
 }

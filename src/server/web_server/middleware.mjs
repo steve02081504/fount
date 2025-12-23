@@ -46,7 +46,7 @@ export function registerMiddleware(router) {
 
 	router.use(diff_if_auth(
 		cors(),
-		(_req, _res, next) => next()
+		(req, res, next) => next()
 	))
 
 	router.use(diff_if_auth(

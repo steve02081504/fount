@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="The Conduit: fount's API Proxy Gateway" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:proxy/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="For developers and integrators, this page unveils the fount API proxy—your connection for weaving fount's capabilities into other applications." />
+	<meta name="description" content="For developers and integrators, this page unveils the fount API proxy—your connection for weaving fount's capabilities into other applications." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="proxy.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="p-4 sm:p-8">
+	<div class="max-w-5xl mx-auto">
+		<!-- Hero Section -->
+		<div class="text-center mb-12">
+			<h1 class="text-4xl sm:text-5xl font-bold mb-4" data-i18n="proxy.heading"></h1>
+			<p class="text-lg sm:text-xl text-base-content/80" data-i18n="proxy.instruction"></p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<!-- Left Column -->
+			<div class="flex flex-col gap-6">
+				<!-- API Endpoint Card -->
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title" data-i18n="proxy.endpointSectionTitle"></h2>
+						<p data-i18n="proxy.endpointInstruction"></p>
+						<div class="form-control">
+							<div class="join w-full">
+								<input type="text" id="proxyApiUrl" class="input input-bordered join-item w-full" readonly data-i18n="proxy.apiUrlInput" />
+								<button class="btn btn-primary join-item" id="copyProxyButton" data-i18n="proxy.copyButton"></button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- API Key Card -->
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title" data-i18n="proxy.apiKeySectionTitle"></h2>
+						<div id="apiKeySection" class="text-center">
+							<!-- API Key will be rendered here by JS -->
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column -->
+			<div class="flex flex-col gap-6">
+				<!-- Usage Example Card -->
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title" data-i18n="proxy.usageExampleTitle"></h2>
+						<p data-i18n="proxy.usageExampleInstruction"></p>
+						<div class="mockup-code">
+							<pre data-prefix="$"><code>curl <span id="exampleUrl"></span>/v1/models -H "Authorization: Bearer &lt;YOUR_API_KEY&gt;"</code></pre>
+						</div>
+					</div>
+				</div>
+
+				<!-- Query String Auth Card -->
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<details class="collapse bg-base-200/50">
+							<summary class="collapse-title text-lg font-medium" data-i18n="proxy.queryStringSectionTitle"></summary>
+							<div class="collapse-content">
+								<p class="text-warning p-2 text-sm" data-i18n="proxy.queryStringWarning"></p>
+								<div class="form-control w-full mx-auto mt-4">
+									<label class="label"><span class="label-text" data-i18n="proxy.copyQueryStringUrlButton"></span></label>
+									<div class="join w-full">
+										<input type="text" id="proxyApiUrlQuery" class="input input-bordered join-item w-full" readonly />
+										<button class="btn btn-primary join-item" id="copyProxyQueryButton" data-i18n="proxy.copyButton"></button>
+									</div>
+								</div>
+							</div>
+						</details>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

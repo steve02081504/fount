@@ -31,9 +31,9 @@ get_system_locales() {
 	echo "${locales[@]}"
 }
 
-# 从 src/locales/list.csv 获取可用区域设置
+# 从 src/public/locales/list.csv 获取可用区域设置
 get_available_locales() {
-	local locale_list_file="$FOUNT_DIR/src/locales/list.csv"
+	local locale_list_file="$FOUNT_DIR/src/public/locales/list.csv"
 	if [ -f "$locale_list_file" ]; then
 		# 跳过标题并获取第一列
 		tail -n +2 "$locale_list_file" | cut -d, -f1
@@ -85,11 +85,11 @@ load_locale_data() {
 		FOUNT_LOCALE=$(get_best_locale "$system_locales" "$available_locales")
 		export FOUNT_LOCALE
 	fi
-	local locale_file="$FOUNT_DIR/src/locales/$FOUNT_LOCALE.json"
+	local locale_file="$FOUNT_DIR/src/public/locales/$FOUNT_LOCALE.json"
 	if [ ! -f "$locale_file" ]; then
 		FOUNT_LOCALE="en-UK"
 		export FOUNT_LOCALE
-		locale_file="$FOUNT_DIR/src/locales/en-UK.json"
+		locale_file="$FOUNT_DIR/src/public/locales/en-UK.json"
 	fi
 	# 检查 jq
 	if ! command -v jq &>/dev/null; then
@@ -598,7 +598,7 @@ get_profile_files() {
 
 # 函数: 创建桌面快捷方式
 create_desktop_shortcut() {
-	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
+	local icon_path="$FOUNT_DIR/src/public/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		install_package "xdg-open" "xdg-utils" || return 1
@@ -645,7 +645,7 @@ EOF
 		rm -rf "$app_path" # Clean up old version first
 
 		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
-		local icns_path="$FOUNT_DIR/src/pages/favicon.icns"
+		local icns_path="$FOUNT_DIR/src/public/pages/favicon.icns"
 		local icon_name="favicon.icns"
 		if [ ! -f "$icns_path" ] && command -v sips &>/dev/null; then
 			sips -s format icns "$icon_path" --out "$icns_path"

@@ -173,7 +173,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 		specScript.type = 'speculationrules'
 		specScript.textContent = JSON.stringify({
 			prerender: [{
-				urls: [hostUrl + '/shells/home']
+				urls: [hostUrl + '/parts/shells/home']
 			}]
 		})
 		document.head.prepend(specScript)
@@ -181,7 +181,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 	else {
 		const link = document.createElement('link')
 		link.rel = 'prerender'
-		link.href = hostUrl + '/shells/home'
+		link.href = hostUrl + '/parts/shells/home'
 		document.head.prepend(link)
 	}
 }

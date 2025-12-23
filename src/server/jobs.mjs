@@ -3,52 +3,47 @@ import { console } from '../scripts/i18n.mjs'
 
 import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { events } from './events.mjs'
-import { loadPart } from './managers/index.mjs'
+import { loadPart } from './parts_loader.mjs'
 import { save_config } from './server.mjs'
 
 /**
  * 启动一个新作业并保存其状态。
  * @param {string} username - 拥有该作业的用户的用户名。
- * @param {string} parttype - 作业所属部件的类型。
- * @param {string} partname - 作业所属部件的名称。
+ * @param {string} partpath - 作业所属部件的路径。
  * @param {string} uid - 作业的唯一标识符。
  * @param {any} [data=null] - 与作业关联的可选数据。
  * @returns {void}
  */
-export function StartJob(username, parttype, partname, uid, data = null) {
+export function StartJob(username, partpath, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}
-	jobs[parttype] ??= {}
-	jobs[parttype][partname] ??= {}
-	jobs[parttype][partname][uid] = data
+	jobs[partpath] ??= {}
+	jobs[partpath][uid] = data
 	try {
 		save_config()
 	}
 	catch (err) {
 		console.error(err)
-		EndJob(username, parttype, partname, uid)
+		EndJob(username, partpath, uid)
 	}
 }
 /**
  * 结束一个作业并移除其状态。
  * @param {string} username - 拥有该作业的用户的用户名。
- * @param {string} parttype - 作业所属部件的类型。
- * @param {string} partname - 作业所属部件的名称。
+ * @param {string} partpath - 作业所属部件的路径。
  * @param {string} uid - 作业的唯一标识符。
  * @returns {void}
  */
-export function EndJob(username, parttype, partname, uid) {
+export function EndJob(username, partpath, uid) {
 	const jobs = getUserByUsername(username).jobs ??= {}
-	if (jobs?.[parttype]?.[partname]?.[uid] !== undefined) {
-		delete jobs[parttype][partname][uid]
-		if (!Object.keys(jobs[parttype][partname]).length) {
-			delete jobs[parttype][partname]
-			if (!Object.keys(jobs[parttype]).length)
-				delete jobs[parttype]
-		}
+	if (jobs?.[partpath]?.[uid] !== undefined) {
+		delete jobs[partpath][uid]
+		if (!Object.keys(jobs[partpath]).length)
+			delete jobs[partpath]
+
 		save_config()
 	}
 	else {
-		console.warn('Job not found:', { username, parttype, partname, uid })
+		console.warn('Job not found:', { username, partpath, uid })
 		throw new Error('Job not found')
 	}
 }
@@ -60,14 +55,13 @@ export function EndJob(username, parttype, partname, uid) {
 async function startJobsOfUser(username) {
 	const jobs = getUserByUsername(username).jobs ?? {}
 	const promises = []
-	for (const parttype in jobs)
-		for (const partname in jobs[parttype])
-			for (const uid in jobs[parttype][partname])
-				promises.push((async () => {
-					console.logI18n('fountConsole.jobs.restartingJob', { username, parttype, partname, uid })
-					const part = await loadPart(username, parttype, partname)
-					await part.interfaces.jobs.ReStartJob(username, jobs[parttype][partname][uid] ?? uid)
-				})().catch(console.error))
+	for (const partpath in jobs)
+		for (const uid in jobs[partpath])
+			promises.push((async () => {
+				console.logI18n('fountConsole.jobs.restartingJob', { username, partpath, uid })
+				const part = await loadPart(username, partpath)
+				await part.interfaces.jobs.ReStartJob(username, jobs[partpath][uid] ?? uid)
+			})().catch(console.error))
 	await Promise.all(promises)
 	return promises.length
 }

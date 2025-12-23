@@ -11,7 +11,6 @@ import { ms } from '../scripts/ms.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { partTypeList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
 const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(async error => {
@@ -21,7 +20,7 @@ const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(as
 		hash: fallback.hash,
 		verify: fallback.verify,
 		Algorithm: {
-			Argon2id : fallback.argon2id
+			Argon2id: fallback.argon2id
 		}
 	}
 })
@@ -980,7 +979,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		console.error(`Failed to copy default user template for ${username}`, e)
 	}
 
-	for (const subdir of ['settings', ...partTypeList]) try {
+	for (const subdir of ['settings']) try {
 		fs.mkdirSync(path.join(userdir, subdir), { recursive: true })
 	} catch (e) {
 		console.error(`Failed to create user subdirectory: ${subdir}`, e)

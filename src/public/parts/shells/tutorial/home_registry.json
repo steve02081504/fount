@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "other",
+			"info": "tutorial.home_function_buttons.other",
+			"level": 100,
+			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "tutorial.home_function_buttons.other.sub_items.replay",
+					"level": 99,
+					"url": "/parts/shells:tutorial/",
+					"button": "<img src=\"https://api.iconify.design/line-md/backup-restore.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	]
+}

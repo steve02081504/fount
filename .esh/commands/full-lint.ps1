@@ -8,19 +8,21 @@ Get-ChildItem -Path "$psscriptroot/../.." -Recurse -File | Where-Object { $_.Ful
 	}
 	catch {
 		Write-Error "Failed to read file: $($_.Exception.Message)"
-		continue
+		return
 	}
 	if ([string]::IsNullOrEmpty($originalContent)) {
-		continue
+		return
 	}
 	if ($originalContent.IndexOf([char]0, 0, [System.Math]::Min($originalContent.Length, 10)) -ge 0) {
-		continue
+		return
 	}
 	$modifiedContent = $originalContent -replace '\r\n', '\n'
+	$modifiedContent = $modifiedContent -replace '\r', '\n'
+	$modifiedContent = $modifiedContent -replace '^\n+', ''
 	$modifiedContent = $modifiedContent.TrimEnd() + "`n"
 	if ($modifiedContent -ne $originalContent) {
 		try {
-			Set-Content -Path $_.FullName -Value $modifiedContent
+			[System.IO.File]::WriteAllText($_.FullName, $modifiedContent, [System.Text.UTF8Encoding]::new($false))
 		}
 		catch {
 			Write-Error "Failed to write file: $($_.Exception.Message)"

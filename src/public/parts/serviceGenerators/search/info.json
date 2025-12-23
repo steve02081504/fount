@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Search Service Generators",
+		"description": "Search Service Generators manager"
+	},
+	"zh-CN": {
+		"name": "搜索服务生成器",
+		"description": "搜索服务生成器管理器"
+	},
+	"ar-SA": {
+		"name": "مولدات خدمة البحث",
+		"description": "مدير مولدات خدمة البحث"
+	},
+	"de-DE": {
+		"name": "Suchdienstgeneratoren",
+		"description": "Suchdienstgeneratoren-Manager"
+	},
+	"emoji": {
+		"name": "搜索服务生成器",
+		"description": "搜索服务生成器管理器"
+	},
+	"es-ES": {
+		"name": "Generadores de servicios de búsqueda",
+		"description": "Administrador de generadores de servicios de búsqueda"
+	},
+	"fr-FR": {
+		"name": "Générateurs de services de recherche",
+		"description": "Gestionnaire de générateurs de services de recherche"
+	},
+	"hi-IN": {
+		"name": "खोज सेवा जेनरेटर",
+		"description": "खोज सेवा जेनरेटर प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Leitarþjónustuframleiðendur",
+		"description": "Umsjónarmaður leitarþjónustuframleiðenda"
+	},
+	"it-IT": {
+		"name": "Generatori di servizi di ricerca",
+		"description": "Gestore dei generatori di servizi di ricerca"
+	},
+	"ja-JP": {
+		"name": "検索サービス ジェネレーター",
+		"description": "検索サービス ジェネレーター マネージャー"
+	},
+	"ko-KR": {
+		"name": "검색 서비스 생성기",
+		"description": "검색 서비스 생성기 관리자"
+	},
+	"lzh": {
+		"name": "搜索服务生成器",
+		"description": "搜索服务生成器管理器"
+	},
+	"nl-NL": {
+		"name": "Zoekservicegeneratoren",
+		"description": "Beheerder van zoekservicegeneratoren"
+	},
+	"pt-PT": {
+		"name": "Geradores de serviços de pesquisa",
+		"description": "Gerente de geradores de serviços de pesquisa"
+	},
+	"ru-RU": {
+		"name": "Генераторы поисковых сервисов",
+		"description": "Менеджер генераторов поисковых сервисов"
+	},
+	"uk-UA": {
+		"name": "Генератори служби пошуку",
+		"description": "Менеджер генераторів служби пошуку"
+	},
+	"vi-VN": {
+		"name": "Trình tạo dịch vụ tìm kiếm",
+		"description": "Trình quản lý trình tạo dịch vụ tìm kiếm"
+	},
+	"zh-TW": {
+		"name": "搜索服務生成器",
+		"description": "搜索服務生成器管理器"
+	}
+}

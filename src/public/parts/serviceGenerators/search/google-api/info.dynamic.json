@@ -1,0 +1,59 @@
+{
+	"en-UK": {
+		"provider": "Google API"
+	},
+	"zh-CN": {
+		"provider": "Google API"
+	},
+	"ar-SA": {
+		"provider": "Google API"
+	},
+	"de-DE": {
+		"provider": "Google API"
+	},
+	"emoji": {
+		"provider": "Google API"
+	},
+	"es-ES": {
+		"provider": "Google API"
+	},
+	"fr-FR": {
+		"provider": "Google API"
+	},
+	"hi-IN": {
+		"provider": "Google API"
+	},
+	"is-IS": {
+		"provider": "Google API"
+	},
+	"it-IT": {
+		"provider": "Google API"
+	},
+	"ja-JP": {
+		"provider": "Google API"
+	},
+	"ko-KR": {
+		"provider": "Google API"
+	},
+	"lzh": {
+		"provider": "Google API"
+	},
+	"nl-NL": {
+		"provider": "Google API"
+	},
+	"pt-PT": {
+		"provider": "Google API"
+	},
+	"ru-RU": {
+		"provider": "Google API"
+	},
+	"uk-UA": {
+		"provider": "Google API"
+	},
+	"vi-VN": {
+		"provider": "Google API"
+	},
+	"zh-TW": {
+		"provider": "Google API"
+	}
+}

@@ -21,7 +21,7 @@ except NameError:
 	MY_DIR = os.path.abspath(".")
 	print("警告: 无法确定脚本精确位置，假设在项目子目录中运行。")
 
-LOCALE_DIR = os.path.join(MY_DIR, "../../src/locales")
+LOCALE_DIR = os.path.join(MY_DIR, "../../src/public/locales")
 FOUNT_DIR = os.path.join(MY_DIR, "../../")  # fount文件夹的路径
 
 # 参考语言优先级列表
@@ -429,6 +429,26 @@ def sync_info_content(info_data, available_lang_codes):
 	"""
 	changed = False
 
+	# 0. 处理空字符串key：将 "" 视为 "en-UK"
+	if "" in info_data:
+		empty_key_data = info_data[""]
+		if "en-UK" in info_data:
+			# 如果 "en-UK" 已存在，合并数据（空字符串key的数据优先）
+			print(f"    - 将空字符串key的数据合并到 'en-UK'")
+			en_uk_data = info_data["en-UK"]
+			if isinstance(empty_key_data, (dict, OrderedDict)) and isinstance(en_uk_data, (dict, OrderedDict)):
+				# 合并：空字符串key的值覆盖en-UK的值
+				for k, v in empty_key_data.items():
+					en_uk_data[k] = v
+			del info_data[""]
+			changed = True
+		else:
+			# 如果 "en-UK" 不存在，将空字符串key重命名为 "en-UK"
+			print(f"    - 将空字符串key重命名为 'en-UK'")
+			info_data["en-UK"] = info_data[""]
+			del info_data[""]
+			changed = True
+
 	# 1. 确定参考源 (Source of Truth)
 	source_lang = None
 	for ref in REFERENCE_LANG_CODES:
@@ -731,15 +751,25 @@ def levenshtein_distance(s1, s2):
 	return previous_row[-1]
 
 
-def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data) -> bool:
-	"""处理占位符数量不匹配的情况：打印警告并清空翻译。"""
+def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data, source_text, source_lang_code) -> bool:
+	"""处理占位符数量不匹配的情况：重新翻译而不是清空。"""
 	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
-	print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-	return update_translation_at_path_in_data(lang_file_data, key_path, None)
+	print(f"    - 重新翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
+
+	if source_text and source_lang_code:
+		translated = translate_text(source_text, source_lang_code, lang_code)
+		if translated is not None:
+			return update_translation_at_path_in_data(lang_file_data, key_path, translated)
+		else:
+			print(f"      - 重新翻译失败，保留原文本。")
+			return False
+	else:
+		print(f"      - 无法找到源文本，跳过重新翻译。")
+		return False
 
 
-def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data) -> bool:
-	"""处理占位符名称不匹配的情况：尝试修复或清空翻译。"""
+def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code) -> bool:
+	"""处理占位符名称不匹配的情况：尝试修复或重新翻译。"""
 	original_text = lang_info["text"]
 	reason = f"占位符名称集不匹配 (当前: {sorted(list(set(current_ph_list_ordered)))}, 规范: {sorted(list(canonical_placeholder_set))})"
 	print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
@@ -749,8 +779,17 @@ def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_
 	if repair_successful and fixed_text is not None:
 		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text)
 	else:
-		print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
-		return update_translation_at_path_in_data(lang_file_data, key_path, None)
+		print(f"      - 无法自信地修复占位符名称。将重新翻译。键: '{key_path}', 语言: '{lang_code}'.")
+		if source_text and source_lang_code:
+			translated = translate_text(source_text, source_lang_code, lang_code)
+			if translated is not None:
+				return update_translation_at_path_in_data(lang_file_data, key_path, translated)
+			else:
+				print(f"        - 重新翻译失败，保留原文本。")
+				return False
+		else:
+			print(f"        - 无法找到源文本，跳过重新翻译。")
+			return False
 
 
 def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
@@ -776,14 +815,16 @@ def align_placeholders_with_list(original_text_with_placeholders: str, new_place
 
 
 def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], most_frequent_count: int, reference_lang_codes: list[str]) -> list[str] | None:
-	"""根据参考语言优先级和最常见数量，确定规范的占位符列表。"""
+	"""根据参考语言优先级确定规范的占位符列表（以REFERENCE_LANG_CODES最上方的为准）。"""
+	# 直接返回REFERENCE_LANG_CODES中第一个存在的语言的占位符列表
 	for ref_lang_code in reference_lang_codes:
-		if ref_lang_code in placeholders_by_lang and len(placeholders_by_lang[ref_lang_code]) == most_frequent_count:
+		if ref_lang_code in placeholders_by_lang:
 			return placeholders_by_lang[ref_lang_code]
 
-	for lang_code in sorted(placeholders_by_lang.keys()):
-		if len(placeholders_by_lang[lang_code]) == most_frequent_count:
-			return placeholders_by_lang[lang_code]
+	# 如果参考语言都不存在，返回第一个可用语言的占位符列表
+	if placeholders_by_lang:
+		first_lang = sorted(placeholders_by_lang.keys())[0]
+		return placeholders_by_lang[first_lang]
 
 	return None
 
@@ -827,14 +868,14 @@ def attempt_placeholder_name_fix(original_text: str, current_ph_list_ordered: li
 	return None, False
 
 
-def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]]) -> bool:
+def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None) -> bool:
 	"""对单个语言条目的占位符进行对齐，返回是否发生更改。"""
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
 
 	if len(current_ph_list_ordered) != most_frequent_count:
-		return handle_placeholder_count_mismatch(lang_code, lang_info, key_path, len(current_ph_list_ordered), most_frequent_count, lang_file_data)
+		return handle_placeholder_count_mismatch(lang_code, lang_info, key_path, len(current_ph_list_ordered), most_frequent_count, lang_file_data, source_text, source_lang_code)
 	elif set(current_ph_list_ordered) != canonical_placeholder_set:
-		return handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data)
+		return handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code)
 
 	return False
 
@@ -861,19 +902,40 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			continue
 
 		placeholders_by_lang = {lang: extract_placeholders(info["text"]) for lang, info in string_values_info.items()}
-		counts = [len(p) for p in placeholders_by_lang.values()]
-		if not counts:
+		if not placeholders_by_lang:
 			continue
 
-		most_frequent_count = Counter(counts).most_common(1)[0][0]
-		canonical_list = find_canonical_placeholder_list(placeholders_by_lang, most_frequent_count, reference_lang_codes_list)
+		# 找到源语言（参考语言，Source of Truth）
+		source_lang_code = None
+		source_text = None
+		for ref_lang_code in reference_lang_codes_list:
+			if ref_lang_code in string_values_info:
+				source_lang_code = ref_lang_code
+				source_text = string_values_info[ref_lang_code]["text"]
+				break
+		# 如果参考语言都不存在，使用第一个可用语言
+		if source_lang_code is None and string_values_info:
+			first_lang = sorted(string_values_info.keys())[0]
+			source_lang_code = first_lang
+			source_text = string_values_info[first_lang]["text"]
 
-		if canonical_list is None:
-			if most_frequent_count == 0:
-				canonical_list = []
-			else:
-				print(f"    - 警告: 键 '{key_path}' 无法确定规范占位符列表。跳过此键。")
-				continue
+		# 独裁：以参考语言（Source of Truth）为准，而不是"民主投票"
+		if source_lang_code and source_lang_code in placeholders_by_lang:
+			# 使用参考语言的占位符列表和数量作为标准
+			canonical_list = placeholders_by_lang[source_lang_code]
+			canonical_count = len(canonical_list)
+		else:
+			# 如果参考语言不存在，回退到使用频率最高的方式（但这种情况应该很少见）
+			counts = [len(p) for p in placeholders_by_lang.values()]
+			canonical_count = Counter(counts).most_common(1)[0][0]
+			canonical_list = find_canonical_placeholder_list(placeholders_by_lang, canonical_count, reference_lang_codes_list)
+			if canonical_list is None:
+				if canonical_count == 0:
+					canonical_list = []
+				else:
+					print(f"    - 警告: 键 '{key_path}' 无法确定规范占位符列表。跳过此键。")
+					continue
+
 		canonical_set = set(canonical_list)
 
 		for lang_code, lang_info in string_values_info.items():
@@ -881,7 +943,11 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			if not lang_file_data:
 				continue
 
-			if align_single_translation_placeholders(lang_code, lang_info, key_path, most_frequent_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang):
+			# 如果当前语言就是源语言，跳过（不需要重新翻译自己）
+			if lang_code == source_lang_code:
+				continue
+
+			if align_single_translation_placeholders(lang_code, lang_info, key_path, canonical_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang, source_text, source_lang_code):
 				overall_changes_made = True
 
 	print("--- 全局占位符验证和修复过程已完成 ---")
@@ -1199,7 +1265,7 @@ def main():
 
 	process_info_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
 
-	ts_decl_path = os.path.join(LOCALE_DIR, "../decl/locale_data.ts")
+	ts_decl_path = os.path.join(LOCALE_DIR, "../../decl/locale_data.ts")
 	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
 
 	generate_list_csv(all_data)

@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "AI Service Generators",
+		"description": "AI Service Generators manager"
+	},
+	"zh-CN": {
+		"name": "AI服务生成器",
+		"description": "AI服务生成器管理器"
+	},
+	"ar-SA": {
+		"name": "مولدات خدمة الذكاء الاصطناعي",
+		"description": "مدير مولدات خدمة الذكاء الاصطناعي"
+	},
+	"de-DE": {
+		"name": "KI-Servicegeneratoren",
+		"description": "KI-Servicegeneratoren-Manager"
+	},
+	"emoji": {
+		"name": "AI服务生成器",
+		"description": "AI服务生成器管理器"
+	},
+	"es-ES": {
+		"name": "Generadores de servicios de IA",
+		"description": "Administrador de generadores de servicios de IA"
+	},
+	"fr-FR": {
+		"name": "Générateurs de services IA",
+		"description": "Gestionnaire de générateurs de services IA"
+	},
+	"hi-IN": {
+		"name": "एआई सेवा जेनरेटर",
+		"description": "एआई सेवा जेनरेटर प्रबंधक"
+	},
+	"is-IS": {
+		"name": "AI þjónusturafallar",
+		"description": "Umsjónarmaður AI þjónusturafalla"
+	},
+	"it-IT": {
+		"name": "Generatori di servizi AI",
+		"description": "Gestore dei generatori di servizi AI"
+	},
+	"ja-JP": {
+		"name": "AI サービス ジェネレーター",
+		"description": "AI サービス ジェネレーター マネージャー"
+	},
+	"ko-KR": {
+		"name": "AI 서비스 생성기",
+		"description": "AI 서비스 생성기 관리자"
+	},
+	"lzh": {
+		"name": "AI服务生成器",
+		"description": "AI服务生成器管理器"
+	},
+	"nl-NL": {
+		"name": "AI-servicegeneratoren",
+		"description": "Beheerder van AI-servicegeneratoren"
+	},
+	"pt-PT": {
+		"name": "Geradores de serviços de IA",
+		"description": "Gerente de geradores de serviços de IA"
+	},
+	"ru-RU": {
+		"name": "Генераторы сервисов ИИ",
+		"description": "Менеджер генераторов сервисов ИИ"
+	},
+	"uk-UA": {
+		"name": "Генератори послуг ШІ",
+		"description": "Менеджер генераторів послуг ШІ"
+	},
+	"vi-VN": {
+		"name": "Trình tạo dịch vụ AI",
+		"description": "Trình quản lý trình tạo dịch vụ AI"
+	},
+	"zh-TW": {
+		"name": "AI服務生成器",
+		"description": "AI服務生成器管理器"
+	}
+}

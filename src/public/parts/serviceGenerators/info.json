@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Service Generators",
+		"description": "Service Generators manager"
+	},
+	"zh-CN": {
+		"name": "服务生成器",
+		"description": "服务生成器管理器"
+	},
+	"ar-SA": {
+		"name": "مولدات الخدمة",
+		"description": "مدير خدمة المولدات"
+	},
+	"de-DE": {
+		"name": "Servicegeneratoren",
+		"description": "Service-Generator-Manager"
+	},
+	"emoji": {
+		"name": "服务生成器",
+		"description": "服务生成器管理器"
+	},
+	"es-ES": {
+		"name": "Generadores de servicios",
+		"description": "Administrador de generadores de servicios"
+	},
+	"fr-FR": {
+		"name": "Générateurs de services",
+		"description": "Gestionnaire de générateurs de services"
+	},
+	"hi-IN": {
+		"name": "सेवा जेनरेटर",
+		"description": "सेवा जेनरेटर प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Þjónustuframleiðendur",
+		"description": "Framkvæmdastjóri Service Generators"
+	},
+	"it-IT": {
+		"name": "Generatori di servizi",
+		"description": "Gestore dei generatori di servizi"
+	},
+	"ja-JP": {
+		"name": "サービスジェネレータ",
+		"description": "サービス ジェネレーター マネージャー"
+	},
+	"ko-KR": {
+		"name": "서비스 생성기",
+		"description": "서비스 생성기 관리자"
+	},
+	"lzh": {
+		"name": "服务生成器",
+		"description": "服务生成器管理器"
+	},
+	"nl-NL": {
+		"name": "Servicegeneratoren",
+		"description": "Manager Servicegeneratoren"
+	},
+	"pt-PT": {
+		"name": "Geradores de serviço",
+		"description": "Gestor de geradores de serviço"
+	},
+	"ru-RU": {
+		"name": "Сервисные генераторы",
+		"description": "Менеджер по сервисным генераторам"
+	},
+	"uk-UA": {
+		"name": "Генератори послуг",
+		"description": "Менеджер генераторів послуг"
+	},
+	"vi-VN": {
+		"name": "Trình tạo dịch vụ",
+		"description": "Trình quản lý trình tạo dịch vụ"
+	},
+	"zh-TW": {
+		"name": "服務生成器",
+		"description": "服務生成器管理器"
+	}
+}

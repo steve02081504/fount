@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     paths:
-      - 'src/locales/**.json'
+      - 'src/public/locales/**.json'
       - '**/home_registry.json'
       - '**/info.json'
       - '**/info.dynamic.json'

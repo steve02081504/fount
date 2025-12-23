@@ -1,0 +1,37 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "component_related",
+			"info": "export.home_function_buttons.component_related",
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "export.home_function_buttons.component_related.sub_items.exportPart",
+					"level": 2,
+					"url": "/parts/shells:export/",
+					"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	],
+	"home_drag_out_generators": [
+		{
+			"id": "generateDownloadUrl",
+			"level": 0,
+			"type": "DownloadURL",
+			"path": "/parts/shells:export/drag_generators/download_url.mjs",
+			"info": "export.home_drag_out_generators.generateDownloadUrl"
+		}
+	],
+	"home_interfaces": {
+		"*": [
+			{
+				"info": "export.home_common_interfaces.main",
+				"level": 2,
+				"url": "/parts/shells:export/?partpath=${path}",
+				"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
+			}
+		]
+	}
+}

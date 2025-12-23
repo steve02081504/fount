@@ -1,0 +1,230 @@
+{
+	"en-UK": {
+		"name": "fount root part",
+		"avatar": "/favicon.svg",
+		"description": "fount root part",
+		"description_markdown": "This is the root part of fount, loads all parts on it.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system"
+		]
+	},
+	"zh-CN": {
+		"name": "根部部分",
+		"avatar": "/favicon.svg",
+		"description": "根部部分",
+		"description_markdown": "这是fount的根部分，将所有部分加载到上面。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统"
+		]
+	},
+	"ar-SA": {
+		"name": "الجزء الجذر وجدت",
+		"avatar": "/favicon.svg",
+		"description": "الجزء الجذر وجدت",
+		"description_markdown": "هذا هو الجزء الجذري للينبوع، ويقوم بتحميل جميع الأجزاء عليه.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام"
+		]
+	},
+	"de-DE": {
+		"name": "Quellwurzelteil",
+		"avatar": "/favicon.svg",
+		"description": "Quellwurzelteil",
+		"description_markdown": "Dies ist der Stammteil von fount, der alle Teile darauf lädt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System"
+		]
+	},
+	"emoji": {
+		"avatar": "/favicon.svg",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			null
+		],
+		"name": "根部部分",
+		"description": "根部部分",
+		"description_markdown": "这是fount的根部分，将所有部分加载到上面。"
+	},
+	"es-ES": {
+		"name": "parte de la raíz de la fuente",
+		"avatar": "/favicon.svg",
+		"description": "parte de la raíz de la fuente",
+		"description_markdown": "Esta es la parte raíz de la fuente, carga todas las partes en ella.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema"
+		]
+	},
+	"fr-FR": {
+		"name": "partie racine de la police",
+		"avatar": "/favicon.svg",
+		"description": "partie racine de la police",
+		"description_markdown": "Il s'agit de la partie racine de la police, elle y charge toutes les parties.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système"
+		]
+	},
+	"hi-IN": {
+		"name": "फव्वारा मूल भाग",
+		"avatar": "/favicon.svg",
+		"description": "फव्वारा मूल भाग",
+		"description_markdown": "यह फाउंटेन का मूल भाग है, इस पर सभी भागों को लोड करता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली"
+		]
+	},
+	"is-IS": {
+		"name": "uppspretturótarhluti",
+		"avatar": "/favicon.svg",
+		"description": "uppspretturótarhluti",
+		"description_markdown": "Þetta er rótarhluti uppsprettu, hleður alla hluta á hann.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi"
+		]
+	},
+	"it-IT": {
+		"name": "parte della radice della fonte",
+		"avatar": "/favicon.svg",
+		"description": "parte della radice della fonte",
+		"description_markdown": "Questa è la parte radice del font, carica tutte le parti su di essa.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema"
+		]
+	},
+	"ja-JP": {
+		"name": "ルート部分を見つける",
+		"avatar": "/favicon.svg",
+		"description": "ルート部分を見つける",
+		"description_markdown": "これは fount のルート部分であり、すべての部分をロードします。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム"
+		]
+	},
+	"ko-KR": {
+		"name": "분수 뿌리부분",
+		"avatar": "/favicon.svg",
+		"description": "분수 뿌리부분",
+		"description_markdown": "이것은 fount의 루트 부분으로 모든 부분을 로드합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"체계"
+		]
+	},
+	"lzh": {
+		"avatar": "/favicon.svg",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			null
+		],
+		"name": "根部部分",
+		"description": "根部部分",
+		"description_markdown": "这是fount的根部分，将所有部分加载到上面。"
+	},
+	"nl-NL": {
+		"name": "bronwortelgedeelte",
+		"avatar": "/favicon.svg",
+		"description": "bronwortelgedeelte",
+		"description_markdown": "Dit is het hoofdgedeelte van font en laadt alle onderdelen erop.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem"
+		]
+	},
+	"pt-PT": {
+		"name": "parte da raiz da fonte",
+		"avatar": "/favicon.svg",
+		"description": "parte da raiz da fonte",
+		"description_markdown": "Esta é a parte raiz da fonte, carrega todas as partes nela.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema"
+		]
+	},
+	"ru-RU": {
+		"name": "Корневая часть фундамента",
+		"avatar": "/favicon.svg",
+		"description": "Корневая часть фундамента",
+		"description_markdown": "Это корневая часть фонда, в нее загружаются все части.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система"
+		]
+	},
+	"uk-UA": {
+		"name": "коренева частина джерела",
+		"avatar": "/favicon.svg",
+		"description": "коренева частина джерела",
+		"description_markdown": "Це коренева частина фонту, завантажує всі її частини.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система"
+		]
+	},
+	"vi-VN": {
+		"name": "phần gốc của đài phun nước",
+		"avatar": "/favicon.svg",
+		"description": "phần gốc của đài phun nước",
+		"description_markdown": "Đây là phần gốc của foun, tải tất cả các phần trên đó.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống"
+		]
+	},
+	"zh-TW": {
+		"name": "根部部分",
+		"avatar": "/favicon.svg",
+		"description": "根部部分",
+		"description_markdown": "這是fount的根部分，將所有部分加載到上面。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統"
+		]
+	}
+}

@@ -1,0 +1,2257 @@
+{
+	"lang": "ja-JP",
+	"name": "日本語",
+	"fountConsole": {
+		"server": {
+			"start": "サーバーを起動しています。",
+			"starting": "サーバー起動中...",
+			"ready": "サーバーが起動しました。",
+			"standingBy": "Standing by...",
+			"showUrl": {
+				"https": "HTTPSサーバーが ${url} で実行されています。",
+				"http": "HTTPサーバーが ${url} で実行されています。"
+			},
+			"mdns": {
+				"description": "想いを形に、心を繋ぐ",
+				"failed": "mDNS 登録に失敗しました: ${error}",
+				"bonjourFailed": "Bonjour サービスの作成に失敗しました: ${error}"
+			},
+			"localUrl": "同じネットワーク上の他のデバイスからのfountへのアクセス：${url}",
+			"update": {
+				"restarting": "新しいバージョンが発見され、更新が再起動されています..."
+			}
+		},
+		"jobs": {
+			"restartingJob": "ユーザー ${username} のタスク ${partpath} を再起動しています: ${uid}"
+		},
+		"ipc": {
+			"serverStarted": "IPCサーバーが起動しました。",
+			"instanceRunning": "別のインスタンスが既に実行中です。",
+			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
+			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
+			"invalidCommand": "無効なコマンドです。「fount run <部品タイプ> <ユーザー名> <部品名> <パラメーター...>」を使用してください。",
+			"invalidCommandFormat": "無効なコマンド形式です。",
+			"unsupportedCommand": "サポートされていないコマンドタイプです。",
+			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
+			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
+			"socketError": "ソケットエラー：${error}",
+			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
+			"cannotParseResponse": "サーバー応答を解析できません。",
+			"unknownError": "不明なエラーが発生しました。"
+		},
+		"partManager": {
+			"partInited": "コンポーネント ${partpath} が初期化されました",
+			"partLoaded": "コンポーネント ${partpath} がロードされました",
+			"git": {
+				"updating": "リモートリポジトリから更新中です...",
+				"upToDate": "既に最新です。",
+				"localAhead": "ローカルブランチがリモートブランチよりも進んでいます。更新は不要です。",
+				"noUpstream": "ブランチ「${currentBranch}」にアップストリームブランチが設定されていません。更新チェックをスキップします。",
+				"dirtyWorkingDirectory": "作業ディレクトリがクリーンではありません。更新前に変更をスタッシュするかコミットしてください。",
+				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制的に更新しています...",
+				"updateFailed": "リモートリポジトリから部品を更新できませんでした：${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "リクエストを受信しました：${method} ${url}",
+			"frontendFilesChanged": "フロントエンド ファイル [${path}] が変更されたため、クライアントにリロードするように通知されています。"
+		},
+		"route": {
+			"setLanguagePreference": "ユーザー「${username}」が優先言語を設定しました：${preferredLanguages}"
+		},
+		"auth": {
+			"accountLockedLog": "ログイン試行が複数回失敗したため、ユーザー「${username}」のアカウントはロックされました。",
+			"tokenVerifyError": "トークン検証エラー：${error}",
+			"refreshTokenError": "リフレッシュトークンエラー：${error}",
+			"logoutRefreshTokenProcessError": "ログアウトリフレッシュトークン処理エラー：${error}",
+			"revokeTokenNoJTI": "JTIのないトークンは取り消せません。"
+		},
+		"verification": {
+			"codeGeneratedLog": "認証コード：${code}（60秒後に期限切れとなります）",
+			"codeNotifyTitle": "認証コード",
+			"codeNotifyBody": "認証コード：${code}（60秒後に期限切れとなります）"
+		},
+		"tray": {
+			"title": "fount",
+			"tooltip": "fount",
+			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
+			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}",
+			"items": {
+				"open": {
+					"title": "開く",
+					"tooltip": "fountを開く"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "fountのGitHubを開く"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "fountのDiscordを開く"
+				},
+				"restart": {
+					"title": "再起動",
+					"tooltip": "アプリケーションを再起動します"
+				},
+				"exit": {
+					"title": "終了",
+					"tooltip": "アプリケーションを終了します"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
+		},
+		"telegrambot": {
+			"botStarted": "キャラクター「${charname}」がTelegramボット「${botusername}」にログインしました。"
+		},
+		"path": {
+			"protocol": {
+				"description": "URL: fount プロトコル",
+				"registerFailed": "fount:// プロトコル ハンドラーの登録に失敗しました: ${message}",
+				"noUrl": "エラー: プロトコルハンドラーの URL が指定されていません。"
+			},
+			"update": {
+				"skippingFountUpdate": ".noupdate ファイルが存在するため、カウントの更新はスキップされます",
+				"skippingDenoUpgradeDocker": "Docker環境でのDenoアップグレードのスキップ"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "${path} にデスクトップ ショートカットが作成されました",
+				"startMenuShortcutCreated": "${path} にスタート メニューのショートカットが作成されました",
+				"protocolHandlerRegistered": "fount:// プロトコル ハンドラーが登録されました。",
+				"shortcutNotSupported": "警告: ご使用のオペレーティング システム (${os}) はデスクトップ ショートカットの作成をサポートしていません。",
+				"osacompileNotFound": "エラー: 「osacompile」が見つかりません。 macOS アプリを作成できません。",
+				"lsregisterFailed": "警告: lsregister を使用してアプリケーションを LaunchServices に登録することに失敗しました。",
+				"createDesktopAppFailed": "エラー: デスクトップ アプリケーションの作成に失敗しました。"
+			},
+			"git": {
+				"repoNotFound": "Font の git リポジトリが見つかりませんでした。新しいものを初期化しています...",
+				"fetchingAndResetting": "リモートリポジトリから取得してマスターにリセットしています...",
+				"localChangesDetected": "ローカルの変更が検出されました。上書きする前に差分が保存されます。",
+				"backupSavedTo": "ローカルでの変更のバックアップが ${path} に保存されました。",
+				"updatingFromRemote": "リモート リポジトリから更新しています...",
+				"alreadyUpToDate": "もう最新です。",
+				"localBranchAhead": "ローカル ブランチはリモート ブランチよりも先にあります。アップデートは必要ありません。",
+				"branchesDiverged": "ローカル ブランチとリモート ブランチが分岐されました。強制アップデート中です...",
+				"notOnBranch": "ブランチ上にありません。「マスター」に切り替えてください...",
+				"noUpstreamBranch": "警告: ブランチ '${branch}' に対して上流ブランチが構成されていません。アップストリームを「オリジン/マスター」に設定します。",
+				"dirtyWorkingDirectory": "警告: 作業ディレクトリにコミットされていない変更があります。更新する前に、変更をステージングまたはコミットしてください。",
+				"notInstalled": "Git がインストールされていないため、インストールしようとしています...",
+				"notInstalledSkippingPull": "Git がインストールされていないため、git pull をスキップします",
+				"repoNotFoundSkippingPull": "リポジトリが見つかりません。git pull をスキップします",
+				"fetchFailed": "「origin」からの取得に失敗しました。",
+				"installFailedWinget": "Winget のインストールに失敗したため、Git をインストールできません。手動でインストールしてください。",
+				"installFailedManual": "Git をインストールできません。手動でインストールしてください。"
+			},
+			"deno": {
+				"missing": "Deno が見つかりません。自動的にインストールされます...",
+				"isRequired": "Deno が見つかりません。Deno なしでは fount を実行できません",
+				"installingTermux": "Termux 用の Deno をインストールしています...",
+				"installFailedFallback": "Deno のインストールが失敗しました。見つかったパス フォルダーに自動的にインストールしようとしています...",
+				"notWorking": "何らかの理由で Deno が動作しない場合は、https://discord.gg/deno に参加してサポートを受けることをお勧めします。",
+				"upgradeFailed": "警告: Deno のアップグレードが失敗した可能性があります。エラーがないか確認してください。",
+				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Deno for Termux を再インストールしようとしています...",
+				"patchMissing": "エラー: パッチ適用前に Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
+				"patchUnsupportedArch": "エラー: サポートされていないパッチ アーキテクチャ: ${arch}",
+				"patchFailed": "エラー: patchelf を使用して Deno 実行可能ファイルにパッチを適用できませんでした。"
+			},
+			"install": {
+				"installingDependencies": "依存関係をインストールしています...",
+				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
+				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
+				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",
+				"rootWarning1": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
+				"rootWarning2": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。"
+			},
+			"clean": {
+				"removingCaches": "キャッシュを削除しています...",
+				"reinstallingDependencies": "依存関係を再インストールしています...",
+				"cleaningDenoCaches": "Deno キャッシュをクリーニングしています...",
+				"cleaningOldPwshModules": "古い pwsh モジュールをクリーンアップしています..."
+			},
+			"keepalive": {
+				"initComplete": "再初期化が完了しました。フォントを再起動しようとしています...",
+				"autoInitDisabled": "fount は過去の短期間に複数回再起動されましたが、.noautoinit ファイルが存在するため自動再初期化が無効になっています。退出中。",
+				"restartingTooFast": "fount が短期間に複数回再起動されました。強制再初期化...",
+				"failedToStart": "自動修復を試みた後でも、噴水は短期間起動しません。ログでエラーを確認してください。",
+				"initFailed": "フォントの初期化に失敗しました。退出中。"
+			},
+			"remove": {
+				"removingFount": "フォントを削除しています...",
+				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
+				"removingFountInstallationDir": "fount インストール ディレクトリを削除しています...",
+				"fountInstallationDirRemoved": "fount のインストール ディレクトリは削除されました。",
+				"removingFountFromPath": "PATH からフォントを削除しています...",
+				"removingProtocolHandler": "fount:// プロトコル ハンドラーを削除しています...",
+				"protocolHandlerRemoved": "fount:// プロトコル ハンドラーは削除されました。",
+				"removeProtocolHandlerFailed": "fount:// プロトコル ハンドラーの削除に失敗しました: ${message}",
+				"removingFountFromGitSafeDir": "gitsafe.directory から fount を削除しています...",
+				"removingInstalledSystemPackages": "インストールされているシステム パッケージを削除しています...",
+				"uninstallingDeno": "Deno をアンインストールしています...",
+				"removeDenoFailed": "Deno を削除できませんでした: ${message}",
+				"removingFountPwshFromProfile": "PowerShell プロファイルから fount-pwsh を削除しています...",
+				"fountPwshRemovedFromProfile": "fount-pwsh は PowerShell プロファイルから削除されました。",
+				"pwshProfileNotFound": "PowerShell プロファイルが見つかりません。プロファイルからの fount-pwsh の削除はスキップされます。",
+				"uninstallingFountPwsh": "fount-pwsh をアンインストールしています...",
+				"uninstallFountPwshFailed": "fount-pwsh のアンインストールに失敗しました: ${message}",
+				"removingTerminalProfile": "Windows ターミナル プロファイルを削除しています...",
+				"terminalProfileRemoved": "Windows ターミナル プロファイル ディレクトリが削除されました。",
+				"terminalProfileNotFound": "Windows ターミナル プロファイル ディレクトリが見つかりません。",
+				"desktopShortcutRemoved": "デスクトップのショートカットが削除されました。",
+				"desktopShortcutNotFound": "デスクトップショートカットが見つかりません。",
+				"removingStartMenuShortcut": "スタート メニューのショートカットを削除しています...",
+				"startMenuShortcutRemoved": "「スタート」メニューのショートカットが削除されました。",
+				"startMenuShortcutNotFound": "[スタート] メニューのショートカットが見つかりません。",
+				"removingInstalledPwshModules": "インストールされている pwsh モジュールを削除しています...",
+				"moduleRemoved": "${module} が削除されました。",
+				"removeModuleFailed": "${module} の削除に失敗しました: ${message}",
+				"uninstallingGit": "Git をアンインストールしています...",
+				"uninstallingChrome": "Chrome をアンインストールしています...",
+				"uninstallingWinget": "Winget をアンインストールしています...",
+				"removingBackgroundRunner": "バックグラウンド プログラムを削除しています...",
+				"removeBackgroundRunnerFailed": "バックグラウンドで実行中のプログラムを削除できませんでした: ${message}"
+			}
+		}
+	},
+	"installer_wait_screen": {
+		"title": "fountへようこそ！",
+		"description": "インストールの進行状況を追跡し、その機能を垣間見てみましょう。すぐに fount を起動する準備が整います。",
+		"hero": {
+			"title": "想いを形に、心を繋ぐ",
+			"description": "fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
+		},
+		"feature1": {
+			"title": "どこでもシームレスな対話を",
+			"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
+		},
+		"feature2": {
+			"title": "美しく、カスタマイズ可能なインターフェース",
+			"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
+		},
+		"feature3": {
+			"title": "表現力豊かで、没入感あふれるチャット",
+			"description": "fountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
+		},
+		"feature4": {
+			"title": "AIソースとの自由な連携",
+			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+		},
+		"language_selector": {
+			"button": {
+				"aria-label": "言語を選択"
+			},
+			"search": {
+				"placeholder": "言語を検索..."
+			}
+		},
+		"theme_selector": {
+			"title": "テーマを選択",
+			"description": "テーマを選択して、あなただけの体験をカスタマイズしましょう。",
+			"search": {
+				"placeholder": "テーマを検索..."
+			}
+		},
+		"mini_game": {
+			"title": "ミニゲームでひと息",
+			"description1": "インストールに時間がかかりすぎていませんか？",
+			"description2": "ここでミニゲームをして、少し時間を潰しましょう。"
+		},
+		"data_showcase": {
+			"title_prefix": "fountは最も",
+			"title_of": "",
+			"active_users": "アクティブユーザー数",
+			"stars": "GitHubスター",
+			"adjectives": [
+				"拡張性のある",
+				"ポテンシャルのある",
+				"先進的な",
+				"互換性のある",
+				"コンパクトでパワフルな"
+			],
+			"nouns": [
+				"AIキャラクター",
+				"エージェント",
+				"サイバーワイフ",
+				"デジタルアシスタント"
+			],
+			"platforms": [
+				"ベースプラットフォーム",
+				"チャットフロントエンド",
+				"ランタイム"
+			]
+		},
+		"footer": {
+			"ready_text": "冒険を始める準備はできましたか？",
+			"wait_text": "しばらくお待ちください...",
+			"open_fount": "fountを開く",
+			"open_or_install_fount": "fountを開く/インストール",
+			"error_message": "あらら…\n\nエラーが発生しました：\n${error}"
+		},
+		"error": {
+			"title": "インストールに失敗しました！",
+			"description": "fountインストーラーに問題が発生したようです。",
+			"connection_failed": "接続に失敗しました！",
+			"description1": "fountインストーラーに問題が発生したようです。",
+			"description2": "ターミナルを確認して、もう一度お試しください。",
+			"close_page": "ページを閉じる"
+		}
+	},
+	"protocolhandler": {
+		"title": "fountプロトコルの処理",
+		"description": "このページは、静かかつ効率的に、ユーザーの意図をフォント内でのシームレスな遷移に変換します。それはカーテンの向こうにある静かな魔法だと考えてください。",
+		"processing": "プロトコルを処理中です...",
+		"shellCommandSent": "シェルコマンドを送信しました。",
+		"runPartConfirm": {
+			"title": "実行の確認",
+			"message": "${partpath} を実行してもよろしいですか?",
+			"confirm": "確認する",
+			"cancel": "キャンセル"
+		},
+		"offline_dialog": {
+			"title": "ホストがオフラインです",
+			"message": "fount ホスト ${hostUrl} はオフラインのようです。再試行しますか？",
+			"buttons": {
+				"start": "起動",
+				"retry": "再試行"
+			}
+		},
+		"fountNotFound": "あらら…\n\nfountが見つかりませんでした。最初にインストールする必要がありますか？",
+		"invalidProtocol": "無効なプロトコルです。",
+		"insufficientParams": "パラメーターが不足しています。",
+		"unknownCommand": "不明なコマンドです。",
+		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
+		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
+		"unknownError": "あらら…\n\nエラーが発生しました：\n${error}"
+	},
+	"startPage": {
+		"title": "fount!",
+		"description": "泉の敷居へようこそ。展開を待つ会話や物語の核心に足を踏み入れる前の、短い準備の時間。"
+	},
+	"tutorial": {
+		"title": "チュートリアルはいかがですか？",
+		"description": "あなたと一緒に泉の世界を歩きましょう。このインタラクティブなチュートリアルは道を明らかにし、その核心に織り込まれた魔法を発見するのに役立ちます。あなたの冒険は理解することから始まります。",
+		"modal": {
+			"title": "fountへようこそ！",
+			"instruction": "入門チュートリアルを開始しますか？",
+			"buttons": {
+				"start": "チュートリアル開始",
+				"skip": "スキップ"
+			}
+		},
+		"endScreen": {
+			"title": "素晴らしい！チュートリアル完了！",
+			"subtitle": "基本操作はこれでバッチリです！",
+			"endButton": "始めましょう！"
+		},
+		"progressMessages": {
+			"mouseMove": "まず、あなたのマウスデバイスを探してください${mouseIcon}。見つけたら、机の上でそれを滑らせてみてください。",
+			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
+			"mobileTouchMove": "あなたのスマートフォン${phoneIcon}を見つけてください。指を一本使って画面に触れ、そのまま画面上で指を滑らせてみましょう。",
+			"mobileClick": "指を使って、スマートフォン${phoneIcon}の画面を優しく一回叩いて、すぐに離してみてください。これが「タップ」です！"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完璧な算数教室",
+				"description": "ようやく初心者向けチュートリアルが終わりました。",
+				"locked_description": "入門チュートリアルを完了します。"
+			},
+			"skip_tutorial": {
+				"name": "スキップしました",
+				"description": "「チュートリアル？ あれは何？ 食べられるの？」",
+				"locked_description": "入門チュートリアルを一度スキップしてください。"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "その他",
+				"sub_items": {
+					"replay": {
+						"title": "チュートリアルをリプレイ"
+					}
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "認証",
+		"subtitle": "ユーザーデータはローカルに保存されます。",
+		"description": "ここで自分の存在を定義します。慣れ親しんだ安息の地に戻るときも、物語のための新しい空間を形作るときも、ここが噴水との旅の始まりです。",
+		"usernameLabel": "ユーザー名:",
+		"usernameInput": {
+			"placeholder": "ユーザー名を入力してください"
+		},
+		"passwordLabel": "パスワード:",
+		"passwordInput": {
+			"placeholder": "パスワードを入力してください"
+		},
+		"confirmPasswordLabel": "パスワード確認:",
+		"confirmPasswordInput": {
+			"placeholder": "もう一度パスワードを入力してください"
+		},
+		"verificationCodeLabel": "認証コード:",
+		"verificationCodeInput": {
+			"placeholder": "認証コードを入力してください"
+		},
+		"sendCodeButton": "認証コードを送信",
+		"login": {
+			"title": "ログイン",
+			"submitButton": "ログイン",
+			"toggleLink": {
+				"textContent": "アカウントをお持ちでない場合",
+				"link": "今すぐ登録"
+			}
+		},
+		"register": {
+			"title": "登録",
+			"submitButton": "登録",
+			"toggleLink": {
+				"textContent": "既にアカウントをお持ちの場合",
+				"link": "今すぐログイン"
+			}
+		},
+		"passwordStrength": {
+			"veryWeak": "非常に弱い",
+			"weak": "弱い",
+			"normal": "普通",
+			"strong": "強い",
+			"veryStrong": "非常に強い"
+		},
+		"error": {
+			"passwordMismatch": "パスワードが一致しません。",
+			"loginError": "ログイン中にエラーが発生しました。",
+			"registrationError": "登録中にエラーが発生しました。",
+			"verificationCodeError": "認証コードが正しくないか、有効期限が切れています。",
+			"verificationCodeSent": "認証コードを正常に送信しました。",
+			"verificationCodeSendError": "認証コードの送信に失敗しました。",
+			"verificationCodeRateLimit": "認証コードの送信リクエストが多すぎます。しばらくしてから再度お試しください。",
+			"lowPasswordStrength": "パスワードの強度が低すぎます。",
+			"accountAlreadyExists": "このアカウントは既に存在します。",
+			"powNotSolved": "最初にPoW検証を完了してください",
+			"powError": "POW検証エラー"
+		}
+	},
+	"login_info": {
+		"title": "ログイン情報",
+		"description": "知られざる物語の世界への鍵となる、見つけたログイン認証情報を管理するための安全なスペース。",
+		"modal": {
+			"title": "証明書転送エラー",
+			"retrieve_error": "ログイン情報を保存しようとしているときにエラーが発生しました。\n${error}\n続行できますが、ログイン情報を保存できません。",
+			"transfer_error": "ログイン情報を転送しようとしているときにエラーが発生しました。\n${error}\n続行できますが、ログイン情報を取得できません。",
+			"buttons": {
+				"ignore": "無視して続行",
+				"retry": "再試行"
+			}
+		}
+	},
+	"home": {
+		"title": "ホーム",
+		"description": "あなたの泉体験の中心。ここでは、想像力の住人であるキャラクター、世界、ペルソナを管理します。あなたの物語は、この中心的なつながりから始まり、分岐していきます。",
+		"sidebarTitle": "詳細",
+		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
+		"noDescription": "説明はありません。",
+		"filterInput": {
+			"placeholder": "検索...",
+			"aria-label": "検索ウィジェット"
+		},
+		"sfwToggle": "一般コンテンツ",
+		"partTypeDropdown": {
+			"button": {
+				"title": "パーツタイプメニュー"
+			},
+			"icon": {
+				"alt": "パーツタイプメニュー"
+			}
+		},
+		"functionMenu": {
+			"search": {
+				"placeholder": "検索..."
+			},
+			"button": {
+				"title": "機能メニュー"
+			},
+			"icon": {
+				"alt": "機能メニュー"
+			}
+		},
+		"emptyList": {
+			"message": "空です...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
+		},
+		"part_pages": {
+			"default": {
+				"title": "コンポーネントの選択",
+				"subtitle": "言の葉を拾い、旅に出よう。",
+				"card": {
+					"noTags": "ラベルなし",
+					"version": "バージョン",
+					"author": "著者",
+					"home_page": "ホームページ",
+					"issue_page": "問題を報告する",
+					"refreshButton": {
+						"alt": "リフレッシュする",
+						"title": "リフレッシュする"
+					},
+					"defaultCheckbox": {
+						"title": "デフォルトとして設定"
+					}
+				}
+			},
+			"chars": {
+				"title": "キャラクター選択",
+				"subtitle": "魂と出会い、会話を始めましょう。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの役割として設定"
+					}
+				}
+			},
+			"worlds": {
+				"title": "世界の選択",
+				"subtitle": "世界に足を踏み入れて、数え切れないほどの可能性に浸ってください。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのワールドとして設定"
+					}
+				}
+			},
+			"personas": {
+				"title": "キャラクター選択",
+				"subtitle": "アイデンティティを変えて、別の人生を体験してください。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのペルソナとして設定"
+					}
+				}
+			},
+			"plugins": {
+				"title": "プラグインの選択",
+				"subtitle": "新しい翼を加えて可能性を広げます。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのプラグインとして設定"
+					}
+				}
+			},
+			"ImportHandlers": {
+				"title": "輸入加工業者",
+				"subtitle": "海はすべての川に開かれており、すべてが含まれます。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのインポートプロセッサとして設定"
+					}
+				}
+			},
+			"serviceGenerators": {
+				"title": "サービスジェネレーター",
+				"subtitle": "目に見えないものを目に見えるものに変え、可能性を現実にします。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのサービスジェネレータとして設定"
+					}
+				}
+			},
+			"serviceGenerators/AI": {
+				"title": "AIサービスジェネレーター",
+				"subtitle": "知恵の糸を紡ぎ、思考の橋を繋ぎます。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの AI サービス ジェネレーターとして設定"
+					}
+				}
+			},
+			"serviceGenerators/search": {
+				"title": "検索サービスジェネレーター",
+				"subtitle": "情報の海に、あなたに光を灯してください。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの検索ジェネレーターとして設定"
+					}
+				}
+			},
+			"serviceGenerators/translate": {
+				"title": "翻訳サービスジェネレーター",
+				"subtitle": "言語の境界を越えて、アイデアを自由に飛び交わせましょう。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの翻訳サービスジェネレーターとして設定"
+					}
+				}
+			},
+			"serviceSources": {
+				"title": "サービスソース",
+				"subtitle": "しずくを集めれば、大きな川になります。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのサービスソースとして設定"
+					}
+				}
+			},
+			"serviceSources/AI": {
+				"title": "AIサービスソース",
+				"subtitle": "知恵の源であり、思考の原点。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの AI サービス ソースとして設定"
+					}
+				}
+			},
+			"serviceSources/search": {
+				"title": "サービスソースの検索",
+				"subtitle": "知識の宝庫であり、探求の出発点です。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの検索ソースとして設定"
+					}
+				}
+			},
+			"serviceSources/translate": {
+				"title": "翻訳サービスのソース",
+				"subtitle": "言葉の架け橋、コミュニケーションの架け橋。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトの翻訳サービスソースとして設定"
+					}
+				}
+			},
+			"shells": {
+				"title": "インタラクティブなインターフェースの選択",
+				"subtitle": "窓を選ぶと、新しい世界が見えてきます。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "デフォルトのシェルとして設定"
+					}
+				}
+			}
+		},
+		"escapeConfirm": "fountを終了しますか？",
+		"alerts": {
+			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました。"
+		},
+		"achievements": {
+			"first_login": {
+				"name": "こんにちは、泉さん！",
+				"description": "新しい世界へ初ログイン！",
+				"locked_description": "一度ファウンテンにログインしてください。"
+			},
+			"sfw_mode_on": {
+				"name": "後ろ！後ろ！",
+				"description": "すぐに全年齢モードに切り替えてください、私はとても賢い子供です。",
+				"locked_description": "セーフ コンテンツ モードを一度オンにします。"
+			},
+			"sfw_mode_off": {
+				"name": "リミッター解除",
+				"description": "「先生、時代は変わりましたね。」",
+				"locked_description": "安全なコンテンツ モードを一度オフにします。"
+			},
+			"open_function_list": {
+				"name": "ちょっと見せて！",
+				"description": "「どんな良いことがあるの？」",
+				"locked_description": "一度関数リストを開いてください。"
+			},
+			"set_default_persona": {
+				"name": "これが私の選んだ道だ",
+				"description": "この世界での行動にアイデンティティを設定します。",
+				"locked_description": "デフォルトのプロファイルを設定します。"
+			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "ドラッグアンドドロップが成功しました！",
+			"dropError": "ドラッグ アンド ドロップ処理のエラー: ${error}",
+			"noHandler": "適切なドラッグ アンド ドロップ ハンドラーが見つかりません。"
+		},
+		"home_common_interfaces": {
+			"open": {
+				"title": "アクセス"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "カウントコンポーネント情報の生成"
+			}
+		}
+	},
+	"chat": {
+		"title": "チャット",
+		"description": "言葉が飛び立ち、物語が展開する場所。 AI 仲間と関わり、物語を形作り、デジタル対話の盛衰に身を委ねましょう。ここで泉の心臓が鼓動します。",
+		"new": {
+			"title": "新しいチャット",
+			"description": "まだ書かれていない物語への静かな期待。新しいチャットが始まり、白紙の状態で、選択した仲間との新鮮な対話と展​​開される物語が始まります。"
+		},
+		"typingIndicator": {
+			"isTyping": "${names} が入力中です...",
+			"multipleMembers": "複数のメンバーが入力しています..."
+		},
+		"sidebar": {
+			"noSelection": "未選択",
+			"noDescription": "説明なし",
+			"world": {
+				"icon": {
+					"alt": "ワールドアイコン"
+				},
+				"title": "ワールド"
+			},
+			"persona": {
+				"icon": {
+					"alt": "ユーザーペルソナアイコン"
+				},
+				"title": "ユーザーペルソナ"
+			},
+			"charList": {
+				"icon": {
+					"alt": "キャラクターリストアイコン"
+				},
+				"title": "キャラクターリスト",
+				"buttons": {
+					"addChar": {
+						"title": "キャラクター追加"
+					},
+					"addCharIcon": {
+						"alt": "キャラクター追加アイコン"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "プラグインリストアイコン"
+				},
+				"title": "プラグイン一覧",
+				"buttons": {
+					"addPlugin": {
+						"title": "プラグインを追加"
+					},
+					"addPluginIcon": {
+						"alt": "プラグイン追加アイコン"
+					}
+				}
+			}
+		},
+		"rightSidebar": {
+			"title": "詳細情報"
+		},
+		"chatArea": {
+			"title": "チャット",
+			"input": {
+				"placeholder": "メッセージを入力...\nCtrl+Enterで送信"
+			},
+			"menuButton": {
+				"title": "メニュー"
+			},
+			"menuButtonIcon": {
+				"alt": "メニューアイコン"
+			},
+			"sendButton": {
+				"title": "送信"
+			},
+			"sendButtonIcon": {
+				"alt": "送信アイコン"
+			},
+			"uploadButton": {
+				"title": "アップロード"
+			},
+			"uploadButtonIcon": {
+				"alt": "アップロードアイコン"
+			},
+			"voiceButton": {
+				"title": "音声入力"
+			},
+			"voiceButtonIcon": {
+				"alt": "音声入力アイコン"
+			},
+			"photoButton": {
+				"title": "写真"
+			},
+			"photoButtonIcon": {
+				"alt": "写真アイコン"
+			}
+		},
+		"messageList": {
+			"confirmDeleteMessage": "このメッセージを削除しますか？"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました。"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "編集"
+				},
+				"editIcon": {
+					"alt": "編集アイコン"
+				},
+				"more": {
+					"title": "その他"
+				},
+				"moreIcon": {
+					"alt": "その他アイコン"
+				},
+				"delete": {
+					"alt": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				},
+				"downloadHtml": {
+					"alt": "HTMLとしてダウンロード"
+				},
+				"downloadHtmlIcon": {
+					"alt": "HTMLダウンロードアイコン"
+				}
+			},
+			"dropdown": {
+				"delete": "削除",
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				},
+				"copyMarkdown": "Markdownとしてコピー",
+				"copyMarkdownIcon": {
+					"alt": "Markdownとしてコピーアイコン"
+				},
+				"copyText": "プレーンテキストとしてコピー",
+				"copyTextIcon": {
+					"alt": "プレーンテキストとしてコピーアイコン"
+				},
+				"copyHtml": "HTMLとしてコピー",
+				"copyHtmlIcon": {
+					"alt": "HTMLとしてコピーアイコン"
+				},
+				"downloadHtml": "HTMLとしてダウンロード",
+				"downloadHtmlIcon": {
+					"alt": "HTMLダウンロードアイコン"
+				},
+				"share": {
+					"textContent": "共有",
+					"1h": "1時間",
+					"12h": "12時間",
+					"24h": "24時間",
+					"72h": "72時間"
+				},
+				"shareIcon": {
+					"alt": "共有アイコン"
+				}
+			},
+			"share": {
+				"uploading": "リンクを作成中...",
+				"success": "共有に成功しました！リンクがクリップボードにコピーされました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
+			},
+			"commonToolCalling": "ツールを呼び出し中"
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "内容を入力してください..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "確認"
+				},
+				"confirmIcon": {
+					"alt": "確認アイコン"
+				},
+				"cancel": {
+					"title": "キャンセル"
+				},
+				"cancelIcon": {
+					"alt": "キャンセルアイコン"
+				},
+				"upload": {
+					"title": "アップロード"
+				},
+				"uploadIcon": {
+					"alt": "アップロードアイコン"
+				}
+			}
+		},
+		"messageGenerating": {
+			"stop": "停止",
+			"stopIcon": {
+				"alt": "停止アイコン"
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "ダウンロード"
+				},
+				"downloadIcon": {
+					"alt": "ダウンロードアイコン"
+				},
+				"delete": {
+					"title": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "頻度",
+			"buttons": {
+				"removeChar": {
+					"title": "チャットから削除"
+				},
+				"removeCharIcon": {
+					"alt": "キャラクター削除アイコン"
+				},
+				"forceReply": {
+					"title": "強制返信"
+				},
+				"forceReplyIcon": {
+					"alt": "強制返信アイコン"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "プラグインを削除"
+				},
+				"removePluginIcon": {
+					"alt": "プラグイン削除アイコン"
+				}
+			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "冒険の書がひらかれた！",
+				"description": "最初のメッセージが送信され、物語が始まります。",
+				"locked_description": "任意のキャラクターを使用して最初のメッセージを送信します。"
+			},
+			"multiplayer_chat": {
+				"name": "WHITE ALBUMの季節",
+				"description": "「どうしてこうなったんだろう…」",
+				"locked_description": "2 人以上のキャラクターが同じチャットで話します。"
+			},
+			"photo_chat": {
+				"name": "写真と真実があります",
+				"description": "絵を使って次元の壁を壊しましょう。",
+				"locked_description": "チャットで写真を送信します。"
+			},
+			"code_greeting": {
+				"name": "コードで挨拶",
+				"description": "「こんにちは、fount！」",
+				"locked_description": "コードブロックを実行して、'hello fount!' と出力する。"
+			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "部品データが無効です。",
+			"charAdded": "ロール ${partName} がチャットに追加されました。",
+			"personaSet": "ペルソナ ${partName} が現在のペルソナとして設定されました。",
+			"worldSet": "ワールド ${partName} は現在のワールドに設定されます。",
+			"pluginAdded": "プラグイン ${partName} がチャットに追加されました。",
+			"unsupportedPartType": "サポートされていないパーツ タイプ: ${partType}。",
+			"errorAddingPart": "パーツ ${partName} の追加中にエラーが発生しました: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "チャット"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "履歴を見る"
+			}
+		}
+	},
+	"chat_history": {
+		"title": "チャット履歴",
+		"pageTitle": "チャット履歴",
+		"description": "過去の対話を旅します。ここでは、会話の記憶が残り、AI 仲間と紡いだストーリーを分類、フィルターし、再訪します。デジタルエコーの静かなライブラリー。",
+		"filterInput": {
+			"placeholder": "検索..."
+		},
+		"sortOptions": {
+			"time_desc": "日時（新しい順）",
+			"time_asc": "日時（古い順）"
+		},
+		"sortBy": {
+			"aria-label": "並べ替え"
+		},
+		"selectAll": "すべて選択",
+		"buttons": {
+			"reverseSelect": "選択を反転",
+			"deleteSelected": "選択項目を削除",
+			"exportSelected": "選択項目をエクスポート",
+			"import": "インポート"
+		},
+		"chatItemButtons": {
+			"continue": "続行",
+			"copy": "コピー",
+			"export": "エクスポート",
+			"delete": "削除"
+		},
+		"confirmDeleteChat": "「${chars}」とのチャット履歴を削除してもよろしいですか？",
+		"confirmDeleteMultiChats": "選択した${count}件のチャット履歴を削除してもよろしいですか？",
+		"alerts": {
+			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください。",
+			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。",
+			"copyError": "コピーに失敗しました。",
+			"deleteError": "削除に失敗しました。",
+			"exportError": "エクスポートに失敗しました。",
+			"dragExportError": "ドラッグアンドドロップエクスポート中のエラー",
+			"importSuccess": "インポート成功",
+			"importError": "インポート失敗",
+			"invalidImportFile": "無効なインポートファイル"
+		},
+		"select_checkbox": {
+			"aria-label": "${chars} とのチャットを選択"
+		}
+	},
+	"easynew": {
+		"title": "クイック作成",
+		"description": "事前定義されたテンプレートまたはカスタム テンプレートを使用して、キャラクター、ワールド、プラグインなどの新しいフォント パーツを迅速に構築します。数回クリックするだけで次の作品を作成できます。",
+		"info": {
+			"description": "これらのテンプレートは、単純なコンポーネントを迅速に作成するためにのみ使用できます。複雑なコンポーネントは、依然として手動で作成する必要があります。"
+		},
+		"cardTitle": "テンプレートから新しいコンポーネントを作成",
+		"templateSelect": {
+			"label": "テンプレートを選択"
+		},
+		"alerts": {
+			"success": "コンポーネント「${partName}」が正常に作成されました！",
+			"error": "エラー: ${message}"
+		},
+		"form": {
+			"partName": {
+				"label": "コンポーネント名",
+				"placeholder": "新しいコンポーネントの名前を入力"
+			},
+			"description": {
+				"label": "説明",
+				"placeholder": "このコンポーネントが何であるかを簡単に説明してください。"
+			},
+			"descriptionMarkdown": {
+				"label": "説明 (Markdown)",
+				"placeholder": "より詳細な書式設定のためにMarkdownをサポートしています。"
+			},
+			"imageUpload": {
+				"label": "アバター画像"
+			},
+			"charDef": {
+				"heading": "キャラクター定義"
+			},
+			"personality": {
+				"label": "性格",
+				"placeholder": "キャラクターの核となる性格特性を説明してください。"
+			},
+			"scenario": {
+				"label": "シナリオ",
+				"placeholder": "キャラクターの背景や設定。"
+			},
+			"mesExample": {
+				"label": "メッセージ例",
+				"placeholder": "キャラクターが言うかもしれないことの例。"
+			},
+			"firstMessage": {
+				"label": "最初のメッセージ",
+				"placeholder": "キャラクターが言う最初のメッセージ。"
+			},
+			"personaDef": {
+				"heading": "ペルソナ定義"
+			},
+			"personaUserName": {
+				"label": "チャットでのあなたの名前",
+				"placeholder": "例: キャプテン、探検家"
+			},
+			"personaAppearance": {
+				"label": "外見",
+				"placeholder": "あなたの外見を説明してください。"
+			},
+			"personaPersonality": {
+				"label": "性格",
+				"placeholder": "あなたの性格特性を説明してください。"
+			},
+			"worldDef": {
+				"heading": "ワールド定義"
+			},
+			"worldPrompt": {
+				"label": "ワールドプロンプト",
+				"placeholder": "ワールドのルール、環境、およびロールプレイングのグローバルなコンテキストを説明します。"
+			},
+			"worldGreeting": {
+				"label": "ワールドの挨拶",
+				"placeholder": "ワールドがユーザーに送信する最初のメッセージ。"
+			},
+			"author": {
+				"label": "作者",
+				"placeholder": "このコンポーネントの作者は誰ですか？"
+			},
+			"version": {
+				"label": "バージョン",
+				"placeholder": "例: 0.0.1"
+			},
+			"tags": {
+				"label": "タグ",
+				"placeholder": "カンマ区切りのタグ"
+			},
+			"homePage": {
+				"label": "ホームページ",
+				"placeholder": "コンポーネントのホームページのURL"
+			},
+			"issuePage": {
+				"label": "問題報告ページ",
+				"placeholder": "コンポーネントの問題報告ページのURL"
+			},
+			"createButton": "コンポーネントを作成"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "錬金術工房がオープンしました",
+				"description": "ゼロから始めて、最初のコンポーネントを作成します。",
+				"locked_description": "クイック新規機能を使用してパーツを作成します。"
+			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"quickCreate": {
+						"title": "クイック作成"
+					}
+				}
+			}
+		}
+	},
+	"import": {
+		"title": "インポート",
+		"description": "あなたの大切なキャラクター、世界、構成をFountに抱かせましょう。ファイルからでも、貼り付けたテキストからでも、ここで新しい要素があなたの個人的なタペストリーに織り込まれます。",
+		"tabs": {
+			"fileImport": "ファイルからインポート",
+			"textImport": "テキストからインポート"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "アップロードアイコン"
+			},
+			"textContent": "ここにファイルをドラッグ＆ドロップするか、クリックしてファイルを選択"
+		},
+		"textArea": {
+			"placeholder": "インポートするテキストを入力してください..."
+		},
+		"buttons": {
+			"import": "インポート"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "削除"
+			},
+			"removeButtonIcon": {
+				"alt": "削除"
+			}
+		},
+		"alerts": {
+			"importSuccess": "正常にインポートされました。",
+			"importFailed": "インポートに失敗しました: ${error}",
+			"unknownError": "不明なエラーが発生しました。"
+		},
+		"errors": {
+			"noFileSelected": "ファイルを選択してください。",
+			"fileImportFailed": "ファイルのインポートに失敗しました: ${message}",
+			"noTextContent": "テキスト内容を入力してください。",
+			"textImportFailed": "テキストのインポートに失敗しました: ${message}",
+			"handler": "ハンドラー",
+			"error": "エラー",
+			"unknownError": "不明なエラーが発生しました。"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "ファイルからコンポーネントをインストールする",
+			"textDropDescription": "テキストからパーツをインストールする"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"import": {
+						"title": "インポート"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "テキストからパーツをインストールする"
+			},
+			"handleFileDrop": {
+				"description": "ファイルからコンポーネントをインストールする"
+			}
+		}
+	},
+	"export": {
+		"title": "コンポーネントエクスポーター",
+		"pageTitle": "コンポーネントエクスポーター",
+		"pageSubtitle": "お気に入りのコンテンツをエクスポート",
+		"description": "フォントの作成物をエクスポートします。このツールは、選択したパーツを単純な zip ファイルにまとめて、保管または共有します。",
+		"steps": {
+			"part": "コンポーネントを選択します",
+			"action": "エクスポート"
+		},
+		"labels": {
+			"part": "コンポーネントを選択"
+		},
+		"placeholders": {
+			"partTypeSelect": "選択してください",
+			"partSelect": "選択してください"
+		},
+		"partSelectDropdown": {
+			"placeholder": "選択してください"
+		},
+		"partSearch": {
+			"placeholder": "検索..."
+		},
+		"options": {
+			"withData": "データファイルが含まれています",
+			"withDataDescription": "キャラクターの記憶など、データとしてマークされたファイルが含まれています。"
+		},
+		"export": {
+			"title": "エクスポートオプション"
+		},
+		"editor": {
+			"disabledIndicator": "最初にコンポーネントを選択してください",
+			"disabledIndicatorHint": "エクスポートしたいコンポーネントの種類とコンポーネントを選択してください"
+		},
+		"buttons": {
+			"export": "エクスポート",
+			"exportWithData": "エクスポート (データを含む)",
+			"copyShareLink": "共有リンクをコピー",
+			"generateShareLink": "共有リンクを生成",
+			"generateShareLinkWithData": "共有リンク生成 (データ込)"
+		},
+		"shareMenu": {
+			"title": "共有時間を選択してください",
+			"1h": "1時間",
+			"12h": "12時間",
+			"24h": "24時間",
+			"72h": "72時間",
+			"cancel": "キャンセル"
+		},
+		"litterbox": {
+			"poweredBy": "共有機能は、Litterbox.moeによってサポートされています",
+			"sponsorLink": "それらを後援します"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラー"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "コンポーネントタイプの取得に失敗しました。",
+			"fetchPartsFailed": "コンポーネントリストの取得に失敗しました。",
+			"loadPartDetailsFailed": "コンポーネント詳細の読み込みに失敗しました。",
+			"exportFailed": "エクスポートに失敗しました。",
+			"shareLinkCopied": "共有リンクがクリップボードにコピーされました！",
+			"shareFailed": "共有リンクの作成に失敗しました。"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "おすそわけ",
+				"description": "「それでは、この良いものをコピーしてあげましょう。」",
+				"locked_description": "ウィジェットを一度共有します。"
+			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "パーツをダウンロードする"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"exportPart": {
+						"title": "パートをエクスポート"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "パーツをダウンロードする"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "エクスポート"
+			}
+		}
+	},
+	"uninstall": {
+		"title": "アンインストール",
+		"description": "別れを選ぶなら、この空間で優雅にお別れを。コンポーネントの削除または自体の削除を確認します。道は分かれても、思い出は残るかもしれない。",
+		"titleWithName": "${type}/${name} をアンインストール",
+		"confirmMessage": "${type}: ${name} をアンインストールしてもよろしいですか？",
+		"invalidParamsTitle": "無効なパラメーター",
+		"infoMessage": {
+			"icon": {
+				"alt": "情報アイコン"
+			}
+		},
+		"buttons": {
+			"confirm": "アンインストール確定",
+			"cancel": "キャンセル",
+			"back": "戻る"
+		},
+		"alerts": {
+			"success": "${type}: ${name} は正常にアンインストールされました。",
+			"failed": "アンインストールに失敗しました: ${error}",
+			"invalidParams": "無効なリクエストパラメーターです。",
+			"httpError": "HTTPエラーが発生しました！ステータスコード: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラーアイコン"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "削除"
+			}
+		}
+	},
+	"userSettings": {
+		"title": "ユーザー設定",
+		"PageTitle": "ユーザー設定",
+		"description": "あなたの財団のアイデンティティの詳細に注意してください。プロファイルを管理し、アクセスを保護し、接続されているデバイスを表示します。あなたのアカウントのための静かな聖域。",
+		"userInfo": {
+			"title": "ユーザー情報",
+			"usernameLabel": "ユーザー名:",
+			"creationDateLabel": "アカウント作成日:",
+			"folderSizeLabel": "ユーザーデータサイズ:",
+			"folderPathLabel": "ユーザーデータパス:",
+			"copyPathBtn": {
+				"title": "パスをコピーする"
+			},
+			"copyPathBtnIcon": {
+				"alt": "コピーアイコン"
+			},
+			"copiedAlert": "パスをクリップボードにコピーしました！"
+		},
+		"changePassword": {
+			"title": "パスワード変更",
+			"currentPasswordLabel": "現在のパスワード:",
+			"newPasswordLabel": "新しいパスワード:",
+			"confirmNewPasswordLabel": "新しいパスワード（確認）:",
+			"submitButton": "パスワードを変更",
+			"errorMismatch": "新しいパスワードが一致しません。",
+			"success": "パスワードが正常に変更されました。"
+		},
+		"renameUser": {
+			"title": "ユーザー名変更",
+			"newUsernameLabel": "新しいユーザー名:",
+			"submitButton": "ユーザー名を変更",
+			"confirmMessage": "ユーザー名を変更しますか？変更後は再度ログインが必要です。",
+			"success": "ユーザー名を「${newUsername}」に正常に変更しました。ログアウトします。"
+		},
+		"userDevices": {
+			"title": "ユーザーデバイス・セッション",
+			"noDevicesFound": "デバイスまたはセッションが見つかりませんでした。",
+			"deviceInfo": "デバイスID：${deviceId}",
+			"thisDevice": "このデバイス",
+			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
+			"revokeButton": "取り消し",
+			"revokeConfirm": "このデバイス/セッションのアクセス権を取り消しますか？",
+			"revokeSuccess": "デバイス/セッションを正常に取り消しました。",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			}
+		},
+		"apiKeys": {
+			"title": "APIキー",
+			"description": "外部アプリケーションのAPIキーを管理します。",
+			"input": {
+				"placeholder": "新しいキーの説明"
+			},
+			"createButton": "作成",
+			"noKeysFound": "APIキーは見つかりませんでした。",
+			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
+			"neverUsed": "未使用",
+			"revokeButton": "取り消す",
+			"revokeConfirm": "このAPIキーを取り消したいですか？",
+			"revokeSuccess": "APIキーは正常に取り消されました。",
+			"errorDescriptionRequired": "説明が必要です。",
+			"createSuccess": "APIキーは正常に作成されました。",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			}
+		},
+		"newApiKey": {
+			"title": "新しいAPIキーが作成されました",
+			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
+			"closeButton": "キーをコピーしました",
+			"copyButton": {
+				"title": "新しい API キーをコピーする"
+			},
+			"copiedAlert": "APIキーがクリップボードにコピーされました！"
+		},
+		"logout": {
+			"title": "ログアウト",
+			"description": "現在のデバイスからアカウントをログアウトします。",
+			"buttonText": "ログアウト",
+			"confirmMessage": "ログアウトしますか？",
+			"successMessage": "正常にログアウトしました。ログインページに移動します..."
+		},
+		"deleteAccount": {
+			"title": "アカウント削除",
+			"warning": "警告：この操作を行うと、アカウントと関連する全てのデータが完全に削除され、元に戻すことはできません。",
+			"submitButton": "アカウントを削除",
+			"confirmMessage1": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
+			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
+			"usernameMismatch": "入力されたユーザー名が現在のアカウントと一致しません。削除処理はキャンセルされました。",
+			"success": "アカウントが正常に削除されました。ログアウトします。"
+		},
+		"passwordConfirm": {
+			"title": "操作の確認",
+			"message": "続行するには、現在のパスワードを入力してください。",
+			"passwordLabel": "パスワード:",
+			"confirmButton": "確認",
+			"cancelButton": "キャンセル"
+		},
+		"apiError": "APIリクエストに失敗しました：${message}",
+		"generalError": "エラーが発生しました：${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "ユーザー設定"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "言語設定",
+		"pageTitle": "言語設定",
+		"description": "フォント アプリケーションの言語設定を管理します。利用可能な言語オプションを使用してエクスペリエンスをカスタマイズします。",
+		"pageDescription": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
+		"availableLanguages": "利用可能な言語",
+		"preferredLanguages": "優先言語リスト",
+		"resetButton": "リセット",
+		"saveButton": "保存",
+		"select": {
+			"placeholder": "言語を選択..."
+		},
+		"search": {
+			"placeholder": "言語を検索..."
+		},
+		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
+		"savedMessage": "言語設定が保存されます！",
+		"resetMessage": "言語設定がリセットされました！",
+		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "言語設定"
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "テーマ管理",
+		"description": "あなたの気分やストーリーを反映する美学を選択してください。テーマのパレットをプレビューして選択し、それぞれが泉のインタラクションに異なる雰囲気を提供します。あなたの世界、あなたのスタイル。",
+		"instruction": "テーマを選択してください！",
+		"search": {
+			"placeholder": "テーマを検索...",
+			"noResult": "一致するテーマが見つかりませんでした。"
+		},
+		"createButton": "+ 新しいテーマを作成",
+		"preview": {
+			"editButton": {
+				"title": "編集"
+			},
+			"editButtonIcon": {
+				"alt": "編集アイコン"
+			},
+			"deleteButton": {
+				"title": "削除"
+			},
+			"deleteButtonIcon": {
+				"alt": "削除アイコン"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製アイコン"
+			}
+		},
+		"editor": {
+			"title": "テーマエディター",
+			"cancelButton": "キャンセル",
+			"saveApplyButton": "保存して適用",
+			"themeName": "テーマ名 (ID)",
+			"autoPaletteTitle": "画像からの自動色補正",
+			"autoPaletteInstruction": "上の色をクリックすると、プライマリ/セカンダリ/アクセント/ニュートラルカラーが自動的に入力されます。",
+			"coreColors": "コアカラー",
+			"baseBackground": "基本と背景",
+			"variables": "変数",
+			"borderRadius": "角丸の半径 (--rounded-box)",
+			"borderWidth": "枠線の幅 (--border-btn)",
+			"advancedCustomization": "高度なカスタマイズ",
+			"customCSS": "カスタム CSS (上書き)",
+			"customMjsScript": "カスタム MJS スクリプト (任意)",
+			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 <code>load()</code> および <code>unload()</code> 関数を含むオブジェクトを返してください。",
+			"themeIdRequired": "テーマIDが必要です",
+			"newThemeName": "新しいテーマ名:",
+			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",
+			"saved": "保存しました！",
+			"failedToSave": "保存に失敗しました"
+		},
+		"themes": {
+			"auto": "自動",
+			"light": "ライト",
+			"dark": "ダーク",
+			"cupcake": "カップケーキ",
+			"bumblebee": "バンブルビー",
+			"emerald": "エメラルド",
+			"corporate": "コーポレート",
+			"synthwave": "シンセウェイヴ",
+			"retro": "レトロ",
+			"cyberpunk": "サイバーパンク",
+			"valentine": "バレンタイン",
+			"halloween": "ハロウィーン",
+			"garden": "ガーデン",
+			"forest": "フォレスト",
+			"aqua": "アクア",
+			"lofi": "Lo-fi",
+			"pastel": "パステル",
+			"fantasy": "ファンタジー",
+			"wireframe": "ワイヤーフレーム",
+			"black": "ブラック",
+			"luxury": "ラグジュアリー",
+			"dracula": "ドラキュラ",
+			"cmyk": "CMYK",
+			"autumn": "オータム",
+			"business": "ビジネス",
+			"acid": "アシッド",
+			"lemonade": "レモネード",
+			"night": "ナイト",
+			"coffee": "コーヒー",
+			"winter": "ウィンター",
+			"dim": "ディム",
+			"nord": "ノール",
+			"sunset": "サンセット",
+			"caramellatte": "キャラメルラテ",
+			"abyss": "アビス",
+			"silk": "シルク"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "新しいスキン、ゲットだぜ！",
+				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
+				"locked_description": "テーマを一度切り替えます。"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"switchTheme": {
+						"title": "テーマ切り替え"
+					}
+				}
+			}
+		}
+	},
+	"part_config": {
+		"title": "コンポーネント設定",
+		"pageTitle": "コンポーネント設定",
+		"description": "泉の中心部を覗いてみましょう。ここでは、さまざまなコンポーネントの設定を調整し、エクスペリエンスを推進するエンジンを調整できます。",
+		"labels": {
+			"part": "コンポーネントを選択"
+		},
+		"placeholders": {
+			"partTypeSelect": "選択してください",
+			"partSelect": "選択してください"
+		},
+		"editor": {
+			"title": "コンポーネント設定",
+			"disabledIndicator": "このコンポーネントは設定に対応していません。",
+			"jsonEditor": {
+				"aria-label": "JSON構成エディター"
+			},
+			"buttons": {
+				"save": "保存"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラー"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "部品タイプの取得に失敗しました。",
+			"fetchPartsFailed": "部品リストの取得に失敗しました。",
+			"loadEditorFailed": "エディターの読み込みに失敗しました。",
+			"saveConfigFailed": "コンポーネント設定の保存に失敗しました。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "コンポーネント設定"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "設定"
+			}
+		}
+	},
+	"serviceSource_manager": {
+		"title": "サービスソース管理",
+		"description": "ここでは、人工知能の声のシンフォニーを指揮します。ソースを追加、調整、またはミュートして、ソース仲間に命を吹き込みます。コードと想像力の微妙なダンスです。",
+		"fileList": {
+			"title": "サービスソースリスト",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "サービスソースの構成",
+		"subtypeSelect": {
+			"label": "ジェネレータのサブカテゴリ",
+			"placeholder": "ジェネレータのカテゴリを選択してください"
+		},
+		"generatorSelect": {
+			"label": "ジェネレータの選択",
+			"placeholder": "選択してください"
+		},
+		"paths": {
+			"serviceSource": "サービスソースカテゴリ",
+			"generator": "ジェネレーターのカテゴリー"
+		},
+		"editor": {
+			"disabledIndicator": "最初にジェネレーターを選択してください"
+		},
+		"common_config_interface": {
+			"empty_generator": "このサービス ソースのレガシー ジェネレーターは読み込み中にエラーが発生したため、アンインストールされたか名前が変更された可能性があります。",
+			"loadingModels": "モデルを読み込み中...",
+			"availableModels": "利用可能なモデル:",
+			"copied": "コピーしました！",
+			"apiKeyRequired": "モデルをリストするには API キーが必要です。",
+			"copyModelIdTooltip": "クリックしてモデル ID をコピーします",
+			"loadModelsFailed": "モデルのロードに失敗しました: ${message}"
+		},
+		"prompts": {
+			"newFileName": "新しいサービス ソース ファイル名を入力してください (サフィックスは含めないでください)。"
+		},
+		"buttons": {
+			"save": "保存",
+			"delete": "削除",
+			"setDefault": {
+				"dataset": {
+					"tip": "デフォルトとして設定"
+				},
+				"aria-label": "「${fileName}」をデフォルトのサービスソースとして設定します"
+			}
+		},
+		"confirm": {
+			"unsavedChanges": "未保存の変更があります。変更を破棄しますか?",
+			"deleteFile": "ファイルを削除してもよろしいですか?",
+			"unsavedChangesBeforeUnload": "未保存の変更があります。このページを離れてもよろしいですか?"
+		},
+		"alerts": {
+			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
+			"fetchGeneratorListFailed": "ジェネレータ リストの取得に失敗しました: ${error}",
+			"fetchDefaultsFailed": "デフォルトのコンポーネントを取得できませんでした: ${error}",
+			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
+			"fetchConfigTemplateFailed": "構成テンプレートの取得に失敗しました",
+			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
+			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
+			"addFileFailed": "ファイルの追加に失敗しました: ${error}",
+			"setDefaultFailed": "デフォルトのサービス ソースを設定できませんでした: ${error}",
+			"fetchBranchesFailed": "コンポーネント ツリーの取得に失敗しました: ${error}",
+			"noFileSelectedSave": "保存するファイルが選択されていません。",
+			"noFileSelectedDelete": "削除するファイルが選択されていません。",
+			"noGeneratorSelectedSave": "保存する前にジェネレータを選択してください",
+			"invalidFileName": "ファイル名には次の文字を含めることはできません: / \\ : * ? \" < > |"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "勝利の法則は決まった！",
+				"description": "マナ供給源としてデフォルトAIが指定されています。",
+				"locked_description": "デフォルトの AI ソースを一度設定します。"
+			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "サービスソースの管理"
+			}
+		}
+	},
+	"discord_bots": {
+		"title": "Discordボット",
+		"description": "Discord の賑やかなホールで、仲間たちに声を届けましょう。一度に 1 台のサーバーずつ、プレゼンスを設定し、運用を管理し、世界間の橋渡しをさせます。",
+		"cardTitle": "Discordボット",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"configCard": {
+			"title": "ボット設定",
+			"labels": {
+				"character": "キャラクター",
+				"apiKey": "Discord APIキー",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "キャラクターを選択",
+			"apiKeyInput": {
+				"placeholder": "APIキーを入力"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API キーの表示を切り替えます"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "APIキーの表示切り替え"
+			},
+			"buttons": {
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください："
+		},
+		"buttons": {
+			"newBot": "新規作成",
+			"deleteBot": "削除"
+		},
+		"alerts": {
+			"configSaved": "設定を正常に保存しました。",
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Discordに来る",
+				"description": "あなたのキャラクターを Discord の世界に召喚します。",
+				"locked_description": "Discord Botを一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Botの設定"
+			}
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegramボット",
+		"description": "あなたのフォントキャラクターがテレグラムの瞬時の波を横断しましょう。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
+		"cardTitle": "Telegramボット管理",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"configCard": {
+			"title": "ボット設定",
+			"labels": {
+				"character": "連携キャラクター",
+				"botToken": "Telegramボットトークン",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "キャラクターを選択",
+			"botTokenInput": {
+				"placeholder": "Telegramボットトークンを入力"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "API キーの表示を切り替えます"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "ボットトークンの表示切り替え"
+			},
+			"buttons": {
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください："
+		},
+		"buttons": {
+			"newBot": "新規作成",
+			"deleteBot": "削除"
+		},
+		"alerts": {
+			"configSaved": "設定を正常に保存しました！",
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "テレグラムに来る",
+				"description": "あなたのキャラクターを Telegram の世界に召喚します。",
+				"locked_description": "Telegram Bot を一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Botの設定"
+			}
+		}
+	},
+	"browser_integration": {
+		"title": "ブラウザの統合",
+		"description": "噴水とウェブの間のギャップを埋めます。このページには、シームレスな統合を可能にし、AI コンパニオンをブラウジング エクスペリエンスに組み込むためのユーザー スクリプトが提供されます。",
+		"pageHeader": "ブラウザの統合",
+		"pageDescription": "fountロールがWebページと対話するには、このブラウザ統合スクリプトをインストールする必要があります。キャラクターとブラウザの間のブリッジとして機能し、ページコンテンツを表示してアクションを実行できるようにします。",
+		"install_script_title": "インストールスクリプト",
+		"install_script_description": "下のボタンをクリックして、ブラウザ統合スクリプトをインストールします。最初にTampermonkey のようなユーザースクリプトマネージャーをインストールする必要があります。",
+		"install_button": "インストール",
+		"install_from_url_tip": "ブラウザはインストールできませんか？このURLをコピーして、Tampermonkey プラグインのURLからスクリプトをインポートします。",
+		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
+		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
+		"popular_managers": "人気のある選択肢：",
+		"csp_warning": "統合機能を適切に動作させるためにCSPを無効にするプラグインのインストールが必要になる場合があります。${browser}の場合は[こちらのプラグイン](${link})をご利用いただけます。",
+		"connected_pages_title": "接続されたページ",
+		"fetch_pages_error": "リンクされたページリストのロードに失敗しました。",
+		"page_title": "ページタイトル",
+		"page_url": "URL",
+		"page_status": "状態",
+		"status_focused": "現在のウィンドウ",
+		"status_unfocused": "バックグラウンド",
+		"copy_button": "コピー",
+		"copied_message": "クリップボードにコピーします",
+		"no_pages_connected": {
+			"title": "まだ接続がありません",
+			"description": "最初にスクリプトをインストールしてから、他のブラウザタブのWebサイトにアクセスしてください。ここでは自動的に表示されます。"
+		},
+		"autorun": {
+			"title": "スクリプトを自動的に実行します",
+			"description": "特定のWebサイトと一致するときに自動的に実行されるJavaScriptスニペットを管理します。これらのスクリプトは、閲覧体験を強化または自動化するために、AIの役割またはプラグインによって提供できます。",
+			"form_title": "新しいスクリプトを追加します",
+			"comment_label": "コメント（オプション）",
+			"url_regex_label": "URL正規表現",
+			"script_label": "JavaScriptコード",
+			"add_button": "スクリプトを追加",
+			"list_title": "構成されたスクリプト",
+			"view_script_button": "スクリプトを表示",
+			"delete_button": "削除",
+			"confirm_delete": "このスクリプトを削除したいですか？この操作はキャンセルできません。",
+			"add_success": "自動実行スクリプトが正常に追加されました！",
+			"delete_success": "スクリプトは正常に削除されました。",
+			"no_scripts": {
+				"title": "自動スクリプトの実行はありません",
+				"description": "まだスクリプトを構成していません。上記のフォームを使用して、最初のフォームを追加してください。"
+			},
+			"table": {
+				"comment": "コメント",
+				"url_regex": "URL正規表現",
+				"created_at": "で作成されました"
+			},
+			"view_script_modal_title": "スクリプトを表示",
+			"view_script_modal_close_button": "閉じる"
+		},
+		"error": {
+			"load_failed": "自動スクリプトのロードに失敗しました：${message}",
+			"add_failed": "スクリプトの追加に失敗しました：${message}",
+			"delete_failed": "削除スクリプトが失敗しました：${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "魔法、注入！",
+				"description": "ブラウザの「プラグイン」が正常にインストールされたので、さらに多くのことを行うことができます。",
+				"locked_description": "ブラウザ統合スクリプトを一度インストールします。"
+			},
+			"run_js": {
+				"name": "コードチャント",
+				"description": "「私の名において、ブラウザに命令してください...」",
+				"locked_description": "ブラウザで JavaScript コードを 1 回実行します。"
+			},
+			"star_fount": {
+				"name": "オープンソースのスター",
+				"description": "GitHubでfountにスターを付けていただき、ありがとうございます！",
+				"locked_description": "fount の GitHub リポジトリにアクセスして、スターを付けてください。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "統合",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "ブラウザ統合"
+					}
+				}
+			}
+		}
+	},
+	"browser_integration_script": {
+		"update": {
+			"prompt": "fount Browser Integration Scriptの新しいバージョンが利用可能です。更新ページは開いていますか？"
+		},
+		"csp_warning": "fount Browser Integration Scriptは、CSPポリシーがページに存在することを検出し、統合スクリプトが適切に機能しない可能性があります。 CSPを無効にするためにプラグインをインストールすることを検討してください。",
+		"hostChange": {
+			"securityWarningTitle": "--- fount 安全警告---",
+			"message": "現在のページ（ \"${origin}\"）は、ファウントホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏れやアカウントの盗難につながる可能性があります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行う必要があります（たとえば、fount サーバーの移行）。\n\nこの変更を許可したいですか？",
+			"uuidMismatchError": "fount セキュリティエラー：ホスト${newHost}のID（UUID）は、既存のものと一致しません。操作はキャンセルされました。",
+			"verificationError": "セキュリティエラーのファウント：新しいホスト「${newHost}」を確認できません。住所が正しいかどうか、およびサービスが実行されているかどうかを確認してください。"
+		}
+	},
+	"terminal_assistant": {
+		"title": "ターミナルアシスタント",
+		"description": "グラフィカル インターフェイスの向こうには、直接コマンドを実行できるスペースがあります。ターミナル アシスタントを通じて fount のコアと対話し、テキストが独自の強力な魔法を織り交ぜます。",
+		"initialMessage": "fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
+		"initialMessageLink": "詳細はこちら",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "「やあ、ファウント」",
+				"description": "暗いターミナルの中で、AIパートナーの名前が呼ばれた。",
+				"locked_description": "ターミナル アシスタンスに一度電話してください。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "統合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "ターミナルアシスト"
+					}
+				}
+			}
+		}
+	},
+	"deskpet": {
+		"title": "デスクトップペット",
+		"description": "あなたのデスクトップ上に住むインタラクティブなペットとして、あなたのフォントキャラクターを起動します。",
+		"launcherCard": {
+			"title": "ペットスターター",
+			"buttons": {
+				"start": "ペットを始める"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択してください"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"runningCard": {
+			"title": "走っているペット",
+			"noPets": "現在ペットは飼っていません。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "ペット「${charname}」が開始されました。",
+			"stopped": "ペット「${charname}」は停止されました。",
+			"start_failed": "ペット '${charname}' の開始に失敗しました: ${message}",
+			"stop_failed": "ペット「${charname}」の停止に失敗しました: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "デスクトップの新しい相棒",
+				"description": "野生のキャラクターが飛び出してきてデスクトップを占領します。",
+				"locked_description": "デスクトップペットを開始します。"
+			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "デスクトップペットとして起動"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "開発中",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "デスクトップペット",
+						"sub_items": {
+							"main": {
+								"title": "デスクトップペットを管理する"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"access": {
+		"title": "他のデバイスからfountにアクセス",
+		"description": "単一の画面を超えてファウントの範囲を拡張します。ここには、他のデバイスから仲間と接続するためのゲートウェイ (URL や QR コード) があり、ローカル イーサを渡る単純なブリッジとなります。",
+		"heading": "他のデバイスからfountにアクセスしますか？",
+		"instruction": {
+			"sameLAN": "デバイスとfountホストが同じローカルネットワーク上にあることを確認してください。",
+			"accessthis": "次のURLにアクセスしてください："
+		},
+		"QRcode": {
+			"alt": "この QR コードをスキャンして fount にアクセス"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
+		"copyButton": "URLをコピー",
+		"copied": "URLをクリップボードにコピーしました！",
+		"home_function_buttons": {
+			"main": {
+				"title": "他のデバイスへのアクセス"
+			}
+		}
+	},
+	"proxy": {
+		"title": "APIプロキシ",
+		"description": "開発者とインテグレータ向けに、このページでは fount API プロキシ、つまり fount の機能を他のアプリケーションに組み込むための接続を公開します。",
+		"heading": "APIプロキシゲートウェイ",
+		"instruction": "このページでAPIキーを生成・管理し、fountを他のアプリケーションと統合します。",
+		"endpointSectionTitle": "APIエンドポイント",
+		"endpointInstruction": "これは他のサービスと統合するためのベースURLです。",
+		"apiUrlInput": {
+			"aria-label": "APIエンドポイント"
+		},
+		"usageExampleTitle": "使用例",
+		"usageExampleInstruction": "`curl`を使用して利用可能なモデルのリストを取得する方法の例です。",
+		"copyButton": "コピー",
+		"copied": "クリップボードにコピーしました",
+		"apiKeySectionTitle": "あなたのAPIキー",
+		"apiKey": "あなたのAPIキー：",
+		"noApiKey": "このページのAPIキーはまだ生成されていません。",
+		"generateApiKeyButton": "新しいキーを生成",
+		"copyApiKeyButton": "コピー",
+		"apiKeyCopied": "APIキーをコピーしました！",
+		"queryStringSectionTitle": "リクエストヘッダーにAPIKeyを設定できませんか？ (非推奨)",
+		"queryStringWarning": "アプリケーションがリクエストヘッダー（Authorizationヘッダー）でのAPIキー送信をサポートしていない場合、この代替方法を使用してください。注意：APIキーを直接URLに含めることは、サーバーのログやブラウザの履歴に記録される可能性があるため、セキュリティ上のリスクを伴います。",
+		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）",
+		"home_function_buttons": {
+			"other": {
+				"title": "その他",
+				"sub_items": {
+					"asProxy": {
+						"title": "プロキシとして"
+					}
+				}
+			}
+		}
+	},
+	"achievements": {
+		"title": "成果",
+		"description": "fount を使用して、旅のマイルストーンと成果を探索しましょう。それぞれの成果は、あなた独自の物語の一歩を表します。",
+		"pageHeader": "功績の殿堂",
+		"pageDescription": "ロック解除された実績とマイルストーンをここで確認してください。",
+		"unlocked_on": "${date} にロック解除されました",
+		"locked": "ロックが解除されていません",
+		"toast_title": "実績のロックが解除されました！",
+		"error": {
+			"load_failed": "実績の読み込みに失敗しました: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "実績コンプを目指して",
+				"description": "実績リストを開き、スタンプ収集の旅を始める準備をしました。",
+				"locked_description": "実績ページを開きます。"
+			},
+			"relock_by_clicking": {
+				"name": "マジかよ？",
+				"description": "ロック解除された実績を繰り返しクリックすると、再度ロックされます。なぜ？",
+				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "成果"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "デバッグとシステム情報",
+		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得します。これは、トラブルシューティングやサポート リクエストに非常に役立ちます。",
+		"heading": "デバッグとシステム情報",
+		"copyButton": "レポートのコピー",
+		"versionStatus": {
+			"title": "バージョンステータス",
+			"checking": "チェック中...",
+			"local": "ローカル：",
+			"remote": "リモート：",
+			"upToDate": "最新です",
+			"outdated": "更新あり",
+			"checkFailed": "チェックに失敗しました"
+		},
+		"systemInfo": {
+			"title": "システム情報",
+			"failed": "システム情報のロードに失敗しました"
+		},
+		"connectivity": {
+			"backend": "バックエンド接続",
+			"frontend": "フロントエンド接続"
+		},
+		"loading": "読み込み中...",
+		"checking": "チェック中...",
+		"failed": "エラー",
+		"copySuccess": "デバッグ レポートがクリップボードにコピーされました",
+		"copyFailed": "レポートのコピーに失敗しました",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "デバッグパネルを開く"
+				}
+			}
+		}
+	},
+	"badges_maker": {
+		"title": "fount! バッジコンバーター",
+		"description": "プロジェクトにFountのキャラクターのタッチが必要な場合に。 Shields.io バッジを変換して、新しく共鳴するアイデンティティを与えます。",
+		"card_title": "fountバッジリンクコンバーター",
+		"original_url_label": "img.shields.io URLを貼り付けます",
+		"original_url": {
+			"placeholder": "例：https://img.shields.io/badge/hello-world-blue"
+		},
+		"new_url_label": "生成された新しいURL",
+		"new_url": {
+			"placeholder": "変換されたURLはここに表示されます"
+		},
+		"preview_label": "プレビュー",
+		"copy_button": "コピー",
+		"copied_text": "コピーしました！",
+		"preview": {
+			"alt": "バッジプレビュー"
+		},
+		"copy_error": "テキストをコピーできません：${error}",
+		"copy_fail_alert": "コピーが失敗しました！"
+	},
+	"404": {
+		"title": "ページが見つかりません",
+		"description": "君が求めた道は霧に溶けた。それは間違いだったのか、順番を忘れていたのか？岸に戻るか、あるいは静かな空間の中でゲームのために一時停止するか、私たちがご案内させていただきます。",
+		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
+		"homepageButton": "ホームページに戻る"
+	},
+	"code_block": {
+		"copy": {
+			"dataset": {
+				"tip": "クリップボードにコピー"
+			},
+			"aria-label": "クリップボードにコピー"
+		},
+		"copied": {
+			"dataset": {
+				"tip": "クリップボードにコピーしました！"
+			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "コードをダウンロード"
+			},
+			"aria-label": "コードをダウンロード"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "コードを実行"
+			},
+			"aria-label": "コードを実行"
+		},
+		"preview": {
+			"dataset": {
+				"tip": "プレビュー"
+			},
+			"aria-label": "プレビュー"
+		},
+		"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
+	},
+	"pow_captcha": {
+		"initial": "私はロボットではありません",
+		"verifying": "検証中...",
+		"solved": "検証成功",
+		"wasm_disabled": "検証を高速化するためにWASMを有効にしてください",
+		"error": "検証失敗",
+		"errorMessage": "検証失敗：${error}"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "キーボード上の連続キーは簡単に推測できます。",
+			"keyPattern": "短いキーボードパターンは簡単に推測できます。",
+			"simpleRepeat": "「AAA」のような繰り返しの文字は簡単に推測されます。",
+			"extendedRepeat": "「ABCABCABC」のような繰り返しの文字パターンは簡単に推測されます。",
+			"sequences": "「ABC」のような一般的な文字シーケンスは簡単に推測されます。",
+			"recentYears": "近年は推測しやすいです。",
+			"dates": "日付は簡単に推測できます。",
+			"topTen": "これは使い古されたパスワードです。",
+			"topHundred": "これはよく使用されるパスワードです。",
+			"common": "これは一般的に使用されるパスワードです。",
+			"similarToCommon": "これは、一般的に使用されるパスワードに似ています。",
+			"wordByItself": "一言が簡単に推測されます。",
+			"namesByThemselves": "単一の最初の名前または姓は簡単に推測できます。",
+			"commonNames": "一般的な名と姓は簡単に推測できます。",
+			"userInputs": "パスワードには、個人またはページ関連のデータを含めるべきではありません。",
+			"pwned": "パスワードはインターネットデータ侵害で公開されています。"
+		},
+		"suggestions": {
+			"l33t": "「a」の代わりに「@」を使用するなど、予測可能な文字置換を使用しないでください。",
+			"reverseWords": "一般的な単語の逆スペルを使用しないでください。",
+			"allUppercase": "すべての文字ではなくいくつかを大文字にします。",
+			"capitalization": "最初の文字だけでなく、他の文字も大文字にしましょう。",
+			"dates": "あなたに関連する日付や年を使用しないでください。",
+			"recentYears": "最近の年の使用は避けてください。",
+			"associatedYears": "あなたに関連する年を使用しないでください。",
+			"sequences": "一般的な文字シーケンスを避けてください。",
+			"repeated": "繰り返しの単語やキャラクターを避けてください。",
+			"longerKeyboardPattern": "より長いキーボードパターンを使用し、入力方向を複数回変更します。",
+			"anotherWord": "より珍しい単語を追加します。",
+			"useWords": "複数の単語を使用しますが、一般的なフレーズは避けてください。",
+			"noNeed": "強力なパスワードを作成するために、シンボル、数字、または大文字を使用する必要はありません。",
+			"pwned": "他の場所でこのパスワードを使用する場合は、変更を加えることをお勧めします。"
+		},
+		"timeEstimation": {
+			"ltSecond": "秒未満",
+			"second": "{base}秒",
+			"seconds": "{base}秒",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base}時間",
+			"hours": "{base}時間",
+			"day": "{base}日",
+			"days": "{base}日",
+			"month": "{base}月",
+			"months": "{base}月",
+			"year": "{base}年",
+			"years": "{base}年",
+			"centuries": "何世紀も"
+		}
+	}
+}

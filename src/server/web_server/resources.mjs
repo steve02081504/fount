@@ -17,7 +17,7 @@ export function betterSendFile(res, path) {
 		if (!err) return
 		try {
 			const fileStream = fs.createReadStream(path)
-			res.type(path.split('.').pop())
+			try { res.type(path.split('.').pop()) } catch (e) { /* ignore */ }
 			fileStream.pipe(res)
 			fileStream.on('end', () => res.end())
 			fileStream.on('error', err => res.status(500).send(err))
@@ -36,14 +36,14 @@ export function registerResources(router) {
 		switch (req.path) {
 			case '/apple-touch-icon-precomposed.png':
 			case '/apple-touch-icon.png':
-				if (fs.existsSync(__dirname + '/src/pages/favicon.png'))
-					return betterSendFile(res, __dirname + '/src/pages/favicon.png')
+				if (fs.existsSync(__dirname + '/src/public/pages/favicon.png'))
+					return betterSendFile(res, __dirname + '/src/public/pages/favicon.png')
 				break
 			case '/favicon.svg':
 				return betterSendFile(res, __dirname + '/imgs/icon.svg')
 		}
 		return next()
 	})
-	watchFrontendChanges('/', __dirname + '/src/pages')
-	router.use(express.static(__dirname + '/src/pages'))
+	watchFrontendChanges('/', __dirname + '/src/public/pages')
+	router.use(express.static(__dirname + '/src/public/pages'))
 }

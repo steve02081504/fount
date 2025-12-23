@@ -1,4 +1,4 @@
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
 import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -47,9 +47,9 @@ export default {
 			 */
 			SetData: async data => {
 				if (data.summaryAIsource)
-					summary.AIsource = await loadAIsource(username, data.summaryAIsource)
+					summary.AIsource = await loadPart(username, 'serviceSources/AI/' + data.summaryAIsource)
 				else
-					summary.AIsource = await loadDefaultAIsource(username)
+					summary.AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI')
 				summary.startLength = data.summaryStartLength
 				summary.size = data.summarySize
 			}

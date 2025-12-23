@@ -1,0 +1,59 @@
+{
+	"en-UK": {
+		"provider": "fount"
+	},
+	"zh-CN": {
+		"provider": "fount"
+	},
+	"ar-SA": {
+		"provider": "fount"
+	},
+	"de-DE": {
+		"provider": "fount"
+	},
+	"emoji": {
+		"provider": "fount"
+	},
+	"es-ES": {
+		"provider": "fount"
+	},
+	"fr-FR": {
+		"provider": "fount"
+	},
+	"hi-IN": {
+		"provider": "fount"
+	},
+	"is-IS": {
+		"provider": "fount"
+	},
+	"it-IT": {
+		"provider": "fount"
+	},
+	"ja-JP": {
+		"provider": "fount"
+	},
+	"ko-KR": {
+		"provider": "fount"
+	},
+	"lzh": {
+		"provider": "fount"
+	},
+	"nl-NL": {
+		"provider": "fount"
+	},
+	"pt-PT": {
+		"provider": "fount"
+	},
+	"ru-RU": {
+		"provider": "fount"
+	},
+	"uk-UA": {
+		"provider": "fount"
+	},
+	"vi-VN": {
+		"provider": "fount"
+	},
+	"zh-TW": {
+		"provider": "fount"
+	}
+}

@@ -1,0 +1,268 @@
+{
+	"en-UK": {
+		"name": "DuckDuckGo Search",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Search using DuckDuckGo",
+		"description_markdown": "Search implementation based on DuckDuckGo HTML search, no API key required.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"zh-CN": {
+		"name": "DuckDuckGo 搜索",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "使用 DuckDuckGo 的搜索",
+		"description_markdown": "基于 DuckDuckGo HTML 搜索实现的搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"ar-SA": {
+		"name": "بحث دك دك جو",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "البحث باستخدام دك دك جو",
+		"description_markdown": "البحث يعتمد على بحث DuckDuckGo HTML، ولا يلزم وجود مفتاح API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"يبحث",
+			"البحث على شبكة الإنترنت"
+		],
+		"home_page": ""
+	},
+	"de-DE": {
+		"name": "DuckDuckGo-Suche",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Suchen Sie mit DuckDuckGo",
+		"description_markdown": "Suche basierend auf der DuckDuckGo-HTML-Suche, kein API-Schlüssel erforderlich.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"suchen",
+			"Websuche"
+		],
+		"home_page": ""
+	},
+	"emoji": {
+		"name": "DuckDuckGo 搜索",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "使用 DuckDuckGo 的搜索",
+		"description_markdown": "基于 DuckDuckGo HTML 搜索实现的搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"es-ES": {
+		"name": "DuckDuckGo Buscar",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Buscar usando DuckDuckGo",
+		"description_markdown": "Búsqueda basada en la búsqueda HTML de DuckDuckGo, no se requiere clave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"patopatogo",
+			"buscar",
+			"búsqueda web"
+		],
+		"home_page": ""
+	},
+	"fr-FR": {
+		"name": "Recherche DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Rechercher avec DuckDuckGo",
+		"description_markdown": "Recherche basée sur la recherche HTML DuckDuckGo, aucune clé API requise.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"canardcanardgo",
+			"recherche",
+			"recherche sur le Web"
+		],
+		"home_page": ""
+	},
+	"hi-IN": {
+		"name": "डकडकगो सर्च",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGo का उपयोग करके खोजें",
+		"description_markdown": "DuckDuckGo HTML खोज पर आधारित खोज, किसी API कुंजी की आवश्यकता नहीं है।",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"खोज",
+			"वेब खोज"
+		],
+		"home_page": ""
+	},
+	"is-IS": {
+		"name": "DuckDuckGo leit",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Leitaðu með DuckDuckGo",
+		"description_markdown": "Leit byggð á DuckDuckGo HTML leit, enginn API lykill krafist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"leit",
+			"vefleit"
+		],
+		"home_page": ""
+	},
+	"it-IT": {
+		"name": "Cerca DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Cerca utilizzando DuckDuckGo",
+		"description_markdown": "Ricerca basata sulla ricerca HTML DuckDuckGo, non è richiesta alcuna chiave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"ricerca",
+			"ricerca sul web"
+		],
+		"home_page": ""
+	},
+	"ja-JP": {
+		"name": "DuckDuck検索に行く",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGoを使用して検索する",
+		"description_markdown": "DuckDuckGo HTML 検索に基づいて検索します。API キーは必要ありません。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"アヒルアヒル",
+			"検索",
+			"ウェブ検索"
+		],
+		"home_page": ""
+	},
+	"ko-KR": {
+		"name": "덕덕고 검색",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGo를 사용하여 검색",
+		"description_markdown": "DuckDuckGo HTML 검색을 기반으로 검색하며 API 키가 필요하지 않습니다.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"덕덕고",
+			"찾다",
+			"웹 검색"
+		],
+		"home_page": ""
+	},
+	"lzh": {
+		"name": "DuckDuckGo 搜索",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "使用 DuckDuckGo 的搜索",
+		"description_markdown": "基于 DuckDuckGo HTML 搜索实现的搜索，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"nl-NL": {
+		"name": "DuckDuckGo Zoeken",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Zoeken met DuckDuckGo",
+		"description_markdown": "Zoeken op basis van DuckDuckGo HTML-zoekopdracht, geen API-sleutel vereist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"zoekopdracht",
+			"web-zoeken"
+		],
+		"home_page": ""
+	},
+	"pt-PT": {
+		"name": "Pesquisa DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Pesquise usando DuckDuckGo",
+		"description_markdown": "Pesquisa baseada na pesquisa HTML DuckDuckGo, sem necessidade de chave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Pato Pato",
+			"procurar",
+			"pesquisa na web"
+		],
+		"home_page": ""
+	},
+	"ru-RU": {
+		"name": "УткаУткаПерейти к поиску",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Искать с помощью DuckDuckGo",
+		"description_markdown": "Поиск на основе HTML-поиска DuckDuckGo, ключ API не требуется.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"дакдакго",
+			"поиск",
+			"веб-поиск"
+		],
+		"home_page": ""
+	},
+	"uk-UA": {
+		"name": "Пошук DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Шукайте за допомогою DuckDuckGo",
+		"description_markdown": "Пошук на основі пошуку HTML DuckDuckGo, ключ API не потрібен.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"пошук",
+			"веб-пошук"
+		],
+		"home_page": ""
+	},
+	"vi-VN": {
+		"name": "VịtVịtĐi Tìm Kiếm",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Tìm kiếm bằng DuckDuckGo",
+		"description_markdown": "Tìm kiếm dựa trên tìm kiếm HTML DuckDuckGo, không cần khóa API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"vịt vịt",
+			"tìm kiếm",
+			"tìm kiếm trên web"
+		],
+		"home_page": ""
+	},
+	"zh-TW": {
+		"name": "DuckDuckGo 搜索",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "使用 DuckDuckGo 的搜索",
+		"description_markdown": "基於 DuckDuckGo HTML 搜索實現的搜索，無需 API 密鑰。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"duckduckgo",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	}
+}

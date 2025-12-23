@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Chars",
+		"description": "Characters manager"
+	},
+	"zh-CN": {
+		"name": "角色",
+		"description": "角色管理器"
+	},
+	"ar-SA": {
+		"name": "شخصيات",
+		"description": "مدير الشخصيات"
+	},
+	"de-DE": {
+		"name": "Charaktere",
+		"description": "Charaktermanager"
+	},
+	"emoji": {
+		"name": "角色",
+		"description": "角色管理器"
+	},
+	"es-ES": {
+		"name": "Personajes",
+		"description": "Administrador de personajes"
+	},
+	"fr-FR": {
+		"name": "Personnages",
+		"description": "Gestionnaire de personnages"
+	},
+	"hi-IN": {
+		"name": "पात्र",
+		"description": "पात्र प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Persónur",
+		"description": "Persónustjóri"
+	},
+	"it-IT": {
+		"name": "Caratteri",
+		"description": "Gestore dei personaggi"
+	},
+	"ja-JP": {
+		"name": "キャラクター",
+		"description": "キャラクターマネージャー"
+	},
+	"ko-KR": {
+		"name": "캐릭터",
+		"description": "캐릭터 매니저"
+	},
+	"lzh": {
+		"name": "角色",
+		"description": "角色管理器"
+	},
+	"nl-NL": {
+		"name": "Chars",
+		"description": "Karaktermanager"
+	},
+	"pt-PT": {
+		"name": "Personagens",
+		"description": "Gerenciador de personagens"
+	},
+	"ru-RU": {
+		"name": "Персонажи",
+		"description": "Менеджер персонажей"
+	},
+	"uk-UA": {
+		"name": "Персонажі",
+		"description": "Менеджер персонажів"
+	},
+	"vi-VN": {
+		"name": "Nhân vật",
+		"description": "Trình quản lý nhân vật"
+	},
+	"zh-TW": {
+		"name": "角色",
+		"description": "角色管理器"
+	}
+}

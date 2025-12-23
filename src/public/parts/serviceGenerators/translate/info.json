@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Translate Service Generators",
+		"description": "Translate Service Generators manager"
+	},
+	"zh-CN": {
+		"name": "翻译服务生成器",
+		"description": "翻译服务生成器管理器"
+	},
+	"ar-SA": {
+		"name": "مولدات خدمة الترجمة",
+		"description": "مدير مولدات خدمة الترجمة"
+	},
+	"de-DE": {
+		"name": "Übersetzungs-Servicegeneratoren",
+		"description": "Übersetzungs-Servicegeneratoren-Manager"
+	},
+	"emoji": {
+		"name": "翻译服务生成器",
+		"description": "翻译服务生成器管理器"
+	},
+	"es-ES": {
+		"name": "Generadores de servicios de traducción",
+		"description": "Administrador de generadores de servicios de traducción"
+	},
+	"fr-FR": {
+		"name": "Générateurs de services de traduction",
+		"description": "Gestionnaire de générateurs de services de traduction"
+	},
+	"hi-IN": {
+		"name": "अनुवाद सेवा जेनरेटर",
+		"description": "अनुवाद सेवा जेनरेटर प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Þýðingarþjónustuframleiðendur",
+		"description": "Umsjónarmaður þýðingarþjónustuframleiðenda"
+	},
+	"it-IT": {
+		"name": "Generatori di servizi di traduzione",
+		"description": "Gestore dei generatori di servizi di traduzione"
+	},
+	"ja-JP": {
+		"name": "翻訳サービス ジェネレーター",
+		"description": "翻訳サービス ジェネレーター マネージャー"
+	},
+	"ko-KR": {
+		"name": "번역 서비스 생성기",
+		"description": "번역 서비스 생성기 관리자"
+	},
+	"lzh": {
+		"name": "翻译服务生成器",
+		"description": "翻译服务生成器管理器"
+	},
+	"nl-NL": {
+		"name": "Vertaal-servicegeneratoren",
+		"description": "Beheerder van vertaal-servicegeneratoren"
+	},
+	"pt-PT": {
+		"name": "Geradores de serviços de tradução",
+		"description": "Gerente de geradores de serviços de tradução"
+	},
+	"ru-RU": {
+		"name": "Генераторы сервисов перевода",
+		"description": "Менеджер генераторов сервисов перевода"
+	},
+	"uk-UA": {
+		"name": "Генератори сервісів перекладу",
+		"description": "Менеджер генераторів сервісів перекладу"
+	},
+	"vi-VN": {
+		"name": "Trình tạo dịch vụ dịch thuật",
+		"description": "Trình quản lý trình tạo dịch vụ dịch thuật"
+	},
+	"zh-TW": {
+		"name": "翻譯服務生成器",
+		"description": "翻譯服務生成器管理器"
+	}
+}

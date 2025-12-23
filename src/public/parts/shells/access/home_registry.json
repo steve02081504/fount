@@ -1,0 +1,10 @@
+{
+	"home_function_buttons": [
+		{
+			"info": "access.home_function_buttons.main",
+			"level": 99,
+			"url": "/parts/shells:access/",
+			"button": "<img src=\"https://api.iconify.design/line-md/cloud.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

@@ -1,0 +1,37 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "in_dev",
+			"info": "deskpet.home_function_buttons.in_dev",
+			"level": 10000,
+			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"id": "deskpet_related",
+					"info": "deskpet.home_function_buttons.in_dev.sub_items.deskpet_related",
+					"level": 2,
+					"button": "<img src=\"https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg\" class=\"text-icon\"/>",
+					"sub_items": [
+						{
+							"info": "deskpet.home_function_buttons.in_dev.sub_items.deskpet_related.sub_items.main",
+							"level": 1,
+							"url": "/parts/shells:deskpet/",
+							"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
+						}
+					]
+				}
+			]
+		}
+	],
+	"home_interfaces": {
+		"chars": [
+			{
+				"info": "deskpet.home_char_interfaces.launch",
+				"level": 1,
+				"interface": "deskpet",
+				"url": "/parts/shells:deskpet/launch?char=${name}",
+				"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
+			}
+		]
+	}
+}

@@ -1,0 +1,59 @@
+{
+	"en-UK": {
+		"provider": "Brave"
+	},
+	"zh-CN": {
+		"provider": "Brave"
+	},
+	"ar-SA": {
+		"provider": "Brave"
+	},
+	"de-DE": {
+		"provider": "Brave"
+	},
+	"emoji": {
+		"provider": "Brave"
+	},
+	"es-ES": {
+		"provider": "Brave"
+	},
+	"fr-FR": {
+		"provider": "Brave"
+	},
+	"hi-IN": {
+		"provider": "Brave"
+	},
+	"is-IS": {
+		"provider": "Brave"
+	},
+	"it-IT": {
+		"provider": "Brave"
+	},
+	"ja-JP": {
+		"provider": "Brave"
+	},
+	"ko-KR": {
+		"provider": "Brave"
+	},
+	"lzh": {
+		"provider": "Brave"
+	},
+	"nl-NL": {
+		"provider": "Brave"
+	},
+	"pt-PT": {
+		"provider": "Brave"
+	},
+	"ru-RU": {
+		"provider": "Brave"
+	},
+	"uk-UA": {
+		"provider": "Brave"
+	},
+	"vi-VN": {
+		"provider": "Brave"
+	},
+	"zh-TW": {
+		"provider": "Brave"
+	}
+}

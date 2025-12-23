@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Personas",
+		"description": "Personas manager"
+	},
+	"zh-CN": {
+		"name": "人设",
+		"description": "人设管理器"
+	},
+	"ar-SA": {
+		"name": "شخصيات",
+		"description": "مدير الشخصيات"
+	},
+	"de-DE": {
+		"name": "Personas",
+		"description": "Personas-Manager"
+	},
+	"emoji": {
+		"name": "人设",
+		"description": "人设管理器"
+	},
+	"es-ES": {
+		"name": "Personas",
+		"description": "Administrador de personas"
+	},
+	"fr-FR": {
+		"name": "Personnages",
+		"description": "Gestionnaire de personas"
+	},
+	"hi-IN": {
+		"name": "व्यक्तित्व",
+		"description": "व्यक्तित्व प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Persónur",
+		"description": "Persónustjóri"
+	},
+	"it-IT": {
+		"name": "Personas",
+		"description": "Gestore delle personas"
+	},
+	"ja-JP": {
+		"name": "ペルソナ",
+		"description": "ペルソナマネージャー"
+	},
+	"ko-KR": {
+		"name": "페르소나",
+		"description": "페르소나 관리자"
+	},
+	"lzh": {
+		"name": "人设",
+		"description": "人设管理器"
+	},
+	"nl-NL": {
+		"name": "Persona's",
+		"description": "Persona-manager"
+	},
+	"pt-PT": {
+		"name": "Personas",
+		"description": "Gestor de personas"
+	},
+	"ru-RU": {
+		"name": "Персоны",
+		"description": "Менеджер персон"
+	},
+	"uk-UA": {
+		"name": "Персони",
+		"description": "Менеджер персон"
+	},
+	"vi-VN": {
+		"name": "Persona",
+		"description": "Trình quản lý persona"
+	},
+	"zh-TW": {
+		"name": "人設",
+		"description": "人設管理器"
+	}
+}
