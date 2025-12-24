@@ -2202,6 +2202,9 @@
 		"error": "謬",
 		"errorMessage": "謬：${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "點選以至${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "鍵序直列，易窺。",

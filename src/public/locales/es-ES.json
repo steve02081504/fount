@@ -2202,6 +2202,9 @@
 		"error": "Verificación fallida",
 		"errorMessage": "Verificación fallida: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Haga clic para navegar a ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Las teclas continuas en el teclado se adivinan fácilmente.",

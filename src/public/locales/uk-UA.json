@@ -2202,6 +2202,9 @@
 		"error": "Перевірка не вдалася",
 		"errorMessage": "Перевірка не вдалася: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Натисніть, щоб перейти до ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Безперервні клавіші на клавіатурі легко здогадуються.",

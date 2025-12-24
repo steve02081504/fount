@@ -2202,6 +2202,9 @@
 		"error": "Staðfesting mistókst",
 		"errorMessage": "Staðfesting mistókst: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Smelltu til að fara í ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Auðvelt er að giska á stöðugan lykla á lyklaborðinu.",

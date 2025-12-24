@@ -2202,6 +2202,9 @@
 		"error": "فشل التحقق",
 		"errorMessage": "فشل التحقق: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "انقر للانتقال إلى ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "مفاتيح مستمرة على لوحة المفاتيح يتم تخمينها بسهولة.",

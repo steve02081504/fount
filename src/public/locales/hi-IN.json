@@ -2202,6 +2202,9 @@
 		"error": "सत्यापन विफल",
 		"errorMessage": "सत्यापन विफल: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "${path} पर नेविगेट करने के लिए क्लिक करें"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "कीबोर्ड पर निरंतर कुंजियों को आसानी से अनुमान लगाया जाता है।",

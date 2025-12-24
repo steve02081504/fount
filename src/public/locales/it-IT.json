@@ -2202,6 +2202,9 @@
 		"error": "Verifica non riuscita",
 		"errorMessage": "Verifica non riuscita: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Fai clic per accedere a ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Le tasti continue sulla tastiera sono facilmente indovinate.",
