@@ -257,7 +257,7 @@ function setupDefaultCheckbox(itemElement, parttype, partname, signal) {
 		const response = await (isChecked ? setDefaultPart : unsetDefaultPart)(parttype, partname)
 
 		if (response.ok) {
-			if (parttype === 'personas' && isChecked) unlockAchievement('shells', 'home', 'set_default_persona')
+			if (parttype === 'personas' && isChecked) unlockAchievement('shells/home', 'set_default_persona')
 		} else {
 			console.error('Failed to update default part:', await response.text())
 			event.target.checked = !isChecked

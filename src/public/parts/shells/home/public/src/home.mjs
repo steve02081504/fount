@@ -100,7 +100,7 @@ export async function initializeApp() {
 	setupDOMEventListeners()
 	setupServerEventListeners()
 
-	unlockAchievement('shells', 'home', 'first_login')
+	unlockAchievement('shells/home', 'first_login')
 
 	syncSettingsToGitHubPages().then(iframe => {
 		iframe.addEventListener('load', () => {

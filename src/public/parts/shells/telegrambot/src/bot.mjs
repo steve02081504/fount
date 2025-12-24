@@ -134,7 +134,7 @@ export async function runBot(username, botname) {
 		botCache[botname] = await botCache[botname]
 		// 在 fount 任务系统中注册此bot为一个正在运行的任务
 		StartJob(username, 'shells/telegrambot', botname)
-		unlockAchievement(username, 'shells', 'telegrambot', 'start_bot')
+		unlockAchievement(username, 'shells/telegrambot', 'start_bot')
 	}
 	catch (error) {
 		// 如果启动失败，从缓存中移除，并向上抛出错误
@@ -182,7 +182,7 @@ on_shutdown(async () => {
 			botCache[botname] = await botCache[botname]
 			await botCache[botname].stop('SIGINT')
 		}
-		finally {
+			finally {
 			delete botCache[botname]
 		}
 	}

@@ -39,7 +39,7 @@ export default {
 			 * @returns {Promise<object>} - 辅助结果。
 			 */
 			IPCInvokeHandler: async (username, data) => {
-				unlockAchievement(username, 'shells', 'shellassist', 'invoke_shell_assist')
+				unlockAchievement(username, 'shells/shellassist', 'invoke_shell_assist')
 				const char = await loadPart(username, 'chars/' + data.charname)
 				if (!char.interfaces.shellassist) {
 					const { GetDefaultShellAssistInterface } = await import('./src/default_interface/main.mjs')

@@ -107,7 +107,7 @@ export const actions = {
 		if (!sourceName) throw new Error('Service source name is required for set-default action.')
 		const serviceSourcePath = inferServiceSourcePath(type)
 		await setDefaultPart(user, serviceSourcePath, sourceName)
-		unlockAchievement(user, 'shells', 'serviceSourceManage', 'set_default_aisource')
+		unlockAchievement(user, 'shells/serviceSourceManage', 'set_default_aisource')
 		return `Service source '${sourceName}' set as default.`
 	}
 }

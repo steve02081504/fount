@@ -85,7 +85,7 @@ export function setEndpoints(router) {
 		const { setDefaultPart } = await import('../../../../../server/parts_loader.mjs')
 		await setDefaultPart(username, serviceSourcePath, name)
 		const { unlockAchievement } = await import('../../achievements/src/api.mjs')
-		unlockAchievement(username, 'shells', 'serviceSourceManage', 'set_default_aisource')
+		unlockAchievement(username, 'shells/serviceSourceManage', 'set_default_aisource')
 		res.status(200).json({ message: 'Service source set as default successfully' })
 	})
 
