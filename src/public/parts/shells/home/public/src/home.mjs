@@ -116,5 +116,4 @@ export async function initializeApp() {
  */
 export async function refreshApp() {
 	await loadDataAndRender()
-	updateTabContent(currentPartType)
 }

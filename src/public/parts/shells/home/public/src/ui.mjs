@@ -114,12 +114,11 @@ export async function renderFilteredItems(partTypeObject, filteredPaths) {
 	const currentContainer = partTypesContainers.querySelector(`#${partTypeName}-container`)
 	if (!currentContainer) return
 
-	currentContainer.innerHTML = ''
-
-	if (!filteredPaths.length)
+	if (!filteredPaths.length) {
+		currentContainer.innerHTML = ''
 		return currentContainer.appendChild(await renderTemplate('empty_list_view'))
+	}
 
-	const fragment = document.createDocumentFragment()
 	const skeletonMap = new Map()
 
 	// 并行创建元素
@@ -135,6 +134,9 @@ export async function renderFilteredItems(partTypeObject, filteredPaths) {
 	})
 
 	const elements = await Promise.all(elementPromises)
+
+	currentContainer.innerHTML = ''
+	const fragment = document.createDocumentFragment()
 	elements.forEach(el => fragment.appendChild(el))
 	currentContainer.appendChild(fragment)
 
