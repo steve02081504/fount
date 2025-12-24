@@ -2202,6 +2202,9 @@
 		"error": "Verification failed",
 		"errorMessage": "Verification failed: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Click to navigate to ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Straight rows of keys on your keyboard are easy to guess.",

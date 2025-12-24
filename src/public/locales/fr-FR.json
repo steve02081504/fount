@@ -2202,6 +2202,9 @@
 		"error": "Échec de la vérification",
 		"errorMessage": "Échec de la vérification : ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Cliquez pour accéder à ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Les touches continues sur le clavier sont facilement devinées.",

@@ -2202,6 +2202,9 @@
 		"error": "Überprüfung fehlgeschlagen",
 		"errorMessage": "Überprüfung fehlgeschlagen: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Klicken Sie, um zu ${path} zu navigieren"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Kontinuierliche Tasten auf der Tastatur sind leicht zu erraten.",

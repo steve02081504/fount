@@ -2202,6 +2202,9 @@
 		"error": "Verificatie mislukt",
 		"errorMessage": "Verificatie mislukt: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Klik om naar ${path} te navigeren"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "Continue toetsen op het toetsenbord zijn gemakkelijk geraden.",

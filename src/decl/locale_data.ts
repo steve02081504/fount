@@ -2191,6 +2191,9 @@ export type LocaleData = {
 		error: string
 		errorMessage: string
 	}
+	breadcrumb: {
+		clickToNavigate: string
+	}
 	zxcvbn: {
 		warnings: {
 			straightRow: string
@@ -2280,6 +2283,7 @@ export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
 	'badges_maker.copy_error': { error: string | number }
+	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
 	'browser_integration.error.add_failed': { message: string | number }
 	'browser_integration.error.delete_failed': { message: string | number }

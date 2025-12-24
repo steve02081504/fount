@@ -2202,6 +2202,9 @@
 		"error": "検証失敗",
 		"errorMessage": "検証失敗：${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "クリックして ${path} に移動"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "キーボード上の連続キーは簡単に推測できます。",

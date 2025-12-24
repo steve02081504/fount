@@ -167,7 +167,7 @@ export async function createPartpathPicker({
 			const li = document.createElement('li')
 			const a = document.createElement('a')
 			a.textContent = segment
-			a.title = geti18n('home.breadcrumb.clickToNavigate', { path: segment }) || segment
+			a.title = geti18n('breadcrumb.clickToNavigate', { path: segment }) || segment
 			a.href = '#'
 			a.addEventListener('click', event => {
 				event.preventDefault()

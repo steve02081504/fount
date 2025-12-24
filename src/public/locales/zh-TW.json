@@ -2202,6 +2202,9 @@
 		"error": "驗證失敗",
 		"errorMessage": "驗證失敗：${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "點擊前往 ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "鍵盤上的連續按鍵很容易被猜到。",

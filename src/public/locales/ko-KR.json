@@ -2202,6 +2202,9 @@
 		"error": "확인 실패",
 		"errorMessage": "확인 실패: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "클릭하여 ${path}로 이동"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",

@@ -2202,6 +2202,9 @@
 		"error": "Verificação falhou",
 		"errorMessage": "Verificação falhou: ${error}"
 	},
+	"breadcrumb": {
+		"clickToNavigate": "Clique para navegar até ${path}"
+	},
 	"zxcvbn": {
 		"warnings": {
 			"straightRow": "As teclas contínuas no teclado são facilmente adivinhadas.",
