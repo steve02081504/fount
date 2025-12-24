@@ -212,10 +212,10 @@ async function closeTutorial() {
 	else window.location.href = '/parts/shells:home'
 }
 skipButton.addEventListener('click', () => {
-	unlockAchievement('shells', 'tutorial', 'skip_tutorial')
+	unlockAchievement('shells/tutorial', 'skip_tutorial')
 	closeTutorial()
 })
 endButton.addEventListener('click', () => {
-	unlockAchievement('shells', 'tutorial', 'complete_tutorial')
+	unlockAchievement('shells/tutorial', 'complete_tutorial')
 	closeTutorial()
 })

@@ -360,7 +360,7 @@ export function handleConnection(ws, username) {
 					const page = manager.addPage(ws, url, title)
 					currentPageId = page.id
 					ws.send(JSON.stringify({ type: 'init_success', payload: { pageId: currentPageId } }))
-					unlockAchievement(username, 'shells', 'browserIntegration', 'install_script')
+					unlockAchievement(username, 'shells/browserIntegration', 'install_script')
 					break
 				}
 				case 'focus': {
@@ -468,7 +468,7 @@ export async function getVisibleHtml(username, pageId) {
  * @returns {Promise<any>} - 脚本执行结果。
  */
 export async function runJsOnPage(username, pageId, script, callbackInfo = null) {
-	unlockAchievement(username, 'shells', 'browserIntegration', 'run_js')
+	unlockAchievement(username, 'shells/browserIntegration', 'run_js')
 	return await getUserManager(username).sendRequest(pageId, { type: 'run_js', payload: { script, callbackInfo } })
 }
 

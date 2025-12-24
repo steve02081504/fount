@@ -1080,7 +1080,7 @@ async function addChatLogEntry(chatid, entry) {
 	// Achievements: multiplayer_chat
 	if (entry.role === 'char' && entry.timeSlice.charname) {
 		const spokenChars = new Set(chatMetadata.chatLog.filter(e => e.role === 'char' && e.timeSlice.charname).map(e => e.timeSlice.charname))
-		if (spokenChars.size >= 2) unlockAchievement(chatMetadata.username, 'shells', 'chat', 'multiplayer_chat')
+		if (spokenChars.size >= 2) unlockAchievement(chatMetadata.username, 'shells/chat', 'multiplayer_chat')
 	}
 
 	// 更新最后一条消息的时间线分支
@@ -1544,11 +1544,11 @@ export async function addUserReply(chatid, object) {
 
 	// Achievements
 	// first_chat
-	unlockAchievement(chatMetadata.username, 'shells', 'chat', 'first_chat')
+	unlockAchievement(chatMetadata.username, 'shells/chat', 'first_chat')
 
 	// photo_chat
 	if (object.files?.some?.(file => file.mime_type.startsWith('image/')))
-		unlockAchievement(chatMetadata.username, 'shells', 'chat', 'photo_chat')
+		unlockAchievement(chatMetadata.username, 'shells/chat', 'photo_chat')
 
 	const timeSlice = chatMetadata.LastTimeSlice
 	const new_timeSlice = timeSlice.copy()

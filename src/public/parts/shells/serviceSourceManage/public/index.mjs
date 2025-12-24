@@ -259,7 +259,7 @@ function renderFileList() {
 
 				if (isChecked) {
 					(defaultParts[currentServiceSourcePath] ||= []).push(fileName)
-					unlockAchievement('shells', 'serviceSourceManage', 'set_default_aisource')
+					unlockAchievement('shells/serviceSourceManage', 'set_default_aisource')
 				}
 				else {
 					const list = defaultParts[currentServiceSourcePath]

@@ -112,7 +112,7 @@ export function setEndpoints(router) {
 				files: req.files,
 			})
 
-			unlockAchievement(username, 'shells', 'easynew', 'create_part')
+			unlockAchievement(username, 'shells/easynew', 'create_part')
 
 			res.status(201).json({ message: `Part '${partName}' created successfully!`, partName })
 		}

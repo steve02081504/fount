@@ -42,9 +42,9 @@ export async function getFountJson(username, partpath) {
 			const remoteUrl = await git.withPath(partPath)('remote get-url origin')
 			if (remoteUrl.trim()) json.share_link = remoteUrl.trim()
 		}
-		catch (err) {
-			console.warn(`Could not get git remote for ${normalized}:`, err)
-		}
+			catch (err) {
+				console.warn(`Could not get git remote for ${normalized}:`, err)
+			}
 	}
 
 	return json
@@ -128,6 +128,6 @@ export async function createShareLink(username, partpath, expiration, withData) 
 		throw new Error(`Failed to upload to litterbox: ${response.statusText}`)
 
 	const link = await response.text()
-	unlockAchievement(username, 'shells', 'export', 'share_part')
+	unlockAchievement(username, 'shells/export', 'share_part')
 	return `https://steve02081504.github.io/fount/protocol?url=fount://run/parts/shells:install/install;${link}`
 }

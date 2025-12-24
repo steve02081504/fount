@@ -108,7 +108,7 @@ export function setupDOMEventListeners() {
 		try {
 			await setUserSetting('sfw', sfwToggle.checked)
 			setIsSfw(sfwToggle.checked)
-			unlockAchievement('shells', 'home', isSfw ? 'sfw_mode_on' : 'sfw_mode_off')
+			unlockAchievement('shells/home', isSfw ? 'sfw_mode_on' : 'sfw_mode_off')
 			refreshCurrentTab()
 		}
 		catch (e) {
@@ -120,7 +120,7 @@ export function setupDOMEventListeners() {
 	onLanguageChange(() => refreshCurrentTab())
 
 	functionMenuButton.addEventListener('focus', () => {
-		unlockAchievement('shells', 'home', 'open_function_list')
+		unlockAchievement('shells/home', 'open_function_list')
 	}, { once: true })
 
 	// Esc键确认

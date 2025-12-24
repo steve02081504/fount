@@ -72,7 +72,7 @@ export async function runPet(username, charname) {
 		runningPets[username] ??= {}
 		runningPets[username][charname] = { webview: myWindow, apiKeyJti: jti }
 		sendEventToAll('deskpet-list-updated')
-		unlockAchievement(username, 'shells', 'deskpet', 'start_deskpet') // Trigger achievement here
+		unlockAchievement(username, 'shells/deskpet', 'start_deskpet') // Trigger achievement here
 	} catch (error) {
 		console.error(`[DeskPet] Failed to start pet for ${charname}:`, error)
 		EndJob(username, 'shells/deskpet', charname) // End job on failure

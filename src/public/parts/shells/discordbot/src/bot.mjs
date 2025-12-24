@@ -139,7 +139,7 @@ export async function runBot(username, botname) {
 	try {
 		botCache[botname] = await botCache[botname]
 		StartJob(username, 'shells/discordbot', botname)
-		unlockAchievement(username, 'shells', 'discordbot', 'start_bot')
+		unlockAchievement(username, 'shells/discordbot', 'start_bot')
 	}
 	catch (error) {
 		delete botCache[botname]
