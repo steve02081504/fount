@@ -191,8 +191,6 @@ async function hydrateChatListItem(chatElement, chat) {
 	})
 
 	// Button listeners
-	chatElement.querySelector('.continue-button').href = `/shells/chat#${chat.chatid}`
-
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
 		try {
 			const datas = await copyChats([chat.chatid])
