@@ -1,11 +1,13 @@
 /**
  * 教程 shell 的客户端逻辑。
  */
+import * as Sentry from 'https://esm.sh/@sentry/browser'
+/* global confetti */
+
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { unlockAchievement, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
+import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-/* global confetti */
 
 applyTheme()
 
@@ -206,8 +208,14 @@ const redirect = urlParams.get('redirect')
  * 关闭教程。
  */
 async function closeTutorial() {
-	await setDefaultPart('shells', 'home')
-	await unsetDefaultPart('shells', 'tutorial')
+	try {
+		await setDefaultPart('shells', 'home')
+		await unsetDefaultPart('shells', 'tutorial')
+		// 获取默认部件来刷新缓存
+		await getAllDefaultParts('shells')
+	} catch (error) {
+		Sentry.captureException(error)
+	}
 	if (redirect) window.location.href = decodeURIComponent(redirect) + window.location.hash
 	else window.location.href = '/parts/shells:home'
 }
