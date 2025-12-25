@@ -11,11 +11,10 @@ import { applyUrlParamsTransferStrategy } from '../../../scripts/urlDataTransfer
 
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
-import { setHomeRegistry, setDefaultParts, setIsSfw, setPartBranches, homeRegistry, preloadDragGenerators, currentPartType } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setIsSfw, setPartBranches, homeRegistry, preloadDragGenerators } from './state.mjs'
 import {
 	setupPartTypeUI,
-	displayFunctionButtons,
-	updateTabContent
+	displayFunctionButtons
 } from './ui.mjs'
 
 
