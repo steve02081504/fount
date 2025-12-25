@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Subfounts - Peer-to-Peer Device Management</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="p-4 md:p-8 bg-base-200">
+	<div class="container mx-auto">
+		<div class="prose mb-4">
+			<h1 class="text-3xl">Subfounts</h1>
+			<p>Manage peer-to-peer subfount connections</p>
+		</div>
+
+		<div class="grid md:grid-cols-2 gap-6">
+			<!-- Left Column - Connection Code -->
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">Host Connection Code</h2>
+					<div class="form-control mt-4">
+						<label class="label">
+							<span class="label-text">Connection Code (Peer ID)</span>
+						</label>
+						<div class="join w-full">
+							<input type="text" readonly class="input input-bordered join-item w-full font-mono" id="connection-code-input" />
+							<button class="btn btn-primary join-item" id="copy-code-button">Copy</button>
+						</div>
+					</div>
+					<div class="form-control mt-4">
+						<label class="label">
+							<span class="label-text">Password</span>
+						</label>
+						<div class="join w-full">
+							<input type="text" readonly class="input input-bordered join-item w-full font-mono" id="password-input" />
+							<button class="btn btn-primary join-item" id="copy-password-button">Copy</button>
+						</div>
+					</div>
+					<div class="card-actions justify-end mt-4">
+						<button class="btn btn-secondary" id="regenerate-button">Regenerate</button>
+					</div>
+					<div class="alert alert-info mt-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+						<span>Share these credentials with subfount clients to establish connections.</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column - Connected Subfounts -->
+			<div class="card bg-base-100 shadow-xl min-w-0">
+				<div class="card-body">
+					<h2 class="card-title">Connected Subfounts</h2>
+					<div id="subfounts-list" class="overflow-x-auto">
+						<div class="text-center">
+							<span class="loading loading-dots loading-md"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Download Section -->
+		<div class="card bg-base-100 shadow-xl mt-6">
+			<div class="card-body">
+				<h2 class="card-title">Download Subfount Client</h2>
+				<p>Download the standalone subfount client script to run on remote devices.</p>
+				<div class="card-actions justify-end mt-4">
+					<a href="/virtual_files/parts/shells:subfounts/subfount.mjs" class="btn btn-primary" download="subfount.mjs">Download subfount.mjs</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>
