@@ -42,9 +42,9 @@ export async function getFountJson(username, partpath) {
 			const remoteUrl = await git.withPath(partPath)('remote get-url origin')
 			if (remoteUrl.trim()) json.share_link = remoteUrl.trim()
 		}
-			catch (err) {
-				console.warn(`Could not get git remote for ${normalized}:`, err)
-			}
+		catch (err) {
+			console.warn(`Could not get git remote for ${normalized}:`, err)
+		}
 	}
 
 	return json

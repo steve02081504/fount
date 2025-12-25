@@ -182,7 +182,7 @@ on_shutdown(async () => {
 			botCache[botname] = await botCache[botname]
 			await botCache[botname].stop('SIGINT')
 		}
-			finally {
+		finally {
 			delete botCache[botname]
 		}
 	}
