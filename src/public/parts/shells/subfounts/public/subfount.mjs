@@ -15,8 +15,9 @@
 
 import os from 'node:os'
 import process from 'node:process'
-import { on_shutdown } from 'npm:on-shutdown'
+
 import { prompt } from 'npm:inquirer'
+import { on_shutdown } from 'npm:on-shutdown'
 import PeerJS from 'npm:peerjs'
 
 const args = process.argv.slice(2)
