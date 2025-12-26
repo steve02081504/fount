@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "ユーザー ${username} のタスク ${partpath} を再起動しています: ${uid}"
+			"restartingJob": "ユーザー ${username} のタスク ${partpath} を再起動しています: ${uid}",
+			"preloadingParts": "${count} 個のパーツをプリロードしています"
 		},
 		"ipc": {
 			"serverStarted": "IPCサーバーが起動しました。",

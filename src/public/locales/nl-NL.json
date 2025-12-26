@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Voor gebruiker ${username}, taak ${partpath} opnieuw starten: ${uid}"
+			"restartingJob": "Voor gebruiker ${username}, taak ${partpath} opnieuw starten: ${uid}",
+			"preloadingParts": "${count} onderdelen vooraf laden"
 		},
 		"ipc": {
 			"serverStarted": "IPC-server is gestart",

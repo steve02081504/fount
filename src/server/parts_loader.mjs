@@ -472,6 +472,53 @@ export async function baseMjsPartUnloader(path) {
 }
 
 const parts_load_results = {}
+
+/**
+ * 记录loadPart调用的集合。
+ * @type {Set<string>}
+ */
+const loadPartCallRecords = new Set()
+
+/**
+ * 是否启用loadPart调用记录。
+ * @type {boolean}
+ */
+let isRecordingLoadPartCalls = false
+
+/**
+ * 启用loadPart调用记录。
+ * @returns {void}
+ */
+export function enableLoadPartRecording() {
+	isRecordingLoadPartCalls = true
+	loadPartCallRecords.clear()
+}
+
+/**
+ * 禁用loadPart调用记录。
+ * @returns {void}
+ */
+export function disableLoadPartRecording() {
+	isRecordingLoadPartCalls = false
+	loadPartCallRecords.clear()
+}
+
+/**
+ * 获取记录的loadPart调用列表。
+ * @returns {string[]} 记录的调用列表，格式为 "username:partpath"。
+ */
+export function getLoadPartCallRecords() {
+	return Array.from(loadPartCallRecords)
+}
+
+/**
+ * 清除记录的loadPart调用。
+ * @returns {void}
+ */
+export function clearLoadPartCallRecords() {
+	loadPartCallRecords.clear()
+}
+
 /**
  * 加载和初始化部件的基础函数。处理初始化和加载生命周期。
  * 使用模板参数来指定部件类型和初始化参数，以获得更好的类型安全。
@@ -514,6 +561,9 @@ export async function loadPartBase(username, partpath, Initargs, {
 	afterInit = part => { },
 	skipParentDelegation = false,
 } = {}) {
+	// 记录loadPart调用
+	if (isRecordingLoadPartCalls) loadPartCallRecords.add(`${username}:${partpath}`)
+
 	// 支持层级化加载
 	const parentPath = path_module.dirname(partpath)
 	const partname = path_module.basename(partpath)

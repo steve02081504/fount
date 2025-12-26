@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Đang khởi động lại tác vụ ${partpath} cho người dùng ${username}: ${uid}"
+			"restartingJob": "Đang khởi động lại tác vụ ${partpath} cho người dùng ${username}: ${uid}",
+			"preloadingParts": "Đang tải trước các phần ${count}"
 		},
 		"ipc": {
 			"serverStarted": "Máy chủ IPC đã khởi động.",

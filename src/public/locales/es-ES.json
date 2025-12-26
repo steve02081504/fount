@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Reiniciando la tarea ${partpath} para el usuario ${username}: ${uid}"
+			"restartingJob": "Reiniciando la tarea ${partpath} para el usuario ${username}: ${uid}",
+			"preloadingParts": "Precargando ${count} piezas"
 		},
 		"ipc": {
 			"serverStarted": "Servidor IPC iniciado",

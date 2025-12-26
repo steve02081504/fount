@@ -30,6 +30,7 @@ export type LocaleData = {
 		}
 		jobs: {
 			restartingJob: string
+			preloadingParts: string
 		}
 		ipc: {
 			serverStarted: string
@@ -2321,6 +2322,7 @@ export type LocaleKeyParams = {
 	'fountConsole.ipc.runPartLog': { args: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.sendCommandFailed': { error: string | number }
 	'fountConsole.ipc.socketError': { error: string | number }
+	'fountConsole.jobs.preloadingParts': { count: string | number }
 	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
