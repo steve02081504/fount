@@ -3,8 +3,13 @@ import { console } from '../scripts/i18n.mjs'
 
 import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { events } from './events.mjs'
-import { loadPart } from './parts_loader.mjs'
-import { save_config } from './server.mjs'
+import {
+	loadPart,
+	enableLoadPartRecording,
+	disableLoadPartRecording,
+	getLoadPartCallRecords,
+} from './parts_loader.mjs'
+import { config, save_config } from './server.mjs'
 
 /**
  * 启动一个新作业并保存其状态。
@@ -65,13 +70,42 @@ async function startJobsOfUser(username) {
 	await Promise.all(promises)
 	return promises.length
 }
+
+/**
+ * 从config.prelaunch.jobparts预加载所有记录的部件。
+ * @returns {Promise<void>}
+ */
+function preloadPartsFromConfig() {
+	const prelaunchParts = config.prelaunch?.jobparts || []
+	if (!prelaunchParts.length) return
+
+	console.logI18n('fountConsole.jobs.preloadingParts', { count: prelaunchParts.length })
+	prelaunchParts.map(async (record) => {
+		const [username, partpath] = record.split(':')
+		if (!username || !partpath) return
+		try {
+			await loadPart(username, partpath, { username })
+		} catch (error) {
+			console.error(`Failed to preload part ${partpath} for user ${username}:`, error)
+		}
+	})
+}
 /**
  * 重新启动所有用户的所有作业。
  * @returns {Promise<void>}
  */
 export async function ReStartJobs() {
-	const count = (await Promise.all(getAllUserNames().map(startJobsOfUser))).reduce((a, b) => a + b, 0)
-	if (count) gc()
+	preloadPartsFromConfig()
+	enableLoadPartRecording()
+	try {
+		const count = (await Promise.all(getAllUserNames().map(startJobsOfUser))).reduce((a, b) => a + b, 0)
+		if (count) gc()
+	}
+	finally {
+		(config.prelaunch ??= {}).jobparts = getLoadPartCallRecords()
+		disableLoadPartRecording()
+		save_config()
+	}
 }
 
 events.on('AfterUserRenamed', async ({ oldUsername, newUsername }) => {

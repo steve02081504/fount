@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Riavvio dell'attività ${partpath} per l'utente ${username}: ${uid}"
+			"restartingJob": "Riavvio dell'attività ${partpath} per l'utente ${username}: ${uid}",
+			"preloadingParts": "Precaricamento di ${count} parti"
 		},
 		"ipc": {
 			"serverStarted": "Server IPC avviato.",
