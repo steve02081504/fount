@@ -338,7 +338,7 @@ export function isPartLoaded(username, partpath) {
 export async function loadPart(username, partpath, Initargs, functions) {
 	// 记录loadPart调用
 	if (isRecordingLoadPartCalls) loadPartCallRecords.add(`${username}:${partpath}`)
-	if (!fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')) debugger
+	if (!fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')) {}
 
 	// 支持层级化加载
 	const parentPath = path_module.dirname(partpath)
