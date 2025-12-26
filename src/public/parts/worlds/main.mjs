@@ -52,7 +52,7 @@ export default {
 				return loadPartBase(username, 'worlds/' + partname, {
 					username,
 					worldname: partname
-				}, { skipParentDelegation: true })
+				})
 			},
 			/**
 			 * 卸载子部件。
@@ -62,7 +62,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			unloadSubPart: async (my_paths, username, partname) => {
-				return unloadPartBase(username, 'worlds/' + partname, {}, { skipParentDelegation: true })
+				return unloadPartBase(username, 'worlds/' + partname)
 			}
 		}
 	}

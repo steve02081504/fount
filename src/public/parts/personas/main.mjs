@@ -49,7 +49,7 @@ export default {
 			 * @returns {Promise<any>} 加载的部件实例。
 			 */
 			loadSubPart: (my_paths, username, partname) => {
-				return loadPartBase(username, 'personas/' + partname, {}, { skipParentDelegation: true })
+				return loadPartBase(username, 'personas/' + partname)
 			},
 			/**
 			 * 卸载子部件。
@@ -59,7 +59,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			unloadSubPart: async (my_paths, username, partname) => {
-				return unloadPartBase(username, 'personas/' + partname, {}, { skipParentDelegation: true })
+				return unloadPartBase(username, 'personas/' + partname)
 			}
 		}
 	}

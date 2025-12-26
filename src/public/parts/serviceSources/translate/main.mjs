@@ -108,7 +108,7 @@ export default {
 			 * @returns {Promise<any>} 加载的部件实例。
 			 */
 			loadSubPart: (my_paths, username, partname) =>
-				loadPartBase(username, 'serviceSources/translate/' + partname, { username }, { skipParentDelegation: true }),
+				loadPartBase(username, 'serviceSources/translate/' + partname, { username }),
 			/**
 			 * 卸载子部件。
 			 * @param {string[]} my_paths - 搜索路径列表。
@@ -129,8 +129,7 @@ export default {
 					 * @param {any} _ - 参数。
 					 * @returns {number} 结果。
 					 */
-					afterUnload: _ => 0,
-					skipParentDelegation: true
+					afterUnload: _ => 0
 				})
 			}
 		},

@@ -49,7 +49,7 @@ export default {
 			 * @returns {Promise<any>} 加载的部件。
 			 */
 			loadSubPart: (my_paths, username, partname) => {
-				return loadPartBase(username, 'ImportHandlers/' + partname, {}, { skipParentDelegation: true })
+				return loadPartBase(username, 'ImportHandlers/' + partname)
 			},
 			/**
 			 * 卸载子部件。
@@ -60,7 +60,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			unloadSubPart: async (my_paths, username, partname, reason) => {
-				return unloadPartBase(username, 'ImportHandlers/' + partname, reason, { skipParentDelegation: true })
+				return unloadPartBase(username, 'ImportHandlers/' + partname, reason)
 			}
 		}
 	}

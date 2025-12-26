@@ -49,7 +49,7 @@ export default {
 			 * @returns {Promise<any>} 加载的部件实例。
 			 */
 			loadSubPart: (my_paths, username, partname) => {
-				return loadPartBase(username, 'shells/' + partname, {}, { skipParentDelegation: true })
+				return loadPartBase(username, 'shells/' + partname)
 			},
 			/**
 			 * 卸载子部件。
@@ -64,7 +64,7 @@ export default {
 				// We should import unloadPartBase too.
 				// For now, let's assume I will update imports.
 				const { unloadPartBase } = await import('../../../server/parts_loader.mjs')
-				return unloadPartBase(username, 'shells/' + partname, {}, { skipParentDelegation: true })
+				return unloadPartBase(username, 'shells/' + partname)
 			}
 		}
 	}

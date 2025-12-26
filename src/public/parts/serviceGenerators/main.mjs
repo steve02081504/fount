@@ -50,15 +50,7 @@ export default {
 			 */
 			loadSubPart: (my_paths, username, partname) => {
 				// 尝试加载为搜索生成器
-				if (partname.startsWith('search/')) 
-					return loadPartBase(username, 'serviceGenerators/' + partname, {}, { skipParentDelegation: true })
-				
-				// 尝试加载为 AI 生成器
-				if (partname.startsWith('AI/')) 
-					return loadPartBase(username, 'serviceGenerators/' + partname, {}, { skipParentDelegation: true })
-				
-				// 默认加载为插件
-				return loadPartBase(username, 'plugins/' + partname, {}, { skipParentDelegation: true })
+				return loadPartBase(username, 'serviceGenerators/translate/' + partname)
 			},
 			/**
 			 * 卸载子部件。
@@ -68,16 +60,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			unloadSubPart: async (my_paths, username, partname) => {
-				// 尝试卸载为搜索生成器
-				if (partname.startsWith('search/')) 
-					return unloadPartBase(username, 'serviceGenerators/' + partname, {}, { skipParentDelegation: true })
-				
-				// 尝试卸载为 AI 生成器
-				if (partname.startsWith('AI/')) 
-					return unloadPartBase(username, 'serviceGenerators/' + partname, {}, { skipParentDelegation: true })
-				
-				// 默认卸载为插件
-				return unloadPartBase(username, 'plugins/' + partname, {}, { skipParentDelegation: true })
+				return unloadPartBase(username, 'serviceGenerators/' + partname)
 			}
 		}
 	}
