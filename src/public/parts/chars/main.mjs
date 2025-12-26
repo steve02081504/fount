@@ -82,7 +82,6 @@ export default {
 					charname: partname,
 					state: char_state,
 				}, {
-					skipParentDelegation: true,
 					/**
 					 * 加载后的回调。
 					 */
@@ -101,7 +100,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			unloadSubPart: async (my_paths, username, partname, reason) => {
-				await unloadPartBase(username, 'chars/' + partname, reason, { skipParentDelegation: true })
+				await unloadPartBase(username, 'chars/' + partname, reason)
 				saveCharData(username)
 			}
 		}
