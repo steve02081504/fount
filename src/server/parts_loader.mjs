@@ -319,17 +319,84 @@ export function isPartLoaded(username, partpath) {
 }
 
 /**
+ * 加载部件的包装函数。处理记录调用和父部件加载等细节，然后调用 loadPartBase。
  *
+ * @async
+ * @template T
+ * @template Initargs_t
+ * @param {string} username - 用户的用户名。
+ * @param {string} partpath - 部件的路径。
+ * @param {Initargs_t} Initargs - 传递给部件 Init 函数的初始化参数。
+ * @param {Object} [functions] - 用于自定义加载和初始化过程的可选函数。
+ * @param {() => string} [functions.pathGetter] - 获取部件路径的函数。
+ * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Loader] - 从路径加载部件的函数。默认为 baseMjsPartLoader 并调用 part.Load。
+ * @param {(part: T) => void} [functions.afterLoad] - 部件加载后调用的函数。
+ * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Initer] - 从路径初始化部件的函数。默认为 baseMjsPartLoader 并调用 part.Init。
+ * @param {(part: T) => void} [functions.afterInit] - 部件初始化后调用的函数。
+ * @returns {Promise<FullProxy<T>>} 一个解析为加载和初始化的部件实例的 FullProxy 的承诺。
  */
-export const loadPart = loadPartBase
+export async function loadPart(username, partpath, Initargs, functions) {
+	// 记录loadPart调用
+	if (isRecordingLoadPartCalls) loadPartCallRecords.add(`${username}:${partpath}`)
+	if (!fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')) debugger
+
+	// 支持层级化加载
+	const parentPath = path_module.dirname(partpath)
+	const partname = path_module.basename(partpath)
+	if (parentPath !== '.' && parentPath !== '/')
+		try {
+			if (fs.existsSync(GetPartPath(username, parentPath) + '/main.mjs')) {
+				const parentPart = await loadPart(username, parentPath)
+				if (parentPart?.interfaces?.parts?.loadSubPart) {
+					const pathGetter = functions?.pathGetter || (() => GetPartPath(username, partpath))
+					const my_paths = parentPart.interfaces.parts.getSubPartsInstallPaths([pathGetter()])
+					const subPart = await parentPart.interfaces.parts.loadSubPart(my_paths, username, partname)
+					if (subPart) return subPart
+				}
+			}
+		} catch (e) { /* ignore parent load error */ }
+
+	return await loadPartBase(username, partpath, Initargs, functions)
+}
+
 /**
  *
  */
 export const getPartList = getPartListBase
+
 /**
+ * 卸载部件的包装函数。处理父部件卸载等细节，然后调用 unloadPartBase。
  *
+ * @async
+ * @template T
+ * @template UnloadArgs_t
+ * @param {string} username - 用户的用户名。
+ * @param {string} partpath - 部件的路径。
+ * @param {UnloadArgs_t} unLoadargs - 传递给部件 Unload 函数的参数。
+ * @param {Object} [options] - 用于自定义卸载过程的可选函数。
+ * @param {() => string} [options.pathGetter] - 获取部件路径的函数。
+ * @param {(part: T) => Promise<void>} [options.unLoader] - 卸载部件的函数。默认为调用 part.Unload。
+ * @param {(path: string, unLoadargs: UnloadArgs_t) => Promise<void>} [options.afterUnload] - 卸载后调用的函数。
+ * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
  */
-export const unloadPart = unloadPartBase
+export async function unloadPart(username, partpath, unLoadargs, options) {
+	// 尝试委托给父部件
+	const parentPath = path_module.dirname(partpath)
+	const partname = path_module.basename(partpath)
+	if (parentPath !== '.' && parentPath !== '/')
+		try {
+			if (isPartLoaded(username, parentPath)) {
+				const parentPart = await loadPart(username, parentPath)
+				if (parentPart?.interfaces?.parts?.unloadSubPart) {
+					const pathGetter = options?.pathGetter || (() => GetPartPath(username, partpath))
+					await parentPart.interfaces.parts.unloadSubPart([pathGetter()], username, partname)
+					return
+				}
+			}
+		} catch (e) { /* ignore */ }
+
+	return await unloadPartBase(username, partpath, unLoadargs, options)
+}
 
 /**
  * 获取已加载的部件列表。
@@ -521,6 +588,7 @@ export function clearLoadPartCallRecords() {
 
 /**
  * 加载和初始化部件的基础函数。处理初始化和加载生命周期。
+ * 此函数只负责加载给定的层级，不处理记录调用或父部件加载等细节。
  * 使用模板参数来指定部件类型和初始化参数，以获得更好的类型安全。
  *
  * @async
@@ -535,7 +603,6 @@ export function clearLoadPartCallRecords() {
  * @param {(part: T) => void} [functions.afterLoad] - 部件加载后调用的函数。
  * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Initer] - 从路径初始化部件的函数。默认为 baseMjsPartLoader 并调用 part.Init。
  * @param {(part: T) => void} [functions.afterInit] - 部件初始化后调用的函数。
- * @param {boolean} [functions.skipParentDelegation=false] - 是否跳过父部件委托。
  * @returns {Promise<FullProxy<T>>} 一个解析为加载和初始化的部件实例的 FullProxy 的承诺。
  */
 export async function loadPartBase(username, partpath, Initargs, {
@@ -559,27 +626,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 		return part
 	},
 	afterInit = part => { },
-	skipParentDelegation = false,
 } = {}) {
-	// 记录loadPart调用
-	if (isRecordingLoadPartCalls) loadPartCallRecords.add(`${username}:${partpath}`)
-
-	// 支持层级化加载
-	const parentPath = path_module.dirname(partpath)
-	const partname = path_module.basename(partpath)
-	if (!skipParentDelegation && parentPath !== '.' && parentPath !== '/')
-		try {
-			if (fs.existsSync(GetPartPath(username, parentPath) + '/main.mjs')) {
-				const parentPart = await loadPart(username, parentPath)
-				if (parentPart?.interfaces?.parts?.loadSubPart) {
-					const my_paths = parentPart.interfaces.parts.getSubPartsInstallPaths([pathGetter()])
-					const subPart = await parentPart.interfaces.parts.loadSubPart(my_paths, username, partname)
-					if (subPart) return subPart
-				}
-			}
-		} catch (e) { /* ignore parent load error */ }
-
-
 	Initargs = {
 		router: getPartRouter(username, partpath),
 		...Initargs
@@ -613,8 +660,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 						 * @param {string} path - 部件路径。
 						 * @returns {Promise<any>} 加载的部件。
 						 */
-						Loader: async path => await Loader(path, Initargs),
-						skipParentDelegation: true
+						Loader: async path => await Loader(path, Initargs)
 					})
 					try {
 						await part.interfaces?.config?.SetData?.(parts_config[partpath] ?? {})
@@ -672,7 +718,8 @@ export async function initPart(username, partpath, Initargs, {
 }
 
 /**
- * 从内存中卸载一个部件，如果存在，则调用其 Unload 函数。
+ * 从内存中卸载一个部件的基础函数，如果存在，则调用其 Unload 函数。
+ * 此函数只负责卸载给定的层级，不处理父部件卸载等细节。
  *
  * @async
  * @template T
@@ -684,30 +731,13 @@ export async function initPart(username, partpath, Initargs, {
  * @param {() => string} [options.pathGetter] - 获取部件路径的函数。
  * @param {(part: T) => Promise<void>} [options.unLoader] - 卸载部件的函数。默认为调用 part.Unload。
  * @param {(path: string, unLoadargs: UnloadArgs_t) => Promise<void>} [options.afterUnload] - 卸载后调用的函数。
- * @param {boolean} [options.skipParentDelegation=false] - 是否跳过父部件委托。
  * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
  */
 export async function unloadPartBase(username, partpath, unLoadargs, {
 	pathGetter = () => GetPartPath(username, partpath),
 	unLoader = part => part.Unload?.(unLoadargs),
-	afterUnload = baseMjsPartUnloader,
-	skipParentDelegation = false,
+	afterUnload = baseMjsPartUnloader
 } = {}) {
-	// 尝试委托给父部件
-	const parentPath = path_module.dirname(partpath)
-	const partname = path_module.basename(partpath)
-	if (!skipParentDelegation && parentPath !== '.' && parentPath !== '/')
-		try {
-			if (isPartLoaded(username, parentPath)) {
-				const parentPart = await loadPart(username, parentPath)
-				if (parentPart?.interfaces?.parts?.unloadSubPart) {
-					await parentPart.interfaces.parts.unloadSubPart([pathGetter()], username, partname)
-					return
-				}
-			}
-		} catch (e) { /* ignore */ }
-
-
 	/** @type {T} */
 	const part = parts_set[username]?.[partpath]
 	if (!part) return
