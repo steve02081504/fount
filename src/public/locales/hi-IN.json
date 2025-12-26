@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "उपयोगकर्ता ${username} का ${partpath} कार्य (${uid}) पुनः आरंभ किया जा रहा है"
+			"restartingJob": "उपयोगकर्ता ${username} का ${partpath} कार्य (${uid}) पुनः आरंभ किया जा रहा है",
+			"preloadingParts": "${count} भागों को प्रीलोड करना"
 		},
 		"ipc": {
 			"serverStarted": "IPC सर्वर शुरू हो गया है",

@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "${username} 사용자에 대한 ${partpath} 작업 다시 시작: ${uid}"
+			"restartingJob": "${username} 사용자에 대한 ${partpath} 작업 다시 시작: ${uid}",
+			"preloadingParts": "${count}개 부품 사전 로드 중"
 		},
 		"ipc": {
 			"serverStarted": "IPC 서버가 시작되었습니다.",

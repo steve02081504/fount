@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "正在重啟用戶 ${username} 的 ${partpath} 任務：${uid}"
+			"restartingJob": "正在重啟用戶 ${username} 的 ${partpath} 任務：${uid}",
+			"preloadingParts": "正在預加載 ${count} 個部件"
 		},
 		"ipc": {
 			"serverStarted": "IPC 伺服器已啟動",
