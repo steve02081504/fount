@@ -997,7 +997,10 @@ elseif ($args[0] -eq 'remove') {
 
 	# Uninstall fount-pwsh
 	Write-Host (Get-I18n -key 'remove.uninstallingFountPwsh')
-	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {
+	try {
+		Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
+	}
+	catch {
 		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
 	}
 
@@ -1055,7 +1058,7 @@ elseif ($args[0] -eq 'remove') {
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {
-				Uninstall-Module -Name $_ -Scope CurrentUser -AllVersions -Force -ErrorAction Stop
+				Uninstall-Module -Name $_ -AllVersions -Force -ErrorAction Stop
 				Write-Host (Get-I18n -key 'remove.moduleRemoved' -params @{module = $_ })
 			}
 		}
