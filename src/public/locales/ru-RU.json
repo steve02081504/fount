@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Перезапуск задачи ${partpath} для пользователя ${username}: ${uid}"
+			"restartingJob": "Перезапуск задачи ${partpath} для пользователя ${username}: ${uid}",
+			"preloadingParts": "Предварительная загрузка компонентов: ${count}"
 		},
 		"ipc": {
 			"serverStarted": "IPC-сервер запущен.",

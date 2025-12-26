@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Перезапуск завдання ${partpath} для користувача ${username}: ${uid}"
+			"restartingJob": "Перезапуск завдання ${partpath} для користувача ${username}: ${uid}",
+			"preloadingParts": "Попереднє завантаження ${count} частин"
 		},
 		"ipc": {
 			"serverStarted": "IPC-сервер запущено",

@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "Fyrir notandann ${username}, endurræsir ${partpath} verkefni: ${uid}"
+			"restartingJob": "Fyrir notandann ${username}, endurræsir ${partpath} verkefni: ${uid}",
+			"preloadingParts": "Forhleður ${count} hluta"
 		},
 		"ipc": {
 			"serverStarted": "IPC netþjónn er ræstur",

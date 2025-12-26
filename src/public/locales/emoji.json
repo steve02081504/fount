@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "🔄👤 ${partpath} ➡️ 🧩${username} 🆔${uid}"
+			"restartingJob": "🔄👤 ${partpath} ➡️ 🧩${username} 🆔${uid}",
+			"preloadingParts": "🔄🧩*${count}"
 		},
 		"ipc": {
 			"serverStarted": "🖥️✅",

@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "إعادة تشغيل مهمة ${partpath} للمستخدم ${username}: ${uid}"
+			"restartingJob": "إعادة تشغيل مهمة ${partpath} للمستخدم ${username}: ${uid}",
+			"preloadingParts": "التحميل المسبق لأجزاء ${count}."
 		},
 		"ipc": {
 			"serverStarted": "بدأ خادم IPC",

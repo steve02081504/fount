@@ -22,7 +22,8 @@
 			}
 		},
 		"jobs": {
-			"restartingJob": "正為 ${username} 復啟 ${partpath} 之役：${uid}"
+			"restartingJob": "正為 ${username} 復啟 ${partpath} 之役：${uid}",
+			"preloadingParts": "正預載 ${count} 個部件"
 		},
 		"ipc": {
 			"serverStarted": "內令司已立",
