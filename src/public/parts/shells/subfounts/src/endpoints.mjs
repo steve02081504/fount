@@ -1,6 +1,4 @@
 import crypto from 'node:crypto'
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
 
 import { authenticate, getUserByReq, getAllUserNames } from '../../../../../server/auth.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
@@ -28,7 +26,7 @@ function getConnectionCodesData(username) {
  * @returns {{peerId: string, password: string}} - Connection code and password.
  */
 function generateConnectionCode(username) {
-	const peerId = crypto.randomBytes(16).toString('base64url').slice(0, 22)
+	const peerId = 'fountHost-' + crypto.randomBytes(16).toString('base64url').slice(0, 8)
 	const password = crypto.randomBytes(8).toString('base64url').slice(0, 12)
 	const codesData = getConnectionCodesData(username)
 	codesData.peerId = peerId
@@ -66,16 +64,6 @@ function getConnectionCode(username) {
  * @param {object} router - Express router instance.
  */
 export async function setEndpoints(router) {
-	// Serve the standalone subfount.mjs file
-	router.get('/virtual_files/parts/shells:subfounts/subfount.mjs', async (req, res) => {
-		const scriptPublicPath = path.join(import.meta.dirname, '..', 'public')
-		const subfountScriptPath = path.join(scriptPublicPath, 'subfount.mjs')
-
-		res.setHeader('Content-Type', 'application/javascript; charset=utf-8')
-		const content = await fs.readFile(subfountScriptPath, 'utf-8')
-		res.status(200).send(content)
-	})
-
 	// WebSocket for UI updates
 	router.ws('/ws/parts/shells:subfounts/ui', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
@@ -122,7 +110,7 @@ export async function setEndpoints(router) {
 	router.post('/api/parts/shells:subfounts/register-peer', async (req, res) => {
 		const { peerId, password: pwd } = req.body
 
-		if (!peerId || !pwd) 
+		if (!peerId || !pwd)
 			return res.status(400).json({ error: 'peerId and password are required.' })
 
 		// Find user by peerId and password
@@ -136,17 +124,17 @@ export async function setEndpoints(router) {
 			}
 		}
 
-		if (!username) 
+		if (!username)
 			return res.status(401).json({ error: 'Invalid credentials.' })
 
 		const manager = getUserManager(username, peerId)
-		
+
 		// Check if subfount already exists by remote peer ID (the subfount client's peer ID)
 		// Note: peerId here is the HOST's peer ID, not the remote subfount's peer ID
 		// The remote subfount's peer ID will be available when the PeerJS connection is established
 		// For now, we just validate credentials and return success
 		// The actual subfount registration happens in handleSubfountConnection when the connection is established
-		
+
 		res.json({ success: true, message: 'Credentials validated. Please establish PeerJS connection.' })
 	})
 
@@ -155,16 +143,16 @@ export async function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { subfountId, peerId } = req.body
 
-		if (subfountId === undefined || !peerId) 
+		if (subfountId === undefined || !peerId)
 			return res.status(400).json({ error: 'subfountId and peerId are required.' })
-		
+
 
 		const manager = getUserManager(username)
 		const subfount = manager.getSubfount(subfountId)
 
-		if (!subfount || subfount.peerId !== peerId) 
+		if (!subfount || subfount.peerId !== peerId)
 			return res.status(404).json({ error: 'Subfount not found or peerId mismatch.' })
-		
+
 
 		// The actual DataConnection is managed in browser, this just confirms the mapping
 		res.json({ success: true })
@@ -176,9 +164,9 @@ export async function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { peerId, deviceInfo } = req.body
 
-		if (!peerId || !deviceInfo) 
+		if (!peerId || !deviceInfo)
 			return res.status(400).json({ error: 'peerId and deviceInfo are required.' })
-		
+
 
 		const manager = getUserManager(username)
 		const subfount = manager.getSubfountByPeerId(peerId)
@@ -187,9 +175,9 @@ export async function setEndpoints(router) {
 			manager.updateDeviceInfo(subfount.id, deviceInfo)
 			res.json({ success: true })
 		}
-		else 
+		else
 			res.status(404).json({ error: 'Subfount not found.' })
-		
+
 	})
 
 	// Execute code on a subfount
@@ -218,7 +206,7 @@ export async function setEndpoints(router) {
 		catch {
 			// Session auth failed, try peerId + password auth
 			const { peerId, password: pwd } = req.body
-			if (peerId && pwd) 
+			if (peerId && pwd)
 				for (const user of getAllUserNames()) {
 					const codesData = getConnectionCodesData(user)
 					if (codesData.peerId === peerId && codesData.password === pwd) {
@@ -226,12 +214,11 @@ export async function setEndpoints(router) {
 						break
 					}
 				}
-			
+
 		}
 
-		if (!username) 
+		if (!username)
 			return res.status(401).json({ error: 'Authentication required. Provide valid session or peerId+password.' })
-		
 
 		const { partpath, data } = req.body
 
@@ -244,7 +231,7 @@ export async function setEndpoints(router) {
 			await part.interfaces.subfount.RemoteCallBack({ data, username, partpath })
 			res.status(200).json({ message: 'Callback processed successfully.' })
 		}
-		else 
+		else
 			res.status(500).json({ error: 'Part or RemoteCallBack interface not found.' })
 	})
 

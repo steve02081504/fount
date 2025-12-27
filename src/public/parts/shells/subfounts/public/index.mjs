@@ -2,8 +2,9 @@
  * Subfounts UI main logic - WebSocket-based updates only
  * All PeerJS connections are handled server-side to avoid ID conflicts
  */
+import { initTranslations, setLocalizeLogic } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { showToast } from '/scripts/toast.mjs'
+import { showToastI18n } from '/scripts/toast.mjs'
 
 const connectionCodeInput = document.getElementById('connection-code-input')
 const passwordInput = document.getElementById('password-input')
@@ -30,7 +31,7 @@ async function loadConnectionCode() {
 	}
 	catch (error) {
 		console.error('Error loading connection code:', error)
-		showToast('error', `Failed to load connection code: ${error.message}`)
+		showToastI18n('error', 'subfounts.errors.loadConnectionCodeFailed', { message: error.message })
 	}
 }
 
@@ -46,23 +47,12 @@ async function regenerateConnectionCode() {
 		password = data.password
 		connectionCodeInput.value = connectionCode
 		passwordInput.value = password
-		showToast('success', 'Connection code regenerated')
+		showToastI18n('success', 'subfounts.hostConnectionCode.regenerateSuccess')
 	}
 	catch (error) {
 		console.error('Error regenerating connection code:', error)
-		showToast('error', `Failed to regenerate connection code: ${error.message}`)
+		showToastI18n('error', 'subfounts.errors.regenerateConnectionCodeFailed', { message: error.message })
 	}
-}
-
-/**
- * Escapes HTML to prevent XSS attacks.
- * @param {string} text - Text to escape.
- * @returns {string} - Escaped text.
- */
-function escapeHtml(text) {
-	const div = document.createElement('div')
-	div.textContent = text
-	return div.innerHTML
 }
 
 /**
@@ -72,33 +62,75 @@ function escapeHtml(text) {
 function renderSubfounts(subfounts) {
 	subfountsList.innerHTML = ''
 	if (!subfounts?.length) {
-		subfountsList.innerHTML = '<p class="text-center text-gray-500">No subfounts connected</p>'
+		const emptyMessage = document.createElement('p')
+		emptyMessage.className = 'text-center text-gray-500'
+		emptyMessage.setAttribute('data-i18n', 'subfounts.connectedSubfounts.noSubfountsConnected')
+		subfountsList.appendChild(emptyMessage)
 		return
 	}
 
 	const table = document.createElement('table')
 	table.className = 'table table-zebra'
 	const thead = document.createElement('thead')
-	thead.innerHTML = `
-		<tr>
-			<th>ID</th>
-			<th>Peer ID</th>
-			<th>Connected At</th>
-			<th>Status</th>
-		</tr>
-	`
+	const headerRow = document.createElement('tr')
+	
+	const headerKeys = [
+		'subfounts.connectedSubfounts.table.id',
+		'subfounts.connectedSubfounts.table.peerId',
+		'subfounts.connectedSubfounts.table.connectedAt',
+		'subfounts.connectedSubfounts.table.status',
+	]
+	
+	for (const key of headerKeys) {
+		const th = document.createElement('th')
+		th.setAttribute('data-i18n', key)
+		headerRow.appendChild(th)
+	}
+	
+	thead.appendChild(headerRow)
+	
 	const tbody = document.createElement('tbody')
 	for (const subfount of subfounts) {
 		const tr = document.createElement('tr')
-		const connectedAt = subfount.connectedAt ? new Date(subfount.connectedAt).toLocaleString() : 'N/A'
-		const status = subfount.isConnected ? '<span class="badge badge-success">Connected</span>' : '<span class="badge badge-error">Disconnected</span>'
-		const peerId = subfount.peerId ? escapeHtml(subfount.peerId) : 'N/A'
-		tr.innerHTML = `
-			<td>${subfount.id}</td>
-			<td class="font-mono text-sm">${peerId}</td>
-			<td>${escapeHtml(connectedAt)}</td>
-			<td>${status}</td>
-		`
+		
+		// ID cell
+		const idCell = document.createElement('td')
+		idCell.textContent = subfount.id
+		tr.appendChild(idCell)
+		
+		// Peer ID cell
+		const peerIdCell = document.createElement('td')
+		peerIdCell.className = 'font-mono text-sm'
+		if (subfount.peerId) 
+			peerIdCell.textContent = subfount.peerId
+		
+		else 
+			peerIdCell.setAttribute('data-i18n', 'subfounts.connectedSubfounts.table.na')
+		
+		tr.appendChild(peerIdCell)
+		
+		// Connected At cell
+		const connectedAtCell = document.createElement('td')
+		if (subfount.connectedAt) 
+			setLocalizeLogic(connectedAtCell, () => {
+				connectedAtCell.textContent = new Date(subfount.connectedAt).toLocaleString()
+			})
+		
+		else 
+			connectedAtCell.setAttribute('data-i18n', 'subfounts.connectedSubfounts.table.na')
+		
+		tr.appendChild(connectedAtCell)
+		
+		// Status cell
+		const statusCell = document.createElement('td')
+		const statusBadge = document.createElement('span')
+		statusBadge.className = subfount.isConnected ? 'badge badge-success' : 'badge badge-error'
+		statusBadge.setAttribute('data-i18n', subfount.isConnected 
+			? 'subfounts.connectedSubfounts.table.connected' 
+			: 'subfounts.connectedSubfounts.table.disconnected')
+		statusCell.appendChild(statusBadge)
+		tr.appendChild(statusCell)
+		
 		tbody.appendChild(tr)
 	}
 	table.appendChild(thead)
@@ -118,7 +150,12 @@ async function loadSubfounts() {
 	}
 	catch (error) {
 		console.error('Error loading subfounts:', error)
-		subfountsList.innerHTML = `<p class="text-error">Failed to load subfounts: ${error.message}</p>`
+		subfountsList.innerHTML = ''
+		const errorMessage = document.createElement('p')
+		errorMessage.className = 'text-error'
+		errorMessage.setAttribute('data-i18n', 'subfounts.errors.loadSubfountsFailed')
+		errorMessage.dataset.message = error.message
+		subfountsList.appendChild(errorMessage)
 	}
 }
 
@@ -166,14 +203,14 @@ function connectWebSocket() {
 // Event listeners
 copyCodeButton.addEventListener('click', () => {
 	navigator.clipboard.writeText(connectionCode)
-		.then(() => showToast('success', 'Connection code copied to clipboard'))
-		.catch(e => showToast('error', e.message))
+		.then(() => showToastI18n('success', 'subfounts.hostConnectionCode.connectionCodeCopied'))
+		.catch(e => showToastI18n('error', 'subfounts.errors.generalError', { message: e.message }))
 })
 
 copyPasswordButton.addEventListener('click', () => {
 	navigator.clipboard.writeText(password)
-		.then(() => showToast('success', 'Password copied to clipboard'))
-		.catch(e => showToast('error', e.message))
+		.then(() => showToastI18n('success', 'subfounts.hostConnectionCode.passwordCopied'))
+		.catch(e => showToastI18n('error', 'subfounts.errors.generalError', { message: e.message }))
 })
 
 regenerateButton.addEventListener('click', regenerateConnectionCode)
@@ -182,6 +219,7 @@ regenerateButton.addEventListener('click', regenerateConnectionCode)
  * Main initialization function.
  */
 async function main() {
+	await initTranslations('subfounts')
 	applyTheme()
 	await loadConnectionCode()
 	await loadSubfounts()
