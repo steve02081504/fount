@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Unterquellen – Peer-to-Peer-Geräteverwaltung",
+		"pageTitle": "Unterquellen",
+		"description": "Verwalten Sie Peer-to-Peer-Brunnenverbindungen",
+		"hostConnectionCode": {
+			"title": "Host-Verbindungscode",
+			"connectionCodeLabel": "Verbindungscode (Peer-ID)",
+			"passwordLabel": "Passwort",
+			"copyButton": "Kopie",
+			"regenerateButton": "Regenerieren",
+			"infoMessage": "Teilen Sie diese Anmeldeinformationen mit Sub-Fonds-Clients, um Verbindungen herzustellen.",
+			"connectionCodeCopied": "Der Verbindungscode wurde in die Zwischenablage kopiert",
+			"passwordCopied": "Passwort in die Zwischenablage kopiert",
+			"regenerateSuccess": "Der Verbindungscode wurde neu generiert"
+		},
+		"connectedSubfounts": {
+			"title": "Verbundener Subfont",
+			"noSubfountsConnected": "Es ist kein Subfont verbunden",
+			"table": {
+				"id": "AUSWEIS",
+				"peerId": "Peer-ID",
+				"connectedAt": "Verbindungszeit",
+				"status": "Zustand",
+				"connected": "Verbunden",
+				"disconnected": "Getrennt",
+				"na": "N / A"
+			}
+		},
+		"downloadClient": {
+			"title": "Laden Sie den Sub-Font-Client herunter",
+			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
+			"downloadButton": "Laden Sie subfount.mjs herunter"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
+			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
+			"loadSubfountsFailed": "Unterordnerliste konnte nicht geladen werden: ${message}",
+			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Spracheinstellungen",
 		"pageTitle": "Spracheinstellungen",

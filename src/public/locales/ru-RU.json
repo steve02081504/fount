@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "подоснова — управление одноранговыми устройствами",
+		"pageTitle": "подфонды",
+		"description": "Управление одноранговыми фонтанными соединениями",
+		"hostConnectionCode": {
+			"title": "Код подключения к хосту",
+			"connectionCodeLabel": "Код подключения (идентификатор узла)",
+			"passwordLabel": "пароль",
+			"copyButton": "копировать",
+			"regenerateButton": "Регенерировать",
+			"infoMessage": "Поделитесь этими учетными данными с дополнительными клиентами для установления соединений.",
+			"connectionCodeCopied": "Код подключения скопирован в буфер обмена.",
+			"passwordCopied": "Пароль скопирован в буфер обмена",
+			"regenerateSuccess": "Код подключения был восстановлен."
+		},
+		"connectedSubfounts": {
+			"title": "Подключенный подфонд",
+			"noSubfountsConnected": "Ни один подфонд не подключен",
+			"table": {
+				"id": "ИДЕНТИФИКАТОР",
+				"peerId": "Идентификатор узла",
+				"connectedAt": "время соединения",
+				"status": "состояние",
+				"connected": "Подключено",
+				"disconnected": "Отключено",
+				"na": "Н/Д"
+			}
+		},
+		"downloadClient": {
+			"title": "Скачать дополнительный клиент",
+			"description": "Загрузите автономный клиентский сценарий подфонда для запуска на удаленном устройстве.",
+			"downloadButton": "Скачать subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Не удалось загрузить код подключения: ${message}.",
+			"regenerateConnectionCodeFailed": "Не удалось повторно создать код подключения: ${message}.",
+			"loadSubfountsFailed": "Не удалось загрузить список подфонров: ${message}.",
+			"generalError": "Произошла ошибка: ${message}."
+		}
+	},
 	"languageSettings": {
 		"title": "Языковые настройки",
 		"pageTitle": "Языковые настройки",

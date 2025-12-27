@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - gestión de dispositivos peer-to-peer",
+		"pageTitle": "subfuentes",
+		"description": "Administrar conexiones de fuentes de igual a igual",
+		"hostConnectionCode": {
+			"title": "Código de conexión del host",
+			"connectionCodeLabel": "Código de conexión (ID de igual)",
+			"passwordLabel": "contraseña",
+			"copyButton": "Copiar",
+			"regenerateButton": "Regenerado",
+			"infoMessage": "Comparta estas credenciales con clientes secundarios para establecer conexiones.",
+			"connectionCodeCopied": "El código de conexión se ha copiado al portapapeles.",
+			"passwordCopied": "Contraseña copiada al portapapeles",
+			"regenerateSuccess": "El código de conexión ha sido regenerado."
+		},
+		"connectedSubfounts": {
+			"title": "Subfuente conectada",
+			"noSubfountsConnected": "No hay ninguna subfuente conectada",
+			"table": {
+				"id": "IDENTIFICACIÓN",
+				"peerId": "Identificación de pares",
+				"connectedAt": "tiempo de conexión",
+				"status": "estado",
+				"connected": "Conectado",
+				"disconnected": "Desconectado",
+				"na": "N / A"
+			}
+		},
+		"downloadClient": {
+			"title": "Descargar cliente de subfuente",
+			"description": "Descargue el script del cliente subfuente independiente para ejecutarlo en el dispositivo remoto.",
+			"downloadButton": "Descargar subfuente.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",
+			"regenerateConnectionCodeFailed": "No se pudo regenerar el código de conexión: ${message}",
+			"loadSubfountsFailed": "No se pudo cargar la lista de subfuentes: ${message}",
+			"generalError": "Se produjo un error: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Configuración de idiomas",
 		"pageTitle": "Configuración de idioma",

@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "子founts - 點對點設備管理",
+		"pageTitle": "子founts",
+		"description": "管理點對點子fount連接",
+		"hostConnectionCode": {
+			"title": "主機連接碼",
+			"connectionCodeLabel": "連接碼 (Peer ID)",
+			"passwordLabel": "密碼",
+			"copyButton": "複製",
+			"regenerateButton": "重新生成",
+			"infoMessage": "與子fount客戶端共享這些憑據以建立連接。",
+			"connectionCodeCopied": "連接碼已復製到剪貼板",
+			"passwordCopied": "密碼已復製到剪貼板",
+			"regenerateSuccess": "連接碼已重新生成"
+		},
+		"connectedSubfounts": {
+			"title": "已連接的子fount",
+			"noSubfountsConnected": "未連接任何子fount",
+			"table": {
+				"id": "ID",
+				"peerId": "Peer ID",
+				"connectedAt": "連接時間",
+				"status": "狀態",
+				"connected": "已連接",
+				"disconnected": "已斷開",
+				"na": "N/A"
+			}
+		},
+		"downloadClient": {
+			"title": "下載子fount客戶端",
+			"description": "下載獨立的子fount客戶端腳本以在遠程設備上運行。",
+			"downloadButton": "下載 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "加載連接碼失敗: ${message}",
+			"regenerateConnectionCodeFailed": "重新生成連接碼失敗: ${message}",
+			"loadSubfountsFailed": "加載子fount列表失敗: ${message}",
+			"generalError": "發生錯誤: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "語言設置",
 		"pageTitle": "語言設置",

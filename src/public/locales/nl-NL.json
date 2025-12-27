@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - peer-to-peer apparaatbeheer",
+		"pageTitle": "sublettertypen",
+		"description": "Beheer peer-to-peer-fonteinverbindingen",
+		"hostConnectionCode": {
+			"title": "Hostverbindingscode",
+			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
+			"passwordLabel": "wachtwoord",
+			"copyButton": "kopiëren",
+			"regenerateButton": "Regenereer",
+			"infoMessage": "Deel deze inloggegevens met subfont-clients om verbindingen tot stand te brengen.",
+			"connectionCodeCopied": "De verbindingscode is naar het klembord gekopieerd",
+			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
+			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
+		},
+		"connectedSubfounts": {
+			"title": "Verbonden subfont",
+			"noSubfountsConnected": "Er is geen subfont aangesloten",
+			"table": {
+				"id": "Identiteitskaart",
+				"peerId": "Peer-ID",
+				"connectedAt": "verbindingstijd",
+				"status": "staat",
+				"connected": "Aangesloten",
+				"disconnected": "Verbinding verbroken",
+				"na": "N.v.t"
+			}
+		},
+		"downloadClient": {
+			"title": "Subfont-client downloaden",
+			"description": "Download het zelfstandige subfont-clientscript om op het externe apparaat uit te voeren.",
+			"downloadButton": "Download subfont.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
+			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
+			"loadSubfountsFailed": "Kan de lijst met subbronnen niet laden: ${message}",
+			"generalError": "Er is een fout opgetreden: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Taalinstellingen",
 		"pageTitle": "Taalinstellingen",

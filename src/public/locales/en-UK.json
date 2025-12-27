@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - peer-to-peer device management",
+		"pageTitle": "subfounts",
+		"description": "Manage peer-to-peer fountain connections",
+		"hostConnectionCode": {
+			"title": "Host connection code",
+			"connectionCodeLabel": "Connection code (Peer ID)",
+			"passwordLabel": "password",
+			"copyButton": "copy",
+			"regenerateButton": "Regenerate",
+			"infoMessage": "Share these credentials with sub-fount clients to establish connections.",
+			"connectionCodeCopied": "The connection code has been copied to the clipboard",
+			"passwordCopied": "Password copied to clipboard",
+			"regenerateSuccess": "The connection code has been regenerated"
+		},
+		"connectedSubfounts": {
+			"title": "Connected subfount",
+			"noSubfountsConnected": "No subfount is connected",
+			"table": {
+				"id": "ID",
+				"peerId": "Peer ID",
+				"connectedAt": "connection time",
+				"status": "state",
+				"connected": "Connected",
+				"disconnected": "Disconnected",
+				"na": "N/A"
+			}
+		},
+		"downloadClient": {
+			"title": "Download sub-fount client",
+			"description": "Download the standalone subfount client script to run on the remote device.",
+			"downloadButton": "Download subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Failed to load connection code: ${message}",
+			"regenerateConnectionCodeFailed": "Failed to regenerate connection code: ${message}",
+			"loadSubfountsFailed": "Failed to load subfount list: ${message}",
+			"generalError": "An error occurred: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Language settings",
 		"pageTitle": "Language Settings",

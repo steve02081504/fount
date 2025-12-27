@@ -1420,6 +1420,46 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "サブフォント - ピアツーピアデバイス管理",
+		"pageTitle": "サブフォント",
+		"description": "ピアツーピアのファウンテン接続を管理する",
+		"hostConnectionCode": {
+			"title": "ホスト接続コード",
+			"connectionCodeLabel": "接続コード（ピアID）",
+			"passwordLabel": "パスワード",
+			"copyButton": "コピー",
+			"regenerateButton": "再生する",
+			"infoMessage": "これらの資格情報をサブカウント クライアントと共有して、接続を確立します。",
+			"connectionCodeCopied": "接続コードがクリップボードにコピーされました",
+			"passwordCopied": "パスワードがクリップボードにコピーされました",
+			"regenerateSuccess": "接続コードが再生成されました"
+		},
+		"connectedSubfounts": {
+			"title": "接続されたサブフォント",
+			"noSubfountsConnected": "サブフォントが接続されていません",
+			"table": {
+				"id": "ID",
+				"peerId": "ピアID",
+				"connectedAt": "接続時間",
+				"status": "州",
+				"connected": "接続済み",
+				"disconnected": "切断されました",
+				"na": "該当なし"
+			}
+		},
+		"downloadClient": {
+			"title": "サブファウントクライアントをダウンロードする",
+			"description": "スタンドアロンのサブフォント クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"downloadButton": "subfount.mjsをダウンロード"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
+			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
+			"loadSubfountsFailed": "サブフォント リストの読み込みに失敗しました: ${message}",
+			"generalError": "エラーが発生しました: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "言語設定",
 		"pageTitle": "言語設定",
