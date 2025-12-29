@@ -367,7 +367,13 @@ async function loadGeneratorAddons(generatorName) {
 		generatorDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(generatorDisplayContainer, { skip_report: true }))
 		if (displayScript) {
-			const eval_result = await async_eval(displayScript, { geti18n, partName: generatorName, element: generatorDisplayContainer })
+			const partpath = 'serviceGenerators/' + currentSubtype + '/' + generatorName
+			const eval_result = await async_eval(displayScript, {
+				geti18n,
+				partpath,
+				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
+				element: generatorDisplayContainer
+			})
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
 		}

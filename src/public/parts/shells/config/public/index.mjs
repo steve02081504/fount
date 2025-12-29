@@ -65,7 +65,11 @@ async function loadPartAddons(partpath) {
 		partDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(partDisplayContainer, { skip_report: true }))
 		if (displayScript) {
-			const eval_result = await async_eval(displayScript, { geti18n, partpath, element: partDisplayContainer })
+			const eval_result = await async_eval(displayScript, {
+				geti18n, partpath,
+				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
+				element: partDisplayContainer
+			})
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
 		}
