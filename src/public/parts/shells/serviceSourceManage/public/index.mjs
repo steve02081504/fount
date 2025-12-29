@@ -254,8 +254,7 @@ function renderFileList() {
 			const isChecked = event.target.checked
 
 			try {
-				const response = await (isChecked ? setDefaultPart : unsetDefaultPart)(currentServiceSourcePath, fileName)
-				if (!response.ok) throw new Error(await response.text())
+				await (isChecked ? setDefaultPart : unsetDefaultPart)(currentServiceSourcePath, fileName)
 
 				if (isChecked) {
 					(defaultParts[currentServiceSourcePath] ||= []).push(fileName)

@@ -24,7 +24,7 @@ const RECONNECT_DELAY = 5000 // 5 seconds
  * @param {any} payload - 负载。
  */
 function sendRemoteSocketMessage(payload) {
-	if (remoteSocket && remoteSocket.readyState === WebSocket.OPEN)
+	if (remoteSocket?.readyState === WebSocket.OPEN)
 		remoteSocket.send(JSON.stringify(payload))
 }
 
@@ -32,12 +32,12 @@ function sendRemoteSocketMessage(payload) {
  * 设置远程会话处理程序。
  */
 function setupRemoteSessionHandlers() {
-	if (dataListenerDisposable) dataListenerDisposable.dispose()
+	dataListenerDisposable?.dispose()
 	dataListenerDisposable = terminal.onData(data => {
 		sendRemoteSocketMessage({ type: 'data', data })
 	})
 
-	if (resizeListenerDisposable) resizeListenerDisposable.dispose()
+	resizeListenerDisposable?.dispose()
 	resizeListenerDisposable = terminal.onResize(({ cols, rows }) => {
 		sendRemoteSocketMessage({ type: 'resize', data: { cols, rows } })
 	})
@@ -47,8 +47,8 @@ function setupRemoteSessionHandlers() {
  * 清除远程会话处理程序。
  */
 function clearRemoteSessionHandlers() {
-	if (dataListenerDisposable) dataListenerDisposable.dispose()
-	if (resizeListenerDisposable) resizeListenerDisposable.dispose()
+	dataListenerDisposable?.dispose()
+	resizeListenerDisposable?.dispose()
 	dataListenerDisposable = null
 	resizeListenerDisposable = null
 }
@@ -57,7 +57,7 @@ function clearRemoteSessionHandlers() {
  * 连接远程终端。
  */
 function connectRemoteTerminal() {
-	if (isRemoteSessionActive || (remoteSocket && remoteSocket.readyState === WebSocket.CONNECTING))
+	if (isRemoteSessionActive || (remoteSocket?.readyState === WebSocket.CONNECTING))
 		return
 
 	const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'

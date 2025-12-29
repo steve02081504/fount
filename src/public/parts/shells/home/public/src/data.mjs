@@ -43,10 +43,9 @@ export async function getpartDetails(partPath, useCache = true) {
  * @returns {Promise<string[]>} 一个解析为排序后的部件路径数组的Promise。
  */
 export async function getAllpartNames(partRoot) {
-	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(partRoot).catch(e => {
-		console.error(`Failed to get all part details for ${partRoot}`, e)
-		return { cachedDetails: {}, uncachedNames: [] } // return empty object on failure
-	})
+	const result = await getAllCachedPartDetails(partRoot)
+	const cachedDetails = result?.cachedDetails || {}
+	const uncachedNames = result?.uncachedNames || []
 
 	for (const partName in cachedDetails) {
 		const partPath = `${partRoot}/${partName}`
