@@ -1,12 +1,11 @@
 import process from 'node:process'
 
+import { where_command } from 'npm:@steve02081504/exec'
 import notifier from 'npm:node-notifier'
 
 import { __dirname } from '../server/base.mjs'
 
 import { in_docker, in_termux } from './env.mjs'
-import { exec } from './exec.mjs'
-
 
 /**
  * 发送桌面通知。
@@ -19,8 +18,8 @@ export async function notify(title, message, options = {}) {
 	if (in_docker || in_termux) return console.log(`[Notify] ${title}\n${message}`)
 	// if linux, check notify-send for notifier workability
 	if (process.platform === 'linux') try {
-		const { stdout } = await exec('which notify-send')
-		if (!stdout.trim()) return console.log(`[Notify] ${title}\n${message}`)
+		const path = await where_command('notify-send')
+		if (!path) return console.log(`[Notify] ${title}\n${message}`)
 	} catch (e) {
 		return console.log(`[Notify] ${title}\n${message}`)
 	}

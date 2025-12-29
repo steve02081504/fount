@@ -3,10 +3,10 @@ import { writeFile, mkdir, readdir, stat, readFile, rm } from 'node:fs/promises'
 import os, { tmpdir } from 'node:os'
 import path from 'node:path'
 
+import { where_command } from 'npm:@steve02081504/exec'
 import jszip from 'npm:jszip'
 import seven from 'npm:node-7z'
 
-import { exec } from '../../../../scripts/exec.mjs'
 
 let sevenZipPathCache
 /**
@@ -16,8 +16,7 @@ let sevenZipPathCache
 async function get7zPath() {
 	if (sevenZipPathCache) return sevenZipPathCache
 	try {
-		await exec('7z')
-		return sevenZipPathCache = '7z'
+		return sevenZipPathCache = await where_command('7z')
 	}
 	catch (err) {
 		const sevenBin = await import('npm:7zip-bin-full')
