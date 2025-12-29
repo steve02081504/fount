@@ -57,7 +57,7 @@ const configTemplate = {
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
 	const weightedSources = await Promise.all(config.sources.map(async item => {
-		if (typeof item.weight !== 'number' || item.weight <= 0)
+		if (Object(item.weight) instanceof Number || item.weight <= 0)
 			throw new Error(`Source item must have a positive numerical 'weight'. Invalid item: ${JSON.stringify(item.source)}`)
 		const sourceInstance = await loadTranslateSourceFromNameOrConfigData(username, item.source, unnamedSources, {
 			SaveConfig

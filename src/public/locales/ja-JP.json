@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfount - ピアツーピアデバイス管理",
+		"pageTitle": "Subfount",
+		"description": "ピアツーピアのファウンテン接続を管理する",
+		"hostConnectionCode": {
+			"title": "ホスト接続コード",
+			"connectionCodeLabel": "接続コード（ピアID）",
+			"passwordLabel": "パスワード",
+			"copyButton": "コピー",
+			"regenerateButton": "再生成",
+			"infoMessage": "これらの資格情報をSubfountクライアントと共有して、接続を確立します。",
+			"connectionCodeCopied": "接続コードがクリップボードにコピーされました",
+			"passwordCopied": "パスワードがクリップボードにコピーされました",
+			"regenerateSuccess": "接続コードが再生成されました"
+		},
+		"connectedSubfounts": {
+			"title": "接続されたSubfount",
+			"noSubfountsConnected": "Subfountが接続されていません",
+			"table": {
+				"id": "ID",
+				"peerId": "ピアID",
+				"connectedAt": "接続時間",
+				"status": "ステータス",
+				"connected": "接続済み",
+				"disconnected": "切断されました",
+				"na": "該当なし"
+			}
+		},
+		"codeExecution": {
+			"title": "コードの実行",
+			"description": "選択したSubfountで JavaScript コードを実行します",
+			"selectSubfountLabel": "Subfountの選択",
+			"selectSubfountPlaceholder": "コードを実行するSubfountを選択してください...",
+			"scriptLabel": "JavaScriptコード",
+			"executeButton": "実行",
+			"executing": "実行中...",
+			"noSubfountSelected": "最初にSubfountを選択してください",
+			"noScriptProvided": "実行するコードを入力してください",
+			"executionSuccess": "コードの実行が成功しました",
+			"executionFailed": "コードの実行に失敗しました: ${message}"
+		},
+		"downloadClient": {
+			"title": "サブファウントクライアントをダウンロードする",
+			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"downloadButton": "subfount.mjsをダウンロード"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
+			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
+			"loadSubfountsFailed": "Subfount リストの読み込みに失敗しました: ${message}",
+			"generalError": "エラーが発生しました: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "言語設定",
 		"pageTitle": "言語設定",

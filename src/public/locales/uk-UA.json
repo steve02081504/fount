@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - керування одноранговим пристроєм",
+		"pageTitle": "Subfounts",
+		"description": "Керуйте одноранговими з’єднаннями фонтанів",
+		"hostConnectionCode": {
+			"title": "Код підключення до хоста",
+			"connectionCodeLabel": "Код підключення (Peer ID)",
+			"passwordLabel": "пароль",
+			"copyButton": "копія",
+			"regenerateButton": "Регенерувати",
+			"infoMessage": "Поділіться цими обліковими даними з клієнтами субфонду для встановлення з’єднань.",
+			"connectionCodeCopied": "Код підключення скопійовано в буфер обміну",
+			"passwordCopied": "Пароль скопійовано в буфер обміну",
+			"regenerateSuccess": "Код підключення було відновлено"
+		},
+		"connectedSubfounts": {
+			"title": "Підключений підзасновок",
+			"noSubfountsConnected": "Підзасновок не підключено",
+			"table": {
+				"id": "ID",
+				"peerId": "ID однолітка",
+				"connectedAt": "час підключення",
+				"status": "стан",
+				"connected": "Підключено",
+				"disconnected": "Відключено",
+				"na": "N/A"
+			}
+		},
+		"codeExecution": {
+			"title": "виконання коду",
+			"description": "Виконати код JavaScript для вибраного Subfount",
+			"selectSubfountLabel": "Виберіть Subfount",
+			"selectSubfountPlaceholder": "Будь ласка, виберіть розширення для виконання коду на...",
+			"scriptLabel": "код JavaScript",
+			"executeButton": "реалізувати",
+			"executing": "Виконання...",
+			"noSubfountSelected": "Спочатку виберіть розширення",
+			"noScriptProvided": "Будь ласка, введіть код для виконання",
+			"executionSuccess": "Код виконано успішно",
+			"executionFailed": "Помилка виконання коду: ${message}"
+		},
+		"downloadClient": {
+			"title": "Завантажте клієнт субфонду",
+			"description": "Завантажте автономний клієнтський сценарій підоснови для запуску на віддаленому пристрої.",
+			"downloadButton": "Завантажте subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Не вдалося завантажити код підключення: ${message}",
+			"regenerateConnectionCodeFailed": "Не вдалося повторно створити код підключення: ${message}",
+			"loadSubfountsFailed": "Не вдалося завантажити список підзасновків: ${message}",
+			"generalError": "Сталася помилка: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Налаштування мови",
 		"pageTitle": "Налаштування мови",

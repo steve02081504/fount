@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts — управление одноранговыми устройствами",
+		"pageTitle": "subfounts",
+		"description": "Управление одноранговыми фонтанными соединениями",
+		"hostConnectionCode": {
+			"title": "Код подключения к хосту",
+			"connectionCodeLabel": "Код подключения (идентификатор узла)",
+			"passwordLabel": "пароль",
+			"copyButton": "копировать",
+			"regenerateButton": "Регенерировать",
+			"infoMessage": "Поделитесь этими учетными данными с дополнительными клиентами для установления соединений.",
+			"connectionCodeCopied": "Код подключения скопирован в буфер обмена.",
+			"passwordCopied": "Пароль скопирован в буфер обмена",
+			"regenerateSuccess": "Код подключения был восстановлен."
+		},
+		"connectedSubfounts": {
+			"title": "Подключенный subfount",
+			"noSubfountsConnected": "Ни один subfount не подключен",
+			"table": {
+				"id": "ИДЕНТИФИКАТОР",
+				"peerId": "Идентификатор узла",
+				"connectedAt": "время соединения",
+				"status": "состояние",
+				"connected": "Подключено",
+				"disconnected": "Отключено",
+				"na": "Н/Д"
+			}
+		},
+		"codeExecution": {
+			"title": "выполнение кода",
+			"description": "Выполнить код JavaScript для выбранного subfount",
+			"selectSubfountLabel": "Выберите subfount",
+			"selectSubfountPlaceholder": "Пожалуйста, выберите subfount для выполнения кода...",
+			"scriptLabel": "JavaScript-код",
+			"executeButton": "выполнить",
+			"executing": "Выполнение...",
+			"noSubfountSelected": "Пожалуйста, сначала выберите subfount",
+			"noScriptProvided": "Пожалуйста, введите код для выполнения",
+			"executionSuccess": "Выполнение кода успешно",
+			"executionFailed": "Не удалось выполнить код: ${message}"
+		},
+		"downloadClient": {
+			"title": "Скачать дополнительный клиент",
+			"description": "Загрузите автономный клиентский сценарий subfountа для запуска на удаленном устройстве.",
+			"downloadButton": "Скачать subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Не удалось загрузить код подключения: ${message}.",
+			"regenerateConnectionCodeFailed": "Не удалось повторно создать код подключения: ${message}.",
+			"loadSubfountsFailed": "Не удалось загрузить список подфонров: ${message}.",
+			"generalError": "Произошла ошибка: ${message}."
+		}
+	},
 	"languageSettings": {
 		"title": "Языковые настройки",
 		"pageTitle": "Языковые настройки",

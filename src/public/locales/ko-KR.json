@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - P2P 장치 관리",
+		"pageTitle": "Subfounts",
+		"description": "P2P Subfount 연결 관리",
+		"hostConnectionCode": {
+			"title": "호스트 연결 코드",
+			"connectionCodeLabel": "연결 코드(Peer ID)",
+			"passwordLabel": "비밀번호",
+			"copyButton": "복사",
+			"regenerateButton": "재생성",
+			"infoMessage": "연결을 설정하려면 이러한 자격 증명을 Subfount 클라이언트와 공유하세요.",
+			"connectionCodeCopied": "연결 코드가 클립보드에 복사되었습니다.",
+			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
+			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
+		},
+		"connectedSubfounts": {
+			"title": "연결된 서브폰트",
+			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
+			"table": {
+				"id": "ID",
+				"peerId": "피어 ID",
+				"connectedAt": "연결 시간",
+				"status": "상태",
+				"connected": "연결됨",
+				"disconnected": "연결이 끊김",
+				"na": "해당 없음"
+			}
+		},
+		"codeExecution": {
+			"title": "코드 실행",
+			"description": "선택한 Subfount에서 JavaScript 코드 실행",
+			"selectSubfountLabel": "Subfount 선택",
+			"selectSubfountPlaceholder": "코드를 실행할 Subfount을 선택하세요...",
+			"scriptLabel": "자바스크립트 코드",
+			"executeButton": "실행",
+			"executing": "실행 중...",
+			"noSubfountSelected": "먼저 Subfount을 선택하세요.",
+			"noScriptProvided": "실행할 코드를 입력해주세요",
+			"executionSuccess": "코드 실행 성공",
+			"executionFailed": "코드 실행 실패: ${message}"
+		},
+		"downloadClient": {
+			"title": "서브폰트 클라이언트 다운로드",
+			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
+			"downloadButton": "subfount.mjs 다운로드"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
+			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
+			"loadSubfountsFailed": "하위 분수 목록을 로드하지 못했습니다: ${message}",
+			"generalError": "오류가 발생했습니다: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "언어 설정",
 		"pageTitle": "언어 설정",

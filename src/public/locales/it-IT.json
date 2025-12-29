@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts: gestione dei dispositivi peer-to-peer",
+		"pageTitle": "subfounts",
+		"description": "Gestisci le connessioni di fontane peer-to-peer",
+		"hostConnectionCode": {
+			"title": "Codice di connessione all'host",
+			"connectionCodeLabel": "Codice di connessione (ID peer)",
+			"passwordLabel": "password",
+			"copyButton": "copia",
+			"regenerateButton": "Rigenerare",
+			"infoMessage": "Condividi queste credenziali con i client dei font secondari per stabilire connessioni.",
+			"connectionCodeCopied": "Il codice di connessione è stato copiato negli appunti",
+			"passwordCopied": "Password copiata negli appunti",
+			"regenerateSuccess": "Il codice di connessione è stato rigenerato"
+		},
+		"connectedSubfounts": {
+			"title": "Sottofonte collegata",
+			"noSubfountsConnected": "Nessuna fonte secondaria è collegata",
+			"table": {
+				"id": "ID",
+				"peerId": "ID del pari",
+				"connectedAt": "tempo di connessione",
+				"status": "stato",
+				"connected": "Collegato",
+				"disconnected": "Disconnesso",
+				"na": "N / A"
+			}
+		},
+		"codeExecution": {
+			"title": "esecuzione del codice",
+			"description": "Esegui il codice JavaScript sulla subfount selezionata",
+			"selectSubfountLabel": "Seleziona la subfount",
+			"selectSubfountPlaceholder": "Seleziona la subfount su cui eseguire il codice...",
+			"scriptLabel": "Codice JavaScript",
+			"executeButton": "esegui",
+			"executing": "In esecuzione...",
+			"noSubfountSelected": "Seleziona prima una subfount",
+			"noScriptProvided": "Inserisci il codice da eseguire",
+			"executionSuccess": "Esecuzione del codice riuscita",
+			"executionFailed": "Esecuzione del codice non riuscita: ${message}"
+		},
+		"downloadClient": {
+			"title": "Scarica il client dei font secondari",
+			"description": "Scarica lo script client del subfont autonomo da eseguire sul dispositivo remoto.",
+			"downloadButton": "Scarica subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Impossibile caricare il codice di connessione: ${message}",
+			"regenerateConnectionCodeFailed": "Impossibile rigenerare il codice di connessione: ${message}",
+			"loadSubfountsFailed": "Impossibile caricare l'elenco delle client subfount: ${message}",
+			"generalError": "Si è verificato un errore: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Impostazioni linguistiche",
 		"pageTitle": "Impostazioni della lingua",

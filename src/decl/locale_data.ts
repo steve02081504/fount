@@ -1409,6 +1409,59 @@ export type LocaleData = {
 			}
 		}
 	}
+	subfounts: {
+		title: string
+		pageTitle: string
+		description: string
+		hostConnectionCode: {
+			title: string
+			connectionCodeLabel: string
+			passwordLabel: string
+			copyButton: string
+			regenerateButton: string
+			infoMessage: string
+			connectionCodeCopied: string
+			passwordCopied: string
+			regenerateSuccess: string
+		}
+		connectedSubfounts: {
+			title: string
+			noSubfountsConnected: string
+			table: {
+				id: string
+				peerId: string
+				connectedAt: string
+				status: string
+				connected: string
+				disconnected: string
+				na: string
+			}
+		}
+		codeExecution: {
+			title: string
+			description: string
+			selectSubfountLabel: string
+			selectSubfountPlaceholder: string
+			scriptLabel: string
+			executeButton: string
+			executing: string
+			noSubfountSelected: string
+			noScriptProvided: string
+			executionSuccess: string
+			executionFailed: string
+		}
+		downloadClient: {
+			title: string
+			description: string
+			downloadButton: string
+		}
+		errors: {
+			loadConnectionCodeFailed: string
+			regenerateConnectionCodeFailed: string
+			loadSubfountsFailed: string
+			generalError: string
+		}
+	}
 	languageSettings: {
 		title: string
 		pageTitle: string
@@ -2378,6 +2431,11 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
 	'serviceSource_manager.buttons.setDefault.aria-label': { fileName: string | number }
 	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
+	'subfounts.codeExecution.executionFailed': { message: string | number }
+	'subfounts.errors.generalError': { message: string | number }
+	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.loadSubfountsFailed': { message: string | number }
+	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }

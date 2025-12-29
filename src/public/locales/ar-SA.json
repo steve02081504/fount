@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfount - إدارة الأجهزة من نظير إلى نظير",
+		"pageTitle": "Subfounts",
+		"description": "إدارة اتصالات نافورة نظير إلى نظير",
+		"hostConnectionCode": {
+			"title": "رمز اتصال المضيف",
+			"connectionCodeLabel": "رمز الاتصال (معرف النظير)",
+			"passwordLabel": "كلمة المرور",
+			"copyButton": "نسخ",
+			"regenerateButton": "تجديد",
+			"infoMessage": "قم بمشاركة بيانات الاعتماد هذه مع عملاء المصدر الفرعي لإنشاء اتصالات.",
+			"connectionCodeCopied": "تم نسخ رمز الاتصال إلى الحافظة",
+			"passwordCopied": "تم نسخ كلمة المرور إلى الحافظة",
+			"regenerateSuccess": "تم إعادة إنشاء رمز الاتصال"
+		},
+		"connectedSubfounts": {
+			"title": "فرعي متصل",
+			"noSubfountsConnected": "لا يوجد فرع فرعي متصل",
+			"table": {
+				"id": "بطاقة تعريف",
+				"peerId": "معرف النظير",
+				"connectedAt": "وقت الاتصال",
+				"status": "حالة",
+				"connected": "متصل",
+				"disconnected": "غير متصل",
+				"na": "لا يوجد"
+			}
+		},
+		"codeExecution": {
+			"title": "تنفيذ التعليمات البرمجية",
+			"description": "تنفيذ كود JavaScript على Subfount المحدد",
+			"selectSubfountLabel": "حدد Subfount",
+			"selectSubfountPlaceholder": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية على...",
+			"scriptLabel": "كود جافا سكريبت",
+			"executeButton": "تنفيذ",
+			"executing": "جاري التنفيذ...",
+			"noSubfountSelected": "الرجاء تحديد ملحق أولاً",
+			"noScriptProvided": "الرجاء إدخال الرمز ليتم تنفيذه",
+			"executionSuccess": "تم تنفيذ التعليمات البرمجية بنجاح",
+			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}"
+		},
+		"downloadClient": {
+			"title": "قم بتنزيل العميل الفرعي",
+			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
+			"downloadButton": "تحميل subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
+			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
+			"loadSubfountsFailed": "فشل تحميل قائمة الأنواع الفرعية: ${message}",
+			"generalError": "حدث خطأ: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "إعدادات اللغة",
 		"pageTitle": "إعدادات اللغة",

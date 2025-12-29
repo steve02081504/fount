@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfounts – Peer-to-Peer-Geräteverwaltung",
+		"pageTitle": "Subfounts",
+		"description": "Verwalten Sie Peer-to-Peer-Subfount-Verbindungen",
+		"hostConnectionCode": {
+			"title": "Host-Verbindungscode",
+			"connectionCodeLabel": "Verbindungscode (Peer-ID)",
+			"passwordLabel": "Passwort",
+			"copyButton": "Kopieren",
+			"regenerateButton": "Regenerieren",
+			"infoMessage": "Teilen Sie diese Anmeldeinformationen mit Subfount-Clients, um Verbindungen herzustellen.",
+			"connectionCodeCopied": "Der Verbindungscode wurde in die Zwischenablage kopiert",
+			"passwordCopied": "Passwort in die Zwischenablage kopiert",
+			"regenerateSuccess": "Der Verbindungscode wurde neu generiert"
+		},
+		"connectedSubfounts": {
+			"title": "Verbundener Subfount",
+			"noSubfountsConnected": "Es ist kein Subfount verbunden",
+			"table": {
+				"id": "ID",
+				"peerId": "Peer-ID",
+				"connectedAt": "Verbindungszeit",
+				"status": "Zustand",
+				"connected": "Verbunden",
+				"disconnected": "Getrennt",
+				"na": "N / A"
+			}
+		},
+		"codeExecution": {
+			"title": "Codeausführung",
+			"description": "Führen Sie JavaScript-Code für die ausgewählte Subfount aus",
+			"selectSubfountLabel": "Wählen Sie die Subfount aus",
+			"selectSubfountPlaceholder": "Bitte wählen Sie die Subfount aus, auf der der Code ausgeführt werden soll...",
+			"scriptLabel": "JavaScript-Code",
+			"executeButton": "ausführen",
+			"executing": "Ausführen...",
+			"noSubfountSelected": "Bitte wählen Sie zunächst eine Subfount aus",
+			"noScriptProvided": "Bitte geben Sie den auszuführenden Code ein",
+			"executionSuccess": "Codeausführung erfolgreich",
+			"executionFailed": "Codeausführung fehlgeschlagen: ${message}"
+		},
+		"downloadClient": {
+			"title": "Laden Sie den Subfount-Client herunter",
+			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
+			"downloadButton": "Laden Sie subfount.mjs herunter"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
+			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
+			"loadSubfountsFailed": "Subfount-Liste konnte nicht geladen werden: ${message}",
+			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Spracheinstellungen",
 		"pageTitle": "Spracheinstellungen",

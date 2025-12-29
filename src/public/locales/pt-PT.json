@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfontes - gerenciamento de dispositivos ponto a ponto",
+		"pageTitle": "subfontes",
+		"description": "Gerenciar conexões fonte ponto a ponto",
+		"hostConnectionCode": {
+			"title": "Código de conexão do host",
+			"connectionCodeLabel": "Código de conexão (ID de peer)",
+			"passwordLabel": "senha",
+			"copyButton": "Copiar",
+			"regenerateButton": "Regenerar",
+			"infoMessage": "Compartilhe essas credenciais com clientes de subfontes para estabelecer conexões.",
+			"connectionCodeCopied": "O código de conexão foi copiado para a área de transferência",
+			"passwordCopied": "Senha copiada para a área de transferência",
+			"regenerateSuccess": "O código de conexão foi regenerado"
+		},
+		"connectedSubfounts": {
+			"title": "Subfonte conectada",
+			"noSubfountsConnected": "Nenhuma subfonte está conectada",
+			"table": {
+				"id": "ID",
+				"peerId": "ID do par",
+				"connectedAt": "tempo de conexão",
+				"status": "estado",
+				"connected": "Conectado",
+				"disconnected": "Desconectado",
+				"na": "N / D"
+			}
+		},
+		"codeExecution": {
+			"title": "execução de código",
+			"description": "Execute o código JavaScript na subfount selecionada",
+			"selectSubfountLabel": "Selecione a subfount",
+			"selectSubfountPlaceholder": "Selecione a subfount para executar o código em...",
+			"scriptLabel": "Código JavaScript",
+			"executeButton": "Executar",
+			"executing": "Executando...",
+			"noSubfountSelected": "Selecione uma subfount primeiro",
+			"noScriptProvided": "Por favor insira o código a ser executado",
+			"executionSuccess": "Execução de código bem-sucedida",
+			"executionFailed": "Falha na execução do código: ${message}"
+		},
+		"downloadClient": {
+			"title": "Baixar cliente de sub-fonte",
+			"description": "Baixe o script do cliente de subfonte autônomo para execução no dispositivo remoto.",
+			"downloadButton": "Transferir subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Falha ao carregar o código de conexão: ${message}",
+			"regenerateConnectionCodeFailed": "Falha ao gerar novamente o código de conexão: ${message}",
+			"loadSubfountsFailed": "Falha ao carregar lista de subfontes: ${message}",
+			"generalError": "Ocorreu um erro: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "Configurações de idiomas",
 		"pageTitle": "Configurações de idioma",

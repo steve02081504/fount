@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "🖇️⛲ - 📱↔️📱",
+		"pageTitle": "🖇️⛲",
+		"description": "⚙️ 📱↔️📱",
+		"hostConnectionCode": {
+			"title": "🏠🔗🔢",
+			"connectionCodeLabel": "🔗🔢 (🆔)",
+			"passwordLabel": "🔑",
+			"copyButton": "📋",
+			"regenerateButton": "🔄",
+			"infoMessage": "ℹ️ 📤 🆔+🔑 ➡️ 📱",
+			"connectionCodeCopied": "🔗🔢 📋✅",
+			"passwordCopied": "🔑 📋✅",
+			"regenerateSuccess": "🔗🔢 🔄✅"
+		},
+		"connectedSubfounts": {
+			"title": "🔗✅ 🖇️⛲",
+			"noSubfountsConnected": "🚫🔗",
+			"table": {
+				"id": "ID",
+				"peerId": "👥🆔",
+				"connectedAt": "🕒🔗",
+				"status": "📊",
+				"connected": "🟢",
+				"disconnected": "🔴",
+				"na": "N/A"
+			}
+		},
+		"codeExecution": {
+			"title": "💻 ▶️",
+			"description": "▶️ JS ➡️ 📱",
+			"selectSubfountLabel": "👆 📱",
+			"selectSubfountPlaceholder": "❓ 👆 📱",
+			"scriptLabel": "JS {}",
+			"executeButton": "▶️",
+			"executing": "🏃...",
+			"noSubfountSelected": "🚫 👆 📱",
+			"noScriptProvided": "🚫 ⌨️",
+			"executionSuccess": "▶️ ✅",
+			"executionFailed": "▶️ ❌: ${message}"
+		},
+		"downloadClient": {
+			"title": "⬇️🖇️⛲🤖",
+			"description": "⬇️ .mjs ➡️ 📱",
+			"downloadButton": "⬇️ subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
+			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
+			"loadSubfountsFailed": "❌ 📋: ${message}",
+			"generalError": "💥: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "🗣️⚙️",
 		"pageTitle": "🌐🗣️⚙️",

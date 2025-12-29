@@ -1420,6 +1420,59 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfounts - 朋輩互連之器",
+		"pageTitle": "Subfounts",
+		"description": "治Subfount朋輩之源流",
+		"hostConnectionCode": {
+			"title": "東道連繫碼",
+			"connectionCodeLabel": "連繫碼 (朋輩ID)",
+			"passwordLabel": "通行語",
+			"copyButton": "謄錄",
+			"regenerateButton": "更造",
+			"infoMessage": "以此符信示於客，以建連繫。",
+			"connectionCodeCopied": "連繫碼已謄於剪貼板",
+			"passwordCopied": "通行語已謄於剪貼板",
+			"regenerateSuccess": "連繫碼已更造"
+		},
+		"connectedSubfounts": {
+			"title": "已連之Subfount",
+			"noSubfountsConnected": "未有Subfount相連",
+			"table": {
+				"id": "ID",
+				"peerId": "Peer ID",
+				"connectedAt": "連繫之時",
+				"status": "況",
+				"connected": "已連",
+				"disconnected": "已斷",
+				"na": "N/A"
+			}
+		},
+		"codeExecution": {
+			"title": "行代碼",
+			"description": "於所選Subfount行JavaScript代碼",
+			"selectSubfountLabel": "擇Subfount",
+			"selectSubfountPlaceholder": "請擇Subfount以行代碼...",
+			"scriptLabel": "JavaScript代碼",
+			"executeButton": "行",
+			"executing": "行之...",
+			"noSubfountSelected": "請先擇一Subfount",
+			"noScriptProvided": "請入代碼以行之",
+			"executionSuccess": "代碼行之有成",
+			"executionFailed": "代碼行之敗績: ${message}"
+		},
+		"downloadClient": {
+			"title": "下載Subfount客端",
+			"description": "下載獨立Subfount客端腳本，以備遠端之用。",
+			"downloadButton": "下載 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "載連繫碼敗績: ${message}",
+			"regenerateConnectionCodeFailed": "更造連繫碼敗績: ${message}",
+			"loadSubfountsFailed": "載Subfount名錄敗績: ${message}",
+			"generalError": "有誤發生: ${message}"
+		}
+	},
 	"languageSettings": {
 		"title": "雅言規度",
 		"pageTitle": "雅言規度",
