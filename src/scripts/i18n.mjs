@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import process from 'node:process'
 
+import { exec } from 'npm:@steve02081504/exec'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 
 import { __dirname } from '../server/base.mjs'
@@ -8,7 +9,6 @@ import { events } from '../server/events.mjs'
 import { loadData, loadTempData, saveData } from '../server/setting_loader.mjs'
 import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
-import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 
 /**
