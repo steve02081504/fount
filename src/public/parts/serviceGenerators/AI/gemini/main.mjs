@@ -1,9 +1,12 @@
 import { Buffer } from 'node:buffer'
 import { hash as calculateHash } from 'node:crypto'
 import fs from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
+import { where_command } from 'npm:@steve02081504/exec'
+import ffmpeg from 'npm:fluent-ffmpeg'
 import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/escape.mjs'
@@ -376,8 +379,10 @@ system:
 						} catch { }
 						let mime_type = file.mime_type?.split?.(';')?.[0]
 
+						// 尝试各种 mime_type 转换
 						if (!supportedFileTypes.includes(mime_type)) {
-							const textMimeType = 'text/' + mime_type.split('/')[1]
+							const [type, subtype] = mime_type.split('/')
+							const textMimeType = 'text/' + subtype
 							if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
 							else if ([
 								'application/json',
@@ -388,7 +393,89 @@ system:
 							else if ([
 								'audio/mpeg',
 							].includes(mime_type)) mime_type = 'audio/mp3'
+							else if (subtype.startsWith('x-') && supportedFileTypes.includes(`${type}/${subtype.slice(2)}`))
+								mime_type = `${type}/${subtype.slice(2)}`
+							else if (supportedFileTypes.includes(`${type}/x-${subtype}`))
+								mime_type = `${type}/x-${subtype}`
 						}
+
+						// 如果仍然不支持，尝试使用 ffmpeg 转换
+						if (!supportedFileTypes.includes(mime_type)) {
+							// 设置 ffmpeg 路径，在系统中找不到则使用 npm 安装的 ffmpeg
+							ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => 0) || await import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path))
+
+							const [type] = mime_type.split('/')
+							let targetMimeType = null
+							let ffmpegOptions = {}
+
+							// 根据文件类型确定目标格式和转换选项
+							if (type === 'audio') {
+								targetMimeType = 'audio/wav'
+								ffmpegOptions = { audioCodec: 'pcm_s16le', noVideo: true }
+							} else if (type === 'video') {
+								targetMimeType = 'video/mp4'
+								ffmpegOptions = { videoCodec: 'libx264', audioCodec: 'aac' }
+							} else if (type === 'image') {
+								targetMimeType = 'image/png'
+								ffmpegOptions = { videoCodec: 'png' }
+							}
+
+							if (targetMimeType && supportedFileTypes.includes(targetMimeType)) {
+								let tempDir = null
+								try {
+									// 创建临时目录
+									tempDir = fs.mkdtempSync(path.join(tmpdir(), 'fount-gemini-convert-'))
+									const inputPath = path.join(tempDir, file.name)
+									const outputPath = path.join(tempDir, `converted_${file.name.replace(/\.[^.]+$/, '')}.${mime.extension(targetMimeType) || (type === 'audio' ? 'wav' : 'mp4')}`)
+
+									// 将 buffer 写入临时文件
+									fs.writeFileSync(inputPath, bufferToUpload)
+
+									// 使用 ffmpeg 转换
+									await new Promise((resolve, reject) => {
+										let ffmpegCommand = ffmpeg(inputPath)
+										if (ffmpegOptions.noVideo)
+											ffmpegCommand = ffmpegCommand.noVideo()
+
+										if (ffmpegOptions.audioCodec)
+											ffmpegCommand = ffmpegCommand.audioCodec(ffmpegOptions.audioCodec)
+
+										if (ffmpegOptions.videoCodec)
+											ffmpegCommand = ffmpegCommand.videoCodec(ffmpegOptions.videoCodec)
+
+
+										ffmpegCommand
+											.output(outputPath)
+											.on('end', () => resolve())
+											.on('error', (err) => {
+												console.error(`FFmpeg conversion failed for ${file.name}:`, err)
+												reject(err)
+											})
+											.run()
+									})
+
+									// 读取转换后的文件
+									bufferToUpload = fs.readFileSync(outputPath)
+									mime_type = targetMimeType
+
+									// 清理临时文件
+									fs.rmSync(tempDir, { recursive: true, force: true })
+									tempDir = null
+								} catch (error) {
+									console.warn(`Failed to convert file ${file.name} from ${mime_type} to ${targetMimeType}:`, error)
+									// 清理临时文件（如果存在）
+									if (tempDir)
+										try {
+											fs.rmSync(tempDir, { recursive: true, force: true })
+										} catch (cleanupError) {
+											console.error(`Failed to cleanup temp directory ${tempDir}:`, cleanupError)
+										}
+
+									// 转换失败，继续使用原始 mime_type，后续会返回错误消息
+								}
+							}
+						}
+
 						if (!supportedFileTypes.includes(mime_type)) {
 							console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
 							return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
