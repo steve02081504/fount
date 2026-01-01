@@ -18,6 +18,7 @@ async function setActivity() {
 }
 
 let interval = null
+let loginInterval = null
 let client = null
 
 /**
@@ -41,6 +42,7 @@ export function StartRPC(
 ) {
 	if (in_docker || in_termux) return
 
+	if (loginInterval) clearInterval(loginInterval)
 	if (interval) clearInterval(interval)
 	StopRPC()
 	client = new Client({ clientId })
@@ -54,7 +56,16 @@ export function StartRPC(
 		interval = setInterval(() => { setActivity() }, 15e3)
 	})
 
-	client.login().catch(console.error)
+	loginInterval = setInterval(async () => {
+		try {
+			await client.login()
+			clearInterval(loginInterval)
+		}
+		catch (error) {
+			if (error.name == 'COULD_NOT_CONNECT') return
+			console.error(error)
+		}
+	}, 15e3)
 }
 
 /**
