@@ -1,1 +1,2 @@
-/* eslint-disable */const c=[''];' i@2:1,6,2; g:2@2:1,45,2; e@2:2@2:1,90,3; 9@3 2@2:2@2:1,360,8; g:2 2:1,45,1; 5@g,0,4'.split`;`.map(s=>{let[e,l,n]=s.split`,`,o=e.match(/.\w/g).map(c=>c[0].repeat(parseInt(c[1],36))),g=[...o,...o.reverse()],t=[...(2**g.length|2*l).toString(2).slice(2)].map(c=>'color:#0'+(+c?'ff':'00'));for(;n--;)c[0]+=g.join`%c`+'\n',c.push(...t)}),c
+s=',color:#000,color:#0ff'.repeat(280);for(v of[9**9-5,982,4624523,18696,1199,227]){for(c='',a=v/9,i=21;i--;a/=3)d=' :'[a%3^0]||'%c@%c',c=d+c+d;s=(c+`
+`).repeat(v%9)+s}s.split`,`
