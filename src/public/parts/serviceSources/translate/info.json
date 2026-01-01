@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Translate Sources",
+		"description": "Translate Sources Manager"
+	},
+	"zh-CN": {
+		"name": "翻译服务源",
+		"description": "翻译服务源管理器"
+	},
+	"ar-SA": {
+		"name": "مصادر الترجمة",
+		"description": "مدير مصادر الترجمة"
+	},
+	"de-DE": {
+		"name": "Übersetzungsquellen",
+		"description": "Manager für Übersetzungsquellen"
+	},
+	"emoji": {
+		"name": "翻译服务源",
+		"description": "翻译服务源管理器"
+	},
+	"es-ES": {
+		"name": "Fuentes de traducción",
+		"description": "Administrador de fuentes de traducción"
+	},
+	"fr-FR": {
+		"name": "Sources de traduction",
+		"description": "Gestionnaire de sources de traduction"
+	},
+	"hi-IN": {
+		"name": "अनुवाद स्रोत",
+		"description": "अनुवाद स्रोत प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Þýða heimildir",
+		"description": "Þýða heimildastjóri"
+	},
+	"it-IT": {
+		"name": "Fonti di traduzione",
+		"description": "Gestore delle fonti di traduzione"
+	},
+	"ja-JP": {
+		"name": "翻訳ソース",
+		"description": "翻訳ソースマネージャー"
+	},
+	"ko-KR": {
+		"name": "번역 소스",
+		"description": "번역 소스 관리자"
+	},
+	"lzh": {
+		"name": "翻译服务源",
+		"description": "翻译服务源管理器"
+	},
+	"nl-NL": {
+		"name": "Vertaalbronnen",
+		"description": "Beheerder van vertaalbronnen"
+	},
+	"pt-PT": {
+		"name": "Traduzir fontes",
+		"description": "Gerenciador de fontes de tradução"
+	},
+	"ru-RU": {
+		"name": "Источники перевода",
+		"description": "Менеджер источников перевода"
+	},
+	"uk-UA": {
+		"name": "Джерела перекладу",
+		"description": "Менеджер джерел перекладу"
+	},
+	"vi-VN": {
+		"name": "Nguồn dịch thuật",
+		"description": "Trình quản lý nguồn dịch thuật"
+	},
+	"zh-TW": {
+		"name": "翻譯服務源",
+		"description": "翻譯服務源管理器"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "other",
+			"info": "proxy.home_function_buttons.other",
+			"level": 100,
+			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "proxy.home_function_buttons.other.sub_items.asProxy",
+					"level": 2,
+					"url": "/parts/shells:proxy/",
+					"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-braces.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	]
+}

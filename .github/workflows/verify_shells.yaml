@@ -3,7 +3,7 @@ name: Verify Shells
 on:
   push:
     paths:
-      - 'src/public/shells/**/*.mjs'
+      - 'src/public/parts/shells/**/*.mjs'
     tags-ignore:
       - '*'
     branches:
@@ -27,7 +27,7 @@ jobs:
           key: fount-CI-node-modules
       - name: test each shell
         run: |
-          deno run --allow-scripts --allow-all --node-modules-dir=auto --v8-flags=--expose-gc ./.github/workflows/verify_shells.mjs
+          deno run --allow-scripts --allow-all --unstable-npm-lazy-caching --node-modules-dir=auto --v8-flags=--expose-gc ./.github/workflows/verify_shells.mjs
       - name: Delete Previous Cache # 删除之前的缓存确保缓存随着项目运行而更新
         continue-on-error: true
         shell: bash
