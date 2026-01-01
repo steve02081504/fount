@@ -21,6 +21,7 @@ export type LocaleData = {
 			mdns: {
 				description: string
 				failed: string
+				bonjourFailed: string
 			}
 			localUrl: string
 			update: {
@@ -29,6 +30,7 @@ export type LocaleData = {
 		}
 		jobs: {
 			restartingJob: string
+			preloadingParts: string
 		}
 		ipc: {
 			serverStarted: string
@@ -114,6 +116,8 @@ export type LocaleData = {
 		path: {
 			protocol: {
 				description: string
+				registerFailed: string
+				noUrl: string
 			}
 			update: {
 				skippingFountUpdate: string
@@ -155,9 +159,14 @@ export type LocaleData = {
 				notWorking: string
 				upgradeFailed: string
 				upgradeFailedTermux: string
+				patchMissing: string
+				patchUnsupportedArch: string
+				patchFailed: string
 			}
 			install: {
 				installingDependencies: string
+				packageFailed: string
+				browserMissing: string
 				untrustedPartsWarning: string
 				rootWarning1: string
 				rootWarning2: string
@@ -307,24 +316,6 @@ export type LocaleData = {
 	startPage: {
 		title: string
 		description: string
-		newTabFailed: {
-			title: string
-			instruction: string
-			tryAllow: string
-			buttons: {
-				retry: string
-				skip: string
-				ignore: string
-			}
-			ignoreConfirm: {
-				title: string
-				instruction: string
-				buttons: {
-					confirm: string
-					cancel: string
-				}
-			}
-		}
 	}
 	tutorial: {
 		title: string
@@ -358,6 +349,16 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			other: {
+				title: string
+				sub_items: {
+					replay: {
+						title: string
+					}
+				}
 			}
 		}
 	}
@@ -465,58 +466,149 @@ export type LocaleData = {
 		emptyList: {
 			message: string
 		}
-		part_types: {
-			chars: string
-			worlds: string
-			personas: string
-			plugins: string
-			AIsources: string
-			AIsourceGenerators: string
-			ImportHandlers: string
-			shells: string
-		}
-		default: {
-			title: string
-			subtitle: string
-			card: {
-				noTags: string
-				version: string
-				author: string
-				home_page: string
-				issue_page: string
-				refreshButton: {
-					alt: string
-					title: string
-				}
-				defaultCheckbox: {
-					title: string
+		part_pages: {
+			default: {
+				title: string
+				subtitle: string
+				card: {
+					noTags: string
+					version: string
+					author: string
+					home_page: string
+					issue_page: string
+					refreshButton: {
+						alt: string
+						title: string
+					}
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		chars: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			chars: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		worlds: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			worlds: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		personas: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			personas: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			plugins: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			ImportHandlers: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			serviceGenerators: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/AI': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/search': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/translate': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			serviceSources: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/AI': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/search': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/translate': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			shells: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
 		}
@@ -555,6 +647,16 @@ export type LocaleData = {
 			dropSuccess: string
 			dropError: string
 			noHandler: string
+		}
+		home_common_interfaces: {
+			open: {
+				title: string
+			}
+		}
+		home_drag_out_generators: {
+			generateXFountPart: {
+				description: string
+			}
 		}
 	}
 	chat: {
@@ -671,6 +773,18 @@ export type LocaleData = {
 				moreIcon: {
 					alt: string
 				}
+				delete: {
+					alt: string
+				}
+				deleteIcon: {
+					alt: string
+				}
+				downloadHtml: {
+					alt: string
+				}
+				downloadHtmlIcon: {
+					alt: string
+				}
 			}
 			dropdown: {
 				delete: string
@@ -693,7 +807,22 @@ export type LocaleData = {
 				downloadHtmlIcon: {
 					alt: string
 				}
+				share: {
+					textContent: string
+					'1h': string
+					'12h': string
+					'24h': string
+					'72h': string
+				}
+				shareIcon: {
+					alt: string
+				}
 			}
+			share: {
+				uploading: string
+				success: string
+			}
+			commonToolCalling: string
 		}
 		messageEdit: {
 			input: {
@@ -718,6 +847,12 @@ export type LocaleData = {
 				uploadIcon: {
 					alt: string
 				}
+			}
+		}
+		messageGenerating: {
+			stop: string
+			stopIcon: {
+				alt: string
 			}
 		}
 		attachment: {
@@ -779,6 +914,11 @@ export type LocaleData = {
 				description: string
 				locked_description: string
 			}
+			code_greeting: {
+				name: string
+				description: string
+				locked_description: string
+			}
 		}
 		dragAndDrop: {
 			invalidPartData: string
@@ -788,6 +928,16 @@ export type LocaleData = {
 			pluginAdded: string
 			unsupportedPartType: string
 			errorAddingPart: string
+		}
+		home_char_interfaces: {
+			main: {
+				title: string
+			}
+		}
+		home_function_buttons: {
+			viewHistory: {
+				title: string
+			}
 		}
 	}
 	chat_history: {
@@ -809,6 +959,7 @@ export type LocaleData = {
 			reverseSelect: string
 			deleteSelected: string
 			exportSelected: string
+			import: string
 		}
 		chatItemButtons: {
 			continue: string
@@ -824,6 +975,10 @@ export type LocaleData = {
 			copyError: string
 			deleteError: string
 			exportError: string
+			dragExportError: string
+			importSuccess: string
+			importError: string
+			invalidImportFile: string
 		}
 		select_checkbox: {
 			'aria-label': string
@@ -933,6 +1088,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					quickCreate: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	import: {
 		title: string
@@ -979,6 +1144,24 @@ export type LocaleData = {
 			fileDropDescription: string
 			textDropDescription: string
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					import: {
+						title: string
+					}
+				}
+			}
+		}
+		home_drag_in_handlers: {
+			handleTextDrop: {
+				description: string
+			}
+			handleFileDrop: {
+				description: string
+			}
+		}
 	}
 	export: {
 		title: string
@@ -986,12 +1169,10 @@ export type LocaleData = {
 		pageSubtitle: string
 		description: string
 		steps: {
-			partType: string
 			part: string
 			action: string
 		}
 		labels: {
-			partType: string
 			part: string
 		}
 		placeholders: {
@@ -1057,6 +1238,26 @@ export type LocaleData = {
 		dragAndDrop: {
 			downloadPartDescription: string
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					exportPart: {
+						title: string
+					}
+				}
+			}
+		}
+		home_drag_out_generators: {
+			generateDownloadUrl: {
+				description: string
+			}
+		}
+		home_common_interfaces: {
+			main: {
+				title: string
+			}
+		}
 	}
 	uninstall: {
 		title: string
@@ -1083,6 +1284,11 @@ export type LocaleData = {
 		errorMessage: {
 			icon: {
 				alt: string
+			}
+		}
+		home_common_interfaces: {
+			delete: {
+				title: string
 			}
 		}
 	}
@@ -1192,6 +1398,69 @@ export type LocaleData = {
 		}
 		apiError: string
 		generalError: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
+					}
+				}
+			}
+		}
+	}
+	subfounts: {
+		title: string
+		pageTitle: string
+		description: string
+		hostConnectionCode: {
+			title: string
+			connectionCodeLabel: string
+			passwordLabel: string
+			copyButton: string
+			regenerateButton: string
+			infoMessage: string
+			connectionCodeCopied: string
+			passwordCopied: string
+			regenerateSuccess: string
+		}
+		connectedSubfounts: {
+			title: string
+			noSubfountsConnected: string
+			table: {
+				id: string
+				peerId: string
+				connectedAt: string
+				status: string
+				connected: string
+				disconnected: string
+				na: string
+			}
+		}
+		codeExecution: {
+			title: string
+			description: string
+			selectSubfountLabel: string
+			selectSubfountPlaceholder: string
+			scriptLabel: string
+			executeButton: string
+			executing: string
+			noSubfountSelected: string
+			noScriptProvided: string
+			executionSuccess: string
+			executionFailed: string
+		}
+		downloadClient: {
+			title: string
+			description: string
+			downloadButton: string
+		}
+		errors: {
+			loadConnectionCodeFailed: string
+			regenerateConnectionCodeFailed: string
+			loadSubfountsFailed: string
+			generalError: string
+		}
 	}
 	languageSettings: {
 		title: string
@@ -1212,6 +1481,16 @@ export type LocaleData = {
 		savedMessage: string
 		resetMessage: string
 		fetchLocalesFailed: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	themeManage: {
 		title: string
@@ -1220,6 +1499,49 @@ export type LocaleData = {
 		search: {
 			placeholder: string
 			noResult: string
+		}
+		createButton: string
+		preview: {
+			editButton: {
+				title: string
+			}
+			editButtonIcon: {
+				alt: string
+			}
+			deleteButton: {
+				title: string
+			}
+			deleteButtonIcon: {
+				alt: string
+			}
+			cloneButton: {
+				title: string
+			}
+			cloneButtonIcon: {
+				alt: string
+			}
+		}
+		editor: {
+			title: string
+			cancelButton: string
+			saveApplyButton: string
+			themeName: string
+			autoPaletteTitle: string
+			autoPaletteInstruction: string
+			coreColors: string
+			baseBackground: string
+			variables: string
+			borderRadius: string
+			borderWidth: string
+			advancedCustomization: string
+			customCSS: string
+			customMjsScript: string
+			mjsSyntaxHint: string
+			themeIdRequired: string
+			newThemeName: string
+			deleteConfirm: string
+			saved: string
+			failedToSave: string
 		}
 		themes: {
 			auto: string
@@ -1266,13 +1588,22 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					switchTheme: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	part_config: {
 		title: string
 		pageTitle: string
 		description: string
 		labels: {
-			partType: string
 			part: string
 		}
 		placeholders: {
@@ -1302,8 +1633,23 @@ export type LocaleData = {
 			unsavedChanges: string
 			beforeUnload: string
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					componentConfigLink: {
+						title: string
+					}
+				}
+			}
+		}
+		home_common_interfaces: {
+			main: {
+				title: string
+			}
+		}
 	}
-	aisource_editor: {
+	serviceSource_manager: {
 		title: string
 		description: string
 		fileList: {
@@ -1313,18 +1659,26 @@ export type LocaleData = {
 			}
 		}
 		configTitle: string
+		subtypeSelect: {
+			label: string
+			placeholder: string
+		}
 		generatorSelect: {
 			label: string
 			placeholder: string
+		}
+		paths: {
+			serviceSource: string
+			generator: string
 		}
 		editor: {
 			disabledIndicator: string
 		}
 		common_config_interface: {
+			empty_generator: string
 			loadingModels: string
 			availableModels: string
 			copied: string
-			empty_generator: string
 			apiKeyRequired: string
 			copyModelIdTooltip: string
 			loadModelsFailed: string
@@ -1357,6 +1711,7 @@ export type LocaleData = {
 			deleteFileFailed: string
 			addFileFailed: string
 			setDefaultFailed: string
+			fetchBranchesFailed: string
 			noFileSelectedSave: string
 			noFileSelectedDelete: string
 			noGeneratorSelectedSave: string
@@ -1367,6 +1722,11 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			manage: {
+				title: string
 			}
 		}
 	}
@@ -1430,6 +1790,21 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
+			}
+		}
 	}
 	telegram_bots: {
 		title: string
@@ -1489,6 +1864,21 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
 			}
 		}
 	}
@@ -1566,6 +1956,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			integration_related: {
+				title: string
+				sub_items: {
+					browserIntegrationLink: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	browser_integration_script: {
 		update: {
@@ -1589,6 +1989,16 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			integration_related: {
+				title: string
+				sub_items: {
+					terminalAssist: {
+						title: string
+					}
+				}
 			}
 		}
 	}
@@ -1627,6 +2037,26 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_char_interfaces: {
+			launch: {
+				title: string
+			}
+		}
+		home_function_buttons: {
+			in_dev: {
+				title: string
+				sub_items: {
+					deskpet_related: {
+						title: string
+						sub_items: {
+							main: {
+								title: string
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	access: {
 		title: string
@@ -1644,6 +2074,11 @@ export type LocaleData = {
 		}
 		copyButton: string
 		copied: string
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
 	}
 	proxy: {
 		title: string
@@ -1668,6 +2103,16 @@ export type LocaleData = {
 		queryStringSectionTitle: string
 		queryStringWarning: string
 		copyQueryStringUrlButton: string
+		home_function_buttons: {
+			other: {
+				title: string
+				sub_items: {
+					asProxy: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	achievements: {
 		title: string
@@ -1690,6 +2135,46 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
+	}
+	debug_info: {
+		title: string
+		description: string
+		heading: string
+		copyButton: string
+		versionStatus: {
+			title: string
+			checking: string
+			local: string
+			remote: string
+			upToDate: string
+			outdated: string
+			checkFailed: string
+		}
+		systemInfo: {
+			title: string
+			failed: string
+		}
+		connectivity: {
+			backend: string
+			frontend: string
+		}
+		loading: string
+		checking: string
+		failed: string
+		copySuccess: string
+		copyFailed: string
+		home_function_buttons: {
+			debug: {
+				main: {
+					title: string
+				}
 			}
 		}
 	}
@@ -1759,6 +2244,9 @@ export type LocaleData = {
 		wasm_disabled: string
 		error: string
 		errorMessage: string
+	}
+	breadcrumb: {
+		clickToNavigate: string
 	}
 	zxcvbn: {
 		warnings: {
@@ -1848,17 +2336,8 @@ export type LocaleKey = Paths<LocaleData>
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
-	'aisource_editor.alerts.addFileFailed': { error: string | number }
-	'aisource_editor.alerts.deleteFileFailed': { error: string | number }
-	'aisource_editor.alerts.fetchDefaultsFailed': { error: string | number }
-	'aisource_editor.alerts.fetchFileDataFailed': { error: string | number }
-	'aisource_editor.alerts.fetchFileListFailed': { error: string | number }
-	'aisource_editor.alerts.fetchGeneratorListFailed': { error: string | number }
-	'aisource_editor.alerts.saveFileFailed': { error: string | number }
-	'aisource_editor.alerts.setDefaultFailed': { error: string | number }
-	'aisource_editor.buttons.setDefault.aria-label': { fileName: string | number }
-	'aisource_editor.common_config_interface.loadModelsFailed': { message: string | number }
 	'badges_maker.copy_error': { error: string | number }
+	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
 	'browser_integration.error.add_failed': { message: string | number }
 	'browser_integration.error.delete_failed': { message: string | number }
@@ -1872,6 +2351,7 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
 	'chat_history.confirmDeleteMultiChats': { count: string | number }
@@ -1889,19 +2369,23 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
 	'fountConsole.discordbot.botStarted': { botusername: string | number; charname: string | number }
-	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partname: string | number; parttype: string | number; username: string | number }
+	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
-	'fountConsole.ipc.runPartLog': { args: string | number; partname: string | number; parttype: string | number; username: string | number }
+	'fountConsole.ipc.runPartLog': { args: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.sendCommandFailed': { error: string | number }
 	'fountConsole.ipc.socketError': { error: string | number }
-	'fountConsole.jobs.restartingJob': { partname: string | number; parttype: string | number; uid: string | number; username: string | number }
+	'fountConsole.jobs.preloadingParts': { count: string | number }
+	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
-	'fountConsole.partManager.partInited': { partname: string | number; parttype: string | number }
-	'fountConsole.partManager.partLoaded': { partname: string | number; parttype: string | number }
+	'fountConsole.partManager.partInited': { partpath: string | number }
+	'fountConsole.partManager.partLoaded': { partpath: string | number }
+	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number }
+	'fountConsole.path.install.packageFailed': { package: string | number }
+	'fountConsole.path.protocol.registerFailed': { message: string | number }
 	'fountConsole.path.remove.moduleRemoved': { module: string | number }
 	'fountConsole.path.remove.removeBackgroundRunnerFailed': { message: string | number }
 	'fountConsole.path.remove.removeDenoFailed': { message: string | number }
@@ -1913,6 +2397,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.shortcut.startMenuShortcutCreated': { path: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
 	'fountConsole.server.localUrl': { url: string | number }
+	'fountConsole.server.mdns.bonjourFailed': { error: string | number }
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
@@ -1933,9 +2418,27 @@ export type LocaleKeyParams = {
 	'login_info.modal.transfer_error': { error: string | number }
 	'pow_captcha.errorMessage': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
-	'protocolhandler.runPartConfirm.message': { partname: string | number; parttype: string | number }
+	'protocolhandler.runPartConfirm.message': { partpath: string | number }
 	'protocolhandler.unknownError': { error: string | number }
+	'serviceSource_manager.alerts.addFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.deleteFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchBranchesFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchDefaultsFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchFileDataFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchFileListFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchGeneratorListFailed': { error: string | number }
+	'serviceSource_manager.alerts.saveFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
+	'serviceSource_manager.buttons.setDefault.aria-label': { fileName: string | number }
+	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
+	'subfounts.codeExecution.executionFailed': { message: string | number }
+	'subfounts.errors.generalError': { message: string | number }
+	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.loadSubfountsFailed': { message: string | number }
+	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
+	'themeManage.editor.deleteConfirm': { id: string | number }
+	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }
 	'tutorial.progressMessages.keyboardPress': { keyboardIcon: string | number }
 	'tutorial.progressMessages.mobileClick': { phoneIcon: string | number }
 	'tutorial.progressMessages.mobileTouchMove': { phoneIcon: string | number }

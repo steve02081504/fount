@@ -1,0 +1,2314 @@
+{
+	"lang": "fr-FR",
+	"name": "Français",
+	"fountConsole": {
+		"server": {
+			"start": "Démarrage du serveur",
+			"starting": "Serveur en cours de démarrage...",
+			"ready": "Serveur démarré",
+			"standingBy": "Standing by...",
+			"showUrl": {
+				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
+				"http": "Serveur HTTP en cours d'exécution sur ${url}"
+			},
+			"mdns": {
+				"description": "L'étincelle d'une Pensée, la Présence d'un Ami.",
+				"failed": "Échec de l'enregistrement mDNS : ${error}",
+				"bonjourFailed": "Échec de la création du service Bonjour : ${error}"
+			},
+			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
+			"update": {
+				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée..."
+			}
+		},
+		"jobs": {
+			"restartingJob": "Redémarrage de la tâche ${partpath} pour l'utilisateur ${username} : ${uid}",
+			"preloadingParts": "Préchargement de ${count} composants"
+		},
+		"ipc": {
+			"serverStarted": "Serveur IPC démarré.",
+			"instanceRunning": "Une autre instance est déjà en cours d'exécution.",
+			"runPartLog": "Exécutez ${partpath} en tant que ${username}, arguments : ${args}",
+			"invokePartLog": "Appelez ${partpath} en tant que ${username}, paramètre : ${invokedata}",
+			"invalidCommand": "Commande non valide. Veuillez utiliser « fount run <type de composant> <nom d'utilisateur> <nom de composant> <paramètres...> ».",
+			"invalidCommandFormat": "Format de commande invalide.",
+			"unsupportedCommand": "Type de commande non pris en charge.",
+			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
+			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
+			"socketError": "Erreur de socket : ${error}",
+			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
+			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
+			"unknownError": "Erreur inconnue."
+		},
+		"partManager": {
+			"partInited": "Le composant ${partpath} a été initialisé",
+			"partLoaded": "Le composant ${partpath} a été chargé",
+			"git": {
+				"updating": "Mise à jour depuis le dépôt distant...",
+				"upToDate": "Déjà à jour.",
+				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
+				"noUpstream": "Aucune branche de suivi configurée pour la branche '${currentBranch}', vérification des mises à jour ignorée.",
+				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez mettre de côté ('stash') ou valider ('commit') vos modifications avant de mettre à jour.",
+				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
+				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Requête reçue : ${method} ${url}",
+			"frontendFilesChanged": "Le fichier frontal [${path}] a été modifié, les clients reçoivent une notification pour recharger."
+		},
+		"route": {
+			"setLanguagePreference": "L'utilisateur ${username} a défini sa langue préférée : ${preferredLanguages}"
+		},
+		"auth": {
+			"accountLockedLog": "Compte utilisateur ${username} verrouillé suite à de multiples tentatives de connexion infructueuses.",
+			"tokenVerifyError": "Erreur de vérification du jeton : ${error}",
+			"refreshTokenError": "Erreur du jeton de rafraîchissement : ${error}",
+			"logoutRefreshTokenProcessError": "Erreur lors du traitement du jeton de rafraîchissement de déconnexion : ${error}",
+			"revokeTokenNoJTI": "Impossible de révoquer le jeton sans JTI."
+		},
+		"verification": {
+			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes)",
+			"codeNotifyTitle": "Code de Vérification",
+			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)"
+		},
+		"tray": {
+			"title": "fount",
+			"tooltip": "fount",
+			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
+			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}",
+			"items": {
+				"open": {
+					"title": "Ouvrir",
+					"tooltip": "Ouvrir fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Ouvrir le GitHub de fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Ouvrir le Discord de fount"
+				},
+				"restart": {
+					"title": "Redémarrer",
+					"tooltip": "Redémarrer l'application"
+				},
+				"exit": {
+					"title": "Quitter",
+					"tooltip": "Quitter l'application"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
+		},
+		"telegrambot": {
+			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
+		},
+		"path": {
+			"protocol": {
+				"description": "URL : protocole de fount",
+				"registerFailed": "Échec de l'enregistrement du gestionnaire de protocole fount:// : ${message}",
+				"noUrl": "Erreur : L'URL du gestionnaire de protocole n'est pas fournie."
+			},
+			"update": {
+				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée",
+				"skippingDenoUpgradeDocker": "Ignorer la mise à niveau de Deno dans l'environnement Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Raccourci sur le bureau créé à ${path}",
+				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à ${path}",
+				"protocolHandlerRegistered": "gestionnaire de protocole fount:// enregistré.",
+				"shortcutNotSupported": "Avertissement : Votre système d'exploitation (${os}) ne prend pas en charge la création de raccourcis sur le bureau.",
+				"osacompileNotFound": "Erreur : « osacompile » introuvable. Impossible de créer l'application macOS.",
+				"lsregisterFailed": "Avertissement : L'utilisation de lsregister pour enregistrer une application auprès de LaunchServices a échoué.",
+				"createDesktopAppFailed": "Erreur : échec de la création de l'application de bureau."
+			},
+			"git": {
+				"repoNotFound": "Le dépôt git de la fount est introuvable. Initialisation d'un nouveau...",
+				"fetchingAndResetting": "Récupération à partir du référentiel distant et réinitialisation vers le maître...",
+				"localChangesDetected": "Modifications locales détectées, les différences seront enregistrées avant écrasement.",
+				"backupSavedTo": "Une sauvegarde de vos modifications locales a été enregistrée dans : ${path}",
+				"updatingFromRemote": "Mise à jour à partir du référentiel distant...",
+				"alreadyUpToDate": "Déjà le dernier.",
+				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
+				"branchesDiverged": "Les succursales locales et distantes ont été bifurquées. Mise à jour forcée en cours...",
+				"notOnBranch": "Pas sur la branche, passez en 'master'...",
+				"noUpstreamBranch": "Attention : Aucune branche amont n'est configurée pour la branche '${branch}'. Réglage en amont sur « origine/maître ».",
+				"dirtyWorkingDirectory": "Attention : le répertoire de travail n'est pas propre. Veuillez stager ou commiter vos modifications avant la mise à jour.",
+				"notInstalled": "Git n'est pas installé, j'essaye de l'installer...",
+				"notInstalledSkippingPull": "Git n'est pas installé, ignorez git pull",
+				"repoNotFoundSkippingPull": "Dépôt introuvable, ignorez git pull",
+				"fetchFailed": "Échec de l'obtention de « l'origine ».",
+				"installFailedWinget": "L'installation de Winget ayant échoué, Git ne peut pas être installé. Veuillez l'installer manuellement.",
+				"installFailedManual": "Impossible d'installer Git, veuillez l'installer manuellement."
+			},
+			"deno": {
+				"missing": "Deno introuvable, installation automatique...",
+				"isRequired": "Deno introuvable, la fount ne peut pas être exécutée sans Deno",
+				"installingTermux": "Installation de Deno pour Termux...",
+				"installFailedFallback": "L'installation de Deno a échoué, tentative d'installation automatique dans le dossier de chemin de la fount...",
+				"notWorking": "Pour une raison quelconque, Deno ne fonctionne pas, vous souhaiterez peut-être rejoindre https://discord.gg/deno pour obtenir de l'aide.",
+				"upgradeFailed": "Avertissement : la mise à niveau de Deno a peut-être échoué. Veuillez vérifier les erreurs.",
+				"upgradeFailedTermux": "La commande de mise à niveau Deno a échoué, tentative de réinstallation de Deno pour Termux...",
+				"patchMissing": "Erreur : l'exécutable Deno est introuvable avant l'application du correctif. Ne peut pas être corrigé.",
+				"patchUnsupportedArch": "Erreur : Architecture de correctifs non prise en charge : ${arch}",
+				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de patchelf."
+			},
+			"install": {
+				"installingDependencies": "Installation des dépendances...",
+				"packageFailed": "Erreur : L'installation de ${package} a échoué.",
+				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
+				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",
+				"rootWarning1": "Non recommandé : exécuter fount en tant qu'utilisateur root accorde un accès complet au système à tous les composants de fount.",
+				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal."
+			},
+			"clean": {
+				"removingCaches": "Suppression du cache...",
+				"reinstallingDependencies": "Réinstallation des dépendances...",
+				"cleaningDenoCaches": "Nettoyage du cache Deno...",
+				"cleaningOldPwshModules": "Nettoyage des anciens modules pwsh..."
+			},
+			"keepalive": {
+				"initComplete": "Réinitialisation terminée. J'essaie de redémarrer la fount...",
+				"autoInitDisabled": "font a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier .noautoinit. Sortir.",
+				"restartingTooFast": "la fount a été redémarrée plusieurs fois en peu de temps. Réinitialisation forcée...",
+				"failedToStart": "Même après des tentatives de réparation automatiques, fount ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
+				"initFailed": "L'initialisation de la fount a échoué. Sortir."
+			},
+			"remove": {
+				"removingFount": "Suppression de la fount...",
+				"fountUninstallationComplete": "désinstallation des founts terminée.",
+				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
+				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
+				"removingFountFromPath": "Suppression de la fount de PATH...",
+				"removingProtocolHandler": "Suppression du gestionnaire de protocole fount://...",
+				"protocolHandlerRemoved": "Le gestionnaire de protocole fount:// a été supprimé.",
+				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole fount:// : ${message}",
+				"removingFountFromGitSafeDir": "Suppression de la fount de git safe.directory...",
+				"removingInstalledSystemPackages": "Suppression des packages système installés...",
+				"uninstallingDeno": "Désinstallation de Deno...",
+				"removeDenoFailed": "Échec de la suppression de Deno : ${message}",
+				"removingFountPwshFromProfile": "Suppression de font-pwsh du profil PowerShell...",
+				"fountPwshRemovedFromProfile": "font-pwsh a été supprimé du profil PowerShell.",
+				"pwshProfileNotFound": "Profil PowerShell introuvable, ignorer la suppression de fount-pwsh du profil.",
+				"uninstallingFountPwsh": "Désinstallation de font-pwsh...",
+				"uninstallFountPwshFailed": "Échec de la désinstallation de font-pwsh : ${message}",
+				"removingTerminalProfile": "Suppression du profil de terminal Windows...",
+				"terminalProfileRemoved": "Le répertoire du profil du terminal Windows a été supprimé.",
+				"terminalProfileNotFound": "Répertoire du profil du terminal Windows introuvable.",
+				"desktopShortcutRemoved": "Raccourci sur le bureau supprimé.",
+				"desktopShortcutNotFound": "Raccourci sur le bureau introuvable.",
+				"removingStartMenuShortcut": "Suppression des raccourcis du menu Démarrer...",
+				"startMenuShortcutRemoved": "Le raccourci du menu Démarrer a été supprimé.",
+				"startMenuShortcutNotFound": "Raccourci du menu Démarrer introuvable.",
+				"removingInstalledPwshModules": "Suppression du module pwsh installé...",
+				"moduleRemoved": "${module} a été supprimé.",
+				"removeModuleFailed": "Échec de la suppression de ${module} : ${message}",
+				"uninstallingGit": "Désinstallation de Git...",
+				"uninstallingChrome": "Désinstallation de Chrome...",
+				"uninstallingWinget": "Désinstallation de Winget...",
+				"removingBackgroundRunner": "Suppression des programmes d'arrière-plan...",
+				"removeBackgroundRunnerFailed": "Échec de la suppression du programme exécuté en arrière-plan : ${message}"
+			}
+		}
+	},
+	"installer_wait_screen": {
+		"title": "Bienvenue sur fount !",
+		"description": "Suivez la progression de l'installation et découvrez les fonctionnalités qu'elle contient. la police sera prête à être lancée dans un instant.",
+		"hero": {
+			"title": "L'étincelle d'une Pensée, la Présence d'un Ami.",
+			"description": "fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
+		},
+		"feature1": {
+			"title": "Dialogues fluides, n'importe où",
+			"description": "Commencez à discuter sur votre ordinateur et poursuivez en toute fluidité sur votre téléphone ou tablette. fount synchronise vos conversations pour que vous restiez en contact avec votre personnage où que vous alliez. Disponible sur Windows, macOS, Linux et même Android."
+		},
+		"feature2": {
+			"title": "Interface superbe et personnalisable",
+			"description": "Choisissez parmi plus de 30 thèmes magnifiques ou créez le vôtre. fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement selon vos préférences et vivez une expérience véritablement unique."
+		},
+		"feature3": {
+			"title": "Chat expressif et immersif",
+			"description": "fount exploite la puissance du HTML, permettant aux personnages de s'exprimer à travers du texte enrichi, des images et même des éléments interactifs. Participez à des discussions de groupe dynamiques et captivantes avec plusieurs personnages simultanément."
+		},
+		"feature4": {
+			"title": "Intégration illimitée de sources d'IA",
+			"description": "fount offre un choix et une flexibilité inégalés. Connectez-vous à <i>n'importe quelle</i> source d'IA – OpenAI, Claude, OpenRouter, NovelAI, etc. La logique de communication sera façonnée par la puissance du code, selon <i>vos</i> désirs."
+		},
+		"language_selector": {
+			"button": {
+				"aria-label": "Sélectionner la langue"
+			},
+			"search": {
+				"placeholder": "Rechercher une langue..."
+			}
+		},
+		"theme_selector": {
+			"title": "Choisissez votre apparence",
+			"description": "Choisissez un thème pour personnaliser votre expérience.",
+			"search": {
+				"placeholder": "Rechercher un thème..."
+			}
+		},
+		"mini_game": {
+			"title": "Jouez à un petit jeu",
+			"description1": "L'installation est trop longue ?",
+			"description2": "Voici un mini-jeu pour passer le temps."
+		},
+		"data_showcase": {
+			"title_prefix": "fount est l'expérience la plus ",
+			"title_of": " ",
+			"active_users": "Utilisateurs actifs",
+			"stars": "Étoiles GitHub",
+			"adjectives": [
+				"extensible",
+				"puissante",
+				"avant-gardiste",
+				"compatible",
+				"compacte et puissante"
+			],
+			"nouns": [
+				"personnage IA ",
+				"Agent ",
+				"Cyber-waifu ",
+				"Assistant numérique "
+			],
+			"platforms": [
+				"plateforme de base",
+				"frontal de discussion",
+				"runtime"
+			]
+		},
+		"footer": {
+			"ready_text": "Prêt à commencer votre voyage ?",
+			"wait_text": "Veuillez patienter un instant...",
+			"open_fount": "Ouvrir fount",
+			"open_or_install_fount": "Ouvrir/Installer fount",
+			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
+		},
+		"error": {
+			"title": "Échec de l'installation !",
+			"description": "Un problème semble être survenu avec le programme d'installation de fount.",
+			"connection_failed": "Échec de la connexion !",
+			"description1": "Un problème semble être survenu avec le programme d'installation de fount.",
+			"description2": "Veuillez vérifier votre terminal et réessayer.",
+			"close_page": "Fermer la page"
+		}
+	},
+	"protocolhandler": {
+		"title": "Traitement du Protocole fount",
+		"description": "Silencieusement et efficacement, cette page traduit votre intention en une transition transparente au sein de fount. Considérez cela comme la magie tranquille derrière le rideau.",
+		"processing": "Traitement du protocole en cours...",
+		"shellCommandSent": "Commande shell envoyée.",
+		"runPartConfirm": {
+			"title": "Confirmer l'exécution",
+			"message": "Êtes-vous sûr de vouloir exécuter ${partpath} ?",
+			"confirm": "confirmer",
+			"cancel": "Annuler"
+		},
+		"offline_dialog": {
+			"title": "Hôte hors ligne",
+			"message": "L'hôte fount ${hostUrl} semble être hors ligne. Voulez-vous réessayer ?",
+			"buttons": {
+				"start": "Démarrer",
+				"retry": "Essayer à nouveau"
+			}
+		},
+		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
+		"invalidProtocol": "Protocole invalide.",
+		"insufficientParams": "Paramètres insuffisants.",
+		"unknownCommand": "Commande inconnue.",
+		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
+	},
+	"startPage": {
+		"title": "fount !",
+		"description": "Bienvenue au seuil de fount. Un bref moment de préparation, avant de plonger au cœur des conversations et des histoires à venir."
+	},
+	"tutorial": {
+		"title": "Un tutoriel ?",
+		"description": "Laissez-nous vous accompagner dans le monde de la police. Ce didacticiel interactif illuminera le chemin et vous aidera à découvrir la magie tissée en son cœur. Votre aventure commence par la compréhension.",
+		"modal": {
+			"title": "Bienvenue sur fount !",
+			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
+			"buttons": {
+				"start": "Commencer le tutoriel",
+				"skip": "Passer"
+			}
+		},
+		"endScreen": {
+			"title": "Bravo ! Tutoriel terminé !",
+			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
+			"endButton": "C'est parti !"
+		},
+		"progressMessages": {
+			"mouseMove": "Veuillez localiser cet appareil curieux qu'est votre souris ${mouseIcon}. Tentez maintenant, avec votre main, de la faire glisser sur votre bureau.",
+			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
+			"mobileTouchMove": "Voici votre téléphone ${phoneIcon}. Avec un de vos doigts, touchez l'écran, puis faites-le glisser. Ne lâchez pas !",
+			"mobileClick": "Veuillez appuyer sur l'écran de votre téléphone ${phoneIcon} avec un doigt, puis retirez-le rapidement. C'est ce qu'on appelle un clic !"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Classe d'arithmétique parfaite",
+				"description": "J'ai enfin terminé le tutoriel novice.",
+				"locked_description": "Suivez un didacticiel d'introduction."
+			},
+			"skip_tutorial": {
+				"name": "j'ai sauté",
+				"description": "\"Tutoriel ? Qu'est-ce que c'est ? Est-ce que ça peut être mangé ?\"",
+				"locked_description": "Ignorez le didacticiel d'introduction une fois."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Autres",
+				"sub_items": {
+					"replay": {
+						"title": "Rejouer le tutoriel"
+					}
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "Authentification",
+		"subtitle": "Les données utilisateur sont stockées localement.",
+		"description": "Ici, vous définissez votre présence. Qu'il s'agisse de retourner dans un refuge familier ou de créer un nouvel espace pour vos histoires, c'est ici que commence votre voyage avec Font.",
+		"usernameLabel": "Nom d'utilisateur :",
+		"usernameInput": {
+			"placeholder": "Saisissez votre nom d'utilisateur"
+		},
+		"passwordLabel": "Mot de passe :",
+		"passwordInput": {
+			"placeholder": "Saisissez votre mot de passe"
+		},
+		"confirmPasswordLabel": "Confirmer le mot de passe :",
+		"confirmPasswordInput": {
+			"placeholder": "Saisissez à nouveau votre mot de passe"
+		},
+		"verificationCodeLabel": "Code de vérification :",
+		"verificationCodeInput": {
+			"placeholder": "Saisissez le code de vérification"
+		},
+		"sendCodeButton": "Envoyer le code",
+		"login": {
+			"title": "Se connecter",
+			"submitButton": "Se connecter",
+			"toggleLink": {
+				"textContent": "Pas de compte ?",
+				"link": "S'inscrire maintenant"
+			}
+		},
+		"register": {
+			"title": "S'inscrire",
+			"submitButton": "S'inscrire",
+			"toggleLink": {
+				"textContent": "Vous avez déjà un compte ?",
+				"link": "Se connecter maintenant"
+			}
+		},
+		"passwordStrength": {
+			"veryWeak": "Très faible",
+			"weak": "Faible",
+			"normal": "Normal",
+			"strong": "Fort",
+			"veryStrong": "Très fort"
+		},
+		"error": {
+			"passwordMismatch": "Les mots de passe ne correspondent pas.",
+			"loginError": "Erreur de connexion.",
+			"registrationError": "Erreur d'inscription.",
+			"verificationCodeError": "Le code de vérification est incorrect ou a expiré.",
+			"verificationCodeSent": "Code de vérification envoyé avec succès.",
+			"verificationCodeSendError": "Échec de l'envoi du code de vérification.",
+			"verificationCodeRateLimit": "Trop de demandes de code de vérification. Veuillez réessayer plus tard.",
+			"lowPasswordStrength": "Le mot de passe est trop faible.",
+			"accountAlreadyExists": "Ce compte existe déjà.",
+			"powNotSolved": "Veuillez d'abord terminer la vérification PoW",
+			"powError": "Erreur de vérification PoW"
+		}
+	},
+	"login_info": {
+		"title": "Informations de connexion",
+		"description": "Un espace sécurisé pour gérer vos identifiants de connexion Font, les clés de votre monde d'histoires inédites.",
+		"modal": {
+			"title": "Erreur de transfert de certificat",
+			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
+			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
+			"buttons": {
+				"ignore": "Ignorer et continuer",
+				"retry": "Réessayer"
+			}
+		}
+	},
+	"home": {
+		"title": "Accueil",
+		"description": "Le cœur de votre expérience de fount. Ici, gérez les habitants de votre imagination : personnages, mondes et personnages. Vos histoires commencent et partent de ce lien central.",
+		"sidebarTitle": "Détails",
+		"itemDescription": "Sélectionnez un élément pour en voir les détails.",
+		"noDescription": "Aucune description disponible.",
+		"filterInput": {
+			"placeholder": "Rechercher...",
+			"aria-label": "Widgets de recherche"
+		},
+		"sfwToggle": "Contenu sûr",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu Type de pièce"
+			},
+			"icon": {
+				"alt": "Menu Type de pièce"
+			}
+		},
+		"functionMenu": {
+			"search": {
+				"placeholder": "Rechercher..."
+			},
+			"button": {
+				"title": "Menu des fonctions"
+			},
+			"icon": {
+				"alt": "Menu des fonctions"
+			}
+		},
+		"emptyList": {
+			"message": "Vide...<br/>Peut-être pourriez-vous [créer une nouvelle partie](${newpartLink}) ou aller sur le [serveur Discord de fount](${discordLink}) pour vous amuser ?"
+		},
+		"part_pages": {
+			"default": {
+				"title": "Sélection des composants",
+				"subtitle": "Ramassez une feuille et commencez votre voyage.",
+				"card": {
+					"noTags": "pas d'étiquette",
+					"version": "Version",
+					"author": "auteur",
+					"home_page": "Page d'accueil",
+					"issue_page": "Signaler un problème",
+					"refreshButton": {
+						"alt": "Rafraîchir",
+						"title": "Rafraîchir"
+					},
+					"defaultCheckbox": {
+						"title": "Définir par défaut"
+					}
+				}
+			},
+			"chars": {
+				"title": "Sélection des personnages",
+				"subtitle": "Rencontrez une âme et démarrez une conversation.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme rôle par défaut"
+					}
+				}
+			},
+			"worlds": {
+				"title": "choix mondial",
+				"subtitle": "Entrez dans un monde et plongez-vous dans d'innombrables possibilités.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme monde par défaut"
+					}
+				}
+			},
+			"personas": {
+				"title": "Sélection des personnages",
+				"subtitle": "Changez votre identité et vivez une autre vie.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme personnage par défaut"
+					}
+				}
+			},
+			"plugins": {
+				"title": "Sélection de plug-ins",
+				"subtitle": "Ajoutez une nouvelle aile et élargissez vos possibilités.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme plugin par défaut"
+					}
+				}
+			},
+			"ImportHandlers": {
+				"title": "Processeur d'importation",
+				"subtitle": "La mer est ouverte à tous les fleuves et inclusive.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme processeur d'importation par défaut"
+					}
+				}
+			},
+			"serviceGenerators": {
+				"title": "Générateur de services",
+				"subtitle": "Transformez l’invisible en quelque chose de tangible, faites du possible une réalité.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme générateur de services par défaut"
+					}
+				}
+			},
+			"serviceGenerators/AI": {
+				"title": "Générateur de services IA",
+				"subtitle": "Tissez des fils de sagesse et reliez des ponts de pensée.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme générateur de services IA par défaut"
+					}
+				}
+			},
+			"serviceGenerators/search": {
+				"title": "Générateur de services de recherche",
+				"subtitle": "Dans l’océan de l’information, allumez la lumière pour vous.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme générateur de recherche par défaut"
+					}
+				}
+			},
+			"serviceGenerators/translate": {
+				"title": "Générateur de services de traduction",
+				"subtitle": "Traversez les frontières linguistiques et laissez les idées circuler librement.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme générateur de service de traduction par défaut"
+					}
+				}
+			},
+			"serviceSources": {
+				"title": "Source du service",
+				"subtitle": "En rassemblant les ruissellements, ils deviennent de vastes rivières.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme source de service par défaut"
+					}
+				}
+			},
+			"serviceSources/AI": {
+				"title": "Source de service IA",
+				"subtitle": "Source de sagesse et point de départ de la pensée.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme source de service IA par défaut"
+					}
+				}
+			},
+			"serviceSources/search": {
+				"title": "Rechercher une source de service",
+				"subtitle": "Un trésor de connaissances et un point de départ pour l'exploration.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme source de recherche par défaut"
+					}
+				}
+			},
+			"serviceSources/translate": {
+				"title": "Source du service de traduction",
+				"subtitle": "Le pont du langage et le lien de la communication.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme source de service de traduction par défaut"
+					}
+				}
+			},
+			"shells": {
+				"title": "Sélection d'interface interactive",
+				"subtitle": "Choisissez une fenêtre et découvrez un nouveau monde.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "Définir comme shell par défaut"
+					}
+				}
+			}
+		},
+		"escapeConfirm": "Êtes-vous sûr de vouloir quitter fount ?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Échec de la récupération des informations du registre d'accueil."
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Bonjour, fount !",
+				"description": "En route vers le nouveau monde, en vous connectant pour la première fois !",
+				"locked_description": "Connectez-vous une fois à fount."
+			},
+			"sfw_mode_on": {
+				"name": "Le patron arrive !",
+				"description": "Passez vite en mode tous âges, je suis un petit enfant tellement intelligent.",
+				"locked_description": "Activez le mode contenu sécurisé une fois."
+			},
+			"sfw_mode_off": {
+				"name": "porte vers un nouveau monde",
+				"description": "\"Monsieur, les temps ont changé.\"",
+				"locked_description": "Désactivez le mode de contenu sécurisé une fois."
+			},
+			"open_function_list": {
+				"name": "Laissez-moi voir !",
+				"description": "\"Qu'y a-t-il de bonnes choses ?\"",
+				"locked_description": "Ouvrez la liste des fonctions une fois."
+			},
+			"set_default_persona": {
+				"name": "Je te choisis !",
+				"description": "Définissez une identité pour vos actions dans ce monde.",
+				"locked_description": "Définissez un profil par défaut."
+			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Glisser-déposer réussi !",
+			"dropError": "Erreur lors du traitement par glisser-déposer : ${error}",
+			"noHandler": "Aucun gestionnaire de glisser-déposer approprié n'a été trouvé."
+		},
+		"home_common_interfaces": {
+			"open": {
+				"title": "Accès"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Générer des informations sur les composants de police"
+			}
+		}
+	},
+	"chat": {
+		"title": "Chat",
+		"description": "Où les mots prennent leur envol et les histoires se déroulent. Interagissez avec vos compagnons IA, façonnez le récit et perdez-vous dans le flux et le reflux du dialogue numérique. Le cœur de Font bat ici.",
+		"new": {
+			"title": "Nouveau chat",
+			"description": "L'anticipation tranquille d'une histoire encore non écrite. Une nouvelle conversation commence, une table rase pour de nouvelles interactions et des récits qui se déroulent avec les compagnons que vous avez choisis."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} écrit...",
+			"multipleMembers": "Plusieurs membres écrivent..."
+		},
+		"sidebar": {
+			"noSelection": "Rien de sélectionné",
+			"noDescription": "Aucune description disponible",
+			"world": {
+				"icon": {
+					"alt": "Icône Monde"
+				},
+				"title": "Monde"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Icône Persona Utilisateur"
+				},
+				"title": "Persona Utilisateur"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Icône Liste des personnages"
+				},
+				"title": "Liste des personnages",
+				"buttons": {
+					"addChar": {
+						"title": "Ajouter un personnage"
+					},
+					"addCharIcon": {
+						"alt": "Icône Ajouter un personnage"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icône de la liste des plugins"
+				},
+				"title": "Liste des plugins",
+				"buttons": {
+					"addPlugin": {
+						"title": "Ajouter un plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Icône d'ajout de plugin"
+					}
+				}
+			}
+		},
+		"rightSidebar": {
+			"title": "Détails"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"input": {
+				"placeholder": "Saisissez un message...\nCtrl+Entrée pour envoyer"
+			},
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Icône Menu"
+			},
+			"sendButton": {
+				"title": "Envoyer"
+			},
+			"sendButtonIcon": {
+				"alt": "Icône Envoyer"
+			},
+			"uploadButton": {
+				"title": "Importer"
+			},
+			"uploadButtonIcon": {
+				"alt": "Icône Importer"
+			},
+			"voiceButton": {
+				"title": "Message vocal"
+			},
+			"voiceButtonIcon": {
+				"alt": "Icône Message vocal"
+			},
+			"photoButton": {
+				"title": "Photo"
+			},
+			"photoButtonIcon": {
+				"alt": "Icône Photo"
+			}
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Supprimer ce message ?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Échec de l'accès au microphone"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Modifier"
+				},
+				"editIcon": {
+					"alt": "Icône Modifier"
+				},
+				"more": {
+					"title": "Plus"
+				},
+				"moreIcon": {
+					"alt": "Icône Plus"
+				},
+				"delete": {
+					"alt": "Supprimer"
+				},
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				},
+				"downloadHtml": {
+					"alt": "Télécharger en HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Icône de téléchargement HTML"
+				}
+			},
+			"dropdown": {
+				"delete": "Supprimer",
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				},
+				"copyMarkdown": "Copier au format Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Icône Copier au format Markdown"
+				},
+				"copyText": "Copier en texte brut",
+				"copyTextIcon": {
+					"alt": "Icône Copier le texte brut"
+				},
+				"copyHtml": "Copier au format HTML",
+				"copyHtmlIcon": {
+					"alt": "Icône Copier au format HTML"
+				},
+				"downloadHtml": "Télécharger en HTML",
+				"downloadHtmlIcon": {
+					"alt": "Icône de téléchargement HTML"
+				},
+				"share": {
+					"textContent": "Partager",
+					"1h": "1 heure",
+					"12h": "12 heures",
+					"24h": "24 heures",
+					"72h": "72 heures"
+				},
+				"shareIcon": {
+					"alt": "icône de partage"
+				}
+			},
+			"share": {
+				"uploading": "Création du lien...",
+				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
+			},
+			"commonToolCalling": "Appel de l'outil"
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Saisir le contenu..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Confirmer"
+				},
+				"confirmIcon": {
+					"alt": "Icône Confirmer"
+				},
+				"cancel": {
+					"title": "Annuler"
+				},
+				"cancelIcon": {
+					"alt": "Icône Annuler"
+				},
+				"upload": {
+					"title": "Importer"
+				},
+				"uploadIcon": {
+					"alt": "Icône Importer"
+				}
+			}
+		},
+		"messageGenerating": {
+			"stop": "Arrêter",
+			"stopIcon": {
+				"alt": "icône d'arrêt"
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Télécharger"
+				},
+				"downloadIcon": {
+					"alt": "Icône Télécharger"
+				},
+				"delete": {
+					"title": "Supprimer"
+				},
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Fréquence",
+			"buttons": {
+				"removeChar": {
+					"title": "Retirer du chat"
+				},
+				"removeCharIcon": {
+					"alt": "Icône Retirer le personnage"
+				},
+				"forceReply": {
+					"title": "Forcer la réponse"
+				},
+				"forceReplyIcon": {
+					"alt": "Icône Forcer la réponse"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Supprimer le plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Icône de suppression de plugin"
+				}
+			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "bonjour étranger",
+				"description": "Le premier message est envoyé et l'histoire commence.",
+				"locked_description": "Envoyez votre premier message avec n'importe quel personnage."
+			},
+			"multiplayer_chat": {
+				"name": "Saison des weißen Albums",
+				"description": "\"Pourquoi est-ce devenu comme ça...\"",
+				"locked_description": "Demandez à deux personnages ou plus de parler dans le même chat."
+			},
+			"photo_chat": {
+				"name": "Il y a des photos et la vérité",
+				"description": "Utilisez des images pour briser le mur dimensionnel.",
+				"locked_description": "Envoyez une photo dans le chat."
+			},
+			"code_greeting": {
+				"name": "Dites bonjour avec du code",
+				"description": "« Bonjour, fount ! »",
+				"locked_description": "Exécutez un bloc de code qui affiche 'hello fount!'."
+			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Données de pièce invalides.",
+			"charAdded": "Le rôle ${partName} a été ajouté au chat.",
+			"personaSet": "La persona ${partName} a été définie comme persona actuelle.",
+			"worldSet": "World ${partName} est défini sur le monde actuel.",
+			"pluginAdded": "Le plugin ${partName} a été ajouté au chat.",
+			"unsupportedPartType": "Type de pièce non pris en charge : ${partType}.",
+			"errorAddingPart": "Erreur lors de l'ajout de la pièce ${partName} : ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Voir l'historique"
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Historique des chats",
+		"pageTitle": "Historique des chats",
+		"description": "Voyagez à travers les dialogues passés. Ici, les souvenirs des conversations persistent : triez, filtrez et revisitez les histoires que vous avez tissées avec vos compagnons IA. Une bibliothèque tranquille d’échos numériques.",
+		"filterInput": {
+			"placeholder": "Rechercher..."
+		},
+		"sortOptions": {
+			"time_desc": "Date décroissante",
+			"time_asc": "Date croissante"
+		},
+		"sortBy": {
+			"aria-label": "Trier par"
+		},
+		"selectAll": "Tout sélectionner",
+		"buttons": {
+			"reverseSelect": "Inverser la sélection",
+			"deleteSelected": "Supprimer la sélection",
+			"exportSelected": "Exporter la sélection",
+			"import": "Importer"
+		},
+		"chatItemButtons": {
+			"continue": "Continuer",
+			"copy": "Copier",
+			"export": "Exporter",
+			"delete": "Supprimer"
+		},
+		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
+		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer",
+			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter",
+			"copyError": "Échec de la copie",
+			"deleteError": "Échec de la suppression",
+			"exportError": "Échec de l'exportation",
+			"dragExportError": "Erreur lors de l'exportation par glisser-déposer",
+			"importSuccess": "Importation réussie",
+			"importError": "Échec de l'importation",
+			"invalidImportFile": "Fichier d'importation invalide"
+		},
+		"select_checkbox": {
+			"aria-label": "Sélectionnez discuter avec ${chars}"
+		}
+	},
+	"easynew": {
+		"title": "Création rapide",
+		"description": "Créez rapidement de nouvelles parties de polices telles que des personnages, des mondes et des plugins à l'aide de modèles prédéfinis ou personnalisés. Votre prochaine création n'est qu'à quelques clics.",
+		"info": {
+			"description": "Ces modèles ne peuvent être utilisés que pour créer rapidement des composants simples ; les composants complexes doivent toujours être créés manuellement."
+		},
+		"cardTitle": "Créer un nouveau composant à partir d'un modèle",
+		"templateSelect": {
+			"label": "Sélectionnez un modèle"
+		},
+		"alerts": {
+			"success": "Le composant '${partName}' a été créé avec succès !",
+			"error": "Erreur : ${message}"
+		},
+		"form": {
+			"partName": {
+				"label": "Nom du composant",
+				"placeholder": "Donnez un nom à votre nouveau composant"
+			},
+			"description": {
+				"label": "Description",
+				"placeholder": "Décrivez brièvement en quoi consiste ce composant."
+			},
+			"descriptionMarkdown": {
+				"label": "Description (Markdown)",
+				"placeholder": "Prend en charge Markdown pour une mise en forme plus détaillée."
+			},
+			"imageUpload": {
+				"label": "Image d'avatar"
+			},
+			"charDef": {
+				"heading": "Définition du personnage"
+			},
+			"personality": {
+				"label": "Personnalité",
+				"placeholder": "Décrivez les principaux traits de personnalité du personnage."
+			},
+			"scenario": {
+				"label": "Scénario",
+				"placeholder": "L'arrière-plan ou le cadre du personnage."
+			},
+			"mesExample": {
+				"label": "Exemple de message",
+				"placeholder": "Exemples de ce qu'un personnage pourrait dire."
+			},
+			"firstMessage": {
+				"label": "Premier message",
+				"placeholder": "Le premier message que le personnage dit."
+			},
+			"personaDef": {
+				"heading": "Définition de la persona"
+			},
+			"personaUserName": {
+				"label": "Votre nom dans le chat",
+				"placeholder": "Par exemple : Capitaine, Explorateur"
+			},
+			"personaAppearance": {
+				"label": "Apparence",
+				"placeholder": "Décrivez votre apparence."
+			},
+			"personaPersonality": {
+				"label": "Personnalité",
+				"placeholder": "Décrivez vos traits de personnalité."
+			},
+			"worldDef": {
+				"heading": "Définition du monde"
+			},
+			"worldPrompt": {
+				"label": "Instructions du monde",
+				"placeholder": "Décrit les règles du monde, l'environnement et tout contexte global pour le jeu de rôle."
+			},
+			"worldGreeting": {
+				"label": "Message d'accueil du monde",
+				"placeholder": "Le premier message que le monde envoie aux utilisateurs."
+			},
+			"author": {
+				"label": "Auteur",
+				"placeholder": "Qui est l'auteur de ce composant ?"
+			},
+			"version": {
+				"label": "Version",
+				"placeholder": "Par exemple : 0.0.1"
+			},
+			"tags": {
+				"label": "Étiquettes",
+				"placeholder": "Étiquettes séparées par des virgules"
+			},
+			"homePage": {
+				"label": "Page d'accueil",
+				"placeholder": "L'URL de la page d'accueil du composant"
+			},
+			"issuePage": {
+				"label": "Page des problèmes",
+				"placeholder": "URL de la page des problèmes du composant"
+			},
+			"createButton": "Créer le composant"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "L'atelier d'alchimie est ouvert",
+				"description": "Partez de zéro et créez votre premier composant.",
+				"locked_description": "Créez une pièce à l'aide de la fonctionnalité Quick New."
+			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Composants",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Création rapide"
+					}
+				}
+			}
+		}
+	},
+	"import": {
+		"title": "Importer",
+		"description": "Apportez vos personnages, mondes et configurations préférés dans les bras de Font. Qu'il s'agisse d'un fichier ou d'un texte collé, c'est ici que de nouveaux éléments sont intégrés à votre tapisserie personnelle.",
+		"tabs": {
+			"fileImport": "Importer un fichier",
+			"textImport": "Importer du texte"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Icône d'importation"
+			},
+			"textContent": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers."
+		},
+		"textArea": {
+			"placeholder": "Saisissez le texte à importer..."
+		},
+		"buttons": {
+			"import": "Importer"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Supprimer"
+			},
+			"removeButtonIcon": {
+				"alt": "Supprimer"
+			}
+		},
+		"alerts": {
+			"importSuccess": "Importation réussie",
+			"importFailed": "Échec de l'importation : ${error}",
+			"unknownError": "Erreur inconnue"
+		},
+		"errors": {
+			"noFileSelected": "Veuillez sélectionner un fichier.",
+			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
+			"noTextContent": "Veuillez saisir du contenu texte.",
+			"textImportFailed": "Échec de l'importation du texte : ${message}",
+			"handler": "Gestionnaire",
+			"error": "Erreur",
+			"unknownError": "Erreur inconnue"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Installer des composants à partir de fichiers",
+			"textDropDescription": "Installer des pièces à partir du texte"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Composants",
+				"sub_items": {
+					"import": {
+						"title": "Importer"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Installer des pièces à partir du texte"
+			},
+			"handleFileDrop": {
+				"description": "Installer des composants à partir de fichiers"
+			}
+		}
+	},
+	"export": {
+		"title": "Exportateur de Composants",
+		"pageTitle": "Exportateur de Composants",
+		"pageSubtitle": "Exportez votre contenu préféré",
+		"description": "Exportez vos créations de polices. Cet outil rassemble vos pièces sélectionnées dans un simple fichier zip pour les conserver ou les partager.",
+		"steps": {
+			"part": "Sélectionner les composants",
+			"action": "Exporter"
+		},
+		"labels": {
+			"part": "Sélectionnez un Composant"
+		},
+		"placeholders": {
+			"partTypeSelect": "Veuillez sélectionner",
+			"partSelect": "Veuillez sélectionner"
+		},
+		"partSelectDropdown": {
+			"placeholder": "Veuillez sélectionner"
+		},
+		"partSearch": {
+			"placeholder": "Rechercher..."
+		},
+		"options": {
+			"withData": "Contient des fichiers de données",
+			"withDataDescription": "Contient des fichiers marqués comme des données, tels que les souvenirs du personnage."
+		},
+		"export": {
+			"title": "Options d'exportation"
+		},
+		"editor": {
+			"disabledIndicator": "Veuillez d'abord sélectionner un composant",
+			"disabledIndicatorHint": "Veuillez sélectionner le type de composant et le composant que vous souhaitez exporter"
+		},
+		"buttons": {
+			"export": "Exporter",
+			"exportWithData": "Exporter (avec données)",
+			"copyShareLink": "Copier le lien de partage",
+			"generateShareLink": "Générer un lien de partage",
+			"generateShareLinkWithData": "Générer un lien de partage (données incluses)"
+		},
+		"shareMenu": {
+			"title": "Choisissez le temps de partage",
+			"1h": "1 heure",
+			"12h": "12 heures",
+			"24h": "24 heures",
+			"72h": "72 heures",
+			"cancel": "Annuler"
+		},
+		"litterbox": {
+			"poweredBy": "La fonction de partage est prise en charge par Litterbox.moe",
+			"sponsorLink": "Soutenez-les"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Erreur"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
+			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
+			"loadPartDetailsFailed": "Échec du chargement des détails du composant.",
+			"exportFailed": "Échec de l'exportation.",
+			"shareLinkCopied": "Le lien de partage a été copié dans le presse-papiers !",
+			"shareFailed": "Échec de la création d'un lien de partage."
+		},
+		"achievements": {
+			"share_part": {
+				"name": "C'est dangereux d'y aller seul ! Prends ça.",
+				"description": "\"Maintenant, je vais vous donner une copie de cette bonne chose.\"",
+				"locked_description": "Partagez le widget une fois."
+			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Télécharger des pièces"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Composants",
+				"sub_items": {
+					"exportPart": {
+						"title": "Exporter Pièce"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Télécharger des pièces"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Exporter"
+			}
+		}
+	},
+	"uninstall": {
+		"title": "Désinstaller",
+		"description": "Si vous choisissez de vous séparer, cet espace permet de faire des adieux gracieux. Confirmez la suppression des composants ou de la police elle-même. Les chemins divergent, mais les souvenirs peuvent demeurer.",
+		"titleWithName": "Désinstaller ${type}/${name}",
+		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
+		"invalidParamsTitle": "Paramètres invalides",
+		"infoMessage": {
+			"icon": {
+				"alt": "Icône d'information"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirmer la désinstallation",
+			"cancel": "Annuler",
+			"back": "Retour"
+		},
+		"alerts": {
+			"success": "${type} : ${name} désinstallé avec succès",
+			"failed": "Échec de la désinstallation : ${error}",
+			"invalidParams": "Paramètres de requête non valides",
+			"httpError": "Erreur HTTP ! Code d'état : ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icône d'erreur"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Supprimer"
+			}
+		}
+	},
+	"userSettings": {
+		"title": "Paramètres utilisateur",
+		"PageTitle": "Paramètres utilisateur",
+		"description": "Occupez-vous des détails de votre identité de source. Gérez votre profil, protégez votre accès et affichez les appareils connectés. Un sanctuaire tranquille pour votre compte.",
+		"userInfo": {
+			"title": "Informations utilisateur",
+			"usernameLabel": "Nom d'utilisateur :",
+			"creationDateLabel": "Date de création du compte :",
+			"folderSizeLabel": "Taille des données utilisateur :",
+			"folderPathLabel": "Chemin des données utilisateur :",
+			"copyPathBtn": {
+				"title": "Copier le Chemin"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Icône de Copie"
+			},
+			"copiedAlert": "Chemin copié dans le presse-papiers !"
+		},
+		"changePassword": {
+			"title": "Modifier le mot de passe",
+			"currentPasswordLabel": "Mot de passe actuel :",
+			"newPasswordLabel": "Nouveau mot de passe :",
+			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
+			"submitButton": "Modifier le mot de passe",
+			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
+			"success": "Mot de passe modifié avec succès."
+		},
+		"renameUser": {
+			"title": "Renommer l'utilisateur",
+			"newUsernameLabel": "Nouveau nom d'utilisateur :",
+			"submitButton": "Renommer l'utilisateur",
+			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
+			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
+		},
+		"userDevices": {
+			"title": "Appareils et sessions utilisateur",
+			"noDevicesFound": "Aucun appareil ou session trouvé.",
+			"deviceInfo": "ID de l'appareil : ${deviceId}",
+			"thisDevice": "Cet appareil",
+			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
+			"revokeSuccess": "Appareil/Session révoqué avec succès.",
+			"refreshButton": {
+				"title": "Actualiser la liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "icône d'actualisation"
+			}
+		},
+		"apiKeys": {
+			"title": "Clé API",
+			"description": "Gérez la clé API pour les applications externes.",
+			"input": {
+				"placeholder": "Nouvelle description de clé"
+			},
+			"createButton": "créer",
+			"noKeysFound": "Aucune clé API n'a été trouvée.",
+			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
+			"neverUsed": "Jamais utilisé",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
+			"revokeSuccess": "La clé API a été révoquée avec succès.",
+			"errorDescriptionRequired": "Une description est requise.",
+			"createSuccess": "La clé API a été créée avec succès.",
+			"refreshButton": {
+				"title": "Actualiser la liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "icône d'actualisation"
+			}
+		},
+		"newApiKey": {
+			"title": "Une nouvelle clé API a été créée",
+			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
+			"closeButton": "J'ai copié ma clé",
+			"copyButton": {
+				"title": "Copier la nouvelle clé API"
+			},
+			"copiedAlert": "Clé API copiée dans le presse-papiers !"
+		},
+		"logout": {
+			"title": "Se déconnecter",
+			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
+			"buttonText": "Se déconnecter",
+			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+			"successMessage": "Déconnexion réussie. Redirection vers la page de connexion en cours..."
+		},
+		"deleteAccount": {
+			"title": "Supprimer le compte",
+			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
+			"submitButton": "Supprimer mon compte",
+			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
+			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
+			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
+			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
+		},
+		"passwordConfirm": {
+			"title": "Confirmer l'opération",
+			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
+			"passwordLabel": "Mot de passe :",
+			"confirmButton": "Confirmer",
+			"cancelButton": "Annuler"
+		},
+		"apiError": "La requête API a échoué : ${message}",
+		"generalError": "Une erreur s'est produite : ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Paramètres",
+				"sub_items": {
+					"main": {
+						"title": "Paramètres Utilisateur"
+					}
+				}
+			}
+		}
+	},
+	"subfounts": {
+		"title": "subfounts - gestion des appareils peer-to-peer",
+		"pageTitle": "subfounts",
+		"description": "Gérer les connexions de fontaines peer-to-peer",
+		"hostConnectionCode": {
+			"title": "Code de connexion hôte",
+			"connectionCodeLabel": "Code de connexion (Peer ID)",
+			"passwordLabel": "mot de passe",
+			"copyButton": "Copier",
+			"regenerateButton": "Régénérer",
+			"infoMessage": "Partagez ces informations d'identification avec les clients de subfount pour établir des connexions.",
+			"connectionCodeCopied": "Le code de connexion a été copié dans le presse-papier",
+			"passwordCopied": "Mot de passe copié dans le presse-papiers",
+			"regenerateSuccess": "Le code de connexion a été régénéré"
+		},
+		"connectedSubfounts": {
+			"title": "subfount connectée",
+			"noSubfountsConnected": "Aucune subfount n'est connectée",
+			"table": {
+				"id": "IDENTIFIANT",
+				"peerId": "ID de pair",
+				"connectedAt": "temps de connexion",
+				"status": "État",
+				"connected": "Connecté",
+				"disconnected": "Déconnecté",
+				"na": "N / A"
+			}
+		},
+		"codeExecution": {
+			"title": "exécution de code",
+			"description": "Exécuter le code JavaScript sur la subfount sélectionnée",
+			"selectSubfountLabel": "Sélectionnez la subfount",
+			"selectSubfountPlaceholder": "Veuillez sélectionner la subfount sur laquelle exécuter le code...",
+			"scriptLabel": "Code JavaScript",
+			"executeButton": "exécuter",
+			"executing": "Exécution...",
+			"noSubfountSelected": "Veuillez d'abord sélectionner une subfount",
+			"noScriptProvided": "Veuillez entrer le code à exécuter",
+			"executionSuccess": "Exécution du code réussie",
+			"executionFailed": "Échec de l'exécution du code : ${message}"
+		},
+		"downloadClient": {
+			"title": "Télécharger le client de subfount",
+			"description": "Téléchargez le script client de Subfount autonome à exécuter sur le périphérique distant.",
+			"downloadButton": "Télécharger subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Échec du chargement du code de connexion : ${message}",
+			"regenerateConnectionCodeFailed": "Échec de la régénération du code de connexion : ${message}",
+			"loadSubfountsFailed": "Échec du chargement de la liste des subfounts : ${message}",
+			"generalError": "Une erreur s'est produite : ${message}"
+		}
+	},
+	"languageSettings": {
+		"title": "Paramètres linguistiques",
+		"pageTitle": "Paramètres de langue",
+		"description": "Gérez vos préférences linguistiques pour l'application de polices. Personnalisez votre expérience avec les options linguistiques disponibles.",
+		"pageDescription": "Gérez vos préférences linguistiques ici. Les langues de la liste auront la priorité sur les paramètres du navigateur dans l'ordre.",
+		"availableLanguages": "Langues disponibles",
+		"preferredLanguages": "Liste des langues prioritaires",
+		"resetButton": "Réinitialiser",
+		"saveButton": "Sauvegarder",
+		"select": {
+			"placeholder": "Choisissez une langue..."
+		},
+		"search": {
+			"placeholder": "Rechercher une langue..."
+		},
+		"noPreferredLanguages": "Pas encore de langue antérieure. Les paramètres par défaut du navigateur seront utilisés.",
+		"savedMessage": "Les paramètres de langue ont été enregistrés !",
+		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
+		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Paramètres",
+				"sub_items": {
+					"main": {
+						"title": "Paramètres linguistiques"
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Gestion des thèmes",
+		"description": "Choisissez l’esthétique qui reflète votre humeur ou votre histoire. Prévisualisez et sélectionnez parmi une palette de thèmes, chacun offrant une ambiance différente pour vos interactions avec vos polices. Votre monde, votre style.",
+		"instruction": "Choisissez un thème !",
+		"search": {
+			"placeholder": "Rechercher un thème...",
+			"noResult": "Aucun thème correspondant trouvé."
+		},
+		"createButton": "+ Créer un nouveau thème",
+		"preview": {
+			"editButton": {
+				"title": "Modifier"
+			},
+			"editButtonIcon": {
+				"alt": "Icône de modification"
+			},
+			"deleteButton": {
+				"title": "Supprimer"
+			},
+			"deleteButtonIcon": {
+				"alt": "Icône de suppression"
+			},
+			"cloneButton": {
+				"title": "Dupliquer"
+			},
+			"cloneButtonIcon": {
+				"alt": "Icône de duplication"
+			}
+		},
+		"editor": {
+			"title": "Éditeur de thème",
+			"cancelButton": "Annuler",
+			"saveApplyButton": "Enregistrer et appliquer",
+			"themeName": "Nom du thème (ID)",
+			"autoPaletteTitle": "Correction automatique des couleurs à partir des images",
+			"autoPaletteInstruction": "Cliquez sur une couleur ci-dessus pour remplir automatiquement les couleurs primaires/secondaires/accentuées/neutres.",
+			"coreColors": "Couleurs de base",
+			"baseBackground": "Bases et arrière-plan",
+			"variables": "Variables",
+			"borderRadius": "Rayon de la bordure (--rounded-box)",
+			"borderWidth": "Largeur de la bordure (--border-btn)",
+			"advancedCustomization": "Personnalisation avancée",
+			"customCSS": "CSS personnalisé (surcharge)",
+			"customMjsScript": "Script MJS personnalisé (facultatif)",
+			"mjsSyntaxHint": "Utilisez la [syntaxe async-eval](${asyncDocLink}). Renvoie un objet contenant les fonctions <code>load()</code> et <code>unload()</code>.",
+			"themeIdRequired": "ID du thème requis",
+			"newThemeName": "Nouveau nom du thème :",
+			"deleteConfirm": "Êtes-vous sûr de vouloir supprimer le thème ${id} ?",
+			"saved": "Enregistré !",
+			"failedToSave": "Échec de l'enregistrement"
+		},
+		"themes": {
+			"auto": "Automatique",
+			"light": "Clair",
+			"dark": "Sombre",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Émeraude",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
+			"retro": "Rétro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Saint-Valentin",
+			"halloween": "Halloween",
+			"garden": "Jardin",
+			"forest": "Forêt",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantaisie",
+			"wireframe": "Filaire",
+			"black": "Noir",
+			"luxury": "Luxe",
+			"dracula": "Dracula",
+			"cmyk": "CMJN",
+			"autumn": "Automne",
+			"business": "Affaires",
+			"acid": "Acid",
+			"lemonade": "Limonade",
+			"night": "Nuit",
+			"coffee": "Café",
+			"winter": "Hiver",
+			"dim": "Tamisé",
+			"nord": "Nordique",
+			"sunset": "Crépuscule",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abysse",
+			"silk": "Soie"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Un nouveau look !",
+				"description": "La fontaine avait un nouveau look et une toute nouvelle ambiance.",
+				"locked_description": "Changez de thème une fois."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Paramètres",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Changer de Thème"
+					}
+				}
+			}
+		}
+	},
+	"part_config": {
+		"title": "Configuration des Composants",
+		"pageTitle": "Configuration des Composants",
+		"description": "Regardez au cœur de fount. Ici, vous pouvez ajuster les paramètres de ses divers composants, réglant ainsi le moteur qui pilote votre expérience.",
+		"labels": {
+			"part": "Sélectionner le composant"
+		},
+		"placeholders": {
+			"partTypeSelect": "Veuillez sélectionner",
+			"partSelect": "Veuillez sélectionner"
+		},
+		"editor": {
+			"title": "Configuration du Composant",
+			"disabledIndicator": "Ce composant ne prend pas en charge la configuration",
+			"jsonEditor": {
+				"aria-label": "Éditeur de configuration JSON"
+			},
+			"buttons": {
+				"save": "Enregistrer"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icône d'erreur"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
+			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
+			"loadEditorFailed": "Échec du chargement de l'éditeur.",
+			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Composants",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Configuration des Composants"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Configuration"
+			}
+		}
+	},
+	"serviceSource_manager": {
+		"title": "Gestion des sources de services",
+		"description": "Ici, vous dirigerez une symphonie de sons d’intelligence artificielle. Ajoutez, sculptez ou faites taire des sources pour donner vie à vos compagnons sources - une danse subtile de code et d'imagination.",
+		"fileList": {
+			"title": "Liste des sources de services",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Configuration des sources de services",
+		"subtypeSelect": {
+			"label": "Sous-catégorie Générateur",
+			"placeholder": "Veuillez sélectionner une catégorie de générateur"
+		},
+		"generatorSelect": {
+			"label": "Sélectionnez le générateur",
+			"placeholder": "Veuillez sélectionner"
+		},
+		"paths": {
+			"serviceSource": "Catégorie de source de service",
+			"generator": "Catégorie de générateur"
+		},
+		"editor": {
+			"disabledIndicator": "Veuillez d'abord sélectionner un générateur"
+		},
+		"common_config_interface": {
+			"empty_generator": "L'ancien générateur de cette source de service a rencontré une erreur lors du chargement et a peut-être été désinstallé ou renommé.",
+			"loadingModels": "Chargement du modèle...",
+			"availableModels": "Modèles disponibles :",
+			"copied": "Copié!",
+			"apiKeyRequired": "Une clé API est requise pour répertorier les modèles.",
+			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
+			"loadModelsFailed": "Échec du chargement du modèle : ${message}"
+		},
+		"prompts": {
+			"newFileName": "Veuillez saisir le nouveau nom du fichier source du service (n'incluez pas le suffixe) :"
+		},
+		"buttons": {
+			"save": "Sauvegarder",
+			"delete": "Supprimer",
+			"setDefault": {
+				"dataset": {
+					"tip": "Définir par défaut"
+				},
+				"aria-label": "Définir \"${fileName}\" comme source de service par défaut"
+			}
+		},
+		"confirm": {
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
+			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
+			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Échec de l'obtention de la liste des fichiers : ${error}",
+			"fetchGeneratorListFailed": "Échec de l'obtention de la liste des générateurs : ${error}",
+			"fetchDefaultsFailed": "Échec de l'obtention du composant par défaut : ${error}",
+			"fetchFileDataFailed": "Échec de l'obtention des données du fichier : ${error}",
+			"fetchConfigTemplateFailed": "Échec de l'obtention du modèle de configuration",
+			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
+			"setDefaultFailed": "Échec de la définition de la source de service par défaut : ${error}",
+			"fetchBranchesFailed": "Échec de l'obtention de l'arborescence des composants : ${error}",
+			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
+			"noFileSelectedDelete": "Aucun fichier sélectionné pour la suppression.",
+			"noGeneratorSelectedSave": "Veuillez sélectionner le générateur avant de sauvegarder",
+			"invalidFileName": "Le nom du fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "La loi de la victoire est déterminée !",
+				"description": "Une IA par défaut est désignée comme source d’approvisionnement en mana.",
+				"locked_description": "Définissez une fois une source IA par défaut."
+			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Gérer la source de service"
+			}
+		}
+	},
+	"discord_bots": {
+		"title": "Bots Discord",
+		"description": "Donnez une voix à vos compagnons de fontaine dans les salles animées de Discord. Configurez leur présence, gérez leurs opérations et laissez-les relier les mondes, un serveur à la fois.",
+		"cardTitle": "Bots Discord",
+		"botSelectDropdown": {
+			"placeholder": "Choisissez un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Sélectionnez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des personnages..."
+		},
+		"configCard": {
+			"title": "Configuration du bot",
+			"labels": {
+				"character": "Personnage",
+				"apiKey": "Clé API Discord",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un personnage",
+			"apiKeyInput": {
+				"placeholder": "Saisir la clé API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Activer/désactiver l'affichage des clés API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Afficher/Masquer la clé API"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la configuration",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+		},
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"alerts": {
+			"configSaved": "Configuration enregistrée avec succès",
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Venir sur Discord",
+				"description": "Invoquez votre personnage dans le monde de Discord.",
+				"locked_description": "Lancez le Discord Bot une fois."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuration du Bot Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuration du Bot Discord"
+			}
+		}
+	},
+	"telegram_bots": {
+		"title": "Bots Telegram",
+		"description": "Laissez vos personnages de police traverser les vagues instantanées de Telegram. Configurez leur présence numérique, gérez leurs conversations et étendez leur portée à ce monde de messagerie dynamique.",
+		"cardTitle": "Gestion des bots Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Choisissez un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Sélectionnez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des personnages..."
+		},
+		"configCard": {
+			"title": "Configuration du bot",
+			"labels": {
+				"character": "Personnage lié",
+				"botToken": "Jeton du bot Telegram",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un personnage",
+			"botTokenInput": {
+				"placeholder": "Saisissez le jeton du bot Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Activer/désactiver l'affichage des clés API"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Afficher/Masquer le jeton du bot"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la configuration",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+		},
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"alerts": {
+			"configSaved": "La configuration a été enregistrée avec succès !",
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment abandonner ces modifications ?",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Venir sur Telegram",
+				"description": "Invoquez votre personnage dans le monde de Telegram.",
+				"locked_description": "Démarrez Telegram Bot une fois."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuration du Bot Telegram"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuration du Bot Telegram"
+			}
+		}
+	},
+	"browser_integration": {
+		"title": "Intégration du navigateur",
+		"description": "Comblez le fossé entre les polices et le Web. Cette page fournit le script utilisateur pour permettre une intégration transparente, intégrant vos compagnons IA dans votre expérience de navigation.",
+		"pageHeader": "Intégration du navigateur",
+		"pageDescription": "Pour que votre rôle fount interagisse avec la page Web, vous devez installer ce script d'intégration du navigateur. Il agit comme un pont entre le caractère et le navigateur, leur permettant de visualiser le contenu de la page et d'effectuer des actions.",
+		"install_script_title": "Script d'installation",
+		"install_script_description": "Cliquez sur le bouton ci-dessous pour installer le script d'intégration du navigateur. Vous devez d'abord installer un gestionnaire de scripts utilisateur comme Tampermonkey.",
+		"install_button": "Installer",
+		"install_from_url_tip": "Votre navigateur ne vous permet-il pas de l'installer? Copiez cette URL et importez le script de l'URL dans le plugin Tampermonkey.",
+		"what_is_manager": "Qu'est-ce qu'un gestionnaire de scripts utilisateur ?",
+		"manager_explanation": "Un gestionnaire de scripts utilisateur est une extension de navigateur qui vous permet d'installer et d'exécuter des scripts qui modifient les pages Web. Pour utiliser le script d'intégration fount, vous avez besoin d'une des extensions.",
+		"popular_managers": "Choix populaires:",
+		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour ${browser}, vous pouvez utiliser [ce plugin](${link}).",
+		"connected_pages_title": "Page connectée",
+		"fetch_pages_error": "Impossible de charger la liste des pages liées.",
+		"page_title": "Titre de la page",
+		"page_url": "URL",
+		"page_status": "Statut",
+		"status_focused": "Fenêtre actuelle",
+		"status_unfocused": "En arrière-plan",
+		"copy_button": "Copier",
+		"copied_message": "Copié dans le presse-papiers",
+		"no_pages_connected": {
+			"title": "Aucune connexion encore",
+			"description": "Veuillez d'abord installer le script, puis visiter n'importe quel site Web dans d'autres onglets de navigateur, qui seront automatiquement affichés ici."
+		},
+		"autorun": {
+			"title": "Exécuter automatiquement les scripts",
+			"description": "Gérez les extraits JavaScript qui sont automatiquement exécutés lors de la correspondance d'un site Web spécifique. Ces scripts peuvent être fournis par votre rôle d'IA ou votre plug-in pour améliorer ou automatiser votre expérience de navigation.",
+			"form_title": "Ajouter un nouveau script",
+			"comment_label": "Commentaires (facultatif)",
+			"url_regex_label": "Expression régulière de l'URL",
+			"script_label": "Code javascript",
+			"add_button": "Ajouter un script",
+			"list_title": "Scripts configurés",
+			"view_script_button": "Afficher le script",
+			"delete_button": "supprimer",
+			"confirm_delete": "Êtes-vous sûr de vouloir supprimer ce script? Cette opération ne peut pas être annulée.",
+			"add_success": "Le script en cours d'exécution automatique a été ajouté avec succès!",
+			"delete_success": "Le script a été supprimé avec succès.",
+			"no_scripts": {
+				"title": "Aucun script automatique en cours d'exécution",
+				"description": "Vous n'avez pas encore configuré de scripts. Veuillez utiliser le formulaire ci-dessus pour ajouter le premier."
+			},
+			"table": {
+				"comment": "Commentaires",
+				"url_regex": "Expression régulière de l'URL",
+				"created_at": "Créé dans"
+			},
+			"view_script_modal_title": "Afficher le script",
+			"view_script_modal_close_button": "Fermer"
+		},
+		"error": {
+			"load_failed": "Échec du chargement du script automatique: ${message}",
+			"add_failed": "Échec de l'ajout de script: ${message}",
+			"delete_failed": "Supprimer le script a échoué: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "Magie, infusez !",
+				"description": "Vous avez installé avec succès le \"plug-in\" pour votre navigateur, vous pouvez désormais faire plus.",
+				"locked_description": "Installez le script d'intégration du navigateur une fois."
+			},
+			"run_js": {
+				"name": "chant de code",
+				"description": "\"En mon nom, commandez le navigateur...\"",
+				"locked_description": "Exécutez le code JavaScript une fois dans le navigateur."
+			},
+			"star_fount": {
+				"name": "étoile open source",
+				"description": "Mettez une étoile à fount sur GitHub, merci pour votre soutien !",
+				"locked_description": "Visitez le référentiel GitHub de fount et mettez-lui une étoile."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Intégrations",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Intégration du navigateur"
+					}
+				}
+			}
+		}
+	},
+	"browser_integration_script": {
+		"update": {
+			"prompt": "Une nouvelle version du script d'intégration du navigateur fount est disponible. La page de mise à jour est-elle maintenant ouverte?"
+		},
+		"csp_warning": "Le script d'intégration du navigateur fount détecte que la politique CSP existe sur la page, ce qui peut empêcher le script d'intégration de fonctionner correctement. Veuillez envisager d'installer le plugin pour désactiver le CSP.",
+		"hostChange": {
+			"securityWarningTitle": "--- Avertissement de sécurité fount ---",
+			"message": "La page actuelle (\"${origin}\") essaie de modifier votre adresse hôte fount pour:\n\n\"${newHost}\"\n\nAVERTISSEMENT: l'approbation de cette action permettra au nouvel hôte de contrôler pleinement les fonctionnalités d'intégration de votre navigateur, ce qui peut entraîner une fuite d'informations sensibles ou un vol de compte.\nL'approbation ne doit être faite que si vous êtes sûr qu'il s'agit de votre propre opération (par exemple, la migration d'un serveur fount).\n\nÊtes-vous sûr d'autoriser ce changement?",
+			"uuidMismatchError": "Erreur de sécurité fount: l'identité (UUID) de l'hôte ${newHost} ne correspond pas à votre existant. L'opération a été annulée.",
+			"verificationError": "Erreur de sécurité fount: Impossible de vérifier le nouvel hôte \"${newHost}\". Veuillez vérifier si l'adresse est correcte et si le service est en cours d'exécution."
+		}
+	},
+	"terminal_assistant": {
+		"title": "Assistant Terminal",
+		"description": "Au-delà de l'interface graphique, un espace de commande directe. Interagissez avec le noyau de la police via l'assistant de terminal, où le texte tisse sa propre magie puissante.",
+		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
+		"initialMessageLink": "Cliquez ici pour en savoir plus",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Hé, Fontaine.\"",
+				"description": "Dans le terminal sombre, le nom du partenaire IA a été appelé.",
+				"locked_description": "Appelez l’assistance du terminal une fois."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Intégrations",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Assistant Terminal"
+					}
+				}
+			}
+		}
+	},
+	"deskpet": {
+		"title": "Animaux de bureau",
+		"description": "Lancez vos personnages de police en tant qu'animaux interactifs vivant sur votre bureau.",
+		"launcherCard": {
+			"title": "démarreur pour animaux de compagnie",
+			"buttons": {
+				"start": "commencer l'animal de compagnie"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Choisissez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des rôles..."
+		},
+		"runningCard": {
+			"title": "animal de compagnie qui court",
+			"noPets": "Il n'y a actuellement aucun animal en cours d'exécution.",
+			"buttons": {
+				"stop": "Arrêter"
+			}
+		},
+		"toasts": {
+			"started": "L'animal '${charname}' est démarré.",
+			"stopped": "L'animal '${charname}' a été arrêté.",
+			"start_failed": "Échec du démarrage de l'animal '${charname}' : ${message}",
+			"stop_failed": "Échec de l'arrêt de l'animal '${charname}' : ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "Un nouveau compagnon pour votre bureau",
+				"description": "Un personnage sauvage surgit et envahit votre bureau.",
+				"locked_description": "Démarrez un animal de compagnie de bureau."
+			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Lancer en tant qu'animal de bureau"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "En développement",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Animaux de bureau",
+						"sub_items": {
+							"main": {
+								"title": "Gérer les animaux de bureau"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"access": {
+		"title": "Accéder à fount sur d'autres appareils",
+		"description": "Étendez la portée des polices au-delà d’un seul écran. C'est ici que se trouve la passerelle (une URL, un code QR) pour vous connecter avec vos compagnons depuis d'autres appareils, un simple pont à travers l'éther local.",
+		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",
+		"instruction": {
+			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
+			"accessthis": "Visitez cette URL :"
+		},
+		"QRcode": {
+			"alt": "Scannez ce code QR pour accéder à fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
+		"copyButton": "Copier l'URL",
+		"copied": "URL copiée dans le presse-papiers !",
+		"home_function_buttons": {
+			"main": {
+				"title": "Accès sur d'autres appareils"
+			}
+		}
+	},
+	"proxy": {
+		"title": "Proxy API",
+		"description": "Pour les développeurs et les intégrateurs, cette page dévoile le proxy de l'API font, votre connexion pour intégrer les capacités de font dans d'autres applications.",
+		"heading": "Passerelle du Proxy API",
+		"instruction": "Générez et gérez vos clés API sur cette page pour intégrer fount avec d'autres applications.",
+		"endpointSectionTitle": "Point de Terminaison de l'API",
+		"endpointInstruction": "Ceci est l'URL de base pour l'intégration avec d'autres services.",
+		"apiUrlInput": {
+			"aria-label": "Point de terminaison de l'API"
+		},
+		"usageExampleTitle": "Exemple d'Utilisation",
+		"usageExampleInstruction": "Voici un exemple de la manière d'obtenir la liste des modèles disponibles en utilisant `curl`.",
+		"copyButton": "Copier",
+		"copied": "Copié dans le presse-papiers",
+		"apiKeySectionTitle": "Vos Clés API",
+		"apiKey": "Votre Clé API :",
+		"noApiKey": "Vous n'avez pas encore généré de clé API pour cette page.",
+		"generateApiKeyButton": "Générer une Nouvelle Clé",
+		"copyApiKeyButton": "Copier",
+		"apiKeyCopied": "Clé API copiée !",
+		"queryStringSectionTitle": "Impossible de définir la clé API dans l'en-tête de la requête ? (Non sécurisé)",
+		"queryStringWarning": "Utilisez cette méthode alternative lorsque votre application ne prend pas en charge l'envoi de la clé API dans l'en-tête de la requête (en-tête Authorization). Attention : Placer la clé API directement dans l'URL présente un risque de sécurité car elle peut être enregistrée dans les journaux du serveur ou l'historique du navigateur.",
+		"copyQueryStringUrlButton": "URL avec Clé API (Query String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Autres",
+				"sub_items": {
+					"asProxy": {
+						"title": "En tant que Proxy"
+					}
+				}
+			}
+		}
+	},
+	"achievements": {
+		"title": "Réalisation",
+		"description": "Explorez les étapes et les réalisations de votre voyage avec Font. Chaque réalisation marque une étape dans votre récit unique.",
+		"pageHeader": "Salle des réalisations",
+		"pageDescription": "Découvrez vos réalisations et jalons débloqués ici.",
+		"unlocked_on": "Débloqué le ${date}",
+		"locked": "Non débloqué",
+		"toast_title": "Succès débloqués !",
+		"error": {
+			"load_failed": "Échec du chargement des succès : ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "Attrapez-les tous !",
+				"description": "J'ai ouvert la liste des réalisations et je me suis préparé à commencer un voyage de collection de timbres.",
+				"locked_description": "Ouvrez la page des réalisations."
+			},
+			"relock_by_clicking": {
+				"name": "Sérieux, mec ?",
+				"description": "En cliquant à plusieurs reprises sur un succès débloqué, vous réussissez à le reverrouiller. Pourquoi?",
+				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Réalisation"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Débogage et informations système",
+		"description": "Obtenez des informations détaillées sur le débogage et le système sur votre installation de fount. Ceci est très utile pour le dépannage et les demandes d’assistance.",
+		"heading": "Débogage et informations système",
+		"copyButton": "Copier le rapport",
+		"versionStatus": {
+			"title": "État de la version",
+			"checking": "Vérification...",
+			"local": "Local :",
+			"remote": "Distant :",
+			"upToDate": "Déjà le dernier",
+			"outdated": "Il y a une mise à jour",
+			"checkFailed": "La vérification a échoué"
+		},
+		"systemInfo": {
+			"title": "Informations système",
+			"failed": "Échec du chargement des informations système"
+		},
+		"connectivity": {
+			"backend": "Connectivité back-end",
+			"frontend": "connectivité frontale"
+		},
+		"loading": "Chargement...",
+		"checking": "Vérification...",
+		"failed": "Échec",
+		"copySuccess": "Rapport de débogage copié dans le presse-papiers",
+		"copyFailed": "Échec de la copie du rapport",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Ouvrir le panneau de débogage"
+				}
+			}
+		}
+	},
+	"badges_maker": {
+		"title": "fount ! Convertisseur de Badges",
+		"description": "Pour lorsque votre projet nécessite une touche de caractère. Convertissez les badges Shields.io en leur conférant une nouvelle identité résonnante.",
+		"card_title": "Convertisseur de Liens de Badges fount",
+		"original_url_label": "Collez l'URL img.shields.io",
+		"original_url": {
+			"placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue"
+		},
+		"new_url_label": "Nouvelle URL générée",
+		"new_url": {
+			"placeholder": "L'URL convertie sera affichée ici"
+		},
+		"preview_label": "Aperçu",
+		"copy_button": "Copier",
+		"copied_text": "Copié !",
+		"preview": {
+			"alt": "Aperçu du badge"
+		},
+		"copy_error": "Impossible de copier le texte : ${error}",
+		"copy_fail_alert": "La copie a échoué !"
+	},
+	"404": {
+		"title": "Page non trouvée",
+		"description": "Le chemin que vous cherchiez s'est dissous dans la brume. Était-ce un faux pas, un virage oublié ? Laissez-nous vous guider vers le rivage, ou peut-être faites une pause pour jouer dans le vide tranquille.",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"homepageButton": "Retour à la page d'accueil"
+	},
+	"code_block": {
+		"copy": {
+			"dataset": {
+				"tip": "Copier dans le presse-papier"
+			},
+			"aria-label": "copier dans le presse-papier"
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Copié dans le presse-papier !"
+			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "Télécharger le code"
+			},
+			"aria-label": "Télécharger le code"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Exécuter le code"
+			},
+			"aria-label": "Exécuter le code"
+		},
+		"preview": {
+			"dataset": {
+				"tip": "Aperçu"
+			},
+			"aria-label": "Aperçu"
+		},
+		"copy_failed": "Impossible de copier dans le presse-papier : ${error}"
+	},
+	"pow_captcha": {
+		"initial": "Je ne suis pas un robot",
+		"verifying": "Vérification en cours...",
+		"solved": "Vérification réussie",
+		"wasm_disabled": "Activer WASM pour une vérification plus rapide",
+		"error": "Échec de la vérification",
+		"errorMessage": "Échec de la vérification : ${error}"
+	},
+	"breadcrumb": {
+		"clickToNavigate": "Cliquez pour accéder à ${path}"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Les touches continues sur le clavier sont facilement devinées.",
+			"keyPattern": "Un court motif de clavier est facile à deviner.",
+			"simpleRepeat": "Des caractères répétés comme \"AAA\" sont facilement devinés.",
+			"extendedRepeat": "Les modèles de caractère répétés comme \"ABCABABABC\" sont facilement devinés.",
+			"sequences": "Les séquences de caractères communes comme \"ABC\" sont facilement devinées.",
+			"recentYears": "Les dernières années sont faciles à deviner.",
+			"dates": "La date est facilement devinée.",
+			"topTen": "Il s'agit d'un mot de passe surutilisé.",
+			"topHundred": "Il s'agit d'un mot de passe qui est souvent utilisé.",
+			"common": "Il s'agit d'un mot de passe couramment utilisé.",
+			"similarToCommon": "Ceci est similaire à un mot de passe couramment utilisé.",
+			"wordByItself": "Un seul mot est facilement deviné.",
+			"namesByThemselves": "Un seul nom ou nom de famille est facilement deviné.",
+			"commonNames": "Les prénoms et les noms de famille communs sont faciles à deviner.",
+			"userInputs": "Le mot de passe ne doit contenir aucune donnée personnelle ou liée à la page.",
+			"pwned": "Votre mot de passe a été exposé dans une violation de données Internet."
+		},
+		"suggestions": {
+			"l33t": "Évitez d'utiliser des substitutions de lettres prévisibles, comme l'utilisation de \"@\" au lieu de \"A\".",
+			"reverseWords": "Évitez d'utiliser l'orthographe inverse des mots communs.",
+			"allUppercase": "Capitalisez certains plutôt que toutes les lettres.",
+			"capitalization": "Mettez en majuscule plus que la première lettre.",
+			"dates": "Évitez d'utiliser des dates et des années liées à vous.",
+			"recentYears": "Évitez d'utiliser les années les plus récentes.",
+			"associatedYears": "Évitez d'utiliser des années liées à vous.",
+			"sequences": "Évitez les séquences de caractères communes.",
+			"repeated": "Évitez les mots et les caractères répétitifs.",
+			"longerKeyboardPattern": "Utilisez le mode clavier plus long et modifiez plusieurs fois les directions d'entrée.",
+			"anotherWord": "Ajoutez des mots plus rares.",
+			"useWords": "Utilisez plusieurs mots, mais évitez les phrases courantes.",
+			"noNeed": "Vous n'avez pas besoin d'utiliser des symboles, des chiffres ou des majuscules pour créer des mots de passe solides.",
+			"pwned": "Si vous utilisez ce mot de passe ailleurs, il est conseillé d'apporter des modifications."
+		},
+		"timeEstimation": {
+			"ltSecond": "Moins d'une seconde",
+			"second": "{base} seconde",
+			"seconds": "{base} secondes",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} heure",
+			"hours": "{base} heures",
+			"day": "{base} jour",
+			"days": "{base} jours",
+			"month": "{base} mois",
+			"months": "{base} mois",
+			"year": "{base} an",
+			"years": "{base} années",
+			"centuries": "Siècles"
+		}
+	}
+}

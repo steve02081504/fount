@@ -8,12 +8,12 @@ import { __dirname } from '../base.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { diff_if_auth, registerMiddleware } from './middleware.mjs'
 import { PartsRouter } from './parts_router.mjs'
-import { registerResources } from './resources.mjs'
+import { betterSendFile, registerResources } from './resources.mjs'
 import { registerWellKnowns } from './well-knowns.mjs'
 
 /**
  * 主 Express 应用程序实例。
- * @type {import('express').Application}
+ * @type {import('npm:express').Application}
  */
 export const app = WsAbleApp()
 app.disable('x-powered-by')
@@ -41,22 +41,23 @@ registerResources(mainRouter)
 
 // 设置最终处理程序（404、错误）
 FinalRouter.use((req, res) => {
+	Sentry.captureException(new Error('404 Not found: ' + req.path))
 	if (req.path.startsWith('/api/') || req.path.startsWith('/ws/')) return res.status(404).json({ message: 'API Not found' })
-	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404/index.html')
+	if (req.accepts('html')) return betterSendFile(res.status(404), __dirname + '/src/public/pages/404/index.html')
 	res.status(404).type('txt').send('Not found')
 })
 /**
  * 应用程序的主错误处理程序。
  * @param {Error} err - 错误对象。
- * @param {import('express').Request} req - Express 请求对象。
- * @param {import('express').Response} res - Express 响应对象。
- * @param {import('express').NextFunction} next - 下一个中间件函数。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @param {import('npm:express').NextFunction} next - 下一个中间件函数。
  * @returns {void}
  */
 const errorHandler = (err, req, res, next) => {
 	if (!err.skip_report) Sentry.captureException(err)
 	console.error(err)
-	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
+	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message || err.cause?.message || String(err) })
 }
 
 PartsRouter.use(errorHandler)

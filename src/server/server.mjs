@@ -4,7 +4,7 @@ import https from 'node:https'
 import path from 'node:path'
 import process from 'node:process'
 
-import { on_shutdown } from 'npm:on-shutdown'
+import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { StartRPC } from '../scripts/discordrpc.mjs'
@@ -123,7 +123,7 @@ async function checkUpstreamAndRestart() {
 		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
 		const needsRestart = changedFiles.some(file =>
 			file.endsWith('.mjs') && file.startsWith('src/') &&
-			!file.startsWith('src/pages/') && !file.startsWith('src/locales/') &&
+			['decl', 'pages', 'locales'].every(dir => !file.startsWith(`src/${dir}/`)) &&
 			!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
 		)
 
@@ -142,6 +142,18 @@ async function checkUpstreamAndRestart() {
 }
 
 /**
+ * 上次 Web 请求的时间戳。
+ * @type {number}
+ */
+export let lastWebRequestTime = 0
+/**
+ * 标记上次 Web 请求的时间戳。
+ * @returns {void}
+ */
+export function webRequestHappend() {
+	lastWebRequestTime = Date.now()
+}
+/**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
  * @returns {Promise<boolean>} 如果初始化成功，则解析为 true，否则为 false。
@@ -150,15 +162,18 @@ export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
-	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC']) starts[start] ??= true
+	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
+		unset_shutdown_listener('error', 'unhandledRejection', 'uncaughtException')
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
+		process.on('uncaughtException', console.log)
 	}
 
 	config = get_config()
@@ -169,7 +184,7 @@ export async function init(start_config) {
 		if (!await new IPCManager().startServer()) return false
 	}
 	let iconPromise
-	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
+	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) {
@@ -237,13 +252,13 @@ export async function init(start_config) {
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'https')
+					if (starts.Web?.mDNS) initMdns(port, 'https', mdnsConfig)
 					resolve()
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'http')
+					if (starts.Web?.mDNS) initMdns(port, 'http', mdnsConfig)
 					resolve()
 				})
 
@@ -274,14 +289,27 @@ export async function init(start_config) {
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {
-		if (starts.Base.Jobs) ReStartJobs()
+		if (starts.Base.Jobs) setTimeout(() => {
+			const Interval = setInterval(() => {
+				if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
+				clearInterval(Interval)
+				ReStartJobs()
+			}, 1000)
+		}, 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
 		if (starts.Base.Idle) idleManager.start()
 		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
 		idleManager.onIdle(setDefaultStuff)
+		idleManager.onIdle(() => {
+			config.prelaunch ??= {}
+			const currentHeap = getMemoryUsage()
+			const oldHeap = config.prelaunch.heapSize / 1.5 || currentHeap
+			config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13 * 1.5)
+			save_config()
+		})
 	}
 	if (starts.DiscordRPC) StartRPC()
-	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
+	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
 	return true
 }

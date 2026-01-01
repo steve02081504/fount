@@ -15,7 +15,11 @@ import { init } from './server.mjs'
 
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
-Sentry.init({
+/**
+ * 是否启用 Sentry 进行错误报告
+ */
+export const sentry_enabled = !existsSync(__dirname + '/.noerrorreport')
+if (sentry_enabled) Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 	/**
 	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
@@ -76,13 +80,12 @@ if (args.length) {
 
 	if (command == 'run') {
 		const username = args[0]
-		const parttype = args[1]
-		const partname = args[2]
+		const partpath = args[1]
 		args = args.slice(3)
 
 		command_obj = {
 			type: 'runpart',
-			data: { username, parttype, partname, args },
+			data: { username, partpath, args },
 		}
 	}
 	else if (command == 'shutdown' || command == 'reboot') {
@@ -93,7 +96,7 @@ if (args.length) {
 			Base: false,
 			Web: false,
 			Tray: false,
-			DiscordIPC: false,
+			DiscordRPC: false,
 		}
 	}
 	else {
@@ -116,9 +119,9 @@ if (command_obj) try {
 		}
 	}
 } catch (err) {
-	if (!(command_obj.type == 'shutdown' && String(err.message).endsWith('read ECONNRESET')))
-		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
-	else throw err
+	if (['shutdown', 'reboot'].includes(command_obj.type) && String(err.message).endsWith('read ECONNRESET')) process.exit(0)
+	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
+	throw err
 }
 // 如果初始化失败则退出。
 if (!okey) process.exit(0)

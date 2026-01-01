@@ -1,4 +1,4 @@
-import { chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts'
+import { chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -118,6 +118,13 @@ export class PluginAPI_t {
 			 * @returns {Promise<Record<string, any>>} - 包含特殊变量或函数的对象。
 			 */
 			GetJSCodeContext?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t) => Promise<Record<string, any>>;
+
+			/**
+			 * 获取回复预览更新器。
+			 * @param {CharReplyPreviewUpdater_t} [updater] - 上一个更新器。
+			 * @returns {CharReplyPreviewUpdater_t} - 新的更新器。
+			 */
+			GetReplyPreviewUpdater?: (updater?: CharReplyPreviewUpdater_t) => CharReplyPreviewUpdater_t
 		}
 	}
 }

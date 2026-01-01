@@ -1,0 +1,287 @@
+{
+	"en-UK": {
+		"name": "Google API Search",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Search using Google Custom Search API",
+		"description_markdown": "Search implementation using Google Custom Search API, requires API key and search engine ID.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"zh-CN": {
+		"name": "Google API 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 Google Custom Search API 的搜索",
+		"description_markdown": "使用 Google Custom Search API 实现的搜索，需要 API 密钥和搜索引擎 ID。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"ar-SA": {
+		"name": "جوجل API البحث",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "ابحث باستخدام Google Custom Search API",
+		"description_markdown": "تتطلب عمليات البحث باستخدام واجهة برمجة التطبيقات للبحث المخصص من Google مفتاح واجهة برمجة التطبيقات ومعرف محرك البحث.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"جوجل",
+			"واجهة برمجة التطبيقات",
+			"يبحث",
+			"البحث على شبكة الإنترنت"
+		],
+		"home_page": ""
+	},
+	"de-DE": {
+		"name": "Google API-Suche",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Suchen Sie mit der Google Custom Search API",
+		"description_markdown": "Für Suchen mit der Google Custom Search API sind ein API-Schlüssel und eine Suchmaschinen-ID erforderlich.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"suchen",
+			"Websuche"
+		],
+		"home_page": ""
+	},
+	"emoji": {
+		"name": "Google API 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 Google Custom Search API 的搜索",
+		"description_markdown": "使用 Google Custom Search API 实现的搜索，需要 API 密钥和搜索引擎 ID。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"es-ES": {
+		"name": "Búsqueda API de Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Buscar utilizando la API de búsqueda personalizada de Google",
+		"description_markdown": "Las búsquedas que utilizan la API de búsqueda personalizada de Google requieren una clave API y un ID de motor de búsqueda.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"buscar",
+			"búsqueda web"
+		],
+		"home_page": ""
+	},
+	"fr-FR": {
+		"name": "Recherche d'API Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Effectuer une recherche à l'aide de l'API de recherche personnalisée Google",
+		"description_markdown": "Les recherches utilisant l'API de recherche personnalisée Google nécessitent une clé API et un identifiant de moteur de recherche.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"recherche",
+			"recherche sur le Web"
+		],
+		"home_page": ""
+	},
+	"hi-IN": {
+		"name": "गूगल एपीआई खोज",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google कस्टम खोज API का उपयोग करके खोजें",
+		"description_markdown": "Google कस्टम खोज API का उपयोग करने वाली खोजों के लिए API कुंजी और खोज इंजन आईडी की आवश्यकता होती है।",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"गूगल",
+			"एपीआई",
+			"खोज",
+			"वेब खोज"
+		],
+		"home_page": ""
+	},
+	"is-IS": {
+		"name": "Google API leit",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Leitaðu með Google Custom Search API",
+		"description_markdown": "Leit sem notar Google Custom Search API þarf API lykil og leitarvélaauðkenni.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"leit",
+			"vefleit"
+		],
+		"home_page": ""
+	},
+	"it-IT": {
+		"name": "Ricerca API di Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Cerca utilizzando l'API di ricerca personalizzata di Google",
+		"description_markdown": "Le ricerche che utilizzano l'API Google Custom Search richiedono una chiave API e un ID motore di ricerca.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"API",
+			"ricerca",
+			"ricerca sul web"
+		],
+		"home_page": ""
+	},
+	"ja-JP": {
+		"name": "Google API検索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google Custom Search APIを使用した検索",
+		"description_markdown": "Google Custom Search API を使用した検索には、API キーと検索エンジン ID が必要です。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"グーグル",
+			"API",
+			"検索",
+			"ウェブ検索"
+		],
+		"home_page": ""
+	},
+	"ko-KR": {
+		"name": "구글 API 검색",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Google 맞춤 검색 API를 사용하여 검색",
+		"description_markdown": "Google 맞춤 검색 API를 사용하여 검색하려면 API 키와 검색 엔진 ID가 필요합니다.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"찾다",
+			"웹 검색"
+		],
+		"home_page": ""
+	},
+	"lzh": {
+		"name": "Google API 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 Google Custom Search API 的搜索",
+		"description_markdown": "使用 Google Custom Search API 实现的搜索，需要 API 密钥和搜索引擎 ID。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	},
+	"nl-NL": {
+		"name": "Google API-zoekopdracht",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Zoek met de Google Custom Search API",
+		"description_markdown": "Voor zoekopdrachten met de Google Custom Search API zijn een API-sleutel en zoekmachine-ID vereist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"googlen",
+			"api",
+			"zoekopdracht",
+			"web-zoeken"
+		],
+		"home_page": ""
+	},
+	"pt-PT": {
+		"name": "Pesquisa de API do Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Pesquise usando a API de pesquisa personalizada do Google",
+		"description_markdown": "As pesquisas que usam a API de pesquisa personalizada do Google exigem uma chave de API e um ID do mecanismo de pesquisa.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"procurar",
+			"pesquisa na web"
+		],
+		"home_page": ""
+	},
+	"ru-RU": {
+		"name": "API-поиск Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Поиск с помощью API пользовательского поиска Google",
+		"description_markdown": "Для поиска с использованием API пользовательского поиска Google требуется ключ API и идентификатор поисковой системы.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"поиск",
+			"веб-поиск"
+		],
+		"home_page": ""
+	},
+	"uk-UA": {
+		"name": "Пошук Google API",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Шукайте за допомогою API користувацького пошуку Google",
+		"description_markdown": "Для пошуку за допомогою API користувацького пошуку Google потрібен ключ API та ідентифікатор пошукової системи.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"api",
+			"пошук",
+			"веб-пошук"
+		],
+		"home_page": ""
+	},
+	"vi-VN": {
+		"name": "Tìm kiếm API của Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Tìm kiếm bằng API tìm kiếm tùy chỉnh của Google",
+		"description_markdown": "Các tìm kiếm sử dụng API tìm kiếm tùy chỉnh của Google yêu cầu khóa API và ID công cụ tìm kiếm.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"API",
+			"tìm kiếm",
+			"tìm kiếm trên web"
+		],
+		"home_page": ""
+	},
+	"zh-TW": {
+		"name": "Google API 搜索",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "使用 Google Custom Search API 的搜索",
+		"description_markdown": "使用 Google Custom Search API 實現的搜索，需要 API 密鑰和搜索引擎 ID。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"api",
+			"search",
+			"web-search"
+		],
+		"home_page": ""
+	}
+}

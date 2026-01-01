@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Gathering the Threads: Importing Your Creations into fount" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:install/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Bring your cherished characters, worlds, and configurations into fount's embrace. Whether from file or pasted text, this is where new elements are woven into your personal tapestry." />
+	<meta name="description" content="Bring your cherished characters, worlds, and configurations into fount's embrace. Whether from file or pasted text, this is where new elements are woven into your personal tapestry." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="import.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="flex flex-col h-screen">
+	<div class="navbar bg-base-100">
+		<div class="navbar-start">
+			<ul class="menu menu-horizontal p-0">
+				<li id="file-import-tab" class="tab tab-active" data-i18n="import.tabs.fileImport"></li>
+				<li id="text-import-tab" class="tab" data-i18n="import.tabs.textImport"></li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="import-content" class="p-4 flex flex-col flex-grow overflow-auto">
+		<!-- 文件导入内容 -->
+		<div id="file-import-content" class="flex flex-col h-full">
+			<div id="drop-area" class="drop-area flex flex-col items-center justify-center">
+				<img src="https://api.iconify.design/line-md/upload-outline-loop.svg" width="50" height="50" class="text-icon" data-i18n="import.dropArea.icon" />
+				<span data-i18n="import.dropArea"></span>
+			</div>
+			<div id="file-list" class="mt-4 overflow-auto flex-grow">
+				<!-- 文件列表将在此处显示 -->
+			</div>
+		</div>
+
+		<!-- 文本导入内容 -->
+		<div id="text-import-content" class="hidden flex flex-col">
+			<textarea id="text-input" class="textarea textarea-bordered w-full flex-grow" data-i18n="import.textArea"></textarea>
+		</div>
+	</div>
+
+	<div class="flex justify-center mt-4 p-4">
+		<button id="import-button" class="btn btn-primary" data-i18n="import.buttons.import"></button>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+{
+	"home_function_buttons": [
+		{
+			"info": "achievements.home_function_buttons.main",
+			"level": 9999,
+			"url": "/parts/shells:achievements/",
+			"button": "<img src=\"https://api.iconify.design/material-symbols/trophy.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

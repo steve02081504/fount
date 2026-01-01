@@ -92,11 +92,19 @@ export function getLocaleNames() {
 }
 
 /**
+ * 加载首选语言。
+ * @returns {string[]} 首选语言列表。
+ */
+export function loadPreferredLangs() {
+	return JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]').filter(Boolean)
+}
+
+/**
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid] - 当前页面的 ID。
  * @param {string[]} preferredlocales - 优先的语言环境列表。
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = /* TODO: remove this */ eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = loadPreferredLangs()) {
 	saved_pageid = pageid
 
 	try {
@@ -232,6 +240,11 @@ export function geti18n(key, params = {}) {
 	console.warn(`Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
+/**
+ * 重新导出 `console` 对象。
+ * @type {Console}
+ */
+export const console = globalThis.console
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -442,10 +455,8 @@ function translateSingularElement(element) {
 	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
 		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
-			if (element.textContent !== literal_value) {
-				element.textContent = literal_value
-				updated = true
-			}
+			// deno-lint-ignore no-cond-assign
+			if (element.textContent ||= literal_value) updated = true
 		}
 		else if (getNestedValue(i18n, key) instanceof Object) {
 			if (!Object.keys(getNestedValue(i18n, key)).length) break
@@ -534,7 +545,6 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 			translateSingularElement(mutation.target)
 })
 
-// Start observing the document body for configured mutations
 /**
  * 观察文档主体以进行配置的突变。
  * @returns {void}

@@ -4,18 +4,29 @@ import cors from 'npm:cors'
 
 import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
-import { pow } from '../../scripts/pow.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
-import { partTypeList } from '../managers/base.mjs'
-import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
-import { getDefaultParts, getPartDetails, setDefaultPart, unsetDefaultPart, getAnyDefaultPart, getAllDefaultParts as getAllDefaultPartsFromLoader, getAnyPreferredDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
+import {
+	getLoadedPartList,
+	getPartList,
+	loadPart,
+	getDefaultParts,
+	getPartDetails,
+	setDefaultPart,
+	unsetDefaultPart,
+	getAnyDefaultPart,
+	getAllDefaultParts as getAllDefaultPartsFromLoader,
+	getAnyPreferredDefaultPart,
+	getAllCachedPartDetails,
+	getPartBranches
+} from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
+import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
 /**
@@ -63,11 +74,15 @@ export function registerEndpoints(router) {
 	router.get('/api/ping', cors(), async (req, res) => {
 		const is_local_ip = is_local_ip_from_req(req)
 		let hosturl_in_local_ip
-		if (is_local_ip || await auth_request(req, res)) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
+		let ver
+		if (is_local_ip || await auth_request(req, res)) {
+			try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
+			ver = currentGitCommit
+		}
 		return res.status(200).json({
 			message: 'pong',
 			client_name: 'fount',
-			ver: currentGitCommit,
+			ver,
 			uuid: config.uuid,
 			is_local_ip,
 			hosturl_in_local_ip,
@@ -75,10 +90,12 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/pow/challenge', async (req, res) => {
+		const { pow } = await import('../../scripts/pow.mjs')
 		res.json(await pow.createChallenge())
 	})
 
 	router.post('/api/pow/redeem', async (req, res) => {
+		const { pow } = await import('../../scripts/pow.mjs')
 		const { token, solutions } = req.body
 		if (!token || !solutions) return res.status(400).json({ success: false })
 		res.json(await pow.redeemChallenge({ token, solutions }))
@@ -111,6 +128,7 @@ export function registerEndpoints(router) {
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		if (!is_local_ip_from_req(req)) {
+			const { pow } = await import('../../scripts/pow.mjs')
 			const { powToken } = req.body
 			const { success } = powToken && await pow.validateToken(powToken)
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
@@ -119,8 +137,9 @@ export function registerEndpoints(router) {
 		const result = await login(username, password, deviceid, req)
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
-			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
-			res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
+			const cookieOptions = getSecureCookieOptions(req)
+			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
+			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
 		}
 		res.status(result.status).json(result)
 	})
@@ -135,6 +154,7 @@ export function registerEndpoints(router) {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
 		if (!is_local_ip(ip)) {
+			const { pow } = await import('../../scripts/pow.mjs')
 			const { powToken } = req.body
 			const { success } = powToken && await pow.validateToken(powToken)
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
@@ -203,66 +223,83 @@ export function registerEndpoints(router) {
 		res.status(200).json({ message: 'Authenticated' })
 	})
 
-	router.get('/api/getparttypelist', authenticate, async (req, res) => {
-		res.status(200).json(partTypeList)
-	})
-
 	router.post('/api/runpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { parttype, partname, args } = req.body
-		await processIPCCommand('runpart', { username, parttype, partname, args })
+		const { partpath, args } = req.body
+		await processIPCCommand('runpart', { username, partpath, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
 	router.post('/api/loadpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		if (!parttype || !partname) return res.status(400).json({ success: false, error: 'Part type and name are required.' })
-		await loadPart(username, parttype, partname)
-		res.status(200).json({ success: true, message: `Part ${parttype}/${partname} loaded successfully.` })
+		const { partpath } = req.body
+		const normalized = partpath?.replace?.(/:/g, '/')
+		if (!normalized) return res.status(400).json({ success: false, error: 'Part path is required.' })
+		await loadPart(username, normalized)
+		res.status(200).json({ success: true, message: `Part ${normalized} loaded successfully.` })
 	})
 
-	for (const part of partTypeList) {
-		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			res.status(200).json(getPartList(username, part))
-		})
-		router.get('/api/getloadedlist/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			res.status(200).json(getLoadedPartList(username, part))
-		})
-		router.get('/api/getallcacheddetails/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			const details = await getAllCachedPartDetails(username, part)
-			res.status(200).json(details)
-		})
-		router.get('/api/getdetails/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByReq(req)
-			const { name, nocache } = req.query
-			const details = await getPartDetails(username, part, name, nocache)
-			res.status(200).json(details)
-		})
-		router.get(new RegExp('^/' + part + '/'), authenticate, async (req, res, next) => {
-			const { username } = await getUserByReq(req)
-			const oripath = decodeURIComponent(req.path)
-			const patharr = oripath.split('/')
-			patharr[patharr.length - 1] ||= 'index.html'
-			const partName = patharr[2]
-			const realPath = part + '/' + partName + '/public'
-			const userPath = getUserDictionary(username) + '/' + realPath
-			const publicPath = __dirname + '/src/public/' + realPath
-			let path
-			if (fs.existsSync(userPath)) path = userPath
-			else if (fs.existsSync(publicPath)) path = publicPath
-			else return next()
+	// Generic path handlers
+	// Capture remaining path as request param 0.
+	router.get(/^\/api\/getlist\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		res.status(200).json(getPartList(username, path))
+	})
+	router.get(/^\/api\/getloadedlist\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		res.status(200).json(getLoadedPartList(username, path))
+	})
+	router.get(/^\/api\/getallcacheddetails\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		const details = await getAllCachedPartDetails(username, path)
+		res.status(200).json(details)
+	})
+	router.get(/^\/api\/getdetails\/(.*)/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const path = req.params[0].replace(/:/g, '/')
+		// name param from query is optional override? Or should invalid?
+		// Usually details are for a specific part path.
+		// But previously it was /api/getdetails/SHELLS?name=CHAT
+		// Now it is likely /api/getdetails/shells/chat.
+		const { nocache } = req.query
+		const details = await getPartDetails(username, path, nocache)
+		res.status(200).json(details)
+	})
 
-			watchFrontendChanges(`/${part}/${partName}/`, path)
-			path += '/' + patharr.slice(3).join('/')
-			if (!fs.existsSync(path)) return next()
-			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
-			else return res.status(200).sendFile(path)
-		})
-	}
+	router.get('/api/getpartbranches', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		res.status(200).json(getPartBranches(username, { nocache }))
+	})
+
+	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
+	router.get(/^\/parts\/([^/]+)(.*)$/, authenticate, async (req, res, next) => {
+		const { username } = await getUserByReq(req)
+		const partpath = req.params[0]
+		const filepath = req.params[1].split('?')[0]
+		// Convert partpath colons to slashes for filesystem access
+		const realPath = partpath.replace(/:/g, '/') + '/public'
+		let finalPath
+		for (const directory of [
+			getUserDictionary(username) + '/' + realPath,
+			__dirname + '/src/public/parts/' + realPath,
+		]) {
+			const path = directory + '/' + filepath
+			if (fs.existsSync(path)) {
+				finalPath = path
+				if (fs.statSync(path).isDirectory())
+					if (req.path.endsWith('/')) finalPath += '/index.html'
+					else return res.redirect(301, req.url.replace(req.path, req.path + '/'))
+				watchFrontendChanges(`/parts/${partpath}/`, directory)
+				break
+			}
+		}
+		if (finalPath) return betterSendFile(res, finalPath)
+		return next()
+	})
 
 	router.get('/api/defaultpart/getall', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
@@ -271,34 +308,34 @@ export function registerEndpoints(router) {
 
 	router.post('/api/defaultpart/add', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		setDefaultPart(user, parttype, partname)
+		const { parent, child } = req.body
+		setDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
 	router.post('/api/defaultpart/unset', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype, partname } = req.body
-		unsetDefaultPart(user, parttype, partname)
+		const { parent, child } = req.body
+		unsetDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
-	router.get('/api/defaultpart/getany/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getany\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAnyDefaultPart(user, parttype) || '')
+		const parent = req.params[0]
+		res.status(200).json(getAnyDefaultPart(user, parent) || '')
 	})
 
-	router.get('/api/defaultpart/getallbytype/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getallbytype\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAllDefaultPartsFromLoader(user, parttype))
+		const parent = req.params[0]
+		res.status(200).json(getAllDefaultPartsFromLoader(user, parent))
 	})
 
-	router.get('/api/defaultpart/getanypreferred/:parttype', authenticate, async (req, res) => {
+	router.get(/^\/api\/defaultpart\/getanypreferred\/(.*)/, authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { parttype } = req.params
-		res.status(200).json(getAnyPreferredDefaultPart(user, parttype) || '')
+		const parent = req.params[0]
+		res.status(200).json(getAnyPreferredDefaultPart(user, parent) || '')
 	})
 
 	router.get('/api/getusersetting', authenticate, async (req, res) => {

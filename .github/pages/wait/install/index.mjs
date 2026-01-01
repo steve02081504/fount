@@ -22,7 +22,6 @@ const themeSearch = document.getElementById('theme-search')
 const activeUsersCountEl = document.getElementById('active-users-count')
 const starsCountEl = document.getElementById('stars-count')
 
-// --- Helper Functions ---
 /**
  * 从指定 URL 获取 JSON 数据。
  * @param {string} url - 目标 URL。
@@ -41,7 +40,6 @@ const fetchJson = async (url, fallback = null) => {
 	}
 }
 
-// --- Initial Data Fetching ---
 const [initialUserData, initialRepoData] = await Promise.all([
 	fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
 	fetchJson('https://api.github.com/repos/steve02081504/fount')
@@ -49,7 +47,6 @@ const [initialUserData, initialRepoData] = await Promise.all([
 const activeUserNum = initialUserData?.hits?.total ?? NaN
 const starNum = initialRepoData?.stargazers_count ?? NaN
 
-// --- Hero Intro Animation ---
 /**
  * 播放英雄动画。
  */
@@ -97,7 +94,6 @@ async function playHeroAnimation() {
 	}
 }
 
-// --- Theme Selection ---
 /**
  * 创建自动主题预览元素。
  * @returns {Promise<HTMLElement>} - 自动主题预览的 DOM 元素。
@@ -127,6 +123,21 @@ async function renderThemePreviews() {
 
 	const allPreviews = []
 
+	// Load custom theme from localStorage if available
+	const customThemeName = localStorage.getItem('custom_theme_name')
+	const customThemeCss = localStorage.getItem('custom_theme_css')
+
+	// Inject custom theme CSS for preview if available
+	if (customThemeName && customThemeCss) {
+		let customStyleTag = document.getElementById('custom-theme-preview-css')
+		if (!customStyleTag) {
+			customStyleTag = document.createElement('style')
+			customStyleTag.id = 'custom-theme-preview-css'
+			document.head.appendChild(customStyleTag)
+		}
+		customStyleTag.textContent = customThemeCss
+	}
+
 	const autoPreview = await createAutoPreview()
 	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
 	if (!theme_now) autoPreview.classList.add('selected-theme')
@@ -145,6 +156,17 @@ async function renderThemePreviews() {
 
 	const renderedPreviews = (await Promise.all(previewPromises)).filter(Boolean)
 	allPreviews.push(...renderedPreviews)
+
+	// Add custom theme preview if available
+	if (customThemeName && customThemeCss) {
+		const customPreview = await renderTemplate('theme_preview', { theme: customThemeName, name: customThemeName })
+		if (customPreview) {
+			customPreview.addEventListener('click', () => handleThemeClick(customPreview, customThemeName))
+			if (theme_now === customThemeName) customPreview.classList.add('selected-theme')
+			allPreviews.push({ element: customPreview, name: customThemeName })
+		}
+	}
+
 	themeList.append(...allPreviews.map(p => p.element))
 
 	makeSearchable({
@@ -193,7 +215,6 @@ function handleThemeClick(previewElement, theme) {
 		document.startViewTransition(applyNewTheme)
 }
 
-// --- Data Showcase Animation ---
 /**
  * 动画计数器。
  * @param {HTMLElement} element - 要动画的 DOM 元素。
@@ -205,6 +226,12 @@ function handleThemeClick(previewElement, theme) {
  */
 function animateCounter(element, start, end, duration, easingPower = 5) {
 	return new Promise(resolve => {
+		// if active from start, just set and resolve
+		if (element.dataset.easterEggActive === 'true') {
+			element.textContent = end.toLocaleString()
+			return resolve()
+		}
+
 		if (start === end) {
 			element.textContent = end.toLocaleString()
 			return resolve()
@@ -216,6 +243,12 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 		 * @returns {void}
 		 */
 		const step = timestamp => {
+			// if activated during animation, set to end and resolve
+			if (element.dataset.easterEggActive === 'true') {
+				element.textContent = end.toLocaleString()
+				return resolve()
+			}
+
 			if (!startTime) startTime = timestamp
 			const progress = Math.min((timestamp - startTime) / duration, 1)
 			const easedProgress = 1 - (1 - progress) ** easingPower
@@ -398,6 +431,7 @@ function updateRotatingSubtitles() {
 }
 
 // --- Language Selector ---
+
 /**
  * 填充语言选择器。
  */
@@ -455,13 +489,14 @@ function populateLanguageSelector() {
 }
 
 // --- fount Service Connection Logic ---
+
 /**
  * 检查 fount 安装程序是否存活。
  * @returns {Promise<boolean>} - 如果安装程序存活则返回 true，否则返回 false。
  */
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch('http://localhost:8930', { cache: 'no-cache' })).ok
+		return (await fetch('http://localhost:8930', { cache: 'no-store' })).ok
 	}
 	catch {
 		return false
@@ -545,7 +580,6 @@ async function handleStandaloneFlow() {
 	}
 }
 
-// --- Main Execution ---
 /**
  * 主函数，初始化翻译并启动流程。
  */
@@ -562,6 +596,84 @@ async function main() {
 	onLanguageChange(updateRotatingSubtitles)
 	populateLanguageSelector()
 	renderThemePreviews()
+
+	// --- Easter Egg ---
+	const shakeStates = new Map()
+	const SHAKE_DECAY_TIME = 2000 // ms before shake starts to decay
+	const MAX_CLICKS_TO_ACTIVATE = 13
+	const MAX_SHAKE_INTENSITY = 5
+
+	/**
+	 * Gradually reduces the shake intensity until it stops.
+	 * @param {HTMLElement} element The element to decay shake for.
+	 * @returns {void}
+	 */
+	function decayShake(element) {
+		const state = shakeStates.get(element)
+		if (!state) return
+
+		state.intensity *= 0.9 // Decay factor
+
+		if (state.intensity < 0.5) { // Stop shaking if intensity is too low
+			state.intensity = 0
+			state.clicks = 0
+			element.classList.remove('shaking')
+			shakeStates.delete(element)
+		}
+		else {
+			element.style.setProperty('--shake-intensity', state.intensity.toString())
+			state.timer = setTimeout(() => decayShake(element), 100)
+		}
+	}
+
+	/**
+	 * Applies a decaying shake effect to an element on click.
+	 * @param {HTMLElement} element The element to make shakable.
+	 * @returns {void}
+	 */
+	function setupClickToShake(element) {
+		if (!element) return
+		element.style.cursor = 'pointer'
+
+		element.addEventListener('click', () => {
+			// If easter egg is fully active, do nothing.
+			if (element.dataset.easterEggActive === 'true') return
+
+			let state = shakeStates.get(element)
+			if (!state) {
+				state = { clicks: 0, intensity: 0, timer: null }
+				shakeStates.set(element, state)
+			}
+
+			clearTimeout(state.timer) // Reset decay timer on new click
+
+			state.clicks++
+			// Increase intensity with a cap.
+			state.intensity = Math.min(state.clicks * 0.5, MAX_SHAKE_INTENSITY)
+
+			// Apply shake
+			if (state.intensity > 0) {
+				element.style.setProperty('--shake-intensity', state.intensity.toString())
+				element.classList.add('shaking')
+			}
+
+			if (state.clicks >= MAX_CLICKS_TO_ACTIVATE) {
+				element.dataset.easterEggActive = 'true'
+				// Easter egg activated, let it shake for a bit then stop.
+				setTimeout(() => {
+					element.classList.remove('shaking')
+					shakeStates.delete(element)
+				}, SHAKE_DECAY_TIME)
+				return
+			}
+
+			// Start decay timer.
+			state.timer = setTimeout(() => decayShake(element), SHAKE_DECAY_TIME)
+		})
+	}
+
+	setupClickToShake(activeUsersCountEl)
+	setupClickToShake(starsCountEl)
 
 	// Set up Intersection Observers for animations
 	const observer = new IntersectionObserver(entries => {

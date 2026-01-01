@@ -1,34 +1,34 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
-# --- i18n functions ---
-# Get system locales
+# --- 国际化函数 ---
+# 获取系统区域设置
 function Get-SystemLocales {
 	$locales = New-Object System.Collections.Generic.List[string]
 	$locales.Add((Get-Culture).Name)
 	if ($env:LANG) { $locales.Add($env:LANG.Split('.')[0].Replace('_', '-')) }
 	if ($env:LANGUAGE) { $locales.Add($env:LANGUAGE.Split('.')[0].Replace('_', '-')) }
 	if ($env:LC_ALL) { $locales.Add($env:LC_ALL.Split('.')[0].Replace('_', '-')) }
-	$locales.Add('en-UK') # Fallback
+	$locales.Add('en-UK') # 备用
 	return $locales | Select-Object -Unique
 }
 
-# Get available locales from src/locales/list.csv
+# 从 src/public/locales/list.csv 获取可用区域设置
 function Get-AvailableLocales {
-	$localeListFile = Join-Path $FOUNT_DIR 'src/locales/list.csv'
+	$localeListFile = Join-Path $FOUNT_DIR 'src/public/locales/list.csv'
 	if (Test-Path $localeListFile) {
 		try {
 			return Import-Csv $localeListFile | Select-Object -ExpandProperty lang
 		}
 		catch {
-			return @('en-UK') # Fallback
+			return @('en-UK') # 备用
 		}
 	}
- else {
-		return @('en-UK') # Fallback
+	else {
+		return @('en-UK') # 备用
 	}
 }
 
-# Find the best locale to use
+# 寻找最合适的区域设置
 function Get-BestLocale {
 	param(
 		[string[]]$preferredLocales,
@@ -50,20 +50,20 @@ function Get-BestLocale {
 		}
 	}
 
-	return 'en-UK' # Default
+	return 'en-UK' # 默认
 }
 
-# Load localization data
+# 加载本地化数据
 function Import-LocaleData {
 	if (-not $env:FOUNT_LOCALE) {
 		$systemLocales = Get-SystemLocales
 		$availableLocales = Get-AvailableLocales
 		$env:FOUNT_LOCALE = Get-BestLocale -preferredLocales $systemLocales -availableLocales $availableLocales
 	}
-	$localeFile = Join-Path $FOUNT_DIR "src/locales/$($env:FOUNT_LOCALE).json"
+	$localeFile = Join-Path $FOUNT_DIR "src/public/locales/$($env:FOUNT_LOCALE).json"
 	if (-not (Test-Path $localeFile)) {
 		$env:FOUNT_LOCALE = 'en-UK'
-		$localeFile = Join-Path $FOUNT_DIR "src/locales/en-UK.json"
+		$localeFile = Join-Path $FOUNT_DIR "src/public/locales/en-UK.json"
 	}
 
 	try {
@@ -71,7 +71,7 @@ function Import-LocaleData {
 	} catch { $null }
 }
 
-# Get a translated string
+# 获取翻译后的字符串
 $Script:FountLocaleData = $null
 function Get-I18n {
 	param(
@@ -96,13 +96,13 @@ function Get-I18n {
 	}
 
 	if ($null -eq $translation) {
-		$translation = $key # Fallback to the key itself
+		$translation = $key # 降级为键本身
 	}
 
-	# Simple interpolation
+	# 简单插值
 	foreach ($paramName in $params.Keys) {
 		$paramValue = $params[$paramName]
-		$translation = $translation.Replace("\${$paramName}", $paramValue)
+		$translation = $translation.Replace("`${$paramName}", $paramValue)
 	}
 
 	return $translation
@@ -115,11 +115,27 @@ if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
 }
 
+Start-Job -ScriptBlock {
+	param($FOUNT_DIR)
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+		# 随手之劳之经验医学之clash的tun没开
+		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
+			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+		}
+	}
+
+	if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
+		Set-Location $FOUNT_DIR
+		compact.exe /c /s /q
+	}
+} -ArgumentList $FOUNT_DIR | Out-Null
+
 # Docker 检测
 $IN_DOCKER = $false
 
 # fount 路径设置
-if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
+if (!(Get-Command fount.ps1 -ErrorAction SilentlyContinue)) {
 	$path = $env:PATH -split ';'
 	if ($path -notcontains "$FOUNT_DIR\path") {
 		$path += "$FOUNT_DIR\path"
@@ -244,9 +260,9 @@ function New-FountShortcut {
 	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
 	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
+		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # 在现有参数前添加 -p fount
 	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
+	$shortcutIconLocation = "$FOUNT_DIR\src\public\pages\favicon.ico"
 
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
 	Remove-Item -Force "$desktopPath\fount.lnk" -ErrorAction Ignore
@@ -279,7 +295,7 @@ function Register-FountProtocol {
 		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
 	}
 	catch {
-		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
+		Write-Warning (Get-I18n -key 'protocol.registerFailed' -params @{message = $_.Exception.Message})
 	}
 }
 
@@ -297,7 +313,7 @@ function Register-FountTerminalProfile {
 				name              = "fount"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
-				icon              = "$FOUNT_DIR\src\pages\favicon.ico"
+				icon              = "$FOUNT_DIR\src\public\pages\favicon.ico"
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress
@@ -316,6 +332,7 @@ function deno_upgrade() {
 		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
 		exit 1
 	}
+
 	$deno_update_channel = "stable"
 	if ($deno_ver.Contains("+")) {
 		$deno_update_channel = "canary"
@@ -323,6 +340,21 @@ function deno_upgrade() {
 	elseif ($deno_ver.Contains("-rc")) {
 		$deno_update_channel = "rc"
 	}
+
+	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+	if (Test-Path $upgradedFlag) {
+		Start-Job -ScriptBlock { # 因为需要兼容 windows powershell，所以不能像是sh中一样定义和复用base_deno_update
+			param($deno_update_channel)
+			. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
+			if ($LastExitCode) {
+				if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
+					deno upgrade -q
+				}
+			}
+		} -ArgumentList $deno_update_channel | Out-Null
+		return
+	}
+
 	. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
 	if ($LastExitCode) {
 		if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
@@ -331,6 +363,10 @@ function deno_upgrade() {
 	}
 	if ($LastExitCode) {
 		Write-Warning (Get-I18n -key 'deno.upgradeFailed')
+	}
+	else {
+		New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+		Set-Content $upgradedFlag "1"
 	}
 }
 
@@ -344,14 +380,14 @@ function Update-FountAndDeno {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'nop') {
+if ($args[0] -eq 'nop') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
+elseif ($args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
-		Start-Process 'https://steve02081504.github.io/fount/wait'
+		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
 		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
 		exit $LastExitCode
@@ -393,7 +429,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		exit 1
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+elseif ($args[0] -eq 'background') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$runargs = $args[1..$args.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
@@ -417,11 +453,16 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	}
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
+elseif ($args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
+	if ($protocolUrl -eq 'fount://nop/') {
+		$runargs = $args[2..$args.Count]
+		fount.ps1 @runargs
+		exit $LastExitCode
+	}
 	if (-not $protocolUrl) {
-		Write-Error "Error: No URL provided for protocolhandle."
+		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1
 	}
 	# 编码 URL 参数，防止特殊字符问题，确保传入的 URL 能正确作为查询参数
@@ -465,6 +506,9 @@ Start-Job -ScriptBlock {
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
 			if (!(Get-Module $_ -ListAvailable)) {
+				$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+				if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+				$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 				$auto_installed_pwsh_modules += $_
 				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
@@ -690,7 +734,7 @@ if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
 }
 if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
 	if ($IN_DOCKER) {
-		Write-Host "Skipping deno upgrade in Docker environment"
+		Write-Host (Get-I18n -key 'update.skippingDenoUpgradeDocker')
 	}
 	else {
 		deno_upgrade
@@ -728,19 +772,36 @@ function run {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 	if (isRoot) {
-		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
-		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
+		Write-Warning (Get-I18n -key 'install.rootWarning1')
+		Write-Warning (Get-I18n -key 'install.rootWarning2')
 	}
+	$v8Flags = "--expose-gc"
+	$heapSizeMB = 100 # Default to 100MB
+	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
+	if (Test-Path $configPath) {
+		try {
+			$fountConfig = Get-Content $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+			$heapSizeBytes = $fountConfig.prelaunch.heapSize
+			$calculatedMB = [math]::Round($heapSizeBytes / 1024 / 1024)
+			if ($calculatedMB -gt 0) {
+				$heapSizeMB = $calculatedMB
+			}
+		}
+		catch {
+			# Could not read or parse, will use the default 100MB.
+		}
+	}
+	$v8Flags += ",--initial-heap-size=${heapSizeMB}"
 	if ($Script:is_debug) {
-		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 	else {
-		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
 
 # 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
 			git -C "$FOUNT_DIR" config core.autocrlf false
@@ -810,7 +871,7 @@ public class ExplorerRefresher {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
+if ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		Write-Host (Get-I18n -key 'clean.removingCaches')
@@ -833,7 +894,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	}
 	Set-FountFileAttributes
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
+elseif ($args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
@@ -842,10 +903,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $exepath
 	exit $LastExitCode
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
+elseif ($args[0] -eq 'init') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
+elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
 		$runargs = $runargs[1..$runargs.Count]
@@ -896,7 +957,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		run
 	}
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
+elseif ($args[0] -eq 'remove') {
 	run shutdown
 	deno clean
 	Write-Host (Get-I18n -key 'remove.removingFount')
@@ -936,7 +997,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Uninstall fount-pwsh
 	Write-Host (Get-I18n -key 'remove.uninstallingFountPwsh')
-	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {
+	try {
+		Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
+	}
+	catch {
 		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
 	}
 
@@ -988,10 +1052,13 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Remove Installed pwsh modules
 	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
+	$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+	if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+	$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {
-				Uninstall-Module -Name $_ -Scope CurrentUser -AllVersions -Force -ErrorAction Stop
+				Uninstall-Module -Name $_ -AllVersions -Force -ErrorAction Stop
 				Write-Host (Get-I18n -key 'remove.moduleRemoved' -params @{module = $_ })
 			}
 		}

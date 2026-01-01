@@ -43,7 +43,7 @@ export async function createTray() {
 	try {
 		if (systray) systray.kill()
 		systray = null
-		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/pages/favicon.ico' : '/src/pages/favicon.png')
+		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/public/pages/favicon.ico' : '/src/public/pages/favicon.png')
 		const base64Icon = await getBase64Icon(iconPath)
 
 		systray = new SysTray({

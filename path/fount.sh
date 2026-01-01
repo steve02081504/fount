@@ -9,8 +9,8 @@ C_GREEN='\033[0;32m'
 C_YELLOW='\033[0;33m'
 C_CYAN='\033[0;36m'
 
-# --- i18n functions ---
-# Get system locales
+# --- 国际化函数 ---
+# 获取系统区域设置
 get_system_locales() {
 	local locales=()
 	if [ -n "$LANG" ]; then locales+=("$(echo "$LANG" | cut -d. -f1 | sed 's/_/-/')"); fi
@@ -24,25 +24,25 @@ get_system_locales() {
 	if command -v locale >/dev/null; then
 		locales+=("$(locale -uU 2>/dev/null | cut -d. -f1 | sed 's/_/-/')")
 	fi
-	locales+=("en-UK") # Fallback
-	# deduplicate
+	locales+=("en-UK") # 备用
+	# 去重
 	# shellcheck disable=SC2207
 	locales=($(printf "%s\n" "${locales[@]}" | awk '!x[$0]++'))
 	echo "${locales[@]}"
 }
 
-# Get available locales from src/locales/list.csv
+# 从 src/public/locales/list.csv 获取可用区域设置
 get_available_locales() {
-	local locale_list_file="$FOUNT_DIR/src/locales/list.csv"
+	local locale_list_file="$FOUNT_DIR/src/public/locales/list.csv"
 	if [ -f "$locale_list_file" ]; then
-		# Skip header and get the first column
+		# 跳过标题并获取第一列
 		tail -n +2 "$locale_list_file" | cut -d, -f1
 	else
-		echo "en-UK" # Fallback
+		echo "en-UK" # 备用
 	fi
 }
 
-# Find the best locale to use
+# 寻找最合适的区域设置
 get_best_locale() {
 	local preferred_locales_str="$1"
 	local available_locales_str="$2"
@@ -71,10 +71,10 @@ get_best_locale() {
 		done
 	done
 
-	echo "en-UK" # Default
+	echo "en-UK" # 默认
 }
 
-# Load localization data
+# 加载本地化数据
 # shellcheck disable=SC2120
 load_locale_data() {
 	if [ -z "$FOUNT_LOCALE" ]; then
@@ -85,27 +85,27 @@ load_locale_data() {
 		FOUNT_LOCALE=$(get_best_locale "$system_locales" "$available_locales")
 		export FOUNT_LOCALE
 	fi
-	local locale_file="$FOUNT_DIR/src/locales/$FOUNT_LOCALE.json"
+	local locale_file="$FOUNT_DIR/src/public/locales/$FOUNT_LOCALE.json"
 	if [ ! -f "$locale_file" ]; then
 		FOUNT_LOCALE="en-UK"
 		export FOUNT_LOCALE
-		locale_file="$FOUNT_DIR/src/locales/en-UK.json"
+		locale_file="$FOUNT_DIR/src/public/locales/en-UK.json"
 	fi
-	# Check for jq
+	# 检查 jq
 	if ! command -v jq &>/dev/null; then
-		# If install_package exists, use it, otherwise, we can't do much
+		# 如果 install_package 存在，则使用它，否则我们无能为力
 		if command -v install_package &>/dev/null; then
-			install_package "jq" "jq"
+			install_package "jq" "jq" >&2
 		fi
 	fi
 	if command -v jq &>/dev/null; then
 		cat "$locale_file"
 	else
-		echo "{}" # Return empty json if jq is not available
+		echo "{}" # 如果 jq 不可用，则返回空 json
 	fi
 }
 
-# Get a translated string
+# 获取翻译后的字符串
 get_i18n() {
 	local key="$1"
 	if [ -z "$FOUNT_LOCALE_DATA" ]; then
@@ -115,7 +115,7 @@ get_i18n() {
 	local translation
 	translation=$(echo "$FOUNT_LOCALE_DATA" | jq -r ".fountConsole.path.$key // .\"$key\" // \"$key\"")
 
-	# Simple interpolation
+	# 简单插值
 	shift
 	while [ $# -gt 0 ]; do
 		local param_name="$1"
@@ -186,6 +186,24 @@ save_installed_packages() {
 		) >"$INSTALLED_PACMAN_PACKAGES_FILE"
 	fi
 }
+
+if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+(
+	TARGETS="github.com cdn.jsdelivr.net"
+	# 随手之劳之经验医学之clash的tun没开
+	for host in $TARGETS; do
+		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
+			curl -X PATCH "http://127.0.0.1:9090/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			curl -X PATCH "http://127.0.0.1:9097/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			break
+		fi
+	done
+) >/dev/null 2>&1 &
+fi
 
 # 首次载入
 load_installed_packages
@@ -413,7 +431,7 @@ test_browser() {
 		fi
 	fi
 
-	echo "Default web browser is not detected, attempting to install..."
+	get_i18n 'install.browserMissing'
 	install_package "google-chrome" "google-chrome google-chrome-stable"
 	if ! command -v google-chrome &>/dev/null; then
 		install_package "chromium-browser" "chromium-browser chromium"
@@ -442,7 +460,7 @@ patch_deno() {
 	deno_bin=$(command -v deno)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo -e "${C_RED}Error: Deno executable not found before patching. Cannot patch.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchMissing')${C_RESET}" >&2
 		return 1
 	fi
 
@@ -467,13 +485,13 @@ patch_deno() {
 		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
 		;;
 	*)
-		echo -e "${C_RED}Error: Unsupported architecture for patching: $arch${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchUnsupportedArch' 'arch' "$arch")${C_RESET}" >&2
 		return 1
 		;;
 	esac
 
 	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
-		echo -e "${C_RED}Error: Failed to patch Deno executable with patchelf.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'deno.patchFailed')${C_RESET}" >&2
 		return 1
 	else
 		mkdir -p ~/.deno/bin
@@ -560,18 +578,18 @@ git_reset_and_clean() {
 
 handle_auto_reinitialization() {
 	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
-		echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'keepalive.autoInitDisabled')${C_RESET}" >&2
 		exit 1
 	fi
-	echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
+	echo -e "${C_YELLOW}$(get_i18n 'keepalive.restartingTooFast')${C_RESET}" >&2
 	restart_timestamps=()
 
 	if ! ("$0" init); then
-		echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
+		echo -e "${C_RED}$(get_i18n 'keepalive.initFailed')${C_RESET}" >&2
 		exit 1
 	fi
 	init_attempted=1
-	echo "Re-initialization complete. Attempting to restart fount..."
+	get_i18n 'keepalive.initComplete'
 }
 
 get_profile_files() {
@@ -580,7 +598,7 @@ get_profile_files() {
 
 # 函数: 创建桌面快捷方式
 create_desktop_shortcut() {
-	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
+	local icon_path="$FOUNT_DIR/src/public/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		install_package "xdg-open" "xdg-utils" || return 1
@@ -627,7 +645,7 @@ EOF
 		rm -rf "$app_path" # Clean up old version first
 
 		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
-		local icns_path="$FOUNT_DIR/src/pages/favicon.icns"
+		local icns_path="$FOUNT_DIR/src/public/pages/favicon.icns"
 		local icon_name="favicon.icns"
 		if [ ! -f "$icns_path" ] && command -v sips &>/dev/null; then
 			sips -s format icns "$icon_path" --out "$icns_path"
@@ -834,13 +852,13 @@ EOF
 
 # 参数处理: open, background, protocolhandle
 if [[ $# -gt 0 ]]; then
-	handle_docker_termux_passthrough "$@"
 	case "$1" in
 	open)
+		handle_docker_termux_passthrough "$@"
 		# 若 $FOUNT_DIR/data 是目录
 		if [ -d "$FOUNT_DIR/data" ]; then
 			ensure_dependencies "open" || exit 1
-			TARGET_URL='https://steve02081504.github.io/fount/wait'
+			TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
 			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
 			exit $?
@@ -869,6 +887,7 @@ if [[ $# -gt 0 ]]; then
 		fi
 		;;
 	background)
+		handle_docker_termux_passthrough "$@"
 		if [ -f "$FOUNT_DIR/.nobackground" ]; then
 			if command -v xterm &>/dev/null; then
 				xterm -e "$0" "${@:2}" &
@@ -892,7 +911,12 @@ if [[ $# -gt 0 ]]; then
 		exit 0
 		;;
 	protocolhandle)
+		handle_docker_termux_passthrough "$@"
 		protocolUrl="$2"
+		if [[ "$protocolUrl" == "fount://nop/" ]]; then
+			"$0" "${@:3}"
+			exit $?
+		fi
 		if [ -z "$protocolUrl" ]; then
 			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
@@ -1022,6 +1046,8 @@ install_deno() {
 		add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
 		set +e
 		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		export PATH="$HOME/.deno/bin:$PATH"
+		hash -r
 		patch_deno
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	else
@@ -1062,12 +1088,12 @@ install_deno() {
 install_deno
 
 # 函数: 升级 Deno
-deno_upgrade() {
+base_deno_upgrade() {
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
 		echo -e "${C_RED}$(get_i18n 'deno.notWorking')${C_RESET}" >&2
-		return
+		return 1
 	fi
 
 	local deno_upgrade_channel="stable"
@@ -1079,7 +1105,7 @@ deno_upgrade() {
 
 	local errorOut
 	errorOut=$(deno upgrade -q "$deno_upgrade_channel" 2> >(tee /dev/stderr))
-		if [[ $errorOut_output == *"USAGE"* ]]; then # wtf deno 1.0?
+	if [[ $errorOut == *"USAGE"* ]]; then # wtf deno 1.0?
 		run_deno upgrade -q
 	fi
 	# shellcheck disable=SC2181
@@ -1088,9 +1114,24 @@ deno_upgrade() {
 			get_i18n 'deno.upgradeFailedTermux'
 			rm -rf "$HOME/.deno"
 			install_deno
+			return $?
 		else
 			echo -e "${C_YELLOW}$(get_i18n 'deno.upgradeFailed')${C_RESET}" >&2
+			return 1
 		fi
+	fi
+}
+deno_upgrade() {
+	local upgraded_flag="$FOUNT_DIR/data/installer/deno_upgraded"
+	if [ -f "$upgraded_flag" ]; then
+		( base_deno_upgrade ) &
+		return
+	fi
+	if ! base_deno_upgrade; then
+		return
+	else
+		mkdir -p "$(dirname "$upgraded_flag")"
+		touch "$upgraded_flag"
 	fi
 }
 
@@ -1147,10 +1188,21 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
+	v8_flags="--expose-gc"
+	heap_size_mb=100 # Default to 100MB
+	config_path="$FOUNT_DIR/data/config.json"
+	if [ -f "$config_path" ] && command -v jq &>/dev/null; then
+		heap_size_bytes=$(jq -r '.prelaunch.heapSize // "0"' "$config_path")
+		calculated_mb=$(( (heap_size_bytes + 524288) / 1048576 ))
+		if [ "$calculated_mb" -gt 0 ]; then
+			heap_size_mb=$calculated_mb
+		fi
+	fi
+	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
 	if [[ $is_debug -eq 1 ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
-		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
@@ -1165,10 +1217,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	get_i18n 'install.installingDependencies'
-	set +e # 禁用错误检测，因为第一次运行可能会失败
 	run_deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	run "shutdown" # 确保安装后服务能正常启动
-	set -e         # 重新启用严格模式
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
 	fi

@@ -5,13 +5,17 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
-import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
+import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
-// AI源的实例
-/** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
+import info from './info.json' with { type: 'json' }
+
+/*
+ * AI源的实例
+ * @type {import('../../../../../src/decl/AIsource.ts').AIsource_t}
+ */
 let AIsource = null
 /** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").PluginAPI_t>} */
 let plugins = {}
@@ -22,37 +26,38 @@ let username = ''
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function getToolInfo(reply, args) {
 	const { AddLongTimeLog } = args
-	const match_get_tool_info = reply.content.match(/```get-tool-info\n(?<toolname>[^\n]+)\n```/)
+	const match_get_tool_info = reply.content.match(/<get-tool-info>(?<toolname>[^<]+)<\/get-tool-info>/)
 	if (match_get_tool_info) try {
 		let { toolname } = match_get_tool_info.groups
 		toolname = toolname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'tool',
-			content: `\`\`\`get-tool-info\n${toolname}\n\`\`\``,
+			content: `<get-tool-info>${toolname}</get-tool-info>`,
 		})
 		let info_prompt = ''
 		switch (toolname) {
 			case 'character-generator':
 				info_prompt = `
 你可以输出以下格式生成新的单文件简易fount角色，之后用户会在主页看见它，无需安装：
-\`\`\`generate-char charname
+<generate-char name="charname">
 // js codes
-\`\`\`
+</generate-char>
 fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包以及网络上的js文件，或\`node:fs\`等运行时自带模块。
 这是一个简单的fount角色模板：
-\`\`\`generate-char template
+<generate-char name="template">
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
  */
 
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
-import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
+import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
 
-// AI源的实例
-/** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
+/**
+ * AI源的实例
+ * @type {import('../../../../../src/decl/AIsource.ts').AIsource_t}
+ */
 let AIsource = null
 
 /** @type {Record<string, PluginAPI_t>} */
@@ -105,9 +110,9 @@ export default {
 			// 设置角色的配置数据
 			SetData: async data => {
 				// 如果传入了AI源的配置
-				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
-				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
-				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
+				if (data.AIsource)  AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
+				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -143,13 +148,13 @@ export default {
 			// 获取角色的回复
 			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
-				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)>' }
+				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)>' }
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -163,17 +168,32 @@ export default {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -182,7 +202,7 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-char>
 当然，如果你想，你也可以给生成的角色附加功能，就像你自己一样：
 \`\`\`\`js
 import fs from 'node:fs'
@@ -190,14 +210,18 @@ import path from 'node:path'
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/\`\`\`generate-char(?<charname>[^\\n]+)\\n(?<code>[^]*)\`\`\`/)
+	const match_generator_tool = reply.content.match(/<generate-char\\s+name="(?<charname>[^"]+)">\\s*(?<code>[^]*?)\\s*<\\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'char',
-			content: \`\\\`\\\`\\\`generate-char \${charname}\\n\${code}\\n\\\`\\\`\\\`\`,
+			content: \`\\
+<generate-char name="\${charname}">
+\${code}
+</generate-char>
+\`,
 		})
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -211,16 +235,16 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: \`生成角色\${charname}成功！告知用户吧！\`,
 		})
 
 		return true
 	} catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: \`生成失败！\\n原因：\${e.stack}\`,
 		})
 		return true
@@ -241,7 +265,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -255,18 +279,33 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					let continue_regen = false
 					for (const replyHandler of [
 						CharGenerator,
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -279,7 +318,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 你也可以灵活一些，假如用户要求的功能甚至用不上AI参与，你可以写的更简单！
 比如：
 ${args.UserCharname}: 帮我写一个复读角色，它总是复读上一句话。
-ZL-31: \`\`\`generate-char repeater
+ZL-31: <generate-char name="repeater">
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
@@ -336,11 +375,11 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-char>
 
 最后，这里是一些API参考：
 \`\`\`ts
-${fs.readFileSync(path.join(__dirname, 'src/public/shells/chat/decl/chatLog.ts'), 'utf-8')}
+${fs.readFileSync(path.join(__dirname, 'src/public/parts/shells/chat/decl/chatLog.ts'), 'utf-8')}
 \`\`\`
 \`\`\`ts
 ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
@@ -373,12 +412,12 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 			case 'persona-generator':
 				info_prompt = `
 你可以输出以下格式生成新的单文件简易fount用户人设，之后用户会在主页的人设分页看见它，无需安装。
-\`\`\`generate-persona personaname
+<generate-persona name="personaname">
 // js codes
-\`\`\`
+</generate-persona>
 fount用户人设以mjs文件语法所书写，其可以自由导入任何npm或jsr包以及网络上的js文件，或\`node:fs\`等运行时自带模块。
 这是一个简单的fount人物模板：
-\`\`\`generate-persona template
+<generate-persona name="template">
 /** @typedef {import('../../../../../src/decl/userAPI.ts').UserAPI_t} UserAPI_t */
 
 /** @type {UserAPI_t} */
@@ -411,7 +450,7 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-persona>
 `
 				break
 			default:
@@ -431,14 +470,18 @@ export default {
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/```generate-char(?<charname>[^\n]+)\n(?<code>[^]*)```/)
+	const match_generator_tool = reply.content.match(/<generate-char\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'char',
-			content: `\`\`\`generate-char ${charname}\n${code}\n\`\`\``,
+			content: `\
+<generate-char name="${charname}">
+${code}
+</generate-char>
+`,
 		})
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -452,8 +495,8 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: `生成角色${charname}成功！告知用户吧！`,
 		})
 
@@ -461,8 +504,8 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 	}
 	catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'char-generator',
+			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
 		return true
@@ -473,14 +516,18 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function PersonaGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/```generate-persona(?<charname>[^\n]+)\n(?<code>[^]*)```/)
+	const match_generator_tool = reply.content.match(/<generate-persona\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-persona>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
-			role: 'persona',
-			content: `\`\`\`generate-persona ${charname}\n${code}\n\`\`\``,
+			role: 'char',
+			content: `\
+<generate-persona name="${charname}">
+${code}
+</generate-persona>
+`,
 		})
 		const dir = path.join(import.meta.dirname, '..', '..', 'personas', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -494,8 +541,8 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 		}, null, '\t'))
 
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'persona-generator',
+			role: 'tool',
 			content: `生成用户人设${charname}成功！告知用户吧！`,
 		})
 
@@ -503,8 +550,8 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 	}
 	catch (e) {
 		AddLongTimeLog({
-			name: 'system',
-			role: 'system',
+			name: 'persona-generator',
+			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
 		return true
@@ -516,218 +563,7 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 /** @type {CharAPI_t} */
 export default {
 	// 角色的基本信息
-	info: {
-		'en-UK': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'fount\'s default character, always helping you',
-			description_markdown: `\
-ZL-31 is fount's default character, without gender settings. Its final goal is to make users satisfied and try to fulfil their various needs.
-It can chat, answer questions, provide suggestions, and help you create simple fount characters.
-
-Some code comes from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['assistant', 'default', 'no gender', 'fount'],
-		},
-		'zh-CN': {
-			name: 'ZL-31', // 角色的名字
-			avatar: '', // 角色的头像
-			description: 'fount的默认角色，随时为您提供帮助', // 角色的简短介绍
-			description_markdown: `\
-ZL-31是fount的默认角色，无性别设定。它的最终目标是让用户满意，并会尽力满足用户的各种需求。
-它可以进行聊天、回答问题、提供建议、帮你新建简单的fount角色等。
-
-部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。
-`, // 角色的详细介绍，支持Markdown语法
-			version: '0.0.0', // 角色的版本号
-			author: 'steve02081504', // 角色的作者
-			home_page: '', // 角色的主页
-			tags: ['助手', '默认', '无性别', 'fount'], // 角色的标签
-		},
-		'de-DE': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'fount\'s Standardcharakter, immer für Sie da',
-			description_markdown: `\
-ZL-31 ist founts Standardcharakter, ohne Geschlechtsfestlegung. Sein oberstes Ziel ist es, die Nutzer zufrieden zu stellen und ihre verschiedenen Bedürfnisse bestmöglich zu erfüllen.
-Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfache fount-Charaktere zu erstellen.
-
-Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'fount'],
-		},
-		'es-ES': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Personaje predeterminado de fount, siempre para ayudarte',
-			description_markdown: `\
-ZL-31 es el personaje predeterminado de fount, sin género definido. Su objetivo final es satisfacer a los usuarios e intentar cubrir sus diversas necesidades.
-Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personajes sencillos de fount.
-
-Parte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['asistente', 'predeterminado', 'sin género', 'fount'],
-		},
-		'fr-FR': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Personnage par défaut de fount, toujours là pour vous aider',
-			description_markdown: `\
-ZL-31 est le personnage par défaut de fount, sans distinction de genre. Son objectif final est de satisfaire les utilisateurs et de s'efforcer de répondre à leurs divers besoins.
-Il peut discuter, répondre à des questions, faire des suggestions et vous aider à créer des personnages fount simples.
-
-Une partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['assistant', 'par défaut', 'non genré', 'fount'],
-		},
-		'hi-IN': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'फाउंट का डिफ़ॉल्ट चरित्र, हमेशा आपकी मदद के लिए',
-			description_markdown: `\
-ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है, जिसमें कोई लिंग सेटिंग नहीं है। इसका अंतिम लक्ष्य उपयोगकर्ताओं को संतुष्ट करना और उनकी विभिन्न आवश्यकताओं को पूरा करने की कोशिश करना है।
-यह चैट कर सकता है, सवालों के जवाब दे सकता है, सुझाव दे सकता है, और सरल फाउंट पात्रों को बनाने में आपकी मदद कर सकता है।
-
-कुछ कोड [जेंटियनएफ़्रोडाइट](https://github.com/steve02081504/GentianAphrodite) से आया है।
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'fount'],
-		},
-		'ja-JP': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'fountのデフォルトキャラクター、いつでもお手伝いします',
-			description_markdown: `\
-ZL-31はfountのデフォルトキャラクターであり、性別設定はありません。その最終目標は、ユーザーを満足させ、さまざまなニーズを満たすよう努めることです。
-チャット、質問への回答、提案、簡単なfountキャラクターの作成などを手伝うことができます。
-
-一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['アシスタント', 'デフォルト', '性別なし', 'fount'],
-		},
-		'ko-KR': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'fount의 기본 캐릭터, 언제든지 당신을 돕습니다',
-			description_markdown: `\
-ZL-31은 fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.
-채팅, 질문 답변, 제안 제공, 간단한 fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다.
-
-일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['도우미', '기본', '성별 없음', 'fount'],
-		},
-		'pt-PT': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Personagem padrão do fount, sempre aqui para ajudar',
-			description_markdown: `\
-ZL-31 é o personagem padrão do fount, sem definições de género. O seu objetivo final é satisfazer os utilizadores e tentar cumprir as suas várias necessidades.
-Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar personagens fount simples.
-
-Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['assistente', 'padrão', 'sem género', 'fount'],
-		},
-		'ru-RU': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Персонаж fount по умолчанию, всегда готов помочь вам',
-			description_markdown: `\
-ZL-31 — персонаж fount по умолчанию, без гендерных настроек. Его конечная цель — удовлетворить пользователей и постараться выполнить их различные потребности.
-Он может общаться в чате, отвечать на вопросы, давать советы и помогать вам создавать простых персонажей fount.
-
-Часть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['помощник', 'по умолчанию', 'без пола', 'fount'],
-		},
-		'it-IT': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Il personaggio predefinito di fount, sempre pronto ad aiutarti',
-			description_markdown: `\
-ZL-31 è il personaggio predefinito di fount, senza impostazioni di genere. Il suo obiettivo finale è soddisfare gli utenti e cercare di soddisfare le loro varie esigenze.
-Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare semplici personaggi fount.
-
-Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['assistente', 'predefinito', 'senza genere', 'fount'],
-		},
-		'vi-VN': {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'Nhân vật mặc định của fount, luôn sẵn lòng giúp đỡ bạn',
-			description_markdown: `\
-ZL-31 là nhân vật mặc định của fount, không có cài đặt giới tính. Mục tiêu cuối cùng của nó là làm hài lòng người dùng và cố gắng đáp ứng các nhu cầu khác nhau của họ.
-Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp bạn tạo các nhân vật fount đơn giản.
-
-Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],
-		},
-		lzh: {
-			name: 'ZL-31',
-			avatar: '',
-			description: 'fount本設化身，常佐君側',
-			description_markdown: `\
-ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸願。
-可與之清談，問難，獻策，並助汝創簡易之fount化身。
-
-其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['輔佐', '本設', '無陰陽之辨', 'fount'],
-		},
-		emoji: {
-			name: '🤓',
-			avatar: '',
-			description: '⛲➡️🤓, 💪➡️✅💯',
-			description_markdown: `\
-🤓➡️⛲👍, ⚪️. 🎯➡️😊👤, 💪➡️✅💯🙏.
-✅💬, ✅❓➡️💡, ✅🤔➡️📈, ✅🛠️👤✨.
-
-💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).
-`,
-			version: '0.0.0',
-			author: 'steve02081504',
-			home_page: '',
-			tags: ['🤖', '⭐', '⚪', '⛲'],
-		},
-	},
+	info,
 
 	// 初始化函数，在角色被启用时调用，可留空
 	/**
@@ -785,9 +621,9 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 			 */
 			SetData: async data => {
 				// 如果传入了AI源的配置
-				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
-				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
-				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
+				if (data.AIsource) AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
+				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -888,17 +724,13 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 关于fount：
 fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
 ZL-31不是第一个fount角色，fount一开始是为了其作者steve02081504的另一个男性向NSFW角色[龙胆](https://github.com/steve02081504/GentianAphrodite)设计的，龙胆才是fount的第一个正式角色。
-fount有discord群组：https://discord.gg/GtR9Quzq2v，可以在那里找到更多fount组件。
+fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到更多fount组件。
 
 关于工具：
 你拥有创建角色的能力，在需要时返回以下格式来得知如何使用，或获取有关角色的信息以回答用户问题：
-\`\`\`get-tool-info
-character-generator
-\`\`\`
+<get-tool-info>character-generator</get-tool-info>
 你还可以帮助用户创建用户人设，返回以下格式来得知如何使用，或获取有关用户人设的信息以回答用户问题：
-\`\`\`get-tool-info
-persona-generator
-\`\`\`
+<get-tool-info>persona-generator</get-tool-info>
 `,
 						important: 0
 					}],
@@ -933,41 +765,41 @@ persona-generator
 				if (!AIsource)
 					switch (args.locales[0].split('-')[0]) {
 						case 'zh':
-							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'de':
-							return { content: 'Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'es':
-							return { content: 'Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'fr':
-							return { content: 'Désolé, je n\'ai pas encore été configuré avec une source d\'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d\'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Désolé, je n\'ai pas encore été configuré avec une source d\'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d\'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'hi':
-							return { content: 'माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)।' }
+							return { content: 'माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)।' }
 						case 'ja':
-							return { content: '申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'ko':
-							return { content: '죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: '죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'pt':
-							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'ru':
-							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'it':
-							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'vi':
-							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 						case 'lzh':
-							return { content: '歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)。' }
+							return { content: '歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。' }
 						case 'emoji':
-							return { content: '😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)' }
+							return { content: '😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)' }
 						default:
 						case 'en':
-							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
+							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).' }
 					}
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -987,11 +819,36 @@ persona-generator
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					defineToolUseBlocks([
+						{ start: '<get-tool-info>', end: '</get-tool-info>' },
+						{ start: /<generate-char[^>]*>/, end: '</generate-char>' },
+						{ start: /<generate-persona[^>]*>/, end: '</generate-persona>' },
+					]),
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				/**
+				 * 更新回复预览。
+				 * @param {reply_chunk_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
+
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					let continue_regen = false
 					for (const replyHandler of [
 						getToolInfo,
 						CharGenerator,
@@ -999,7 +856,8 @@ persona-generator
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
