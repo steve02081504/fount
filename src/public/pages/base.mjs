@@ -131,7 +131,7 @@ onServerEvent('show-toast', ({ type, message, duration }) => {
 
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
-		console.noBreadcrumb.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
+		console.noBreadcrumb.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	} catch (error) { console.error(error) }
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 	// Dispatch host info for browser integration script
