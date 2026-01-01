@@ -1,9 +1,19 @@
 #!pwsh
-#_pragma icon $PSScriptRoot/../../src/pages/favicon.ico
+#_pragma icon $PSScriptRoot/../../src/public/pages/favicon.ico
 #_pragma title "fount"
 
 if (!$env:FOUNT_BRANCH) {
 	$env:FOUNT_BRANCH = "master"
+}
+
+if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+	Start-Job {
+		# 随手之劳之经验医学之clash的tun没开
+		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
+			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
+		}
+	} | Out-Null
 }
 
 #_if PSScript
@@ -183,7 +193,7 @@ try {
 		}
 		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 		if (Get-Command git -ErrorAction Ignore) {
-			git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
+			git clone -c core.autocrlf=false https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
 			if ($LastExitCode) {
 				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
 			}
@@ -221,7 +231,8 @@ try {
 		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
 	}
 
-	Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+	try { Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore }
+	catch { <# ignore #> }
 	#_if PSEXE
 		#_!! if (Test-Path "${PSEXEpath}.old") {
 			#_!! Remove-Item "${PSEXEpath}.old"

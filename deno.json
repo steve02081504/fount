@@ -1,10 +1,28 @@
 {
 	"nodeModulesDir": "auto",
 	"lock": false,
+	"unstable": [
+		"npm-lazy-caching"
+	],
 	"imports": {
 		"npm:express": "npm:express@^5.1.0",
 		"npm:express-fileupload": "npm:express-fileupload@^1.5.0",
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
-		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.0.6"
+		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.1.4",
+		"npm:on-shutdown": "npm:on-shutdown@^0.0.3",
+		"npm:fs-extra": "npm:fs-extra@^11.3.2"
+	},
+	"lint": {
+		"exclude": [
+			"src/public/pages/",
+			".github/pages/",
+			"src/public/parts/shells/*/public/**"
+		],
+		"rules": {
+			"exclude": [
+				"no-unversioned-import",
+				"no-import-prefix"
+			]
+		}
 	}
 }

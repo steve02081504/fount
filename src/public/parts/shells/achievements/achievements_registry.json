@@ -1,0 +1,18 @@
+{
+	"achievements": {
+		"open_achievements_page": {
+			"name": "achievements.achievements.open_achievements_page.name",
+			"description": "achievements.achievements.open_achievements_page.description",
+			"icon": "https://api.iconify.design/material-symbols/trophy.svg",
+			"locked_description": "achievements.achievements.open_achievements_page.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"relock_by_clicking": {
+			"name": "achievements.achievements.relock_by_clicking.name",
+			"description": "achievements.achievements.relock_by_clicking.description",
+			"icon": "https://api.iconify.design/material-symbols/contact-support.svg",
+			"locked_description": "achievements.achievements.relock_by_clicking.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

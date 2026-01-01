@@ -1,4 +1,13 @@
+import { sentry_enabled } from '../server/index.mjs'
+
+/**
+ * 将 Sentry 事件隧道传输到 Sentry 服务器。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<void>}
+ */
 export async function sentrytunnel(req, res) {
+	if (!sentry_enabled) return res.status(418).json({ error: 'Sentry is disabled' })
 	try {
 		const envelopeBytes = req.body
 

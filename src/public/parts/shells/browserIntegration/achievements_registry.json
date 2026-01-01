@@ -1,0 +1,25 @@
+{
+	"achievements": {
+		"install_script": {
+			"name": "browser_integration.achievements.install_script.name",
+			"description": "browser_integration.achievements.install_script.description",
+			"icon": "https://api.iconify.design/line-md/downloading-loop.svg",
+			"locked_description": "browser_integration.achievements.install_script.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"run_js": {
+			"name": "browser_integration.achievements.run_js.name",
+			"description": "browser_integration.achievements.run_js.description",
+			"icon": "https://api.iconify.design/line-md/document-code.svg",
+			"locked_description": "browser_integration.achievements.run_js.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"star_fount": {
+			"name": "browser_integration.achievements.star_fount.name",
+			"description": "browser_integration.achievements.star_fount.description",
+			"icon": "https://api.iconify.design/line-md/github-loop.svg",
+			"locked_description": "browser_integration.achievements.star_fount.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

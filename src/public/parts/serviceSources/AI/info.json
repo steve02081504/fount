@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "AI Sources",
+		"description": "AI Sources Manager"
+	},
+	"zh-CN": {
+		"name": "AI服务源",
+		"description": "AI服务源管理器"
+	},
+	"ar-SA": {
+		"name": "مصادر الذكاء الاصطناعي",
+		"description": "مدير مصادر الذكاء الاصطناعي"
+	},
+	"de-DE": {
+		"name": "KI-Quellen",
+		"description": "AI-Quellen-Manager"
+	},
+	"emoji": {
+		"name": "AI服务源",
+		"description": "AI服务源管理器"
+	},
+	"es-ES": {
+		"name": "Fuentes de IA",
+		"description": "Gerente de fuentes de IA"
+	},
+	"fr-FR": {
+		"name": "Sources d'IA",
+		"description": "Gestionnaire de sources IA"
+	},
+	"hi-IN": {
+		"name": "एआई स्रोत",
+		"description": "एआई स्रोत प्रबंधक"
+	},
+	"is-IS": {
+		"name": "AI heimildir",
+		"description": "AI heimildastjóri"
+	},
+	"it-IT": {
+		"name": "Fonti AI",
+		"description": "Gestore delle fonti AI"
+	},
+	"ja-JP": {
+		"name": "AI ソース",
+		"description": "AI ソース マネージャー"
+	},
+	"ko-KR": {
+		"name": "AI 소스",
+		"description": "AI 소스 관리자"
+	},
+	"lzh": {
+		"name": "AI服务源",
+		"description": "AI服务源管理器"
+	},
+	"nl-NL": {
+		"name": "AI-bronnen",
+		"description": "Beheerder van AI-bronnen"
+	},
+	"pt-PT": {
+		"name": "Fontes de IA",
+		"description": "Gerenciador de fontes de IA"
+	},
+	"ru-RU": {
+		"name": "Источники ИИ",
+		"description": "Менеджер по источникам ИИ"
+	},
+	"uk-UA": {
+		"name": "Джерела AI",
+		"description": "Менеджер джерел AI"
+	},
+	"vi-VN": {
+		"name": "Nguồn AI",
+		"description": "Trình quản lý nguồn AI"
+	},
+	"zh-TW": {
+		"name": "AI服務源",
+		"description": "AI服務源管理器"
+	}
+}

@@ -1,0 +1,32 @@
+<div class="source-section">
+	<h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+		<img src="${source.icon || source.avatar || 'https://api.iconify.design/material-symbols/trophy.svg'}" class="text-icon w-8 h-8 object-cover">
+		<span>${source.name}</span>
+		<span class="text-lg opacity-70">(${unlockedAchievements}/${totalAchievements})</span>
+		<progress class="progress progress-primary w-56" value="${unlockedAchievements}" max="${totalAchievements}"></progress>
+	</h2>
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+		${Object.entries(achievements).map(([id, achievement]) => `
+		<div class="card bg-base-100 shadow-md achievement-card ${achievement.unlocked_at ? 'unlocked' : ''}" data-partpath="${partpath}" data-id="${id}">
+			<div class="card-body">
+				<div class="flex items-center gap-4">
+					<div class="achievement-icon text-5xl">
+						<img src="${(achievement.unlocked_at ? null : achievement.locked_icon) || achievement.icon}" class="w-12 h-12" />
+					</div>
+					<div>
+						<h3 class="card-title" data-i18n="${(achievement.unlocked_at ? null : achievement.locked_name) || achievement.name}"></h3>
+						<p class="text-sm opacity-70" data-i18n="${(achievement.unlocked_at ? null : achievement.locked_description) || achievement.description}"></p>
+						${achievement.unlocked_at ? `
+						<div class="text-xs opacity-50 mt-2">
+							${geti18n('achievements.unlocked_on', { date: new Date(achievement.unlocked_at).toLocaleString() })}
+						</div>
+						` : `
+						<div class="text-xs opacity-50 mt-2" data-i18n="achievements.locked"></div>
+						`}
+					</div>
+				</div>
+			</div>
+		</div>
+		`).join('')}
+	</div>
+</div>
