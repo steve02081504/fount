@@ -1,0 +1,59 @@
+{
+	"en-UK": {
+		"provider": "Google"
+	},
+	"zh-CN": {
+		"provider": "Google"
+	},
+	"ar-SA": {
+		"provider": "Google"
+	},
+	"de-DE": {
+		"provider": "Google"
+	},
+	"emoji": {
+		"provider": "Google"
+	},
+	"es-ES": {
+		"provider": "Google"
+	},
+	"fr-FR": {
+		"provider": "Google"
+	},
+	"hi-IN": {
+		"provider": "Google"
+	},
+	"is-IS": {
+		"provider": "Google"
+	},
+	"it-IT": {
+		"provider": "Google"
+	},
+	"ja-JP": {
+		"provider": "Google"
+	},
+	"ko-KR": {
+		"provider": "Google"
+	},
+	"lzh": {
+		"provider": "Google"
+	},
+	"nl-NL": {
+		"provider": "Google"
+	},
+	"pt-PT": {
+		"provider": "Google"
+	},
+	"ru-RU": {
+		"provider": "Google"
+	},
+	"uk-UA": {
+		"provider": "Google"
+	},
+	"vi-VN": {
+		"provider": "Google"
+	},
+	"zh-TW": {
+		"provider": "Google"
+	}
+}

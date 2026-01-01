@@ -1,5 +1,13 @@
 {
 	"defaultParts": {
-		"world": "fount"
+		"worlds": [
+			"fount"
+		],
+		"shells": [
+			"tutorial"
+		],
+		"serviceSources/search": [
+			"google-sr"
+		]
 	}
 }

@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Search Sources",
+		"description": "Search Sources Manager"
+	},
+	"zh-CN": {
+		"name": "搜索服务源",
+		"description": "搜索服务源管理器"
+	},
+	"ar-SA": {
+		"name": "مصادر البحث",
+		"description": "مدير مصادر البحث"
+	},
+	"de-DE": {
+		"name": "Suchquellen",
+		"description": "Suchquellen-Manager"
+	},
+	"emoji": {
+		"name": "搜索服务源",
+		"description": "搜索服务源管理器"
+	},
+	"es-ES": {
+		"name": "Fuentes de búsqueda",
+		"description": "Administrador de fuentes de búsqueda"
+	},
+	"fr-FR": {
+		"name": "Sources de recherche",
+		"description": "Gestionnaire de sources de recherche"
+	},
+	"hi-IN": {
+		"name": "खोज स्रोत",
+		"description": "खोज स्रोत प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Leita að heimildum",
+		"description": "Leitarheimildastjóri"
+	},
+	"it-IT": {
+		"name": "Fonti di ricerca",
+		"description": "Gestore delle fonti di ricerca"
+	},
+	"ja-JP": {
+		"name": "検索ソース",
+		"description": "検索ソースマネージャー"
+	},
+	"ko-KR": {
+		"name": "검색 소스",
+		"description": "검색 소스 관리자"
+	},
+	"lzh": {
+		"name": "搜索服务源",
+		"description": "搜索服务源管理器"
+	},
+	"nl-NL": {
+		"name": "Zoekbronnen",
+		"description": "Beheerder van zoekbronnen"
+	},
+	"pt-PT": {
+		"name": "Fontes de pesquisa",
+		"description": "Gerenciador de fontes de pesquisa"
+	},
+	"ru-RU": {
+		"name": "Источники поиска",
+		"description": "Менеджер поисковых источников"
+	},
+	"uk-UA": {
+		"name": "Пошук джерел",
+		"description": "Менеджер джерел пошуку"
+	},
+	"vi-VN": {
+		"name": "Nguồn tìm kiếm",
+		"description": "Trình quản lý nguồn tìm kiếm"
+	},
+	"zh-TW": {
+		"name": "搜索服務源",
+		"description": "搜索服務源管理器"
+	}
+}

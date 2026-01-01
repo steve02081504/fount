@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="fount Desktop Pets: Your Digital Companions" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:deskpet/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Launch your fount characters as interactive pets that live on your desktop." />
+	<meta name="description" content="Launch your fount characters as interactive pets that live on your desktop." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="deskpet.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="flex justify-center items-start h-screen p-4">
+	<div class="container mx-auto w-full lg:w-2/3">
+
+		<div class="card bg-base-100 shadow-xl mb-4">
+			<div class="card-body">
+				<h2 class="card-title mb-4" data-i18n="deskpet.launcherCard.title">Pet Launcher</h2>
+				<div id="char-select-dropdown" class="w-full" data-i18n="deskpet.charSelectDropdown">
+					<input type="text" data-i18n="deskpet.charSearch" />
+				</div>
+				<div class="card-actions justify-end mt-4">
+					<button id="start-pet-btn" class="btn btn-primary" data-i18n="deskpet.launcherCard.buttons.start">Start Pet</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title mb-4" data-i18n="deskpet.runningCard.title">Running Pets</h2>
+				<div id="running-pets-list" class="flex flex-col gap-2">
+					<!-- Running pets will be dynamically inserted here -->
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

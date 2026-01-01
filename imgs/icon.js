@@ -1,4 +1,2 @@
-c=[h=r='']
-for(k of`		!2"!2"!3	"!8"!14`)for(p of+k?(h+r+`
-`).repeat(k):(h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?11:'ff')),h=r=''
-c
+s=',color:#000,color:#0ff'.repeat(280);for(v of[9**9-5,982,4624523,18696,1199,227]){for(c='',a=v/9,i=21;i--;a/=3)d=' :'[a%3^0]||'%c@%c',c=d+c+d;s=(c+`
+`).repeat(v%9)+s}s.split`,`

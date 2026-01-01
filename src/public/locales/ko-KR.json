@@ -1,0 +1,2314 @@
+{
+	"lang": "ko-KR",
+	"name": "한국어",
+	"fountConsole": {
+		"server": {
+			"start": "서버를 시작하고 있습니다.",
+			"starting": "서버 시작 중...",
+			"ready": "서버가 준비되었습니다.",
+			"standingBy": "Standing by...",
+			"showUrl": {
+				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
+				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
+			},
+			"mdns": {
+				"description": "상상이 생명을 얻는 순간",
+				"failed": "mDNS 등록 실패: ${error}",
+				"bonjourFailed": "Bonjour 서비스 생성 실패: ${error}"
+			},
+			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
+			"update": {
+				"restarting": "새 버전이 발견되었고 업데이트가 다시 시작됩니다..."
+			}
+		},
+		"jobs": {
+			"restartingJob": "${username} 사용자에 대한 ${partpath} 작업 다시 시작: ${uid}",
+			"preloadingParts": "${count}개 부품 사전 로드 중"
+		},
+		"ipc": {
+			"serverStarted": "IPC 서버가 시작되었습니다.",
+			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다.",
+			"runPartLog": "${partpath}으로 ${username}를 실행합니다. 인수: ${args}",
+			"invokePartLog": "${partpath}으로 ${username}를 호출합니다. 매개변수: ${invokedata}",
+			"invalidCommand": "잘못된 명령입니다. \"fount run <컴포넌트 유형> <사용자 이름> <컴포넌트 이름> <매개변수...>\" 형식을 사용하십시오.",
+			"invalidCommandFormat": "잘못된 명령 형식입니다.",
+			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
+			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
+			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
+			"socketError": "소켓 오류: ${error}",
+			"parseResponseFailed": "서버 응답 구문 분석에 실패했습니다: ${error}",
+			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다.",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
+		},
+		"partManager": {
+			"partInited": "${partpath} 구성요소가 초기화되었습니다.",
+			"partLoaded": "${partpath} 구성요소가 로드되었습니다.",
+			"git": {
+				"updating": "원격 리포지토리에서 업데이트하는 중...",
+				"upToDate": "이미 최신 버전입니다.",
+				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
+				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
+				"dirtyWorkingDirectory": "작업 디렉터리가 정리되지 않았습니다. 업데이트하기 전에 변경 사항을 스태시하거나 커밋하세요.",
+				"diverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
+				"updateFailed": "원격 리포지토리에서 컴포넌트 업데이트에 실패했습니다: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "요청 수신됨: ${method} ${url}",
+			"frontendFilesChanged": "프런트엔드 파일 [${path}]이(가) 변경되었으며 클라이언트에 다시 로드하라는 알림이 전달됩니다."
+		},
+		"route": {
+			"setLanguagePreference": "사용자 ${username}님이 선호하는 언어를 설정했습니다: ${preferredLanguages}"
+		},
+		"auth": {
+			"accountLockedLog": "로그인 시도 실패 횟수 초과로 사용자 ${username}님의 계정이 잠겼습니다.",
+			"tokenVerifyError": "토큰 검증 오류: ${error}",
+			"refreshTokenError": "리프레시 토큰 오류: ${error}",
+			"logoutRefreshTokenProcessError": "로그아웃 리프레시 토큰 처리 오류: ${error}",
+			"revokeTokenNoJTI": "JTI가 없는 토큰은 해지할 수 없습니다."
+		},
+		"verification": {
+			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다)",
+			"codeNotifyTitle": "인증 코드",
+			"codeNotifyBody": "인증 코드: ${code} (60초 후에 만료됩니다)"
+		},
+		"tray": {
+			"title": "fount",
+			"tooltip": "fount",
+			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
+			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}",
+			"items": {
+				"open": {
+					"title": "열기",
+					"tooltip": "fount 열기"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "fount의 GitHub 열기"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "fount의 Discord 열기"
+				},
+				"restart": {
+					"title": "재시작",
+					"tooltip": "애플리케이션 재시작"
+				},
+				"exit": {
+					"title": "종료",
+					"tooltip": "애플리케이션 종료"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
+		},
+		"telegrambot": {
+			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
+		},
+		"path": {
+			"protocol": {
+				"description": "URL: fount 프로토콜",
+				"registerFailed": "fount:// 프로토콜 핸들러 등록 실패: ${message}",
+				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
+			},
+			"update": {
+				"skippingFountUpdate": ".noupdate 파일이 존재하므로 폰트 업데이트를 건너뜁니다.",
+				"skippingDenoUpgradeDocker": "Docker 환경에서 Deno 업그레이드 건너뛰기"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "${path}에 바탕화면 바로가기가 생성되었습니다.",
+				"startMenuShortcutCreated": "${path}에 시작 메뉴 바로가기가 생성되었습니다.",
+				"protocolHandlerRegistered": "fount:// 프로토콜 핸들러가 등록되었습니다.",
+				"shortcutNotSupported": "경고: 귀하의 운영 체제(${os})는 바탕화면 바로가기 생성을 지원하지 않습니다.",
+				"osacompileNotFound": "오류: 'osacompile'을 찾을 수 없습니다. macOS 앱을 생성할 수 없습니다.",
+				"lsregisterFailed": "경고: lsregister를 사용하여 LaunchServices에 애플리케이션을 등록하는 데 실패했습니다.",
+				"createDesktopAppFailed": "오류: 데스크톱 애플리케이션을 생성하지 못했습니다."
+			},
+			"git": {
+				"repoNotFound": "fount의 git 저장소를 찾을 수 없습니다. 새로 초기화하는 중...",
+				"fetchingAndResetting": "원격 저장소에서 가져오고 마스터로 재설정하는 중...",
+				"localChangesDetected": "로컬 변경 사항이 감지되었습니다. 덮어쓰기 전에 차이점이 저장됩니다.",
+				"backupSavedTo": "로컬 변경 사항의 백업이 ${path}에 저장되었습니다.",
+				"updatingFromRemote": "원격 저장소에서 업데이트 중...",
+				"alreadyUpToDate": "이미 최신입니다.",
+				"localBranchAhead": "로컬 지점이 원격 지점보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
+				"branchesDiverged": "로컬 및 원격 분기가 분기되었습니다. 강제 업데이트 진행 중...",
+				"notOnBranch": "브랜치에 없으면 '마스터'로 전환하세요..",
+				"noUpstreamBranch": "경고: '${branch}' 분기에 대해 구성된 업스트림 분기가 없습니다. 업스트림을 '원본/마스터'로 설정합니다.",
+				"dirtyWorkingDirectory": "경고: 작업 디렉터리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하세요.",
+				"notInstalled": "Git이 설치되지 않았습니다. 설치하려고 합니다...",
+				"notInstalledSkippingPull": "Git이 설치되지 않았습니다. git pull을 건너뛰세요.",
+				"repoNotFoundSkippingPull": "저장소를 찾을 수 없습니다. git pull을 건너뛰세요.",
+				"fetchFailed": "'원본'에서 가져오지 못했습니다.",
+				"installFailedWinget": "Winget 설치에 실패하여 Git을 설치할 수 없습니다. 수동으로 설치해주세요.",
+				"installFailedManual": "Git을 설치할 수 없습니다. 수동으로 설치하세요."
+			},
+			"deno": {
+				"missing": "Deno를 찾을 수 없습니다. 자동으로 설치 중입니다...",
+				"isRequired": "Deno를 찾을 수 없습니다. Deno 없이는 샘을 실행할 수 없습니다.",
+				"installingTermux": "Termux용 Deno 설치 중...",
+				"installFailedFallback": "Deno 설치에 실패했습니다. Fount의 경로 폴더에 자동으로 설치하려고 합니다...",
+				"notWorking": "어떤 이유로 Deno가 작동하지 않는 경우 https://discord.gg/deno에 가입하여 지원을 받을 수 있습니다.",
+				"upgradeFailed": "경고: Deno 업그레이드가 실패했을 수 있습니다. 오류가 있는지 확인해주세요.",
+				"upgradeFailedTermux": "Deno 업그레이드 명령이 실패했습니다. Termux용 Deno를 다시 설치하는 중입니다...",
+				"patchMissing": "오류: 패치 이전에는 Deno 실행 파일을 찾을 수 없습니다. 패치할 수 없습니다.",
+				"patchUnsupportedArch": "오류: 지원되지 않는 패치 아키텍처: ${arch}",
+				"patchFailed": "오류: patchelf를 사용하여 Deno 실행 파일을 패치하지 못했습니다."
+			},
+			"install": {
+				"installingDependencies": "종속성 설치 중...",
+				"packageFailed": "오류: ${package} 설치에 실패했습니다.",
+				"browserMissing": "기본 브라우저가 감지되지 않습니다. 설치를 시도 중입니다...",
+				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 요소 구성 요소를 설치하지 마십시오. 그들은 무엇이든 할 수 있습니다.",
+				"rootWarning1": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
+				"rootWarning2": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다."
+			},
+			"clean": {
+				"removingCaches": "캐시 삭제 중...",
+				"reinstallingDependencies": "종속성을 다시 설치하는 중...",
+				"cleaningDenoCaches": "Deno 캐시를 청소하는 중...",
+				"cleaningOldPwshModules": "오래된 pwsh 모듈을 정리 중..."
+			},
+			"keepalive": {
+				"initComplete": "재초기화 완료. fount를 다시 시작하는 중입니다...",
+				"autoInitDisabled": "지난 짧은 기간 동안 fount가 여러 번 다시 시작되었지만 .noautoinit 파일로 인해 자동 재초기화가 비활성화되었습니다. 종료합니다.",
+				"restartingTooFast": "짧은 시간 동안 fount가 여러 번 다시 시작되었습니다. 강제 재초기화...",
+				"failedToStart": "자동 수리를 시도한 후에도 잠시 동안 fount가 작동하지 않는 현상이 발생합니다. 로그에서 오류를 확인하세요.",
+				"initFailed": "글꼴 초기화에 실패했습니다. 종료합니다."
+			},
+			"remove": {
+				"removingFount": "fount 제거 중...",
+				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
+				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
+				"fountInstallationDirRemoved": "fount 설치 디렉터리가 제거되었습니다.",
+				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
+				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
+				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",
+				"removeProtocolHandlerFailed": "fount:// 프로토콜 핸들러를 제거하지 못했습니다: ${message}",
+				"removingFountFromGitSafeDir": "git safe.directory에서 글꼴을 제거하는 중...",
+				"removingInstalledSystemPackages": "설치된 시스템 패키지 제거 중...",
+				"uninstallingDeno": "데노 제거 중...",
+				"removeDenoFailed": "Deno 제거 실패: ${message}",
+				"removingFountPwshFromProfile": "PowerShell 프로필에서 fount-pwsh 제거 중...",
+				"fountPwshRemovedFromProfile": "fount-pwsh가 PowerShell 프로필에서 제거되었습니다.",
+				"pwshProfileNotFound": "PowerShell 프로필을 찾을 수 없습니다. 프로필에서 fount-pwsh 제거를 건너뜁니다.",
+				"uninstallingFountPwsh": "fount-pwsh 제거 중...",
+				"uninstallFountPwshFailed": "fount-pwsh 제거 실패: ${message}",
+				"removingTerminalProfile": "Windows 터미널 프로필을 제거하는 중...",
+				"terminalProfileRemoved": "Windows 터미널 프로필 디렉터리가 제거되었습니다.",
+				"terminalProfileNotFound": "Windows 터미널 프로필 디렉터리를 찾을 수 없습니다.",
+				"desktopShortcutRemoved": "바탕화면 바로가기가 제거되었습니다.",
+				"desktopShortcutNotFound": "바탕화면 바로가기를 찾을 수 없습니다.",
+				"removingStartMenuShortcut": "시작 메뉴 바로가기 삭제 중...",
+				"startMenuShortcutRemoved": "시작 메뉴 바로가기가 제거되었습니다.",
+				"startMenuShortcutNotFound": "시작 메뉴 바로가기를 찾을 수 없습니다.",
+				"removingInstalledPwshModules": "설치된 pwsh 모듈 제거 중...",
+				"moduleRemoved": "${module}이(가) 제거되었습니다.",
+				"removeModuleFailed": "${module} 제거 실패: ${message}",
+				"uninstallingGit": "Git 제거 중...",
+				"uninstallingChrome": "Chrome 제거 중...",
+				"uninstallingWinget": "Winget 제거 중...",
+				"removingBackgroundRunner": "백그라운드 프로그램 제거 중...",
+				"removeBackgroundRunnerFailed": "백그라운드 실행 프로그램 제거 실패: ${message}"
+			}
+		}
+	},
+	"installer_wait_screen": {
+		"title": "fount에 오신 것을 환영합니다!",
+		"description": "설치 진행 과정을 따라가며 그 안에 포함된 기능을 살펴보세요. 잠시 후에 분수를 시작할 준비가 될 것입니다.",
+		"hero": {
+			"title": "상상이 생명을 얻는 순간",
+			"description": "fount는 <i>당신</i>에게 특별한 경험을 선사하기 위해 설계된 AI 기반 캐릭터 인터랙션 플랫폼입니다. 상상 속 캐릭터와 당신을 연결하여 손쉽게 대화하고, 자신만의 캐릭터를 만들어 세상과 공유할 수 있게 해주는 다리입니다."
+		},
+		"feature1": {
+			"title": "어디서든 끊김 없는 대화",
+			"description": "컴퓨터에서 채팅을 시작하고 휴대폰이나 태블릿에서 매끄럽게 이어가세요. fount는 대화를 항상 동기화하여 어디에 있든 당신의 캐릭터와 소통할 수 있도록 합니다. Windows, macOS, Linux는 물론 Android에서도 실행됩니다."
+		},
+		"feature2": {
+			"title": "아름답고 사용자 정의 가능한 인터페이스",
+			"description": "30가지가 넘는 아름다운 테마 중에서 선택하거나 자신만의 테마를 만드세요. fount는 당신의 개인적인 캔버스입니다. 자신을 표현하고, 원하는 대로 환경을 설정하여 진정으로 개인화된 경험을 즐겨보세요."
+		},
+		"feature3": {
+			"title": "표현 풍부한 몰입형 채팅",
+			"description": "fount는 HTML의 강력한 기능을 활용하여 캐릭터가 리치 텍스트, 이미지, 심지어 인터랙티브 요소를 통해 자신을 표현할 수 있도록 합니다. 여러 캐릭터와 동시에 역동적이고 매력적인 그룹 채팅을 즐겨보세요."
+		},
+		"feature4": {
+			"title": "자유로운 AI 소스 연동",
+			"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
+		},
+		"language_selector": {
+			"button": {
+				"aria-label": "언어 선택"
+			},
+			"search": {
+				"placeholder": "언어 검색..."
+			}
+		},
+		"theme_selector": {
+			"title": "테마 선택",
+			"description": "테마를 선택하여 당신의 경험을 개인화하세요.",
+			"search": {
+				"placeholder": "테마 검색..."
+			}
+		},
+		"mini_game": {
+			"title": "미니 게임 한판!",
+			"description1": "설치가 너무 오래 걸리나요?",
+			"description2": "시간을 보낼 수 있는 미니 게임이 준비되어 있습니다."
+		},
+		"data_showcase": {
+			"title_prefix": "fount는 가장 ",
+			"title_of": " ",
+			"active_users": "활성 사용자",
+			"stars": "GitHub 스타",
+			"adjectives": [
+				"확장 가능한",
+				"잠재력 있는",
+				"미래 지향적인",
+				"호환되는",
+				"작고 강력한"
+			],
+			"nouns": [
+				"AI 캐릭터 ",
+				"에이전트 ",
+				"사이버 와이프 ",
+				"디지털 비서 "
+			],
+			"platforms": [
+				"기반 플랫폼",
+				"채팅 프론트엔드",
+				"런타임"
+			]
+		},
+		"footer": {
+			"ready_text": "여정을 시작할 준비가 되셨나요?",
+			"wait_text": "잠시만 기다려주세요...",
+			"open_fount": "fount 열기",
+			"open_or_install_fount": "fount 열기/설치하기",
+			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}"
+		},
+		"error": {
+			"title": "설치 실패!",
+			"description": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
+			"connection_failed": "연결 실패!",
+			"description1": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
+			"description2": "터미널을 확인하고 다시 시도해주세요.",
+			"close_page": "페이지 닫기"
+		}
+	},
+	"protocolhandler": {
+		"title": "fount 프로토콜 처리",
+		"description": "조용하고 효율적으로 이 페이지는 귀하의 의도를 원천 내에서 원활한 전환으로 변환합니다. 커튼 뒤의 조용한 마법을 생각해 보세요.",
+		"processing": "프로토콜 처리 중...",
+		"shellCommandSent": "셸 명령이 전송되었습니다.",
+		"runPartConfirm": {
+			"title": "실행을 확인하십시오",
+			"message": "${partpath}을(를) 실행하시겠습니까?",
+			"confirm": "확인하다",
+			"cancel": "취소"
+		},
+		"offline_dialog": {
+			"title": "오프라인 호스트",
+			"message": "fount 호스트 ${hostUrl}이(가) 오프라인인 것 같습니다. 다시 시도하시겠습니까?",
+			"buttons": {
+				"start": "시작",
+				"retry": "다시 시도"
+			}
+		},
+		"fountNotFound": "아이고…\n\nfount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
+		"invalidProtocol": "잘못된 프로토콜입니다.",
+		"insufficientParams": "매개변수가 부족합니다.",
+		"unknownCommand": "알 수 없는 명령입니다.",
+		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
+		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
+		"unknownError": "아이고…\n\n오류가 발생했습니다:\n${error}"
+	},
+	"startPage": {
+		"title": "fount!",
+		"description": "분수의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다."
+	},
+	"tutorial": {
+		"title": "튜토리얼 어떠세요?",
+		"description": "분수의 세계를 여러분과 함께 걸어가겠습니다. 이 대화형 튜토리얼은 경로를 조명하여 핵심에 얽힌 마법을 발견하는 데 도움을 줍니다. 당신의 모험은 이해로부터 시작됩니다.",
+		"modal": {
+			"title": "fount에 오신 것을 환영합니다!",
+			"instruction": "시작 가이드를 진행하시겠습니까?",
+			"buttons": {
+				"start": "가이드 시작",
+				"skip": "건너뛰기"
+			}
+		},
+		"endScreen": {
+			"title": "훌륭합니다! 가이드 완료!",
+			"subtitle": "이제 fount 사용법을 익혔습니다!",
+			"endButton": "시작하기!"
+		},
+		"progressMessages": {
+			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
+			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "완벽한 산수교실",
+				"description": "드디어 초보자 튜토리얼을 마쳤습니다.",
+				"locked_description": "입문 튜토리얼을 완료하세요."
+			},
+			"skip_tutorial": {
+				"name": "나는 건너뛰었다",
+				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
+				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "기타",
+				"sub_items": {
+					"replay": {
+						"title": "튜토리얼 다시 재생"
+					}
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "인증",
+		"subtitle": "사용자 데이터는 로컬에 저장됩니다.",
+		"description": "여기에서 당신의 존재를 정의합니다. 익숙한 안식처로 돌아가든, 이야기를 위한 새로운 공간을 만들든, 이곳에서 샘과 함께하는 여정이 시작됩니다.",
+		"usernameLabel": "사용자 이름:",
+		"usernameInput": {
+			"placeholder": "사용자 이름을 입력하세요"
+		},
+		"passwordLabel": "비밀번호:",
+		"passwordInput": {
+			"placeholder": "비밀번호를 입력하세요"
+		},
+		"confirmPasswordLabel": "비밀번호 확인:",
+		"confirmPasswordInput": {
+			"placeholder": "비밀번호를 다시 입력하세요"
+		},
+		"verificationCodeLabel": "인증 코드:",
+		"verificationCodeInput": {
+			"placeholder": "인증 코드를 입력하세요"
+		},
+		"sendCodeButton": "인증 코드 전송",
+		"login": {
+			"title": "로그인",
+			"submitButton": "로그인",
+			"toggleLink": {
+				"textContent": "계정이 없으신가요?",
+				"link": "지금 회원가입하세요"
+			}
+		},
+		"register": {
+			"title": "회원가입",
+			"submitButton": "회원가입",
+			"toggleLink": {
+				"textContent": "이미 계정이 있으신가요?",
+				"link": "지금 로그인하세요"
+			}
+		},
+		"passwordStrength": {
+			"veryWeak": "매우 약함",
+			"weak": "약함",
+			"normal": "보통",
+			"strong": "강함",
+			"veryStrong": "매우 강함"
+		},
+		"error": {
+			"passwordMismatch": "비밀번호가 일치하지 않습니다.",
+			"loginError": "로그인 중 오류가 발생했습니다.",
+			"registrationError": "회원가입 중 오류가 발생했습니다.",
+			"verificationCodeError": "인증 코드가 잘못되었거나 만료되었습니다.",
+			"verificationCodeSent": "인증 코드가 성공적으로 전송되었습니다.",
+			"verificationCodeSendError": "인증 코드 전송에 실패했습니다.",
+			"verificationCodeRateLimit": "인증 코드 요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.",
+			"lowPasswordStrength": "비밀번호의 보안 수준이 너무 낮습니다.",
+			"accountAlreadyExists": "이미 존재하는 계정입니다.",
+			"powNotSolved": "먼저 PoW 인증을 완료해주세요",
+			"powError": "POW 검증 오류"
+		}
+	},
+	"login_info": {
+		"title": "로그인 정보",
+		"description": "알려지지 않은 이야기의 세계로 가는 열쇠인 샘 로그인 자격 증명을 관리하기 위한 안전한 공간입니다.",
+		"modal": {
+			"title": "인증서 전송 오류",
+			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
+			"transfer_error": "로그인 정보를 전송하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 얻을 수는 없습니다.",
+			"buttons": {
+				"ignore": "무시하고 계속",
+				"retry": "재시도"
+			}
+		}
+	},
+	"home": {
+		"title": "홈",
+		"description": "분수 체험의 핵심입니다. 여기에서 캐릭터, 세계, 페르소나 등 상상 속 인물을 관리하세요. 여러분의 이야기는 이 중심 연결점에서 시작되고 분기됩니다.",
+		"sidebarTitle": "세부 정보",
+		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
+		"noDescription": "설명이 없습니다.",
+		"filterInput": {
+			"placeholder": "검색...",
+			"aria-label": "위젯 검색"
+		},
+		"sfwToggle": "일반 콘텐츠",
+		"partTypeDropdown": {
+			"button": {
+				"title": "부품 유형 메뉴"
+			},
+			"icon": {
+				"alt": "부품 유형 메뉴"
+			}
+		},
+		"functionMenu": {
+			"search": {
+				"placeholder": "검색..."
+			},
+			"button": {
+				"title": "기능 메뉴"
+			},
+			"icon": {
+				"alt": "기능 메뉴"
+			}
+		},
+		"emptyList": {
+			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 Discord 서버](${discordLink})로 가서 재미있게 놀 수 있을까요?"
+		},
+		"part_pages": {
+			"default": {
+				"title": "구성 요소 선택",
+				"subtitle": "나뭇잎을 들고 여행을 시작하세요.",
+				"card": {
+					"noTags": "라벨 없음",
+					"version": "버전",
+					"author": "작가",
+					"home_page": "홈페이지",
+					"issue_page": "문제 신고",
+					"refreshButton": {
+						"alt": "새로 고치다",
+						"title": "새로 고치다"
+					},
+					"defaultCheckbox": {
+						"title": "기본값으로 설정"
+					}
+				}
+			},
+			"chars": {
+				"title": "캐릭터 선택",
+				"subtitle": "영혼을 만나 대화를 시작해 보세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 역할로 설정"
+					}
+				}
+			},
+			"worlds": {
+				"title": "세계의 선택",
+				"subtitle": "세계로 들어가 수많은 가능성에 빠져보세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 세계로 설정"
+					}
+				}
+			},
+			"personas": {
+				"title": "캐릭터 선택",
+				"subtitle": "정체성을 바꾸고 또 다른 삶을 경험해보세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 페르소나로 설정"
+					}
+				}
+			},
+			"plugins": {
+				"title": "플러그인 선택",
+				"subtitle": "새로운 날개를 추가하고 가능성을 확장하세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 플러그인으로 설정"
+					}
+				}
+			},
+			"ImportHandlers": {
+				"title": "수입 가공업체",
+				"subtitle": "바다는 모든 강과 강을 포함하여 열려 있습니다.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 수입 프로세서로 설정"
+					}
+				}
+			},
+			"serviceGenerators": {
+				"title": "서비스 빌더",
+				"subtitle": "보이지 않는 것을 실체로 바꾸고, 가능성을 현실로 만드세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 서비스 생성기로 설정"
+					}
+				}
+			},
+			"serviceGenerators/AI": {
+				"title": "AI 서비스 생성기",
+				"subtitle": "지혜의 실을 엮고 생각의 다리를 연결하세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 AI 서비스 생성기로 설정"
+					}
+				}
+			},
+			"serviceGenerators/search": {
+				"title": "검색 서비스 생성기",
+				"subtitle": "정보의 바다 속에서 당신을 위한 빛을 밝혀주세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 검색 생성기로 설정"
+					}
+				}
+			},
+			"serviceGenerators/translate": {
+				"title": "번역 서비스 생성기",
+				"subtitle": "언어의 경계를 넘어 아이디어가 자유롭게 흐르도록 하세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 번역 서비스 생성기로 설정"
+					}
+				}
+			},
+			"serviceSources": {
+				"title": "서비스 소스",
+				"subtitle": "그 물방울들이 모이면 큰 강이 됩니다.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 서비스 소스로 설정"
+					}
+				}
+			},
+			"serviceSources/AI": {
+				"title": "AI 서비스 소스",
+				"subtitle": "지혜의 근원이자 사고의 출발점.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 AI 서비스 소스로 설정"
+					}
+				}
+			},
+			"serviceSources/search": {
+				"title": "서비스 소스 검색",
+				"subtitle": "지식의 보고이자 탐구의 출발점입니다.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 검색 소스로 설정"
+					}
+				}
+			},
+			"serviceSources/translate": {
+				"title": "번역 서비스 소스",
+				"subtitle": "언어의 다리이자 의사소통의 연결고리.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 번역 서비스 소스로 설정"
+					}
+				}
+			},
+			"shells": {
+				"title": "대화형 인터페이스 선택",
+				"subtitle": "창을 선택하고 새로운 세상을 만나보세요.",
+				"card": {
+					"defaultCheckbox": {
+						"title": "기본 인터페이스로 설정"
+					}
+				}
+			}
+		},
+		"escapeConfirm": "fount를 종료하시겠습니까?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "홈 레지스트리 정보를 가져오는 데 실패했습니다."
+		},
+		"achievements": {
+			"first_login": {
+				"name": "안녕하세요, fount님!",
+				"description": "새로운 세계를 향해 첫 로그인!",
+				"locked_description": "fount에 한 번 로그인해 보세요."
+			},
+			"sfw_mode_on": {
+				"name": "엄마가 보고있다",
+				"description": "전연령 모드로 빠르게 전환하세요. 저는 정말 영리한 꼬마입니다.",
+				"locked_description": "안전 콘텐츠 모드를 한 번 켜보세요."
+			},
+			"sfw_mode_off": {
+				"name": "새로운 세계로 가는 문",
+				"description": "\"선생님, 시대가 변했어요.\"",
+				"locked_description": "안전 콘텐츠 모드를 한 번 끄세요."
+			},
+			"open_function_list": {
+				"name": "어디 한번 볼까!",
+				"description": "\"어떤 좋은 일이 있나요?\"",
+				"locked_description": "기능 목록을 한 번 열어보세요."
+			},
+			"set_default_persona": {
+				"name": "나의 길은 내가 정한다",
+				"description": "이 세상에서 당신의 행동에 대한 정체성을 설정하십시오.",
+				"locked_description": "기본 프로필을 설정합니다."
+			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "드래그 앤 드롭에 성공했습니다!",
+			"dropError": "드래그 앤 드롭 처리 중 오류: ${error}",
+			"noHandler": "적합한 드래그 앤 드롭 핸들러를 찾을 수 없습니다."
+		},
+		"home_common_interfaces": {
+			"open": {
+				"title": "접근"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "샘물 구성요소 정보 생성"
+			}
+		}
+	},
+	"chat": {
+		"title": "채팅",
+		"description": "말이 날아오르고 이야기가 펼쳐지는 곳. AI 동료와 함께 이야기를 구성하고 디지털 대화의 썰물과 흐름에 빠져보세요. 분수의 심장이 여기서 뛰는군요.",
+		"new": {
+			"title": "새 채팅",
+			"description": "아직 쓰여지지 않은 이야기에 대한 조용한 기대. 새로운 채팅이 시작됩니다. 선택한 동료와의 신선한 상호작용과 전개되는 이야기를 위한 깨끗한 상태입니다."
+		},
+		"typingIndicator": {
+			"isTyping": "${names}님이 입력 중입니다...",
+			"multipleMembers": "여러 회원이 입력 중입니다..."
+		},
+		"sidebar": {
+			"noSelection": "선택된 항목 없음",
+			"noDescription": "설명 없음",
+			"world": {
+				"icon": {
+					"alt": "월드 아이콘"
+				},
+				"title": "월드"
+			},
+			"persona": {
+				"icon": {
+					"alt": "사용자 페르소나 아이콘"
+				},
+				"title": "사용자 페르소나"
+			},
+			"charList": {
+				"icon": {
+					"alt": "캐릭터 목록 아이콘"
+				},
+				"title": "캐릭터 목록",
+				"buttons": {
+					"addChar": {
+						"title": "캐릭터 추가"
+					},
+					"addCharIcon": {
+						"alt": "캐릭터 추가 아이콘"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "플러그인 목록 아이콘"
+				},
+				"title": "플러그인 목록",
+				"buttons": {
+					"addPlugin": {
+						"title": "플러그인 추가"
+					},
+					"addPluginIcon": {
+						"alt": "플러그인 추가 아이콘"
+					}
+				}
+			}
+		},
+		"rightSidebar": {
+			"title": "세부 정보"
+		},
+		"chatArea": {
+			"title": "채팅",
+			"input": {
+				"placeholder": "메시지를 입력하세요...\nCtrl+Enter로 전송"
+			},
+			"menuButton": {
+				"title": "메뉴"
+			},
+			"menuButtonIcon": {
+				"alt": "메뉴 아이콘"
+			},
+			"sendButton": {
+				"title": "전송"
+			},
+			"sendButtonIcon": {
+				"alt": "전송 아이콘"
+			},
+			"uploadButton": {
+				"title": "업로드"
+			},
+			"uploadButtonIcon": {
+				"alt": "업로드 아이콘"
+			},
+			"voiceButton": {
+				"title": "음성 입력"
+			},
+			"voiceButtonIcon": {
+				"alt": "음성 입력 아이콘"
+			},
+			"photoButton": {
+				"title": "사진"
+			},
+			"photoButtonIcon": {
+				"alt": "사진 아이콘"
+			}
+		},
+		"messageList": {
+			"confirmDeleteMessage": "이 메시지를 삭제하시겠습니까?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "마이크에 연결하지 못했습니다."
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "편집"
+				},
+				"editIcon": {
+					"alt": "편집 아이콘"
+				},
+				"more": {
+					"title": "더 보기"
+				},
+				"moreIcon": {
+					"alt": "더 보기 아이콘"
+				},
+				"delete": {
+					"alt": "삭제"
+				},
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				},
+				"downloadHtml": {
+					"alt": "HTML로 다운로드"
+				},
+				"downloadHtmlIcon": {
+					"alt": "HTML 다운로드 아이콘"
+				}
+			},
+			"dropdown": {
+				"delete": "삭제",
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				},
+				"copyMarkdown": "Markdown으로 복사",
+				"copyMarkdownIcon": {
+					"alt": "Markdown으로 복사 아이콘"
+				},
+				"copyText": "일반 텍스트로 복사",
+				"copyTextIcon": {
+					"alt": "일반 텍스트로 복사 아이콘"
+				},
+				"copyHtml": "HTML로 복사",
+				"copyHtmlIcon": {
+					"alt": "HTML로 복사 아이콘"
+				},
+				"downloadHtml": "HTML로 다운로드",
+				"downloadHtmlIcon": {
+					"alt": "HTML 다운로드 아이콘"
+				},
+				"share": {
+					"textContent": "공유",
+					"1h": "1 시간",
+					"12h": "12 시간",
+					"24h": "24 시간",
+					"72h": "72 시간"
+				},
+				"shareIcon": {
+					"alt": "공유 아이콘"
+				}
+			},
+			"share": {
+				"uploading": "링크 생성 중...",
+				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
+			},
+			"commonToolCalling": "도구 호출 중"
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "내용을 입력하세요..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "확인"
+				},
+				"confirmIcon": {
+					"alt": "확인 아이콘"
+				},
+				"cancel": {
+					"title": "취소"
+				},
+				"cancelIcon": {
+					"alt": "취소 아이콘"
+				},
+				"upload": {
+					"title": "업로드"
+				},
+				"uploadIcon": {
+					"alt": "업로드 아이콘"
+				}
+			}
+		},
+		"messageGenerating": {
+			"stop": "중지",
+			"stopIcon": {
+				"alt": "정지 아이콘"
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "다운로드"
+				},
+				"downloadIcon": {
+					"alt": "다운로드 아이콘"
+				},
+				"delete": {
+					"title": "삭제"
+				},
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "빈도",
+			"buttons": {
+				"removeChar": {
+					"title": "채팅에서 제거"
+				},
+				"removeCharIcon": {
+					"alt": "캐릭터 제거 아이콘"
+				},
+				"forceReply": {
+					"title": "강제 응답"
+				},
+				"forceReplyIcon": {
+					"alt": "강제 응답 아이콘"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "플러그인 제거"
+				},
+				"removePluginIcon": {
+					"alt": "플러그인 제거 아이콘"
+				}
+			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "안녕 낯선 사람",
+				"description": "첫 번째 메시지가 전송되고 이야기가 시작됩니다.",
+				"locked_description": "어떤 문자로든 첫 번째 메시지를 보내세요."
+			},
+			"multiplayer_chat": {
+				"name": "화이트앨범의 계절",
+				"description": "\"왜 이렇게 됐지...\"",
+				"locked_description": "두 명 이상의 캐릭터가 동일한 채팅에서 말하게 하세요."
+			},
+			"photo_chat": {
+				"name": "사진도 있고 진실도 있다",
+				"description": "사진을 활용해 차원의 벽을 허무세요.",
+				"locked_description": "채팅으로 사진을 보내보세요."
+			},
+			"code_greeting": {
+				"name": "코드로 인사하기",
+				"description": "\"안녕하세요, fount!\"",
+				"locked_description": "코드 블록을 실행하여 'hello fount!'를 출력하세요."
+			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "부품 데이터가 잘못되었습니다.",
+			"charAdded": "${partName} 역할이 채팅에 추가되었습니다.",
+			"personaSet": "페르소나 ${partName}이(가) 현재 페르소나로 설정되었습니다.",
+			"worldSet": "${partName} 세계가 현재 세계로 설정되어 있습니다.",
+			"pluginAdded": "${partName} 플러그인이 채팅에 추가되었습니다.",
+			"unsupportedPartType": "지원되지 않는 부품 유형: ${partType}.",
+			"errorAddingPart": "${partName} 부품 추가 오류: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "채팅"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "기록 보기"
+			}
+		}
+	},
+	"chat_history": {
+		"title": "채팅 기록",
+		"pageTitle": "채팅 기록",
+		"description": "과거의 대화를 통해 여행하세요. 여기에는 대화의 추억이 남아 있습니다. AI 동료와 함께 엮은 이야기를 정렬하고 필터링하고 다시 방문하세요. 디지털 에코의 조용한 라이브러리입니다.",
+		"filterInput": {
+			"placeholder": "검색..."
+		},
+		"sortOptions": {
+			"time_desc": "시간 (최신순)",
+			"time_asc": "시간 (오래된순)"
+		},
+		"sortBy": {
+			"aria-label": "정렬"
+		},
+		"selectAll": "모두 선택",
+		"buttons": {
+			"reverseSelect": "선택 반전",
+			"deleteSelected": "선택 항목 삭제",
+			"exportSelected": "선택 항목 내보내기",
+			"import": "가져오기"
+		},
+		"chatItemButtons": {
+			"continue": "계속하기",
+			"copy": "복사",
+			"export": "내보내기",
+			"delete": "삭제"
+		},
+		"confirmDeleteChat": "${chars}님과의 채팅 기록을 삭제하시겠습니까?",
+		"confirmDeleteMultiChats": "선택한 ${count}개의 채팅 기록을 삭제하시겠습니까?",
+		"alerts": {
+			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요.",
+			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요.",
+			"copyError": "복사에 실패했습니다.",
+			"deleteError": "삭제에 실패했습니다.",
+			"exportError": "내보내기에 실패했습니다.",
+			"dragExportError": "드래그 앤 드롭 내보내기 중 오류가 발생했습니다.",
+			"importSuccess": "가져오기 성공",
+			"importError": "가져오기 실패",
+			"invalidImportFile": "잘못된 가져오기 파일"
+		},
+		"select_checkbox": {
+			"aria-label": "${chars}님과의 채팅 선택"
+		}
+	},
+	"easynew": {
+		"title": "빠른 생성",
+		"description": "사전 정의된 템플릿이나 사용자 정의 템플릿을 사용하여 캐릭터, 세계, 플러그인과 같은 새로운 기반 부분을 신속하게 구성합니다. 몇 번의 클릭만으로 다음 작품을 만들 수 있습니다.",
+		"info": {
+			"description": "이 템플릿은 간단한 컴포넌트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 컴포넌트는 여전히 수동으로 만들어야 합니다."
+		},
+		"cardTitle": "템플릿에서 새 컴포넌트 만들기",
+		"templateSelect": {
+			"label": "템플릿 선택"
+		},
+		"alerts": {
+			"success": "컴포넌트 '${partName}'이(가) 성공적으로 생성되었습니다!",
+			"error": "오류: ${message}"
+		},
+		"form": {
+			"partName": {
+				"label": "컴포넌트 이름",
+				"placeholder": "새 컴포넌트에 이름을 지정하세요"
+			},
+			"description": {
+				"label": "설명",
+				"placeholder": "이 컴포넌트가 무엇에 관한 것인지 간략하게 설명하세요."
+			},
+			"descriptionMarkdown": {
+				"label": "설명 (마크다운)",
+				"placeholder": "더 자세한 서식을 위해 마크다운을 지원합니다."
+			},
+			"imageUpload": {
+				"label": "아바타 사진"
+			},
+			"charDef": {
+				"heading": "캐릭터 정의"
+			},
+			"personality": {
+				"label": "성격",
+				"placeholder": "캐릭터의 핵심 성격 특성을 설명하세요."
+			},
+			"scenario": {
+				"label": "시나리오",
+				"placeholder": "캐릭터의 배경 또는 설정."
+			},
+			"mesExample": {
+				"label": "메시지 예시",
+				"placeholder": "캐릭터가 할 수 있는 말의 예시."
+			},
+			"firstMessage": {
+				"label": "첫 메시지",
+				"placeholder": "캐릭터가 하는 첫 메시지."
+			},
+			"personaDef": {
+				"heading": "페르소나 정의"
+			},
+			"personaUserName": {
+				"label": "채팅에서 사용할 이름",
+				"placeholder": "예: 캡틴, 탐험가"
+			},
+			"personaAppearance": {
+				"label": "외모",
+				"placeholder": "자신의 외모를 설명하세요."
+			},
+			"personaPersonality": {
+				"label": "성격",
+				"placeholder": "자신의 성격 특성을 설명하세요."
+			},
+			"worldDef": {
+				"heading": "세계관 정의"
+			},
+			"worldPrompt": {
+				"label": "세계관 프롬프트",
+				"placeholder": "세계의 규칙, 환경 및 역할극의 전반적인 맥락을 설명합니다."
+			},
+			"worldGreeting": {
+				"label": "세계관 인사말",
+				"placeholder": "세계가 사용자에게 보내는 첫 메시지."
+			},
+			"author": {
+				"label": "제작자",
+				"placeholder": "이 컴포넌트의 제작자는 누구인가요?"
+			},
+			"version": {
+				"label": "버전",
+				"placeholder": "예: 0.0.1"
+			},
+			"tags": {
+				"label": "태그",
+				"placeholder": "쉼표로 구분된 태그"
+			},
+			"homePage": {
+				"label": "홈페이지",
+				"placeholder": "컴포넌트 홈페이지의 URL"
+			},
+			"issuePage": {
+				"label": "문제 신고 페이지",
+				"placeholder": "컴포넌트 문제 신고 페이지의 URL"
+			},
+			"createButton": "컴포넌트 만들기"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "연금술 작업장이 열려있습니다",
+				"description": "처음부터 시작하여 첫 번째 구성 요소를 만듭니다.",
+				"locked_description": "Quick New 기능을 사용하여 부품을 생성합니다."
+			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"quickCreate": {
+						"title": "빠른 생성"
+					}
+				}
+			}
+		}
+	},
+	"import": {
+		"title": "가져오기",
+		"description": "소중한 캐릭터, 세계, 구성을 샘의 품에 안겨주세요. 파일이든 붙여넣은 텍스트이든 여기에서 새로운 요소가 개인 태피스트리에 짜여집니다.",
+		"tabs": {
+			"fileImport": "파일 가져오기",
+			"textImport": "텍스트 가져오기"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "업로드 아이콘"
+			},
+			"textContent": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
+		},
+		"textArea": {
+			"placeholder": "가져올 텍스트를 입력하세요..."
+		},
+		"buttons": {
+			"import": "가져오기"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "제거"
+			},
+			"removeButtonIcon": {
+				"alt": "제거"
+			}
+		},
+		"alerts": {
+			"importSuccess": "성공적으로 가져왔습니다.",
+			"importFailed": "가져오기에 실패했습니다: ${error}",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
+		},
+		"errors": {
+			"noFileSelected": "파일을 선택해주세요.",
+			"fileImportFailed": "파일 가져오기에 실패했습니다: ${message}",
+			"noTextContent": "텍스트 내용을 입력해주세요.",
+			"textImportFailed": "텍스트 가져오기에 실패했습니다: ${message}",
+			"handler": "핸들러",
+			"error": "오류",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "파일에서 구성 요소 설치",
+			"textDropDescription": "텍스트에서 부품 설치"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"import": {
+						"title": "가져오기"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "텍스트에서 부품 설치"
+			},
+			"handleFileDrop": {
+				"description": "파일에서 구성 요소 설치"
+			}
+		}
+	},
+	"export": {
+		"title": "컴포넌트 내보내기",
+		"pageTitle": "컴포넌트 내보내기",
+		"pageSubtitle": "가장 좋아하는 콘텐츠 내보내기",
+		"description": "분수 창작물을 내보냅니다. 이 도구는 안전하게 보관하거나 공유할 수 있도록 선택한 부분을 간단한 zip 파일로 수집합니다.",
+		"steps": {
+			"part": "구성 요소를 선택하십시오",
+			"action": "내보내기"
+		},
+		"labels": {
+			"part": "컴포넌트 선택"
+		},
+		"placeholders": {
+			"partTypeSelect": "선택해주세요",
+			"partSelect": "선택해주세요"
+		},
+		"partSelectDropdown": {
+			"placeholder": "선택하세요"
+		},
+		"partSearch": {
+			"placeholder": "검색..."
+		},
+		"options": {
+			"withData": "데이터 파일이 포함되어 있습니다",
+			"withDataDescription": "캐릭터 기억과 같은 데이터로 표시된 파일이 포함되어 있습니다."
+		},
+		"export": {
+			"title": "내보내기 옵션"
+		},
+		"editor": {
+			"disabledIndicator": "먼저 컴포넌트를 선택해주세요",
+			"disabledIndicatorHint": "내보낼 컴포넌트 유형과 컴포넌트를 선택하세요"
+		},
+		"buttons": {
+			"export": "내보내기",
+			"exportWithData": "내보내기 (데이터 포함)",
+			"copyShareLink": "공유 링크 복사",
+			"generateShareLink": "공유 링크 생성",
+			"generateShareLinkWithData": "공유 링크 생성 (데이터 포함)"
+		},
+		"shareMenu": {
+			"title": "공유 시간을 선택하십시오",
+			"1h": "1 시간",
+			"12h": "12 시간",
+			"24h": "24 시간",
+			"72h": "72 시간",
+			"cancel": "취소"
+		},
+		"litterbox": {
+			"poweredBy": "공유 기능은 Litterbox.Moe에서 지원합니다",
+			"sponsorLink": "그들을 후원하십시오"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
+			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
+			"loadPartDetailsFailed": "컴포넌트 세부 정보를 불러오는 데 실패했습니다.",
+			"exportFailed": "내보내기에 실패했습니다.",
+			"shareLinkCopied": "공유 링크가 클립 보드에 복사되었습니다!",
+			"shareFailed": "공유 링크를 만들지 못했습니다."
+		},
+		"achievements": {
+			"share_part": {
+				"name": "혼자 가는 것은 위험하단다! 이걸 가져가렴.",
+				"description": "\"이제 이 좋은 것의 사본을 당신에게 주겠습니다.\"",
+				"locked_description": "위젯을 한 번 공유해 보세요."
+			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "부품 다운로드"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"exportPart": {
+						"title": "파트 내보내기"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "부품 다운로드"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "내보내기"
+			}
+		}
+	},
+	"uninstall": {
+		"title": "제거",
+		"description": "헤어지기로 결정했다면, 이 공간에서 우아한 작별을 해보세요. 구성 요소 또는 파운데이션 자체의 제거를 확인하십시오. 길은 다양하지만 추억은 남을 수 있습니다.",
+		"titleWithName": "${type}/${name} 제거",
+		"confirmMessage": "${type}: ${name}을(를) 제거하시겠습니까?",
+		"invalidParamsTitle": "잘못된 매개변수",
+		"infoMessage": {
+			"icon": {
+				"alt": "정보 아이콘"
+			}
+		},
+		"buttons": {
+			"confirm": "제거 확인",
+			"cancel": "취소",
+			"back": "뒤로"
+		},
+		"alerts": {
+			"success": "${type}: ${name}이(가) 성공적으로 제거되었습니다.",
+			"failed": "제거에 실패했습니다: ${error}",
+			"invalidParams": "잘못된 요청 매개변수입니다.",
+			"httpError": "HTTP 오류! 상태 코드: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 아이콘"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "삭제"
+			}
+		}
+	},
+	"userSettings": {
+		"title": "사용자 설정",
+		"PageTitle": "사용자 설정",
+		"description": "당신의 분수 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
+		"userInfo": {
+			"title": "사용자 정보",
+			"usernameLabel": "사용자 이름:",
+			"creationDateLabel": "계정 생성일:",
+			"folderSizeLabel": "사용자 데이터 크기:",
+			"folderPathLabel": "사용자 데이터 경로:",
+			"copyPathBtn": {
+				"title": "경로 복사"
+			},
+			"copyPathBtnIcon": {
+				"alt": "복사 아이콘"
+			},
+			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
+		},
+		"changePassword": {
+			"title": "비밀번호 변경",
+			"currentPasswordLabel": "현재 비밀번호:",
+			"newPasswordLabel": "새 비밀번호:",
+			"confirmNewPasswordLabel": "새 비밀번호 확인:",
+			"submitButton": "비밀번호 변경",
+			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
+			"success": "비밀번호가 성공적으로 변경되었습니다."
+		},
+		"renameUser": {
+			"title": "사용자 이름 변경",
+			"newUsernameLabel": "새 사용자 이름:",
+			"submitButton": "사용자 이름 변경",
+			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
+		},
+		"userDevices": {
+			"title": "사용자 기기/세션",
+			"noDevicesFound": "기기 또는 세션이 없습니다.",
+			"deviceInfo": "기기 ID: ${deviceId}",
+			"thisDevice": "이 기기",
+			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
+			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			}
+		},
+		"apiKeys": {
+			"title": "API 키",
+			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
+			"input": {
+				"placeholder": "새로운 키 설명"
+			},
+			"createButton": "생성",
+			"noKeysFound": "API 키가 발견되지 않았습니다.",
+			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
+			"neverUsed": "사용하지 않았습니다",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
+			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
+			"errorDescriptionRequired": "설명이 필요합니다.",
+			"createSuccess": "API 키는 성공적으로 생성되었습니다.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			}
+		},
+		"newApiKey": {
+			"title": "새로운 API 키가 만들어졌습니다",
+			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
+			"closeButton": "내 키를 복사했습니다",
+			"copyButton": {
+				"title": "새 API 키 복사"
+			},
+			"copiedAlert": "키가 클립보드에 복사되었습니다!"
+		},
+		"logout": {
+			"title": "로그아웃",
+			"description": "현재 기기에서 계정을 로그아웃합니다.",
+			"buttonText": "로그아웃",
+			"confirmMessage": "로그아웃하시겠습니까?",
+			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
+		},
+		"deleteAccount": {
+			"title": "계정 삭제",
+			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
+			"submitButton": "내 계정 삭제",
+			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
+			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
+		},
+		"passwordConfirm": {
+			"title": "작업 확인",
+			"message": "계속하려면 현재 비밀번호를 입력하세요:",
+			"passwordLabel": "비밀번호:",
+			"confirmButton": "확인",
+			"cancelButton": "취소"
+		},
+		"apiError": "API 요청에 실패했습니다: ${message}",
+		"generalError": "오류가 발생했습니다: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "사용자 설정"
+					}
+				}
+			}
+		}
+	},
+	"subfounts": {
+		"title": "subfounts - P2P 장치 관리",
+		"pageTitle": "Subfounts",
+		"description": "P2P Subfount 연결 관리",
+		"hostConnectionCode": {
+			"title": "호스트 연결 코드",
+			"connectionCodeLabel": "연결 코드(Peer ID)",
+			"passwordLabel": "비밀번호",
+			"copyButton": "복사",
+			"regenerateButton": "재생성",
+			"infoMessage": "연결을 설정하려면 이러한 자격 증명을 Subfount 클라이언트와 공유하세요.",
+			"connectionCodeCopied": "연결 코드가 클립보드에 복사되었습니다.",
+			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
+			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
+		},
+		"connectedSubfounts": {
+			"title": "연결된 서브폰트",
+			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
+			"table": {
+				"id": "ID",
+				"peerId": "피어 ID",
+				"connectedAt": "연결 시간",
+				"status": "상태",
+				"connected": "연결됨",
+				"disconnected": "연결이 끊김",
+				"na": "해당 없음"
+			}
+		},
+		"codeExecution": {
+			"title": "코드 실행",
+			"description": "선택한 Subfount에서 JavaScript 코드 실행",
+			"selectSubfountLabel": "Subfount 선택",
+			"selectSubfountPlaceholder": "코드를 실행할 Subfount을 선택하세요...",
+			"scriptLabel": "자바스크립트 코드",
+			"executeButton": "실행",
+			"executing": "실행 중...",
+			"noSubfountSelected": "먼저 Subfount을 선택하세요.",
+			"noScriptProvided": "실행할 코드를 입력해주세요",
+			"executionSuccess": "코드 실행 성공",
+			"executionFailed": "코드 실행 실패: ${message}"
+		},
+		"downloadClient": {
+			"title": "서브폰트 클라이언트 다운로드",
+			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
+			"downloadButton": "subfount.mjs 다운로드"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
+			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
+			"loadSubfountsFailed": "하위 분수 목록을 로드하지 못했습니다: ${message}",
+			"generalError": "오류가 발생했습니다: ${message}"
+		}
+	},
+	"languageSettings": {
+		"title": "언어 설정",
+		"pageTitle": "언어 설정",
+		"description": "분수 애플리케이션에 대한 언어 기본 설정을 관리하세요. 사용 가능한 언어 옵션으로 경험을 맞춤화하세요.",
+		"pageDescription": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
+		"availableLanguages": "사용 가능한 언어",
+		"preferredLanguages": "우선 언어 목록",
+		"resetButton": "초기화",
+		"saveButton": "저장",
+		"select": {
+			"placeholder": "언어 선택..."
+		},
+		"search": {
+			"placeholder": "언어 검색..."
+		},
+		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
+		"savedMessage": "언어 설정이 저장됩니다!",
+		"resetMessage": "언어 설정이 재설정되었습니다!",
+		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "언어 설정"
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "테마 관리",
+		"description": "당신의 기분이나 이야기를 반영하는 미학을 선택하세요. 테마 팔레트에서 미리 보고 선택하세요. 각 테마는 분수 상호 작용에 대해 서로 다른 분위기를 제공합니다. 당신의 세계, 당신의 스타일.",
+		"instruction": "테마를 선택하세요!",
+		"search": {
+			"placeholder": "테마 검색...",
+			"noResult": "일치하는 테마가 없습니다."
+		},
+		"createButton": "+ 새 테마 만들기",
+		"preview": {
+			"editButton": {
+				"title": "편집"
+			},
+			"editButtonIcon": {
+				"alt": "편집 아이콘"
+			},
+			"deleteButton": {
+				"title": "삭제"
+			},
+			"deleteButtonIcon": {
+				"alt": "삭제 아이콘"
+			},
+			"cloneButton": {
+				"title": "복제"
+			},
+			"cloneButtonIcon": {
+				"alt": "복제 아이콘"
+			}
+		},
+		"editor": {
+			"title": "테마 편집기",
+			"cancelButton": "취소",
+			"saveApplyButton": "저장 및 적용",
+			"themeName": "테마 이름 (ID)",
+			"autoPaletteTitle": "사진에서 자동 색상 보정",
+			"autoPaletteInstruction": "위의 색상을 클릭하면 기본/보조/강조/중성색이 자동으로 채워집니다.",
+			"coreColors": "핵심 색상",
+			"baseBackground": "기본 및 배경",
+			"variables": "변수",
+			"borderRadius": "테두리 반경 (--rounded-box)",
+			"borderWidth": "테두리 너비 (--border-btn)",
+			"advancedCustomization": "고급 사용자 정의",
+			"customCSS": "사용자 정의 CSS (재정의)",
+			"customMjsScript": "사용자 정의 MJS 스크립트 (선택 사항)",
+			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. <code>load()</code> 및 <code>unload()</code> 함수가 포함된 객체를 반환합니다.",
+			"themeIdRequired": "테마 ID가 필요합니다.",
+			"newThemeName": "새 테마 이름:",
+			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",
+			"saved": "저장되었습니다!",
+			"failedToSave": "저장 실패"
+		},
+		"themes": {
+			"auto": "자동",
+			"light": "라이트",
+			"dark": "다크",
+			"cupcake": "컵케이크",
+			"bumblebee": "범블비",
+			"emerald": "에메랄드",
+			"corporate": "코퍼레이트",
+			"synthwave": "신스웨이브",
+			"retro": "레트로",
+			"cyberpunk": "사이버펑크",
+			"valentine": "밸런타인",
+			"halloween": "할로윈",
+			"garden": "가든",
+			"forest": "포레스트",
+			"aqua": "아쿠아",
+			"lofi": "Lo-fi",
+			"pastel": "파스텔",
+			"fantasy": "판타지",
+			"wireframe": "와이어프레임",
+			"black": "블랙",
+			"luxury": "럭셔리",
+			"dracula": "드라큘라",
+			"cmyk": "CMYK",
+			"autumn": "어텀",
+			"business": "비즈니스",
+			"acid": "애시드",
+			"lemonade": "레모네이드",
+			"night": "나이트",
+			"coffee": "커피",
+			"winter": "윈터",
+			"dim": "딤",
+			"nord": "노드",
+			"sunset": "선셋",
+			"caramellatte": "카라멜 라떼",
+			"abyss": "어비스",
+			"silk": "실크"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "화려한 변신!",
+				"description": "fount는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
+				"locked_description": "테마를 한 번 전환해 보세요."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"switchTheme": {
+						"title": "테마 변경"
+					}
+				}
+			}
+		}
+	},
+	"part_config": {
+		"title": "컴포넌트 설정",
+		"pageTitle": "컴포넌트 설정",
+		"description": "분수의 중심부를 들여다보세요. 여기에서 다양한 구성 요소의 설정을 조정하고 경험을 주도하는 엔진을 조정할 수 있습니다.",
+		"labels": {
+			"part": "컴포넌트 선택"
+		},
+		"placeholders": {
+			"partTypeSelect": "선택해주세요",
+			"partSelect": "선택해주세요"
+		},
+		"editor": {
+			"title": "컴포넌트 설정",
+			"disabledIndicator": "이 컴포넌트는 설정을 지원하지 않습니다.",
+			"jsonEditor": {
+				"aria-label": "JSON 구성 편집기"
+			},
+			"buttons": {
+				"save": "저장"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 아이콘"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
+			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
+			"loadEditorFailed": "에디터를 로드하는 데 실패했습니다.",
+			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "컴포넌트 설정"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "구성"
+			}
+		}
+	},
+	"serviceSource_manager": {
+		"title": "서비스 소스 관리",
+		"description": "여기서는 인공지능 소리의 교향곡을 지휘하게 됩니다. 소스를 추가, 조각 또는 침묵시켜 소스 동료에게 생명을 불어넣습니다. 코드와 상상력의 미묘한 춤입니다.",
+		"fileList": {
+			"title": "서비스 소스 목록",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "서비스 소스 구성",
+		"subtypeSelect": {
+			"label": "생성기 하위 카테고리",
+			"placeholder": "생성기 카테고리를 선택해 주세요"
+		},
+		"generatorSelect": {
+			"label": "생성기 선택",
+			"placeholder": "선택하세요"
+		},
+		"paths": {
+			"serviceSource": "서비스 소스 카테고리",
+			"generator": "생성기 카테고리"
+		},
+		"editor": {
+			"disabledIndicator": "먼저 생성기를 선택해 주세요"
+		},
+		"common_config_interface": {
+			"empty_generator": "이 서비스 소스의 레거시 생성기를 로드하는 동안 오류가 발생하여 제거되었거나 이름이 변경되었을 수 있습니다.",
+			"loadingModels": "모델 로드 중...",
+			"availableModels": "사용 가능한 모델:",
+			"copied": "복사되었습니다!",
+			"apiKeyRequired": "모델을 나열하려면 API 키가 필요합니다.",
+			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
+			"loadModelsFailed": "모델 로드 실패: ${message}"
+		},
+		"prompts": {
+			"newFileName": "새 서비스 소스 파일 이름을 입력하세요(접미사 제외)."
+		},
+		"buttons": {
+			"save": "저장",
+			"delete": "삭제",
+			"setDefault": {
+				"dataset": {
+					"tip": "기본값으로 설정"
+				},
+				"aria-label": "\"${fileName}\"을 기본 서비스 소스로 설정"
+			}
+		},
+		"confirm": {
+			"unsavedChanges": "저장되지 않은 변경사항이 있습니다. 변경사항을 취소하시겠습니까?",
+			"deleteFile": "파일을 삭제하시겠습니까?",
+			"unsavedChangesBeforeUnload": "저장되지 않은 변경사항이 있습니다. 정말로 이 페이지를 떠나시겠습니까?"
+		},
+		"alerts": {
+			"fetchFileListFailed": "파일 목록을 가져오지 못했습니다: ${error}",
+			"fetchGeneratorListFailed": "생성기 목록을 가져오지 못했습니다: ${error}",
+			"fetchDefaultsFailed": "기본 구성 요소를 가져오지 못했습니다: ${error}",
+			"fetchFileDataFailed": "파일 데이터를 가져오지 못했습니다: ${error}",
+			"fetchConfigTemplateFailed": "구성 템플릿을 가져오지 못했습니다.",
+			"saveFileFailed": "파일 저장 실패: ${error}",
+			"deleteFileFailed": "파일 삭제 실패: ${error}",
+			"addFileFailed": "파일 추가 실패: ${error}",
+			"setDefaultFailed": "기본 서비스 소스를 설정하지 못했습니다: ${error}",
+			"fetchBranchesFailed": "구성 요소 트리를 가져오지 못했습니다: ${error}",
+			"noFileSelectedSave": "저장할 파일을 선택하지 않았습니다.",
+			"noFileSelectedDelete": "삭제할 파일을 선택하지 않았습니다.",
+			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택하십시오",
+			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "승리의 법칙이 정해졌다!",
+				"description": "기본 AI가 마나 공급원으로 지정됩니다.",
+				"locked_description": "기본 AI 소스를 한 번 설정합니다."
+			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "서비스 소스 관리"
+			}
+		}
+	},
+	"discord_bots": {
+		"title": "Discord 봇",
+		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
+		"cardTitle": "Discord 봇",
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "캐릭터",
+				"apiKey": "Discord API 키",
+				"config": "설정"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"apiKeyInput": {
+				"placeholder": "API 키를 입력하세요"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API 키 표시 전환"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API 키 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "설정이 성공적으로 저장되었습니다.",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "디스코드에 오다",
+				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
+				"locked_description": "Discord Bot을 한 번 실행하세요."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot 구성"
+			}
+		}
+	},
+	"telegram_bots": {
+		"title": "텔레그램 봇",
+		"description": "당신의 주인공이 텔레그램의 즉각적인 물결을 넘나들게 하세요. 디지털 인지도를 구성하고, 대화를 관리하고, 활발한 메시징 세계로 도달 범위를 확장하세요.",
+		"cardTitle": "텔레그램 봇 관리",
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "연결된 캐릭터",
+				"botToken": "텔레그램 봇 토큰",
+				"config": "설정"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"botTokenInput": {
+				"placeholder": "텔레그램 봇 토큰을 입력하세요"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "API 키 표시 전환"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "봇 토큰 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "설정이 성공적으로 저장되었습니다!",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "텔레그램으로 오세요",
+				"description": "당신의 캐릭터를 텔레그램의 세계로 소환해보세요.",
+				"locked_description": "텔레그램 봇을 한 번 시작하세요."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Bot 구성"
+			}
+		}
+	},
+	"browser_integration": {
+		"title": "브라우저 통합",
+		"description": "분수와 웹 사이의 격차를 해소하세요. 이 페이지는 원활한 통합을 가능하게 하는 사용자 스크립트를 제공하여 AI 동료를 탐색 경험으로 가져옵니다.",
+		"pageHeader": "브라우저 통합",
+		"pageDescription": "fount 역할이 웹 페이지와 상호 작용하려면이 브라우저 통합 스크립트를 설치해야합니다. 캐릭터와 브라우저 사이의 브리지 역할을하여 페이지 컨텐츠를보고 작업을 수행 할 수 있습니다.",
+		"install_script_title": "설치 스크립트",
+		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야합니다.",
+		"install_button": "설치하다",
+		"install_from_url_tip": "브라우저를 설치할 수 없습니까? 이 URL을 복사하고 Tampermonkey 플러그인에서 URL에서 스크립트를 가져 오십시오.",
+		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
+		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
+		"popular_managers": "인기있는 선택 :",
+		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. ${browser}의 경우 [이 플러그인](${link})을 사용할 수 있습니다.",
+		"connected_pages_title": "연결된 페이지",
+		"fetch_pages_error": "링크 된 페이지 목록을로드하지 못했습니다.",
+		"page_title": "페이지 제목",
+		"page_url": "URL",
+		"page_status": "상태",
+		"status_focused": "현재 창",
+		"status_unfocused": "백그라운드에서",
+		"copy_button": "복사",
+		"copied_message": "클립 보드에 복사",
+		"no_pages_connected": {
+			"title": "아직 연결이 없습니다",
+			"description": "먼저 스크립트를 설치 한 다음 다른 브라우저 탭의 웹 사이트를 방문하십시오. 여기에는 자동으로 표시됩니다."
+		},
+		"autorun": {
+			"title": "스크립트를 자동으로 실행합니다",
+			"description": "특정 웹 사이트와 일치 할 때 자동으로 실행되는 JavaScript 스 니펫을 관리합니다. 이 스크립트는 AI 역할 또는 플러그인에서 제공하여 브라우징 경험을 향상 시키거나 자동화 할 수 있습니다.",
+			"form_title": "새 스크립트를 추가하십시오",
+			"comment_label": "댓글 (선택 사항)",
+			"url_regex_label": "URL 정규 표현식",
+			"script_label": "자바 스크립트 코드",
+			"add_button": "스크립트 추가",
+			"list_title": "구성된 스크립트",
+			"view_script_button": "스크립트 보기",
+			"delete_button": "삭제",
+			"confirm_delete": "이 스크립트를 삭제 하시겠습니까? 이 작업은 취소 할 수 없습니다.",
+			"add_success": "자동 실행 스크립트가 성공적으로 추가되었습니다!",
+			"delete_success": "스크립트가 성공적으로 삭제되었습니다.",
+			"no_scripts": {
+				"title": "자동 스크립트가 실행되지 않습니다",
+				"description": "아직 스크립트를 구성하지 않았습니다. 위의 양식을 사용하여 첫 번째 양식을 추가하십시오."
+			},
+			"table": {
+				"comment": "의견",
+				"url_regex": "URL 정규 표현식",
+				"created_at": "만들어졌습니다"
+			},
+			"view_script_modal_title": "스크립트 보기",
+			"view_script_modal_close_button": "닫기"
+		},
+		"error": {
+			"load_failed": "자동 스크립트를로드하지 못했습니다 : ${message}",
+			"add_failed": "스크립트를 추가하지 못했습니다 : ${message}",
+			"delete_failed": "스크립트 삭제 실패 : ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "마법을 불어넣어라!",
+				"description": "브라우저에 \"플러그인\"을 성공적으로 설치했습니다. 이제 더 많은 작업을 수행할 수 있습니다.",
+				"locked_description": "브라우저 통합 스크립트를 한 번 설치하십시오."
+			},
+			"run_js": {
+				"name": "코드 성가",
+				"description": "\"내 이름으로 브라우저에 명령을 내려라...\"",
+				"locked_description": "브라우저에서 JavaScript 코드를 한 번 실행하십시오."
+			},
+			"star_fount": {
+				"name": "오픈소스 스타",
+				"description": "GitHub에서 fount에 스타를 눌러주세요. 지원에 감사드립니다!",
+				"locked_description": "fount의 GitHub 저장소를 방문하여 별을 밝히세요."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "통합",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "브라우저 통합"
+					}
+				}
+			}
+		}
+	},
+	"browser_integration_script": {
+		"update": {
+			"prompt": "fount 브라우저 통합 스크립트의 새 버전을 사용할 수 있습니다. 업데이트 페이지가 지금 열려 있습니까?"
+		},
+		"csp_warning": "fount Browser Integration 스크립트는 CSP 정책이 페이지에 존재 함을 감지하여 통합 스크립트가 제대로 작동하지 않을 수 있습니다. CSP를 끄려면 플러그인 설치를 고려하십시오.",
+		"hostChange": {
+			"securityWarningTitle": "--- fount 안전 경고 ---",
+			"message": "현재 페이지 ( \"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고합니다.\n\n\"${newHost}\"\n\n경고 :이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어 할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n승인은 이것이 자신의 작업 (예 : fount 서버 마이그레이션)인지 확인하는 경우에만 이루어져야합니다.\n\n이 변경을 허용 하시겠습니까?",
+			"uuidMismatchError": "fount 보안 오류: 호스트 ${newHost}의 식별자(UUID)가 기존의 것과 일치하지 않습니다. 작업이 취소되었습니다.",
+			"verificationError": "fount 보안 오류 : 새 호스트 \"${newHost}\"를 확인할 수 없습니다. 주소가 올바른지 확인하고 서비스가 실행 중인지 확인하십시오."
+		}
+	},
+	"terminal_assistant": {
+		"title": "터미널 어시스턴트",
+		"description": "그래픽 인터페이스 너머에는 직접 명령을 내릴 수 있는 공간이 있습니다. 텍스트가 강력한 마법을 엮어내는 터미널 도우미를 통해 원천의 핵심과 상호작용하세요.",
+		"initialMessage": "fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
+		"initialMessageLink": "자세한 내용은 여기를 클릭하세요.",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"안녕하세요, 파운트.\"",
+				"description": "어두운 단말기에서는 AI 파트너의 이름이 호명됐다.",
+				"locked_description": "터미널 지원에 한 번 전화하십시오."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "통합",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "터미널 지원"
+					}
+				}
+			}
+		}
+	},
+	"deskpet": {
+		"title": "데스크톱 애완동물",
+		"description": "데스크탑에 사는 대화형 애완동물로 분수 캐릭터를 실행하세요.",
+		"launcherCard": {
+			"title": "애완동물 스타터",
+			"buttons": {
+				"start": "애완동물 시작"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "역할 검색..."
+		},
+		"runningCard": {
+			"title": "달리는 애완동물",
+			"noPets": "현재 운영중인 애완동물이 없습니다.",
+			"buttons": {
+				"stop": "중지"
+			}
+		},
+		"toasts": {
+			"started": "애완동물 '${charname}'이(가) 시작되었습니다.",
+			"stopped": "애완동물 '${charname}'이(가) 중지되었습니다.",
+			"start_failed": "애완동물 '${charname}' 시작 실패: ${message}",
+			"stop_failed": "애완동물 '${charname}' 중지 실패: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "데스크탑의 새로운 동반자",
+				"description": "야생의 캐릭터가 튀어나와 데스크탑을 점령합니다.",
+				"locked_description": "데스크톱 애완동물을 시작하세요."
+			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "데스크톱 애완동물로 출시"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "개발중",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "데스크톱 애완동물",
+						"sub_items": {
+							"main": {
+								"title": "데스크톱 애완동물 관리"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"access": {
+		"title": "다른 기기에서 fount에 접속",
+		"description": "단일 화면을 넘어 분수의 도달 범위를 확장합니다. 여기에는 로컬 에테르를 가로지르는 간단한 브리지인 다른 장치의 동료와 연결하기 위한 게이트웨이(URL, QR 코드)가 있습니다.",
+		"heading": "다른 기기에서 fount에 접속하시겠습니까?",
+		"instruction": {
+			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
+			"accessthis": "다음 URL로 접속하세요:"
+		},
+		"QRcode": {
+			"alt": "이 QR 코드를 스캔하여 fount에 액세스하세요."
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
+		"copyButton": "URL 복사",
+		"copied": "URL이 클립보드에 복사되었습니다!",
+		"home_function_buttons": {
+			"main": {
+				"title": "다른 디바이스에서 접속"
+			}
+		}
+	},
+	"proxy": {
+		"title": "API 프록시",
+		"description": "개발자와 통합자를 위해 이 페이지에서는 fount의 기능을 다른 애플리케이션에 통합하기 위한 연결인 fount API 프록시를 공개합니다.",
+		"heading": "API 프록시 게이트웨이",
+		"instruction": "이 페이지에서 API 키를 생성하고 관리하여 fount를 다른 애플리케이션과 통합하세요.",
+		"endpointSectionTitle": "API 엔드포인트",
+		"endpointInstruction": "다른 서비스와 통합하기 위한 기본 URL입니다.",
+		"apiUrlInput": {
+			"aria-label": "API 엔드포인트"
+		},
+		"usageExampleTitle": "사용 예제",
+		"usageExampleInstruction": "`curl`을 사용하여 사용 가능한 모델 목록을 가져오는 방법의 예입니다.",
+		"copyButton": "복사",
+		"copied": "클립보드에 복사됨",
+		"apiKeySectionTitle": "내 API 키",
+		"apiKey": "내 API 키:",
+		"noApiKey": "아직 이 페이지에 대한 API 키를 생성하지 않았습니다.",
+		"generateApiKeyButton": "새 키 생성",
+		"copyApiKeyButton": "복사",
+		"apiKeyCopied": "API 키가 복사되었습니다!",
+		"queryStringSectionTitle": "요청 헤더에 APIKey를 설정할 수 없나요? (안전하지 않음)",
+		"queryStringWarning": "애플리케이션이 요청 헤더(Authorization 헤더)에서 API 키 전송을 지원하지 않는 경우 이 대체 방법을 사용하세요. 참고: API 키를 URL에 직접 넣는 것은 서버 로그나 브라우저 기록에 기록될 수 있으므로 보안 위험이 있습니다.",
+		"copyQueryStringUrlButton": "API 키가 포함된 URL (쿼리 문자열)",
+		"home_function_buttons": {
+			"other": {
+				"title": "기타",
+				"sub_items": {
+					"asProxy": {
+						"title": "프록시로"
+					}
+				}
+			}
+		}
+	},
+	"achievements": {
+		"title": "성취",
+		"description": "샘과 함께하는 여정의 이정표와 성과를 살펴보세요. 각 업적은 고유한 이야기의 한 단계를 나타냅니다.",
+		"pageHeader": "성취의 전당",
+		"pageDescription": "여기에서 잠금 해제된 업적과 마일스톤을 확인하세요.",
+		"unlocked_on": "${date}에 잠금 해제됨",
+		"locked": "잠금 해제되지 않음",
+		"toast_title": "업적 잠금 해제!",
+		"error": {
+			"load_failed": "업적을 로드하지 못했습니다: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "도감 채우러 가자!",
+				"description": "성취 목록을 열고 우표 수집 여행을 시작할 준비를 했습니다.",
+				"locked_description": "업적 페이지를 엽니다."
+			},
+			"relock_by_clicking": {
+				"name": "실화냐?",
+				"description": "잠금 해제된 업적을 반복적으로 클릭하면 성공적으로 다시 잠길 수 있습니다. 왜?",
+				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "성취"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "디버깅 및 시스템 정보",
+		"description": "fount 설치에 대한 자세한 디버깅 및 시스템 정보를 얻으십시오. 이는 문제 해결 및 지원 요청에 매우 유용합니다.",
+		"heading": "디버깅 및 시스템 정보",
+		"copyButton": "보고서 복사",
+		"versionStatus": {
+			"title": "버전 상태",
+			"checking": "확인 중...",
+			"local": "로컬:",
+			"remote": "클라우드:",
+			"upToDate": "이미 최신",
+			"outdated": "업데이트가 있습니다",
+			"checkFailed": "확인 실패"
+		},
+		"systemInfo": {
+			"title": "시스템 정보",
+			"failed": "시스템 정보를 로드하지 못했습니다."
+		},
+		"connectivity": {
+			"backend": "백엔드 연결",
+			"frontend": "프런트엔드 연결"
+		},
+		"loading": "로드 중...",
+		"checking": "확인 중...",
+		"failed": "실패",
+		"copySuccess": "디버그 보고서가 클립보드에 복사되었습니다.",
+		"copyFailed": "보고서 복사 실패",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "디버그 패널 열기"
+				}
+			}
+		}
+	},
+	"badges_maker": {
+		"title": "fount! 배지 변환기",
+		"description": "프로젝트에 분수의 특성이 더해져야 하는 경우에 적합합니다. Shields.io 배지를 변환하여 새롭고 공감되는 정체성을 부여하세요.",
+		"card_title": "fount 배지 링크 컨버터",
+		"original_url_label": "img.shields.io URL을 붙여넣으세요",
+		"original_url": {
+			"placeholder": "예: https://img.shields.io/badge/hello-world-blue"
+		},
+		"new_url_label": "생성된 새 URL",
+		"new_url": {
+			"placeholder": "변환된 URL이 여기에 표시됩니다"
+		},
+		"preview_label": "배지 미리보기",
+		"copy_button": "복사",
+		"copied_text": "복사됨!",
+		"preview": {
+			"alt": "배지 미리보기"
+		},
+		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
+		"copy_fail_alert": "복사 실패!"
+	},
+	"404": {
+		"title": "페이지를 찾을 수 없습니다",
+		"description": "당신이 찾던 길은 안개 속으로 사라졌습니다. 실수였나요, 잊혀진 방향이었나요? 우리가 당신을 해안으로 다시 안내해 주거나 아마도 조용한 공허 속에서 게임을 잠시 멈출 수도 있습니다.",
+		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
+		"homepageButton": "홈페이지로 돌아가기"
+	},
+	"code_block": {
+		"copy": {
+			"dataset": {
+				"tip": "클립보드에 복사"
+			},
+			"aria-label": "클립보드에 복사"
+		},
+		"copied": {
+			"dataset": {
+				"tip": "클립보드에 복사되었습니다!"
+			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "코드 다운로드하기"
+			},
+			"aria-label": "코드 다운로드"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "코드 실행하기"
+			},
+			"aria-label": "코드 실행"
+		},
+		"preview": {
+			"dataset": {
+				"tip": "미리보기"
+			},
+			"aria-label": "미리보기"
+		},
+		"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
+	},
+	"pow_captcha": {
+		"initial": "나는 로봇이 아닙니다",
+		"verifying": "확인 중...",
+		"solved": "확인 성공",
+		"wasm_disabled": "더 빠른 확인을 위해 WASM을 활성화하세요",
+		"error": "확인 실패",
+		"errorMessage": "확인 실패: ${error}"
+	},
+	"breadcrumb": {
+		"clickToNavigate": "클릭하여 ${path}로 이동"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",
+			"keyPattern": "짧은 키보드 패턴은 추측하기 쉽습니다.",
+			"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측 할 수 있습니다.",
+			"extendedRepeat": "\"abcabcabc\"와 같은 반복된 문자 패턴은 쉽게 추측됩니다.",
+			"sequences": "\"ABC\"와 같은 일반적인 문자 시퀀스는 쉽게 추측됩니다.",
+			"recentYears": "최근 몇 년 동안 추측하기 쉽습니다.",
+			"dates": "날짜는 쉽게 추측됩니다.",
+			"topTen": "이것은 과도한 암호입니다.",
+			"topHundred": "이것은 종종 사용되는 비밀번호입니다.",
+			"common": "이것은 일반적으로 사용되는 비밀번호입니다.",
+			"similarToCommon": "이것은 일반적으로 사용되는 비밀번호와 유사합니다.",
+			"wordByItself": "한 마디도 쉽게 추측 할 수 있습니다.",
+			"namesByThemselves": "단일 이름 또는 성은 쉽게 추측됩니다.",
+			"commonNames": "일반적인 이름과 성은 추측하기 쉽습니다.",
+			"userInputs": "비밀번호에는 개인 또는 페이지 관련 데이터가 포함되어 있지 않아야합니다.",
+			"pwned": "인터넷 데이터 위반으로 비밀번호가 노출되었습니다."
+		},
+		"suggestions": {
+			"l33t": "\"a\"대신 \"@\"를 사용하는 것과 같은 예측 가능한 문자 대체를 사용하지 마십시오.",
+			"reverseWords": "일반적인 단어의 역 철자를 사용하지 마십시오.",
+			"allUppercase": "모든 글자보다는 일부를 대문자로 삼으십시오.",
+			"capitalization": "첫 글자뿐만 아니라 다른 글자도 대문자로 사용하세요.",
+			"dates": "당신과 관련된 날짜와 연도를 사용하지 마십시오.",
+			"recentYears": "가장 최근 몇 년 동안 사용하지 마십시오.",
+			"associatedYears": "당신과 관련된 연도를 사용하지 마십시오.",
+			"sequences": "일반적인 문자 시퀀스를 피하십시오.",
+			"repeated": "반복적 인 단어와 문자를 피하십시오.",
+			"longerKeyboardPattern": "더 긴 키보드 모드를 사용하고 입력 방향을 여러 번 변경하십시오.",
+			"anotherWord": "더 드문 단어를 추가하십시오.",
+			"useWords": "여러 단어를 사용하지만 일반적인 문구를 피하십시오.",
+			"noNeed": "강력한 암호를 만들기 위해 기호, 숫자 또는 대문자를 사용할 필요가 없습니다.",
+			"pwned": "다른 곳 에서이 암호를 사용하는 경우 변경하는 것이 좋습니다."
+		},
+		"timeEstimation": {
+			"ltSecond": "1초 미만",
+			"second": "{base} 초",
+			"seconds": "{base} 초",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} 시간",
+			"hours": "{base} 시간",
+			"day": "{base}일",
+			"days": "{base}일",
+			"month": "{base}개월",
+			"months": "{base}개월",
+			"year": "{base}년",
+			"years": "{base}년",
+			"centuries": "세기"
+		}
+	}
+}

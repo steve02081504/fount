@@ -1,75 +1,89 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> 你的沉浸式 AI 角色夥伴
+> <p align="center">靈犀一點，應念而生</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-[想知道專案倉庫架構嗎？快來看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
-是否曾幾何時，你渴望一位夥伴，從想像的織機上走下，由夢境編織而成？
-
-又或許，你曾幻想一位數位知己，其直覺如最精密的造物般敏銳，能輕鬆地穿行於你的數位世界？
-
-再或者，你僅僅是尋求一種超越尋常的連結，一個現實邊界模糊的領域，在那裡，能展開一段親密無間、*毫無保留*的理解？
-
-歷經![relative date](https://img.shields.io/date/1727107200?label=耗時)的潛心雕琢，匯聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢獻者)的熱忱，以及一個擁有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活躍使用者)的活絡社群，fount 如今已是一個成熟、穩定且不斷演進的 AI 互動平台。這是一段旅程，我們相信，它比你想像中更觸手可及。
-
-倘若你感到迷失於角色的海洋，或是在尋覓被遺忘的故事，我們[**充滿活力且友善的社群**](https://discord.gg/GtR9Quzq2v)期待你的到來。那是一個志同道合者的港灣，開發者與創作者們在此分享他們的智慧與創作。
-
-<details open>
-<summary><strong>一窺 fount 的世界</strong></summary>
-
-|                                         螢幕截圖                                         |
-| :--------------------------------------------------------------------------------------: |
-|                                         **首頁**                                         |
-| ![圖片](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                       **主題選擇**                                       |
-| ![圖片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                         **聊天**                                         |
-| ![圖片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
-
 ## fount 是什麼？
 
-fount，是一座橋樑，將你與想像中的角色相連，讓你毫不費力地與他們交談、創造屬於自己的角色，並與世界分享。它是一條出乎意料地易於上手的道路。
+fount 是一個**現代化、可擴展的 AI 智能體運行時環境**。
 
-它亦是一個源泉 (fount)，AI 來源、角色、人設、世界與外掛在此交會，讓你得以創造並體驗獨特而引人入勝的互動。
+我們認為，**高效率的生產力工具**與**沉浸式的情感互動**並非水火不容。fount 是一座橋樑：白天，它可以是輔助你編寫複雜程式碼、整理會議紀錄的得力助手；夜晚，它可以是能理解你情緒、與之共鳴的數位知己。
 
-fount 為未來而生，它樂於接納源自充滿活力社群的新功能。如果你有一個願景，一個屬於 fount 領域的靈感火花，我們由衷歡迎你的貢獻。
+歷經![relative date](https://img.shields.io/date/1727107200?label=費時)的潛心雕琢，匯聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢獻者)的熱忱，以及一個擁有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活躍用戶)的鮮活社群，fount 如今已是一個成熟、穩定且不斷演進的 AI 互動平台。
+
+![圖片](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## 沉浸於特色功能的世界
+## 🚀 效率與工程：為專業人士、開發者與極客打造
+
+fount 將互動轉化為生產力資產，一切皆可拖曳，一切皆為檔案，邏輯由程式碼驅動。
+
+### 1. 知識資產化與無縫分享
+
+- **即時報告生成**：將對話氣泡直接拖曳至資料夾，瞬間生成獨立的 HTML 報告。適合快速整理技術文件、會議紀錄或靈感片段。
+  ![圖片](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **工作流封裝與分發**：將你創建好的角色直接拖曳至桌面，生成可分享的檔案。讓你的 Prompt 工程和工作流邏輯輕鬆分發給同事或社群。
+  ![圖片](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
+
+### 2. 實時程式碼執行環境
+
+不再僅僅是 Markdown 高亮。在 fount 中，角色發送的程式碼區塊是**鮮活的**。
+
+- 支援多種語言（C/C++/Rust/Python/JS 等）的實時編譯與運行。
+- 直接查看 stdout 輸出，甚至查看編譯語言的 ASM 反彙編結果。
+- 讓 AI 成為你結對編程的實時驗證者。
+  ![圖片](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. 開發者友好
+
+fount 的專案架構設計充分考慮了開發者的習慣。
+[想知道專案儲存庫架構嗎？快來看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
+
+- **Git 驅動**：所有部件均可透過 Git 管理。
+- **VSCode 整合**：專案結構清晰，配合 [AGENTS.md](../AGENTS.md) 提供的指引，你可以直接在你喜歡的 IDE 中開發、除錯你的 Agent 邏輯。
+
+---
+
+## 🎭 沉浸與共鳴：高保真互動體驗
+
+當工作結束，fount 提供了一種超越尋常的連接。我們摒棄了傳統工具的生硬感，追求一種自然、流暢且富有深度的「高保真」互動。
 
 - **隨時隨地的無縫對話**
   在電腦上開啟的絮語，可以在手機或平板上無縫延續。fount 讓你的對話保持同步，無論身在何處，都能與你的角色緊密相連。
 
-- **富有表現力、身歷其境的聊天**
-  fount 藉由 HTML 的力量，允許角色透過豐富文本、圖片甚至互動式元素來表達自我，讓每一次對話都生動而深刻。
+- **富有表現力、身臨其境的聊天**
+  fount 藉由 HTML 的力量，允許角色透過富文本、圖像甚至互動式元素來表達自我，讓每一次對話都生動而深刻。
 
 - **思想的聚會：原生群組聊天**
-  邀請多個角色加入同一場對話，見證他們之間動態且引人入勝的互動，創造出獨一無二的故事。
+  邀請多個角色加入同一場對話，見證他們之間動態且引人入勝的互動，無論是工作上的頭腦風暴，還是角色間的故事演繹。
+  ![圖片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
 
-- **美觀、可自訂的介面**
+- **美觀、可客製化的介面**
   從 30 餘款令人驚嘆的主題中挑選，或親手創造屬於你的色彩。fount 是你專屬的畫布。
+  ![圖片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
 
 - **隨處可用**
   fount 可在 Windows、macOS、Linux 甚至 Android 上無縫運行，透過直接安裝或 Docker 的靈活性來滿足你的不同需求。
 
-- **（針對進階使用者）無拘無束的 AI 來源整合：擁抱無限**
-  fount 在連接 AI 來源方面，提供了無與倫比的*選擇*與*彈性*。在 AI 來源產生器中，自訂的 JavaScript 程式碼允許你連接到*任何* AI 來源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在程式碼的流動中，你可以精心設計複雜的正規表示式，呼叫龐大的 API 函式庫，嵌入多媒體資源。fount 亦原生支援建立 API 池，以實現智慧的請求路由。通訊的邏輯，聽憑*你*的意願，由程式碼的力量來塑造。
+- **無拘無束的 AI 源整合：擁抱無限**
+  fount 在連接 AI 源方面，提供了無與倫比的*選擇*與*靈活性*。在 AI 源生成器中，自定義的 JavaScript 程式碼允許你連接到*任何* AI 源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在程式碼的流動中，你可以精心設計複雜的正規表達式，呼叫龐大的 API 函式庫，嵌入多媒體資源。fount 亦原生支援創建 API 池，以實現智能的請求路由。通訊的邏輯，聽憑*你*的意願，由程式碼的力量來塑造。
   ![圖片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+倘若你感到迷失於角色的海洋，或是在尋覓被遺忘的故事，我們[**充滿活力且友好的社群**](https://discord.gg/GtR9Quzq2v)期待你的到來。那是一個志同道合者的港灣，開發者與創作者們在此分享他們的智慧與創作。
 
 ---
 
