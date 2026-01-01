@@ -1,2 +1,3 @@
-s=',color:#000,color:#0ff'.repeat(280);for(v of[9**9-5,982,4624523,18696,1199,227]){for(c='',a=v/9,i=21;i--;a/=3)d=' :'[a%3^0]||'%c@%c',c=d+c+d;s=(c+`
-`).repeat(v%9)+s}s.split`,`
+let f,o,u,n,t=',color:#000,color:#0ff'.repeat(280)
+for(f of[9**8-1,109,513835,2077,133,25])for(o='',n=21;u=' :'[0|f%3]||'%c@%c',n;f/=3)(t=`${o=u+o+u}
+`.repeat(!--n*6939/f%9.4)+t).split`,`
