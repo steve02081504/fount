@@ -1,1 +1,3 @@
-/* eslint-disable */const c=[''];' i@2:1,6,2; g:2@2:1,45,2; e@2:2@2:1,90,3; 9@3 2@2:2@2:1,360,8; g:2 2:1,45,1; 5@g,0,4'.split`;`.map(s=>{let[e,l,n]=s.split`,`,o=e.match(/.\w/g).map(c=>c[0].repeat(parseInt(c[1],36))),g=[...o,...o.reverse()],t=[...(2**g.length|2*l).toString(2).slice(2)].map(c=>'color:#0'+(+c?'ff':'00'));for(;n--;)c[0]+=g.join`%c`+'\n',c.push(...t)}),c
+let f,o,u,n,t=',color:#000,color:#0ff'.repeat(280)
+for(f of[9**8-1,109,513835,2077,133,25])for(o='',n=21;u=' :'[0|f%3]||'%c@%c',n;f/=3)(t=`${o=u+o+u}
+`.repeat(!--n*6939/f%9.4)+t).split`,`
