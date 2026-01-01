@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Plugins",
+		"description": "Plugins manager"
+	},
+	"zh-CN": {
+		"name": "插件",
+		"description": "插件管理器"
+	},
+	"ar-SA": {
+		"name": "الإضافات",
+		"description": "مدير الإضافات"
+	},
+	"de-DE": {
+		"name": "Plugins",
+		"description": "Plugins-Manager"
+	},
+	"emoji": {
+		"name": "插件",
+		"description": "插件管理器"
+	},
+	"es-ES": {
+		"name": "Complementos",
+		"description": "Administrador de complementos"
+	},
+	"fr-FR": {
+		"name": "Plugins",
+		"description": "Gestionnaire de plugins"
+	},
+	"hi-IN": {
+		"name": "प्लग-इन",
+		"description": "प्लगइन्स मैनेजर"
+	},
+	"is-IS": {
+		"name": "Viðbætur",
+		"description": "Viðbótarstjóri"
+	},
+	"it-IT": {
+		"name": "Plugin",
+		"description": "Gestore dei plugin"
+	},
+	"ja-JP": {
+		"name": "プラグイン",
+		"description": "プラグインマネージャー"
+	},
+	"ko-KR": {
+		"name": "플러그인",
+		"description": "플러그인 관리자"
+	},
+	"lzh": {
+		"name": "插件",
+		"description": "插件管理器"
+	},
+	"nl-NL": {
+		"name": "Plug-ins",
+		"description": "Beheerder van plug-ins"
+	},
+	"pt-PT": {
+		"name": "Plug-ins",
+		"description": "Gerenciador de plug-ins"
+	},
+	"ru-RU": {
+		"name": "Плагины",
+		"description": "Менеджер плагинов"
+	},
+	"uk-UA": {
+		"name": "Плагіни",
+		"description": "Менеджер плагінів"
+	},
+	"vi-VN": {
+		"name": "Plugin",
+		"description": "Trình quản lý plugin"
+	},
+	"zh-TW": {
+		"name": "插件",
+		"description": "插件管理器"
+	}
+}

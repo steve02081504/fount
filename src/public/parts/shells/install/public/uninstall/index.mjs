@@ -1,0 +1,151 @@
+/**
+ * 卸载 shell 的客户端逻辑。
+ */
+import { initTranslations, geti18n } from '/scripts/i18n.mjs'
+import { onServerEvent } from '/scripts/server_events.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { uninstallPart as uninstallPartEndpoint } from '../src/endpoints.mjs'
+import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
+
+applyTheme()
+
+/**
+ * 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
+function getURLParams() {
+	return new URLSearchParams(window.location.search)
+}
+
+/**
+ * 卸载部件。
+ * @param {string} partpath - 部件路径。
+ * @returns {Promise<any>} - 响应数据。
+ */
+async function uninstallPart(partpath) {
+	// Renamed imported function to avoid conflict with this local function
+	const response = await uninstallPartEndpoint(partpath)
+
+	if (!response.ok) {
+		const data = await response.json().catch(() => null)
+		throw new Error(data?.message || geti18n('uninstall.alerts.httpError', { status: response.status }))
+	}
+
+	return await response.json()
+}
+
+/**
+ * 显示消息。
+ * @param {'info' | 'error'} type - 消息类型。
+ * @param {string} message - 消息内容。
+ */
+function showMessage(type, message) {
+	const messageElement = document.getElementById('message-content')
+	const infoMessage = document.getElementById('info-message')
+	const errorElement = document.getElementById('error-content')
+	const errorMessage = document.getElementById('error-message')
+	if (type === 'info') {
+		messageElement.textContent = message
+		infoMessage.style.display = 'flex'
+		errorMessage.style.display = 'none'
+	}
+	else if (type === 'error') {
+		errorElement.textContent = message
+		errorMessage.style.display = 'flex'
+		infoMessage.style.display = 'none'
+	}
+}
+/**
+ * 隐藏消息。
+ */
+function hideMessage() {
+	document.getElementById('info-message').style.display = 'none'
+	document.getElementById('error-message').style.display = 'none'
+}
+
+await initTranslations('uninstall')
+const partpathDropdown = document.getElementById('partpath-dropdown')
+const partpathBreadcrumb = document.getElementById('partpath-breadcrumb')
+const partpathMenu = document.getElementById('partpath-menu')
+const urlParams = getURLParams()
+const partpath = urlParams.get('partpath')
+let activePartpath = partpath || ''
+const uninstallMessage = document.getElementById('uninstall-message')
+const title = document.getElementById('title')
+const confirmButton = document.getElementById('confirm-uninstall')
+const cancelButton = document.getElementById('cancel-uninstall')
+
+/**
+ *
+ */
+const renderTexts = () => {
+	if (!activePartpath) return
+	const [type, ...name] = activePartpath.split('/')
+	title.textContent = geti18n('uninstall.titleWithName', { type, name: name.join('/') })
+	uninstallMessage.textContent = geti18n('uninstall.confirmMessage', { type, name: name.join('/') })
+}
+
+/**
+ *
+ */
+const setupEvents = () => {
+	confirmButton.addEventListener('click', async () => {
+		if (!activePartpath) return
+		hideMessage()
+		try {
+			await uninstallPart(activePartpath)
+		}
+		catch (error) {
+			showMessage('error', geti18n('uninstall.alerts.failed', { error: error.message }))
+		}
+	})
+
+	onServerEvent('part-uninstalled', ({ partpath: eventPartpath }) => {
+		if (eventPartpath === activePartpath) {
+			const [etype, ...ename] = activePartpath.split('/')
+			showMessage('info', geti18n('uninstall.alerts.success', { type: etype, name: ename.join('/') }))
+			confirmButton.disabled = true
+			cancelButton.dataset.i18n = 'uninstall.buttons.back'
+		}
+	})
+
+	onServerEvent('part-installed', ({ partpath: eventPartpath }) => {
+		if (eventPartpath === activePartpath) {
+			confirmButton.disabled = false
+			cancelButton.dataset.i18n = 'uninstall.buttons.cancel'
+			hideMessage()
+		}
+	})
+}
+
+if (activePartpath) renderTexts()
+else title.dataset.i18n = 'uninstall.title'
+
+const picker = await createPartpathPicker({
+	dropdown: partpathDropdown,
+	breadcrumbList: partpathBreadcrumb,
+	menu: partpathMenu,
+	initialPath: activePartpath,
+	/**
+	 * 处理用户选择的部件路径。
+	 * @param {string} selectedPath 选中的部件路径。
+	 */
+	onChange: (selectedPath) => {
+		if (!selectedPath) return
+		activePartpath = selectedPath
+		renderTexts()
+		hideMessage()
+		confirmButton.disabled = false
+		cancelButton.dataset.i18n = 'uninstall.buttons.cancel'
+	}
+})
+
+if (!activePartpath) {
+	activePartpath = picker.getPath()
+	if (!activePartpath) {
+		title.dataset.i18n = 'uninstall.invalidParamsTitle'
+		showMessage('error', geti18n('uninstall.alerts.invalidParams'))
+	} else renderTexts()
+}
+
+setupEvents()

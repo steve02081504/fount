@@ -2,7 +2,6 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import argon2 from 'npm:argon2'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
@@ -12,44 +11,69 @@ import { ms } from '../scripts/ms.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { partTypeList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
+const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(async error => {
+	globalThis.console.warn(error)
+	const fallback = await import('npm:argon2')
+	return {
+		hash: fallback.hash,
+		verify: fallback.verify,
+		Algorithm: {
+			Argon2id: fallback.argon2id
+		}
+	}
+})
+/**
+ * 此文件处理应用程序的所有认证相关逻辑，
+ * 包括用户注册、登录、JWT管理、API密钥验证和密码处理。
+ */
+
 // --- 常量定义 ---
-const ACCESS_TOKEN_EXPIRY = '1d' // Access Token 有效期
-export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY) // Access Token 有效期 (毫秒数)
-export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
-export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY) // Refresh Token 有效期 (毫秒数)
-const ACCOUNT_LOCK_TIME = '10m' // 账户锁定时间
-const MAX_LOGIN_ATTEMPTS = 5 // 最大登录尝试次数
-const BRUTE_FORCE_THRESHOLD = 8 // Brute force threshold
-const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3 // 1/3 chance of fake success
-const JWT_CACHE_SIZE = 32 // JWT验证缓存大小
+const ACCESS_TOKEN_EXPIRY = '1d'
+/** @constant {number} 访问令牌的持续时间（毫秒）。 */
+export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY)
+/** @constant {string} 刷新令牌的过期时间。 */
+export const REFRESH_TOKEN_EXPIRY = '30d'
+/** @constant {number} 刷新令牌的持续时间（毫秒）。 */
+export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY)
+const ACCOUNT_LOCK_TIME = '10m'
+const MAX_LOGIN_ATTEMPTS = 5
+const BRUTE_FORCE_THRESHOLD = 8
+const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3
+const JWT_CACHE_SIZE = 32
 
 // --- 模块级变量 ---
-let privateKey, publicKey // 用于JWT签名的密钥对
-const loginFailures = {} // { [ip]: count }
-const jwtCache = new Map() // JWT验证结果缓存
+
+/** @type {jose.KeyLike} */
+let privateKey
+/** @type {jose.KeyLike} */
+let publicKey
+/** @type {Object<string, number>} */
+const loginFailures = {}
+/** @type {Map<string, object>} */
+const jwtCache = new Map()
 
 // --- 辅助函数 ---
 
 /**
  * 获取安全的 Cookie 选项，动态判断 'secure' 标志。
- * @param {import('express').Request} req - Express 请求对象
- * @returns {object} Cookie 选项对象
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {object} Cookie 选项对象。
  */
-function getSecureCookieOptions(req) {
+export function getSecureCookieOptions(req) {
+	const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https'
 	return {
 		httpOnly: true,
-		secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+		secure: isSecure,
 		sameSite: 'Lax',
 	}
 }
 
 /**
  * 清除所有认证相关的 Cookies。
- * @param {import('express').Response} res - Express 响应对象
- * @param {object} options - Cookie 选项
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @param {object} options - Cookie 选项。
  */
 function clearAuthCookies(res, options) {
 	res.clearCookie('accessToken', options)
@@ -60,7 +84,7 @@ function clearAuthCookies(res, options) {
 
 /**
  * 生成新的 EC 密钥对 (PEM 格式)。
- * @returns {{privateKey: string, publicKey: string}}
+ * @returns {{privateKey: string, publicKey: string}} 新的密钥对。
  */
 function genNewKeyPair() {
 	const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
@@ -74,8 +98,8 @@ function genNewKeyPair() {
 
 /**
  * 将 PEM 格式的密钥对导入为 jose 可用的格式。
- * @param {{privateKey: string, publicKey: string}} keyPair - PEM 格式的密钥对
- * @returns {Promise<{privateKey: jose.KeyLike, publicKey: jose.KeyLike}>}
+ * @param {{privateKey: string, publicKey: string}} keyPair - PEM 格式的密钥对。
+ * @returns {Promise<{privateKey: jose.KeyLike, publicKey: jose.KeyLike}>} 导入的密钥对。
  */
 async function importKeyPair(keyPair) {
 	return {
@@ -86,7 +110,7 @@ async function importKeyPair(keyPair) {
 
 /**
  * 为暴力破解防御生成一个临时的、假的私钥。
- * @returns {Promise<jose.KeyLike>}
+ * @returns {Promise<jose.KeyLike>} 一个假的私钥。
  */
 async function getFakePrivateKey() {
 	let fakeKeyPair
@@ -97,11 +121,11 @@ async function getFakePrivateKey() {
 }
 
 /**
- * 通用的 JWT 生成函数。
- * @param {object} payload - 令牌的有效载荷
- * @param {string | number} expirationTime - 令牌有效期 (例如 '1d', '2h', 3600)
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥
- * @returns {Promise<string>} 生成的 JWT
+ * 一个通用的 JWT 生成函数。
+ * @param {object} payload - 令牌的有效载荷。
+ * @param {string | number} expirationTime - 令牌的过期时间 (例如, '1d', '2h', 3600)。
+ * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
+ * @returns {Promise<string>} 生成的 JWT。
  */
 async function generateToken(payload, expirationTime, signingKey = privateKey) {
 	const jti = crypto.randomUUID()
@@ -115,7 +139,8 @@ async function generateToken(payload, expirationTime, signingKey = privateKey) {
 // --- 核心认证逻辑 ---
 
 /**
- * 初始化认证模块，加载或生成密钥对，并清理数据。
+ * 初始化认证模块，加载或生成密钥对并清理数据。
+ * @returns {Promise<void>}
  */
 export async function initAuth() {
 	config.uuid ??= crypto.randomUUID()
@@ -142,51 +167,51 @@ export async function initAuth() {
 }
 
 /**
- * 生成 JWT (Access Token)。
- * @param {object} payload - 令牌的有效载荷
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥
- * @returns {Promise<string>} Access Token
+ * 生成一个 JWT 访问令牌。
+ * @param {object} payload - 令牌的有效载荷。
+ * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
+ * @returns {Promise<string>} 生成的访问令牌。
  */
 export async function generateAccessToken(payload, signingKey = privateKey) {
 	return generateToken(payload, ACCESS_TOKEN_EXPIRY, signingKey)
 }
 
 /**
- * 生成 API Access Token。
- * @param {object} payload - 令牌的有效载荷
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥
- * @returns {Promise<string>} API Access Token
+ * 生成一个 API 访问令牌。
+ * @param {object} payload - 令牌的有效载荷。
+ * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
+ * @returns {Promise<string>} 生成的 API 访问令牌。
  */
 export async function generateApiAccessToken(payload, signingKey = privateKey) {
 	return generateToken({ ...payload, type: 'api' }, ACCESS_TOKEN_EXPIRY, signingKey)
 }
 
 /**
- * 生成刷新令牌 (Refresh Token)。
- * @param {object} payload - 令牌的有效载荷
- * @param {string} deviceId - 设备的唯一标识符
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥
- * @returns {Promise<string>} Refresh Token
+ * 生成一个刷新令牌。
+ * @param {object} payload - 令牌的有效载荷。
+ * @param {string} deviceId - 设备的唯一标识符。
+ * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
+ * @returns {Promise<string>} 生成的刷新令牌。
  */
 async function generateRefreshToken(payload, deviceId = 'unknown', signingKey = privateKey) {
 	return generateToken({ ...payload, deviceId }, REFRESH_TOKEN_EXPIRY, signingKey)
 }
 
 /**
- * 生成 API Refresh Token。
- * @param {object} payload - 令牌的有效载荷
- * @param {string} apiKeyJti - 关联的 API Key 的 JTI
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥
- * @returns {Promise<string>} API Refresh Token
+ * 生成一个 API 刷新令牌。
+ * @param {object} payload - 令牌的有效载荷。
+ * @param {string} apiKeyJti - 关联的 API 密钥的 JTI。
+ * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
+ * @returns {Promise<string>} 生成的 API 刷新令牌。
  */
 async function generateApiRefreshToken(payload, apiKeyJti, signingKey = privateKey) {
 	return generateToken({ ...payload, apiKeyJti, type: 'apiRefresh' }, REFRESH_TOKEN_EXPIRY, signingKey)
 }
 
 /**
- * 验证 JWT (包括 Access Token 和 Refresh Token)，支持缓存。
- * @param {string} token - 要验证的 JWT
- * @returns {Promise<object|null>} 解码后的 payload 或 null
+ * 验证一个 JWT（访问令牌或刷新令牌），支持缓存。
+ * @param {string} token - 要验证的 JWT。
+ * @returns {Promise<object|null>} 解码后的有效载荷，如果验证失败则返回 null。
  */
 async function verifyToken(token) {
 	if (jwtCache.has(token)) {
@@ -223,10 +248,10 @@ async function verifyToken(token) {
 
 /**
  * 通用的令牌刷新处理器。
- * @param {string} refreshTokenValue - 客户端传入的 Refresh Token
- * @param {import('express').Request} req - Express 请求对象
- * @param {object} options - 刷新逻辑的配置
- * @returns {Promise<object>} 包含状态码、新令牌或错误消息的对象
+ * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {object} options - 刷新逻辑的配置。
+ * @returns {Promise<object>} 包含状态码、新令牌或错误消息的对象。
  */
 async function handleTokenRefresh(refreshTokenValue, req, options) {
 	try {
@@ -258,7 +283,7 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 		const newRefreshToken = await options.generateRefreshToken(payload, tokenEntry)
 		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken)
 
-		// 更新用户令牌列表
+		// 更新用户的令牌列表
 		user.auth[options.userTokenArrayKey] = user.auth[options.userTokenArrayKey].filter(t => t.jti !== decoded.jti)
 		user.auth[options.userTokenArrayKey].push({
 			...options.getNewTokenEntry(decodedNewRefreshToken, tokenEntry),
@@ -280,20 +305,43 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 }
 
 /**
- * 刷新 Access Token。
- * @param {string} refreshTokenValue - 客户端传入的 Refresh Token
- * @param {import('express').Request} req - Express 请求对象
- * @returns {Promise<object>}
+ * 刷新访问令牌。
+ * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refresh(refreshTokenValue, req) {
 	return handleTokenRefresh(refreshTokenValue, req, {
 		tokenName: 'standard',
 		expectedType: undefined,
 		userTokenArrayKey: 'refreshTokens',
+		/**
+		 * 验证令牌条目。
+		 * @param {object} entry - 用户的令牌条目。
+		 * @param {object} decoded - 解码后的刷新令牌。
+		 * @returns {boolean} 如果条目有效，则返回 true。
+		 */
 		validateEntry: (entry, decoded) => entry.deviceId === decoded.deviceId,
 		mismatchRevokeReason: 'refresh-device-mismatch',
+		/**
+		 * 生成新的访问令牌。
+		 * @param {object} payload - 访问令牌的有效载荷。
+		 * @returns {Promise<string>} 新的访问令牌。
+		 */
 		generateAccessToken: (payload) => generateAccessToken(payload),
+		/**
+		 * 生成新的刷新令牌。
+		 * @param {object} payload - 刷新令牌的有效载荷。
+		 * @param {object} entry - 旧的令牌条目。
+		 * @returns {Promise<string>} 新的刷新令牌。
+		 */
 		generateRefreshToken: (payload, entry) => generateRefreshToken(payload, entry.deviceId),
+		/**
+		 * 获取新的令牌条目。
+		 * @param {object} decoded - 解码后的新刷新令牌。
+		 * @param {object} oldEntry - 旧的令牌条目。
+		 * @returns {object} 新的令牌条目。
+		 */
 		getNewTokenEntry: (decoded, oldEntry) => ({
 			jti: decoded.jti,
 			deviceId: oldEntry.deviceId,
@@ -306,20 +354,43 @@ async function refresh(refreshTokenValue, req) {
 }
 
 /**
- * 刷新 API Access Token。
- * @param {string} apiRefreshTokenValue - 客户端传入的 API Refresh Token
- * @param {import('express').Request} req - Express 请求对象
- * @returns {Promise<object>}
+ * 刷新 API 访问令牌。
+ * @param {string} apiRefreshTokenValue - 客户端提供的 API 刷新令牌。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refreshApiToken(apiRefreshTokenValue, req) {
 	return handleTokenRefresh(apiRefreshTokenValue, req, {
 		tokenName: 'API',
 		expectedType: 'apiRefresh',
 		userTokenArrayKey: 'apiRefreshTokens',
+		/**
+		 * 验证 API 令牌条目。
+		 * @param {object} entry - 用户的 API 令牌条目。
+		 * @param {object} decoded - 解码后的 API 刷新令牌。
+		 * @returns {boolean} 如果条目有效，则返回 true。
+		 */
 		validateEntry: (entry, decoded) => entry.apiKeyJti === decoded.apiKeyJti,
 		mismatchRevokeReason: 'api-refresh-key-mismatch',
+		/**
+		 * 生成新的 API 访问令牌。
+		 * @param {object} payload - API 访问令牌的有效载荷。
+		 * @returns {Promise<string>} 新的 API 访问令牌。
+		 */
 		generateAccessToken: (payload) => generateApiAccessToken(payload),
+		/**
+		 * 生成新的 API 刷新令牌。
+		 * @param {object} payload - API 刷新令牌的有效载荷。
+		 * @param {object} entry - 旧的令牌条目。
+		 * @returns {Promise<string>} 新的 API 刷新令牌。
+		 */
 		generateRefreshToken: (payload, entry) => generateApiRefreshToken(payload, entry.apiKeyJti),
+		/**
+		 * 获取新的 API 令牌条目。
+		 * @param {object} decoded - 解码后的新 API 刷新令牌。
+		 * @param {object} oldEntry - 旧的令牌条目。
+		 * @returns {object} 新的 API 令牌条目。
+		 */
 		getNewTokenEntry: (decoded, oldEntry) => ({
 			jti: decoded.jti,
 			apiKeyJti: oldEntry.apiKeyJti,
@@ -334,8 +405,9 @@ async function refreshApiToken(apiRefreshTokenValue, req) {
 
 /**
  * 用户登出。
- * @param {import('express').Request} req - Express 请求对象
- * @param {import('express').Response} res - Express 响应对象
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<void>}
  */
 export async function logout(req, res) {
 	const { cookies: { accessToken, refreshToken } } = req
@@ -363,9 +435,9 @@ export async function logout(req, res) {
 }
 
 /**
- * 验证 API Key。
- * @param {string} apiKey - 待验证的 API Key
- * @returns {Promise<object|null>} 成功则返回用户对象，否则返回 null
+ * 验证 API 密钥。
+ * @param {string} apiKey - 要验证的 API 密钥。
+ * @returns {Promise<object|null>} 如果成功，则返回用户对象，否则返回 null。
  */
 export async function verifyApiKey(apiKey) {
 	try {
@@ -392,19 +464,25 @@ export async function verifyApiKey(apiKey) {
 
 /**
  * 尝试对请求进行身份验证，成功则填充 req.user。
- * @param {import('express').Request} req - Express 请求对象
- * @param {import('express').Response} res - Express 响应对象
- * @throws {Error} 如果认证失败
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @throws {Error} 如果认证失败。
+ * @returns {Promise<void>}
  */
 export async function try_auth_request(req, res) {
 	if (req.user) return
 
+	/**
+	 * 抛出未授权错误。
+	 * @param {string} [message='Unauthorized'] - 错误消息。
+	 * @throws {Error}
+	 */
 	const Unauthorized = (message = 'Unauthorized') => {
 		console.error(message)
 		throw new Error(message)
 	}
 
-	// 1. API Key 认证
+	// 1. API 密钥认证
 	let apiKey
 	if (req.ws) apiKey = req.headers['sec-websocket-protocol']?.split?.(',')?.[0]?.trim?.()
 	else {
@@ -418,7 +496,7 @@ export async function try_auth_request(req, res) {
 		return Unauthorized('Invalid API Key')
 	}
 
-	// 2. Cookie Token 认证
+	// 2. Cookie 令牌认证
 	const { accessToken, refreshToken, apiAccessToken, apiRefreshToken } = req.cookies
 	let decoded = accessToken ? await verifyToken(accessToken) : null
 	if (decoded && decoded.type !== 'api') {
@@ -432,7 +510,7 @@ export async function try_auth_request(req, res) {
 		return
 	}
 
-	// 3. 尝试刷新 Token
+	// 3. 尝试刷新令牌
 	let refreshResult
 	if (refreshToken) refreshResult = await refresh(refreshToken, req)
 	else if (apiRefreshToken) refreshResult = await refreshApiToken(apiRefreshToken, req)
@@ -442,13 +520,13 @@ export async function try_auth_request(req, res) {
 		return Unauthorized(refreshResult?.message || 'Session expired, please login again.')
 	}
 
-	// 4. 刷新成功，设置 Cookies 并验证新 Token
+	// 4. 刷新成功，设置 Cookies 并验证新令牌
 	const cookieOptions = getSecureCookieOptions(req)
 	let newAccessTokenValue
 	if (refreshResult.accessToken) {
 		res.cookie('accessToken', refreshResult.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
 		res.cookie('refreshToken', refreshResult.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
-		req.cookies.accessToken = refreshResult.accessToken // 更新 req 对象以便后续中间件使用
+		req.cookies.accessToken = refreshResult.accessToken // 为后续中间件更新 req
 		newAccessTokenValue = refreshResult.accessToken
 	} else if (refreshResult.apiAccessToken) {
 		res.cookie('apiAccessToken', refreshResult.apiAccessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
@@ -464,22 +542,28 @@ export async function try_auth_request(req, res) {
 }
 
 /**
- * 验证请求，一个 try_auth_request 的 Promise 包装器。
- * @param {import('express').Request} req - Express 请求对象
- * @param {import('express').Response} res - Express 响应对象
- * @returns {Promise<boolean>} 成功返回 true，失败返回 false
+ * try_auth_request 的 Promise 包装器。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<boolean>} 成功时为 true，失败时为 false。
  */
 export function auth_request(req, res) {
 	return try_auth_request(req, res).then(() => true, () => false)
 }
 
 /**
- * 身份验证中间件。
- * @param {import('express').Request} req - Express 请求对象
- * @param {import('express').Response} res - Express 响应对象
- * @param {import('express').NextFunction} next - Express next middleware 函数
+ * 认证中间件。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @param {import('npm:express').NextFunction} next - Express 的 next 中间件函数。
+ * @returns {Promise<void>}
  */
 export async function authenticate(req, res, next) {
+	/**
+	 * 处理未授权的请求。
+	 * @param {string} [message='Unauthorized'] - 错误消息。
+	 * @returns {void}
+	 */
 	const Unauthorized = (message = 'Unauthorized') => {
 		const path = encodeURIComponent(req.originalUrl)
 		if (req.accepts('html') && req.method === 'GET')
@@ -498,9 +582,10 @@ export async function authenticate(req, res, next) {
 }
 
 /**
- * 撤销令牌 (将其 JTI 添加到撤销列表)。
- * @param {string} token - 要撤销的令牌
- * @param {string} [typeSuffix='unknown'] - 撤销原因的后缀 (e.g., 'logout', 'manual')
+ * 通过将其 JTI 添加到撤销列表来撤销令牌。
+ * @param {string} token - 要撤销的令牌。
+ * @param {string} [typeSuffix='unknown'] - 撤销原因的后缀 (例如, 'logout', 'manual')。
+ * @returns {Promise<void>}
  */
 async function revokeToken(token, typeSuffix = 'unknown') {
 	try {
@@ -530,16 +615,16 @@ async function revokeToken(token, typeSuffix = 'unknown') {
 
 /**
  * 通过用户名获取完整的用户信息对象。
- * @param {string} username - 用户名
- * @returns {object|undefined} 用户对象或 undefined
+ * @param {string} username - 用户名。
+ * @returns {object|undefined} 用户对象，如果未找到则为 undefined。
  */
 export function getUserByUsername(username) {
 	return config.data.users[username]
 }
 
 /**
- * 获取所有用户名列表。
- * @returns {string[]}
+ * 获取所有用户名的列表。
+ * @returns {string[]} 用户名数组。
  */
 export function getAllUserNames() {
 	return Object.keys(config.data.users)
@@ -547,17 +632,17 @@ export function getAllUserNames() {
 
 /**
  * 获取所有用户对象的字典。
- * @returns {object}
+ * @returns {object} 用户对象的字典。
  */
 export function getAllUsers() {
 	return config.data.users
 }
 
 /**
- * 创建新用户。
- * @param {string} username - 用户名
- * @param {string} password - 密码
- * @returns {Promise<object>} 创建的用户对象 (包含 userId)
+ * 创建一个新用户。
+ * @param {string} username - 用户名。
+ * @param {string} password - 密码。
+ * @returns {Promise<object>} 创建的用户对象。
  */
 async function createUser(username, password) {
 	const hashedPassword = await hashPassword(password)
@@ -584,30 +669,30 @@ async function createUser(username, password) {
 
 /**
  * 使用 Argon2id 哈希密码。
- * @param {string} password - 明文密码
- * @returns {Promise<string>} 哈希后的密码
+ * @param {string} password - 明文密码。
+ * @returns {Promise<string>} 哈希后的密码。
  */
 export async function hashPassword(password) {
-	return await argon2.hash(password, { type: argon2.argon2id })
+	return await hash(password, { algorithm: Algorithm.Argon2id })
 }
 
 /**
  * 验证密码。
- * @param {string} password - 用户输入的明文密码
- * @param {string} hashedPassword - 存储的哈希密码
- * @returns {Promise<boolean>} 密码是否匹配
+ * @param {string} password - 用户提供的明文密码。
+ * @param {string} hashedPassword - 存储的哈希密码。
+ * @returns {Promise<boolean>} 如果密码匹配则为 true，否则为 false。
  */
 export async function verifyPassword(password, hashedPassword) {
 	if (!password || !hashedPassword) return false
-	return await argon2.verify(hashedPassword, password)
+	return await verify(hashedPassword, password)
 }
 
 /**
- * 修改用户密码。
- * @param {string} username - 用户名
- * @param {string} currentPassword - 当前密码
- * @param {string} newPassword - 新密码
- * @returns {Promise<{success: boolean, message: string}>} 操作结果
+ * 更改用户密码。
+ * @param {string} username - 用户名。
+ * @param {string} currentPassword - 当前密码。
+ * @param {string} newPassword - 新密码。
+ * @returns {Promise<{success: boolean, message: string}>} 操作结果。
  */
 export async function changeUserPassword(username, currentPassword, newPassword) {
 	const user = getUserByUsername(username)
@@ -622,10 +707,10 @@ export async function changeUserPassword(username, currentPassword, newPassword)
 }
 
 /**
- * 生成 API Key。
- * @param {string} username - 所属用户名
- * @param {string} [description='New API Key'] - API Key 描述
- * @returns {Promise<{apiKey: string, jti: string}>}
+ * 生成 API 密钥。
+ * @param {string} username - 与密钥关联的用户名。
+ * @param {string} [description='New API Key'] - API 密钥的描述。
+ * @returns {Promise<{apiKey: string, jti: string}>} 生成的 API 密钥及其 JTI。
  */
 export async function generateApiKey(username, description = 'New API Key') {
 	const user = getUserByUsername(username)
@@ -648,11 +733,11 @@ export async function generateApiKey(username, description = 'New API Key') {
 }
 
 /**
- * 撤销 API Key。
- * @param {string} username - 用户名
- * @param {string} jti - API Key 的 JTI
- * @param {string} password - 用户密码，用于验证权限
- * @returns {Promise<{success: boolean, message: string}>}
+ * 撤销 API 密钥。
+ * @param {string} username - 用户名。
+ * @param {string} jti - 要撤销的 API 密钥的 JTI。
+ * @param {string} password - 用于验证的用户密码。
+ * @returns {Promise<{success: boolean, message: string}>} 操作结果。
  */
 export async function revokeApiKey(username, jti, password) {
 	const user = getUserByUsername(username)
@@ -668,7 +753,7 @@ export async function revokeApiKey(username, jti, password) {
 	if (hashToRemove) delete config.data.apiKeys[hashToRemove]
 	user.auth.apiKeys.splice(keyIndex, 1)
 
-	// Revoke associated API refresh tokens
+	// 撤销关联的 API 刷新令牌
 	const tokensToRevoke = user.auth.apiRefreshTokens.filter(token => token.apiKeyJti === jti)
 	for (const token of tokensToRevoke)
 		config.data.revokedTokens[token.jti] = {
@@ -684,11 +769,11 @@ export async function revokeApiKey(username, jti, password) {
 }
 
 /**
- * 根据 JTI 撤销用户的某个设备（Refresh Token）。
- * @param {string} username - 用户名
- * @param {string} tokenJti - 要撤销的 Refresh Token 的 JTI
- * @param {string} password - 用户密码，用于验证权限
- * @returns {Promise<{success: boolean, message: string}>}
+ * 通过 JTI 撤销用户的设备（刷新令牌）。
+ * @param {string} username - 用户名。
+ * @param {string} tokenJti - 要撤销的刷新令牌的 JTI。
+ * @param {string} password - 用于验证的用户密码。
+ * @returns {Promise<{success: boolean, message: string}>} 操作结果。
  */
 export async function revokeUserDeviceByJti(username, tokenJti, password) {
 	const user = getUserByUsername(username)
@@ -713,10 +798,10 @@ export async function revokeUserDeviceByJti(username, tokenJti, password) {
 }
 
 /**
- * 删除用户账户及数据，需要密码验证。
- * @param {string} username - 要删除的用户名
- * @param {string} password - 用户密码
- * @returns {Promise<{success: boolean, message: string}>}
+ * 删除用户帐户及其数据，需要密码验证。
+ * @param {string} username - 要删除的帐户的用户名。
+ * @param {string} password - 用户密码。
+ * @returns {Promise<{success: boolean, message: string}>} 操作结果。
  */
 export async function deleteUserAccount(username, password) {
 	const user = getUserByUsername(username)
@@ -728,7 +813,7 @@ export async function deleteUserAccount(username, password) {
 
 	const userDirectoryPath = getUserDictionary(username)
 
-	// Revoke all user refresh tokens
+	// 撤销所有用户刷新令牌
 	user.auth.refreshTokens?.forEach(token => {
 		if (token.jti)
 			config.data.revokedTokens[token.jti] = {
@@ -749,11 +834,11 @@ export async function deleteUserAccount(username, password) {
 }
 
 /**
- * 重命名用户账户，需要密码验证。
- * @param {string} currentUsername - 当前用户名
- * @param {string} newUsername - 新用户名
- * @param {string} password - 用户密码
- * @returns {Promise<{success: boolean, message: string}>}
+ * 重命名用户帐户，需要密码验证。
+ * @param {string} currentUsername - 当前用户名。
+ * @param {string} newUsername - 新用户名。
+ * @param {string} password - 用户密码。
+ * @returns {Promise<{success: boolean, message: string}>} 操作结果。
  */
 export async function renameUser(currentUsername, newUsername, password) {
 	const user = getUserByUsername(currentUsername)
@@ -784,7 +869,7 @@ export async function renameUser(currentUsername, newUsername, password) {
 		}
 	}
 	catch (error) {
-		// Revert config change on failure
+		// 失败时恢复配置更改
 		config.data.users[currentUsername] = user
 		delete config.data.users[newUsername]
 		console.error('Error moving user data directory:', error)
@@ -797,10 +882,10 @@ export async function renameUser(currentUsername, newUsername, password) {
 }
 
 /**
- * 从请求中获取用户信息。依赖 authenticate 中间件已填充 req.user。
- * @param {import('express').Request} req - Express 请求对象
- * @returns {Promise<object>} 用户对象
- * @throws {Error} 如果请求未认证
+ * 从请求中获取用户信息。依赖于 authenticate 中间件已填充 req.user。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 用户对象。
+ * @throws {Error} 如果请求未经过身份验证。
  */
 export async function getUserByReq(req) {
 	if (!req.user) throw new Error('Request is not authenticated. Use authenticate middleware first.')
@@ -808,9 +893,9 @@ export async function getUserByReq(req) {
 }
 
 /**
- * 获取用户的数据目录路径。
- * @param {string} username - 用户名
- * @returns {string} 用户数据目录的绝对路径
+ * 获取用户数据目录的路径。
+ * @param {string} username - 用户名。
+ * @returns {string} 用户数据目录的绝对路径。
  */
 export function getUserDictionary(username) {
 	const user = config.data.users[username]
@@ -820,22 +905,27 @@ export function getUserDictionary(username) {
 let avgVerifyTime = 0
 {
 	const startTime = Date.now()
-	await argon2.verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => {})
+	await verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
 	avgVerifyTime = Date.now() - startTime
 }
 
 /**
  * 用户登录。
- * @param {string} username - 用户名
- * @param {string} password - 密码
- * @param {string} [deviceId='unknown'] - 设备标识符
- * @param {import('express').Request} req - Express 请求对象
- * @returns {Promise<object>} 包含状态码、消息、令牌的对象
+ * @param {string} username - 用户名。
+ * @param {string} password - 密码。
+ * @param {string} [deviceId='unknown'] - 设备标识符。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
 export async function login(username, password, deviceId = 'unknown', req) {
-	const ip = req.ip
+	const { ip } = req
 	const user = getUserByUsername(username)
 
+	/**
+	 * 处理失败的登录尝试。
+	 * @param {object} [response={}] - 要包含在响应中的附加数据。
+	 * @returns {Promise<object>} 包含状态码和消息的响应对象。
+	 */
 	async function handleFailedLogin(response = {}) {
 		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 
@@ -846,7 +936,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
 			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken }
 		}
-		// 防止计时攻击
+		// 时间攻击保护
 		const delay = Math.max(0, avgVerifyTime * 0.9 + Math.random() * avgVerifyTime * 0.2)
 		await new Promise(resolve => setTimeout(resolve, delay))
 		return { status: 401, success: false, message: 'Invalid username or password', ...response }
@@ -889,7 +979,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		console.error(`Failed to copy default user template for ${username}`, e)
 	}
 
-	for (const subdir of ['settings', ...partTypeList]) try {
+	for (const subdir of ['settings']) try {
 		fs.mkdirSync(path.join(userdir, subdir), { recursive: true })
 	} catch (e) {
 		console.error(`Failed to create user subdirectory: ${subdir}`, e)
@@ -916,10 +1006,10 @@ export async function login(username, password, deviceId = 'unknown', req) {
 
 
 /**
- * 用户注册。
- * @param {string} username - 用户名
- * @param {string} password - 密码
- * @returns {Promise<object>} 包含状态码和用户信息的对象
+ * 注册一个新用户。
+ * @param {string} username - 用户名。
+ * @param {string} password - 密码。
+ * @returns {Promise<object>} 包含状态码和用户信息的对象。
  */
 export async function register(username, password) {
 	if (getUserByUsername(username)?.auth) return { status: 409, success: false, message: 'Username already exists' }
@@ -928,11 +1018,11 @@ export async function register(username, password) {
 }
 
 /**
- * 通过 API Key 设置认证 Cookies。
- * @param {string} apiKey - API Key
- * @param {import('express').Request} req - Express 请求对象
- * @param {import('express').Response} res - Express 响应对象
- * @returns {Promise<object>} 操作结果
+ * 使用 API 密钥设置认证 Cookies。
+ * @param {string} apiKey - API 密钥。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<object>} 操作结果。
  */
 export async function setApiCookieResponse(apiKey, req, res) {
 	if (!apiKey) return { status: 400, success: false, error: 'API key is required.' }
@@ -970,7 +1060,8 @@ export async function setApiCookieResponse(apiKey, req, res) {
 // --- 定时清理任务 ---
 
 /**
- * 清理过期的已撤销 token。
+ * 清理过期的已撤销令牌。
+ * @returns {void}
  */
 function cleanupRevokedTokens() {
 	const now = Date.now()
@@ -985,7 +1076,8 @@ function cleanupRevokedTokens() {
 }
 
 /**
- * 清理用户配置中过期的 refresh token。
+ * 清理用户配置中过期的刷新令牌。
+ * @returns {void}
  */
 function cleanupRefreshTokens() {
 	const now = Date.now()
@@ -1005,6 +1097,7 @@ function cleanupRefreshTokens() {
 
 /**
  * 清理旧的登录失败记录。
+ * @returns {void}
  */
 function cleanupLoginFailures() {
 	for (const ip in loginFailures)
