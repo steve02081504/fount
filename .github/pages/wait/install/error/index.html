@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html data-theme="dark">
+<html>
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="darkreader-lock">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title data-i18n="installer_wait_screen.error.title"></title>
-	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
-	<meta property="og:title" content="fount!">
-	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<meta property="og:title" content="Installation failed!" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="There seems to be something wrong with the fount installer." />
+	<meta name="description" content="There seems to be something wrong with the fount installer." />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<script blocking="render" type="module" src="../../../preload.mjs"></script>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
-	<script blocking="render" type="module" src="../../../preload.mjs"></script>
-	<link rel="stylesheet" href="../../../base.css" type="text/css">
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../../../base.css" type="text/css" />
 	<script type="module">
-		import { setBaseDir } from '../../../base.mjs'
 		import { initTranslations, getAvailableLocales, getLocaleNames, setLocales } from '../../../scripts/i18n.mjs'
-		import { makeSearchable } from '../../scripts/search.mjs'
+		import { makeSearchable } from '../../../scripts/search.mjs'
 
-		setBaseDir('../../..')
-		await initTranslations('installer_wait_screen.error')
-
+		/**
+		 * 填充语言选择器。
+		 * @returns {Promise<void>}
+		 */
 		async function populateLanguageSelector() {
 			const languageSelector = document.getElementById('language-selector')
 			const languageSearch = document.getElementById('language-search')
@@ -34,7 +37,7 @@
 
 			const items = locales.map(locale => {
 				const li = document.createElement('li')
-				const a = document.createElement('a')
+				const a = document.createElement('div')
 				a.textContent = localeNames.get(locale) || locale
 				a.addEventListener('click', e => {
 					e.preventDefault()
@@ -42,7 +45,6 @@
 					// Close dropdown after selection
 					if (document.activeElement instanceof HTMLElement)
 						document.activeElement.blur()
-
 				})
 				li.appendChild(a)
 				return { element: li, locale, name: a.textContent }
@@ -52,7 +54,16 @@
 			makeSearchable({
 				searchInput: languageSearch,
 				data: items,
+				/**
+				 * 数据访问器，用于从项目获取名称和语言环境。
+				 * @param {object} item - 列表中的项目。
+				 * @returns {{name: string, locale: string}} - 包含名称和语言环境的对象。
+				 */
 				dataAccessor: item => ({ name: item.name, locale: item.locale }),
+				/**
+				 * 更新回调函数，用于根据过滤后的项目更新显示。
+				 * @param {Array<object>} filteredItems - 过滤后的项目列表。
+				 */
 				onUpdate: (filteredItems) => {
 					const visibleElements = new Set(filteredItems)
 					items.forEach(item => {
@@ -63,14 +74,16 @@
 		}
 
 		populateLanguageSelector()
+
+		await initTranslations('installer_wait_screen.error')
 	</script>
 </head>
 
 <body class="flex justify-center items-center h-screen">
 	<div class="absolute top-0 left-0 p-4 z-50">
 		<div class="dropdown dropdown-bottom dropdown-start">
-			<button tabindex="0" role="button" class="btn btn-ghost">
-				<img src="https://api.iconify.design/heroicons/language.svg" class="w-6 h-6 text-icon" alt="Language Selector" />
+			<button tabindex="0" role="button" class="btn btn-ghost" data-i18n="installer_wait_screen.language_selector.button">
+				<img src="https://api.iconify.design/heroicons/language.svg" class="w-6 h-6 text-icon" />
 			</button>
 			<div tabindex="0" class="dropdown-content z-[1] rounded-box w-[25rem] shadow-md bg-base-100/30">
 				<div class="card-body p-0">
@@ -86,15 +99,17 @@
 			</div>
 		</div>
 	</div>
-	<div role="alert" class="alert alert-error max-w-md">
-		<img src="https://api.iconify.design/line-md/alert.svg" class="flex-shrink-0 w-6 h-6" />
-		<div>
-			<h3 class="font-bold" data-i18n="installer_wait_screen.error.connection_failed"></h3>
-			<div class="text-xs" data-i18n="installer_wait_screen.error.description1"></div>
-			<div class="text-xs" data-i18n="installer_wait_screen.error.description2"></div>
+	<main>
+		<div role="alert" class="alert alert-error max-w-md">
+			<img src="https://api.iconify.design/line-md/alert.svg" class="flex-shrink-0 w-6 h-6" />
+			<div>
+				<h3 class="font-bold" data-i18n="installer_wait_screen.error.connection_failed"></h3>
+				<div class="text-xs" data-i18n="installer_wait_screen.error.description1"></div>
+				<div class="text-xs" data-i18n="installer_wait_screen.error.description2"></div>
+			</div>
+			<button class="btn btn-sm btn-primary" onclick="window.close()" data-i18n="installer_wait_screen.error.close_page"></button>
 		</div>
-		<button class="btn btn-sm btn-primary" onclick="window.close()" data-i18n="installer_wait_screen.error.close_page"></button>
-	</div>
+	</main>
 </body>
 
 </html>

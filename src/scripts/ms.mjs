@@ -1,3 +1,8 @@
+/**
+ * 将持续时间字符串转换为毫秒。
+ * @param {string|number} duration - 持续时间字符串 (例如, "1d", "2h", "30m", "10s") 或毫秒数。
+ * @returns {number} 持续时间（以毫秒为单位）。
+ */
 export function ms(duration) {
 	if (Object(duration) instanceof Number) return duration
 

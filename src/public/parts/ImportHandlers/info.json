@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "ImportHandlers",
+		"description": "ImportHandlers manager"
+	},
+	"zh-CN": {
+		"name": "导入处理器",
+		"description": "納入司掌事"
+	},
+	"ar-SA": {
+		"name": "ImportHandlers",
+		"description": "مدير ImportHandlers"
+	},
+	"de-DE": {
+		"name": "ImportHandler",
+		"description": "ImportHandler-Manager"
+	},
+	"emoji": {
+		"name": "导入处理器",
+		"description": "納入司掌事"
+	},
+	"es-ES": {
+		"name": "Importadores",
+		"description": "Administrador de ImportHandlers"
+	},
+	"fr-FR": {
+		"name": "Gestionnaires d'importation",
+		"description": "Gestionnaire d'importations"
+	},
+	"hi-IN": {
+		"name": "आयात हैंडलर",
+		"description": "आयात हैंडलर प्रबंधक"
+	},
+	"is-IS": {
+		"name": "ImportHandlers",
+		"description": "ImportHandlers framkvæmdastjóri"
+	},
+	"it-IT": {
+		"name": "ImportHandlers",
+		"description": "Gestore ImportHandlers"
+	},
+	"ja-JP": {
+		"name": "インポートハンドラー",
+		"description": "インポートハンドラーマネージャー"
+	},
+	"ko-KR": {
+		"name": "ImportHandler",
+		"description": "ImportHandler 관리자"
+	},
+	"lzh": {
+		"name": "納入司",
+		"description": "納入司掌事"
+	},
+	"nl-NL": {
+		"name": "ImportHandlers",
+		"description": "ImportHandlers-beheerder"
+	},
+	"pt-PT": {
+		"name": "Manipuladores de importação",
+		"description": "Gerenciador de ImportHandlers"
+	},
+	"ru-RU": {
+		"name": "Обработчики импорта",
+		"description": "Менеджер импортных обработчиков"
+	},
+	"uk-UA": {
+		"name": "ImportHandlers",
+		"description": "Менеджер ImportHandlers"
+	},
+	"vi-VN": {
+		"name": "Trình xử lý nhập khẩu",
+		"description": "Trình quản lý ImportHandlers"
+	},
+	"zh-TW": {
+		"name": "匯入處理器",
+		"description": "導入處理器管理器"
+	}
+}
