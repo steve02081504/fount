@@ -13,7 +13,6 @@
 </p>
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
-<p align="center"><a href="https://www.producthunt.com/products/fount-4?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-fount&#0045;4" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1046391&theme=dark&t=1764920382364" alt="fount - ⛲imagination&#0044;&#0032;given&#0032;voice&#0046;✨A&#0032;extensible&#0032;AI&#0032;agent&#0032;runtime&#0046; | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a></p>
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
