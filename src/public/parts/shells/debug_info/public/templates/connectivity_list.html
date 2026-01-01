@@ -1,0 +1,8 @@
+${checks.map(check => `
+<li class="flex justify-between items-center p-2 bg-base-200 rounded" id="${check.id || ''}">
+	<span>${check.name}</span>
+	<span class="badge ${check.status ? (check.status === 'ok' ? 'badge-success' : 'badge-error') : 'badge-ghost'}" ${check.status && check.status !=='ok' ? 'data-i18n="debug_info.failed"' : '' } ${!check.status ? 'data-i18n="debug_info.checking"' : '' }>
+		${check.status === 'ok' ? check.duration + 'ms' : ''}
+	</span>
+</li>
+`).join('')}

@@ -12,6 +12,24 @@ C_CYAN='\033[0;36m'
 # 若未定义，则默认 fount 安装分支
 FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 
+if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+(
+	TARGETS="github.com cdn.jsdelivr.net"
+	# 随手之劳之经验医学之clash的tun没开
+	for host in $TARGETS; do
+		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
+			curl -X PATCH "http://127.0.0.1:9090/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			curl -X PATCH "http://127.0.0.1:9097/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			break
+		fi
+	done
+) >/dev/null 2>&1 &
+fi
+
 # 若是 Windows 环境，则转交 PowerShell 处理
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	powershell.exe -noprofile -executionpolicy bypass -command "& {
@@ -214,7 +232,7 @@ else
 
 	if install_package "git" "git git-core"; then
 		echo "Cloning fount repository..."
-		if git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
 		else
 			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"

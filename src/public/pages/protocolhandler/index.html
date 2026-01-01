@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Bridging Worlds: fount's Internal Navigator" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/protocolhandler/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Silently and efficiently, this page translates your intent into a seamless transition within fount. Consider it the quiet magic behind the curtain." />
+	<meta name="description" content="Silently and efficiently, this page translates your intent into a seamless transition within fount. Consider it the quiet magic behind the curtain." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="protocolhandler.title"></title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body>
+	<div class="flex justify-center items-center h-screen">
+		<div class="text-center">
+			<p id="message" class="text-lg mb-4" data-i18n="protocolhandler.processing"></p>
+			<progress class="progress w-56"></progress>
+		</div>
+	</div>
+	<dialog id="confirmation_modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg" data-i18n="protocolhandler.runPartConfirm.title"></h3>
+			<p class="py-4" id="confirmation_message"></p>
+			<div class="modal-action">
+				<button class="btn btn-primary" id="confirm_btn" data-i18n="protocolhandler.runPartConfirm.confirm"></button>
+				<button class="btn" id="cancel_btn" data-i18n="protocolhandler.runPartConfirm.cancel"></button>
+			</div>
+		</div>
+	</dialog>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

@@ -1,0 +1,2314 @@
+{
+	"lang": "zh-TW",
+	"name": "繁體中文",
+	"fountConsole": {
+		"server": {
+			"start": "正在啟動伺服器",
+			"starting": "伺服器啟動中...",
+			"ready": "伺服器已啟動",
+			"standingBy": "Standing by...",
+			"showUrl": {
+				"https": "HTTPS 伺服器運行在 ${url}",
+				"http": "HTTP 伺服器運行在 ${url}"
+			},
+			"mdns": {
+				"description": "靈犀一點，應念而生",
+				"failed": "mDNS 註冊失敗：${error}",
+				"bonjourFailed": "Bonjour 服務建立失敗：${error}"
+			},
+			"localUrl": "透過同一網路下的其他裝置存取fount：${url}",
+			"update": {
+				"restarting": "發現新版本，正在重啟更新..."
+			}
+		},
+		"jobs": {
+			"restartingJob": "正在重啟用戶 ${username} 的 ${partpath} 任務：${uid}",
+			"preloadingParts": "正在預加載 ${count} 個部件"
+		},
+		"ipc": {
+			"serverStarted": "IPC 伺服器已啟動",
+			"instanceRunning": "另一個實例正在執行",
+			"runPartLog": "運行 ${partpath} 作為 ${username}，參數：${args}",
+			"invokePartLog": "調用 ${partpath} 作為 ${username}，參數：${invokedata}",
+			"invalidCommand": "無效的指令，請使用 \"fount run <組件類型> <使用者名稱> <組件名稱> <參數...>\"",
+			"invalidCommandFormat": "無效的指令格式",
+			"unsupportedCommand": "不支援的指令類型",
+			"processMessageError": "處理 IPC 訊息時出錯：${error}",
+			"sendCommandFailed": "傳送指令失敗：${error}",
+			"socketError": "Socket 錯誤: ${error}",
+			"parseResponseFailed": "解析伺服器回應失敗: ${error}",
+			"cannotParseResponse": "無法解析伺服器回應",
+			"unknownError": "未知錯誤"
+		},
+		"partManager": {
+			"partInited": "組件${partpath}已初始化",
+			"partLoaded": "組件${partpath}已加載",
+			"git": {
+				"updating": "從遠端倉庫更新中...",
+				"upToDate": "已是最新。",
+				"localAhead": "本地分支領先於遠端分支。無需更新。",
+				"noUpstream": "沒有為分支 '${currentBranch}' 設定上游分支，跳過更新檢查。",
+				"dirtyWorkingDirectory": "工作目錄不乾淨。請暫存或提交你的變更後再更新。",
+				"diverged": "本地和遠端分支已分叉。強制更新中...",
+				"updateFailed": "從遠端倉庫更新組件失敗：${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "接收到請求：${method} ${url}",
+			"frontendFilesChanged": "前端文件 [${path}] 已更改，正在通知客戶端重新加載。"
+		},
+		"route": {
+			"setLanguagePreference": "使用者 ${username} 設定偏好語言: ${preferredLanguages}"
+		},
+		"auth": {
+			"accountLockedLog": "使用者 ${username} 帳號因多次登入失敗被鎖定",
+			"tokenVerifyError": "權杖驗證錯誤: ${error}",
+			"refreshTokenError": "刷新權杖錯誤: ${error}",
+			"logoutRefreshTokenProcessError": "登出刷新權杖處理錯誤: ${error}",
+			"revokeTokenNoJTI": "無法撤銷沒有 jti 的權杖"
+		},
+		"verification": {
+			"codeGeneratedLog": "驗證碼: ${code} (60秒後過期)",
+			"codeNotifyTitle": "驗證碼",
+			"codeNotifyBody": "驗證碼: ${code} (60秒後過期)"
+		},
+		"tray": {
+			"title": "fount",
+			"tooltip": "fount",
+			"readIconFailed": "讀取圖示檔案失敗: ${error}",
+			"createTrayFailed": "建立托盤圖示失敗: ${error}",
+			"items": {
+				"open": {
+					"title": "開啟",
+					"tooltip": "開啟 fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "開啟 fount 的 GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "開啟 fount 的 Discord"
+				},
+				"restart": {
+					"title": "重啟",
+					"tooltip": "重啟應用程式"
+				},
+				"exit": {
+					"title": "離開",
+					"tooltip": "離開應用程式"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登入"
+		},
+		"telegrambot": {
+			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登入"
+		},
+		"path": {
+			"protocol": {
+				"description": "URL:fount 協議",
+				"registerFailed": "註冊 fount:// 協議處理器失敗：${message}",
+				"noUrl": "錯誤：未提供協議處理程式的 URL。"
+			},
+			"update": {
+				"skippingFountUpdate": "因 .noupdate 文件存在，跳過 fount 更新",
+				"skippingDenoUpgradeDocker": "在 Docker 環境中跳過 Deno 升級"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "已在 ${path} 創建桌面捷徑",
+				"startMenuShortcutCreated": "已在 ${path} 創建開始菜單捷徑",
+				"protocolHandlerRegistered": "fount:// 協議處理器已註冊。",
+				"shortcutNotSupported": "警告：您的操作系統 (${os}) 不支持創建桌面捷徑。",
+				"osacompileNotFound": "錯誤：找不到 'osacompile'。無法創建 macOS 應用。",
+				"lsregisterFailed": "警告：使用 lsregister 向 LaunchServices 註冊應用程式失敗。",
+				"createDesktopAppFailed": "錯誤：創建桌面應用程式失敗。"
+			},
+			"git": {
+				"repoNotFound": "未找到 fount 的 git 倉庫，正在初始化一個新的...",
+				"fetchingAndResetting": "正在從遠程倉庫獲取並重置到 master...",
+				"localChangesDetected": "檢測到本地更改，將在覆蓋前保存差異。",
+				"backupSavedTo": "您的本地更改備份已保存到：${path}",
+				"updatingFromRemote": "正在從遠程倉庫更新...",
+				"alreadyUpToDate": "已是最新。",
+				"localBranchAhead": "本地分支領先於遠程分支。無需更新。",
+				"branchesDiverged": "本地和遠程分支已分叉。強制更新中...",
+				"notOnBranch": "不在分支上，切換到 'master'...",
+				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 配置上游分支。正在將上游設置為 'origin/master'。",
+				"dirtyWorkingDirectory": "警告：工作目錄有尚未提交的變更。請在更新前暫存或提交。",
+				"notInstalled": "未安裝 Git，正在嘗試安裝...",
+				"notInstalledSkippingPull": "未安裝 Git，跳過 git pull",
+				"repoNotFoundSkippingPull": "未找到倉庫，跳過 git pull",
+				"fetchFailed": "從 'origin' 獲取失敗。",
+				"installFailedWinget": "由於 Winget 安裝失敗，無法安裝 Git，請手動安裝。",
+				"installFailedManual": "無法安裝 Git，請手動安裝。"
+			},
+			"deno": {
+				"missing": "未找到 Deno，正在自動安裝...",
+				"isRequired": "未找到 Deno，沒有 Deno 無法運行 fount",
+				"installingTermux": "正在為 Termux 安裝 Deno...",
+				"installFailedFallback": "Deno 安裝失敗，嘗試自動安裝到 fount 的 path 文件夾...",
+				"notWorking": "由於某種原因 Deno 無法工作，您可能需要加入 https://discord.gg/deno 以獲取支持",
+				"upgradeFailed": "警告：Deno 升級可能已失敗。請檢查錯誤。",
+				"upgradeFailedTermux": "Deno 升級命令失敗，正在嘗試為 Termux 重新安裝 Deno...",
+				"patchMissing": "錯誤：修補前未找到 Deno 可執行文件。無法修補。",
+				"patchUnsupportedArch": "錯誤：不支持的修補架構：${arch}",
+				"patchFailed": "錯誤：使用 patchelf 修補 Deno 可執行文件失敗。"
+			},
+			"install": {
+				"installingDependencies": "正在安裝依賴...",
+				"packageFailed": "錯誤：${package} 安裝失敗。",
+				"browserMissing": "未檢測到預設瀏覽器，正在嘗試安裝...",
+				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。",
+				"rootWarning1": "不推薦：以 root 身份運行 fount 會授予所有 fount 元件完全的系統訪問權限。",
+				"rootWarning2": "除非您清楚自己在做什麼，否則建議以普通用戶身份運行 fount。"
+			},
+			"clean": {
+				"removingCaches": "正在移除緩存...",
+				"reinstallingDependencies": "正在重新安裝依賴...",
+				"cleaningDenoCaches": "正在清理 Deno 緩存...",
+				"cleaningOldPwshModules": "正在清理舊的 pwsh 模塊..."
+			},
+			"keepalive": {
+				"initComplete": "重新初始化完成。正在嘗試重啟 fount...",
+				"autoInitDisabled": "fount 在最近短時間內多次重啟，但由於 .noautoinit 文件存在，自動重新初始化已被禁用。正在退出。",
+				"restartingTooFast": "fount 在最近短時間內多次重啟。正在強制重新初始化...",
+				"failedToStart": "即使在自動修復嘗試後，fount 仍在短時間內啟動失敗。請檢查日誌中的錯誤。",
+				"initFailed": "fount 初始化失敗。正在退出。"
+			},
+			"remove": {
+				"removingFount": "正在移除 fount...",
+				"fountUninstallationComplete": "fount 卸載完成。",
+				"removingFountInstallationDir": "正在移除 fount 安裝目錄...",
+				"fountInstallationDirRemoved": "fount 安裝目錄已移除。",
+				"removingFountFromPath": "正在從 PATH 中移除 fount...",
+				"removingProtocolHandler": "正在移除 fount:// 協議處理器...",
+				"protocolHandlerRemoved": "fount:// 協議處理器已移除。",
+				"removeProtocolHandlerFailed": "移除 fount:// 協議處理器失敗：${message}",
+				"removingFountFromGitSafeDir": "正在從 git safe.directory 中移除 fount...",
+				"removingInstalledSystemPackages": "正在移除已安裝的系統包...",
+				"uninstallingDeno": "正在卸載 Deno...",
+				"removeDenoFailed": "移除 Deno 失敗：${message}",
+				"removingFountPwshFromProfile": "正在從 PowerShell Profile 中移除 fount-pwsh...",
+				"fountPwshRemovedFromProfile": "已從 PowerShell Profile 中移除 fount-pwsh。",
+				"pwshProfileNotFound": "未找到 PowerShell Profile，跳過從 profile 中移除 fount-pwsh。",
+				"uninstallingFountPwsh": "正在卸載 fount-pwsh...",
+				"uninstallFountPwshFailed": "卸載 fount-pwsh 失敗：${message}",
+				"removingTerminalProfile": "正在移除 Windows Terminal Profile...",
+				"terminalProfileRemoved": "Windows Terminal Profile 目錄已移除。",
+				"terminalProfileNotFound": "未找到 Windows Terminal Profile 目錄。",
+				"desktopShortcutRemoved": "桌面捷徑已移除。",
+				"desktopShortcutNotFound": "未找到桌面捷徑。",
+				"removingStartMenuShortcut": "正在移除開始菜單捷徑...",
+				"startMenuShortcutRemoved": "開始菜單捷徑已移除。",
+				"startMenuShortcutNotFound": "未找到開始菜單捷徑。",
+				"removingInstalledPwshModules": "正在移除已安裝的 pwsh 模塊...",
+				"moduleRemoved": "${module} 已移除。",
+				"removeModuleFailed": "移除 ${module} 失敗：${message}",
+				"uninstallingGit": "正在卸載 Git...",
+				"uninstallingChrome": "正在卸載 Chrome...",
+				"uninstallingWinget": "正在卸載 Winget...",
+				"removingBackgroundRunner": "正在移除後台運行程式...",
+				"removeBackgroundRunnerFailed": "移除後台運行程式失敗：${message}"
+			}
+		}
+	},
+	"installer_wait_screen": {
+		"title": "歡迎使用 fount！",
+		"description": "跟踪安裝進度並了解其中的功能。fount很快就可以啟動了。",
+		"hero": {
+			"title": "靈犀一點，應念而生",
+			"description": "fount 是一個由 AI 驅動的角色互動平台，旨在賦能<i>您</i>。它是一座橋樑，將您與您想像中的角色連結起來，讓您輕鬆地與他們對話、創建自己的角色並與世界分享。"
+		},
+		"feature1": {
+			"title": "無縫對話，隨時隨地",
+			"description": "在電腦上開始聊天，在手機或平板電腦上無縫接續。fount 讓您的對話保持同步，無論您走到哪裡，都能與您的角色保持聯繫。可在 Windows、macOS、Linux 甚至 Android 上運行。"
+		},
+		"feature2": {
+			"title": "美觀、可自訂的介面",
+			"description": "從 30 多個精美主題中選擇，或創建您自己的主題。fount 是您的個人畫布。表達自我，根據您的喜好自訂環境，獲得真正個人化的體驗。"
+		},
+		"feature3": {
+			"title": "富有表現力、沉浸式的聊天",
+			"description": "fount 充分利用 HTML 的強大功能，允許角色透過豐富文本、圖片甚至互動元素表達自己。同時與多個角色進行動態且引人入勝的群組聊天。"
+		},
+		"feature4": {
+			"title": "不受束縛的 AI 來源整合",
+			"description": "fount 提供無與倫比的選擇和彈性。連接到<i>任何</i> AI 來源——OpenAI、Claude、OpenRouter、NovelAI 等。通訊邏輯將根據<i>您的</i>意願，透過程式碼的力量來塑造。"
+		},
+		"language_selector": {
+			"button": {
+				"aria-label": "選擇語言"
+			},
+			"search": {
+				"placeholder": "搜尋語言..."
+			}
+		},
+		"theme_selector": {
+			"title": "選擇您的外觀",
+			"description": "選擇一個主題來個人化您的體驗。",
+			"search": {
+				"placeholder": "搜尋主題..."
+			}
+		},
+		"mini_game": {
+			"title": "玩點小遊戲",
+			"description1": "安裝太慢了？",
+			"description2": "這裡有小遊戲用來打發時間。"
+		},
+		"data_showcase": {
+			"title_prefix": "fount是最",
+			"title_of": "的",
+			"active_users": "活躍使用者數",
+			"stars": "GitHub Stars",
+			"adjectives": [
+				"具擴充性",
+				"有潛力",
+				"大步向前",
+				"具相容性",
+				"小巧且強大"
+			],
+			"nouns": [
+				"AI虛擬角色",
+				"Agent",
+				"賽博老婆",
+				"數位助理"
+			],
+			"platforms": [
+				"基礎平台",
+				"聊天前端",
+				"執行器"
+			]
+		},
+		"footer": {
+			"ready_text": "準備好開始您的旅程了嗎？",
+			"wait_text": "請稍候片刻...",
+			"open_fount": "開啟 fount",
+			"open_or_install_fount": "開啟/安裝 fount",
+			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}"
+		},
+		"error": {
+			"title": "安裝失敗！",
+			"description": "fount 安裝程式似乎出了問題。",
+			"connection_failed": "連線失敗！",
+			"description1": "fount 安裝程式似乎出了問題。",
+			"description2": "請檢查您的終端機並重試。",
+			"close_page": "關閉頁面"
+		}
+	},
+	"protocolhandler": {
+		"title": "處理 fount 協定",
+		"description": "該頁面安靜而高效地將您的意圖轉化為fount內的無縫過渡。認為這是幕後的安靜魔法。",
+		"processing": "正在處理協定...",
+		"shellCommandSent": "Shell 指令已傳送",
+		"runPartConfirm": {
+			"title": "確認運行",
+			"message": "您確定要運行 ${partpath} 嗎？",
+			"confirm": "確認",
+			"cancel": "取消"
+		},
+		"offline_dialog": {
+			"title": "主機離線",
+			"message": "fount 主機 ${hostUrl} 似乎已離線。您想重試嗎？",
+			"buttons": {
+				"start": "啟動",
+				"retry": "重試"
+			}
+		},
+		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
+		"invalidProtocol": "無效的協定",
+		"insufficientParams": "參數不足",
+		"unknownCommand": "未知的指令",
+		"shellCommandFailed": "傳送 Shell 指令失敗",
+		"shellCommandError": "傳送 Shell 指令時出錯",
+		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}"
+	},
+	"startPage": {
+		"title": "fount!",
+		"description": "歡迎來到fount的門檻。在進入等待展開的對話和故事的核心之前，先進行短暫的準備。"
+	},
+	"tutorial": {
+		"title": "來點教學？",
+		"description": "讓我們與您一起走進泉水的世界。這個交互式教程將闡明道路，幫助您發現其核心的魔力。你的冒險始於理解。",
+		"modal": {
+			"title": "歡迎使用fount！",
+			"instruction": "要走一遍新手教學嗎？",
+			"buttons": {
+				"start": "開始教學",
+				"skip": "跳過"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教學完成！",
+			"subtitle": "現在你已經學會操作啦！",
+			"endButton": "下一步！"
+		},
+		"progressMessages": {
+			"mouseMove": "請使用您的手指嘗試握住滑鼠${mouseIcon}<br/>隨後移動它",
+			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
+			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
+			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完美算數教室",
+				"description": "總算是把新手教程給點完了。",
+				"locked_description": "完成一次入門教程。"
+			},
+			"skip_tutorial": {
+				"name": "P鍵已扣",
+				"description": "“教程？那是什麼，能吃嗎？”",
+				"locked_description": "跳過一次入門教程。"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"replay": {
+						"title": "重玩教程"
+					}
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "認證",
+		"subtitle": "使用者資料儲存在本機",
+		"description": "在這裡，您定義自己的存在。無論是回到熟悉的港灣，還是為你的故事塑造一個新的空間，這裡都是你的源泉之旅開始的地方。",
+		"usernameLabel": "使用者名稱:",
+		"usernameInput": {
+			"placeholder": "請輸入使用者名稱"
+		},
+		"passwordLabel": "密碼:",
+		"passwordInput": {
+			"placeholder": "請輸入密碼"
+		},
+		"confirmPasswordLabel": "確認密碼:",
+		"confirmPasswordInput": {
+			"placeholder": "請再次輸入密碼"
+		},
+		"verificationCodeLabel": "驗證碼:",
+		"verificationCodeInput": {
+			"placeholder": "請輸入驗證碼"
+		},
+		"sendCodeButton": "傳送驗證碼",
+		"login": {
+			"title": "登入",
+			"submitButton": "登入",
+			"toggleLink": {
+				"textContent": "沒有帳號？",
+				"link": "立即註冊"
+			}
+		},
+		"register": {
+			"title": "註冊",
+			"submitButton": "註冊",
+			"toggleLink": {
+				"textContent": "已有帳號？",
+				"link": "立即登入"
+			}
+		},
+		"passwordStrength": {
+			"veryWeak": "非常弱",
+			"weak": "弱",
+			"normal": "一般",
+			"strong": "強",
+			"veryStrong": "非常強"
+		},
+		"error": {
+			"passwordMismatch": "兩次密碼不一致。",
+			"loginError": "登入出錯。",
+			"registrationError": "註冊出錯。",
+			"verificationCodeError": "驗證碼錯誤或已過期。",
+			"verificationCodeSent": "驗證碼傳送成功。",
+			"verificationCodeSendError": "驗證碼傳送失敗。",
+			"verificationCodeRateLimit": "傳送驗證碼過於頻繁，請稍後再試。",
+			"lowPasswordStrength": "密碼強度太低。",
+			"accountAlreadyExists": "帳號已存在",
+			"powNotSolved": "請先完成 PoW 驗證",
+			"powError": "PoW 驗證出錯"
+		}
+	},
+	"login_info": {
+		"title": "登入資訊",
+		"description": "一個用於管理您的 font 登錄憑據的安全空間——打開您不為人知的故事世界的鑰匙。",
+		"modal": {
+			"title": "憑證傳輸錯誤",
+			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
+			"transfer_error": "嘗試轉移您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法取得登入資訊。",
+			"buttons": {
+				"ignore": "忽略並繼續",
+				"retry": "重試"
+			}
+		}
+	},
+	"home": {
+		"title": "首頁",
+		"description": "您的fount體驗的核心。在這裡，管理你想像力的居民——人物、世界和人物角色。你的故事從這個中心紐帶開始並分支。",
+		"sidebarTitle": "詳情",
+		"itemDescription": "在此處選擇一個項目以查看詳細資訊。",
+		"noDescription": "無描述資訊",
+		"filterInput": {
+			"placeholder": "搜尋...",
+			"aria-label": "搜索部件"
+		},
+		"sfwToggle": "安全內容",
+		"partTypeDropdown": {
+			"button": {
+				"title": "部件類型選單"
+			},
+			"icon": {
+				"alt": "部件類型選單"
+			}
+		},
+		"functionMenu": {
+			"search": {
+				"placeholder": "搜尋..."
+			},
+			"button": {
+				"title": "功能選單"
+			},
+			"icon": {
+				"alt": "功能選單"
+			}
+		},
+		"emptyList": {
+			"message": "空空如也...<br/>或許你可以[新建一個部件](${newpartLink})或到[fount的Discord服務器](${discordLink})找點樂子？"
+		},
+		"part_pages": {
+			"default": {
+				"title": "組件選擇",
+				"subtitle": "拾取一葉，開啟旅程。",
+				"card": {
+					"noTags": "無標籤",
+					"version": "版本",
+					"author": "作者",
+					"home_page": "主頁",
+					"issue_page": "報告問題",
+					"refreshButton": {
+						"alt": "重新整理",
+						"title": "重新整理"
+					},
+					"defaultCheckbox": {
+						"title": "設為預設"
+					}
+				}
+			},
+			"chars": {
+				"title": "角色選擇",
+				"subtitle": "邂逅一個靈魂，開啟一段對話。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設角色"
+					}
+				}
+			},
+			"worlds": {
+				"title": "世界選擇",
+				"subtitle": "踏入一方天地，沉浸萬千可能。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設世界"
+					}
+				}
+			},
+			"personas": {
+				"title": "人設選擇",
+				"subtitle": "換一種身份，體驗另一種人生。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設人設"
+					}
+				}
+			},
+			"plugins": {
+				"title": "插件選擇",
+				"subtitle": "添一羽翼，展無限可能。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設插件"
+					}
+				}
+			},
+			"ImportHandlers": {
+				"title": "導入處理器",
+				"subtitle": "海納百川，兼容並蓄。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設導入處理器"
+					}
+				}
+			},
+			"serviceGenerators": {
+				"title": "服務產生器",
+				"subtitle": "化無形為有形，讓可能成為現實。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設服務產生器"
+					}
+				}
+			},
+			"serviceGenerators/AI": {
+				"title": "AI服務產生器",
+				"subtitle": "編織智慧的絲線，連接思想的橋樑。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設AI服務產生器"
+					}
+				}
+			},
+			"serviceGenerators/search": {
+				"title": "搜索服務產生器",
+				"subtitle": "在信息的海洋中，為你點亮明燈。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設搜索服務產生器"
+					}
+				}
+			},
+			"serviceGenerators/translate": {
+				"title": "翻譯服務產生器",
+				"subtitle": "跨越語言的邊界，讓思想自由流淌。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設翻譯服務產生器"
+					}
+				}
+			},
+			"serviceSources": {
+				"title": "服務源",
+				"subtitle": "匯聚涓涓細流，成就浩瀚江河。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設服務源"
+					}
+				}
+			},
+			"serviceSources/AI": {
+				"title": "AI服務源",
+				"subtitle": "智慧的源泉，思想的起點。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設AI服務源"
+					}
+				}
+			},
+			"serviceSources/search": {
+				"title": "搜索服務源",
+				"subtitle": "知識的寶庫，探索的起點。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設搜索服務源"
+					}
+				}
+			},
+			"serviceSources/translate": {
+				"title": "翻譯服務源",
+				"subtitle": "語言的橋樑，溝通的紐帶。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設翻譯服務源"
+					}
+				}
+			},
+			"shells": {
+				"title": "互動介面選擇",
+				"subtitle": "選擇一扇窗，看見新世界。",
+				"card": {
+					"defaultCheckbox": {
+						"title": "設為預設殼"
+					}
+				}
+			}
+		},
+		"escapeConfirm": "確定要離開fount嗎？",
+		"alerts": {
+			"fetchHomeRegistryFailed": "獲取首頁註冊資訊失敗"
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Hello, fount!",
+				"description": "向著新世界，初次登錄！",
+				"locked_description": "登錄fount一次。"
+			},
+			"sfw_mode_on": {
+				"name": "背後有人！",
+				"description": "迅速切換至全年齡模式，我可真是個小機靈鬼。",
+				"locked_description": "開啟一次安全內容模式。"
+			},
+			"sfw_mode_off": {
+				"name": "通往新世界的大門",
+				"description": "“大人，時代變了。”",
+				"locked_description": "關閉一次安全內容模式。"
+			},
+			"open_function_list": {
+				"name": "讓我康康！",
+				"description": "“這裡面都有些什麼好東西？”",
+				"locked_description": "打開一次功能列表。"
+			},
+			"set_default_persona": {
+				"name": "決定就是你了！",
+				"description": "為自己在這個世界的行動定下了一個身份。",
+				"locked_description": "設置一次預設人設。"
+			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "拖放成功！",
+			"dropError": "拖放處理出錯：${error}",
+			"noHandler": "沒有找到合適的拖放處理器。"
+		},
+		"home_common_interfaces": {
+			"open": {
+				"title": "訪問"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "生成 fount 部件資訊"
+			}
+		}
+	},
+	"chat": {
+		"title": "聊天",
+		"description": "言語飛揚，故事展開。與您的人工智能夥伴互動，塑造敘事，並在數字對話的潮起潮落中迷失自我。fount的心臟在這裡跳動。",
+		"new": {
+			"title": "新聊天",
+			"description": "對一個尚未寫下的故事的安靜期待。新的聊天開始，與您選擇的同伴進行新的互動並展開敘述。"
+		},
+		"typingIndicator": {
+			"isTyping": "${names} 正在輸入...",
+			"multipleMembers": "多個成員正在輸入..."
+		},
+		"sidebar": {
+			"noSelection": "未選擇",
+			"noDescription": "無描述資訊",
+			"world": {
+				"icon": {
+					"alt": "世界圖示"
+				},
+				"title": "世界"
+			},
+			"persona": {
+				"icon": {
+					"alt": "使用者角色圖示"
+				},
+				"title": "使用者角色"
+			},
+			"charList": {
+				"icon": {
+					"alt": "角色列表圖示"
+				},
+				"title": "角色列表",
+				"buttons": {
+					"addChar": {
+						"title": "新增角色"
+					},
+					"addCharIcon": {
+						"alt": "新增角色圖示"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "外掛列表圖示"
+				},
+				"title": "外掛列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "新增外掛"
+					},
+					"addPluginIcon": {
+						"alt": "新增外掛圖示"
+					}
+				}
+			}
+		},
+		"rightSidebar": {
+			"title": "描述資訊"
+		},
+		"chatArea": {
+			"title": "聊天",
+			"input": {
+				"placeholder": "輸入訊息...\nCtrl+Enter 傳送"
+			},
+			"menuButton": {
+				"title": "選單"
+			},
+			"menuButtonIcon": {
+				"alt": "選單圖示"
+			},
+			"sendButton": {
+				"title": "傳送"
+			},
+			"sendButtonIcon": {
+				"alt": "傳送圖示"
+			},
+			"uploadButton": {
+				"title": "上傳"
+			},
+			"uploadButtonIcon": {
+				"alt": "上傳圖示"
+			},
+			"voiceButton": {
+				"title": "錄音"
+			},
+			"voiceButtonIcon": {
+				"alt": "錄音圖示"
+			},
+			"photoButton": {
+				"title": "照片"
+			},
+			"photoButtonIcon": {
+				"alt": "照片圖示"
+			}
+		},
+		"messageList": {
+			"confirmDeleteMessage": "確認刪除此訊息？"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "無法存取麥克風"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "編輯"
+				},
+				"editIcon": {
+					"alt": "編輯圖示"
+				},
+				"more": {
+					"title": "更多"
+				},
+				"moreIcon": {
+					"alt": "更多圖示"
+				},
+				"delete": {
+					"alt": "刪除"
+				},
+				"deleteIcon": {
+					"alt": "刪除圖示"
+				},
+				"downloadHtml": {
+					"alt": "下載為html"
+				},
+				"downloadHtmlIcon": {
+					"alt": "下載html圖示"
+				}
+			},
+			"dropdown": {
+				"delete": "刪除",
+				"deleteIcon": {
+					"alt": "刪除圖示"
+				},
+				"copyMarkdown": "複製為markdown",
+				"copyMarkdownIcon": {
+					"alt": "複製為markdown圖示"
+				},
+				"copyText": "複製為純文字",
+				"copyTextIcon": {
+					"alt": "複製文字圖示"
+				},
+				"copyHtml": "複製為html",
+				"copyHtmlIcon": {
+					"alt": "複製html圖示"
+				},
+				"downloadHtml": "下載為html",
+				"downloadHtmlIcon": {
+					"alt": "下載html圖示"
+				},
+				"share": {
+					"textContent": "分享",
+					"1h": "1 小時",
+					"12h": "12 小時",
+					"24h": "24 小時",
+					"72h": "72 小時"
+				},
+				"shareIcon": {
+					"alt": "分享圖標"
+				}
+			},
+			"share": {
+				"uploading": "正在建立連結...",
+				"success": "分享成功！連結已複製到剪貼板。<br>此功能由 ${provider} 提供支援。<br>[贊助他們。](${sponsorLink})"
+			},
+			"commonToolCalling": "正在調用工具"
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "輸入內容..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "確認"
+				},
+				"confirmIcon": {
+					"alt": "確認圖示"
+				},
+				"cancel": {
+					"title": "取消"
+				},
+				"cancelIcon": {
+					"alt": "取消圖示"
+				},
+				"upload": {
+					"title": "上傳"
+				},
+				"uploadIcon": {
+					"alt": "上傳圖示"
+				}
+			}
+		},
+		"messageGenerating": {
+			"stop": "停止",
+			"stopIcon": {
+				"alt": "停止圖標"
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "下載"
+				},
+				"downloadIcon": {
+					"alt": "下載圖示"
+				},
+				"delete": {
+					"title": "刪除"
+				},
+				"deleteIcon": {
+					"alt": "刪除圖示"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "頻率",
+			"buttons": {
+				"removeChar": {
+					"title": "移出對話"
+				},
+				"removeCharIcon": {
+					"alt": "移除角色圖示"
+				},
+				"forceReply": {
+					"title": "強制回覆"
+				},
+				"forceReplyIcon": {
+					"alt": "強制回覆圖示"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "移除外掛"
+				},
+				"removePluginIcon": {
+					"alt": "移除外掛圖示"
+				}
+			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "你好，陌生人",
+				"description": "發出了第一條消息，故事從此開始。",
+				"locked_description": "與任意角色發送第一條消息。"
+			},
+			"multiplayer_chat": {
+				"name": "白色相簿的季節",
+				"description": "“為什麼會變成這樣呢……”",
+				"locked_description": "在同一個聊天裡，讓兩個或更多角色都發言。"
+			},
+			"photo_chat": {
+				"name": "有圖有真相",
+				"description": "用圖片打破了次元壁。",
+				"locked_description": "在聊天中發送一張圖片。"
+			},
+			"code_greeting": {
+				"name": "用程式碼問好",
+				"description": "「你好，fount！」",
+				"locked_description": "通過執行程式碼區塊，成功輸出 'hello fount!'。"
+			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "無效的部件數據。",
+			"charAdded": "角色 ${partName} 已添加到聊天。",
+			"personaSet": "已將 ${partName} 設為當前人設。",
+			"worldSet": "世界 ${partName} 已設置為當前世界。",
+			"pluginAdded": "插件 ${partName} 已添加到聊天。",
+			"unsupportedPartType": "不支持的部件類型：${partType}。",
+			"errorAddingPart": "添加部件 ${partName} 時出錯：${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "聊天"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "瀏覽歷史記錄"
+			}
+		}
+	},
+	"chat_history": {
+		"title": "聊天記錄",
+		"pageTitle": "聊天記錄",
+		"description": "穿越過去的對話之旅。在這裡，對話的記憶揮之不去——排序、過濾並重新審視你與人工智能夥伴編織的故事。一個安靜的數字迴聲圖書館。",
+		"filterInput": {
+			"placeholder": "搜尋..."
+		},
+		"sortOptions": {
+			"time_desc": "時間降序",
+			"time_asc": "時間升序"
+		},
+		"sortBy": {
+			"aria-label": "排序方式"
+		},
+		"selectAll": "全選",
+		"buttons": {
+			"reverseSelect": "反選",
+			"deleteSelected": "刪除選取",
+			"exportSelected": "匯出選取項目",
+			"import": "匯入"
+		},
+		"chatItemButtons": {
+			"continue": "繼續",
+			"copy": "複製",
+			"export": "匯出",
+			"delete": "刪除"
+		},
+		"confirmDeleteChat": "確定要刪除與 ${chars} 的聊天記錄嗎？",
+		"confirmDeleteMultiChats": "確定要刪除選取的 ${count} 則聊天記錄嗎？",
+		"alerts": {
+			"noChatSelectedForDeletion": "請選擇要刪除的聊天記錄",
+			"noChatSelectedForExport": "請選擇要匯出的聊天記錄",
+			"copyError": "複製失敗",
+			"deleteError": "刪除失敗",
+			"exportError": "匯出失敗",
+			"dragExportError": "拖曳匯出時出錯",
+			"importSuccess": "匯入成功",
+			"importError": "匯入失敗",
+			"invalidImportFile": "無效的匯入檔案"
+		},
+		"select_checkbox": {
+			"aria-label": "選擇與 ${chars} 的聊天"
+		}
+	},
+	"easynew": {
+		"title": "快速新建",
+		"description": "使用預定義或自定義模板快速構建新的fount部分，例如角色、世界和插件。只需點擊幾下即可完成您的下一個創作。",
+		"info": {
+			"description": "這些範本只能用於快速建構簡單的組件，複雜的組件仍然需要手動建立。"
+		},
+		"cardTitle": "從範本建立一個新組件",
+		"templateSelect": {
+			"label": "選擇一個範本"
+		},
+		"alerts": {
+			"success": "組件 '${partName}' 建立成功！",
+			"error": "錯誤: ${message}"
+		},
+		"form": {
+			"partName": {
+				"label": "組件名稱",
+				"placeholder": "為你的新組件取個名字"
+			},
+			"description": {
+				"label": "描述",
+				"placeholder": "簡要描述這個組件是關於什麼的。"
+			},
+			"descriptionMarkdown": {
+				"label": "描述 (Markdown)",
+				"placeholder": "支援 Markdown 以獲得更詳細的格式。"
+			},
+			"imageUpload": {
+				"label": "頭像圖片"
+			},
+			"charDef": {
+				"heading": "角色定義"
+			},
+			"personality": {
+				"label": "性格",
+				"placeholder": "描述角色的核心性格特徵。"
+			},
+			"scenario": {
+				"label": "場景",
+				"placeholder": "角色的背景或設定。"
+			},
+			"mesExample": {
+				"label": "訊息範例",
+				"placeholder": "角色可能會說的話的例子。"
+			},
+			"firstMessage": {
+				"label": "第一則訊息",
+				"placeholder": "角色說的第一句話。"
+			},
+			"personaDef": {
+				"heading": "人設定義"
+			},
+			"personaUserName": {
+				"label": "你在聊天中的名字",
+				"placeholder": "例如：船長、探險家"
+			},
+			"personaAppearance": {
+				"label": "外貌",
+				"placeholder": "描述你的外貌。"
+			},
+			"personaPersonality": {
+				"label": "性格",
+				"placeholder": "描述你的性格特徵。"
+			},
+			"worldDef": {
+				"heading": "世界定義"
+			},
+			"worldPrompt": {
+				"label": "世界提示",
+				"placeholder": "描述世界的規則、環境以及角色扮演的任何全域背景。"
+			},
+			"worldGreeting": {
+				"label": "世界問候語",
+				"placeholder": "世界向使用者傳送的第一則訊息。"
+			},
+			"author": {
+				"label": "作者",
+				"placeholder": "這個組件的作者是誰？"
+			},
+			"version": {
+				"label": "版本",
+				"placeholder": "例如：0.0.1"
+			},
+			"tags": {
+				"label": "標籤",
+				"placeholder": "用逗號分隔的標籤"
+			},
+			"homePage": {
+				"label": "主頁",
+				"placeholder": "組件主頁的URL"
+			},
+			"issuePage": {
+				"label": "問題頁面",
+				"placeholder": "組件問題頁面的URL"
+			},
+			"createButton": "建立組件"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "萬物皆可煉成",
+				"description": "從零開始，創造屬於自己的第一個組件。",
+				"locked_description": "使用快速新建功能創建一個部件。"
+			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"quickCreate": {
+						"title": "快速新建"
+					}
+				}
+			}
+		}
+	},
+	"import": {
+		"title": "匯入",
+		"description": "將您喜愛的角色、世界和配置帶入源泉的懷抱。無論是來自文件還是粘貼的文本，新元素都將融入您的個人掛毯中。",
+		"tabs": {
+			"fileImport": "檔案匯入",
+			"textImport": "文字匯入"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "上傳圖示"
+			},
+			"textContent": "拖放檔案到此處或點擊選擇檔案"
+		},
+		"textArea": {
+			"placeholder": "輸入要匯入的文字..."
+		},
+		"buttons": {
+			"import": "匯入"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "移除"
+			},
+			"removeButtonIcon": {
+				"alt": "移除"
+			}
+		},
+		"alerts": {
+			"importSuccess": "匯入成功",
+			"importFailed": "匯入失敗: ${error}",
+			"unknownError": "未知錯誤"
+		},
+		"errors": {
+			"noFileSelected": "請選擇檔案",
+			"fileImportFailed": "檔案匯入失敗: ${message}",
+			"noTextContent": "請輸入文字內容",
+			"textImportFailed": "文字匯入失敗: ${message}",
+			"handler": "處理器",
+			"error": "錯誤",
+			"unknownError": "未知錯誤"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "從檔案安裝部件",
+			"textDropDescription": "從文字安裝部件"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"import": {
+						"title": "匯入"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "從文本安裝部件"
+			},
+			"handleFileDrop": {
+				"description": "從文件安裝部件"
+			}
+		}
+	},
+	"export": {
+		"title": "組件匯出器",
+		"pageTitle": "組件匯出器",
+		"pageSubtitle": "匯出你喜歡的內容",
+		"description": "導出您的fount創作。該工具將您選擇的部件收集到一個簡單的 zip 文件中，以便妥善保存或共享。",
+		"steps": {
+			"part": "選擇組件",
+			"action": "匯出"
+		},
+		"labels": {
+			"part": "選擇組件"
+		},
+		"placeholders": {
+			"partTypeSelect": "請選擇",
+			"partSelect": "請選擇"
+		},
+		"partSelectDropdown": {
+			"placeholder": "請選擇"
+		},
+		"partSearch": {
+			"placeholder": "搜尋..."
+		},
+		"options": {
+			"withData": "包含資料檔案",
+			"withDataDescription": "包含標記為資料的檔案，例如角色記憶。"
+		},
+		"export": {
+			"title": "匯出選項"
+		},
+		"editor": {
+			"disabledIndicator": "請先選擇一個組件",
+			"disabledIndicatorHint": "請選擇要匯出的組件類型和組件"
+		},
+		"buttons": {
+			"export": "匯出",
+			"exportWithData": "匯出 (包含資料)",
+			"copyShareLink": "複製分享連結",
+			"generateShareLink": "建立分享連結",
+			"generateShareLinkWithData": "產生分享連結 (包含資料)"
+		},
+		"shareMenu": {
+			"title": "選擇分享時長",
+			"1h": "1 小時",
+			"12h": "12 小時",
+			"24h": "24 小時",
+			"72h": "72 小時",
+			"cancel": "取消"
+		},
+		"litterbox": {
+			"poweredBy": "分享功能由 litterbox.moe 支援",
+			"sponsorLink": "贊助他們"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "錯誤"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "獲取組件類型失敗。",
+			"fetchPartsFailed": "獲取組件列表失敗。",
+			"loadPartDetailsFailed": "載入組件詳情失敗。",
+			"exportFailed": "匯出失敗。",
+			"shareLinkCopied": "分享連結已複製到剪貼簿！",
+			"shareFailed": "建立分享連結失敗。"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "一個人探索太危險了，帶上這個！",
+				"description": "“吶，這個好東西也給你一份。”",
+				"locked_description": "分享一次部件。"
+			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "下載部件"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"exportPart": {
+						"title": "導出組件"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "下載部件"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "匯出"
+			}
+		}
+	},
+	"uninstall": {
+		"title": "解除安裝",
+		"description": "如果您選擇分道揚鑣，這個空間可以讓您優雅地告別。確認移除組件，或自行發現。道路有所不同，但記憶可能依然存在。",
+		"titleWithName": "解除安裝 ${type}/${name}",
+		"confirmMessage": "您確定要解除安裝 ${type}: ${name} 嗎？",
+		"invalidParamsTitle": "參數無效",
+		"infoMessage": {
+			"icon": {
+				"alt": "資訊圖示"
+			}
+		},
+		"buttons": {
+			"confirm": "確認解除安裝",
+			"cancel": "取消",
+			"back": "返回"
+		},
+		"alerts": {
+			"success": "成功解除安裝 ${type}: ${name}",
+			"failed": "解除安裝失敗: ${error}",
+			"invalidParams": "無效的請求參數。",
+			"httpError": "HTTP 錯誤！狀態碼：${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "錯誤圖示"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "刪除"
+			}
+		}
+	},
+	"userSettings": {
+		"title": "使用者設定",
+		"PageTitle": "使用者設定",
+		"description": "關注您的fount標識的詳細資訊。管理您的個人資料、保護您的訪問權限並查看連接的設備。為您提供一個安靜的聖所。",
+		"userInfo": {
+			"title": "使用者資訊",
+			"usernameLabel": "使用者名稱:",
+			"creationDateLabel": "帳號建立日期:",
+			"folderSizeLabel": "使用者資料大小:",
+			"folderPathLabel": "使用者資料路徑:",
+			"copyPathBtn": {
+				"title": "複製路徑"
+			},
+			"copyPathBtnIcon": {
+				"alt": "複製圖示"
+			},
+			"copiedAlert": "路徑已複製到剪貼簿！"
+		},
+		"changePassword": {
+			"title": "修改密碼",
+			"currentPasswordLabel": "目前密碼:",
+			"newPasswordLabel": "新密碼:",
+			"confirmNewPasswordLabel": "確認新密碼:",
+			"submitButton": "修改密碼",
+			"errorMismatch": "新密碼兩次輸入不一致。",
+			"success": "密碼修改成功。"
+		},
+		"renameUser": {
+			"title": "重命名使用者",
+			"newUsernameLabel": "新使用者名稱:",
+			"submitButton": "重命名使用者",
+			"confirmMessage": "您確定要更改使用者名稱嗎？這將需要您重新登入。",
+			"success": "使用者已成功重命名為 「${newUsername}」。您現在將被登出。"
+		},
+		"userDevices": {
+			"title": "使用者裝置/會話",
+			"noDevicesFound": "未找到任何裝置或會話。",
+			"deviceInfo": "裝置ID: ${deviceId}",
+			"thisDevice": "目前裝置",
+			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要從此裝置/會話登出嗎？",
+			"revokeSuccess": "裝置/會話已成功撤銷。",
+			"refreshButton": {
+				"title": "重新整理列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理列表圖示"
+			}
+		},
+		"apiKeys": {
+			"title": "API 金鑰",
+			"description": "管理外部應用程式的 API 金鑰。",
+			"input": {
+				"placeholder": "新金鑰描述"
+			},
+			"createButton": "創建",
+			"noKeysFound": "未找到任何 API 金鑰。",
+			"keyDetails": "描述: ${description} | 創建於: ${createdAt} | 最後使用: ${lastUsed}",
+			"neverUsed": "從未使用",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要撤銷此 API 金鑰嗎？",
+			"revokeSuccess": "API 金鑰已成功撤銷。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 金鑰創建成功。",
+			"refreshButton": {
+				"title": "重新整理列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理列表圖示"
+			}
+		},
+		"newApiKey": {
+			"title": "新 API 金鑰已創建",
+			"warning": "請複制您的新 API 金鑰。您將無法再次看到它！",
+			"closeButton": "我已復制我的金鑰",
+			"copyButton": {
+				"title": "複製新 API 金鑰"
+			},
+			"copiedAlert": "API 金鑰已複製到剪貼簿！"
+		},
+		"logout": {
+			"title": "登出",
+			"description": "這將從目前裝置登出您的帳號。",
+			"buttonText": "登出",
+			"confirmMessage": "您確定要登出嗎？",
+			"successMessage": "已成功登出。即將跳轉到登入頁面..."
+		},
+		"deleteAccount": {
+			"title": "刪除帳號",
+			"warning": "警告：此操作將永久刪除您的帳號和所有相關資料，且無法恢復。",
+			"submitButton": "刪除我的帳號",
+			"confirmMessage1": "警告！您確定要永久刪除您的帳號嗎？此操作無法撤銷。",
+			"confirmMessage2": "為確認刪除，請輸入您的使用者名稱「${username}」：",
+			"usernameMismatch": "輸入的使用者名稱與目前使用者不符。刪除操作已取消。",
+			"success": "帳號已成功刪除。您現在將被登出。"
+		},
+		"passwordConfirm": {
+			"title": "確認操作",
+			"message": "為繼續此操作，請輸入您的目前密碼：",
+			"passwordLabel": "密碼:",
+			"confirmButton": "確認",
+			"cancelButton": "取消"
+		},
+		"apiError": "API 請求失敗: ${message}",
+		"generalError": "發生錯誤: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "用戶設置"
+					}
+				}
+			}
+		}
+	},
+	"subfounts": {
+		"title": "子fount - 點對點設備管理",
+		"pageTitle": "子fount",
+		"description": "管理點對點子fount連接",
+		"hostConnectionCode": {
+			"title": "主機連接碼",
+			"connectionCodeLabel": "連接碼 (Peer ID)",
+			"passwordLabel": "密碼",
+			"copyButton": "複製",
+			"regenerateButton": "重新生成",
+			"infoMessage": "與子fount客戶端共享這些憑據以建立連接。",
+			"connectionCodeCopied": "連接碼已複製到剪貼板",
+			"passwordCopied": "密碼已複製到剪貼板",
+			"regenerateSuccess": "連接碼已重新生成"
+		},
+		"connectedSubfounts": {
+			"title": "已連接的子fount",
+			"noSubfountsConnected": "未連接任何子fount",
+			"table": {
+				"id": "ID",
+				"peerId": "Peer ID",
+				"connectedAt": "連接時間",
+				"status": "狀態",
+				"connected": "已連接",
+				"disconnected": "已斷開",
+				"na": "N/A"
+			}
+		},
+		"codeExecution": {
+			"title": "代碼執行",
+			"description": "在選定的Subfount上執行JavaScript代碼",
+			"selectSubfountLabel": "選擇Subfount",
+			"selectSubfountPlaceholder": "請選擇要執行代碼的Subfount...",
+			"scriptLabel": "JavaScript代碼",
+			"executeButton": "執行",
+			"executing": "執行中...",
+			"noSubfountSelected": "請先選擇一個Subfount",
+			"noScriptProvided": "請輸入要執行的代碼",
+			"executionSuccess": "代碼執行成功",
+			"executionFailed": "代碼執行失敗: ${message}"
+		},
+		"downloadClient": {
+			"title": "下載子fount客戶端",
+			"description": "下載獨立的子fount客戶端腳本以在遠程設備上運行。",
+			"downloadButton": "下載 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "加載連接碼失敗: ${message}",
+			"regenerateConnectionCodeFailed": "重新生成連接碼失敗: ${message}",
+			"loadSubfountsFailed": "加載子fount列表失敗: ${message}",
+			"generalError": "發生錯誤: ${message}"
+		}
+	},
+	"languageSettings": {
+		"title": "語言設置",
+		"pageTitle": "語言設置",
+		"description": "管理您的fount應用程序的語言首選項。使用可用的語言選項定制您的體驗。",
+		"pageDescription": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設置。",
+		"availableLanguages": "可用語言",
+		"preferredLanguages": "優先語言列表",
+		"resetButton": "重置",
+		"saveButton": "儲存",
+		"select": {
+			"placeholder": "選擇一種語言..."
+		},
+		"search": {
+			"placeholder": "搜尋語言..."
+		},
+		"noPreferredLanguages": "尚未設定偏好語言。將使用瀏覽器預設設定。",
+		"savedMessage": "語言設置已保存！",
+		"resetMessage": "語言設置已重置！",
+		"fetchLocalesFailed": "獲取可用語言失敗！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "語言設置"
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "主題管理",
+		"description": "選擇反映您的心情或故事的美學。預覽並從主題調色板中進行選擇，每個主題都為您的fount交互提供不同的氛圍。你的世界，你的風格。",
+		"instruction": "選擇一個主題！",
+		"search": {
+			"placeholder": "搜尋主題...",
+			"noResult": "未找到相符的主題。"
+		},
+		"createButton": "+ 建立新主題",
+		"preview": {
+			"editButton": {
+				"title": "編輯"
+			},
+			"editButtonIcon": {
+				"alt": "編輯圖示"
+			},
+			"deleteButton": {
+				"title": "刪除"
+			},
+			"deleteButtonIcon": {
+				"alt": "刪除圖示"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製圖示"
+			}
+		},
+		"editor": {
+			"title": "主題編輯器",
+			"cancelButton": "取消",
+			"saveApplyButton": "儲存並套用",
+			"themeName": "主題名稱 (ID)",
+			"autoPaletteTitle": "從圖片自動調色",
+			"autoPaletteInstruction": "點擊上方顏色以自動填充主色/輔助色/強調色/中性色。",
+			"coreColors": "核心顏色",
+			"baseBackground": "基礎與背景",
+			"variables": "變數",
+			"borderRadius": "圓角半徑 (--rounded-box)",
+			"borderWidth": "邊框寬度 (--border-btn)",
+			"advancedCustomization": "進階自訂",
+			"customCSS": "自訂 CSS (覆蓋)",
+			"customMjsScript": "自訂 MJS 腳本 (選填)",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。返回一個包含 <code>load()</code> 和 <code>unload()</code> 函數的物件。",
+			"themeIdRequired": "需要主題 ID",
+			"newThemeName": "新主題名稱：",
+			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
+			"saved": "已儲存！",
+			"failedToSave": "儲存失敗"
+		},
+		"themes": {
+			"auto": "自動",
+			"light": "亮色",
+			"dark": "暗色",
+			"cupcake": "杯子蛋糕",
+			"bumblebee": "蜜蜂",
+			"emerald": "綠寶石",
+			"corporate": "企業",
+			"synthwave": "合成波",
+			"retro": "復古",
+			"cyberpunk": "賽博龐克",
+			"valentine": "情人節",
+			"halloween": "萬聖節",
+			"garden": "花園",
+			"forest": "森林",
+			"aqua": "深海",
+			"lofi": "lo-fi",
+			"pastel": "粉彩",
+			"fantasy": "奇幻",
+			"wireframe": "線框",
+			"black": "黑色",
+			"luxury": "奢華",
+			"dracula": "惡魔",
+			"cmyk": "CMYK",
+			"autumn": "秋天",
+			"business": "商業",
+			"acid": "酸性",
+			"lemonade": "檸檬水",
+			"night": "夜晚",
+			"coffee": "咖啡",
+			"winter": "冬天",
+			"dim": "昏暗",
+			"nord": "北歐",
+			"sunset": "日落",
+			"caramellatte": "焦糖拿鐵",
+			"abyss": "深淵",
+			"silk": "絲綢"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "這個UI…可以上了！",
+				"description": "讓fount換上了新的裝扮，心情也煥然一新。",
+				"locked_description": "切換一次主題。"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"switchTheme": {
+						"title": "切換主題"
+					}
+				}
+			}
+		}
+	},
+	"part_config": {
+		"title": "組件設定",
+		"pageTitle": "組件設定",
+		"description": "凝視fount的心臟。在這裡，您可以調整其不同組件的設置，調整驅動您體驗的引擎。",
+		"labels": {
+			"part": "選擇組件"
+		},
+		"placeholders": {
+			"partTypeSelect": "請選擇",
+			"partSelect": "請選擇"
+		},
+		"editor": {
+			"title": "組件設定",
+			"disabledIndicator": "此組件不支援設定",
+			"jsonEditor": {
+				"aria-label": "JSON 配置編輯器"
+			},
+			"buttons": {
+				"save": "儲存"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "錯誤提示"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "獲取組件類型失敗",
+			"fetchPartsFailed": "獲取組件列表失敗",
+			"loadEditorFailed": "載入編輯器失敗",
+			"saveConfigFailed": "儲存組件設定失敗",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "組件配置"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "配置"
+			}
+		}
+	},
+	"serviceSource_manager": {
+		"title": "服務來源管理",
+		"description": "在這裡，你將指揮人工智能聲音的交響樂。新增、雕琢或靜音源泉，為您的源泉夥伴賦予生命——代碼和想像力的微妙舞蹈。",
+		"fileList": {
+			"title": "服務來源列表",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "服務源配置",
+		"subtypeSelect": {
+			"label": "產生器子類別",
+			"placeholder": "請選擇產生器類別"
+		},
+		"generatorSelect": {
+			"label": "選擇產生器",
+			"placeholder": "請選擇"
+		},
+		"paths": {
+			"serviceSource": "服務源類別",
+			"generator": "產生器類別"
+		},
+		"editor": {
+			"disabledIndicator": "請先選擇產生器"
+		},
+		"common_config_interface": {
+			"empty_generator": "此服務源的舊有產生器在加載時出錯，可能已被卸載或重命名。",
+			"loadingModels": "正在加載模型...",
+			"availableModels": "可用模型：",
+			"copied": "已複製！",
+			"apiKeyRequired": "需要 API 金鑰才能列出模型。",
+			"copyModelIdTooltip": "點擊以復制模型 ID",
+			"loadModelsFailed": "加載模型失敗：${message}"
+		},
+		"prompts": {
+			"newFileName": "請輸入新的服務源文件名 (請勿包含後綴名):"
+		},
+		"buttons": {
+			"save": "儲存",
+			"delete": "刪除",
+			"setDefault": {
+				"dataset": {
+					"tip": "設為預設"
+				},
+				"aria-label": "將“${fileName}”設為預設服務源"
+			}
+		},
+		"confirm": {
+			"unsavedChanges": "您有未儲存的更改。是否要放棄更改？",
+			"deleteFile": "確定要刪除檔案嗎?",
+			"unsavedChangesBeforeUnload": "您有未儲存的更改。確定要離開此頁面嗎？"
+		},
+		"alerts": {
+			"fetchFileListFailed": "獲取檔案列表失敗: ${error}",
+			"fetchGeneratorListFailed": "獲取產生器列表失敗: ${error}",
+			"fetchDefaultsFailed": "獲取預設組件失敗: ${error}",
+			"fetchFileDataFailed": "獲取檔案資料失敗: ${error}",
+			"fetchConfigTemplateFailed": "獲取配置模板失敗",
+			"saveFileFailed": "儲存檔案失敗: ${error}",
+			"deleteFileFailed": "刪除檔案失敗: ${error}",
+			"addFileFailed": "新增檔案失敗: ${error}",
+			"setDefaultFailed": "設置預設服務源失敗: ${error}",
+			"fetchBranchesFailed": "獲取部件樹失敗: ${error}",
+			"noFileSelectedSave": "沒有選擇要保存的文件。",
+			"noFileSelectedDelete": "沒有選擇要刪除的文件。",
+			"noGeneratorSelectedSave": "請選擇產生器後再保存",
+			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "勝利的法則已然確立！",
+				"description": "指定了一個預設的AI作為魔力供應源。",
+				"locked_description": "設置一次預設的AI源。"
+			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "管理服務源"
+			}
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "讓你的源泉同伴在喧鬧的無序大廳中發出聲音。配置他們的存在，管理他們的運營，並讓他們連接世界，一次一台服務器。",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
+		"configCard": {
+			"title": "Bot 設定",
+			"labels": {
+				"character": "綁定角色",
+				"apiKey": "Discord API 金鑰",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "選擇角色",
+			"apiKeyInput": {
+				"placeholder": "請輸入 API 金鑰"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切換顯示 API 金鑰"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切換顯示 API 金鑰"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "設定儲存成功",
+			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "降臨於 Discord",
+				"description": "將你的角色召喚到了Discord的世界。",
+				"locked_description": "啟動一次Discord Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Discord Bot"
+			}
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"description": "讓你的角色穿越 Telegram 的即時浪潮。配置他們的數字形象，管理他們的對話，並將他們的影響力擴展到這個充滿活力的消息世界。",
+		"cardTitle": "Telegram Bot管理",
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
+		"configCard": {
+			"title": "Bot 設定",
+			"labels": {
+				"character": "綁定角色",
+				"botToken": "Telegram Bot Token",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "選擇角色",
+			"botTokenInput": {
+				"placeholder": "請輸入 Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切換顯示 API 金鑰"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切換顯示 API 金鑰"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "設定已成功儲存！",
+			"botExists": "名為 “${botname}” 的bot已存在，請使用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。確定要放棄這些變更嗎？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開當前頁面嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "降臨於 Telegram",
+				"description": "將你的角色召喚到了Telegram的世界。",
+				"locked_description": "啟動一次Telegram Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Telegram Bot"
+			}
+		}
+	},
+	"browser_integration": {
+		"title": "瀏覽器集成",
+		"description": "彌合fount和網絡之間的差距。此頁面提供用戶腳本以實現無縫集成，將您的 AI 伴侶帶入您的瀏覽體驗中。",
+		"pageHeader": "瀏覽器集成",
+		"pageDescription": "為了讓您的 fount 角色能夠與網頁互動，需要安裝此瀏覽器集成腳本。它充當角色與瀏覽器之間的橋樑，使他們能夠查看頁面內容並執行操作。",
+		"install_script_title": "安裝腳本",
+		"install_script_description": "點擊下面的按鈕來安裝瀏覽器集成腳本。您必須先安裝一個像油猴 (Tampermonkey) 一樣的用戶腳本管理器。",
+		"install_button": "安裝",
+		"install_from_url_tip": "瀏覽器不允許你安裝？複製這個網址並在油猴擴充功能中從url中導入腳本。",
+		"what_is_manager": "什麼是油猴腳本管理器？",
+		"manager_explanation": "油猴腳本管理器是一個瀏覽器擴展，允許您安裝和運行修改網頁的腳本。要使用 fount 集成腳本，您需要其中一個擴展。",
+		"popular_managers": "熱門選擇：",
+		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於${browser}可以使用[這個擴充功能](${link})。",
+		"connected_pages_title": "已連接的頁面",
+		"fetch_pages_error": "加載已連接頁面列表失敗。",
+		"page_title": "頁面標題",
+		"page_url": "URL",
+		"page_status": "狀態",
+		"status_focused": "當前窗口",
+		"status_unfocused": "背景",
+		"copy_button": "複製",
+		"copied_message": "已複製到剪貼簿",
+		"no_pages_connected": {
+			"title": "暫無連接",
+			"description": "請先安裝腳本，然後在其他瀏覽器標籤頁中訪問任意網站，這裡將自動顯示。"
+		},
+		"autorun": {
+			"title": "自動運行腳本",
+			"description": "管理在匹配特定網站時自動執行的JavaScript片段。這些腳本可以由您的AI角色或插件提供，以增強或自動化您的瀏覽體驗。",
+			"form_title": "添加新腳本",
+			"comment_label": "註釋（可選）",
+			"url_regex_label": "URL 正則表達式",
+			"script_label": "JavaScript 代碼",
+			"add_button": "添加腳本",
+			"list_title": "已配置的腳本",
+			"view_script_button": "查看腳本",
+			"delete_button": "刪除",
+			"confirm_delete": "您確定要刪除此腳本嗎？此操作無法撤銷。",
+			"add_success": "自動運行腳本已成功添加！",
+			"delete_success": "腳本已成功刪除。",
+			"no_scripts": {
+				"title": "沒有自動運行腳本",
+				"description": "您還沒有配置任何腳本。請使用上面的表單添加第一個。"
+			},
+			"table": {
+				"comment": "註釋",
+				"url_regex": "URL 正則表達式",
+				"created_at": "創建於"
+			},
+			"view_script_modal_title": "查看腳本",
+			"view_script_modal_close_button": "關閉"
+		},
+		"error": {
+			"load_failed": "加載自動運行腳本失敗：${message}",
+			"add_failed": "添加腳本失敗：${message}",
+			"delete_failed": "刪除腳本失敗：${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "魔法，注入！",
+				"description": "成功為你的瀏覽器安裝了“插件”，現在可以做更多事了。",
+				"locked_description": "安裝一次瀏覽器集成腳本。"
+			},
+			"run_js": {
+				"name": "代碼詠唱",
+				"description": "“以我之名，命令瀏覽器……”",
+				"locked_description": "在瀏覽器中運行一次JavaScript代碼。"
+			},
+			"star_fount": {
+				"name": "開源之星",
+				"description": "為 fount 的 GitHub 專案點個星星 (Star)，感謝您的支持！",
+				"locked_description": "訪問fount的GitHub倉庫並點亮星星。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "整合",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "瀏覽器整合"
+					}
+				}
+			}
+		}
+	},
+	"browser_integration_script": {
+		"update": {
+			"prompt": "fount 瀏覽器集成腳本的新版本可用。是否現在打開更新頁面？"
+		},
+		"csp_warning": "fount 瀏覽器集成腳本檢測到頁面存在CSP策略，這可能導致集成腳本無法正常運行。請考慮安裝擴充功能停用CSP。",
+		"hostChange": {
+			"securityWarningTitle": "--- fount 安全警告 ---",
+			"message": "當前頁面 (\"${origin}\") 正試圖將您的 fount 主機地址更改為:\n\n\"${newHost}\"\n\n警告：批准此操作將允許新主機完全控制您的瀏覽器集成功能，可能導致敏感資訊洩露或賬戶被盜用。\n只有在您確信這是您本人操作（例如，遷移 fount 伺服器）時才應批准。\n\n您確定要允許這次更改嗎？",
+			"uuidMismatchError": "fount 安全錯誤：主機 ${newHost} 的標識 (UUID) 與您現有的不匹配。操作已取消。",
+			"verificationError": "fount 安全錯誤：無法驗證新的主機 \"${newHost}\"。請檢查地址是否正確以及服務是否正在運行。"
+		}
+	},
+	"terminal_assistant": {
+		"title": "終端機助理",
+		"description": "除了圖形界面之外，還有直接命令的空間。通過終端助手與fount的核心進行交互，其中文本編織了自己強大的魔力。",
+		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
+		"initialMessageLink": "點擊這裡了解更多資訊",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "“Hey, fount.”",
+				"description": "在黑漆漆的終端裡，呼喚了AI夥伴的名字。",
+				"locked_description": "調用一次終端輔助。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "整合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "終端輔助"
+					}
+				}
+			}
+		}
+	},
+	"deskpet": {
+		"title": "桌面寵物",
+		"description": "將您的fount角色作為桌面上的互動寵物啟動。",
+		"launcherCard": {
+			"title": "寵物啟動器",
+			"buttons": {
+				"start": "啟動寵物"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"runningCard": {
+			"title": "正在運行的寵物",
+			"noPets": "當前沒有寵物在運行。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "寵物 '${charname}' 已啟動。",
+			"stopped": "寵物 '${charname}' 已停止。",
+			"start_failed": "啟動寵物 '${charname}' 失敗: ${message}",
+			"stop_failed": "停止寵物 '${charname}' 失敗: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "桌面的新夥伴",
+				"description": "一隻野生的角色跳了出來，並佔領了你的桌面。",
+				"locked_description": "啟動一次桌面寵物。"
+			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "作為桌面寵物啟動"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "正在開發",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "桌面寵物",
+						"sub_items": {
+							"main": {
+								"title": "管理桌面寵物"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"access": {
+		"title": "在其他裝置上存取 fount",
+		"description": "將fount的覆蓋範圍擴展到單個屏幕之外。這裡有網關（一個 URL、一個 QR 碼），用於通過其他設備與您的同伴進行連接，這是一個跨本地以太網的簡單橋樑。",
+		"heading": "想在其他裝置上存取 fount 嗎？",
+		"instruction": {
+			"sameLAN": "確保裝置和 fount 主機在同一個區域網路下",
+			"accessthis": "存取以下網址："
+		},
+		"QRcode": {
+			"alt": "掃描此二維碼訪問 fount"
+		},
+		"urlInput": {
+			"aria-label": "網址"
+		},
+		"copyButton": "複製網址",
+		"copied": "網址已複製到剪貼簿！",
+		"home_function_buttons": {
+			"main": {
+				"title": "在其他設備訪問"
+			}
+		}
+	},
+	"proxy": {
+		"title": "API 代理",
+		"description": "對於開發人員和集成商，此頁面推出了 fount API 代理，您可以將 fount 的功能編織到其他應用程序中。",
+		"heading": "API 代理網關",
+		"instruction": "在此頁面生成並管理您的 API 金鑰，以將 fount 與其他應用程式整合。",
+		"endpointSectionTitle": "API 端點",
+		"endpointInstruction": "這是與其他服務整合的基本 URL。",
+		"apiUrlInput": {
+			"aria-label": "API 端點"
+		},
+		"usageExampleTitle": "用法範例",
+		"usageExampleInstruction": "以下是如何使用 `curl` 獲取可用模型列表的範例。",
+		"copyButton": "複製",
+		"copied": "已複製到剪貼簿",
+		"apiKeySectionTitle": "您的 API 金鑰",
+		"apiKey": "您的 API 金鑰：",
+		"noApiKey": "您尚未為此頁面生成 API 金鑰。",
+		"generateApiKeyButton": "生成新金鑰",
+		"copyApiKeyButton": "複製",
+		"apiKeyCopied": "API 金鑰已複製！",
+		"queryStringSectionTitle": "無法在請求標頭中設定 APIKey？ (不安全)",
+		"queryStringWarning": "當您的應用程式不支援在請求標頭（Authorization header）中發送 API 金鑰時，可以使用此備用方法。請注意：將 API 金鑰直接放在 URL 中存在安全風險，因為它可能被記錄在伺服器日誌或瀏覽器歷史中。",
+		"copyQueryStringUrlButton": "包含 API 金鑰的 URL (查詢字串)",
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"asProxy": {
+						"title": "作為代理"
+					}
+				}
+			}
+		}
+	},
+	"achievements": {
+		"title": "成就",
+		"description": "探索您與 fount 旅程的里程碑和成就。每項成就都標誌著您獨特敘事的一步。",
+		"pageHeader": "成就殿堂",
+		"pageDescription": "在這裡查看您已解鎖的成就和里程碑。",
+		"unlocked_on": "解鎖於 ${date}",
+		"locked": "未解鎖",
+		"toast_title": "成就已解鎖！",
+		"error": {
+			"load_failed": "加載成就失敗：${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "把它們全部收服！",
+				"description": "打開了成就列表，準備開始一場集郵之旅。",
+				"locked_description": "打開成就頁面。"
+			},
+			"relock_by_clicking": {
+				"name": "不是吧，大哥？",
+				"description": "通過反复點擊一個已解鎖的成就，你成功地把它給重新鎖上了。為什麼呢？",
+				"locked_description": "？ ？ ？"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "成就"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "除錯與系統資訊",
+		"description": "獲取有關您的 fount 安裝的詳細除錯和系統資訊。這對於故障排除和支持請求非常有幫助。",
+		"heading": "除錯與系統資訊",
+		"copyButton": "複製報告",
+		"versionStatus": {
+			"title": "版本狀態",
+			"checking": "檢查中...",
+			"local": "本地:",
+			"remote": "雲端:",
+			"upToDate": "已是最新",
+			"outdated": "有更新",
+			"checkFailed": "檢查失敗"
+		},
+		"systemInfo": {
+			"title": "系統資訊",
+			"failed": "加載系統資訊失敗"
+		},
+		"connectivity": {
+			"backend": "後端連線狀態",
+			"frontend": "前端連線狀態"
+		},
+		"loading": "載入中...",
+		"checking": "檢查中...",
+		"failed": "失敗",
+		"copySuccess": "除錯報告已複製到剪貼簿",
+		"copyFailed": "複製報告失敗",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "打開除錯面板"
+				}
+			}
+		}
+	},
+	"badges_maker": {
+		"title": "fount! 徽章轉換器",
+		"description": "當您的項目需要一點fount的特色時。轉換shields.io徽章，賦予它們新的、引起共鳴的身份。",
+		"card_title": "fount 徽章連結轉換器",
+		"original_url_label": "貼上 img.shields.io 網址",
+		"original_url": {
+			"placeholder": "例如: https://img.shields.io/badge/Hello-World-blue"
+		},
+		"new_url_label": "產生的新網址",
+		"new_url": {
+			"placeholder": "這裡會顯示轉換後的網址"
+		},
+		"preview_label": "效果預覽",
+		"copy_button": "複製",
+		"copied_text": "已複製!",
+		"preview": {
+			"alt": "徽章預覽"
+		},
+		"copy_error": "無法複製文字: ${error}",
+		"copy_fail_alert": "複製失敗！"
+	},
+	"404": {
+		"title": "頁面未找到",
+		"description": "你所尋找的道路已消散在迷霧之中。這是一個失誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
+		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
+		"homepageButton": "返回首頁"
+	},
+	"code_block": {
+		"copy": {
+			"dataset": {
+				"tip": "複製到剪貼簿"
+			},
+			"aria-label": "複製到剪貼簿"
+		},
+		"copied": {
+			"dataset": {
+				"tip": "已複製到剪貼簿！"
+			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "下載代碼"
+			},
+			"aria-label": "下載代碼"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "執行代碼"
+			},
+			"aria-label": "執行代碼"
+		},
+		"preview": {
+			"dataset": {
+				"tip": "預覽"
+			},
+			"aria-label": "預覽"
+		},
+		"copy_failed": "無法複製到剪貼簿：${error}"
+	},
+	"pow_captcha": {
+		"initial": "我不是機器人",
+		"verifying": "正在驗證...",
+		"solved": "驗證成功",
+		"wasm_disabled": "啟用 WASM 可加快驗證速度",
+		"error": "驗證失敗",
+		"errorMessage": "驗證失敗：${error}"
+	},
+	"breadcrumb": {
+		"clickToNavigate": "點擊前往 ${path}"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "鍵盤上的連續按鍵很容易被猜到。",
+			"keyPattern": "簡短的鍵盤序列很容易被猜到。",
+			"simpleRepeat": "像“aaa”這樣的重複字符很容易被猜到。",
+			"extendedRepeat": "像“abcabcabc”這樣的重複字符模式很容易被猜到。",
+			"sequences": "像“abc”這樣的常見字符序列很容易被猜到。",
+			"recentYears": "最近的年份很容易被猜到。",
+			"dates": "日期很容易被猜到。",
+			"topTen": "這是一個被過度使用的密碼。",
+			"topHundred": "這是一個經常被使用的密碼。",
+			"common": "這是一個常用的密碼。",
+			"similarToCommon": "這與一個常用的密碼相似。",
+			"wordByItself": "單個單詞很容易被猜到。",
+			"namesByThemselves": "單個名字或姓氏很容易被猜到。",
+			"commonNames": "常見的名字和姓氏很容易被猜到。",
+			"userInputs": "密碼中不應包含任何個人或與頁面相關的數據。",
+			"pwned": "您的密碼已在互聯網數據洩露事件中被曝光。"
+		},
+		"suggestions": {
+			"l33t": "避免使用可預測的字母替換，例如用“@”代替“a”。",
+			"reverseWords": "避免使用常見單詞的倒序拼寫。",
+			"allUppercase": "將部分而非全部字母大寫。",
+			"capitalization": "不僅僅將首字母大寫。",
+			"dates": "避免使用與您相關的日期和年份。",
+			"recentYears": "避免使用最近的年份。",
+			"associatedYears": "避免使用與您相關的年份。",
+			"sequences": "避免使用常見的字符序列。",
+			"repeated": "避免重複的單詞和字符。",
+			"longerKeyboardPattern": "使用更長的鍵盤序列並多次改變輸入方向。",
+			"anotherWord": "添加更多不常見的單詞。",
+			"useWords": "使用多個單詞，但避免使用常見的短語。",
+			"noNeed": "您無需使用符號、數字或大寫字母即可創建強密碼。",
+			"pwned": "如果您在其他地方使用此密碼，建議您進行更改。"
+		},
+		"timeEstimation": {
+			"ltSecond": "不到一秒",
+			"second": "{base}秒",
+			"seconds": "{base}秒",
+			"minute": "{base}分鐘",
+			"minutes": "{base}分鐘",
+			"hour": "{base}小時",
+			"hours": "{base}小時",
+			"day": "{base}天",
+			"days": "{base}天",
+			"month": "{base}月",
+			"months": "{base}月",
+			"year": "{base}年",
+			"years": "{base}年",
+			"centuries": "幾個世紀"
+		}
+	}
+}

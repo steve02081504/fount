@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Shells",
+		"description": "Shells manager"
+	},
+	"zh-CN": {
+		"name": "交互界面",
+		"description": "交互界面管理器"
+	},
+	"ar-SA": {
+		"name": "قذائف",
+		"description": "مدير قذائف"
+	},
+	"de-DE": {
+		"name": "Muscheln",
+		"description": "Muschelmanager"
+	},
+	"emoji": {
+		"name": "交互界面",
+		"description": "交互界面管理器"
+	},
+	"es-ES": {
+		"name": "Interfaz",
+		"description": "Gestor de conchas"
+	},
+	"fr-FR": {
+		"name": "Coquilles",
+		"description": "Gestionnaire d'obus"
+	},
+	"hi-IN": {
+		"name": "गोले",
+		"description": "शैल प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Skeljar",
+		"description": "Skeljastjóri"
+	},
+	"it-IT": {
+		"name": "Conchiglie",
+		"description": "Responsabile delle conchiglie"
+	},
+	"ja-JP": {
+		"name": "貝殻",
+		"description": "シェルマネージャー"
+	},
+	"ko-KR": {
+		"name": "포탄",
+		"description": "쉘 관리자"
+	},
+	"lzh": {
+		"name": "靈窗",
+		"description": "交互界面管理器"
+	},
+	"nl-NL": {
+		"name": "Interactieve interface",
+		"description": "Shells-manager"
+	},
+	"pt-PT": {
+		"name": "Interface",
+		"description": "Gerenciador de conchas"
+	},
+	"ru-RU": {
+		"name": "Ракушки",
+		"description": "Менеджер снарядов"
+	},
+	"uk-UA": {
+		"name": "Раковини",
+		"description": "Менеджер оболонок"
+	},
+	"vi-VN": {
+		"name": "Giao diện",
+		"description": "Trình quản lý vỏ"
+	},
+	"zh-TW": {
+		"name": "互動介面",
+		"description": "互動介面管理器"
+	}
+}

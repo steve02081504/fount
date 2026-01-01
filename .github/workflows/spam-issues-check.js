@@ -1,5 +1,11 @@
 /* global module */
-/** @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments */
+/**
+ * 自动关闭和锁定垃圾问题。
+ * @param {object} AsyncFunctionArguments - 异步函数参数。
+ * @param {import('@octokit/rest').Octokit} AsyncFunctionArguments.github - GitHub API 客户端。
+ * @param {object} AsyncFunctionArguments.context - 上下文。
+ * @returns {Promise<void>}
+ */
 module.exports = async ({ github, context }) => {
 	const issueBody = context.payload.issue.body.toLowerCase()
 	const keywords = [
@@ -10,8 +16,7 @@ module.exports = async ({ github, context }) => {
 	]
 
 	const issueNumber = context.payload.issue.number
-	const owner = context.repo.owner
-	const repo = context.repo.repo
+	const { owner, repo } = context.repo
 
 	// 1. 计算匹配到的关键词数量
 	const matchCount = keywords.filter(keyword => issueBody.includes(keyword)).length

@@ -18,21 +18,21 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 // We replicate this structure virtually using express.static middleware.
 // The order is important to correctly resolve file paths.
 
-// `cp -r ./src/locales ./.github/pages/`
-const localesPath = path.join(projectRoot, 'src', 'locales')
+// `cp -r ./src/public/locales ./.github/pages/`
+const localesPath = path.join(projectRoot, 'src', 'public', 'locales')
 app.use('/fount/locales', express.static(localesPath))
 
 // `cp -r ./imgs ./.github/pages/`
 const imgsPath = path.join(projectRoot, 'imgs')
 app.use('/fount/imgs', express.static(imgsPath))
 
-// `cp -rn ./src/pages/scripts ./.github/pages/`
+// `cp -rn ./src/public/pages/scripts ./.github/pages/`
 // The '-n' flag means "no-clobber", so files in the destination (`.github/pages/scripts`) take precedence.
 // We replicate this by checking the destination directory first.
 const githubScriptsPath = path.join(projectRoot, '.github', 'pages', 'scripts')
 app.use('/fount/scripts', express.static(githubScriptsPath))
 
-const srcScriptsPath = path.join(projectRoot, 'src', 'pages', 'scripts')
+const srcScriptsPath = path.join(projectRoot, 'src', 'public', 'pages', 'scripts')
 app.use('/fount/scripts', express.static(srcScriptsPath))
 
 // Serve the main content from `.github/pages` as the root.

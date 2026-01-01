@@ -1,1 +1,2 @@
-c=[''];T=`     @@@@ @@@@:@@@@@:::::@@@  @    :::  `;G=`aaaaabbbbbbbbbbbccbbcaaaaaaaaadddaaddeeddeaaaaaaaaafffaaddeeddeaaaaaaaaaaaaaagghhdde`;for(y=20;y--;){for(x=42;x--;)h=x<21?x:41-x,i=G.charCodeAt((y/5|0)*21+h)-97,p=T[i*5+y%5],c[0]+='%c'+p,c.push('color:#0'+(p<'@'?'ff':11));c[0]+='\n'}c
+s=',color:#000,color:#0ff'.repeat(280);for(v of[9**9-5,982,4624523,18696,1199,227]){for(c='',a=v/9,i=21;i--;a/=3)d=' :'[a%3^0]||'%c@%c',c=d+c+d;s=(c+`
+`).repeat(v%9)+s}s.split`,`

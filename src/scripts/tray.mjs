@@ -10,7 +10,13 @@ import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor } from '../server/server.mjs'
 
 const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
+// systray2 不好用，Windows下图标会时不时消失，尝试过了，详见 7ef383c550663d9f1df051854df925e94e04025f
 
+/**
+ * 获取图标的 base64 编码。
+ * @param {string} iconPath - 图标文件的路径。
+ * @returns {Promise<string>} 一个解析为图标的 base64 编码的承诺。
+ */
 async function getBase64Icon(iconPath) {
 	try {
 		const iconData = fs.readFileSync(iconPath)
@@ -29,11 +35,15 @@ on_shutdown(() => {
 	systray = null
 })
 
+/**
+ * 创建系统托盘菜单。
+ * @returns {Promise<object|undefined>} 创建的托盘对象或在出错时返回undefined。
+ */
 export async function createTray() {
 	try {
 		if (systray) systray.kill()
 		systray = null
-		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/pages/favicon.ico' : '/src/pages/favicon.png')
+		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/public/pages/favicon.ico' : '/src/public/pages/favicon.png')
 		const base64Icon = await getBase64Icon(iconPath)
 
 		systray = new SysTray({
