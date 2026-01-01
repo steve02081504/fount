@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.">
+	<meta property="og:title" content="fount Debug Info: Troubleshooting & System Details">
+	<meta property="og:type" content="website">
+	<meta property="og:description" content="Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.">
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<title data-i18n="debug_info.title"></title>
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="p-4 md:p-8 bg-base-200 min-h-screen">
+	<div class="max-w-4xl mx-auto space-y-6">
+		<!-- Header -->
+		<div class="flex justify-between items-center">
+			<h1 class="text-3xl font-bold" data-i18n="debug_info.heading"></h1>
+			<button id="copy-btn" class="btn btn-primary gap-2">
+				<img src="https://api.iconify.design/line-md/clipboard.svg" class="w-5 h-5" />
+				<span data-i18n="debug_info.copyButton"></span>
+			</button>
+		</div>
+
+		<!-- Version Status -->
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title" data-i18n="debug_info.versionStatus.title"></h2>
+				<div class="flex items-center gap-4 mt-2">
+					<div id="version-indicator" class="badge badge-lg badge-warning gap-2" data-i18n="debug_info.versionStatus.checking">
+					</div>
+					<div class="text-sm opacity-70">
+						<div><span data-i18n="debug_info.versionStatus.local"></span> <span id="local-version" class="font-mono">...</span></div>
+						<div><span data-i18n="debug_info.versionStatus.remote"></span> <span id="remote-version" class="font-mono">...</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- System Info -->
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title" data-i18n="debug_info.systemInfo.title"></h2>
+				<div class="overflow-x-auto">
+					<table class="table table-zebra w-full">
+						<tbody id="system-info-table">
+							<tr>
+								<td colspan="2" class="text-center" data-i18n="debug_info.loading"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Connectivity -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<!-- Backend Connectivity -->
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title text-sm uppercase opacity-70" data-i18n="debug_info.connectivity.backend"></h2>
+					<ul id="backend-checks" class="space-y-2 mt-2">
+						<li class="text-center opacity-50" data-i18n="debug_info.checking"></li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- Frontend Connectivity -->
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title text-sm uppercase opacity-70" data-i18n="debug_info.connectivity.frontend"></h2>
+					<ul id="frontend-checks" class="space-y-2 mt-2">
+						<li class="text-center opacity-50" data-i18n="debug_info.checking"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

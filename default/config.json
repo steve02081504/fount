@@ -1,5 +1,14 @@
 {
 	"port": 8931,
+	"prelaunch": {
+		"heapSize": 0
+	},
+	"listen": null,
+	"https": {
+		"enabled": false,
+		"keyFile": "./data/ssl/key.pem",
+		"certFile": "./data/ssl/cert.pem"
+	},
 	"data": {
 		"users": {}
 	}

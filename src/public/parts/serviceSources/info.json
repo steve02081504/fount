@@ -1,0 +1,78 @@
+{
+	"en-UK": {
+		"name": "Service Sources",
+		"description": "Service Sources manager"
+	},
+	"zh-CN": {
+		"name": "服务源",
+		"description": "服务源管理器"
+	},
+	"ar-SA": {
+		"name": "مصادر الخدمة",
+		"description": "مدير مصادر الخدمة"
+	},
+	"de-DE": {
+		"name": "Servicequellen",
+		"description": "Manager für Servicequellen"
+	},
+	"emoji": {
+		"name": "服务源",
+		"description": "服务源管理器"
+	},
+	"es-ES": {
+		"name": "Fuentes de servicio",
+		"description": "Administrador de fuentes de servicio"
+	},
+	"fr-FR": {
+		"name": "Sources de services",
+		"description": "Gestionnaire de sources de services"
+	},
+	"hi-IN": {
+		"name": "सेवा स्रोत",
+		"description": "सेवा स्रोत प्रबंधक"
+	},
+	"is-IS": {
+		"name": "Þjónustuheimildir",
+		"description": "Umsjónarmaður þjónustuheimilda"
+	},
+	"it-IT": {
+		"name": "Fonti del servizio",
+		"description": "Gestore delle fonti di servizio"
+	},
+	"ja-JP": {
+		"name": "サービスソース",
+		"description": "サービスソースマネージャー"
+	},
+	"ko-KR": {
+		"name": "서비스 소스",
+		"description": "서비스 소스 관리자"
+	},
+	"lzh": {
+		"name": "服务源",
+		"description": "服务源管理器"
+	},
+	"nl-NL": {
+		"name": "Servicebronnen",
+		"description": "Beheerder van servicebronnen"
+	},
+	"pt-PT": {
+		"name": "Fontes de serviço",
+		"description": "Gestor de fontes de serviço"
+	},
+	"ru-RU": {
+		"name": "Источники услуг",
+		"description": "Менеджер по источникам услуг"
+	},
+	"uk-UA": {
+		"name": "Джерела послуг",
+		"description": "Менеджер джерел послуг"
+	},
+	"vi-VN": {
+		"name": "Nguồn dịch vụ",
+		"description": "Người quản lý nguồn dịch vụ"
+	},
+	"zh-TW": {
+		"name": "服務源",
+		"description": "服務源管理器"
+	}
+}

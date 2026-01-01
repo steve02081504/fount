@@ -1,10 +1,10 @@
-# fount Project Architecture & AI Agent Prompting Guide
+# fount Architecture & AI Agent Prompting Guide
 
 ## 1. Project Overview
 
 fount is a modular, multi-user, and extensible framework for building interactive chat experiences with AI characters. Its core is a robust backend server that manages users, AI connections, and various **"parts"** that define the application's behavior. The architecture is designed for high customizability, allowing developers to create unique characters, worlds, user interfaces (shells), and plugins.
 
-## 2. Fount Philosophy
+## 2. fount Philosophy
 
 fount is built on a set of core principles that guide its architecture and development. Understanding these is crucial for contributing effectively.
 
@@ -22,8 +22,7 @@ The project follows a modular, **"part-based"** architecture. The server dynamic
   - `server.mjs`: Main entry point; initializes the web server, IPC, and other core services. It dynamically loads `web_server/index.mjs` to handle HTTP requests.
   - `web_server/index.mjs`: The main entry point for the Express application. It sets up all core middleware, including logging, authentication, static file serving (`express.static`), and API routing. It uses a multi-router setup (`mainRouter`, `PartsRouter`, `FinalRouter`) to organize request handling, with `FinalRouter` acting as the final 404 catch-all. **Understanding the middleware order in this file is critical for debugging routing issues.**
   - `auth.mjs`: Handles user management (registration, login, sessions with JWT, passwords with Argon2) and user data directories.
-  - `parts_loader.mjs`: **The heart of the modular system.** Responsible for the entire lifecycle (discovery, loading, initialization, unloading) of all "parts". It supports git-based parts for automatic updates.
-  - `managers/`: Contains specific logic for loading and managing each type of part.
+  - `parts_loader.mjs`: **The heart of the modular system.** Responsible for the entire lifecycle (discovery, loading, initialization, unloading) of all "parts". It serves as the direct API for part management, discovering parts by scanning designated directories, identifying `main.mjs` as the entry point, and handling automatic updates for git-based parts. Callers of `parts_loader` functions are responsible for providing correctly constructed `partpath` strings (e.g., `shells/my-shell`).
 
 - **Parts (Components)**: Self-contained modules defining a piece of functionality. The main types are:
   - **`shells`**: User interfaces (e.g., a web chat UI, a command-line interface).
@@ -39,6 +38,9 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 
 - **`CharAPI_t`**: The interface for a character.
   - `interfaces.chat.GetPrompt`: Crucial method to add the character's personality, memories, and context to the main prompt structure.
+  - `interfaces.chat.GetPromptForOther`: Defines how the character's prompt appears to other characters in a group chat.
+  - `interfaces.chat.TweakPrompt`: Allows for modifications of the prompt before it is sent to the AI.
+  - `interfaces.chat.TweakPromptForOther`: Allows for modifications of the prompt for other characters in a group chat.
   - `interfaces.chat.GetReply`: Generates a reply in a conversation.
   - `interfaces.chat.GetGreeting`: Provides the initial message when a character joins a chat.
 
@@ -65,22 +67,22 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 
 ## 6. Task Implementation Patterns
 
-To effectively modify or extend fount, follow these patterns:
+To effectively modify or extend fount, follow these patterns. The fundamental principle is that each part is a directory containing a `main.mjs` file at its root, which serves as the entry point.
 
-- **To change a character's personality**: Modify the `GetPrompt` method in the character's `main.mjs` file (`/data/users/<user>/chars/<charname>/`).
-- **To add a new chat feature/command**: Create a new **Plugin** part. Use `GetPrompt` to inform the AI and `ReplyHandler` to execute the logic.
-- **To create a new AI character**: Create a new directory under `/data/users/<user>/chars/` and implement the `CharAPI_t` interface in `main.mjs`.
-- **To understand a chat's context**: The primary object is `chatMetadata_t`. To see the state for a specific message, inspect the `timeSlice` property of the corresponding `chatLogEntry_t`.
+- **To create a new part (e.g., a Character)**: Create a new directory (e.g., `/data/users/<user>/chars/<charname>/`). In that directory, create a `main.mjs` file that exports a default object implementing the required API (e.g., `CharAPI_t`).
+- **To change a character's personality**: Modify the `GetPrompt` method in the character's `main.mjs` file.
+- **To add a new chat feature/command**: Create a new **Plugin** part. Its `main.mjs` will implement the `PluginAPI_t`, using `GetPrompt` to inform the AI and `ReplyHandler` to execute logic.
+- **Advanced: Parent-Delegated Loading**: A parent part can manage the loading of its own children. If a parent's `main.mjs` exports an `interfaces.parts.loadSubPart` function, the `parts_loader` will invoke this function to load any part that is a child of it. This allows for complex, hierarchical parts where the parent can control the lifecycle and environment of its children.
 
 ## 7. Additional Developer Documentation
 
 For more specific development tasks, refer to the following detailed guides:
 
-- **[Frontend Common Functions Guide](./src/pages/AGENTS.md)**
+- **[Frontend Common Functions Guide](./src/public/pages/AGENTS.md)**
   - **Purpose**: Your primary reference for all shared frontend JavaScript helper functions.
   - **When to Consult**: Before developing any new frontend page or component, check this guide first to see if a utility function already exists. This promotes code reuse and consistency.
 
-- **[Shell Architecture & Creation Guide](./src/public/shells/AGENTS.md)**
+- **[Shell Architecture & Creation Guide](./src/public/parts/shells/AGENTS.md)**
   - **Purpose**: A complete guide to understanding and building user interfaces (Shells).
   - **When to Consult**: When you need to create a new Shell from scratch or need to understand the structure and backend/frontend interaction of existing Shells.
 

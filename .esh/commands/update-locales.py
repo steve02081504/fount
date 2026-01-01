@@ -21,7 +21,7 @@ except NameError:
 	MY_DIR = os.path.abspath(".")
 	print("警告: 无法确定脚本精确位置，假设在项目子目录中运行。")
 
-LOCALE_DIR = os.path.join(MY_DIR, "../../src/locales")
+LOCALE_DIR = os.path.join(MY_DIR, "../../src/public/locales")
 FOUNT_DIR = os.path.join(MY_DIR, "../../")  # fount文件夹的路径
 
 # 参考语言优先级列表
@@ -41,11 +41,16 @@ REFERENCE_LANG_CODES = [
 TRANSLATION_DELAY = 0.6
 # 同步最大迭代次数
 MAX_SYNC_ITERATIONS = 10
-# 占位符名称相似度修复阈值 (0.0 到 1.0，越高越严格，这里指 Levenshtein 距离与长度的比值，1.0 - dist/len)
-# 或者使用绝对距离阈值，如下面的实现。
-PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7  # 用于计算最大可接受距离
-PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3  # 或者一个固定的最大编辑距离
+# 占位符名称相似度修复阈值
+PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7
+PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3
+
+# --- 新增配置: Info 文件处理 ---
+INFO_FILENAMES = {"info.json", "info.dynamic.json"}
+# 仅翻译这些字段，其他字段（如 version, author, home_page）直接复制
+TRANSLATABLE_INFO_FIELDS = {"name", "description", "description_markdown", "summary", "tags"}
 # ----------- 配置结束 -----------
+
 
 def load_gitignore_spec(fount_root_dir):
 	"""Loads .gitignore and returns a pathspec.PathSpec object."""
@@ -58,6 +63,7 @@ def load_gitignore_spec(fount_root_dir):
 		spec = pathspec.PathSpec.from_lines("gitwildmatch", f)
 	print(f"已从 .gitignore 加载忽略规则。")
 	return spec
+
 
 # 获取Google支持的语言代码字典和代码集合
 try:
@@ -264,6 +270,9 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
 		return None  # Return None as per original behavior for failed translations
 	if tgt_code_compat is None:
 		print(f"    - 错误: 目标语言代码 '{target_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
+		if source_lang.startswith("zh"):
+			print(f"      - 警告: 目标语言不支持，但源语言为中文，回退使用原文。")
+			return text
 		return None  # Return None
 	if src_code_compat == tgt_code_compat:
 		return text  # Return original if, after compatibility, codes are the same
@@ -411,6 +420,165 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
 
 
+# --- Info File Sync Logic ---
+
+def sync_info_content(info_data, available_lang_codes):
+	"""
+	同步 info.json 类型的内容。
+	结构通常为: { "en-UK": {...}, "zh-CN": {...} }
+	"""
+	changed = False
+
+	# 0. 处理空字符串key：将 "" 视为 "en-UK"
+	if "" in info_data:
+		empty_key_data = info_data[""]
+		if "en-UK" in info_data:
+			# 如果 "en-UK" 已存在，合并数据（空字符串key的数据优先）
+			print(f"    - 将空字符串key的数据合并到 'en-UK'")
+			en_uk_data = info_data["en-UK"]
+			if isinstance(empty_key_data, (dict, OrderedDict)) and isinstance(en_uk_data, (dict, OrderedDict)):
+				# 合并：空字符串key的值覆盖en-UK的值
+				for k, v in empty_key_data.items():
+					en_uk_data[k] = v
+			del info_data[""]
+			changed = True
+		else:
+			# 如果 "en-UK" 不存在，将空字符串key重命名为 "en-UK"
+			print(f"    - 将空字符串key重命名为 'en-UK'")
+			info_data["en-UK"] = info_data[""]
+			del info_data[""]
+			changed = True
+
+	# 1. 确定参考源 (Source of Truth)
+	source_lang = None
+	for ref in REFERENCE_LANG_CODES:
+		if ref in info_data:
+			source_lang = ref
+			break
+	if not source_lang:
+		# 如果找不到参考语言，尝试使用存在的第一个语言
+		available_in_file = [k for k in info_data.keys() if k in available_lang_codes]
+		if available_in_file:
+			source_lang = available_in_file[0]
+
+	if not source_lang:
+		print(f"    - 跳过: 无法在文件中找到任何有效的参考语言块。")
+		return False
+
+	source_obj = info_data[source_lang]
+	if not isinstance(source_obj, (dict, OrderedDict)):
+		return False
+
+	# 2. 遍历所有应该支持的语言
+	for target_lang in available_lang_codes:
+		if target_lang == source_lang:
+			continue
+
+		# 如果目标语言块不存在，创建它
+		if target_lang not in info_data:
+			print(f"    + 为 '{target_lang}' 创建新块 (基于 '{source_lang}')")
+			info_data[target_lang] = OrderedDict()
+			changed = True
+
+		target_obj = info_data[target_lang]
+
+		# 3. 同步字段
+		for key, val in source_obj.items():
+			if key not in target_obj:
+				# 缺失键：决定是翻译还是复制
+				if key in TRANSLATABLE_INFO_FIELDS:
+					# 翻译
+					print(f"      + 翻译缺失字段 '{key}': {source_lang} -> {target_lang}")
+					translated = translate_value(copy.deepcopy(val), source_lang, target_lang)
+					if translated is not None:
+						target_obj[key] = translated
+						changed = True
+				else:
+					# 直接复制 (例如 version, author, provider)
+					# print(f"      + 复制字段 '{key}'")
+					target_obj[key] = copy.deepcopy(val)
+					changed = True
+
+			# 如果键存在，暂时不做覆盖更新，假设已有的是手动修正过的
+			# 除非值为空字符串且源不为空？这里暂保持保守策略。
+
+	# 4. (可选) 排序：让 info.json 的语言顺序好看一点
+	# 这里简单对顶层 key (语言) 排序，把非语言的 key 留着
+	sorted_keys = sorted(info_data.keys(), key=lambda k: (0 if k in REFERENCE_LANG_CODES else 1, k))
+	if list(info_data.keys()) != sorted_keys:
+		new_ordered = OrderedDict((k, info_data[k]) for k in sorted_keys)
+		info_data.clear()
+		info_data.update(new_ordered)
+		changed = True
+
+	return changed
+
+def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
+	"""
+	扫描并同步所有的 info.json / info.dynamic.json 文件
+	不仅同步内容，还会强制统一缩进格式（缩进使用 Tab，末尾有空行）。
+	"""
+	print(f"\n--- 开始扫描并同步 Info JSON 文件 ---")
+	print(f"目标文件名: {INFO_FILENAMES}")
+
+	count_processed = 0
+	count_changed = 0
+
+	for root, dirs, files in os.walk(fount_dir):
+		if gitignore_spec:
+			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), fount_dir))]
+
+		for filename in files:
+			if filename not in INFO_FILENAMES:
+				continue
+
+			filepath = os.path.join(root, filename)
+			if gitignore_spec and gitignore_spec.match_file(os.path.relpath(filepath, fount_dir)):
+				continue
+
+			try:
+				# 1. 读取原始文件内容（字符串）以便后续比较格式
+				with open(filepath, "r", encoding="utf-8") as f:
+					original_content_str = f.read()
+
+				# 2. 解析数据
+				# 使用 loads 而不是 load，因为我们已经读取了字符串
+				try:
+					data = json5.loads(original_content_str, object_pairs_hook=OrderedDict)
+				except Exception as e:
+					print(f"    ! 解析 JSON5 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
+					continue
+
+				print(f"  正在处理: {os.path.relpath(filepath, fount_dir)}")
+
+				# 3. 执行内容同步逻辑 (sync_info_content 会修改 data 对象)
+				content_has_logical_changes = sync_info_content(data, available_lang_codes)
+
+				# 4. 生成标准格式的新字符串
+				# 强制使用 Tab 缩进，且末尾附加一个换行符
+				new_content_str = json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n"
+
+				# 5. 判定是否需要写入
+				# 条件：(内容逻辑有变化) 或者 (原始文本与标准格式文本不一致)
+				if content_has_logical_changes or original_content_str != new_content_str:
+					action = "更新内容" if content_has_logical_changes else "格式化"
+
+					with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+						f.write(new_content_str)
+
+					print(f"    -> 已保存 ({action})。")
+					count_changed += 1
+				else:
+					print("    -> 无需变更。")
+					pass
+
+				count_processed += 1
+
+			except Exception as e:
+				print(f"    ! 错误处理文件 {filepath}: {e}")
+
+	print(f"--- Info 文件处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
+
 def normalize_and_sync_dicts(
 	dict_a,
 	dict_b,
@@ -479,187 +647,12 @@ def reorder_keys_like_reference(target_dict, reference_dict):
 	return ordered_target
 
 
-def remove_unavailable_languages_from_info(current_info_dict: OrderedDict, available_locale_langs: set, item_description: str):
-	"""Removes languages from info dict if their locale files are not available."""
-	langs_in_info_to_remove = []
-	for lang in list(current_info_dict.keys()):  # Iterate over a copy for safe deletion
-		locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
-		if lang not in available_locale_langs and not os.path.exists(locale_file_path):
-			langs_in_info_to_remove.append(lang)
-		elif lang not in available_locale_langs and os.path.exists(locale_file_path):
-			print(f"    - 警告: 语言 '{lang}' 在 {item_description} 的 info 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在于磁盘。跳过删除。")
-
-	for lang_code_to_remove in langs_in_info_to_remove:
-		print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (关联的 locale 文件在 locales/ 中不存在且语言未加载)")
-		del current_info_dict[lang_code_to_remove]
-
-
-def determine_translation_source_for_info(current_info_dict: OrderedDict, global_ref_lang_codes: list[str]) -> tuple[str | None, OrderedDict | None]:
-	"""Determines the source language and data for translating other info entries."""
-	source_lang_in_info, source_data_from_info = None, None
-	present_info_langs = set(current_info_dict.keys())
-
-	for r_lang_code in global_ref_lang_codes:
-		if r_lang_code in present_info_langs:
-			source_lang_in_info = r_lang_code
-			source_data_from_info = current_info_dict[r_lang_code]
-			break
-	if not source_lang_in_info and present_info_langs:
-		source_lang_in_info = next(iter(sorted(list(present_info_langs))))
-		source_data_from_info = current_info_dict[source_lang_in_info]
-	return source_lang_in_info, source_data_from_info
-
-
-def translate_missing_languages_for_info(current_info_dict: OrderedDict, langs_to_add_to_info: set, source_lang_in_info: str, source_data_from_info: OrderedDict, item_description: str) -> bool:
-	"""Translates missing languages for the info dict, modifying it in place. Returns True if any translation was added."""
-	if not isinstance(source_data_from_info, (dict, OrderedDict)):
-		print(f"    - 警告: {item_description} 中源语言 '{source_lang_in_info}' 的数据不是字典。跳过翻译。")
-		return False
-
-	any_translation_added = False
-	print(f"    - 为 {item_description} 的 info 翻译缺失语言 (目标: {', '.join(sorted(list(langs_to_add_to_info)))}), 源: '{source_lang_in_info}'")
-	for target_lang_to_add in sorted(list(langs_to_add_to_info)):
-		translated_item_content = OrderedDict()
-		translation_successful_for_all_sub_keys = True
-		for text_key, text_to_translate in source_data_from_info.items():
-			if isinstance(text_to_translate, str):
-				translated_text = translate_text(text_to_translate, source_lang_in_info, target_lang_to_add)
-				if translated_text is None:
-					print(f"      - 警告: {item_description} 中 '{text_key}' 从 '{source_lang_in_info}' 到 '{target_lang_to_add}' 翻译失败。跳过此子项。")
-					translated_item_content[text_key] = text_to_translate
-					translation_successful_for_all_sub_keys = False
-				else:
-					translated_item_content[text_key] = translated_text
-			else:
-				translated_item_content[text_key] = copy.deepcopy(text_to_translate)
-
-		if translated_item_content and translation_successful_for_all_sub_keys:
-			current_info_dict[target_lang_to_add] = translated_item_content
-			any_translation_added = True
-		elif not translation_successful_for_all_sub_keys:
-			print(f"      - 警告: 由于部分子项翻译失败，未向 {item_description} 的info中添加 '{target_lang_to_add}'。")
-	return any_translation_added
-
-
-def reorder_info_dict_keys(current_info_dict: OrderedDict, global_ref_lang_codes: list[str]) -> OrderedDict:
-	"""Reorders the keys in the info dictionary based on reference languages and then alphabetically."""
-	final_ordered_info_dict = OrderedDict()
-	for r_lang in global_ref_lang_codes:
-		if r_lang in current_info_dict:
-			final_ordered_info_dict[r_lang] = current_info_dict[r_lang]
-	for lang_code_key in sorted(current_info_dict.keys()):
-		if lang_code_key not in final_ordered_info_dict:
-			final_ordered_info_dict[lang_code_key] = current_info_dict[lang_code_key]
-	return final_ordered_info_dict
-
-
-def process_registry_item_info(item_object_in_list, reg_key_list_name, item_index, available_locale_langs, global_ref_lang_codes):
-	"""
-	(Recursively) Processes the 'info' dictionary of a single item and its sub_items.
-	Modifies item_object_in_list in place.
-	Returns True if changes were made, False otherwise.
-	"""
-	item_changed = False
-	if not isinstance(item_object_in_list, (dict, OrderedDict)):
-		return False
-
-	# Process the 'info' of the current item
-	if "info" in item_object_in_list and isinstance(item_object_in_list["info"], (dict, OrderedDict)):
-		current_info_dict = item_object_in_list["info"]
-		if not isinstance(current_info_dict, OrderedDict):
-			current_info_dict = OrderedDict(current_info_dict.items())
-
-		original_info_dict_for_comparison = copy.deepcopy(current_info_dict)
-		item_id_str = item_object_in_list.get("id", f"索引 {item_index}")
-		item_description = f"'{reg_key_list_name}' 项目 (ID: {item_id_str})"
-
-		remove_unavailable_languages_from_info(current_info_dict, available_locale_langs, item_description)
-
-		present_info_langs_after_delete = set(current_info_dict.keys())
-		langs_to_add_to_info = available_locale_langs - present_info_langs_after_delete
-
-		if langs_to_add_to_info:
-			if not present_info_langs_after_delete:
-				print(f"    - 警告: {item_description} 的 info 为空，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
-			else:
-				source_lang, source_data = determine_translation_source_for_info(current_info_dict, global_ref_lang_codes)
-				if source_lang and source_data:
-					translate_missing_languages_for_info(current_info_dict, langs_to_add_to_info, source_lang, source_data, item_description)
-
-		final_ordered_info_dict = reorder_info_dict_keys(current_info_dict, global_ref_lang_codes)
-
-		if final_ordered_info_dict != original_info_dict_for_comparison:
-			item_object_in_list["info"] = final_ordered_info_dict
-			item_changed = True
-		else:
-			# Restore original object to avoid minor (e.g. dict vs OrderedDict) changes that are not actual content changes
-			item_object_in_list["info"] = original_info_dict_for_comparison
-
-	# Recursively process sub_items
-	if "sub_items" in item_object_in_list and isinstance(item_object_in_list["sub_items"], list):
-		parent_id = item_object_in_list.get("id", f"索引 {item_index}")
-		sub_item_list_name = f"{reg_key_list_name} -> {parent_id}"
-		for i, sub_item in enumerate(item_object_in_list["sub_items"]):
-			if process_registry_item_info(sub_item, sub_item_list_name, i, available_locale_langs, global_ref_lang_codes):
-				item_changed = True
-
-	return item_changed
-
-
-def process_home_registries(map_lang_to_path, global_ref_lang_codes, gitignore_spec):
-	if not os.path.isdir(FOUNT_DIR):
-		print(f"警告: fount 目录 '{FOUNT_DIR}' 不存在，跳过 home_registry.json 处理。")
-		return
-	available_locale_langs = set(map_lang_to_path.keys())
-	if not available_locale_langs:
-		print("警告: 没有加载任何有效的区域设置语言，无法处理 home_registry.json。")
-		return
-
-	print(f"\n--- 开始处理 fount 目录 '{FOUNT_DIR}' 下的 home_registry.json 文件 ---")
-	print(f"可用的区域语言 (来自 locales): {', '.join(sorted(list(available_locale_langs)))}")
-	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces", "home_world_interfaces", "home_persona_interfaces", "home_common_interfaces"]
-
-	for root, dirs, files in os.walk(FOUNT_DIR):
-		if gitignore_spec:
-			# Prune directories using pathspec
-			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), FOUNT_DIR))]
-
-		for filename in files:
-			if filename == "home_registry.json":
-				filepath = os.path.join(root, filename)
-				if gitignore_spec and gitignore_spec.match_file(os.path.relpath(filepath, FOUNT_DIR)):
-					continue
-				try:
-					with open(filepath, "r", encoding="utf-8") as f:
-						registry_data = json.load(f, object_pairs_hook=OrderedDict)
-				except Exception as e:
-					print(f"  错误: 无法加载或解析 {filepath}: {e}")
-					continue
-
-				file_changed_this_json = False
-				for reg_key in registry_keys_to_process:
-					if reg_key in registry_data and isinstance(registry_data[reg_key], list):
-						for i, item in enumerate(registry_data[reg_key]):
-							if process_registry_item_info(item, reg_key, i, available_locale_langs, global_ref_lang_codes):
-								file_changed_this_json = True
-
-				if file_changed_this_json:
-					print(f"  检测到更改，正在保存文件: {filepath}")
-					try:
-						with open(filepath, "w", encoding="utf-8", newline="\n") as f:
-							json.dump(registry_data, f, ensure_ascii=False, indent="\t", default=str)
-							f.write("\n")
-					except Exception as e:
-						print(f"  错误: 保存 {filepath} 时出错: {e}")
-	print("--- fount 目录 home_registry.json 文件处理完毕 ---")
-
-
 def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code, gitignore_spec):
 	if not os.path.isdir(fount_dir):
 		print(f"警告: fount 目录 '{fount_dir}' 不存在，跳过i18n键使用情况检查。")
 		return
 
-	print(f"\n--- 开始在 FOUNT 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")
+	print(f"\n--- 开始在 fount 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")
 	regex_patterns = [re.compile(r"data-i18n=(?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')"), re.compile(r"(?:geti|I)18n\((?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')\)")]
 	found_keys_in_fount_code = set()
 
@@ -687,22 +680,22 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 					print(f"  警告: 读取或解析文件 {filepath} 失败: {e}")
 
 	if not found_keys_in_fount_code:
-		print("  在 FOUNT 目录的 MJS/HTML 文件中没有检测到任何 i18n 键的使用。")
+		print("  在 fount 目录的 MJS/HTML 文件中没有检测到任何 i18n 键的使用。")
 		return
 
-	print(f"  在 FOUNT 代码中检测到 {len(found_keys_in_fount_code)} 个唯一 i18n 键。正在与参考语言 '{reference_lang_code}' 数据比较...")
+	print(f"  在 fount 代码中检测到 {len(found_keys_in_fount_code)} 个唯一 i18n 键。正在与参考语言 '{reference_lang_code}' 数据比较...")
 	missing_keys_count = 0
 	for key in sorted(list(found_keys_in_fount_code)):
 		_, found = get_value_at_path(reference_loc_data, key)
 		if not found:
-			print(f"  - 警告 (FOUNT): 代码中使用的键 '{key}' 在参考语言 '{reference_lang_code}' 的本地化数据中未找到。")
+			print(f"  - 警告: 代码中使用的键 '{key}' 在参考语言 '{reference_lang_code}' 的本地化数据中未找到。")
 			missing_keys_count += 1
 
 	if missing_keys_count == 0:
-		print(f"  所有在 FOUNT 代码中使用的 {len(found_keys_in_fount_code)} 个 i18n 键均存在于参考语言 '{reference_lang_code}' 数据中。")
+		print(f"  所有在 fount 代码中使用的 {len(found_keys_in_fount_code)} 个 i18n 键均存在于参考语言 '{reference_lang_code}' 数据中。")
 	else:
-		print(f"  总计: {missing_keys_count} 个在 FOUNT 代码中使用的键在参考语言数据中缺失。")
-	print("--- FOUNT 目录i18n键检查完毕 ---")
+		print(f"  总计: {missing_keys_count} 个在 fount 代码中使用的键在参考语言数据中缺失。")
+	print("--- fount 目录i18n键检查完毕 ---")
 
 
 def extract_placeholders(text_string: str) -> list[str]:
@@ -758,15 +751,25 @@ def levenshtein_distance(s1, s2):
 	return previous_row[-1]
 
 
-def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data) -> bool:
-	"""处理占位符数量不匹配的情况：打印警告并清空翻译。"""
+def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data, source_text, source_lang_code) -> bool:
+	"""处理占位符数量不匹配的情况：重新翻译而不是清空。"""
 	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
-	print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-	return update_translation_at_path_in_data(lang_file_data, key_path, None)
+	print(f"    - 重新翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
+
+	if source_text and source_lang_code:
+		translated = translate_text(source_text, source_lang_code, lang_code)
+		if translated is not None:
+			return update_translation_at_path_in_data(lang_file_data, key_path, translated)
+		else:
+			print(f"      - 重新翻译失败，保留原文本。")
+			return False
+	else:
+		print(f"      - 无法找到源文本，跳过重新翻译。")
+		return False
 
 
-def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data) -> bool:
-	"""处理占位符名称不匹配的情况：尝试修复或清空翻译。"""
+def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code) -> bool:
+	"""处理占位符名称不匹配的情况：尝试修复或重新翻译。"""
 	original_text = lang_info["text"]
 	reason = f"占位符名称集不匹配 (当前: {sorted(list(set(current_ph_list_ordered)))}, 规范: {sorted(list(canonical_placeholder_set))})"
 	print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
@@ -776,8 +779,17 @@ def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_
 	if repair_successful and fixed_text is not None:
 		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text)
 	else:
-		print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
-		return update_translation_at_path_in_data(lang_file_data, key_path, None)
+		print(f"      - 无法自信地修复占位符名称。将重新翻译。键: '{key_path}', 语言: '{lang_code}'.")
+		if source_text and source_lang_code:
+			translated = translate_text(source_text, source_lang_code, lang_code)
+			if translated is not None:
+				return update_translation_at_path_in_data(lang_file_data, key_path, translated)
+			else:
+				print(f"        - 重新翻译失败，保留原文本。")
+				return False
+		else:
+			print(f"        - 无法找到源文本，跳过重新翻译。")
+			return False
 
 
 def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
@@ -803,14 +815,16 @@ def align_placeholders_with_list(original_text_with_placeholders: str, new_place
 
 
 def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], most_frequent_count: int, reference_lang_codes: list[str]) -> list[str] | None:
-	"""根据参考语言优先级和最常见数量，确定规范的占位符列表。"""
+	"""根据参考语言优先级确定规范的占位符列表（以REFERENCE_LANG_CODES最上方的为准）。"""
+	# 直接返回REFERENCE_LANG_CODES中第一个存在的语言的占位符列表
 	for ref_lang_code in reference_lang_codes:
-		if ref_lang_code in placeholders_by_lang and len(placeholders_by_lang[ref_lang_code]) == most_frequent_count:
+		if ref_lang_code in placeholders_by_lang:
 			return placeholders_by_lang[ref_lang_code]
 
-	for lang_code in sorted(placeholders_by_lang.keys()):
-		if len(placeholders_by_lang[lang_code]) == most_frequent_count:
-			return placeholders_by_lang[lang_code]
+	# 如果参考语言都不存在，返回第一个可用语言的占位符列表
+	if placeholders_by_lang:
+		first_lang = sorted(placeholders_by_lang.keys())[0]
+		return placeholders_by_lang[first_lang]
 
 	return None
 
@@ -854,14 +868,14 @@ def attempt_placeholder_name_fix(original_text: str, current_ph_list_ordered: li
 	return None, False
 
 
-def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]]) -> bool:
+def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None) -> bool:
 	"""对单个语言条目的占位符进行对齐，返回是否发生更改。"""
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
 
 	if len(current_ph_list_ordered) != most_frequent_count:
-		return handle_placeholder_count_mismatch(lang_code, lang_info, key_path, len(current_ph_list_ordered), most_frequent_count, lang_file_data)
+		return handle_placeholder_count_mismatch(lang_code, lang_info, key_path, len(current_ph_list_ordered), most_frequent_count, lang_file_data, source_text, source_lang_code)
 	elif set(current_ph_list_ordered) != canonical_placeholder_set:
-		return handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data)
+		return handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code)
 
 	return False
 
@@ -888,19 +902,40 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			continue
 
 		placeholders_by_lang = {lang: extract_placeholders(info["text"]) for lang, info in string_values_info.items()}
-		counts = [len(p) for p in placeholders_by_lang.values()]
-		if not counts:
+		if not placeholders_by_lang:
 			continue
 
-		most_frequent_count = Counter(counts).most_common(1)[0][0]
-		canonical_list = find_canonical_placeholder_list(placeholders_by_lang, most_frequent_count, reference_lang_codes_list)
+		# 找到源语言（参考语言，Source of Truth）
+		source_lang_code = None
+		source_text = None
+		for ref_lang_code in reference_lang_codes_list:
+			if ref_lang_code in string_values_info:
+				source_lang_code = ref_lang_code
+				source_text = string_values_info[ref_lang_code]["text"]
+				break
+		# 如果参考语言都不存在，使用第一个可用语言
+		if source_lang_code is None and string_values_info:
+			first_lang = sorted(string_values_info.keys())[0]
+			source_lang_code = first_lang
+			source_text = string_values_info[first_lang]["text"]
 
-		if canonical_list is None:
-			if most_frequent_count == 0:
-				canonical_list = []
-			else:
-				print(f"    - 警告: 键 '{key_path}' 无法确定规范占位符列表。跳过此键。")
-				continue
+		# 独裁：以参考语言（Source of Truth）为准，而不是"民主投票"
+		if source_lang_code and source_lang_code in placeholders_by_lang:
+			# 使用参考语言的占位符列表和数量作为标准
+			canonical_list = placeholders_by_lang[source_lang_code]
+			canonical_count = len(canonical_list)
+		else:
+			# 如果参考语言不存在，回退到使用频率最高的方式（但这种情况应该很少见）
+			counts = [len(p) for p in placeholders_by_lang.values()]
+			canonical_count = Counter(counts).most_common(1)[0][0]
+			canonical_list = find_canonical_placeholder_list(placeholders_by_lang, canonical_count, reference_lang_codes_list)
+			if canonical_list is None:
+				if canonical_count == 0:
+					canonical_list = []
+				else:
+					print(f"    - 警告: 键 '{key_path}' 无法确定规范占位符列表。跳过此键。")
+					continue
+
 		canonical_set = set(canonical_list)
 
 		for lang_code, lang_info in string_values_info.items():
@@ -908,7 +943,11 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			if not lang_file_data:
 				continue
 
-			if align_single_translation_placeholders(lang_code, lang_info, key_path, most_frequent_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang):
+			# 如果当前语言就是源语言，跳过（不需要重新翻译自己）
+			if lang_code == source_lang_code:
+				continue
+
+			if align_single_translation_placeholders(lang_code, lang_info, key_path, canonical_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang, source_text, source_lang_code):
 				overall_changes_made = True
 
 	print("--- 全局占位符验证和修复过程已完成 ---")
@@ -1084,12 +1123,130 @@ def generate_list_csv(all_data):
 		print(f"  - Error: Failed to write to {csv_path}: {e}")
 
 
+def generate_locale_data_ts(ref_data, output_path):
+	"""Generates the locale_data.ts file for i18n key type completion."""
+	print(f"\n--- Generating {os.path.basename(output_path)} for type safety ---")
+
+	def collect_placeholder_keys_recursive(data, prefix=""):
+		"""Recursively finds all keys that have string values with placeholders."""
+		keys = {}
+		for key, value in data.items():
+			path = f"{prefix}.{key}" if prefix else key
+			if isinstance(value, (OrderedDict, dict)):
+				keys.update(collect_placeholder_keys_recursive(value, path))
+			elif isinstance(value, str):
+				placeholders = extract_placeholders(value)
+				if placeholders:
+					keys[path] = sorted(list(set(placeholders)))
+		return keys
+
+	def sanitize_ts_key(key):
+		"""Sanitizes a key for use in TypeScript types. If not a valid identifier, wraps in single quotes."""
+		if re.match(r"^[a-zA-Z_$][a-zA-Z0-9_$]*$", key):
+			return key
+		return f"'{key}'"
+
+	def generate_ts_type_recursive(data, indent_level):
+		"""Recursively generates a TypeScript type string from a dictionary."""
+		parts = ["{"]
+		indent = "\t" * indent_level
+		for key, value in data.items():
+			ts_key = sanitize_ts_key(key)
+			if isinstance(value, (OrderedDict, dict)):
+				parts.append(f"{indent}{ts_key}: {generate_ts_type_recursive(value, indent_level + 1)}")
+			elif isinstance(value, str):
+				parts.append(f"{indent}{ts_key}: string")
+		parts.append("\t" * (indent_level - 1) + "}")
+		return "\n".join(parts)
+
+	locale_data_type_str = generate_ts_type_recursive(ref_data, indent_level=1)
+
+	placeholder_keys = collect_placeholder_keys_recursive(ref_data)
+	params_map_parts = ["{"]
+	for key, placeholders in sorted(placeholder_keys.items()):
+		param_types = "; ".join([f"{sanitize_ts_key(p.strip())}: string | number" for p in placeholders])
+		params_map_parts.append(f"\t'{key}': {{ {param_types} }}")
+	params_map_parts.append("}")
+	params_map_str = "\n".join(params_map_parts)
+
+	content = f"""\
+// 此文件由本地化文件自动生成。
+// 请勿手动编辑此文件，因为它将被覆盖。
+// 此文件为 i18n 键提供类型定义，实现自动补全。
+
+/**
+ * 表示所有可能的语言环境数据类型。
+ */
+export type LocaleData = {locale_data_type_str}
+// 用于从嵌套对象生成点表示法键的实用类型。
+type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
+
+type Paths<T, D extends number = 5> = [D] extends [never]
+	? never
+	: T extends object
+		? {{ [K in keyof T]-?: K extends string | number
+			? `${{K}}` | Join<K, Paths<T[K], Prev[D]>>
+			: never
+		}}[keyof T]
+		: ''
+
+type Join<K, P> = K extends string | number
+	? P extends string | number
+		? `${{K}}${{'' extends P ? '' : '.'}}${{P}}`
+		: never
+	: never
+
+/**
+ * 表示语言环境数据所有可能的点表示法键。
+ * 这为在 `geti18n` 中使用的键提供自动补全。
+ *
+ * @example
+ * 'home.title'
+ * 'login.errors.password_mismatch'
+ */
+export type LocaleKey = Paths<LocaleData>
+
+/**
+ * 将语言环境键映射到其预期参数对象的类型。
+ * 如果键不需要参数，则不包含在此类型中。
+ */
+export type LocaleKeyParams = {params_map_str}
+
+/**
+ * 表示所有需要参数的语言环境键的类型。
+ */
+export type LocaleKeyWithParams = keyof LocaleKeyParams
+
+/**
+ * 表示所有不需要参数的语言环境键的类型。
+ */
+export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
+"""
+
+	try:
+		existing_content = ""
+		if os.path.exists(output_path):
+			with open(output_path, "r", encoding="utf-8") as f:
+				existing_content = f.read()
+
+		if existing_content != content:
+			with open(output_path, "w", encoding="utf-8", newline="\n") as f:
+				f.write(content)
+			print(f"  - Successfully generated and updated {os.path.basename(output_path)}")
+		else:
+			print(f"  - {os.path.basename(output_path)} is already up-to-date.")
+
+	except Exception as e:
+		print(f"  - Error: Failed to write to {output_path}: {e}")
+
+
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
 	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
 
 	all_data, languages, lang_to_path = load_locale_files()
+	available_lang_codes = list(lang_to_path.keys()) # 收集所有可用语言代码
 
 	ref_path, ref_lang = find_reference_language(lang_to_path, all_data, languages)
 
@@ -1097,7 +1254,7 @@ def main():
 	if first_ref_lang:
 		check_used_keys_in_fount(FOUNT_DIR, all_data[lang_to_path[first_ref_lang]], first_ref_lang, gitignore_spec)
 	else:
-		print("\n警告: 未找到参考语言数据，跳过 FOUNT 目录i18n键检查。")
+		print("\n警告: 未找到参考语言数据，跳过 fount 目录i18n键检查。")
 
 	run_synchronization_loop(all_data, languages, ref_path)
 
@@ -1106,10 +1263,10 @@ def main():
 
 	save_locale_files(all_data, ref_path)
 
-	if lang_to_path:
-		process_home_registries(lang_to_path, REFERENCE_LANG_CODES, gitignore_spec)
-	else:
-		print("\n警告: 无有效区域设置，跳过 home_registry.json 处理。")
+	process_info_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
+
+	ts_decl_path = os.path.join(LOCALE_DIR, "../../decl/locale_data.ts")
+	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
 
 	generate_list_csv(all_data)
 

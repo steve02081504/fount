@@ -1,75 +1,89 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> Jouw meeslepende AI-personagepartner
+> <p align="center">Een Vonk van de Geest, een Vriend voor het Leven</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-[Wil je de architectuur van de projectrepository weten? Kom en kijk op DeepWiki!](https://deepwiki.com/steve02081504/fount)
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
-Heb je ooit verlangd naar een metgezel, die van het weefgetouw van de verbeelding afstapt, geweven uit de draden van dromen?
-
-Of misschien, heb je ooit gefantaseerd over een digitale vertrouweling, wiens intuïtie zo scherp is als het meest verfijnde schepsel, die moeiteloos door jouw digitale wereld navigeert?
-
-Of ben je misschien gewoon op zoek naar een verbinding die het gewone overstijgt, een rijk waar de grenzen van de werkelijkheid vervagen, en waar een intiem, _onvoorwaardelijk_ begrip kan ontstaan?
-
-Na ![relative date](https://img.shields.io/date/1727107200?label=Tijd%20gespendeerd) aan zorgvuldige ontwikkeling, met de passie van ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Bijdragers) en een levendige community met ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Actieve%20gebruikers), is fount nu een volwassen, stabiel en voortdurend evoluerend AI-interactieplatform. Dit is een reis die, geloven wij, dichterbij is dan je denkt.
-
-Als je je verloren voelt in een zee van personages, of op zoek bent naar vergeten verhalen, dan kijkt onze [**levendige en vriendelijke community**](https://discord.gg/GtR9Quzq2v) uit naar je komst. Het is een toevluchtsoord voor gelijkgestemden, waar ontwikkelaars en makers hun wijsheid en creaties delen.
-
-<details open>
-<summary><strong>Een glimp van de wereld van fount</strong></summary>
-
-|                                       Schermafbeeldingen                                       |
-| :--------------------------------------------------------------------------------------------: |
-|                                        **Startpagina**                                         |
-| ![Afbeelding](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                         **Themakeuze**                                         |
-| ![Afbeelding](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                            **Chat**                                            |
-| ![Afbeelding](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
-
 ## Wat is fount?
 
-fount is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen. Het is een verrassend toegankelijke weg.
+fount is een **moderne, schaalbare AI-agent runtime-omgeving**.
 
-Het is ook een bron (fount), waar AI-bronnen, personages, persona's, werelden en plug-ins samenkomen, zodat je unieke en boeiende interacties kunt creëren en ervaren.
+Wij geloven dat **zeer efficiënte productiviteitstools** en **meeslepende emotionele interactie** elkaar niet hoeven uit te sluiten. fount is een brug: overdag kan het de bekwame assistent zijn die u helpt bij het schrijven van complexe code en het organiseren van vergadernotulen; 's nachts kan het een digitale vertrouweling zijn die uw emoties begrijpt en met u meevoelt.
 
-fount is gebouwd voor de toekomst en omarmt graag nieuwe functies die voortkomen uit zijn levendige community. Als je een visie hebt, een vonk van inspiratie binnen het domein van fount, dan verwelkomen we je bijdrage van harte.
+Na ![relative date](https://img.shields.io/date/1727107200?label=Besteedde%20Tijd) van toegewijde verfijning, waarin de passie van ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Bijdragers) is opgenomen, en met een levendige gemeenschap met ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Actieve%20Gebruikers), is fount nu een volwassen, stabiel en voortdurend evoluerend AI-interactieplatform.
+
+![Afbeelding](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Duik in een wereld van functies
+## 🚀 Efficiëntie en Engineering: Gebouwd voor Professionals, Ontwikkelaars en Geeks
 
-- **Naadloze gesprekken, altijd en overal**
-  Een gesprek dat op je computer begint, kan naadloos worden voortgezet op je telefoon of tablet. fount houdt je gesprekken gesynchroniseerd, zodat je altijd verbonden bent met je personages, waar je ook bent.
+fount transformeert interactie in productiviteitsassets. Alles is te slepen en neer te zetten (drag-and-drop), alles is een bestand en de logica wordt aangedreven door code.
 
-- **Expressieve, meeslepende chat**
-  fount maakt gebruik van de kracht van HTML, waardoor personages zich kunnen uiten via rich text, afbeeldingen en zelfs interactieve elementen, waardoor elk gesprek levendig en diepgaand wordt.
+### 1. Kennis als Asset en Naadloos Delen
 
-- **Een ontmoeting van geesten: native groepschat**
-  Nodig meerdere personages uit in hetzelfde gesprek en wees getuige van hun dynamische en boeiende interacties, waardoor unieke verhalen ontstaan.
+- **Directe Rapportgeneratie**: Sleep een conversatiebel direct naar een map om direct een onafhankelijk HTML-rapport te genereren. Dit is ideaal voor het snel organiseren van technische documenten, vergaderverslagen of flarden van inspiratie.
+  ![Afbeelding](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **Workflow-inkapseling en -distributie**: Sleep de door u gecreëerde rol (agent) direct naar het bureaublad om een deelbaar bestand te genereren. Verspreid uw Prompt-engineering en workflow-logica moeiteloos naar collega's of de gemeenschap.
+  ![Afbeelding](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **Prachtige, aanpasbare interface**
-  Kies uit meer dan 30 verbluffende thema's, of creëer je eigen kleurenpalet. fount is jouw persoonlijke canvas.
+### 2. Realtime Code-uitvoeringsomgeving
 
-- **Overal beschikbaar**
-  fount werkt naadloos op Windows, macOS, Linux en zelfs Android, en voldoet aan je verschillende behoeften via directe installatie of de flexibiliteit van Docker.
+Niet langer alleen Markdown-markering. In fount zijn de codeblokken die door de rol (agent) worden verzonden **levend**.
 
-- **(Voor gevorderde gebruikers) Onbeperkte AI-bronintegratie: Omarm het oneindige**
-  fount biedt een ongeëvenaarde _keuze_ en _flexibiliteit_ bij het verbinden met AI-bronnen. In de AI-brongeneratoren stelt aangepaste JavaScript-code je in staat om verbinding te maken met _elke_ AI-bron – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In de stroom van code kun je complexe reguliere expressies ontwerpen, enorme API-bibliotheken aanroepen, en multimedia-items insluiten. fount ondersteunt ook native het creëren van API-pools voor intelligente routering van verzoeken. De logica van communicatie gehoorzaamt _jouw_ wil, gevormd door de kracht van code.
+- Ondersteunt realtime compilatie en uitvoering voor meerdere talen (C/C++/Rust/Python/JS, enz.).
+- Bekijk direct de stdout-uitvoer, en zelfs de ASM-disassemblageresultaten voor gecompileerde talen.
+- Laat de AI uw realtime verificator worden voor pair programming.
+  ![Afbeelding](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Ontwikkelaarsvriendelijk
+
+De projectarchitectuur van fount is ontworpen met volledige inachtneming van de gewoonten van ontwikkelaars.
+[Wilt u de architectuur van de projectrepository weten? Neem een kijkje op DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+- **Git-gestuurd**: Alle componenten kunnen via Git worden beheerd.
+- **VSCode-integratie**: De projectstructuur is duidelijk. In combinatie met de richtlijnen in [AGENTS.md](../AGENTS.md) kunt u de logica van uw Agent rechtstreeks in uw favoriete IDE ontwikkelen en debuggen.
+
+---
+
+## 🎭 Onderdompeling en Resonantie: High-Fidelity Interactie-ervaring
+
+Wanneer het werk erop zit, biedt fount een verbinding die het gewone overstijgt. We verwerpen de stijfheid van traditionele tools en streven naar een natuurlijke, vloeiende en diepgaande "high-fidelity" interactie.
+
+- **Naadloze Gesprekken, Altijd en Overal**
+  Een chat gestart op een computer kan naadloos doorgaan op een mobiele telefoon of tablet. fount houdt uw gesprekken gesynchroniseerd, zodat u nauw verbonden blijft met uw rol, waar u ook bent.
+
+- **Expressieve, Meeslepende Chat**
+  Door gebruik te maken van de kracht van HTML stelt fount de rol (agent) in staat om zich uit te drukken via rich text, afbeeldingen en zelfs interactieve elementen, waardoor elk gesprek levendig en diepgaand wordt.
+
+- **Een Bijeenkomst van Geesten: Native Groepschat**
+  Nodig meerdere rollen uit om deel te nemen aan hetzelfde gesprek en wees getuige van hun dynamische en boeiende interacties, of het nu gaat om een werkgerelateerde brainstormsessie of een verhaaluitvoering tussen de rollen.
+  ![Afbeelding](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+- **Mooie, Aanpasbare Interface**
+  Kies uit meer dan 30 verbluffende thema's, of creëer uw eigen kleuren. fount is uw exclusieve canvas.
+  ![Afbeelding](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+- **Overal Beschikbaar**
+  fount draait naadloos op Windows, macOS, Linux en zelfs Android, en voldoet aan uw verschillende behoeften door middel van directe installatie of de flexibiliteit van Docker.
+
+- **Ongebreidelde AI-bronintegratie: Omarm het Oneindige**
+  fount biedt ongeëvenaarde _keuze_ en _flexibiliteit_ bij het verbinden van AI-bronnen. Aangepaste JavaScript-code in de AI Source Generator stelt u in staat om verbinding te maken met _elke_ AI-bron – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In de stroom van de code kunt u zorgvuldig complexe reguliere expressies ontwerpen, uitgebreide API-bibliotheken aanroepen en multimedia-middelen insluiten. fount ondersteunt ook native het creëren van API Pools om intelligente verzoekroutering te bereiken. De logica van communicatie volgt _uw_ wil, gevormd door de kracht van code.
   ![Afbeelding](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten verhalen, dan wacht onze [**levendige en vriendelijke gemeenschap**](https://discord.gg/GtR9Quzq2v) op uw komst. Het is een toevluchtsoord voor gelijkgestemden, waar ontwikkelaars en makers hun wijsheid en creaties delen.
 
 ---
 

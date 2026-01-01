@@ -1,23 +1,33 @@
+import { exec } from 'npm:@steve02081504/exec'
+
 import { __dirname } from '../server/base.mjs'
 
-import { exec } from './exec.mjs'
+/**
+ * 在指定目录中执行 git 命令。
+ * @param {string} targetPath - 运行 git 命令的目录。
+ * @param {...string} args - Git 命令参数。
+ * @returns {Promise<string>} - 解析为 git 命令的修剪后 stdout 的 Promise。
+ */
 async function basegit(targetPath, ...args) {
-	return (await exec('git -C "' + targetPath + '" ' + args.join(' '))).stdout.trim()
+	return (await exec(`git -C "${targetPath}" ${args.join(' ')}`)).stdout.trim()
 }
 /**
- * Executes a git command within the main application directory.
- * @param {...string} args - Git command arguments.
- * @returns {Promise<string>} - Promise resolving to the trimmed stdout of the git command.
+ * 在主应用程序目录中执行 git 命令。
+ * @param {...string} args - Git 命令参数。
+ * @returns {Promise<string>} - 解析为 git 命令的修剪后 stdout 的 Promise。
  */
 export async function git(...args) {
 	return basegit(__dirname, ...args)
 }
 /**
- * Creates a git command function bound to a specific directory.
- * @param {string} targetPath - The directory to bind the git commands to.
- * @returns {(...args: string[]): Promise<string>} - A function that executes git commands in the specified directory.
+ * 创建一个绑定到特定目录的 git 命令函数。
+ * @param {string} targetPath - 要绑定 git 命令的目录。
+ * @returns {(...args: string[]): Promise<string>} - 在指定目录中执行 git 命令的函数。
  */
 git.withPath = (targetPath) => (...args) => basegit(targetPath, ...args)
+/**
+ * `git` 的别名。
+ */
 export {
 	git as run_git
 }

@@ -1,0 +1,82 @@
+{
+	"en-UK": {
+		"name": "fount default world",
+		"description": "Used to provide output guidance for characters regarding fount rendering support."
+	},
+	"zh-CN": {
+		"name": "fount默认世界",
+		"description": "用于向角色提供关于fount渲染支持的输出指南。"
+	},
+	"ar-SA": {
+		"name": "العالم الافتراضي لـ fount",
+		"description": "يُستخدم لتوفير إرشادات الإخراج للشخصيات فيما يتعلق بدعم عرض fount."
+	},
+	"de-DE": {
+		"name": "fount-Standardwelt",
+		"description": "Dient als Ausgabeleitfaden für Charaktere bezüglich der fount-Rendering-Unterstützung."
+	},
+	"emoji": {
+		"name": "⛲🌐",
+		"description": "ℹ️👤🧑‍🎨🖼️➡️🧭"
+	},
+	"en-US": {
+		"name": "fount default world",
+		"description": "fount rendering support output guide for characters"
+	},
+	"es-ES": {
+		"name": "Mundo predeterminado de fount",
+		"description": "Guía de salida para personajes sobre el soporte de renderizado de fount."
+	},
+	"fr-FR": {
+		"name": "Monde par défaut de fount",
+		"description": "Sert de guide de sortie pour les personnages concernant le support de rendu fount."
+	},
+	"hi-IN": {
+		"name": "fount डिफ़ॉल्ट दुनिया",
+		"description": "पात्रों को fount रेंडरिंग समर्थन आउटपुट मार्गदर्शन देने के लिए उपयोग किया जाता है"
+	},
+	"is-IS": {
+		"name": "Sjálfgefinn heimur fount",
+		"description": "Notað til að veita persónum leiðbeiningar um úttak varðandi fount myndgerðarstuðning."
+	},
+	"it-IT": {
+		"name": "Mondo predefinito di fount",
+		"description": "Utilizzato per fornire ai personaggi indicazioni sull'output per il supporto al rendering di fount"
+	},
+	"ja-JP": {
+		"name": "fountデフォルト世界",
+		"description": "fountレンダリング対応に関するキャラクター向け出力ガイドです。"
+	},
+	"ko-KR": {
+		"name": "fount 기본 세계",
+		"description": "캐릭터에게 fount 렌더링 지원 출력 지침을 제공하는 데 사용됩니다"
+	},
+	"lzh": {
+		"name": "fount本然之世",
+		"description": "為化身示fount繪算之法，以正其儀。"
+	},
+	"nl-NL": {
+		"name": "fount standaardwereld",
+		"description": "Wordt gebruikt om uitvoerrichtlijnen te bieden aan karakters met betrekking tot fount-renderondersteuning."
+	},
+	"pt-PT": {
+		"name": "Mundo padrão fount",
+		"description": "Usado para orientar os personagens sobre a saída de suporte de renderização fount"
+	},
+	"ru-RU": {
+		"name": "Мир fount по умолчанию",
+		"description": "Руководство по выводу данных для персонажей касательно поддержки рендеринга fount."
+	},
+	"uk-UA": {
+		"name": "Світ fount за замовчуванням",
+		"description": "Використовується для надання персонажам вказівок щодо виводу для підтримки рендерингу fount."
+	},
+	"vi-VN": {
+		"name": "Thế giới mặc định fount",
+		"description": "Được sử dụng để cung cấp hướng dẫn đầu ra cho các nhân vật liên quan đến hỗ trợ kết xuất fount"
+	},
+	"zh-TW": {
+		"name": "fount預設世界",
+		"description": "用於提供角色有關fount渲染支援的輸出指南。"
+	}
+}

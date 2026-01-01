@@ -1,75 +1,89 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> あなただけの没入型 AI キャラクターコンパニオン
+> <p align="center">想いを形に、心を繋ぐ</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-[リポジトリのアーキテクチャについて知りたいですか？DeepWikiをチェックしてください！](https://deepwiki.com/steve02081504/fount)
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
-あなたは、想像力のページから飛び出したキャラクター、夢の糸で織られた仲間との旅を切望したことはありませんか？
+## fount とは？
 
-あるいは、デジタルな腹心を思い描いたことは？最も先進的な創造物のように直感的で、あなたのデジタル世界を難なく操るAIアシスタントを？
+fount は**モダンでスケーラブルな AI エージェントのランタイム環境**です。
 
-あるいは、ただ、日常を超えたつながりを求めていたのかもしれません。現実の境界が曖昧になり、親密で、*フィルターのない*理解が花開く領域を。
+私たちは、**高効率な生産性ツール**と**没入型の感情的な対話**は両立しないものではないと考えています。fount はその架け橋です。昼間は、複雑なコードの記述や会議の議事録整理を支援する有能な助っ人となり、夜は、あなたの感情を理解し、共感するデジタルな知己となり得ます。
 
-約![relative date](https://img.shields.io/date/1727107200?label=経過時間)にわたる献身的な開発、![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢献者)以上の情熱的な貢献、そして![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=アクティブユーザー)を超えるユーザーからなる活気あるコミュニティを経て、fountはAIインタラクションのための成熟し、安定し、そして絶えず進化するプラットフォームとしてここにあります。これは一つの旅であり、私たちが信じるには、あなたが想像するよりもずっと身近な旅です。
+![relative date](https://img.shields.io/date/1727107200?label=費やした時間)をかけて丹念に磨き上げられ、![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢献者)たちの熱意と、![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=アクティブユーザー)を擁する活気あるコミュニティと共に、fount は今や成熟し、安定し、絶えず進化する AI 対話プラットフォームとなりました。
 
-道に迷ったキャラクター、忘れ去られた物語？私たちの[**活気に満ちた、そして温かいコミュニティ**](https://discord.gg/GtR9Quzq2v)があなたを待っています。そこは、志を同じくする者たちが集い、開発者もクリエイターも、その知恵と創造物を分かち合う安息の地です。
-
-<details open>
-<summary><strong>fountの世界を垣間見る</strong></summary>
-
-|                                    スクリーンショット                                    |
-| :--------------------------------------------------------------------------------------: |
-|                                     **ホームページ**                                     |
-| ![画像](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                      **テーマ選択**                                      |
-| ![画像](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                       **チャット**                                       |
-| ![画像](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
-
-## fountとは？
-
-fountは、あなたと想像上のキャラクターとをつなぐ架け橋です。彼らとたやすく会話し、あなた自身のキャラクターを創造し、世界と分かち合うことを可能にします。それは驚くほど身近な道です。
-
-それは泉（fount）であり、AIソース、キャラクター、ペルソナ、世界、そしてプラグインが一つに流れ込み、ユニークで魅力的なインタラクションを創造し、体験させてくれます。
-
-fountは未来のために作られています。活気あるコミュニティから生まれる新機能を喜んで受け入れます。もしあなたにビジョンがあり、fountの世界に属するアイデアの火花があるのなら、私たちはあなたの貢献を心から歓迎します。
+![画像](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## 機能の世界に深く潜る
+## 🚀 効率とエンジニアリング：ビジネスパーソン、開発者、ギークのために
 
-- **いつでも、どこでも、シームレスな会話**
-  PCで始めた囁きは、スマートフォンやタブレットで途切れることなく続けられます。fountはあなたの会話を同期させ、どこにいてもキャラクターとあなたを結びつけます。
+fount は、対話を生産性アセットへと変換します。すべてがドラッグ可能、すべてがファイルであり、ロジックはコードによって駆動されます。
 
-- **表現豊かで、没入感のあるチャット**
-  fountはHTMLの力を最大限に活用し、キャラクターがリッチテキストや画像、インタラクティブな要素で自己を表現することを可能にし、すべての会話を鮮やかで深いものにします。
+### 1. 知識のアセット化とシームレスな共有
 
-- **知性の集い：ネイティブグループチャット**
-  複数のキャラクターを一つの会話に招き、彼らのダイナミックで魅力的なインタラクションを目撃し、あなただけの物語を創造しましょう。
+- **即時レポート生成**：対話の吹き出しを直接フォルダにドラッグすると、瞬時に独立した HTML レポートが生成されます。技術文書、会議の記録、またはインスピレーションの断片を素早く整理するのに適しています。
+  ![画像](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **ワークフローのカプセル化と配布**：作成した役割（エージェント）を直接デスクトップにドラッグして、共有可能なファイルを生成します。あなたのプロンプトエンジニアリングとワークフローロジックを、同僚やコミュニティに簡単に配布できます。
+  ![画像](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
+
+### 2. リアルタイム・コード実行環境
+
+単なる Markdown のハイライトではありません。fount では、役割（エージェント）が送信するコードブロックは**生きています**。
+
+- 多様な言語（C/C++/Rust/Python/JS など）のリアルタイムコンパイルと実行をサポート。
+- stdout 出力を直接確認でき、コンパイル言語の ASM 逆アセンブリ結果さえも確認できます。
+- AI をペアプログラミングのリアルタイム検証者として機能させます。
+  ![画像](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. 開発者に優しい
+
+fount のプロジェクトアーキテクチャ設計は、開発者の習慣を十分に考慮しています。
+[プロジェクトリポジトリのアーキテクチャを知りたいですか？ DeepWiki をご覧ください！](https://deepwiki.com/steve02081504/fount)
+
+- **Git駆動**: すべてのコンポーネントは Git を介して管理できます。
+- **VSCode 統合**: プロジェクト構造は明確で、[AGENTS.md](../AGENTS.md) で提供されるガイドラインと組み合わせることで、お気に入りの IDE で直接 Agent のロジックを開発、デバッグできます。
+
+---
+
+## 🎭 没入と共鳴：高忠実度な対話体験
+
+仕事が終わると、fount は通常を超えるつながりを提供します。私たちは従来のツールの硬質な感覚を捨て去り、自然で、流暢で、深みのある「高忠実度（ハイ・フィデリティ）」な対話を追求しています。
+
+- **いつでもどこでもシームレスな会話**
+  コンピューターで始めたおしゃべりを、スマートフォンやタブレットでシームレスに続けることができます。fount はあなたの会話を同期させ、どこにいてもあなたの役割（エージェント）と密接につながることを保証します。
+
+- **表現力豊かで、臨場感あふれるチャット**
+  HTML の力を借りて、fount は役割（エージェント）がリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己を表現することを可能にし、すべての会話を生き生きと、そして深遠なものにします。
+
+- **思考の集い：ネイティブなグループチャット**
+  複数の役割を同じ会話に招待し、仕事のブレインストーミングであれ、役割間の物語の演出であれ、彼らのダイナミックで魅力的な相互作用を目撃してください。
+  ![画像](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
 
 - **美しく、カスタマイズ可能なインターフェース**
-  30以上の美しいテーマから選ぶか、あなた自身の色で世界を彩りましょう。fountはあなた専用のキャンバスです。
+  30以上の素晴らしいテーマから選択するか、ご自身の色彩を創造してください。fount はあなた専用のキャンバスです。
+  ![画像](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
 
-- **どこでもあなたのそばに**
-  fountはWindows、macOS、Linux、そしてAndroidでさえもシームレスに動作し、直接インストールまたはDockerの柔軟性によってあなたのニーズに応えます。
+- **どこでも利用可能**
+  fount は Windows、macOS、Linux、さらには Android でシームレスに動作し、直接インストールまたは Docker の柔軟性を通じて、あなたの異なるニーズに応えます。
 
-- **（上級ユーザー向け）解き放たれたAIソース統合：無限を抱擁する**
-  fountはAIソースへの接続において、比類のない*選択肢*と*柔軟性*を提供します。AIソースジェネレーター内のカスタムJavaScriptコードは、OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistralなど、*あらゆる*AIソースへの接続を可能にします。複雑な正規表現を作り、広大なAPIライブラリを呼び出し、マルチメディアアセットを埋め込む。そのすべてがあなたのコードの流れの中で実現します。fountはまた、インテリジェントなリクエストルーティングのためのAPIプールの作成をネイティブでサポートしています。コミュニケーションの論理は、コードの力によって形作られ、*あなたの*意志に従います。
+- **制約のない AI ソース統合：無限を抱擁する**
+  fount は、AI ソースへの接続において、比類のない*選択*と*柔軟性*を提供します。AI ソースジェネレーター内のカスタム JavaScript コードにより、OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral...など、_あらゆる_ AI ソースに接続できます。コードの流れの中で、複雑な正規表現を慎重に設計したり、膨大な API ライブラリを呼び出したり、マルチメディアリソースを埋め込んだりできます。fount はまた、インテリジェントなリクエストルーティングを実現するために、API プールの作成をネイティブにサポートしています。通信のロジックは、*あなたの*意志に従い、コードの力によって形作られます。
   ![画像](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+もし役割の海で迷子になったり、忘れられた物語を探しているなら、私たちの[**活気に満ちたフレンドリーなコミュニティ**](https://discord.gg/GtR9Quzq2v)があなたの到着を待っています。そこは志を同じくする人々の港であり、開発者とクリエイターが彼らの知恵と創造物を共有しています。
 
 ---
 
