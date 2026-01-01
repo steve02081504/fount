@@ -8,7 +8,7 @@ import { __dirname } from '../base.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { diff_if_auth, registerMiddleware } from './middleware.mjs'
 import { PartsRouter } from './parts_router.mjs'
-import { registerResources } from './resources.mjs'
+import { betterSendFile, registerResources } from './resources.mjs'
 import { registerWellKnowns } from './well-knowns.mjs'
 
 /**
@@ -41,8 +41,9 @@ registerResources(mainRouter)
 
 // 设置最终处理程序（404、错误）
 FinalRouter.use((req, res) => {
+	Sentry.captureException(new Error('404 Not found: ' + req.path))
 	if (req.path.startsWith('/api/') || req.path.startsWith('/ws/')) return res.status(404).json({ message: 'API Not found' })
-	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404/index.html')
+	if (req.accepts('html')) return betterSendFile(res.status(404), __dirname + '/src/public/pages/404/index.html')
 	res.status(404).type('txt').send('Not found')
 })
 /**

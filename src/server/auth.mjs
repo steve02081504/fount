@@ -2,7 +2,6 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { hash, verify, Algorithm } from 'npm:@node-rs/argon2'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
@@ -12,9 +11,19 @@ import { ms } from '../scripts/ms.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { partTypeList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
+const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(async error => {
+	globalThis.console.warn(error)
+	const fallback = await import('npm:argon2')
+	return {
+		hash: fallback.hash,
+		verify: fallback.verify,
+		Algorithm: {
+			Argon2id: fallback.argon2id
+		}
+	}
+})
 /**
  * 此文件处理应用程序的所有认证相关逻辑，
  * 包括用户注册、登录、JWT管理、API密钥验证和密码处理。
@@ -970,7 +979,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		console.error(`Failed to copy default user template for ${username}`, e)
 	}
 
-	for (const subdir of ['settings', ...partTypeList]) try {
+	for (const subdir of ['settings']) try {
 		fs.mkdirSync(path.join(userdir, subdir), { recursive: true })
 	} catch (e) {
 		console.error(`Failed to create user subdirectory: ${subdir}`, e)

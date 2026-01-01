@@ -74,16 +74,16 @@ export class importHandlerAPI_t {
 			 * 将二进制数据作为角色数据导入。
 			 * @param {string} username - 用户名。
 			 * @param {Buffer} chardata - 角色数据。
-			 * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+			 * @returns {Promise<Array<string>>} - 导入的部分路径数组（partpath）。
 			 */
-			ImportAsData: (username: string, chardata: Buffer) => Promise<Array<{ parttype: string; partname: string }>>;
+			ImportAsData: (username: string, chardata: Buffer) => Promise<Array<string>>;
 			/**
 			 * 将文本作为角色数据导入。
 			 * @param {string} username - 用户名。
 			 * @param {string} text - 角色数据的文本表示。
-			 * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+			 * @returns {Promise<Array<string>>} - 导入的部分路径数组（partpath）。
 			 */
-			ImportByText: (username: string, text: string) => Promise<Array<{ parttype: string; partname: string }>>;
+			ImportByText: (username: string, text: string) => Promise<Array<string>>;
 		}
 	}
 }

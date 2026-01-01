@@ -1,0 +1,22 @@
+{
+	"home_drag_out_generators": [
+		{
+			"id": "generateXFountPart",
+			"level": 0,
+			"type": "x-fount-part",
+			"path": "/parts/shells:home/drag_generators/x_fount_part.mjs",
+			"info": "home.home_drag_out_generators.generateXFountPart"
+		}
+	],
+	"home_interfaces": {
+		"*": [
+			{
+				"info": "home.home_common_interfaces.open",
+				"interface": "web",
+				"level": 0,
+				"url": "/parts/${access_path}",
+				"button": "<img src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"
+			}
+		]
+	}
+}

@@ -30,6 +30,7 @@ export type LocaleData = {
 		}
 		jobs: {
 			restartingJob: string
+			preloadingParts: string
 		}
 		ipc: {
 			serverStarted: string
@@ -465,58 +466,149 @@ export type LocaleData = {
 		emptyList: {
 			message: string
 		}
-		part_types: {
-			chars: string
-			worlds: string
-			personas: string
-			plugins: string
-			AIsources: string
-			AIsourceGenerators: string
-			ImportHandlers: string
-			shells: string
-		}
-		default: {
-			title: string
-			subtitle: string
-			card: {
-				noTags: string
-				version: string
-				author: string
-				home_page: string
-				issue_page: string
-				refreshButton: {
-					alt: string
-					title: string
-				}
-				defaultCheckbox: {
-					title: string
+		part_pages: {
+			default: {
+				title: string
+				subtitle: string
+				card: {
+					noTags: string
+					version: string
+					author: string
+					home_page: string
+					issue_page: string
+					refreshButton: {
+						alt: string
+						title: string
+					}
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		chars: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			chars: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		worlds: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			worlds: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
-		}
-		personas: {
-			title: string
-			subtitle: string
-			card: {
-				defaultCheckbox: {
-					title: string
+			personas: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			plugins: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			ImportHandlers: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			serviceGenerators: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/AI': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/search': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceGenerators/translate': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			serviceSources: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/AI': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/search': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			'serviceSources/translate': {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
+				}
+			}
+			shells: {
+				title: string
+				subtitle: string
+				card: {
+					defaultCheckbox: {
+						title: string
+					}
 				}
 			}
 		}
@@ -556,9 +648,9 @@ export type LocaleData = {
 			dropError: string
 			noHandler: string
 		}
-		home_shell_interfaces: {
+		home_common_interfaces: {
 			open: {
-				description: string
+				title: string
 			}
 		}
 		home_drag_out_generators: {
@@ -759,6 +851,9 @@ export type LocaleData = {
 		}
 		messageGenerating: {
 			stop: string
+			stopIcon: {
+				alt: string
+			}
 		}
 		attachment: {
 			buttons: {
@@ -1074,12 +1169,10 @@ export type LocaleData = {
 		pageSubtitle: string
 		description: string
 		steps: {
-			partType: string
 			part: string
 			action: string
 		}
 		labels: {
-			partType: string
 			part: string
 		}
 		placeholders: {
@@ -1316,6 +1409,59 @@ export type LocaleData = {
 			}
 		}
 	}
+	subfounts: {
+		title: string
+		pageTitle: string
+		description: string
+		hostConnectionCode: {
+			title: string
+			connectionCodeLabel: string
+			passwordLabel: string
+			copyButton: string
+			regenerateButton: string
+			infoMessage: string
+			connectionCodeCopied: string
+			passwordCopied: string
+			regenerateSuccess: string
+		}
+		connectedSubfounts: {
+			title: string
+			noSubfountsConnected: string
+			table: {
+				id: string
+				peerId: string
+				connectedAt: string
+				status: string
+				connected: string
+				disconnected: string
+				na: string
+			}
+		}
+		codeExecution: {
+			title: string
+			description: string
+			selectSubfountLabel: string
+			selectSubfountPlaceholder: string
+			scriptLabel: string
+			executeButton: string
+			executing: string
+			noSubfountSelected: string
+			noScriptProvided: string
+			executionSuccess: string
+			executionFailed: string
+		}
+		downloadClient: {
+			title: string
+			description: string
+			downloadButton: string
+		}
+		errors: {
+			loadConnectionCodeFailed: string
+			regenerateConnectionCodeFailed: string
+			loadSubfountsFailed: string
+			generalError: string
+		}
+	}
 	languageSettings: {
 		title: string
 		pageTitle: string
@@ -1458,7 +1604,6 @@ export type LocaleData = {
 		pageTitle: string
 		description: string
 		labels: {
-			partType: string
 			part: string
 		}
 		placeholders: {
@@ -1504,7 +1649,7 @@ export type LocaleData = {
 			}
 		}
 	}
-	aisource_editor: {
+	serviceSource_manager: {
 		title: string
 		description: string
 		fileList: {
@@ -1514,18 +1659,26 @@ export type LocaleData = {
 			}
 		}
 		configTitle: string
+		subtypeSelect: {
+			label: string
+			placeholder: string
+		}
 		generatorSelect: {
 			label: string
 			placeholder: string
+		}
+		paths: {
+			serviceSource: string
+			generator: string
 		}
 		editor: {
 			disabledIndicator: string
 		}
 		common_config_interface: {
+			empty_generator: string
 			loadingModels: string
 			availableModels: string
 			copied: string
-			empty_generator: string
 			apiKeyRequired: string
 			copyModelIdTooltip: string
 			loadModelsFailed: string
@@ -1558,6 +1711,7 @@ export type LocaleData = {
 			deleteFileFailed: string
 			addFileFailed: string
 			setDefaultFailed: string
+			fetchBranchesFailed: string
 			noFileSelectedSave: string
 			noFileSelectedDelete: string
 			noGeneratorSelectedSave: string
@@ -2091,6 +2245,9 @@ export type LocaleData = {
 		error: string
 		errorMessage: string
 	}
+	breadcrumb: {
+		clickToNavigate: string
+	}
 	zxcvbn: {
 		warnings: {
 			straightRow: string
@@ -2179,17 +2336,8 @@ export type LocaleKey = Paths<LocaleData>
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
-	'aisource_editor.alerts.addFileFailed': { error: string | number }
-	'aisource_editor.alerts.deleteFileFailed': { error: string | number }
-	'aisource_editor.alerts.fetchDefaultsFailed': { error: string | number }
-	'aisource_editor.alerts.fetchFileDataFailed': { error: string | number }
-	'aisource_editor.alerts.fetchFileListFailed': { error: string | number }
-	'aisource_editor.alerts.fetchGeneratorListFailed': { error: string | number }
-	'aisource_editor.alerts.saveFileFailed': { error: string | number }
-	'aisource_editor.alerts.setDefaultFailed': { error: string | number }
-	'aisource_editor.buttons.setDefault.aria-label': { fileName: string | number }
-	'aisource_editor.common_config_interface.loadModelsFailed': { message: string | number }
 	'badges_maker.copy_error': { error: string | number }
+	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
 	'browser_integration.error.add_failed': { message: string | number }
 	'browser_integration.error.delete_failed': { message: string | number }
@@ -2221,17 +2369,18 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
 	'fountConsole.discordbot.botStarted': { botusername: string | number; charname: string | number }
-	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partname: string | number; parttype: string | number; username: string | number }
+	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
-	'fountConsole.ipc.runPartLog': { args: string | number; partname: string | number; parttype: string | number; username: string | number }
+	'fountConsole.ipc.runPartLog': { args: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.sendCommandFailed': { error: string | number }
 	'fountConsole.ipc.socketError': { error: string | number }
-	'fountConsole.jobs.restartingJob': { partname: string | number; parttype: string | number; uid: string | number; username: string | number }
+	'fountConsole.jobs.preloadingParts': { count: string | number }
+	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
-	'fountConsole.partManager.partInited': { partname: string | number; parttype: string | number }
-	'fountConsole.partManager.partLoaded': { partname: string | number; parttype: string | number }
+	'fountConsole.partManager.partInited': { partpath: string | number }
+	'fountConsole.partManager.partLoaded': { partpath: string | number }
 	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number }
@@ -2269,8 +2418,24 @@ export type LocaleKeyParams = {
 	'login_info.modal.transfer_error': { error: string | number }
 	'pow_captcha.errorMessage': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
-	'protocolhandler.runPartConfirm.message': { partname: string | number; parttype: string | number }
+	'protocolhandler.runPartConfirm.message': { partpath: string | number }
 	'protocolhandler.unknownError': { error: string | number }
+	'serviceSource_manager.alerts.addFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.deleteFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchBranchesFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchDefaultsFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchFileDataFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchFileListFailed': { error: string | number }
+	'serviceSource_manager.alerts.fetchGeneratorListFailed': { error: string | number }
+	'serviceSource_manager.alerts.saveFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
+	'serviceSource_manager.buttons.setDefault.aria-label': { fileName: string | number }
+	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
+	'subfounts.codeExecution.executionFailed': { message: string | number }
+	'subfounts.errors.generalError': { message: string | number }
+	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.loadSubfountsFailed': { message: string | number }
+	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }

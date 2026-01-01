@@ -173,7 +173,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 		specScript.type = 'speculationrules'
 		specScript.textContent = JSON.stringify({
 			prerender: [{
-				urls: [hostUrl + '/shells/home']
+				urls: [hostUrl + '/parts/shells/home']
 			}]
 		})
 		document.head.prepend(specScript)
@@ -181,7 +181,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 	else {
 		const link = document.createElement('link')
 		link.rel = 'prerender'
-		link.href = hostUrl + '/shells/home'
+		link.href = hostUrl + '/parts/shells/home'
 		document.head.prepend(link)
 	}
 }
@@ -196,6 +196,23 @@ if ('serviceWorker' in navigator)
 		.catch(error => {
 			console.error('Service Worker registration failed: ', error)
 		})
+
+/**
+ * 处理键盘事件。
+ * @param {KeyboardEvent} event - 键盘事件。
+ * @returns {void}
+ */
+document.addEventListener('keydown', event => {
+	switch (event.key) {
+		case 'Escape':
+			if (history.length > 1) history.back()
+			else window.close()
+			break
+		case 'F1':
+			window.open('https://discord.gg/GtR9Quzq2v', '_blank')
+			break
+	}
+})
 
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
