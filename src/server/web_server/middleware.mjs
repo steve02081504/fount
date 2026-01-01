@@ -5,7 +5,14 @@ import fileUpload from 'npm:express-fileupload'
 
 import { console } from '../../scripts/i18n.mjs'
 import { auth_request } from '../auth.mjs'
+import { webRequestHappend } from '../server.mjs'
 
+/**
+ * 一个中间件，根据请求是否经过身份验证来应用不同的中间件。
+ * @param {Function} if_auth - 如果请求经过身份验证，则应用的中间件。
+ * @param {Function} if_not_auth - 如果请求未经过身份验证，则应用的中间件。
+ * @returns {Function} 中间件函数。
+ */
 export function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
 		if (await auth_request(req, res)) return if_auth(req, res, next)
@@ -14,7 +21,9 @@ export function diff_if_auth(if_auth, if_not_auth) {
 }
 
 /**
- * @param {import('../../scripts/WsAbleRouter.mjs').WsAbleRouter} router
+ * 为应用程序注册所有中间件。
+ * @param {import('../../scripts/WsAbleRouter.mjs').WsAbleRouter} router - 要在其上注册中间件的 Express 路由器。
+ * @returns {void}
  */
 export function registerMiddleware(router) {
 	router.use((req, res, next) => {
@@ -24,8 +33,9 @@ export function registerMiddleware(router) {
 		if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
 			console.logI18n('fountConsole.web.requestReceived', {
 				method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
-				url: req.url
+				url: req.url.replace(/fount-apikey=[^&]*/, 'fount-apikey=45450721')
 			})
+		webRequestHappend()
 		return next()
 	})
 
@@ -36,7 +46,7 @@ export function registerMiddleware(router) {
 
 	router.use(diff_if_auth(
 		cors(),
-		(_req, _res, next) => next()
+		(req, res, next) => next()
 	))
 
 	router.use(diff_if_auth(

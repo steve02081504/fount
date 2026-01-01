@@ -1,0 +1,268 @@
+{
+	"en-UK": {
+		"name": "Google Translate",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google translate using @vitalets/google-translate-api library",
+		"description_markdown": "Google translate implementation based on @vitalets/google-translate-api library, no API key required.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"translate",
+			"web-translate"
+		],
+		"home_page": ""
+	},
+	"zh-CN": {
+		"name": "Google 翻译",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
+		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"translate",
+			"web-translate"
+		],
+		"home_page": ""
+	},
+	"ar-SA": {
+		"name": "ترجمة جوجل",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "ترجمة Google باستخدام مكتبة @vitalets/google-translate-api",
+		"description_markdown": "تم تنفيذ ترجمة Google استنادًا إلى مكتبة @vitalets/google-translate-api، ولا يلزم وجود مفتاح API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"جوجل",
+			"يترجم",
+			"ترجمة الويب"
+		],
+		"home_page": ""
+	},
+	"de-DE": {
+		"name": "Google Translate",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate mit der @vitalets/google-translate-api-Bibliothek",
+		"description_markdown": "Google Translate basiert auf der Bibliothek @vitalets/google-translate-api, kein API-Schlüssel erforderlich.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"übersetzen",
+			"Web-Übersetzung"
+		],
+		"home_page": ""
+	},
+	"emoji": {
+		"name": "Google 翻译",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
+		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"translate",
+			"web-translate"
+		],
+		"home_page": ""
+	},
+	"es-ES": {
+		"name": "Google Translate",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Traductor de Google usando la biblioteca @vitalets/google-translate-api",
+		"description_markdown": "Google Translate se implementó en base a la biblioteca @vitalets/google-translate-api, no se requiere clave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"traducir",
+			"traducción web"
+		],
+		"home_page": ""
+	},
+	"fr-FR": {
+		"name": "Google Traduction",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate utilisant la bibliothèque @vitalets/google-translate-api",
+		"description_markdown": "Google Translate implémenté sur la base de la bibliothèque @vitalets/google-translate-api, aucune clé API requise.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"traduire",
+			"traduction Web"
+		],
+		"home_page": ""
+	},
+	"hi-IN": {
+		"name": "गूगल अनुवाद",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "@vitalets/google-translate-api लाइब्रेरी का उपयोग करके Google अनुवाद",
+		"description_markdown": "Google अनुवाद @vitalets/google-translate-api लाइब्रेरी के आधार पर कार्यान्वित किया गया है, किसी API कुंजी की आवश्यकता नहीं है।",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"गूगल",
+			"अनुवाद",
+			"वेब-अनुवाद"
+		],
+		"home_page": ""
+	},
+	"is-IS": {
+		"name": "Google Translate",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate með @vitalets/google-translate-api bókasafninu",
+		"description_markdown": "Google Translate útfært byggt á @vitalets/google-translate-api bókasafninu, engin API lykil krafist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"þýða",
+			"vef-þýða"
+		],
+		"home_page": ""
+	},
+	"it-IT": {
+		"name": "Google Traduttore",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Traduttore utilizzando la libreria @vitalets/google-translate-api",
+		"description_markdown": "Google Translate implementato in base alla libreria @vitalets/google-translate-api, non è richiesta alcuna chiave API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"tradurre",
+			"traduzione web"
+		],
+		"home_page": ""
+	},
+	"ja-JP": {
+		"name": "Google翻訳",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "@vitalets/google-translate-api ライブラリを使用した Google 翻訳",
+		"description_markdown": "Google 翻訳は @vitalets/google-translate-api ライブラリに基づいて実装されており、API キーは必要ありません。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"グーグル",
+			"翻訳する",
+			"ウェブ翻訳"
+		],
+		"home_page": ""
+	},
+	"ko-KR": {
+		"name": "구글 번역",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "@vitalets/google-translate-api 라이브러리를 사용한 Google 번역",
+		"description_markdown": "@vitalets/google-translate-api 라이브러리를 기반으로 구현된 Google 번역은 API 키가 필요하지 않습니다.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"번역하다",
+			"웹 번역"
+		],
+		"home_page": ""
+	},
+	"lzh": {
+		"name": "Google 翻译",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
+		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"translate",
+			"web-translate"
+		],
+		"home_page": ""
+	},
+	"nl-NL": {
+		"name": "Google Vertalen",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate met @vitalets/google-translate-api bibliotheek",
+		"description_markdown": "Google Translate geïmplementeerd op basis van de @vitalets/google-translate-api bibliotheek, geen API-sleutel vereist.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"googlen",
+			"vertalen",
+			"web-vertalen"
+		],
+		"home_page": ""
+	},
+	"pt-PT": {
+		"name": "Google Tradutor",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Tradutor usando a biblioteca @vitalets/google-translate-api",
+		"description_markdown": "Google Translate implementado com base na biblioteca @vitalets/google-translate-api, sem necessidade de chave de API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"traduzir",
+			"web-traduzir"
+		],
+		"home_page": ""
+	},
+	"ru-RU": {
+		"name": "Гугл переводчик",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate с использованием библиотеки @vitalets/google-translate-api",
+		"description_markdown": "Google Translate реализован на основе библиотеки @vitalets/google-translate-api, ключ API не требуется.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"переводить",
+			"веб-переводчик"
+		],
+		"home_page": ""
+	},
+	"uk-UA": {
+		"name": "Перекладач Google",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Translate використовує бібліотеку @vitalets/google-translate-api",
+		"description_markdown": "Google Translate реалізовано на основі бібліотеки @vitalets/google-translate-api, ключ API не потрібен.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"перекладати",
+			"веб-перекладач"
+		],
+		"home_page": ""
+	},
+	"vi-VN": {
+		"name": "Google Dịch",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "Google Dịch sử dụng thư viện @vitalets/google-translate-api",
+		"description_markdown": "Google Dịch được triển khai dựa trên thư viện @vitalets/google-translate-api, không cần khóa API.",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Google",
+			"dịch",
+			"dịch web"
+		],
+		"home_page": ""
+	},
+	"zh-TW": {
+		"name": "Google 翻譯",
+		"avatar": "https://api.iconify.design/logos/google-translate.svg",
+		"description": "使用 @vitalets/google-translate-api 庫的 Google 翻譯",
+		"description_markdown": "基於 @vitalets/google-translate-api 庫實現的 Google 翻譯，無需 API 密鑰。",
+		"version": "1.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"google",
+			"translate",
+			"web-translate"
+		],
+		"home_page": ""
+	}
+}

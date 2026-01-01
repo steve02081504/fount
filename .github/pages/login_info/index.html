@@ -1,32 +1,34 @@
 <!DOCTYPE html>
-<html data-theme="dark">
+<html>
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="darkreader-lock">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta property="og:title" content="fount Credentials Manager" />
 	<meta property="og:type" content="website" />
 	<meta property="og:description" content="A secure space for managing your fount login credentials—the keys to your world of untold stories." />
-	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
-	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
-	<title>fount Credentials Manager</title>
+	<meta name="description" content="A secure space for managing your fount login credentials—the keys to your world of untold stories." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<title data-i18n="login_info.title"></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
-	<script blocking="render" type="module" src="../preload.mjs"></script>
-	<link rel="stylesheet" href="../base.css" type="text/css">
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css" />
 	<script type="module">
 		import '../base.mjs'
 		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/credentialManager.mjs'
-		import { initTranslations, console, geti18n } from '../scripts/i18n.mjs'
+		import { initTranslations, geti18n } from '../scripts/i18n.mjs'
 		/* global urlParams */
 		await initTranslations('login_info')
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
 		const uuid = hashParams.get('uuid')
 		const redirectUrl = urlParams.get('redirect')
-		const fileId = urlParams.get('fileId')
-		const from = urlParams.get('from')
+		// Get fileId and from from hash params for security (not sent to server)
+		const fileId = hashParams.get('fileId')
+		const from = hashParams.get('from')
 		const errorModal = document.getElementById('error_modal')
 		const errorMessageElement = document.getElementById('error_modal_message')
 		const ignoreBtn = document.getElementById('ignore_and_continue_btn')
@@ -40,7 +42,6 @@
 				const targetUrl = new URL(decodeURIComponent(redirectUrl))
 				if (urlParams.has('forward')) {
 					const newHashParams = new URLSearchParams()
-					newHashParams.set('uuid', uuid)
 					if (fileId) newHashParams.set('fileId', fileId)
 					if (from) newHashParams.set('from', from)
 					targetUrl.hash = newHashParams.toString()
@@ -63,10 +64,18 @@
 		}
 		catch (error) {
 			errorModal.showModal()
+			/**
+			 * 处理重试按钮点击事件。
+			 * @returns {void}
+			 */
 			retryBtn.onclick = () => {
 				errorModal.close()
 				window.location.reload()
 			}
+			/**
+			 * 处理忽略并继续按钮点击事件。
+			 * @returns {void}
+			 */
 			ignoreBtn.onclick = () => {
 				errorModal.close()
 				const targetUrl = new URL(decodeURIComponent(redirectUrl))

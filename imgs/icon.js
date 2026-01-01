@@ -1,5 +1,2 @@
-c=[h=r=``];for(k of`J2B	2:	3&
-	8B	
-1@4`)for(p of(h+r+`
-`).repeat(k)||(k=k.charCodeAt(),h+=s=`@: `[k&3].repeat(k/4),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'<'?10:'ff')),h=r=''
-c
+s=',color:#000,color:#0ff'.repeat(280);for(v of[9**9-5,982,4624523,18696,1199,227]){for(c='',a=v/9,i=21;i--;a/=3)d=' :'[a%3^0]||'%c@%c',c=d+c+d;s=(c+`
+`).repeat(v%9)+s}s.split`,`
