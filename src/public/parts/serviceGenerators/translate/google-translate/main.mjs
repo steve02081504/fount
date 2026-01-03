@@ -60,7 +60,7 @@ async function GetSource(config) {
 
 			return {
 				text: result.text,
-				from: result.from.language.iso,
+				from: result.from?.language?.iso || result.from?.iso || from === 'auto' ? 'auto' : from,
 				to
 			}
 		},
