@@ -417,7 +417,14 @@ system:
 								ffmpegOptions = { videoCodec: 'libx264', audioCodec: 'aac' }
 							} else if (type === 'image') {
 								targetMimeType = 'image/png'
-								ffmpegOptions = { videoCodec: 'png' }
+								// 对于 GIF 等动画图像，只提取第一帧
+								if (mime_type === 'image/gif')
+									ffmpegOptions = { videoCodec: 'png', outputOptions: ['-frames:v', '1'] }
+								// 对于 AVIF 格式，需要明确指定输入格式
+								else if (mime_type === 'image/avif')
+									ffmpegOptions = { videoCodec: 'png', inputOptions: ['-f', 'avif'] }
+								else
+									ffmpegOptions = { videoCodec: 'png' }
 							}
 
 							if (targetMimeType && supportedFileTypes.includes(targetMimeType)) {
@@ -443,6 +450,13 @@ system:
 										if (ffmpegOptions.videoCodec)
 											ffmpegCommand = ffmpegCommand.videoCodec(ffmpegOptions.videoCodec)
 
+										// 添加输入选项（如用于 AVIF 的 -f avif）
+										if (ffmpegOptions.inputOptions)
+											ffmpegCommand = ffmpegCommand.inputOptions(ffmpegOptions.inputOptions)
+
+										// 添加输出选项（如用于 GIF 的 -frames:v 1）
+										if (ffmpegOptions.outputOptions)
+											ffmpegCommand = ffmpegCommand.outputOptions(ffmpegOptions.outputOptions)
 
 										ffmpegCommand
 											.output(outputPath)
