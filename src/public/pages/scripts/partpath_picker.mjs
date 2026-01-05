@@ -62,6 +62,7 @@ const getChildrenOfPath = (branches, partpath, filterPath) => {
  * @returns {boolean} 是否为叶子节点。
  */
 const isLeafPath = (branches, partpath) => {
+	if (!partpath) return false
 	const node = getNodeByPath(branches, partpath)
 	return node instanceof Object && !Object.keys(node).length
 }
@@ -94,7 +95,7 @@ const findFirstLeaf = (branches, prefix = '', filterPath) => {
  */
 async function hasPartsInterface(path) {
 	try {
-		const partDetails = await getPartDetails(path, true)
+		const partDetails = await getPartDetails(path)
 		return partDetails?.supportedInterfaces?.includes('parts') === true
 	} catch {
 		return false
@@ -127,7 +128,7 @@ export async function createPartpathPicker({
 		return {}
 	})
 
-	let currentPath = ''
+	let currentPath
 
 	/**
 	 * 检查路径是否存在（无论是叶子节点还是父节点）。
@@ -135,6 +136,7 @@ export async function createPartpathPicker({
 	 * @returns {boolean} 路径是否存在。
 	 */
 	const pathExists = (partpath) => {
+		if (!partpath) return true
 		const normalized = normalizePath(partpath)
 		const node = getNodeByPath(branches, normalized)
 		if (!(node instanceof Object)) return !normalized && (!filterPath || filterPath(''))
@@ -146,14 +148,12 @@ export async function createPartpathPicker({
 	 * @param {string} targetPath 目标部件路径。
 	 */
 	const setPath = (targetPath) => {
-		const normalized = normalizePath(targetPath)
-		// 允许空路径（根路径）
-		if (normalized && !pathExists(normalized)) return
-		// 如果路径相同，跳过更新以避免循环
-		if (currentPath === (normalized || '')) return
-		currentPath = normalized || ''
+		const normalized = normalizePath(targetPath) || ''
+		if (!pathExists(normalized)) return // 允许空路径（根路径）
+		if (currentPath === normalized) return // 如果路径相同，跳过更新以避免循环
+		currentPath = normalized
 		renderBreadcrumb()
-		onChange?.(currentPath)
+		onChange?.(normalized)
 	}
 
 	/**
@@ -169,11 +169,12 @@ export async function createPartpathPicker({
 			a.textContent = segment
 			a.title = geti18n('breadcrumb.clickToNavigate', { path: segment }) || segment
 			a.href = '#'
-			a.addEventListener('click', event => {
+			a.addEventListener('click', async event => {
 				event.preventDefault()
 				const targetPath = index === 0 ? '' : segments.slice(0, index).join('/')
 				if (targetPath === currentPath) {
-					dropdown.classList.remove('dropdown-open')
+					if (!isLeafPath(branches, currentPath)) await openMenu(currentPath)
+					else dropdown.classList.remove('dropdown-open')
 					return
 				}
 				dropdown.classList.remove('dropdown-open')
@@ -238,8 +239,8 @@ export async function createPartpathPicker({
 
 	dropdown.addEventListener('click', async event => {
 		if (event.target.closest('a, button, input, select, textarea')) return
-		const parentPath = currentPath ? currentPath.split('/').slice(0, -1).join('/') : ''
-		await openMenu(parentPath)
+		const targetPath = isLeafPath(branches, currentPath) ? currentPath : currentPath.split('/').slice(0, -1).join('/')
+		await openMenu(targetPath)
 	})
 
 	document.addEventListener('click', event => {
@@ -247,19 +248,9 @@ export async function createPartpathPicker({
 			dropdown.classList.remove('dropdown-open')
 	}, { capture: true })
 
-	// 初始化路径
-	const normalizedInitial = normalizePath(initialPath)
-	const fallbackPath = normalizedInitial && pathExists(normalizedInitial)
-		? normalizedInitial
-		: findFirstLeaf(branches, '', filterPath)
-
-	if (fallbackPath)
-		setPath(fallbackPath)
-
-	else if (normalizedInitial) {
-		currentPath = normalizedInitial
-		renderBreadcrumb()
-	}
+	initialPath = normalizePath(initialPath)
+	if (!pathExists(initialPath)) initialPath = findFirstLeaf(branches, '', filterPath)
+	setPath(initialPath)
 
 	return {
 		setPath,

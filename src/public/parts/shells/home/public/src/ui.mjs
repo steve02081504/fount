@@ -63,7 +63,7 @@ function updateUrlWithPath(path) {
 	const url = new URL(window.location.href)
 	if (path) url.searchParams.set('partpath', path)
 	else url.searchParams.delete('partpath')
-	window.history.replaceState({}, '', url)
+	window.history.replaceState(null, null, url)
 }
 
 /**

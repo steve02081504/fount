@@ -86,10 +86,6 @@ async function loadPartAddons(partpath) {
  * @returns {Promise<void>}
  */
 async function loadEditor(partpath) {
-	if (isDirty)
-		if (!confirmI18n('part_config.alerts.unsavedChanges'))
-			return
-
 	try {
 		await loadPartAddons(partpath)
 		const partDetailsData = await getPartDetails(partpath)
@@ -138,7 +134,6 @@ async function loadEditor(partpath) {
 			jsonEditor.updateProps({ readOnly: false })
 		}
 
-		activePartPath = partpath
 		const data = await getConfigData(partpath)
 		jsonEditor.set({ json: data || {} })
 		onJsonUpdate({
@@ -213,11 +208,9 @@ function getURLParams() {
  */
 function updateURLParams(partpath) {
 	const urlParams = new URLSearchParams()
-	if (partpath)
-		urlParams.set('partpath', partpath)
-
+	if (partpath) urlParams.set('partpath', partpath)
 	const newURL = `${window.location.pathname}?${urlParams.toString()}`
-	window.history.pushState({ path: newURL }, '', newURL)
+	window.history.replaceState(null, null, newURL)
 }
 
 /**
@@ -265,12 +258,11 @@ partpathPicker = await createPartpathPicker({
 	onChange: async (partpath) => {
 		if (partpath === activePartPath) return
 		if (isDirty && !confirmI18n('part_config.alerts.unsavedChanges')) {
-			if (activePartPath)
-				partpathPicker.setPath(activePartPath)
+			if (activePartPath) partpathPicker.setPath(activePartPath)
 			return
 		}
+		updateURLParams(activePartPath = partpath)
 		await loadEditor(partpath)
-		updateURLParams(partpath)
 	}
 })
 initializeFromURLParams()
