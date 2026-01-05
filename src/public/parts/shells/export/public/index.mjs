@@ -192,7 +192,7 @@ function updateURLParams(partpath) {
 	const urlParams = new URLSearchParams()
 	if (partpath) urlParams.set('partpath', partpath)
 	const newURL = `${window.location.pathname}?${urlParams.toString()}`
-	window.history.pushState({ path: newURL }, '', newURL)
+	window.history.replaceState(null, null, newURL)
 }
 
 // --- Initialization ---
@@ -211,8 +211,6 @@ async function initializeFromURLParams() {
 		initialPath: partpath || '',
 		onChange: onPartSelected
 	})
-
-	updateUIState()
 }
 
 /**

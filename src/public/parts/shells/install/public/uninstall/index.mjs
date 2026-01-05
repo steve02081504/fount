@@ -18,6 +18,17 @@ function getURLParams() {
 }
 
 /**
+ * 更新 URL 参数。
+ * @param {string} partpath - 部件路径。
+ */
+function updateURLParams(partpath) {
+	const urlParams = new URLSearchParams()
+	if (partpath) urlParams.set('partpath', partpath)
+	const newURL = `${window.location.pathname}?${urlParams.toString()}`
+	window.history.replaceState(null, null, newURL)
+}
+
+/**
  * 卸载部件。
  * @param {string} partpath - 部件路径。
  * @returns {Promise<any>} - 响应数据。
@@ -133,6 +144,7 @@ const picker = await createPartpathPicker({
 	onChange: (selectedPath) => {
 		if (!selectedPath) return
 		activePartpath = selectedPath
+		updateURLParams(activePartpath)
 		renderTexts()
 		hideMessage()
 		confirmButton.disabled = false

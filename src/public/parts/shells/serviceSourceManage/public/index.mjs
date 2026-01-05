@@ -436,7 +436,7 @@ async function loadEditor(fileName) {
 	urlParams.set('file', fileName)
 	urlParams.set('sourcePath', currentServiceSourcePath)
 	const newURL = `${window.location.pathname}?${urlParams.toString()}`
-	window.history.pushState({ path: newURL }, '', newURL)
+	window.history.replaceState(null, null, newURL)
 
 	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
 	const activeItem = fileListContainer.querySelector(`.file-list-item[data-name="${fileName}"]`)
@@ -615,7 +615,7 @@ generatorSubtypeSelect.addEventListener('change', async () => {
 	await setSubtype(generatorSubtypeSelect.value)
 	const url = new URL(window.location.toString())
 	url.searchParams.set('sourcePath', currentServiceSourcePath)
-	window.history.replaceState({ path: url.toString() }, '', url.toString())
+	window.history.replaceState(null, null, url.toString())
 })
 
 generatorSelect.addEventListener('change', async () => {
