@@ -113,7 +113,7 @@ ${chatLog[0].extension.summary = newSummary}
 					text: [
 						{
 							content: `\
-当前环境为fount前端，支持*Markdown*、Mermaid图表
+当前环境为fount前端，支持*GitHub|| & Discord|| Flavored Markdown*、Mermaid图表
 
 \`\`\`mermaid
 graph TD;
@@ -169,7 +169,7 @@ console.log('Hello')
 
 **通用渲染规范：**
 1. **HTML**：需渲染的 <i class="text-red-500">HTML/JS</i> 不要包裹在代码块中。
-2. **Markdown**：~~删除线~~必须使用双波浪线。
+2. **Markdown**：~~删除线~~必须使用双波浪线，||点击显示||必须使用双竖线。
 3. **数学公式 (KaTeX)**：\`$$\` 与 \`\\begin\` 或 \`\\end\` 之间必须换行。
 
 $$

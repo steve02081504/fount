@@ -52,6 +52,80 @@ function remarkDisable(options = {}) {
 }
 
 /**
+ * Discord 剧透文本插件（rehype 阶段）。
+ * 支持 ||文本|| 语法，将其转换为剧透文本。
+ * @returns {Function} - Unified.js 插件。
+ */
+function rehypeDiscordSpoiler() {
+	return tree => {
+		visit(tree, 'text', (node, index, parent) => {
+			if (!node.value || !(Object(node.value) instanceof String)) return
+
+			// 跳过代码块中的文本（代码块应该保持原样）
+			if (parent?.tagName?.toLowerCase() === 'code' || parent?.tagName?.toLowerCase() === 'pre') return
+
+			// 匹配 ||文本|| 模式（至少包含一个非 | 字符）
+			const spoilerRegex = /\|\|([^|]+)\|\|/g
+			const matches = [...node.value.matchAll(spoilerRegex)]
+
+			if (!matches.length) return
+
+			// 如果整个文本就是一个剧透，直接替换
+			if (matches.length === 1 && matches[0][0] === node.value) {
+				const spoilerText = matches[0][1]
+				parent.children[index] = {
+					type: 'element',
+					tagName: 'span',
+					properties: {
+						className: ['discord-spoiler'],
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
+					},
+					children: [{ type: 'text', value: spoilerText }]
+				}
+				return
+			}
+
+			// 如果有多个匹配或部分匹配，需要拆分文本节点
+			const newNodes = []
+			let lastIndex = 0
+
+			for (const match of matches) {
+				// 添加匹配前的文本
+				if (match.index > lastIndex) {
+					const beforeText = node.value.slice(lastIndex, match.index)
+					if (beforeText) newNodes.push({ type: 'text', value: beforeText })
+				}
+
+				// 添加剧透元素
+				const spoilerText = match[1]
+				newNodes.push({
+					type: 'element',
+					tagName: 'span',
+					properties: {
+						className: ['discord-spoiler'],
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
+					},
+					children: [{ type: 'text', value: spoilerText }]
+				})
+
+				lastIndex = match.index + match[0].length
+			}
+
+			// 添加剩余的文本
+			if (lastIndex < node.value.length) {
+				const afterText = node.value.slice(lastIndex)
+				if (afterText) newNodes.push({ type: 'text', value: afterText })
+			}
+
+			// 替换原节点
+			parent.children.splice(index, 1, ...newNodes)
+		})
+	}
+}
+
+/**
  * 为元素添加 DaisyUI 类。
  * @returns {Function} - Unified.js 插件。
  */
@@ -799,6 +873,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
+		.use(rehypeDiscordSpoiler)
 		.use(rehypeMermaid, {
 			dark: true,
 			/**
