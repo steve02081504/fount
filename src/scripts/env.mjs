@@ -18,7 +18,7 @@ export const in_docker = (() => {
  * @type {boolean}
  */
 export const in_termux = (() => {
-	if (process.platform !== 'linux') return false
+	if (!['linux', 'android'].includes(process.platform)) return false
 	if (fs.existsSync('/data/data/com.termux')) return true
 	return false
 })()
