@@ -919,6 +919,7 @@ elseif ($args[0] -eq 'keepalive') {
 
 	run @runargs
 	while ($LastExitCode) {
+		if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 		if ($LastExitCode -ne 131) {
 			$elapsedTime = (Get-Date) - $startTime
 			if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
