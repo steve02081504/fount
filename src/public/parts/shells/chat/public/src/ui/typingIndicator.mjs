@@ -1,4 +1,4 @@
-import { geti18n, setLocalizeLogic } from '../../../../../scripts/i18n.mjs'
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { getPartDetails } from '../../../../../scripts/parts.mjs'
 
 const typingIndicatorElement = document.getElementById('typing-indicator')
@@ -16,30 +16,30 @@ async function updateTypingIndicator() {
 
 	typingIndicatorElement.classList.remove('hidden')
 
-	const charNames = await Promise.all(
-		Array.from(typingChars).map(async (charname) => {
-			try {
-				const details = await getPartDetails(`chars/${charname}`)
-				return details.info.name
-			} catch (e) {
-				return charname // fallback to id
-			}
-		})
-	)
+	let names = '', i18nKey = ''
+	if (typingChars.size > 4) {
+		i18nKey = 'chat.typingIndicator.multipleMembers'
+		names = ''
+	}
+	else {
+		i18nKey = 'chat.typingIndicator.isTyping'
+		const charNames = await Promise.all(
+			Array.from(typingChars).map(async (charname) => {
+				try {
+					const details = await getPartDetails(`chars/${charname}`)
+					return details.info.name
+				} catch (e) {
+					return charname // fallback to id
+				}
+			})
+		)
+		names = charNames.join('、')
+	}
 
-	setLocalizeLogic(typingIndicatorElement, () => {
-		let text
-		if (charNames.length > 4) text = geti18n('chat.typingIndicator.multipleMembers')
-		else {
-			const names = charNames.join('、')
-			text = geti18n('chat.typingIndicator.isTyping', { names })
-		}
-
-		typingIndicatorElement.innerHTML = `\
+	typingIndicatorElement.innerHTML = `\
 <span class="loading loading-dots loading-xs"></span>
-<span>${text}</span>
+<span data-i18n="${i18nKey}" data-names="${names}"></span>
 `
-	})
 }
 
 /**
