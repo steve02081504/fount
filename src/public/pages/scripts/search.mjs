@@ -141,9 +141,9 @@ export async function createSearchableDropdown({
 
 	// Ensure the dropdownElement has the 'dropdown' class
 	dropdownElement.classList.add('dropdown', 'searchable-dropdown')
-	dropdownElement.setAttribute('role', 'combobox')
-	dropdownElement.setAttribute('aria-haspopup', 'listbox')
-	dropdownElement.setAttribute('aria-expanded', 'false')
+	dropdownElement.role = 'combobox'
+	dropdownElement.ariaHaspopup = 'listbox'
+	dropdownElement.ariaExpanded = false
 
 	if (disabled)
 		dropdownElement.innerHTML = /* html */ `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
@@ -212,14 +212,14 @@ export async function createSearchableDropdown({
 	 * 聚焦事件侦听器。
 	 * @returns {void}
 	 */
-	const focusinListener = () => dropdownElement.setAttribute('aria-expanded', 'true')
+	const focusinListener = () => dropdownElement.ariaExpanded = true
 	/**
 	 * 失焦事件侦听器。
 	 * @returns {void}
 	 */
 	const focusoutListener = () => {
 		if (!dropdownElement.contains(document.activeElement))
-			dropdownElement.setAttribute('aria-expanded', 'false')
+			dropdownElement.ariaExpanded = false
 	}
 
 	dropdownElement.addEventListener('focusin', focusinListener)

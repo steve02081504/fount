@@ -263,7 +263,7 @@ function applyThemeToDOM(theme) {
 	localStorage.setItem(STORAGE_KEY_THEME, theme)
 
 	if (document.documentElement.getAttribute('data-theme') !== resolvedTheme)
-		document.documentElement.setAttribute('data-theme', resolvedTheme)
+		document.documentElement.dataset.theme = resolvedTheme
 }
 
 /**
@@ -490,7 +490,7 @@ function updateColors() {
 	else // 如果未定义背景色，回退到系统偏好
 		is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
-	document.documentElement.setAttribute('color-scheme', is_dark ? 'dark' : 'light')
+	document.documentElement.colorScheme = is_dark ? 'dark' : 'light'
 
 	for (const func of functions) try {
 		func(theme_now, is_dark)

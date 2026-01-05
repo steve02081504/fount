@@ -71,7 +71,7 @@ async function renderList() {
 	// Bind create button event (only once)
 	const createBtn = document.getElementById('create-theme-btn')
 	if (createBtn && !createBtn.hasAttribute('data-bound')) {
-		createBtn.setAttribute('data-bound', 'true')
+		createBtn.dataset.bound = 'true'
 		/**
 		 * 创建一个新的主题。
 		 * @returns {void}
@@ -215,7 +215,7 @@ async function handleClone(id, isCustom) {
 
 		// Try to read common variables
 		const container = document.createElement('div')
-		container.setAttribute('data-theme', id)
+		container.dataset.theme = id
 		container.style.position = 'absolute'
 		container.style.visibility = 'hidden'
 		container.style.pointerEvents = 'none'
@@ -324,7 +324,7 @@ const CLASS_MAP = {
  */
 const getComputedColor = (colorName, themeId) => {
 	const container = document.createElement('div')
-	if (themeId) container.setAttribute('data-theme', themeId)
+	if (themeId) container.dataset.theme = themeId
 	// Hide it but keep it in DOM for computation
 	container.style.position = 'absolute'
 	container.style.visibility = 'hidden'
@@ -361,7 +361,7 @@ const getComputedColor = (colorName, themeId) => {
  */
 const getComputedVar = (varName, themeId) => {
 	const container = document.createElement('div')
-	if (themeId) container.setAttribute('data-theme', themeId)
+	if (themeId) container.dataset.theme = themeId
 	container.style.position = 'absolute'
 	container.style.visibility = 'hidden'
 	container.style.pointerEvents = 'none'
@@ -556,7 +556,7 @@ async function openEditor(themeData) {
 		previewStyleTag.textContent = cssInput.value
 
 		// Force preview area to use this theme
-		document.documentElement.setAttribute('data-theme', id)
+		document.documentElement.dataset.theme = id
 	}
 
 	// Bind Inputs

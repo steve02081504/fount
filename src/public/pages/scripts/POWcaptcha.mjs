@@ -42,11 +42,11 @@ export async function createPOWCaptcha(container) {
 
 	// Apply translations
 	setLocalizeLogic(widget, () => {
-		widget.setAttribute('data-cap-i18n-verifying-label', geti18n('pow_captcha.verifying'))
-		widget.setAttribute('data-cap-i18n-initial-state', geti18n('pow_captcha.initial'))
-		widget.setAttribute('data-cap-i18n-solved-label', geti18n('pow_captcha.solved'))
-		widget.setAttribute('data-cap-i18n-error-label', geti18n('pow_captcha.error'))
-		widget.setAttribute('data-cap-i18n-wasm-disabled', geti18n('pow_captcha.wasm_disabled'))
+		widget.dataset.capI18nVerifyingLabel = geti18n('pow_captcha.verifying')
+		widget.dataset.capI18nInitialState = geti18n('pow_captcha.initial')
+		widget.dataset.capI18nSolvedLabel = geti18n('pow_captcha.solved')
+		widget.dataset.capI18nErrorLabel = geti18n('pow_captcha.error')
+		widget.dataset.capI18nWasmDisabled = geti18n('pow_captcha.wasm_disabled')
 	})
 
 	// Clear container and append widget

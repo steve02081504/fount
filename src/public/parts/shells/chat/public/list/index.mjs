@@ -137,7 +137,7 @@ async function hydrateChatListItem(chatElement, chat) {
 	chatElement.innerHTML = realElement.innerHTML
 	chatElement.className = realElement.className
 	chatElement.removeAttribute('data-template-type')
-	chatElement.setAttribute('data-chatid', chat.chatid)
+	chatElement.dataset.chatid = chat.chatid
 
 	// Drag-and-drop functionality
 	chatElement.addEventListener('mousedown', e => {

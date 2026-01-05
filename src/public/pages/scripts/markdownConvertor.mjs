@@ -421,8 +421,8 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
-						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
+						? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
+						: 'tooltip.dataset.i18n = \'code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
@@ -433,8 +433,8 @@ const button = this
 	}
 	setTimeout(() => {
 		${isStandalone
-						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copy.dataset.tip')}')`
-						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copy\')'
+						? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
+						: 'tooltip.dataset.i18n = \'code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
@@ -506,8 +506,8 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	btn.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-							? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
-							: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
+							? `btn.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
+							: 'btn.parentElement.dataset.i18n = \'code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone

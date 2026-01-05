@@ -208,7 +208,7 @@ async function renderCharDetails(charName, frequency_num) {
 			...charData.info,
 			frequency_num
 		})
-		charCard.setAttribute('data-char-name', charName)
+		charCard.dataset.charName = charName
 		addCardEventListeners(charCard, charData)
 		// 添加滑动条的事件监听
 		const frequencySlider = charCard.querySelector('.frequency-slider')
@@ -288,7 +288,7 @@ async function renderPluginDetails(pluginName) {
 		const pluginCard = cachedDom.plugin[pluginName] = await renderTemplate('plugin_info_chat_view', {
 			...pluginData.info
 		})
-		pluginCard.setAttribute('data-plugin-name', pluginName)
+		pluginCard.dataset.pluginName = pluginName
 		addCardEventListeners(pluginCard, pluginData)
 
 		// 添加移除按钮的事件监听
