@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - peer-to-peer apparaatbeheer",
+		"pageTitle": "subfounts",
+		"description": "Beheer peer-to-peer-fonteinverbindingen",
+		"hostConnectionCode": {
+			"title": "Hostverbindingscode",
+			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
+			"passwordLabel": "wachtwoord",
+			"copyButton": "kopiëren",
+			"regenerateButton": "Regenereer",
+			"infoMessage": "Deel deze inloggegevens met subfount-clients om verbindingen tot stand te brengen.",
+			"connectionCodeCopied": "De verbindingscode is naar het klembord gekopieerd",
+			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
+			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
+		},
+		"connectedSubfounts": {
+			"title": "Verbonden subfount",
+			"noSubfountsConnected": "Er is geen subfount aangesloten",
+			"table": {
+				"id": "ID",
+				"description": "Opmerking",
+				"deviceId": "Apparaat-ID",
+				"connectedAt": "verbindingstijd",
+				"status": "Status",
+				"actions": "Acties",
+				"connected": "Aangesloten",
+				"disconnected": "Verbinding verbroken",
+				"save": "opslaan",
+				"na": "N.v.t"
+			},
+			"descriptionSaved": "Notitie opgeslagen",
+			"descriptionSaveFailed": "Kan notitie niet opslaan: ${message}"
+		},
+		"codeExecution": {
+			"title": "uitvoering van code",
+			"description": "Voer JavaScript-code uit op de geselecteerde subfount",
+			"selectSubfountLabel": "Selecteer subfount",
+			"selectSubfountPlaceholder": "Selecteer de subfount waarop de code moet worden uitgevoerd...",
+			"hostOption": "Host (ID: ${id})",
+			"subfountOption": "Extensie ${id}${deviceId}",
+			"scriptLabel": "JavaScript-code",
+			"executeButton": "uitvoeren",
+			"executing": "Uitvoeren...",
+			"noSubfountSelected": "Selecteer eerst een subfount",
+			"noScriptProvided": "Voer de uit te voeren code in",
+			"executionSuccess": "Code-uitvoering succesvol",
+			"executionFailed": "Uitvoering van code mislukt: ${message}"
+		},
+		"downloadClient": {
+			"title": "subfount-client downloaden",
+			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
+			"downloadButton": "Download subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
+			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
+			"generalError": "Er is een fout opgetreden: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "In ontwikkeling",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "subapparaat",
+						"sub_items": {
+							"main": {
+								"title": "Beheer subapparaten"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Taalinstellingen",
 		"pageTitle": "Taalinstellingen",

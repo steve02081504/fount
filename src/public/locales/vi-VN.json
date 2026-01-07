@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfount - quản lý thiết bị ngang hàng",
+		"pageTitle": "nguồn phụ",
+		"description": "Quản lý kết nối đài phun nước ngang hàng",
+		"hostConnectionCode": {
+			"title": "Mã kết nối máy chủ",
+			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
+			"passwordLabel": "mật khẩu",
+			"copyButton": "sao chép",
+			"regenerateButton": "Tạo lại",
+			"infoMessage": "Chia sẻ những thông tin xác thực này với các máy khách phụ để thiết lập kết nối.",
+			"connectionCodeCopied": "Mã kết nối đã được sao chép vào clipboard",
+			"passwordCopied": "Đã sao chép mật khẩu vào bảng nhớ tạm",
+			"regenerateSuccess": "Mã kết nối đã được tạo lại"
+		},
+		"connectedSubfounts": {
+			"title": "Nguồn phụ được kết nối",
+			"noSubfountsConnected": "Không có đài phụ nào được kết nối",
+			"table": {
+				"id": "NHẬN DẠNG",
+				"description": "Nhận xét",
+				"deviceId": "ID thiết bị",
+				"connectedAt": "thời gian kết nối",
+				"status": "tình trạng",
+				"actions": "Thao tác",
+				"connected": "Đã kết nối",
+				"disconnected": "Đã ngắt kết nối",
+				"save": "Lưu",
+				"na": "không áp dụng"
+			},
+			"descriptionSaved": "Đã lưu ghi chú",
+			"descriptionSaveFailed": "Không lưu được ghi chú: ${message}"
+		},
+		"codeExecution": {
+			"title": "thực thi mã",
+			"description": "Thực thi mã JavaScript trên Subfount đã chọn",
+			"selectSubfountLabel": "Chọn Subfount",
+			"selectSubfountPlaceholder": "Vui lòng chọn Subfount để thực thi mã trên...",
+			"hostOption": "Máy chủ (ID: ${id})",
+			"subfountOption": "Thiết bị con ${id}${deviceId}",
+			"scriptLabel": "Mã JavaScript",
+			"executeButton": "thực hiện",
+			"executing": "Đang thực hiện...",
+			"noSubfountSelected": "Vui lòng chọn Subfount trước",
+			"noScriptProvided": "Vui lòng nhập mã để thực thi",
+			"executionSuccess": "Thực thi mã thành công",
+			"executionFailed": "Việc thực thi mã không thành công: ${message}"
+		},
+		"downloadClient": {
+			"title": "Tải xuống ứng dụng khách phụ",
+			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
+			"downloadButton": "Tải xuống subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
+			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
+			"generalError": "Đã xảy ra lỗi: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Đang được phát triển",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "thiết bị phụ",
+						"sub_items": {
+							"main": {
+								"title": "Quản lý thiết bị phụ"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Cài đặt ngôn ngữ",
 		"pageTitle": "Cài đặt ngôn ngữ",

@@ -1,0 +1,268 @@
+{
+	"en-UK": {
+		"name": "Subfounts",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Remote subfount device management.",
+		"description_markdown": "Manage remote subfount devices via Trystero (P2P) connections. Display host connection codes and execute code remotely on connected devices.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"network",
+			"remote"
+		]
+	},
+	"zh-CN": {
+		"name": "子设备",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "远程子设备管理。",
+		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"网络",
+			"远程"
+		]
+	},
+	"ar-SA": {
+		"name": "جهاز فرعي",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "إدارة الأجهزة الفرعية عن بعد.",
+		"description_markdown": "إدارة الأجهزة الفرعية البعيدة عبر اتصالات Trystero (نظير إلى نظير). عرض رمز اتصال المضيف وتنفيذ التعليمات البرمجية عن بعد.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"شبكة",
+			"بعيد"
+		]
+	},
+	"de-DE": {
+		"name": "Untergerät",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Remote-Untergeräteverwaltung.",
+		"description_markdown": "Verwalten Sie entfernte Untergeräte über Trystero-Verbindungen (Peer-to-Peer). Zeigen Sie den Host-Verbindungscode an und führen Sie den Code remote aus.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"WebSocket",
+			"Netzwerk",
+			"Fernbedienung"
+		]
+	},
+	"emoji": {
+		"name": "子设备",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "远程子设备管理。",
+		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"网络",
+			"远程"
+		]
+	},
+	"es-ES": {
+		"name": "subdispositivo",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Gestión remota de subdispositivos.",
+		"description_markdown": "Administre subdispositivos remotos a través de conexiones Trystero (peer-to-peer). Muestra el código de conexión del host y ejecuta el código de forma remota.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"enchufe web",
+			"red",
+			"remoto"
+		]
+	},
+	"fr-FR": {
+		"name": "sous-appareil",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Gestion des sous-appareils à distance.",
+		"description_markdown": "Gérez les sous-appareils distants via des connexions Trystero (peer-to-peer). Affichez le code de connexion hôte et exécutez le code à distance.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"prise Web",
+			"réseau",
+			"télécommande"
+		]
+	},
+	"hi-IN": {
+		"name": "उपयंत्र",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "दूरस्थ उप-डिवाइस प्रबंधन।",
+		"description_markdown": "Trystero (पीयर-टू-पीयर) कनेक्शन के माध्यम से दूरस्थ उप-डिवाइस प्रबंधित करें। होस्ट कनेक्शन कोड प्रदर्शित करें और कोड को दूरस्थ रूप से निष्पादित करें।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"वेबसोकेट",
+			"नेटवर्क",
+			"दूर"
+		]
+	},
+	"is-IS": {
+		"name": "undirtæki",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Fjarstýring undirtækja.",
+		"description_markdown": "Stjórnaðu fjartengdum undirtækjum í gegnum Trystero (peer-to-peer) tengingar. Sýndu hýsiltengingarkóðann og keyrðu kóðann úr fjarlægð.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"veftengi",
+			"net",
+			"fjarstýring"
+		]
+	},
+	"it-IT": {
+		"name": "sottodispositivo",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Gestione remota dei sotto-dispositivi.",
+		"description_markdown": "Gestisci i dispositivi secondari remoti tramite connessioni Trystero (peer-to-peer). Visualizza il codice di connessione host ed esegui il codice in remoto.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"rete",
+			"remoto"
+		]
+	},
+	"ja-JP": {
+		"name": "サブデバイス",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "リモートサブデバイス管理。",
+		"description_markdown": "Trystero (ピアツーピア) 接続を介してリモート サブデバイスを管理します。ホスト接続コードを表示し、リモートでコードを実行します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"ウェブソケット",
+			"ネットワーク",
+			"リモート"
+		]
+	},
+	"ko-KR": {
+		"name": "하위 장치",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "원격 하위 장치 관리.",
+		"description_markdown": "Trystero(피어 투 피어) 연결을 통해 원격 하위 장치를 관리합니다. 호스트 연결 코드를 표시하고 원격으로 코드를 실행합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"웹소켓",
+			"회로망",
+			"원격"
+		]
+	},
+	"lzh": {
+		"name": "子设备",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "远程子设备管理。",
+		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"网络",
+			"远程"
+		]
+	},
+	"nl-NL": {
+		"name": "subapparaat",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Beheer van subapparaten op afstand.",
+		"description_markdown": "Beheer externe subapparaten via Trystero-verbindingen (peer-to-peer). Geef de hostverbindingscode weer en voer code op afstand uit.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"webaansluiting",
+			"netwerk",
+			"op afstand"
+		]
+	},
+	"pt-PT": {
+		"name": "subdispositivo",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Gerenciamento remoto de subdispositivos.",
+		"description_markdown": "Gerencie subdispositivos remotos por meio de conexões Trystero (ponto a ponto). Exiba o código de conexão do host e execute o código remotamente.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"rede",
+			"remoto"
+		]
+	},
+	"ru-RU": {
+		"name": "субустройство",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Удаленное управление подустройствами.",
+		"description_markdown": "Управляйте удаленными подустройствами через соединения Trystero (одноранговые). Отобразите код подключения к хосту и выполните код удаленно.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"веб-сокет",
+			"сеть",
+			"удаленный"
+		]
+	},
+	"uk-UA": {
+		"name": "підпристрій",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Віддалене керування підпристроєм.",
+		"description_markdown": "Керуйте віддаленими допоміжними пристроями через з’єднання Trystero (peer-to-peer). Відображення коду підключення до хоста та виконання коду віддалено.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"мережі",
+			"дистанційний"
+		]
+	},
+	"vi-VN": {
+		"name": "thiết bị phụ",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "Quản lý thiết bị phụ từ xa.",
+		"description_markdown": "Quản lý các thiết bị phụ từ xa thông qua kết nối Trystero (ngang hàng). Hiển thị mã kết nối máy chủ và thực thi mã từ xa.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"ổ cắm web",
+			"mạng",
+			"xa"
+		]
+	},
+	"zh-TW": {
+		"name": "子設備",
+		"avatar": "https://api.iconify.design/line-md/network.svg",
+		"description": "遠程子設備管理。",
+		"description_markdown": "通過Trystero（點對點）連接管理遠程子設備。顯示主機連接碼並遠程執行代碼。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"網絡",
+			"遠程"
+		]
+	}
+}

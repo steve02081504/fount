@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - gestion des appareils peer-to-peer",
+		"pageTitle": "subfounts",
+		"description": "Gérer les connexions de fontaines peer-to-peer",
+		"hostConnectionCode": {
+			"title": "Code de connexion hôte",
+			"connectionCodeLabel": "Code de connexion (Peer ID)",
+			"passwordLabel": "mot de passe",
+			"copyButton": "Copier",
+			"regenerateButton": "Régénérer",
+			"infoMessage": "Partagez ces informations d'identification avec les clients de subfount pour établir des connexions.",
+			"connectionCodeCopied": "Le code de connexion a été copié dans le presse-papier",
+			"passwordCopied": "Mot de passe copié dans le presse-papiers",
+			"regenerateSuccess": "Le code de connexion a été régénéré"
+		},
+		"connectedSubfounts": {
+			"title": "subfount connectée",
+			"noSubfountsConnected": "Aucune subfount n'est connectée",
+			"table": {
+				"id": "IDENTIFIANT",
+				"description": "Remarque",
+				"deviceId": "ID de l'appareil",
+				"connectedAt": "temps de connexion",
+				"status": "État",
+				"actions": "Actions",
+				"connected": "Connecté",
+				"disconnected": "Déconnecté",
+				"save": "sauvegarder",
+				"na": "N / A"
+			},
+			"descriptionSaved": "Remarque enregistrée",
+			"descriptionSaveFailed": "Échec de l'enregistrement de la note : ${message}"
+		},
+		"codeExecution": {
+			"title": "exécution de code",
+			"description": "Exécuter le code JavaScript sur la subfount sélectionnée",
+			"selectSubfountLabel": "Sélectionnez la subfount",
+			"selectSubfountPlaceholder": "Veuillez sélectionner la subfount sur laquelle exécuter le code...",
+			"hostOption": "Hôte (ID : ${id})",
+			"subfountOption": "Extension ${id}${deviceId}",
+			"scriptLabel": "Code JavaScript",
+			"executeButton": "exécuter",
+			"executing": "Exécution...",
+			"noSubfountSelected": "Veuillez d'abord sélectionner une subfount",
+			"noScriptProvided": "Veuillez entrer le code à exécuter",
+			"executionSuccess": "Exécution du code réussie",
+			"executionFailed": "Échec de l'exécution du code : ${message}"
+		},
+		"downloadClient": {
+			"title": "Télécharger le client de subfount",
+			"description": "Téléchargez le script client de Subfount autonome à exécuter sur le périphérique distant.",
+			"downloadButton": "Télécharger subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Échec du chargement du code de connexion : ${message}",
+			"regenerateConnectionCodeFailed": "Échec de la régénération du code de connexion : ${message}",
+			"generalError": "Une erreur s'est produite : ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "En développement",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "sous-appareil",
+						"sub_items": {
+							"main": {
+								"title": "Gérer les sous-appareils"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Paramètres linguistiques",
 		"pageTitle": "Paramètres de langue",

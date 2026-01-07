@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "子fount - 點對點設備管理",
+		"pageTitle": "子fount",
+		"description": "管理點對點子fount連接",
+		"hostConnectionCode": {
+			"title": "主機連接碼",
+			"connectionCodeLabel": "連接碼 (Peer ID)",
+			"passwordLabel": "密碼",
+			"copyButton": "複製",
+			"regenerateButton": "重新生成",
+			"infoMessage": "與子fount客戶端共享這些憑據以建立連接。",
+			"connectionCodeCopied": "連接碼已複製到剪貼板",
+			"passwordCopied": "密碼已複製到剪貼板",
+			"regenerateSuccess": "連接碼已重新生成"
+		},
+		"connectedSubfounts": {
+			"title": "已連接的子fount",
+			"noSubfountsConnected": "未連接任何子fount",
+			"table": {
+				"id": "ID",
+				"description": "備註",
+				"deviceId": "設備 ID",
+				"connectedAt": "連接時間",
+				"status": "狀態",
+				"actions": "操作",
+				"connected": "已連接",
+				"disconnected": "已斷開",
+				"save": "保存",
+				"na": "N/A"
+			},
+			"descriptionSaved": "備註已保存",
+			"descriptionSaveFailed": "保存備註失敗: ${message}"
+		},
+		"codeExecution": {
+			"title": "代碼執行",
+			"description": "在選定的Subfount上執行JavaScript代碼",
+			"selectSubfountLabel": "選擇Subfount",
+			"selectSubfountPlaceholder": "請選擇要執行代碼的Subfount...",
+			"hostOption": "主機 (ID: ${id})",
+			"subfountOption": "分機 ${id}${deviceId}",
+			"scriptLabel": "JavaScript代碼",
+			"executeButton": "執行",
+			"executing": "執行中...",
+			"noSubfountSelected": "請先選擇一個Subfount",
+			"noScriptProvided": "請輸入要執行的代碼",
+			"executionSuccess": "代碼執行成功",
+			"executionFailed": "代碼執行失敗: ${message}"
+		},
+		"downloadClient": {
+			"title": "下載子fount客戶端",
+			"description": "下載獨立的子fount客戶端腳本以在遠程設備上運行。",
+			"downloadButton": "下載 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "加載連接碼失敗: ${message}",
+			"regenerateConnectionCodeFailed": "重新生成連接碼失敗: ${message}",
+			"generalError": "發生錯誤: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "正在開發",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "子設備",
+						"sub_items": {
+							"main": {
+								"title": "管理子設備"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "語言設置",
 		"pageTitle": "語言設置",

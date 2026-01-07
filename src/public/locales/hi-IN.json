@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "सबफ़ाउट्स - पीयर-टू-पीयर डिवाइस प्रबंधन",
+		"pageTitle": "Subfounts",
+		"description": "पीयर-टू-पीयर फव्वारा कनेक्शन प्रबंधित करें",
+		"hostConnectionCode": {
+			"title": "होस्ट कनेक्शन कोड",
+			"connectionCodeLabel": "कनेक्शन कोड (पीयर आईडी)",
+			"passwordLabel": "पासवर्ड",
+			"copyButton": "कॉपी",
+			"regenerateButton": "पुनः जेनरेट",
+			"infoMessage": "कनेक्शन स्थापित करने के लिए इन क्रेडेंशियल्स को सब-फ़ाउंट क्लाइंट के साथ साझा करें।",
+			"connectionCodeCopied": "कनेक्शन कोड क्लिपबोर्ड पर कॉपी कर दिया गया है",
+			"passwordCopied": "पासवर्ड क्लिपबोर्ड पर कॉपी किया गया",
+			"regenerateSuccess": "कनेक्शन कोड पुनः जनरेट किया गया है"
+		},
+		"connectedSubfounts": {
+			"title": "कनेक्टेड सबफ़ाउंट",
+			"noSubfountsConnected": "कोई सबफ़ाउंट कनेक्ट नहीं है",
+			"table": {
+				"id": "पहचान",
+				"description": "टिप्पणी",
+				"deviceId": "डिवाइस आईडी",
+				"connectedAt": "कनेक्शन का समय",
+				"status": "राज्य",
+				"actions": "प्रचालन",
+				"connected": "जुड़े हुए",
+				"disconnected": "डिस्कनेक्ट किया गया",
+				"save": "सहेजें",
+				"na": "एन/ए"
+			},
+			"descriptionSaved": "नोट सहेजा गया",
+			"descriptionSaveFailed": "नोट सहेजने में विफल: ${message}"
+		},
+		"codeExecution": {
+			"title": "कोड निष्पादन",
+			"description": "चयनित एक्सटेंशन पर जावास्क्रिप्ट कोड निष्पादित करें",
+			"selectSubfountLabel": "Subfount चुनें",
+			"selectSubfountPlaceholder": "कृपया कोड निष्पादित करने के लिए Subfount का चयन करें...",
+			"hostOption": "होस्ट (आईडी: ${id})",
+			"subfountOption": "एक्सटेंशन ${id}${deviceId}",
+			"scriptLabel": "जावास्क्रिप्ट कोड",
+			"executeButton": "अमल में लाना",
+			"executing": "क्रियान्वयन...",
+			"noSubfountSelected": "कृपया पहले एक Subfount चुनें",
+			"noScriptProvided": "कृपया निष्पादित करने के लिए कोड दर्ज करें",
+			"executionSuccess": "कोड निष्पादन सफल",
+			"executionFailed": "कोड निष्पादन विफल: ${message}"
+		},
+		"downloadClient": {
+			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
+			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
+			"downloadButton": "सबफ़ाउंट.एमजेएस डाउनलोड करें"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "कनेक्शन कोड लोड करने में विफल: ${message}",
+			"regenerateConnectionCodeFailed": "कनेक्शन कोड पुन: उत्पन्न करने में विफल: ${message}",
+			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "अल्प विकास",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "उपयंत्र",
+						"sub_items": {
+							"main": {
+								"title": "उप-उपकरण प्रबंधित करें"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "भाषा सेटिंग्स",
 		"pageTitle": "भाषा सेटिंग्स",

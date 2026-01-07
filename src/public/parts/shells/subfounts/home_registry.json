@@ -1,0 +1,27 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "in_dev",
+			"info": "subfounts.home_function_buttons.in_dev",
+			"level": 10000,
+			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"id": "subfounts_related",
+					"info": "subfounts.home_function_buttons.in_dev.sub_items.subfounts_related",
+					"level": 2,
+					"button": "<img src=\"https://api.iconify.design/line-md/network.svg\" class=\"text-icon\"/>",
+					"sub_items": [
+						{
+							"info": "subfounts.home_function_buttons.in_dev.sub_items.subfounts_related.sub_items.main",
+							"level": 1,
+							"url": "/parts/shells:subfounts/",
+							"button": "<img src=\"https://api.iconify.design/line-md/network.svg\" class=\"text-icon\"/>"
+						}
+					]
+				}
+			]
+		}
+	]
+}
+

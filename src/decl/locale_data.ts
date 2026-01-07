@@ -1409,6 +1409,80 @@ export type LocaleData = {
 			}
 		}
 	}
+	subfounts: {
+		title: string
+		pageTitle: string
+		description: string
+		hostConnectionCode: {
+			title: string
+			connectionCodeLabel: string
+			passwordLabel: string
+			copyButton: string
+			regenerateButton: string
+			infoMessage: string
+			connectionCodeCopied: string
+			passwordCopied: string
+			regenerateSuccess: string
+		}
+		connectedSubfounts: {
+			title: string
+			noSubfountsConnected: string
+			table: {
+				id: string
+				description: string
+				deviceId: string
+				connectedAt: string
+				status: string
+				actions: string
+				connected: string
+				disconnected: string
+				save: string
+				na: string
+			}
+			descriptionSaved: string
+			descriptionSaveFailed: string
+		}
+		codeExecution: {
+			title: string
+			description: string
+			selectSubfountLabel: string
+			selectSubfountPlaceholder: string
+			hostOption: string
+			subfountOption: string
+			scriptLabel: string
+			executeButton: string
+			executing: string
+			noSubfountSelected: string
+			noScriptProvided: string
+			executionSuccess: string
+			executionFailed: string
+		}
+		downloadClient: {
+			title: string
+			description: string
+			downloadButton: string
+		}
+		errors: {
+			loadConnectionCodeFailed: string
+			regenerateConnectionCodeFailed: string
+			generalError: string
+		}
+		home_function_buttons: {
+			in_dev: {
+				title: string
+				sub_items: {
+					subfounts_related: {
+						title: string
+						sub_items: {
+							main: {
+								title: string
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	languageSettings: {
 		title: string
 		pageTitle: string
@@ -2378,6 +2452,13 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
 	'serviceSource_manager.buttons.setDefault.aria-label': { fileName: string | number }
 	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
+	'subfounts.codeExecution.executionFailed': { message: string | number }
+	'subfounts.codeExecution.hostOption': { id: string | number }
+	'subfounts.codeExecution.subfountOption': { deviceId: string | number; id: string | number }
+	'subfounts.connectedSubfounts.descriptionSaveFailed': { message: string | number }
+	'subfounts.errors.generalError': { message: string | number }
+	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }

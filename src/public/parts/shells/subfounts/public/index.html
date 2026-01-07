@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="subfounts.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="p-4 md:p-8 bg-base-200">
+	<div class="container mx-auto">
+		<div class="prose mb-4">
+			<h1 class="text-3xl" data-i18n="subfounts.pageTitle"></h1>
+			<p data-i18n="subfounts.description"></p>
+		</div>
+
+		<div class="grid md:grid-cols-2 gap-6">
+			<!-- Left Column - Connection Code -->
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title" data-i18n="subfounts.hostConnectionCode.title"></h2>
+					<div class="form-control mt-4">
+						<label class="label">
+							<span class="label-text" data-i18n="subfounts.hostConnectionCode.connectionCodeLabel"></span>
+						</label>
+						<div class="join w-full">
+							<input type="text" readonly class="input input-bordered join-item w-full font-mono" id="connection-code-input" />
+							<button class="btn btn-primary join-item" id="copy-code-button" data-i18n="subfounts.hostConnectionCode.copyButton"></button>
+						</div>
+					</div>
+					<div class="form-control mt-4">
+						<label class="label">
+							<span class="label-text" data-i18n="subfounts.hostConnectionCode.passwordLabel"></span>
+						</label>
+						<div class="join w-full">
+							<input type="text" readonly class="input input-bordered join-item w-full font-mono" id="password-input" />
+							<button class="btn btn-primary join-item" id="copy-password-button" data-i18n="subfounts.hostConnectionCode.copyButton"></button>
+						</div>
+					</div>
+					<div class="card-actions justify-end mt-4">
+						<button class="btn btn-secondary" id="regenerate-button" data-i18n="subfounts.hostConnectionCode.regenerateButton"></button>
+					</div>
+					<div class="alert alert-info mt-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+						<span data-i18n="subfounts.hostConnectionCode.infoMessage"></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column - Connected Subfounts -->
+			<div class="card bg-base-100 shadow-xl min-w-0">
+				<div class="card-body">
+					<h2 class="card-title" data-i18n="subfounts.connectedSubfounts.title"></h2>
+					<div id="subfounts-list" class="overflow-x-auto">
+						<div class="text-center">
+							<span class="loading loading-dots loading-md"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Code Execution Section -->
+		<div class="card bg-base-100 shadow-xl mt-6">
+			<div class="card-body">
+				<h2 class="card-title" data-i18n="subfounts.codeExecution.title"></h2>
+				<p data-i18n="subfounts.codeExecution.description"></p>
+				<div class="form-control mt-4">
+					<label class="label">
+						<span class="label-text" data-i18n="subfounts.codeExecution.selectSubfountLabel"></span>
+					</label>
+					<select class="select select-bordered w-full" id="subfount-select">
+						<option value="" data-i18n="subfounts.codeExecution.selectSubfountPlaceholder"></option>
+					</select>
+				</div>
+				<div class="form-control mt-4">
+					<label class="label">
+						<span class="label-text" data-i18n="subfounts.codeExecution.scriptLabel"></span>
+					</label>
+					<textarea class="textarea textarea-bordered h-32 font-mono" id="script-input" placeholder="console.log('Hello, World!')"></textarea>
+				</div>
+				<div class="card-actions justify-end mt-4">
+					<button class="btn btn-primary" id="execute-button" data-i18n="subfounts.codeExecution.executeButton"></button>
+				</div>
+				<div id="execution-result" class="mt-4 hidden">
+					<div class="alert" id="result-alert">
+						<pre class="whitespace-pre-wrap text-sm" id="result-content"></pre>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Download Section -->
+		<div class="card bg-base-100 shadow-xl mt-6">
+			<div class="card-body">
+				<h2 class="card-title" data-i18n="subfounts.downloadClient.title"></h2>
+				<p data-i18n="subfounts.downloadClient.description"></p>
+				<div class="card-actions justify-end mt-4">
+					<a href="./subfount.mjs" class="btn btn-primary" download="subfount.mjs" data-i18n="subfounts.downloadClient.downloadButton"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>
