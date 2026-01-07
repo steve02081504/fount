@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfount - jafningi-til-jafningi tækjastjórnun",
+		"pageTitle": "Subfounts",
+		"description": "Stjórna jafningi-til-jafningi gosbrunnstengingum",
+		"hostConnectionCode": {
+			"title": "Tengikóði gestgjafa",
+			"connectionCodeLabel": "Tengikóði (peer ID)",
+			"passwordLabel": "lykilorð",
+			"copyButton": "afrit",
+			"regenerateButton": "Endurnýja",
+			"infoMessage": "Deildu þessum skilríkjum með undirstofnum viðskiptavinum til að koma á tengingum.",
+			"connectionCodeCopied": "Tengikóði hefur verið afritaður á klemmuspjaldið",
+			"passwordCopied": "Lykilorð afritað á klippiborð",
+			"regenerateSuccess": "Tengikóði hefur verið endurnýjaður"
+		},
+		"connectedSubfounts": {
+			"title": "Tengt undirefni",
+			"noSubfountsConnected": "Ekkert undirefni er tengt",
+			"table": {
+				"id": "auðkenni",
+				"description": "Athugasemd",
+				"deviceId": "Auðkenni tækis",
+				"connectedAt": "tengitími",
+				"status": "ríki",
+				"actions": "Aðgerðir",
+				"connected": "Tengdur",
+				"disconnected": "Ótengdur",
+				"save": "vista",
+				"na": "N/A"
+			},
+			"descriptionSaved": "Athugasemd vistuð",
+			"descriptionSaveFailed": "Mistókst að vista athugasemd: ${message}"
+		},
+		"codeExecution": {
+			"title": "keyrslu kóða",
+			"description": "Keyra JavaScript kóða á valinni Subfount",
+			"selectSubfountLabel": "Veldu Subfount",
+			"selectSubfountPlaceholder": "Vinsamlegast veldu viðbótina til að keyra kóðann á...",
+			"hostOption": "Gestgjafi (auðkenni: ${id})",
+			"subfountOption": "Viðbót ${id}${deviceId}",
+			"scriptLabel": "JavaScript kóða",
+			"executeButton": "framkvæma",
+			"executing": "Framkvæmir...",
+			"noSubfountSelected": "Vinsamlegast veldu viðbót fyrst",
+			"noScriptProvided": "Vinsamlegast sláðu inn kóðann sem á að framkvæma",
+			"executionSuccess": "Kóðaframkvæmd tókst",
+			"executionFailed": "Kóðaframkvæmd mistókst: ${message}"
+		},
+		"downloadClient": {
+			"title": "Sæktu biðlara undirlindar",
+			"description": "Sæktu sjálfstætt smáforrit biðlara til að keyra á ytra tækinu.",
+			"downloadButton": "Sækja subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Mistókst að hlaða tengikóða: ${message}",
+			"regenerateConnectionCodeFailed": "Mistókst að endurskapa tengikóða: ${message}",
+			"generalError": "Villa kom upp: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Undir þróun",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "undirtæki",
+						"sub_items": {
+							"main": {
+								"title": "Stjórna undirtækjum"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Tungumálastillingar",
 		"pageTitle": "Tungumálastillingar",

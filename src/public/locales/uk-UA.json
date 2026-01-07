@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "subfounts - керування одноранговим пристроєм",
+		"pageTitle": "Subfounts",
+		"description": "Керуйте одноранговими з’єднаннями фонтанів",
+		"hostConnectionCode": {
+			"title": "Код підключення до хоста",
+			"connectionCodeLabel": "Код підключення (Peer ID)",
+			"passwordLabel": "пароль",
+			"copyButton": "копія",
+			"regenerateButton": "Регенерувати",
+			"infoMessage": "Поділіться цими обліковими даними з клієнтами субфонду для встановлення з’єднань.",
+			"connectionCodeCopied": "Код підключення скопійовано в буфер обміну",
+			"passwordCopied": "Пароль скопійовано в буфер обміну",
+			"regenerateSuccess": "Код підключення було відновлено"
+		},
+		"connectedSubfounts": {
+			"title": "Підключений підзасновок",
+			"noSubfountsConnected": "Підзасновок не підключено",
+			"table": {
+				"id": "ID",
+				"description": "Зауваження",
+				"deviceId": "ID пристрою",
+				"connectedAt": "час підключення",
+				"status": "стан",
+				"actions": "оперувати",
+				"connected": "Підключено",
+				"disconnected": "Відключено",
+				"save": "зберегти",
+				"na": "N/A"
+			},
+			"descriptionSaved": "Нотатку збережено",
+			"descriptionSaveFailed": "Не вдалося зберегти нотатку: ${message}"
+		},
+		"codeExecution": {
+			"title": "виконання коду",
+			"description": "Виконати код JavaScript для вибраного Subfount",
+			"selectSubfountLabel": "Виберіть Subfount",
+			"selectSubfountPlaceholder": "Будь ласка, виберіть розширення для виконання коду на...",
+			"hostOption": "Хост (ID: ${id})",
+			"subfountOption": "Розширення ${id}${deviceId}",
+			"scriptLabel": "код JavaScript",
+			"executeButton": "реалізувати",
+			"executing": "Виконання...",
+			"noSubfountSelected": "Спочатку виберіть розширення",
+			"noScriptProvided": "Будь ласка, введіть код для виконання",
+			"executionSuccess": "Код виконано успішно",
+			"executionFailed": "Помилка виконання коду: ${message}"
+		},
+		"downloadClient": {
+			"title": "Завантажте клієнт субфонду",
+			"description": "Завантажте автономний клієнтський сценарій підоснови для запуску на віддаленому пристрої.",
+			"downloadButton": "Завантажте subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Не вдалося завантажити код підключення: ${message}",
+			"regenerateConnectionCodeFailed": "Не вдалося повторно створити код підключення: ${message}",
+			"generalError": "Сталася помилка: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Розробляти",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "підпристрій",
+						"sub_items": {
+							"main": {
+								"title": "Керуйте підпристроями"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Налаштування мови",
 		"pageTitle": "Налаштування мови",

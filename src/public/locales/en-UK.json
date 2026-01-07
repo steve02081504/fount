@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfounts - peer-to-peer device management",
+		"pageTitle": "subfounts",
+		"description": "Manage peer-to-peer fountain connections",
+		"hostConnectionCode": {
+			"title": "Host connection code",
+			"connectionCodeLabel": "Connection code (Peer ID)",
+			"passwordLabel": "Password",
+			"copyButton": "Copy",
+			"regenerateButton": "Regenerate",
+			"infoMessage": "Share these credentials with subfount clients to establish connections.",
+			"connectionCodeCopied": "The connection code has been copied to the clipboard",
+			"passwordCopied": "Password copied to clipboard",
+			"regenerateSuccess": "The connection code has been regenerated"
+		},
+		"connectedSubfounts": {
+			"title": "Connected subfount",
+			"noSubfountsConnected": "No subfount is connected",
+			"table": {
+				"id": "ID",
+				"description": "Remark",
+				"deviceId": "Device ID",
+				"connectedAt": "Connection time",
+				"status": "Status",
+				"actions": "operate",
+				"connected": "Connected",
+				"disconnected": "Disconnected",
+				"save": "save",
+				"na": "N/A"
+			},
+			"descriptionSaved": "Note saved",
+			"descriptionSaveFailed": "Failed to save note: ${message}"
+		},
+		"codeExecution": {
+			"title": "Code execution",
+			"description": "Execute JavaScript code on selected Subfount",
+			"selectSubfountLabel": "Select Subfount",
+			"selectSubfountPlaceholder": "Please select the Subfount to execute the code on...",
+			"hostOption": "Host (ID: ${id})",
+			"subfountOption": "Extension ${id}${deviceId}",
+			"scriptLabel": "JavaScript code",
+			"executeButton": "Execute",
+			"executing": "Executing...",
+			"noSubfountSelected": "Please select a Subfount first",
+			"noScriptProvided": "Please enter the code to be executed",
+			"executionSuccess": "Code execution successful",
+			"executionFailed": "Code execution failed: ${message}"
+		},
+		"downloadClient": {
+			"title": "Download subfount client",
+			"description": "Download the standalone subfount client script to run on the remote device.",
+			"downloadButton": "Download subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Failed to load connection code: ${message}",
+			"regenerateConnectionCodeFailed": "Failed to regenerate connection code: ${message}",
+			"generalError": "An error occurred: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "under development",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "subdevice",
+						"sub_items": {
+							"main": {
+								"title": "Manage sub-devices"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "Language settings",
 		"pageTitle": "Language Settings",

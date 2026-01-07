@@ -1420,6 +1420,80 @@
 			}
 		}
 	},
+	"subfounts": {
+		"title": "Subfount - إدارة الأجهزة من نظير إلى نظير",
+		"pageTitle": "Subfounts",
+		"description": "إدارة اتصالات نافورة نظير إلى نظير",
+		"hostConnectionCode": {
+			"title": "رمز اتصال المضيف",
+			"connectionCodeLabel": "رمز الاتصال (معرف النظير)",
+			"passwordLabel": "كلمة المرور",
+			"copyButton": "نسخ",
+			"regenerateButton": "تجديد",
+			"infoMessage": "قم بمشاركة بيانات الاعتماد هذه مع عملاء المصدر الفرعي لإنشاء اتصالات.",
+			"connectionCodeCopied": "تم نسخ رمز الاتصال إلى الحافظة",
+			"passwordCopied": "تم نسخ كلمة المرور إلى الحافظة",
+			"regenerateSuccess": "تم إعادة إنشاء رمز الاتصال"
+		},
+		"connectedSubfounts": {
+			"title": "فرعي متصل",
+			"noSubfountsConnected": "لا يوجد فرع فرعي متصل",
+			"table": {
+				"id": "بطاقة تعريف",
+				"description": "ملاحظة",
+				"deviceId": "معرف الجهاز",
+				"connectedAt": "وقت الاتصال",
+				"status": "حالة",
+				"actions": "إجراءات",
+				"connected": "متصل",
+				"disconnected": "غير متصل",
+				"save": "يحفظ",
+				"na": "لا يوجد"
+			},
+			"descriptionSaved": "تم حفظ الملاحظة",
+			"descriptionSaveFailed": "فشل حفظ الملاحظة: ${message}"
+		},
+		"codeExecution": {
+			"title": "تنفيذ التعليمات البرمجية",
+			"description": "تنفيذ كود JavaScript على Subfount المحدد",
+			"selectSubfountLabel": "حدد Subfount",
+			"selectSubfountPlaceholder": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية على...",
+			"hostOption": "المضيف (المعرف: ${id})",
+			"subfountOption": "الجهاز الفرعي ${id}${deviceId}",
+			"scriptLabel": "كود جافا سكريبت",
+			"executeButton": "تنفيذ",
+			"executing": "جاري التنفيذ...",
+			"noSubfountSelected": "الرجاء تحديد جهاز فرعي أولاً",
+			"noScriptProvided": "الرجاء إدخال الرمز ليتم تنفيذه",
+			"executionSuccess": "تم تنفيذ التعليمات البرمجية بنجاح",
+			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}"
+		},
+		"downloadClient": {
+			"title": "قم بتنزيل العميل الفرعي",
+			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
+			"downloadButton": "تحميل subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
+			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
+			"generalError": "حدث خطأ: ${message}"
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "قيد التطوير",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "جهاز فرعي",
+						"sub_items": {
+							"main": {
+								"title": "إدارة الأجهزة الفرعية"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"languageSettings": {
 		"title": "إعدادات اللغة",
 		"pageTitle": "إعدادات اللغة",
