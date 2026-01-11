@@ -11,7 +11,9 @@ import { exec } from 'npm:@steve02081504/exec'
 export async function cloneRepo(repoUrl, targetDir) {
 	await mkdir(targetDir, { recursive: true })
 	try {
-		await exec(`git clone --depth 1 --single-branch ${repoUrl} .`, { cwd: targetDir })
+		const result = await exec(`git clone --depth 1 --single-branch ${repoUrl} .`, { cwd: targetDir })
+		if (result.code) throw new Error(result.stderr.trim() || 'Failed to clone repository')
+		return result.stdout.trim()
 	}
 	catch (err) {
 		await rm(targetDir, { recursive: true, force: true })
