@@ -1,0 +1,16 @@
+{
+	"zh-CN": {
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "条件选择",
+		"description_markdown": "根据条件选择不同的 AI 源，并在结果返回后进行处理。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"条件",
+			"实用工具",
+			"元"
+		],
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount"
+	}
+}
