@@ -1,4 +1,18 @@
 {
+	"en-UK": {
+		"name": "Condition selection",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Condition selection",
+		"description_markdown": "Different AI sources are selected based on conditions and processed after the results are returned.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"condition",
+			"Utility tools",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
 	"zh-CN": {
 		"name": "条件选择",
 		"avatar": "https://api.iconify.design/mdi/if-else.svg",
@@ -9,6 +23,244 @@
 		"tags": [
 			"条件",
 			"实用工具",
+			"元"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ar-SA": {
+		"name": "اختيار الحالة",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "اختيار الحالة",
+		"description_markdown": "يتم تحديد مصادر مختلفة للذكاء الاصطناعي بناءً على الشروط وتتم معالجتها بعد إرجاع النتائج.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"حالة",
+			"الأدوات المساعدة",
+			"يوان"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"de-DE": {
+		"name": "Bedingungsauswahl",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Bedingungsauswahl",
+		"description_markdown": "Basierend auf den Bedingungen werden verschiedene KI-Quellen ausgewählt und verarbeitet, nachdem die Ergebnisse zurückgegeben wurden.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"Zustand",
+			"Hilfswerkzeuge",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"emoji": {
+		"name": "条件选择",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "条件选择",
+		"description_markdown": "根据条件选择不同的 AI 源，并在结果返回后进行处理。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"条件",
+			"实用工具",
+			"元"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"es-ES": {
+		"name": "Selección de condición",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Selección de condición",
+		"description_markdown": "Se seleccionan diferentes fuentes de IA en función de las condiciones y se procesan después de que se devuelven los resultados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"condición",
+			"Herramientas utilitarias",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"fr-FR": {
+		"name": "Sélection des conditions",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Sélection des conditions",
+		"description_markdown": "Différentes sources d'IA sont sélectionnées en fonction des conditions et traitées une fois les résultats renvoyés.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"condition",
+			"Outils utilitaires",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"hi-IN": {
+		"name": "शर्त चयन",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "शर्त चयन",
+		"description_markdown": "स्थितियों के आधार पर विभिन्न एआई स्रोतों का चयन किया जाता है और परिणाम आने के बाद संसाधित किया जाता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"स्थिति",
+			"उपयोगिता उपकरण",
+			"युआन"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"is-IS": {
+		"name": "Val á ástandi",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Val á ástandi",
+		"description_markdown": "Mismunandi gervigreind heimildir eru valdar út frá skilyrðum og unnar eftir að niðurstöðum er skilað.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"ástandi",
+			"Notkunartæki",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"it-IT": {
+		"name": "Selezione delle condizioni",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Selezione delle condizioni",
+		"description_markdown": "Diverse fonti di intelligenza artificiale vengono selezionate in base alle condizioni ed elaborate dopo la restituzione dei risultati.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"condizione",
+			"Strumenti di utilità",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ja-JP": {
+		"name": "条件選択",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "条件選択",
+		"description_markdown": "条件に基づいてさまざまな AI ソースが選択され、結果が返された後に処理されます。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"状態",
+			"ユーティリティツール",
+			"元"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ko-KR": {
+		"name": "조건 선택",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "조건 선택",
+		"description_markdown": "조건에 따라 다양한 AI 소스가 선택되고 결과가 반환된 후 처리됩니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"상태",
+			"유틸리티 도구",
+			"원"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"lzh": {
+		"name": "条件选择",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "条件选择",
+		"description_markdown": "根据条件选择不同的 AI 源，并在结果返回后进行处理。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"条件",
+			"实用工具",
+			"元"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"nl-NL": {
+		"name": "Conditie selectie",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Conditie selectie",
+		"description_markdown": "Verschillende AI-bronnen worden geselecteerd op basis van voorwaarden en verwerkt nadat de resultaten zijn geretourneerd.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"voorwaarde",
+			"Hulpprogramma's",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"pt-PT": {
+		"name": "Seleção de condição",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Seleção de condição",
+		"description_markdown": "Diferentes fontes de IA são selecionadas com base nas condições e processadas após o retorno dos resultados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"doença",
+			"Ferramentas utilitárias",
+			"Yuan"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"ru-RU": {
+		"name": "Выбор условия",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Выбор условия",
+		"description_markdown": "Различные источники искусственного интеллекта выбираются в зависимости от условий и обрабатываются после получения результатов.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"состояние",
+			"Вспомогательные инструменты",
+			"Юань"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"uk-UA": {
+		"name": "Вибір умов",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Вибір умов",
+		"description_markdown": "Різні джерела ШІ вибираються на основі умов і обробляються після повернення результатів.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"хвороба",
+			"Службові інструменти",
+			"Юань"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"vi-VN": {
+		"name": "Lựa chọn điều kiện",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "Lựa chọn điều kiện",
+		"description_markdown": "Các nguồn AI khác nhau được chọn dựa trên các điều kiện và được xử lý sau khi trả về kết quả.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"tình trạng",
+			"Công cụ tiện ích",
+			"Nhân dân tệ"
+		],
+		"home_page": "https://github.com/steve02081504/fount"
+	},
+	"zh-TW": {
+		"name": "條件選擇",
+		"avatar": "https://api.iconify.design/mdi/if-else.svg",
+		"description": "條件選擇",
+		"description_markdown": "根據條件選擇不同的 AI 源，並在結果返回後進行處理。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"條件",
+			"實用工具",
 			"元"
 		],
 		"home_page": "https://github.com/steve02081504/fount"
