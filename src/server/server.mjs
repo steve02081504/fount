@@ -187,65 +187,65 @@ export async function init(start_config) {
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
-	if (starts.Web) {
+	if (starts.Web) try {
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		const { initMdns } = starts.Web?.mDNS ? await import('./web_server/mdns.mjs') : {}
-		await new Promise((resolve, reject) => {
-			let appPromise
-			/**
-			 * 获取 Express 应用程序实例。
-			 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
-			 */
-			const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
-				app.set('trust proxy', trust_proxy ?? 'loopback')
-				server.removeListener('request', requestListener)
-				server.on('request', app)
-				server.removeListener('upgrade', upgradeListener)
-				server.on('upgrade', app.ws_on_upgrade)
-				return app
-			})
-			/**
-			 * 处理 HTTP 请求。
-			 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-			 * @param {import('http').ServerResponse} res - HTTP 响应对象。
-			 * @returns {Promise<void>}
-			 */
-			const requestListener = async (req, res) => {
-				try {
-					const app = await getApp()
-					return app(req, res)
-				}
-				catch (e) {
-					console.error(e)
-					res.statusCode = 500
-					res.end('Internal Server Error: Could not load web server.')
-				}
+		let appPromise
+		/**
+		 * 懒加载地获取 Express 应用程序实例。
+		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
+		 */
+		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+			app.set('trust proxy', trust_proxy ?? 'loopback')
+			server.removeListener('request', requestListener)
+			server.on('request', app)
+			server.removeListener('upgrade', upgradeListener)
+			server.on('upgrade', app.ws_on_upgrade)
+			return app
+		})
+		/**
+		 * 处理 HTTP 请求。
+		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
+		 * @param {import('http').ServerResponse} res - HTTP 响应对象。
+		 * @returns {Promise<void>}
+		 */
+		const requestListener = async (req, res) => {
+			try {
+				const app = await getApp()
+				return app(req, res)
 			}
-			/**
-			 * 处理 WebSocket 升级请求。
-			 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-			 * @param {import('net').Socket} socket - 客户端和服务器之间的网络套接字。
-			 * @param {Buffer} head - 已升级流的第一个数据包。
-			 * @returns {Promise<void>}
-			 */
-			const upgradeListener = async (req, socket, head) => {
-				try {
-					const app = await getApp()
-					return app.ws_on_upgrade(req, socket, head)
-				}
-				catch (e) {
-					console.error(e)
-					socket.end()
-				}
+			catch (e) {
+				console.error(e)
+				res.statusCode = 500
+				res.end('Internal Server Error: Could not load web server.')
 			}
+		}
+		/**
+		 * 处理 WebSocket 升级请求。
+		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
+		 * @param {import('net').Socket} socket - 客户端和服务器之间的网络套接字。
+		 * @param {Buffer} head - 已升级流的第一个数据包。
+		 * @returns {Promise<void>}
+		 */
+		const upgradeListener = async (req, socket, head) => {
+			try {
+				const app = await getApp()
+				return app.ws_on_upgrade(req, socket, head)
+			}
+			catch (e) {
+				console.error(e)
+				socket.end()
+			}
+		}
 
+		const listen = async (listenAddress) => await new Promise((resolve, reject) => {
 			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 
-			const listen = [port, config.listen].filter(Boolean)
+			const listen = [port, listenAddress].filter(Boolean)
 			if (httpsConfig?.enabled)
 				server = https.createServer({
 					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
@@ -253,26 +253,41 @@ export async function init(start_config) {
 				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) initMdns(port, 'https', mdnsConfig)
-					resolve()
+					resolve(listenAddress == 'localhost')
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) initMdns(port, 'http', mdnsConfig)
-					resolve()
+					resolve(listenAddress == 'localhost')
 				})
 
 			server.on('upgrade', upgradeListener)
-			server.on('error', reject)
+			server.on('error', (err) => {
+				console.error(err)
+				server.close(() => {
+					server = null
+					reject(err)
+				})
+			})
 		})
+		let is_localhost
+		try {
+			is_localhost = await listen(config.listen)
+		}
+		catch (error) {
+			if (error.code === 'EACCES')
+				is_localhost = await listen('localhost')
+			else throw error
+		}
 
-		if (start_config.needs_output) try {
+		if (start_config.needs_output && !is_localhost) try {
 			const local_url = get_hosturl_in_local_ip()
 			console.logI18n('fountConsole.server.localUrl', { url: local_url })
 			const qrcode = await import('npm:qrcode-terminal')
 			qrcode.generate(local_url, { small: true }, console.noBreadcrumb.log)
 		} catch (e) { /* ignore */ }
-	}
+	} catch (e) { console.error(e) }
 
 	if (starts.Tray) iconPromise.then(() => createTray()).then(t => tray = t)
 	if (starts.Base) {
