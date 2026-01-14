@@ -3,8 +3,8 @@ import path from 'node:path'
 import fs from 'npm:fs-extra'
 import sanitizeFilename from 'npm:sanitize-filename'
 
-import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
+import { getUserDictionary } from '../../../../../../server/auth.mjs'
 
 /**
  * 获取一个可用的部件路径。
