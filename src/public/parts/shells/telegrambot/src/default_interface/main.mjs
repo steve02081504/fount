@@ -1,6 +1,6 @@
-import { localhostLocales, console } from '../../../../../scripts/i18n.mjs'
-import { getPartInfo } from '../../../../../scripts/locale.mjs'
-import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
+import { getPartInfo } from '../../../../../../scripts/locale.mjs'
+import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 
 import {
 	TelegramMessageToFountChatLogEntry,
@@ -11,7 +11,7 @@ import {
 
 /** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
 /** @typedef {import('npm:telegraf').Context} TelegrafContext */
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
 /** @typedef {import('./tools.mjs').chatLogEntry_t_simple} chatLogEntry_t_simple */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */

@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer'
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 
 
-import { localhostLocales, console } from '../../../../../scripts/i18n.mjs'
-import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
+import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
 
@@ -39,7 +39,7 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 
 /**
  * 创建一个简单的 Discord 接口。
- * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} charAPI - 角色 API 对象。
+ * @param {import('../../../../../../decl/charAPI.ts').CharAPI_t} charAPI - 角色 API 对象。
  * @param {string} ownerUsername - 所有者的用户名。
  * @param {string} botCharname - 机器人角色的名称。
  * @returns {Promise<object>} 返回一个包含 Discord 接口方法的 Promise。
