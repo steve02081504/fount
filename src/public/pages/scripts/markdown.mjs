@@ -3,7 +3,7 @@ import { createDocumentFragmentFromHtmlStringNoScriptActivation, activateScripts
 const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(error => {
 	/**
 	 * 处理 Markdown 内容。
-	 * @param {string} content 要处理的 Markdown 字符串。
+	 * @param {{value: string, data: object}} content 要处理的对象。
 	 * @returns {string} 返回处理后的 HTML 字符串。
 	 */
 	const func = content => /* html */ `\
@@ -15,7 +15,7 @@ ${error.stack || error.message || error}
 <br/>
 
 <pre><code>
-${content}
+${content.value}
 </code></pre>
 `
 	return {
