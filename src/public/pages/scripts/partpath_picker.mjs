@@ -1,5 +1,6 @@
 import { geti18n } from './i18n.mjs'
 import { getPartBranches, getPartDetails } from './parts.mjs'
+import { onServerEvent } from './server_events.mjs'
 
 /**
  * 去除首尾斜杠并返回标准化路径。
@@ -123,7 +124,7 @@ export async function createPartpathPicker({
 	filterPath,
 	onOpenMenu,
 }) {
-	const branches = await getPartBranches().catch(error => {
+	let branches = await getPartBranches().catch(error => {
 		console.error('Failed to load part branches:', error)
 		return {}
 	})
@@ -142,6 +143,19 @@ export async function createPartpathPicker({
 		if (!(node instanceof Object)) return !normalized && (!filterPath || filterPath(''))
 		return !filterPath || filterPath(normalized)
 	}
+
+	/**
+	 * 刷新部件分支缓存。
+	 * @returns {Promise<void>}
+	 */
+	const refreshBranches = async () => {
+		branches = await getPartBranches(true).catch(() => branches)
+		if (dropdown.classList.contains('dropdown-open')) await openMenu(currentPath)
+	}
+
+	// 监听部件安装/卸载事件，自动刷新
+	onServerEvent('part-installed', refreshBranches)
+	onServerEvent('part-uninstalled', refreshBranches)
 
 	/**
 	 * 设置当前选中的路径。
