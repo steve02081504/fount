@@ -217,7 +217,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
  * @param {import('npm:express').Router} router - 路由。
  */
 export function setOpenAIAPIEndpoints(router) {
-	const basePath = '/api/parts/shells:proxy/calling/openai'
+	const basePath = '/api/parts/shells\\:proxy/calling/openai'
 
 	// 1. 模型列表 (Models List) - Remains the same
 	router.get(basePath + '/v1/models', authenticate, async (req, res) => {

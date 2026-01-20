@@ -7,7 +7,7 @@ import { authenticate } from '../../../../../server/auth.mjs'
  * @param {Object} router - Express 路由器。
  */
 export function setEndpoints(router) {
-	router.get('/api/parts/shells:debug_info/system_info', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:debug_info/system_info', authenticate, async (req, res) => {
 		const checks = [
 			{ name: 'npm Registry', url: 'https://registry.npmjs.org' },
 			{ name: 'Deno Land', url: 'https://deno.land' },

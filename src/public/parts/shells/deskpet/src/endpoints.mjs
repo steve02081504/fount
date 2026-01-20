@@ -8,7 +8,7 @@ import { runPet, stopPet, getRunningPets } from './pet_runner.mjs'
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
-	router.post('/api/parts/shells:deskpet/start', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:deskpet/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.body
 		try {
@@ -20,7 +20,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.post('/api/parts/shells:deskpet/stop', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:deskpet/stop', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.body
 		try {
@@ -32,7 +32,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.get('/api/parts/shells:deskpet/getrunningpetlist', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:deskpet/getrunningpetlist', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
 			const running = getRunningPets(username)
