@@ -46,7 +46,7 @@ async function getTemplateDir(username, templateName) {
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
-	router.get('/api/parts/shells:easynew/templates', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:easynew/templates', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
 			const userTemplatesPath = getUserTemplatesPath(username)
@@ -82,7 +82,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.get('/api/parts/shells:easynew/template-html', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:easynew/template-html', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
 			const { templateName } = req.query
@@ -98,7 +98,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.post('/api/parts/shells:easynew/create', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:easynew/create', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
 			const { templateName } = req.body

@@ -20,7 +20,7 @@ import {
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
-	router.get('/virtual_files/parts/shells:browserIntegration/script.user.js', async (req, res) => {
+	router.get('/virtual_files/parts/shells\\:browserIntegration/script.user.js', async (req, res) => {
 		const scriptPublicPath = path.join(import.meta.dirname, '..', 'public')
 		const publicScriptPath = path.join(scriptPublicPath, 'script.user.js')
 
@@ -40,23 +40,23 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.ws('/ws/parts/shells:browserIntegration/page', authenticate, async (ws, req) => {
+	router.ws('/ws/parts/shells\\:browserIntegration/page', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
 		handleConnection(ws, username)
 	})
 
-	router.ws('/ws/parts/shells:browserIntegration/ui', authenticate, async (ws, req) => {
+	router.ws('/ws/parts/shells\\:browserIntegration/ui', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
 		const manager = getUserManager(username)
 		manager.registerUi(ws)
 	})
 
-	router.get('/api/parts/shells:browserIntegration/history', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:browserIntegration/history', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.json(getBrowseHistory(username))
 	})
 
-	router.post('/api/parts/shells:browserIntegration/callback', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:browserIntegration/callback', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { partpath, data, pageId, script } = req.body
 
@@ -75,13 +75,13 @@ export function setEndpoints(router) {
 	})
 
 	// New endpoints for auto-run scripts
-	router.get('/api/parts/shells:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const scripts = listAutoRunScripts(username)
 		res.json({ success: true, scripts })
 	})
 
-	router.post('/api/parts/shells:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		try {
 			const newScript = addAutoRunScript(username, req.body)
@@ -92,7 +92,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.delete('/api/parts/shells:browserIntegration/autorun-scripts/:id', authenticate, async (req, res) => {
+	router.delete('/api/parts/shells\\:browserIntegration/autorun-scripts/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { id } = req.params
 		const result = removeAutoRunScript(username, id)

@@ -61,7 +61,7 @@ function formatBytes(bytes, decimals = 2) {
  * @param {object} router - Express 路由实例。
  */
 export function setEndpoints(router) {
-	router.get('/api/parts/shells:userSettings/stats', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:userSettings/stats', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
 		if (!userReqData) return res.status(401).json({ success: false, message: 'Unauthorized' })
 
@@ -86,7 +86,7 @@ export function setEndpoints(router) {
 		})
 	})
 
-	router.post('/api/parts/shells:userSettings/change_password', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:userSettings/change_password', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 		const { currentPassword, newPassword } = req.body
@@ -96,7 +96,7 @@ export function setEndpoints(router) {
 		res.status(result.success ? 200 : result.message.includes('Invalid current password') ? 401 : 400).json(result)
 	})
 
-	router.get('/api/parts/shells:userSettings/devices', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:userSettings/devices', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
 		if (!userReqData) return res.status(401).json({ success: false, message: 'Unauthorized' })
 
@@ -115,7 +115,7 @@ export function setEndpoints(router) {
 		res.json({ success: true, devices })
 	})
 
-	router.post('/api/parts/shells:userSettings/revoke_device', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:userSettings/revoke_device', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 		const { tokenJti, password } = req.body
@@ -125,7 +125,7 @@ export function setEndpoints(router) {
 		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 
-	router.post('/api/parts/shells:userSettings/rename_user', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:userSettings/rename_user', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 		const { newUsername, password } = req.body
@@ -139,7 +139,7 @@ export function setEndpoints(router) {
 		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 
-	router.post('/api/parts/shells:userSettings/delete_account', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:userSettings/delete_account', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 		const { password } = req.body

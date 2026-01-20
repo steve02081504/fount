@@ -7,7 +7,7 @@ import { exportPart, getFountJson, createShareLink } from './manager.mjs'
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
-	router.get('/api/parts/shells:export/export', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:export/export', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
@@ -19,7 +19,7 @@ export function setEndpoints(router) {
 		res.send(buffer)
 	})
 
-	router.get('/api/parts/shells:export/fountjson', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:export/fountjson', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
@@ -32,7 +32,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.post('/api/parts/shells:export/share', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:export/share', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.body.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
@@ -45,7 +45,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.get('/virtual_files/parts/shells:export/download/*partpath', authenticate, async (req, res) => {
+	router.get('/virtual_files/parts/shells\\:export/download/*partpath', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.params.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })

@@ -169,7 +169,7 @@ import { handleTerminalConnection } from './terminal_ws.mjs'; // Example from sh
 export function setEndpoints(router) {
   // Standard HTTP endpoint, using ':' in the path
   router.get(
-    '/api/parts/shells/my-new-shell:info',
+    '/api/parts/shells\\:my-new-shell/info',
     authenticate,
     (req, res) => {
       res.status(200).json({ message: 'Welcome to my new shell!' });
@@ -179,7 +179,7 @@ export function setEndpoints(router) {
   // WebSocket endpoint for interactive terminal, using ':' in the path
   // The 'ws' method is added by the 'express-ws' middleware used in fount
   router.ws(
-    '/ws/parts/shells/my-new-shell:terminal',
+    '/ws/parts/shells\\:my-new-shell/terminal',
     authenticate,
     (ws, req) => {
       console.log('WebSocket connection established!');
@@ -247,7 +247,7 @@ Define the UI and connect it to the backend. Note how relative paths are used to
 </html>
 ```
 
-When `index.html` is loaded from the URL `/parts/shells/my-new-shell:`, the browser correctly resolves the relative path `./index.mjs` to `/parts/shells/my-new-shell:index.mjs`, which the fount server then maps to the correct file in the `public` directory.
+When `index.html` is loaded from the URL `/parts/shells:my-new-shell:`, the browser correctly resolves the relative path `./index.mjs` to `/parts/shells:my-new-shell/index.mjs`, which the fount server then maps to the correct file in the `public` directory.
 
 **`public/index.mjs`:**
 
@@ -266,7 +266,7 @@ terminal.writeln('Welcome to My New Shell!');
 
 // 2. Connect to the WebSocket backend
 const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const socketUrl = `${socketProtocol}//${window.location.host}/ws/parts/shells/my-new-shell:terminal`;
+const socketUrl = `${socketProtocol}//${window.location.host}/ws/parts/shells:my-new-shell/terminal`;
 const ws = new WebSocket(socketUrl);
 
 ws.onopen = () => {
@@ -288,4 +288,4 @@ terminal.onData((data) => {
 });
 ```
 
-After completing these steps, restart the fount server. The new shell will be available at the URL `/parts/shells/my-new-shell`, which serves the shell's `index.html`.
+After completing these steps, restart the fount server. The new shell will be available at the URL `/parts/shells:my-new-shell`, which serves the shell's `index.html`.

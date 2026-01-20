@@ -13,13 +13,13 @@ import {
  */
 export function setEndpoints(router) {
 	// 获取列表
-	router.get('/api/parts/shells:themeManage/list', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:themeManage/list', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.json(getCustomThemes(username))
 	})
 
 	// 获取单个主题
-	router.get('/api/parts/shells:themeManage/theme/:id', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:themeManage/theme/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const theme = getTheme(username, req.params.id)
 		if (theme) res.json(theme)
@@ -27,14 +27,14 @@ export function setEndpoints(router) {
 	})
 
 	// 保存主题
-	router.post('/api/parts/shells:themeManage/save', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:themeManage/save', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const id = saveTheme(username, req.body)
 		res.json({ success: true, id })
 	})
 
 	// 删除主题
-	router.delete('/api/parts/shells:themeManage/theme/:id', authenticate, async (req, res) => {
+	router.delete('/api/parts/shells\\:themeManage/theme/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		deleteTheme(username, req.params.id)
 		res.json({ success: true })

@@ -21,7 +21,7 @@ import {
  */
 export function setEndpoints(router) {
 	// 启动 Telegram Bot
-	router.post('/api/parts/shells:telegrambot/start', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:telegrambot/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body
 		if (!botname) return res.status(400).json({ message: 'Bot name is required.' })
@@ -30,7 +30,7 @@ export function setEndpoints(router) {
 	})
 
 	// 停止 Telegram Bot
-	router.post('/api/parts/shells:telegrambot/stop', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:telegrambot/stop', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body
 		if (!botname) return res.status(400).json({ message: 'Bot name is required.' })
@@ -39,21 +39,21 @@ export function setEndpoints(router) {
 	})
 
 	// 获取用户的所有 Telegram Bot 列表
-	router.get('/api/parts/shells:telegrambot/getbotlist', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:telegrambot/getbotlist', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const list = getBotList(username)
 		res.status(200).json(list)
 	})
 
 	// 获取正在运行的 Telegram Bot 列表
-	router.get('/api/parts/shells:telegrambot/getrunningbotlist', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:telegrambot/getrunningbotlist', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const list = getRunningBotList(username)
 		res.status(200).json(list)
 	})
 
 	// 获取特定 Telegram Bot 的配置
-	router.get('/api/parts/shells:telegrambot/getbotconfig', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:telegrambot/getbotconfig', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.query
 		if (!botname) return res.status(400).json({ message: 'Bot name query parameter is required.' })
@@ -62,7 +62,7 @@ export function setEndpoints(router) {
 	})
 
 	// 获取特定角色用于 Telegram Bot 的配置模板
-	router.get('/api/parts/shells:telegrambot/getbotConfigTemplate', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:telegrambot/getbotConfigTemplate', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.query
 		if (!charname) return res.status(400).json({ message: 'Character name query parameter is required.' })
@@ -71,7 +71,7 @@ export function setEndpoints(router) {
 	})
 
 	// 设置/保存特定 Telegram Bot 的配置
-	router.post('/api/parts/shells:telegrambot/setbotconfig', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:telegrambot/setbotconfig', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname, config } = req.body
 		if (!botname || !config) return res.status(400).json({ message: 'Bot name and config are required.' })
@@ -80,7 +80,7 @@ export function setEndpoints(router) {
 	})
 
 	// 删除特定 Telegram Bot 的配置
-	router.post('/api/parts/shells:telegrambot/deletebotconfig', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:telegrambot/deletebotconfig', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body
 		if (!botname) return res.status(400).json({ message: 'Bot name is required.' })
@@ -96,7 +96,7 @@ export function setEndpoints(router) {
 	})
 
 	// 创建一个新的 Telegram Bot 配置 (空配置)
-	router.post('/api/parts/shells:telegrambot/newbotconfig', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:telegrambot/newbotconfig', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body
 		if (!botname) return res.status(400).json({ message: 'Bot name is required.' })

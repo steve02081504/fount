@@ -5,5 +5,5 @@ import { handleTerminalConnection } from './terminal_ws.mjs'
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
-	router.ws('/ws/parts/shells:shellassist/terminal', handleTerminalConnection)
+	router.ws('/ws/parts/shells\\:shellassist/terminal', handleTerminalConnection)
 }
