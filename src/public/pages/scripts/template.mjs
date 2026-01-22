@@ -232,7 +232,6 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
  * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
  */
 export async function renderTemplate(template, data = {}) {
-	data.renderTemplate ??= renderTemplateAsHtmlString
 	const node = await renderTemplateNoScriptActivation(template, data)
 	return activateScripts(node)
 }

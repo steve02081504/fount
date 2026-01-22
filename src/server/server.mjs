@@ -242,6 +242,11 @@ export async function init(start_config) {
 			}
 		}
 
+		/**
+		 * 监听特定地址
+		 * @param {String} listenAddress 要监听的地址
+		 * @returns {Promise<Boolean>} 是否本地
+		 */
 		const listen = async (listenAddress) => await new Promise((resolve, reject) => {
 			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 

@@ -1,4 +1,3 @@
-import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { getPartDetails } from '../../../../../scripts/parts.mjs'
 
 const typingIndicatorElement = document.getElementById('typing-indicator')
