@@ -3,6 +3,7 @@ import express from 'npm:express'
 
 import { sentrytunnel } from '../../scripts/sentrytunnel.mjs'
 import { WsAbleApp, WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
+import { auth_request } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 
 import { registerEndpoints } from './endpoints.mjs'
@@ -40,9 +41,12 @@ registerWellKnowns(mainRouter)
 registerResources(mainRouter)
 
 // 设置最终处理程序（404、错误）
-FinalRouter.use((req, res) => {
-	Sentry.captureException(new Error('404 Not found: ' + req.path))
-	if (req.path.startsWith('/api/') || req.path.startsWith('/ws/')) return res.status(404).json({ message: 'API Not found' })
+FinalRouter.use(async (req, res) => {
+	const is_api = req.path.startsWith('/api/') || req.path.startsWith('/ws/')
+	const is_part = req.path.startsWith('/parts/') || req.path.startsWith('/api/parts/') || req.path.startsWith('/ws/parts/')
+	if (!is_part || await auth_request(req, res))
+		Sentry.captureException(new Error('404 Not found: ' + req.path))
+	if (is_api) return res.status(404).json({ message: 'API Not found' })
 	if (req.accepts('html')) return betterSendFile(res.status(404), __dirname + '/src/public/pages/404/index.html')
 	res.status(404).type('txt').send('Not found')
 })

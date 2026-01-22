@@ -382,6 +382,11 @@ export function updateDefaultPartDisplay() {
 // ==========================================
 
 /**
+ * 用于避免多个渲染切换同时调用
+ */
+let transitionPromise
+
+/**
  * 更新当前选定选项卡的内容。
  * @param {object} partTypeObject - 部件类型对象
  * @returns {Promise<void>}
@@ -438,8 +443,10 @@ export async function updateTabContent(partTypeObject) {
 	}
 
 	if (document.startViewTransition && oldIndex !== -1) {
+		await transitionPromise
 		document.documentElement.dataset.transitionDirection = direction
-		await document.startViewTransition(updateAndRender).finished
+		transitionPromise = document.startViewTransition(updateAndRender).finished
+		await transitionPromise
 		delete document.documentElement.dataset.transitionDirection
 	} else await updateAndRender()
 }
