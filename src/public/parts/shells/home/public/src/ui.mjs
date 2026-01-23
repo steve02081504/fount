@@ -532,7 +532,7 @@ function hasChildrenInBranches(path, branches) {
 async function shouldBeFolderStyle(path, branches) {
 	if (!branches) return false
 	const children = getChildrenOfPath(branches, path)
-	if (children.length === 0) return false
+	if (!children.length) return false
 
 	// 1. 结构检查：任何子项在树中是分支
 	for (const child of children)

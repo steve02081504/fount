@@ -185,7 +185,7 @@ export async function createPartpathPicker({
 			a.href = '#'
 			a.addEventListener('click', async event => {
 				event.preventDefault()
-				const targetPath = index === 0 ? '' : segments.slice(0, index).join('/')
+				const targetPath = index ? segments.slice(0, index).join('/') : ''
 				if (targetPath === currentPath) {
 					if (!isLeafPath(branches, currentPath)) await openMenu(currentPath)
 					else dropdown.classList.remove('dropdown-open')
