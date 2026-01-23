@@ -60,6 +60,16 @@ export async function loadAIsourceFromNameOrConfigData(username, source, unnamed
 }
 
 /**
+ * 标记一个错误对象表示源已死亡（如 API key 非法）。
+ * @param {Error} err - 错误对象。
+ * @returns {Error} 修改后的错误对象。
+ */
+export function source_dead(err) {
+	err.source_dead = true
+	return err
+}
+
+/**
  * AI 服务源部件。
  */
 export default {

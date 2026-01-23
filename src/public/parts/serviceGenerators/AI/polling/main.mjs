@@ -1,7 +1,7 @@
 /** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
-import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
+import { loadAIsourceFromNameOrConfigData, source_dead } from '../../../serviceSources/AI/main.mjs'
 
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
 import info from './info.json' with { type: 'json' }
@@ -39,6 +39,7 @@ const configTemplate = {
 			}
 		}
 	],
+	dead_sources: [],
 }
 /**
  * 获取 AI 源。
@@ -49,6 +50,7 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} 一个 Promise，解析为 AI 源。
  */
 async function GetSource(config, { username, SaveConfig }) {
+	config.dead_sources ??= []
 	let index = config.random_start ?? true ? Math.floor(Math.random() * config.sources.length) : -1
 	const unnamedSources = []
 	const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
@@ -59,6 +61,51 @@ async function GetSource(config, { username, SaveConfig }) {
 		config.sources.length,
 		config.max_fail_count || new Set(config.sources.map(source => source.generator)).size == 1 ? 3 : Infinity
 	)
+
+	/**
+	 * 处理死源：将其标记为死亡并从可用源列表中移除。
+	 * @param {number} deadIndex - 死源的索引。
+	 * @returns {Promise<boolean>} 如果所有源都已死亡则返回 true，否则返回 false。
+	 */
+	async function handleDeadSource(deadIndex) {
+		const deadSourceConfig = config.sources[deadIndex]
+		config.dead_sources.push(deadSourceConfig)
+		config.sources.splice(deadIndex, 1)
+		sources.splice(deadIndex, 1)
+		if (index >= sources.length) index = 0
+		await SaveConfig()
+		console.warn('source dead:', deadSourceConfig?.generator ?? deadSourceConfig ?? 'unknown')
+		return !sources.length
+	}
+
+	/**
+	 * 创建轮询调用函数。
+	 * @param {string} methodName - 要调用的方法名（'Call' 或 'StructCall'）。
+	 * @returns {Function} 轮询调用函数。
+	 */
+	function createPollingCall(methodName) {
+		return async (...args) => {
+			if (!sources.length) throw new Error('no source selected')
+			let error_num = 0
+			let skipIncrement = false
+			while (true) try {
+				if (!skipIncrement) index = (index + 1) % sources.length
+				skipIncrement = false
+				return await sources[index][methodName](...args)
+			} catch (e) {
+				if (e.source_dead) {
+					if (await handleDeadSource(index)) throw source_dead(new Error('All sources are dead'))
+					skipIncrement = true
+					continue
+				}
+				console.error(e)
+				error_num++
+				if (error_num >= maxFailCount)
+					throw new Error(`Too many failures (${error_num}/${maxFailCount}). Last error: ` + (e.message || e))
+			}
+		}
+	}
+
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
@@ -79,38 +126,14 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @param {string} prompt - 要发送给 AI 的提示。
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		Call: async prompt => {
-			if (!sources.length) throw new Error('no source selected')
-			let error_num = 0
-			while (true) try {
-				index++
-				index %= config.sources.length
-				return await sources[index].Call(prompt)
-			} catch (e) {
-				console.error(e)
-				error_num++
-				if (error_num >= maxFailCount) throw new Error(`Too many failures (${error_num}/${maxFailCount}). Last error: ` + (e.message || e))
-			}
-		},
+		Call: createPollingCall('Call'),
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
 		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
-			if (!sources.length) throw new Error('no source selected')
-			let error_num = 0
-			while (true) try {
-				index++
-				index %= config.sources.length
-				return await sources[index].StructCall(prompt_struct, options)
-			} catch (e) {
-				console.error(e)
-				error_num++
-				if (error_num >= maxFailCount) throw new Error(`Too many failures (${error_num}/${maxFailCount}). Last error: ` + (e.message || e))
-			}
-		},
+		StructCall: createPollingCall('StructCall'),
 		tokenizer: {
 			/**
 			 * 释放分词器。
