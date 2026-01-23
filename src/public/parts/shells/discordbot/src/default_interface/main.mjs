@@ -2,7 +2,6 @@ import { Buffer } from 'node:buffer'
 
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 
-
 import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 
@@ -77,11 +76,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		const ChannelMessageQueues = {} // Record<string, Message<boolean>[]>
 		const ChannelHandlers = {}      // Record<string, Promise<void>>
 
-		/**
-		 * @type {Record<string, ChatReply_t>}
-		 * 缓存bot发送AI回复时，AI原始的回复对象。键是bot发出的Discord消息ID。
-		 * 完全对标龙胆的 replayInfoCache 逻辑。
-		 */
+		/** @type {Record<string, ChatReply_t>} 键为 bot 发出的 Discord 消息 ID，值为对应 AI 回复对象。 */
 		const aiReplyObjectCache = {}
 
 		/**
@@ -95,9 +90,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				fullMessage = await tryFewTimes(() => discordMessage.fetch())
 			} catch (error) {
 				console.error(`[SimpleDiscord] 获取部分消息 ${discordMessage.id} 失败:`, error)
-				return null // 获取失败则无法处理
+				return null
 			}
-
 
 			const { author } = fullMessage
 			if (!userInfoCache[author.id] || Math.random() < 0.1) try {
@@ -109,7 +103,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}
 				userInfoCache[author.id] = displayName
 			} catch (e) {
-				if (!userInfoCache[author.id]) userInfoCache[author.id] = author.globalName || author.username || `User_${author.id}`
+				if (!userInfoCache[author.id])
+					userInfoCache[author.id] = author.globalName || author.username || `User_${author.id}`
 			}
 
 			const finalDisplayName = userInfoCache[author.id] || author.globalName || author.username
@@ -134,24 +129,22 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						name: url.substring(url.lastIndexOf('/') + 1) || 'embedded_image.png',
 						buffer: Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer()))),
 						description: embed.title || embed.description || '',
-						mime_type: 'image/png' // 简化处理，实际应更精确
+						mime_type: 'image/png'
 					})
 				} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${embed.image.url} 失败:`, error) }
 
-			// 核心：从aiReplyObjectCache恢复extension，完全模仿龙胆
 			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
 			/** @type {chatLogEntry_t_simple} */
 			const entry = {
-				...cachedAIReply, // 如果缓存命中，其extension会覆盖这里的空对象
+				...cachedAIReply,
 				time_stamp: fullMessage.createdTimestamp,
 				role: author.id === client.user.id ? 'char' : author.username === config.OwnerUserName ? 'user' : 'char',
 				name: author.id === client.user.id ? client.user.displayName || client.user.username : finalDisplayName,
 				content,
 				files: files.filter(Boolean),
-				// 确保discord_message_id总是最新的
 				extension: { ...cachedAIReply?.extension, discord_message_id: fullMessage.id }
 			}
-			if (cachedAIReply) delete aiReplyObjectCache[fullMessage.id] // 用后即焚，同龙胆
+			if (cachedAIReply) delete aiReplyObjectCache[fullMessage.id]
 
 			return entry
 		}
@@ -213,7 +206,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						ChannelChatLogs[channelId] = MargeChatLog(ChannelChatLogs[channelId])
 						while (ChannelChatLogs[channelId].length > MAX_MESSAGE_DEPTH) {
 							const removed = ChannelChatLogs[channelId].shift()
-							// 如果移除的条目在缓存中，也一并清除 (虽然理论上DiscordMessageToFountChatLogEntry已经清了)
 							delete aiReplyObjectCache[removed?.extension?.discord_message_id]
 						}
 					}
@@ -245,7 +237,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 * @returns {Promise<void>}
 		 */
 		async function DoMessageReply(triggerMessage, channelId) {
-			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(e => { }) }, 7000)
+			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(_ => 0) }, 7000)
 
 			/**
 			 * 发送消息并缓存AI原始回复对象 (如果提供了)
@@ -263,7 +255,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}
 				catch (error) {
 					console.error('[SimpleDiscord] 发送消息失败: ', error, 'Payload content length:', payload?.content?.length)
-					// 不在此处向频道发送错误，由顶层处理
 					return null
 				}
 			}
@@ -282,26 +273,18 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				for (let i = 0; i < filesToSend.length; i += MAX_FILES_PER_MESSAGE)
 					fileChunks.push(filesToSend.slice(i, i + MAX_FILES_PER_MESSAGE))
 
+				if (!textChunks.length && !fileChunks.length) return
 
-				if (!textChunks.length && !fileChunks.length) return // 无任何内容，不发送
-
-				// 1. 发送所有文本消息。最后一个文本块会带上第一个文件块（如果存在）。
 				for (let i = 0; i < textChunks.length; i++) {
 					const isLastTextMessage = i === textChunks.length - 1
 					const payload = { content: textChunks[i] }
-
-					// 核心：如果是最后一个文本块，并且有文件要发送，则附加第一个文件块
 					if (isLastTextMessage && fileChunks.length)
-						payload.files = fileChunks.shift() // 附加并从待处理队列中移除
+						payload.files = fileChunks.shift()
 
 					const isLastOverallMessage = isLastTextMessage && !fileChunks.length
 					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
 				}
 
-				// 2. 发送所有剩余的文件块。
-				// 这个循环会在以下情况执行：
-				// a) 根本没有文本，只有文件。
-				// b) 文本发送完毕后，还有剩余的文件块。
 				for (let i = 0; i < fileChunks.length; i++) {
 					const payload = { files: fileChunks[i] }
 					const isLastOverallMessage = i === fileChunks.length - 1
@@ -315,7 +298,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				 * @param {ChatReply_t} replyFromChar - 角色回复对象。
 				 * @returns {Promise<null>} 一个不返回任何值的 Promise。
 				 */
-				const AddChatLogEntry = async replyFromChar => { // AI调用的中间消息发送函数
+				const AddChatLogEntry = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
 						await sendSplitReply(replyFromChar)
 
@@ -335,7 +318,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					UserCharname: config.OwnerUserName,
 					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
 					locales: localhostLocales, time: new Date(), world: null, user: await(async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
-					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })), // 传递副本
+					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })),
 					AddChatLogEntry, /**
 					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
 					 */
@@ -350,8 +333,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 			catch (error) {
 				console.error(`[SimpleDiscord] Error in DoMessageReply for message ${triggerMessage.id} in channel ${channelId}:`, error)
+				console.error('[SimpleDiscord] 错误堆栈:', error.stack)
 				try {
-					await triggerMessage.channel.send(`Sorry, an error occurred while replying to your message: ${escapeMarkdown(error.message)}`)
+					const errorMessage = `Sorry, an error occurred while replying to your message: ${escapeMarkdown(error.message || 'Unknown error')}`
+					await triggerMessage.channel.send(errorMessage)
 				}
 				catch (sendError) {
 					console.error(`[SimpleDiscord] Failed to send error reply for message ${triggerMessage.id}:`, sendError)
@@ -362,14 +347,82 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 		}
 
+		client.on(Events.MessageUpdate, async (oldMessage, newMessage) => {
+			try {
+				const fetchedNewMessage = await tryFewTimes(() => newMessage.fetch().catch(e => {
+					if (e.code === 10008) return null
+					throw e
+				}))
+				if (!fetchedNewMessage) {
+					console.log(`[SimpleDiscord] Updated message ${newMessage.id} not found or deleted, skipping processing.`)
+					return
+				}
+
+				const channelId = fetchedNewMessage.channel.id
+				const channelLogs = ChannelChatLogs[channelId]
+				if (!channelLogs) return
+
+				const fountEntry = await DiscordMessageToFountChatLogEntry(fetchedNewMessage)
+				if (!fountEntry) return
+
+				const messageId = fetchedNewMessage.id
+				const existingIndex = channelLogs.findIndex(entry =>
+					entry.extension?.discord_message_id === messageId
+				)
+
+				if (existingIndex >= 0) {
+					channelLogs[existingIndex] = fountEntry
+					ChannelChatLogs[channelId] = MargeChatLog(channelLogs)
+				}
+				else {
+					channelLogs.push(fountEntry)
+					const merged = MargeChatLog(channelLogs)
+					ChannelChatLogs[channelId] = merged
+					while (merged.length > MAX_MESSAGE_DEPTH) {
+						const removed = merged.shift()
+						delete aiReplyObjectCache[removed?.extension?.discord_message_id]
+					}
+				}
+			}
+			catch (error) {
+				console.error(`[SimpleDiscord] Error processing message update for ${newMessage.id}:`, error)
+			}
+		})
+
+		client.on(Events.MessageDelete, async message => {
+			try {
+				if (!message.id || !message.channelId) {
+					console.warn('[SimpleDiscord] Received MessageDelete event with missing id or channelId.')
+					return
+				}
+
+				const channelId = message.channelId
+				const channelLogs = ChannelChatLogs[channelId]
+				if (!channelLogs) return
+
+				const messageId = message.id
+				const indexToRemove = channelLogs.findIndex(entry =>
+					entry.extension?.discord_message_id === messageId
+				)
+
+				if (indexToRemove >= 0) {
+					const removed = channelLogs.splice(indexToRemove, 1)[0]
+					delete aiReplyObjectCache[removed?.extension?.discord_message_id]
+					console.log(`[SimpleDiscord] Removed deleted message ${messageId} from chat log.`)
+				}
+			}
+			catch (error) {
+				console.error(`[SimpleDiscord] Error processing message delete for ${message.id}:`, error)
+			}
+		})
+
 		client.on(Events.MessageCreate, async message => {
 			let fullMessage = message
 			if (fullMessage.partial)
 				try { fullMessage = await tryFewTimes(() => message.fetch()) }
 				catch (error) { console.error(`[SimpleDiscord] MessageCreate 获取部分消息 ${message.id} 失败:`, error); return }
 
-
-			const channelId = fullMessage.channel.id;
+			const channelId = fullMessage.channel.id
 			(ChannelMessageQueues[channelId] ??= []).push(fullMessage)
 			if (!ChannelHandlers[channelId]) ChannelHandlers[channelId] = HandleMessageQueue(channelId)
 		})

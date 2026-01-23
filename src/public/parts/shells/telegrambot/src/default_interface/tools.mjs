@@ -69,7 +69,6 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 			else
 				replierName = repliedFrom.first_name || repliedFrom.username || `User_${repliedFrom.id}`
 
-
 		const repliedTextContent = replyToMessage.text || replyToMessage.caption || ''
 		const repliedEntities = replyToMessage.entities || replyToMessage.caption_entities
 		let repliedPreview = ''
@@ -210,11 +209,18 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 	else if (interfaceConfig.OwnerUserID && String(fromUser.id) === String(interfaceConfig.OwnerUserID))
 		role = 'user'
 
-
-	let name = fromUser.first_name || ''
-	if (fromUser.last_name) name += ` ${fromUser.last_name}`
-	if (!name.trim() && fromUser.username) name = fromUser.username
-	if (!name.trim()) name = `User_${fromUser.id}`
+	let name = ''
+	const userDisplayNameCache = interfaceConfig._userDisplayNameCache || {}
+	if (fromUser.id in userDisplayNameCache && Math.random() >= 0.1)
+		name = userDisplayNameCache[fromUser.id]
+	else {
+		name = fromUser.first_name || ''
+		if (fromUser.last_name) name += ` ${fromUser.last_name}`
+		if (!name.trim() && fromUser.username) name = fromUser.username
+		if (!name.trim()) name = `User_${fromUser.id}`
+		if (!interfaceConfig._userDisplayNameCache) interfaceConfig._userDisplayNameCache = {}
+		interfaceConfig._userDisplayNameCache[fromUser.id] = name
+	}
 
 	const botDisplayName = (await getPartInfo(charAPI))?.name || botCharname
 
@@ -227,7 +233,6 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 		const telegramApi = ctx.telegram || (ctx.botInfo ? ctx : null)?.telegram
 		if (!telegramApi)
 			console.warn('[TelegramDefaultInterface] telegram API object not found in context for file processing.')
-
 
 		if (telegramApi && 'photo' in message && message.photo) {
 			const photo = message.photo.reduce((prev, current) => (prev.file_size || 0) > (current.file_size || 0) ? prev : current)
@@ -321,38 +326,87 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 }
 
 /**
- * 分割 Telegram 回复文本以适应其消息长度限制。
- * @param {string} reply - 原始回复文本。
+ * 智能分割 HTML 字符串，避免截断标签。
+ * @param {string} longString - 长 HTML 字符串。
+ * @param {number} maxLength - 最大长度。
+ * @returns {string[]} 分割后的字符串数组。
+ */
+function splitHtmlAware(longString, maxLength) {
+	const chunks = []
+	let remainingString = longString
+
+	while (remainingString.length > maxLength) {
+		const candidateChunk = remainingString.substring(0, maxLength)
+		const lastTagCloseIndex = candidateChunk.lastIndexOf('>')
+		const lastNewlineIndex = candidateChunk.lastIndexOf('\n')
+		const lastSpaceIndex = candidateChunk.lastIndexOf(' ')
+
+		let splitPos = Math.max(
+			lastTagCloseIndex > -1 ? lastTagCloseIndex + 1 : -1,
+			lastNewlineIndex > -1 ? lastNewlineIndex + 1 : -1,
+			lastSpaceIndex > -1 ? lastSpaceIndex + 1 : -1
+		)
+
+		if (splitPos <= 1)
+			splitPos = maxLength
+
+		chunks.push(remainingString.substring(0, splitPos))
+		remainingString = remainingString.substring(splitPos)
+	}
+
+	if (remainingString.length)
+		chunks.push(remainingString)
+
+	return chunks
+}
+
+/**
+ * 分割 Telegram 回复文本以适应其消息长度限制。超长行按 HTML 边界智能分割。
+ * @param {string} reply - 原始回复文本（HTML 格式）。
  * @param {number} [split_length=4096] - 每条消息的最大长度。
  * @returns {string[]} 分割后的消息片段数组。
  */
 export function splitTelegramReply(reply, split_length = 4096) {
 	if (!reply) return []
+
 	const messages = []
 	let currentMessage = ''
 	const lines = reply.split('\n')
-	for (const line of lines)
-		if (currentMessage.length + (currentMessage ? 1 : 0) + line.length <= split_length) {
+
+	for (const line of lines) {
+		const lineLength = line.length
+		const separatorLength = currentMessage ? 1 : 0
+
+		if (currentMessage.length + separatorLength + lineLength <= split_length) {
 			if (currentMessage)
 				currentMessage += '\n'
-
 			currentMessage += line
 		}
-		else if (line.length > split_length) {
+		else if (lineLength > split_length) {
 			if (currentMessage) {
 				messages.push(currentMessage)
 				currentMessage = ''
 			}
-			for (let i = 0; i < line.length; i += split_length)
-				messages.push(line.substring(i, Math.min(i + split_length, line.length)))
+			const parts = splitHtmlAware(line, split_length)
+			if (parts.length > 1) {
+				messages.push(...parts.slice(0, -1))
+				currentMessage = parts[parts.length - 1]
+			}
+			else if (parts.length === 1)
+				currentMessage = parts[0]
 		}
 		else {
 			if (currentMessage) messages.push(currentMessage)
-
 			currentMessage = line
 		}
+	}
 
-	if (currentMessage) messages.push(currentMessage)
+	if (currentMessage) 
+		if (currentMessage.length > split_length)
+			messages.push(...splitHtmlAware(currentMessage, split_length))
+		else
+			messages.push(currentMessage)
+	
 
 	return messages.filter(msg => msg.trim().length)
 }
