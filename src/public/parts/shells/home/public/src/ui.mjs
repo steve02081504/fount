@@ -203,7 +203,8 @@ function setupDragAndDrop(itemElement, part, signal) {
 	}, { signal })
 
 	/**
-	 *
+	 * 清理拖拽状态
+	 * @returns {void}
 	 */
 	const cleanupDraggable = () => { itemElement.draggable = false }
 	itemElement.addEventListener('mouseup', cleanupDraggable, { signal })

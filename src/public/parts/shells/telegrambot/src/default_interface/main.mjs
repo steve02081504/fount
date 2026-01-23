@@ -51,7 +51,6 @@ function constructLogicalChannelIdForDefault(chatId, threadId) {
 	return String(chatId)
 }
 
-
 /**
  * 为没有自定义 Telegram 接口的角色创建一个简单的默认 Telegram 接口。
  * @param {CharAPI_t} charAPI - 角色的 API 对象。
@@ -98,6 +97,46 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * 此缓存用于在处理bot自身发出的消息时，恢复AI返回的附加数据(如extension)。
 		 */
 		const aiReplyObjectCache = {}
+		/** @type {Record<number, string>} 用户 ID → 显示名称，附于 interfaceConfig 供 tools 使用。 */
+		interfaceConfig._userDisplayNameCache = {}
+
+		bot.on('edited_message', async ctx_generic => {
+			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>} */
+			const ctx = ctx_generic
+			if (!('edited_message' in ctx.update)) return
+
+			const editedMessage = ctx.update.edited_message
+			const logicalChannelId = constructLogicalChannelIdForDefault(editedMessage.chat.id, editedMessage.message_thread_id)
+
+			if (editedMessage.chat.type === 'private' && String(editedMessage.from?.id) !== String(interfaceConfig.OwnerUserID)) {
+				console.log(`[TelegramDefaultInterface] Ignoring edited private message from non-owner ${editedMessage.from?.id} in chat ${logicalChannelId}`)
+				return
+			}
+			if (editedMessage.from?.is_bot) return
+
+			const channelLogs = ChannelChatLogs[logicalChannelId]
+			if (!channelLogs) return
+
+			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, { message: editedMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
+			if (!fountEntry) return
+
+			const messageId = editedMessage.message_id
+			const existingIndex = channelLogs.findIndex(entry =>
+				entry.extension?.platform_message_ids?.includes(messageId)
+			)
+
+			if (existingIndex >= 0)
+				channelLogs[existingIndex] = fountEntry
+			else {
+				channelLogs.push(fountEntry)
+				const maxDepth = interfaceConfig.MaxMessageDepth || 20
+				while (channelLogs.length > maxDepth) {
+					const removed = channelLogs.shift()
+					if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
+						delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
+				}
+			}
+		})
 
 		bot.on('message', async ctx_generic => {
 			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
@@ -164,11 +203,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							let lastSentIntermediateMsg = null
 							for (const part of textParts)
 								lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendMessage(
-									ctx.chat.id, // 目标群组/私聊ID
+									ctx.chat.id,
 									part,
-									{ // 发送选项
+									{
 										...DefaultParseModeOptions,
-										// 确保中间消息也发送到正确的 thread (如果原始消息在 thread 中)
 										...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 									}
 								))
@@ -197,7 +235,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const generateChatReplyRequest = async () => ({
 					supported_functions: { markdown: true, files: true, add_message: true },
 					username: ownerUsername,
-					// chat_name 可以包含分区信息
 					chat_name: ctx.chat.type === 'private' ?
 						`TG_DM_${logicalChannelId}` :
 						`TG_Group_${ctx.chat.title || ctx.chat.id}${ctx.message.message_thread_id ? `_Topic_${ctx.message.message_thread_id}` : ''}`,
@@ -206,12 +243,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					locales: localhostLocales,
-					UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
-					ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
-					locales: localhostLocales,
 					time: new Date(), world: null, user: await(async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
-					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
-					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
 					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					AddChatLogEntry: AddChatLogEntryViaCharAPI,
@@ -223,8 +255,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					extension: {
 						platform: 'telegram',
 						trigger_message_id: ctx.message.message_id,
-						chat_id: ctx.chat.id, // 原始 chat.id
-						message_thread_id: ctx.message.message_thread_id, // 原始 thread_id
+						chat_id: ctx.chat.id,
+						message_thread_id: ctx.message.message_thread_id,
 						user_id: ctx.from.id,
 						username_tg: ctx.from.username,
 						first_name_tg: ctx.from.first_name,
@@ -245,11 +277,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					}))
 
 					let firstSentTelegramMessage = null
-					// ctx.reply() 会自动回复到原始消息，并继承 message_thread_id (如果存在)
-					const baseSendOptionsForReply = {
-						...DefaultParseModeOptions,
-						// Telegraf 的 ctx.reply 自动处理 reply_to_message_id 和 message_thread_id
-					}
+					const baseSendOptionsForReply = { ...DefaultParseModeOptions }
 
 					if (filesToProcess.length) {
 						let mainTextSentAsCaption = false
@@ -291,11 +319,18 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							}
 							catch (e) {
 								console.error(`[TelegramDefaultInterface] 发送文件 ${fileItem.filename} 失败:`, e)
-								const fallbackText = `[文件发送失败: ${fileItem.filename}] ${captionAiMarkdown || ''}`.trim()
-								if (fallbackText) try {
-									// ctx.reply 的第二个参数是 Extra
-									sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
-								} catch (e2) { console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e2) }
+								try {
+									sentMsg = await tryFewTimes(() => ctx.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
+								}
+								catch (e2) {
+									console.error(`[TelegramDefaultInterface] 作为文档发送 ${fileItem.filename} 也失败:`, e2)
+									const fallbackText = `[文件发送失败: ${fileItem.filename}]${captionAiMarkdown ? '\n' + captionAiMarkdown : ''}`.trim()
+									if (fallbackText) try {
+										sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
+									} catch (e3) {
+										console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e3)
+									}
+								}
 							}
 							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 						}
@@ -334,8 +369,13 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				}
 			}
 			catch (error) {
-				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}):`, error)
-				await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
+				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}, message ${ctx.message.message_id}):`, error)
+				console.error('[TelegramDefaultInterface] 错误堆栈:', error.stack)
+				try {
+					await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
+				} catch (replyError) {
+					console.error('[TelegramDefaultInterface] 发送错误消息也失败:', replyError)
+				}
 			}
 		})
 
