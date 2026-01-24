@@ -5,15 +5,15 @@ let last_proxy_url = ''
 
 return async ({ data, containers }) => {
 	const div = containers.generatorDisplay
-	const { apikey, proxy_url } = data
+	const { apikey, base_url } = data
 	if (!apikey) {
 		div.innerHTML = /* html */ '<div class="text-warning" data-i18n="serviceSource_manager.common_config_interface.apiKeyRequired"></div>'
 		return
 	}
 
-	if (apikey === last_apikey && (proxy_url || '') === (last_proxy_url || '')) return
+	if (apikey === last_apikey && (base_url || '') === (last_proxy_url || '')) return
 	last_apikey = apikey
-	last_proxy_url = proxy_url || ''
+	last_proxy_url = base_url || ''
 
 	div.innerHTML = /* html */ '<div data-i18n="serviceSource_manager.common_config_interface.loadingModels"></div>'
 
@@ -22,8 +22,8 @@ return async ({ data, containers }) => {
 
 		const ai = new GoogleGenAI({
 			apiKey: apikey,
-			httpOptions: proxy_url ? {
-				baseUrl: proxy_url
+			httpOptions: base_url ? {
+				baseUrl: base_url
 			} : undefined
 		})
 
