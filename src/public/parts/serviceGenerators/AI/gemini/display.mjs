@@ -1,7 +1,7 @@
 /* global geti18n */
 
 let last_apikey = ''
-let last_proxy_url = ''
+let last_base_url = ''
 
 return async ({ data, containers }) => {
 	const div = containers.generatorDisplay
@@ -11,9 +11,9 @@ return async ({ data, containers }) => {
 		return
 	}
 
-	if (apikey === last_apikey && (base_url || '') === (last_proxy_url || '')) return
+	if (apikey === last_apikey && (base_url || '') === (last_base_url || '')) return
 	last_apikey = apikey
-	last_proxy_url = base_url || ''
+	last_base_url = base_url || ''
 
 	div.innerHTML = /* html */ '<div data-i18n="serviceSource_manager.common_config_interface.loadingModels"></div>'
 
