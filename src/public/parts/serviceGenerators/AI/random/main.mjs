@@ -114,11 +114,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			return await selectedSource.Call(prompt)
 		},
 		/**
-	 * 使用结构化提示调用 AI 源。
-	 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-	 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
-	 * @returns {Promise<any>} 来自 AI 的结果。
-	 */
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+		 * @returns {Promise<any>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.StructCall(prompt_struct, options)

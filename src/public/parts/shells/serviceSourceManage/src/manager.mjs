@@ -113,7 +113,7 @@ export default {
 	async Load({ username }) {
 		const manager = await loadPart(username, '${normalizedServiceSourcePath}')
 		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
-			SaveConfig: (newdata) => { saveJsonFile(configPath, Object.assign(data, newdata)) }
+			SaveConfig: defaultInterfaces.config.SetData
 		}))
 		Object.assign(this.interfaces, defaultInterfaces)
 	},
