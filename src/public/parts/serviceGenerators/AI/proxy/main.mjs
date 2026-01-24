@@ -225,10 +225,8 @@ async function GetSource(config, { SaveConfig }) {
 			try {
 				const result = await fetchChatCompletion(messages, currentConfig, options)
 
-				if (retryConfig.urlSuffix)
-					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
-
 				if (retryConfig.urlSuffix) {
+					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
 					Object.assign(config, currentConfig)
 					SaveConfig()
 				}
