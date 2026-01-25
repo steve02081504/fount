@@ -93,6 +93,12 @@ async function GetSource(config, { SaveConfig }) {
 			throw response
 
 		const reader = response.body.getReader()
+		signal?.addEventListener?.('abort', () => {
+			const err = new Error('User Aborted')
+			err.name = 'AbortError'
+			reader.cancel(err)
+		}, { once: true })
+
 		const decoder = new TextDecoder()
 		let buffer = ''
 		let isSSE = false
@@ -133,6 +139,11 @@ async function GetSource(config, { SaveConfig }) {
 
 		try {
 			while (true) {
+				if (signal?.aborted) {
+					const err = new Error('User Aborted')
+					err.name = 'AbortError'
+					throw err
+				}
 				const { done, value } = await reader.read()
 				if (done) break
 
