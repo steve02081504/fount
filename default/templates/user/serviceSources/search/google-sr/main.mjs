@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../../src/server/parts_loader.mjs'
+import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 
 const configPath = import.meta.dirname + '/config.json'
 const data = loadJsonFile(configPath)
@@ -20,8 +21,13 @@ const defaultInterfaces = {
 		 * @returns {Promise<void>}
 		 */
 		async SetData(new_data) {
-			if (new_data.generator) data.generator = new_data.generator
-			if (new_data.config) data.config = new_data.config
+			if (new_data !== data) {
+				if (new_data.generator) data.generator = new_data.generator
+				if (new_data.config) { // 保持config对象不变，确保saveConfig有效
+					for (const key in data.config ??= {}) delete data.config[key]
+					Object.assign(data.config, new_data.config)
+				}
+			}
 			saveJsonFile(configPath, data)
 		},
 		/**
@@ -34,11 +40,13 @@ const defaultInterfaces = {
 	}
 }
 
+const my_name = path.basename(import.meta.dirname)
+
 /**
  * 搜索服务源模块。
  */
 export default {
-	filename: path.basename(import.meta.dirname),
+	filename: my_name,
 	/**
 	 * 加载搜索服务源。
 	 * @param {object} root0 - 参数对象。
@@ -48,11 +56,7 @@ export default {
 	async Load({ username }) {
 		const manager = await loadPart(username, 'serviceSources/search')
 		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
-			/**
-			 * 保存配置。
-			 * @param {any} newdata - 新的配置数据。
-			 */
-			SaveConfig: (newdata) => { saveJsonFile(configPath, Object.assign(data, newdata)) }
+			SaveConfig: () => setPartData(username, `serviceSources/search/${my_name}`, data)
 		}))
 		Object.assign(this.interfaces, defaultInterfaces)
 	},
