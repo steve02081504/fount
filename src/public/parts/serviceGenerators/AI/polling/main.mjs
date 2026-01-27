@@ -50,7 +50,6 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} 一个 Promise，解析为 AI 源。
  */
 async function GetSource(config, { username, SaveConfig }) {
-	config.dead_sources ??= []
 	let index = config.random_start ?? true ? Math.floor(Math.random() * config.sources.length) : -1
 	const unnamedSources = []
 	const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
@@ -68,8 +67,8 @@ async function GetSource(config, { username, SaveConfig }) {
 	 * @returns {Promise<boolean>} 如果所有源都已死亡则返回 true，否则返回 false。
 	 */
 	async function handleDeadSource(deadIndex) {
-		const deadSourceConfig = config.sources[deadIndex]
-		config.dead_sources.push(deadSourceConfig)
+		const deadSourceConfig = config.sources[deadIndex];
+		(config.dead_sources ??= []).push(deadSourceConfig)
 		config.sources.splice(deadIndex, 1)
 		sources.splice(deadIndex, 1)
 		if (index >= sources.length) index = 0

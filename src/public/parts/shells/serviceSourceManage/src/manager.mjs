@@ -76,6 +76,7 @@ import path from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../../src/server/parts_loader.mjs'
+import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 
 const configPath = import.meta.dirname + '/config.json'
 const data = loadJsonFileIfExists(configPath, { generator: '', config: {} })
@@ -94,8 +95,13 @@ const defaultInterfaces = {
 		 * @returns {Promise<void>}
 		 */
 		async SetData(new_data) {
-			if (new_data.generator) data.generator = new_data.generator
-			if (new_data.config) data.config = new_data.config
+			if (new_data !== data) {
+				if (new_data.generator) data.generator = new_data.generator
+				if (new_data.config) { // 保持config对象不变，确保saveConfig有效
+					for (const key in data.config ??= {}) delete data.config[key]
+					Object.assign(data.config, new_data.config)
+				}
+			}
 			saveJsonFile(configPath, data)
 		},
 		/**
@@ -108,12 +114,14 @@ const defaultInterfaces = {
 	}
 }
 
+const my_name = path.basename(import.meta.dirname)
+
 export default {
-	filename: path.basename(import.meta.dirname),
+	filename: my_name,
 	async Load({ username }) {
 		const manager = await loadPart(username, '${normalizedServiceSourcePath}')
 		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
-			SaveConfig: defaultInterfaces.config.SetData
+			SaveConfig: () => setPartData(username, \`${normalizedServiceSourcePath}/\${my_name}\`, data)
 		}))
 		Object.assign(this.interfaces, defaultInterfaces)
 	},
