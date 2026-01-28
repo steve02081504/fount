@@ -707,15 +707,26 @@ export function getUserManager(username, hostPeerId = null) {
  * 在分机上执行代码。
  * @param {string} username - 用户名。
  * @param {number} subfountId - 分机 ID。
- * @param {string} script - 要执行的 JavaScript 代码。
+ * @param {string|Function} script - 要执行的 JavaScript 代码或独立的函数/无外界引用的闭包。
  * @param {object} callbackInfo - 回调信息。
  * @param {string|null} hostPeerId - 主机对等端 ID（可选）。
  * @returns {Promise<any>} - 执行结果。
+ * @example
+ * // 推荐做法，便于lint检查
+ * executeCodeOnSubfount('username', 1, () => {
+ * 	const robotjs = await import('npm:robotjs')
+ * 	return { width: robotjs.screen.width(), height: robotjs.screen.height() }
+ * })
+ * @example
+ * executeCodeOnSubfount('username', 1, `\
+ * import { screen } from 'npm:robotjs'
+ * return { width: screen.width(), height: screen.height() }
+ * `)
  */
 export async function executeCodeOnSubfount(username, subfountId, script, callbackInfo = null, hostPeerId = null) {
 	const manager = hostPeerId ? getUserManager(username, hostPeerId) : userManagers.get(username)
-	if (!manager)
-		throw new Error(`No manager found for user ${username}`)
+	if (!manager) throw new Error(`No manager found for user ${username}`)
+	if (script instanceof Function) script = `(${script})()`
 
 	return await manager.sendRequest(subfountId, {
 		type: 'run_code',
