@@ -538,7 +538,11 @@ const routes = [
 			if (url.searchParams.has('cold_bootting')) {
 				const cleanUrl = new URL(url)
 				cleanUrl.searchParams.delete('cold_bootting')
-				const cleanRequest = new Request(cleanUrl, event.request)
+				const { mode, ...rest } = event.request
+				const cleanRequest = new Request(cleanUrl, {
+					...rest,
+					mode: mode === 'navigate' ? 'same-origin' : mode,
+				})
 				return handleCacheFirst(cleanRequest)
 			}
 			return handleCacheFirst(event.request)
