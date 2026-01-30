@@ -867,6 +867,34 @@ async function showToastI18n(type = 'info', key, params = {}, duration = 4000) {
 }
 
 /**
+ * 获取当前全屏元素（标准或 webkit 前缀）。
+ * 全屏时弹幕必须挂在全屏元素下才能被看见。
+ * @returns {Element|null} - 全屏元素，未全屏时为 null。
+ */
+function getFullscreenElement() {
+	return document.fullscreenElement ?? document.webkitFullscreenElement ?? null
+}
+
+/**
+ * 返回弹幕容器应挂载的父节点：全屏时挂在全屏元素下，否则挂在 body。
+ * @returns {HTMLElement} - 父元素。
+ */
+function getDanmakuContainerParent() {
+	return getFullscreenElement() ?? document.body
+}
+
+/**
+ * 根据当前是否全屏，将弹幕容器移动到正确父节点。
+ * @returns {void}
+ */
+function syncDanmakuContainerToFullscreen() {
+	if (!danmakuContainer) return
+	const parent = getDanmakuContainerParent()
+	if (danmakuContainer.parentElement === parent) return
+	parent.appendChild(danmakuContainer)
+}
+
+/**
  * 追加弹幕样式
  * @returns {void}
  */
@@ -904,12 +932,17 @@ function addDanmakuStyles() {
 }
 `
 	document.head.appendChild(style)
+	// 全屏切换时把弹幕容器移入/移出全屏元素，否则全屏看视频时弹幕不可见
+	for (const eventName of ['fullscreenchange', 'webkitfullscreenchange']) {
+		document.addEventListener(eventName, syncDanmakuContainerToFullscreen)
+	}
 }
 
 let danmakuContainer = null
 
 /**
  * 确保弹幕容器存在并返回它。
+ * 若当前处于全屏，容器会挂在全屏元素下以正常显示。
  * @returns {HTMLElement} - 弹幕容器元素。
  */
 function ensureDanmakuContainer() {
@@ -920,7 +953,9 @@ function ensureDanmakuContainer() {
 		danmakuContainer = document.createElement('div')
 		danmakuContainer.id = 'fount-danmaku-container'
 		danmakuContainer.className = 'fount-danmaku-container'
-		document.body.appendChild(danmakuContainer)
+		getDanmakuContainerParent().appendChild(danmakuContainer)
+	} else {
+		syncDanmakuContainerToFullscreen()
 	}
 	return danmakuContainer
 }
