@@ -19,7 +19,7 @@ export async function svgInliner(DOM) {
 		for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
 		const newSvg = createDocumentFragmentFromHtmlString(data)
 		for (const attr of svg.attributes)
-			newSvg.querySelector('svg').setAttribute(attr.name, attr.value)
+			newSvg.querySelector('svg')?.setAttribute?.(attr.name, attr.value)
 		svg.replaceWith(newSvg)
 	})).catch(console.error)
 	return DOM

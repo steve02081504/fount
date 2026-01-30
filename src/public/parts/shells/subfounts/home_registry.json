@@ -10,13 +10,13 @@
 					"id": "subfounts_related",
 					"info": "subfounts.home_function_buttons.in_dev.sub_items.subfounts_related",
 					"level": 2,
-					"button": "<img src=\"https://api.iconify.design/line-md/network.svg\" class=\"text-icon\"/>",
+					"button": "<img src=\"https://api.iconify.design/line-md/computer.svg\" class=\"text-icon\"/>",
 					"sub_items": [
 						{
 							"info": "subfounts.home_function_buttons.in_dev.sub_items.subfounts_related.sub_items.main",
 							"level": 1,
 							"url": "/parts/shells:subfounts/",
-							"button": "<img src=\"https://api.iconify.design/line-md/network.svg\" class=\"text-icon\"/>"
+							"button": "<img src=\"https://api.iconify.design/line-md/computer.svg\" class=\"text-icon\"/>"
 						}
 					]
 				}
