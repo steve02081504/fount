@@ -16,6 +16,7 @@
 
 import os from 'node:os'
 import process from 'node:process'
+import { serialize } from 'node:v8'
 
 import inquirer from 'npm:inquirer'
 import { RTCPeerConnection } from 'npm:node-datachannel/polyfill'
@@ -119,21 +120,6 @@ async function generateDeviceId() {
 		console.error('Failed to generate machine ID, falling back to hostname:', error)
 		// 如果生成失败，使用 hostname 作为后备方案
 		return os.hostname().replace(/[^a-zA-Z0-9]/g, '').substring(0, 32) || 'subfount-client'
-	}
-}
-
-/**
- * 获取 JSON.stringify 的循环引用替换器。
- * @returns {function(string, any): any} - 替换器函数。
- */
-const getCircularReplacer = () => {
-	const seen = new WeakSet()
-	return (_key, value) => {
-		if (value === Object(value)) {
-			if (seen.has(value)) return '[Circular]'
-			seen.add(value)
-		}
-		return value
 	}
 }
 
@@ -294,19 +280,17 @@ async function handleRunCode(message, peerId) {
 			callback = async (data) => {
 				await actions.sendCallback({
 					partpath: callbackInfo.partpath,
-					data,
+					data: serialize(data),
 				}, hostPeerId)
 			}
 
 		// 执行代码
 		const evalResult = await async_eval(script, { callback })
 
-		const serializedResult = JSON.parse(JSON.stringify(evalResult, getCircularReplacer()))
-
 		// 通过 Trystero 发送结果回传
 		await actions.sendResponse({
 			requestId,
-			payload: serializedResult,
+			payload: serialize(evalResult),
 		}, hostPeerId)
 
 		// 执行代码后更新设备信息
@@ -344,7 +328,7 @@ async function handleShellExec(message, peerId) {
 			const result = await shell_exec_map[shell](command, options || {})
 			await actions.sendResponse({
 				requestId,
-				payload: result,
+				payload: serialize(result),
 			}, hostPeerId)
 			return
 		}
@@ -353,7 +337,7 @@ async function handleShellExec(message, peerId) {
 		const result = await exec(command, options || {})
 		await actions.sendResponse({
 			requestId,
-			payload: result,
+			payload: serialize(result),
 		}, hostPeerId)
 	}
 	catch (error) {
