@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { deserialize } from 'node:v8'
 
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
@@ -27,21 +28,6 @@ import { loadShellData, saveShellData } from '../../../../../server/setting_load
  * @property {string} deviceId - 设备 ID (本机为 'localhost'，远程设备为机器 ID 或 id 的字符串形式)
  * @property {SubfountExecutor} executor - 执行器实例
  */
-
-/**
- * 获取 JSON.stringify 的循环引用替换器。
- * @returns {function(string, any): any} - 替换器函数。
- */
-const getCircularReplacer = () => {
-	const seen = new WeakSet()
-	return (_key, value) => {
-		if (value === Object(value)) {
-			if (seen.has(value)) return '[Circular]'
-			seen.add(value)
-		}
-		return value
-	}
-}
 
 /**
  * 分机执行器基类，定义统一的执行接口。
@@ -113,7 +99,7 @@ class LocalSubfountExecutor extends SubfountExecutor {
 
 		const evalResult = await async_eval(script, { callback })
 
-		return JSON.parse(JSON.stringify(evalResult, getCircularReplacer()))
+		return evalResult
 	}
 
 	/**
@@ -350,7 +336,7 @@ class UserSubfountManager {
 					if (data.isError)
 						pending.reject(new Error(data.payload?.error || data.payload || 'Unknown error'))
 					else
-						pending.resolve(data.payload)
+						pending.resolve(deserialize(data.payload))
 				}
 			}
 
@@ -433,7 +419,7 @@ class UserSubfountManager {
 		const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 		const part = await loadPart(this.username, normalizedPartpath)
 		if (part.interfaces?.subfount?.RemoteCallBack)
-			await part.interfaces.subfount.RemoteCallBack({ data, username: this.username, partpath })
+			await part.interfaces.subfount.RemoteCallBack({ data: deserialize(data), username: this.username, partpath })
 	}
 
 	/**
