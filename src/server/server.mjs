@@ -12,6 +12,7 @@ import { getMemoryUsage } from '../scripts/gc.mjs'
 import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
+import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
@@ -153,6 +154,17 @@ export let lastWebRequestTime = 0
 export function webRequestHappend() {
 	lastWebRequestTime = Date.now()
 }
+
+/**
+ * 处理错误。
+ * @param {Error} err - 错误对象。
+ * @returns {void}
+ */
+function handleError(err) {
+	notify('Error', err.message)
+	console.error(err)
+}
+
 /**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
@@ -170,10 +182,10 @@ export async function init(start_config) {
 		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
-		unset_shutdown_listener('error', 'unhandledRejection', 'uncaughtException')
-		process.on('error', console.log)
-		process.on('unhandledRejection', console.log)
-		process.on('uncaughtException', console.log)
+		for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
+			unset_shutdown_listener(event)
+			process.on(event, handleError)
+		}
 	}
 
 	config = get_config()
