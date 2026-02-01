@@ -419,7 +419,7 @@ export function getLoadedPartList(username, partpath) {
  * @returns {Promise<any>} 一个解析为重新加载的部件实例的承诺。
  */
 export async function reloadPart(username, partpath) {
-	restartor() // 我们将重新启动整个服务器，因为 deno 不支持单个 js 文件的热重载
+	setTimeout(restartor, 1000) // 我们将重新启动整个服务器，因为 deno 不支持单个 js 文件的热重载
 	/*
 	await unloadPartBase(username, partpath)
 	return await loadPartBase(username, partpath)
