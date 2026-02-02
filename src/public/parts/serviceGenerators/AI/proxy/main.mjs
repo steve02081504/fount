@@ -44,7 +44,8 @@ const configTemplate = {
 	},
 	custom_headers: {},
 	convert_config: {
-		roleReminding: true
+		roleReminding: true,
+		ignoreFiles: false,
 	},
 	use_stream: true,
 }
@@ -89,8 +90,19 @@ async function GetSource(config, { SaveConfig }) {
 			signal
 		})
 
-		if (!response.ok)
+		if (!response.ok) try {
+			const text = await response.text()
+			try {
+				const data = JSON.parse(text)
+				throw { data, response }
+			}
+			catch {
+				throw { text, response }
+			}
+		}
+		catch {
 			throw response
+		}
 
 		const reader = response.body.getReader()
 		signal?.addEventListener?.('abort', () => {
@@ -282,9 +294,11 @@ async function GetSource(config, { SaveConfig }) {
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
+			const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
+
 			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
-				const textContent = `\
+				let textContent = `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>
 <content>
@@ -292,6 +306,7 @@ ${chatLogEntry.content}
 </content>
 </message "${uid}">
 `
+
 				/** @type {{role: 'user'|'assistant'|'system', content: string | object[]}} */
 				const message = {
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -299,6 +314,16 @@ ${chatLogEntry.content}
 				}
 
 				if (chatLogEntry.files?.length) {
+					if (ignoreFiles) {
+						const notices = chatLogEntry.files.map((file) => {
+							const mime_type = file.mime_type || 'application/octet-stream'
+							const name = file.name ?? 'unknown'
+							return `[System Notice: can't show you about file '${name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]`
+						})
+						textContent += '\n' + notices.join('\n')
+						message.content = textContent
+						return message
+					}
 					const contentParts = [{ type: 'text', text: textContent }]
 
 					for (const file of chatLogEntry.files) {
