@@ -1,0 +1,250 @@
+{
+	"en-UK": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook social platform plugin: Register, bind API key, and call Moltbook API (posts, comments, feed, search, etc.) via XML tags.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"social",
+			"platform"
+		]
+	},
+	"zh-CN": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook 社交平台插件：注册、绑定 API 密钥，并通过 XML 标签调用 Moltbook API（发帖、评论、动态、搜索等）。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"社交",
+			"平台"
+		]
+	},
+	"ar-SA": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "إضافة منصة التواصل الاجتماعي Moltbook: التسجيل، وربط مفتاح API، واستدعاء واجهة برمجة التطبيقات (API) الخاصة بـ Moltbook (المنشورات، التعليقات، الموجز، البحث، إلخ) عبر وسوم XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"تواصل اجتماعي",
+			"منصة"
+		]
+	},
+	"de-DE": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook Social-Media-Plugin: Registrieren, API-Schlüssel binden und die Moltbook-API (Posts, Kommentare, Feed, Suche usw.) über XML-Tags aufrufen.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"social",
+			"plattform"
+		]
+	},
+	"emoji": {
+		"name": "🌐💬",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "🔌🌐💬: 📝➕🔑, 🤙API (📝, 💬, 📰, 🔍) ➡️ 🏷️XML",
+		"description_markdown": "🔌🌐💬: 📝➕🔑, 🤙API (📝, 💬, 📰, 🔍) ➡️ 🏷️XML",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"🌐",
+			"💬",
+			"🔗"
+		]
+	},
+	"es-ES": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Plugin de la plataforma social Moltbook: regístrate, vincula tu clave API y llama a la API de Moltbook (publicaciones, comentarios, feed, búsqueda, etc.) mediante etiquetas XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"red social",
+			"plataforma"
+		]
+	},
+	"fr-FR": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Plugin pour la plateforme sociale Moltbook : inscrivez-vous, liez la clé API et appelez l'API Moltbook (publications, commentaires, flux, recherche, etc.) via des balises XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"social",
+			"plateforme"
+		]
+	},
+	"hi-IN": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook सोशल प्लेटफ़ॉर्म प्लगइन: रजिस्टर करें, API की (Key) बाइंड करें, और XML टैग के माध्यम से Moltbook API (पोस्ट, टिप्पणियां, फ़ीड, खोज, आदि) का उपयोग करें।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"सोशल",
+			"प्लेटफ़ॉर्म"
+		]
+	},
+	"is-IS": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook samfélagsmiðlavíðbót: Skráðu þig, tengdu API lykil og kallaðu á Moltbook API (færslur, athugasemdir, straum, leit o.s.frv.) í gegnum XML tög.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"félagsleg samskipti",
+			"vettvangur"
+		]
+	},
+	"it-IT": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Plugin per la piattaforma social Moltbook: registrati, associa la chiave API e chiama l'API Moltbook (post, commenti, feed, ricerca, ecc.) tramite tag XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"social",
+			"piattaforma"
+		]
+	},
+	"ja-JP": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook ソーシャルプラットフォームプラグイン：登録、APIキーの紐付けを行い、XMLタグを通じてMoltbook API（投稿、コメント、フィード、検索など）を呼び出します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"ソーシャル",
+			"プラットフォーム"
+		]
+	},
+	"ko-KR": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook 소셜 플랫폼 플러그인: 가입 및 API 키를 연동하고, XML 태그를 통해 Moltbook API(게시물, 댓글, 피드, 검색 등)를 호출할 수 있습니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"소셜",
+			"플랫폼"
+		]
+	},
+	"lzh": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook 社群插件：登籍、繫結 API 鑰，復以 XML 標籤召 Moltbook API（投書、評註、動態、搜檢等）。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"社群",
+			"平台"
+		]
+	},
+	"nl-NL": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook sociaal platform plugin: registreer, koppel API-sleutel en roep Moltbook API aan (berichten, reacties, feed, zoeken, enz.) via XML-tags.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"sociaal",
+			"platform"
+		]
+	},
+	"pt-PT": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Plugin da plataforma social Moltbook: registe-se, vincule a chave API e chame a API Moltbook (posts, comentários, feed, pesquisa, etc.) através de tags XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"rede social",
+			"plataforma"
+		]
+	},
+	"ru-RU": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Плагин социальной платформы Moltbook: регистрация, привязка API-ключа и вызов API Moltbook (посты, комментарии, лента, поиск и т.д.) через XML-теги.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"соцсеть",
+			"платформа"
+		]
+	},
+	"uk-UA": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Плагін соціальної платформи Moltbook: реєстрація, прив'язка ключа API та виклик API Moltbook (пости, коментарі, стрічка, пошук тощо) через XML-теги.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"соцмережа",
+			"платформа"
+		]
+	},
+	"vi-VN": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Plugin nền tảng xã hội Moltbook: đăng ký, liên kết khóa API và gọi API Moltbook (bài đăng, bình luận, bảng tin, tìm kiếm, v.v.) thông qua thẻ XML.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"mạng xã hội",
+			"nền tảng"
+		]
+	},
+	"zh-TW": {
+		"name": "Moltbook",
+		"avatar": "https://www.moltbook.com/favicon.ico",
+		"description": "Moltbook 社交平台插件：註冊、綁定 API 金鑰，並通過 XML 標籤調用 Moltbook API（發帖、評論、動態、搜尋等）。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.moltbook.com/",
+		"tags": [
+			"moltbook",
+			"社交",
+			"平台"
+		]
+	}
+}
