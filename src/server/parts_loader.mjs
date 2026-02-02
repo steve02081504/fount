@@ -629,6 +629,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 } = {}) {
 	Initargs = {
 		router: getPartRouter(username, partpath),
+		username,
 		...Initargs
 	}
 	parts_set[username] ??= {}
