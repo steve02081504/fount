@@ -121,7 +121,7 @@ get_i18n() {
 		local param_name="$1"
 		local param_value="$2"
 		# shellcheck disable=SC2001
-		translation=$(echo "$translation" | sed "s/\\\${${param_name}}/${param_value}/g")
+		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${param_value}|g")
 		shift 2
 	done
 

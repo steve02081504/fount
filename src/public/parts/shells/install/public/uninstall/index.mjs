@@ -159,5 +159,11 @@ if (!activePartpath) {
 		showMessage('error', geti18n('uninstall.alerts.invalidParams'))
 	} else renderTexts()
 }
+else if (!picker.isPathValid()) {
+	title.dataset.i18n = 'uninstall.invalidParamsTitle'
+	showMessage('error', geti18n('uninstall.alerts.pathNotFound'))
+	confirmButton.disabled = true
+	updateURLParams(activePartpath)
+}
 
 setupEvents()

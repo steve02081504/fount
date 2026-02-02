@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} erfolgreich deinstalliert",
 			"failed": "Deinstallation fehlgeschlagen: ${error}",
 			"invalidParams": "Ungültige Anfrageparameter.",
+			"pathNotFound": "Der Pfad existiert nicht; die Komponente wurde möglicherweise bereits deinstalliert.",
 			"httpError": "HTTP-Fehler! Statuscode: ${status}"
 		},
 		"errorMessage": {

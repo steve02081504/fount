@@ -113,7 +113,7 @@ async function hasPartsInterface(path) {
  * @param {string} [options.initialPath] - 初始路径。
  * @param {(path: string) => boolean} [options.filterPath] - 可选的路径过滤函数，返回 true 表示路径可用。
  * @param {(path: string) => Promise<void>} [options.onOpenMenu] - 可选的回调，在打开菜单时触发，用于预加载详情。
- * @returns {Promise<{ setPath: (path: string) => void, getPath: () => string }>} 选择器控制器。
+ * @returns {Promise<{ setPath: (path: string) => void, getPath: () => string, isPathValid: (path?: string) => boolean }>} 选择器控制器。
  */
 export async function createPartpathPicker({
 	dropdown,
@@ -263,8 +263,11 @@ export async function createPartpathPicker({
 	}, { capture: true })
 
 	initialPath = normalizePath(initialPath)
-	if (!pathExists(initialPath)) initialPath = findFirstLeaf(branches, '', filterPath)
-	setPath(initialPath)
+	if (pathExists(initialPath)) setPath(initialPath)
+	else if (initialPath) {
+		currentPath = initialPath
+		renderBreadcrumb()
+	}
 
 	return {
 		setPath,
@@ -273,5 +276,11 @@ export async function createPartpathPicker({
 		 * @returns {string} 当前路径。
 		 */
 		getPath: () => currentPath,
+		/**
+		 * 检查路径在部件树中是否存在。
+		 * @param {string} [path] - 要检查的路径，不传则使用当前路径。
+		 * @returns {boolean} 路径是否存在。
+		 */
+		isPathValid: (path) => pathExists(normalizePath(path ?? currentPath ?? '')),
 	}
 }

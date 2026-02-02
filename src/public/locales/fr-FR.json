@@ -1290,6 +1290,7 @@
 			"success": "${type} : ${name} désinstallé avec succès",
 			"failed": "Échec de la désinstallation : ${error}",
 			"invalidParams": "Paramètres de requête non valides",
+			"pathNotFound": "Le chemin n'existe pas ; le composant a peut-être déjà été désinstallé.",
 			"httpError": "Erreur HTTP ! Code d'état : ${status}"
 		},
 		"errorMessage": {

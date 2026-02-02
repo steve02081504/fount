@@ -1279,6 +1279,7 @@ export type LocaleData = {
 			success: string
 			failed: string
 			invalidParams: string
+			pathNotFound: string
 			httpError: string
 		}
 		errorMessage: {

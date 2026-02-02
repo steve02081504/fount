@@ -1290,6 +1290,7 @@
 			"success": "Успішно видалено ${type}: ${name}",
 			"failed": "Помилка видалення: ${error}",
 			"invalidParams": "Невірні параметри запиту.",
+			"pathNotFound": "Шлях не існує, можливо, його було видалено.",
 			"httpError": "HTTP-помилка! Статус: ${status}"
 		},
 		"errorMessage": {

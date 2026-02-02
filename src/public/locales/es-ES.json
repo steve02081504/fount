@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} desinstalado correctamente",
 			"failed": "Error al desinstalar: ${error}",
 			"invalidParams": "Parámetros de solicitud no válidos",
+			"pathNotFound": "La ruta no existe; es posible que ya se haya desinstalado.",
 			"httpError": "¡Error HTTP! Código de estado: ${status}"
 		},
 		"errorMessage": {

@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} は正常にアンインストールされました。",
 			"failed": "アンインストールに失敗しました: ${error}",
 			"invalidParams": "無効なリクエストパラメーターです。",
+			"pathNotFound": "パスが存在しません。すでにアンインストールされている可能性があります。",
 			"httpError": "HTTPエラーが発生しました！ステータスコード: ${status}"
 		},
 		"errorMessage": {

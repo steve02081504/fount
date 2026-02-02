@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} desinstalado com sucesso.",
 			"failed": "Falha ao desinstalar: ${error}",
 			"invalidParams": "Parâmetros de pedido inválidos.",
+			"pathNotFound": "O caminho não existe; o componente pode ter sido desinstalado.",
 			"httpError": "Erro HTTP! Código de estado: ${status}"
 		},
 		"errorMessage": {

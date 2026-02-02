@@ -1290,6 +1290,7 @@
 			"success": "✅🗑️ ${type}: ${name}",
 			"failed": "🗑️❌: ${error}",
 			"invalidParams": "❓",
+			"pathNotFound": "🚫📂, 🤷🗑️",
 			"httpError": "🌐❌❗️ #${status}"
 		},
 		"errorMessage": {
