@@ -1290,6 +1290,7 @@
 			"success": "Đã gỡ cài đặt thành công ${type}: ${name}.",
 			"failed": "Gỡ cài đặt thất bại: ${error}",
 			"invalidParams": "Tham số yêu cầu không hợp lệ.",
+			"pathNotFound": "Đường dẫn không tồn tại và có thể đã được gỡ cài đặt.",
 			"httpError": "Lỗi HTTP! Mã trạng thái: ${status}"
 		},
 		"errorMessage": {

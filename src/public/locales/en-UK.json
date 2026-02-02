@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} uninstalled successfully",
 			"failed": "Uninstall failed: ${error}",
 			"invalidParams": "Invalid request parameters",
+			"pathNotFound": "Path not found; the component may have already been uninstalled.",
 			"httpError": "HTTP Error! Status code: ${status}"
 		},
 		"errorMessage": {

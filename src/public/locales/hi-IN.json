@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} सफलतापूर्वक अनइंस्टॉल कर दिया गया है।",
 			"failed": "अनइंस्टॉल विफल: ${error}",
 			"invalidParams": "अमान्य अनुरोध पैरामीटर।",
+			"pathNotFound": "यह पथ मौजूद नहीं है; शायद यह पहले ही अनइंstॉल हो चुका है।",
 			"httpError": "HTTP त्रुटि! स्थिति कोड: ${status}"
 		},
 		"errorMessage": {

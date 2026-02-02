@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name}이(가) 성공적으로 제거되었습니다.",
 			"failed": "제거에 실패했습니다: ${error}",
 			"invalidParams": "잘못된 요청 매개변수입니다.",
+			"pathNotFound": "경로가 존재하지 않으며 제거되었을 수 있습니다.",
 			"httpError": "HTTP 오류! 상태 코드: ${status}"
 		},
 		"errorMessage": {

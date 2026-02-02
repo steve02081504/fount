@@ -1290,6 +1290,7 @@
 			"success": "${type}: ${name} disinstallato correttamente.",
 			"failed": "Disinstallazione non riuscita: ${error}",
 			"invalidParams": "Parametri della richiesta non validi.",
+			"pathNotFound": "Il percorso non esiste e potrebbe essere stato disinstallato.",
 			"httpError": "Errore HTTP! Codice stato: ${status}"
 		},
 		"errorMessage": {

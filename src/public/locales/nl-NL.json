@@ -1290,6 +1290,7 @@
 			"success": "Succesvol gede-ïnstalleerd: ${type}: ${name}",
 			"failed": "De-installatie mislukt: ${error}",
 			"invalidParams": "Ongeldige verzoekparameters.",
+			"pathNotFound": "Het pad bestaat niet; de component is mogelijk al gedeïnstalleerd.",
 			"httpError": "HTTP-fout! Statuscode: ${status}"
 		},
 		"errorMessage": {

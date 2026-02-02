@@ -1290,6 +1290,7 @@
 			"success": "成功解除安裝 ${type}: ${name}",
 			"failed": "解除安裝失敗: ${error}",
 			"invalidParams": "無效的請求參數。",
+			"pathNotFound": "該路徑不存在，相關組件可能已被解除安裝。",
 			"httpError": "HTTP 錯誤！狀態碼：${status}"
 		},
 		"errorMessage": {

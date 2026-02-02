@@ -1290,6 +1290,7 @@
 			"success": "Tókst að fjarlægja ${type}: ${name}",
 			"failed": "Fjarlæging mistókst: ${error}",
 			"invalidParams": "Ógildar beiðnisfæribreytur.",
+			"pathNotFound": "Slóðin er ekki til og gæti hafa verið fjarlægð.",
 			"httpError": "HTTP villa! Stöðukóði: ${status}"
 		},
 		"errorMessage": {

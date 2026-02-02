@@ -1290,6 +1290,7 @@
 			"success": "تم إلغاء تثبيت ${type}: ‏${name} بنجاح",
 			"failed": "فشل إلغاء التثبيت: ${error}",
 			"invalidParams": "معلمات طلب غير صالحة.",
+			"pathNotFound": "المسار غير موجود؛ قد يكون قد تم إلغاء تثبيت المكون.",
 			"httpError": "خطأ HTTP! رمز الحالة: ${status}"
 		},
 		"errorMessage": {
