@@ -134,7 +134,8 @@ export function registerEndpoints(router) {
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
 		}
 		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid, req)
+		const result = await login(username, password, deviceid, req, res)
+		if (result.status === 114514) return
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
 			const cookieOptions = getSecureCookieOptions(req)

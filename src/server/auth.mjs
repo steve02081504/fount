@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -41,6 +42,12 @@ const ACCOUNT_LOCK_TIME = '10m'
 const MAX_LOGIN_ATTEMPTS = 5
 const BRUTE_FORCE_THRESHOLD = 8
 const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3
+const FAKE_REPLY_BEHAVIORS = [
+	// fakeReplyInvalidHttp, // 等 Deno 修复 https://github.com/denoland/deno/issues/31858
+	fakeReplyGzipBomb,
+	{}._
+]
+const GZIP_BOMB_MIN_BYTES = 2 * 1024 ** 4 // 不少于 2TB
 const JWT_CACHE_SIZE = 32
 
 // --- 模块级变量 ---
@@ -109,7 +116,47 @@ async function importKeyPair(keyPair) {
 }
 
 /**
- * 为暴力破解防御生成一个临时的、假的私钥。
+ * 向 socket 写入无效 HTTP 状态行并关闭连接。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {{ status: 114514 }} 表示响应已由本函数直接发送，调用方不应再写响应。
+ */
+function fakeReplyInvalidHttp(res) {
+	const rawResponse =
+		'HTTP/1.1 -114514 I am very Stinky\r\n' +
+		'Content-Type: text/plain\r\n' +
+		'Connection: close\r\n' +
+		'\r\n' +
+		'いいよ、こいよ。'
+	res.socket?.write(rawResponse, 'utf8', () => res.socket?.destroy())
+	return { status: 114514 }
+}
+
+/**
+ * 返回不少于 2TB、大小随机的 gzip 流。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<{ status: 114514 }>} 表示响应已由本函数直接发送，调用方不应再写响应。
+ */
+async function fakeReplyGzipBomb(res) {
+	const BASE_CHUNK = Buffer.from('1f8b08000000000002ffedc101010000008090feafee080a0000000000000000000000000000000000000000000000000000000000000018a6fc1f00800000', 'hex') // 尝尝XFL的威力吧崽子，32KB极致压缩率
+	const targetSizeBytes = GZIP_BOMB_MIN_BYTES + Math.floor(Math.random() * (1024 ** 16)) / (32 * 1024) // 2 ~ 18TB 随机，除以 32KB 得到 chunk 数量
+	res.setHeader('Content-Encoding', 'gzip')
+	res.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+	try {
+		const num = 1/targetSizeBytes
+		while (Math.random() > num)
+			if (!res.write(BASE_CHUNK))
+				await new Promise(resolve => res.once('drain', resolve))
+			else
+				await new Promise(resolve => setTimeout(resolve, 1919))
+		res.end()
+	} catch (error) {
+		res.destroy(error)
+	}
+	return { status: 114514 }
+}
+
+/**
+ * 生成一个临时的、假的私钥。
  * @returns {Promise<jose.KeyLike>} 一个假的私钥。
  */
 async function getFakePrivateKey() {
@@ -915,34 +962,46 @@ let avgVerifyTime = 0
  * @param {string} password - 密码。
  * @param {string} [deviceId='unknown'] - 设备标识符。
  * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - 用于需要直接写响应的回复。
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
-export async function login(username, password, deviceId = 'unknown', req) {
+export async function login(username, password, deviceId = 'unknown', req, res) {
 	const { ip } = req
 	const user = getUserByUsername(username)
 
 	/**
 	 * 处理失败的登录尝试。
+	 * @param {import('npm:express').Response} res - 用于需要直接写响应的回复。
 	 * @param {object} [response={}] - 要包含在响应中的附加数据。
 	 * @returns {Promise<object>} 包含状态码和消息的响应对象。
 	 */
-	async function handleFailedLogin(response = {}) {
+	async function handleFailedLogin(res, response = {}) {
 		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 
-		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
-			const fakePrivateKey = await getFakePrivateKey()
-			const fakeUserId = crypto.randomUUID()
-			const accessToken = await generateAccessToken({ username, userId: fakeUserId }, fakePrivateKey)
-			const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
-			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken }
-		}
 		// 时间攻击保护
 		const delay = Math.max(0, avgVerifyTime * 0.9 + Math.random() * avgVerifyTime * 0.2)
 		await new Promise(resolve => setTimeout(resolve, delay))
+
+		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
+			const behavior = FAKE_REPLY_BEHAVIORS[Math.floor(Math.random() * FAKE_REPLY_BEHAVIORS.length)]
+			const isValidPassword = Math.random() < 0.5
+			const isValidUsername = Math.random() < 0.5
+			const success = isValidPassword && isValidUsername
+			const message = `${isValidPassword ? 'Invalid' : 'Valid'} password with ${isValidUsername ? 'Invalid' : 'Valid'} username`
+			const status = success ? 200 : 401
+			if (Math.random() < 0.25) {
+				const fakePrivateKey = await getFakePrivateKey()
+				const fakeUserId = crypto.randomUUID()
+				const accessToken = await generateAccessToken({ username, userId: fakeUserId }, fakePrivateKey)
+				const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
+				response = { message: 'Login successful', accessToken, refreshToken, ...response }
+			}
+			return (await behavior?.(res)) || { status, success, message, ...response }
+		}
 		return { status: 401, success: false, message: 'Invalid username or password', ...response }
 	}
 
-	if (!user) return await handleFailedLogin()
+	if (!user) return await handleFailedLogin(res)
 
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
@@ -963,7 +1022,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			console.logI18n('fountConsole.auth.accountLockedLog', { username })
 			return { status: 403, success: false, message: 'Account locked due to too many failed attempts.' }
 		}
-		return await handleFailedLogin()
+		return await handleFailedLogin(res)
 	}
 
 	// 登录成功
