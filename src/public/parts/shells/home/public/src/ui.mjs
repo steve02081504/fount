@@ -664,7 +664,6 @@ async function createMenuItem(name, path, branches, filterFn) {
  */
 export async function setupPartTypeUI(partTypes, initialPath) {
 	partTypesTabsContainer.innerHTML = ''
-	partTypesContainers.innerHTML = ''
 
 	/**
 	 * 路径过滤函数
