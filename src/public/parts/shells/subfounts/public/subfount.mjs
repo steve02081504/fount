@@ -119,7 +119,7 @@ async function generateDeviceId() {
 	catch (error) {
 		console.error('Failed to generate machine ID, falling back to hostname:', error)
 		// 如果生成失败，使用 hostname 作为后备方案
-		return os.hostname().replace(/[^a-zA-Z0-9]/g, '').substring(0, 32) || 'subfount-client'
+		return os.hostname().replace(/[^\dA-Za-z]/g, '').substring(0, 32) || 'subfount-client'
 	}
 }
 
@@ -218,9 +218,9 @@ async function collectDeviceInfo() {
 				const parts = line.trim().split(/\s+/)
 				if (parts.length >= 6) {
 					const disk = parts[5]
-					const totalSize = parseFloat(parts[1].replace(/[^0-9.]/g, ''))
-					const usedSize = parseFloat(parts[2].replace(/[^0-9.]/g, ''))
-					const unit = parts[1].replace(/[0-9.]/g, '')
+					const totalSize = parseFloat(parts[1].replace(/[^\d.]/g, ''))
+					const usedSize = parseFloat(parts[2].replace(/[^\d.]/g, ''))
+					const unit = parts[1].replace(/[\d.]/g, '')
 					const multiplier = unit === 'G' ? 1 : unit === 'M' ? 0.001 : unit === 'T' ? 1000 : 1
 					diskUsage[disk] = {
 						total: totalSize * multiplier,

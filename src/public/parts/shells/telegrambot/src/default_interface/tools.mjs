@@ -401,12 +401,12 @@ export function splitTelegramReply(reply, split_length = 4096) {
 		}
 	}
 
-	if (currentMessage) 
+	if (currentMessage)
 		if (currentMessage.length > split_length)
 			messages.push(...splitHtmlAware(currentMessage, split_length))
 		else
 			messages.push(currentMessage)
-	
+
 
 	return messages.filter(msg => msg.trim().length)
 }

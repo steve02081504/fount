@@ -243,7 +243,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					locales: localhostLocales,
-					time: new Date(), world: null, user: await(async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
+					time: new Date(), world: null, user: await (async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
 					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					AddChatLogEntry: AddChatLogEntryViaCharAPI,

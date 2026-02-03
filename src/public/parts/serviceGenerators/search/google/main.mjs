@@ -13,7 +13,7 @@ export default {
 			 * 获取此搜索源的配置显示内容。
 			 * @returns {Promise<object>} 配置显示内容。
 			 */
-			GetConfigDisplayContent: async () => ({ }),
+			GetConfigDisplayContent: async () => ({}),
 			/**
 			 * 获取此搜索源的配置模板。
 			 * @returns {Promise<object>} 配置模板。

@@ -6,15 +6,16 @@
 const BASE = 'https://www.moltbook.com/api/v1'
 
 /**
- * @param {string} apiKey - Moltbook API key (only sent to www.moltbook.com).
- * @param {string} path - Path without leading slash (e.g. 'agents/me').
- * @param {RequestInit} [opts] - fetch options.
- * @returns {Promise<Response>}
+ * 向 Moltbook API 发起请求（仅发送至 www.moltbook.com）。
+ * @param {string} apiKey - Moltbook API 密钥（仅发送至 www.moltbook.com）。
+ * @param {string} path - 路径，不含前导斜杠（如 'agents/me'）。
+ * @param {RequestInit} [opts] - fetch 选项。
+ * @returns {Promise<Response>} 原始 fetch 响应。
  */
 export function moltbookFetch(apiKey, path, opts = {}) {
 	const url = path.startsWith('http') ? path : `${BASE}/${path.replace(/^\//, '')}`
 	const headers = {
-		...(opts.headers && { ...opts.headers }),
+		...opts.headers && { ...opts.headers },
 		Authorization: `Bearer ${apiKey}`,
 	}
 	if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData) && !(opts.body instanceof URLSearchParams)) {
@@ -25,10 +26,11 @@ export function moltbookFetch(apiKey, path, opts = {}) {
 }
 
 /**
- * @param {string} apiKey
- * @param {string} path
- * @param {RequestInit} [opts]
- * @returns {Promise<{ success: boolean, data?: object, error?: string, hint?: string }>}
+ * 请求 Moltbook API 并解析为 JSON。
+ * @param {string} apiKey - Moltbook API 密钥。
+ * @param {string} path - API 路径。
+ * @param {RequestInit} [opts] - fetch 选项。
+ * @returns {Promise<{ success: boolean, data?: object, error?: string, hint?: string }>} 解析后的 JSON 结果。
  */
 export async function moltbookJson(apiKey, path, opts = {}) {
 	const res = await moltbookFetch(apiKey, path, opts)
@@ -39,9 +41,9 @@ export async function moltbookJson(apiKey, path, opts = {}) {
 }
 
 /**
- * Register agent (no API key required).
- * @param {{ name: string, description: string }} body
- * @returns {Promise<{ success?: boolean, agent?: { api_key: string, claim_url: string, verification_code: string }, error?: string }>}
+ * 注册 Moltbook 代理（无需 API 密钥）。
+ * @param {{ name: string, description: string }} body - 代理名称与描述。
+ * @returns {Promise<{ success?: boolean, agent?: { api_key: string, claim_url: string, verification_code: string }, error?: string }>} 注册结果。
  */
 export async function moltbookRegister(body) {
 	const res = await fetch(`${BASE}/agents/register`, {

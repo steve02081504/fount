@@ -9,10 +9,10 @@ import { moltbookJson, moltbookRegister } from './api.mjs'
 const PLUGIN_PARTPATH = 'plugins/moltbook'
 
 /**
- * 从 parts_config 中按角色获取 Moltbook 密钥
- * @param {string} username
- * @param {string} charId
- * @returns {{ api_key: string, agent_name?: string } | null}
+ * 从 parts_config 中按角色获取 Moltbook 密钥。
+ * @param {string} username - 用户名。
+ * @param {string} charId - 角色 ID。
+ * @returns {{ api_key: string, agent_name?: string } | null} 该角色的密钥记录，未配置则 null。
  */
 function getKeyForChar(username, charId) {
 	const parts_config = loadData(username, 'parts_config')
@@ -23,9 +23,10 @@ function getKeyForChar(username, charId) {
 
 /**
  * 保存角色对应的密钥到 parts_config。
- * @param {string} username
- * @param {string} charId
- * @param {{ api_key: string, agent_name?: string, claim_url?: string, verification_code?: string }} record
+ * @param {string} username - 用户名。
+ * @param {string} charId - 角色 ID。
+ * @param {{ api_key: string, agent_name?: string, claim_url?: string, verification_code?: string }} record - 要保存的密钥记录。
+ * @returns {void}
  */
 function saveKeyForChar(username, charId, record) {
 	const parts_config = loadData(username, 'parts_config')
@@ -41,8 +42,8 @@ function saveKeyForChar(username, charId, record) {
 
 /**
  * 解析 XML 属性字符串为对象。
- * @param {string} attrStr
- * @returns {Record<string, string>}
+ * @param {string} attrStr - 属性字符串（如 name="x" id="1"）。
+ * @returns {Record<string, string>} 属性名到属性值的映射。
  */
 function parseAttrs(attrStr) {
 	const out = {}
@@ -52,20 +53,28 @@ function parseAttrs(attrStr) {
 	return out
 }
 
-/** @param {Record<string, string>} attrs */
+/**
+ * 从属性中取帖子/评论 ID。
+ * @param {Record<string, string>} attrs - 标签属性对象。
+ * @returns {string} id 或 post_id 的值。
+ */
 function getId(attrs) {
 	return attrs.id ?? attrs.post_id ?? ''
 }
 
-/** @param {Record<string, string>} attrs */
+/**
+ * 从属性中取 submolt 名称。
+ * @param {Record<string, string>} attrs - 标签属性对象。
+ * @returns {string} submolt 或 name 的值。
+ */
 function getSubmolt(attrs) {
 	return attrs.submolt ?? attrs.name ?? ''
 }
 
 /**
  * 将 API 结果格式化为可读文本。
- * @param {unknown} data
- * @returns {string}
+ * @param {unknown} data - 任意 API 返回数据。
+ * @returns {string} 格式化后的字符串。
  */
 function formatResult(data) {
 	if (!data) return ''
@@ -83,8 +92,8 @@ function formatResult(data) {
  * @param {string} tag - 标签名（如 register, bind_key, me, post, feed, ...）
  * @param {Record<string, string>} attrs - 属性
  * @param {string} [body] - 标签体（如有）
- * @param {{ username: string, char_id: string }} ctx
- * @returns {Promise<string | null>} 要加入 AddLongTimeLog 的 content；null 表示无需注入（如未命中）
+ * @param {{ username: string, char_id: string }} ctx - 当前用户与角色上下文。
+ * @returns {Promise<string | null>} 要加入 AddLongTimeLog 的 content；null 表示无需注入（如未命中）。
  */
 async function runTag(tag, attrs, body, ctx) {
 	const { username, char_id } = ctx
@@ -129,6 +138,11 @@ async function runTag(tag, attrs, body, ctx) {
 	const apiKey = keyRecord.api_key
 
 	const id = getId(attrs)
+	/**
+	 * 去除标签体首尾空白。
+	 * @param {string} [b] - 标签体内容。
+	 * @returns {string} 修剪后的字符串。
+	 */
 	const trimBody = (b) => (b ?? '').trim()
 
 	switch (tag) {
@@ -262,11 +276,12 @@ async function runTag(tag, attrs, body, ctx) {
 }
 
 /** 匹配 <moltbook_xxx ... /> 或 <moltbook_xxx ...>...</moltbook_xxx> */
-const MOLTBOOK_TAG_REGEX = /<moltbook_(\w+)(\s*[^>]*?)(?:\/>|>([\s\S]*?)<\/moltbook_\1>)/gi
+const MOLTBOOK_TAG_REGEX = /<moltbook_(\w+)(\s*[^>]*?)(?:\/>|>([\S\s]*?)<\/moltbook_\1>)/gi
 
 /**
  * Moltbook ReplyHandler：解析 result.content 中所有 <moltbook_*> 标签，执行并 AddLongTimeLog，返回 true 触发重新生成。
  * @type {import('../../../../decl/PluginAPI.ts').ReplyHandler_t}
+ * @returns {Promise<boolean>} 若处理了标签并需重新生成则为 true，否则 false。
  */
 export async function moltbookReplyHandler(reply, args) {
 	const content = reply?.content ?? ''

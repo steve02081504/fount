@@ -112,7 +112,7 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { type = 'AI', name } = req.params
 		const serviceSourcePath = inferServiceSourcePath(type)
-		let generator = req.query.generator
+		let { generator } = req.query
 
 		// 尝试从服务源获取信息
 		try {
@@ -136,7 +136,7 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { type = 'AI', name } = req.params
 		const serviceSourcePath = inferServiceSourcePath(type)
-		let generator = req.query.generator
+		let { generator } = req.query
 
 		// 尝试从服务源获取信息
 		try {
