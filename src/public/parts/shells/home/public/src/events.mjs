@@ -137,7 +137,7 @@ export function setupDOMEventListeners() {
 
 	document.body.addEventListener('drop', async event => {
 		event.preventDefault()
-		const dataTransfer = event.dataTransfer
+		const { dataTransfer } = event
 		if (!dataTransfer) return
 
 		const handlers = homeRegistry.home_drag_in_handlers || []

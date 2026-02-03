@@ -379,7 +379,7 @@ const getComputedVar = (varName, themeId) => {
  * @returns {object|null} - 包含主题块的起始和结束索引的对象，如果未找到则为null。
  */
 function findThemeBlockRange(css) {
-	const startMatch = css.match(/\[data-theme="[^"]+"\]\s*\{/)
+	const startMatch = css.match(/\[data-theme="[^"]+"]\s*{/)
 	if (!startMatch) return null
 
 	const startIndex = startMatch.index + startMatch[0].length
@@ -498,7 +498,7 @@ async function openEditor(themeData) {
 
 		// Update Selector (ID)
 		const preBlock = css.substring(0, blockRange.start)
-		const newPreBlock = preBlock.replace(/\[data-theme="[^"]+"\]/, `[data-theme="${id}"]`)
+		const newPreBlock = preBlock.replace(/\[data-theme="[^"]+"]/, `[data-theme="${id}"]`)
 
 		const lengthDiff = newPreBlock.length - preBlock.length
 		css = newPreBlock + css.substring(blockRange.start)
