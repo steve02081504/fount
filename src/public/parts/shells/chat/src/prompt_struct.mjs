@@ -1,7 +1,7 @@
-/** @typedef {import('../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
-/** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
-/** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
