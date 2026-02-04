@@ -8,6 +8,8 @@ ones.
 this pattern ensures that new user interfaces (Shells) are modular,
 maintainable, and integrate correctly with the fount ecosystem.
 
+**See also**: [fount Architecture & AI Agent Prompting Guide](../../../../AGENTS.md) (root); [Frontend Common Functions Guide](../../pages/AGENTS.md) for shared scripts (theming, i18n, API helpers, etc.).
+
 ---
 
 ## 1. Standard Shell Architecture & URL-to-Filesystem Mapping
@@ -25,13 +27,13 @@ fount uses a special colon-based URL structure to serve a shell's public static 
 - **`:`**: A separator. If omitted, the server defaults to serving `index.html`.
 - **`<filepath_within_public>`**: The path to a file _inside_ the shell's `public` directory.
 
-**Example Mapping:**
+**Example Mapping:** (The colon is only in the URL; the filesystem path uses normal slashes.)
 
 - **URL**: `/parts/shells:chat/chat.css`
-- **Maps to File**: `/src/public/parts/shells:chat/public/chat.css`
+- **Maps to File**: `src/public/parts/shells/chat/public/chat.css`
 
 - **URL**: `/parts/shells:chat` (or `/parts/shells:chat/`)
-- **Maps to File**: `/src/public/parts/shells:chat/public/index.html`
+- **Maps to File**: `src/public/parts/shells/chat/public/index.html`
 
 ### 1.2. Standard Filesystem Structure
 
