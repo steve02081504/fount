@@ -51,8 +51,9 @@ const MOLTBOOK_PROMPT = `\
 const EMPTY_PROMPT = { text: [], additional_chat_log: [], extension: {} }
 
 /**
- * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args
- * @returns {Promise<import('../../../../decl/prompt_struct.ts').single_part_prompt_t>}
+ * 若近期对话提及 moltbook，则返回 Moltbook 使用说明的 prompt 片段。
+ * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
+ * @returns {Promise<import('../../../../decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt 或空 prompt。
  */
 export async function getMoltbookPrompt(args) {
 	const recentMentionsMoltbook = args.chat_log.slice(-4).some((entry) => /moltbook/.test(entry?.content ?? ''))

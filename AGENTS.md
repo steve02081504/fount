@@ -30,11 +30,12 @@ The project follows a modular, **"part-based"** architecture. The server dynamic
   - **`worlds`**: The environment or context for a chat, managing multiple characters and global events.
   - **`personas`**: User profiles or "avatars" defining the user's representation in the chat.
   - **`AIsourceGenerators` / `AIsources`**: Connectors to AI model APIs. `AIsourceGenerator` is the factory that creates configured `AIsource` instances.
+  - **`ImportHandlers`**: Handlers for importing characters or data from external formats (e.g., SillyTavern, Risu).
   - **`plugins`**: Extend chat functionality, such as by adding new commands or modifying prompts.
 
 ## 4. Key APIs & Component Definitions (`@src/decl/`)
 
-These TypeScript files define the interfaces that all "parts" must adhere to. **Consult these files to understand the required methods and properties for any part you create or modify.**
+These TypeScript (`.ts`) files define the interfaces that all "parts" must adhere to; type names use the `_t` suffix (e.g. `CharAPI_t` in `charAPI.ts`). **Consult these files to understand the required methods and properties for any part you create or modify.**
 
 - **`CharAPI_t`**: The interface for a character.
   - `interfaces.chat.GetPrompt`: Crucial method to add the character's personality, memories, and context to the main prompt structure.
@@ -53,6 +54,10 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 - **`ShellAPI_t`**: The interface for a user interface.
   - `Load`/`Unload`: Hooks to register/unregister API endpoints and WebSocket routes using the provided `router`.
 
+- **`ImportHandlerAPI_t`**: The interface for import handlers.
+  - `interfaces.import.GetSources`: Returns available sources or files to import.
+  - `interfaces.import.Import`: Executes the import process.
+
 - **`PluginAPI_t`**: The interface for a plugin.
   - `interfaces.chat.GetPrompt`: Allows plugins to add their own context to the prompt.
   - `interfaces.chat.ReplyHandler`: Can process a character's reply, potentially triggering new actions or re-generating the response.
@@ -60,10 +65,10 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 ## 5. Core Data Structures
 
 - **`prompt_struct_t` (`@src/decl/prompt_struct.ts`)**: The central data structure for building a prompt for the AI. It aggregates context from all active parts.
-- **Chat State (`@src/public/shells/chat/src/chat.mjs`)**:
+- **Chat State (`@src/public/parts/shells/chat/src/chat.mjs`)**:
   - **`chatMetadata_t`**: Represents the entire state of a single chat session. This is the primary object saved to disk as a JSON file.
   - **`timeSlice_t`**: A snapshot of the chat's context at a specific point in time (i.e., for a single message). **Crucial for maintaining state consistency.**
-  - **`chatLogEntry_t`**: A single message in the chat log, containing a `timeSlice` property.
+  - **`chatLogEntry_t`**: A single message in the chat log, containing a `timeSlice` property. Type definitions also exist in `@src/public/parts/shells/chat/decl/chatLog.ts` and `@src/decl/prompt_struct.ts`.
 
 ## 6. Task Implementation Patterns
 
@@ -72,31 +77,35 @@ To effectively modify or extend fount, follow these patterns. The fundamental pr
 - **To create a new part (e.g., a Character)**: Create a new directory (e.g., `/data/users/<user>/chars/<charname>/`). In that directory, create a `main.mjs` file that exports a default object implementing the required API (e.g., `CharAPI_t`).
 - **To change a character's personality**: Modify the `GetPrompt` method in the character's `main.mjs` file.
 - **To add a new chat feature/command**: Create a new **Plugin** part. Its `main.mjs` will implement the `PluginAPI_t`, using `GetPrompt` to inform the AI and `ReplyHandler` to execute logic.
-- **Advanced: Parent-Delegated Loading**: A parent part can manage the loading of its own children. If a parent's `main.mjs` exports an `interfaces.parts.loadSubPart` function, the `parts_loader` will invoke this function to load any part that is a child of it. This allows for complex, hierarchical parts where the parent can control the lifecycle and environment of its children.
+- **Advanced: Parent-Delegated Loading**: A parent part can manage the loading of its own children. If a parent's `main.mjs` exports `interfaces.parts.loadSubPart`, the `parts_loader` will use it to load any part that is a child of it; optionally export `interfaces.parts.unloadSubPart` to handle unloading. This allows for complex, hierarchical parts where the parent controls the lifecycle and environment of its children (see e.g. `@src/public/parts/chars/main.mjs`, `@src/public/parts/worlds/main.mjs`).
 
 ## 7. Additional Developer Documentation
 
-For more specific development tasks, refer to the following detailed guides:
+For more specific development tasks, refer to the following detailed guides (paths are relative to the project root):
 
-- **[Frontend Common Functions Guide](./src/public/pages/AGENTS.md)**
-  - **Purpose**: Your primary reference for all shared frontend JavaScript helper functions.
+- **[Frontend Common Functions Guide](src/public/pages/AGENTS.md)** — shared frontend scripts (theming, i18n, API helpers, templates, markdown, etc.).
+  - **Purpose**: Your primary reference for all shared frontend JavaScript helper functions in `src/public/pages/scripts/`.
   - **When to Consult**: Before developing any new frontend page or component, check this guide first to see if a utility function already exists. This promotes code reuse and consistency.
 
-- **[Shell Architecture & Creation Guide](./src/public/parts/shells/AGENTS.md)**
+- **[Shell Architecture & Creation Guide](src/public/parts/shells/AGENTS.md)** — Shell structure, URL-to-filesystem mapping, and creation steps.
   - **Purpose**: A complete guide to understanding and building user interfaces (Shells).
   - **When to Consult**: When you need to create a new Shell from scratch or need to understand the structure and backend/frontend interaction of existing Shells.
+
+- **[Plugin Architecture & Creation Guide](src/public/parts/plugins/AGENTS.md)** — Plugin structure, ReplyHandler, and tool-call logging.
+  - **Purpose**: Essential points for creating Plugins (GetPrompt, ReplyHandler, AddLongTimeLog). Emphasizes logging both the AI’s tool-invocation message and tool results.
+  - **When to Consult**: When you need to create or modify a Plugin, or implement a ReplyHandler that processes tool/function calls.
 
 ## 8. AI Agent Guidelines
 
 As an AI agent, your primary goal is to assist in developing fount by strictly adhering to its architecture and conventions.
 
 1.  **Runtime and Dependencies**: fount is a [Deno](https://deno.land/) project. It manages its own dependencies, so you do not need to run `npm install`. The project includes scripts that handle dependency installation automatically.
-2.  **Check for Specific Guides First**: Before starting any task, **you must first search for and read any `AGENTS.md` file located in the relevant subdirectory.** For example, if the task involves a Shell, you must read `/src/public/shells/AGENTS.md`. These specific guides take precedence over the general guidelines in this document.
+2.  **Check for Specific Guides First**: Before starting any task, **you must first search for and read any `AGENTS.md` file located in the relevant subdirectory.** For example, if the task involves a Shell, read `src/public/parts/shells/AGENTS.md`; if it involves a Plugin, read `src/public/parts/plugins/AGENTS.md`. These specific guides take precedence over the general guidelines in this document.
 3.  **Respect the Architecture**: fount is a **"part-based"** system. All new functionality should be implemented within the appropriate part type (Shell, Char, Plugin, etc.). Do not add logic to the core server unless absolutely necessary. When course-correcting based on new information, ensure all original, still-valid requirements are maintained.
 4.  **Consult General Documentation**: After checking for specific guides, review this document and the linked guides in Section 7. They provide the necessary context and patterns to follow.
 5.  **Follow Existing Patterns**: Before creating a new part (e.g., a Shell, Char, or Plugin), **you must find and analyze a similar, existing part first.** For example, when creating a new Shell, examine the directory structure and files of another Shell like `discordbot` or `chat`. This is the most critical step to ensure new components integrate correctly. Mimic the observed file structure, naming conventions, and architectural patterns. When using a new library, consult its documentation carefully, especially regarding asynchronous behavior (e.g., blocking vs. non-blocking calls) to ensure it fits the project's architecture. Do not introduce external dependencies (like `package.json`) or architectural patterns not already present in similar parts.
 6.  **Linting and Formatting**: After making any code changes, you must run `eslint --fix --quiet` to ensure the code adheres to the project's style guide and to automatically fix any minor formatting issues. This is a mandatory step before considering a task complete.
-7.  **API-Driven UI**: Shells (UIs) must be decoupled from the backend. All communication should happen through well-defined API endpoints. Follow the pattern of defining backend routes in `src/server/web_server/endpoints.mjs` and creating corresponding fetch helpers in `src/pages/scripts/endpoints.mjs`.
+7.  **API-Driven UI**: Shells (UIs) must be decoupled from the backend. All communication should happen through well-defined API endpoints. Follow the pattern of defining backend routes in `src/server/web_server/endpoints.mjs` and creating corresponding fetch helpers in `src/public/pages/scripts/endpoints.mjs` (for app-wide APIs) or in the shell's own `public/` or `public/src/` (e.g. `src/public/parts/shells/<shell>/public/src/endpoints.mjs`) for shell-specific APIs.
 8.  **Update Documentation**: If you learned new things or added a new, reusable component or made a significant change to the architecture, update the relevant `AGENTS.md` file to reflect your changes. This is crucial for future AI agents.
 9.  **Localization (i18n)**: When adding or changing text that requires translation, you only need to modify the source localization file: `src/locales/zh-CN.json`. The system has an automated process (`update-locales.py`) that propagates these changes to all other language files. Do not manually edit other `.json` locale files.
 10. **Logging**: Do not log any information unless it is an error or a warning. This helps to keep the logs clean and focused on actionable issues.

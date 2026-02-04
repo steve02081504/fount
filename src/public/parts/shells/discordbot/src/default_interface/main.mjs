@@ -317,7 +317,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					Charname: client.user.displayName || client.user.username,
 					UserCharname: config.OwnerUserName,
 					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
-					locales: localhostLocales, time: new Date(), world: null, user: await(async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
+					locales: localhostLocales, time: new Date(), world: null, user: await (async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })),
 					AddChatLogEntry, /**
 					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
@@ -396,7 +396,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					return
 				}
 
-				const channelId = message.channelId
+				const { channelId } = message
 				const channelLogs = ChannelChatLogs[channelId]
 				if (!channelLogs) return
 
@@ -422,7 +422,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				try { fullMessage = await tryFewTimes(() => message.fetch()) }
 				catch (error) { console.error(`[SimpleDiscord] MessageCreate 获取部分消息 ${message.id} 失败:`, error); return }
 
-			const channelId = fullMessage.channel.id
+			const channelId = fullMessage.channel.id;
 			(ChannelMessageQueues[channelId] ??= []).push(fullMessage)
 			if (!ChannelHandlers[channelId]) ChannelHandlers[channelId] = HandleMessageQueue(channelId)
 		})

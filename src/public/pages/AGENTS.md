@@ -7,6 +7,8 @@ JavaScript helper functions located in `@src/public/pages/scripts/`.
 consult this guide**. Reusing these functions is critical for maintaining
 application consistency, reducing code duplication, and ensuring stability.
 
+**See also**: [fount Architecture & AI Agent Prompting Guide](../../../AGENTS.md) (root); [Shell Architecture & Creation Guide](../parts/shells/AGENTS.md) for Shell-specific frontend/backend patterns.
+
 ---
 
 ## 1. API Communication
@@ -14,33 +16,52 @@ application consistency, reducing code duplication, and ensuring stability.
 ### 1.1. Core Backend API (`endpoints.mjs`)
 
 - **Purpose**: Functions for core user authentication and system interaction.
+- `async ping(with_cache)`: Pings the server.
+- `async hosturl_in_local_ip()`: Gets the host URL in the local IP network.
+- `async getPoWChallenge()`: Gets a Proof-of-Work challenge.
+- `async redeemPoWToken(token, solutions)`: Redeems a PoW token.
+- `async getLocaleData(preferred)`: Gets locale data for preferred languages.
+- `async getAvailableLocales()`: Gets a list of available locales.
+- `async generateVerificationCode()`: Generates a registration verification code.
 - `async whoami()`: Retrieves the current user's identity.
-- `async login(username, password, deviceid)`: Authenticates a user.
+- `async login(username, password, deviceid, powToken)`: Authenticates a user.
+- `async register(username, password, deviceid, verificationcode, powToken)`: Registers a new user.
+- `async authenticate()`: Verifies the current session.
+- `async getUserSetting(key)`: Gets a specific user setting.
+- `async setUserSetting(key, value)`: Sets a specific user setting.
 - `async logout()`: Logs out the current user.
-- `async runPart(parttype, partname, args)`: Executes a "part" on the server.
 - `async getApiKeys()`: Retrieves the user's API keys.
 - `async createApiKey(description)`: Creates a new API key.
-- `async revokeApiKey(jti)`: Revokes an API key.
+- `async revokeApiKey(jti, password)`: Revokes an API key.
 - `async verifyApiKey(apiKey)`: Verifies an API key.
+- `async getApiCookie(apiKey)`: Gets a session cookie using an API key.
 
 ### 1.2. "Part" Interaction API (`parts.mjs`)
 
 - **Purpose**: Functions for fetching and managing fount "parts" (e.g.,
   characters, worlds).
-- `async getPartTypes()`: Retrieves a list of all available part types.
-- `async getPartList(partType)`: Retrieves a list of all available parts of a
-  specified type (e.g., 'chars').
-- `async getPartDetails(partType, partName)`: Fetches detailed information for a
-  specific part.
-- `async getCharDetails(charname)`: Fetches detailed information for a specific
-  character. (Similar functions exist for `worlds` and `personas`).
-- `async getAllCachedPartDetails(partType)`: Fetches all cached details for a
-  given part type.
+- `async runPart(partpath, args)`: Executes a "part" on the server.
+- `async loadPart(partpath)`: Loads a part.
+- `async getPartTypeList()`: Retrieves a list of all available part types.
+- `async getPartList(path)`: Retrieves a list of all available parts at a
+  specified path (e.g., 'chars').
+- `async getLoadedPartList(path)`: Retrieves a list of already loaded parts at a
+  specified path.
+- `async getPartDetails(path, nocache)`: Fetches detailed information for a
+  specific part (e.g., 'chars/my-char').
+- `async getAllCachedPartDetails(path)`: Fetches all cached details for a
+  given path.
 - `async setDefaultPart(parent, child)`: Sets the user's default part for a
-  given type.
+  given parent.
+- `async unsetDefaultPart(parent, child)`: Unsets a default part.
 - `async getAllDefaultParts()`: Gets all of the user's default parts.
+- `async getAnyDefaultPart(parent)`: Gets any single default part for a parent.
+- `async getAllDefaultPartsByType(parent)`: Gets all default parts for a parent.
+- `async getAnyPreferredDefaultPart(parent)`: Gets a preferred default part for a parent.
+- `async getPartBranches(nocache)`: Gets the part branch tree.
+- `async unlockAchievement(partpath, achievementId)`: Unlocks an achievement for a part.
 
-### 1.3. Home Shell API (`@src/public/shells/home/src/public/endpoints.mjs`)
+### 1.3. Home Shell API (`@src/public/parts/shells/home/public/src/endpoints.mjs`)
 
 - `async getHomeRegistry()`: Fetches the registry that defines what buttons and
   part interfaces appear on the Home shell.

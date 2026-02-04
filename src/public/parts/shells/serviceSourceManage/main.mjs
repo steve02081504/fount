@@ -7,9 +7,9 @@ import { setEndpoints } from './src/endpoints.mjs'
  * @returns {{action: string, params: object}} - 解析后的动作和参数。
  */
 function parseArgs(args) {
-	if (!args.length) 
+	if (!args.length)
 		throw new Error('No action specified. Available actions: list, get, create, set, delete, set-default')
-	
+
 
 	const action = args[0]
 	const params = {}
@@ -42,14 +42,14 @@ function parseArgs(args) {
 			params.type = args[2] || 'AI'
 			// 查找 --config 参数
 			const configIndex = args.indexOf('--config')
-			if (configIndex !== -1 && args[configIndex + 1]) 
+			if (configIndex !== -1 && args[configIndex + 1])
 				try {
 					params.config = JSON.parse(args[configIndex + 1])
 				}
 				catch (e) {
 					throw new Error(`Invalid JSON in --config: ${e.message}`)
 				}
-			
+
 			break
 		}
 		case 'delete': {

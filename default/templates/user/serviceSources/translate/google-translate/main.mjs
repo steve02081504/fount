@@ -1,8 +1,8 @@
 import path from 'node:path'
 
+import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../../src/server/parts_loader.mjs'
-import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 
 const configPath = import.meta.dirname + '/config.json'
 const data = loadJsonFile(configPath)
@@ -56,6 +56,10 @@ export default {
 	async Load({ username }) {
 		const manager = await loadPart(username, 'serviceSources/translate')
 		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
+			/**
+			 * 将当前配置保存到部件数据。
+			 * @returns {void}
+			 */
 			SaveConfig: () => setPartData(username, `serviceSources/translate/${my_name}`, data)
 		}))
 		Object.assign(this.interfaces, defaultInterfaces)

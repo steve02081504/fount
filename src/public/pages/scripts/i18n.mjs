@@ -449,9 +449,9 @@ function translateSingularElement(element) {
 		}
 		else if (geti18n_nowarn(key)) {
 			const translation = geti18n_nowarn(key, element.dataset)
-			if (element.innerHTML !== translation) 
+			if (element.innerHTML !== translation)
 				element.innerHTML = translation
-			
+
 			updated = true
 		}
 		if (updated) break

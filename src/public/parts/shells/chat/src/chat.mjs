@@ -1244,8 +1244,8 @@ export async function modifyTimeLine(chatid, delta) {
 	// 4. 判断是否需要生成新消息 (索引超出范围)
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
-		const timeSlice = previousEntry.timeSlice
-		const greeting_type = timeSlice.greeting_type
+		const { timeSlice } = previousEntry
+		const { greeting_type } = timeSlice
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID() // 必须生成新ID
@@ -1281,7 +1281,7 @@ export async function modifyTimeLine(chatid, delta) {
 		// === 分支处理：开场白 vs 普通回复 ===
 		if (greeting_type)
 			try {
-				const charname = timeSlice.charname
+				const { charname } = timeSlice
 				// 获取合适的 request 对象
 				const request = await getChatRequest(chatid, charname || undefined)
 				let result
@@ -1352,7 +1352,7 @@ export async function modifyTimeLine(chatid, delta) {
 
 		else {
 			// **普通回复逻辑 (流式)**
-			const charname = timeSlice.charname
+			const { charname } = timeSlice
 			const request = await getChatRequest(chatid, charname)
 			const stream = StreamManager.create(chatid, newEntry.id)
 			// 在后台执行生成
