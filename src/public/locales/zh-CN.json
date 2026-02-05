@@ -438,6 +438,8 @@
 			"title": "凭证转移错误",
 			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",
 			"transfer_error": "尝试转移您的登录凭证时发生错误：\n${error}\n您可以继续但无法获取登录信息。",
+			"no_credentials": "未找到任何已保存的登录凭据。\n请从 fount 内重新登录来更新登录凭证，或点击下方按钮在无登录凭证的前提下继续前往目标页面。",
+			"missing_params": "链接缺少必要参数。",
 			"buttons": {
 				"ignore": "忽略并继续",
 				"retry": "重试"

@@ -438,6 +438,8 @@
 			"title": "Villa við flutning vottorðs",
 			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
 			"transfer_error": "Villa kom upp þegar reynt var að flytja innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki fengið innskráningarupplýsingar.",
+			"no_credentials": "Engin vistuð innskráningarskilríki fundust.\nVinsamlega skráðu þig inn aftur innan úr fount til að uppfæra innskráningarskilríkin þín, eða smelltu á hnappinn hér að neðan til að halda áfram á marksíðuna án innskráningarskilríkja.",
+			"missing_params": "Hlekkinn vantar nauðsynlega færibreytu.",
 			"buttons": {
 				"ignore": "Hunsa og halda áfram",
 				"retry": "Reyndu aftur"

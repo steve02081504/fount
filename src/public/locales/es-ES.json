@@ -438,6 +438,8 @@
 			"title": "Error de transferencia de certificado",
 			"retrieve_error": "Se produjo un error al intentar guardar sus credenciales de inicio de sesión:\n${error}\nPuede continuar pero no puede guardar la información de inicio de sesión.",
 			"transfer_error": "Se produjo un error al intentar transferir sus credenciales de inicio de sesión:\n${error}\nPuede continuar pero no puede obtener información de inicio de sesión.",
+			"no_credentials": "No se encontraron credenciales de inicio de sesión guardadas.\nInicie sesión nuevamente desde fount para actualizar sus credenciales de inicio de sesión, o haga clic en el botón a continuación para continuar a la página de destino sin credenciales de inicio de sesión.",
+			"missing_params": "Al enlace le falta un parámetro requerido.",
 			"buttons": {
 				"ignore": "Ignorar y continuar",
 				"retry": "Reintentar"

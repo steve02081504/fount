@@ -34,7 +34,35 @@
 		const ignoreBtn = document.getElementById('ignore_and_continue_btn')
 		const retryBtn = document.getElementById('retry_btn')
 
+		/**
+		 * 显示错误弹窗。
+		 * @param {string} message - 错误信息。
+		 * @param {Object} [options] - 选项。
+		 * @param {() => void} [options.onIgnore] - 点击忽略时的回调。
+		 * @param {() => void} [options.onRetry] - 点击重试时的回调。
+		 */
+		function showErrorModal(message, {
+			onIgnore,
+			/**
+			 * 默认重试回调函数。
+			 * @returns {void}
+			 */
+			onRetry = () => {
+				errorModal.close()
+				window.location.reload()
+			}
+		} = {}) {
+			errorMessageElement.textContent = message
+			ignoreBtn.onclick = onIgnore
+			retryBtn.onclick = onRetry
+			errorModal.showModal()
+		}
+
 		try {
+			if (!redirectUrl || !uuid) {
+				errorMessageElement.textContent = geti18n('login_info.modal.missing_params')
+				throw new Error('Missing redirect or uuid')
+			}
 			const instanceId = uuid.split('-')[0]
 			if (fileId || from) try { // save
 				const encryptedData = await receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid)
@@ -59,30 +87,27 @@
 				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
 				throw error
 			}
-			else // No credentials found, just redirect
-				window.location.href = decodeURIComponent(redirectUrl)
+			else {
+				console.error('No credentials found.')
+				errorMessageElement.textContent = geti18n('login_info.modal.no_credentials')
+				throw new Error('No credentials found.')
+			}
 		}
 		catch (error) {
-			errorModal.showModal()
-			/**
-			 * 处理重试按钮点击事件。
-			 * @returns {void}
-			 */
-			retryBtn.onclick = () => {
-				errorModal.close()
-				window.location.reload()
-			}
-			/**
-			 * 处理忽略并继续按钮点击事件。
-			 * @returns {void}
-			 */
-			ignoreBtn.onclick = () => {
-				errorModal.close()
-				const targetUrl = new URL(decodeURIComponent(redirectUrl))
-				targetUrl.searchParams.set('login_status', 'failed')
-				targetUrl.searchParams.set('reason', error.message)
-				window.location.href = targetUrl.href
-			}
+			showErrorModal(errorMessageElement.textContent || error.message, {
+				/**
+				 * 默认忽略回调函数。
+				 * @returns {void}
+				 */
+				onIgnore: () => {
+					errorModal.close()
+					if (!redirectUrl) return window.location.reload()
+					const targetUrl = new URL(decodeURIComponent(redirectUrl))
+					targetUrl.searchParams.set('login_status', 'failed')
+					targetUrl.searchParams.set('reason', error.message)
+					window.location.href = targetUrl.href
+				}
+			})
 		}
 	</script>
 </head>

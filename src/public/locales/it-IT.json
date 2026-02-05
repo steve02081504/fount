@@ -438,6 +438,8 @@
 			"title": "Errore di trasferimento del certificato",
 			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",
 			"transfer_error": "Si è verificato un errore durante il tentativo di trasferire le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi ottenere informazioni di accesso.",
+			"no_credentials": "Nessuna credenziale di accesso salvata trovata.\nAccedi nuovamente da Font per aggiornare le tue credenziali di accesso oppure fai clic sul pulsante in basso per continuare alla pagina di destinazione senza credenziali di accesso.",
+			"missing_params": "Nel collegamento manca un parametro obbligatorio.",
 			"buttons": {
 				"ignore": "Ignora e continua",
 				"retry": "Riprova"

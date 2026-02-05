@@ -34,8 +34,8 @@ try {
 	const searchParams = new URLSearchParams(window.location.search)
 	const hashParams = new URLSearchParams(window.location.hash.substring(1))
 
-	const login_status = searchParams.get('login_status')
-	if (login_status === 'failed') {
+	const cameBackWithFailure = searchParams.get('login_status') === 'failed'
+	if (cameBackWithFailure) {
 		const reason = searchParams.get('reason')
 		showToast('error', reason || 'Credential transfer failed.')
 	}
@@ -59,6 +59,8 @@ try {
 		url = await generateLoginInfoUrl(credentials, uuid, baseUrl)
 	}
 	else if (fileId || from) throw new Error('Failed to retrieve/decrypt credentials from transfer.')
+	else if (cameBackWithFailure)
+		url = await hosturl_in_local_ip().catch(() => window.location.origin)
 	else await redirectToLoginInfo(window.location.href)
 }
 catch (e) {
