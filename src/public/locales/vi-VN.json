@@ -438,6 +438,8 @@
 			"title": "Lỗi chuyển chứng chỉ",
 			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
 			"transfer_error": "Đã xảy ra lỗi trong khi cố gắng chuyển thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lấy thông tin đăng nhập.",
+			"no_credentials": "Không tìm thấy thông tin đăng nhập đã lưu.\nVui lòng đăng nhập lại từ bên trong fount để cập nhật thông tin đăng nhập của bạn hoặc nhấp vào nút bên dưới để tiếp tục đến trang đích mà không có thông tin đăng nhập.",
+			"missing_params": "Liên kết thiếu tham số bắt buộc.",
 			"buttons": {
 				"ignore": "Bỏ qua và tiếp tục",
 				"retry": "Thử lại"

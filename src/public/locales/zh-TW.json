@@ -438,6 +438,8 @@
 			"title": "憑證傳輸錯誤",
 			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
 			"transfer_error": "嘗試轉移您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法取得登入資訊。",
+			"no_credentials": "未找到任何已儲存的登入憑證。\n請從 fount 內重新登錄來更新登錄憑證，或點擊下方按鈕在無登入憑證的情況下繼續前往目標頁面。",
+			"missing_params": "連結缺少必要參數。",
 			"buttons": {
 				"ignore": "忽略並繼續",
 				"retry": "重試"

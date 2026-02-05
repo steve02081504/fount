@@ -438,6 +438,8 @@
 			"title": "Certificate transfer error",
 			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
 			"transfer_error": "An error occurred while trying to transfer your login credentials:\n${error}\nYou can continue but cannot get login information.",
+			"no_credentials": "No saved login credentials found.\nPlease log in again from within fount to update them, or click the button below to continue to the target page without login credentials.",
+			"missing_params": "The link is missing a required parameter.",
 			"buttons": {
 				"ignore": "Ignore and continue",
 				"retry": "Try again"

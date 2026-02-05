@@ -438,6 +438,8 @@
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
 			"transfer_error": "Er is een fout opgetreden bij het proberen uw inloggegevens over te dragen:\n${error}\nU kunt doorgaan, maar kunt geen inloggegevens ophalen.",
+			"no_credentials": "Geen opgeslagen inloggegevens gevonden.\nMeld u opnieuw aan vanuit fount om uw inloggegevens bij te werken, of klik op de onderstaande knop om zonder inloggegevens door te gaan naar de doelpagina.",
+			"missing_params": "Er ontbreekt een vereiste parameter in de link.",
 			"buttons": {
 				"ignore": "Negeer en ga door",
 				"retry": "Opnieuw proberen"
