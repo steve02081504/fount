@@ -438,6 +438,8 @@
 			"title": "Erro de transferência de certificado",
 			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
 			"transfer_error": "Ocorreu um erro ao tentar transferir as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode obter as informações de início de sessão.",
+			"no_credentials": "Nenhuma credencial de login salva foi encontrada.\nFaça login novamente na fonte para atualizar suas credenciais de login ou clique no botão abaixo para continuar para a página de destino sem credenciais de login.",
+			"missing_params": "O link está faltando um parâmetro obrigatório.",
 			"buttons": {
 				"ignore": "Ignore e continue",
 				"retry": "Tente novamente"

@@ -438,6 +438,8 @@
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
 			"transfer_error": "傳送登錄憑證時有誤：\n${error}\n可續行，然憑證不得取，如緣木求魚。",
+			"no_credentials": "未找到任何已保存的登录凭据。\n请从 fount 内重新登陆来更新登陆凭证，或点击下方按钮在无登录凭证的前提下继续前往目标页面。",
+			"missing_params": "链接缺少必要参数。",
 			"buttons": {
 				"ignore": "略而續行",
 				"retry": "再試"

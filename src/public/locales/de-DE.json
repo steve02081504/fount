@@ -438,6 +438,8 @@
 			"title": "Zertifikatübertragungsfehler",
 			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",
 			"transfer_error": "Beim Versuch, Ihre Anmeldeinformationen zu übertragen, trat ein Fehler auf:\n${error}\nSie können fortfahren, können jedoch keine Anmeldeinformationen abrufen.",
+			"no_credentials": "Keine gespeicherten Anmeldedaten gefunden.\nBitte melden Sie sich in fount erneut an, um Ihre Anmeldeinformationen zu aktualisieren, oder klicken Sie auf die Schaltfläche unten, um ohne Anmeldeinformationen zur Zielseite fortzufahren.",
+			"missing_params": "Dem Link fehlt ein erforderlicher Parameter.",
 			"buttons": {
 				"ignore": "Ignorieren und fortfahren",
 				"retry": "Erneut versuchen"
