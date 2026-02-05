@@ -438,6 +438,8 @@
 			"title": "Error de transferencia de certificado",
 			"retrieve_error": "Se produjo un error al intentar guardar sus credenciales de inicio de sesión:\n${error}\nPuede continuar pero no puede guardar la información de inicio de sesión.",
 			"transfer_error": "Se produjo un error al intentar transferir sus credenciales de inicio de sesión:\n${error}\nPuede continuar pero no puede obtener información de inicio de sesión.",
+			"no_credentials": "No se encontraron credenciales de inicio de sesión guardadas.\nInicie sesión nuevamente desde font para actualizar sus credenciales de inicio de sesión, o haga clic en el botón a continuación para continuar a la página de destino sin credenciales de inicio de sesión.",
+			"missing_params": "Al enlace le falta un parámetro requerido.",
 			"buttons": {
 				"ignore": "Ignorar y continuar",
 				"retry": "Reintentar"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Error al obtener los tipos de componentes.",
 			"fetchPartsFailed": "Error al obtener la lista de componentes.",
-			"loadPartDetailsFailed": "Error al cargar los detalles del componente.",
-			"exportFailed": "Error al exportar.",
-			"shareLinkCopied": "¡Share Link se ha copiado en el portapapeles!",
-			"shareFailed": "No se pudo crear un enlace de compartir."
+			"loadPartDetailsFailed": "No se pudieron cargar los detalles del componente: ${message}",
+			"exportFailed": "Error al exportar: ${message}",
+			"shareLinkCopied": "¡El enlace para compartir se ha copiado en el portapapeles!",
+			"shareFailed": "No se pudo crear el enlace para compartir: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Error al obtener los tipos de componente.",
 			"fetchPartsFailed": "Error al obtener la lista de componentes.",
-			"loadEditorFailed": "Error al cargar el editor.",
-			"saveConfigFailed": "Error al guardar la configuración del componente.",
+			"loadEditorFailed": "No se pudo cargar el editor: ${message}",
+			"saveConfigFailed": "No se pudo guardar la configuración del componente: ${message}",
+			"saveConfigSuccess": "Configuración guardada",
+			"noPartSelected": "No hay ningún componente seleccionado para guardar; seleccione el componente primero.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
 		},

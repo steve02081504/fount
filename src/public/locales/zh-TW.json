@@ -438,6 +438,8 @@
 			"title": "憑證傳輸錯誤",
 			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
 			"transfer_error": "嘗試轉移您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法取得登入資訊。",
+			"no_credentials": "未找到任何已保存的登錄憑據。\n請從 fount 內重新登陸來更新登陸憑證，或點擊下方按鈕在無登錄憑證的前提下繼續前往目標頁面。",
+			"missing_params": "鏈接缺少必要參數。",
 			"buttons": {
 				"ignore": "忽略並繼續",
 				"retry": "重試"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "獲取組件類型失敗。",
 			"fetchPartsFailed": "獲取組件列表失敗。",
-			"loadPartDetailsFailed": "載入組件詳情失敗。",
-			"exportFailed": "匯出失敗。",
+			"loadPartDetailsFailed": "載入組件詳情失敗: ${message}",
+			"exportFailed": "匯出失敗: ${message}",
 			"shareLinkCopied": "分享連結已複製到剪貼簿！",
-			"shareFailed": "建立分享連結失敗。"
+			"shareFailed": "建立分享連結失敗: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "獲取組件類型失敗",
 			"fetchPartsFailed": "獲取組件列表失敗",
-			"loadEditorFailed": "載入編輯器失敗",
-			"saveConfigFailed": "儲存組件設定失敗",
+			"loadEditorFailed": "載入編輯器失敗: ${message}",
+			"saveConfigFailed": "儲存組件設定失敗: ${message}",
+			"saveConfigSuccess": "設定已儲存",
+			"noPartSelected": "未選擇要儲存的組件，請先選擇組件。",
 			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
 			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
 		},

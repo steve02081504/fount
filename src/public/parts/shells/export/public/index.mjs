@@ -3,7 +3,7 @@
  */
 import { initTranslations, geti18n } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { showToast, showToastI18n } from '/scripts/toast.mjs'
+import { showToastI18n } from '/scripts/toast.mjs'
 import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
 import { getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
 
@@ -69,7 +69,7 @@ async function onPartSelected(partpath) {
 		fountJson = await getFountJson(activePartPath)
 	} catch (err) {
 		console.error('Failed to load part details:', err)
-		showToast('error', `${geti18n('export.alerts.loadPartDetailsFailed')}: ${err.message}`)
+		showToastI18n('error', 'export.alerts.loadPartDetailsFailed', { message: err.message })
 	}
 
 	updateUIState()
@@ -100,7 +100,7 @@ async function handleExport() {
 		setButtonState(exportStatusIcon, 'success')
 	}
 	catch (err) {
-		showToast('error', geti18n('export.alerts.exportFailed') + ': ' + err.message)
+		showToastI18n('error', 'export.alerts.exportFailed', { message: err.message })
 		console.error('Failed to export part:', err)
 		setButtonState(exportStatusIcon, 'error')
 	}
@@ -137,7 +137,7 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 		setButtonState(shareStatusIcon, 'success')
 	}
 	catch (err) {
-		showToast('error', geti18n('export.alerts.shareFailed') + ': ' + err.message)
+		showToastI18n('error', 'export.alerts.shareFailed', { message: err.message })
 		console.error('Failed to handle share action:', err)
 		setButtonState(shareStatusIcon, 'error')
 	}

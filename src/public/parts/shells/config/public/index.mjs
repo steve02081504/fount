@@ -8,7 +8,7 @@ import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartDetails } from '/scripts/parts.mjs'
 import { svgInliner } from '/scripts/svgInliner.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { showToast } from '/scripts/toast.mjs'
+import { showToastI18n } from '/scripts/toast.mjs'
 
 import { saveConfigData, getConfigData, getPartDisplay } from './src/endpoints.mjs' // 导入 API 模块
 import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
@@ -155,7 +155,7 @@ async function loadEditor(partpath) {
 	catch (err) {
 		console.error('Failed to load editor:', err)
 		disableEditorAndSaveButton()
-		showToast('error', geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message)
+		showToastI18n('error', 'part_config.alerts.loadEditorFailed', { message: err.message })
 	}
 }
 
@@ -165,7 +165,7 @@ async function loadEditor(partpath) {
  */
 async function saveConfig() {
 	if (!activePartPath) {
-		console.warn('No part selected to save.')
+		showToastI18n('warning', 'part_config.alerts.noPartSelected')
 		return
 	}
 
@@ -180,9 +180,10 @@ async function saveConfig() {
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
+		showToastI18n('success', 'part_config.alerts.saveConfigSuccess')
 	}
 	catch (err) {
-		showToast('error', geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
+		showToastI18n('error', 'part_config.alerts.saveConfigFailed', { message: err.message })
 		console.error('Failed to save part config:', err)
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -223,7 +224,7 @@ async function initializeFromURLParams() {
 	if (partpathPicker)
 		if (partpath) {
 			partpathPicker.setPath(partpath)
-			if (partpath !== activePartPath) await loadEditor(partpath)
+			if (partpath !== activePartPath) await loadEditor(activePartPath = partpath)
 		}
 		else if (activePartPath)
 			partpathPicker.setPath(activePartPath)

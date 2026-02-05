@@ -427,6 +427,8 @@ export type LocaleData = {
 			title: string
 			retrieve_error: string
 			transfer_error: string
+			no_credentials: string
+			missing_params: string
 			buttons: {
 				ignore: string
 				retry: string
@@ -1652,6 +1654,8 @@ export type LocaleData = {
 			fetchPartsFailed: string
 			loadEditorFailed: string
 			saveConfigFailed: string
+			saveConfigSuccess: string
+			noPartSelected: string
 			unsavedChanges: string
 			beforeUnload: string
 		}
@@ -2386,6 +2390,9 @@ export type LocaleKeyParams = {
 	'discord_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }
+	'export.alerts.exportFailed': { message: string | number }
+	'export.alerts.loadPartDetailsFailed': { message: string | number }
+	'export.alerts.shareFailed': { message: string | number }
 	'fountConsole.auth.accountLockedLog': { username: string | number }
 	'fountConsole.auth.logoutRefreshTokenProcessError': { error: string | number }
 	'fountConsole.auth.refreshTokenError': { error: string | number }
@@ -2438,6 +2445,8 @@ export type LocaleKeyParams = {
 	'installer_wait_screen.footer.error_message': { error: string | number }
 	'login_info.modal.retrieve_error': { error: string | number }
 	'login_info.modal.transfer_error': { error: string | number }
+	'part_config.alerts.loadEditorFailed': { message: string | number }
+	'part_config.alerts.saveConfigFailed': { message: string | number }
 	'pow_captcha.errorMessage': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
 	'protocolhandler.runPartConfirm.message': { partpath: string | number }

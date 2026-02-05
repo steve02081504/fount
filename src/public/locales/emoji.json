@@ -438,6 +438,8 @@
 			"title": "🔐❌",
 			"retrieve_error": "🔐💾❌:\n${error}\n➡️🤷‍♂️💾",
 			"transfer_error": "🔐➡️❌:\n${error}\n➡️🤷‍♂️🔐",
+			"no_credentials": "未找到任何已保存的登录凭据。\n请从 fount 内重新登陆来更新登陆凭证，或点击下方按钮在无登录凭证的前提下继续前往目标页面。",
+			"missing_params": "链接缺少必要参数。",
 			"buttons": {
 				"ignore": "🤷‍♂️➡️",
 				"retry": "🔄"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "🧩📥❌",
 			"fetchPartsFailed": "🧩📥❌",
-			"loadPartDetailsFailed": "🧩ℹ️📥❌",
-			"exportFailed": "📤❌",
+			"loadPartDetailsFailed": "🧩ℹ️📥❌: ${message}",
+			"exportFailed": "📤❌: ${message}",
 			"shareLinkCopied": "🔗📋✅❗️",
-			"shareFailed": "🔗✨❌"
+			"shareFailed": "🔗✨❌: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "🧩📥❌",
 			"fetchPartsFailed": "🧩📥❌",
-			"loadEditorFailed": "✍️📥❌",
-			"saveConfigFailed": "💾⚙️❌",
+			"loadEditorFailed": "✍️📥❌: ${message}",
+			"saveConfigFailed": "💾⚙️❌: ${message}",
+			"saveConfigSuccess": "⚙️💾✅",
+			"noPartSelected": "💾❌👉🧩❓",
 			"unsavedChanges": "🤔💾❓",
 			"beforeUnload": "🤔💾➡️🚪❓"
 		},

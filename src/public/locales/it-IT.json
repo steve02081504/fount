@@ -438,6 +438,8 @@
 			"title": "Errore di trasferimento del certificato",
 			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",
 			"transfer_error": "Si è verificato un errore durante il tentativo di trasferire le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi ottenere informazioni di accesso.",
+			"no_credentials": "Nessuna credenziale di accesso salvata trovata.\nAccedi nuovamente da Font per aggiornare le tue credenziali di accesso oppure fai clic sul pulsante in basso per continuare alla pagina di destinazione senza credenziali di accesso.",
+			"missing_params": "Nel collegamento manca un parametro obbligatorio.",
 			"buttons": {
 				"ignore": "Ignora e continua",
 				"retry": "Riprova"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Impossibile ottenere i tipi di componenti.",
 			"fetchPartsFailed": "Impossibile ottenere l'elenco dei componenti.",
-			"loadPartDetailsFailed": "Impossibile caricare i dettagli del componente.",
-			"exportFailed": "Esportazione non riuscita.",
-			"shareLinkCopied": "Condividi il link è stato copiato negli appunti!",
-			"shareFailed": "Impossibile creare il link di condivisione."
+			"loadPartDetailsFailed": "Impossibile caricare i dettagli del componente: ${message}",
+			"exportFailed": "Esportazione non riuscita: ${message}",
+			"shareLinkCopied": "Link di condivisione copiato negli appunti!",
+			"shareFailed": "Impossibile creare il collegamento di condivisione: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Impossibile ottenere i tipi di componente.",
 			"fetchPartsFailed": "Impossibile ottenere l'elenco dei componenti.",
-			"loadEditorFailed": "Impossibile caricare l'editor.",
-			"saveConfigFailed": "Impossibile salvare la configurazione del componente.",
+			"loadEditorFailed": "Impossibile caricare l'editor: ${message}",
+			"saveConfigFailed": "Impossibile salvare la configurazione del componente: ${message}",
+			"saveConfigSuccess": "Configurazione salvata",
+			"noPartSelected": "Nessun componente selezionato da salvare, seleziona prima il componente.",
 			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
 			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
 		},

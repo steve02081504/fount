@@ -109,7 +109,7 @@
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",
-				"registerFailed": "Не удалось зарегистрировать обработчик протокола fount://: ${message}.",
+				"registerFailed": "Не удалось зарегистрировать обработчик протокола fount://: `${message}",
 				"noUrl": "Ошибка: не указан URL для обработчика протокола."
 			},
 			"update": {
@@ -185,7 +185,7 @@
 				"removingFountFromPath": "Удаление fount из PATH...",
 				"removingProtocolHandler": "Удаление обработчика протокола fount://...",
 				"protocolHandlerRemoved": "Обработчик протокола fount:// был удален.",
-				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола fount://: ${message}.",
+				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола fount://: `${message}",
 				"removingFountFromGitSafeDir": "Удаление fount из gitsafe.directory...",
 				"removingInstalledSystemPackages": "Удаление установленных системных пакетов...",
 				"uninstallingDeno": "Удаление Дено...",
@@ -210,7 +210,7 @@
 				"uninstallingChrome": "Удаление Chrome...",
 				"uninstallingWinget": "Удаление Winget...",
 				"removingBackgroundRunner": "Удаление фоновых программ...",
-				"removeBackgroundRunnerFailed": "Не удалось удалить фоновую программу: ${message}."
+				"removeBackgroundRunnerFailed": "Не удалось удалить фоновую программу: `${message}"
 			}
 		}
 	},
@@ -438,6 +438,8 @@
 			"title": "Ошибка передачи сертификата",
 			"retrieve_error": "Произошла ошибка при попытке сохранить учетные данные для входа:\n${error}\nВы можете продолжить, но не можете сохранить информацию о входе.",
 			"transfer_error": "Произошла ошибка при попытке перенести учетные данные для входа:\n${error}\nВы можете продолжить, но не можете получить информацию о входе.",
+			"no_credentials": "Сохраненные учетные данные для входа не найдены.\nПожалуйста, войдите в систему еще раз из Fount, чтобы обновить свои учетные данные, или нажмите кнопку ниже, чтобы перейти на целевую страницу без учетных данных.",
+			"missing_params": "В ссылке отсутствует обязательный параметр.",
 			"buttons": {
 				"ignore": "Игнорировать и продолжить",
 				"retry": "Повторить"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Не удалось получить типы частей.",
 			"fetchPartsFailed": "Не удалось получить список частей.",
-			"loadPartDetailsFailed": "Не удалось загрузить детали части.",
-			"exportFailed": "Экспорт не удался.",
-			"shareLinkCopied": "Поделиться ссылка была скопирована в буфер обмена!",
-			"shareFailed": "Не удалось создать ссылку для обмена."
+			"loadPartDetailsFailed": "Не удалось загрузить детали части: `${message}",
+			"exportFailed": "Не удалось экспортировать: ${message}",
+			"shareLinkCopied": "Ссылка для обмена скопирована в буфер обмена!",
+			"shareFailed": "Не удалось создать ссылку для обмена: `${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1452,7 +1454,7 @@
 				"na": "Н/Д"
 			},
 			"descriptionSaved": "Заметка сохранена.",
-			"descriptionSaveFailed": "Не удалось сохранить заметку: ${message}."
+			"descriptionSaveFailed": "Не удалось сохранить заметку: `${message}"
 		},
 		"codeExecution": {
 			"title": "выполнение кода",
@@ -1475,9 +1477,9 @@
 			"downloadButton": "Скачать subfount.mjs"
 		},
 		"errors": {
-			"loadConnectionCodeFailed": "Не удалось загрузить код подключения: ${message}.",
-			"regenerateConnectionCodeFailed": "Не удалось повторно создать код подключения: ${message}.",
-			"generalError": "Произошла ошибка: ${message}."
+			"loadConnectionCodeFailed": "Не удалось загрузить код подключения: `${message}",
+			"regenerateConnectionCodeFailed": "Не удалось повторно создать код подключения: `${message}",
+			"generalError": "Произошла ошибка: `${message}"
 		},
 		"home_function_buttons": {
 			"in_dev": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Не удалось получить типы компонентов.",
 			"fetchPartsFailed": "Не удалось получить список компонентов.",
-			"loadEditorFailed": "Не удалось загрузить редактор.",
-			"saveConfigFailed": "Не удалось сохранить настройку компонента.",
+			"loadEditorFailed": "Не удалось загрузить редактор: `${message}",
+			"saveConfigFailed": "Не удалось сохранить конфигурацию компонента: `${message}",
+			"saveConfigSuccess": "Конфигурация сохранена",
+			"noPartSelected": "Ни один компонент не выбран для сохранения, сначала выберите компонент.",
 			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
 			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
 		},
@@ -1714,7 +1718,7 @@
 			"copied": "Скопировано!",
 			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
-			"loadModelsFailed": "Не удалось загрузить модель: ${message}."
+			"loadModelsFailed": "Не удалось загрузить модель: `${message}"
 		},
 		"prompts": {
 			"newFileName": "Введите имя нового исходного файла службы (не включайте суффикс):"
@@ -2060,7 +2064,7 @@
 		"toasts": {
 			"started": "Pet '${charname}' запущен.",
 			"stopped": "Питомец '${charname}' остановлен.",
-			"start_failed": "Не удалось запустить питомца «${charname}»: ${message}.",
+			"start_failed": "Не удалось запустить питомца «${charname}»: `${message}",
 			"stop_failed": "Остановить питомца '${charname}' не удалось: ${message}"
 		},
 		"achievements": {
@@ -2156,7 +2160,7 @@
 		"locked": "Не разблокировано",
 		"toast_title": "Достижения разблокированы!",
 		"error": {
-			"load_failed": "Не удалось загрузить достижения: ${message}."
+			"load_failed": "Не удалось загрузить достижения: `${message}"
 		},
 		"achievements": {
 			"open_achievements_page": {

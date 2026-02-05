@@ -204,9 +204,20 @@ application consistency, reducing code duplication, and ensuring stability.
 
 ### 5.4. Toast Notifications (`toast.mjs`)
 
-- `showToast(type, message, duration)`: Displays a toast notification.
+- `showToast(type, message, duration)`: Displays a toast notification. Use
+  `duration === 0` for no auto-hide.
 - `showToastI18n(type, key, params, duration)`: Displays a toast notification
   with an internationalized message.
+- `setDefaultToastDuration(ms)`: Sets the default duration for toasts on this
+  page when `duration` is not passed to `showToast` / `showToastI18n`. Use
+  `setDefaultToastDuration(0)` so all toasts on that page do not auto-hide
+  (showMessage-style experience).
+- `setToastContainer(container)`: Sets the DOM element that toasts are appended
+  to; pass `null` to revert to the default (body-level) container. Use this so
+  toasts render in a page-specific area (e.g. uninstall message area).
+- `getToastContainer()`: Returns the current toast container. Use
+  `getToastContainer().innerHTML = ''` to clear toasts when using a custom
+  container.
 
 ### 5.5. Search (`search.mjs`)
 

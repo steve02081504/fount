@@ -438,6 +438,8 @@
 			"title": "Erreur de transfert de certificat",
 			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
 			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
+			"no_credentials": "Aucune information de connexion enregistrée trouvée.\nVeuillez vous reconnecter depuis Font pour mettre à jour vos identifiants de connexion, ou cliquez sur le bouton ci-dessous pour continuer vers la page cible sans identifiants de connexion.",
+			"missing_params": "Il manque un paramètre obligatoire dans le lien.",
 			"buttons": {
 				"ignore": "Ignorer et continuer",
 				"retry": "Réessayer"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
 			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
-			"loadPartDetailsFailed": "Échec du chargement des détails du composant.",
-			"exportFailed": "Échec de l'exportation.",
+			"loadPartDetailsFailed": "Échec du chargement des détails du composant : ${message}",
+			"exportFailed": "Échec de l'exportation : ${message}",
 			"shareLinkCopied": "Le lien de partage a été copié dans le presse-papiers !",
-			"shareFailed": "Échec de la création d'un lien de partage."
+			"shareFailed": "Échec de la création du lien de partage : ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
 			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
-			"loadEditorFailed": "Échec du chargement de l'éditeur.",
-			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
+			"loadEditorFailed": "Échec du chargement de l'éditeur : ${message}",
+			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant : ${message}",
+			"saveConfigSuccess": "Configuration enregistrée",
+			"noPartSelected": "Aucun composant n'est sélectionné pour l'enregistrement, veuillez d'abord sélectionner le composant.",
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
 			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		},

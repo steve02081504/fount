@@ -438,6 +438,8 @@
 			"title": "Villa við flutning vottorðs",
 			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
 			"transfer_error": "Villa kom upp þegar reynt var að flytja innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki fengið innskráningarupplýsingar.",
+			"no_credentials": "Engin vistuð innskráningarskilríki fundust.\nVinsamlega skráðu þig inn aftur innan úr fontinum til að uppfæra innskráningarskilríkin þín, eða smelltu á hnappinn hér að neðan til að halda áfram á marksíðuna án innskráningarskilríkja.",
+			"missing_params": "Hlekkinn vantar nauðsynlega færibreytu.",
 			"buttons": {
 				"ignore": "Hunsa og halda áfram",
 				"retry": "Reyndu aftur"
@@ -1234,10 +1236,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta.",
 			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti.",
-			"loadPartDetailsFailed": "Mistókst að hlaða upplýsingum um íhlut.",
-			"exportFailed": "Útflutningur mistókst.",
+			"loadPartDetailsFailed": "Mistókst að hlaða íhlutaupplýsingum: ${message}",
+			"exportFailed": "Útflutningur mistókst: ${message}",
 			"shareLinkCopied": "Deilingarhlekkur afritaður á klippiborð!",
-			"shareFailed": "Mistókst að búa til deilingarhlekk."
+			"shareFailed": "Mistókst að búa til deilingartengil: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1663,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta",
 			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti",
-			"loadEditorFailed": "Mistókst að hlaða ritil",
-			"saveConfigFailed": "Mistókst að vista stillingar íhlutar",
+			"loadEditorFailed": "Mistókst að hlaða ritil: ${message}",
+			"saveConfigFailed": "Mistókst að vista uppsetningu íhluta: ${message}",
+			"saveConfigSuccess": "Stilling vistuð",
+			"noPartSelected": "Enginn hluti er valinn til að vista, vinsamlegast veldu íhlutinn fyrst.",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
 		},
