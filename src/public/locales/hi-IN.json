@@ -1184,7 +1184,7 @@
 			"action": "निर्यात"
 		},
 		"labels": {
-			"part": "एक पार्ट चुनें"
+			"part": "एक घटक चुनें"
 		},
 		"placeholders": {
 			"partTypeSelect": "कृपया चुनें",
@@ -1204,7 +1204,7 @@
 			"title": "निर्यात विकल्प"
 		},
 		"editor": {
-			"disabledIndicator": "कृपया पहले एक पार्ट चुनें",
+			"disabledIndicator": "कृपया पहले एक घटक चुनें",
 			"disabledIndicatorHint": "कृपया उस घटक प्रकार और उस घटक का चयन करें जिसे आप निर्यात करना चाहते हैं"
 		},
 		"buttons": {
@@ -1232,12 +1232,12 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "पार्ट प्रकार प्राप्त करने में विफल।",
-			"fetchPartsFailed": "पार्ट सूची प्राप्त करने में विफल।",
-			"loadPartDetailsFailed": "पार्ट विवरण लोड करने में विफल।",
-			"exportFailed": "निर्यात विफल रहा।",
+			"fetchPartTypesFailed": "घटक प्रकार प्राप्त करने में विफल।",
+			"fetchPartsFailed": "घटक सूची प्राप्त करने में विफल।",
+			"loadPartDetailsFailed": "घटक विवरण लोड करने में विफल: ${message}",
+			"exportFailed": "निर्यात विफल: ${message}",
 			"shareLinkCopied": "शेयर लिंक को क्लिपबोर्ड पर कॉपी किया गया है!",
-			"shareFailed": "एक शेयर लिंक बनाने में विफल रहा।"
+			"shareFailed": "साझा लिंक बनाने में विफल: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1254,7 +1254,7 @@
 				"title": "घटक",
 				"sub_items": {
 					"exportPart": {
-						"title": "पार्ट निर्यात करें"
+						"title": "घटक निर्यात करें"
 					}
 				}
 			}
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "घटक प्रकार प्राप्त करने में विफल।",
 			"fetchPartsFailed": "घटक सूची प्राप्त करने में विफल।",
-			"loadEditorFailed": "संपादक लोड करने में विफल।",
-			"saveConfigFailed": "घटक कॉन्फ़िगरेशन सहेजने में विफल।",
+			"loadEditorFailed": "संपादक लोड करने में विफल: ${message}",
+			"saveConfigFailed": "घटक कॉन्फ़िगरेशन सहेजने में विफल: ${message}",
+			"saveConfigSuccess": "कॉन्फ़िगरेशन सहेजा गया",
+			"noPartSelected": "सहेजने के लिए कोई घटक नहीं चुना गया है, कृपया पहले घटक का चयन करें।",
 			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
 			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
 		},

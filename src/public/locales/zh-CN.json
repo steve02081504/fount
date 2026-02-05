@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "获取组件类型失败。",
 			"fetchPartsFailed": "获取组件列表失败。",
-			"loadPartDetailsFailed": "加载组件详情失败。",
-			"exportFailed": "导出失败。",
+			"loadPartDetailsFailed": "加载组件详情失败: ${message}",
+			"exportFailed": "导出失败: ${message}",
 			"shareLinkCopied": "分享链接已复制到剪贴板！",
-			"shareFailed": "创建分享链接失败。"
+			"shareFailed": "创建分享链接失败: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "获取组件类型失败",
 			"fetchPartsFailed": "获取组件列表失败",
-			"loadEditorFailed": "加载编辑器失败",
-			"saveConfigFailed": "保存组件配置失败",
+			"loadEditorFailed": "加载编辑器失败: ${message}",
+			"saveConfigFailed": "保存组件配置失败: ${message}",
+			"saveConfigSuccess": "配置已保存",
+			"noPartSelected": "未选择要保存的组件，请先选择组件。",
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
 			"beforeUnload": "您有未保存的更改。确定要离开吗？"
 		},

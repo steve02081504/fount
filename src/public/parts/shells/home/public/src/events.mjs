@@ -1,8 +1,8 @@
 import { setUserSetting } from '../../../scripts/endpoints.mjs'
-import { confirmI18n, geti18n, onLanguageChange } from '../../../scripts/i18n.mjs'
+import { confirmI18n, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { unlockAchievement } from '../../../scripts/parts.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
+import { showToastI18n } from '../../../scripts/toast.mjs'
 
 import { partDetailsCache, partListsCache } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
@@ -144,13 +144,13 @@ export function setupDOMEventListeners() {
 		for (const handlerConfig of handlers) try {
 			const handlerModule = await import(handlerConfig.path)
 			const handled = await handlerModule.default?.(dataTransfer, handlerConfig)
-			if (handled) return showToast('success', geti18n('home.dragAndDrop.dropSuccess'))
+			if (handled) return showToastI18n('success', 'home.dragAndDrop.dropSuccess')
 		} catch (error) {
 			console.error(`Error importing or executing drag-in handler from ${handlerConfig.path}:`, error)
-			showToast('error', geti18n('home.dragAndDrop.dropError', { error: error.message }))
+			showToastI18n('error', 'home.dragAndDrop.dropError', { error: error.message })
 		}
 
-		showToast('warning', geti18n('home.dragAndDrop.noHandler'))
+		showToastI18n('warning', 'home.dragAndDrop.noHandler')
 	})
 }
 

@@ -1232,12 +1232,12 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Komponente-Typen konnten nicht abgerufen werden.",
-			"fetchPartsFailed": "Die Komponente-Liste konnte nicht abgerufen werden.",
-			"loadPartDetailsFailed": "Komponente-Details konnten nicht geladen werden.",
-			"exportFailed": "Export fehlgeschlagen.",
-			"shareLinkCopied": "Share Link wurde in die Zwischenablage kopiert!",
-			"shareFailed": "Der Freigabelink konnte nicht erstellt werden."
+			"fetchPartTypesFailed": "Komponententypen konnten nicht abgerufen werden.",
+			"fetchPartsFailed": "Die Komponentenliste konnte nicht abgerufen werden.",
+			"loadPartDetailsFailed": "Komponentendetails konnten nicht geladen werden: ${message}",
+			"exportFailed": "Export fehlgeschlagen: ${message}",
+			"shareLinkCopied": "Freigabelink wurde in die Zwischenablage kopiert!",
+			"shareFailed": "Freigabelink konnte nicht erstellt werden: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Fehler beim Abrufen der Komponententypen.",
 			"fetchPartsFailed": "Fehler beim Abrufen der Komponentenliste.",
-			"loadEditorFailed": "Fehler beim Laden des Editors.",
-			"saveConfigFailed": "Fehler beim Speichern der Komponentenkonfiguration.",
+			"loadEditorFailed": "Editor konnte nicht geladen werden: ${message}",
+			"saveConfigFailed": "Komponentenkonfiguration konnte nicht gespeichert werden: ${message}",
+			"saveConfigSuccess": "Konfiguration gespeichert",
+			"noPartSelected": "Es ist keine Komponente zum Speichern ausgewählt. Bitte wählen Sie zuerst eine Komponente aus.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
 			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
 		},

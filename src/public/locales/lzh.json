@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "取器類失利。",
 			"fetchPartsFailed": "取器錄失利。",
-			"loadPartDetailsFailed": "載器詳情失利。",
-			"exportFailed": "導出失利。",
+			"loadPartDetailsFailed": "載器詳情失利: ${message}",
+			"exportFailed": "導出失利: ${message}",
 			"shareLinkCopied": "分享之鑰已錄！",
-			"shareFailed": "造分享之鑰失利。"
+			"shareFailed": "造分享之鑰失利: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "取器類失利",
 			"fetchPartsFailed": "取器錄失利",
-			"loadEditorFailed": "載入失利",
-			"saveConfigFailed": "存規度失利",
+			"loadEditorFailed": "載入失利: ${message}",
+			"saveConfigFailed": "存規度失利: ${message}",
+			"saveConfigSuccess": "規度已存",
+			"noPartSelected": "欲存無器，請先選之。",
 			"unsavedChanges": "尚有未存之變，欲棄之乎？",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
 		},

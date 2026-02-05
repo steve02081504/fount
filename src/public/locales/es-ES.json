@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Error al obtener los tipos de componentes.",
 			"fetchPartsFailed": "Error al obtener la lista de componentes.",
-			"loadPartDetailsFailed": "Error al cargar los detalles del componente.",
-			"exportFailed": "Error al exportar.",
-			"shareLinkCopied": "¡Share Link se ha copiado en el portapapeles!",
-			"shareFailed": "No se pudo crear un enlace de compartir."
+			"loadPartDetailsFailed": "No se pudieron cargar los detalles del componente: ${message}",
+			"exportFailed": "Error al exportar: ${message}",
+			"shareLinkCopied": "¡El enlace para compartir se ha copiado en el portapapeles!",
+			"shareFailed": "No se pudo crear el enlace para compartir: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Error al obtener los tipos de componente.",
 			"fetchPartsFailed": "Error al obtener la lista de componentes.",
-			"loadEditorFailed": "Error al cargar el editor.",
-			"saveConfigFailed": "Error al guardar la configuración del componente.",
+			"loadEditorFailed": "No se pudo cargar el editor: ${message}",
+			"saveConfigFailed": "No se pudo guardar la configuración del componente: ${message}",
+			"saveConfigSuccess": "Configuración guardada",
+			"noPartSelected": "No hay ningún componente seleccionado para guardar; seleccione el componente primero.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
 		},

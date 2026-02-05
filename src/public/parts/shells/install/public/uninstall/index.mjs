@@ -4,6 +4,7 @@
 import { initTranslations, geti18n } from '/scripts/i18n.mjs'
 import { onServerEvent } from '/scripts/server_events.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
+import { showToastI18n, setToastContainer, getToastContainer, setDefaultToastDuration } from '/scripts/toast.mjs'
 import { uninstallPart as uninstallPartEndpoint } from '../src/endpoints.mjs'
 import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
 
@@ -46,35 +47,15 @@ async function uninstallPart(partpath) {
 }
 
 /**
- * 显示消息。
- * @param {'info' | 'error'} type - 消息类型。
- * @param {string} message - 消息内容。
- */
-function showMessage(type, message) {
-	const messageElement = document.getElementById('message-content')
-	const infoMessage = document.getElementById('info-message')
-	const errorElement = document.getElementById('error-content')
-	const errorMessage = document.getElementById('error-message')
-	if (type === 'info') {
-		messageElement.textContent = message
-		infoMessage.style.display = 'flex'
-		errorMessage.style.display = 'none'
-	}
-	else if (type === 'error') {
-		errorElement.textContent = message
-		errorMessage.style.display = 'flex'
-		infoMessage.style.display = 'none'
-	}
-}
-/**
  * 隐藏消息。
  */
 function hideMessage() {
-	document.getElementById('info-message').style.display = 'none'
-	document.getElementById('error-message').style.display = 'none'
+	getToastContainer().innerHTML = ''
 }
 
 await initTranslations('uninstall')
+setToastContainer(document.getElementById('message-container'))
+setDefaultToastDuration(0)
 const partpathDropdown = document.getElementById('partpath-dropdown')
 const partpathBreadcrumb = document.getElementById('partpath-breadcrumb')
 const partpathMenu = document.getElementById('partpath-menu')
@@ -87,9 +68,9 @@ const confirmButton = document.getElementById('confirm-uninstall')
 const cancelButton = document.getElementById('cancel-uninstall')
 
 /**
- *
+ * 渲染文本。
  */
-const renderTexts = () => {
+function renderTexts() {
 	if (!activePartpath) return
 	const [type, ...name] = activePartpath.split('/')
 	title.textContent = geti18n('uninstall.titleWithName', { type, name: name.join('/') })
@@ -97,24 +78,24 @@ const renderTexts = () => {
 }
 
 /**
- *
+ * 设置事件监听器。
  */
-const setupEvents = () => {
+function setupEvents() {
 	confirmButton.addEventListener('click', async () => {
 		if (!activePartpath) return
 		hideMessage()
 		try {
-			await uninstallPart(activePartpath)
+			await uninstallPart(activePartpath) // success toast will be shown in part-uninstalled event
 		}
 		catch (error) {
-			showMessage('error', geti18n('uninstall.alerts.failed', { error: error.message }))
+			showToastI18n('error', 'uninstall.alerts.failed', { error: error.message })
 		}
 	})
 
 	onServerEvent('part-uninstalled', ({ partpath: eventPartpath }) => {
 		if (eventPartpath === activePartpath) {
 			const [etype, ...ename] = activePartpath.split('/')
-			showMessage('info', geti18n('uninstall.alerts.success', { type: etype, name: ename.join('/') }))
+			showToastI18n('success', 'uninstall.alerts.success', { type: etype, name: ename.join('/') })
 			confirmButton.disabled = true
 			cancelButton.dataset.i18n = 'uninstall.buttons.back'
 		}
@@ -156,12 +137,12 @@ if (!activePartpath) {
 	activePartpath = picker.getPath()
 	if (!activePartpath) {
 		title.dataset.i18n = 'uninstall.invalidParamsTitle'
-		showMessage('error', geti18n('uninstall.alerts.invalidParams'))
+		showToastI18n('error', 'uninstall.alerts.invalidParams')
 	} else renderTexts()
 }
 else if (!picker.isPathValid()) {
 	title.dataset.i18n = 'uninstall.invalidParamsTitle'
-	showMessage('error', geti18n('uninstall.alerts.pathNotFound'))
+	showToastI18n('error', 'uninstall.alerts.pathNotFound')
 	confirmButton.disabled = true
 	updateURLParams(activePartpath)
 }

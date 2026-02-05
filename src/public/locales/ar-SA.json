@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "فشل في جلب أنواع المكونات.",
 			"fetchPartsFailed": "فشل في جلب قائمة المكونات.",
-			"loadPartDetailsFailed": "فشل تحميل تفاصيل المكون.",
-			"exportFailed": "فشل التصدير.",
+			"loadPartDetailsFailed": "فشل تحميل تفاصيل المكون: ${message}",
+			"exportFailed": "فشل التصدير: ${message}",
 			"shareLinkCopied": "تم نسخ رابط المشاركة إلى الحافظة!",
-			"shareFailed": "فشل إنشاء رابط المشاركة."
+			"shareFailed": "فشل إنشاء رابط المشاركة: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "فشل في جلب أنواع المكونات",
 			"fetchPartsFailed": "فشل في جلب قائمة المكونات",
-			"loadEditorFailed": "فشل تحميل المحرر",
-			"saveConfigFailed": "فشل حفظ تهيئة المكون",
+			"loadEditorFailed": "فشل تحميل المحرر: ${message}",
+			"saveConfigFailed": "فشل حفظ تكوين المكون: ${message}",
+			"saveConfigSuccess": "تم حفظ التكوين",
+			"noPartSelected": "لم يتم تحديد أي مكون للحفظ، يرجى تحديد المكون أولاً.",
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
 		},
