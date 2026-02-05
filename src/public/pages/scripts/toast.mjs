@@ -3,7 +3,11 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { geti18n, setLocalizeLogic } from './i18n.mjs'
 
+/** 显式设置的 toast 容器；为 null 时使用默认的 #toast-container。 */
 let toastContainer = null
+
+/** 未传 duration 时使用的默认持续时间（毫秒）；0 表示不自动消失。页面可设为 0 以得到 showMessage 式常驻提示。 */
+let defaultToastDuration = 4000
 
 const icons = {
 	info: 'https://api.iconify.design/line-md/alert-circle.svg',
@@ -14,29 +18,51 @@ const icons = {
 
 /**
  * 确保 toast 容器存在。
+ * 若已通过 setToastContainer 设置则返回该容器，否则使用或创建默认的 #toast-container。
  * @returns {HTMLElement} - toast 容器。
  */
 function ensureToastContainer() {
-	if (!toastContainer)
-		toastContainer = document.querySelector('#toast-container')
+	return (toastContainer ??= document.getElementById('toast-container')) || document.body.appendChild(toastContainer = Object.assign(document.createElement('div'), {
+		id: 'toast-container',
+		className: 'toast toast-bottom toast-end z-[100]'
+	})) && toastContainer
+}
 
-	if (!toastContainer) {
-		toastContainer = document.createElement('div')
-		toastContainer.id = 'toast-container'
-		toastContainer.className = 'toast toast-bottom toast-end z-[100]'
-		document.body.appendChild(toastContainer)
-	}
-	return toastContainer
+/**
+ * 设置 toast 使用的容器；toast 将追加到此元素内。
+ * 传入 null 或省略则恢复使用默认容器。
+ * @param {HTMLElement | null} [container] - 作为容器的元素。
+ */
+export function setToastContainer(container) {
+	toastContainer = container ?? null
+}
+
+/**
+ * 返回当前用于显示 toast 的容器（即 ensureToastContainer() 的结果）。
+ * 可用于清空当前页的 toast 区域，例如 getToastContainer().innerHTML = ''。
+ * @returns {HTMLElement} - 当前 toast 容器。
+ */
+export function getToastContainer() {
+	return ensureToastContainer()
+}
+
+/**
+ * 设置本页 toast 的默认持续时间；未传 duration 的 showToast/showToastI18n 将使用此值。
+ * 传 0 可让该页所有 toast 不自动消失（常驻直到清空容器），等同于 showMessage 行为。
+ * @param {number} ms - 默认持续时间（毫秒），0 表示不自动消失。
+ */
+export function setDefaultToastDuration(ms) {
+	defaultToastDuration = ms
 }
 
 /**
  * 显示一个基本的 toast。
  * @param {string} type - toast 类型。
  * @param {string|HTMLElement} message - toast 消息。
- * @param {number} [duration=4000] - toast 持续时间。
+ * @param {number} [duration] - toast 持续时间。
  * @returns {HTMLElement} - toast 元素。
  */
-function base_showToast(type, message, duration = 4000) {
+function base_showToast(type, message, duration = defaultToastDuration) {
 	if (!(message instanceof HTMLElement) && !(Object(message) instanceof String)) {
 		Sentry.captureException(new Error(`showToast() called with non-string/non-HTMLElement message: ${message}`))
 		message = String(message)
@@ -78,6 +104,7 @@ function base_showToast(type, message, duration = 4000) {
 	 * @returns {void}
 	 */
 	const startTimer = () => {
+		if (duration <= 0) return
 		hideTimeout = setTimeout(() => {
 			alertDiv.classList.add('animate-fade-out-down')
 			alertDiv.addEventListener('animationend', () => {
@@ -91,6 +118,7 @@ function base_showToast(type, message, duration = 4000) {
 	 * @returns {void}
 	 */
 	const resetTimer = () => {
+		if (duration <= 0) return
 		clearTimeout(hideTimeout)
 		startTimer()
 	}
@@ -102,14 +130,15 @@ function base_showToast(type, message, duration = 4000) {
 	startTimer()
 	return alertDiv
 }
+
 /**
  * 显示一个 toast。
  * @param {string} [type='info'] - toast 类型。
  * @param {string|HTMLElement} message - toast 消息。
- * @param {number} [duration=4000] - toast 持续时间。
+ * @param {number} [duration] - 持续时间（毫秒）；不传则用 setDefaultToastDuration 设置的值，0 表示不自动消失。
  * @returns {void}
  */
-export function showToast(type = 'info', message, duration = 4000) {
+export function showToast(type = 'info', message, duration) {
 	base_showToast(type, message, duration)
 }
 /**
@@ -117,14 +146,15 @@ export function showToast(type = 'info', message, duration = 4000) {
  * @param {string} [type='info'] - toast 类型。
  * @param {string} key - i18n 键。
  * @param {object} [params={}] - i18n 参数。
- * @param {number} [duration=4000] - toast 持续时间。
+ * @param {number} [duration] - 持续时间（毫秒）；不传则用 setDefaultToastDuration 设置的值，0 表示不自动消失。
  * @returns {void}
  */
-export function showToastI18n(type = 'info', key, params = {}, duration = 4000) {
+export function showToastI18n(type = 'info', key, params = {}, duration) {
 	const div = base_showToast(type, '', duration)
-	setLocalizeLogic(div, () => {
+	if (Object.keys(params).length) setLocalizeLogic(div, () => {
 		div.querySelector('div').innerHTML = geti18n(key, params).replace(/\n/g, '<br>')
 	})
+	else div.querySelector('div').dataset.i18n = key
 }
 
 const style = document.createElement('style')

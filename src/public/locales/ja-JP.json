@@ -30,7 +30,7 @@
 			"instanceRunning": "別のインスタンスが既に実行中です。",
 			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
 			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
-			"invalidCommand": "無効なコマンドです。「fount run <部品タイプ> <ユーザー名> <部品名> <パラメーター...>」を使用してください。",
+			"invalidCommand": "無効なコマンドです。「fount run <コンポーネントタイプ> <ユーザー名> <コンポーネント名> <パラメーター...>」を使用してください。",
 			"invalidCommandFormat": "無効なコマンド形式です。",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "コンポーネントタイプの取得に失敗しました。",
 			"fetchPartsFailed": "コンポーネントリストの取得に失敗しました。",
-			"loadPartDetailsFailed": "コンポーネント詳細の読み込みに失敗しました。",
-			"exportFailed": "エクスポートに失敗しました。",
+			"loadPartDetailsFailed": "コンポーネント詳細の読み込みに失敗しました: ${message}",
+			"exportFailed": "エクスポートに失敗しました: ${message}",
 			"shareLinkCopied": "共有リンクがクリップボードにコピーされました！",
-			"shareFailed": "共有リンクの作成に失敗しました。"
+			"shareFailed": "共有リンクの作成に失敗しました: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1659,10 +1659,12 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "部品タイプの取得に失敗しました。",
-			"fetchPartsFailed": "部品リストの取得に失敗しました。",
-			"loadEditorFailed": "エディターの読み込みに失敗しました。",
-			"saveConfigFailed": "コンポーネント設定の保存に失敗しました。",
+			"fetchPartTypesFailed": "コンポーネントタイプの取得に失敗しました。",
+			"fetchPartsFailed": "コンポーネントリストの取得に失敗しました。",
+			"loadEditorFailed": "エディターの読み込みに失敗しました: ${message}",
+			"saveConfigFailed": "コンポーネント設定の保存に失敗しました: ${message}",
+			"saveConfigSuccess": "設定が保存されました",
+			"noPartSelected": "保存するコンポーネントが選択されていません。最初にコンポーネントを選択してください。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		},

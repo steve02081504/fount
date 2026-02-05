@@ -44,9 +44,11 @@ async function ImportAsData(username, data) {
 	// make an dir for the character
 	// copy directory
 	const templateDir = path.join(import.meta.dirname, 'Template')
-	const targetPath = await getAvailablePath(username, 'chars', sanitizeFilename(chardata.name || 'unknown'))
+	const dirname = sanitizeFilename(chardata.name || 'unknown')
+	const targetPath = await getAvailablePath(username, 'chars', dirname)
 
 	await fs.copy(templateDir, targetPath)
+	saveJsonFile(path.join(targetPath, 'fount.json'), { type: 'chars', dirname })
 	// write chardata to the character
 	const chardataPath = path.join(targetPath, 'chardata.json')
 	saveJsonFile(chardataPath, chardata)
@@ -56,7 +58,7 @@ async function ImportAsData(username, data) {
 	await fs.ensureDir(publicDir)
 	const imagePath = path.join(publicDir, 'image.png')
 	await fs.writeFile(imagePath, image)
-	return [`chars/${chardata.name}`]
+	return [`chars/${dirname}`]
 }
 
 /**

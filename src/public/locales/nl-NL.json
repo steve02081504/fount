@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Ophalen van componenttypes mislukt.",
 			"fetchPartsFailed": "Ophalen van componentenlijst mislukt.",
-			"loadPartDetailsFailed": "Laden van componentdetails mislukt.",
-			"exportFailed": "Exporteren mislukt.",
+			"loadPartDetailsFailed": "Kan componentdetails niet laden: ${message}",
+			"exportFailed": "Exporteren mislukt: ${message}",
 			"shareLinkCopied": "Deellink gekopieerd naar klembord!",
-			"shareFailed": "Aanmaken van deellink mislukt."
+			"shareFailed": "Kan deellink niet maken: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Ophalen van componenttypes mislukt",
 			"fetchPartsFailed": "Ophalen van componentenlijst mislukt",
-			"loadEditorFailed": "Laden van editor mislukt",
-			"saveConfigFailed": "Opslaan van componentconfiguratie mislukt",
+			"loadEditorFailed": "Kan editor niet laden: ${message}",
+			"saveConfigFailed": "Kan componentconfiguratie niet opslaan: ${message}",
+			"saveConfigSuccess": "Configuratie opgeslagen",
+			"noPartSelected": "Er is geen onderdeel geselecteerd om op te slaan. Selecteer eerst het onderdeel.",
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
 		},

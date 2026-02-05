@@ -37,18 +37,7 @@
 				<ul id="partpath-menu" class="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-full max-h-80 overflow-auto"></ul>
 			</div>
 		</div>
-		<div class="alert alert-info shadow-lg" id="info-message" style="display: none;">
-			<div>
-				<img src="https://api.iconify.design/line-md/alert-circle.svg" class="flex-shrink-0 w-6 h-6" data-i18n="uninstall.infoMessage.icon" />
-				<span id="message-content"></span>
-			</div>
-		</div>
-		<div class="alert alert-error shadow-lg" id="error-message" style="display: none;">
-			<div>
-				<img src="https://api.iconify.design/line-md/alert.svg" class="flex-shrink-0 w-6 h-6" data-i18n="uninstall.errorMessage.icon" />
-				<span id="error-content"></span>
-			</div>
-		</div>
+		<div id="message-container" class="min-h-0"></div>
 		<p id="uninstall-message" class="mb-4"></p>
 		<div class="flex space-x-4">
 			<button id="confirm-uninstall" class="btn btn-error" data-i18n="uninstall.buttons.confirm"></button>

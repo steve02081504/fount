@@ -91,6 +91,8 @@ async function ImportAsData(username, dataBuffer) {
 		const targetPath = await getAvailablePath(username, 'chars', charName)
 		await mkdir(targetPath, { recursive: true })
 
+		saveJsonFile(path.join(targetPath, 'fount.json'), { type: 'chars', dirname: charName })
+
 		const processedAssetsForST = []
 		if (ccv3Card.data.assets && Array.isArray(ccv3Card.data.assets))
 			for (const assetDef of ccv3Card.data.assets) {
