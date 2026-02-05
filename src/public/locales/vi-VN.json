@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Không thể lấy loại thành phần.",
 			"fetchPartsFailed": "Không thể lấy danh sách thành phần.",
-			"loadPartDetailsFailed": "Không thể tải chi tiết thành phần.",
-			"exportFailed": "Xuất thất bại.",
+			"loadPartDetailsFailed": "Không tải được chi tiết thành phần: ${message}",
+			"exportFailed": "Xuất không thành công: ${message}",
 			"shareLinkCopied": "Liên kết chia sẻ đã được sao chép vào bảng tạm!",
-			"shareFailed": "Không tạo được liên kết chia sẻ."
+			"shareFailed": "Không tạo được liên kết chia sẻ: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Lấy loại thành phần thất bại.",
 			"fetchPartsFailed": "Lấy danh sách thành phần thất bại.",
-			"loadEditorFailed": "Tải trình chỉnh sửa thất bại.",
-			"saveConfigFailed": "Lưu cấu hình thành phần thất bại.",
+			"loadEditorFailed": "Không tải được trình soạn thảo: ${message}",
+			"saveConfigFailed": "Không lưu được cấu hình thành phần: ${message}",
+			"saveConfigSuccess": "Đã lưu cấu hình",
+			"noPartSelected": "Không có thành phần nào được chọn để lưu, vui lòng chọn thành phần đó trước.",
 			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
 			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
 		},

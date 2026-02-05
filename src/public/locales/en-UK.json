@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Failed to get component types.",
 			"fetchPartsFailed": "Failed to get the list of components.",
-			"loadPartDetailsFailed": "Failed to load component details.",
-			"exportFailed": "Export failed.",
-			"shareLinkCopied": "Share link has been copied to the clipboard!",
-			"shareFailed": "Failed to create a share link."
+			"loadPartDetailsFailed": "Failed to load component details: ${message}",
+			"exportFailed": "Export failed: ${message}",
+			"shareLinkCopied": "Share link copied to the clipboard!",
+			"shareFailed": "Failed to create share link: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Failed to get component types.",
 			"fetchPartsFailed": "Failed to get component list.",
-			"loadEditorFailed": "Failed to load editor.",
-			"saveConfigFailed": "Failed to save component configuration.",
+			"loadEditorFailed": "Failed to load editor: ${message}",
+			"saveConfigFailed": "Failed to save component configuration: ${message}",
+			"saveConfigSuccess": "Configuration saved",
+			"noPartSelected": "No component is selected to save, please select the component first.",
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		},

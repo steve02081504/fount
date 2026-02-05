@@ -826,7 +826,7 @@
 					"72h": "72 horas"
 				},
 				"shareIcon": {
-					"alt": "ícone de compartilhamento"
+					"alt": "ícone de partilha"
 				}
 			},
 			"share": {
@@ -1178,7 +1178,7 @@
 		"title": "Exportador de Componentes",
 		"pageTitle": "Exportador de Componentes",
 		"pageSubtitle": "Exporte o seu conteúdo favorito",
-		"description": "Exporte suas criações de fontes. Esta ferramenta reúne as peças selecionadas em um arquivo zip simples para guarda ou compartilhamento.",
+		"description": "Exporte suas criações de fontes. Esta ferramenta reúne as peças selecionadas em um arquivo zip simples para guarda ou partilha.",
 		"steps": {
 			"part": "Selecione componentes",
 			"action": "Exportar"
@@ -1212,10 +1212,10 @@
 			"exportWithData": "Exportar (com dados)",
 			"copyShareLink": "Copiar link de partilha",
 			"generateShareLink": "Gerar link de partilha",
-			"generateShareLinkWithData": "Gerar um link de compartilhamento (incluindo dados)"
+			"generateShareLinkWithData": "Gerar um link de partilha (incluindo dados)"
 		},
 		"shareMenu": {
-			"title": "Escolha o tempo de compartilhamento",
+			"title": "Escolha o tempo de partilha",
 			"1h": "1 hora",
 			"12h": "12 horas",
 			"24h": "24 horas",
@@ -1223,7 +1223,7 @@
 			"cancel": "Cancelar"
 		},
 		"litterbox": {
-			"poweredBy": "O recurso de compartilhamento é suportado pelo LitterBox.moe",
+			"poweredBy": "O recurso de partilha é suportado pelo LitterBox.moe",
 			"sponsorLink": "Patrocine-os"
 		},
 		"errorMessage": {
@@ -1234,10 +1234,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Falha ao obter os tipos de peça.",
 			"fetchPartsFailed": "Falha ao obter a lista de peças.",
-			"loadPartDetailsFailed": "Falha ao carregar os detalhes da peça.",
-			"exportFailed": "A exportação falhou.",
-			"shareLinkCopied": "O link de compartilhamento foi copiado para a área de transferência!",
-			"shareFailed": "Falha ao criar um link de compartilhamento."
+			"loadPartDetailsFailed": "Falha ao carregar detalhes do componente: ${message}",
+			"exportFailed": "Falha na exportação: ${message}",
+			"shareLinkCopied": "O link de partilha foi copiado para a área de transferência!",
+			"shareFailed": "Falha ao criar link de partilha: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -1661,8 +1661,10 @@
 		"alerts": {
 			"fetchPartTypesFailed": "Falha ao obter os tipos de componente.",
 			"fetchPartsFailed": "Falha ao obter a lista de componentes.",
-			"loadEditorFailed": "Falha ao carregar o editor.",
-			"saveConfigFailed": "Falha ao guardar a configuração do componente.",
+			"loadEditorFailed": "Falha ao carregar o editor: ${message}",
+			"saveConfigFailed": "Falha ao salvar a configuração do componente: ${message}",
+			"saveConfigSuccess": "Configuração guardada",
+			"noPartSelected": "Nenhum componente foi selecionado para salvar. Selecione o componente primeiro.",
 			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
 			"beforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair?"
 		},
