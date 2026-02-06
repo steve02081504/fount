@@ -12,7 +12,7 @@ import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { doProfile } from '../scripts/profiler.mjs'
 
-import { getUserByUsername, getUserDictionary } from './auth.mjs'
+import { getAllUsers, getUserByUsername, getUserDictionary } from './auth.mjs'
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
 import { restartor, save_config, setDefaultStuff, skip_report } from './server.mjs'
@@ -508,6 +508,25 @@ export async function baseloadPart(username, partpath, {
 		saveData(username, 'parts_details_cache')
 		throw e
 	})
+}
+/**
+ * 浅加载所有的默认部件，以此实现默认部件的快速启动
+ * @param {object | string} user - 用户对象或用户名。
+ * @returns {Promise<void>}
+ */
+async function shallowLoadDefaultPartsForUser(user) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const defaultParts = user.defaultParts ??= {}
+	for (const parent in defaultParts)
+		for (const child of defaultParts[parent] ?? [])
+			await baseloadPart(user.username, parent + '/' + child).catch(_ => 0)
+}
+/**
+ * 浅加载所有用户的默认部件，以此实现默认部件的快速启动
+ * @returns {Promise<void>}
+ */
+export async function shallowLoadAllDefaultParts() {
+	for (const user of Object.values(getAllUsers())) await shallowLoadDefaultPartsForUser(user)
 }
 
 /**

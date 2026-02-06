@@ -21,6 +21,7 @@ import { initAuth } from './auth.mjs'
 import { __dirname, startTime } from './base.mjs'
 import idleManager from './idle.mjs'
 import { ReStartJobs } from './jobs.mjs'
+import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
@@ -321,11 +322,12 @@ export async function init(start_config) {
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {
-		if (starts.Base.Jobs) setTimeout(() => {
-			const Interval = setInterval(() => {
+		setTimeout(() => {
+			const Interval = setInterval(async () => {
 				if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
 				clearInterval(Interval)
-				ReStartJobs()
+				if (starts.Base.Jobs) await ReStartJobs()
+				await shallowLoadAllDefaultParts()
 			}, 1000)
 		}, 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
