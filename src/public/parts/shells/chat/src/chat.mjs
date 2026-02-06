@@ -19,7 +19,7 @@ import { sendNotification } from '../../../../../server/web_server/event_dispatc
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
-import { generateDiff } from './stream.mjs'
+import { generateDiff, createBufferedSyncPreviewUpdater } from './stream.mjs'
 
 const activeStreams = new Map()
 const StreamManager = {
@@ -42,26 +42,29 @@ const StreamManager = {
 
 		activeStreams.set(streamId, context)
 
+		const syncUpdate = createBufferedSyncPreviewUpdater((newMessage) => {
+			if (context.controller.signal.aborted) return
+			const slices = generateDiff(context.lastMessage, newMessage)
+			if (slices.length > 0) {
+				context.lastMessage = structuredClone(newMessage)
+				broadcastChatEvent(chatId, {
+					type: 'stream_update',
+					payload: { messageId, slices },
+				})
+			}
+		})
+
 		return {
 			id: streamId,
 			signal: controller.signal, // 暴露 signal 给 CharAPI / AIsource
 
 			/**
-			 * CharAPI 调用此方法更新流式消息内容。
+			 * CharAPI 调用此方法更新流式消息内容（同步入 buffer，后台合并后广播）。
 			 * @param {object} newMessage - 新的消息内容，包含文本和文件。
 			 */
 			update(newMessage) {
-				if (context.controller.signal.aborted) return // 已中断就不再更新
-
-				const slices = generateDiff(context.lastMessage, newMessage)
-
-				if (slices.length > 0) {
-					context.lastMessage = structuredClone(newMessage)
-					broadcastChatEvent(chatId, {
-						type: 'stream_update',
-						payload: { messageId, slices },
-					})
-				}
+				if (context.controller.signal.aborted) return
+				syncUpdate(newMessage)
 			},
 
 			/** 正常结束 */
