@@ -178,14 +178,14 @@ export async function init(start_config) {
 	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
-		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
-		starts.Base = Object(starts.Base)
-		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
-		console.freshLineI18n('server start', 'fountConsole.server.start')
 		for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
 			unset_shutdown_listener(event)
 			process.on(event, handleError)
 		}
+		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
+		starts.Base = Object(starts.Base)
+		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
+		console.freshLineI18n('server start', 'fountConsole.server.start')
 	}
 
 	config = get_config()
