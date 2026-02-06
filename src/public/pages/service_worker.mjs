@@ -334,6 +334,22 @@ async function cleanupExpiredCache() {
 }
 
 /**
+ * 清理响应对象，使其符合傻逼Chrome的脑残规范。
+ * @param {Response} response - 响应对象。
+ * @returns {Promise<Response>} 返回一个符合规范的响应对象。
+ */
+function cleanResponse(response) {
+	return Promise.resolve('body' in response ?
+		response.body :
+		response.blob()
+	).then((body) => new Response(body, {
+		headers: response.headers,
+		status: response.status,
+		statusText: response.statusText,
+	}))
+}
+
+/**
  * 获取资源并智能地处理缓存和重定向。
  * 这是解决重定向问题的核心。它会正确地缓存重定向响应和最终内容。
  * @param {Request} request - 要获取和缓存的请求。
@@ -357,12 +373,12 @@ async function fetchAndCache(request) {
 			const now = Date.now()
 
 			if (networkResponse.redirected) {
-				await cache.put(networkResponse.url, responseToCache)
+				await cache.put(networkResponse.url, await cleanResponse(responseToCache))
 				await updateTimestamp(networkResponse.url, now)
 
-				const redirectResponse = Response.redirect(networkResponse.url, 301)
+				const redirectResponse = Response.redirect(networkResponse.url, 302)
 
-				await cache.put(request, redirectResponse.clone())
+				await cache.put(request, await cleanResponse(redirectResponse.clone()))
 				await updateTimestamp(request.url, now)
 
 				return redirectResponse
