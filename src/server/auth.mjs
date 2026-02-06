@@ -488,8 +488,8 @@ export async function try_auth_request(req, res) {
 	else {
 		const authHeader = req.headers.authorization
 		if (authHeader?.startsWith?.('Bearer ')) apiKey = authHeader.substring(7)
-		if (!apiKey) apiKey = req.query?.['fount-apikey']
 	}
+	apiKey ||= req.query?.['fount-apikey']
 	if (apiKey) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
