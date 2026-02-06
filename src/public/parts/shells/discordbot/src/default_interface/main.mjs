@@ -267,7 +267,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			async function sendSplitReply(fountReply) {
 				const MAX_FILES_PER_MESSAGE = 10
 				const filesToSend = (fountReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description }))
-				const textChunks = splitDiscordReply(fountReply.content || '')
+				const textChunks = splitDiscordReply(fountReply.content_for_show || fountReply.content || '')
 
 				const fileChunks = []
 				for (let i = 0; i < filesToSend.length; i += MAX_FILES_PER_MESSAGE)

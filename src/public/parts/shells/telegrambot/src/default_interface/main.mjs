@@ -196,7 +196,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
-						const aiMarkdownContent = replyFromChar.content || ''
+						const aiMarkdownContent = replyFromChar.content_for_show || replyFromChar.content || ''
 						if (aiMarkdownContent.trim()) {
 							const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
 							const textParts = splitTelegramReply(htmlContent)
@@ -269,8 +269,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
 
-				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length)) {
-					const aiMarkdownContent = aiFinalReply.content || ''
+				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.content_for_show || aiFinalReply.files?.length)) {
+					const aiMarkdownContent = aiFinalReply.content_for_show || aiFinalReply.content || ''
 					const filesToProcess = (aiFinalReply.files || []).map(f => ({
 						source: f.buffer,
 						filename: f.name || 'file',
