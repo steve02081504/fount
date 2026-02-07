@@ -835,7 +835,8 @@
 				"uploading": "⏳🔗...",
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
-			"commonToolCalling": "🛠️🔄"
+			"commonToolCalling": "🛠️🔄",
+			"noReplyContent": "💬🍃"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "🤖🔄"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "🔗 ⛲ ➡️ 📝 (Zed, JetBrains, Neovim) 🤝 ACP. ⚙️ 🔑 & 🎭. ➕ 🤖 ➡️ 👨‍💻 🔄.",
+		"title": "⛲🔗",
+		"heading": "⛲🔗",
+		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP.",
+		"supportedEditorsTitle": "✅💻 & 📱",
+		"supportedEditorsIntro": "⬇️ 🔌 🤝 ⛲:",
+		"supportedEditorsLoading": "⏳...",
+		"supportedEditorsError": "❌📋: ${message}",
+		"acpTitle": "⚙️ ⛲ ACP 📋",
+		"acpDesc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
+		"acpCharLabel": "🎭",
+		"acpCharPlaceholder": "👈🎭",
+		"charListError": "❌🎭📋",
+		"acpScriptLabel": "ACP 📋 URL",
+		"acpConfigPlaceholder": "1️⃣👈🎭 & 🔨🗝️",
+		"acpConfigSample": "⚙️🌰:",
+		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️.",
+		"copyButton": "📋",
+		"copied": "✅📋",
+		"apiKeySectionTitle": "🗝️",
+		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️).",
+		"generateApiKeyButton": "🔨🆕🗝️",
+		"apiKeyCopied": "🗝️✅📋",
+		"apiKeyCreateError": "❌🔨🗝️: ${message}",
+		"apiKeyInput": {
+			"aria-label": "🗝️"
+		},
+		"home_function_buttons": {
+			"integration_related": "🔗✨",
+			"ide_integration_config": {
+				"title": "💻🔗⚙️"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "⛲🌊💻",
+				"description": "🥇⚙️⛲🎭➡️💻(Zed, JetBrains...).",
+				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️."
 			}
 		}
 	},

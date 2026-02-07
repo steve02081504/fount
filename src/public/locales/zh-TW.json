@@ -835,7 +835,8 @@
 				"uploading": "正在建立連結...",
 				"success": "分享成功！連結已複製到剪貼板。<br>此功能由 ${provider} 提供支援。<br>[贊助他們。](${sponsorLink})"
 			},
-			"commonToolCalling": "正在調用工具"
+			"commonToolCalling": "正在調用工具",
+			"noReplyContent": "（無回應內容）"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "作為代理"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "通過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），配置 API 密鑰與角色，將 AI 夥伴帶入開發工作流。",
+		"title": "IDE 整合",
+		"heading": "IDE 整合",
+		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
+		"supportedEditorsTitle": "受支援的編輯器與客戶端",
+		"supportedEditorsIntro": "以下客戶端可與 fount 配合使用：",
+		"supportedEditorsLoading": "載入中…",
+		"supportedEditorsError": "加載列表失敗：${message}",
+		"acpTitle": "配置 fount ACP 腳本",
+		"acpDesc": "參考以下示例配置 fount ACP 腳本：",
+		"acpCharLabel": "角色",
+		"acpCharPlaceholder": "選擇角色",
+		"charListError": "獲取角色列表失敗",
+		"acpScriptLabel": "ACP 腳本 URL",
+		"acpConfigPlaceholder": "請先選擇角色並生成 API 密鑰",
+		"acpConfigSample": "配置示例：",
+		"acpConfigHint": "角色 id 見本頁角色下拉，API 密鑰可在用戶設置中管理。",
+		"copyButton": "複製",
+		"copied": "已複製到剪貼板",
+		"apiKeySectionTitle": "API 密鑰",
+		"apiKeyHint": "用於 ACP 腳本連接 fount（與 API 代理同套密鑰，可在用戶設置中創建）。",
+		"generateApiKeyButton": "生成新密鑰",
+		"apiKeyCopied": "API 金鑰已複製",
+		"apiKeyCreateError": "創建 API 密鑰失敗：${message}",
+		"apiKeyInput": {
+			"aria-label": "API 密鑰"
+		},
+		"home_function_buttons": {
+			"integration_related": "整合相關",
+			"ide_integration_config": {
+				"title": "IDE 整合設定"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "第一次在外部 IDE 裡用 fount",
+				"description": "在支持 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色輔助編程。",
+				"locked_description": "在外部 IDE 中連接 fount 角色並完成一次對話。"
 			}
 		}
 	},

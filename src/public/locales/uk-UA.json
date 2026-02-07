@@ -835,7 +835,8 @@
 				"uploading": "Створення посилання...",
 				"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
 			},
-			"commonToolCalling": "Виклик інструменту"
+			"commonToolCalling": "Виклик інструменту",
+			"noReplyContent": "(Немає вмісту відповіді)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "Як агент"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Підключіть роль fount до підтримуваних редакторів (таких як Zed, JetBrains, Neovim) через протокол клієнта агента, налаштуйте ключі та ролі API та залучіть партнерів зі штучного інтелекту до робочого процесу розробки.",
+		"title": "Інтеграція IDE",
+		"heading": "Інтеграція IDE",
+		"instruction": "Використовуйте ролі фонту для допомоги в програмуванні в редакторах із підтримкою ACP (таких як Zed, JetBrains, Neovim тощо).",
+		"supportedEditorsTitle": "Підтримувані редактори та клієнти",
+		"supportedEditorsIntro": "З fount працюють такі клієнти:",
+		"supportedEditorsLoading": "завантаження...",
+		"supportedEditorsError": "Не вдалося завантажити список: ${message}",
+		"acpTitle": "Налаштуйте скрипт ACP",
+		"acpDesc": "Зверніться до наступного прикладу, щоб налаштувати сценарій fount ACP:",
+		"acpCharLabel": "роль",
+		"acpCharPlaceholder": "Виберіть роль",
+		"charListError": "Не вдалося отримати список ролей",
+		"acpScriptLabel": "URL-адреса сценарію ACP",
+		"acpConfigPlaceholder": "Виберіть роль і спочатку згенеруйте ключ API",
+		"acpConfigSample": "Приклад конфігурації:",
+		"acpConfigHint": "Ідентифікатор ролі відображається в спадному списку ролі на цій сторінці, а ключем API можна керувати в налаштуваннях користувача.",
+		"copyButton": "копія",
+		"copied": "Скопійовано в буфер обміну",
+		"apiKeySectionTitle": "Ключ API",
+		"apiKeyHint": "Використовується для джерела підключення сценарію ACP (той самий набір ключів, що й проксі API, можна створити в налаштуваннях користувача).",
+		"generateApiKeyButton": "Згенерувати новий ключ",
+		"apiKeyCopied": "Ключ API скопійовано",
+		"apiKeyCreateError": "Не вдалося створити ключ API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "Ключ API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Пов'язані з інтеграцією",
+			"ide_integration_config": {
+				"title": "Конфігурація інтеграції IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Перше використання фонту у зовнішньому IDE",
+				"description": "Уперше використовуйте ролі шрифту, щоб допомогти програмувати в редакторах із підтримкою ACP, таких як Zed, JetBrains, Neovim тощо.",
+				"locked_description": "Підключіться до ролі джерела в зовнішньому середовищі розробки та завершіть сеанс."
 			}
 		}
 	},

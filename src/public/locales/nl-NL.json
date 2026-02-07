@@ -835,7 +835,8 @@
 				"uploading": "Link maken...",
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
-			"commonToolCalling": "Tool aanroepen"
+			"commonToolCalling": "Tool aanroepen",
+			"noReplyContent": "(Geen antwoordinhoud)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2151,9 +2152,51 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Verbind de fount-rol met ondersteunde editors (zoals Zed, JetBrains, Neovim) via Agent Client Protocol, configureer API-sleutels en -rollen en betrek AI-partners in de ontwikkelingsworkflow.",
+		"title": "IDE-integratie",
+		"heading": "IDE-integratie",
+		"instruction": "Gebruik fount-rollen voor ondersteuning bij het programmeren in ACP-compatibele editors (zoals Zed, JetBrains, Neovim, enz.).",
+		"supportedEditorsTitle": "Ondersteunde redacteuren en klanten",
+		"supportedEditorsIntro": "De volgende klanten werken met fount:",
+		"supportedEditorsLoading": "laden…",
+		"supportedEditorsError": "Kan lijst niet laden: ${message}",
+		"acpTitle": "Configureer het lettertype ACP-script",
+		"acpDesc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
+		"acpCharLabel": "Rol",
+		"acpCharPlaceholder": "Selecteer rol",
+		"charListError": "Kan de rollijst niet ophalen",
+		"acpScriptLabel": "ACP-script-URL",
+		"acpConfigPlaceholder": "Selecteer een rol en genereer eerst een API-sleutel",
+		"acpConfigSample": "Configuratievoorbeeld:",
+		"acpConfigHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
+		"copyButton": "kopiëren",
+		"copied": "Gekopieerd naar klembord",
+		"apiKeySectionTitle": "API-sleutel",
+		"apiKeyHint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",
+		"generateApiKeyButton": "Nieuwe sleutel genereren",
+		"apiKeyCopied": "API-sleutel gekopieerd",
+		"apiKeyCreateError": "Kan API-sleutel niet maken: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API-sleutel"
+		},
+		"home_function_buttons": {
+			"integration_related": "Integratie gerelateerd",
+			"ide_integration_config": {
+				"title": "IDE-integratieconfiguratie"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Eerste keer dat ik het lettertype in een externe IDE gebruik",
+				"description": "Gebruik voor het eerst lettertyperollen voor ondersteuning bij het programmeren in ACP-compatibele editors zoals Zed, JetBrains, Neovim en meer.",
+				"locked_description": "Maak verbinding met de font-rol in een externe IDE en voltooi een sessie."
+			}
+		}
+	},
 	"achievements": {
 		"title": "Prestatie",
-		"description": "Ontdek de mijlpalen en prestaties van uw reis met font. Elke prestatie markeert een stap in jouw unieke verhaal.",
+		"description": "Ontdek de mijlpalen en prestaties van uw reis met fount. Elke prestatie markeert een stap in jouw unieke verhaal.",
 		"pageHeader": "Hal van prestatie",
 		"pageDescription": "Bekijk hier je ontgrendelde prestaties en mijlpalen.",
 		"unlocked_on": "Ontgrendeld op ${date}",

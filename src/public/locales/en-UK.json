@@ -835,7 +835,8 @@
 				"uploading": "Creating link...",
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
-			"commonToolCalling": "Calling tool"
+			"commonToolCalling": "Calling tool",
+			"noReplyContent": "(No reply content)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "As Proxy"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Connect the fount role to supported editors (such as Zed, JetBrains, Neovim) through Agent Client Protocol (ACP), configure API keys and roles, and bring AI partners into the development workflow.",
+		"title": "IDE integration",
+		"heading": "IDE integration",
+		"instruction": "Use fount roles to assist programming in ACP-enabled editors (such as Zed, JetBrains, Neovim, etc.).",
+		"supportedEditorsTitle": "Supported editors and clients",
+		"supportedEditorsIntro": "The following clients work with fount:",
+		"supportedEditorsLoading": "Loading…",
+		"supportedEditorsError": "Failed to load list: ${message}",
+		"acpTitle": "Configure fount ACP script",
+		"acpDesc": "Refer to the following example to configure the fount ACP script:",
+		"acpCharLabel": "Role",
+		"acpCharPlaceholder": "Select role",
+		"charListError": "Failed to get role list",
+		"acpScriptLabel": "ACP script URL",
+		"acpConfigPlaceholder": "Please select a role and generate an API key first",
+		"acpConfigSample": "Configuration example:",
+		"acpConfigHint": "The role id is shown in the role drop-down on this page, and the API key can be managed in user settings.",
+		"copyButton": "Copy",
+		"copied": "Copied to clipboard",
+		"apiKeySectionTitle": "API key",
+		"apiKeyHint": "Used for ACP script connection to fount (same set of keys as API proxy, can be created in user settings).",
+		"generateApiKeyButton": "Generate new key",
+		"apiKeyCopied": "API key copied",
+		"apiKeyCreateError": "Failed to create API key: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API key"
+		},
+		"home_function_buttons": {
+			"integration_related": "Integration related",
+			"ide_integration_config": {
+				"title": "IDE integration configuration"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Beyond the Sandbox",
+				"description": "For the first time, use fount roles to assist programming in ACP-enabled editors like Zed, JetBrains, Neovim, and more.",
+				"locked_description": "Connect to the fount role in an external IDE and complete a session."
 			}
 		}
 	},

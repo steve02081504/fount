@@ -580,38 +580,38 @@
 				}
 			},
 			"serviceSources": {
-				"title": "Fuente de servicio",
+				"title": "fount de servicio",
 				"subtitle": "Al juntar los chorritos, se convierten en vastos ríos.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Establecer como fuente de servicio predeterminada"
+						"title": "Establecer como fount de servicio predeterminada"
 					}
 				}
 			},
 			"serviceSources/AI": {
-				"title": "Fuente de servicio de IA",
-				"subtitle": "La fuente de la sabiduría y el punto de partida del pensamiento.",
+				"title": "fount de servicio de IA",
+				"subtitle": "La fount de la sabiduría y el punto de partida del pensamiento.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Establecer como fuente de servicio de IA predeterminada"
+						"title": "Establecer como fount de servicio de IA predeterminada"
 					}
 				}
 			},
 			"serviceSources/search": {
-				"title": "Buscar fuente de servicio",
+				"title": "Buscar fount de servicio",
 				"subtitle": "Un tesoro escondido de conocimientos y un punto de partida para la exploración.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Establecer como fuente de búsqueda predeterminada"
+						"title": "Establecer como fount de búsqueda predeterminada"
 					}
 				}
 			},
 			"serviceSources/translate": {
-				"title": "Fuente del servicio de traducción",
+				"title": "fount del servicio de traducción",
 				"subtitle": "El puente del lenguaje y el vínculo de la comunicación.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Establecer como fuente de servicio de traducción predeterminada"
+						"title": "Establecer como fount de servicio de traducción predeterminada"
 					}
 				}
 			},
@@ -668,7 +668,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "Generar información del componente fuente"
+				"description": "Generar información del componente fount"
 			}
 		}
 	},
@@ -833,9 +833,10 @@
 			},
 			"share": {
 				"uploading": "Creando enlace...",
-				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Esta función es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
+				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Este rol es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
 			},
-			"commonToolCalling": "Llamando a la herramienta"
+			"commonToolCalling": "Llamando a la herramienta",
+			"noReplyContent": "(Sin contenido de respuesta)"
 		},
 		"messageEdit": {
 			"input": {
@@ -1098,7 +1099,7 @@
 			"create_part": {
 				"name": "El taller de alquimia está abierto.",
 				"description": "Comienza desde cero y crea tu primer componente.",
-				"locked_description": "Cree una pieza utilizando la función Nuevo rápido."
+				"locked_description": "Cree una pieza utilizando el rol Nuevo rápido."
 			}
 		},
 		"home_function_buttons": {
@@ -1225,7 +1226,7 @@
 			"cancel": "Cancelar"
 		},
 		"litterbox": {
-			"poweredBy": "La función de compartir es compatible con litterbox.moe",
+			"poweredBy": "El rol de compartir es compatible con litterbox.moe",
 			"sponsorLink": "Patrocinarlos"
 		},
 		"errorMessage": {
@@ -1426,7 +1427,7 @@
 	"subfounts": {
 		"title": "subfounts - gestión de dispositivos peer-to-peer",
 		"pageTitle": "subfounts",
-		"description": "Administrar conexiones de fuentes de igual a igual",
+		"description": "Administrar conexiones de founts de igual a igual",
 		"hostConnectionCode": {
 			"title": "Código de conexión del host",
 			"connectionCodeLabel": "Código de conexión (ID de igual)",
@@ -1687,15 +1688,15 @@
 		}
 	},
 	"serviceSource_manager": {
-		"title": "Gestión de fuentes de servicios",
-		"description": "Aquí dirigirás una sinfonía de sonidos de inteligencia artificial. Añade, talla o silencia fuentes para darle vida a tus compañeros de fuentes: una sutil danza de código e imaginación.",
+		"title": "Gestión de founts de servicios",
+		"description": "Aquí dirigirás una sinfonía de sonidos de inteligencia artificial. Añade, talla o silencia founts para darle vida a tus compañeros de founts: una sutil danza de código e imaginación.",
 		"fileList": {
-			"title": "Lista de fuentes de servicios",
+			"title": "Lista de founts de servicios",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuración de fuente de servicio",
+		"configTitle": "Configuración de fount de servicio",
 		"subtypeSelect": {
 			"label": "Subcategoría de generador",
 			"placeholder": "Por favor seleccione una categoría de generador"
@@ -1705,14 +1706,14 @@
 			"placeholder": "Por favor seleccione"
 		},
 		"paths": {
-			"serviceSource": "Categoría de fuente de servicio",
+			"serviceSource": "Categoría de fount de servicio",
 			"generator": "Categoría de generador"
 		},
 		"editor": {
 			"disabledIndicator": "Por favor seleccione un generador primero"
 		},
 		"common_config_interface": {
-			"empty_generator": "El generador heredado para esta fuente de servicio encontró un error durante la carga y es posible que se haya desinstalado o se le haya cambiado el nombre.",
+			"empty_generator": "El generador heredado para esta fount de servicio encontró un error durante la carga y es posible que se haya desinstalado o se le haya cambiado el nombre.",
 			"loadingModels": "Cargando modelo...",
 			"availableModels": "Modelos disponibles:",
 			"copied": "¡Copiado!",
@@ -1721,7 +1722,7 @@
 			"loadModelsFailed": "No se pudo cargar el modelo: ${message}"
 		},
 		"prompts": {
-			"newFileName": "Ingrese el nuevo nombre del archivo fuente del servicio (no incluya el sufijo):"
+			"newFileName": "Ingrese el nuevo nombre del archivo fount del servicio (no incluya el sufijo):"
 		},
 		"buttons": {
 			"save": "Guardar",
@@ -1730,7 +1731,7 @@
 				"dataset": {
 					"tip": "Establecer como predeterminado"
 				},
-				"aria-label": "Establezca \"${fileName}\" como fuente de servicio predeterminada"
+				"aria-label": "Establezca \"${fileName}\" como fount de servicio predeterminada"
 			}
 		},
 		"confirm": {
@@ -1747,7 +1748,7 @@
 			"saveFileFailed": "No se pudo guardar el archivo: ${error}",
 			"deleteFileFailed": "No se pudo eliminar el archivo: ${error}",
 			"addFileFailed": "No se pudo agregar el archivo: ${error}",
-			"setDefaultFailed": "No se pudo establecer la fuente de servicio predeterminada: ${error}",
+			"setDefaultFailed": "No se pudo establecer la fount de servicio predeterminada: ${error}",
 			"fetchBranchesFailed": "No se pudo obtener el árbol de componentes: ${error}",
 			"noFileSelectedSave": "No se seleccionó ningún archivo para guardar.",
 			"noFileSelectedDelete": "No hay archivos seleccionados para eliminar.",
@@ -1757,13 +1758,13 @@
 		"achievements": {
 			"set_default_aisource": {
 				"name": "¡La ley de la victoria ha sido determinada!",
-				"description": "Se designa una IA predeterminada como fuente de suministro de maná.",
-				"locked_description": "Establece una fuente de IA predeterminada una vez."
+				"description": "Se designa una IA predeterminada como fount de suministro de maná.",
+				"locked_description": "Establece una fount de IA predeterminada una vez."
 			}
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "Administrar fuente de servicio"
+				"title": "Administrar fount de servicio"
 			}
 		}
 	},
@@ -1931,7 +1932,7 @@
 		"what_is_manager": "¿Qué es un gestor de scripts de usuario?",
 		"manager_explanation": "Un gestor de scripts de usuario es una extensión del navegador que le permite instalar y ejecutar scripts que modifican las páginas web. Para usar el script de integración de fount, necesita una de las extensiones.",
 		"popular_managers": "Opciones populares:",
-		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para ${browser}, puede usar [este complemento](${link}).",
+		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la rol de integración funcione correctamente. Para ${browser}, puede usar [este complemento](${link}).",
 		"connected_pages_title": "Página conectada",
 		"fetch_pages_error": "No se pudo cargar la lista de páginas vinculada.",
 		"page_title": "Título de página",
@@ -2023,7 +2024,7 @@
 		"initialMessageLink": "Haz clic aquí para más información",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Hola, Fuente\".",
+				"name": "\"Hola, fount\".",
 				"description": "En la terminal oscura, se llamó el nombre del socio de IA.",
 				"locked_description": "Llame a asistencia del terminal una vez."
 			}
@@ -2148,6 +2149,48 @@
 						"title": "Como Proxy"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Conecte el rol fount a editores compatibles (como Zed, JetBrains, Neovim) a través del protocolo de cliente de agente, configure claves y funciones de API e incorpore socios de IA al flujo de trabajo de desarrollo.",
+		"title": "Integración con IDE",
+		"heading": "Integración con IDE",
+		"instruction": "Utilice funciones de fount para ayudar a la programación en editores habilitados para ACP (como Zed, JetBrains, Neovim, etc.).",
+		"supportedEditorsTitle": "Editores y clientes compatibles",
+		"supportedEditorsIntro": "Los siguientes clientes trabajan con fount:",
+		"supportedEditorsLoading": "cargando…",
+		"supportedEditorsError": "No se pudo cargar la lista: ${message}",
+		"acpTitle": "Configurar el script ACP fount",
+		"acpDesc": "Consulte el siguiente ejemplo para configurar el script ACP fount:",
+		"acpCharLabel": "Role",
+		"acpCharPlaceholder": "Seleccionar rol",
+		"charListError": "No se pudo obtener la lista de roles",
+		"acpScriptLabel": "URL del script ACP",
+		"acpConfigPlaceholder": "Seleccione un rol y genere una clave API primero",
+		"acpConfigSample": "Ejemplo de configuración:",
+		"acpConfigHint": "La identificación de la rol se muestra en el menú desplegable de funciones de esta página y la clave API se puede administrar en la configuración del usuario.",
+		"copyButton": "Copiar",
+		"copied": "Copiado al portapapeles",
+		"apiKeySectionTitle": "clave API",
+		"apiKeyHint": "Se utiliza para la fount de conexión del script ACP (el mismo conjunto de claves que el proxy API, se puede crear en la configuración del usuario).",
+		"generateApiKeyButton": "Generar nueva clave",
+		"apiKeyCopied": "Clave API copiada",
+		"apiKeyCreateError": "No se pudo crear la clave API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "clave API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Relacionado con la integración",
+			"ide_integration_config": {
+				"title": "Configuración de integración con IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Manantial de Código",
+				"description": "Por primera vez, utilice funciones de fount para ayudar a la programación en editores habilitados para ACP como Zed, JetBrains, Neovim y más.",
+				"locked_description": "Conéctese al rol de fount en un IDE externo y complete una sesión."
 			}
 		}
 	},

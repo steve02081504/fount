@@ -216,7 +216,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Bem-vindo ao fount!",
-		"description": "Acompanhe o progresso da instalação e veja os recursos contidos nela. A fonte estará pronta para ser lançada em um momento.",
+		"description": "Acompanhe o progresso da instalação e veja os recursos contidos nela. A fount estará pronta para ser lançada em um momento.",
 		"hero": {
 			"title": "Onde a Imaginação Ganha Vida",
 			"description": "fount é uma plataforma de interação com personagens alimentada por IA, desenhada para <i>lhe</i> dar poder. É uma ponte que o conecta com as suas personagens imaginadas, permitindo-lhe conversar facilmente com elas, criar as suas próprias personagens e partilhá-las com o mundo."
@@ -234,7 +234,7 @@
 			"description": "fount aproveita o poder do HTML, permitindo que as personagens se expressem através de texto formatado, imagens e até elementos interativos. Tenha conversas de grupo dinâmicas e envolventes com várias personagens ao mesmo tempo."
 		},
 		"feature4": {
-			"title": "Integração Livre com Fontes de IA",
+			"title": "Integração Livre com founts de IA",
 			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
 		"language_selector": {
@@ -299,7 +299,7 @@
 	},
 	"protocolhandler": {
 		"title": "A Processar o Protocolo fount",
-		"description": "Silenciosamente e de forma eficiente, esta página traduz sua intenção em uma transição perfeita dentro da fonte. Considere isso a magia silenciosa por trás da cortina.",
+		"description": "Silenciosamente e de forma eficiente, esta página traduz sua intenção em uma transição perfeita dentro da fount. Considere isso a magia silenciosa por trás da cortina.",
 		"processing": "A processar o protocolo...",
 		"shellCommandSent": "Comando shell enviado.",
 		"runPartConfirm": {
@@ -326,11 +326,11 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Bem-vindo ao limiar da fonte. Um breve momento de preparação, antes de entrar no centro das conversas e histórias que aguardam para se desenrolar."
+		"description": "Bem-vindo ao limiar da fount. Um breve momento de preparação, antes de entrar no centro das conversas e histórias que aguardam para se desenrolar."
 	},
 	"tutorial": {
 		"title": "Que tal um tutorial?",
-		"description": "Deixe-nos caminhar com você pelo mundo das fontes. Este tutorial interativo iluminará o caminho, ajudando você a descobrir a magia que está em sua essência. Sua aventura começa com a compreensão.",
+		"description": "Deixe-nos caminhar com você pelo mundo das founts. Este tutorial interativo iluminará o caminho, ajudando você a descobrir a magia que está em sua essência. Sua aventura começa com a compreensão.",
 		"modal": {
 			"title": "Bem-vindo ao fount!",
 			"instruction": "Gostaria de seguir o tutorial para principiantes?",
@@ -376,7 +376,7 @@
 	"auth": {
 		"title": "Autenticação",
 		"subtitle": "Os dados do utilizador são armazenados localmente.",
-		"description": "Aqui você define sua presença. Seja retornando a um refúgio familiar ou criando um novo espaço para suas histórias, é aqui que começa sua jornada com a fonte.",
+		"description": "Aqui você define sua presença. Seja retornando a um refúgio familiar ou criando um novo espaço para suas histórias, é aqui que começa sua jornada com a fount.",
 		"usernameLabel": "Nome de utilizador:",
 		"usernameInput": {
 			"placeholder": "Introduza o nome de utilizador"
@@ -433,7 +433,7 @@
 	},
 	"login_info": {
 		"title": "Informação de início de sessão",
-		"description": "Um espaço seguro para gerenciar suas credenciais de login de fontes – as chaves para o seu mundo de histórias não contadas.",
+		"description": "Um espaço seguro para gerenciar suas credenciais de login de founts – as chaves para o seu mundo de histórias não contadas.",
 		"modal": {
 			"title": "Erro de transferência de certificado",
 			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
@@ -448,7 +448,7 @@
 	},
 	"home": {
 		"title": "Início",
-		"description": "O coração da sua experiência com fontes. Aqui, gerencie os habitantes de sua imaginação – personagens, mundos e personas. Suas histórias começam e se ramificam a partir desse nexo central.",
+		"description": "O coração da sua experiência com founts. Aqui, gerencie os habitantes de sua imaginação – personagens, mundos e personas. Suas histórias começam e se ramificam a partir desse nexo central.",
 		"sidebarTitle": "Detalhes",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
@@ -580,38 +580,38 @@
 				}
 			},
 			"serviceSources": {
-				"title": "Fonte de serviço",
+				"title": "fount de serviço",
 				"subtitle": "Juntando os filetes, eles se transformam em vastos rios.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Definir como fonte de serviço padrão"
+						"title": "Definir como fount de serviço padrão"
 					}
 				}
 			},
 			"serviceSources/AI": {
-				"title": "Fonte de serviço de IA",
-				"subtitle": "A fonte da sabedoria e o ponto de partida do pensamento.",
+				"title": "fount de serviço de IA",
+				"subtitle": "A fount da sabedoria e o ponto de partida do pensamento.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Definir como fonte de serviço de IA padrão"
+						"title": "Definir como fount de serviço de IA padrão"
 					}
 				}
 			},
 			"serviceSources/search": {
-				"title": "Fonte de serviço de pesquisa",
+				"title": "fount de serviço de pesquisa",
 				"subtitle": "Um tesouro de conhecimento e um ponto de partida para exploração.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Definir como fonte de pesquisa padrão"
+						"title": "Definir como fount de pesquisa padrão"
 					}
 				}
 			},
 			"serviceSources/translate": {
-				"title": "Fonte do serviço de tradução",
+				"title": "fount do serviço de tradução",
 				"subtitle": "A ponte da linguagem e o elo de comunicação.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Definir como fonte de serviço de tradução padrão"
+						"title": "Definir como fount de serviço de tradução padrão"
 					}
 				}
 			},
@@ -668,13 +668,13 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "Gerar informações do componente fonte"
+				"description": "Gerar informações do componente fount"
 			}
 		}
 	},
 	"chat": {
 		"title": "Chat",
-		"description": "Onde as palavras voam e as histórias se desenrolam. Envolva-se com seus companheiros de IA, molde a narrativa e perca-se no fluxo e refluxo do diálogo digital. O coração da fonte bate aqui.",
+		"description": "Onde as palavras voam e as histórias se desenrolam. Envolva-se com seus companheiros de IA, molde a narrativa e perca-se no fluxo e refluxo do diálogo digital. O coração da fount bate aqui.",
 		"new": {
 			"title": "Nova conversa",
 			"description": "A silenciosa antecipação de uma história ainda não escrita. Um novo bate-papo começa, uma lousa em branco para novas interações e desdobramento de narrativas com os companheiros escolhidos."
@@ -835,7 +835,8 @@
 				"uploading": "A criar ligação...",
 				"success": "Partilhado com sucesso! Ligação copiada para a área de transferência. <br>Esta funcionalidade é suportada por ${provider}. <br>[Patrocine-os.](${sponsorLink})"
 			},
-			"commonToolCalling": "A chamar ferramenta"
+			"commonToolCalling": "A chamar ferramenta",
+			"noReplyContent": "(Sem conteúdo de resposta)"
 		},
 		"messageEdit": {
 			"input": {
@@ -999,7 +1000,7 @@
 	},
 	"easynew": {
 		"title": "Criação Rápida",
-		"description": "Crie rapidamente novas partes de fontes, como personagens, mundos e plug-ins, usando modelos predefinidos ou personalizados. Sua próxima criação está a apenas alguns cliques de distância.",
+		"description": "Crie rapidamente novas partes de founts, como personagens, mundos e plug-ins, usando modelos predefinidos ou personalizados. Sua próxima criação está a apenas alguns cliques de distância.",
 		"info": {
 			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criadas manualmente."
 		},
@@ -1114,7 +1115,7 @@
 	},
 	"import": {
 		"title": "Importar",
-		"description": "Traga seus personagens, mundos e configurações queridos para o abraço da fonte. Seja a partir de um arquivo ou de texto colado, é aqui que novos elementos são integrados à sua tapeçaria pessoal.",
+		"description": "Traga seus personagens, mundos e configurações queridos para o abraço da fount. Seja a partir de um arquivo ou de texto colado, é aqui que novos elementos são integrados à sua tapeçaria pessoal.",
 		"tabs": {
 			"fileImport": "Importar Ficheiro",
 			"textImport": "Importar Texto"
@@ -1180,7 +1181,7 @@
 		"title": "Exportador de Componentes",
 		"pageTitle": "Exportador de Componentes",
 		"pageSubtitle": "Exporte o seu conteúdo favorito",
-		"description": "Exporte suas criações de fontes. Esta ferramenta reúne as peças selecionadas em um arquivo zip simples para guarda ou partilha.",
+		"description": "Exporte suas criações de founts. Esta ferramenta reúne as peças selecionadas em um arquivo zip simples para guarda ou partilha.",
 		"steps": {
 			"part": "Selecione componentes",
 			"action": "Exportar"
@@ -1274,7 +1275,7 @@
 	},
 	"uninstall": {
 		"title": "Desinstalar",
-		"description": "Caso você decida se separar, este espaço permite uma despedida graciosa. Confirme a remoção dos componentes ou a própria fonte. Os caminhos divergem, mas as memórias podem permanecer.",
+		"description": "Caso você decida se separar, este espaço permite uma despedida graciosa. Confirme a remoção dos componentes ou a própria fount. Os caminhos divergem, mas as memórias podem permanecer.",
 		"titleWithName": "Desinstalar ${type}/${name}",
 		"confirmMessage": "Tem a certeza que pretende desinstalar ${type}: ${name}?",
 		"invalidParamsTitle": "Parâmetros Inválidos",
@@ -1424,23 +1425,23 @@
 		}
 	},
 	"subfounts": {
-		"title": "subfontes - gerenciamento de dispositivos ponto a ponto",
-		"pageTitle": "subfontes",
-		"description": "Gerenciar conexões fonte ponto a ponto",
+		"title": "subfounts - gerenciamento de dispositivos ponto a ponto",
+		"pageTitle": "subfounts",
+		"description": "Gerenciar conexões fount ponto a ponto",
 		"hostConnectionCode": {
 			"title": "Código de conexão do host",
 			"connectionCodeLabel": "Código de conexão (ID de peer)",
 			"passwordLabel": "senha",
 			"copyButton": "Copiar",
 			"regenerateButton": "Regenerar",
-			"infoMessage": "Compartilhe essas credenciais com clientes de subfontes para estabelecer conexões.",
+			"infoMessage": "Compartilhe essas credenciais com clientes de subfounts para estabelecer conexões.",
 			"connectionCodeCopied": "O código de conexão foi copiado para a área de transferência",
 			"passwordCopied": "Senha copiada para a área de transferência",
 			"regenerateSuccess": "O código de conexão foi regenerado"
 		},
 		"connectedSubfounts": {
-			"title": "Subfonte conectada",
-			"noSubfountsConnected": "Nenhuma subfonte está conectada",
+			"title": "Subfount conectada",
+			"noSubfountsConnected": "Nenhuma subfount está conectada",
 			"table": {
 				"id": "ID",
 				"description": "Observação",
@@ -1472,8 +1473,8 @@
 			"executionFailed": "Falha na execução do código: ${message}"
 		},
 		"downloadClient": {
-			"title": "Baixar cliente de sub-fonte",
-			"description": "Baixe o script do cliente de subfonte autônomo para execução no dispositivo remoto.",
+			"title": "Baixar cliente de sub-fount",
+			"description": "Baixe o script do cliente de subfount autônomo para execução no dispositivo remoto.",
 			"downloadButton": "Transferir subfount.mjs"
 		},
 		"errors": {
@@ -1500,7 +1501,7 @@
 	"languageSettings": {
 		"title": "Configurações de idiomas",
 		"pageTitle": "Configurações de idioma",
-		"description": "Gerencie suas preferências de idioma para o aplicativo de fontes. Personalize sua experiência com as opções de idioma disponíveis.",
+		"description": "Gerencie suas preferências de idioma para o aplicativo de founts. Personalize sua experiência com as opções de idioma disponíveis.",
 		"pageDescription": "Gerencie suas preferências de idioma aqui. Os idiomas da lista terão precedência sobre as configurações do navegador em ordem.",
 		"availableLanguages": "Idiomas disponíveis",
 		"preferredLanguages": "Lista de idiomas prioritária",
@@ -1529,7 +1530,7 @@
 	},
 	"themeManage": {
 		"title": "Gestão de Temas",
-		"description": "Escolha a estética que reflete seu humor ou história. Visualize e selecione uma paleta de temas, cada um oferecendo um ambiente diferente para suas interações com fontes. Seu mundo, seu estilo.",
+		"description": "Escolha a estética que reflete seu humor ou história. Visualize e selecione uma paleta de temas, cada um oferecendo um ambiente diferente para suas interações com founts. Seu mundo, seu estilo.",
 		"instruction": "Escolha um tema!",
 		"search": {
 			"placeholder": "Pesquisar temas...",
@@ -1637,7 +1638,7 @@
 	"part_config": {
 		"title": "Configuração de Componente",
 		"pageTitle": "Configuração de Componente",
-		"description": "Olhe para o coração da fonte. Aqui você pode ajustar as configurações de seus diversos componentes, ajustando o motor que impulsiona sua experiência.",
+		"description": "Olhe para o coração da fount. Aqui você pode ajustar as configurações de seus diversos componentes, ajustando o motor que impulsiona sua experiência.",
 		"labels": {
 			"part": "Selecionar Componente"
 		},
@@ -1687,15 +1688,15 @@
 		}
 	},
 	"serviceSource_manager": {
-		"title": "Gerenciamento de fonte de serviço",
-		"description": "Aqui, você conduzirá uma sinfonia de sons de inteligência artificial. Adicione, esculpe ou silencie fontes para dar vida às suas companheiras de origem - uma dança sutil de código e imaginação.",
+		"title": "Gerenciamento de fount de serviço",
+		"description": "Aqui, você conduzirá uma sinfonia de sons de inteligência artificial. Adicione, esculpe ou silencie founts para dar vida às suas companheiras de origem - uma dança sutil de código e imaginação.",
 		"fileList": {
-			"title": "Lista de fontes de serviço",
+			"title": "Lista de founts de serviço",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuração da fonte de serviço",
+		"configTitle": "Configuração da fount de serviço",
 		"subtypeSelect": {
 			"label": "Subcategoria Gerador",
 			"placeholder": "Selecione uma categoria de gerador"
@@ -1712,7 +1713,7 @@
 			"disabledIndicator": "Selecione um gerador primeiro"
 		},
 		"common_config_interface": {
-			"empty_generator": "O gerador legado desta fonte de serviço encontrou um erro durante o carregamento e pode ter sido desinstalado ou renomeado.",
+			"empty_generator": "O gerador legado desta fount de serviço encontrou um erro durante o carregamento e pode ter sido desinstalado ou renomeado.",
 			"loadingModels": "Carregando modelo...",
 			"availableModels": "Modelos disponíveis:",
 			"copied": "Copiado!",
@@ -1730,7 +1731,7 @@
 				"dataset": {
 					"tip": "Definir como padrão"
 				},
-				"aria-label": "Defina \"${fileName}\" como fonte de serviço padrão"
+				"aria-label": "Defina \"${fileName}\" como fount de serviço padrão"
 			}
 		},
 		"confirm": {
@@ -1747,7 +1748,7 @@
 			"saveFileFailed": "Falha ao salvar arquivo: ${error}",
 			"deleteFileFailed": "Falha ao excluir arquivo: ${error}",
 			"addFileFailed": "Falha ao adicionar arquivo: ${error}",
-			"setDefaultFailed": "Falha ao definir a fonte de serviço padrão: ${error}",
+			"setDefaultFailed": "Falha ao definir a fount de serviço padrão: ${error}",
 			"fetchBranchesFailed": "Falha ao obter a árvore de componentes: ${error}",
 			"noFileSelectedSave": "Nenhum arquivo selecionado para salvar.",
 			"noFileSelectedDelete": "Nenhum arquivo selecionado para exclusão.",
@@ -1757,19 +1758,19 @@
 		"achievements": {
 			"set_default_aisource": {
 				"name": "A lei da vitória foi determinada!",
-				"description": "Uma IA padrão é designada como fonte de fornecimento de mana.",
-				"locked_description": "Defina uma fonte de IA padrão uma vez."
+				"description": "Uma IA padrão é designada como fount de fornecimento de mana.",
+				"locked_description": "Defina uma fount de IA padrão uma vez."
 			}
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "Gerenciar fonte de serviço"
+				"title": "Gerenciar fount de serviço"
 			}
 		}
 	},
 	"discord_bots": {
 		"title": "Bots do Discord",
-		"description": "Dê voz aos seus companheiros de fonte nos movimentados corredores do Discord. Configure sua presença, gerencie suas operações e permita que eles conectem mundos, um servidor por vez.",
+		"description": "Dê voz aos seus companheiros de fount nos movimentados corredores do Discord. Configure sua presença, gerencie suas operações e permita que eles conectem mundos, um servidor por vez.",
 		"cardTitle": "Bots do Discord",
 		"botSelectDropdown": {
 			"placeholder": "Escolha um bot"
@@ -1921,7 +1922,7 @@
 	},
 	"browser_integration": {
 		"title": "Integração do navegador",
-		"description": "Preencha a lacuna entre a fonte e a web. Esta página fornece o script do usuário para permitir uma integração perfeita, trazendo seus companheiros de IA para sua experiência de navegação.",
+		"description": "Preencha a lacuna entre a fount e a web. Esta página fornece o script do usuário para permitir uma integração perfeita, trazendo seus companheiros de IA para sua experiência de navegação.",
 		"pageHeader": "Integração do navegador",
 		"pageDescription": "Para que sua função de fount interaja com a página da web, você precisa instalar este script de integração do navegador. Ele atua como uma ponte entre o personagem e o navegador, permitindo que eles visualizem o conteúdo da página e executem ações.",
 		"install_script_title": "Script de instalação",
@@ -2018,12 +2019,12 @@
 	},
 	"terminal_assistant": {
 		"title": "Assistente de Terminal",
-		"description": "Além da interface gráfica, um espaço para comando direto. Interaja com o núcleo da fonte através do assistente de terminal, onde o texto tece sua própria magia poderosa.",
+		"description": "Além da interface gráfica, um espaço para comando direto. Interaja com o núcleo da fount através do assistente de terminal, onde o texto tece sua própria magia poderosa.",
 		"initialMessage": "O fount suporta a implementação das suas personagens favoritas no seu terminal para o ajudar na programação!",
 		"initialMessageLink": "Clique aqui para saber mais.",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Ei, Fonte.\"",
+				"name": "\"Ei, fount.\"",
 				"description": "No terminal escuro, foi chamado o nome do parceiro de IA.",
 				"locked_description": "Ligue para a assistência do terminal uma vez."
 			}
@@ -2097,7 +2098,7 @@
 	},
 	"access": {
 		"title": "Aceder ao fount noutros dispositivos",
-		"description": "Estenda o alcance da fonte além de uma única tela. Aqui está o gateway – um URL, um código QR – para se conectar com seus companheiros de outros dispositivos, uma ponte simples através do éter local.",
+		"description": "Estenda o alcance da fount além de uma única tela. Aqui está o gateway – um URL, um código QR – para se conectar com seus companheiros de outros dispositivos, uma ponte simples através do éter local.",
 		"heading": "Quer aceder ao fount noutros dispositivos?",
 		"instruction": {
 			"sameLAN": "Certifique-se de que o dispositivo e o anfitrião do fount estão na mesma rede local.",
@@ -2119,7 +2120,7 @@
 	},
 	"proxy": {
 		"title": "Proxy de API",
-		"description": "Para desenvolvedores e integradores, esta página revela o proxy API da fonte — sua conexão para integrar os recursos da fonte em outros aplicativos.",
+		"description": "Para desenvolvedores e integradores, esta página revela o proxy API da fount — sua conexão para integrar os recursos da fount em outros aplicativos.",
 		"heading": "Gateway de Proxy de API",
 		"instruction": "Gere e gira as suas chaves de API nesta página para integrar o fount com outras aplicações.",
 		"endpointSectionTitle": "Endpoint da API",
@@ -2151,9 +2152,51 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Conecte o papel fount a editores suportados (como Zed, JetBrains, Neovim) por meio do Agent Client Protocol, configure chaves e funções de API e traga parceiros de IA para o fluxo de trabalho de desenvolvimento.",
+		"title": "Integração IDE",
+		"heading": "Integração IDE",
+		"instruction": "Use funções de fount para auxiliar na programação em editores habilitados para ACP (como Zed, JetBrains, Neovim, etc.).",
+		"supportedEditorsTitle": "Editores e clientes suportados",
+		"supportedEditorsIntro": "Os seguintes clientes trabalham com fount:",
+		"supportedEditorsLoading": "carregando…",
+		"supportedEditorsError": "Falha ao carregar lista: ${message}",
+		"acpTitle": "Configurar script ACP de fount",
+		"acpDesc": "Consulte o exemplo a seguir para configurar o script ACP da fount:",
+		"acpCharLabel": "Papel",
+		"acpCharPlaceholder": "Selecione a função",
+		"charListError": "Falha ao obter lista de funções",
+		"acpScriptLabel": "URL do script ACP",
+		"acpConfigPlaceholder": "Selecione uma função e gere uma chave de API primeiro",
+		"acpConfigSample": "Exemplo de configuração:",
+		"acpConfigHint": "O ID da função é mostrado no menu suspenso da função nesta página, e a chave de API pode ser gerenciada nas configurações do usuário.",
+		"copyButton": "cópia",
+		"copied": "Copiado para a área de transferência",
+		"apiKeySectionTitle": "Chave de API",
+		"apiKeyHint": "Usado para fount de conexão de script ACP (mesmo conjunto de chaves do proxy API, pode ser criado nas configurações do usuário).",
+		"generateApiKeyButton": "Gerar nova chave",
+		"apiKeyCopied": "Chave de API copiada",
+		"apiKeyCreateError": "Falha ao criar chave de API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "Chave de API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Relacionado à integração",
+			"ide_integration_config": {
+				"title": "Configuração de integração IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Primeira vez usando fount em um IDE externo",
+				"description": "Pela primeira vez, use funções de fount para auxiliar na programação em editores habilitados para ACP, como Zed, JetBrains, Neovim e muito mais.",
+				"locked_description": "Conecte-se à função de fount em um IDE externo e conclua uma sessão."
+			}
+		}
+	},
 	"achievements": {
 		"title": "Conquista",
-		"description": "Explore os marcos e realizações de sua jornada com fonte. Cada conquista marca um passo em sua narrativa única.",
+		"description": "Explore os marcos e realizações de sua jornada com fount. Cada conquista marca um passo em sua narrativa única.",
 		"pageHeader": "Salão das conquistas",
 		"pageDescription": "Confira suas conquistas e marcos desbloqueados aqui.",
 		"unlocked_on": "Desbloqueado em ${date}",
@@ -2217,7 +2260,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Conversor de Crachás",
-		"description": "Para quando o seu projeto pede um toque de caráter da fonte. Converta emblemas do Shields.io, emprestando-lhes uma identidade nova e ressonante.",
+		"description": "Para quando o seu projeto pede um toque de caráter da fount. Converta emblemas do Shields.io, emprestando-lhes uma identidade nova e ressonante.",
 		"card_title": "Conversor de Links para Emblemas fount",
 		"original_url_label": "Colar URL img.shields.io",
 		"original_url": {
