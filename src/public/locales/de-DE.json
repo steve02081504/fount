@@ -835,7 +835,8 @@
 				"uploading": "Link wird erstellt...",
 				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
 			},
-			"commonToolCalling": "Tool wird aufgerufen"
+			"commonToolCalling": "Tool wird aufgerufen",
+			"noReplyContent": "(Kein Inhalt)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "Als Proxy"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Verbinden Sie die fount-Rolle über das Agent Client Protocol mit unterstützten Editoren (wie Zed, JetBrains, Neovim), konfigurieren Sie API-Schlüssel und -Rollen und beziehen Sie KI-Partner in den Entwicklungsworkflow ein.",
+		"title": "IDE-Integration",
+		"heading": "IDE-Integration",
+		"instruction": "Verwenden Sie fount-Rollen, um die Programmierung in ACP-fähigen Editoren (wie Zed, JetBrains, Neovim usw.) zu unterstützen.",
+		"supportedEditorsTitle": "Unterstützte Editoren und Clients",
+		"supportedEditorsIntro": "Folgende Clients arbeiten mit fount:",
+		"supportedEditorsLoading": "Laden…",
+		"supportedEditorsError": "Liste konnte nicht geladen werden: ${message}",
+		"acpTitle": "Konfigurieren Sie das fount-ACP-Skript",
+		"acpDesc": "Sehen Sie sich das folgende Beispiel an, um das fount-ACP-Skript zu konfigurieren:",
+		"acpCharLabel": "Rolle",
+		"acpCharPlaceholder": "Rolle auswählen",
+		"charListError": "Rollenliste konnte nicht abgerufen werden",
+		"acpScriptLabel": "ACP-Skript-URL",
+		"acpConfigPlaceholder": "Bitte wählen Sie eine Rolle aus und generieren Sie zunächst einen API-Schlüssel",
+		"acpConfigSample": "Konfigurationsbeispiel:",
+		"acpConfigHint": "Die Rollen-ID wird im Rollen-Dropdown auf dieser Seite angezeigt und der API-Schlüssel kann in den Benutzereinstellungen verwaltet werden.",
+		"copyButton": "Kopieren",
+		"copied": "In die Zwischenablage kopiert",
+		"apiKeySectionTitle": "API-Schlüssel",
+		"apiKeyHint": "Wird für die ACP-Skript-Verbindungsquelle verwendet (gleicher Schlüsselsatz wie API-Proxy, kann in den Benutzereinstellungen erstellt werden).",
+		"generateApiKeyButton": "Neuen Schlüssel generieren",
+		"apiKeyCopied": "API-Schlüssel kopiert",
+		"apiKeyCreateError": "API-Schlüssel konnte nicht erstellt werden: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API-Schlüssel"
+		},
+		"home_function_buttons": {
+			"integration_related": "Integrationsbezogen",
+			"ide_integration_config": {
+				"title": "IDE-Integrationskonfiguration"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "fount jenseits der Grenzen",
+				"description": "Verwenden Sie zum ersten Mal fount-Rollen, um die Programmierung in ACP-fähigen Editoren wie Zed, JetBrains, Neovim und anderen zu unterstützen.",
+				"locked_description": "Stellen Sie eine Verbindung zur fount-Rolle in einer externen IDE her und schließen Sie eine Sitzung ab."
 			}
 		}
 	},

@@ -1,0 +1,291 @@
+{
+	"en-UK": {
+		"name": "IDE Integration",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integrate fount roles with ACP-enabled IDEs for enhanced development workflow.",
+		"description_markdown": "This plugin offers **Agent Client Protocol (ACP)** services, allowing seamless integration of fount roles into ACP-compatible editors (e.g., Zed, JetBrains, Neovim). It provides a default chat interface for roles without a dedicated UI, includes an ACP instruction guide, and lists supported clients, encouraging developers to explore various IDEs with their fount roles.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"integration",
+			"development",
+			"workflow"
+		]
+	},
+	"zh-CN": {
+		"name": "IDE 集成",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "通过 ACP 将 fount 角色集成到支持 ACP 的 IDE 中，提升开发效率。",
+		"description_markdown": "此插件提供 **Agent Client Protocol (ACP)** 服务，实现 fount 角色与支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）的无缝集成。对于无界面的角色，它提供默认聊天界面；同时包含 ACP 使用说明及受支持客户端列表，鼓励开发者在多种编辑器中探索 fount 角色的潜力。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"集成",
+			"开发",
+			"工作流"
+		]
+	},
+	"ar-SA": {
+		"name": "تكامل بيئة التطوير المتكاملة (IDE)",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "دمج أدوار fount مع بيئات التطوير المتكاملة التي تدعم ACP لتحسين سير عمل التطوير.",
+		"description_markdown": "يقدم هذا الملحق خدمات **بروتوكول عميل الوكيل (ACP)**، مما يسمح بدمج أدوار fount بسلاسة في المحررات المتوافقة مع ACP (مثل Zed وJetBrains وNeovim). يوفر واجهة دردشة افتراضية للأدوار التي لا تحتوي على واجهة مستخدم مخصصة، ويتضمن دليل تعليمات ACP، ويسرد العملاء المدعومين، مما يشجع المطورين على استكشاف بيئات تطوير متكاملة مختلفة بأدوار fount الخاصة بهم.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"تكامل",
+			"تطوير"
+		]
+	},
+	"de-DE": {
+		"name": "IDE-Integration",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integrieren Sie fount-Rollen in ACP-fähige IDEs für einen verbesserten Entwicklungs-Workflow.",
+		"description_markdown": "Dieses Plugin bietet **Agent Client Protocol (ACP)**-Dienste, die eine nahtlose Integration von fount-Rollen in ACP-kompatible Editoren (z. B. Zed, JetBrains, Neovim) ermöglichen. Es bietet eine Standard-Chat-Oberfläche für Rollen ohne dedizierte Benutzeroberfläche, enthält eine ACP-Anleitung und listet unterstützte Clients auf, um Entwickler zu ermutigen, verschiedene IDEs mit ihren fount-Rollen zu erkunden.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"Integration",
+			"Entwicklung",
+			"Workflow"
+		]
+	},
+	"emoji": {
+		"name": "💻🧠🤝",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "💻↔️🧠, ✅🛠️",
+		"description_markdown": "💻🧠🤝 ➡️ 📜. \n🤖 🤝 ✍️. \n🚫🖼️ ➡️ 💬. \n📖 ➡️ 📚, ✍️➡️🔗.\n\n✨ 💻 🚀",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"💻",
+			"🧠",
+			"🤝",
+			"🚀"
+		]
+	},
+	"es-ES": {
+		"name": "Integración IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integre roles de fount con IDEs habilitados para ACP para un flujo de trabajo de desarrollo mejorado.",
+		"description_markdown": "Este plugin ofrece servicios de **Agent Client Protocol (ACP)**, permitiendo una integración perfecta de roles de fount en editores compatibles con ACP (ej., Zed, JetBrains, Neovim). Proporciona una interfaz de chat predeterminada para roles sin una UI dedicada, incluye una guía de instrucciones ACP y lista los clientes compatibles.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"integración",
+			"desarrollo"
+		]
+	},
+	"fr-FR": {
+		"name": "Intégration IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Intégrer les rôles fount avec les IDE compatibles ACP pour un flux de travail de développement amélioré.",
+		"description_markdown": "Ce plugin offre des services **Agent Client Protocol (ACP)**, permettant une intégration transparente des rôles fount dans les éditeurs compatibles ACP (ex. : Zed, JetBrains, Neovim). Il fournit une interface de chat par défaut pour les rôles sans interface utilisateur dédiée, comprend un guide d'instructions ACP et liste les clients pris en charge.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"intégration",
+			"développement"
+		]
+	},
+	"hi-IN": {
+		"name": "IDE एकीकरण",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "बेहतर विकास कार्यप्रवाह के लिए fount भूमिकाओं को ACP-सक्षम IDEs के साथ एकीकृत करें।",
+		"description_markdown": "यह प्लगइन **एजेंट क्लाइंट प्रोटोकॉल (ACP)** सेवाएँ प्रदान करता है, जो fount भूमिकाओं को ACP-संगत संपादकों (जैसे Zed, JetBrains, Neovim) में सहज एकीकरण की अनुमति देता है। यह समर्पित UI के बिना भूमिकाओं के लिए एक डिफ़ॉल्ट चैट इंटरफ़ेस प्रदान करता है, इसमें एक ACP निर्देशिका और समर्थित ग्राहकों की सूची शामिल है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"एकीकरण",
+			"विकास"
+		]
+	},
+	"is-IS": {
+		"name": "IDE samþætting",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Samþættu fount-hlutverk við ACP-virkar IDE-ir til að auka þróunarvinnuflæði.",
+		"description_markdown": "Þessi viðbót býður upp á **Agent Client Protocol (ACP)** þjónustu, sem gerir óaðfinnanlega samþættingu fount-hlutverka í ACP-samhæfða ritstjóra (t.d. Zed, JetBrains, Neovim). Hún veitir sjálfgefið spjallviðmót fyrir hlutverk án sérstaks notendaviðmóts, inniheldur ACP leiðbeiningar og lista yfir studda viðskiptavini.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"samþætting",
+			"þróun"
+		]
+	},
+	"it-IT": {
+		"name": "Integrazione IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integra i ruoli fount con gli IDE abilitati per ACP per un flusso di lavoro di sviluppo migliorato.",
+		"description_markdown": "Questo plugin offre servizi **Agent Client Protocol (ACP)**, consentendo l'integrazione perfetta dei ruoli fount negli editor compatibili con ACP (ad es. Zed, JetBrains, Neovim). Fornisce un'interfaccia di chat predefinita per i ruoli senza una UI dedicata, include una guida alle istruzioni ACP e elenca i client supportati.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"integrazione",
+			"sviluppo"
+		]
+	},
+	"ja-JP": {
+		"name": "IDE 統合",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "fount ロールと ACP 対応 IDE を統合し、開発ワークフローを強化。",
+		"description_markdown": "このプラグインは **Agent Client Protocol (ACP)** サービスを提供し、fount ロールと ACP 互換エディター（例：Zed、JetBrains、Neovim）のシームレスな統合を可能にします。専用 UI のないロールにはデフォルトのチャットインターフェースを提供し、ACP 使用説明書とサポートされているクライアントのリストを含みます。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"統合",
+			"開発"
+		]
+	},
+	"ko-KR": {
+		"name": "IDE 통합",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "ACP 지원 IDE와 fount 역할을 통합하여 개발 워크플로우를 향상시킵니다.",
+		"description_markdown": "이 플러그인은 **Agent Client Protocol (ACP)** 서비스를 제공하여 fount 역할을 ACP 호환 편집기(예: Zed, JetBrains, Neovim)와 원활하게 통합합니다. 전용 UI가 없는 역할에는 기본 채팅 인터페이스를 제공하며, ACP 사용 설명서와 지원 클라이언트 목록을 포함합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"통합",
+			"개발"
+		]
+	},
+	"lzh": {
+		"name": "工欲善其事",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "偕幕僚協約，助 fount 角色入編輯之器",
+		"description_markdown": "此插件供**幕僚協約 (ACP)** 之術，使 fount 角色能順接諸編輯之器（如 Zed、JetBrains、Neovim）。若角色無其專屬介面，則給予預設之對談窗；內附協約說明與支持之客端，勸君多試，以盡其用。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"集成",
+			"開發"
+		]
+	},
+	"nl-NL": {
+		"name": "IDE-integratie",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integreer fount-rollen met ACP-compatibele IDE's voor een verbeterde ontwikkelingsworkflow.",
+		"description_markdown": "Deze plugin biedt **Agent Client Protocol (ACP)**-services, waardoor naadloze integratie van fount-rollen in ACP-compatibele editors (bijv. Zed, JetBrains, Neovim) mogelijk is. Het biedt een standaard chatinterface voor rollen zonder speciale gebruikersinterface, bevat een ACP-instructiegids en een lijst met ondersteunde clients.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"integratie",
+			"ontwikkeling"
+		]
+	},
+	"pt-PT": {
+		"name": "Integração IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Integre os papéis do fount com IDEs habilitadas para ACP para um fluxo de trabalho de desenvolvimento aprimorado.",
+		"description_markdown": "Este plugin oferece serviços **Agent Client Protocol (ACP)**, permitindo uma integração perfeita dos papéis do fount em editores compatíveis com ACP (por exemplo, Zed, JetBrains, Neovim). Ele fornece uma interface de chat padrão para papéis sem uma UI dedicada, inclui um guia de instruções ACP e lista os clientes suportados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"integração",
+			"desenvolvimento"
+		]
+	},
+	"ru-RU": {
+		"name": "Интеграция IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Интегрируйте роли fount с IDE с поддержкой ACP для улучшения рабочего процесса разработки.",
+		"description_markdown": "Этот плагин предоставляет службы **Agent Client Protocol (ACP)**, обеспечивая бесшовную интеграцию ролей fount в редакторы, совместимые с ACP (например, Zed, JetBrains, Neovim). Он предоставляет стандартный интерфейс чата для ролей без выделенного пользовательского интерфейса, включает руководство по инструкциям ACP и список поддерживаемых клиентов.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"интеграция",
+			"разработка"
+		]
+	},
+	"uk-UA": {
+		"name": "Інтеграція IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Інтегруйте ролі fount з IDE з підтримкою ACP для покращення робочого процесу розробки.",
+		"description_markdown": "Цей плагін надає послуги **Agent Client Protocol (ACP)**, що дозволяє бездоганну інтеграцію ролей fount в редактори, сумісні з ACP (наприклад, Zed, JetBrains, Neovim). Він надає стандартний інтерфейс чату для ролей без виділеного інтерфейсу користувача, включає посібник з інструкціями ACP та список підтримуваних клієнтів.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"інтеграція",
+			"розробка"
+		]
+	},
+	"vi-VN": {
+		"name": "Tích hợp IDE",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "Tích hợp vai trò fount với IDE hỗ trợ ACP để cải thiện quy trình làm việc phát triển.",
+		"description_markdown": "Plugin này cung cấp dịch vụ **Agent Client Protocol (ACP)**, cho phép tích hợp liền mạch các vai trò fount vào các trình chỉnh sửa tương thích với ACP (ví dụ: Zed, JetBrains, Neovim). Nó cung cấp giao diện trò chuyện mặc định cho các vai trò không có giao diện người dùng chuyên dụng, bao gồm hướng dẫn ACP và danh sách các máy khách được hỗ trợ.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"tích hợp",
+			"phát triển"
+		]
+	},
+	"zh-TW": {
+		"name": "IDE 集成",
+		"avatar": "https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@main/docs/logo/light.svg",
+		"description": "通過 ACP 將 fount 角色集成到支持 ACP 的 IDE 中，提升開發效率。",
+		"description_markdown": "此插件提供 **Agent Client Protocol (ACP)** 服務，實現 fount 角色與支持 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）的無縫集成。對於無界面的角色，它提供預設聊天界面；同時包含 ACP 使用說明及受支持客戶端列表，鼓勵開發者在多種編輯器中探索 fount 角色的潛力。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://agentclientprotocol.com/",
+		"tags": [
+			"IDE",
+			"ACP",
+			"集成",
+			"開發",
+			"工作流"
+		]
+	}
+}

@@ -835,7 +835,8 @@
 				"uploading": "Đang tạo liên kết...",
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Tài trợ cho họ.](${sponsorLink})"
 			},
-			"commonToolCalling": "Đang gọi công cụ"
+			"commonToolCalling": "Đang gọi công cụ",
+			"noReplyContent": "(Không có nội dung trả lời)"
 		},
 		"messageEdit": {
 			"input": {
@@ -1426,7 +1427,7 @@
 	"subfounts": {
 		"title": "Subfount - quản lý thiết bị ngang hàng",
 		"pageTitle": "nguồn phụ",
-		"description": "Quản lý kết nối đài phun nước ngang hàng",
+		"description": "Quản lý kết nối fount ngang hàng",
 		"hostConnectionCode": {
 			"title": "Mã kết nối máy chủ",
 			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
@@ -1619,7 +1620,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "Thay áo mới!",
-				"description": "Đài phun nước đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
+				"description": "fount đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
 				"locked_description": "Chuyển chủ đề một lần."
 			}
 		},
@@ -2148,6 +2149,48 @@
 						"title": "Làm Proxy"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Kết nối vai trò fount với các trình chỉnh sửa được hỗ trợ (chẳng hạn như Zed, JetBrains, Neovim) thông qua Giao thức máy khách tác nhân, định cấu hình các khóa và vai trò API, đồng thời đưa các đối tác AI vào quy trình phát triển.",
+		"title": "Tích hợp IDE",
+		"heading": "Tích hợp IDE",
+		"instruction": "Sử dụng vai trò fount để hỗ trợ lập trình trong các trình soạn thảo hỗ trợ ACP (chẳng hạn như Zed, JetBrains, Neovim, v.v.).",
+		"supportedEditorsTitle": "Các biên tập viên và khách hàng được hỗ trợ",
+		"supportedEditorsIntro": "Các khách hàng sau đây làm việc với fount:",
+		"supportedEditorsLoading": "đang tải…",
+		"supportedEditorsError": "Không tải được danh sách: ${message}",
+		"acpTitle": "Định cấu hình tập lệnh ACP nguồn",
+		"acpDesc": "Tham khảo ví dụ sau để định cấu hình tập lệnh ACP nguồn:",
+		"acpCharLabel": "Vai trò",
+		"acpCharPlaceholder": "Chọn vai trò",
+		"charListError": "Không lấy được danh sách vai trò",
+		"acpScriptLabel": "URL tập lệnh ACP",
+		"acpConfigPlaceholder": "Vui lòng chọn một vai trò và tạo khóa API trước",
+		"acpConfigSample": "Ví dụ về cấu hình:",
+		"acpConfigHint": "Id vai trò được hiển thị trong menu thả xuống vai trò trên trang này và khóa API có thể được quản lý trong cài đặt người dùng.",
+		"copyButton": "sao chép",
+		"copied": "Đã sao chép vào bảng nhớ tạm",
+		"apiKeySectionTitle": "Khóa API",
+		"apiKeyHint": "Được sử dụng cho nguồn kết nối tập lệnh ACP (cùng bộ khóa với proxy API, có thể được tạo trong cài đặt người dùng).",
+		"generateApiKeyButton": "Tạo khóa mới",
+		"apiKeyCopied": "Đã sao chép khóa API",
+		"apiKeyCreateError": "Không tạo được khóa API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "Khóa API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Liên quan đến tích hợp",
+			"ide_integration_config": {
+				"title": "Cấu hình tích hợp IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Lần đầu tiên sử dụng fount trong IDE bên ngoài",
+				"description": "Lần đầu tiên, hãy sử dụng vai trò fount để hỗ trợ lập trình trong các trình chỉnh sửa hỗ trợ ACP như Zed, JetBrains, Neovim, v.v.",
+				"locked_description": "Kết nối với vai trò fount trong IDE bên ngoài và hoàn thành phiên."
 			}
 		}
 	},

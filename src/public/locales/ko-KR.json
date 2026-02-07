@@ -503,7 +503,7 @@
 				"subtitle": "영혼을 만나 대화를 시작해 보세요.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "기본 역할로 설정"
+						"title": "fount 역할로 설정"
 					}
 				}
 			},
@@ -835,7 +835,8 @@
 				"uploading": "링크 생성 중...",
 				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
 			},
-			"commonToolCalling": "도구 호출 중"
+			"commonToolCalling": "도구 호출 중",
+			"noReplyContent": "(답장 내용 없음)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "프록시로"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "에이전트 클라이언트 프로토콜을 통해 지원되는 편집기(예: Zed, JetBrains, Neovim)에 fount 역할을 연결하고, API 키 및 역할을 구성하고, AI 파트너를 개발 워크플로우에 참여시킵니다.",
+		"title": "IDE 통합",
+		"heading": "IDE 통합",
+		"instruction": "ACP 지원 편집기(예: Zed, JetBrains, Neovim 등)에서 fount 역할을 사용하여 프로그래밍을 지원받으세요.",
+		"supportedEditorsTitle": "지원되는 편집자 및 클라이언트",
+		"supportedEditorsIntro": "다음 클라이언트는 fount를 사용하여 작업합니다.",
+		"supportedEditorsLoading": "로드 중…",
+		"supportedEditorsError": "목록을 로드하지 못했습니다: ${message}",
+		"acpTitle": "fount ACP 스크립트 구성",
+		"acpDesc": "fount ACP 스크립트를 구성하려면 다음 예를 참조하십시오.",
+		"acpCharLabel": "역할",
+		"acpCharPlaceholder": "역할 선택",
+		"charListError": "역할 목록을 가져오지 못했습니다.",
+		"acpScriptLabel": "ACP 스크립트 URL",
+		"acpConfigPlaceholder": "역할을 선택하고 먼저 API 키를 생성하세요.",
+		"acpConfigSample": "구성 예:",
+		"acpConfigHint": "역할 ID는 이 페이지의 역할 드롭다운에 표시되며, API 키는 사용자 설정에서 관리할 수 있습니다.",
+		"copyButton": "복사",
+		"copied": "클립보드에 복사됨",
+		"apiKeySectionTitle": "API 키",
+		"apiKeyHint": "ACP 스크립트 연결 fount에 사용됩니다(API 프록시와 동일한 키 세트, 사용자 설정에서 생성 가능).",
+		"generateApiKeyButton": "새 키 생성",
+		"apiKeyCopied": "API 키가 복사되었습니다.",
+		"apiKeyCreateError": "API 키 생성 실패: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API 키"
+		},
+		"home_function_buttons": {
+			"integration_related": "통합 관련",
+			"ide_integration_config": {
+				"title": "IDE 통합 구성"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "코드의 샘물을 발견하다",
+				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
+				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
 			}
 		}
 	},

@@ -172,7 +172,7 @@
 			},
 			"keepalive": {
 				"initComplete": "Réinitialisation terminée. J'essaie de redémarrer la fount...",
-				"autoInitDisabled": "font a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier .noautoinit. Sortir.",
+				"autoInitDisabled": "fount a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier .noautoinit. Sortir.",
 				"restartingTooFast": "la fount a été redémarrée plusieurs fois en peu de temps. Réinitialisation forcée...",
 				"failedToStart": "Même après des tentatives de réparation automatiques, fount ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
 				"initFailed": "L'initialisation de la fount a échoué. Sortir."
@@ -190,11 +190,11 @@
 				"removingInstalledSystemPackages": "Suppression des packages système installés...",
 				"uninstallingDeno": "Désinstallation de Deno...",
 				"removeDenoFailed": "Échec de la suppression de Deno : ${message}",
-				"removingFountPwshFromProfile": "Suppression de font-pwsh du profil PowerShell...",
-				"fountPwshRemovedFromProfile": "font-pwsh a été supprimé du profil PowerShell.",
+				"removingFountPwshFromProfile": "Suppression de fount-pwsh du profil PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh a été supprimé du profil PowerShell.",
 				"pwshProfileNotFound": "Profil PowerShell introuvable, ignorer la suppression de fount-pwsh du profil.",
-				"uninstallingFountPwsh": "Désinstallation de font-pwsh...",
-				"uninstallFountPwshFailed": "Échec de la désinstallation de font-pwsh : ${message}",
+				"uninstallingFountPwsh": "Désinstallation de fount-pwsh...",
+				"uninstallFountPwshFailed": "Échec de la désinstallation de fount-pwsh : ${message}",
 				"removingTerminalProfile": "Suppression du profil de terminal Windows...",
 				"terminalProfileRemoved": "Le répertoire du profil du terminal Windows a été supprimé.",
 				"terminalProfileNotFound": "Répertoire du profil du terminal Windows introuvable.",
@@ -216,7 +216,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur fount !",
-		"description": "Suivez la progression de l'installation et découvrez les fonctionnalités qu'elle contient. la police sera prête à être lancée dans un instant.",
+		"description": "Suivez la progression de l'installation et découvrez les fonctionnalités qu'elle contient. la fount sera prête à être lancée dans un instant.",
 		"hero": {
 			"title": "L'étincelle d'une Pensée, la Présence d'un Ami.",
 			"description": "fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
@@ -330,7 +330,7 @@
 	},
 	"tutorial": {
 		"title": "Un tutoriel ?",
-		"description": "Laissez-nous vous accompagner dans le monde de la police. Ce didacticiel interactif illuminera le chemin et vous aidera à découvrir la magie tissée en son cœur. Votre aventure commence par la compréhension.",
+		"description": "Laissez-nous vous accompagner dans le monde de la fount. Ce didacticiel interactif illuminera le chemin et vous aidera à découvrir la magie tissée en son cœur. Votre aventure commence par la compréhension.",
 		"modal": {
 			"title": "Bienvenue sur fount !",
 			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
@@ -376,7 +376,7 @@
 	"auth": {
 		"title": "Authentification",
 		"subtitle": "Les données utilisateur sont stockées localement.",
-		"description": "Ici, vous définissez votre présence. Qu'il s'agisse de retourner dans un refuge familier ou de créer un nouvel espace pour vos histoires, c'est ici que commence votre voyage avec Font.",
+		"description": "Ici, vous définissez votre présence. Qu'il s'agisse de retourner dans un refuge familier ou de créer un nouvel espace pour vos histoires, c'est ici que commence votre voyage avec fount.",
 		"usernameLabel": "Nom d'utilisateur :",
 		"usernameInput": {
 			"placeholder": "Saisissez votre nom d'utilisateur"
@@ -433,7 +433,7 @@
 	},
 	"login_info": {
 		"title": "Informations de connexion",
-		"description": "Un espace sécurisé pour gérer vos identifiants de connexion Font, les clés de votre monde d'histoires inédites.",
+		"description": "Un espace sécurisé pour gérer vos identifiants de connexion fount, les clés de votre monde d'histoires inédites.",
 		"modal": {
 			"title": "Erreur de transfert de certificat",
 			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
@@ -668,13 +668,13 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "Générer des informations sur les composants de police"
+				"description": "Générer des informations sur les composants de fount"
 			}
 		}
 	},
 	"chat": {
 		"title": "Chat",
-		"description": "Où les mots prennent leur envol et les histoires se déroulent. Interagissez avec vos compagnons IA, façonnez le récit et perdez-vous dans le flux et le reflux du dialogue numérique. Le cœur de Font bat ici.",
+		"description": "Où les mots prennent leur envol et les histoires se déroulent. Interagissez avec vos compagnons IA, façonnez le récit et perdez-vous dans le flux et le reflux du dialogue numérique. Le cœur de fount bat ici.",
 		"new": {
 			"title": "Nouveau chat",
 			"description": "L'anticipation tranquille d'une histoire encore non écrite. Une nouvelle conversation commence, une table rase pour de nouvelles interactions et des récits qui se déroulent avec les compagnons que vous avez choisis."
@@ -835,7 +835,8 @@
 				"uploading": "Création du lien...",
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
-			"commonToolCalling": "Appel de l'outil"
+			"commonToolCalling": "Appel de l'outil",
+			"noReplyContent": "(Pas de contenu de réponse)"
 		},
 		"messageEdit": {
 			"input": {
@@ -999,7 +1000,7 @@
 	},
 	"easynew": {
 		"title": "Création rapide",
-		"description": "Créez rapidement de nouvelles parties de polices telles que des personnages, des mondes et des plugins à l'aide de modèles prédéfinis ou personnalisés. Votre prochaine création n'est qu'à quelques clics.",
+		"description": "Créez rapidement de nouvelles parties de founts telles que des personnages, des mondes et des plugins à l'aide de modèles prédéfinis ou personnalisés. Votre prochaine création n'est qu'à quelques clics.",
 		"info": {
 			"description": "Ces modèles ne peuvent être utilisés que pour créer rapidement des composants simples ; les composants complexes doivent toujours être créés manuellement."
 		},
@@ -1114,7 +1115,7 @@
 	},
 	"import": {
 		"title": "Importer",
-		"description": "Apportez vos personnages, mondes et configurations préférés dans les bras de Font. Qu'il s'agisse d'un fichier ou d'un texte collé, c'est ici que de nouveaux éléments sont intégrés à votre tapisserie personnelle.",
+		"description": "Apportez vos personnages, mondes et configurations préférés dans les bras de fount. Qu'il s'agisse d'un fichier ou d'un texte collé, c'est ici que de nouveaux éléments sont intégrés à votre tapisserie personnelle.",
 		"tabs": {
 			"fileImport": "Importer un fichier",
 			"textImport": "Importer du texte"
@@ -1180,7 +1181,7 @@
 		"title": "Exportateur de Composants",
 		"pageTitle": "Exportateur de Composants",
 		"pageSubtitle": "Exportez votre contenu préféré",
-		"description": "Exportez vos créations de polices. Cet outil rassemble vos pièces sélectionnées dans un simple fichier zip pour les conserver ou les partager.",
+		"description": "Exportez vos créations de founts. Cet outil rassemble vos pièces sélectionnées dans un simple fichier zip pour les conserver ou les partager.",
 		"steps": {
 			"part": "Sélectionner les composants",
 			"action": "Exporter"
@@ -1274,7 +1275,7 @@
 	},
 	"uninstall": {
 		"title": "Désinstaller",
-		"description": "Si vous choisissez de vous séparer, cet espace permet de faire des adieux gracieux. Confirmez la suppression des composants ou de la police elle-même. Les chemins divergent, mais les souvenirs peuvent demeurer.",
+		"description": "Si vous choisissez de vous séparer, cet espace permet de faire des adieux gracieux. Confirmez la suppression des composants ou de la fount elle-même. Les chemins divergent, mais les souvenirs peuvent demeurer.",
 		"titleWithName": "Désinstaller ${type}/${name}",
 		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
 		"invalidParamsTitle": "Paramètres invalides",
@@ -1426,7 +1427,7 @@
 	"subfounts": {
 		"title": "subfounts - gestion des appareils peer-to-peer",
 		"pageTitle": "subfounts",
-		"description": "Gérer les connexions de fontaines peer-to-peer",
+		"description": "Gérer les connexions de founts peer-to-peer",
 		"hostConnectionCode": {
 			"title": "Code de connexion hôte",
 			"connectionCodeLabel": "Code de connexion (Peer ID)",
@@ -1500,7 +1501,7 @@
 	"languageSettings": {
 		"title": "Paramètres linguistiques",
 		"pageTitle": "Paramètres de langue",
-		"description": "Gérez vos préférences linguistiques pour l'application de polices. Personnalisez votre expérience avec les options linguistiques disponibles.",
+		"description": "Gérez vos préférences linguistiques pour l'application de founts. Personnalisez votre expérience avec les options linguistiques disponibles.",
 		"pageDescription": "Gérez vos préférences linguistiques ici. Les langues de la liste auront la priorité sur les paramètres du navigateur dans l'ordre.",
 		"availableLanguages": "Langues disponibles",
 		"preferredLanguages": "Liste des langues prioritaires",
@@ -1529,7 +1530,7 @@
 	},
 	"themeManage": {
 		"title": "Gestion des thèmes",
-		"description": "Choisissez l’esthétique qui reflète votre humeur ou votre histoire. Prévisualisez et sélectionnez parmi une palette de thèmes, chacun offrant une ambiance différente pour vos interactions avec vos polices. Votre monde, votre style.",
+		"description": "Choisissez l’esthétique qui reflète votre humeur ou votre histoire. Prévisualisez et sélectionnez parmi une palette de thèmes, chacun offrant une ambiance différente pour vos interactions avec vos founts. Votre monde, votre style.",
 		"instruction": "Choisissez un thème !",
 		"search": {
 			"placeholder": "Rechercher un thème...",
@@ -1619,7 +1620,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "Un nouveau look !",
-				"description": "La fontaine avait un nouveau look et une toute nouvelle ambiance.",
+				"description": "La fount avait un nouveau look et une toute nouvelle ambiance.",
 				"locked_description": "Changez de thème une fois."
 			}
 		},
@@ -1769,7 +1770,7 @@
 	},
 	"discord_bots": {
 		"title": "Bots Discord",
-		"description": "Donnez une voix à vos compagnons de fontaine dans les salles animées de Discord. Configurez leur présence, gérez leurs opérations et laissez-les relier les mondes, un serveur à la fois.",
+		"description": "Donnez une voix à vos compagnons de fount dans les salles animées de Discord. Configurez leur présence, gérez leurs opérations et laissez-les relier les mondes, un serveur à la fois.",
 		"cardTitle": "Bots Discord",
 		"botSelectDropdown": {
 			"placeholder": "Choisissez un bot"
@@ -1845,7 +1846,7 @@
 	},
 	"telegram_bots": {
 		"title": "Bots Telegram",
-		"description": "Laissez vos personnages de police traverser les vagues instantanées de Telegram. Configurez leur présence numérique, gérez leurs conversations et étendez leur portée à ce monde de messagerie dynamique.",
+		"description": "Laissez vos personnages de fount traverser les vagues instantanées de Telegram. Configurez leur présence numérique, gérez leurs conversations et étendez leur portée à ce monde de messagerie dynamique.",
 		"cardTitle": "Gestion des bots Telegram",
 		"botSelectDropdown": {
 			"placeholder": "Choisissez un bot"
@@ -1921,7 +1922,7 @@
 	},
 	"browser_integration": {
 		"title": "Intégration du navigateur",
-		"description": "Comblez le fossé entre les polices et le Web. Cette page fournit le script utilisateur pour permettre une intégration transparente, intégrant vos compagnons IA dans votre expérience de navigation.",
+		"description": "Comblez le fossé entre les founts et le Web. Cette page fournit le script utilisateur pour permettre une intégration transparente, intégrant vos compagnons IA dans votre expérience de navigation.",
 		"pageHeader": "Intégration du navigateur",
 		"pageDescription": "Pour que votre rôle fount interagisse avec la page Web, vous devez installer ce script d'intégration du navigateur. Il agit comme un pont entre le caractère et le navigateur, leur permettant de visualiser le contenu de la page et d'effectuer des actions.",
 		"install_script_title": "Script d'installation",
@@ -2018,12 +2019,12 @@
 	},
 	"terminal_assistant": {
 		"title": "Assistant Terminal",
-		"description": "Au-delà de l'interface graphique, un espace de commande directe. Interagissez avec le noyau de la police via l'assistant de terminal, où le texte tisse sa propre magie puissante.",
+		"description": "Au-delà de l'interface graphique, un espace de commande directe. Interagissez avec le noyau de la fount via l'assistant de terminal, où le texte tisse sa propre magie puissante.",
 		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
 		"initialMessageLink": "Cliquez ici pour en savoir plus",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Hé, Fontaine.\"",
+				"name": "\"Hé, fount.\"",
 				"description": "Dans le terminal sombre, le nom du partenaire IA a été appelé.",
 				"locked_description": "Appelez l’assistance du terminal une fois."
 			}
@@ -2041,7 +2042,7 @@
 	},
 	"deskpet": {
 		"title": "Animaux de bureau",
-		"description": "Lancez vos personnages de police en tant qu'animaux interactifs vivant sur votre bureau.",
+		"description": "Lancez vos personnages de fount en tant qu'animaux interactifs vivant sur votre bureau.",
 		"launcherCard": {
 			"title": "démarreur pour animaux de compagnie",
 			"buttons": {
@@ -2097,7 +2098,7 @@
 	},
 	"access": {
 		"title": "Accéder à fount sur d'autres appareils",
-		"description": "Étendez la portée des polices au-delà d’un seul écran. C'est ici que se trouve la passerelle (une URL, un code QR) pour vous connecter avec vos compagnons depuis d'autres appareils, un simple pont à travers l'éther local.",
+		"description": "Étendez la portée des founts au-delà d’un seul écran. C'est ici que se trouve la passerelle (une URL, un code QR) pour vous connecter avec vos compagnons depuis d'autres appareils, un simple pont à travers l'éther local.",
 		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",
 		"instruction": {
 			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
@@ -2119,7 +2120,7 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"description": "Pour les développeurs et les intégrateurs, cette page dévoile le proxy de l'API font, votre connexion pour intégrer les capacités de font dans d'autres applications.",
+		"description": "Pour les développeurs et les intégrateurs, cette page dévoile le proxy de l'API fount, votre connexion pour intégrer les capacités de fount dans d'autres applications.",
 		"heading": "Passerelle du Proxy API",
 		"instruction": "Générez et gérez vos clés API sur cette page pour intégrer fount avec d'autres applications.",
 		"endpointSectionTitle": "Point de Terminaison de l'API",
@@ -2151,9 +2152,51 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Connectez le rôle fount aux éditeurs pris en charge (tels que Zed, JetBrains, Neovim) via le protocole client agent, configurez les clés et les rôles API et intégrez les partenaires IA au flux de travail de développement.",
+		"title": "Intégration de l'EDI",
+		"heading": "Intégration de l'EDI",
+		"instruction": "Utilisez des rôles fount pour faciliter la programmation dans les éditeurs compatibles ACP (tels que Zed, JetBrains, Neovim, etc.).",
+		"supportedEditorsTitle": "Éditeurs et clients pris en charge",
+		"supportedEditorsIntro": "Les clients suivants fonctionnent avec fount :",
+		"supportedEditorsLoading": "chargement…",
+		"supportedEditorsError": "Échec du chargement de la liste : ${message}",
+		"acpTitle": "Configurer le script ACP fount",
+		"acpDesc": "Reportez-vous à l'exemple suivant pour configurer le script fount ACP :",
+		"acpCharLabel": "Rôle",
+		"acpCharPlaceholder": "Sélectionnez un rôle",
+		"charListError": "Impossible d'obtenir la liste des rôles",
+		"acpScriptLabel": "URL du script ACP",
+		"acpConfigPlaceholder": "Veuillez sélectionner un rôle et générer d'abord une clé API",
+		"acpConfigSample": "Exemple de configuration :",
+		"acpConfigHint": "L'ID du rôle est affiché dans la liste déroulante des rôles sur cette page et la clé API peut être gérée dans les paramètres utilisateur.",
+		"copyButton": "Copier",
+		"copied": "Copié dans le presse-papiers",
+		"apiKeySectionTitle": "Clé API",
+		"apiKeyHint": "Utilisé pour la fount de connexion du script ACP (même jeu de clés que le proxy API, peut être créé dans les paramètres utilisateur).",
+		"generateApiKeyButton": "Générer une nouvelle clé",
+		"apiKeyCopied": "Clé API copiée",
+		"apiKeyCreateError": "Échec de la création de la clé API : ${message}",
+		"apiKeyInput": {
+			"aria-label": "Clé API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Lié à l'intégration",
+			"ide_integration_config": {
+				"title": "Configuration de l'intégration IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Source de Savoir",
+				"description": "Pour la première fois, utilisez des rôles fount pour faciliter la programmation dans des éditeurs compatibles ACP tels que Zed, JetBrains, Neovim, etc.",
+				"locked_description": "Connectez-vous au rôle de fount dans un IDE externe et terminez une session."
+			}
+		}
+	},
 	"achievements": {
 		"title": "Réalisation",
-		"description": "Explorez les étapes et les réalisations de votre voyage avec Font. Chaque réalisation marque une étape dans votre récit unique.",
+		"description": "Explorez les étapes et les réalisations de votre voyage avec fount. Chaque réalisation marque une étape dans votre récit unique.",
 		"pageHeader": "Salle des réalisations",
 		"pageDescription": "Découvrez vos réalisations et jalons débloqués ici.",
 		"unlocked_on": "Débloqué le ${date}",

@@ -835,7 +835,8 @@
 				"uploading": "Býr til tengil...",
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			},
-			"commonToolCalling": "Kallar á tól"
+			"commonToolCalling": "Kallar á tól",
+			"noReplyContent": "(Ekkert svar innihald)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "Sem umboðsmaður"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "Tengdu fount-hlutverkið við studda ritstjóra (eins og Zed, JetBrains, Neovim) í gegnum Agent Client Protocol, stilltu API lykla og hlutverk og færðu gervigreindarfélaga inn í þróunarvinnuflæðið.",
+		"title": "IDE samþætting",
+		"heading": "IDE samþætting",
+		"instruction": "Notaðu fount-hlutverk til að aðstoða við forritun í ACP-virkjum ritstjórum (eins og Zed, JetBrains, Neovim, osfrv.).",
+		"supportedEditorsTitle": "Styður ritstjórar og viðskiptavinir",
+		"supportedEditorsIntro": "Eftirfarandi viðskiptavinir vinna með font:",
+		"supportedEditorsLoading": "hleður…",
+		"supportedEditorsError": "Mistókst að hlaða lista: ${message}",
+		"acpTitle": "Stilla uppsprettu ACP skriftu",
+		"acpDesc": "Skoðaðu eftirfarandi dæmi til að stilla uppsprettu ACP forskriftina:",
+		"acpCharLabel": "Hlutverk",
+		"acpCharPlaceholder": "Veldu hlutverk",
+		"charListError": "Ekki tókst að ná í hlutverkalista",
+		"acpScriptLabel": "ACP handritsslóð",
+		"acpConfigPlaceholder": "Vinsamlegast veldu hlutverk og búðu til API lykil fyrst",
+		"acpConfigSample": "Dæmi um stillingar:",
+		"acpConfigHint": "Hlutaauðkenni er sýnt í fellilistanum fyrir hlutverk á þessari síðu og hægt er að stjórna API lyklinum í notendastillingum.",
+		"copyButton": "afrit",
+		"copied": "Afritað á klippiborð",
+		"apiKeySectionTitle": "API lykill",
+		"apiKeyHint": "Notað fyrir ACP forskriftartengingarfont (sama lyklasett og API umboð, hægt að búa til í notendastillingum).",
+		"generateApiKeyButton": "Búðu til nýjan lykil",
+		"apiKeyCopied": "API lykill afritaður",
+		"apiKeyCreateError": "Mistókst að búa til API lykil: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API lykill"
+		},
+		"home_function_buttons": {
+			"integration_related": "Samþætting tengd",
+			"ide_integration_config": {
+				"title": "IDE samþættingarstillingar"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Í fyrsta skipti sem þú notar font í ytri IDE",
+				"description": "Í fyrsta skipti, notaðu font hlutverk til að aðstoða við forritun í ACP-virkum ritstjórum eins og Zed, JetBrains, Neovim og fleira.",
+				"locked_description": "Tengstu við uppsprettuhlutverkið í ytri IDE og kláraðu lotu."
 			}
 		}
 	},

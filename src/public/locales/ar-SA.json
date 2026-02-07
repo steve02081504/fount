@@ -835,7 +835,8 @@
 				"uploading": "جارٍ إنشاء الرابط...",
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 			},
-			"commonToolCalling": "جارٍ استدعاء الأداة"
+			"commonToolCalling": "جارٍ استدعاء الأداة",
+			"noReplyContent": "(لا يوجد محتوى الرد)"
 		},
 		"messageEdit": {
 			"input": {
@@ -2148,6 +2149,48 @@
 						"title": "كوكيل"
 					}
 				}
+			}
+		}
+	},
+	"ide_integration": {
+		"description": "قم بتوصيل دور fount بالمحررين المدعومين (مثل Zed وJetBrains وNeovim) من خلال Agent Client Protocol، وقم بتكوين مفاتيح واجهة برمجة التطبيقات وأدوارها، وقم بإحضار شركاء الذكاء الاصطناعي إلى سير عمل التطوير.",
+		"title": "تكامل بيئة تطوير متكاملة",
+		"heading": "تكامل بيئة تطوير متكاملة",
+		"instruction": "استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP (مثل Zed وJetBrains وNeovim وما إلى ذلك).",
+		"supportedEditorsTitle": "المحررين والعملاء المدعومة",
+		"supportedEditorsIntro": "العملاء التاليين يعملون مع fount:",
+		"supportedEditorsLoading": "تحميل…",
+		"supportedEditorsError": "فشل تحميل القائمة: ${message}",
+		"acpTitle": "تكوين البرنامج النصي fount ACP",
+		"acpDesc": "ارجع إلى المثال التالي لتكوين البرنامج النصي ACP الناشئ:",
+		"acpCharLabel": "دور",
+		"acpCharPlaceholder": "حدد الدور",
+		"charListError": "فشل الحصول على قائمة الأدوار",
+		"acpScriptLabel": "عنوان URL للبرنامج النصي لـ ACP",
+		"acpConfigPlaceholder": "الرجاء تحديد دور وإنشاء مفتاح API أولاً",
+		"acpConfigSample": "مثال التكوين:",
+		"acpConfigHint": "يظهر معرف الدور في القائمة المنسدلة للدور في هذه الصفحة، ويمكن إدارة مفتاح واجهة برمجة التطبيقات في إعدادات المستخدم.",
+		"copyButton": "ينسخ",
+		"copied": "تم النسخ إلى الحافظة",
+		"apiKeySectionTitle": "مفتاح واجهة برمجة التطبيقات",
+		"apiKeyHint": "يستخدم لمصدر اتصال البرنامج النصي ACP (يمكن إنشاء نفس مجموعة المفاتيح مثل وكيل API في إعدادات المستخدم).",
+		"generateApiKeyButton": "توليد مفتاح جديد",
+		"apiKeyCopied": "تم نسخ مفتاح API",
+		"apiKeyCreateError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات: ${message}",
+		"apiKeyInput": {
+			"aria-label": "مفتاح واجهة برمجة التطبيقات"
+		},
+		"home_function_buttons": {
+			"integration_related": "المتعلقة بالتكامل",
+			"ide_integration_config": {
+				"title": "تكامل بيئة تطوير متكاملة"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "أول مرة تستخدم فيها fount في IDE خارجي",
+				"description": "لأول مرة، استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP مثل Zed وJetBrains وNeovim والمزيد.",
+				"locked_description": "اتصل بالدور الناشئ في IDE خارجي وأكمل الجلسة."
 			}
 		}
 	},

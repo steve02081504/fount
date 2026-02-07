@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "integration_related",
+			"info": "ide_integration.home_function_buttons.integration_related",
+			"level": 3,
+			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "ide_integration.home_function_buttons.ide_integration_config",
+					"level": 2,
+					"url": "/parts/shells:ideIntegration/",
+					"button": "<img src=\"https://api.iconify.design/line-md/document-code.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	]
+}

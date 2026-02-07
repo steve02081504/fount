@@ -835,7 +835,8 @@
 				"uploading": "鏈結正製...",
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 			},
-			"commonToolCalling": "方召工具"
+			"commonToolCalling": "方召工具",
+			"noReplyContent": "（未有复言）"
 		},
 		"messageEdit": {
 			"input": {
@@ -2151,6 +2152,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "援 ACP 协定，以此泉（fount）角役连诸编辑器（若 Zed、JetBrains、Neovim 之属），设符钥、定职分，引机智同侪以此佐编程之业。",
+		"title": "工欲善其事",
+		"heading": "工欲善其事",
+		"instruction": "于 Zed、JetBrains、Neovim 等 ACP 之器，以 fount 司职佐编程之事。",
+		"supportedEditorsTitle": "所容之器与客",
+		"supportedEditorsIntro": "下所列者，皆可与 fount 通：",
+		"supportedEditorsLoading": "载入中…",
+		"supportedEditorsError": "名录载入不成：${message}",
+		"acpTitle": "置 fount ACP 脚本",
+		"acpDesc": "依下例以置 fount ACP 脚本：",
+		"acpCharLabel": "司职",
+		"acpCharPlaceholder": "择其司职",
+		"charListError": "司职名录未能得",
+		"acpScriptLabel": "ACP 脚本 URL",
+		"acpConfigPlaceholder": "请先择其司职并制 API 符节",
+		"acpConfigSample": "置设之例：",
+		"acpConfigHint": "角 ID 见此页下拉，API 符节可于用户设中理之。",
+		"copyButton": "誊录",
+		"copied": "已存简帖",
+		"apiKeySectionTitle": "API 符节",
+		"apiKeyHint": "用于 ACP 脚本连 fount（与 API 代理同符，可于用户设中制）。",
+		"generateApiKeyButton": "制新符",
+		"apiKeyCopied": "API 符节已誊",
+		"apiKeyCreateError": "制 API 符节不成：${message}",
+		"apiKeyInput": {
+			"aria-label": "API 符节"
+		},
+		"home_function_buttons": {
+			"integration_related": "通连之事",
+			"ide_integration_config": {
+				"title": "IDE 集成配置"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "灵光外现",
+				"description": "初于支持 ACP 之编辑器（如 Zed 等）用 fount 司职佐编程。",
+				"locked_description": "于外器接引泉源之灵，以助编修。"
+			}
+		}
+	},
 	"achievements": {
 		"title": "成就",
 		"description": "探君泉源之旅之里程與成就。每一功績，皆是君獨特敘事中之一步。",
@@ -2160,7 +2203,7 @@
 		"locked": "尚未功成",
 		"toast_title": "功成！",
 		"error": {
-			"load_failed": "录功绩不成：${message}"
+			"load_failed": "誊录功绩不成：${message}"
 		},
 		"achievements": {
 			"open_achievements_page": {
