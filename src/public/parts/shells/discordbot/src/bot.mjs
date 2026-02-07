@@ -167,6 +167,29 @@ export async function stopBot(username, botname) {
 }
 
 /**
+ * 暂停机器人（停止运行但不从 config 中移除，以便 PauseAllJobs 后可通过 ReStartJobs 恢复）。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @returns {Promise<void>}
+ */
+export async function pauseBot(username, botname) {
+	const botCache = loadTempData(username, 'discordbot_cache')
+	if (!botCache[botname]) return
+
+	try {
+		const client = await botCache[botname]
+		await client.destroy()
+	} finally {
+		delete botCache[botname]
+	}
+}
+on_shutdown(async () => {
+	for (const username of getAllUserNames())
+		for (const botname of [...Object.keys(loadTempData(username, 'discordbot_cache'))])
+			await pauseBot(username, botname).catch(console.error)
+})
+
+/**
  * 获取正在运行的机器人列表。
  * @param {string} username - 用户名。
  * @returns {Array<string>} - 正在运行的机器人列表。
@@ -175,18 +198,6 @@ export function getRunningBotList(username) {
 	return Object.keys(loadTempData(username, 'discordbot_cache'))
 }
 
-on_shutdown(async () => {
-	for (const username in getAllUserNames()) {
-		const botCache = loadTempData(username, 'discordbot_cache')
-		for (const botname in botCache)
-			if (botCache[botname]) try {
-				const client = await botCache[botname]
-				await client.destroy()
-			} finally {
-				delete botCache[botname]
-			}
-	}
-})
 
 /**
  * 获取机器人列表。

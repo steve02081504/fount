@@ -95,9 +95,30 @@ async function TimerHeartbeat() {
 }
 
 /**
+ * 计时器心跳的定时器。
+ * @type {number}
+ */
+let timer_heartbeat_interval = null
+/**
  * 启动计时器心跳。
  * @returns {void}
  */
 export function startTimerHeartbeat() {
-	setInterval(TimerHeartbeat, 500)
+	timer_heartbeat_interval ??= setInterval(TimerHeartbeat, 500)
+}
+/**
+ * 停止计时器心跳。
+ * @returns {void}
+ */
+export function stopTimerHeartbeat() {
+	if (timer_heartbeat_interval) clearInterval(timer_heartbeat_interval)
+	timer_heartbeat_interval = null
+}
+/**
+ * 重启计时器心跳。
+ * @returns {void}
+ */
+export function restartTimerHeartbeat() {
+	stopTimerHeartbeat()
+	startTimerHeartbeat()
 }

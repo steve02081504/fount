@@ -9,7 +9,6 @@ import supportsAnsi from 'npm:supports-ansi'
 
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { getMemoryUsage } from '../scripts/gc.mjs'
-import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { notify } from '../scripts/notify.mjs'
@@ -18,12 +17,12 @@ import { createTray } from '../scripts/tray.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
+import { enableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, startTime } from './base.mjs'
 import idleManager from './idle.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
-import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
 /**
  * 应用程序数据目录的路径。
@@ -98,50 +97,6 @@ export let tray
  * @type {Function}
  */
 export let restartor
-
-/**
- * 当前的 Git 提交哈希。
- * @type {string|null}
- */
-export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
-
-/**
- * 检查上游git存储库的更新，并在必要时重新启动应用程序。
- * @returns {Promise<void>}
- */
-async function checkUpstreamAndRestart() {
-	if (fs.existsSync(__dirname + '/.git')) try {
-		await git('config core.autocrlf false')
-		await git('fetch')
-
-		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
-
-		const remoteCommit = await git('rev-parse', '@{u}')
-
-		if (currentGitCommit == remoteCommit) return
-		const mergeBase = await git('merge-base', 'HEAD', '@{u}')
-		if (mergeBase !== currentGitCommit) return // Not a fast-forward merge
-
-		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
-		const needsRestart = changedFiles.some(file =>
-			file.endsWith('.mjs') && file.startsWith('src/') &&
-			['decl', 'pages', 'locales'].every(dir => !file.startsWith(`src/${dir}/`)) &&
-			!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
-		)
-
-		if (needsRestart) {
-			console.logI18n('fountConsole.server.update.restarting')
-			if (restartor) await restartor()
-		}
-		else {
-			await git('reset', '--hard', '@{u}')
-			currentGitCommit = await git('rev-parse', 'HEAD')
-			sendEventToAll('server-updated', { commitId: currentGitCommit })
-		}
-	} catch (e) {
-		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
-	}
-}
 
 /**
  * 上次 Web 请求的时间戳。
@@ -332,7 +287,7 @@ export async function init(start_config) {
 		}, 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
 		if (starts.Base.Idle) idleManager.start()
-		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
+		if (starts.Base.AutoUpdate) enableAutoUpdate()
 		idleManager.onIdle(setDefaultStuff)
 		idleManager.onIdle(() => {
 			config.prelaunch ??= {}

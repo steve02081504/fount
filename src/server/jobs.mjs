@@ -91,6 +91,38 @@ function preloadPartsFromConfig() {
 	})
 }
 /**
+ * 暂停指定用户的所有作业（停止运行中的实例，但保留 config 中的作业数据以便恢复）。
+ * @param {string} username - 用户名。
+ * @returns {Promise<number>} 解析为已暂停作业数量的 Promise。
+ */
+async function pauseJobsOfUser(username) {
+	const jobs = getUserByUsername(username).jobs ?? {}
+	const promises = []
+	for (const partpath in jobs)
+		for (const uid in jobs[partpath])
+			promises.push((async () => {
+				try {
+					const part = await loadPart(username, partpath)
+					if (typeof part.interfaces?.jobs?.PauseJob === 'function')
+						await part.interfaces.jobs.PauseJob(username, uid)
+				}
+				catch (err) {
+					console.error(err)
+				}
+			})())
+	await Promise.all(promises)
+	return promises.length
+}
+
+/**
+ * 暂停所有用户的所有作业。
+ * @returns {Promise<void>}
+ */
+export async function PauseAllJobs() {
+	await Promise.all(getAllUserNames().map(pauseJobsOfUser))
+}
+
+/**
  * 重新启动所有用户的所有作业。
  * @returns {Promise<void>}
  */

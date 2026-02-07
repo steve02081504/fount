@@ -1,5 +1,5 @@
 import info from './info.json' with { type: 'json' }
-import { runBot } from './src/bot.mjs'
+import { runBot, pauseBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
@@ -69,6 +69,15 @@ export default {
 		},
 		jobs: {
 			/**
+			 * 暂停 Discord 机器人任务。
+			 * @param {string} user - 用户名。
+			 * @param {string} botname - 机器人名称。
+			 * @returns {Promise<void>}
+			 */
+			PauseJob: async (user, botname) => {
+				await pauseBot(user, botname)
+			},
+			/**
 			 * 重新启动Discord机器人任务。
 			 * @param {string} user - 用户名。
 			 * @param {string} botname - 机器人名称。
@@ -84,7 +93,7 @@ export default {
 					await new Promise(resolve => setTimeout(resolve, sleep_time))
 					sleep_time += 1000
 				}
-			}
+			},
 		}
 	}
 }

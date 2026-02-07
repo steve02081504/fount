@@ -1,6 +1,6 @@
 import { console } from '../../scripts/i18n.mjs'
+import { currentGitCommit } from '../autoupdate.mjs'
 import { events } from '../events.mjs'
-import { currentGitCommit } from '../server.mjs'
 
 /**
  * 存储每个用户的活动 WebSocket 连接。

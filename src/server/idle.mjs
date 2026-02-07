@@ -17,6 +17,8 @@ export class IdleManager {
 	#idleRuns = []
 	#idleRunOnces = []
 	#config
+	#timeoutId = null
+	#stopped = true
 
 	/**
 	 * 创建 IdleManager 的实例。
@@ -78,6 +80,16 @@ export class IdleManager {
 	}
 
 	/**
+	 * 取消注册一个在空闲时执行的动作。
+	 * @param {Function} action 曾通过 onIdle 注册的动作。
+	 * @returns {void}
+	 */
+	offIdle(action) {
+		const i = this.#idleRuns.indexOf(action)
+		if (i !== -1) this.#idleRuns.splice(i, 1)
+	}
+
+	/**
 	 * 注册一个仅在系统下一次变为空闲时执行的动作。
 	 * @param {Function} action 在空闲时执行一次的动作。
 	 * @returns {void}
@@ -120,10 +132,24 @@ export class IdleManager {
 	 * @returns {void}
 	 */
 	start() {
-		setTimeout(async () => {
+		this.#stopped = false
+		this.#timeoutId = setTimeout(async () => {
+			this.#timeoutId = null
 			await this.#idleRunner()
-			this.start() // 重新安排下一次检查
+			if (!this.#stopped) this.start()
 		}, this.#config.checkInterval)
+	}
+
+	/**
+	 * 停止定期检查空闲状态。
+	 * @returns {void}
+	 */
+	stop() {
+		this.#stopped = true
+		if (this.#timeoutId !== null) {
+			clearTimeout(this.#timeoutId)
+			this.#timeoutId = null
+		}
 	}
 
 	/**
