@@ -1,5 +1,5 @@
 import { escapeRegExp } from '../../../../../scripts/escape.mjs'
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n.mjs'
 
 /**
  * 将异步的回复预览更新器包装为同步接口：内部维护最新 reply 的 buffer，
@@ -26,7 +26,7 @@ export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
 			drainScheduled = false
 			const reply = lastReply
 			if (!reply) return
-			return Promise.resolve(asyncPreviewUpdater(reply)).catch(() => {})
+			return Promise.resolve(asyncPreviewUpdater(reply)).catch(() => { })
 		})
 	}
 
@@ -48,6 +48,14 @@ export function defineToolUseBlocks(toolPairs) {
 		return `(?:${start})[\\s\\S]*?(?:(?:${end})|$)`
 	}).join('|')})`, 'g')
 	return (next) => (args, reply) => {
+		/**
+		 * 获取工具调用本地化文本。
+		 * @returns {string} 工具调用本地化文本。
+		 */
+		const toolCallingText = () => geti18nForLocales(
+			[...args.locales ?? [], ...localhostLocales],
+			'chat.messageView.commonToolCalling'
+		)
 		let { content } = reply
 		content = content.replace(pattern,
 			args.supported_functions.html ? `\
@@ -55,15 +63,15 @@ export function defineToolUseBlocks(toolPairs) {
 	<div class="card-body">
 	${args.supported_functions.fount_i18nkeys ?
 					'<span class="tool-call-placeholder-text" data-i18n="chat.messageView.commonToolCalling"></span>' :
-					`<span class="tool-call-placeholder-text">${geti18n('chat.messageView.commonToolCalling')}</span>`
+					`<span class="tool-call-placeholder-text">${toolCallingText()}</span>`
 				}
 	</div>
 </div>
 `
 				:
 				args.supported_functions.markdown ?
-					`*[[${geti18n('chat.messageView.commonToolCalling')}]]*` :
-					`(${geti18n('chat.messageView.commonToolCalling')})`
+					`*[[${toolCallingText()}]]*` :
+					`(${toolCallingText()})`
 		)
 		pattern.lastIndex = 0
 		next?.(args, { ...reply, content })

@@ -4,6 +4,7 @@ import process from 'node:process'
 import { exec } from 'npm:@steve02081504/exec'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 
+import { getUserByUsername } from '../server/auth.mjs'
 import { __dirname } from '../server/base.mjs'
 import { events } from '../server/events.mjs'
 import { loadData, loadTempData, saveData } from '../server/setting_loader.mjs'
@@ -61,17 +62,27 @@ export function getbestlocale(preferredlocaleList, localeList) {
 const fountLocaleCache = {}
 
 /**
+ * 获取区域设置数据。
+ * @param {string[]} localeList - 区域设置列表。
+ * @returns {LocaleData} 区域设置数据。
+ */
+export function getLocaleData(localeList) {
+	const resultLocale = getbestlocale(localeList, fountLocaleList)
+	return fountLocaleCache[resultLocale] ?? loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
+}
+/**
  * 获取用户的区域设置数据。
  * @param {string} username - 用户的用户名。
  * @param {string[]} preferredlocaleList - 首选区域设置的列表。
  * @returns {Promise<LocaleData>} 一个解析为区域设置数据的承诺。
  */
-export async function getLocaleData(username, preferredlocaleList) {
-	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
+export async function getLocaleDataForUser(username, preferredlocaleList) {
 	const result = {
-		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
+		...getLocaleData([
+			...preferredlocaleList ?? [],
+			...getUserByUsername(username)?.locales ?? [],
+		])
 	}
-	if (!username) return result
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
@@ -113,7 +124,7 @@ export const localhostLocales = [...new Set([
  * 本地主机的区域设置数据。
  * @type {LocaleData}
  */
-export let localhostLocaleData = await getLocaleData(null, localhostLocales)
+export let localhostLocaleData = getLocaleData(localhostLocales)
 
 fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	if (!filename?.endsWith('.json')) return
@@ -123,10 +134,8 @@ fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	// 清除已更改文件的缓存（如果存在）
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]
-	getLocaleData(null, localhostLocales).then((data) => {
-		localhostLocaleData = data
-		sendEventToAll('locale-updated', null)
-	})
+	localhostLocaleData = getLocaleData(localhostLocales)
+	sendEventToAll('locale-updated', null)
 })
 
 // 疯狂星期四V我50
@@ -185,22 +194,90 @@ function getNestedValue(obj, key) {
  * @returns {string}
  */
 /**
+ * 获取区域设置数据中的翻译文本。
+ * @param {LocaleData} localeData - 区域设置数据。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @returns {string} - 翻译后的文本。
+ */
+function baseGeti18n(localeData, key, params = {}) {
+	let translation = getNestedValue(localeData, key)
+	if (translation === undefined)
+		console.warn(`Translation key "${key}" not found.`)
+	for (const param in params)
+		translation = translation?.replaceAll?.(`\${${param}}`, params[param])
+	return translation
+}
+/**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
+ * 根据首选区域设置列表和翻译键获取翻译后的文本。
+ * @param {string[]} localeList - 区域设置列表。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @returns {string} - 翻译后的文本。
+ */
+export function geti18nForLocales(localeList, key, params = {}) {
+	return baseGeti18n(getLocaleData(localeList), key, params)
+}
+/**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
+ * 根据用户名和翻译键获取翻译后的文本。
+ * @param {string} username - 用户名。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @returns {string} - 翻译后的文本。
+ */
+export async function geti18nForUser(username, key, params = {}) {
+	return baseGeti18n(await getLocaleDataForUser(username), key, params)
+}
+/**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 根据提供的键（key）获取翻译后的文本。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
  */
 export function geti18n(key, params = {}) {
-	let translation = getNestedValue(localhostLocaleData, key)
-
-	if (translation === undefined)
-		console.warn(`Translation key "${key}" not found.`)
-
-	// 简单的插值处理
-	for (const param in params)
-		translation = translation?.replaceAll?.(`\${${param}}`, params[param])
-
-	return translation
+	return baseGeti18n(localhostLocaleData, key, params)
 }
 /**
  * @overload
