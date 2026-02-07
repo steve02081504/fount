@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import cors from 'npm:cors'
 
-import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
+import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
@@ -119,7 +119,7 @@ export function registerEndpoints(router) {
 			console.error('Error setting language preference for user:', error)
 		}
 
-		return res.status(200).json(await getLocaleData(username, preferredLanguages))
+		return res.status(200).json(await getLocaleDataForUser(username, preferredLanguages))
 	})
 
 	router.get('/api/getavailablelocales', async (req, res) => {
