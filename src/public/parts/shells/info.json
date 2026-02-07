@@ -1,78 +1,290 @@
 {
 	"en-UK": {
 		"name": "Shells",
-		"description": "Shells manager"
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "The structural root for all interactive interface components.",
+		"description_markdown": "This is the **root component** for the fount UI layer. It acts as the primary container where all interactive nodes—such as Home, Settings, and User Dashboards—are mounted and displayed.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"interface",
+			"shells",
+			"fount"
+		]
 	},
 	"zh-CN": {
 		"name": "交互界面",
-		"description": "交互界面管理器"
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "所有交互组件的根节点",
+		"description_markdown": "这是 fount 交互层的**根节点**。它作为 UI 的基础容器，承载并挂载诸如主页、用户设置等所有功能性交互部件。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"界面",
+			"交互",
+			"fount"
+		]
 	},
 	"ar-SA": {
-		"name": "قذائف",
-		"description": "مدير قذائف"
+		"name": "الواجهات",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "الجذر الهيكلي لجميع مكونات واجهة التفاعل",
+		"description_markdown": "هذا هو **المكون الجذر** لطبقة واجهة المستخدم. يعمل كحاوية أساسية حيث يتم تثبيت جميع عقد التفاعل مثل الصفحة الرئيسية والإعدادات.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"واجهة",
+			"fount"
+		]
 	},
 	"de-DE": {
-		"name": "Muscheln",
-		"description": "Muschelmanager"
+		"name": "Shells",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Der strukturelle Stammknoten für alle interaktiven Schnittstellen.",
+		"description_markdown": "Dies ist die **Stammkomponente** für die fount-Benutzeroberfläche. Sie fungiert als Hauptcontainer, an dem alle interaktiven Knoten wie Startseite oder Einstellungen hängen.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"Schnittstelle",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "交互界面",
-		"description": "交互界面管理器"
+		"name": "🐚",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "🐚 ➡️ 🖼️ / ⚙️ / 👤",
+		"description_markdown": "🐚 ➡️ 🏗️. \n📦 ➕ 🖼️. \n⚓ ➡️ 🏠, ⚙️, 👤.\n\n✨ 🐚 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"🐚",
+			"🖼️",
+			"⚓",
+			"⛲"
+		]
 	},
 	"es-ES": {
-		"name": "Interfaz",
-		"description": "Gestor de conchas"
+		"name": "Interfaces",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "El nodo raíz estructural para todos los componentes de interfaz.",
+		"description_markdown": "Este es el **componente raíz** de la capa de interfaz de fount. Actúa como el contenedor principal donde se montan todos los nodos interactivos.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"interfaz",
+			"fount"
+		]
 	},
 	"fr-FR": {
-		"name": "Coquilles",
-		"description": "Gestionnaire d'obus"
+		"name": "Shells",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Le nœud racine structurel pour tous les composants d'interface.",
+		"description_markdown": "Il s'agit du **composant racine** de la couche UI de fount. Il sert de conteneur principal pour tous les modules interactifs.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"interface",
+			"fount"
+		]
 	},
 	"hi-IN": {
-		"name": "गोले",
-		"description": "शैल प्रबंधक"
+		"name": "इंटरफ़ेस",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "सभी इंटरैक्टिव घटकों के लिए संरचनात्मक मूल नोड।",
+		"description_markdown": "यह fount UI परत का **मूल घटक** है। यह प्राथमिक कंटेनर के रूप में कार्य करता है जहाँ होम और सेटिंग्स जैसे सभी नोड्स जुड़े होते हैं।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"इंटरफ़ेस",
+			"fount"
+		]
 	},
 	"is-IS": {
 		"name": "Skeljar",
-		"description": "Skeljastjóri"
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Grunnstýrieining fyrir öll viðmót.",
+		"description_markdown": "Þetta er **rótareiningin** fyrir viðmótshluta fount. Hún virkar sem gámur þar sem allar einingar eins og heimasíða og stillingar eru hýstar.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"viðmót",
+			"fount"
+		]
 	},
 	"it-IT": {
-		"name": "Conchiglie",
-		"description": "Responsabile delle conchiglie"
+		"name": "Interfacce",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Il nodo radice strutturale per tutti i componenti di interfaccia.",
+		"description_markdown": "Questo è il **componente radice** per il livello UI di fount. Funge da contenitore principale in cui sono montati tutti i nodi interattivi.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"interfaccia",
+			"fount"
+		]
 	},
 	"ja-JP": {
-		"name": "貝殻",
-		"description": "シェルマネージャー"
+		"name": "インターフェース",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "すべてのインタラクティブコンポーネントの構造的ルートノード",
+		"description_markdown": "これは fount UI レイヤーの**ルートコンポーネント**です。ホームや設定などのすべてのインタラクティブノードがマウントされる主要なコンテナとして機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"インターフェース",
+			"fount"
+		]
 	},
 	"ko-KR": {
-		"name": "포탄",
-		"description": "쉘 관리자"
+		"name": "인터페이스",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "모든 상호작용 구성 요소의 구조적 루트 노드",
+		"description_markdown": "이것은 fount UI 계층의 **루트 컴포넌트**입니다. 홈, 설정 등 모든 상호작용 노드가 마운트되는 기본 컨테이너 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"인터페이스",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "靈窗",
-		"description": "交互界面管理器"
+		"name": "儀殼",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "諸交互組件之根柢",
+		"description_markdown": "此乃 fount 交互層之**根柢**。凡「靈窗」、「設局」諸交互之端，皆依附於此殼，以呈於君前。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根柢",
+			"交互",
+			"fount"
+		]
 	},
 	"nl-NL": {
-		"name": "Interactieve interface",
-		"description": "Shells-manager"
+		"name": "Interfaces",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "De structurele wortel voor alle interactieve componenten.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor de fount UI-laag. Het fungeert als de primaire container waar alle interactieve nodes zijn ondergebracht.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"interface",
+			"fount"
+		]
 	},
 	"pt-PT": {
-		"name": "Interface",
-		"description": "Gerenciador de conchas"
+		"name": "Interfaces",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "O nó raiz estrutural para todos os componentes de interface.",
+		"description_markdown": "Este é o **componente raiz** da camada de UI do fount. Atua como o contentor principal onde todos os nós interativos são montados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"interface",
+			"fount"
+		]
 	},
 	"ru-RU": {
-		"name": "Ракушки",
-		"description": "Менеджер снарядов"
+		"name": "Оболочки",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Структурный корневой узел для всех компонентов интерфейса.",
+		"description_markdown": "Это **корневой компонент** уровня интерфейса fount. Он служит основным контейнером, в котором размещаются все интерактивные узлы.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"интерфейс",
+			"fount"
+		]
 	},
 	"uk-UA": {
-		"name": "Раковини",
-		"description": "Менеджер оболонок"
+		"name": "Оболонки",
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Структурний кореневий вузол для всіх компонентів інтерфейсу.",
+		"description_markdown": "Це **кореневий компонент** шару інтерфейсу fount. Він виступає основним контейнером, у якому монтуються всі інтерактивні вузли.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"інтерфейс",
+			"fount"
+		]
 	},
 	"vi-VN": {
 		"name": "Giao diện",
-		"description": "Trình quản lý vỏ"
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "Nút gốc cấu trúc cho tất cả các thành phần giao diện.",
+		"description_markdown": "Đây là **thành phần gốc** của lớp giao diện fount. Nó đóng vai trò là khung chứa chính, nơi gắn kết các nút tương tác như Trang chủ hay Cài đặt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"giao diện",
+			"fount"
+		]
 	},
 	"zh-TW": {
 		"name": "互動介面",
-		"description": "互動介面管理器"
+		"avatar": "https://api.iconify.design/line-md/monitor.svg",
+		"description": "所有互動組件的根節點",
+		"description_markdown": "這是 fount 交互層的**根節點**。它作為 UI 的基礎容器，承載並掛載諸如主頁、用戶設置等所有功能性互動部件。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"介面",
+			"交互",
+			"fount"
+		]
 	}
 }

@@ -1,287 +1,284 @@
 {
 	"en-UK": {
-		"name": "Fallback",
+		"name": "Fallback Generator",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "A source that tries a list of sources in order until one succeeds.",
+		"description": "A generator factory that produces redundant fallback chains.",
+		"description_markdown": "This **service generator** functions as a reliability factory. It allows users to group multiple search sources into a prioritized sequence, creating a robust 'fallback' mechanism for characters.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"generator",
 			"fallback",
-			"utility",
+			"reliability",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"zh-CN": {
-		"name": "备用",
+		"name": "故障转移生成器",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "备用",
-		"description_markdown": "一个按顺序尝试源列表，直到有一个成功为止的源。",
+		"description": "生产冗余备用链组件的工厂根节点",
+		"description_markdown": "这是系统的**可靠性工厂**。它允许将多个不同的搜索源组合成一个有序列表，生产出具备“故障自动转移”能力的备用源组件。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"生成器",
 			"备用",
-			"实用工具",
+			"冗余",
 			"元"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"ar-SA": {
-		"name": "الاحتياطي",
+		"name": "مولد الاحتياطي",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "الاحتياطي",
-		"description_markdown": "مصدر يحاول قائمة من المصادر بالترتيب حتى ينجح أحدها.",
+		"description": "مصنع مولد ينتج سلاسل احتياطية زائدة عن الحاجة.",
+		"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع للموثوقية. يسمح بتجميع مصادر بحث متعددة في تسلسل ذي أولوية، مما يخلق آلية 'احتياطية' قوية.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"مولد",
 			"احتياطي",
-			"أداة",
-			"ميتا"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"موثوقية"
+		]
 	},
 	"de-DE": {
-		"name": "Fallback",
+		"name": "Fallback-Generator",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "Eine Quelle, die eine Liste von Quellen der Reihe nach ausprobiert, bis eine erfolgreich ist.",
+		"description": "Eine Generatorenfabrik für redundante Fallback-Ketten.",
+		"description_markdown": "Dieser **Service-Generator** fungiert als Zuverlässigkeitsfabrik. Er ermöglicht die Gruppierung mehrerer Suchquellen zu einer priorisierten Sequenz.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"Fallback",
-			"Dienstprogramm",
-			"Meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"generator",
+			"fallback",
+			"metadaten"
+		]
 	},
 	"emoji": {
-		"name": "🛡️🔄",
+		"name": "🏗️🛡️",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "🛡️🆘",
-		"description_markdown": "1️⃣❌➡️2️⃣✅🛡️",
+		"description": "🏗️ ➡️ 🛡️🔄🛡️",
+		"description_markdown": "🏗️🛡️ ➡️ ⛓️✅. \n🛠️ ➡️ 🛡️1️⃣, 🛡️2️⃣, 🛡️3️⃣.\n⚙️ ➡️ 🔄🛡️.\n\n✨ 🛡️ 🏭",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"🏗️",
 			"🛡️",
-			"🔄",
-			"🆘"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"⚙️"
+		]
 	},
 	"es-ES": {
-		"name": "Respaldo",
+		"name": "Generador de servicio alternativo",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Respaldo",
-		"description_markdown": "Una fuente que prueba una lista de fuentes en orden hasta que una tiene éxito.",
+		"description": "Nodo raíz de fábrica que produce componentes de cadena de espera redundantes",
+		"description_markdown": "Esta es la **fábrica de confiabilidad** del sistema. Permite combinar múltiples fuentes de búsqueda diferentes en una lista ordenada, produciendo un componente de fuente de respaldo con capacidades de \"conmutación por error\".",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"respaldo",
-			"utilidad",
+			"generador",
+			"repuesto",
+			"redundancia",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"fr-FR": {
-		"name": "Fallback",
+		"name": "Générateur de services alternatifs",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "Une source qui essaie une liste de sources dans l'ordre jusqu'à ce que l'une d'entre elles réussisse.",
+		"description": "Nœud racine d'usine qui produit des composants de chaîne de secours redondants",
+		"description_markdown": "Il s'agit de l'**usine de fiabilité** du système. Il permet de combiner plusieurs sources de recherche différentes dans une liste ordonnée, produisant ainsi un composant de source de sauvegarde doté de capacités de « basculement ».",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"fallback",
-			"utilitaire",
-			"méta"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"générateur",
+			"de rechange",
+			"redondance",
+			"meta"
+		]
 	},
 	"hi-IN": {
-		"name": "फ़ॉलबैक",
+		"name": "वैकल्पिक सेवा जनरेटर",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "फ़ॉलबैक",
-		"description_markdown": "एक स्रोत जो स्रोतों की एक सूची को क्रम में तब तक आज़माता है जब तक कि कोई एक सफल न हो जाए।",
+		"description": "फ़ैक्टरी रूट नोड जो अनावश्यक स्टैंडबाय श्रृंखला घटकों का उत्पादन करता है",
+		"description_markdown": "यह सिस्टम की **विश्वसनीयता फ़ैक्टरी** है। यह कई अलग-अलग खोज स्रोतों को एक ऑर्डर की गई सूची में संयोजित करने की अनुमति देता है, जिससे \"फ़ेलओवर\" क्षमताओं के साथ एक बैकअप स्रोत घटक तैयार होता है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"फ़ॉलबैक",
-			"उपयोगिता",
+			"जनरेटर",
+			"अतिरिक्त",
+			"फालतूपन",
 			"मेटा"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"is-IS": {
-		"name": "Varaskeifa",
+		"name": "Varamaður þjónusturafall",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Varaskeifa",
-		"description_markdown": "Heimild sem reynir lista yfir heimildir í röð þar til ein tekst.",
+		"description": "Verksmiðjurótarhnútur sem framleiðir óþarfa biðkeðjuhluta",
+		"description_markdown": "Þetta er **áreiðanleikaverksmiðja** kerfisins. Það gerir kleift að sameina margar mismunandi leitarheimildir í raðaðan lista, sem framleiðir varahluti með „failover“ getu.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"varaskeifa",
-			"gagnsemi",
+			"rafall",
+			"vara",
+			"offramboð",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"it-IT": {
-		"name": "Fallback",
+		"name": "Generatore di servizi alternativi",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "Una fonte che prova un elenco di fonti in ordine finché una non ha successo.",
+		"description": "Nodo root di fabbrica che produce componenti ridondanti della catena di standby",
+		"description_markdown": "Questa è la **fabbrica dell'affidabilità** del sistema. Consente di combinare più origini di ricerca diverse in un elenco ordinato, producendo un componente di origine di backup con funzionalità di \"failover\".",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"fallback",
-			"utilità",
+			"generatore",
+			"ricambio",
+			"ridondanza",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"ja-JP": {
-		"name": "フォールバック",
+		"name": "代替サービスジェネレータ",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "フォールバック",
-		"description_markdown": "成功するまでソースのリストを順番に試行するソース。",
+		"description": "冗長スタンバイ チェーン コンポーネントを生成するファクトリー ルート ノード",
+		"description_markdown": "これはシステムの**信頼性ファクトリー**です。これにより、複数の異なる検索ソースを順序付きリストに結合して、「フェイルオーバー」機能を備えたバックアップ ソース コンポーネントを作成できるようになります。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"フォールバック",
-			"ユーティリティ",
+			"ジェネレータ",
+			"スペア",
+			"冗長性",
 			"メタ"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"ko-KR": {
-		"name": "폴백",
+		"name": "대체 서비스 생성기",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "폴백",
-		"description_markdown": "성공할 때까지 소스 목록을 순서대로 시도하는 소스입니다.",
+		"description": "중복 대기 체인 구성 요소를 생성하는 공장 루트 노드",
+		"description_markdown": "이것이 시스템의 **신뢰성 공장**입니다. 이를 통해 여러 다른 검색 소스를 정렬된 목록으로 결합하여 \"장애 조치\" 기능이 있는 백업 소스 구성 요소를 생성할 수 있습니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"폴백",
-			"유틸리티",
+			"발전기",
+			"여분의",
+			"중복성",
 			"메타"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"lzh": {
-		"name": "後備",
+		"name": "遞補肆",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "後備",
-		"description_markdown": "一源，循序試源列，至一得，乃止。",
+		"description": "集群芳以为后继，聚众源以备不虞",
+		"description_markdown": "此乃**後備之肆**。凡欲立不拔之基、建遞補之源者，皆取准於此。其能合諸源為一鏈，序而待之，為化身造就不窮之智門。\n",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"肆",
 			"後備",
-			"器用",
-			"元"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"元",
+			"系統"
+		]
 	},
 	"nl-NL": {
-		"name": "Fallback",
+		"name": "Alternatieve servicegenerator",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "Een bron die een lijst met bronnen op volgorde probeert totdat er een slaagt.",
+		"description": "Fabriekshoofdknooppunt dat redundante standby-ketencomponenten produceert",
+		"description_markdown": "Dit is de **betrouwbaarheidsfabriek** van het systeem. Hiermee kunnen meerdere verschillende zoekbronnen worden gecombineerd tot een geordende lijst, waardoor een back-upbroncomponent met \"failover\"-mogelijkheden ontstaat.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"fallback",
-			"hulpprogramma",
+			"generator",
+			"sparen",
+			"ontslag",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"pt-PT": {
-		"name": "Fallback",
+		"name": "Gerador de serviço alternativo",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Fallback",
-		"description_markdown": "Uma fonte que tenta uma lista de fontes em ordem até que uma tenha sucesso.",
+		"description": "Nó raiz de fábrica que produz componentes redundantes da cadeia de espera",
+		"description_markdown": "Esta é a **fábrica de confiabilidade** do sistema. Ele permite que diversas fontes de pesquisa diferentes sejam combinadas em uma lista ordenada, produzindo um componente de origem de backup com recursos de \"failover\".",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"fallback",
-			"utilitário",
+			"gerador",
+			"poupar",
+			"redundância",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"ru-RU": {
-		"name": "Резервный",
+		"name": "Альтернативный генератор услуг",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Резервный",
-		"description_markdown": "Источник, который пробует список источников по порядку, пока один из них не сработает.",
+		"description": "Заводской корневой узел, производящий резервные компоненты резервной цепочки.",
+		"description_markdown": "Это **фабрика надежности** системы. Он позволяет объединять несколько различных источников поиска в упорядоченный список, создавая компонент резервного источника с возможностями «отработки отказа».",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"резервный",
-			"утилита",
+			"генератор",
+			"запасной",
+			"избыточность",
 			"мета"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"uk-UA": {
-		"name": "Резервний",
+		"name": "Альтернативний сервісний генератор",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Резервний",
-		"description_markdown": "Джерело, яке пробує список джерел по порядку, доки одне з них не спрацює.",
+		"description": "Фабричний кореневий вузол, який створює надлишкові резервні компоненти ланцюжка",
+		"description_markdown": "Це **фабрика надійності** системи. Це дозволяє об’єднати кілька різних джерел пошуку в упорядкований список, утворюючи компонент джерела резервного копіювання з можливостями «відмови».",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"резервний",
-			"утиліта",
+			"генератор",
+			"запасний",
+			"надмірність",
 			"мета"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"vi-VN": {
-		"name": "Dự phòng",
+		"name": "Trình tạo dịch vụ thay thế",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "Dự phòng",
-		"description_markdown": "Một nguồn thử một danh sách các nguồn theo thứ tự cho đến khi một nguồn thành công.",
+		"description": "Nút gốc của nhà máy tạo ra các thành phần chuỗi dự phòng dự phòng",
+		"description_markdown": "Đây là **nhà máy đáng tin cậy** của hệ thống. Nó cho phép kết hợp nhiều nguồn tìm kiếm khác nhau thành một danh sách có thứ tự, tạo ra thành phần nguồn dự phòng có khả năng \"chuyển đổi dự phòng\".",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"trình tạo",
 			"dự phòng",
-			"tiện ích",
+			"sự dư thừa",
 			"meta"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	},
 	"zh-TW": {
-		"name": "備用",
+		"name": "備用服務產生器",
 		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-		"description": "備用",
-		"description_markdown": "一個按順序嘗試來源列表，直到有一個成功為止的來源。",
+		"description": "生產冗餘備用鏈組件的工廠根節點",
+		"description_markdown": "這是系統的**可靠性工廠**。它允許將多個不同的搜索源組合成一個有序列表，生產出具備「故障自動轉移」能力的備用源組件。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"產生器",
 			"備用",
-			"實用程式",
+			"冗餘",
 			"元"
-		],
-		"provider": "fount",
-		"home_page": ""
+		]
 	}
 }

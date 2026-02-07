@@ -1,6 +1,14 @@
 from pathlib import Path
 from bs4 import BeautifulSoup
 import pathspec
+import sys
+
+# 保证 Windows 控制台能正确输出
+if sys.platform == "win32" and sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+	try:
+		sys.stdout.reconfigure(encoding="utf-8")
+	except Exception:
+		pass
 
 # --- 配置 ---
 # 需要检查的元数据标签

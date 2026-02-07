@@ -1,287 +1,304 @@
 {
 	"en-UK": {
-		"name": "Weighted Random",
+		"name": "Weighted Random Generator",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Weighted Random",
-		"description_markdown": "Selects a source randomly based on configured weights.",
+		"description": "A factory that creates Weighted Random source instances with configurable weights.",
+		"description_markdown": "This **service generator** acts as a factory for producing 'Weighted Random' source instances. It empowers users to define a list of potential sources and assign specific probability weights to each, enabling the creation of highly customizable and flexible resource allocation strategies.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"random",
-			"utility",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"weighted",
+			"generator",
+			"configuration",
+			"utility"
+		]
 	},
 	"zh-CN": {
-		"name": "加权随机",
+		"name": "加权随机服务生成器",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "加权随机",
-		"description_markdown": "根据配置的权重随机选择一个源。",
+		"description": "生产加权随机服务源实例的工厂组件。",
+		"description_markdown": "这是一个**服务生成器**，用于生产“加权随机”服务源实例。它允许用户为每个源配置其被选中的权重（概率），从而创建出具备灵活调度和个性化分配能力的资源选择机制。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"随机",
-			"实用工具",
-			"元"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"加权",
+			"生成器",
+			"配置",
+			"实用工具"
+		]
 	},
 	"ar-SA": {
-		"name": "عشوائي مرجح",
+		"name": "مولد عشوائي مرجح",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "عشوائي مرجح",
-		"description_markdown": "يختار مصدرًا عشوائيًا بناءً على الأوزان المكونة.",
+		"description": "مصنع يُنشئ مثيلات مصادر عشوائية مرجحة بأوزان قابلة للتكوين.",
+		"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع لإنتاج مثيلات مصادر 'عشوائية مرجحة'. يمكّن المستخدمين من تحديد قائمة بالمصادر المحتملة وتعيين أوزان احتمالية محددة لكل منها، مما يتيح إنشاء استراتيجيات تخصيص موارد مرنة للغاية.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"عشوائي",
-			"أداة",
-			"ميتا"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"مرجح",
+			"مولد",
+			"تكوين",
+			"أداة"
+		]
 	},
 	"de-DE": {
-		"name": "Gewichteter Zufall",
+		"name": "Gewichteter Zufallsgenerator",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Gewichteter Zufall",
-		"description_markdown": "Wählt eine Quelle zufällig basierend auf konfigurierten Gewichten aus.",
+		"description": "Eine Fabrik, die gewichtete Zufallsquellinstanzen mit konfigurierbaren Gewichten erzeugt.",
+		"description_markdown": "Dieser **Service-Generator** fungiert als Fabrik zur Erzeugung von 'Gewichtete Zufall'-Quellinstanzen. Er ermöglicht es Benutzern, eine Liste potenzieller Quellen zu definieren und jeder spezifische Wahrscheinlichkeitsgewichte zuzuweisen, was hochgradig anpassbare Ressourcenallokationsstrategien ermöglicht.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
-			"Zufall",
-			"Dienstprogramm",
-			"Meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"zufall",
+			"gewichtet",
+			"generator",
+			"konfiguration",
+			"dienstprogramm"
+		]
 	},
 	"emoji": {
-		"name": "🎲❓",
+		"name": "🏗️⚖️🎲",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "🎲⚖️🤞",
-		"description_markdown": "⚖️➡️🎲➡️🤖",
+		"description": "🏗️➡️⚖️🎲",
+		"description_markdown": "🏗️⚖️🎲 ➡️ 🏭. \n📐⚖️➕🔢. \n🏭🔀✨. \n\n✨ 📐⚖️🎲.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
-			"🎲",
+			"🏗️",
 			"⚖️",
-			"❓"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"🎲",
+			"⚙️"
+		]
 	},
 	"es-ES": {
-		"name": "Aleatorio ponderado",
+		"name": "Generador Aleatorio Ponderado",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Aleatorio ponderado",
-		"description_markdown": "Selecciona una fuente al azar en función de los pesos configurados.",
+		"description": "Una fábrica que crea instancias de fuentes aleatorias ponderadas con pesos configurables.",
+		"description_markdown": "Este **generador de servicios** actúa como una fábrica para producir instancias de fuentes 'Aleatorias Ponderadas'. Permite a los usuarios definir una lista de posibles fuentes y asignar pesos de probabilidad específicos a cada una, lo que permite la creación de estrategias de asignación de recursos altamente personalizables y flexibles.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"aleatorio",
-			"utilidad",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"ponderado",
+			"generador",
+			"configuración",
+			"utilidad"
+		]
 	},
 	"fr-FR": {
-		"name": "Aléatoire pondéré",
+		"name": "Générateur Aléatoire Pondéré",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Aléatoire pondéré",
-		"description_markdown": "Sélectionne une source au hasard en fonction des poids configurés.",
+		"description": "Une usine qui crée des instances de sources aléatoires pondérées avec des poids configurables.",
+		"description_markdown": "Ce **générateur de services** fonctionne comme une usine pour produire des instances de sources 'Aléatoires Pondérées'. Il permet aux utilisateurs de définir une liste de sources potentielles et d'attribuer des poids de probabilité spécifiques à chacune, permettant la création de stratégies d'allocation de ressources hautement personnalisables et flexibles.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"aléatoire",
-			"utilitaire",
-			"méta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"pondéré",
+			"générateur",
+			"configuration",
+			"utilitaire"
+		]
 	},
 	"hi-IN": {
-		"name": "भारित यादृच्छिक",
+		"name": "भारित यादृच्छिक जेनरेटर",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "भारित यादृच्छिक",
-		"description_markdown": "कॉन्फ़िगर किए गए भार के आधार पर यादृच्छिक रूप से एक स्रोत का चयन करता है।",
+		"description": "भारित यादृच्छिक स्रोत उदाहरण बनाने वाली एक फैक्ट्री जिसमें कॉन्फ़िगर करने योग्य भार होते हैं।",
+		"description_markdown": "यह **सेवा जेनरेटर** 'भारित यादृच्छिक' स्रोत उदाहरण बनाने के लिए एक फैक्ट्री के रूप में कार्य करता है। यह उपयोगकर्ताओं को संभावित स्रोतों की एक सूची को परिभाषित करने और प्रत्येक को विशिष्ट संभाव्यता भार निर्दिष्ट करने का अधिकार देता है, जिससे अत्यधिक अनुकूलन योग्य और लचीली संसाधन आवंटन रणनीतियाँ बनाई जा सकती हैं।",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"यादृच्छिक",
-			"उपयोगिता",
-			"मेटा"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"भारित",
+			"जेनरेटर",
+			"कॉन्फ़िगरेशन",
+			"उपयोगिता"
+		]
 	},
 	"is-IS": {
-		"name": "Vegið slembiúrtak",
+		"name": "Vegið Slembirafall",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Vegið slembiúrtak",
-		"description_markdown": "Velur heimild af handahófi miðað við stilltar þyngdir.",
+		"description": "Verksmiðja sem býr til vegin slembiheimildartilvik með stillanlegum þyngdum.",
+		"description_markdown": "Þetta **þjónusturafall** virkar sem verksmiðja til að framleiða 'Vegið Slembi' heimildartilvik. Það gerir notendum kleift að skilgreina lista yfir mögulegar heimildir og úthluta hverri ákveðnum líkumþyngdum, sem gerir kleift að búa til mjög sérhannaðar og sveigjanlegar auðlindaúthlutunarstefnur.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
-			"slembiúrtak",
-			"gagnsemi",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"slembi",
+			"vegið",
+			"rafall",
+			"stillingar",
+			"gagnsemi"
+		]
 	},
 	"it-IT": {
-		"name": "Casuale ponderato",
+		"name": "Generatore Casuale Ponderato",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Casuale ponderato",
-		"description_markdown": "Seleziona una fonte in modo casuale in base ai pesi configurati.",
+		"description": "Una fabbrica che crea istanze di sorgenti casuali ponderate con pesi configurabili.",
+		"description_markdown": "Questo **generatore di servizi** funge da fabbrica per la produzione di istanze di sorgenti 'Casuali Ponderate'. Permette agli utenti di definire un elenco di potenziali sorgenti e di assegnare pesi di probabilità specifici a ciascuna, consentendo la creazione di strategie di allocazione delle risorse altamente personalizzabili e flessibili.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"casuale",
-			"utilità",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"ponderato",
+			"generatore",
+			"configurazione",
+			"utilità"
+		]
 	},
 	"ja-JP": {
-		"name": "加重ランダム",
+		"name": "加重ランダムジェネレーター",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "加重ランダム",
-		"description_markdown": "設定された重みに基づいてソースをランダムに選択します。",
+		"description": "設定可能な重みを持つ加重ランダムソースインスタンスを作成する工場。",
+		"description_markdown": "この**サービスジェネレーター**は、「加重ランダム」ソースインスタンスを生成する工場として機能します。ユーザーは潜在的なソースのリストを定義し、それぞれに特定の確率の重みを割り当てることができ、高度にカスタマイズ可能で柔軟なリソース割り当て戦略を作成できます。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"ランダム",
-			"ユーティリティ",
-			"メタ"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"加重",
+			"ジェネレーター",
+			"構成",
+			"ユーティリティ"
+		]
 	},
 	"ko-KR": {
-		"name": "가중 무작위",
+		"name": "가중 무작위 생성기",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "가중 무작위",
-		"description_markdown": "구성된 가중치에 따라 무작위로 소스를 선택합니다.",
+		"description": "구성 가능한 가중치를 가진 가중 무작위 소스 인스턴스를 생성하는 팩토리입니다.",
+		"description_markdown": "이 **서비스 생성기**는 '가중 무작위' 소스 인스턴스를 생성하는 팩토리 역할을 합니다. 사용자가 잠재적 소스 목록을 정의하고 각 소스에 특정 확률 가중치를 할당할 수 있도록 하여 고도로 사용자 정의 가능하고 유연한 리소스 할당 전략을 만들 수 있습니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"무작위",
-			"유틸리티",
-			"메타"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"가중",
+			"생성기",
+			"구성",
+			"유틸리티"
+		]
 	},
 	"lzh": {
-		"name": "權衡隨機",
+		"name": "權衡隨機肆",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "權衡隨機",
-		"description_markdown": "依權重之差，隨機取源，如探囊取物。",
+		"description": "制權衡隨機之器，俾能靈活定其輕重。",
+		"description_markdown": "此乃**權衡隨機之肆**。其職在於創製「加權隨機」之源實例。用戶可於此處為諸潛在之源預設其輕重比例，俾使所產之源能依此配置，靈活地進行資源之擇取與調配，盡顯智慧管理之功。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
+			"生成器",
+			"權衡",
 			"隨機",
-			"器用",
-			"元"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"配置"
+		]
 	},
 	"nl-NL": {
-		"name": "Gewogen willekeurig",
+		"name": "Gewogen Willekeurige Generator",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Gewogen willekeurig",
-		"description_markdown": "Selecteert willekeurig een bron op basis van geconfigureerde gewichten.",
+		"description": "Een fabriek die gewogen willekeurige broninstanties creëert met configureerbare gewichten.",
+		"description_markdown": "Deze **servicegenerator** fungeert als een fabriek voor het produceren van 'Gewogen Willekeurige' broninstanties. Het stelt gebruikers in staat om een lijst van potentiële bronnen te definiëren en specifieke waarschijnlijkheidsgewichten aan elk toe te wijzen, waardoor zeer aanpasbare en flexibele resourcetoewijzingsstrategieën kunnen worden gecreëerd.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"willekeurig",
-			"hulpprogramma",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"gewogen",
+			"generator",
+			"configuratie",
+			"hulpprogramma"
+		]
 	},
 	"pt-PT": {
-		"name": "Aleatório Ponderado",
+		"name": "Gerador Aleatório Ponderado",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Aleatório Ponderado",
-		"description_markdown": "Seleciona uma fonte aleatoriamente com base nos pesos configurados.",
+		"description": "Uma fábrica que cria instâncias de fontes aleatórias ponderadas com pesos configuráveis.",
+		"description_markdown": "Este **gerador de serviços** atua como uma fábrica para produzir instâncias de fontes 'Aleatórias Ponderadas'. Ele permite aos usuários definir uma lista de fontes potenciais e atribuir pesos de probabilidade específicos a cada uma, permitindo a criação de estratégias de alocação de recursos altamente personalizáveis e flexíveis.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"aleatório",
-			"utilitário",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"ponderado",
+			"gerador",
+			"configuração",
+			"utilitário"
+		]
 	},
 	"ru-RU": {
-		"name": "Взвешенный случайный",
+		"name": "Генератор взвешенного случайного выбора",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Взвешенный случайный",
-		"description_markdown": "Выбирает источник случайным образом на основе настроенных весов.",
+		"description": "Фабрика, которая создает экземпляры источников взвешенного случайного выбора с настраиваемыми весами.",
+		"description_markdown": "Этот **генератор сервиса** действует как фабрика для создания экземпляров источников 'Взвешенного случайного выбора'. Он позволяет пользователям определять список потенциальных источников и назначать каждому из них определенные веса вероятности, что позволяет создавать высоко настраиваемые и гибкие стратегии распределения ресурсов.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"случайный",
-			"утилита",
-			"мета"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"взвешенный",
+			"генератор",
+			"конфигурация",
+			"утилита"
+		]
 	},
 	"uk-UA": {
-		"name": "Зважений випадковий",
+		"name": "Генератор зваженого випадкового вибору",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Зважений випадковий",
-		"description_markdown": "Вибирає джерело випадковим чином на основі налаштованих ваг.",
+		"description": "Фабрика, яка створює екземпляри джерел зваженого випадкового вибору з настроюваними вагами.",
+		"description_markdown": "Цей **генератор сервісу** діє як фабрика для створення екземплярів джерел 'Зваженого випадкового вибору'. Він дозволяє користувачам визначати список потенційних джерел та призначати кожному з них певні ваги ймовірності, що дозволяє створювати високо настроювані та гнучкі стратегії розподілу ресурсів.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"випадковий",
-			"утиліта",
-			"мета"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"зважений",
+			"генератор",
+			"конфігурація",
+			"утиліта"
+		]
 	},
 	"vi-VN": {
-		"name": "Ngẫu nhiên có trọng số",
+		"name": "Trình tạo Ngẫu nhiên Có Trọng số",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "Ngẫu nhiên có trọng số",
-		"description_markdown": "Chọn một nguồn ngẫu nhiên dựa trên trọng số được định cấu hình.",
+		"description": "Một nhà máy tạo ra các phiên bản nguồn Ngẫu nhiên Có Trọng số với trọng số có thể cấu hình.",
+		"description_markdown": "Trình tạo dịch vụ này hoạt động như một nhà máy để tạo ra các phiên bản nguồn 'Ngẫu nhiên Có Trọng số'. Nó cho phép người dùng định nghĩa danh sách các nguồn tiềm năng và gán trọng số xác suất cụ thể cho từng nguồn, cho phép tạo ra các chiến lược phân bổ tài nguyên có khả năng tùy chỉnh cao và linh hoạt.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
-			"ngẫu nhiên",
-			"tiện ích",
-			"meta"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"ngẫu_nhiên",
+			"có_trọng_số",
+			"trình_tạo",
+			"cấu_hình",
+			"tiện_ích"
+		]
 	},
 	"zh-TW": {
-		"name": "加權隨機",
+		"name": "加權隨機服務產生器",
 		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
-		"description": "加權隨機",
-		"description_markdown": "根據配置的權重隨機選擇一個來源。",
+		"description": "生產加權隨機服務源實例的工廠組件。",
+		"description_markdown": "這是一個**服務產生器**，用於生產「加權隨機」服務源實例。它允許用戶為每個源配置其被選中的權重（機率），從而創建出具備靈活調度和個性化分配能力的資源選擇機制。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
 		"tags": [
 			"隨機",
-			"實用程式",
-			"元"
-		],
-		"provider": "fount",
-		"home_page": "https://github.com/steve02081504/fount"
+			"加權",
+			"產生器",
+			"配置",
+			"實用工具"
+		]
 	}
 }

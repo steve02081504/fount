@@ -1,78 +1,290 @@
 {
 	"en-UK": {
 		"name": "Personas",
-		"description": "Personas manager"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "The foundational root for all user persona components.",
+		"description_markdown": "This is the **root component** for user identities. It serves as the primary structural node where all your personal settings, avatars, and interaction profiles are attached and organized.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"persona",
+			"identity",
+			"fount"
+		]
 	},
 	"zh-CN": {
 		"name": "人设",
-		"description": "人设管理器"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "用户所有个人设定组件的根节点",
+		"description_markdown": "这是人设模块的**根节点**。它作为基础承载结构，用户定义的所有个人身份、性格设定及交互档案都挂载于此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"人设",
+			"身份",
+			"fount"
+		]
 	},
 	"ar-SA": {
-		"name": "شخصيات",
-		"description": "مدير الشخصيات"
+		"name": "السمات الشخصية",
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "الجذر الأساسي لجميع مكونات سمات المستخدم",
+		"description_markdown": "هذا هو **المكون الجذر** لهويات المستخدم. إنه يمثل العقدة الهيكلية حيث يتم إرفاق جميع إعداداتك الشخصية وملفات تعريف التفاعل.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"سمات",
+			"fount"
+		]
 	},
 	"de-DE": {
 		"name": "Personas",
-		"description": "Personas-Manager"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Der grundlegende Stammknoten für alle Persona-Komponenten.",
+		"description_markdown": "Dies ist die **Stammkomponente** für Benutzeridentitäten. Sie dient als struktureller Knotenpunkt, an dem all Ihre persönlichen Einstellungen und Interaktionsprofile hängen.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"Persona",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "人设",
-		"description": "人设管理器"
+		"name": "👤",
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "👤 ➡️ 🆔 / 🎭 / 📝",
+		"description_markdown": "👤 ➡️ 🏗️. \n🪞 ➕ 🎭. \n⚓ ➡️ 👤✨.\n\n✨ 🆔 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"👤",
+			"🪞",
+			"⚓",
+			"⛲"
+		]
 	},
 	"es-ES": {
 		"name": "Personas",
-		"description": "Administrador de personas"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "El nodo raíz fundamental para todos los componentes de persona.",
+		"description_markdown": "Este es el **componente raíz** para las identidades de usuario. Actúa como el nodo estructural donde se organizan todos tus ajustes personales y perfiles de interacción.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"persona",
+			"fount"
+		]
 	},
 	"fr-FR": {
-		"name": "Personnages",
-		"description": "Gestionnaire de personas"
+		"name": "Personas",
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Le nœud racine fondamental pour tous les composants de persona.",
+		"description_markdown": "Il s'agit du **composant racine** pour les identités d'utilisateur. Il sert de nœud structurel où tous vos paramètres personnels et profils sont rattachés.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"persona",
+			"fount"
+		]
 	},
 	"hi-IN": {
 		"name": "व्यक्तित्व",
-		"description": "व्यक्तित्व प्रबंधक"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "सभी उपयोगकर्ता व्यक्तित्व घटकों के लिए मौलिक मूल नोड।",
+		"description_markdown": "यह उपयोगकर्ता पहचान के लिए **मूल घटक** है। यह वह संरचनात्मक आधार है जहाँ आपकी सभी व्यक्तिगत सेटिंग्स और प्रोफाइल जुड़े होते हैं।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"व्यक्तित्व",
+			"fount"
+		]
 	},
 	"is-IS": {
 		"name": "Persónur",
-		"description": "Persónustjóri"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Grunnrót fyrir allar persónustillingar notanda.",
+		"description_markdown": "Þetta er **rótareiningin** fyrir sjálfsmyndir notenda. Hún þjónar sem grunnur þar sem allar þínar persónulegu stillingar og prófílar eru hýstir.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"persóna",
+			"fount"
+		]
 	},
 	"it-IT": {
 		"name": "Personas",
-		"description": "Gestore delle personas"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Il nodo radice fondamentale per tutti i componenti persona.",
+		"description_markdown": "Questo è il **componente radice** per le identità utente. Funge da nodo strutturale in cui sono organizzate tutte le tue impostazioni personali.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"persona",
+			"fount"
+		]
 	},
 	"ja-JP": {
 		"name": "ペルソナ",
-		"description": "ペルソナマネージャー"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "すべてのユーザー設定コンポーネントの構造的ルートノード",
+		"description_markdown": "これはユーザーアイデンティティの**ルートコンポーネント**です。すべての個人設定、アバター、対話プロファイルがアタッチされる構造的基盤として機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"ペルソナ",
+			"fount"
+		]
 	},
 	"ko-KR": {
 		"name": "페르소나",
-		"description": "페르소나 관리자"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "모든 사용자 설정 구성 요소의 구조적 루트 노드",
+		"description_markdown": "이것은 사용자 정체성 모듈의 **루트 컴포넌트**입니다. 사용자의 모든 개인 설정, 아바타 및 상호작용 프로필이 부착되는 구조적 중심 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"페르소나",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "人设",
-		"description": "人设管理器"
+		"name": "我相",
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "诸自况组件之根柢",
+		"description_markdown": "此乃**我相**之根柢。凡君自况之身、外饰之言，皆附于此，以定君之本面。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根柢",
+			"我相",
+			"fount"
+		]
 	},
 	"nl-NL": {
 		"name": "Persona's",
-		"description": "Persona-manager"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "De fundamentele wortel voor alle persona-componenten.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor gebruikersidentiteiten. Het fungeert als het structurele punt waar al uw persoonlijke instellingen en profielen zijn ondergebracht.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"persona",
+			"fount"
+		]
 	},
 	"pt-PT": {
 		"name": "Personas",
-		"description": "Gestor de personas"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "O nó raiz fundamental para todos os componentes de persona.",
+		"description_markdown": "Este é o **componente raiz** para as identidades de utilizador. Serve como o nó estrutural onde todas as suas definições pessoais são anexadas.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"persona",
+			"fount"
+		]
 	},
 	"ru-RU": {
 		"name": "Персоны",
-		"description": "Менеджер персон"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Структурный корневой узел для всех компонентов персоны.",
+		"description_markdown": "Это **корневой компонент** для пользовательских личностей. Он служит структурным узлом, где размещаются все ваши личные настройки и профили.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"персона",
+			"fount"
+		]
 	},
 	"uk-UA": {
 		"name": "Персони",
-		"description": "Менеджер персон"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Структурний кореневий вузол для всіх компонентів персони.",
+		"description_markdown": "Це **кореневий компонент** для ідентичностей користувача. Він виступає структурним вузлом, де розміщуються всі ваші особисті налаштування.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"персона",
+			"fount"
+		]
 	},
 	"vi-VN": {
 		"name": "Persona",
-		"description": "Trình quản lý persona"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "Nút gốc cấu trúc cho tất cả các thành phần persona.",
+		"description_markdown": "Đây là **thành phần gốc** của các danh tính người dùng. Nó đóng vai trò là nền tảng cấu trúc nơi gắn kết các thiết lập cá nhân và hồ sơ tương tác của bạn.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"persona",
+			"fount"
+		]
 	},
 	"zh-TW": {
 		"name": "人設",
-		"description": "人設管理器"
+		"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
+		"description": "用戶所有個人設定組件的根節點",
+		"description_markdown": "這是人設模組的**根節點**。它作為基礎承載結構，用戶定義的所有個人身份、性格設定及交互檔案都掛載於此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"人設",
+			"身份",
+			"fount"
+		]
 	}
 }

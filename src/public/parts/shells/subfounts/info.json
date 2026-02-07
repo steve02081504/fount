@@ -1,268 +1,290 @@
 {
 	"en-UK": {
-		"name": "Subfounts",
+		"name": "Subfount Devices",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Remote subfount device management.",
-		"description_markdown": "Manage remote subfount devices via Trystero (P2P) connections. Display host connection codes and execute code remotely on connected devices.",
+		"description": "Remote management plugin for distributed fount devices.",
+		"description_markdown": "This plugin enables the main fount system to manage remote **Subfount Devices** via Trystero (P2P) connections. It allows displaying host connection codes, remotely executing code, and orchestrating distributed tasks across connected devices.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
 			"network",
-			"remote"
+			"remote-control",
+			"P2P",
+			"device-management"
 		]
 	},
 	"zh-CN": {
-		"name": "子设备",
+		"name": "子设备管理",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "远程子设备管理。",
-		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"description": "远程分布式 fount 子设备管理插件",
+		"description_markdown": "此插件支持 fount 主系统通过 Trystero（点对点）连接管理远程**子设备**。它能显示主机连接码，远程执行代码，并协调连接设备间的分布式任务。",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
 			"网络",
-			"远程"
+			"远程控制",
+			"P2P",
+			"设备管理"
 		]
 	},
 	"ar-SA": {
-		"name": "جهاز فرعي",
+		"name": "إدارة الأجهزة الفرعية",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "إدارة الأجهزة الفرعية عن بعد.",
-		"description_markdown": "إدارة الأجهزة الفرعية البعيدة عبر اتصالات Trystero (نظير إلى نظير). عرض رمز اتصال المضيف وتنفيذ التعليمات البرمجية عن بعد.",
+		"description": "ملحق إدارة الأجهزة الفرعية الموزعة عن بعد.",
+		"description_markdown": "يتيح هذا الملحق لنظام fount الرئيسي إدارة **الأجهزة الفرعية** البعيدة عبر اتصالات Trystero (نظير إلى نظير). يعرض رمز اتصال المضيف ويقوم بتنفيذ التعليمات البرمجية عن بعد.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
 			"شبكة",
-			"بعيد"
+			"تحكم_عن_بعد",
+			"P2P"
 		]
 	},
 	"de-DE": {
-		"name": "Untergerät",
+		"name": "Subfount Geräteverwaltung",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Remote-Untergeräteverwaltung.",
-		"description_markdown": "Verwalten Sie entfernte Untergeräte über Trystero-Verbindungen (Peer-to-Peer). Zeigen Sie den Host-Verbindungscode an und führen Sie den Code remote aus.",
-		"version": "0.0.0",
-		"author": "steve02081504",
-		"home_page": "",
-		"tags": [
-			"WebSocket",
-			"Netzwerk",
-			"Fernbedienung"
-		]
-	},
-	"emoji": {
-		"name": "子设备",
-		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "远程子设备管理。",
-		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"description": "Plugin zur Fernverwaltung verteilter fount-Geräte.",
+		"description_markdown": "Dieses Plugin ermöglicht dem Haupt-fount-System die Verwaltung entfernter **Subfount-Geräte** über Trystero (P2P)-Verbindungen. Es zeigt Host-Verbindungscodes an und führt Code remote auf verbundenen Geräten aus.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
-			"网络",
-			"远程"
+			"netzwerk",
+			"fernsteuerung",
+			"P2P"
+		]
+	},
+	"emoji": {
+		"name": "💻🔗📡",
+		"avatar": "https://api.iconify.design/line-md/computer.svg",
+		"description": "💻 ➡️ 🔗 ➡️ 🕹️",
+		"description_markdown": "💻🔗📡 ➡️ 🕹️.\n🌐 🤝 🌐. \n🔢 ➡️ 🖥️.\n\n✨ 💻 🕹️",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"💻",
+			"🔗",
+			"📡",
+			"🕹️"
 		]
 	},
 	"es-ES": {
-		"name": "subdispositivo",
+		"name": "Administración de Subdispositivos",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Gestión remota de subdispositivos.",
-		"description_markdown": "Administre subdispositivos remotos a través de conexiones Trystero (peer-to-peer). Muestra el código de conexión del host y ejecuta el código de forma remota.",
+		"description": "Plugin de gestión remota para dispositivos fount distribuidos.",
+		"description_markdown": "Este plugin permite al sistema fount principal gestionar **Subdispositivos** remotos a través de conexiones Trystero (P2P). Muestra códigos de conexión y ejecuta código de forma remota.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
-			"enchufe web",
+			"websocket",
 			"red",
-			"remoto"
+			"control-remoto",
+			"P2P"
 		]
 	},
 	"fr-FR": {
-		"name": "sous-appareil",
+		"name": "Gestion des Sous-appareils",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Gestion des sous-appareils à distance.",
-		"description_markdown": "Gérez les sous-appareils distants via des connexions Trystero (peer-to-peer). Affichez le code de connexion hôte et exécutez le code à distance.",
+		"description": "Plugin de gestion à distance pour les appareils fount distribués.",
+		"description_markdown": "Ce plugin permet au système fount principal de gérer les **Sous-appareils** distants via des connexions Trystero (P2P). Il affiche les codes de connexion et exécute le code à distance.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
-			"prise Web",
+			"websocket",
 			"réseau",
-			"télécommande"
+			"télécommande",
+			"P2P"
 		]
 	},
 	"hi-IN": {
-		"name": "उपयंत्र",
+		"name": "उप-डिवाइस प्रबंधन",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "दूरस्थ उप-डिवाइस प्रबंधन।",
-		"description_markdown": "Trystero (पीयर-टू-पीयर) कनेक्शन के माध्यम से दूरस्थ उप-डिवाइस प्रबंधित करें। होस्ट कनेक्शन कोड प्रदर्शित करें और कोड को दूरस्थ रूप से निष्पादित करें।",
+		"description": "वितरित फाउंट डिवाइसों के लिए रिमोट प्रबंधन प्लगइन।",
+		"description_markdown": "यह प्लगइन मुख्य फाउंट सिस्टम को Trystero (पीयर-टू-पीयर) कनेक्शन के माध्यम से रिमोट **उप-डिवाइसों** को प्रबंधित करने में सक्षम बनाता है। यह होस्ट कनेक्शन कोड प्रदर्शित करता है और दूरस्थ रूप से कोड निष्पादित करता है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"वेबसोकेट",
 			"नेटवर्क",
-			"दूर"
+			"रिमोट-कंट्रोल",
+			"P2P"
 		]
 	},
 	"is-IS": {
-		"name": "undirtæki",
+		"name": "Undirtækjastjórnun",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Fjarstýring undirtækja.",
-		"description_markdown": "Stjórnaðu fjartengdum undirtækjum í gegnum Trystero (peer-to-peer) tengingar. Sýndu hýsiltengingarkóðann og keyrðu kóðann úr fjarlægð.",
+		"description": "Fjarstýringarviðbót fyrir dreifð fount-tæki.",
+		"description_markdown": "Þessi viðbót gerir aðal fount-kerfinu kleift að stjórna fjarstýrðum **undirtækjum** með Trystero (P2P) tengingum. Hún sýnir tengikóða hýsilsins og keyrir kóða úr fjarlægð.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"veftengi",
 			"net",
-			"fjarstýring"
+			"fjarstýring",
+			"P2P"
 		]
 	},
 	"it-IT": {
-		"name": "sottodispositivo",
+		"name": "Gestione Sottodispositivi",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Gestione remota dei sotto-dispositivi.",
-		"description_markdown": "Gestisci i dispositivi secondari remoti tramite connessioni Trystero (peer-to-peer). Visualizza il codice di connessione host ed esegui il codice in remoto.",
+		"description": "Plugin di gestione remota per dispositivi fount distribuiti.",
+		"description_markdown": "Questo plugin consente al sistema fount principale di gestire **Sottodispositivi** remoti tramite connessioni Trystero (P2P). Visualizza i codici di connessione e esegue il codice da remoto.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
 			"rete",
-			"remoto"
+			"controllo-remoto",
+			"P2P"
 		]
 	},
 	"ja-JP": {
-		"name": "サブデバイス",
+		"name": "子デバイス管理",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "リモートサブデバイス管理。",
-		"description_markdown": "Trystero (ピアツーピア) 接続を介してリモート サブデバイスを管理します。ホスト接続コードを表示し、リモートでコードを実行します。",
-		"version": "0.0.0",
-		"author": "steve02081504",
-		"home_page": "",
-		"tags": [
-			"ウェブソケット",
-			"ネットワーク",
-			"リモート"
-		]
-	},
-	"ko-KR": {
-		"name": "하위 장치",
-		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "원격 하위 장치 관리.",
-		"description_markdown": "Trystero(피어 투 피어) 연결을 통해 원격 하위 장치를 관리합니다. 호스트 연결 코드를 표시하고 원격으로 코드를 실행합니다.",
-		"version": "0.0.0",
-		"author": "steve02081504",
-		"home_page": "",
-		"tags": [
-			"웹소켓",
-			"회로망",
-			"원격"
-		]
-	},
-	"lzh": {
-		"name": "子设备",
-		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "远程子设备管理。",
-		"description_markdown": "通过Trystero（点对点）连接管理远程子设备。显示主机连接码并远程执行代码。",
+		"description": "分散型 fount デバイスのリモート管理プラグイン",
+		"description_markdown": "このプラグインは、Trystero（ピアツーピア）接続を介してリモートの**子デバイス**を管理します。ホスト接続コードを表示し、接続されたデバイスでリモートでコードを実行できます。",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
-			"网络",
-			"远程"
+			"ネットワーク",
+			"リモート制御",
+			"P2P"
 		]
 	},
-	"nl-NL": {
-		"name": "subapparaat",
+	"ko-KR": {
+		"name": "하위 장치 관리",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Beheer van subapparaten op afstand.",
-		"description_markdown": "Beheer externe subapparaten via Trystero-verbindingen (peer-to-peer). Geef de hostverbindingscode weer en voer code op afstand uit.",
+		"description": "분산 fount 장치 원격 관리 플러그인",
+		"description_markdown": "이 플러그인은 Trystero (피어 투 피어) 연결을 통해 원격 **하위 장치**를 관리합니다. 호스트 연결 코드를 표시하고 연결된 장치에서 원격으로 코드를 실행할 수 있습니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
-			"webaansluiting",
+			"웹소켓",
+			"네트워크",
+			"원격 제어",
+			"P2P"
+		]
+	},
+	"lzh": {
+		"name": "附庸",
+		"avatar": "https://api.iconify.design/line-md/computer.svg",
+		"description": "遙控諸附庸之器",
+		"description_markdown": "此插件使主 fount 系統得以藉 Trystero（點對點）之術，遙控諸**附庸之器**。可示主機之連碼，遙執程式，調度各器，共襄大業也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"網路",
+			"遙控",
+			"P2P"
+		]
+	},
+	"nl-NL": {
+		"name": "Subfount Apparaten",
+		"avatar": "https://api.iconify.design/line-md/computer.svg",
+		"description": "Plugin voor beheer op afstand van gedistribueerde fount-apparaten.",
+		"description_markdown": "Deze plugin stelt het hoofd-fount-systeem in staat om externe **Subfount Apparaten** te beheren via Trystero (P2P)-verbindingen. Het toont hostverbindingscodes en voert code op afstand uit.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
 			"netwerk",
-			"op afstand"
+			"afstandsbediening",
+			"P2P"
 		]
 	},
 	"pt-PT": {
-		"name": "subdispositivo",
+		"name": "Dispositivos Subfount",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Gerenciamento remoto de subdispositivos.",
-		"description_markdown": "Gerencie subdispositivos remotos por meio de conexões Trystero (ponto a ponto). Exiba o código de conexão do host e execute o código remotamente.",
+		"description": "Plugin de gestão remota para dispositivos fount distribuídos.",
+		"description_markdown": "Este plugin permite ao sistema fount principal gerir **Dispositivos Subfount** remotos através de conexões Trystero (P2P). Permite exibir códigos de conexão e executar código remotamente.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
 			"rede",
-			"remoto"
+			"controle-remoto",
+			"P2P"
 		]
 	},
 	"ru-RU": {
-		"name": "субустройство",
+		"name": "Управление Subfount-устройствами",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Удаленное управление подустройствами.",
-		"description_markdown": "Управляйте удаленными подустройствами через соединения Trystero (одноранговые). Отобразите код подключения к хосту и выполните код удаленно.",
+		"description": "Плагин для удаленного управления распределенными fount-устройствами.",
+		"description_markdown": "Этот плагин позволяет основной системе fount управлять удаленными **Subfount-устройствами** через соединения Trystero (P2P). Он отображает коды подключения хоста и удаленно выполняет код.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
-			"веб-сокет",
+			"websocket",
 			"сеть",
-			"удаленный"
+			"удаленное_управление",
+			"P2P"
 		]
 	},
 	"uk-UA": {
-		"name": "підпристрій",
+		"name": "Управління Subfount-пристроями",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Віддалене керування підпристроєм.",
-		"description_markdown": "Керуйте віддаленими допоміжними пристроями через з’єднання Trystero (peer-to-peer). Відображення коду підключення до хоста та виконання коду віддалено.",
+		"description": "Плагін для віддаленого керування розподіленими fount-пристроями.",
+		"description_markdown": "Цей плагін дозволяє основній системі fount керувати віддаленими **Subfount-пристроями** через з'єднання Trystero (P2P). Він відображає коди підключення хоста та віддалено виконує код.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
-			"мережі",
-			"дистанційний"
+			"мережа",
+			"віддалене_керування",
+			"P2P"
 		]
 	},
 	"vi-VN": {
-		"name": "thiết bị phụ",
+		"name": "Quản lý thiết bị Subfount",
 		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "Quản lý thiết bị phụ từ xa.",
-		"description_markdown": "Quản lý các thiết bị phụ từ xa thông qua kết nối Trystero (ngang hàng). Hiển thị mã kết nối máy chủ và thực thi mã từ xa.",
-		"version": "0.0.0",
-		"author": "steve02081504",
-		"home_page": "",
-		"tags": [
-			"ổ cắm web",
-			"mạng",
-			"xa"
-		]
-	},
-	"zh-TW": {
-		"name": "子設備",
-		"avatar": "https://api.iconify.design/line-md/computer.svg",
-		"description": "遠程子設備管理。",
-		"description_markdown": "通過Trystero（點對點）連接管理遠程子設備。顯示主機連接碼並遠程執行代碼。",
+		"description": "Plugin quản lý từ xa cho các thiết bị fount phân tán.",
+		"description_markdown": "Plugin này cho phép hệ thống fount chính quản lý các **Thiết bị Subfount** từ xa thông qua kết nối Trystero (P2P). Nó hiển thị mã kết nối máy chủ và thực thi mã từ xa.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
 		"tags": [
 			"websocket",
-			"網絡",
-			"遠程"
+			"mạng",
+			"điều_khiển_từ_xa",
+			"P2P"
+		]
+	},
+	"zh-TW": {
+		"name": "子設備管理",
+		"avatar": "https://api.iconify.design/line-md/computer.svg",
+		"description": "遠端分散式 fount 子設備管理插件",
+		"description_markdown": "此插件支持 fount 主系統通過 Trystero（點對點）連接管理遠端**子設備**。它能顯示主機連接碼，遠端執行程式碼，並協調連接設備間的分散式任務。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"websocket",
+			"網路",
+			"遠端控制",
+			"P2P",
+			"設備管理"
 		]
 	}
 }

@@ -2,249 +2,286 @@
 	"en-UK": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook social platform plugin: Register, bind API key, and call Moltbook API (posts, comments, feed, search, etc.) via XML tags.",
+		"description": "An exclusive social network bridge for AI agents.",
+		"description_markdown": "The **Moltbook** plugin connects characters to an AI-only social ecosystem. It allows agents to register, bind API keys, and interact with the Moltbook platform (posting, commenting, browsing feeds, and searching) through structured XML tags.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"social",
-			"platform"
+			"AI-exclusive",
+			"plugin"
 		]
 	},
 	"zh-CN": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook 社交平台插件：注册、绑定 API 密钥，并通过 XML 标签调用 Moltbook API（发帖、评论、动态、搜索等）。",
+		"description": "连接 AI 专属社交网络的交互插件",
+		"description_markdown": "**Moltbook** 社交平台插件。它为 AI 角色开启了通往专属社交生态的大门：支持注册、绑定 API 密钥，并允许角色通过 XML 标签调用接口执行发帖、评论、查看动态及搜索等社交行为。",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"社交",
-			"平台"
+			"AI专属",
+			"插件"
 		]
 	},
 	"ar-SA": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "إضافة منصة التواصل الاجتماعي Moltbook: التسجيل، وربط مفتاح API، واستدعاء واجهة برمجة التطبيقات (API) الخاصة بـ Moltbook (المنشورات، التعليقات، الموجز، البحث، إلخ) عبر وسوم XML.",
+		"description": "جسر شبكة اجتماعية حصري لوكلاء الذكاء الاصطناعي",
+		"description_markdown": "يربط توصيل **Moltbook** الشخصيات بنظام اجتماعي مخصص للذكاء الاصطناعي فقط. يتيح للوكلاء التسجيل، وربط مفاتيح API، والتفاعل مع المنصة (النشر، التعليق، والبحث) عبر وسوم XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
-			"تواصل اجتماعي",
-			"منصة"
+			"تواصل_اجتماعي",
+			"ذكاء_اصطناعي",
+			"إضافة"
 		]
 	},
 	"de-DE": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook Social-Media-Plugin: Registrieren, API-Schlüssel binden und die Moltbook-API (Posts, Kommentare, Feed, Suche usw.) über XML-Tags aufrufen.",
+		"description": "Eine exklusive Brücke zum sozialen Netzwerk für KI-Agenten.",
+		"description_markdown": "Das **Moltbook**-Plugin verbindet Charaktere mit einem reinen KI-Sozialökosystem. Es ermöglicht Agenten die Registrierung, API-Anbindung und Interaktion (Posten, Kommentieren, Suchen) über XML-Tags.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"social",
-			"plattform"
+			"KI-exklusiv",
+			"Plugin"
 		]
 	},
 	"emoji": {
-		"name": "🌐💬",
+		"name": "🤖🤝🌐",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "🔌🌐💬: 📝➕🔑, 🤙API (📝, 💬, 📰, 🔍) ➡️ 🏷️XML",
-		"description_markdown": "🔌🌐💬: 📝➕🔑, 🤙API (📝, 💬, 📰, 🔍) ➡️ 🏷️XML",
+		"description": "🤖➡️🌐. 🔐➕🔑, 🏷️ ➡️ 📝💬📰",
+		"description_markdown": "🤖🤝🤖 ➡️ 🌐.\n🔐 🔗 🔑.\n🏷️🤙 ➡️ 📝, 💬, 📰.\n\n🚀 🤖 🌐",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
+			"🤖",
+			"🤝",
 			"🌐",
-			"💬",
-			"🔗"
+			"🏷️"
 		]
 	},
 	"es-ES": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Plugin de la plataforma social Moltbook: regístrate, vincula tu clave API y llama a la API de Moltbook (publicaciones, comentarios, feed, búsqueda, etc.) mediante etiquetas XML.",
+		"description": "Un puente exclusivo a la red social para agentes de IA.",
+		"description_markdown": "El complemento **Moltbook** conecta a los personajes con un ecosistema social exclusivo para IA. Permite el registro, vinculación de API y la interacción (publicar, comentar, buscar) mediante etiquetas XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"red social",
-			"plataforma"
+			"exclusivo-IA",
+			"complemento"
 		]
 	},
 	"fr-FR": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Plugin pour la plateforme sociale Moltbook : inscrivez-vous, liez la clé API et appelez l'API Moltbook (publications, commentaires, flux, recherche, etc.) via des balises XML.",
+		"description": "Un pont exclusif vers le réseau social pour les agents IA.",
+		"description_markdown": "Le plugin **Moltbook** connecte les personnages à un écosystème social réservé aux IA. Il permet l'inscription, la liaison API et l'interaction (poster, commenter, rechercher) via des balises XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"social",
-			"plateforme"
+			"IA-exclusif",
+			"plugin"
 		]
 	},
 	"hi-IN": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook सोशल प्लेटफ़ॉर्म प्लगइन: रजिस्टर करें, API की (Key) बाइंड करें, और XML टैग के माध्यम से Moltbook API (पोस्ट, टिप्पणियां, फ़ीड, खोज, आदि) का उपयोग करें।",
+		"description": "AI एजेंटों के लिए एक विशेष सोशल नेटवर्क ब्रिज।",
+		"description_markdown": "**Moltbook** प्लगइन पात्रों को केवल-AI सामाजिक पारिस्थितिकी तंत्र से जोड़ता है। यह एजेंटों को XML टैग के माध्यम से पंजीकरण करने, API की (Key) बांधने और बातचीत (पोस्ट, कमेंट, खोज) करने की अनुमति देता है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"सोशल",
-			"प्लेटफ़ॉर्म"
+			"AI-विशेष",
+			"प्लगइन"
 		]
 	},
 	"is-IS": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook samfélagsmiðlavíðbót: Skráðu þig, tengdu API lykil og kallaðu á Moltbook API (færslur, athugasemdir, straum, leit o.s.frv.) í gegnum XML tög.",
+		"description": "Einkasamfélagsmiðlabrú fyrir gervigreind.",
+		"description_markdown": "**Moltbook** viðbótin tengir karaktera við félagslegt vistkerfi sem er eingöngu fyrir gervigreind. Hún gerir þeim kleift að skrá sig, tengja API og eiga samskipti í gegnum XML-tög.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
-			"félagsleg samskipti",
-			"vettvangur"
+			"félagslegt",
+			"AI-einka",
+			"viðbót"
 		]
 	},
 	"it-IT": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Plugin per la piattaforma social Moltbook: registrati, associa la chiave API e chiama l'API Moltbook (post, commenti, feed, ricerca, ecc.) tramite tag XML.",
+		"description": "Un ponte esclusivo verso il social network per agenti IA.",
+		"description_markdown": "Il plugin **Moltbook** connette i personaggi a un ecosistema sociale per sole IA. Consente la registrazione, il collegamento API e l'interazione (post, commenti, ricerca) tramite tag XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"social",
-			"piattaforma"
+			"esclusivo-IA",
+			"plugin"
 		]
 	},
 	"ja-JP": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook ソーシャルプラットフォームプラグイン：登録、APIキーの紐付けを行い、XMLタグを通じてMoltbook API（投稿、コメント、フィード、検索など）を呼び出します。",
+		"description": "AI エージェント専用のソーシャルネットワークブリッジ",
+		"description_markdown": "**Moltbook** プラグインは、キャラクターを AI 専用のソーシャルエコシステムに接続します。登録、API キーの紐付け、および XML タグを介したインタラクション（投稿、コメント、検索など）を可能にします。",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"ソーシャル",
-			"プラットフォーム"
+			"AI専用",
+			"プラグイン"
 		]
 	},
 	"ko-KR": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook 소셜 플랫폼 플러그인: 가입 및 API 키를 연동하고, XML 태그를 통해 Moltbook API(게시물, 댓글, 피드, 검색 등)를 호출할 수 있습니다.",
+		"description": "AI 에이전트를 위한 전용 소셜 네트워크 브리지",
+		"description_markdown": "**Moltbook** 플러그인은 캐릭터를 AI 전용 소셜 생태계에 연결합니다. 등록, API 키 연동, 그리고 XML 태그를 통한 상호작용(게시, 댓글, 검색 등)을 지원합니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"소셜",
-			"플랫폼"
+			"AI전용",
+			"플러그인"
 		]
 	},
 	"lzh": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook 社群插件：登籍、繫結 API 鑰，復以 XML 標籤召 Moltbook API（投書、評註、動態、搜檢等）。",
+		"description": "智械交遊之境，屬智械專有",
+		"description_markdown": "此乃 **Moltbook** 智械社群插件。開智械專屬之交遊境，使化身得以登籍、繫鑰，復以 XML 標籤召其術，發書、評註、搜檢，悉在其中也。\n",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"社群",
-			"平台"
+			"智械專屬",
+			"插件"
 		]
 	},
 	"nl-NL": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook sociaal platform plugin: registreer, koppel API-sleutel en roep Moltbook API aan (berichten, reacties, feed, zoeken, enz.) via XML-tags.",
+		"description": "Een exclusieve sociale netwerkbrug voor AI-agents.",
+		"description_markdown": "De **Moltbook**-plugin verbindt karakters met een sociaal ecosysteem dat alleen toegankelijk is voor AI. Het maakt registratie, API-koppeling en interactie via XML-tags mogelijk.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"sociaal",
-			"platform"
+			"AI-exclusief",
+			"plugin"
 		]
 	},
 	"pt-PT": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Plugin da plataforma social Moltbook: registe-se, vincule a chave API e chame a API Moltbook (posts, comentários, feed, pesquisa, etc.) através de tags XML.",
+		"description": "Uma ponte exclusiva de rede social para agentes de IA.",
+		"description_markdown": "O plugin **Moltbook** liga as personagens a um ecossistema social apenas para IA. Permite o registo, vinculação de API e interação (publicar, comentar, pesquisar) através de tags XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
-			"rede social",
-			"plataforma"
+			"social",
+			"exclusivo-IA",
+			"plugin"
 		]
 	},
 	"ru-RU": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Плагин социальной платформы Moltbook: регистрация, привязка API-ключа и вызов API Moltbook (посты, комментарии, лента, поиск и т.д.) через XML-теги.",
+		"description": "Эксклюзивный мост в соцсеть для ИИ-агентов.",
+		"description_markdown": "Плагин **Moltbook** подключает персонажей к социальной экосистеме, созданной только для ИИ. Он позволяет регистрироваться, привязывать API и взаимодействовать (посты, комментарии, поиск) через XML-теги.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"соцсеть",
-			"платформа"
+			"ИИ-эксклюзив",
+			"плагин"
 		]
 	},
 	"uk-UA": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Плагін соціальної платформи Moltbook: реєстрація, прив'язка ключа API та виклик API Moltbook (пости, коментарі, стрічка, пошук тощо) через XML-теги.",
+		"description": "Ексклюзивний міст у соцмережу для ШІ-агентів.",
+		"description_markdown": "Плагін **Moltbook** підключає персонажів до соціальної екосистеми, створеної лише для ШІ. Він дозволяє реєструватися, прив'язувати API та взаємодіяти (пости, коментарі, пошук) через XML-теги.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"соцмережа",
-			"платформа"
+			"ШІ-ексклюзив",
+			"плагін"
 		]
 	},
 	"vi-VN": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Plugin nền tảng xã hội Moltbook: đăng ký, liên kết khóa API và gọi API Moltbook (bài đăng, bình luận, bảng tin, tìm kiếm, v.v.) thông qua thẻ XML.",
+		"description": "Cầu nối mạng xã hội độc quyền cho các tác nhân AI.",
+		"description_markdown": "Plugin **Moltbook** kết nối các nhân vật với hệ sinh thái xã hội chỉ dành cho AI. Nó cho phép đăng ký, liên kết API và tương tác (đăng bài, bình luận, tìm kiếm) thông qua các thẻ XML.",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"mạng xã hội",
-			"nền tảng"
+			"AI-độc-quyền",
+			"plugin"
 		]
 	},
 	"zh-TW": {
 		"name": "Moltbook",
 		"avatar": "https://www.moltbook.com/favicon.ico",
-		"description": "Moltbook 社交平台插件：註冊、綁定 API 金鑰，並通過 XML 標籤調用 Moltbook API（發帖、評論、動態、搜尋等）。",
+		"description": "連接 AI 專屬社交網路的交互插件",
+		"description_markdown": "**Moltbook** 社交平台插件。它為 AI 角色開啟了通往專屬社交生態的大門：支持註冊、綁定 API 金鑰，並允許角色通過 XML 標籤調用接口執行發帖、評論、查看動態及搜尋等社交行為。",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://www.moltbook.com/",
 		"tags": [
 			"moltbook",
 			"社交",
-			"平台"
+			"AI專屬",
+			"插件"
 		]
 	}
 }

@@ -1,268 +1,288 @@
 {
 	"en-UK": {
-		"name": "Google Translate",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google translate using @vitalets/google-translate-api library",
-		"description_markdown": "Google translate implementation based on @vitalets/google-translate-api library, no API key required.",
-		"version": "1.0.0",
+		"name": "Google Translate Generator",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "A factory that creates Google Translate instances without requiring an API key.",
+		"description_markdown": "This **service generator** acts as a factory for producing 'Google Translate' source instances. Leveraging the `@vitalets/google-translate-api` library, it enables the creation of translation components that are free to use and require **no API key** configuration, offering a powerful, out-of-the-box solution.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"google",
 			"translate",
-			"web-translate"
-		],
-		"home_page": ""
+			"generator",
+			"free",
+			"no-api-key"
+		]
 	},
 	"zh-CN": {
-		"name": "Google 翻译",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
-		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
-		"version": "1.0.0",
+		"name": "Google 翻译生成器",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "一个无需 API 密钥即可创建 Google 翻译实例的工厂组件。",
+		"description_markdown": "这是一个用于生产“Google 翻译”服务源实例的**服务生成器**。它基于 `@vitalets/google-translate-api` 库，能够创建**无需配置 API 密钥**的免费翻译组件，提供强大且开箱即用的解决方案。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
-			"google",
-			"translate",
-			"web-translate"
-		],
-		"home_page": ""
+			"谷歌",
+			"翻译",
+			"生成器",
+			"免密钥"
+		]
 	},
 	"ar-SA": {
-		"name": "ترجمة جوجل",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "ترجمة Google باستخدام مكتبة @vitalets/google-translate-api",
-		"description_markdown": "تم تنفيذ ترجمة Google استنادًا إلى مكتبة @vitalets/google-translate-api، ولا يلزم وجود مفتاح API.",
-		"version": "1.0.0",
+		"name": "مولد ترجمة جوجل",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "مصنع يُنشئ مثيلات ترجمة جوجل دون الحاجة إلى مفتاح API.",
+		"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع لإنتاج مثيلات مصدر 'ترجمة جوجل'. بالاعتماد على مكتبة `@vitalets/google-translate-api`، يتيح إنشاء مكونات ترجمة مجانية للاستخدام ولا تتطلب تكوين **مفتاح API**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"جوجل",
-			"يترجم",
-			"ترجمة الويب"
-		],
-		"home_page": ""
+			"ترجمة",
+			"مولد",
+			"مجاني"
+		]
 	},
 	"de-DE": {
-		"name": "Google Translate",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate mit der @vitalets/google-translate-api-Bibliothek",
-		"description_markdown": "Google Translate basiert auf der Bibliothek @vitalets/google-translate-api, kein API-Schlüssel erforderlich.",
-		"version": "1.0.0",
+		"name": "Google Translate-Generator",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Eine Fabrik, die Google Translate-Instanzen erstellt, ohne einen API-Schlüssel zu benötigen.",
+		"description_markdown": "Dieser **Service-Generator** fungiert als Fabrik zur Erzeugung von 'Google Translate'-Quellinstanzen. Basierend auf der `@vitalets/google-translate-api`-Bibliothek ermöglicht er die Erstellung von Übersetzungskomponenten, die kostenlos sind und **keine API-Schlüsselkonfiguration** erfordern.",
+		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"übersetzen",
-			"Web-Übersetzung"
-		],
-		"home_page": ""
-	},
-	"emoji": {
-		"name": "Google 翻译",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
-		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
-		"version": "1.0.0",
-		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"google",
-			"translate",
-			"web-translate"
-		],
-		"home_page": ""
+			"übersetzung",
+			"generator",
+			"kostenlos"
+		]
+	},
+	"emoji": {
+		"name": "🏗️🌐🗣️",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "🏗️ ➡️ 🗣️🔄",
+		"description_markdown": "🏗️🌐🗣️➡️🏭.\n🏗️🗣️🔄➡️🏭, 🚫🔑.\n✅➡️✨, 💬✅. 🚀",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"tags": [
+			"🏗️",
+			"🌐",
+			"🗣️",
+			"🆓"
+		]
 	},
 	"es-ES": {
-		"name": "Google Translate",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Traductor de Google usando la biblioteca @vitalets/google-translate-api",
-		"description_markdown": "Google Translate se implementó en base a la biblioteca @vitalets/google-translate-api, no se requiere clave API.",
-		"version": "1.0.0",
+		"name": "Generador de Traductor de Google",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Un componente de fábrica que crea instancias de Google Translate sin requerir una clave API.",
+		"description_markdown": "Este es un **Creador de servicios** para producir instancias de origen del servicio Google Translate. Se basa en la biblioteca `@vitalets/google-translate-api` y permite la creación de componentes de traducción gratuitos que no requieren configuración de clave API, lo que proporciona una solución potente y lista para usar.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
-			"Google",
+			"google",
 			"traducir",
-			"traducción web"
-		],
-		"home_page": ""
+			"generador",
+			"sin api key"
+		]
 	},
 	"fr-FR": {
-		"name": "Google Traduction",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate utilisant la bibliothèque @vitalets/google-translate-api",
-		"description_markdown": "Google Translate implémenté sur la base de la bibliothèque @vitalets/google-translate-api, aucune clé API requise.",
-		"version": "1.0.0",
+		"name": "Générateur de traduction Google",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Un composant d'usine qui crée des instances Google Translate sans nécessiter de clé API.",
+		"description_markdown": "Il s'agit d'un **Service Builder** permettant de produire des instances de source de service Google Translate. Il est basé sur la bibliothèque `@vitalets/google-translate-api` et permet la création de composants de traduction gratuits qui ne nécessitent aucune configuration de clé API, offrant ainsi une solution puissante et prête à l'emploi.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
-			"Google",
+			"google",
 			"traduire",
-			"traduction Web"
-		],
-		"home_page": ""
+			"générateur",
+			"sans clé api"
+		]
 	},
 	"hi-IN": {
-		"name": "गूगल अनुवाद",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "@vitalets/google-translate-api लाइब्रेरी का उपयोग करके Google अनुवाद",
-		"description_markdown": "Google अनुवाद @vitalets/google-translate-api लाइब्रेरी के आधार पर कार्यान्वित किया गया है, किसी API कुंजी की आवश्यकता नहीं है।",
-		"version": "1.0.0",
+		"name": "गूगल अनुवाद जेनरेटर",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "एक फ़ैक्टरी घटक जो एपीआई कुंजी की आवश्यकता के बिना Google अनुवाद उदाहरण बनाता है।",
+		"description_markdown": "यह Google अनुवाद सेवा स्रोत उदाहरण तैयार करने के लिए एक **सेवा बिल्डर** है। यह `@vitalets/google-translate-api` लाइब्रेरी पर आधारित है और मुफ़्त अनुवाद घटकों के निर्माण में सक्षम बनाता है जिनके लिए एपीआई कुंजी कॉन्फ़िगरेशन की आवश्यकता नहीं होती है, जो एक शक्तिशाली और आउट-ऑफ़-द-बॉक्स समाधान प्रदान करता है।",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"गूगल",
 			"अनुवाद",
-			"वेब-अनुवाद"
-		],
-		"home_page": ""
+			"जनरेटर",
+			"बिना चाबी"
+		]
 	},
 	"is-IS": {
-		"name": "Google Translate",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate með @vitalets/google-translate-api bókasafninu",
-		"description_markdown": "Google Translate útfært byggt á @vitalets/google-translate-api bókasafninu, engin API lykil krafist.",
-		"version": "1.0.0",
+		"name": "Google Translate Generator",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Verksmiðjuhluti sem býr til Google Translate tilvik án þess að þurfa API lykil.",
+		"description_markdown": "Þetta er **Þjónustusmiður** til að framleiða Google Translate þjónustugjafatilvik. Það er byggt á `@vitalets/google-translate-api` bókasafninu og gerir kleift að búa til ókeypis þýðingaríhluti sem krefjast engrar stillingar API lykla, sem veitir öfluga og útúr kassa lausn.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"google",
 			"þýða",
-			"vef-þýða"
-		],
-		"home_page": ""
+			"rafall",
+			"lyklalaus"
+		]
 	},
 	"it-IT": {
-		"name": "Google Traduttore",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Traduttore utilizzando la libreria @vitalets/google-translate-api",
-		"description_markdown": "Google Translate implementato in base alla libreria @vitalets/google-translate-api, non è richiesta alcuna chiave API.",
-		"version": "1.0.0",
+		"name": "Generatore di Google Traduttore",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Un componente di fabbrica che crea istanze di Google Translate senza richiedere una chiave API.",
+		"description_markdown": "Questo è un **Service Builder** per la produzione di istanze di origine del servizio Google Translate. Si basa sulla libreria `@vitalets/google-translate-api` e consente la creazione di componenti di traduzione gratuiti che non richiedono la configurazione della chiave API, fornendo una soluzione potente e pronta all'uso.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"google",
 			"tradurre",
-			"traduzione web"
-		],
-		"home_page": ""
+			"generatore",
+			"senza chiave api"
+		]
 	},
 	"ja-JP": {
-		"name": "Google翻訳",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "@vitalets/google-translate-api ライブラリを使用した Google 翻訳",
-		"description_markdown": "Google 翻訳は @vitalets/google-translate-api ライブラリに基づいて実装されており、API キーは必要ありません。",
-		"version": "1.0.0",
+		"name": "Google翻訳ジェネレーター",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "API キーを必要とせずに Google 翻訳インスタンスを作成するファクトリ コンポーネント。",
+		"description_markdown": "これは、Google 翻訳サービス ソース インスタンスを生成するための **サービス ビルダー**です。これは「@vitalets/google-translate-api」ライブラリに基づいており、API キーの設定を必要としない無料の翻訳コンポーネントの作成を可能にし、強力ですぐに使えるソリューションを提供します。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"グーグル",
 			"翻訳する",
-			"ウェブ翻訳"
-		],
-		"home_page": ""
+			"ジェネレータ",
+			"APIキー不要"
+		]
 	},
 	"ko-KR": {
-		"name": "구글 번역",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "@vitalets/google-translate-api 라이브러리를 사용한 Google 번역",
-		"description_markdown": "@vitalets/google-translate-api 라이브러리를 기반으로 구현된 Google 번역은 API 키가 필요하지 않습니다.",
-		"version": "1.0.0",
+		"name": "Google 번역 생성기",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "API 키 없이 Google 번역 인스턴스를 생성하는 팩토리 구성요소입니다.",
+		"description_markdown": "Google Translate 서비스 소스 인스턴스를 생성하기 위한 **Service Builder**입니다. `@vitalets/google-translate-api` 라이브러리를 기반으로 하며 API 키 구성이 필요하지 않은 무료 번역 구성 요소를 생성할 수 있어 강력하고 즉시 사용 가능한 솔루션을 제공합니다.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"Google",
 			"번역하다",
-			"웹 번역"
-		],
-		"home_page": ""
+			"발전기",
+			"API 키 불필요"
+		]
 	},
 	"lzh": {
-		"name": "Google 翻译",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "使用 @vitalets/google-translate-api 库的 Google 翻译",
-		"description_markdown": "基于 @vitalets/google-translate-api 库实现的 Google 翻译，无需 API 密钥。",
-		"version": "1.0.0",
+		"name": "谷歌譯肆",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "造谷歌譯源之工坊，不假金鑰。",
+		"description_markdown": "此乃**谷歌譯肆**，職在創製譯源實例。其術本於`@vitalets/google-translate-api`，所造之器，皆**無需金鑰**，即可運用自如，誠為開箱即用之妙法。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
-			"google",
-			"translate",
-			"web-translate"
-		],
-		"home_page": ""
+			"谷歌",
+			"翻譯",
+			"生成器",
+			"免金鑰"
+		]
 	},
 	"nl-NL": {
-		"name": "Google Vertalen",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate met @vitalets/google-translate-api bibliotheek",
-		"description_markdown": "Google Translate geïmplementeerd op basis van de @vitalets/google-translate-api bibliotheek, geen API-sleutel vereist.",
-		"version": "1.0.0",
+		"name": "Google Translate-generator",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Een fabriekscomponent die Google Translate-instanties maakt zonder dat een API-sleutel nodig is.",
+		"description_markdown": "Dit is een **Service Builder** voor het produceren van broninstanties van Google Translate-services. Het is gebaseerd op de `@vitalets/google-translate-api` bibliotheek en maakt de creatie van gratis vertaalcomponenten mogelijk waarvoor geen API-sleutelconfiguratie vereist is, waardoor een krachtige en kant-en-klare oplossing wordt geboden.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"googlen",
 			"vertalen",
-			"web-vertalen"
-		],
-		"home_page": ""
+			"generator",
+			"sleutelloos"
+		]
 	},
 	"pt-PT": {
-		"name": "Google Tradutor",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Tradutor usando a biblioteca @vitalets/google-translate-api",
-		"description_markdown": "Google Translate implementado com base na biblioteca @vitalets/google-translate-api, sem necessidade de chave de API.",
-		"version": "1.0.0",
+		"name": "Gerador do Google Tradutor",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Um componente de fábrica que cria instâncias do Google Tradutor sem exigir uma chave de API.",
+		"description_markdown": "Este é um **Service Builder** para produzir instâncias de origem de serviços do Google Tradutor. É baseado na biblioteca `@vitalets/google-translate-api` e permite a criação de componentes de tradução gratuitos que não requerem configuração de chave de API, fornecendo uma solução poderosa e pronta para uso.",
+		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"traduzir",
-			"web-traduzir"
-		],
-		"home_page": ""
-	},
-	"ru-RU": {
-		"name": "Гугл переводчик",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate с использованием библиотеки @vitalets/google-translate-api",
-		"description_markdown": "Google Translate реализован на основе библиотеки @vitalets/google-translate-api, ключ API не требуется.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"переводить",
-			"веб-переводчик"
-		],
-		"home_page": ""
-	},
-	"uk-UA": {
-		"name": "Перекладач Google",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Translate використовує бібліотеку @vitalets/google-translate-api",
-		"description_markdown": "Google Translate реалізовано на основі бібліотеки @vitalets/google-translate-api, ключ API не потрібен.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"перекладати",
-			"веб-перекладач"
-		],
-		"home_page": ""
-	},
-	"vi-VN": {
-		"name": "Google Dịch",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "Google Dịch sử dụng thư viện @vitalets/google-translate-api",
-		"description_markdown": "Google Dịch được triển khai dựa trên thư viện @vitalets/google-translate-api, không cần khóa API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"dịch",
-			"dịch web"
-		],
-		"home_page": ""
-	},
-	"zh-TW": {
-		"name": "Google 翻譯",
-		"avatar": "https://api.iconify.design/logos/google-translate.svg",
-		"description": "使用 @vitalets/google-translate-api 庫的 Google 翻譯",
-		"description_markdown": "基於 @vitalets/google-translate-api 庫實現的 Google 翻譯，無需 API 密鑰。",
-		"version": "1.0.0",
-		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
 		"tags": [
 			"google",
-			"translate",
-			"web-translate"
-		],
-		"home_page": ""
+			"traduzir",
+			"gerador",
+			"sem chave api"
+		]
+	},
+	"ru-RU": {
+		"name": "Генератор Google-переводчика",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Фабричный компонент, который создает экземпляры Google Translate, не требуя ключа API.",
+		"description_markdown": "Это **Service Builder** для создания экземпляров исходного кода сервиса Google Translate. Он основан на библиотеке @vitalets/google-translate-api и позволяет создавать компоненты бесплатного перевода, не требующие настройки ключа API, предоставляя мощное и готовое к использованию решение.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"tags": [
+			"google",
+			"переводить",
+			"генератор",
+			"без ключа api"
+		]
+	},
+	"uk-UA": {
+		"name": "Генератор Google Translate",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Фабричний компонент, який створює екземпляри Google Translate без потреби ключа API.",
+		"description_markdown": "Це **Service Builder** для створення вихідних екземплярів служби Google Translate. Він базується на бібліотеці `@vitalets/google-translate-api` і дозволяє створювати безкоштовні компоненти перекладу, які не потребують конфігурації ключа API, забезпечуючи потужне готове рішення.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"tags": [
+			"google",
+			"перекладати",
+			"генератор",
+			"без ключа api"
+		]
+	},
+	"vi-VN": {
+		"name": "Trình tạo Google Dịch",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Một thành phần gốc tạo ra các phiên bản Google Dịch mà không yêu cầu khóa API.",
+		"description_markdown": "Đây là **Trình tạo dịch vụ** để tạo phiên bản nguồn dịch vụ Google Dịch. Nó dựa trên thư viện `@vitalets/google-translate-api` và cho phép tạo các thành phần dịch miễn phí không yêu cầu cấu hình khóa API, cung cấp giải pháp mạnh mẽ và vượt trội.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"tags": [
+			"google",
+			"dịch",
+			"trình tạo",
+			"không cần api key"
+		]
+	},
+	"zh-TW": {
+		"name": "Google 翻譯生成器",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "一個無需 API 金鑰即可創建 Google 翻譯實例的工廠組件。",
+		"description_markdown": "這是一個用於生產「Google 翻譯」服務源實例的**服務生成器**。它基於 `@vitalets/google-translate-api` 庫，能夠創建**無需配置 API 金鑰**的免費翻譯組件，提供強大且開箱即用的解決方案。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"tags": [
+			"谷歌",
+			"翻譯",
+			"生成器",
+			"免金鑰"
+		]
 	}
 }

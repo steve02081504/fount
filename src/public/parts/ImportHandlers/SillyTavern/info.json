@@ -56,17 +56,17 @@
 		]
 	},
 	"emoji": {
-		"name": "🤪 SillyTavern Importer",
+		"name": "🤪🎴📥",
 		"avatar": "https://sillytavern.app/img/logo.png",
-		"description": "Imports SillyTavern characters from .png files or URLs.",
-		"description_markdown": "Imports SillyTavern characters from `.png` files or URLs from character sharing sites.",
+		"description": "🖼️🔗➡️🎭✨",
+		"description_markdown": "🖼️📄 ➡️ 🎭. \n🌐🔗 ➡️ 📥.\n\n✨ 🤪 🎭",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
 		"tags": [
-			"sillytavern",
-			"character card",
-			"import"
+			"🤪",
+			"🎴",
+			"📥"
 		]
 	},
 	"es-ES": {

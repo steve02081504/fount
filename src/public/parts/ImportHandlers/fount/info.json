@@ -56,17 +56,17 @@
 		]
 	},
 	"emoji": {
-		"name": "⛲ fount Importer",
+		"name": "⛲📦📥",
 		"avatar": "/favicon.svg",
-		"description": "Imports fount parts from archive files or git repositories.",
-		"description_markdown": "Imports fount parts from archive files (e.g., `.zip`, `.7z`) or git repositories.",
+		"description": "📦➡️⛲✨",
+		"description_markdown": "📦📄 ➡️ ⛲🏗️. \n🔀📂 ➡️ 🏭.\n\n✨ 📥 🏗️",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://steve02081504.github.io/fount/",
 		"tags": [
-			"fount",
-			"part",
-			"import"
+			"⛲",
+			"📦",
+			"📥"
 		]
 	},
 	"es-ES": {

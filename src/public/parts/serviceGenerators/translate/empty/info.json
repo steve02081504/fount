@@ -1,287 +1,290 @@
 {
 	"en-UK": {
-		"name": "Empty",
+		"name": "Empty Translate Generator",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Empty Translate Source",
-		"description_markdown": "A placeholder for a missing translate source generator.",
+		"description": "A factory for creating placeholder translation source instances.",
+		"description_markdown": "This **service generator** acts as a fallback factory for translation services. When a designated translation source generator is missing or fails to provide an active instance, this generator steps in to produce an 'Empty' placeholder, maintaining system stability without a functional translation component.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"empty",
 			"placeholder",
-			"utility"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"generator",
+			"translation",
+			"fallback"
+		]
 	},
 	"zh-CN": {
-		"name": "空",
+		"name": "空翻译生成器",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "空翻译源",
-		"description_markdown": "一个用于占位的翻译源生成器，表示缺少某个生成器。",
+		"description": "生产翻译服务占位符实例的工厂组件。",
+		"description_markdown": "这是一个**翻译服务备用生成器**。当指定的翻译源生成器缺失或无法提供活跃实例时，它将介入生产“空”占位符，从而在缺乏实际翻译功能时维持系统稳定性。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"空",
 			"占位符",
-			"实用工具"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"生成器",
+			"翻译",
+			"备用"
+		]
 	},
 	"ar-SA": {
-		"name": "فارغ",
+		"name": "مولد ترجمة فارغ",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "مصدر ترجمة فارغ",
-		"description_markdown": "عنصر نائب لمولد مصدر ترجمة مفقود.",
+		"description": "مصنع لإنشاء مثيلات مصدر ترجمة وهمية.",
+		"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع احتياطي لخدمات الترجمة. عندما يكون مولد مصدر الترجمة المعين مفقودًا أو يفشل في توفير مثيل نشط، يتدخل هذا المولد لإنتاج عنصر نائب 'فارغ'، مما يحافظ على استقرار النظام.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"فارغ",
-			"عنصر نائب",
-			"أداة"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"عنصر_نائب",
+			"مولد",
+			"ترجمة"
+		]
 	},
 	"de-DE": {
-		"name": "Leer",
+		"name": "Leerer Übersetzungsgenerator",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Leere Übersetzungsquelle",
-		"description_markdown": "Ein Platzhalter für einen fehlenden Übersetzungsquellengenerator.",
+		"description": "Eine Fabrik zum Erstellen von Platzhalter-Übersetzungsquellinstanzen.",
+		"description_markdown": "Dieser **Service-Generator** fungiert als Fallback-Fabrik für Übersetzungsdienste. Wenn ein bestimmter Übersetzungsquellengenerator fehlt oder keine aktive Instanz bereitstellt, tritt dieser Generator in Aktion, um einen 'leeren' Platzhalter zu erzeugen.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"leer",
 			"platzhalter",
-			"dienstprogramm"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"generator",
+			"übersetzung"
+		]
 	},
 	"emoji": {
-		"name": "🚫🕳️",
+		"name": "🏗️🚫🗣️",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "🕳️👻",
-		"description_markdown": "🚫👻🕳️🤷‍♂️",
+		"description": "🏗️ ➡️ 🗣️🚫",
+		"description_markdown": "🏗️🗣️🚫. \n🚫📦➡️🛠️.\n⬜➡️✅.\n\n✨🛠️👻",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
+			"🏗️",
 			"🚫",
-			"🕳️",
-			"👻"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"🗣️",
+			"⚙️"
+		]
 	},
 	"es-ES": {
-		"name": "Vacío",
+		"name": "Generador de Traducción Vacío",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Fuente de traducción vacía",
-		"description_markdown": "Un marcador de posición para un generador de fuente de traducción faltante.",
+		"description": "Una fábrica para crear instancias de fuentes de traducción de marcador de posición.",
+		"description_markdown": "Este **generador de servicios** actúa como una fábrica de respaldo para los servicios de traducción. Cuando un generador de fuente de traducción designado falta o no proporciona una instancia activa, este generador interviene para producir un marcador de posición 'vacío', manteniendo la estabilidad del sistema.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"vacío",
-			"marcador de posición",
-			"utilidad"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"marcador_de_posición",
+			"generador",
+			"traducción"
+		]
 	},
 	"fr-FR": {
-		"name": "Vide",
+		"name": "Générateur de Traduction Vide",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Source de traduction vide",
-		"description_markdown": "Un espace réservé pour un générateur de source de traduction manquant.",
+		"description": "Une usine pour créer des instances de sources de traduction de substitution.",
+		"description_markdown": "Ce **générateur de services** agit comme une usine de secours pour les services de traduction. Lorsqu'un générateur de source de traduction désigné est manquant ou ne parvient pas à fournir une instance active, ce générateur intervient pour produire un espace réservé 'vide'.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"vide",
-			"espace réservé",
-			"utilitaire"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"espace_réservé",
+			"générateur",
+			"traduction"
+		]
 	},
 	"hi-IN": {
-		"name": "खाली",
+		"name": "खाली अनुवाद जेनरेटर",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "खाली अनुवाद स्रोत",
-		"description_markdown": "एक लापता अनुवाद स्रोत जनरेटर के लिए एक प्लेसहोल्डर।",
+		"description": "प्लेसहोल्डर अनुवाद स्रोत उदाहरण बनाने के लिए एक फैक्ट्री।",
+		"description_markdown": "यह **सेवा जेनरेटर** अनुवाद सेवाओं के लिए एक फॉलबैक फैक्ट्री के रूप में कार्य करता है। जब एक निर्दिष्ट अनुवाद स्रोत जेनरेटर गुम होता है या एक सक्रिय उदाहरण प्रदान करने में विफल रहता है, तो यह जेनरेटर 'खाली' प्लेसहोल्डर बनाने के लिए हस्तक्षेप करता है, जिससे सिस्टम स्थिरता बनी रहती है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"खाली",
 			"प्लेसहोल्डर",
-			"उपयोगिता"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"जेनरेटर",
+			"अनुवाद"
+		]
 	},
 	"is-IS": {
-		"name": "Tómt",
+		"name": "Tómt Þýðingarrafall",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Tóm þýðingarheimild",
-		"description_markdown": "Staðgengill fyrir vantar þýðingarheimildargenerator.",
+		"description": "Verksmiðja sem býr til staðgengiltilvik fyrir þýðingarheimildir.",
+		"description_markdown": "Þetta **þjónusturafall** virkar sem varaverksmiðja fyrir þýðingaþjónustu. Þegar tilnefndur þýðingaheimildarrafall vantar eða tekst ekki að útvega virkt tilvik, kemur þessi rafall inn til að búa til 'Tómt' staðgengil.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"tómt",
-			"staðgengill",
-			"gagnsemi"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"staðgengil",
+			"rafall",
+			"þýðing"
+		]
 	},
 	"it-IT": {
-		"name": "Vuoto",
+		"name": "Generatore di Traduzione Vuoto",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Sorgente di traduzione vuota",
-		"description_markdown": "Un segnaposto per un generatore di sorgenti di traduzione mancante.",
+		"description": "Una fabbrica per la creazione di istanze di sorgenti di traduzione segnaposto.",
+		"description_markdown": "Questo **generatore di servizi** funge da fabbrica di fallback per i servizi di traduzione. Quando un generatore di sorgenti di traduzione designato manca o non riesce a fornire un'istanza attiva, questo generatore interviene per produrre un segnaposto 'vuoto', mantenendo la stabilità del sistema.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"vuoto",
 			"segnaposto",
-			"utilità"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"generatore",
+			"traduzione"
+		]
 	},
 	"ja-JP": {
-		"name": "空",
+		"name": "空の翻訳ジェネレーター",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "空の翻訳ソース",
-		"description_markdown": "不足している翻訳ソース ジェネレーターのプレースホルダー。",
+		"description": "プレースホルダー翻訳ソースインスタンスを作成する工場。",
+		"description_markdown": "この**サービスジェネレーター**は、翻訳サービスのフォールバックファクトリとして機能します。指定された翻訳ソースジェネレーターが見つからないか、アクティブなインスタンスを提供できない場合、このジェネレーターは「空」のプレースホルダーを生成するために介入し、機能する翻訳コンポーネントなしでシステムの安定性を維持します。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"空",
 			"プレースホルダー",
-			"ユーティリティ"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"ジェネレーター",
+			"翻訳"
+		]
 	},
 	"ko-KR": {
-		"name": "비어 있음",
+		"name": "빈 번역 생성기",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "빈 번역 소스",
-		"description_markdown": "누락된 번역 소스 생성기를 위한 자리 표시자입니다.",
+		"description": "자리 표시자 번역 소스 인스턴스를 생성하는 팩토리입니다.",
+		"description_markdown": "이 **서비스 생성기**는 번역 서비스의 대체 팩토리 역할을 합니다. 지정된 번역 소스 생성기가 누락되거나 활성 인스턴스를 제공하지 못하는 경우, 이 생성기는 '빈' 자리 표시자를 생성하여 기능하는 번역 구성 요소 없이 시스템 안정성을 유지합니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
-			"비어 있음",
-			"자리 표시자",
-			"유틸리티"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"빈",
+			"자리_표시자",
+			"생성기",
+			"번역"
+		]
 	},
 	"lzh": {
-		"name": "空",
+		"name": "補闕譯肆",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "空翻译源",
-		"description_markdown": "一缺翻译源生成器之位之所。",
+		"description": "譯源闕如，則造虛源以補之。",
+		"description_markdown": "此乃**譯事補闕之肆**。凡譯源之肆，若其未備，或其失其效用，此肆即應而作，造一「虛無」之譯源，以補其位，使系統不致紛亂，雖無真譯之功，亦能維其緒也。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"空",
-			"位之所",
-			"用"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"補闕",
+			"生成器",
+			"翻譯"
+		]
 	},
 	"nl-NL": {
-		"name": "Leeg",
+		"name": "Lege Vertaalgenerator",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Lege vertaalbron",
-		"description_markdown": "Een tijdelijke aanduiding voor een ontbrekende vertaalbrongenerator.",
+		"description": "Een fabriek voor het maken van plaatsaanduidingen voor vertaalbroninstanties.",
+		"description_markdown": "Deze **servicegenerator** fungeert als een terugvalfabriek voor vertaaldiensten. Wanneer een aangewezen vertaalbrongenerator ontbreekt of geen actieve instantie kan leveren, springt deze generator in om een 'Lege' plaatsaanduiding te produceren, waardoor de systeemstabiliteit zonder een functionele vertaalcomponent behouden blijft.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"leeg",
-			"tijdelijke aanduiding",
-			"hulpprogramma"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"plaatsaanduiding",
+			"generator",
+			"vertaling"
+		]
 	},
 	"pt-PT": {
-		"name": "Vazio",
+		"name": "Gerador de Tradução Vazio",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Fonte de tradução vazia",
-		"description_markdown": "Um espaço reservado para um gerador de fonte de tradução ausente.",
+		"description": "Uma fábrica para criar instâncias de fonte de tradução de marcador de posição.",
+		"description_markdown": "Este **gerador de serviços** atua como uma fábrica de fallback para serviços de tradução. Quando um gerador de fonte de tradução designado está ausente ou não consegue fornecer uma instância ativa, este gerador entra em ação para produzir um marcador de posição 'Vazio', mantendo a estabilidade do sistema sem um componente de tradução funcional.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"vazio",
-			"espaço reservado",
-			"utilitário"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"marcador_de_posição",
+			"gerador",
+			"tradução"
+		]
 	},
 	"ru-RU": {
-		"name": "Пустой",
+		"name": "Генератор пустого перевода",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Пустой источник перевода",
-		"description_markdown": "Заполнитель для отсутствующего генератора источника перевода.",
+		"description": "Фабрика для создания экземпляров источников-заполнителей перевода.",
+		"description_markdown": "Этот **генератор сервиса** действует как фабрика запасного варианта для служб перевода. Когда назначенный генератор источника перевода отсутствует или не может предоставить активный экземпляр, этот генератор вступает в действие для создания 'пустого' заполнителя, поддерживая стабильность системы без функционального компонента перевода.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"пустой",
 			"заполнитель",
-			"утилита"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"генератор",
+			"перевод"
+		]
 	},
 	"uk-UA": {
-		"name": "Порожній",
+		"name": "Генератор порожнього перекладу",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Порожнє джерело перекладу",
-		"description_markdown": "Заповнювач для відсутнього генератора джерела перекладу.",
+		"description": "Фабрика для створення екземплярів джерел-заповнювачів перекладу.",
+		"description_markdown": "Цей **генератор сервісу** діє як фабрика запасного варіанту для служб перекладу. Коли призначений генератор джерела перекладу відсутній або не може надати активний екземпляр, цей генератор вступає в дію для створення 'порожнього' заповнювача, підтримуючи стабільність системи без функціонального компонента перекладу.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"порожній",
 			"заповнювач",
-			"утиліта"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"генератор",
+			"переклад"
+		]
 	},
 	"vi-VN": {
-		"name": "Trống",
+		"name": "Trình tạo Dịch Trống",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "Nguồn dịch trống",
-		"description_markdown": "Một trình giữ chỗ cho một trình tạo nguồn dịch bị thiếu.",
+		"description": "Một nhà máy để tạo các phiên bản nguồn dịch thuật giữ chỗ.",
+		"description_markdown": "Trình tạo dịch vụ này hoạt động như một nhà máy dự phòng cho các dịch vụ dịch thuật. Khi một trình tạo nguồn dịch thuật được chỉ định bị thiếu hoặc không cung cấp được một phiên bản hoạt động, trình tạo này sẽ can thiệp để tạo ra một trình giữ chỗ 'Trống', duy trì sự ổn định của hệ thống mà không cần một thành phần dịch thuật chức năng.",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"trống",
-			"trình giữ chỗ",
-			"tiện ích"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"trình_giữ_chỗ",
+			"trình_tạo",
+			"dịch_thuật"
+		]
 	},
 	"zh-TW": {
-		"name": "空",
+		"name": "空翻譯生成器",
 		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
-		"description": "空翻譯來源",
-		"description_markdown": "一個用於佔位的翻譯來源產生器，表示缺少某個產生器。",
+		"description": "生產翻譯服務佔位符實例的工廠組件。",
+		"description_markdown": "這是一個**翻譯服務備用生成器**。當指定的翻譯源生成器缺失或無法提供活躍實例時，它將介入生產「空」佔位符，從而維持系統穩定性。",
 		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "",
 		"tags": [
 			"空",
 			"佔位符",
-			"實用程式"
-		],
-		"provider": "fount",
-		"home_page": ""
+			"生成器",
+			"翻譯",
+			"備用"
+		]
 	}
 }

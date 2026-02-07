@@ -56,17 +56,17 @@
 		]
 	},
 	"emoji": {
-		"name": "✨ MCP Importer",
+		"name": "✨🔌🧩",
 		"avatar": "https://modelcontextprotocol.io/favicon.svg",
-		"description": "Import MCP (Model Context Protocol) server configurations as plugins.",
-		"description_markdown": "Import MCP (Model Context Protocol) server configurations as individual plugins. Each MCP server becomes a separate plugin that can be enabled/disabled independently.",
+		"description": "🔌➡️🧩✨",
+		"description_markdown": "🔌📜 ➡️ 🧩. \n🔧➡️🧩. \n✅❌➡️🔄.\n\n✨ 🔌 🧩",
 		"version": "0.0.0",
 		"author": "steve02081504 & ZINWIN10",
 		"home_page": "https://modelcontextprotocol.io/",
 		"tags": [
-			"mcp",
-			"tools",
-			"plugin-generator"
+			"✨",
+			"🔧",
+			"🧩"
 		]
 	},
 	"es-ES": {

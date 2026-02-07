@@ -1,78 +1,290 @@
 {
 	"en-UK": {
 		"name": "Plugins",
-		"description": "Plugins manager"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "The foundational hub for character capability extensions.",
+		"description_markdown": "This is the **root component** for all functional extensions. It serves as the primary structural node where plugins—designed to enhance character intelligence, provide external tools, or expand system capabilities—are mounted.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"plugin",
+			"extension",
+			"fount"
+		]
 	},
 	"zh-CN": {
 		"name": "插件",
-		"description": "插件管理器"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "角色能力扩展组件的根节点",
+		"description_markdown": "这是功能扩展模块的**根节点**。它作为基础承载结构，所有用于增强角色智能、调用外部工具或拓展系统功能的插件均挂载于此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"插件",
+			"扩展",
+			"fount"
+		]
 	},
 	"ar-SA": {
 		"name": "الإضافات",
-		"description": "مدير الإضافات"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "المركز الأساسي لامتدادات قدرات الشخصية",
+		"description_markdown": "هذا هو **المكون الجذر** لجميع الامتدادات الوظيفية. إنه يمثل العقدة الهيكلية التي يتم فيها تثبيت الإضافات المصممة لتعزيز ذكاء الشخصية أو توسيع قدرات النظام.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"إضافات",
+			"fount"
+		]
 	},
 	"de-DE": {
 		"name": "Plugins",
-		"description": "Plugins-Manager"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Der zentrale Knotenpunkt für Erweiterungen der Charakterfähigkeiten.",
+		"description_markdown": "Dies ist die **Stammkomponente** für alle Funktionserweiterungen. Sie dient als struktureller Ankerpunkt für Plugins, die die Intelligenz von Charakteren verbessern oder Systemfunktionen erweitern.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"Plugin",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "插件",
-		"description": "插件管理器"
+		"name": "🧩",
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "🧩 ➡️ 💪✨",
+		"description_markdown": "🧩 ➡️ 🏗️. \n⚡ ➕ 🧠. \n⚓ ➡️ 🚀.\n\n✨ 🧩 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"🧩",
+			"⚡",
+			"⚓",
+			"⛲"
+		]
 	},
 	"es-ES": {
 		"name": "Complementos",
-		"description": "Administrador de complementos"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "El nodo raíz fundamental para las extensiones de capacidad de personajes.",
+		"description_markdown": "Este es el **componente raíz** para todas las extensiones funcionales. Actúa como el nodo estructural donde se montan los complementos diseñados para mejorar la inteligencia de los personajes.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"complemento",
+			"fount"
+		]
 	},
 	"fr-FR": {
 		"name": "Plugins",
-		"description": "Gestionnaire de plugins"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Le nœud racine fondamental pour les extensions de capacités des personnages.",
+		"description_markdown": "Il s'agit du **composant racine** pour toutes les extensions fonctionnelles. Il sert de nœud structurel pour les plugins visant à accroître l'intelligence ou les outils des personnages.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"plugin",
+			"fount"
+		]
 	},
 	"hi-IN": {
 		"name": "प्लग-इन",
-		"description": "प्लगइन्स मैनेजर"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "पात्र क्षमता विस्तार के लिए मौलिक मूल नोड।",
+		"description_markdown": "यह सभी कार्यात्मक विस्तारों के लिए **मूल घटक** है। यह वह संरचनात्मक आधार है जहाँ पात्रों की बुद्धि बढ़ाने या सिस्टम क्षमताओं का विस्तार करने वाले प्लग-इन जुड़े होते हैं।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"प्लग-इन",
+			"fount"
+		]
 	},
 	"is-IS": {
 		"name": "Viðbætur",
-		"description": "Viðbótarstjóri"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Grunnstýrieining fyrir allar getu-viðbætur persóna.",
+		"description_markdown": "Þetta er **rótareiningin** fyrir allar kerfisviðbætur. Hún þjónar sem grunnur fyrir viðbætur sem auka vitsmuni persóna eða bæta við nýjum eiginleikum.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"viðbót",
+			"fount"
+		]
 	},
 	"it-IT": {
 		"name": "Plugin",
-		"description": "Gestore dei plugin"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Il nodo radice fondamentale per le estensioni delle capacità dei personaggi.",
+		"description_markdown": "Questo è il **componente radice** per tutte le estensioni funzionali. Funge da nodo strutturale in cui sono montati i plugin per potenziare l'intelligenza dei personaggi.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"plugin",
+			"fount"
+		]
 	},
 	"ja-JP": {
 		"name": "プラグイン",
-		"description": "プラグインマネージャー"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "キャラクター能力拡張の構造的ルートノード",
+		"description_markdown": "これはすべての機能拡張の**ルートコンポーネント**です。キャラクターの知能を強化したり、外部ツールを提供したりするためのプラグインがアタッチされる構造的基盤として機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"プラグイン",
+			"fount"
+		]
 	},
 	"ko-KR": {
 		"name": "플러그인",
-		"description": "플러그인 관리자"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "캐릭터 능력 확장의 구조적 루트 노드",
+		"description_markdown": "이것은 모든 기능 확장의 **루트 컴포넌트**입니다. 캐릭터의 지능을 강화하거나 시스템 기능을 확장하는 플러그인들이 부착되는 구조적 중심 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"플러그인",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "插件",
-		"description": "插件管理器"
+		"name": "附翼",
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "诸通能组件之根柢",
+		"description_markdown": "此乃 fount 拓能之**根柢**。凡增角色之智、广其能者，皆附于此，如翼之于鸟，助其化境也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根柢",
+			"附翼",
+			"fount"
+		]
 	},
 	"nl-NL": {
 		"name": "Plug-ins",
-		"description": "Beheerder van plug-ins"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "De fundamentele wortel voor uitbreidingen van karaktervaardigheden.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor alle functionele uitbreidingen. Het fungeert als het structurele punt waar plug-ins zijn ondergebracht om de mogelijkheden van het systeem te vergroten.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"plugin",
+			"fount"
+		]
 	},
 	"pt-PT": {
 		"name": "Plug-ins",
-		"description": "Gerenciador de plug-ins"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "O nó raiz fundamental para as extensões de capacidades dos personagens.",
+		"description_markdown": "Este é o **componente raiz** para todas as extensões funcionais. Serve como o nó estrutural onde os plug-ins para melhorar a inteligência do personagem são anexados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"plugin",
+			"fount"
+		]
 	},
 	"ru-RU": {
 		"name": "Плагины",
-		"description": "Менеджер плагинов"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Структурный корневой узел для расширений возможностей персонажей.",
+		"description_markdown": "Это **корневой компонент** для всех функциональных расширений. Он служит узлом, в котором размещаются плагины для улучшения интеллекта персонажей или расширения функций системы.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"плагин",
+			"fount"
+		]
 	},
 	"uk-UA": {
 		"name": "Плагіни",
-		"description": "Менеджер плагінів"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Структурний кореневий вузол для розширень можливостей персонажів.",
+		"description_markdown": "Це **кореневий компонент** для всіх функціональних розширень. Він виступає структурною основою, до якої приєднуються плагіни для покращення здібностей персонажів.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"плагін",
+			"fount"
+		]
 	},
 	"vi-VN": {
 		"name": "Plugin",
-		"description": "Trình quản lý plugin"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "Nút gốc cấu trúc cho các thành phần mở rộng khả năng nhân vật.",
+		"description_markdown": "Đây là **thành phần gốc** của tất cả các phần mở rộng chức năng. Nó đóng vai trò là nền tảng cấu trúc nơi gắn kết các plugin nhằm tăng cường trí thông minh hoặc khả năng của nhân vật.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"plugin",
+			"fount"
+		]
 	},
 	"zh-TW": {
 		"name": "插件",
-		"description": "插件管理器"
+		"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
+		"description": "角色能力擴展組件的根節點",
+		"description_markdown": "這是功能擴展模塊的**根節點**。它作為基礎承載結構，所有用於增強角色智能、調用外部工具或拓展系統功能的插件均掛載於此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"插件",
+			"擴展",
+			"fount"
+		]
 	}
 }

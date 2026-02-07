@@ -1,78 +1,287 @@
 {
 	"en-UK": {
-		"name": "Chars",
-		"description": "Characters manager"
+		"name": "Characters",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "The foundational hub for all character components.",
+		"description_markdown": "This is the **root component** for character modules. It serves as the primary mounting point where all your favorite characters reside and are organized within the fount system.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"characters",
+			"fount"
+		]
 	},
 	"zh-CN": {
 		"name": "角色",
-		"description": "角色管理器"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "所有角色组件的挂载中心",
+		"description_markdown": "这是角色模块的**根节点**。它作为基础承载空间，用户所关注和喜爱的所有角色部件都挂载于此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"角色",
+			"fount"
+		]
 	},
 	"ar-SA": {
-		"name": "شخصيات",
-		"description": "مدير الشخصيات"
+		"name": "الشخصيات",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "المركز الأساسي لجميع مكونات الشخصية",
+		"description_markdown": "هذا هو **المكون الجذر** لوحدات الشخصية. إنه يمثل نقطة الارتكاز حيث يتم تثبيت جميع الشخصيات التي تفضلها داخل نظام fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"شخصيات",
+			"fount"
+		]
 	},
 	"de-DE": {
 		"name": "Charaktere",
-		"description": "Charaktermanager"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Der zentrale Knotenpunkt für alle Charakterkomponenten.",
+		"description_markdown": "Dies ist die **Stammkomponente** für Charaktermodule. Sie dient als struktureller Ankerpunkt, an dem all Ihre bevorzugten Charaktere im fount-System beheimatet sind.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"Charaktere",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "角色",
-		"description": "角色管理器"
+		"name": "🎭",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "🎭 ➡️ 👥✨",
+		"description_markdown": "🎭 ➡️ 🏗️. \n🎭 ➕ 👥🌟. \n⚓ ➡️ 👤💖.\n\n✨ 👥 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"🎭",
+			"👥",
+			"⚓",
+			"⛲"
+		]
 	},
 	"es-ES": {
 		"name": "Personajes",
-		"description": "Administrador de personajes"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "El centro fundamental para todos los componentes de personajes.",
+		"description_markdown": "Este es el **componente raíz** para los módulos de personajes. Actúa como el punto de montaje principal donde residen todos tus personajes favoritos.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"personajes",
+			"fount"
+		]
 	},
 	"fr-FR": {
 		"name": "Personnages",
-		"description": "Gestionnaire de personnages"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Le centre fondamental pour tous les composants de personnages.",
+		"description_markdown": "Il s'agit du **composant racine** pour les modules de personnages. Il sert de point d'attache principal où résident tous vos personnages préférés.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"personnages",
+			"fount"
+		]
 	},
 	"hi-IN": {
 		"name": "पात्र",
-		"description": "पात्र प्रबंधक"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "सभी पात्र घटकों के लिए मौलिक केंद्र।",
+		"description_markdown": "यह पात्र मॉड्यूल के लिए **मूल घटक (Root Component)** है। यह उस संरचनात्मक आधार के रूप में कार्य करता है जहाँ आपके सभी पसंदीदा पात्र स्थित होते हैं।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"पात्र",
+			"fount"
+		]
 	},
 	"is-IS": {
 		"name": "Persónur",
-		"description": "Persónustjóri"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Aðalmiðstöð fyrir allar persónueiningar.",
+		"description_markdown": "Þetta er **rótareiningin** fyrir persónuhluta fount. Hún þjónar sem akkeri þar sem allar uppáhalds persónurnar þínar eru hýstar.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"persónur",
+			"fount"
+		]
 	},
 	"it-IT": {
-		"name": "Caratteri",
-		"description": "Gestore dei personaggi"
+		"name": "Personaggi",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "L'hub fondamentale per tutti i componenti dei personaggi.",
+		"description_markdown": "Questo è il **componente radice** per i moduli dei personaggi. Funge da punto di montaggio principale dove risiedono tutti i tuoi personaggi preferiti.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"personaggi",
+			"fount"
+		]
 	},
 	"ja-JP": {
 		"name": "キャラクター",
-		"description": "キャラクターマネージャー"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "すべてのキャラクターコンポーネントの基本ハブ",
+		"description_markdown": "これはキャラクターモジュールの**ルートコンポーネント**です。お気に入りのキャラクターたちが集まり、整理されるための主要なマウントポイントとして機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"キャラクター",
+			"fount"
+		]
 	},
 	"ko-KR": {
 		"name": "캐릭터",
-		"description": "캐릭터 매니저"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "모든 캐릭터 구성 요소의 기본 허브",
+		"description_markdown": "이것은 캐릭터 모듈의 **루트 컴포넌트**입니다. 사용자가 좋아하는 모든 캐릭터가 부착되고 머무르는 구조적 중심 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"캐릭터",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "角色",
-		"description": "角色管理器"
+		"name": "众相",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "诸色栖灵之根柢",
+		"description_markdown": "此乃诸角之**根柢**。凡君所爱之化身，皆栖于此府，以待君召。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根柢",
+			"众相",
+			"fount"
+		]
 	},
 	"nl-NL": {
-		"name": "Chars",
-		"description": "Karaktermanager"
+		"name": "Karakters",
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "De fundamentele hub voor alle karaktercomponenten.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor karaktermodules. Het dient als het centrale punt waar al uw favoriete karakters zijn ondergebracht.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"karakters",
+			"fount"
+		]
 	},
 	"pt-PT": {
 		"name": "Personagens",
-		"description": "Gerenciador de personagens"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "O centro fundamental para todos os componentes de personagens.",
+		"description_markdown": "Este é o **componente raiz** para os módulos de personagens. Serve como o ponto de montagem principal onde todos os seus personagens favoritos residem.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"personagens",
+			"fount"
+		]
 	},
 	"ru-RU": {
 		"name": "Персонажи",
-		"description": "Менеджер персонажей"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Центральный узел для всех компонентов персонажей.",
+		"description_markdown": "Это **корневой компонент** для модулей персонажей. Он служит основным местом размещения, где находятся все ваши любимые персонажи.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"персонажи",
+			"fount"
+		]
 	},
 	"uk-UA": {
 		"name": "Персонажі",
-		"description": "Менеджер персонажів"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Центральний вузол для всіх компонентів персонажів.",
+		"description_markdown": "Це **кореневий компонент** для модулів персонажів. Він виступає основним місцем кріплення, де розміщуються всі ваші улюблені персонажі.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"персонажі",
+			"fount"
+		]
 	},
 	"vi-VN": {
 		"name": "Nhân vật",
-		"description": "Trình quản lý nhân vật"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "Trung tâm cơ bản cho tất cả các thành phần nhân vật.",
+		"description_markdown": "Đây là **thành phần gốc** cho các mô-đun nhân vật. Nó đóng vai trò là điểm kết nối chính, nơi tất cả các nhân vật bạn yêu thích cùng hội tụ.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"nhân vật",
+			"fount"
+		]
 	},
 	"zh-TW": {
 		"name": "角色",
-		"description": "角色管理器"
+		"avatar": "https://api.iconify.design/line-md/account.svg",
+		"description": "所有角色組件的掛載中心",
+		"description_markdown": "這是角色模塊的**根節點**。它作為基礎承載空間，用戶所關注和喜愛的所有角色部件都掛載於此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"角色",
+			"fount"
+		]
 	}
 }

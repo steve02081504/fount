@@ -1,59 +1,305 @@
 {
 	"en-UK": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo Search Source",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "A privacy-focused search service instance powered by DuckDuckGo.",
+		"description_markdown": "This is an active instance of the **DuckDuckGo** search engine. It provides characters with search capabilities that prioritize user privacy, ensuring no tracking while retrieving information from the web.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"search",
+			"duckduckgo",
+			"privacy",
+			"source"
+		]
 	},
 	"zh-CN": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo 搜索源",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "由 DuckDuckGo 提供支持的隐私优先搜索实例",
+		"description_markdown": "这是 **DuckDuckGo** 搜索引擎的一个活动实例。它为角色提供注重隐私的互联网检索能力，确保在获取外部信息时不进行任何追踪。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"搜索",
+			"DuckDuckGo",
+			"隐私",
+			"服务源"
+		]
 	},
 	"ar-SA": {
-		"provider": "DuckDuckGo"
+		"name": "مصدر بحث DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "مثيل خدمة بحث يركز على الخصوصية مدعوم من DuckDuckGo.",
+		"description_markdown": "هذا مثيل نشط لمحرك بحث **DuckDuckGo**. يوفر للشخصيات قدرات بحث تعطي الأولوية لخصوصية المستخدم، مما يضمن عدم التتبع.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"بحث",
+			"DuckDuckGo",
+			"خصوصية",
+			"مصدر"
+		]
 	},
 	"de-DE": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo Suchquelle",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Eine datenschutzorientierte Suchdienstinstanz von DuckDuckGo.",
+		"description_markdown": "Dies ist eine aktive Instanz der **DuckDuckGo**-Suchmaschine. Sie bietet Charakteren Suchfunktionen, bei denen die Privatsphäre an erster Stelle steht.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"Suche",
+			"DuckDuckGo",
+			"Privatsphäre",
+			"Quelle"
+		]
 	},
 	"emoji": {
-		"provider": "DuckDuckGo"
+		"name": "🦆🔍",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "🦆 ➡️ 🔍 ➡️ 🛡️",
+		"description_markdown": "🦆🔍 ➡️ 🌐🛡️. \n🚀 ➡️ 🧠.\n🦆 ✨ 🚫👣.\n\n✨ 🔍 🦆",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"🦆",
+			"🔍",
+			"🛡️"
+		]
 	},
 	"es-ES": {
-		"provider": "DuckDuckGo"
+		"name": "Fuente de Búsqueda DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Instancia de servicio de búsqueda centrada en la privacidad de DuckDuckGo.",
+		"description_markdown": "Esta es una instancia activa del motor de búsqueda **DuckDuckGo**. Ofrece capacidades de búsqueda que priorizan la privacidad, sin rastreo.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"búsqueda",
+			"duckduckgo",
+			"privacidad",
+			"fuente"
+		]
 	},
 	"fr-FR": {
-		"provider": "DuckDuckGo"
+		"name": "Source de Recherche DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Instance de service de recherche respectueuse de la vie privée DuckDuckGo.",
+		"description_markdown": "Il s'agit d'une instance active du moteur de recherche **DuckDuckGo**, offrant des capacités de recherche sans suivi.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"recherche",
+			"duckduckgo",
+			"vie privée",
+			"source"
+		]
 	},
 	"hi-IN": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo खोज स्रोत",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGo द्वारा संचालित गोपनीयता-केंद्रित खोज सेवा उदाहरण।",
+		"description_markdown": "यह **DuckDuckGo** खोज इंजन का एक सक्रिय उदाहरण है, जो बिना किसी ट्रैकिंग के गोपनीयता को प्राथमिकता देता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"खोज",
+			"DuckDuckGo",
+			"गोपनीयता",
+			"स्रोत"
+		]
 	},
 	"is-IS": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo Leitarheimild",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Leitarþjónusta með áherslu á persónuvernd frá DuckDuckGo.",
+		"description_markdown": "Þetta er virkt tilvik af **DuckDuckGo** leitarvélinni, sem tryggir leit án eftirtektar.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"leit",
+			"duckduckgo",
+			"persónuvernd",
+			"heimild"
+		]
 	},
 	"it-IT": {
-		"provider": "DuckDuckGo"
+		"name": "Fonte di Ricerca DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Istanza di servizio di ricerca DuckDuckGo incentrata sulla privacy.",
+		"description_markdown": "Questa è un'istanza attiva del motore di ricerca **DuckDuckGo**, che garantisce ricerche senza tracciamento.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"ricerca",
+			"duckduckgo",
+			"privacy",
+			"fonte"
+		]
 	},
 	"ja-JP": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo 検索ソース",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGo によるプライバシー重視の検索サービスインスタンス",
+		"description_markdown": "これは **DuckDuckGo** 検索エンジンのアクティブなインスタンスです。トラッキングを行わず、プライバシーを保護しながら情報を取得します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"検索",
+			"DuckDuckGo",
+			"プライバシー",
+			"ソース"
+		]
 	},
 	"ko-KR": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo 검색 소스",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "DuckDuckGo에서 제공하는 개인정보 보호 중심 검색 인스턴스",
+		"description_markdown": "이것은 **DuckDuckGo** 검색 엔진의 활성 인스턴스입니다. 추적 없이 개인정보를 보호하며 정보를 검색합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"검색",
+			"DuckDuckGo",
+			"개인정보보호",
+			"소스"
+		]
 	},
 	"lzh": {
-		"provider": "DuckDuckGo"
+		"name": "潜凫寻",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "绝迹索讯，弗存垢迹",
+		"description_markdown": "此乃 **“DuckDuckGo”** 寻索之实例。资凫之术，入水无波，索讯而不留行迹，为化身守卫隐秘、博采万方之具也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"寻索",
+			"潜凫",
+			"隐秘",
+			"实例"
+		]
 	},
 	"nl-NL": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo Zoekbron",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Privacyvriendelijke zoekservice-instantie van DuckDuckGo.",
+		"description_markdown": "Dit is een actieve instantie van **DuckDuckGo**, voor zoekopdrachten zonder tracking.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"zoeken",
+			"duckduckgo",
+			"privacy",
+			"bron"
+		]
 	},
 	"pt-PT": {
-		"provider": "DuckDuckGo"
+		"name": "Fonte de Pesquisa DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Instância de serviço de pesquisa DuckDuckGo focada na privacidade.",
+		"description_markdown": "Esta é uma instância ativa do motor de busca **DuckDuckGo**, permitindo pesquisas sem rastreio.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"pesquisa",
+			"duckduckgo",
+			"privacidade",
+			"fonte"
+		]
 	},
 	"ru-RU": {
-		"provider": "DuckDuckGo"
+		"name": "Источник Поиска DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Конфиденциальный экземпляр поискового сервиса DuckDuckGo.",
+		"description_markdown": "Это активный экземпляр поисковой системы **DuckDuckGo**, обеспечивающий поиск без отслеживания.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"поиск",
+			"duckduckgo",
+			"конфиденциальность",
+			"источник"
+		]
 	},
 	"uk-UA": {
-		"provider": "DuckDuckGo"
+		"name": "Джерело Пошуку DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Конфіденційний екземпляр пошукового сервісу DuckDuckGo.",
+		"description_markdown": "Це активний екземпляр пошукової системи **DuckDuckGo** для пошуку без відстеження.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"пошук",
+			"duckduckgo",
+			"конфіденційність",
+			"джерело"
+		]
 	},
 	"vi-VN": {
-		"provider": "DuckDuckGo"
+		"name": "Nguồn Tìm kiếm DuckDuckGo",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "Thực thể dịch vụ tìm kiếm bảo mật từ DuckDuckGo.",
+		"description_markdown": "Đây là thực thể hoạt động của **DuckDuckGo**, đảm bảo tìm kiếm không để lại dấu vết.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"tìm_kiếm",
+			"duckduckgo",
+			"bảo_mật",
+			"nguồn"
+		]
 	},
 	"zh-TW": {
-		"provider": "DuckDuckGo"
+		"name": "DuckDuckGo 搜尋源",
+		"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+		"description": "由 DuckDuckGo 提供支持的隱私優先搜尋實例",
+		"description_markdown": "這是 **DuckDuckGo** 搜尋引擎的一個活動實例。它為角色提供注重隱私的互聯網檢索能力，確保在獲取外部信息時不進行任何追蹤。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://duckduckgo.com/",
+		"provider": "DuckDuckGo",
+		"tags": [
+			"搜尋",
+			"DuckDuckGo",
+			"隱私",
+			"服務源"
+		]
 	}
 }

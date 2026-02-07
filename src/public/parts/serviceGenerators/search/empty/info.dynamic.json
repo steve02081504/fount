@@ -1,59 +1,301 @@
 {
 	"en-UK": {
-		"provider": "fount"
+		"name": "Empty Source Instance",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "An active instance of a null search source.",
+		"description_markdown": "This is an **active placeholder instance**. It represents a state where no search source is available or configured, ensuring system stability by returning null results.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"empty",
+			"null",
+			"instance",
+			"placeholder"
+		]
 	},
 	"zh-CN": {
-		"provider": "fount"
+		"name": "空搜索源实例",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "一个活跃的空搜索服务实例",
+		"description_markdown": "这是一个**活跃的占位符实例**。它代表当前没有任何可用的搜索源配置，通过返回空结果来维持系统的稳定性。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"空",
+			"虚无",
+			"实例",
+			"占位符"
+		]
 	},
 	"ar-SA": {
-		"provider": "fount"
+		"name": "مثيل مصدر فارغ",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "مثيل نشط لمصدر بحث فارغ.",
+		"description_markdown": "هذا **مثيل نائب نشط**. يمثل حالة لا يتوفر فيها مصدر بحث، مما يضمن استقرار النظام.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"فارغ",
+			"نائب",
+			"مثيل"
+		]
 	},
 	"de-DE": {
-		"provider": "fount"
+		"name": "Leere Quellinstanz",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Eine aktive Instanz einer Null-Suchquelle.",
+		"description_markdown": "Dies ist eine **aktive Platzhalter-Instanz**. Sie stellt einen Zustand dar, in dem keine Suchquelle konfiguriert ist.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"leer",
+			"null",
+			"instanz",
+			"platzhalter"
+		]
 	},
 	"emoji": {
-		"provider": "fount"
+		"name": "👻🕳️",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "0️⃣ ➡️ 👻",
+		"description_markdown": "🚫🔍 ➡️ 🕳️. \n⚓ ➡️ 😶. \n✨ ➡️ 🤷‍♂️.\n\n✨ 👻 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"👻",
+			"🚫",
+			"🕳️"
+		]
 	},
 	"es-ES": {
-		"provider": "fount"
+		"name": "Instancia de Fuente Vacía",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Instancia activa de una fuente de búsqueda nula.",
+		"description_markdown": "Esta es una **instancia de marcador de posición activa**. Representa la ausencia de configuración de búsqueda.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"vacío",
+			"nulo",
+			"instancia"
+		]
 	},
 	"fr-FR": {
-		"provider": "fount"
+		"name": "Instance de Source Vide",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Une instance active d'une source de recherche nulle.",
+		"description_markdown": "Il s'agit d'une **instance d'espace réservé active**. Elle assure la stabilité du système en cas d'absence de source.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"vide",
+			"nul",
+			"instance"
+		]
 	},
 	"hi-IN": {
-		"provider": "fount"
+		"name": "खाली सेवा स्रोत उदाहरण",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "एक सक्रिय, खाली खोज सेवा उदाहरण",
+		"description_markdown": "यह एक सक्रिय प्लेसहोल्डर उदाहरण है. यह इंगित करता है कि वर्तमान में कोई खोज स्रोत कॉन्फ़िगरेशन उपलब्ध नहीं है और खाली परिणाम लौटाकर सिस्टम स्थिरता बनाए रखता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"व्यर्थ",
+			"शून्य",
+			"इंस्टेंस",
+			"प्लेसहोल्डर"
+		]
 	},
 	"is-IS": {
-		"provider": "fount"
+		"name": "Tómt tilvik þjónustugjafa",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Virkt, tómt leitarþjónustutilvik",
+		"description_markdown": "Þetta er virkt staðsetningartilvik. Það gefur til kynna að það séu engar tiltækar uppsetningar fyrir leitaruppsprettu sem stendur og viðheldur stöðugleika kerfisins með því að skila tómum niðurstöðum.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"núll",
+			"ekki neitt",
+			"tilvik",
+			"staðgengill"
+		]
 	},
 	"it-IT": {
-		"provider": "fount"
+		"name": "Istanza di origine del servizio vuota",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Un'istanza del servizio di ricerca attiva e vuota",
+		"description_markdown": "Questa è un'istanza segnaposto attiva. Indica che al momento non sono disponibili configurazioni dell'origine di ricerca e mantiene la stabilità del sistema restituendo risultati vuoti.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"nullo",
+			"nulla",
+			"istanza",
+			"segnaposto"
+		]
 	},
 	"ja-JP": {
-		"provider": "fount"
+		"name": "空ソースインスタンス",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "アクティブな空の検索ソースインスタンス",
+		"description_markdown": "これは**プレースホルダー用インスタンス**です。検索ソースが設定されていない状態を表し、システムを保護します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"空",
+			"インスタンス",
+			"プレースホルダー"
+		]
 	},
 	"ko-KR": {
-		"provider": "fount"
+		"name": "빈 검색 소스 인스턴스",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "활성 상태의 빈 검색 서비스 인스턴스",
+		"description_markdown": "이는 플레이스홀더 인스턴스입니다. 이는 현재 사용 가능한 검색 소스 구성이 없음을 나타내며 빈 결과를 반환하여 시스템 안정성을 유지합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"null",
+			"없음",
+			"인스턴스",
+			"자리 표시자"
+		]
 	},
 	"lzh": {
-		"provider": "fount"
+		"name": "虚无源",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "万化归空，虚位以待",
+		"description_markdown": "此乃**虚无之实例**。凡寻索无门、源起未立者，暂寄于此，以全系统之运化，不致崩殂。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"虚无",
+			"空",
+			"实例",
+			"补缺"
+		]
 	},
 	"nl-NL": {
-		"provider": "fount"
+		"name": "Leeg servicebroninstantie",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Een actief, leeg exemplaar van de zoekservice",
+		"description_markdown": "Dit is een actieve tijdelijke aanduiding. Het geeft aan dat er momenteel geen beschikbare zoekbronconfiguraties zijn en handhaaft de systeemstabiliteit door lege resultaten te retourneren.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"nul",
+			"niets",
+			"instantie",
+			"tijdelijke aanduiding"
+		]
 	},
 	"pt-PT": {
-		"provider": "fount"
+		"name": "Instância de origem de serviço vazia",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Uma instância de serviço de pesquisa ativa e vazia",
+		"description_markdown": "Esta é uma instância de espaço reservado ativa. Indica que atualmente não há configurações de origem de pesquisa disponíveis e mantém a estabilidade do sistema retornando resultados vazios.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"nulo",
+			"nada",
+			"exemplo",
+			"espaço reservado"
+		]
 	},
 	"ru-RU": {
-		"provider": "fount"
+		"name": "Пустой экземпляр поиска",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Активный пустой экземпляр службы поиска.",
+		"description_markdown": "Это активный экземпляр заполнителя. Это указывает на то, что в настоящее время нет доступных конфигураций источника поиска, и поддерживает стабильность системы, возвращая пустые результаты.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"нулевой",
+			"пустота",
+			"экземпляр",
+			"заполнитель"
+		]
 	},
 	"uk-UA": {
-		"provider": "fount"
+		"name": "Порожній екземпляр джерела служби",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Активний порожній екземпляр служби пошуку",
+		"description_markdown": "Це активний екземпляр заповнювача. Це вказує на те, що наразі немає доступних конфігурацій джерела пошуку, і підтримує стабільність системи, повертаючи порожні результати.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"null",
+			"порожній",
+			"екземпляр",
+			"заповнювач"
+		]
 	},
 	"vi-VN": {
-		"provider": "fount"
+		"name": "Phiên bản nguồn dịch vụ trống",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "Một phiên bản dịch vụ tìm kiếm trống, đang hoạt động",
+		"description_markdown": "Đây là một phiên bản giữ chỗ đang hoạt động. Nó chỉ ra rằng hiện tại không có cấu hình nguồn tìm kiếm nào và duy trì sự ổn định của hệ thống bằng cách trả về các kết quả trống.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"null",
+			"rỗng",
+			"thực thể",
+			"phần giữ chỗ"
+		]
 	},
 	"zh-TW": {
-		"provider": "fount"
+		"name": "空服務源實例",
+		"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+		"description": "一個活躍的空搜索服務實例",
+		"description_markdown": "這是一個**活躍的佔位符實例**。它代表當前沒有任何可用的搜索源配置，通過返回空結果來維持系統的穩定性。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"空",
+			"虛無",
+			"實例",
+			"佔位符"
+		]
 	}
 }
