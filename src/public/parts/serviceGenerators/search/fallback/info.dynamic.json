@@ -1,59 +1,303 @@
 {
 	"en-UK": {
-		"provider": "fount"
+		"name": "Fallback Source Instance",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "An active instance that chains search sources for reliability.",
+		"description_markdown": "This is an **active fallback instance**. It executes a list of search sources in a specific order. If one fails, it automatically moves to the next until a successful result is retrieved, ensuring high availability.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"fallback",
+			"reliability",
+			"instance",
+			"utility"
+		]
 	},
 	"zh-CN": {
-		"provider": "fount"
+		"name": "故障转移搜索实例",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "一个通过链式调用确保可用性的搜索服务实例",
+		"description_markdown": "这是一个**故障转移实例**。它会按顺序尝试预设的搜索源列表：当前面的源失效时，自动切换至下一个，直到获取成功结果。它是系统高可用性的重要保障。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"备用",
+			"可靠性",
+			"实例",
+			"实用工具"
+		]
 	},
 	"ar-SA": {
-		"provider": "fount"
+		"name": "مثيل المصدر الاحتياطي",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "مثيل نشط يربط مصادر البحث من أجل الموثوقية.",
+		"description_markdown": "هذا **مثيل احتياطي نشط**. يقوم بتنفيذ قائمة من مصادر البحث بترتيب معين؛ إذا فشل أحدها، فإنه ينتقل تلقائيًا إلى التالي حتى يتم الحصول على نتيجة.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"احتياطي",
+			"موثوقية",
+			"مثيل"
+		]
 	},
 	"de-DE": {
-		"provider": "fount"
+		"name": "Fallback-Quellinstanz",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Eine aktive Instanz, die Suchquellen für mehr Zuverlässigkeit verkettet.",
+		"description_markdown": "Dies ist eine **aktive Fallback-Instanz**. Sie probiert eine Liste von Quellen nacheinander aus: Schlägt eine fehl, wird die nächste genutzt, bis ein Ergebnis vorliegt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"fallback",
+			"zuverlässigkeit",
+			"instanz"
+		]
 	},
 	"emoji": {
-		"provider": "fount"
+		"name": "🛡️⛓️",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "1️⃣❌➡️2️⃣✅",
+		"description_markdown": "⛓️🛡️. \n1️⃣ ➡️ ❌ ➡️ 🆘.\n2️⃣ ➡️ ✅ ➡️ 🚀.\n🛡️ ➡️ 🔄.\n\n✨ 🛡️ ⛓️",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"🛡️",
+			"⛓️",
+			"🔄"
+		]
 	},
 	"es-ES": {
-		"provider": "fount"
+		"name": "Instancia de búsqueda de respaldo",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Una instancia de servicio de búsqueda que asegura disponibilidad a través de llamadas encadenadas",
+		"description_markdown": "Esta es una **instancia en espera activa**. Intenta una lista preestablecida de fuentes de búsqueda en orden: cuando la fuente anterior falla, cambia automáticamente a la siguiente hasta que se obtiene un resultado exitoso. Es una garantía importante para la alta disponibilidad del sistema.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"repuesto",
+			"fiabilidad",
+			"instancia",
+			"utilidad"
+		]
 	},
 	"fr-FR": {
-		"provider": "fount"
+		"name": "Instance de source de service alternative",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Une instance de service de recherche qui garantit la disponibilité via des appels chaînés",
+		"description_markdown": "Il s'agit d'une **instance de secours active**. Il essaie une liste prédéfinie de sources de recherche dans l'ordre : lorsque la source précédente échoue, il passe automatiquement à la suivante jusqu'à ce qu'un résultat positif soit obtenu. C'est une garantie importante pour la haute disponibilité du système.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"secours",
+			"fiabilité",
+			"instance",
+			"utilitaire"
+		]
 	},
 	"hi-IN": {
-		"provider": "fount"
+		"name": "वैकल्पिक सेवा स्रोत उदाहरण",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "एक खोज सेवा उदाहरण जो श्रृंखलाबद्ध कॉल के माध्यम से उपलब्धता सुनिश्चित करता है",
+		"description_markdown": "यह एक **सक्रिय स्टैंडबाय उदाहरण** है। यह क्रम में खोज स्रोतों की एक पूर्व निर्धारित सूची का प्रयास करता है: जब पिछला स्रोत विफल हो जाता है, तो यह सफल परिणाम प्राप्त होने तक स्वचालित रूप से अगले स्रोत पर स्विच हो जाता है। यह सिस्टम की उच्च उपलब्धता के लिए एक महत्वपूर्ण गारंटी है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"अतिरिक्त",
+			"विश्वसनीयता",
+			"इंस्टेंस",
+			"उपयोगिता"
+		]
 	},
 	"is-IS": {
-		"provider": "fount"
+		"name": "Varatilvik þjónustugjafa",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Leitarþjónustutilvik sem tryggir framboð með hlekkjaðri símtölum",
+		"description_markdown": "Þetta er **virkt biðtilvik**. Það reynir forstilltan lista yfir leitarheimildir í röð: þegar fyrri uppspretta mistekst skiptir það sjálfkrafa yfir í þá næstu þar til árangursrík niðurstaða fæst. Það er mikilvæg trygging fyrir háu framboði kerfisins.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"vara",
+			"áreiðanleika",
+			"tilvik",
+			"tól"
+		]
 	},
 	"it-IT": {
-		"provider": "fount"
+		"name": "Istanza di origine del servizio alternativa",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Un'istanza del servizio di ricerca che garantisce la disponibilità tramite chiamate concatenate",
+		"description_markdown": "Questa è un'**istanza in standby attivo**. Prova un elenco preimpostato di fonti di ricerca in ordine: quando la fonte precedente fallisce, passa automaticamente a quella successiva fino a quando non si ottiene un risultato positivo. Si tratta di una garanzia importante per l'elevata disponibilità del sistema.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"riserva",
+			"affidabilità",
+			"istanza",
+			"utilità"
+		]
 	},
 	"ja-JP": {
-		"provider": "fount"
+		"name": "フォールバック検索インスタンス",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "連鎖呼び出しを通じて可用性を確保する検索サービス インスタンス",
+		"description_markdown": "これは **フォールバック・インスタンス**です。事前に設定された検索ソースのリストを順番に試行します。前のソースが失敗すると、成功した結果が得られるまで自動的に次のソースに切り替わります。これはシステムの高可用性を保証する重要な要素です。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"予備",
+			"信頼性",
+			"インスタンス",
+			"ユーティリティ"
+		]
 	},
 	"ko-KR": {
-		"provider": "fount"
+		"name": "폴백 검색 인스턴스",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "연쇄 호출을 통해 가용성을 보장하는 검색 서비스 인스턴스",
+		"description_markdown": "**폴백 인스턴스**입니다. 사전 설정된 검색 소스 목록을 순서대로 시도합니다. 이전 소스가 실패하면 성공적인 결과를 얻을 때까지 자동으로 다음 소스로 전환됩니다. 이는 시스템 고가용성을 보장하는 중요한 요소입니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"예비",
+			"신뢰할 수 있음",
+			"인스턴스",
+			"유틸리티"
+		]
 	},
 	"lzh": {
-		"provider": "fount"
+		"name": "循序備援",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "諸源遞補，必求其成",
+		"description_markdown": "此乃**後備之實例**。其法如排班受事：首源若竭，次源繼之；循序而進，務使功成而後止。此乃保系統不墜、靈活運化之盾也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"後備",
+			"遞補",
+			"實例",
+			"保險"
+		]
 	},
 	"nl-NL": {
-		"provider": "fount"
+		"name": "Alternatieve servicebroninstantie",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Een zoekservice-instantie die beschikbaarheid garandeert via gekoppelde oproepen",
+		"description_markdown": "Dit is een **actieve standby-instantie**. Het probeert een vooraf ingestelde lijst met zoekbronnen op volgorde: wanneer de vorige bron faalt, schakelt het automatisch over naar de volgende totdat een succesvol resultaat wordt verkregen. Het is een belangrijke garantie voor een hoge systeembeschikbaarheid.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"sparen",
+			"betrouwbaarheid",
+			"instantie",
+			"hulpprogramma"
+		]
 	},
 	"pt-PT": {
-		"provider": "fount"
+		"name": "Instância de origem de serviço alternativa",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Uma instância de serviço de pesquisa que garante disponibilidade por meio de chamadas encadeadas",
+		"description_markdown": "Esta é uma **instância de espera ativa**. Ele tenta uma lista predefinida de fontes de pesquisa em ordem: quando a fonte anterior falha, ele muda automaticamente para a próxima até obter um resultado bem-sucedido. É uma garantia importante para a alta disponibilidade do sistema.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"reserva",
+			"confiabilidade",
+			"instância",
+			"utilitário"
+		]
 	},
 	"ru-RU": {
-		"provider": "fount"
+		"name": "Экземпляр альтернативного источника службы",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Экземпляр службы поиска, обеспечивающий доступность посредством связанных вызовов.",
+		"description_markdown": "Это **активный резервный экземпляр**. Он пробует заданный список источников поиска по порядку: при сбое предыдущего источника он автоматически переключается на следующий до тех пор, пока не будет получен успешный результат. Это важная гарантия высокой доступности системы.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"резервный",
+			"надежность",
+			"экземпляр",
+			"утилита"
+		]
 	},
 	"uk-UA": {
-		"provider": "fount"
+		"name": "Екземпляр джерела альтернативної служби",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Екземпляр служби пошуку, який забезпечує доступність через ланцюгові виклики",
+		"description_markdown": "Це **екземпляр активного режиму очікування**. Він перевіряє попередньо встановлений список джерел пошуку в порядку: якщо попереднє джерело не вдається, воно автоматично перемикається на наступне, доки не буде отримано успішний результат. Це важлива гарантія високої доступності системи.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"резервний",
+			"надійність",
+			"екземпляр",
+			"утиліта"
+		]
 	},
 	"vi-VN": {
-		"provider": "fount"
+		"name": "Thực thể nguồn dịch vụ thay thế",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "Một phiên bản dịch vụ tìm kiếm đảm bảo tính khả dụng thông qua các cuộc gọi theo chuỗi",
+		"description_markdown": "Đây là **phiên bản dự phòng đang hoạt động**. Nó thử danh sách các nguồn tìm kiếm được đặt trước theo thứ tự: khi nguồn trước đó bị lỗi, nó sẽ tự động chuyển sang nguồn tiếp theo cho đến khi thu được kết quả thành công. Đây là một sự đảm bảo quan trọng cho tính sẵn sàng cao của hệ thống.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"dự phòng",
+			"độ tin cậy",
+			"thực thể",
+			"tiện ích"
+		]
 	},
 	"zh-TW": {
-		"provider": "fount"
+		"name": "備用服務源實例",
+		"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+		"description": "一個通過鏈式調用確保可用性的搜索服務實例",
+		"description_markdown": "這是一個**活躍的備用實例**。它會按順序嘗試預設的搜索源列表：當前面的源失效時，自動切換至下一個，直到獲取成功結果。它是系統高可用性的重要保障。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"provider": "fount",
+		"tags": [
+			"備用",
+			"可靠性",
+			"實例",
+			"實用程式"
+		]
 	}
 }

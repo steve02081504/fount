@@ -1,78 +1,287 @@
 {
 	"en-UK": {
 		"name": "Worlds",
-		"description": "Worlds manager"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "The foundational parent node for all world components.",
+		"description_markdown": "This is the **parent component** for all world-related modules. It serves as the structural root where all individual worlds are attached and organized within the fount system.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"worlds",
+			"fount"
+		]
 	},
 	"zh-CN": {
 		"name": "世界",
-		"description": "世界管理器"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "所有世界组件的父节点",
+		"description_markdown": "这是 fount 系统中所有“世界”组件的**根节点**。它作为基础承载结构，所有独立的世界模块都依附于此。 ",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"世界",
+			"fount"
+		]
 	},
 	"ar-SA": {
-		"name": "عوالم",
-		"description": "مدير العالمين"
+		"name": "العوالم",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "العقدة الأصلية الأساسية لجميع مكونات العالم",
+		"description_markdown": "هذا هو **المكون الجذر** لجميع الوحدات المتعلقة بالعالم. إنه يمثل القاعدة الهيكلية التي ترتبط بها جميع العوالم الفردية وتنظم داخل نظام fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"عوالم",
+			"fount"
+		]
 	},
 	"de-DE": {
 		"name": "Welten",
-		"description": "Weltmanager"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Der grundlegende Elternknoten für alle Weltkomponenten.",
+		"description_markdown": "Dies ist die **Elternkomponente** für alle weltbezogenen Module. Sie dient als strukturelle Wurzel, an der alle einzelnen Welten innerhalb des fount-Systems angehängt und organisiert werden.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"Welten",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "世界",
-		"description": "世界管理器"
+		"name": "🌌",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "🌌 ➡️ 🌍🌍🌍",
+		"description_markdown": "🌌 ➡️ 🌍. \n🏗️ 🧱 ➡️ 🌌.\n⚓ ➡️ 🌍🌍🌍.\n\n🌌 📦 ➡️ 🧩.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"🌌",
+			"⚓",
+			"🏗️",
+			"⛲"
+		]
 	},
 	"es-ES": {
 		"name": "Mundos",
-		"description": "Gestor de mundos"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "El nodo padre fundamental para todos los componentes del mundo.",
+		"description_markdown": "Este es el **componente raíz** para todos los módulos relacionados con mundos. Actúa como la base estructural donde se adjuntan y organizan todos los mundos individuales.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"mundos",
+			"fount"
+		]
 	},
 	"fr-FR": {
 		"name": "Mondes",
-		"description": "Gestionnaire de mondes"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Le nœud parent fondamental pour tous les composants du monde.",
+		"description_markdown": "Il s'agit du **composant parent** pour tous les modules liés aux mondes. Il sert de racine structurelle où tous les mondes individuels sont attachés.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"mondes",
+			"fount"
+		]
 	},
 	"hi-IN": {
-		"name": "संसारों",
-		"description": "विश्व प्रबंधक"
+		"name": "संसार",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "सभी विश्व घटकों के लिए मौलिक जनक नोड।",
+		"description_markdown": "यह सभी विश्व-संबंधी मॉड्यूल के लिए **जनक घटक (Parent Component)** है। यह उस संरचनात्मक जड़ के रूप में कार्य करता है जहां सभी व्यक्तिगत संसार जुड़े होते हैं।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"संसार",
+			"fount"
+		]
 	},
 	"is-IS": {
-		"name": "Heimir",
-		"description": "Heimsstjóri"
+		"name": "Heimar",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Grunnstýrieining fyrir alla heima.",
+		"description_markdown": "Þetta er **móðureiningin** fyrir alla heima í fount-kerfinu. Hún þjónar sem rót þar sem allir einstakir heimar eru hýstir.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"heimar",
+			"fount"
+		]
 	},
 	"it-IT": {
 		"name": "Mondi",
-		"description": "Direttore dei mondi"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Il nodo genitore fondamentale per tutti i componenti del mondo.",
+		"description_markdown": "Questo è il **componente radice** per tutti i moduli relativi ai mondi. Funge da base strutturale a cui sono collegati tutti i singoli mondi.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"mondi",
+			"fount"
+		]
 	},
 	"ja-JP": {
 		"name": "世界",
-		"description": "ワールドマネージャー"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "すべての世界コンポーネントの親ノード",
+		"description_markdown": "これは、すべての世界関連モジュールの**親コンポーネント**です。fount システム内で個々の世界がアタッチされ、整理されるための構造的なルートとして機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"世界",
+			"fount"
+		]
 	},
 	"ko-KR": {
 		"name": "세계",
-		"description": "월드 매니저"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "모든 세계 구성 요소의 상위 노드",
+		"description_markdown": "이것은 모든 세계 관련 모듈의 **상위 컴포넌트**입니다. fount 시스템 내에서 각각의 세계가 부착되고 조직되는 구조적 루트 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"세계",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "世界",
-		"description": "世界管理器"
+		"name": "諸界",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "諸界组件之根柢",
+		"description_markdown": "此乃諸界之**根柢**。凡屬「世界」之件，皆依附於此，受其統攝。萬界並立，皆由此出。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根柢",
+			"諸界",
+			"fount"
+		]
 	},
 	"nl-NL": {
 		"name": "Werelden",
-		"description": "Wereldmanager"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "De fundamentele bovenliggende node voor alle wereldcomponenten.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor alle wereldgerelateerde modules. Het dient als de structurele wortel waaraan alle individuele werelden zijn verbonden.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"werelden",
+			"fount"
+		]
 	},
 	"pt-PT": {
 		"name": "Mundos",
-		"description": "Gestor de mundos"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "O nó pai fundamental para todos os componentes do mundo.",
+		"description_markdown": "Este é o **componente raiz** para todos os módulos relacionados com mundos. Serve como a base estrutural onde todos os mundos individuais são anexados.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"mundos",
+			"fount"
+		]
 	},
 	"ru-RU": {
 		"name": "Миры",
-		"description": "Менеджер миров"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Фундаментальный родительский узел для всех компонентов мира.",
+		"description_markdown": "Это **родительский компонент** для всех модулей, связанных с мирами. Он служит структурным корнем, к которому прикрепляются все отдельные миры.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"миры",
+			"fount"
+		]
 	},
 	"uk-UA": {
 		"name": "Світи",
-		"description": "Менеджер світів"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Фундаментальний батьківський вузол для всіх компонентів світу.",
+		"description_markdown": "Це **батьківський компонент** для всіх модулів, пов'язаних зі світами. Він є структурним коренем, до якого приєднуються всі окремі світи.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"світи",
+			"fount"
+		]
 	},
 	"vi-VN": {
-		"name": "thế giới",
-		"description": "Người quản lý thế giới"
+		"name": "Thế giới",
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "Nút cha cơ bản cho tất cả các thành phần thế giới.",
+		"description_markdown": "Đây là **thành phần gốc** cho tất cả các mô-đun liên quan đến thế giới. Nó đóng vai trò là nền tảng cấu trúc nơi tất cả các thế giới riêng lẻ được gắn vào.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"thế giới",
+			"fount"
+		]
 	},
 	"zh-TW": {
 		"name": "世界",
-		"description": "世界管理器"
+		"avatar": "https://api.iconify.design/line-md/map-marker.svg",
+		"description": "所有世界組件的父節點",
+		"description_markdown": "這是 fount 系統中所有「世界」組件的**根節點**。它作為基礎承載結構，所有獨立的世界模塊都依附於此。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"世界",
+			"fount"
+		]
 	}
 }

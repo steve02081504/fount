@@ -1,59 +1,319 @@
 {
 	"en-UK": {
-		"provider": "fount"
+		"name": "Polling Source Instance",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "An active instance that cycles through a list of sources for each request.",
+		"description_markdown": "This is an **active polling instance**. It efficiently distributes requests by sequentially using each source from a predefined list. For every new request, it automatically moves to the next available source in the list, ensuring even distribution and resource utilization.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"polling",
+			"load-balancing",
+			"round-robin",
+			"instance",
+			"utility"
+		]
 	},
 	"zh-CN": {
-		"provider": "fount"
+		"name": "轮询翻译实例",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "一个按请求顺序循环分配翻译源的活跃实例",
+		"description_markdown": "这是一个**活跃的轮询实例**。它通过按预设列表顺序，为每个传入请求分配下一个可用源，有效实现请求的均衡分布和资源的最大化利用。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"轮询",
+			"负载均衡",
+			"循环",
+			"实例",
+			"实用工具"
+		]
 	},
 	"ar-SA": {
-		"provider": "fount"
+		"name": "مثيل مصدر الاقتراع",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "مثيل نشط يدور عبر قائمة من المصادر لكل طلب.",
+		"description_markdown": "هذا **مثيل اقتراع نشط**. يقوم بتوزيع الطلبات بكفاءة عن طريق استخدام كل مصدر بالتسلسل من قائمة محددة مسبقًا. لكل طلب جديد، ينتقل تلقائيًا إلى المصدر التالي.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"اقتراع",
+			"توازن_الحمل",
+			"مثيل"
+		]
 	},
 	"de-DE": {
-		"provider": "fount"
+		"name": "Polling-Quellinstanz",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Eine aktive Instanz, die für jede Anfrage eine Liste von Quellen durchläuft.",
+		"description_markdown": "Dies ist eine **aktive Polling-Instanz**. Sie verteilt Anfragen effizient, indem sie nacheinander jede Quelle aus einer vordefinierten Liste verwendet. Für jede neue Anfrage wird automatisch zur nächsten verfügbaren Quelle in der Liste gewechselt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"polling",
+			"lastausgleich",
+			"round-robin",
+			"instanz"
+		]
 	},
 	"emoji": {
-		"provider": "fount"
+		"name": "🔢🔄",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "1️⃣➡️2️⃣➡️3️⃣🔄",
+		"description_markdown": "🔢🔄. \n1️⃣ ➡️ 📥. \n2️⃣ ➡️ 📥. \n3️⃣ ➡️ 📥.\n\n✨ 🔄 ✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"🔢",
+			"🔄",
+			"📊"
+		]
 	},
 	"es-ES": {
-		"provider": "fount"
+		"name": "Instancia de origen de sondeo",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Una instancia activa que distribuye fuentes en un orden por turnos en el orden solicitado",
+		"description_markdown": "Esta es una **instancia de sondeo activa**. Logra de manera efectiva una distribución equilibrada de solicitudes y maximiza la utilización de recursos al asignar la siguiente fuente disponible a cada solicitud entrante en el orden de una lista preestablecida.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"sondeo",
+			"equilibrio de carga",
+			"ciclo",
+			"instancia",
+			"utilidad"
+		]
 	},
 	"fr-FR": {
-		"provider": "fount"
+		"name": "Instance source d'interrogation",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Une instance active qui distribue les sources dans un ordre circulaire dans l'ordre demandé",
+		"description_markdown": "Il s'agit d'une **instance d'interrogation active**. Il parvient efficacement à une répartition équilibrée des demandes et maximise l'utilisation des ressources en allouant la prochaine source disponible à chaque demande entrante dans l'ordre d'une liste prédéfinie.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"interrogation",
+			"équilibrage de charge",
+			"faire du vélo",
+			"instance",
+			"utilitaire"
+		]
 	},
 	"hi-IN": {
-		"provider": "fount"
+		"name": "मतदान सेवा स्रोत उदाहरण",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "एक सक्रिय उदाहरण जो अनुरोधित क्रम में स्रोतों को राउंड-रॉबिन क्रम में वितरित करता है",
+		"description_markdown": "यह एक **सक्रिय मतदान उदाहरण** है। यह प्रभावी ढंग से अनुरोधों का संतुलित वितरण प्राप्त करता है और पूर्व निर्धारित सूची के क्रम में प्रत्येक आने वाले अनुरोध के लिए अगले उपलब्ध स्रोत को आवंटित करके संसाधन उपयोग को अधिकतम करता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"पॉलिंग",
+			"भार का संतुलन",
+			"चक्र",
+			"इंस्टेंस",
+			"उपयोगिता"
+		]
 	},
 	"is-IS": {
-		"provider": "fount"
+		"name": "Uppspretta könnunarþjónustu",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Virkt tilvik sem dreifir heimildum í hringlaga röð í þeirri röð sem óskað er eftir",
+		"description_markdown": "Þetta er **virkt könnunartilvik**. Það nær í raun jafnvægi dreifingar beiðna og hámarkar auðlindanýtingu með því að úthluta næsta tiltæka uppsprettu til hverrar beiðni sem berast í röð forstilltra lista.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"skoðanakönnun",
+			"álagsjöfnun",
+			"hringrás",
+			"tilvik",
+			"tól"
+		]
 	},
 	"it-IT": {
-		"provider": "fount"
+		"name": "Istanza di origine di polling",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Un'istanza attiva che distribuisce le fonti in un ordine round-robin nell'ordine richiesto",
+		"description_markdown": "Questa è un'**istanza di polling attiva**. Raggiunge in modo efficace una distribuzione equilibrata delle richieste e massimizza l'utilizzo delle risorse assegnando la successiva fonte disponibile a ciascuna richiesta in entrata nell'ordine di un elenco preimpostato.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"polling",
+			"bilanciamento del carico",
+			"ciclo",
+			"istanza",
+			"utilità"
+		]
 	},
 	"ja-JP": {
-		"provider": "fount"
+		"name": "ポーリング翻訳インスタンス",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "要求された順序でラウンドロビン順序でソースを配布するアクティブなインスタンス",
+		"description_markdown": "これは **アクティブなポーリング インスタンス**です。プリセット リストの順序で各受信リクエストに次に利用可能なソースを割り当てることで、リクエストのバランスの取れた分散を効果的に実現し、リソースの使用率を最大化します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"ポーリング",
+			"負荷分散",
+			"サイクル",
+			"インスタンス",
+			"ユーティリティ"
+		]
 	},
 	"ko-KR": {
-		"provider": "fount"
+		"name": "폴링 번역 인스턴스",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "요청한 순서대로 라운드 로빈 방식으로 소스를 배포하는 활성 인스턴스",
+		"description_markdown": "**활성 폴링 인스턴스**입니다. 미리 설정된 목록의 순서에 따라 들어오는 각 요청에 다음으로 사용 가능한 소스를 할당하여 요청의 균형 잡힌 배포를 효과적으로 달성하고 리소스 활용도를 극대화합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"폴링",
+			"로드 밸런싱",
+			"주기",
+			"인스턴스",
+			"유틸리티"
+		]
 	},
 	"lzh": {
-		"provider": "fount"
+		"name": "循次致用源",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "列源依次，有求即應",
+		"description_markdown": "此乃**循次致用之實例**。其法如周流六虛，應者無窮：每有求，則依序取一源應之。循環往復，使諸源各盡其能，不偏不廢。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"輪詢",
+			"均衡",
+			"實例",
+			"運用"
+		]
 	},
 	"nl-NL": {
-		"provider": "fount"
+		"name": "Pollingservicebroninstantie",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Een actieve instantie die bronnen distribueert in een round-robin-volgorde in de gevraagde volgorde",
+		"description_markdown": "Dit is een **actieve pollinginstantie**. Het zorgt op effectieve wijze voor een evenwichtige verdeling van verzoeken en maximaliseert het gebruik van hulpbronnen door de volgende beschikbare bron toe te wijzen aan elk binnenkomend verzoek in de volgorde van een vooraf ingestelde lijst.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"polling",
+			"taakverdeling",
+			"cyclus",
+			"instantie",
+			"hulpprogramma"
+		]
 	},
 	"pt-PT": {
-		"provider": "fount"
+		"name": "Instância de origem de serviço de pesquisa",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Uma instância activa que distribui fontes em uma ordem round-robin na ordem solicitada",
+		"description_markdown": "Esta é uma **instância de pesquisa activa**. Ele consegue efectivamente uma distribuição equilibrada de solicitações e maximiza a utilização de recursos, alocando a próxima fonte disponível para cada solicitação recebida na ordem de uma lista predefinida.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"sondagem",
+			"balanceamento de carga",
+			"ciclo",
+			"instância",
+			"utilitário"
+		]
 	},
 	"ru-RU": {
-		"provider": "fount"
+		"name": "Экземпляр источника опроса",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Активный экземпляр, который распределяет источники в циклическом порядке в запрошенном порядке.",
+		"description_markdown": "Это **активный экземпляр опроса**. Он эффективно обеспечивает сбалансированное распределение запросов и максимизирует использование ресурсов, выделяя следующий доступный источник для каждого входящего запроса в порядке заданного списка.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"опрос",
+			"балансировка нагрузки",
+			"цикл",
+			"экземпляр",
+			"утилита"
+		]
 	},
 	"uk-UA": {
-		"provider": "fount"
+		"name": "Примірник джерела опитування",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Активний екземпляр, який розподіляє джерела в циклічному порядку в потрібному порядку",
+		"description_markdown": "Це **активний екземпляр опитування**. Він ефективно досягає збалансованого розподілу запитів і максимізує використання ресурсів шляхом виділення наступного доступного джерела для кожного вхідного запиту в порядку попередньо встановленого списку.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"опитування",
+			"балансування навантаження",
+			"цикл",
+			"екземпляр",
+			"утиліта"
+		]
 	},
 	"vi-VN": {
-		"provider": "fount"
+		"name": "Thực thể nguồn dịch vụ luân phiên",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "Một phiên bản đang hoạt động phân phối các nguồn theo thứ tự vòng tròn theo thứ tự được yêu cầu",
+		"description_markdown": "Đây là **trường hợp luân phiên đang hoạt động**. Nó đạt được sự phân phối cân bằng các yêu cầu một cách hiệu quả và tối đa hóa việc sử dụng tài nguyên bằng cách phân bổ nguồn sẵn có tiếp theo cho mỗi yêu cầu đến theo thứ tự của danh sách đặt trước.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"luân phiên",
+			"cân bằng tải",
+			"xe đạp",
+			"thực thể",
+			"tiện ích"
+		]
 	},
 	"zh-TW": {
-		"provider": "fount"
+		"name": "輪詢翻譯實例",
+		"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
+		"description": "一個按請求順序循環分配翻譯源的活躍實例",
+		"description_markdown": "這是一個**活躍的輪詢實例**。它會按預設列表順序，為每個傳入請求分配下一個可用源，有效實現請求的均衡分佈和資源的最大化利用。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"輪詢",
+			"負載平衡",
+			"循環",
+			"實例",
+			"實用工具"
+		]
 	}
 }

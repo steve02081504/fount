@@ -1,59 +1,321 @@
 {
 	"en-UK": {
-		"provider": "Google"
+		"name": "Google Translate Instance",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "An active instance providing translation services via Google Translate.",
+		"description_markdown": "This is an **active Google Translate instance** based on the `@vitalets/google-translate-api` library. It offers robust, multi-language translation capabilities **without requiring an API key**, making it a free and ready-to-use component for characters.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"translate",
+			"language",
+			"free",
+			"instance"
+		]
 	},
 	"zh-CN": {
-		"provider": "Google"
+		"name": "Google 翻译实例",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "一个通过 Google 翻译提供服务的活跃实例。",
+		"description_markdown": "这是一个基于 `@vitalets/google-translate-api` 库的**活跃 Google 翻译实例**。它提供强大的多语言翻译能力，且**无需Key**，是一个开箱即用的免费翻译组件。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"谷歌",
+			"翻译",
+			"语言",
+			"免密钥",
+			"实例"
+		]
 	},
 	"ar-SA": {
-		"provider": "Google"
+		"name": "مثيل ترجمة جوجل",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "مثيل نشط يقدم خدمات الترجمة عبر ترجمة جوجل.",
+		"description_markdown": "هذا **مثيل نشط لترجمة جوجل** يعتمد على مكتبة `@vitalets/google-translate-api`. يوفر إمكانيات ترجمة قوية متعددة اللغات **دون الحاجة إلى مفتاح API**، مما يجعله مكونًا مجانيًا وجاهزًا للاستخدام.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"جوجل",
+			"ترجمة",
+			"لغة",
+			"مجاني"
+		]
 	},
 	"de-DE": {
-		"provider": "Google"
+		"name": "Google Translate-Instanz",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Eine aktive Instanz, die Übersetzungsdienste über Google Translate bereitstellt.",
+		"description_markdown": "Dies ist eine **aktive Google Translate-Instanz**, die auf der Bibliothek `@vitalets/google-translate-api` basiert. Sie bietet robuste, mehrsprachige Übersetzungsfunktionen, **ohne dass ein API-Schlüssel erforderlich ist**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"übersetzung",
+			"sprache",
+			"kostenlos"
+		]
 	},
 	"emoji": {
-		"provider": "Google"
+		"name": "🌐🗣️🔄",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "A🗣️ ➡️ 🌍 ➡️ B🗣️",
+		"description_markdown": "🌐🗣️🔄 \n無須🔑, 即刻用✅. \n通曉萬國語, 溝通無礙. 🚀",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"🌐",
+			"🗣️",
+			"🔄",
+			"🆓"
+		]
 	},
 	"es-ES": {
-		"provider": "Google"
+		"name": "Instancia del traductor de Google",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Una instancia activa servida a través de Google Translate.",
+		"description_markdown": "Esta es una instancia activa de Google Translate basada en la biblioteca `@vitalets/google-translate-api`. Proporciona potentes capacidades de traducción en varios idiomas sin necesidad de una clave API y es un componente de traducción gratuito que funciona de inmediato.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"traducir",
+			"idioma",
+			"sin api key",
+			"instancia"
+		]
 	},
 	"fr-FR": {
-		"provider": "Google"
+		"name": "Instance de traduction Google",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Une instance active servie via Google Translate.",
+		"description_markdown": "Il s'agit d'une instance active de Google Translate basée sur la bibliothèque `@vitalets/google-translate-api`. Il offre de puissantes capacités de traduction multilingue sans avoir besoin d'une clé API et constitue un composant de traduction gratuit qui fonctionne immédiatement.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"traduire",
+			"langue",
+			"sans clé api",
+			"instance"
+		]
 	},
 	"hi-IN": {
-		"provider": "Google"
+		"name": "गूगल अनुवाद उदाहरण",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Google अनुवाद के माध्यम से प्रस्तुत एक सक्रिय उदाहरण।",
+		"description_markdown": "यह `@vitalets/google-translate-api` लाइब्रेरी पर आधारित एक सक्रिय Google अनुवाद उदाहरण है। यह एपीआई कुंजी की आवश्यकता के बिना शक्तिशाली बहु-भाषा अनुवाद क्षमताएं प्रदान करता है और एक निःशुल्क अनुवाद घटक है जो बॉक्स से बाहर काम करता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"गूगल",
+			"अनुवाद",
+			"भाषा",
+			"बिना चाबी",
+			"इंस्टेंस"
+		]
 	},
 	"is-IS": {
-		"provider": "Google"
+		"name": "Google Translate Tilvik",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Virkt tilvik þjónað í gegnum Google Translate.",
+		"description_markdown": "Þetta er virkt Google Translate tilvik byggt á `@vitalets/google-translate-api` bókasafninu. Það býður upp á öfluga þýðingarmöguleika á mörgum tungumálum án þess að þurfa API lykil og er ókeypis þýðingarþáttur sem virkar út úr kassanum.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"þýða",
+			"tungumál",
+			"lyklalaus",
+			"tilvik"
+		]
 	},
 	"it-IT": {
-		"provider": "Google"
+		"name": "Istanza di Google Traduttore",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Un'istanza attiva servita tramite Google Translate.",
+		"description_markdown": "Questa è un'istanza attiva di Google Translate basata sulla libreria `@vitalets/google-translate-api`. Fornisce potenti funzionalità di traduzione multilingue senza la necessità di una chiave API ed è un componente di traduzione gratuito che funziona immediatamente.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"tradurre",
+			"lingua",
+			"senza chiave api",
+			"istanza"
+		]
 	},
 	"ja-JP": {
-		"provider": "Google"
+		"name": "Google翻訳インスタンス",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Google 翻訳経由で提供されるアクティブなインスタンス。",
+		"description_markdown": "これは、「@vitalets/google-translate-api」ライブラリに基づくアクティブな Google 翻訳インスタンスです。 API キーを必要とせずに強力な多言語翻訳機能を提供し、すぐに使える無料の翻訳コンポーネントです。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"グーグル",
+			"翻訳する",
+			"言語",
+			"APIキー不要",
+			"インスタンス"
+		]
 	},
 	"ko-KR": {
-		"provider": "Google"
+		"name": "Google 번역 인스턴스",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Google 번역을 통해 제공되는 활성 인스턴스입니다.",
+		"description_markdown": "이는 `@vitalets/google-translate-api` 라이브러리를 기반으로 하는 활성 Google 번역 인스턴스입니다. API 키 없이도 강력한 다국어 번역 기능을 제공하며 즉시 사용 가능한 무료 번역 구성 요소입니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"Google",
+			"번역하다",
+			"언어",
+			"API 키 불필요",
+			"인스턴스"
+		]
 	},
 	"lzh": {
-		"provider": "Google"
+		"name": "谷歌譯源",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "谷歌之譯源實例，通曉萬國之言。",
+		"description_markdown": "此乃**谷歌譯源之實例**，其術本於`@vitalets/google-translate-api`。能通曉萬國之言，互譯無礙，且**不假金鑰**，取用自如，誠為便捷之利器也。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"谷歌",
+			"翻譯",
+			"語言",
+			"免金鑰"
+		]
 	},
 	"nl-NL": {
-		"provider": "Google"
+		"name": "Google Translate-instantie",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Een actieve instantie die wordt weergegeven via Google Translate.",
+		"description_markdown": "Dit is een actieve Google Translate-instantie gebaseerd op de `@vitalets/google-translate-api` bibliotheek. Het biedt krachtige meertalige vertaalmogelijkheden zonder de noodzaak van een API-sleutel en is een gratis vertaalcomponent die kant-en-klaar werkt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"googlen",
+			"vertalen",
+			"taal",
+			"sleutelloos",
+			"instantie"
+		]
 	},
 	"pt-PT": {
-		"provider": "Google"
+		"name": "Instância do Google Tradutor",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Uma instância ativa veiculada pelo Google Tradutor.",
+		"description_markdown": "Esta é uma instância ativa do Google Translate baseada na biblioteca `@vitalets/google-translate-api`. Ele fornece recursos poderosos de tradução multilíngue sem a necessidade de uma chave de API e é um componente de tradução gratuito que funciona imediatamente.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"traduzir",
+			"linguagem",
+			"sem chave api",
+			"instância"
+		]
 	},
 	"ru-RU": {
-		"provider": "Google"
+		"name": "Экземпляр Google-переводчика",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Активный экземпляр, обслуживаемый через Google Translate.",
+		"description_markdown": "Это активный экземпляр Google Translate, основанный на библиотеке @vitalets/google-translate-api. Он предоставляет мощные возможности многоязычного перевода без необходимости использования ключа API и представляет собой бесплатный компонент перевода, который работает «из коробки».",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"переводить",
+			"язык",
+			"без ключа api",
+			"экземпляр"
+		]
 	},
 	"uk-UA": {
-		"provider": "Google"
+		"name": "Екземпляр Google Translate",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Активний екземпляр обслуговується через Google Translate.",
+		"description_markdown": "Це активний екземпляр Перекладача Google на основі бібліотеки @vitalets/google-translate-api. Він надає потужні можливості багатомовного перекладу без необхідності використання ключа API та є безкоштовним компонентом перекладу, який працює з коробки.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"перекладати",
+			"мова",
+			"без ключа api",
+			"екземпляр"
+		]
 	},
 	"vi-VN": {
-		"provider": "Google"
+		"name": "Thực thể Google Dịch",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "Một phiên bản đang hoạt động được cung cấp qua Google Dịch.",
+		"description_markdown": "Đây là phiên bản Google Dịch đang hoạt động dựa trên thư viện `@vitalets/google-translate-api`. Nó cung cấp khả năng dịch đa ngôn ngữ mạnh mẽ mà không cần khóa API và là một thành phần dịch thuật miễn phí hoạt động tốt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"google",
+			"dịch",
+			"ngôn ngữ",
+			"không cần api key",
+			"thực thể"
+		]
 	},
 	"zh-TW": {
-		"provider": "Google"
+		"name": "Google 翻譯實例",
+		"avatar": "https://api.iconify.design/mdi/google-translate.svg",
+		"description": "一個通過 Google 翻譯提供服務的活躍實例。",
+		"description_markdown": "這是一個基於 `@vitalets/google-translate-api` 庫的**活躍 Google 翻譯實例**。它提供強大的多語言翻譯能力，且**無需 API 金鑰**，是一個開箱即用的免費翻譯組件。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://translate.google.com/",
+		"provider": "Google",
+		"tags": [
+			"谷歌",
+			"翻譯",
+			"語言",
+			"免金鑰",
+			"實例"
+		]
 	}
 }

@@ -1,78 +1,293 @@
 {
 	"en-UK": {
 		"name": "AI Service Generators",
-		"description": "AI Service Generators manager"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "The foundational factory hub for producing AI engine sources.",
+		"description_markdown": "This is the **root component** for all AI generator modules. It functions as a structural factory where various AI engines (sources) are produced. Characters rely on the sources generated here to enable dialogue and other intelligent interactions.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"system",
+			"root",
+			"AI",
+			"generator",
+			"fount"
+		]
 	},
 	"zh-CN": {
-		"name": "AI服务生成器",
-		"description": "AI服务生成器管理器"
+		"name": "AI 服务生成器",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "生产 AI 驱动源组件的工厂根节点",
+		"description_markdown": "这是 AI 生成器模块的**根节点**。它扮演着“引擎工厂”的角色，所有负责产生 AI 驱动源的组件都挂载于此。角色通过加载此处生成的 AI 源，方可获得对话与交互的能力。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根节点",
+			"AI",
+			"生成器",
+			"fount"
+		]
 	},
 	"ar-SA": {
 		"name": "مولدات خدمة الذكاء الاصطناعي",
-		"description": "مدير مولدات خدمة الذكاء الاصطناعي"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "مركز المصنع الأساسي لإنتاج مصادر محرك الذكاء الاصطناعي",
+		"description_markdown": "هذا هو **المكون الجذر** لجميع وحدات توليد الذكاء الاصطناعي. إنه يعمل كمصنع هيكلي حيث يتم إنتاج محركات الذكاء الاصطناعي المختلفة التي تعتمد عليها الشخصيات في الحوار والتفاعل.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"نظام",
+			"جذر",
+			"ذكاء_اصطناعي",
+			"fount"
+		]
 	},
 	"de-DE": {
 		"name": "KI-Servicegeneratoren",
-		"description": "KI-Servicegeneratoren-Manager"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Der zentrale Fabrik-Knotenpunkt zur Erzeugung von KI-Datenquellen.",
+		"description_markdown": "Dies ist die **Stammkomponente** für alle KI-Generator-Module. Sie fungiert als strukturelle Fabrik, in der KI-Engines erzeugt werden, die Charakteren das Chatten und Interagieren ermöglichen.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"System",
+			"Stamm",
+			"KI",
+			"Generator",
+			"fount"
+		]
 	},
 	"emoji": {
-		"name": "AI服务生成器",
-		"description": "AI服务生成器管理器"
+		"name": "🏭",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "🏭 ➡️ 🧠 ➡️ 💬",
+		"description_markdown": "🏭 ➡️ 🏗️. \n⚙️ ➕ 🧠. \n⚓ ➡️ 🚀✨.\n\n✨ 🤖 🏭",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"🏭",
+			"🧠",
+			"⚙️",
+			"⛲"
+		]
 	},
 	"es-ES": {
-		"name": "Generadores de servicios de IA",
-		"description": "Administrador de generadores de servicios de IA"
+		"name": "Generadores de Servicios de IA",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "El centro de fábrica fundamental para producir fuentes de motores de IA.",
+		"description_markdown": "Este es el **componente raíz** de todos los módulos generadores de IA. Funciona como una fábrica estructural donde se producen motores de IA para que los personajes puedan conversar e interactuar.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raíz",
+			"IA",
+			"fount"
+		]
 	},
 	"fr-FR": {
-		"name": "Générateurs de services IA",
-		"description": "Gestionnaire de générateurs de services IA"
+		"name": "Générateurs de Services IA",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Le centre de fabrication fondamental pour produire des sources de moteurs IA.",
+		"description_markdown": "Il s'agit du **composant racine** pour tous les modules générateurs d'IA. Il sert d'usine structurelle où sont produits les moteurs IA permettant aux personnages de dialoguer.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"système",
+			"racine",
+			"IA",
+			"fount"
+		]
 	},
 	"hi-IN": {
-		"name": "एआई सेवा जेनरेटर",
-		"description": "एआई सेवा जेनरेटर प्रबंधक"
+		"name": "AI सेवा जेनरेटर",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "AI इंजन स्रोतों के उत्पादन के लिए मौलिक फैक्ट्री हब।",
+		"description_markdown": "यह सभी AI जनरेटर मॉड्यूल के लिए **मूल घटक** है। यह एक संरचनात्मक फैक्ट्री के रूप में कार्य करता है जहाँ AI इंजन तैयार किए जाते हैं, जिससे पात्रों में संवाद करने की क्षमता आती है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"प्रणाली",
+			"मूल",
+			"AI",
+			"fount"
+		]
 	},
 	"is-IS": {
-		"name": "AI þjónusturafallar",
-		"description": "Umsjónarmaður AI þjónusturafalla"
+		"name": "AI Þjónusturafallar",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Aðalverksmiðja fyrir myndun AI-vinnslueininga.",
+		"description_markdown": "Þetta er **rótareiningin** fyrir alla AI-rafala. Hún virkar sem verksmiðja þar sem AI-vélar eru búnar til svo persónur geti átt í samskiptum.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"kerfi",
+			"rót",
+			"AI",
+			"fount"
+		]
 	},
 	"it-IT": {
-		"name": "Generatori di servizi AI",
-		"description": "Gestore dei generatori di servizi AI"
+		"name": "Generatori di Servizi AI",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "L'hub di fabbrica fondamentale per la produzione di motori IA.",
+		"description_markdown": "Questo è il **componente radice** per tutti i moduli generatori di IA. Funziona come una fabbrica strutturale in cui vengono prodotti i motori IA necessari ai personaggi.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"radice",
+			"IA",
+			"fount"
+		]
 	},
 	"ja-JP": {
 		"name": "AI サービス ジェネレーター",
-		"description": "AI サービス ジェネレーター マネージャー"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "AI エンジンソースを生成する基盤ファクトリーハブ",
+		"description_markdown": "これはすべての AI ジェネレーターモジュールの**ルートコンポーネント**です。キャラクターが対話や交流を行うための AI エンジンを生産する「工場」として機能します。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"システム",
+			"ルート",
+			"AI",
+			"ジェネレーター",
+			"fount"
+		]
 	},
 	"ko-KR": {
 		"name": "AI 서비스 생성기",
-		"description": "AI 서비스 생성기 관리자"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "AI 엔진 소스를 생산하는 기초 팩토리 허브",
+		"description_markdown": "이것은 모든 AI 생성기 모듈의 **루트 컴포넌트**입니다. 캐릭터가 대화와 상호작용을 할 수 있도록 AI 엔진을 생산하는 구조적 공장 역할을 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"시스템",
+			"루트",
+			"AI",
+			"생성기",
+			"fount"
+		]
 	},
 	"lzh": {
-		"name": "AI服务生成器",
-		"description": "AI服务生成器管理器"
+		"name": "智源肆",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "诸 AI 智源生成器之根柢",
+		"description_markdown": "此乃 fount 之**智源肆**。凡欲启角色之智、通对话之机者，皆取准于此。此间聚诸生成器，如工坊之产引擎，为万化之基也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系统",
+			"根柢",
+			"智源",
+			"fount"
+		]
 	},
 	"nl-NL": {
 		"name": "AI-servicegeneratoren",
-		"description": "Beheerder van AI-servicegeneratoren"
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "De fundamentele fabriekshub voor het produceren van AI-bronnen.",
+		"description_markdown": "Dit is de **hoofdcomponent** voor alle AI-generatormodules. Het fungeert als een structurele fabriek waar AI-engines worden geproduceerd voor de karakters.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"systeem",
+			"wortel",
+			"AI",
+			"fount"
+		]
 	},
 	"pt-PT": {
-		"name": "Geradores de serviços de IA",
-		"description": "Gerente de geradores de serviços de IA"
+		"name": "Geradores de Serviços de IA",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "O centro de fábrica fundamental para produzir fontes de motores de IA.",
+		"description_markdown": "Este é o **componente raiz** para todos os módulos geradores de IA. Funciona como uma fábrica estrutural onde os motores de IA são produzidos para permitir a interação dos personagens.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"sistema",
+			"raiz",
+			"IA",
+			"fount"
+		]
 	},
 	"ru-RU": {
-		"name": "Генераторы сервисов ИИ",
-		"description": "Менеджер генераторов сервисов ИИ"
+		"name": "Генераторы Сервисов ИИ",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Фундаментальный заводской узел для производства источников ИИ.",
+		"description_markdown": "Это **корневой компонент** для всех модулей генераторов ИИ. Он работает как структурный завод, где производятся движки ИИ, необходимые персонажам для общения.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корень",
+			"ИИ",
+			"fount"
+		]
 	},
 	"uk-UA": {
-		"name": "Генератори послуг ШІ",
-		"description": "Менеджер генераторів послуг ШІ"
+		"name": "Генератори Сервісів ШІ",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Фундаментальний заводський вузол для виробництва джерел ШІ.",
+		"description_markdown": "Це **кореневий компонент** для всіх модулів генерації ШІ. Він функціонує як структурний завод, де створюються двигуни ШІ для взаємодії персонажів.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"система",
+			"корінь",
+			"ШІ",
+			"fount"
+		]
 	},
 	"vi-VN": {
-		"name": "Trình tạo dịch vụ AI",
-		"description": "Trình quản lý trình tạo dịch vụ AI"
+		"name": "Trình tạo Dịch vụ AI",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "Trung tâm nhà máy cơ bản để sản xuất các nguồn động cơ AI.",
+		"description_markdown": "Đây là **thành phần gốc** cho tất cả các mô-đun tạo AI. Nó hoạt động như một nhà máy cấu trúc nơi sản xuất các công cụ AI để nhân vật có thể trò chuyện và tương tác.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"hệ thống",
+			"gốc",
+			"AI",
+			"fount"
+		]
 	},
 	"zh-TW": {
-		"name": "AI服務生成器",
-		"description": "AI服務生成器管理器"
+		"name": "AI 服務生成器",
+		"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+		"description": "生產 AI 驅動源組件的工廠根節點",
+		"description_markdown": "這是 AI 生成器模組的**根節點**。它扮演著「引擎工廠」的角色，所有負責產生 AI 驅動源的組件都掛載於此。角色透過加載此處生成的 AI 源，方可獲得對話與交互的能力。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"系統",
+			"根節點",
+			"AI",
+			"生成器",
+			"fount"
+		]
 	}
 }

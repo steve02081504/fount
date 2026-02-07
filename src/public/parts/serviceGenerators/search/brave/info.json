@@ -1,287 +1,286 @@
 {
 	"en-UK": {
-		"name": "Brave Search",
+		"name": "Brave Search Generator",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Search using Brave Search API",
-		"description_markdown": "Search implementation using Brave Search API, requires API key.",
-		"version": "1.0.0",
+		"description": "A generator factory for Brave Search service sources.",
+		"description_markdown": "This is a **service generator** using the Brave Search API. It functions as a factory to produce instantiated search sources, providing characters with privacy-focused and independent web search capabilities. Requires an API key.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
 			"brave",
-			"api",
 			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"generator",
+			"api"
+		]
 	},
 	"zh-CN": {
-		"name": "Brave 搜索",
+		"name": "Brave 搜索生成器",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "使用 Brave Search API 的搜索",
-		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
-		"version": "1.0.0",
+		"description": "生产 Brave 搜索服务源的工厂组件",
+		"description_markdown": "这是基于 **Brave Search API** 的服务生成器。它作为生产搜索实例的工厂，为角色提供独立且注重隐私的互联网搜索能力。使用时需要配置 API 密钥。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
 			"brave",
-			"api",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"搜索",
+			"生成器",
+			"api"
+		]
 	},
 	"ar-SA": {
-		"name": "بحث شجاع",
+		"name": "مولد بحث Brave",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "ابحث باستخدام Brave Search API",
-		"description_markdown": "تتطلب عمليات البحث باستخدام واجهة برمجة تطبيقات Brave Search مفتاح واجهة برمجة التطبيقات.",
-		"version": "1.0.0",
+		"description": "مصنع مولد لمصادر خدمة بحث Brave.",
+		"description_markdown": "هذا **مولد خدمة** يستخدم واجهة برمجة تطبيقات Brave Search. يعمل كمصنع لإنتاج مصادر بحث مثيلة، مما يوفر للشخصيات قدرات بحث مستقلة. يتطلب مفتاح API.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"شجاع",
-			"واجهة برمجة التطبيقات",
-			"يبحث",
-			"البحث على شبكة الإنترنت"
-		],
-		"home_page": ""
+			"brave",
+			"بحث",
+			"مولد",
+			"api"
+		]
 	},
 	"de-DE": {
-		"name": "Mutige Suche",
+		"name": "Brave Search Generator",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Suchen Sie mit der Brave Search API",
-		"description_markdown": "Für Suchen mit der Brave Search API ist ein API-Schlüssel erforderlich.",
-		"version": "1.0.0",
+		"description": "Eine Generatorenfabrik für Brave-Suchdienstquellen.",
+		"description_markdown": "Dies ist ein **Service-Generator**, der die Brave Search API nutzt. Er fungiert als Fabrik zur Erzeugung von Suchinstanzen und bietet Charakteren unabhängige Web-Suchfunktionen. Erfordert einen API-Schlüssel.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"mutig",
-			"API",
-			"suchen",
-			"Websuche"
-		],
-		"home_page": ""
+			"brave",
+			"suche",
+			"generator",
+			"api"
+		]
 	},
 	"emoji": {
-		"name": "Brave 搜索",
+		"name": "🦁⚙️",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "使用 Brave Search API 的搜索",
-		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
-		"version": "1.0.0",
+		"description": "🦁 ➕ ⚙️ ➡️ 🔍",
+		"description_markdown": "🦁⚙️ ➡️ 🏗️🔍. \n🔑 ➡️ 🔓🦁. \n⚙️ ➡️ 🔍✨.\n\n✨ 🦁 🏭",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"brave",
-			"api",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"🦁",
+			"⚙️",
+			"🔍"
+		]
 	},
 	"es-ES": {
-		"name": "Búsqueda valiente",
+		"name": "Generador de Búsqueda Brave",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Buscar usando Brave Search API",
-		"description_markdown": "Las búsquedas que utilizan Brave Search API requieren una clave API.",
-		"version": "1.0.0",
+		"description": "Una fábrica de generadores para fuentes de servicio de búsqueda Brave.",
+		"description_markdown": "Este es un **generador de servicios** que utiliza la API de Brave Search. Funciona como una fábrica para producir fuentes de búsqueda instanciadas. Requiere una clave API.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"corajudo",
-			"API",
-			"buscar",
-			"búsqueda web"
-		],
-		"home_page": ""
+			"brave",
+			"búsqueda",
+			"generador",
+			"api"
+		]
 	},
 	"fr-FR": {
-		"name": "Recherche courageuse",
+		"name": "Générateur de Recherche Brave",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Rechercher à l'aide de l'API Brave Search",
-		"description_markdown": "Les recherches utilisant l'API Brave Search nécessitent une clé API.",
-		"version": "1.0.0",
+		"description": "Une usine de génération pour les sources de recherche Brave.",
+		"description_markdown": "Il s'agit d'un **générateur de services** utilisant l'API Brave Search. Il fonctionne comme une usine pour produire des instances de recherche web. Nécessite une clé API.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"courageux",
-			"API",
+			"brave",
 			"recherche",
-			"recherche sur le Web"
-		],
-		"home_page": ""
+			"générateur",
+			"api"
+		]
 	},
 	"hi-IN": {
-		"name": "बहादुर खोज",
+		"name": "Brave खोज जेनरेटर",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "बहादुर खोज एपीआई का उपयोग करके खोजें",
-		"description_markdown": "ब्रेव सर्च एपीआई का उपयोग करने वाली खोजों के लिए एपीआई कुंजी की आवश्यकता होती है।",
-		"version": "1.0.0",
+		"description": "Brave खोज सेवा स्रोतों के लिए एक जेनरेटर फैक्ट्री।",
+		"description_markdown": "यह **Brave Search API** का उपयोग करने वाला एक सेवा जेनरेटर है। यह खोज उदाहरणों का उत्पादन करने के लिए एक फैक्ट्री के रूप में कार्य करता है। इसके लिए एपीआई कुंजी की आवश्यकता होती है।",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"बहादुर",
-			"एपीआई",
+			"brave",
 			"खोज",
-			"वेब खोज"
-		],
-		"home_page": ""
+			"जेनरेटर",
+			"api"
+		]
 	},
 	"is-IS": {
-		"name": "Hugrakkur leit",
+		"name": "Brave leitarrafall",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Leitaðu með Brave Search API",
-		"description_markdown": "Leit sem notar Brave Search API þarf API lykil.",
-		"version": "1.0.0",
+		"description": "Verksmiðja sem framleiðir Brave leitarheimildir.",
+		"description_markdown": "Þetta er **þjónusturafall** sem notar Brave Search API. Hann virkar sem verksmiðja til að búa til leitarvinnslueiningar. Krefst API lykils.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"hugrakkur",
-			"api",
+			"brave",
 			"leit",
-			"vefleit"
-		],
-		"home_page": ""
+			"rafall",
+			"api"
+		]
 	},
 	"it-IT": {
-		"name": "Ricerca coraggiosa",
+		"name": "Generatore di Ricerca Brave",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Cerca utilizzando l'API Brave Search",
-		"description_markdown": "Le ricerche che utilizzano l'API Brave Search richiedono una chiave API.",
-		"version": "1.0.0",
+		"description": "Una fabbrica di generatori per fonti di ricerca Brave.",
+		"description_markdown": "Questo è un **generatore di servizi** che utilizza l'API Brave Search. Funziona come una fabbrica per produrre istanze di ricerca indipendenti. Richiede una chiave API.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"coraggioso",
-			"API",
+			"brave",
 			"ricerca",
-			"ricerca sul web"
-		],
-		"home_page": ""
+			"generatore",
+			"api"
+		]
 	},
 	"ja-JP": {
-		"name": "ブレイブサーチ",
+		"name": "Brave 検索ジェネレーター",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Brave Search APIを使用して検索する",
-		"description_markdown": "Brave Search API を使用した検索には API キーが必要です。",
-		"version": "1.0.0",
+		"description": "Brave 検索サービスソースを生産する工場コンポーネント",
+		"description_markdown": "これは **Brave Search API** を使用したサービスジェネレーターです。検索インスタンスを生産する工場として機能し、キャラクターに独立したウェブ検索能力を提供します。API キーが必要です。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"勇敢な",
-			"API",
+			"brave",
 			"検索",
-			"ウェブ検索"
-		],
-		"home_page": ""
+			"ジェネレーター",
+			"api"
+		]
 	},
 	"ko-KR": {
-		"name": "용감한 검색",
+		"name": "Brave 검색 생성기",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Brave Search API를 사용하여 검색",
-		"description_markdown": "Brave Search API를 사용하여 검색하려면 API 키가 필요합니다.",
-		"version": "1.0.0",
+		"description": "Brave 검색 서비스 소스를 생산하는 공장 컴포넌트",
+		"description_markdown": "이것은 **Brave Search API**를 사용하는 서비스 생성기입니다. 검색 인스턴스를 생산하는 공장 역할을 하며 캐릭터에게 독립적인 웹 검색 능력을 제공합니다. API 키가 필요합니다.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"용감한",
-			"API",
-			"찾다",
-			"웹 검색"
-		],
-		"home_page": ""
+			"brave",
+			"검색",
+			"생성기",
+			"api"
+		]
 	},
 	"lzh": {
-		"name": "Brave 搜索",
+		"name": "勇武寻索肆",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "使用 Brave Search API 的搜索",
-		"description_markdown": "使用 Brave Search API 实现的搜索，需要 API 密钥。",
-		"version": "1.0.0",
+		"description": "依勇武之术，产寻索之源",
+		"description_markdown": "此乃基于 **Brave Search API** 之智工肆。其能产“寻索实例”，使化身得以外接大千、遍索讯息。须配其“钥”方可起行。\n",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
-			"brave",
-			"api",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"勇武",
+			"寻索",
+			"肆",
+			"api"
+		]
 	},
 	"nl-NL": {
-		"name": "Moedig zoeken",
+		"name": "Brave Zoekgenerator",
 		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Zoek met de Brave Search-API",
-		"description_markdown": "Voor zoekopdrachten met de Brave Search API is een API-sleutel vereist.",
-		"version": "1.0.0",
+		"description": "Een fabriek voor Brave Search-servicebronnen.",
+		"description_markdown": "Dit is een **servicegenerator** Dutch die de Brave Search API gebruikt. Het fungeert als een fabriek om zoekinstanties te produceren. Vereist een API-sleutel.",
+		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": [
-			"moedig",
-			"api",
-			"zoekopdracht",
-			"web-zoeken"
-		],
-		"home_page": ""
-	},
-	"pt-PT": {
-		"name": "Busca corajosa",
-		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Pesquise usando a API Brave Search",
-		"description_markdown": "As pesquisas usando a API Brave Search requerem uma chave de API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"corajoso",
-			"API",
-			"procurar",
-			"pesquisa na web"
-		],
-		"home_page": ""
-	},
-	"ru-RU": {
-		"name": "Смелый поиск",
-		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Поиск с использованием Brave Search API",
-		"description_markdown": "Для поиска с использованием Brave Search API требуется ключ API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"храбрый",
-			"API",
-			"поиск",
-			"веб-поиск"
-		],
-		"home_page": ""
-	},
-	"uk-UA": {
-		"name": "Відважний пошук",
-		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Шукайте за допомогою Brave Search API",
-		"description_markdown": "Для пошуку за допомогою Brave Search API потрібен ключ API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"хоробрий",
-			"api",
-			"пошук",
-			"веб-пошук"
-		],
-		"home_page": ""
-	},
-	"vi-VN": {
-		"name": "Tìm kiếm dũng cảm",
-		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "Tìm kiếm bằng API tìm kiếm dũng cảm",
-		"description_markdown": "Các tìm kiếm sử dụng API tìm kiếm dũng cảm yêu cầu khóa API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"can đảm",
-			"API",
-			"tìm kiếm",
-			"tìm kiếm trên web"
-		],
-		"home_page": ""
-	},
-	"zh-TW": {
-		"name": "Brave 搜索",
-		"avatar": "https://api.iconify.design/logos/brave.svg",
-		"description": "使用 Brave Search API 的搜索",
-		"description_markdown": "使用 Brave Search API 實現的搜索，需要 API 密鑰。",
-		"version": "1.0.0",
-		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
 		"tags": [
 			"brave",
-			"api",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"zoeken",
+			"generator",
+			"api"
+		]
+	},
+	"pt-PT": {
+		"name": "Gerador de Pesquisa Brave",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Uma fábrica de geradores para fontes de serviço de pesquisa Brave.",
+		"description_markdown": "Este é un **gerador de serviços** que utiliza a API Brave Search. Funciona como uma fábrica para produzir instâncias de pesquisa web. Requer uma chave API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
+		"tags": [
+			"brave",
+			"pesquisa",
+			"gerador",
+			"api"
+		]
+	},
+	"ru-RU": {
+		"name": "Генератор Поиска Brave",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Завод-генератор для источников поискового сервиса Brave.",
+		"description_markdown": "Это **генератор сервиса**, использующий Brave Search API. Он работает как завод по производству экземпляров поиска, обеспечивая персонажей инструментами веб-поиска. Требуется API-ключ.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
+		"tags": [
+			"brave",
+			"поиск",
+			"генератор",
+			"api"
+		]
+	},
+	"uk-UA": {
+		"name": "Генератор Пошуку Brave",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Завод-генератор для джерел пошукового сервісу Brave.",
+		"description_markdown": "Це **генератор сервісу**, що використовує Brave Search API. Він функціонує як завод для створення примірників пошуку. Потребує ключ API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
+		"tags": [
+			"brave",
+			"пошук",
+			"генератор",
+			"api"
+		]
+	},
+	"vi-VN": {
+		"name": "Trình tạo Tìm kiếm Brave",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "Nhà máy sản xuất các nguồn dịch vụ tìm kiếm Brave.",
+		"description_markdown": "Đây là **trình tạo dịch vụ** sử dụng Brave Search API. Nó hoạt động như một nhà máy để tạo ra các thực thể tìm kiếm web cho nhân vật. Yêu cầu khóa API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
+		"tags": [
+			"brave",
+			"tìm kiếm",
+			"trình tạo",
+			"api"
+		]
+	},
+	"zh-TW": {
+		"name": "Brave 搜尋生成器",
+		"avatar": "https://api.iconify.design/logos/brave.svg",
+		"description": "生產 Brave 搜尋服務源的工廠組件",
+		"description_markdown": "這是基於 **Brave Search API** 的服務生成器。它作為生產搜尋實例的工廠，為角色提供獨立且注重隱私的互聯網搜尋能力。使用時需要配置 API 金鑰。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://brave.com/search/api/",
+		"tags": [
+			"brave",
+			"搜尋",
+			"生成器",
+			"api"
+		]
 	}
 }

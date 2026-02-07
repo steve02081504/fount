@@ -1,268 +1,303 @@
 {
 	"en-UK": {
-		"name": "Google Search",
+		"name": "Google Search Generator",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Google search using google-sr library",
-		"description_markdown": "Google search implementation based on google-sr library, no API key required.",
-		"version": "1.0.0",
+		"description": "A generator factory for Google Search service sources (via google-sr).",
+		"description_markdown": "This **service generator** leverages the `google-sr` library to create Google Search instances. It provides characters with readily available, comprehensive web search capabilities, with **no API key required**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
 			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"generator",
+			"web",
+			"free"
+		]
 	},
 	"zh-CN": {
-		"name": "Google 搜索",
+		"name": "Google 搜索生成器",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "使用 google-sr 库的 Google 搜索",
-		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
-		"version": "1.0.0",
+		"description": "生产 Google 搜索服务源的工厂组件（通过 google-sr 库）",
+		"description_markdown": "这是基于 `google-sr` 库实现的 **Google 搜索**生成器。它作为生产搜索实例的工厂，**无需 API 密钥**即可为角色提供开箱即用的、全面的互联网搜索能力。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"搜索",
+			"生成器",
+			"互联网",
+			"免密钥"
+		]
 	},
 	"ar-SA": {
-		"name": "بحث جوجل",
+		"name": "مولد بحث Google",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "بحث جوجل باستخدام مكتبة google-sr",
-		"description_markdown": "بحث Google يعتمد على مكتبة google-sr، ولا يلزم وجود مفتاح API.",
-		"version": "1.0.0",
+		"description": "مصنع مولد لمصادر خدمة بحث Google (عبر google-sr).",
+		"description_markdown": "يستفيد **مولد الخدمة** هذا من مكتبة `google-sr` لإنشاء مثيلات بحث Google. يوفر للشخصيات قدرات بحث شاملة، **لا يتطلب مفتاح API**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": [
-			"جوجل",
-			"يبحث",
-			"البحث على شبكة الإنترنت"
-		],
-		"home_page": ""
-	},
-	"de-DE": {
-		"name": "Google-Suche",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Google-Suche mit der Google-SR-Bibliothek",
-		"description_markdown": "Google-Suche basierend auf der google-sr-Bibliothek, kein API-Schlüssel erforderlich.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"suchen",
-			"Websuche"
-		],
-		"home_page": ""
-	},
-	"emoji": {
-		"name": "Google 搜索",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "使用 google-sr 库的 Google 搜索",
-		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
-		"version": "1.0.0",
-		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"بحث",
+			"مولد",
+			"ويب"
+		]
+	},
+	"de-DE": {
+		"name": "Google Search Generator",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Eine Generatorenfabrik für Google Search-Dienstquellen (über google-sr).",
+		"description_markdown": "Dieser **Service-Generator** nutzt die `google-sr`-Bibliothek, um Google Search-Instanzen zu erstellen. Er bietet Charakteren umfassende Web-Suchfunktionen, **ohne dass ein API-Schlüssel erforderlich ist**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"suche",
+			"generator",
+			"web",
+			"kostenlos"
+		]
+	},
+	"emoji": {
+		"name": "🌐⚙️",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "🌐 ➕ ⚙️ ➡️ 🔍 (🚫🔑)",
+		"description_markdown": "🌐⚙️ ➡️ 🏗️🔍. \n🛠️ ➡️ 🔍📦. \n🚫🔑 ➡️ ✅.\n\n✨ 🌐 🏭",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"🌐",
+			"⚙️",
+			"🔍",
+			"🆓"
+		]
 	},
 	"es-ES": {
-		"name": "búsqueda de google",
+		"name": "Generador de Búsqueda de Google",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Búsqueda de Google usando la biblioteca google-sr",
-		"description_markdown": "Búsqueda de Google basada en la biblioteca google-sr, no se requiere clave API.",
-		"version": "1.0.0",
+		"description": "Una fábrica de generadores para fuentes de servicio de Google Search (a través de google-sr).",
+		"description_markdown": "Este **generador de servicios** aprovecha la biblioteca `google-sr` para crear instancias de Google Search. Proporciona a los personajes capacidades de búsqueda web completas, **sin necesidad de clave API**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"Google",
-			"buscar",
-			"búsqueda web"
-		],
-		"home_page": ""
+			"google",
+			"búsqueda",
+			"generador",
+			"web",
+			"gratis"
+		]
 	},
 	"fr-FR": {
-		"name": "Recherche Google",
+		"name": "Générateur de Recherche Google",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Recherche Google à l'aide de la bibliothèque google-sr",
-		"description_markdown": "Recherche Google basée sur la bibliothèque google-sr, aucune clé API requise.",
-		"version": "1.0.0",
+		"description": "Une usine de génération pour les sources de service Google Search (via google-sr).",
+		"description_markdown": "Ce **générateur de services** exploite la bibliothèque `google-sr` pour créer des instances de Google Search. Il offre des capacités de recherche web complètes, **sans clé API requise**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"Google",
+			"google",
 			"recherche",
-			"recherche sur le Web"
-		],
-		"home_page": ""
+			"générateur",
+			"web",
+			"gratuit"
+		]
 	},
 	"hi-IN": {
-		"name": "गूगल खोज",
+		"name": "Google खोज जेनरेटर",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Google-sr लाइब्रेरी का उपयोग करके Google खोज",
-		"description_markdown": "Google खोज google-sr लाइब्रेरी पर आधारित है, किसी API कुंजी की आवश्यकता नहीं है।",
-		"version": "1.0.0",
+		"description": "Google Search सेवा स्रोतों के लिए एक जेनरेटर फैक्ट्री (google-sr के माध्यम से)।",
+		"description_markdown": "यह **सेवा जेनरेटर** `google-sr` लाइब्रेरी का उपयोग करके Google Search उदाहरण बनाता है। यह पात्रों को व्यापक वेब खोज क्षमताएं प्रदान करता है, जिसके लिए **किसी API कुंजी की आवश्यकता नहीं होती है**।",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"गूगल",
+			"google",
 			"खोज",
-			"वेब खोज"
-		],
-		"home_page": ""
+			"जेनरेटर",
+			"वेब",
+			"मुफ़्त"
+		]
 	},
 	"is-IS": {
-		"name": "Google leit",
+		"name": "Google Leitarrafall",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Google leit með því að nota google-sr bókasafnið",
-		"description_markdown": "Google leit byggt á google-sr bókasafninu, engin API lykil krafist.",
-		"version": "1.0.0",
+		"description": "Verksmiðja sem framleiðir Google Search heimildir (í gegnum google-sr).",
+		"description_markdown": "Þessi **þjónusturafall** notar `google-sr` safnið til að búa til Google Search tilvik. Hún veitir karakterum alhliða vefleitarmöguleika, **án þess að API lykill sé nauðsynlegur**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
 			"leit",
-			"vefleit"
-		],
-		"home_page": ""
+			"rafall",
+			"vefur",
+			"ókeypis"
+		]
 	},
 	"it-IT": {
-		"name": "Ricerca su Google",
+		"name": "Generatore di Ricerca Google",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Cerca su Google utilizzando la libreria google-sr",
-		"description_markdown": "Ricerca Google basata sulla libreria google-sr, non è richiesta alcuna chiave API.",
-		"version": "1.0.0",
+		"description": "Una fabbrica di generatori per fonti di servizio Google Search (tramite google-sr).",
+		"description_markdown": "Questo **generatore di servizi** sfrutta la libreria `google-sr` per creare istanze di Google Search. Fornisce ai personaggi capacità complete di ricerca web, **senza richiedere una chiave API**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
 			"ricerca",
-			"ricerca sul web"
-		],
-		"home_page": ""
+			"generatore",
+			"web",
+			"gratuito"
+		]
 	},
 	"ja-JP": {
-		"name": "Google検索",
+		"name": "Google 検索ジェネレーター",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "google-sr ライブラリを使用した Google 検索",
-		"description_markdown": "google-sr ライブラリに基づく Google 検索。API キーは必要ありません。",
-		"version": "1.0.0",
+		"description": "Google Search サービスソースを生産する工場コンポーネント (google-sr 経由)",
+		"description_markdown": "この**サービスジェネレーター**は `google-sr` ライブラリを活用して Google Search インスタンスを作成します。**API キー不要**で、キャラクターに包括的なウェブ検索機能を提供します。",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"グーグル",
+			"google",
 			"検索",
-			"ウェブ検索"
-		],
-		"home_page": ""
+			"ジェネレーター",
+			"ウェブ",
+			"無料"
+		]
 	},
 	"ko-KR": {
-		"name": "구글 검색",
+		"name": "Google 검색 생성기",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "google-sr 라이브러리를 사용한 Google 검색",
-		"description_markdown": "google-sr 라이브러리를 기반으로 한 Google 검색으로 API 키가 필요하지 않습니다.",
-		"version": "1.0.0",
+		"description": "Google Search 서비스 소스를 생산하는 공장 컴포넌트 (google-sr을 통해)",
+		"description_markdown": "이 **서비스 생성기**는 `google-sr` 라이브러리를 활용하여 Google Search 인스턴스를 생성합니다. **API 키 없이** 캐릭터에게 즉시 사용 가능한 포괄적인 웹 검색 기능을 제공합니다.",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"Google",
-			"찾다",
-			"웹 검색"
-		],
-		"home_page": ""
+			"google",
+			"검색",
+			"생성기",
+			"웹",
+			"무료"
+		]
 	},
 	"lzh": {
-		"name": "Google 搜索",
+		"name": "谷歌寻索肆",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "使用 google-sr 库的 Google 搜索",
-		"description_markdown": "基于 google-sr 库实现的 Google 搜索，无需 API 密钥。",
-		"version": "1.0.0",
+		"description": "依谷歌之术，产寻索之源",
+		"description_markdown": "此乃基於 `google-sr` 函庫所建之 **“谷歌” (Google)** 尋索智工肆。其能產尋索實例，使化身得以外接大千、遍索訊息。此術**不假金鑰**，可逕行之。\n",
+		"version": "0.0.0",
 		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
-			"google",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"谷歌",
+			"寻索",
+			"肆",
+			"免金钥"
+		]
 	},
 	"nl-NL": {
-		"name": "Google-zoekopdracht",
+		"name": "Google Search Generator",
 		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Google zoeken met behulp van de Google-sr-bibliotheek",
-		"description_markdown": "Google-zoekopdracht op basis van de Google-sr-bibliotheek, geen API-sleutel vereist.",
-		"version": "1.0.0",
+		"description": "Een generatorfabriek voor Google Search-servicebronnen (via google-sr).",
+		"description_markdown": "Deze **servicegenerator** maakt gebruik van de `google-sr`-bibliotheek om Google Search-instanties te maken. Het biedt karakters uitgebreide webzoekmogelijkheden, **zonder dat een API-sleutel vereist is**.",
+		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": [
-			"googlen",
-			"zoekopdracht",
-			"web-zoeken"
-		],
-		"home_page": ""
-	},
-	"pt-PT": {
-		"name": "Pesquisa Google",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Pesquisa Google usando a biblioteca google-sr",
-		"description_markdown": "Pesquisa Google baseada na biblioteca google-sr, sem necessidade de chave API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"procurar",
-			"pesquisa na web"
-		],
-		"home_page": ""
-	},
-	"ru-RU": {
-		"name": "поиск Google",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Поиск в Google с использованием библиотеки google-sr",
-		"description_markdown": "Поиск Google на основе библиотеки google-sr, ключ API не требуется.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"поиск",
-			"веб-поиск"
-		],
-		"home_page": ""
-	},
-	"uk-UA": {
-		"name": "Пошук Google",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Пошук Google за допомогою бібліотеки google-sr",
-		"description_markdown": "Пошук Google на основі бібліотеки google-sr, ключ API не потрібен.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"пошук",
-			"веб-пошук"
-		],
-		"home_page": ""
-	},
-	"vi-VN": {
-		"name": "tìm kiếm của Google",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "Tìm kiếm trên Google bằng thư viện google-sr",
-		"description_markdown": "Tìm kiếm của Google dựa trên thư viện google-sr, không cần khóa API.",
-		"version": "1.0.0",
-		"author": "steve02081504",
-		"tags": [
-			"Google",
-			"tìm kiếm",
-			"tìm kiếm trên web"
-		],
-		"home_page": ""
-	},
-	"zh-TW": {
-		"name": "Google 搜索",
-		"avatar": "https://api.iconify.design/logos/google-icon.svg",
-		"description": "使用 google-sr 庫的 Google 搜索",
-		"description_markdown": "基於 google-sr 庫實現的 Google 搜索，無需 API 密鑰。",
-		"version": "1.0.0",
-		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
 		"tags": [
 			"google",
-			"search",
-			"web-search"
-		],
-		"home_page": ""
+			"zoeken",
+			"generator",
+			"web",
+			"gratis"
+		]
+	},
+	"pt-PT": {
+		"name": "Gerador de Pesquisa Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Uma fábrica de geradores para fontes de serviço Google Search (via google-sr).",
+		"description_markdown": "Este **gerador de serviços** aproveita a biblioteca `google-sr` para criar instâncias de Pesquisa Google. Ele fornece aos personagens capacidades abrangentes de pesquisa na web, **sem necessidade de chave API**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"pesquisa",
+			"gerador",
+			"web",
+			"gratuito"
+		]
+	},
+	"ru-RU": {
+		"name": "Генератор Поиска Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Завод-генератор для источников сервиса Google Search (через google-sr).",
+		"description_markdown": "Этот **генератор сервиса** использует библиотеку `google-sr` для создания экземпляров Google Search. Он предоставляет персонажам комплексные возможности веб-поиска, **не требуя ключа API**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"поиск",
+			"генератор",
+			"веб",
+			"бесплатно"
+		]
+	},
+	"uk-UA": {
+		"name": "Генератор Пошуку Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Завод-генератор для джерел сервісу Google Search (через google-sr).",
+		"description_markdown": "Цей **генератор сервісу** використовує бібліотеку `google-sr` для створення екземплярів Google Search. Він надає персонажам комплексні можливості веб-пошуку, **не вимагаючи ключа API**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"пошук",
+			"генератор",
+			"веб",
+			"безкоштовно"
+		]
+	},
+	"vi-VN": {
+		"name": "Trình tạo Tìm kiếm Google",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "Nhà máy sản xuất các nguồn dịch vụ Google Search (qua google-sr).",
+		"description_markdown": "Trình tạo dịch vụ này tận dụng thư viện `google-sr` để tạo các thực thể Tìm kiếm Google. Nó cung cấp cho các nhân vật khả năng tìm kiếm web toàn diện, **không yêu cầu khóa API**.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"tìm kiếm",
+			"trình tạo",
+			"web",
+			"miễn_phí"
+		]
+	},
+	"zh-TW": {
+		"name": "Google 搜尋生成器",
+		"avatar": "https://api.iconify.design/logos/google-icon.svg",
+		"description": "生產 Google 搜尋服務源的工廠組件（透過 google-sr 庫）",
+		"description_markdown": "這是基於 `google-sr` 庫實現的 **Google 搜尋**生成器。它作為生產搜尋實例的工廠，**無需 API 金鑰**即可為角色提供開箱即用的、全面的網際網路搜尋能力。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://www.google.com/",
+		"tags": [
+			"google",
+			"搜尋",
+			"生成器",
+			"網際網路",
+			"免金鑰"
+		]
 	}
 }

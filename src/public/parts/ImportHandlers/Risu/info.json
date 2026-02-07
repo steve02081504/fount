@@ -60,18 +60,17 @@
 		]
 	},
 	"emoji": {
-		"name": "🐿️ RisuAI Importer",
+		"name": "🐿️🎴📥",
 		"avatar": "https://risuai.net/favicon.png",
-		"description": "Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.",
-		"description_markdown": "Imports Risu Character Cards (V3) in `.png`, `.charx`, or `.json` format, and from `realm.risuai.net` URLs.\nSupports CCv3 features including embedded assets and lorebooks.",
+		"description": "🎴➡️🎭✨",
+		"description_markdown": "🎴🖼️📄 ➡️ 🎭. \n🌐🔗 ➡️ 📥. \n📎📚✅.\n\n✨ 🐿️ 🎭",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
 		"tags": [
-			"risu",
-			"character card",
-			"ccv3",
-			"import"
+			"🐿️",
+			"🎴",
+			"📥"
 		]
 	},
 	"es-ES": {

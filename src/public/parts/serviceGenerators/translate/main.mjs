@@ -22,7 +22,7 @@ export default {
 		parts: {
 			/**
 			 * 获取子部件列表。
-			 * @param {string[]} my_paths - 搜索路径列表。
+			 * @param {string[]} my_paths - 路径列表。
 			 * @returns {string[]} 子部件名称列表。
 			 */
 			getSubPartsList: (my_paths) => {
@@ -37,13 +37,13 @@ export default {
 			},
 			/**
 			 * 获取子部件安装路径。
-			 * @param {string[]} my_paths - 搜索路径列表。
+			 * @param {string[]} my_paths - 路径列表。
 			 * @returns {string[]} 子部件安装路径列表。
 			 */
 			getSubPartsInstallPaths: (my_paths) => my_paths,
 			/**
 			 * 加载子部件。
-			 * @param {string[]} my_paths - 搜索路径列表。
+			 * @param {string[]} my_paths - 路径列表。
 			 * @param {string} username - 用户名。
 			 * @param {string} partname - 部件名称。
 			 * @returns {Promise<any>} 加载的部件实例。
@@ -53,7 +53,7 @@ export default {
 			},
 			/**
 			 * 卸载子部件。
-			 * @param {string[]} my_paths - 搜索路径列表。
+			 * @param {string[]} my_paths - 路径列表。
 			 * @param {string} username - 用户名。
 			 * @param {string} partname - 部件名称。
 			 * @returns {Promise<void>}

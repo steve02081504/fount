@@ -1,59 +1,322 @@
 {
 	"en-UK": {
-		"provider": "fount"
+		"name": "Weighted Random Source Instance",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "An active instance that randomly selects a source based on configured weights.",
+		"description_markdown": "This is an **active Weighted Random instance**. It processes incoming requests by selecting a source from a predefined list, with the probability of selection for each source determined by its configured weight. This mechanism is ideal for flexible resource distribution, ensuring sources with higher weights are utilized more frequently.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"random",
+			"weighted",
+			"selection",
+			"instance",
+			"utility"
+		]
 	},
 	"zh-CN": {
-		"provider": "fount"
+		"name": "加权随机服务源实例",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "一个根据预设权重随机选择源的活跃实例。",
+		"description_markdown": "这是一个**活跃的加权随机实例**。它能根据为每个源配置的权重（即概率）进行随机选择，确保权重较高的源有更大的机会被选中，从而实现灵活的资源调度和分配。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"随机",
+			"加权",
+			"选择",
+			"实例",
+			"实用工具"
+		]
 	},
 	"ar-SA": {
-		"provider": "fount"
+		"name": "مثيل المصدر العشوائي المرجح",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "مثيل نشط يختار مصدرًا عشوائيًا بناءً على الأوزان المكونة.",
+		"description_markdown": "هذا **مثيل عشوائي مرجح نشط**. يعالج الطلبات الواردة عن طريق اختيار مصدر من قائمة محددة مسبقًا، مع تحديد احتمالية اختيار كل مصدر بواسطة وزنه المكون. هذه الآلية مثالية لتوزيع الموارد بمرونة.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"عشوائي",
+			"مرجح",
+			"اختيار",
+			"مثيل",
+			"أداة"
+		]
 	},
 	"de-DE": {
-		"provider": "fount"
+		"name": "Gewichtete Zufallsquellinstanz",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Eine aktive Instanz, die eine Quelle zufällig basierend auf konfigurierten Gewichten auswählt.",
+		"description_markdown": "Dies ist eine **aktive gewichtete Zufallsinstanz**. Sie verarbeitet eingehende Anfragen, indem sie eine Quelle aus einer vordefinierten Liste auswählt, wobei die Auswahlwahrscheinlichkeit jeder Quelle durch ihr konfiguriertes Gewicht bestimmt wird. Dieser Mechanismus ist ideal für eine flexible Ressourcenverteilung.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"zufall",
+			"gewichtet",
+			"auswahl",
+			"instanz",
+			"dienstprogramm"
+		]
 	},
 	"emoji": {
-		"provider": "fount"
+		"name": "⚖️🎲",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "🔢⚖️➡️🎲",
+		"description_markdown": "🔢⚖️➡️🎲. \n多⚖️➡️多🎯. \n每求➡️🔀.\n\n✨ 📊🎲.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"🎲",
+			"⚖️",
+			"✨"
+		]
 	},
 	"es-ES": {
-		"provider": "fount"
+		"name": "Instancia de Fuente Aleatoria Ponderada",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Una instancia activa que selecciona una fuente aleatoriamente según los pesos configurados.",
+		"description_markdown": "Esta es una **instancia aleatoria ponderada activa**. Procesa las solicitudes entrantes seleccionando una fuente de una lista predefinida, con la probabilidad de selección determinada por su peso configurado. Este mecanismo es ideal para una distribución flexible de recursos.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"aleatorio",
+			"ponderado",
+			"selección",
+			"instancia",
+			"utilidad"
+		]
 	},
 	"fr-FR": {
-		"provider": "fount"
+		"name": "Instance de Source Aléatoire Pondérée",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Une instance active qui sélectionne une source aléatoirement en fonction des poids configurés.",
+		"description_markdown": "Ceci est une **instance aléatoire pondérée active**. Elle traite les requêtes entrantes en sélectionnant une source à partir d'une liste prédéfinie, la probabilité de sélection étant déterminée par son poids configuré. Ce mécanisme est idéal pour une distribution flexible des ressources.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"aléatoire",
+			"pondéré",
+			"sélection",
+			"instance",
+			"utilitaire"
+		]
 	},
 	"hi-IN": {
-		"provider": "fount"
+		"name": "भारित यादृच्छिक स्रोत उदाहरण",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "एक सक्रिय उदाहरण जो कॉन्फ़िगर किए गए भार के आधार पर यादृच्छिक रूप से एक स्रोत का चयन करता है।",
+		"description_markdown": "यह एक **सक्रिय भारित यादृच्छिक उदाहरण** है। यह पूर्वनिर्धारित सूची से एक स्रोत का चयन करके आने वाले अनुरोधों को संसाधित करता है, जिसमें प्रत्येक स्रोत के चयन की संभावना उसके कॉन्फ़िगर किए गए भार से निर्धारित होती है। यह तंत्र लचीले संसाधन वितरण के लिए आदर्श है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"यादृच्छिक",
+			"भारित",
+			"चयन",
+			"उदाहरण",
+			"उपयोगिता"
+		]
 	},
 	"is-IS": {
-		"provider": "fount"
+		"name": "Vegið Slembiheimildartilvik",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Virkt tilvik sem velur heimild af handahófi byggt á skilgreindum þyngdum.",
+		"description_markdown": "Þetta er **virkt vegið slembiúrtakstilvik**. Það vinnur úr innkomnum beiðnum með því að velja heimild úr fyrirfram skilgreindum lista, þar sem líkur á vali hverrar heimildar eru ákvarðaðar af skilgreindri þyngd hennar. Þessi aðferð er tilvalin fyrir sveigjanlega auðlindaúthlutun.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"slembi",
+			"vegið",
+			"val",
+			"tilvik",
+			"gagnsemi"
+		]
 	},
 	"it-IT": {
-		"provider": "fount"
+		"name": "Istanza di Sorgente Casuale Ponderata",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Un'istanza attiva che seleziona casualmente una fonte in base ai pesi configurati.",
+		"description_markdown": "Questa è un'**istanza casuale ponderata attiva**. Elabora le richieste in ingresso selezionando una fonte da un elenco predefinito, con la probabilità di selezione determinata dal suo peso configurato. Questo meccanismo è ideale per una distribuzione flessibile delle risorse.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"casuale",
+			"ponderata",
+			"selezione",
+			"istanza",
+			"utilità"
+		]
 	},
 	"ja-JP": {
-		"provider": "fount"
+		"name": "加重ランダムソースインスタンス",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "設定された重みに基づいてランダムにソースを選択するアクティブなインスタンス。",
+		"description_markdown": "これは**アクティブな加重ランダムインスタンス**です。事前定義されたリストからソースを選択して受信リクエストを処理し、各ソースの選択確率は設定された重みによって決定されます。このメカニズムは、柔軟なリソース配布に最適です。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"ランダム",
+			"加重",
+			"選択",
+			"インスタンス",
+			"ユーティリティ"
+		]
 	},
 	"ko-KR": {
-		"provider": "fount"
+		"name": "가중 무작위 소스 인스턴스",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "구성된 가중치에 따라 소스를 무작위로 선택하는 활성 인스턴스입니다.",
+		"description_markdown": "이것은 **활성 가중 무작위 인스턴스**입니다. 미리 정의된 목록에서 소스를 선택하여 수신 요청을 처리하며, 각 소스의 선택 확률은 구성된 가중치에 따라 결정됩니다. 이 메커니즘은 유연한 리소스 분배에 이상적입니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"무작위",
+			"가중",
+			"선택",
+			"인스턴스",
+			"유틸리티"
+		]
 	},
 	"lzh": {
-		"provider": "fount"
+		"name": "權衡隨機源",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "依輕重之序，隨機取源而應之。",
+		"description_markdown": "此乃**權衡隨機之實例**。其運作如執骰擲之，然非均平，蓋預設諸源之輕重，以增其應事之幾率。凡有所求，則依此輕重，隨機而取一源應之，務使資源調配靈巧有效也。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"隨機",
+			"權衡",
+			"實例",
+			"活用"
+		]
 	},
 	"nl-NL": {
-		"provider": "fount"
+		"name": "Gewogen Willekeurige Broninstantie",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Een actieve instantie die willekeurig een bron selecteert op basis van geconfigureerde gewichten.",
+		"description_markdown": "Dit is een **actieve gewogen willekeurige instantie**. Het verwerkt inkomende verzoeken door een bron uit een vooraf gedefinieerde lijst te selecteren, waarbij de selectiekans van elke bron wordt bepaald door het geconfigureerde gewicht. Dit mechanisme is ideaal voor flexibele resourcedistributie.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"willekeurig",
+			"gewogen",
+			"selectie",
+			"instantie",
+			"hulpprogramma"
+		]
 	},
 	"pt-PT": {
-		"provider": "fount"
+		"name": "Instância de Fonte Aleatória Ponderada",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Uma instância ativa que seleciona aleatoriamente uma fonte com base nos pesos configurados.",
+		"description_markdown": "Esta é uma **instância aleatória ponderada ativa**. Ela processa as requisições recebidas selecionando uma fonte de uma lista predefinida, com a probabilidade de seleção de cada fonte determinada por seu peso configurado. Este mecanismo é ideal para uma distribuição flexível de recursos.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"aleatório",
+			"ponderado",
+			"seleção",
+			"instância",
+			"utilitário"
+		]
 	},
 	"ru-RU": {
-		"provider": "fount"
+		"name": "Экземпляр взвешенного случайного источника",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Активный экземпляр, который случайным образом выбирает источник на основе настроенных весов.",
+		"description_markdown": "Это **активный экземпляр взвешенного случайного выбора**. Он обрабатывает входящие запросы, выбирая источник из предопределенного списка, при этом вероятность выбора каждого источника определяется его настроенным весом. Этот механизм идеально подходит для гибкого распределения ресурсов.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"случайный",
+			"взвешенный",
+			"выбор",
+			"экземпляр",
+			"утилита"
+		]
 	},
 	"uk-UA": {
-		"provider": "fount"
+		"name": "Екземпляр зваженого випадкового джерела",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Активний екземпляр, який випадковим чином вибирає джерело на основі налаштованих ваг.",
+		"description_markdown": "Це **активний екземпляр зваженого випадкового вибору**. Він обробляє вхідні запити, вибираючи джерело з попередньо визначеного списку, при цьому ймовірність вибору кожного джерела визначається його налаштованою вагою. Цей механізм ідеально підходить для гнучкого розподілу ресурсів.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"випадковий",
+			"зважений",
+			"вибір",
+			"екземпляр",
+			"утиліта"
+		]
 	},
 	"vi-VN": {
-		"provider": "fount"
+		"name": "Phiên bản Nguồn Ngẫu nhiên Có Trọng số",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "Một phiên bản hoạt động chọn ngẫu nhiên một nguồn dựa trên trọng số đã cấu hình.",
+		"description_markdown": "Đây là một **phiên bản Ngẫu nhiên Có Trọng số hoạt động**. Nó xử lý các yêu cầu đến bằng cách chọn một nguồn từ danh sách được xác định trước, với xác suất chọn của mỗi nguồn được xác định bởi trọng số đã cấu hình. Cơ chế này lý tưởng cho việc phân phối tài nguyên linh hoạt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"ngẫu_nhiên",
+			"có_trọng_số",
+			"lựa_chọn",
+			"phiên_bản",
+			"tiện_ích"
+		]
 	},
 	"zh-TW": {
-		"provider": "fount"
+		"name": "加權隨機服務源實例",
+		"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+		"description": "一個根據預設權重隨機選擇源的活躍實例。",
+		"description_markdown": "這是一個**活躍的加權隨機實例**。它能根據為每個源配置的權重（即機率）進行隨機選擇，確保權重較高的源有更大的機會被選中，從而實現靈活的資源調度和分配。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "https://github.com/steve02081504/fount",
+		"provider": "fount",
+		"tags": [
+			"隨機",
+			"加權",
+			"選擇",
+			"實例",
+			"實用工具"
+		]
 	}
 }
