@@ -165,6 +165,29 @@ export async function stopBot(username, botname) {
 }
 
 /**
+ * 暂停一个 Telegram Bot（停止运行但不从 config 中移除，以便 PauseAllJobs 后可通过 ReStartJobs 恢复）。
+ * @param {string} username - 用户名。
+ * @param {string} botname - bot名称。
+ */
+export async function pauseBot(username, botname) {
+	const botCache = loadTempData(username, 'telegrambot_cache')
+	if (!botCache[botname]) return
+
+	botCache[botname] = await botCache[botname]
+	try {
+		await botCache[botname].stop('SIGINT')
+	}
+	finally {
+		delete botCache[botname]
+	}
+}
+on_shutdown(async () => {
+	for (const username of getAllUserNames())
+		for (const botname of [...Object.keys(loadTempData(username, 'telegrambot_cache'))])
+			await pauseBot(username, botname).catch(console.error)
+})
+
+/**
  * 获取指定用户正在运行的 Telegram Bot 列表。
  * @param {string} username - 用户名。
  * @returns {string[]} 正在运行的bot名称列表。
@@ -172,21 +195,6 @@ export async function stopBot(username, botname) {
 export function getRunningBotList(username) {
 	return Object.keys(loadTempData(username, 'telegrambot_cache'))
 }
-
-// 注册一个在 fount 进程关闭时执行的回调
-on_shutdown(async () => {
-	const users = getAllUserNames() // 获取所有 fount 用户
-	for (const username of users) {
-		const botCache = loadTempData(username, 'telegrambot_cache')
-		for (const botname of Object.keys(botCache)) try {
-			botCache[botname] = await botCache[botname]
-			await botCache[botname].stop('SIGINT')
-		}
-		finally {
-			delete botCache[botname]
-		}
-	}
-})
 
 /**
  * 获取指定用户的所有已配置的 Telegram Bot 名称列表。

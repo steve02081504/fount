@@ -24,7 +24,7 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.body
 		try {
-			stopPet(username, charname) // Not async, but keep await for consistency if it changes
+			await stopPet(username, charname)
 			res.status(200).json({ message: 'Pet stopped successfully', charname })
 		} catch (error) {
 			console.error(`[DeskPet] API error stopping pet ${charname}:`, error)

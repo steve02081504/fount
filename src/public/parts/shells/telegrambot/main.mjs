@@ -1,6 +1,6 @@
 import info from './info.json' with { type: 'json' }
 import { actions } from './src/actions.mjs'
-import { runBot } from './src/bot.mjs'
+import { runBot, pauseBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /** @typedef {import('../../../../decl/basedefs.ts').info_t} info_t */
@@ -90,6 +90,14 @@ export default {
 		 */
 		jobs: {
 			/**
+			 * 暂停 Telegram 机器人任务。
+			 * @param {string} user - 用户名。
+			 * @param {string} botname - 机器人名称。
+			 */
+			PauseJob: async (user, botname) => {
+				await pauseBot(user, botname)
+			},
+			/**
 			 * 重新启动Telegram机器人任务。
 			 * @param {string} user - 用户名。
 			 * @param {string} botname - 机器人名称。
@@ -105,7 +113,7 @@ export default {
 					await new Promise(resolve => setTimeout(resolve, sleep_time))
 					sleep_time += 1000
 				}
-			}
+			},
 		}
 	}
 }

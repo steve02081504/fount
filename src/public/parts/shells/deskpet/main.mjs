@@ -66,6 +66,16 @@ export default {
 		},
 		jobs: {
 			/**
+			 * 暂停桌面宠物任务。
+			 * @param {string} user - 用户名。
+			 * @param {string} charname - 角色名称。
+			 * @returns {Promise<void>}
+			 */
+			PauseJob: async (user, charname) => {
+				const { pausePet } = await import('./src/pet_runner.mjs')
+				await pausePet(user, charname)
+			},
+			/**
 			 * 重新启动桌面宠物任务。
 			 * @param {string} user - 用户名。
 			 * @param {string} charname - 角色名称。
@@ -74,7 +84,7 @@ export default {
 			ReStartJob: async (user, charname) => {
 				const { runPet } = await import('./src/pet_runner.mjs')
 				await runPet(user, charname)
-			}
+			},
 		}
 	}
 }

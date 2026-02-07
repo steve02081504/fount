@@ -105,6 +105,30 @@ export async function stopPet(username, charname) {
 }
 
 /**
+ * 暂停宠物（停止运行但不从 config 中移除，以便 PauseAllJobs 后可通过 ReStartJobs 恢复）。
+ * @param {string} username - 用户名。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<void>}
+ */
+export async function pausePet(username, charname) {
+	const petInfo = runningPets[username]?.[charname]
+	if (!petInfo) return
+
+	delete runningPets[username][charname]
+	if (!Object.keys(runningPets[username]).length)
+		delete runningPets[username]
+
+	petInfo.webview.destroy()
+	await revokeApiKey(petInfo.apiKeyJti)
+	sendEventToAll('deskpet-list-updated')
+}
+on_shutdown(async () => {
+	for (const username of Object.keys(runningPets))
+		for (const charname of [...Object.keys(runningPets[username] ?? {})])
+			await pausePet(username, charname).catch(console.error)
+})
+
+/**
  * 获取正在运行的宠物。
  * @param {string} username - 用户名。
  * @returns {Array<string>} - 正在运行的宠物列表。
@@ -114,9 +138,3 @@ export function getRunningPets(username) {
 	return Object.keys(runningPets[username])
 }
 
-// Graceful shutdown
-on_shutdown(async () => {
-	for (const username in runningPets)
-		for (const charname in runningPets[username])
-			await stopPet(username, charname)
-})

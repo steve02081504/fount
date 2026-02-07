@@ -3,34 +3,47 @@
  * 解析命令行参数，配置服务器，并启动初始化过程。
  * 它还通过 IPC 处理向正在运行的服务器实例发送命令。
  */
-import { existsSync } from 'node:fs'
+import fs from 'node:fs'
 import process from 'node:process'
 
 import * as Sentry from 'npm:@sentry/deno'
 
 import { console } from '../scripts/i18n.mjs'
 
+import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
+import { IdleManager } from './idle.mjs'
+import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
 import { init } from './server.mjs'
+import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
 /**
  * 是否启用 Sentry 进行错误报告
+ * @type {boolean}
  */
-export const sentry_enabled = !existsSync(__dirname + '/.noerrorreport')
-if (sentry_enabled) Sentry.init({
-	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	/**
-	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
-	 * @param {object} hint - 包含原始事件等信息的辅助对象。
-	 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
-	 */
-	beforeBreadcrumb: (breadcrumb, hint) => {
-		if (skipBreadcrumb) return null
-		return breadcrumb
-	}
-})
+export let sentry_enabled
+/**
+ * 设置 Sentry 是否启用
+ * @param {boolean} new_sentry_enabled - 是否启用 Sentry
+ * @returns {void}
+ */
+function set_sentry_enabled(new_sentry_enabled) {
+	if (sentry_enabled = new_sentry_enabled) Sentry.init({
+		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		/**
+		 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
+		 * @param {object} hint - 包含原始事件等信息的辅助对象。
+		 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
+		 */
+		beforeBreadcrumb: (breadcrumb, hint) => {
+			if (skipBreadcrumb) return null
+			return breadcrumb
+		}
+	})
+}
+set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
 console.noBreadcrumb = {
 	/**
 	 * 写入日志并跳过面包屑记录
@@ -63,13 +76,29 @@ const fount_config = {
 	needs_output: process.stdout.writable && process.stdout.isTTY,
 	starts: {
 		Base: {
-			Jobs: !existsSync(__dirname + '/.nojobs'),
-			Timers: !existsSync(__dirname + '/.notimers'),
-			Idle: !existsSync(__dirname + '/.noidle'),
-			AutoUpdate: !existsSync(__dirname + '/.noupdate'),
+			Jobs: !fs.existsSync(__dirname + '/.nojobs'),
+			Timers: !fs.existsSync(__dirname + '/.notimers'),
+			Idle: !fs.existsSync(__dirname + '/.noidle'),
+			AutoUpdate: !fs.existsSync(__dirname + '/.noupdate'),
 		}
 	}
 }
+
+fs.watch(__dirname, (event, filename) => {
+	if (filename == '.noerrorreport') set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
+	if (filename == '.nojobs')
+		if (fs.existsSync(__dirname + '/.nojobs')) PauseAllJobs().catch(console.error)
+		else ReStartJobs().catch(console.error)
+	if (filename == '.notimers')
+		if (fs.existsSync(__dirname + '/.notimers')) stopTimerHeartbeat()
+		else startTimerHeartbeat()
+	if (filename == '.noidle')
+		if (fs.existsSync(__dirname + '/.noidle')) IdleManager.stop()
+		else IdleManager.start()
+	if (filename == '.noupdate')
+		if (fs.existsSync(__dirname + '/.noupdate')) disableAutoUpdate()
+		else enableAutoUpdate()
+})
 
 let command_obj
 
