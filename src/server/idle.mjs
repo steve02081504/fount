@@ -1,11 +1,15 @@
+import { setTimeout, clearTimeout } from 'node:timers'
+
+import { ms } from '../scripts/ms.mjs'
+
 /**
  * @typedef {object} IdleManagerConfig
  * @property {number} timeout - 在考虑系统空闲之前等待的毫秒数。
  * @property {number} checkInterval - 空闲检查之间的毫秒数。
  */
 const defaultConfig = {
-	timeout: 30000, // 30 seconds
-	checkInterval: 5 * 60 * 1000 // 5 minutes
+	timeout: ms('30s'),
+	checkInterval: ms('5m')
 }
 
 /**
@@ -137,7 +141,7 @@ export class IdleManager {
 			this.#timeoutId = null
 			await this.#idleRunner()
 			if (!this.#stopped) this.start()
-		}, this.#config.checkInterval)
+		}, this.#config.checkInterval).unref()
 	}
 
 	/**

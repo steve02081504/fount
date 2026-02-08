@@ -1,3 +1,5 @@
+import { setInterval, clearInterval } from 'node:timers'
+
 import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
 import { getAllContextData, runWithContexts } from 'npm:als-registry'
 
@@ -104,7 +106,7 @@ let timer_heartbeat_interval = null
  * @returns {void}
  */
 export function startTimerHeartbeat() {
-	timer_heartbeat_interval ??= setInterval(TimerHeartbeat, 500)
+	timer_heartbeat_interval ??= setInterval(TimerHeartbeat, 500).unref()
 }
 /**
  * 停止计时器心跳。

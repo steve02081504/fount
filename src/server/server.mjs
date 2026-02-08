@@ -20,6 +20,7 @@ import { initAuth } from './auth.mjs'
 import { enableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, startTime } from './base.mjs'
 import idleManager from './idle.mjs'
+import { info } from './info.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
@@ -69,7 +70,7 @@ function setWindowTitle(title) {
  * @returns {void}
  */
 export function setDefaultStuff() {
-	setWindowTitle('fount')
+	setWindowTitle(info.title)
 }
 /**
  * 标记一个错误对象以便跳过报告。

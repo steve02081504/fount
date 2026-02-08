@@ -14,7 +14,6 @@
 			"runtimeExecutable": "deno",
 			"runtimeArgs": [
 				"run",
-				"--unstable",
 				"--inspect-wait",
 				"--allow-scripts",
 				"--allow-all",

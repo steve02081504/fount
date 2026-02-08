@@ -1,4 +1,5 @@
 import { watch } from 'node:fs'
+import { setTimeout, clearTimeout } from 'node:timers'
 
 import { sendEventToAll } from './event_dispatcher.mjs'
 const watchers = {}
@@ -15,6 +16,6 @@ export function watchFrontendChanges(url, dir) {
 		timeout = setTimeout(() => {
 			console.logI18n('fountConsole.web.frontendFilesChanged', { path: url })
 			sendEventToAll('page-modified', { path: url })
-		}, 666)
+		}, 666).unref()
 	})
 }

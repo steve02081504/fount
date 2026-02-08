@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { setInterval, setTimeout } from 'node:timers'
 
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
@@ -938,7 +939,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		}
 		// 时间攻击保护
 		const delay = Math.max(0, avgVerifyTime * 0.9 + Math.random() * avgVerifyTime * 0.2)
-		await new Promise(resolve => setTimeout(resolve, delay))
+		await new Promise(resolve => setTimeout(resolve, delay).unref())
 		return { status: 401, success: false, message: 'Invalid username or password', ...response }
 	}
 
@@ -1110,4 +1111,4 @@ setInterval(() => {
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
 	cleanupLoginFailures()
-}, ms('1h'))
+}, ms('1h')).unref()

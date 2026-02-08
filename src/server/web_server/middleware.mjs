@@ -5,6 +5,7 @@ import fileUpload from 'npm:express-fileupload'
 
 import { console } from '../../scripts/i18n.mjs'
 import { auth_request } from '../auth.mjs'
+import { info } from '../info.mjs'
 import { webRequestHappend } from '../server.mjs'
 
 /**
@@ -27,9 +28,7 @@ export function diff_if_auth(if_auth, if_not_auth) {
  */
 export function registerMiddleware(router) {
 	router.use((req, res, next) => {
-		if (new Date().getMonth() === 3 && new Date().getDate() === 1)
-			res.setHeader('X-Powered-By', 'Skynet/0.2')
-		else res.setHeader('X-Powered-By', 'PHP/4.2.0')
+		res.setHeader('X-Powered-By', info.xPoweredBy)
 		if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
 			console.logI18n('fountConsole.web.requestReceived', {
 				method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),

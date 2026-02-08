@@ -1,6 +1,11 @@
+import { setInterval, clearInterval } from 'node:timers'
+
 import { Client } from 'npm:@xhayper/discord-rpc'
 
+import { info } from '../server/info.mjs'
+
 import { in_docker, in_termux } from './env.mjs'
+import { ms } from './ms.mjs'
 
 const FountStartTimestamp = new Date()
 let activity = {
@@ -13,7 +18,7 @@ async function setActivity() {
 	for (const key in activity) if (activity[key] === undefined) delete activity[key]
 	await client.user?.setActivity({
 		startTimestamp: FountStartTimestamp,
-		...activity
+		...activity || defaultActivity()
 	})
 }
 
@@ -22,24 +27,35 @@ let loginInterval = null
 let client = null
 
 /**
+ * 获取默认活动。
+ * @returns {object} - 默认活动。
+ */
+function defaultActivity() {
+	return {
+		details: info.activity,
+		state: info.logotext,
+		startTimestamp: undefined,
+		largeImageKey: 'icon',
+		largeImageText: info.shortlinkUrl.split('://')[1],
+		smallImageKey: undefined,
+		smallImageText: undefined,
+		buttons: [
+			{
+				label: info.shortlinkName,
+				url: info.shortlinkUrl,
+			},
+		],
+		instance: false,
+	}
+}
+
+/**
  * 启动 Discord RPC 客户端。
  * @param {string} [clientId='1344722070323335259'] - Discord 客户端 ID。
  * @param {object} [activity] - 要设置的初始活动。
  * @returns {void}
  */
-export function StartRPC(
-	clientId = '1344722070323335259',
-	activity = {
-		details: 'fountting',
-		state: Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!',
-		startTimestamp: undefined,
-		largeImageKey: 'icon',
-		largeImageText: 'bit.ly/get-fount',
-		smallImageKey: undefined,
-		smallImageText: undefined,
-		instance: false,
-	}
-) {
+export function StartRPC(clientId = '1344722070323335259', activity) {
 	if (in_docker || in_termux) return
 
 	if (loginInterval) clearInterval(loginInterval)
@@ -53,7 +69,7 @@ export function StartRPC(
 		await setActivity()
 
 		// activity can only be set every 15 seconds
-		interval = setInterval(() => { setActivity() }, 15e3)
+		interval = setInterval(() => { setActivity() }, ms('15s')).unref()
 	})
 
 	loginInterval = setInterval(async () => {
@@ -65,7 +81,7 @@ export function StartRPC(
 			if (error.name == 'COULD_NOT_CONNECT') return
 			console.error(error)
 		}
-	}, 15e3)
+	}, ms('15s')).unref()
 }
 
 /**
