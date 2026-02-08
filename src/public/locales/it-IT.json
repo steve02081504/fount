@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
 		"homepageButton": "Torna alla Homepage"
 	},
+	"directoryListing": {
+		"title": "Indice della directory",
+		"description": "Sfoglia ed esplora i file e le cartelle nell'area di lavoro di fount.",
+		"indexOf": "Indice: ${path}",
+		"name": "nome",
+		"mimeType": "Tipo MIME",
+		"size": "Dimensione",
+		"parentLink": "↑ Livello precedente ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

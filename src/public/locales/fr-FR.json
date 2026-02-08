@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil"
 	},
+	"directoryListing": {
+		"title": "Index du répertoire",
+		"description": "Parcourez et explorez les fichiers et dossiers dans l'espace de travail de fount.",
+		"indexOf": "Indice : ${path}",
+		"name": "nom",
+		"mimeType": "Type MIME",
+		"size": "taille",
+		"parentLink": "↑ Niveau précédent ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

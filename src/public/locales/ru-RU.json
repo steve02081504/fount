@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Ой! Кажется, вы зашли на несуществующую страницу.",
 		"homepageButton": "Вернуться на главную страницу"
 	},
+	"directoryListing": {
+		"title": "индекс каталога",
+		"description": "Просматривайте и исследуйте файлы и папки в рабочей области fount.",
+		"indexOf": "Индекс: ${path}",
+		"name": "имя",
+		"mimeType": "MIME-тип",
+		"size": "размер",
+		"parentLink": "↑ Предыдущий уровень../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

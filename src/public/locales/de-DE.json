@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
+	"directoryListing": {
+		"title": "Verzeichnisindex",
+		"description": "Durchsuchen und erkunden Sie die Dateien und Ordner im fount-Arbeitsbereich.",
+		"indexOf": "Index: ${path}",
+		"name": "Name",
+		"mimeType": "MIME-Typ",
+		"size": "Größe",
+		"parentLink": "↑ Übergeordnetes Verzeichnis ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

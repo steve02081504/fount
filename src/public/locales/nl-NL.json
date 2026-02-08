@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
+	"directoryListing": {
+		"title": "directory-index",
+		"description": "Blader en verken de bestanden en mappen in de fount-werkruimte.",
+		"indexOf": "Index: ${path}",
+		"name": "naam",
+		"mimeType": "MIME-type",
+		"size": "Grootte",
+		"parentLink": "↑ Vorig niveau ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

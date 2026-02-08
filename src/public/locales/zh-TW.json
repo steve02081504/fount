@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
 		"homepageButton": "返回首頁"
 	},
+	"directoryListing": {
+		"title": "目錄索引",
+		"description": "瀏覽並探索 fount 工作區中的文件和文件夾。",
+		"indexOf": "索引：${path}",
+		"name": "名稱",
+		"mimeType": "MIME 類型",
+		"size": "大小",
+		"parentLink": "↑ 上一級 ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	},
+	"directoryListing": {
+		"title": "فهرس الدليل",
+		"description": "تصفح واستكشف الملفات والمجلدات الموجودة في مساحة العمل.",
+		"indexOf": "الفهرس: ${path}",
+		"name": "اسم",
+		"mimeType": "نوع MIME",
+		"size": "الحجم",
+		"parentLink": "↑ المستوى السابق ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

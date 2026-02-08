@@ -10,7 +10,8 @@
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
 		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.1.4",
 		"npm:on-shutdown": "npm:on-shutdown@^0.0.3",
-		"npm:fs-extra": "npm:fs-extra@^11.3.2"
+		"npm:fs-extra": "npm:fs-extra@^11.3.2",
+		"npm:file-type": "npm:file-type@^21.0.0"
 	},
 	"lint": {
 		"exclude": [
