@@ -24,6 +24,8 @@ fount 是一個**現代化、可擴展的 AI 智能體運行時環境**。
 
 歷經![relative date](https://img.shields.io/date/1727107200?label=費時)的潛心雕琢，匯聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢獻者)的熱忱，以及一個擁有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活躍用戶)的鮮活社群，fount 如今已是一個成熟、穩定且不斷演進的 AI 互動平台。
 
+若你希望從零開始完成配置、搭建與入門，可參閱社群教學 [**fount 從零開始的傻瓜式指南**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies)（教學為中文，非中文使用者可使用瀏覽器翻譯功能閱讀）。
+
 ![圖片](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount 致力於將角色編織進你生活的紋理，提供超越螢幕的陪�
   ![圖片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![圖片](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **瀏覽器整合**
+  將角色整合到瀏覽器擴充功能中，讓角色能夠**看到並修改**你瀏覽器中的頁面內容，實現真正的「與 AI 一起上網」。
+  你可以對你的角色說：嘿 XX，幫我給這個頁面換個顏色並加點裝飾。
+  ![圖片](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE 整合**
+  將角色整合到 JetBrains、neovim、Zed 等 IDE 中，讓角色像 Cursor Agent 或 GitHub Copilot 一樣，在編寫程式碼時為你提供上下文感知的輔助與建議。
+  ![圖片](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **終端機的寧靜 (與 [fount-pwsh](https://github.com/steve02081504/fount-pwsh) 結合)**
   當終端機指令執行失敗時，讓你的角色在旁輕聲提供指導，化解程式碼世界的孤寂。
   ![圖片](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ fount 建構於一個強大且可擴充的架構之上。後端利用 [Deno](htt
 ## 安裝與移除：一場優雅的相遇與告別
 
 ### 安裝：將 fount 編織入你的世界 – _毫不費力_
+
+> [!TIP]
+>
+> 若你希望從零開始完成配置、搭建與入門，可參閱社群教學 [**fount 從零開始的傻瓜式指南**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies)（教學為中文，非中文使用者可使用瀏覽器翻譯功能閱讀）。
 
 以 fount 開啟你的旅程，這是一個穩定可靠的平台。只需幾次簡單的點擊或指令，fount 的世界便會徐徐展開。
 

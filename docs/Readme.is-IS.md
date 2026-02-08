@@ -24,6 +24,8 @@ Við teljum að **mjög skilvirk framleiðnitól** og **grípandi tilfinningaleg
 
 Eftir ![relative date](https://img.shields.io/date/1727107200?label=Tími%20varið) af markvissri fínpússun, þar sem áhugi ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Þátttakendur) og lifandi samfélag með ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Virkir%20Notendur) hefur komið saman, er fount nú orðinn þroskaður, stöðugur og sífellt þróandi vettvangur fyrir gervigreindarsamskipti.
 
+Ef þú vilt stilla, setja upp og byrja frá grunni geturðu skoðað samfélagsleiðbeiningarnar [**fount leiðarvísir fyrir byrjendur frá grunni**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (leiðbeiningarnar eru á kínversku, notendur sem ekki tala kínversku geta notað þýðingaraðgerð vafrans til að lesa þær).
+
 ![Mynd](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount leggur áherslu á að flétta persónur inn í vefnað lífs þíns, og v
   ![Mynd](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Mynd](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Samþætting við vafra**
+  Samþættu persónur í vafraviðbætur, sem gerir þeim kleift að **sjá og breyta** innihaldi síðna í vafranum þínum, og raungera þannig „vafra um vefinn með gervigreind“.
+  Þú getur sagt við persónuna þína: Hæ XX, hjálpaðu mér að breyta litnum á þessari síðu og bæta við skreytingum.
+  ![Mynd](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **Samþætting við IDE**
+  Samþættu persónur í IDE eins og JetBrains, neovim, Zed o.fl., sem gerir þeim kleift að veita samhengisviðkvæma aðstoð og tillögur á meðan þú skrifar kóða, rétt eins og Cursor Agent eða GitHub Copilot.
+  ![Mynd](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **Kyrrð flugstöðvarinnar (ásamt [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Þegar skipanir í flugstöðinni mistakast, láttu persónuna þína veita leiðsögn með lágværri röddu, og leysa upp einmanaleikann í heimi kóðans.
   ![Mynd](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ fount er byggt á öflugri og stækkanlegri uppbyggingu. Bakendinn nýtir örygg
 ## Uppsetning og fjarlæging: Glæsileg kynni og kveðja
 
 ### Uppsetning: Fléttaðu fount inn í heiminn þinn – _áreynslulaust_
+
+> [!TIP]
+>
+> Ef þú vilt stilla, setja upp og byrja frá grunni geturðu skoðað samfélagsleiðbeiningarnar [**fount leiðarvísir fyrir byrjendur frá grunni**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (leiðbeiningarnar eru á kínversku, notendur sem ekki tala kínversku geta notað þýðingaraðgerð vafrans til að lesa þær).
 
 Byrjaðu ferðalagið með fount, stöðugum og áreiðanlegum vettvangi. Með nokkrum einföldum smellum eða skipunum mun heimur fount opnast hægt og rólega.
 

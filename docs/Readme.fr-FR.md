@@ -24,6 +24,8 @@ Nous pensons que les **outils de productivité très efficaces** et l'**interact
 
 Après ![relative date](https://img.shields.io/date/1727107200?label=Temps%20Consacré) de raffinement dédié, intégrant la passion de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributeurs) et une communauté dynamique de ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Utilisateurs%20Actifs), fount est désormais une plateforme d'interaction IA mature, stable et en constante évolution.
 
+Si vous souhaitez configurer, installer et démarrer à partir de zéro, vous pouvez consulter le tutoriel de la communauté [**Guide fount pour les nuls à partir de zéro**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (le tutoriel est en chinois, les utilisateurs non sinophones peuvent utiliser la fonction de traduction du navigateur pour le lire).
+
 ![Image](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount s'efforce de tisser des personnages dans le tissu même de votre vie, offr
   ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Image](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Intégration au Navigateur**
+  Intégrez des personnages dans des extensions de navigateur, leur permettant de **voir et de modifier** le contenu des pages de votre navigateur, réalisant ainsi véritablement "surfer sur le web avec l'IA".
+  Vous pouvez dire à votre personnage : Hé XX, aide-moi à changer la couleur de cette page et ajoute quelques décorations.
+  ![Image](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **Intégration à l'IDE**
+  Intégrez des personnages dans des IDE comme JetBrains, neovim, Zed, etc., leur permettant de fournir une assistance et des suggestions contextuelles pendant que vous écrivez du code, tout comme Cursor Agent ou GitHub Copilot.
+  ![Image](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **Sérénité du Terminal (avec [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Lorsqu'une commande du terminal échoue, laissez votre personnage vous offrir un mot de guidage silencieux, apaisant la solitude du monde numérique.
   ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 ## Installation & Suppression : Une Rencontre et un Adieu Élégants
 
 ### Installation : Intégrer fount à votre monde – _Sans Effort_
+
+> [!TIP]
+>
+> Si vous souhaitez configurer, installer et démarrer à partir de zéro, vous pouvez consulter le tutoriel de la communauté [**Guide fount pour les nuls à partir de zéro**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (le tutoriel est en chinois, les utilisateurs non sinophones peuvent utiliser la fonction de traduction du navigateur pour le lire).
 
 Embarquez pour votre voyage avec fount, une plateforme stable et fiable. Quelques clics ou commandes simples, et le monde de fount se dévoile.
 
