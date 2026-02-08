@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Перезапуск завдання ${partpath} для користувача ${username}: ${uid}",
+			"pausingJob": "Призупинення завдання ${partpath} для користувача ${username}: ${uid}",
 			"preloadingParts": "Попереднє завантаження ${count} частин"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Вийти",
 					"tooltip": "Вийти з програми"
+				},
+				"clearTerminalScreen": {
+					"title": "Очистити екран терміналу",
+					"tooltip": "Очистіть екран терміналу"
 				}
 			}
 		},

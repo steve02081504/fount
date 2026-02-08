@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "正在重啟用戶 ${username} 的 ${partpath} 任務：${uid}",
+			"pausingJob": "正在暫停用戶 ${username} 的 ${partpath} 任務：${uid}",
 			"preloadingParts": "正在預加載 ${count} 個部件"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "離開",
 					"tooltip": "離開應用程式"
+				},
+				"clearTerminalScreen": {
+					"title": "清空終端機螢幕",
+					"tooltip": "清空終端機螢幕"
 				}
 			}
 		},

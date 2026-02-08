@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Restarting ${partpath} task for user ${username}: ${uid}",
+			"pausingJob": "Pausing ${partpath} task for user ${username}: ${uid}",
 			"preloadingParts": "Preloading ${count} parts"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Exit",
 					"tooltip": "Exit the application"
+				},
+				"clearTerminalScreen": {
+					"title": "Clear the terminal screen",
+					"tooltip": "Clear the terminal screen"
 				}
 			}
 		},

@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "🔄👤 ${partpath} ➡️ 🧩${username} 🆔${uid}",
+			"pausingJob": "⏸️👤 ${partpath} ➡️ 🧩${username} 🆔${uid}",
 			"preloadingParts": "🔄🧩*${count}"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "🚪",
 					"tooltip": "🚪"
+				},
+				"clearTerminalScreen": {
+					"title": "🧹🖥️",
+					"tooltip": "🧹🖥️"
 				}
 			}
 		},

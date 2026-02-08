@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "إعادة تشغيل مهمة ${partpath} للمستخدم ${username}: ${uid}",
+			"pausingJob": "الإيقاف المؤقت لمهمة ${partpath} للمستخدم ${username}: ${uid}",
 			"preloadingParts": "التحميل المسبق لأجزاء ${count}."
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "خروج",
 					"tooltip": "الخروج من التطبيق"
+				},
+				"clearTerminalScreen": {
+					"title": "مسح الشاشة الطرفية",
+					"tooltip": "امسح الشاشة الطرفية"
 				}
 			}
 		},

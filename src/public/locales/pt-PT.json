@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Para o utilizador ${username}, a reiniciar a tarefa ${partpath}: ${uid}",
+			"pausingJob": "A pausar a tarefa ${partpath} para o utilizador ${username}: ${uid}",
 			"preloadingParts": "Pré-carregando ${count} peças"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Sair",
 					"tooltip": "Sair da aplicação"
+				},
+				"clearTerminalScreen": {
+					"title": "Limpar o ecrã do terminal",
+					"tooltip": "Limpar o ecrã do terminal"
 				}
 			}
 		},

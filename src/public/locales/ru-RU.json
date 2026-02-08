@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Перезапуск задачи ${partpath} для пользователя ${username}: ${uid}",
+			"pausingJob": "Приостановка задачи ${partpath} для пользователя ${username}: ${uid}",
 			"preloadingParts": "Предварительная загрузка компонентов: ${count}"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Выход",
 					"tooltip": "Выйти из приложения"
+				},
+				"clearTerminalScreen": {
+					"title": "Очистить экран терминала",
+					"tooltip": "Очистить экран терминала"
 				}
 			}
 		},

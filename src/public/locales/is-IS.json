@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Fyrir notandann ${username}, endurræsir ${partpath} verkefni: ${uid}",
+			"pausingJob": "Gerir hlé á ${partpath} verkefni fyrir notandann ${username}: ${uid}",
 			"preloadingParts": "Forhleður ${count} hluta"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Hætta",
 					"tooltip": "Hætta í forritinu"
+				},
+				"clearTerminalScreen": {
+					"title": "Hreinsaðu flugstöðvarskjáinn",
+					"tooltip": "Hreinsaðu flugstöðvarskjáinn"
 				}
 			}
 		},

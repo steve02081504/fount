@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Starte Aufgabe ${partpath} für Benutzer ${username} neu: ${uid}",
+			"pausingJob": "Pausiere ${partpath}-Aufgabe für Benutzer ${username}: ${uid}",
 			"preloadingParts": "${count} Teile werden vorab geladen"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Beenden",
 					"tooltip": "Anwendung beenden"
+				},
+				"clearTerminalScreen": {
+					"title": "Terminalbildschirm leeren",
+					"tooltip": "Terminalbildschirm leeren"
 				}
 			}
 		},

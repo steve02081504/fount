@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Đang khởi động lại tác vụ ${partpath} cho người dùng ${username}: ${uid}",
+			"pausingJob": "Đang tạm dừng tác vụ ${partpath} cho người dùng ${username}: ${uid}",
 			"preloadingParts": "Đang tải trước ${count} phần"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Thoát",
 					"tooltip": "Thoát khỏi ứng dụng"
+				},
+				"clearTerminalScreen": {
+					"title": "Xóa màn hình terminal",
+					"tooltip": "Xóa màn hình terminal"
 				}
 			}
 		},

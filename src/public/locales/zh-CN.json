@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "正在重启用户 ${username} 的 ${partpath} 任务：${uid}",
+			"pausingJob": "正在暂停用户 ${username} 的 ${partpath} 任务：${uid}",
 			"preloadingParts": "正在预加载 ${count} 个部件"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "退出",
 					"tooltip": "退出应用程序"
+				},
+				"clearTerminalScreen": {
+					"title": "清空终端屏幕",
+					"tooltip": "清空终端屏幕"
 				}
 			}
 		},
