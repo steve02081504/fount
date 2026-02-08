@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "उपयोगकर्ता ${username} का ${partpath} कार्य (${uid}) पुनः आरंभ किया जा रहा है",
+			"pausingJob": "उपयोगकर्ता ${username} के लिए ${partpath} कार्य को रोका जा रहा है: ${uid}",
 			"preloadingParts": "${count} भागों को प्रीलोड करना"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "बाहर निकलें",
 					"tooltip": "एप्लिकेशन से बाहर निकलें"
+				},
+				"clearTerminalScreen": {
+					"title": "टर्मिनल स्क्रीन साफ़ करें",
+					"tooltip": "टर्मिनल स्क्रीन साफ़ करें"
 				}
 			}
 		},

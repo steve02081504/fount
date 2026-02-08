@@ -101,15 +101,10 @@ async function pauseJobsOfUser(username) {
 	for (const partpath in jobs)
 		for (const uid in jobs[partpath])
 			promises.push((async () => {
-				try {
-					const part = await loadPart(username, partpath)
-					if (typeof part.interfaces?.jobs?.PauseJob === 'function')
-						await part.interfaces.jobs.PauseJob(username, uid)
-				}
-				catch (err) {
-					console.error(err)
-				}
-			})())
+				console.logI18n('fountConsole.jobs.pausingJob', { username, partpath, uid })
+				const part = await loadPart(username, partpath)
+				await part.interfaces.jobs.PauseJob(username, uid)
+			})().catch(console.error))
 	await Promise.all(promises)
 	return promises.length
 }

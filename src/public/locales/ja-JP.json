@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "ユーザー ${username} のタスク ${partpath} を再起動しています: ${uid}",
+			"pausingJob": "ユーザー ${username} の ${partpath} タスクを一時停止しています: ${uid}",
 			"preloadingParts": "${count} 個のパーツをプリロード中"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "終了",
 					"tooltip": "アプリケーションを終了します"
+				},
+				"clearTerminalScreen": {
+					"title": "ターミナルをクリア",
+					"tooltip": "ターミナル画面のクリア"
 				}
 			}
 		},

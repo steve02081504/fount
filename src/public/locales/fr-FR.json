@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Redémarrage de la tâche ${partpath} pour l'utilisateur ${username} : ${uid}",
+			"pausingJob": "Suspension de la tâche ${partpath} pour l'utilisateur ${username} : ${uid}",
 			"preloadingParts": "Préchargement de ${count} composants"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Quitter",
 					"tooltip": "Quitter l'application"
+				},
+				"clearTerminalScreen": {
+					"title": "Effacer l'écran du terminal",
+					"tooltip": "Effacer l'écran du terminal"
 				}
 			}
 		},

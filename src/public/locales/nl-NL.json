@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "Voor gebruiker ${username}, taak ${partpath} opnieuw starten: ${uid}",
+			"pausingJob": "Taak ${partpath} onderbreken voor gebruiker ${username}: ${uid}",
 			"preloadingParts": "${count} onderdelen vooraf laden"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "Afsluiten",
 					"tooltip": "Sluit de applicatie af"
+				},
+				"clearTerminalScreen": {
+					"title": "Wis het terminalscherm",
+					"tooltip": "Wis het terminalscherm"
 				}
 			}
 		},

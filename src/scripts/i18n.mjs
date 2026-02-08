@@ -15,11 +15,11 @@ import { loadJsonFile } from './json_loader.mjs'
 import { ms } from './ms.mjs'
 
 /**
- * @typedef {import('../../decl/locale_data.ts').LocaleData} LocaleData
- * @typedef {import('../../decl/locale_data.ts').LocaleKey} LocaleKey
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
+ * @typedef {import('../decl/locale_data.ts').LocaleData} LocaleData
+ * @typedef {import('../decl/locale_data.ts').LocaleKey} LocaleKey
+ * @typedef {import('../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * @typedef {import('../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * @typedef {import('../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
 
 const console = baseConsole

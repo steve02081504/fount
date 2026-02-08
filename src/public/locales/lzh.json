@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "正為 ${username} 復啟 ${partpath} 之役：${uid}",
+			"pausingJob": "正暫止 ${username} 之 ${partpath} 役：${uid}",
 			"preloadingParts": "正預載 ${count} 個部件"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "掛冠而去",
 					"tooltip": "退出 fount"
+				},
+				"clearTerminalScreen": {
+					"title": "滌除終端幕",
+					"tooltip": "滌除終端幕"
 				}
 			}
 		},

@@ -30,6 +30,7 @@ export type LocaleData = {
 		}
 		jobs: {
 			restartingJob: string
+			pausingJob: string
 			preloadingParts: string
 		}
 		ipc: {
@@ -102,6 +103,10 @@ export type LocaleData = {
 					tooltip: string
 				}
 				exit: {
+					title: string
+					tooltip: string
+				}
+				clearTerminalScreen: {
 					title: string
 					tooltip: string
 				}
@@ -2457,6 +2462,7 @@ export type LocaleKeyParams = {
 	'fountConsole.ipc.runPartLog': { args: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.sendCommandFailed': { error: string | number }
 	'fountConsole.ipc.socketError': { error: string | number }
+	'fountConsole.jobs.pausingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.jobs.preloadingParts': { count: string | number }
 	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }

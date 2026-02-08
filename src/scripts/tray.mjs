@@ -1,9 +1,11 @@
+import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import os from 'node:os'
 import process from 'node:process'
 
 import { on_shutdown } from 'npm:on-shutdown'
 import open from 'npm:open'
+import supportsAnsi from 'npm:supports-ansi'
 
 import { in_docker, in_termux } from '../scripts/env.mjs'
 import { console, geti18n } from '../scripts/i18n.mjs'
@@ -40,6 +42,7 @@ on_shutdown(() => {
 export async function createTray() {
 	if (in_docker || in_termux) return
 	try {
+		const terminalWorks = process.stdout.writable
 		if (systray) systray.kill()
 		systray = null
 		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/public/pages/favicon.ico' : '/src/public/pages/favicon.png')
@@ -83,29 +86,35 @@ export async function createTray() {
 						tooltip: geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
 						enabled: true
+					},
+					terminalWorks && {
+						title: geti18n('fountConsole.tray.items.clearTerminalScreen.title'),
+						tooltip: geti18n('fountConsole.tray.items.clearTerminalScreen.tooltip'),
+						checked: false,
+						enabled: true
 					}
-				]
+				].filter(Boolean)
 			},
 			debug: false,
 			copyDir: false
 		})
 
-		systray.onClick(action => {
-			switch (action.seq_id) {
-				case 0:
-					open(hosturl)
-					break
-				case 1:
-					open('https://github.com/steve02081504/fount')
-					break
-				case 2:
-					open('https://discord.gg/GtR9Quzq2v')
-					break
-				case 3:
-					restartor()
-					break
-				case 4:
-					process.exit(0)
+		systray.onClick(async action => {
+			let action_id = action.seq_id
+			if (!action_id--) open(hosturl)
+			else if (!action_id--) open('https://github.com/steve02081504/fount')
+			else if (!action_id--) open('https://discord.gg/GtR9Quzq2v')
+			else if (!action_id--) restartor()
+			else if (!action_id--) process.exit(0)
+			else if (terminalWorks && !action_id--) {
+				const terminalImage = await import('npm:terminal-image').catch(_ => 0)
+				if (supportsAnsi) process.stdout.write('\x1Bc')
+				else console.clear()
+				await fetch('https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b').
+					then(res => res.arrayBuffer()).
+					then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
+					then(console.noBreadcrumb.log).
+					catch(_ => 0)
 			}
 		})
 

@@ -23,6 +23,7 @@
 		},
 		"jobs": {
 			"restartingJob": "${username} 사용자에 대한 ${partpath} 작업 다시 시작: ${uid}",
+			"pausingJob": "${username} 사용자에 대한 ${partpath} 작업 일시 중지: ${uid}",
 			"preloadingParts": "${count}개 부품 사전 로드 중"
 		},
 		"ipc": {
@@ -97,6 +98,10 @@
 				"exit": {
 					"title": "종료",
 					"tooltip": "애플리케이션 종료"
+				},
+				"clearTerminalScreen": {
+					"title": "터미널 화면 지우기",
+					"tooltip": "터미널 화면 지우기"
 				}
 			}
 		},
