@@ -44,6 +44,8 @@ We believe that **highly efficient productivity tools** and **immersive emotiona
 
 After ![relative date](https://img.shields.io/date/1727107200?label=Time%20Spent) of dedicated refinement, incorporating the passion of ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributors), and a vibrant community with ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Active%20Users), fount is now a mature, stable, and continuously evolving AI interaction platform.
 
+If you wish to configure, set up, and get started from scratch, you can refer to the community tutorial [**fount Guide for Dummies from Scratch**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (the tutorial is in Chinese, non-Chinese users can use the browser translation function to read it).
+
 ![Image](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -117,6 +119,15 @@ fount strives to weave characters into the very fabric of your life, offering co
   ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Image](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Browser Integration**
+  Integrate characters into browser extensions, allowing them to **see and modify** the content of pages in your browser, truly realizing "surfing the web with AI".
+  You can say to your character: Hey XX, help me change the color of this page and add some decorations.
+  ![Image](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE Integration**
+  Integrate characters into IDEs like JetBrains, neovim, Zed, etc., allowing them to provide context-aware assistance and suggestions while you write code, just like Cursor Agent or GitHub Copilot.
+  ![Image](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **Terminal Serenity (with [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   When a terminal command falters, let your character offer a quiet word of guidance, easing the solitude of the digital world.
   ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -131,13 +142,13 @@ fount strives to weave characters into the very fabric of your life, offering co
 For the creator, fount offers a clearer path to bringing your AI characters to life.
 
 - **Revolutionary AI-Assisted Creation**
-  Describe your character in a single sentence, and our intelligent AI assistant will craft a fully realized persona. This simplifies the initial setup, allowing you to focus on refining and interacting with your creation.
+  Describe your character in a single sentence, and our intelligent AI assistant will craft a fully realised persona. This simplifies the initial setup, allowing you to focus on refining and interacting with your creation.
 
 - **The Magic of Code, Easier Than You Imagine**
   In fount, code is a form of modern magic. With the gentle guidance of our community and the illuminating aid of AI, learning it is surprisingly easy. You'll find that defining character logic with code can be an intuitive and maintainable way to craft characters whose responses are _woven_ from your own logic.
 
 - **Start with Ready-Made Magic: A Treasure Trove of Templates**
-  fount's community provides a wealth of pre-crafted character and persona templates. They act as "living blueprints," easy to adapt and customize, providing a fantastic starting point.
+  fount's community provides a wealth of pre-crafted character and persona templates. They act as "living blueprints," easy to adapt and customise, providing a fantastic starting point.
 
 - **Embedded Resources**
   Weave images, audio, and other resources directly into your characters, making their presence all the more tangible.
@@ -159,7 +170,7 @@ fount is built upon a robust and scalable architecture. The backend leverages th
 
 ### Expansion: A Tapestry Woven from Diverse Threads
 
-In the world of fount, modularity reigns supreme. A rich ecosystem of components intertwines to create the tapestry of your experience. All of these can be effortlessly installed, expanded, and customized by users.
+In the world of fount, modularity reigns supreme. A rich ecosystem of components intertwines to create the tapestry of your experience. All of these can be effortlessly installed, expanded, and customised by users.
 
 - **chars (Characters):** The heart of fount, where personalities are born.
 - **worlds (Worlds):** _Far more than mere lorebooks._ They are the silent architects of reality, able to append knowledge, influence decisions, and even manipulate chat history.
@@ -174,6 +185,10 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 ## Installation & Removal: An Elegant Encounter and Farewell
 
 ### Installation: Weaving fount Into Your World – _Effortlessly_
+
+> [!TIP]
+>
+> If you wish to configure, set up, and get started from scratch, you can refer to the community tutorial [**fount Guide for Dummies from Scratch**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (the tutorial is in Chinese, non-Chinese users can use the browser translation function to read it).
 
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
@@ -222,7 +237,7 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
   fountInstaller init
   ```
 
-### Git Installation: For Those Who Prefer a Touch of Magic
+### Git Installation: For those who prefer a touch of magic
 
 If you already have Git installed, embracing fount is as simple as running a script.
 

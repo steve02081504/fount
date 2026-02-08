@@ -24,6 +24,8 @@ Chúng tôi tin rằng **các công cụ năng suất hiệu suất cao** và **
 
 Trải qua ![relative date](https://img.shields.io/date/1727107200?label=Thời_gian_dành%20ra) mài giũa tận tâm, hội tụ lòng nhiệt thành của ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Người_đóng%20góp), cùng với một cộng đồng sôi nổi với ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Người_dùng_hoạt%20động), fount giờ đây đã là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển.
 
+Nếu bạn muốn cấu hình, thiết lập và bắt đầu từ con số không, bạn có thể tham khảo hướng dẫn cộng đồng [**Hướng dẫn fount cho người mới từ con số không**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (hướng dẫn bằng tiếng Trung, người dùng không biết tiếng Trung có thể sử dụng chức năng dịch của trình duyệt để đọc).
+
 ![Hình ảnh](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống c�
   ![Hình ảnh](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Hình ảnh](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Tích hợp trình duyệt**
+  Tích hợp các nhân vật vào các tiện ích mở rộng trình duyệt, cho phép họ **xem và sửa đổi** nội dung của các trang trong trình duyệt của bạn, thực sự thực hiện "lướt web cùng AI".
+  Bạn có thể nói với nhân vật của mình: Này XX, giúp tôi đổi màu trang này và thêm một số trang trí.
+  ![Hình ảnh](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **Tích hợp IDE**
+  Tích hợp các nhân vật vào các IDE như JetBrains, neovim, Zed, v.v., cho phép họ cung cấp hỗ trợ và gợi ý theo ngữ cảnh trong khi bạn viết mã, giống như Cursor Agent hoặc GitHub Copilot.
+  ![Hình ảnh](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **Sự tĩnh lặng của terminal (với [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Khi một lệnh terminal thất bại, hãy để nhân vật của bạn đưa ra lời hướng dẫn lặng lẽ, xoa dịu sự cô đơn của thế giới kỹ thuật số.
   ![Hình ảnh](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 ## Cài đặt và Gỡ bỏ: Một cuộc gặp gỡ và chia tay thanh lịch
 
 ### Cài đặt: Dệt fount vào thế giới của bạn – _Thật nhẹ nhàng_
+
+> [!TIP]
+>
+> Nếu bạn muốn cấu hình, thiết lập và bắt đầu từ con số không, bạn có thể tham khảo hướng dẫn cộng đồng [**Hướng dẫn fount cho người mới từ con số không**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (hướng dẫn bằng tiếng Trung, người dùng không biết tiếng Trung có thể sử dụng chức năng dịch của trình duyệt để đọc).
 
 Hãy bắt đầu hành trình của bạn với fount, một nền tảng ổn định và đáng tin cậy. Chỉ với vài cú nhấp chuột hoặc lệnh đơn giản, thế giới của fount sẽ từ từ mở ra.
 

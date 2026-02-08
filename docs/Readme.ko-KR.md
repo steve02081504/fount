@@ -24,6 +24,8 @@ fount는 **현대적이고 확장 가능한 AI 에이전트 런타임 환경**�
 
 ![relative date](https://img.shields.io/date/1727107200?label=소요%20시간)의 헌신적인 다듬기 과정을 거쳤으며, ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=기여자)들의 열정과, ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=활성%20사용자)를 가진 활발한 커뮤니티와 함께, fount는 이제 성숙하고 안정적이며 지속적으로 발전하는 AI 상호작용 플랫폼입니다.
 
+처음부터 구성, 설치 및 시작하고 싶다면 커뮤니티 튜토리얼 [**fount 초보자를 위한 처음부터 가이드**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies)를 참조하세요(튜토리얼은 중국어로 되어 있으며, 중국어 사용자가 아닌 경우 브라우저 번역 기능을 사용하여 읽을 수 있습니다).
+
 ![이미지](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount는 캐릭터를 당신의 삶이라는 직물에 짜 넣으려 노력하�
   ![이미지](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![이미지](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **브라우저 통합**
+  캐릭터를 브라우저 확장 프로그램에 통합하여 브라우저의 페이지 콘텐츠를 **보고 수정**할 수 있도록 함으로써 진정한 "AI와 함께하는 웹 서핑"을 실현합니다.
+  캐릭터에게 이렇게 말해 보세요: 이봐 XX, 이 페이지의 색상을 바꾸고 장식을 좀 추가해 줘.
+  ![이미지](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE 통합**
+  캐릭터를 JetBrains, neovim, Zed 등의 IDE에 통합하여 코드를 작성할 때 Cursor Agent나 GitHub Copilot처럼 문맥 인식 지원 및 제안을 제공할 수 있도록 합니다.
+  ![이미지](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **터미널의 평온함 ([fount-pwsh](https://github.com/steve02081504/fount-pwsh)와 함께)**
   터미널 명령이 실패했을 때, 당신의 캐릭터가 조용한 안내의 말을 건네며 디지털 세계의 고독을 달래줍니다.
   ![이미지](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ fount의 세계에서는 모듈성이 최고입니다. 풍부한 컴포넌트 �
 ## 설치와 제거: 우아한 만남과 작별
 
 ### 설치: fount를 당신의 세계에 엮어 넣기 – _손쉽게_
+
+> [!TIP]
+>
+> 처음부터 구성, 설치 및 시작하고 싶다면 커뮤니티 튜토리얼 [**fount 초보자를 위한 처음부터 가이드**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies)를 참조하세요(튜토리얼은 중국어로 되어 있으며, 중국어 사용자가 아닌 경우 브라우저 번역 기능을 사용하여 읽을 수 있습니다).
 
 안정적이고 신뢰할 수 있는 플랫폼, fount와 함께 여정을 시작하세요. 몇 번의 간단한 클릭이나 명령만으로 fount의 세계가 펼쳐집니다.
 

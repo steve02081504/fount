@@ -24,6 +24,8 @@ Creemos que **herramientas de productividad de alta eficiencia** y la **interacc
 
 Después de ![relative date](https://img.shields.io/date/1727107200?label=Tiempo%20Dedicado) de refinamiento dedicado, con la pasión de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contribuidores) y una comunidad vibrante con ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Usuarios%20Activos), fount es ahora una plataforma de interacción de IA madura, estable y en continua evolución.
 
+Si deseas configurar, instalar y empezar desde cero, puedes consultar el tutorial de la comunidad [**Guía de fount para principiantes desde cero**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (el tutorial está en chino, los usuarios que no hablen chino pueden usar la función de traducción del navegador para leerlo).
+
 ![Imagen](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount se esfuerza por tejer personajes en el tejido mismo de tu vida, ofreciendo
   ![Imagen](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Imagen](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Integración con el Navegador**
+  Integra personajes en extensiones del navegador, permitiéndoles **ver y modificar** el contenido de las páginas en tu navegador, logrando verdaderamente "navegar por la web con IA".
+  Puedes decirle a tu personaje: Oye XX, ayúdame a cambiar el color de esta página y añade algo de decoración.
+  ![Imagen](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **Integración con IDE**
+  Integra personajes en IDEs como JetBrains, neovim, Zed, etc., permitiéndoles proporcionar asistencia y sugerencias conscientes del contexto mientras escribes código, al igual que Cursor Agent o GitHub Copilot.
+  ![Imagen](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **Serenidad en el Terminal (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Cuando un comando del terminal falla, deja que tu personaje te ofrezca una palabra de guía en voz baja, aliviando la soledad del mundo digital.
   ![Imagen](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ En el mundo de fount, la modularidad reina suprema. Un rico ecosistema de compon
 ## Instalación y Eliminación: Un Encuentro y Despedida Elegante
 
 ### Instalación: Tejiendo fount en tu Mundo – _Sin Esfuerzo_
+
+> [!TIP]
+>
+> Si deseas configurar, instalar y empezar desde cero, puedes consultar el tutorial de la comunidad [**Guía de fount para principiantes desde cero**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (el tutorial está en chino, los usuarios que no hablen chino pueden usar la función de traducción del navegador para leerlo).
 
 Embárcate en tu viaje con fount, una plataforma estable y confiable. Unos pocos clics o comandos simples, y el mundo de fount se despliega.
 

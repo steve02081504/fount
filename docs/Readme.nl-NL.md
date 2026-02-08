@@ -24,6 +24,8 @@ Wij geloven dat **zeer efficiënte productiviteitstools** en **meeslepende emoti
 
 Na ![relative date](https://img.shields.io/date/1727107200?label=Besteedde%20Tijd) van toegewijde verfijning, waarin de passie van ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Bijdragers) is opgenomen, en met een levendige gemeenschap met ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Actieve%20Gebruikers), is fount nu een volwassen, stabiel en voortdurend evoluerend AI-interactieplatform.
 
+Als u wilt configureren, instellen en vanaf nul wilt beginnen, kunt u de community-tutorial [**fount-gids voor dummies vanaf nul**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) raadplegen (de tutorial is in het Chinees, niet-Chinese gebruikers kunnen de vertaalfunctie van de browser gebruiken om deze te lezen).
+
 ![Afbeelding](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fount streeft ernaar om personages te verweven in het weefsel van je leven, en b
   ![Afbeelding](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Afbeelding](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **Browserintegratie**
+  Integreer personages in browserextensies, waardoor ze de inhoud van pagina's in uw browser kunnen **zien en aanpassen**, waardoor "surfen op het web met AI" echt wordt gerealiseerd.
+  U kunt tegen uw personage zeggen: Hé XX, help me de kleur van deze pagina te veranderen en voeg wat decoraties toe.
+  ![Afbeelding](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE-integratie**
+  Integreer personages in IDE's zoals JetBrains, neovim, Zed, enz., zodat ze contextbewuste assistentie en suggesties kunnen bieden terwijl u code schrijft, net als Cursor Agent of GitHub Copilot.
+  ![Afbeelding](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **De rust van de terminal (in combinatie met [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Wanneer een terminalcommando mislukt, laat je personage dan zachtjes begeleiding bieden, en verlicht de eenzaamheid in de wereld van code.
   ![Afbeelding](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ In de wereld van fount is modulariteit van het grootste belang. Een rijk ecosyst
 ## Installatie en verwijdering: Een elegante ontmoeting en afscheid
 
 ### Installatie: Verweef fount in je wereld – _moeiteloos_
+
+> [!TIP]
+>
+> Als u wilt configureren, instellen en vanaf nul wilt beginnen, kunt u de community-tutorial [**fount-gids voor dummies vanaf nul**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) raadplegen (de tutorial is in het Chinees, niet-Chinese gebruikers kunnen de vertaalfunctie van de browser gebruiken om deze te lezen).
 
 Begin je reis met fount, een stabiel en betrouwbaar platform. Met slechts een paar simpele klikken of commando's ontvouwt de wereld van fount zich.
 

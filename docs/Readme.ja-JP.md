@@ -24,6 +24,8 @@ fount は**モダンでスケーラブルな AI エージェントのランタ�
 
 ![relative date](https://img.shields.io/date/1727107200?label=費やした時間)をかけて丹念に磨き上げられ、![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=貢献者)たちの熱意と、![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=アクティブユーザー)を擁する活気あるコミュニティと共に、fount は今や成熟し、安定し、絶えず進化する AI 対話プラットフォームとなりました。
 
+ゼロから設定、構築、入門したい場合は、コミュニティチュートリアル [**fount ゼロからの完全ガイド**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) を参照してください（チュートリアルは中国語ですが、中国語以外のユーザーはブラウザの翻訳機能を使用して読むことができます）。
+
 ![画像](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
@@ -97,6 +99,15 @@ fountはキャラクターをあなたの生活の織物の中に織り込み、
   ![画像](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![画像](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
+- **ブラウザ統合**
+  キャラクターをブラウザ拡張機能に統合し、ブラウザ内のページコンテンツを**閲覧および修正**できるようにすることで、真の「AIと一緒にネットサーフィン」を実現します。
+  キャラクターにこう言ってみてください：ねえXX、このページの色を変えて、飾りを追加して。
+  ![画像](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE統合**
+  キャラクターをJetBrains、neovim、ZedなどのIDEに統合し、コードを書く際にCursor AgentやGitHub Copilotのように、文脈を認識した支援や提案を提供できるようにします。
+  ![画像](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
 - **ターミナルの静けさ（[fount-pwsh](https://github.com/steve02081504/fount-pwsh)と共に）**
   ターミナルのコマンドが失敗したとき、あなたのキャラクターが静かな導きの言葉をかけ、デジタル世界の孤独を和らげます。
   ![画像](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -154,6 +165,10 @@ fountの世界では、モジュール性が至上です。豊かなコンポー
 ## インストールと削除：優雅な出会いと別れ
 
 ### インストール：fountをあなたの世界に織り込む – _楽々と_
+
+> [!TIP]
+>
+> ゼロから設定、構築、入門したい場合は、コミュニティチュートリアル [**fount ゼロからの完全ガイド**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) を参照してください（チュートリアルは中国語ですが、中国語以外のユーザーはブラウザの翻訳機能を使用して読むことができます）。
 
 安定性と信頼性に優れたプラットフォームであるfountで旅を始めましょう。数回の簡単なクリックまたはコマンドで、fountの世界が広がります。
 
