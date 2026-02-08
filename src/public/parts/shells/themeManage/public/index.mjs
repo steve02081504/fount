@@ -51,6 +51,35 @@ async function fetchCustomThemes() {
 // --- List View Logic ---
 
 /**
+ * 创建「自动」主题预览卡片（亮/暗各占一半）。
+ * @returns {Promise<HTMLElement>} 自动主题预览卡片。
+ */
+async function createAutoPreview() {
+	const container = document.createElement('div')
+	container.classList.add('theme-preview-card', 'cursor-pointer', 'auto-theme-container')
+	container.dataset.theme = 'auto'
+
+	const darkHalf = await renderTemplate('theme_preview', {
+		theme: 'dark',
+		name: 'auto',
+		isCustom: false,
+	})
+	const lightHalf = await renderTemplate('theme_preview', {
+		theme: 'light',
+		name: 'auto',
+		isCustom: false,
+	})
+
+	darkHalf.classList.add('auto-theme-half', 'auto-theme-dark')
+	lightHalf.classList.add('auto-theme-half', 'auto-theme-light')
+
+	container.appendChild(lightHalf)
+	container.appendChild(darkHalf)
+
+	return container
+}
+
+/**
  * 渲染主题列表，包括自定义主题和内置主题，并设置搜索功能。
  * @returns {Promise<void>}
  */
@@ -59,8 +88,9 @@ async function renderList() {
 	await fetchCustomThemes()
 
 	// Prepare data for search/render
-	// Merged list: custom (object) first, then built-in (string)
+	// Merged list: "auto" (follow system) first, then custom, then built-in from daisyUI
 	const allItems = [
+		{ id: 'auto', type: 'builtin' },
 		...customThemes.map((t) => ({ id: t.id, type: 'custom', data: t })),
 		...builtin_themes.map((t) => ({ id: t, type: 'builtin' })),
 	]
@@ -108,7 +138,8 @@ async function renderList() {
 
 			const previews = await Promise.all(filtered.map(async (item) => {
 				const isCustom = item.type === 'custom'
-				const preview = await renderTemplate('theme_preview', {
+
+				const preview = item.id === 'auto' ? await createAutoPreview() : await renderTemplate('theme_preview', {
 					theme: item.id,
 					name: item.id,
 					isCustom,
@@ -136,7 +167,7 @@ async function renderList() {
 						() => handleDelete(item.id),
 					)
 				}
-				preview.querySelector('.clone-btn')?.addEventListener(
+				if (item.id !== 'auto') preview.querySelector('.clone-btn')?.addEventListener(
 					'click',
 					() => handleClone(item.id, isCustom),
 				)
@@ -150,15 +181,17 @@ async function renderList() {
 
 /**
  * 更新UI以显示当前选定的主题。
+ * 仅匹配 grid 的直接子卡片，避免选中 auto 卡片内部的 light/dark 半块。
  * @param {string} id - 主题的ID。
  * @returns {void}
  */
 function updateSelectedUI(id) {
-	document.querySelectorAll('.theme-preview-card').forEach((el) =>
+	const grid = document.getElementById('theme-grid')
+	grid?.querySelectorAll(':scope > .theme-preview-card').forEach((el) =>
 		el.classList.remove('selected-theme')
 	)
-	const target = document.querySelector(
-		`.theme-preview-card[data-theme="${id}"]`
+	const target = grid?.querySelector(
+		`:scope > .theme-preview-card[data-theme="${id}"]`
 	)
 	if (target) target.classList.add('selected-theme')
 }
