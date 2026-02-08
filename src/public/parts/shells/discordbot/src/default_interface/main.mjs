@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { setInterval, clearInterval, setTimeout } from 'node:timers'
 
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 
@@ -237,7 +238,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 * @returns {Promise<void>}
 		 */
 		async function DoMessageReply(triggerMessage, channelId) {
-			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(_ => 0) }, 7000)
+			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(_ => 0) }, 7000).unref()
 
 			/**
 			 * 发送消息并缓存AI原始回复对象 (如果提供了)

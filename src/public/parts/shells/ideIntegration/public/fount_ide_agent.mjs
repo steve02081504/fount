@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-env --allow-net
 /**
- * fount IDE Agent：仅将 stdio 与 fount 的 ACP WebSocket 互相转发。（内部使用 Node 风格 API，Deno 通过 node: 兼容层运行）
+ * fount IDE Agent：仅将 stdio 与 fount 的 ACP WebSocket 互相转发。
  * 用法一（推荐）：deno run "https://你的fount地址/parts/shells:ideIntegration/fount_ide_agent.mjs?fount-apikey=KEY&charname=角色id"
  * 用法二：本地运行时用环境变量 FOUNDT_URL、FOUNDT_API_KEY、FOUNDT_CHAR。
  */

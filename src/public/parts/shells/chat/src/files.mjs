@@ -1,9 +1,11 @@
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
+import { setInterval } from 'node:timers'
 
 import blake2b from 'npm:@bitgo/blake2b-wasm'
 import { on_shutdown } from 'npm:on-shutdown'
 
+import { ms } from '../../../../../scripts/ms.mjs'
 import { nicerWriteFileSync } from '../../../../../scripts/nicerWriteFile.mjs'
 import { getAllUserNames, getUserDictionary } from '../../../../../server/auth.mjs'
 /**
@@ -88,5 +90,5 @@ function cleanFiles() {
 /**
  * 清理文件的定时器。
  */
-export const cleanFilesInterval = setInterval(cleanFiles, 60 * 60 * 1000) // every hour
+export const cleanFilesInterval = setInterval(cleanFiles, ms('1h')).unref() // every hour
 on_shutdown(cleanFiles)

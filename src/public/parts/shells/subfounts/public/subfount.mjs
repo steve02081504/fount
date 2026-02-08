@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run -A
-/* global Deno */
 
 /**
  * 独立 Subfount 客户端
@@ -16,8 +15,10 @@
 
 import os from 'node:os'
 import process from 'node:process'
+import { setInterval, clearInterval, setTimeout } from 'node:timers'
 import { serialize } from 'node:v8'
 
+import { exec } from 'npm:@steve02081504/exec'
 import inquirer from 'npm:inquirer'
 import { RTCPeerConnection } from 'npm:node-datachannel/polyfill'
 import { on_shutdown } from 'npm:on-shutdown'
@@ -185,12 +186,7 @@ async function collectDeviceInfo() {
 		const diskUsage = {}
 		if (process.platform === 'win32') {
 			// Windows 平台使用 WMIC 命令
-			const command = new Deno.Command('wmic', {
-				args: ['logicaldisk', 'get', 'DeviceID,Size,FreeSpace'],
-				stdout: 'piped',
-			})
-			const { stdout } = await command.output()
-			const disks = new TextDecoder().decode(stdout)
+			const disks = (await exec('wmic logicaldisk get DeviceID,Size,FreeSpace')).stdout
 			disks.split('\n').slice(1).forEach(line => {
 				const parts = line.trim().split(/\s+/)
 				if (parts.length === 3) {
@@ -208,12 +204,7 @@ async function collectDeviceInfo() {
 		}
 		else if (process.platform === 'linux' || process.platform === 'darwin') {
 			// Linux/macOS 平台使用 df 命令
-			const command = new Deno.Command('df', {
-				args: ['-h'],
-				stdout: 'piped',
-			})
-			const { stdout } = await command.output()
-			const disks = new TextDecoder().decode(stdout)
+			const disks = (await exec('df -h')).stdout
 			disks.split('\n').slice(1).forEach(line => {
 				const parts = line.trim().split(/\s+/)
 				if (parts.length >= 6) {
@@ -389,7 +380,7 @@ async function connectViaTrystero() {
 				hostPeerId = peerId
 				console.log('✓ Successfully connected to host')
 				sendDeviceInfoToHost()
-				deviceInfoUpdateInterval = setInterval(sendDeviceInfoToHost, 15 * 60 * 1000)
+				deviceInfoUpdateInterval = setInterval(sendDeviceInfoToHost, 15 * 60 * 1000).unref()
 			}
 			else if (data.type === 'auth_error') {
 				console.log('✗ Authentication failed, retrying in 5 seconds...')

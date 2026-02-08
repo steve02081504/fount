@@ -1,6 +1,8 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
+import { setInterval, setTimeout } from 'node:timers'
 
+import { ms } from '../../../../../scripts/ms.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
@@ -331,13 +333,10 @@ export function getUserManager(username) {
 }
 
 // --- Periodic Cleanup ---
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
-const MAX_DISCONNECT_AGE_MS = 60 * 60 * 1000 // 1 hour
-
 setInterval(() => {
 	for (const manager of userManagers.values())
-		manager.cleanupOldPages(MAX_DISCONNECT_AGE_MS)
-}, CLEANUP_INTERVAL_MS)
+		manager.cleanupOldPages(ms('1h'))
+}, ms('5m')).unref()
 
 // --- Userscript WebSocket ---
 

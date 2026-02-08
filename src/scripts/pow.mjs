@@ -1,3 +1,5 @@
+import { setInterval } from 'node:timers'
+
 import Cap from 'npm:@cap.js/server'
 
 import { ms } from './ms.mjs'
@@ -89,4 +91,4 @@ export const pow = new Cap({
 })
 
 pow.cleanup()
-setInterval(() => pow.cleanup(), ms('1h'))
+setInterval(() => pow.cleanup(), ms('1h')).unref()

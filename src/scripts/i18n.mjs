@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import process from 'node:process'
+import { setInterval } from 'node:timers'
 
 import { exec } from 'npm:@steve02081504/exec'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
@@ -11,6 +12,7 @@ import { loadData, loadTempData, saveData } from '../server/setting_loader.mjs'
 import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { loadJsonFile } from './json_loader.mjs'
+import { ms } from './ms.mjs'
 
 /**
  * @typedef {import('../../decl/locale_data.ts').LocaleData} LocaleData
@@ -143,7 +145,7 @@ if (localhostLocales[0] === 'zh-CN')
 	setInterval(() => {
 		if (new Date().getDay() === 4)
 			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')
-	}, 5 * 60 * 1000)
+	}, ms('5m')).unref()
 
 /**
  * 为部件添加区域设置数据。
