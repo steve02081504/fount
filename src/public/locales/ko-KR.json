@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기"
 	},
+	"directoryListing": {
+		"title": "디렉토리 인덱스",
+		"description": "Fount 작업 공간에서 파일과 폴더를 탐색하고 탐색하세요.",
+		"indexOf": "색인: ${path}",
+		"name": "이름",
+		"mimeType": "MIME 유형",
+		"size": "크기",
+		"parentLink": "↑ 이전 수준 ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

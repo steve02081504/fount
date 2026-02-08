@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
 	},
+	"directoryListing": {
+		"title": "目錄",
+		"description": "閱覽 fount 案頭之文檔。",
+		"indexOf": "目次：${path}",
+		"name": "名",
+		"mimeType": "格致",
+		"size": "量",
+		"parentLink": "↑ 上層 ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
 		"homepageButton": "Back to Homepage"
 	},
+	"directoryListing": {
+		"title": "Directory Index",
+		"description": "Browse and explore the files and folders in the fount workspace.",
+		"indexOf": "Index: ${path}",
+		"name": "Name",
+		"mimeType": "MIME type",
+		"size": "Size",
+		"parentLink": "↑ Previous level ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

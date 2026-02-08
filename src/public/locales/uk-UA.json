@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
 		"homepageButton": "Повернутися на головну"
 	},
+	"directoryListing": {
+		"title": "індекс каталогу",
+		"description": "Переглядайте та досліджуйте файли та папки в робочій області fount.",
+		"indexOf": "Індекс: ${path}",
+		"name": "назва",
+		"mimeType": "Тип MIME",
+		"size": "розмір",
+		"parentLink": "↑ Попередній рівень ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

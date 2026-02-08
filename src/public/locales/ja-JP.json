@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る"
 	},
+	"directoryListing": {
+		"title": "ディレクトリインデックス",
+		"description": "fountワークスペース内のファイルとフォルダーを参照して探索します。",
+		"indexOf": "インデックス: ${path}",
+		"name": "名前",
+		"mimeType": "MIMEタイプ",
+		"size": "サイズ",
+		"parentLink": "↑ 前のレベル ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

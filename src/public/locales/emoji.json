@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
 	},
+	"directoryListing": {
+		"title": "📂📇",
+		"description": "👀🔭 fount 📦📂📄",
+		"indexOf": "📇: ${path}",
+		"name": "🏷️",
+		"mimeType": "🆔",
+		"size": "⚖️",
+		"parentLink": "🆙 ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

@@ -26,6 +26,7 @@ import {
 } from '../parts_loader.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
 
+import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
@@ -292,8 +293,14 @@ export function registerEndpoints(router) {
 			if (fs.existsSync(path)) {
 				finalPath = path
 				if (fs.statSync(path).isDirectory())
-					if (req.path.endsWith('/')) finalPath += '/index.html'
-					else return res.redirect(301, req.url.replace(req.path, req.path + '/'))
+					if (req.path.endsWith('/')) {
+						const indexPath = path + '/index.html'
+						if (fs.existsSync(indexPath)) finalPath = indexPath
+						else return res.set('Content-Type', 'text/html; charset=utf-8').send(await renderDirectoryListingHtml(req.path, path))
+					}
+					else
+						return res.redirect(301, req.url.replace(req.path, req.path + '/'))
+
 				watchFrontendChanges(`/parts/${partpath}/`, directory)
 				break
 			}

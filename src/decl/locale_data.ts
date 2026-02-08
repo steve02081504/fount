@@ -2274,6 +2274,15 @@ export type LocaleData = {
 		pageNotFoundText: string
 		homepageButton: string
 	}
+	directoryListing: {
+		title: string
+		description: string
+		indexOf: string
+		name: string
+		mimeType: string
+		size: string
+		parentLink: string
+	}
 	code_block: {
 		copy: {
 			dataset: {
@@ -2430,6 +2439,7 @@ export type LocaleKeyParams = {
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.stopped': { charname: string | number }
+	'directoryListing.indexOf': { path: string | number }
 	'discord_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }

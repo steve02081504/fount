@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Directory Listing — fount" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Browse and explore files and folders in your fount workspace." />
+	<meta name="description" content="Browse and explore files and folders in your fount workspace." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="directoryListing.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+<body class="min-h-screen bg-base-200">
+	<div class="p-4 sm:p-8">
+		<main class="max-w-4xl mx-auto">
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h1 id="directory-listing-heading" class="card-title text-2xl break-all" data-path="{{DIRECTORY_PATH}}" data-i18n="directoryListing.indexOf"></h1>
+					<div class="overflow-x-auto">
+						<table class="table table-sm">
+							<thead>
+								<tr>
+									<th data-i18n="directoryListing.name"></th>
+									<th data-i18n="directoryListing.mimeType"></th>
+									<th data-i18n="directoryListing.size"></th>
+								</tr>
+							</thead>
+							<tbody id="directory-listing-tbody">
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+	<script type="application/json" id="directory-data">{{DIRECTORY_DATA}}</script>
+	<script type="module" src="/directory-listing/index.mjs"></script>
+</body>
+</html>

@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
 	},
+	"directoryListing": {
+		"title": "Skráayfirlit",
+		"description": "Skoðaðu og skoðaðu skrárnar og möppurnar á vinnusvæðinu.",
+		"indexOf": "Vísitala: ${path}",
+		"name": "nafn",
+		"mimeType": "MIME tegund",
+		"size": "stærð",
+		"parentLink": "↑ Fyrra stig ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {

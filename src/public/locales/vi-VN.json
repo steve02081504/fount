@@ -2285,6 +2285,15 @@
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
+	"directoryListing": {
+		"title": "chỉ mục thư mục",
+		"description": "Duyệt và khám phá các tệp và thư mục trong không gian làm việc của fount.",
+		"indexOf": "Chỉ mục: ${path}",
+		"name": "tên",
+		"mimeType": "loại MIME",
+		"size": "kích cỡ",
+		"parentLink": "↑ Cấp độ trước đó ../"
+	},
 	"code_block": {
 		"copy": {
 			"dataset": {
