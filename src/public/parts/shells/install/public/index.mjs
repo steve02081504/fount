@@ -71,36 +71,30 @@ dropArea.addEventListener('click', () => {
  */
 async function handleDroppedItems(items) {
 	const filesToProcess = []
-	for (const item of items) {
-		const entry = item.webkitGetAsEntry()
-		if (entry) {
-			const files = await traverseFileTree(entry)
-			filesToProcess.push(...files)
-		}
-	}
+	for (const item of items)
+		filesToProcess.push(...await traverseFileSystemHandle(
+			await item.getAsFileSystemHandle()
+		))
 	await handleFiles(filesToProcess)
 }
 
 /**
- * 遍历文件树。
- * @param {FileSystemEntry} entry - 文件系统条目。
+ * 遍历文件系统句柄。
+ * @param {FileSystemHandle} handle - 文件系统句柄。
  * @returns {Promise<File[]>} - 文件数组。
  */
-async function traverseFileTree(entry) {
-	return new Promise(resolve => {
-		if (entry.isFile)
-			entry.file(file => resolve([file]))
-		else if (entry.isDirectory) {
-			const directoryReader = entry.createReader()
-			directoryReader.readEntries(async entries => {
-				const files = []
-				for (const subEntry of entries)
-					files.push(...await traverseFileTree(subEntry))
-
-				resolve(files)
-			})
-		}
-	})
+async function traverseFileSystemHandle(handle) {
+	const files = []
+	switch (handle?.kind) {
+		case 'file':
+			files.push(await handle.getFile())
+			break
+		case 'directory':
+			for await (const entry of handle.values())
+				files.push(...await traverseFileSystemHandle(entry))
+			break
+	}
+	return files
 }
 
 /**
