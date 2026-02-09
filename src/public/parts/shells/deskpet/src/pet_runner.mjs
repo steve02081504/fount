@@ -124,7 +124,7 @@ export async function pausePet(username, charname) {
 }
 on_shutdown(async () => {
 	for (const username of Object.keys(runningPets))
-		for (const charname of [...Object.keys(runningPets[username] ?? {})])
+		for (const charname of Object.keys(runningPets[username] ?? {}))
 			await pausePet(username, charname).catch(console.error)
 })
 
