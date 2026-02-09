@@ -1,9 +1,7 @@
 .multiline-truncate {
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
-	/* 折叠时只显示两行 */
 	line-clamp: 2;
-	/* 折叠时只显示两行 */
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	text-overflow: ellipsis;
