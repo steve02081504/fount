@@ -1122,6 +1122,9 @@
 		"title": "引入",
 		"description": "迎君珍藏之人物、世界、配置入泉源。或取之文檔，或貼之文本，新物入此，融為一體。",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "擇納式"
+			},
 			"fileImport": "納卷",
 			"textImport": "納文"
 		},

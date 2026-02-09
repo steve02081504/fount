@@ -1122,6 +1122,9 @@
 		"title": "匯入",
 		"description": "將您喜愛的角色、世界和配置帶入源泉的懷抱。無論是來自文件還是粘貼的文本，新元素都將融入您的個人掛毯中。",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "匯入類型選擇"
+			},
 			"fileImport": "檔案匯入",
 			"textImport": "文字匯入"
 		},

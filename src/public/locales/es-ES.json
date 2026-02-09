@@ -1122,6 +1122,9 @@
 		"title": "Importar",
 		"description": "Lleva a tus queridos personajes, mundos y configuraciones al abrazo de fount. Ya sea a partir de un archivo o de un texto pegado, aquí es donde se tejen nuevos elementos en su tapiz personal.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Selección del tipo de importación"
+			},
 			"fileImport": "Importar archivo",
 			"textImport": "Importar texto"
 		},

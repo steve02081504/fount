@@ -1122,6 +1122,9 @@
 		"title": "Innflutningur",
 		"description": "Komdu með þykja vænt um persónurnar þínar, heima og stillingar í faðmi lindarinnar. Hvort sem það er úr skrá eða límdum texta, þetta er þar sem nýir þættir fléttast inn í persónulega veggteppið þitt.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Innflutningstegundarval"
+			},
 			"fileImport": "Flytja inn skrá",
 			"textImport": "Flytja inn texta"
 		},

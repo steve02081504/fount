@@ -1122,6 +1122,9 @@
 		"title": "Importeren",
 		"description": "Breng je geliefde personages, werelden en configuraties in de omhelzing van Font. Of het nu gaat om een ​​bestand of om geplakte tekst, hier worden nieuwe elementen in uw persoonlijke tapijt verweven.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Selectie van importtype"
+			},
 			"fileImport": "Bestand importeren",
 			"textImport": "Tekst importeren"
 		},

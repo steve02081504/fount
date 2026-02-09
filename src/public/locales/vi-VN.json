@@ -1122,6 +1122,9 @@
 		"title": "Nhập",
 		"description": "Đưa các nhân vật, thế giới và cấu hình yêu quý của bạn vào vòng tay của fount. Cho dù từ tệp hay văn bản được dán, đây là nơi các yếu tố mới được dệt vào tấm thảm cá nhân của bạn.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Chọn phương thức nhập"
+			},
 			"fileImport": "Nhập tệp",
 			"textImport": "Nhập văn bản"
 		},

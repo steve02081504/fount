@@ -1111,6 +1111,9 @@ export type LocaleData = {
 		title: string
 		description: string
 		tabs: {
+			tabsLabel: {
+				'aria-label': string
+			}
 			fileImport: string
 			textImport: string
 		}

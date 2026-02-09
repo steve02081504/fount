@@ -1122,6 +1122,9 @@
 		"title": "Importieren",
 		"description": "Bringen Sie Ihre geschätzten Charaktere, Welten und Konfigurationen in die Arme von fount. Ob aus einer Datei oder eingefügtem Text, hier werden neue Elemente in Ihr persönliches Gesamtbild eingewebt.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Auswahl des Importtyps"
+			},
 			"fileImport": "Datei importieren",
 			"textImport": "Text importieren"
 		},

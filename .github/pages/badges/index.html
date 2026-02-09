@@ -21,42 +21,42 @@
 </head>
 
 <body class="flex justify-center items-center h-screen bg-base-100 p-4">
+	<main class="w-full max-w-2xl">
+		<div class="card w-full bg-base-200 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title text-2xl mb-4" data-i18n="badges_maker.card_title"></h2>
 
-	<div class="card w-full max-w-2xl bg-base-200 shadow-xl">
-		<div class="card-body">
-			<h2 class="card-title text-2xl mb-4" data-i18n="badges_maker.card_title"></h2>
+				<!-- 输入区域 -->
+				<div class="form-control w-full">
+					<label class="label" for="originalUrlInput">
+						<span class="label-text" data-i18n="badges_maker.original_url_label"></span>
+					</label>
+					<input type="text" id="originalUrlInput" data-i18n="badges_maker.original_url" class="input input-bordered w-full" />
+				</div>
 
-			<!-- 输入区域 -->
-			<div class="form-control w-full">
-				<label class="label" for="originalUrlInput">
-					<span class="label-text" data-i18n="badges_maker.original_url_label"></span>
-				</label>
-				<input type="text" id="originalUrlInput" data-i18n="badges_maker.original_url" class="input input-bordered w-full" />
-			</div>
+				<!-- 输出区域 -->
+				<div class="form-control w-full mt-4">
+					<label class="label" for="newUrlOutput">
+						<span class="label-text" data-i18n="badges_maker.new_url_label"></span>
+					</label>
+					<div class="join w-full">
+						<input type="text" id="newUrlOutput" data-i18n="badges_maker.new_url" class="input input-bordered join-item w-full" readonly />
+						<button id="copyButton" class="btn btn-primary join-item" disabled data-i18n="badges_maker.copy_button"></button>
+					</div>
+				</div>
 
-			<!-- 输出区域 -->
-			<div class="form-control w-full mt-4">
-				<label class="label" for="newUrlOutput">
-					<span class="label-text" data-i18n="badges_maker.new_url_label"></span>
-				</label>
-				<div class="join w-full">
-					<input type="text" id="newUrlOutput" data-i18n="badges_maker.new_url" class="input input-bordered join-item w-full" readonly />
-					<button id="copyButton" class="btn btn-primary join-item" disabled data-i18n="badges_maker.copy_button"></button>
+				<!-- 预览区域 -->
+				<div id="previewContainer" class="mt-6 hidden">
+					<label class="label">
+						<span class="label-text" data-i18n="badges_maker.preview_label"></span>
+					</label>
+					<div class="bg-base-100 p-4 rounded-lg flex justify-center items-center">
+						<img id="badgePreview" data-i18n="badges_maker.preview" src="">
+					</div>
 				</div>
 			</div>
-
-			<!-- 预览区域 -->
-			<div id="previewContainer" class="mt-6 hidden">
-				<label class="label">
-					<span class="label-text" data-i18n="badges_maker.preview_label"></span>
-				</label>
-				<div class="bg-base-100 p-4 rounded-lg flex justify-center items-center">
-					<img id="badgePreview" data-i18n="badges_maker.preview" src="">
-				</div>
-			</div>
-
 		</div>
-	</div>
+	</main>
 	<script type="module" src="./index.mjs"></script>
 </body>
 

@@ -1122,6 +1122,9 @@
 		"title": "Import",
 		"description": "Bring your cherished characters, worlds, and configurations into fount's embrace. Whether from file or pasted text, this is where new elements are woven into your personal tapestry.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Import type selection"
+			},
 			"fileImport": "File Import",
 			"textImport": "Text Import"
 		},

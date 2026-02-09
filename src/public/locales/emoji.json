@@ -1122,6 +1122,9 @@
 		"title": "📥",
 		"description": "📥🎭🌍⚙️ ➡️ 🏛️",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "📥🔀"
+			},
 			"fileImport": "📄",
 			"textImport": "📝"
 		},
