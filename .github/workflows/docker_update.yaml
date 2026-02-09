@@ -5,6 +5,12 @@ permissions:
   packages: write
 
 on:
+  push:
+    paths:
+      - 'dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+    branches: ['master']
   schedule:
     - cron: '0 8 * * *'
   workflow_dispatch:
