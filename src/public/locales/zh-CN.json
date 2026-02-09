@@ -1122,6 +1122,9 @@
 		"title": "导入",
 		"description": "将您喜爱的角色、世界和配置带入源泉的怀抱。无论是来自文件还是粘贴的文本，新元素都将融入您的个人挂毯中。",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "导入类型选择"
+			},
 			"fileImport": "文件导入",
 			"textImport": "文本导入"
 		},

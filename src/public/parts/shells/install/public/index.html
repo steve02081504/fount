@@ -24,7 +24,7 @@
 </head>
 
 <body class="flex flex-col h-screen">
-	<div class="navbar bg-base-100">
+	<div class="navbar bg-base-100" role="navigation" data-i18n="import.tabs.tabsLabel">
 		<div class="navbar-start">
 			<ul class="menu menu-horizontal p-0">
 				<li id="file-import-tab" class="tab tab-active" data-i18n="import.tabs.fileImport"></li>
@@ -33,7 +33,7 @@
 		</div>
 	</div>
 
-	<div id="import-content" class="p-4 flex flex-col flex-grow overflow-auto">
+	<main id="import-content" class="p-4 flex flex-col flex-grow overflow-auto">
 		<!-- 文件导入内容 -->
 		<div id="file-import-content" class="flex flex-col h-full">
 			<div id="drop-area" class="drop-area flex flex-col items-center justify-center">
@@ -49,7 +49,7 @@
 		<div id="text-import-content" class="hidden flex flex-col">
 			<textarea id="text-input" class="textarea textarea-bordered w-full flex-grow" data-i18n="import.textArea"></textarea>
 		</div>
-	</div>
+	</main>
 
 	<div class="flex justify-center mt-4 p-4">
 		<button id="import-button" class="btn btn-primary" data-i18n="import.buttons.import"></button>

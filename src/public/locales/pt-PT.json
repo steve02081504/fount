@@ -1122,6 +1122,9 @@
 		"title": "Importar",
 		"description": "Traga seus personagens, mundos e configurações queridos para o abraço da fount. Seja a partir de um arquivo ou de texto colado, é aqui que novos elementos são integrados à sua tapeçaria pessoal.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Seleção do tipo de importação"
+			},
 			"fileImport": "Importar Ficheiro",
 			"textImport": "Importar Texto"
 		},

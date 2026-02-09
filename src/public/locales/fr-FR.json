@@ -1122,6 +1122,9 @@
 		"title": "Importer",
 		"description": "Apportez vos personnages, mondes et configurations préférés dans les bras de fount. Qu'il s'agisse d'un fichier ou d'un texte collé, c'est ici que de nouveaux éléments sont intégrés à votre tapisserie personnelle.",
 		"tabs": {
+			"tabsLabel": {
+				"aria-label": "Sélection du type d'importation"
+			},
 			"fileImport": "Importer un fichier",
 			"textImport": "Importer du texte"
 		},
