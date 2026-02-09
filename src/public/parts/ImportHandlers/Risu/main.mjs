@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import fsSync from 'node:fs' // For existsSync
+import fs from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -143,7 +143,7 @@ async function ImportAsData(username, dataBuffer) {
 						fount_uri: savedRelPath
 					})
 
-					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fsSync.existsSync(path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`))) {
+					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fs.existsSync(path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`))) {
 						const imagePath = path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`)
 						await mkdir(path.dirname(imagePath), { recursive: true })
 						await writeFile(imagePath, assetBuffer)
@@ -156,7 +156,7 @@ async function ImportAsData(username, dataBuffer) {
 
 
 		const avatarPath = path.join(targetPath, 'public', 'image.png')
-		if (!fsSync.existsSync(avatarPath) && mainImageBuffer)
+		if (!fs.existsSync(avatarPath) && mainImageBuffer)
 			try {
 				await mkdir(path.dirname(avatarPath), { recursive: true })
 				await writeFile(avatarPath, mainImageBuffer)
@@ -165,7 +165,7 @@ async function ImportAsData(username, dataBuffer) {
 			catch (imgErr) {
 				console.error('Failed to save main image buffer:', imgErr)
 			}
-		else if (!fsSync.existsSync(avatarPath))
+		else if (!fs.existsSync(avatarPath))
 			console.warn('Main avatar image.png could not be created.')
 
 
@@ -196,7 +196,7 @@ async function ImportAsData(username, dataBuffer) {
 
 		const templateMainMjsPath = path.join(import.meta.dirname, 'Template', 'main.mjs')
 		const targetMainMjsPath = path.join(targetPath, 'main.mjs')
-		const templateContent = fsSync.readFileSync(templateMainMjsPath, 'utf-8')
+		const templateContent = fs.readFileSync(templateMainMjsPath, 'utf-8')
 		await writeFile(targetMainMjsPath, templateContent)
 
 		const needsReload = isPartLoaded(username, 'chars', charName)

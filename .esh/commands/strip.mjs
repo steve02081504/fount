@@ -1,4 +1,4 @@
-import { promises as fs } from 'node:fs'
+import fs from 'node:fs'
 import { resolve, dirname, relative, join } from 'node:path'
 import process from 'node:process'
 
@@ -66,7 +66,7 @@ class FileScanner {
 	async init() {
 		try {
 			const gitignorePath = join(this.#config.FOUNT_DIR, '.gitignore')
-			const gitignoreContent = await fs.readFile(gitignorePath, 'utf-8')
+			const gitignoreContent = await fs.promises.readFile(gitignorePath, 'utf-8')
 			this.#ignoreFilter.add(gitignoreContent)
 		} catch (error) {
 			if (error.code === 'ENOENT')
@@ -141,7 +141,7 @@ class PathResolver {
 		 */
 		const checkExists = async (p) => {
 			try {
-				const stat = await fs.stat(p)
+				const stat = await fs.promises.stat(p)
 				return stat.isFile() ? p : null
 			} catch { return null }
 		}
@@ -178,7 +178,7 @@ class AstParser {
 	 */
 	async parseFile(filepath) {
 		try {
-			const content = await fs.readFile(filepath, 'utf-8')
+			const content = await fs.promises.readFile(filepath, 'utf-8')
 			if (filepath.endsWith('.mjs'))
 				return await this.#parseMjs(filepath, content)
 

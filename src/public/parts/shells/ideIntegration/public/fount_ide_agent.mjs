@@ -5,7 +5,7 @@
  * 用法二：本地运行时用环境变量 FOUNDT_URL、FOUNDT_API_KEY、FOUNDT_CHAR。
  */
 import { Buffer } from 'node:buffer'
-import { writeSync } from 'node:fs'
+import fs from 'node:fs'
 import process from 'node:process'
 
 const scriptUrl = import.meta?.url?.match(/^https?:\/\//)
@@ -23,19 +23,6 @@ const qs = params.toString()
 const wsUrl = (base.startsWith('https') ? 'wss' : 'ws') + base.slice(base.indexOf('://')) + wsPath + (qs ? '?' + qs : '')
 
 let buffer = ''
-
-/**
- * 写入 stdout 并立即刷新，避免管道下被全缓冲导致 Zed 收不到响应。
- * @param {string|Buffer} data - 要写入的数据。
- */
-function writeOut(data) {
-	const buf = Buffer.from(String(data), 'utf8')
-	try {
-		writeSync(1, buf)
-	} catch {
-		process.stdout.write(buf)
-	}
-}
 
 /**
  * 运行 IDE Agent。
@@ -57,8 +44,8 @@ async function run() {
 	 * @param {object} event - 消息事件。
 	 */
 	ws.onmessage = event => {
-		const data = event.data || ''
-		if (data) writeOut(data.endsWith('\n') ? data : data + '\n')
+		const data = String(event.data || '')
+		if (data) process.stdout.write(data)
 	}
 	/**
 	 * WebSocket 关闭处理。
@@ -84,7 +71,7 @@ async function run() {
 }
 
 run().catch((e) => {
-	writeOut(JSON.stringify({ jsonrpc: '2.0', error: { code: -32603, message: e.message } }) + '\n')
+	process.stdout.write(JSON.stringify({ jsonrpc: '2.0', error: { code: -32603, message: e.message } }) + '\n')
 	process.exitCode = 1
 	process.exit(1)
 })

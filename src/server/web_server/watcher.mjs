@@ -1,4 +1,4 @@
-import { watch } from 'node:fs'
+import fs from 'node:fs'
 import { setTimeout, clearTimeout } from 'node:timers'
 
 import { sendEventToAll } from './event_dispatcher.mjs'
@@ -10,7 +10,7 @@ const watchers = {}
  */
 export function watchFrontendChanges(url, dir) {
 	let timeout
-	watchers[url] ??= watch(dir, { recursive: true }, (eventType, filename) => {
+	watchers[url] ??= fs.watch(dir, { recursive: true }, (eventType, filename) => {
 		if (!filename) return
 		if (timeout) clearTimeout(timeout)
 		timeout = setTimeout(() => {

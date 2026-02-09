@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import fs from 'node:fs'
 import { mkdir, rm, stat, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -23,7 +23,7 @@ import { isFountPart, unzipDirectory } from './zip.mjs'
  * @returns {Promise<void>}
  */
 async function moveWithMerge(src, dest) {
-	if (!existsSync(dest)) return await move(src, dest)
+	if (!fs.existsSync(dest)) return await move(src, dest)
 
 	const srcStat = await stat(src)
 	const destStat = await stat(dest)
@@ -58,7 +58,7 @@ async function mergeDirectories(srcDir, destDir) {
 		if (srcStat.isFile())
 			await move(srcPath, destPath, { overwrite: true })
 		else if (srcStat.isDirectory())
-			if (!existsSync(destPath))
+			if (!fs.existsSync(destPath))
 				await move(srcPath, destPath)
 			else
 				await mergeDirectories(srcPath, destPath)
@@ -93,7 +93,7 @@ async function ImportAsData(username, data) {
 		const needsReload = isPartLoaded(username, meta.type, meta.dirname)
 		const targetPath = await getAvailablePath(username, meta.type, meta.dirname)
 		meta.data_files ??= []
-		if (existsSync(targetPath)) {
+		if (fs.existsSync(targetPath)) {
 			const files = await readdir(targetPath)
 			for (const file of files)
 				if (!meta.data_files.includes(file))
@@ -136,7 +136,7 @@ async function ImportByText(username, text) {
 					const needsReload = isPartLoaded(username, meta.type, meta.dirname)
 					const targetPath = await getAvailablePath(username, meta.type, meta.dirname)
 					meta.data_files ??= []
-					if (existsSync(targetPath)) {
+					if (fs.existsSync(targetPath)) {
 						const files = await readdir(targetPath)
 						for (const file of files)
 							if (!meta.data_files.includes(file))
