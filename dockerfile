@@ -17,7 +17,7 @@ RUN echo '{\
 }' > /app/terser.config.json
 
 RUN find . -type f \( -name "*.mjs" -o -name "*.js" \) ! -path "./node_modules/*" -print0 \
-    | xargs -0 -P $(nproc) -I {} deno run -A npm:terser {} --config-file /app/terser.config.json --output {}
+	| xargs -0 -P $(nproc) -I {} deno run -A npm:terser {} --config-file /app/terser.config.json --output {}
 
 RUN rm -rf /app/node_modules /app/terser.config.json
 
@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=terser-builder /app /app
 
 RUN find . -type f \( -name "*.html" -o -name "*.css" -o -name "*.json" -o -name "*.svg" -o -name "*.xml" \) ! -path "./node_modules/*" -print0 \
-    | xargs -0 -P $(nproc) -I {} sh -c 'minify -o {} {} || echo "Warning: Failed to minify {}, skipping."'
+	| xargs -0 -P $(nproc) -I {} sh -c 'minify -o {} {} || echo "Warning: Failed to minify {}, skipping."'
 
 # 阶段三：最终运行时镜像
 FROM denoland/deno:alpine-2.6.7

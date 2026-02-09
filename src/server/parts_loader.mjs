@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import path_module from 'node:path'
+import path from 'node:path'
 import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
@@ -188,13 +188,12 @@ function walkFountJsonFiles(rootPath) {
 		} catch { continue }
 
 		for (const dirent of dirents) {
-			const fullPath = path_module.join(current, dirent.name)
+			const fullPath = path.join(current, dirent.name)
 			if (dirent.isDirectory())
 				stack.push(fullPath)
 
 			else if (dirent.isFile() && dirent.name === 'fount.json')
 				files.push(fullPath)
-
 		}
 	}
 
@@ -241,7 +240,7 @@ function mergeFountJsonIntoBranches(branches, filePath) {
 function buildPartBranches(username) {
 	const branches = {}
 	const roots = [
-		path_module.join(__dirname, 'src/public/parts'),
+		path.join(__dirname, 'src/public/parts'),
 		getUserDictionary(username),
 	]
 
@@ -342,8 +341,8 @@ export async function loadPart(username, partpath, Initargs, functions) {
 	if (!fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')) debugger
 
 	// 支持层级化加载
-	const parentPath = path_module.dirname(partpath)
-	const partname = path_module.basename(partpath)
+	const parentPath = path.dirname(partpath)
+	const partname = path.basename(partpath)
 	if (parentPath !== '.' && parentPath !== '/')
 		try {
 			if (fs.existsSync(GetPartPath(username, parentPath) + '/main.mjs')) {
@@ -382,8 +381,8 @@ export const getPartList = getPartListBase
  */
 export async function unloadPart(username, partpath, unLoadargs, options) {
 	// 尝试委托给父部件
-	const parentPath = path_module.dirname(partpath)
-	const partname = path_module.basename(partpath)
+	const parentPath = path.dirname(partpath)
+	const partname = path.basename(partpath)
 	if (parentPath !== '.' && parentPath !== '/')
 		try {
 			if (isPartLoaded(username, parentPath)) {
@@ -812,8 +811,8 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	parts_set[username] ??= {}
 	/** @type {T | undefined} */
 	let part = parts_set[username][partpath]
-	const parent = path_module.dirname(partpath)
-	const partname = path_module.basename(partpath)
+	const parent = path.dirname(partpath)
+	const partname = path.basename(partpath)
 	if (getAllDefaultParts(username, parent).includes(partname))
 		unsetDefaultPart(username, parent, partname)
 	try {
@@ -903,7 +902,7 @@ async function nocacheGetPartBaseDetails(username, partpath) {
 		return {
 			info: {
 				'': {
-					name: path_module.basename(partpath),
+					name: path.basename(partpath),
 					avatar: 'https://api.iconify.design/line-md/emoji-frown-open.svg',
 					description: 'error loading part',
 					description_markdown: `# error loading part\n\n\`\`\`\`ansi\n${error.message}\n${error.stack}\n\`\`\`\``,
@@ -988,7 +987,7 @@ export async function getAllCachedPartDetails(username, partpath) {
 		if (user.sfw) info = getSfwInfo(info)
 
 		// Return keyed by NAME, not full path, to likely match frontend expectations for a list
-		const name = path_module.basename(cachedPath)
+		const name = path.basename(cachedPath)
 		cachedDetails[name] = { ...details, info }
 	})
 

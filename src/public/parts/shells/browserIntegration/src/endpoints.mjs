@@ -1,4 +1,4 @@
-import { promises as fs } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -30,12 +30,12 @@ export function setEndpoints(router) {
 			const localScriptTemplatePath = path.join(scriptPublicPath, 'local_script.user.js')
 			const mainScriptFileUrl = pathToFileURL(publicScriptPath).href
 
-			const template = await fs.readFile(localScriptTemplatePath, 'utf-8')
+			const template = await fs.promises.readFile(localScriptTemplatePath, 'utf-8')
 			const content = template.replace('${file_protocol_url}', mainScriptFileUrl)
 			res.status(200).send(content)
 		}
 		else {
-			const content = await fs.readFile(publicScriptPath, 'utf-8')
+			const content = await fs.promises.readFile(publicScriptPath, 'utf-8')
 			res.status(200).send(content)
 		}
 	})
