@@ -185,7 +185,7 @@ export async function pauseBot(username, botname) {
 }
 on_shutdown(async () => {
 	for (const username of getAllUserNames())
-		for (const botname of [...Object.keys(loadTempData(username, 'discordbot_cache'))])
+		for (const botname of Object.keys(loadTempData(username, 'discordbot_cache')))
 			await pauseBot(username, botname).catch(console.error)
 })
 

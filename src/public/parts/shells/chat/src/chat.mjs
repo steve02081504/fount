@@ -1205,7 +1205,7 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		if (e.name === 'AbortError') {
 			console.log(`Generation aborted for message ${entryId}: ${e.message}`)
 			placeholderEntry.is_generating = false
-			placeholderEntry.extension = { ...placeholderEntry.extension || {}, aborted: true }
+			placeholderEntry.extension = { ...placeholderEntry.extension, aborted: true }
 			await finalizeEntry(placeholderEntry, false)
 		}
 		else {

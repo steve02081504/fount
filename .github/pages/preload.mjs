@@ -2,5 +2,5 @@
 import { retrieveUrlParams } from './scripts/urlDataTransfer.mjs'
 window.urlParams = await retrieveUrlParams(new URLSearchParams(window.location.search))
 document.documentElement.dataset.theme = (urlParams.get('theme') ?? localStorage.getItem('fountTheme')) || (
-	Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+	window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light'
 )

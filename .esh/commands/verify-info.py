@@ -8,18 +8,18 @@
 用法：在项目根目录执行 python .esh/commands/verify-info.py
 """
 from pathlib import Path
+import contextlib
 import json
 import re
 import sys
 import time
 import urllib.request
+from urllib.parse import urlparse
 
 # 保证 Windows 控制台能正确输出
 if sys.platform == "win32" and sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
-	try:
+	with contextlib.suppress(Exception):
 		sys.stdout.reconfigure(encoding="utf-8")
-	except Exception:
-		pass
 
 # --- 配置 ---
 PARTS_DIR = Path("src/public/parts")
@@ -128,7 +128,10 @@ def collect_avatar_refs(parts_dir: Path) -> list[tuple[Path, int, str]]:
 
 
 def is_avatar_url_404(url: str, timeout: float = 10.0) -> bool:
-	"""先 HEAD（不拉 body，更友好），失败再回退 GET。仅当确认为 404 或两次都失败时返回 True。"""
+	"""先 HEAD（不拉 body，更友好），失败再回退 GET。仅当确认为 404 或两次都失败时返回 True。只允许 http/https 协议。"""
+	parsed = urlparse(url)
+	if parsed.scheme not in ("http", "https"):
+		return False
 	headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0"}
 
 	def do_get():

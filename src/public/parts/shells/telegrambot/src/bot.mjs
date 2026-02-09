@@ -183,7 +183,7 @@ export async function pauseBot(username, botname) {
 }
 on_shutdown(async () => {
 	for (const username of getAllUserNames())
-		for (const botname of [...Object.keys(loadTempData(username, 'telegrambot_cache'))])
+		for (const botname of Object.keys(loadTempData(username, 'telegrambot_cache')))
 			await pauseBot(username, botname).catch(console.error)
 })
 

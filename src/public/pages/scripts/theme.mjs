@@ -109,7 +109,7 @@ let theme_now
  * 初始化时基于系统偏好设置。
  * @type {boolean}
  */
-export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+export let is_dark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 
 /**
  * 记录上一次检测到的背景颜色，用于检测变化。
@@ -255,7 +255,7 @@ function autoresize_frames() {
 function applyThemeToDOM(theme) {
 	let resolvedTheme = theme
 	if (resolvedTheme === 'auto' || !resolvedTheme)
-		resolvedTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+		resolvedTheme = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light'
 
 	if (theme === theme_now && document.documentElement.getAttribute('data-theme') === resolvedTheme) return
 
@@ -484,10 +484,10 @@ function updateColors() {
 			is_dark = lightness < threshold
 		}
 		else // 如果无法解析颜色格式，回退到系统偏好
-			is_dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+			is_dark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 	}
 	else // 如果未定义背景色，回退到系统偏好
-		is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		is_dark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 
 	document.documentElement.colorScheme = is_dark ? 'dark' : 'light'
 

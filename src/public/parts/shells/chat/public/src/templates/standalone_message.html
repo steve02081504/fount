@@ -78,7 +78,7 @@ ${
 
 <body class="flex flex-col min-h-screen">
 	<script>
-		const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+		const isDarkMode = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 		const styleLink = document.createElement('link')
 		styleLink.rel = 'stylesheet'
 		styleLink.crossOrigin = 'anonymous'
