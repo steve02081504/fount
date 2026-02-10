@@ -5,7 +5,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 /* global confetti */
 
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../scripts/parts.mjs'
+import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAnyDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
@@ -212,7 +212,7 @@ async function closeTutorial() {
 		await setDefaultPart('shells', 'home')
 		await unsetDefaultPart('shells', 'tutorial')
 		// 获取默认部件来刷新缓存
-		await getAllDefaultParts('shells')
+		await getAnyDefaultPart('shells')
 	} catch (error) {
 		Sentry.captureException(error)
 	}
