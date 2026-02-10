@@ -4,8 +4,6 @@
  * 用法一（推荐）：deno run "https://你的fount地址/parts/shells:ideIntegration/fount_ide_agent.mjs?fount-apikey=KEY&charname=角色id"
  * 用法二：本地运行时用环境变量 FOUNDT_URL、FOUNDT_API_KEY、FOUNDT_CHAR。
  */
-import { Buffer } from 'node:buffer'
-import fs from 'node:fs'
 import process from 'node:process'
 
 const scriptUrl = import.meta?.url?.match(/^https?:\/\//)

@@ -10,9 +10,9 @@ applyTheme()
 await initTranslations('ide_integration')
 
 const ACP_CLIENTS_MDX_URL = 'https://cdn.jsdelivr.net/gh/agentclientprotocol/agent-client-protocol@refs/heads/main/docs/get-started/clients.mdx'
-const RE_MAIN_LINK = /^-\s+\[([^\]]+)\]\(([^)]+)\)/
+const RE_MAIN_LINK = /^-\s+\[([^\]]+)]\(([^)]+)\)/
 const RE_MAIN_PLAIN = /^-\s+(.+)$/
-const RE_SUB_THROUGH = /^\s+-\s+through\s+(?:the\s+)?\[([^\]]+)\]\(([^)]+)\)/
+const RE_SUB_THROUGH = /^\s+-\s+through\s+(?:the\s+)?\[([^\]]+)]\(([^)]+)\)/
 
 /**
  * 解析客户端列表 MDX 文件。
@@ -99,7 +99,7 @@ async function loadSupportedEditors() {
 
 loadSupportedEditors()
 
-const origin = window.location.origin
+const { origin } = window.location
 const listUrl = `${origin}/api/getlist/chars`
 const scriptPath = `${origin}/parts/shells:ideIntegration/fount_ide_agent.mjs`
 
