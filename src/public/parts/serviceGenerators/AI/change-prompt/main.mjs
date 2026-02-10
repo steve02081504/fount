@@ -56,7 +56,7 @@ const configTemplate = {
 当前环境的设定如下：
 \${world_prompt}
 其他角色的设定如下：
-\${other_chars_prompt}
+\${other_chars_prompts}
 你可以使用以下插件，方法如下：
 \${plugin_prompts}
 `
@@ -121,7 +121,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				Charname: prompt_struct.Charname,
 				char_prompt: getSinglePartPrompt(),
 				user_prompt: getSinglePartPrompt(),
-				other_chars_prompt: {},
+				other_chars_prompts: {},
 				world_prompt: getSinglePartPrompt(),
 				plugin_prompts: {},
 				chat_log: prompt_struct.chat_log,
@@ -130,7 +130,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				char_prompt: '',
 				user_prompt: '',
 				world_prompt: '',
-				other_chars_prompt: '',
+				other_chars_prompts: '',
 				plugin_prompts: '',
 			}
 			if (config.build_prompt) {
@@ -150,10 +150,10 @@ async function GetSource(config, { username, SaveConfig }) {
 				}
 
 				{
-					const sorted = Object.values(prompt_struct.other_chars_prompt).map(char => char.text).filter(Boolean).map(
+					const sorted = Object.values(prompt_struct.other_chars_prompts).map(char => char.text).filter(Boolean).map(
 						char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					).flat().filter(Boolean)
-					eval_strings.other_chars_prompt = sorted.join('\n')
+					eval_strings.other_chars_prompts = sorted.join('\n')
 				}
 
 				{
@@ -167,7 +167,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				new_prompt_struct.char_prompt = prompt_struct.char_prompt
 				new_prompt_struct.user_prompt = prompt_struct.user_prompt
 				new_prompt_struct.world_prompt = prompt_struct.world_prompt
-				new_prompt_struct.other_chars_prompt = prompt_struct.other_chars_prompt
+				new_prompt_struct.other_chars_prompts = prompt_struct.other_chars_prompts
 				new_prompt_struct.plugin_prompts = prompt_struct.plugin_prompts
 				eval_strings = {}
 			}
