@@ -34,6 +34,18 @@ const selectedChats = new Set()
 let virtualList = null
 
 /**
+ * 仅更新选择相关的 UI（全选 checkbox 与各列表项的 checkbox），不重新渲染列表。
+ */
+function updateSelectionUI() {
+	selectAllCheckbox.checked = currentFilteredList.every(c => selectedChats.has(c.chatid))
+	for (const checkbox of chatListContainer.querySelectorAll('.select-checkbox')) {
+		const chatElement = checkbox.closest('.chat-list-item')
+		const chatid = chatElement?.dataset?.chatid
+		checkbox.checked = selectedChats.has(chatid)
+	}
+}
+
+/**
  * 根据当前的过滤和排序设置对聊天列表进行排序和渲染。
  * 它会重置 UI 并使用虚拟列表进行渲染。
  * @returns {Promise<void>}
@@ -182,12 +194,9 @@ async function hydrateChatListItem(chatElement, chat) {
 	i18nElement(selectCheckbox)
 	selectCheckbox.checked = selectedChats.has(chat.chatid)
 	selectCheckbox.addEventListener('change', () => {
-		if (selectCheckbox.checked)
-			selectedChats.add(chat.chatid)
-		else {
-			selectedChats.delete(chat.chatid)
-			selectAllCheckbox.checked = false
-		}
+		if (selectCheckbox.checked) selectedChats.add(chat.chatid)
+		else selectedChats.delete(chat.chatid)
+		selectAllCheckbox.checked = selectCheckbox.checked && currentFilteredList.every(c => selectedChats.has(c.chatid))
 	})
 
 	// Button listeners
@@ -281,7 +290,7 @@ selectAllCheckbox.addEventListener('change', () => {
 			selectedChats.add(chat.chatid)
 		else
 			selectedChats.delete(chat.chatid)
-	renderUI() // 触发重绘
+	updateSelectionUI()
 })
 
 reverseSelectButton.addEventListener('click', () => {
@@ -290,7 +299,7 @@ reverseSelectButton.addEventListener('click', () => {
 			selectedChats.delete(chat.chatid)
 		else
 			selectedChats.add(chat.chatid)
-	renderUI() // 触发重绘
+	updateSelectionUI()
 })
 deleteSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
