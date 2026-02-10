@@ -164,7 +164,7 @@ export function buildACPClientToolsPlugin(connection, sessionId, clientCapabilit
 		const acp = getACPContext(args)
 
 		// ── <thinking> → thought_message_chunk ──
-		const thinkingMatches = [...text.matchAll(/<thinking>([\s\S]*?)<\/thinking>/g)]
+		const thinkingMatches = [...text.matchAll(/<thinking>([\S\s]*?)<\/thinking>/g)]
 		for (const match of thinkingMatches)
 			if (acp && match[1].trim())
 				acp.connection.sessionUpdate({
@@ -173,12 +173,12 @@ export function buildACPClientToolsPlugin(connection, sessionId, clientCapabilit
 				})
 
 		// ── <acp-plan> → plan notification ──
-		const planMatches = [...text.matchAll(/<acp-plan>([\s\S]*?)<\/acp-plan>/g)]
+		const planMatches = [...text.matchAll(/<acp-plan>([\S\s]*?)<\/acp-plan>/g)]
 		for (const match of planMatches)
 			if (acp) {
 				const entries = []
 				for (const line of match[1].split('\n')) {
-					const entryMatch = line.match(/^[-*]\s*\[(\w+)\]\s*(\w+):\s*(.+)$/)
+					const entryMatch = line.match(/^[*-]\s*\[(\w+)]\s*(\w+):\s*(.+)$/)
 					if (entryMatch)
 						entries.push({
 							content: entryMatch[3].trim(),
@@ -198,7 +198,7 @@ export function buildACPClientToolsPlugin(connection, sessionId, clientCapabilit
 			? [...text.matchAll(/<acp-read-file\s+path="([^"]+)"(?:\s+line="(\d+)")?(?:\s+limit="(\d+)")?\s*\/>/g)]
 			: []
 		const writeMatches = canWrite
-			? [...text.matchAll(/<acp-write-file\s+path="([^"]+)">([\s\S]*?)<\/acp-write-file>/g)]
+			? [...text.matchAll(/<acp-write-file\s+path="([^"]+)">([\S\s]*?)<\/acp-write-file>/g)]
 			: []
 		const terminalMatches = canTerminal
 			? [...text.matchAll(/<acp-terminal\s+command="([^"]+)"(?:\s+args="([^"]*)")?(?:\s+cwd="([^"]*)")?(?:\s+env="([^"]*)")?\s*\/>/g)]

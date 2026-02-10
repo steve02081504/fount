@@ -85,8 +85,8 @@ export async function renderDirectoryListingHtml(urlPath, dirPath) {
 	const safeJson = jsonStr.replace(/<\/script/gi, '\\u003c/script')
 
 	let template = fs.readFileSync(TEMPLATE_PATH, 'utf8')
-	template = template.replace(/\{\{DIRECTORY_PATH\}\}/g, urlPath)
-	template = template.replace(/\{\{DIRECTORY_DATA\}\}/g, safeJson)
+	template = template.replace(/{{DIRECTORY_PATH}}/g, urlPath)
+	template = template.replace(/{{DIRECTORY_DATA}}/g, safeJson)
 
 	return template
 }

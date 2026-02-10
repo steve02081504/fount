@@ -440,7 +440,7 @@ export function createLineBasedIncrementalStream(options) {
 	 */
 	function update(reply) {
 		const text = reply.content_for_show || reply.content || ''
-		const files = reply.files
+		const { files } = reply
 		pending = pending.then(() => processUpdate(text, files))
 		return pending
 	}
