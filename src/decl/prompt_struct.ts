@@ -36,11 +36,11 @@ export class single_part_prompt_t {
 	extension: object
 }
 /**
- * @class other_chars_prompt_t
+ * @class other_chars_prompts_t
  * @augments single_part_prompt_t
  * 定义了其他角色提示的结构。
  */
-export class other_chars_prompt_t extends single_part_prompt_t {
+export class other_chars_prompts_t extends single_part_prompt_t {
 	/**
 	 * 名称。
 	 */
@@ -137,7 +137,7 @@ export interface prompt_struct_t {
 	/**
 	 * 其他角色提示。
 	 */
-	other_chars_prompt: Record<string, other_chars_prompt_t>
+	other_chars_prompts: Record<string, other_chars_prompts_t>
 	/**
 	 * 世界提示。
 	 */
