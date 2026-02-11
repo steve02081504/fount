@@ -1,5 +1,5 @@
 # 阶段一：跑 terser，压缩并移除所有 JS 注释
-FROM --platform=$BUILDPLATFORM denoland/deno:alpine-2.6.7 AS terser-builder
+FROM --platform=$BUILDPLATFORM denoland/deno:alpine AS terser-builder
 WORKDIR /app
 COPY . /app
 
@@ -30,7 +30,7 @@ RUN find . -type f \( -name "*.html" -o -name "*.css" -o -name "*.json" -o -name
 	| xargs -0 -P $(nproc) -I {} sh -c 'minify -o {} {} || echo "Warning: Failed to minify {}, skipping."'
 
 # 阶段三：最终运行时镜像
-FROM denoland/deno:alpine-2.6.7
+FROM denoland/deno:alpine
 WORKDIR /app
 COPY --from=minify-builder /app /app
 RUN touch /app/.noupdate && touch /.dockerenv
