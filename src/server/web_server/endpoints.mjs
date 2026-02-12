@@ -111,8 +111,7 @@ export function registerEndpoints(router) {
 		const preferredLanguages = [...new Set([...userPreferredLanguages, ...browserLanguages])].filter(Boolean)
 
 		let username
-		if (req.cookies.accessToken) try {
-			await authenticate(req, res)
+		if (await auth_request(req, res)) try {
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
 			username = user.username

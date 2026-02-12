@@ -79,6 +79,7 @@ export function getLocaleData(localeList) {
  * @returns {Promise<LocaleData>} 一个解析为区域设置数据的承诺。
  */
 export async function getLocaleDataForUser(username, preferredlocaleList) {
+	if (!username) return getLocaleData(preferredlocaleList)
 	const result = {
 		...getLocaleData([
 			...preferredlocaleList ?? [],
