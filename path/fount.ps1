@@ -253,22 +253,35 @@ function Set-FountFileAttributes {
 	}
 }
 
+function Get-WTfountCmd($ArgumentList = @()) {
+	$FilePath = "powershell.exe"
+	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
+	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+		$FilePath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+		$ArgumentList = "-p fount powershell.exe $ArgumentList"
+	}
+	return @{
+		FilePath = $FilePath
+		ArgumentList = $ArgumentList
+	}
+}
+
+function Start-WTfountCmd($ArgumentList = @()) {
+	$cmd = Get-WTfountCmd @args
+	Start-Process @cmd
+}
+
 function New-FountShortcut {
 	$shell = New-Object -ComObject WScript.Shell
 
-	$shortcutTargetPath = "powershell.exe"
-	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
-	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
-		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # 在现有参数前添加 -p fount
-	}
+	$shortcutCmd = Get-WTfountCmd -args @('open', 'keepalive')
 	$shortcutIconLocation = "$FOUNT_DIR\src\public\pages\favicon.ico"
 
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
 	Remove-Item -Force "$desktopPath\fount.lnk" -ErrorAction Ignore
 	$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
-	$desktopShortcut.TargetPath = $shortcutTargetPath
-	$desktopShortcut.Arguments = $shortcutArguments
+	$desktopShortcut.TargetPath = $shortcutCmd.FilePath
+	$desktopShortcut.Arguments = $shortcutCmd.ArgumentList
 	$desktopShortcut.IconLocation = $shortcutIconLocation
 	$desktopShortcut.Save()
 	Write-Host (Get-I18n -key 'shortcut.desktopShortcutCreated' -params @{path = "$desktopPath\fount.lnk" })
@@ -276,8 +289,8 @@ function New-FountShortcut {
 	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
 	Remove-Item -Force "$startMenuPath\fount.lnk" -ErrorAction Ignore
 	$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
-	$startMenuShortcut.TargetPath = $shortcutTargetPath
-	$startMenuShortcut.Arguments = $shortcutArguments
+	$startMenuShortcut.TargetPath = $shortcutCmd.FilePath
+	$startMenuShortcut.Arguments = $shortcutCmd.ArgumentList
 	$startMenuShortcut.IconLocation = $shortcutIconLocation
 	$startMenuShortcut.Save()
 	Write-Host (Get-I18n -key 'shortcut.startMenuShortcutCreated' -params @{path = "$startMenuPath\fount.lnk" })
@@ -457,8 +470,7 @@ elseif ($args[0] -eq 'protocolhandle') {
 	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
 	if ($protocolUrl -eq 'fount://nop/') {
-		$runargs = $args[2..$args.Count]
-		fount.ps1 @runargs
+		Start-WTfountCmd
 		exit $LastExitCode
 	}
 	if (-not $protocolUrl) {
@@ -478,8 +490,7 @@ elseif ($args[0] -eq 'protocolhandle') {
 		}
 		Start-Process $targetUrl
 	} -ArgumentList $targetUrl
-	$runargs = $args[2..$args.Count]
-	fount.ps1 @runargs
+	Start-WTfountCmd
 	exit $LastExitCode
 }
 
