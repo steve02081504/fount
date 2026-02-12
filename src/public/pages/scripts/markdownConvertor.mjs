@@ -958,12 +958,51 @@ ${diagram}`
 
 // --- 全局样式注入 ---
 
+{
+	const markdown_style = document.createElement('style')
+	markdown_style.textContent = /* css */ `\
+.markdown-body {
+	color: var(--color-base-content);
+	background-color: #11451400;
+}
+
+.markdown-body .join-item,
+.markdown-body figure,
+.markdown-code-block,
+.markdown-code-block pre {
+	margin: 0;
+}
+
+.markdown-body img {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+	color: var(--color-base-content);
+	background-color: var(--color-base-100);
+}
+
+[color-scheme="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-light)
+}
+
+[color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-dark)
+}
+`
+	document.head.prepend(markdown_style)
+}
+
 document.head.prepend(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css' }))
 
-const markdown_style = document.createElement('link')
-markdown_style.rel = 'stylesheet'
-markdown_style.crossOrigin = 'anonymous'
-onThemeChange((theme, is_dark) => {
-	markdown_style.href = `https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-${is_dark ? 'dark' : 'light'}.min.css`
-})
-document.head.prepend(markdown_style)
+{
+	const markdown_style = document.createElement('link')
+	markdown_style.rel = 'stylesheet'
+	markdown_style.crossOrigin = 'anonymous'
+	onThemeChange((theme, is_dark) => {
+		markdown_style.href = `https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-${is_dark ? 'dark' : 'light'}.min.css`
+	})
+	document.head.prepend(markdown_style)
+}
