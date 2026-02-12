@@ -33,6 +33,22 @@ export function createJsonEditor(jsonEditorContainer, options) {
 	return result
 }
 
+// --- 全局样式注入 ---
+
+{
+	const jse_style = document.createElement('style')
+	jse_style.textContent = /* css */ `\
+.jsoneditor-container {
+	width: 100%;
+	--jse-theme-color: var(--color-primary) !important;
+	--jse-a-color: var(--color-primary) !important;
+	--jse-menu-color: var(--color-primary-content) !important;
+	--jse-theme-color-highlight: var(--color-info) !important;
+}
+`
+	document.head.prepend(jse_style)
+}
+
 {
 	const jse_style = document.createElement('link')
 	jse_style.rel = 'stylesheet'
