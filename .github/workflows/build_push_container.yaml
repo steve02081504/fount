@@ -22,7 +22,7 @@ on:
         default: false
 jobs:
   build-and-push:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-slim
     timeout-minutes: ${{ inputs.no-cache == true && 360 || 13 }}
     steps:
       - name: Checkout code
@@ -39,9 +39,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: check ls -l
-        run: ls -l
-      - name: Build and Push Containers
+      - name: Build and Push to DockerHub
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -59,7 +57,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Containers
+      - name: Build and Push to GHCR
         uses: docker/build-push-action@v6
         with:
           context: .

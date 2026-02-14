@@ -1,4 +1,4 @@
-name: spam issues check
+name: Spam Issues Check
 on:
   issues:
     types:
@@ -9,9 +9,9 @@ permissions:
 
 jobs:
   spam-issues-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check for keywords
         uses: actions/github-script@v7
         with:

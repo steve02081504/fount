@@ -1,0 +1,103 @@
+name: Automated File Updates
+
+permissions:
+  contents: write
+
+on:
+  push:
+    paths:
+      - 'src/public/locales/**.json'
+      - '**/home_registry.json'
+      - '**/info.json'
+      - '**/info.dynamic.json'
+      - '**.sh'
+      - '**.fish'
+      - '**.zsh'
+      - '**.ps1'
+      - '**.bat'
+      - 'path/**'
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  changes:
+    runs-on: ubuntu-slim
+    outputs:
+      locales: ${{ steps.set-outputs.outputs.locales }}
+      scripts: ${{ steps.set-outputs.outputs.scripts }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'push'
+        with:
+          filters: |
+            locales:
+              - 'src/public/locales/**.json'
+              - '**/home_registry.json'
+              - '**/info.json'
+              - '**/info.dynamic.json'
+            scripts:
+              - '**.sh'
+              - '**.fish'
+              - '**.zsh'
+              - '**.ps1'
+              - '**.bat'
+              - 'path/**'
+      - id: set-outputs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "locales=true" >> $GITHUB_OUTPUT
+            echo "scripts=true" >> $GITHUB_OUTPUT
+          else
+            echo "locales=${{ steps.filter.outputs.locales || 'false' }}" >> $GITHUB_OUTPUT
+            echo "scripts=${{ steps.filter.outputs.scripts || 'false' }}" >> $GITHUB_OUTPUT
+          fi
+
+  update-locales:
+    needs: changes
+    if: needs.changes.outputs.locales == 'true'
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run script to update locale files
+        run: |
+          pip install deep_translator json5 pathspec
+          python ./.esh/commands/update-locales.py
+      - name: Git add all
+        run: git add -A
+      - name: Push changes
+        uses: actions-go/push@master
+        with:
+          author-email: taromati2@outlook.com
+          author-name: Taromati2
+          commit-message: 'file update~'
+          remote: origin
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  set-permissions:
+    needs: changes
+    if: needs.changes.outputs.scripts == 'true'
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set execute permission for script files
+        run: |
+          find . -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
+          find ./path -maxdepth 1 -type f -print0 | xargs -0 chmod +x
+          chmod -x ./path/desktop.ini
+      - name: Git add all
+        run: git add -A
+      - name: Push changes
+        uses: actions-go/push@master
+        with:
+          author-email: taromati2@outlook.com
+          author-name: Taromati2
+          commit-message: 'file update~'
+          remote: origin
+          token: ${{ secrets.GITHUB_TOKEN }}
