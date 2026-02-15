@@ -2,6 +2,7 @@ import { setInterval, clearInterval } from 'node:timers'
 
 import { Client } from 'npm:@xhayper/discord-rpc'
 
+import { startTime } from '../server/base.mjs'
 import { info } from '../server/info.mjs'
 
 import { in_docker, in_termux } from './env.mjs'
@@ -34,7 +35,7 @@ function defaultActivity() {
 	return {
 		details: info.activity,
 		state: info.logotext,
-		startTimestamp: undefined,
+		startTimestamp: startTime.getTime(),
 		largeImageKey: 'icon',
 		largeImageText: info.shortlinkUrl.split('://')[1],
 		smallImageKey: undefined,
