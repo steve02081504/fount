@@ -11,6 +11,7 @@
 /.nobackground
 /.nojobs
 /.notimers
+/im.steve
 /data
 /.vm_data_*
 /node_modules
