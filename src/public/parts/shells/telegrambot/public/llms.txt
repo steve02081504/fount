@@ -1,0 +1,52 @@
+# telegrambot shell 支持的 Web 端点说明
+
+本 shell 提供 Telegram 机器人的启动、停止与配置管理。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:telegrambot/
+- 用途：Telegram 机器人管理页面，用于创建、配置、启动和停止 Telegram 机器人。支持管理多个机器人配置、查看运行状态、编辑机器人设置等功能。
+
+---
+
+## 机器人生命周期
+
+### POST /api/parts/shells:telegrambot/start
+- Body：botname
+- 用途：启动指定 Telegram 机器人。
+
+### POST /api/parts/shells:telegrambot/stop
+- Body：botname
+- 用途：停止指定 Telegram 机器人。
+
+### GET /api/parts/shells:telegrambot/getbotlist
+- 用途：获取当前用户所有 Telegram 机器人配置名称列表。
+
+### GET /api/parts/shells:telegrambot/getrunningbotlist
+- 用途：获取当前正在运行的 Telegram 机器人名称列表。
+
+---
+
+## 配置
+
+### GET /api/parts/shells:telegrambot/getbotconfig
+- 查询：botname
+- 用途：获取指定机器人的配置。
+
+### GET /api/parts/shells:telegrambot/getbotConfigTemplate
+- 查询：charname（可选，用于基于角色的模板）
+- 用途：获取机器人配置模板。
+
+### POST /api/parts/shells:telegrambot/setbotconfig
+- Body：botname, config
+- 用途：保存指定机器人的配置。
+
+### POST /api/parts/shells:telegrambot/deletebotconfig
+- Body：botname
+- 用途：删除指定机器人配置（若在运行会先停止）。
+
+### POST /api/parts/shells:telegrambot/newbotconfig
+- Body：JSON。`botname`（字符串，必填），新机器人配置名称。
+- 用途：创建新的空机器人配置。

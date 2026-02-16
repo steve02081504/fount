@@ -1,0 +1,147 @@
+# chat shell 支持的 Web 端点说明
+
+本 shell 提供聊天界面及会话管理相关 API，便于 AI Agent 操作聊天、角色、插件与消息。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:chat/
+- 用途：主聊天界面页面，用于进行 AI 角色对话。支持多角色聊天、插件集成、消息编辑等功能。
+
+### GET /parts/shells:chat/list
+- 用途：聊天历史列表页面，显示所有聊天会话。支持搜索、排序、批量操作（删除、复制、导出、导入）等功能。
+
+### GET /parts/shells:chat/new
+- 用途：新建聊天页面，用于创建新的聊天会话。可通过 URL 参数指定初始角色（`?char=${name}`）。
+
+---
+
+## WebSocket
+
+### GET /ws/parts/shells:chat/ui/:chatid
+- 路径：chatid 为会话 ID（字符串）。
+- 用途：连接指定聊天的 UI 实时通道，用于推送消息与状态更新。
+
+---
+
+## 会话与列表
+
+### POST /api/parts/shells:chat/new
+- Body：可选。当前实现仅根据当前用户创建新会话，不解析 body；返回 `{ chatid }`。
+- 用途：创建新聊天会话，返回新 chatid。
+
+### GET /api/parts/shells:chat/getchatlist
+- 用途：获取当前用户聊天列表。
+
+### DELETE /api/parts/shells:chat/delete
+- Body：JSON。`chatids`（数组，必填），要删除的会话 ID 列表。
+- 用途：批量删除聊天。
+
+### POST /api/parts/shells:chat/copy
+- Body：JSON。`chatids`（数组，必填），要复制的会话 ID 列表。每项会复制为新会话，返回含 newChatId 等。
+- 用途：复制聊天。
+
+### POST /api/parts/shells:chat/export
+- Body：JSON。`chatids`（数组，必填），要导出的会话 ID 列表。
+- 用途：导出聊天。
+
+### POST /api/parts/shells:chat/import
+- Body：JSON，为完整聊天导入数据（与单会话导出结构兼容）。
+- 用途：导入聊天，服务端会创建新 chatid 并写入数据。
+
+### POST /api/parts/shells:chat/addfile
+- Body：multipart 表单，字段名为上传文件的 key，值为文件。服务端从 req.files 读取。
+- 用途：向当前用户聊天文件库添加附件；返回后可通过 getfile 的 hash 引用。
+
+### GET /api/parts/shells:chat/getfile
+- 查询：`hash`（字符串，必填），由 addfile 或聊天消息中文件产生的哈希标识。
+- 用途：获取或下载该 hash 对应的文件内容（二进制流）。
+
+### GET /virtual_files/parts/shells:chat/:chatid
+- 路径：chatid 为会话 ID；其后可跟虚拟文件路径。
+- 用途：访问该聊天下的虚拟文件（如导出该会话的 JSON 等）。
+
+---
+
+## 单会话：上下文与配置
+
+### GET /api/parts/shells:chat/:chatid/initial-data
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天的初始数据（角色、persona、world、插件、日志摘要等）。
+
+### GET /api/parts/shells:chat/:chatid/chars
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天中的角色列表。
+
+### GET /api/parts/shells:chat/:chatid/plugins
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天已加载的插件列表。
+
+### GET /api/parts/shells:chat/:chatid/log
+- 路径：chatid 为会话 ID。查询：`start`、`end`（可选，整数，消息索引范围）。
+- 用途：获取该聊天的消息日志。
+
+### GET /api/parts/shells:chat/:chatid/log/length
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天消息条数。
+
+### GET /api/parts/shells:chat/:chatid/persona
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天当前用户 persona 名称等信息。
+
+### GET /api/parts/shells:chat/:chatid/world
+- 路径：chatid 为会话 ID。
+- 用途：获取该聊天当前 world 名称等信息。
+
+### PUT /api/parts/shells:chat/:chatid/timeline
+- 路径：chatid 为会话 ID。Body：JSON。`delta`（时间线/上下文切片变更结构）。
+- 用途：修改该聊天的时间线/上下文切片。
+
+### PUT /api/parts/shells:chat/:chatid/persona
+- 路径：chatid 为会话 ID。Body：JSON。`personaname`（字符串），personas 下的 part 名称。
+- 用途：设置该聊天的用户 persona。
+
+### PUT /api/parts/shells:chat/:chatid/world
+- 路径：chatid 为会话 ID。Body：JSON。`worldname`（字符串），worlds 下的 part 名称。
+- 用途：设置该聊天的 world。
+
+---
+
+## 单会话：消息与角色
+
+### POST /api/parts/shells:chat/:chatid/message
+- 路径：chatid 为会话 ID。Body：JSON。`reply`（对象），含消息内容及可选 `files`（文件中 buffer 为 base64 等，见后端约定）。
+- 用途：向该聊天追加一条用户消息。
+
+### PUT /api/parts/shells:chat/:chatid/message/:index
+- 路径：chatid、index（消息索引，整数）。Body：JSON。`content`（与 reply 结构类似）。
+- 用途：编辑指定索引的消息。
+
+### DELETE /api/parts/shells:chat/:chatid/message/:index
+- 路径：chatid、index（消息索引）。
+- 用途：删除指定索引的消息。
+
+### POST /api/parts/shells:chat/:chatid/trigger-reply
+- 路径：chatid 为会话 ID。Body：JSON。`charname`（字符串，可选），指定要回复的角色；不传则按会话逻辑触发回复。
+- 用途：触发角色在该聊天中生成回复。
+
+### POST /api/parts/shells:chat/:chatid/char
+- 路径：chatid 为会话 ID。Body：JSON。`charname`（字符串，必填），chars 下的 part 名称。
+- 用途：向该聊天添加角色。
+
+### DELETE /api/parts/shells:chat/:chatid/char/:charname
+- 路径：chatid、charname（角色名）。
+- 用途：从该聊天移除指定角色。
+
+### PUT /api/parts/shells:chat/:chatid/char/:charname/frequency
+- 路径：chatid、charname。Body：JSON。`frequency`（数字等，发言频率配置）。
+- 用途：设置该角色在此聊天中的发言频率。
+
+### POST /api/parts/shells:chat/:chatid/plugin
+- 路径：chatid 为会话 ID。Body：JSON。`pluginname`（字符串，必填），plugins 下的 part 名称。
+- 用途：为该聊天添加插件。
+
+### DELETE /api/parts/shells:chat/:chatid/plugin/:pluginname
+- 路径：chatid、pluginname。
+- 用途：从该聊天移除指定插件。

@@ -1,0 +1,39 @@
+# browserIntegration shell 支持的 Web 端点说明
+
+本 shell 提供浏览器集成：用户脚本、历史记录、回调与自动运行脚本管理。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:browserIntegration/
+- 用途：浏览器集成管理页面，用于管理浏览器用户脚本、查看操作历史、配置自动运行脚本等功能。支持与浏览器扩展和用户脚本的集成，实现跨页面的功能调用。
+
+---
+
+## 用户脚本与历史
+
+### GET /virtual_files/parts/shells:browserIntegration/script.user.js
+- 用途：获取用于浏览器集成的用户脚本内容。
+
+### GET /api/parts/shells:browserIntegration/history
+- 用途：获取浏览器集成相关操作历史。
+
+### POST /api/parts/shells:browserIntegration/callback
+- Body：JSON。`partpath`（字符串，必填），实现 browserIntegration 回调的 part 路径。`data`、`pageId`、`script` 等由集成流程决定。
+- 用途：处理来自浏览器或扩展的回调（如 OAuth、注入结果等）。
+
+---
+
+## 自动运行脚本
+
+### GET /api/parts/shells:browserIntegration/autorun-scripts
+- 用途：获取当前用户配置的自动运行脚本列表。返回 `{ success: true, scripts: [...] }`，每项含 `id`、`urlRegex`、`script`、`comment`、`createdAt` 等。
+
+### POST /api/parts/shells:browserIntegration/autorun-scripts
+- Body：JSON。`urlRegex`（字符串，必填），匹配 URL 的正则。`script`（字符串，必填），要执行的脚本内容。`comment`（字符串，可选）。
+- 用途：添加新的自动运行脚本。返回 `{ success: true, script: newScript }`，newScript 含生成的 `id`。
+
+### DELETE /api/parts/shells:browserIntegration/autorun-scripts/:id
+- 路径：id 为脚本 ID（GET autorun-scripts 返回的每项 script.id，UUID 字符串）。
+- 用途：删除指定自动运行脚本。

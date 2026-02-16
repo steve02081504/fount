@@ -1,0 +1,40 @@
+# themeManage shell 支持的 Web 端点说明
+
+本 shell 提供主题的列出、获取、保存与删除。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:themeManage/
+- 用途：主题管理页面，用于创建、编辑、删除和应用自定义主题。支持预览主题效果、管理主题列表、切换当前页面主题等功能。
+
+---
+
+## 原理说明
+
+- **API 能做什么**：主题的列出、获取、保存、删除均通过下述 HTTP 接口完成；主题数据存储在服务端，可跨设备同步。
+- **API 不能做什么**：当前页面的「应用/切换主题」由前端负责，没有对应 API。即：用户希望「把当前看到的界面换成某个主题」时，仅靠调用 themeManage 的 API 无法生效。
+- **若用户希望设置/切换当前页面的主题**：必须在**前端**执行 JavaScript。方式：在已加载 fount 前端的页面中，从共享脚本 `/scripts/theme.mjs` 调用：
+  - `setTheme(theme)`：切换并应用主题。参数 `theme` 为字符串，可为内置值 `'light'`、`'dark'`、`'auto'`，或 themeManage 中保存的自定义主题 ID/名称（与 GET theme/:id 返回的 `id` 或 `name` 一致）。需先通过 themeManage API 或 localStorage 确保该主题已存在。
+  - `applyTheme()`：根据当前存储的 theme 重新应用主题（例如页面加载时或跨标签同步后）。
+  因此，若 AI Agent 需要帮用户「切换当前看到的主题」，应引导用户在前端执行上述 JS（例如通过支持执行前端脚本的 shell，如 browserIntegration 的 runJsOnPage），或让用户打开 themeManage 页面手动选择主题。
+
+---
+
+## 主题管理
+
+### GET /api/parts/shells:themeManage/list
+- 用途：获取当前用户主题列表。返回主题数组，每项至少含 id、name 等，用于展示或作为 theme/:id 的 id。
+
+### GET /api/parts/shells:themeManage/theme/:id
+- 路径：id 为主题 ID（字符串，与 list 中项的 id 一致）。
+- 用途：获取指定主题的完整内容（含 id、name、lastModified 及主题配置等）。保存时可将此结构略作修改后 POST 到 save。
+
+### POST /api/parts/shells:themeManage/save
+- Body：JSON。可选字段 `id`（不传则自动生成）；建议含 `name` 及与 GET theme/:id 返回结构一致的配置对象（如 daisyUI 相关变量等）。服务端会写入 `lastModified`。
+- 用途：保存（新建或更新）主题。返回 `{ success: true, id }`。
+
+### DELETE /api/parts/shells:themeManage/theme/:id
+- 路径：id 为主题 ID。
+- 用途：删除指定主题。

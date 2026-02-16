@@ -1,0 +1,200 @@
+# fount 基础 API 入口点说明
+
+fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 API 调用规范与用途，便于 AI Agent 操作 fount 系统。
+除特别说明外，需认证的接口支持：Cookie（accessToken/apiAccessToken）、Authorization: Bearer <apiKey>、或查询参数 fount-apikey=<apiKey>。
+
+---
+
+## WebSocket
+
+### GET /ws/test/echo
+- 认证：无
+- 用途：测试 WebSocket 连接，回显收到的消息。
+
+### GET /ws/test/auth_echo
+- 认证：需要
+- 用途：测试认证后的 WebSocket 连接，回显收到的消息。
+
+### GET /ws/notify
+- 认证：需要
+- 用途：订阅服务端事件通知（长连接）。
+
+---
+
+## 健康与元数据
+
+### GET /api/ping
+- 认证：本地 IP 或任意认证方式
+- 用途：存活检测。返回 client_name、ver、uuid、is_local_ip、hosturl_in_local_ip 等。
+
+### GET /api/getlocaledata
+- 查询：preferred（可选，逗号分隔语言代码）
+- 认证：可选；若已认证会保存用户语言偏好
+- 用途：获取前端国际化数据。Accept-Language 与 preferred 合并后返回对应 locale 内容。
+
+### GET /api/getavailablelocales
+- 认证：无
+- 用途：返回可用语言列表（fountLocaleList）。
+
+---
+
+## 认证与用户
+
+### POST /api/login
+- 限流：5 次/分钟
+- Body：username, password, deviceid；非本地 IP 时需 powToken（PoW 验证）
+- 用途：登录。成功时设置 accessToken、refreshToken Cookie。
+
+### POST /api/register/generateverificationcode
+- 认证：无
+- 用途：根据请求 IP 生成注册验证码（用于非本地 IP 注册）。
+
+### POST /api/register
+- 限流：5 次/分钟
+- Body：username, password, verificationcode；非本地 IP 时需 powToken 与验证码
+- 用途：注册新用户。
+
+### POST /api/logout
+- 用途：登出（清除 Cookie 等）。
+
+### POST /api/apikey/create
+- 认证：需要
+- Body：description（可选）
+- 用途：创建 API Key。返回 apiKey、jti；apiKey 仅返回一次，需妥善保存。
+
+### GET /api/apikey/list
+- 认证：需要
+- 用途：列出当前用户的 API Key 列表（jti、prefix、description、createdAt、lastUsed）。
+
+### POST /api/apikey/revoke
+- 认证：需要
+- Body：jti, password
+- 用途：撤销指定 API Key。
+
+### POST /api/apikey/verify
+- Body：apiKey
+- 用途：验证 API Key 是否有效，返回 valid: true/false。
+
+### POST /api/get-api-cookie
+- Body：apiKey
+- 用途：用 API Key 换取并设置 apiAccessToken/apiRefreshToken Cookie，便于浏览器端使用。
+
+### GET /api/whoami
+- 认证：需要
+- 用途：返回当前用户名 { username }。
+
+### POST /api/authenticate
+- 认证：需要
+- 用途：仅验证当前请求是否已认证，成功返回 200。
+
+---
+
+## PoW（防滥用）
+
+### POST /api/pow/challenge
+- 用途：获取 PoW 挑战（用于登录/注册前）。
+
+### POST /api/pow/redeem
+- Body：token, solutions
+- 用途：提交 PoW 解答并兑换 token。
+
+---
+
+## Parts 与默认配置
+
+### POST /api/runpart
+- 认证：需要
+- Body：partpath, args
+- 用途：通过 IPC 执行指定 part 的命令（如 shell 命令）。
+
+### POST /api/loadpart
+- 认证：需要
+- Body：partpath（路径中可用冒号代替斜杠，会规范化为 /）
+- 用途：为当前用户加载指定 part。
+
+### GET /api/getlist/:path
+- 认证：需要
+- 路径：path 中冒号会替换为斜杠，如 shells 或 worlds:myworld
+- 用途：获取指定路径下的 part 名称列表（未加载的也会列出）。
+
+### GET /api/getloadedlist/:path
+- 认证：需要
+- 路径：同上
+- 用途：获取指定路径下当前已加载的 part 名称列表。
+
+### GET /api/getallcacheddetails/:path
+- 认证：需要
+- 路径：同上
+- 用途：获取指定路径下所有 part 的缓存详情。
+
+### GET /api/getdetails/:path
+- 认证：需要
+- 查询：nocache（可选，跳过缓存）
+- 路径：同上
+- 用途：获取指定 part 的详情（单 part）。
+
+### GET /api/getpartbranches
+- 认证：需要
+- 查询：nocache（可选，true/1）
+- 用途：获取 part 的 git 分支信息。
+
+### GET /parts/:partpath/*
+- 认证：需要
+- 路径：partpath 中冒号会替换为斜杠；其后为 part 的 public 下相对路径
+- 用途：访问 part 的静态资源。若为目录且存在 index.html 则返回该文件，否则可能返回目录列表或 404。
+
+### GET /api/defaultpart/getall
+- 认证：需要
+- 用途：获取当前用户所有默认 part 配置。
+
+### POST /api/defaultpart/add
+- 认证：需要
+- Body：parent, child
+- 用途：设置某类型下的默认 part。
+
+### POST /api/defaultpart/unset
+- 认证：需要
+- Body：parent, child
+- 用途：取消某类型下的默认 part。
+
+### GET /api/defaultpart/getany/:parent
+- 认证：需要
+- 路径：parent 如 shells、chars
+- 用途：获取该类型下任意一个默认 part 名称（无则空字符串）。
+
+### GET /api/defaultpart/getallbytype/:parent
+- 认证：需要
+- 路径：同上
+- 用途：获取该类型下所有默认 part 名称列表。
+
+### GET /api/defaultpart/getanypreferred/:parent
+- 认证：需要
+- 路径：同上
+- 用途：获取该类型下优先的默认 part 名称（无则空字符串）。
+
+---
+
+## 用户设置
+
+### GET /api/getusersetting
+- 认证：需要
+- 查询：key
+- 用途：获取当前用户配置项 key 的值。
+
+### POST /api/setusersetting
+- 认证：需要
+- Body：key, value
+- 用途：设置当前用户配置项。
+
+---
+
+## 测试（仅开发/调试）
+
+### GET /api/test/error
+- 用途：触发测试错误（skip_report）。
+
+### GET /api/test/async_error
+- 用途：异步触发测试错误。
+
+### GET /api/test/unhandledRejection
+- 用途：触发未处理的 Promise 拒绝。

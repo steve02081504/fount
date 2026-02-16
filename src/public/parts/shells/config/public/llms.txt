@@ -1,0 +1,26 @@
+# config shell 支持的 Web 端点说明
+
+本 shell 提供 part 配置的读取、写入与展示信息。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:config/
+- 用途：part 配置页面，用于查看和编辑指定 part 的配置。可通过 URL 参数指定 partpath（`?partpath=${path}`）。支持动态配置 UI 展示。
+
+---
+
+## 配置数据
+
+### GET /api/parts/shells:config/getdata
+- 查询：`partpath`（字符串，必填）。part 路径，如 `chars/my-char`，路径中可用冒号代替斜杠（会规范化为 /）。
+- 用途：获取指定 part 的配置数据。
+
+### POST /api/parts/shells:config/setdata
+- Body：JSON。`partpath`（字符串，必填）、`data`（要保存的配置对象）。
+- 用途：保存指定 part 的配置。
+
+### GET /api/parts/shells:config/getPartDisplay
+- 查询：`partpath`（字符串，必填）。
+- 用途：获取指定 part 的展示信息（名称、描述、配置 UI 等），用于配置界面。返回 `{ html, js }` 等。

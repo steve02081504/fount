@@ -1,0 +1,13 @@
+# tutorial shell 支持的 Web 端点说明
+
+本 shell 仅提供静态教程页面，无独立 HTTP 或 WebSocket API 端点。
+通过 /parts/shells:tutorial/ 访问前端界面即可。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:tutorial/
+- 用途：教程页面，提供 fount 系统的使用教程和帮助文档。包含入门指南、功能介绍、使用技巧等内容，帮助用户快速了解和使用 fount。
+
+---

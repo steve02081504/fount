@@ -1,0 +1,13 @@
+# ideIntegration shell 支持的 Web 端点说明
+
+本 shell 提供 IDE 集成相关的前端界面，无独立对外文档的 HTTP 或 WebSocket API 端点。
+通过 /parts/shells:ideIntegration/ 访问前端；与 IDE 的交互由该 shell 内部或 IPC 处理。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:ideIntegration/
+- 用途：IDE 集成页面，用于配置和管理与 IDE（集成开发环境）的集成功能。支持设置 IDE 连接、查看集成状态、管理集成配置等功能。
+
+---
