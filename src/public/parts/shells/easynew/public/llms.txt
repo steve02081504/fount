@@ -1,0 +1,34 @@
+# easynew shell 支持的 Web 端点说明
+
+本 shell 提供基于模板快速新建 part（角色、世界、persona 等）的功能。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:easynew/
+- 用途：快速新建 part 页面，提供基于模板的向导式创建界面。支持创建角色、世界、persona 等不同类型的 part，通过模板简化创建流程。
+
+### GET /parts/shells:easynew/parts/easychar
+- 用途：快速创建角色页面，专门用于通过模板创建新角色。
+
+### GET /parts/shells:easynew/parts/easypersona
+- 用途：快速创建 persona 页面，专门用于通过模板创建新 persona。
+
+### GET /parts/shells:easynew/parts/easyworld
+- 用途：快速创建世界页面，专门用于通过模板创建新世界。
+
+---
+
+## 模板与创建
+
+### GET /api/parts/shells:easynew/templates
+- 用途：获取可用的新建模板列表。返回对象，key 为 templateName，用于 template-html 与 create。
+
+### GET /api/parts/shells:easynew/template-html
+- 查询：`templateName`（字符串，必填），模板名称，与 templates 返回的 key 一致。
+- 用途：获取指定模板的 HTML 表单内容，用于前端渲染新建向导。
+
+### POST /api/parts/shells:easynew/create
+- Body：表单或 JSON。`templateName`（字符串，必填）。其余字段由模板的 main.mjs New() 决定，可含表单字段及可选文件（multipart 时通过 req.files 传递）。
+- 用途：根据模板与表单数据创建新 part。返回 `{ message, partName }`。

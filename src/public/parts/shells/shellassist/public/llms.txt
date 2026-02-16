@@ -1,0 +1,17 @@
+# shellassist shell 支持的 Web 端点说明
+
+本 shell 提供基于终端的辅助界面，主要通过 WebSocket 与后端交互。以下为已注册的 WebSocket 端点。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:shellassist/
+- 用途：终端辅助界面页面，提供基于 Web 终端的交互式命令行界面。通过 WebSocket 与后端通信，支持执行命令、查看输出、交互式操作等功能，是 fount 的命令行管理工具。
+
+---
+
+## WebSocket
+
+### GET /ws/parts/shells:shellassist/terminal
+- 用途：连接 shellassist 的终端 WebSocket，用于交互式命令行会话。

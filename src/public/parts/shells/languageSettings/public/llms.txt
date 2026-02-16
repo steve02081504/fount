@@ -1,0 +1,15 @@
+# languageSettings shell 支持的 Web 端点说明
+
+本 shell 仅提供语言/国际化设置的前端页面，无独立 HTTP 或 WebSocket API 端点。
+语言数据通过基础 API /api/getlocaledata、/api/getavailablelocales 等获取；本 shell 通过 /parts/shells:languageSettings/ 提供设置界面。
+
+若用户希望 AI 协助「切换界面语言」：语言偏好由前端保存与应用，无专用服务端 API。需在前端执行 JS，例如使用 /scripts/i18n.mjs 的 savePreferredLangs(langs) 保存偏好，并可由 initTranslations 或页面刷新生效。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:languageSettings/
+- 用途：语言设置页面，用于设置界面语言偏好。支持选择首选语言列表、查看可用语言、预览语言效果等功能。
+
+---

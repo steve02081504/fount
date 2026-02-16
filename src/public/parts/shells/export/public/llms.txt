@@ -1,0 +1,30 @@
+# export shell 支持的 Web 端点说明
+
+本 shell 提供 part 导出、fount JSON 导出、分享与虚拟文件下载。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:export/
+- 用途：part 导出页面，用于导出指定的 part（角色、世界、插件等）为可下载文件或分享链接。可通过 URL 参数指定 partpath（`?partpath=${path}`）。支持导出为 ZIP/7z 压缩包或 fount JSON 格式。
+
+---
+
+## 导出与分享
+
+### GET /api/parts/shells:export/export
+- 查询：`partpath`（字符串，必填），如 `chars/my-char`。`withData`（可选，字符串 `'true'` 则包含数据）。
+- 用途：导出指定 part 为可下载文件（ZIP 或 7z），直接返回文件流。
+
+### GET /api/parts/shells:export/fountjson
+- 查询：`partpath`（字符串，必填）。
+- 用途：获取指定 part 的 fount 原生 JSON 表示。
+
+### POST /api/parts/shells:export/share
+- Body：JSON。`partpath`（字符串，必填）。`expiration`、`withData` 可选，由实现决定。
+- 用途：创建分享链接，返回 `{ link }`。
+
+### GET /virtual_files/parts/shells:export/download/*partpath
+- 路径：*partpath 为导出产物路径（如 part 路径或分享 ID）。查询：`withData`（可选，同 export）。
+- 用途：下载已导出的虚拟文件或分享包，返回文件流。

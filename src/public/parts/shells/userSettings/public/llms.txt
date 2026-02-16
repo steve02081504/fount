@@ -1,0 +1,36 @@
+# userSettings shell 支持的 Web 端点说明
+
+本 shell 提供用户账户设置：统计、改密、重命名、设备管理、注销账户等。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:userSettings/
+- 用途：用户设置页面，用于管理用户账户信息。包括查看统计信息、修改密码、重命名账户、管理已登录设备、注销账户等功能。
+
+---
+
+## 用户与账户
+
+### GET /api/parts/shells:userSettings/stats
+- 用途：获取当前用户统计信息。
+
+### POST /api/parts/shells:userSettings/change_password
+- Body：JSON。`currentPassword`（字符串，必填）、`newPassword`（字符串，必填）。
+- 用途：修改当前用户密码。
+
+### POST /api/parts/shells:userSettings/rename_user
+- Body：JSON。`newUsername`（字符串，必填）、`password`（字符串，必填）。
+- 用途：重命名当前用户。
+
+### POST /api/parts/shells:userSettings/delete_account
+- Body：JSON。`password`（字符串，必填）。
+- 用途：注销当前用户账户。
+
+### GET /api/parts/shells:userSettings/devices
+- 用途：获取当前用户已登录设备列表。返回 `{ success: true, devices: [...] }`，每项含 `deviceId`、`jti`、`expiry`、`lastSeen`、`ipAddress`、`userAgent` 等。撤销设备时使用其中的 `jti` 作为 tokenJti。
+
+### POST /api/parts/shells:userSettings/revoke_device
+- Body：JSON。`tokenJti`（字符串，必填，来自 GET devices 返回的某设备的 `jti` 字段）、`password`（字符串，必填）。
+- 用途：撤销指定设备的登录会话。

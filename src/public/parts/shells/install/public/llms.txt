@@ -1,0 +1,29 @@
+# install shell 支持的 Web 端点说明
+
+本 shell 提供 part 安装、从文件/文本导入以及卸载功能。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:install/
+- 用途：part 安装页面，用于通过文件上传或文本粘贴的方式安装/导入 part（角色、世界、插件等）。支持多种格式（角色卡、Risu、SillyTavern 等）。
+
+### GET /parts/shells:install/uninstall
+- 用途：part 卸载页面，用于卸载指定的 part。可通过 URL 参数指定 partpath（`?partpath=${path}`）。
+
+---
+
+## 安装与导入
+
+### POST /api/parts/shells:install/file
+- Body：multipart 表单，包含要导入的文件（如角色卡、压缩包等）。服务端从 req.files 读取文件数据。
+- 用途：通过上传文件安装或导入 part（支持 chars、Risu/SillyTavern 等格式）。
+
+### POST /api/parts/shells:install/text
+- Body：JSON。`text`（字符串，必填），粘贴的文本内容。类型/目标 part 由服务端根据内容解析。
+- 用途：通过粘贴文本安装或导入 part。
+
+### POST /api/parts/shells:install/uninstall
+- Body：JSON。`partpath`（字符串，必填），如 `chars/my-char`。路径中冒号会规范化为斜杠。
+- 用途：卸载指定 part。

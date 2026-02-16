@@ -1,0 +1,17 @@
+# home shell 支持的 Web 端点说明
+
+本 shell 提供首页/仪表盘入口，仅有一个 API 用于获取首页注册表（按钮与 part 入口等）。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:home/
+- 用途：fount 主首页/仪表盘页面，提供所有 part（角色、世界、插件等）的浏览和管理入口。显示各 shell 的功能按钮和 part 类型界面，是用户的主要导航中心。
+
+---
+
+## 首页注册表
+
+### GET /api/parts/shells:home/gethomeregistry
+- 用途：获取首页注册表，包含各 shell 的入口按钮与 part 界面配置，用于渲染首页。

@@ -1,0 +1,45 @@
+# subfounts shell 支持的 Web 端点说明
+
+本 shell 提供子 fount 连接码、连接列表、远程执行与描述管理。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:subfounts/
+- 用途：子 fount 管理页面，用于管理子 fount 连接。包括查看连接码、管理连接列表、远程执行脚本/命令、设置连接描述等功能，支持多实例 fount 之间的连接和协作。
+
+---
+
+## 连接码与列表
+
+### GET /api/parts/shells:subfounts/connection-code
+- 用途：获取当前实例的连接码，供子 fount 或客户端连接。
+
+### POST /api/parts/shells:subfounts/regenerate-code
+- 用途：重新生成连接码。
+
+### GET /api/parts/shells:subfounts/list
+- 用途：获取已配置的子 fount 或连接列表。
+
+### GET /api/parts/shells:subfounts/connected
+- 用途：获取当前已连接的子 fount/客户端状态。
+
+### GET /api/parts/shells:subfounts/info
+- 用途：获取 subfounts 相关元信息（含 shell 可用性等）。
+
+### POST /api/parts/shells:subfounts/set-description
+- Body：JSON。`deviceId`（字符串，必填），连接的设备 ID（来自 list/connected 等）。`description`（字符串，可选），要设置的描述。
+- 用途：设置某连接的描述信息。
+
+---
+
+## 远程执行
+
+### POST /api/parts/shells:subfounts/execute
+- Body：JSON。`subfountId`（必填，子 fount 标识，与 list/connected 中一致）。`script`（字符串，必填），要在子 fount 上执行的 JavaScript 代码。`callbackInfo`（可选），回调信息。
+- 用途：在指定子 fount 上执行脚本，返回 `{ success: true, result }`。
+
+### POST /api/parts/shells:subfounts/execute-shell
+- Body：JSON。`subfountId`（必填）。`command`（字符串，必填），要执行的 shell 命令。`shell`（可选），shell 类型。`options`（可选，对象）。
+- 用途：在指定子 fount 上执行 shell 命令（如 runpart），返回 `{ success: true, result }`。

@@ -1,0 +1,31 @@
+# deskpet shell 支持的 Web 端点说明
+
+本 shell 提供桌面宠物的启动、停止与运行列表查询。桌面宠物由「角色」（chars）担任，需该角色 part 实现 deskpet 接口并提供宠物 URL。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:deskpet/
+- 用途：桌面宠物管理页面，用于启动、停止和管理桌面宠物。显示可用的宠物角色列表、正在运行的宠物状态等信息。
+
+### GET /parts/shells:deskpet/default_pet
+- 用途：默认宠物页面，用于设置和查看默认桌面宠物配置。
+
+### GET /parts/shells:deskpet/set_cookie_and_redirect
+- 用途：设置 cookie 并重定向页面，用于桌面宠物窗口的认证和初始化流程。
+
+---
+
+## 桌面宠物
+
+### POST /api/parts/shells:deskpet/start
+- Body：JSON，字段 `charname`（字符串，必填）。角色名，即 chars 下的 part 名称，例如 `my-pet`（对应 partpath `chars/my-pet`）。需先通过 GET /api/getlist/chars 等确认该角色存在且已实现 deskpet 接口。
+- 用途：启动指定角色对应的桌面宠物窗口。
+
+### POST /api/parts/shells:deskpet/stop
+- Body：JSON，字段 `charname`（字符串，必填）。与 start 相同，为要停止的宠物对应的角色名。
+- 用途：停止指定桌面宠物。
+
+### GET /api/parts/shells:deskpet/getrunningpetlist
+- 用途：获取当前用户正在运行的桌面宠物列表。返回 JSON 数组，每项为角色名字符串（charname），与 start/stop 的 `charname` 一致，可直接用于调用 stop。

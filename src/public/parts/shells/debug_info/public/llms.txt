@@ -1,0 +1,17 @@
+# debug_info shell 支持的 Web 端点说明
+
+本 shell 提供调试用系统信息接口。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:debug_info/
+- 用途：调试信息页面，用于查看服务器系统信息、运行环境详情、连接状态等调试相关信息，便于问题排查和系统诊断。
+
+---
+
+## 系统信息
+
+### GET /api/parts/shells:debug_info/system_info
+- 用途：获取当前服务器/运行环境的系统信息，用于调试与问题排查。

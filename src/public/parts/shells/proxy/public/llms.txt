@@ -1,0 +1,34 @@
+# proxy shell 支持的 Web 端点说明
+
+本 shell 提供兼容 OpenAI API 的代理，供外部客户端调用 fount 的 AI 模型（AIsources）。
+基础路径：/api/parts/shells:proxy/calling/openai。
+
+---
+
+## 提供的页面
+
+### GET /parts/shells:proxy/
+- 用途：代理服务管理页面，用于查看和管理 OpenAI 兼容 API 代理服务。显示可用的 AI 模型列表、API 密钥管理、代理配置等信息，便于外部客户端通过标准 OpenAI API 调用 fount 的 AI 模型。
+
+---
+
+## 模型与补全
+
+### GET /api/parts/shells:proxy/calling/openai/v1/models
+- 用途：获取可用模型列表（对应当前用户已加载的 AIsources）。
+
+### POST /api/parts/shells:proxy/calling/openai/v1/completions
+- Body：OpenAI 兼容的 completions 请求（model、prompt 等）
+- 用途：文本补全。
+
+### POST /api/parts/shells:proxy/calling/openai/models/:modelname/v1/completions
+- Body：同上，model 可由路径参数指定
+- 用途：文本补全（路径指定模型）。
+
+### POST /api/parts/shells:proxy/calling/openai/v1/chat/completions
+- Body：OpenAI 兼容的 chat completions 请求（model、messages 等）
+- 用途：聊天补全。
+
+### POST /api/parts/shells:proxy/calling/openai/models/:modelname/v1/chat/completions
+- Body：同上，model 可由路径参数指定
+- 用途：聊天补全（路径指定模型）。
