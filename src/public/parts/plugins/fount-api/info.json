@@ -1,0 +1,269 @@
+{
+	"en-UK": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Provides fount API access for AI characters.",
+		"description_markdown": "The **fount API** plugin provides AI characters with the ability to access the fount system. It allows characters to fetch operation guides and automatically manages API Keys, enabling characters to use the `fountApiKey` variable in JavaScript code to call fount APIs.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"zh-CN": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "为 AI 角色提供 fount API 访问能力",
+		"description_markdown": "**fount API** 插件为 AI 角色提供了访问 fount 系统的能力。它允许角色通过 fetch 获取操作指引，并自动管理 API Key，使角色能够在 JavaScript 代码中使用 `fountApiKey` 变量调用 fount API。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"插件"
+		]
+	},
+	"ar-SA": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "يوفر إمكانية الوصول إلى واجهة برمجة تطبيقات fount لشخصيات الذكاء الاصطناعي.",
+		"description_markdown": "يوفر المكون الإضافي **fount API** لشخصيات الذكاء الاصطناعي القدرة على الوصول إلى نظام fount. يتيح للشخصية جلب أدلة التشغيل ويدير مفاتيح API تلقائيًا، مما يسمح باستخدام متغير `fountApiKey` في أكواد JavaScript لاستدعاء واجهات fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"إضافة"
+		]
+	},
+	"de-DE": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Ermöglicht KI-Charakteren den Zugriff auf die fount-API.",
+		"description_markdown": "Das **fount API**-Plugin ermöglicht KI-Charakteren den Zugriff auf das fount-System. Es erlaubt den Charakteren, Bedienungsanleitungen via `fetch` abzurufen und verwaltet API-Keys automatisch, sodass die Variable `fountApiKey` in JavaScript-Code zur Steuerung der fount-API genutzt werden kann.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"emoji": {
+		"name": "⛲🔑",
+		"avatar": "",
+		"description": "🤖➡️⛲ API ✅",
+		"description_markdown": "**fount API** 🔌 ➡️ 🤖✨.\n✅ 📲 `fetch` 📖.\n✅ 🔑 🤖-manage.\n✅ 📜 JS `fountApiKey` ➡️ ⛲.\n\n💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"⛲",
+			"🔑",
+			"📡",
+			"🔌"
+		]
+	},
+	"es-ES": {
+		"name": "API de fount",
+		"avatar": "",
+		"description": "Proporciona acceso a la API de fount para personajes de IA.",
+		"description_markdown": "El complemento **fount API** dota a los personajes de IA de la capacidad de acceder al sistema fount. Permite obtener guías de operación mediante `fetch` y gestiona automáticamente las API Keys, permitiendo usar la variable `fountApiKey` en JavaScript para llamar a las API de fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"complemento"
+		]
+	},
+	"fr-FR": {
+		"name": "API fount",
+		"avatar": "",
+		"description": "Fournit un accès à l'API fount pour les personnages IA.",
+		"description_markdown": "Le plugin **fount API** permet aux personnages IA d'accéder au système fount. Il permet de récupérer des guides d'utilisation via `fetch` et gère automatiquement les clés API, permettant l'utilisation de la variable `fountApiKey` dans le code JavaScript pour appeler les API fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"hi-IN": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "AI पात्रों के लिए fount API एक्सेस प्रदान करता है।",
+		"description_markdown": "**fount API** प्लगइन AI पात्रों को fount सिस्टम तक पहुंचने की क्षमता देता है। यह पात्रों को `fetch` के माध्यम से संचालन निर्देश प्राप्त करने की अनुमति देता है और ऑटो-मैनेज्ड API Keys प्रदान करता है, जिससे `fountApiKey` वेरिएबल का उपयोग करके fount API को कॉल किया जा सकता है।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"प्लगइन"
+		]
+	},
+	"is-IS": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Veitir gervigreindarkarakterum aðgang að fount API.",
+		"description_markdown": "**fount API** viðbótin gerir gervigreindarkarakterum kleift að tengjast fount-kerfinu. Hún gerir þeim kleift að sækja leiðbeiningar með `fetch` og heldur utan um API-lykla sjálfkrafa, svo hægt sé að nota breytuna `fountApiKey` í JavaScript til að kalla á fount API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"viðbót"
+		]
+	},
+	"it-IT": {
+		"name": "API fount",
+		"avatar": "",
+		"description": "Fornisce l'accesso alle API fount per i personaggi IA.",
+		"description_markdown": "Il plugin **fount API** fornisce ai personaggi IA la possibilità di accedere al sistema fount. Consente di recuperare guide operative tramite `fetch` e gestisce automaticamente le chiavi API, permettendo di usare la variabile `fountApiKey` in JavaScript per chiamare le API fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"ja-JP": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "AI キャラクターに fount API へのアクセス機能を提供します。",
+		"description_markdown": "**fount API** プラグインは、AI キャラクターが fount システムにアクセスすることを可能にします。`fetch` による操作ガイドの取得や API キーの自動管理をサポートし、JavaScript 内で `fountApiKey` 変数を使用して fount API を呼び出すことができます。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"プラグイン"
+		]
+	},
+	"ko-KR": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "AI 캐릭터에게 fount API 액세스 권한을 제공합니다.",
+		"description_markdown": "**fount API** 플러그인은 AI 캐릭터가 fount 시스템에 접근할 수 있는 기능을 제공합니다. `fetch`를 통해 조작 가이드를 가져오고 API 키를 자동으로 관리하여, JavaScript 코드에서 `fountApiKey` 변수를 사용해 fount API를 호출할 수 있게 합니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"플러그인"
+		]
+	},
+	"lzh": {
+		"name": "fount 接口",
+		"avatar": "",
+		"description": "爲化身啓 fount 接口之門",
+		"description_markdown": "此 **fount API** 插件，使化身得入 fount 之系。可以 `fetch` 索操演之方，且由系統自理金鑰（API Key）。化身遂得於 JavaScript 之中，憑 `fountApiKey` 變數以奏 fount 接口也。\n",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"接口",
+			"插件"
+		]
+	},
+	"nl-NL": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Biedt fount API-toegang voor AI-personages.",
+		"description_markdown": "De **fount API**-plugin geeft AI-personages de mogelijkheid om toegang te krijgen tot het fount-systeem. Het stelt personages in staat om handleidingen op te halen via `fetch` en beheert automatisch API-keys, zodat de variabele `fountApiKey` in JavaScript kan worden gebruikt.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"pt-PT": {
+		"name": "API fount",
+		"avatar": "",
+		"description": "Fornece acesso à API fount para personagens de IA.",
+		"description_markdown": "O plugin **fount API** permite que personagens de IA acedam ao sistema fount. Permite obter guias de operação via `fetch` e gere automaticamente chaves de API, permitindo o uso da variável `fountApiKey` em JavaScript para chamar as APIs fount.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"ru-RU": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Предоставляет ИИ-персонажам доступ к API fount.",
+		"description_markdown": "Плагин **fount API** позволяет ИИ-персонажам взаимодействовать с системой fount. Он поддерживает получение руководств через `fetch` и автоматически управляет API-ключами, позволяя использовать переменную `fountApiKey` в коде JavaScript.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"плагин"
+		]
+	},
+	"uk-UA": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Надає ШІ-персонажам доступ до API fount.",
+		"description_markdown": "Плагін **fount API** дає ШІ-персонажам можливість доступу до системи fount. Він дозволяє отримувати інструкції через `fetch` та автоматично керує API-ключами, що дозволяє використовувати змінну `fountApiKey` у коді JavaScript.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"плагін"
+		]
+	},
+	"vi-VN": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "Cung cấp quyền truy cập fount API cho các nhân vật AI.",
+		"description_markdown": "Plugin **fount API** cung cấp cho các nhân vật AI khả năng truy cập vào hệ thống fount. Nó cho phép lấy hướng dẫn vận hành thông qua `fetch` và tự động quản lý API Key, giúp nhân vật có thể sử dụng biến `fountApiKey` trong mã JavaScript.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"plugin"
+		]
+	},
+	"zh-TW": {
+		"name": "fount API",
+		"avatar": "",
+		"description": "為 AI 角色提供 fount API 存取能力",
+		"description_markdown": "**fount API** 外掛程式為 AI 角色提供了存取 fount 系統的能力。它允許角色透過 fetch 取得操作指引，並自動管理 API Key，使角色能夠在 JavaScript 程式碼中使用 `fountApiKey` 變數呼叫 fount API。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"home_page": "",
+		"tags": [
+			"fount",
+			"api",
+			"外掛"
+		]
+	}
+}
