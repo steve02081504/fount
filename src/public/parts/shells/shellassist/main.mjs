@@ -49,13 +49,13 @@ export default {
 					...data,
 					username,
 					UserCharname: data.UserCharname || username,
-					chat_scoped_char_memory: data.chat_scoped_char_memorys[data.charname] || {},
-					chat_scoped_char_memorys: undefined
+					chat_scoped_char_memory: data.chat_scoped_char_memories[data.charname] || {},
+					chat_scoped_char_memories: undefined
 				})
 				return {
 					...result,
-					chat_scoped_char_memorys: {
-						...data.chat_scoped_char_memorys,
+					chat_scoped_char_memories: {
+						...data.chat_scoped_char_memories,
 						[data.charname]: result.chat_scoped_char_memory
 					},
 					chat_scoped_char_memory: undefined

@@ -2295,7 +2295,7 @@
 	},
 	"directoryListing": {
 		"title": "디렉토리 인덱스",
-		"description": "Fount 작업 공간에서 파일과 폴더를 탐색하고 탐색하세요.",
+		"description": "fount 작업 공간에서 파일과 폴더를 탐색하고 탐색하세요.",
 		"indexOf": "색인: ${path}",
 		"name": "이름",
 		"mimeType": "MIME 유형",

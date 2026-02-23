@@ -108,7 +108,7 @@ export let lastWebRequestTime = 0
  * 标记上次 Web 请求的时间戳。
  * @returns {void}
  */
-export function webRequestHappend() {
+export function webRequestHappened() {
 	lastWebRequestTime = Date.now()
 }
 

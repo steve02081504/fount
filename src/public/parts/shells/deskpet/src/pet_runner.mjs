@@ -137,4 +137,3 @@ export function getRunningPets(username) {
 	if (!runningPets[username]) return []
 	return Object.keys(runningPets[username])
 }
-

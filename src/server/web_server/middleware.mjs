@@ -6,7 +6,7 @@ import fileUpload from 'npm:express-fileupload'
 import { console } from '../../scripts/i18n.mjs'
 import { auth_request } from '../auth.mjs'
 import { info } from '../info.mjs'
-import { webRequestHappend } from '../server.mjs'
+import { webRequestHappened } from '../server.mjs'
 
 /**
  * 一个中间件，根据请求是否经过身份验证来应用不同的中间件。
@@ -34,7 +34,7 @@ export function registerMiddleware(router) {
 				method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 				url: req.url.replace(/fount-apikey=[^&]*/, 'fount-apikey=45450721')
 			})
-		webRequestHappend()
+		webRequestHappened()
 		return next()
 	})
 

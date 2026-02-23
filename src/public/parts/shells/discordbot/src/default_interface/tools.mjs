@@ -1,10 +1,10 @@
 /**
  * 分割 Discord 回复。
  * @param {string} reply - 要分割的回复字符串。
- * @param {number} split_lenth - 分割长度。
+ * @param {number} split_length - 分割长度。
  * @returns {string[]} 分割后的字符串数组。
  */
-export function splitDiscordReply(reply, split_lenth = 2000) {
+export function splitDiscordReply(reply, split_length = 2000) {
 	let content_slices = reply.split('\n')
 	let new_content_slices = []
 	let last = ''
@@ -30,7 +30,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 
 		const block_begin = content_slices.shift() + '\n'
 		const block_end = '\n' + content_slices.pop()
-		const max_content_length = split_lenth - block_begin.length - block_end.length
+		const max_content_length = split_length - block_begin.length - block_end.length
 
 		const results = []
 		let current_chunk = ''
@@ -86,7 +86,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 
 	// --- 第二阶段：处理超大块 ---
 	for (const content_slice of content_slices)
-		if (content_slice.length > split_lenth)
+		if (content_slice.length > split_length)
 			if (content_slice.startsWith('```')) {
 				const splited_blocks = splitCodeBlock(content_slice)
 				new_content_slices.push(...splited_blocks) // 使用 push(...array) 来添加所有元素
@@ -96,7 +96,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 				const splited_lines = content_slice.split(/(?<=[ !"');?\]}’”。》！）：；？])/)
 				let last_line_chunk = ''
 				for (const splited_line of splited_lines) {
-					if (last_line_chunk.length + splited_line.length > split_lenth) {
+					if (last_line_chunk.length + splited_line.length > split_length) {
 						new_content_slices.push(last_line_chunk)
 						last_line_chunk = ''
 					}
@@ -112,14 +112,14 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	// --- 第三阶段：生硬拆分（作为最后防线）---
 	// 这个阶段现在应该只会处理那些经过智能分割后仍然超长的“普通文本块”。
 	for (const content_slice of content_slices)
-		if (content_slice.length > split_lenth)
+		if (content_slice.length > split_length)
 			// 检查是否是代码块（理论上不应该到这里，但作为保险）
 			if (content_slice.startsWith('```'))
 				// 如果万一有代码块漏到这里，再次调用 splitCodeBlock
 				new_content_slices.push(...splitCodeBlock(content_slice))
 			else
 				// 对普通文本进行硬分割
-				new_content_slices.push(...content_slice.match(new RegExp(`[^]{1,${split_lenth}}`, 'g')))
+				new_content_slices.push(...content_slice.match(new RegExp(`[^]{1,${split_length}}`, 'g')))
 		else
 			new_content_slices.push(content_slice)
 	mapend()
@@ -131,7 +131,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 			continue
 		}
 
-		if (last.length + content_slice.length + 1 < split_lenth)  // +1 for the newline
+		if (last.length + content_slice.length + 1 < split_length)  // +1 for the newline
 			last += '\n' + content_slice
 		else {
 			new_content_slices.push(last)

@@ -541,7 +541,7 @@ export async function baseMjsPartUnloader(path) {
 	 */
 	async function codeunloader(path) {
 		/*
-		todo: implement codeunloader after moveing fount from deno to bun/done
+		todo: implement codeunloader after moving fount from deno to bun/done
 		deno ll never support this, see also:
 		https://github.com/denoland/deno/issues/27820
 		https://github.com/denoland/deno/issues/28126

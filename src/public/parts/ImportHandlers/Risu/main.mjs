@@ -13,6 +13,7 @@ import { isPartLoaded, loadPart } from '../../../../server/parts_loader.mjs'
 
 import { convertCCv3ToSTv2 } from './ccv3-converter.mjs'
 import { unzipCharx } from './charx-parser.mjs'
+import { matchCharxEmbeddedPrefix } from './charx-uri.mjs'
 import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
 import { extractPngCardData } from './png-parser.mjs'
@@ -62,7 +63,7 @@ async function ImportAsData(username, dataBuffer) {
 		try {
 			const charxData = await unzipCharx(dataBuffer)
 			ccv3Card = charxData.card
-			charxAssets = charxData.assets // 包含 module 内资源（uri已更新为 embeded://__module_asset__/*）和 charx assets/*
+			charxAssets = charxData.assets // 包含 module 内资源（uri 已更新为 embedded://__module_asset__/*）和 charx assets/*
 			risuModuleDef = charxData.moduleData
 			mainImageBuffer = charxData.mainImage // 可能为 undefined
 			sourceSpec = 'ccv3' // CHARX 总是 CCv3
@@ -101,16 +102,16 @@ async function ImportAsData(username, dataBuffer) {
 				const originalUri = assetDef.uri
 
 				try {
-					if (assetDef.uri.startsWith('embeded://')) {
-						const internalPath = assetDef.uri.substring('embeded://'.length)
-						assetBuffer = charxAssets.get(internalPath)
-						if (!assetBuffer) throw new Error(`Embedded asset not found in CHARX: ${internalPath}`)
-					}
-					else if (assetDef.uri.startsWith('__asset:')) {
-						const assetId = assetDef.uri.substring('__asset:'.length)
-						assetBuffer = pngEmbeddedAssets.get(assetId)
-						if (!assetBuffer) throw new Error(`PNG embedded asset not found: ${assetId}`)
-					}
+					const embeddedMatch = matchCharxEmbeddedPrefix(assetDef.uri)
+					if (embeddedMatch)
+						if (embeddedMatch.prefix === '__asset:') {
+							assetBuffer = pngEmbeddedAssets.get(embeddedMatch.path)
+							if (!assetBuffer) throw new Error(`PNG embedded asset not found: ${embeddedMatch.path}`)
+						}
+						else {
+							assetBuffer = charxAssets.get(embeddedMatch.path)
+							if (!assetBuffer) throw new Error(`Embedded asset not found in CHARX: ${embeddedMatch.path}`)
+						}
 					else if (assetDef.uri.startsWith('data:')) {
 						const parts = assetDef.uri.split(',')
 						const b64data = parts[1]
@@ -170,7 +171,8 @@ async function ImportAsData(username, dataBuffer) {
 
 
 		for (const [internalPath, buffer] of charxAssets.entries()) {
-			const alreadyProcessed = processedAssetsForST.some(pa => pa.original_uri === `embeded://${internalPath}`)
+			const alreadyProcessed = processedAssetsForST.some(pa =>
+				pa.original_uri === `embedded://${internalPath}` || pa.original_uri === `embeded://${internalPath}`)
 			if (!alreadyProcessed && internalPath.startsWith('assets/')) try {
 				const filename = path.basename(internalPath)
 				const relativeSavePath = ['risu_assets', 'charx_provided', internalPath.substring('assets/'.length)].join('/')
@@ -181,7 +183,7 @@ async function ImportAsData(username, dataBuffer) {
 					type: 'charx_unreferenced_asset',
 					name: filename,
 					ext: path.extname(filename).substring(1),
-					original_uri: `embeded://${internalPath}`,
+					original_uri: `embedded://${internalPath}`,
 					fount_uri: relativeSavePath
 				})
 			} catch (err) {

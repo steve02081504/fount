@@ -8,7 +8,7 @@ set_start()
 const fount_config = {
 	/**
 	 * 重新启动服务器。
-	 * @returns {never}
+	 * @returns {never} 不会返回，因为进程会退出。
 	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/.github/workflows/default_data',
