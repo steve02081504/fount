@@ -2,6 +2,7 @@ import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { makeSearchable } from '/scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { unlockAchievement } from '/scripts/parts.mjs'
 import {
 	applyTheme,
 	builtin_themes,
@@ -210,6 +211,7 @@ async function handleThemeApply(id, isCustom) {
 		await setCustomTheme(id, url)
 	} else
 		setTheme(id)
+	unlockAchievement('shells/themeManage', 'change_theme')
 }
 
 /**

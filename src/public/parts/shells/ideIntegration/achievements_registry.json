@@ -3,7 +3,7 @@
 		"first_ide_use": {
 			"name": "ide_integration.achievements.first_ide_use.name",
 			"description": "ide_integration.achievements.first_ide_use.description",
-			"icon": "https://api.iconify.design/line-md/code.svg",
+			"icon": "https://api.iconify.design/line-md/briefcase.svg",
 			"locked_description": "ide_integration.achievements.first_ide_use.locked_description",
 			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
 		}
