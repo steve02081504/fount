@@ -121,8 +121,8 @@ async function GetSource(config) {
 
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMutiChar)
+				const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
+				if (isMultiChar)
 					messages.push({
 						role: 'system',
 						content: `Now, please continue the conversation as ${prompt_struct.Charname}.`

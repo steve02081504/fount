@@ -68,7 +68,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 
 	if (risuModule && Array.isArray(risuModule.lorebook)) { // Risu 模块的 lorebook 格式与卡片内嵌的不同
 		// Risu 模块的 lorebook 是 ST-like 的格式，需要适配转换
-		// Risu Module LorebookEntry: {key, secondkey, insertorder, comment, content, mode, alwaysActive, selective, extentions, useRegex}
+		// Risu Module LorebookEntry: {key, secondkey, insertorder, comment, content, mode, alwaysActive, selective, extensions, useRegex}
 		// CCv3 Card LorebookEntry: {keys, content, extensions, enabled, insertion_order, case_sensitive, use_regex, constant, name, priority, id, comment, selective, secondary_keys, position}
 		// 这里我们假设 risuModule.lorebook 已经是 CCv3 LorebookEntry 格式，如果不是，需要额外转换层
 		// 从 Risu 源码看，module.lorebook 确实是不同的格式，更接近旧版 ST 或 AgnAI。

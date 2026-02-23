@@ -100,8 +100,8 @@ if ($args.Length -eq 0) {
 	$newargs = @("open", "keepalive")
 }
 
-$Script:Insalled_winget = 0
-$Script:Insalled_chrome = 0
+$Script:Installed_winget = 0
+$Script:Installed_chrome = 0
 
 function RefreshPath {
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -123,7 +123,7 @@ function Test-Winget {
 					Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix
 				}
 			}
-			$Script:Insalled_winget = 1
+			$Script:Installed_winget = 1
 			RefreshPath
 		}
 	} catch { <# ignore #> }
@@ -140,7 +140,7 @@ function Test-Browser {
 		if (!$browser) {
 			Test-Winget
 			winget install --id Google.Chrome -e --source winget
-			$Script:Insalled_chrome = 1
+			$Script:Installed_chrome = 1
 			RefreshPath
 		}
 	} catch { $Failed = 1 }
@@ -155,7 +155,7 @@ function Test-Browser {
 			} while (Get-Process | Where-Object { $Process2Monitor -contains $_.Name } | Select-Object -ExpandProperty Name)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
 
-			$Script:Insalled_chrome = 1
+			$Script:Installed_chrome = 1
 			RefreshPath
 		}
 	} catch { <# ignore #> }
@@ -216,15 +216,15 @@ try {
 			exit 1
 		}
 		$Script:fountDir = $env:FOUNT_DIR
-		if ($Script:Insalled_winget) {
+		if ($Script:Installed_winget) {
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
-			$Script:Insalled_winget = 0
+			$Script:Installed_winget = 0
 		}
-		if ($Script:Insalled_chrome) {
+		if ($Script:Installed_chrome) {
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
-			$Script:Insalled_chrome = 0
+			$Script:Installed_chrome = 0
 		}
 	}
 	else {
@@ -252,10 +252,10 @@ finally {
 		$statusServerJob | Stop-Job
 		$statusServerJob | Remove-Job
 	}
-	if ($Script:Insalled_chrome) {
+	if ($Script:Installed_chrome) {
 		winget uninstall --id Google.Chrome -e --source winget
 	}
-	if ($Script:Insalled_winget) {
+	if ($Script:Installed_winget) {
 		Import-Module Appx
 		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}

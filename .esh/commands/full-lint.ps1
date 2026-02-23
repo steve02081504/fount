@@ -1,10 +1,12 @@
 prettier "**/*.{md,yaml,yml,toml}" --write --single-quote --log-level error
 prettier . --check --log-level error
 eslint --fix --quiet
+eslint --fix *> $null
+typos -w
 $excludePattern = "[\\/]\.git[\\/]|[\\/]node_modules[\\/]"
 Get-ChildItem -Path "$psscriptroot/../.." -Recurse -File | Where-Object { $_.FullName -notmatch $excludePattern } | ForEach-Object {
 	try {
-		$originalContent = Get-Content -Path $_.FullName -Raw
+		$originalContent = Get-Content -Path $_.FullName -Raw -Encoding UTF8
 	}
 	catch {
 		Write-Error "Failed to read file: $($_.Exception.Message)"

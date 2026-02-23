@@ -862,9 +862,9 @@ export async function setWorld(chatid, worldname) {
 		}
 		if (!result) return
 
-		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
-		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
-		return greeting_entrie
+		const greeting_entry = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
+		await addChatLogEntry(chatid, greeting_entry) // 此处已广播
+		return greeting_entry
 	}
 	catch {
 		chatMetadata.LastTimeSlice.world = timeSlice.world
@@ -913,9 +913,9 @@ export async function addchar(chatid, charname) {
 		}
 		if (!result) return null
 
-		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
-		return greeting_entrie
+		const greeting_entry = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
+		await addChatLogEntry(chatid, greeting_entry) // 此处已广播
+		return greeting_entry
 	}
 	catch (error) {
 		console.error(error)

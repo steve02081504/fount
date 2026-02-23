@@ -1,0 +1,59 @@
+# typos 拼写检查配置
+# 参考: https://github.com/crate-ci/typos/blob/master/docs/reference.md
+
+[files]
+extend-exclude = [
+	"/data",
+	"/docs",
+	"/src/public/locales",
+	"**/info.json",
+	"**/info.dynamic.json",
+]
+ignore-hidden = true
+ignore-files = true
+ignore-dot = false
+ignore-vcs = true
+ignore-global = true
+ignore-parent = true
+
+[default]
+# locale = "en-gb"
+# 仅忽略特定上下文，不全局放行
+extend-ignore-re = [
+	# npm package name
+	"'npm:[^ ']+'",
+	# 单引号内的长 base64/hash（如 Telegram file_id），避免误报 BA/TYE/UE 等
+	"'[A-Za-z0-9/_-]{50,}'",
+	# switch *locales* { ... }（匹配到行首的 } 为止，无反向引用）
+	"\\s*switch[^\\n]*locales[^\\n]*\\s*\\{[\\s\\S]*?\\n\\s*\\}",
+	# CC 许可 BY-NC-ND 中的 ND（No Derivatives）
+	"BY-NC-ND",
+	# CC 图标 alt 文案中的 "ND icon"
+	"alt=\"ND icon\"",
+	# info logo
+	"\\.fill\\('..-'\\)",
+	# 错误信息中的 PNGv3 等格式名（避免 PN 被误报）
+	"PNGv\\d",
+	# ndJson
+	"ndJson",
+	# notdiamond 服务 User-Agent 常量名
+	"USER_AGENT_ND",
+	# RisuAI 的天才使用该拼写
+	"embeded://",
+	# IdleManager 中“仅运行一次”的动作列表
+	"RunOnces",
+]
+# 白名单：允许的“词”（用于正文拼写检查）
+# 当 correction 与 key 相同时表示该词始终视为正确
+[default.extend-words]
+# 在全词匹配时fount项目名始终应该是小写开头
+fount = "fount"
+# Fount = "fount"
+
+# splited 这种形式的拼写比正规英语能传递更多的信息，避免无法分清是名词还是动词的情况
+splited = "splited"
+# datas 代表多个或多类型的数据，比正规英语能传递更多的信息
+datas = "datas"
+# setted 表示设置过的
+setted = "setted"
+unsetted = "unsetted"

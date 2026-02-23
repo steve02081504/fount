@@ -11,7 +11,7 @@ export function reverseStr(/** @type {string} */str) {
 /**
  * Gets a real regex object from a slash-delimited regex string
  *
- * This function works with `/` as delimiter, and each occurance of it inside the regex has to be escaped.
+ * This function works with `/` as delimiter, and each occurrence of it inside the regex has to be escaped.
  * Flags are optional, but can only be valid flags supported by JavaScript's `RegExp` (`g`, `i`, `m`, `s`, `u`, `y`).
  *
  * @param {string} input - A delimited regex string

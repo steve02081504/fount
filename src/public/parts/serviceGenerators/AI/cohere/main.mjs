@@ -96,8 +96,8 @@ ${chatLogEntry.content}
 			})
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMutiChar)
+				const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
+				if (isMultiChar)
 					request.messages.push({
 						role: 'system',
 						content: `现在请以${prompt_struct.Charname}的身份续写对话。`

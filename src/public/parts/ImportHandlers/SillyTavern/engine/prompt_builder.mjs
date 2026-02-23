@@ -1,7 +1,7 @@
 import { regex_placement, world_info_position } from './charData.mjs'
 import { evaluateMacros } from './marco.mjs'
 import { parseRegexFromString } from './tools.mjs'
-import { GetActivedWorldInfoEntries } from './world_info.mjs'
+import { GetActivatedWorldInfoEntries } from './world_info.mjs'
 
 const DEFAULT_DEPTH = 0
 
@@ -46,7 +46,7 @@ export function promptBuilder(
 	}
 	for (const key in aret) if (Object(aret[key]) instanceof String) aret[key] = evaluateMacros(aret[key], env, arg.chat_scoped_char_memory, chatLog) // 传递 chatLog
 	let WIs = charData?.character_book?.entries ?
-		GetActivedWorldInfoEntries(charData.character_book.entries, chatLog, env, arg.chat_scoped_char_memory) :
+		GetActivatedWorldInfoEntries(charData.character_book.entries, chatLog, env, arg.chat_scoped_char_memory) :
 		[]
 	if (charData?.extensions?.regex_scripts) {
 		const WI_regex_scripts = charData.extensions.regex_scripts.filter(e => e.placement.includes(regex_placement.WORLD_INFO))
@@ -117,11 +117,11 @@ export function promptBuilder(
 	const additional_chat_log = []
 	for (let index = 0; index < chatLog.length; index++) {
 		const WIDepth = WIDepthEntries.filter(e => e.depth === index)
-		for (const entrie of WIDepth) {
-			const role = ['system', 'user', 'assistant'][entrie.role]
+		for (const entry of WIDepth) {
+			const role = ['system', 'user', 'assistant'][entry.role]
 			additional_chat_log.push({
 				role,
-				content: entrie.entries.join('\n'),
+				content: entry.entries.join('\n'),
 			})
 		}
 		if (charData?.extensions?.depth_prompt?.prompt && index == charData?.extensions?.depth_prompt?.depth)

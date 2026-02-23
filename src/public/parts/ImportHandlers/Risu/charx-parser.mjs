@@ -1,5 +1,6 @@
 import JSZip from 'npm:jszip'
 
+import { stripCharxEmbeddedPathPrefix } from './charx-uri.mjs'
 import { parseRisuModule } from './module-parser.mjs'
 
 /**
@@ -9,7 +10,7 @@ import { parseRisuModule } from './module-parser.mjs'
  *          card: card.json 解析后的对象
  *          assets: Map<relative_path_in_zip, asset_buffer> (来自 zip 内的 assets/ 目录)
  *          moduleData: module.risum 解析后的模块定义 (RisuModule 结构)
- *          mainImage: 如果 card.json 中 assets 指向 embeded:// 并类型为 icon/main，则尝试提取该图片
+ *          mainImage: 如果 card.json 中 assets 指向 embedded:// 并类型为 icon/main，则尝试提取该图片
  */
 export async function unzipCharx(zipBuffer) {
 	const zip = await JSZip.loadAsync(zipBuffer)
@@ -46,7 +47,7 @@ export async function unzipCharx(zipBuffer) {
 						const moduleAssetPath = `__module_asset__/${assetMeta.name || `asset_${i}`}.${assetMeta.ext || 'bin'}`
 						assets.set(moduleAssetPath, moduleAssetsData[i])
 						// 更新 moduleDef 中该资源的 uri，指向这个内部路径，以便后续统一处理
-						assetMeta.uri = `embeded://${moduleAssetPath}`
+						assetMeta.uri = `embedded://${moduleAssetPath}`
 					}
 				}
 		}
@@ -69,11 +70,9 @@ export async function unzipCharx(zipBuffer) {
 	let mainImageBuffer
 	if (card.data && card.data.assets && Array.isArray(card.data.assets)) {
 		const mainIconAsset = card.data.assets.find(a => a.type === 'icon' && a.name === 'main')
-		if (mainIconAsset && mainIconAsset.uri && mainIconAsset.uri.startsWith('embeded://')) {
-			const assetPathInZip = mainIconAsset.uri.substring('embeded://'.length)
-			if (assets.has(assetPathInZip))
-				mainImageBuffer = assets.get(assetPathInZip)
-		}
+		const assetPathInZip = stripCharxEmbeddedPathPrefix(mainIconAsset.uri)
+		if (assets.has(assetPathInZip))
+			mainImageBuffer = assets.get(assetPathInZip)
 	}
 
 	return { card, assets, moduleData, mainImage: mainImageBuffer }

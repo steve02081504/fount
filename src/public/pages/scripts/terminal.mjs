@@ -31,8 +31,8 @@ export function setTerminal(element) {
 		cursorBlink: true
 	})
 
-	const fiter = new FitAddon()
-	terminal.loadAddon(fiter)
+	const fitAddon = new FitAddon()
+	terminal.loadAddon(fitAddon)
 	terminal.loadAddon(new WebLinksAddon())
 	terminal.loadAddon(new ClipboardAddon())
 
@@ -59,9 +59,9 @@ export function setTerminal(element) {
 		terminal.options.theme = terminalOptions
 	})
 	terminal.open(element)
-	fiter.fit()
+	fitAddon.fit()
 	window.addEventListener('resize', () => {
-		fiter.fit()
+		fitAddon.fit()
 	})
 	terminal.element.addEventListener('contextmenu', async event => {
 		event.preventDefault()

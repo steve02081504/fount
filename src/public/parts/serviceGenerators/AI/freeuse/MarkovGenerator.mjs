@@ -134,15 +134,15 @@ export class MarkovGenerator {
 	* @param {number} [options.outputLength=this.endToken ? Infinity : 256] 期望生成的 token 数量。
 	* @param {string} [options.prompt=''] 可选的提示文本。
 	* @param {string} [options.startPrefix=''] 可选的起始前缀文本。
-	* @param {boolean} [options.autoTrainning=true] 是否自动训练模型。
+	* @param {boolean} [options.autoTraining=true] 是否自动训练模型。
 	* @returns {string} 生成的文本。
 	* @throws {Error} 模型未训练或无法生成 (English message)。
 	* @throws {RangeError} outputLength 无效 (English message)。
 	*/
 	generate(options = {}) {
-		const { outputLength = this.endToken ? Infinity : 256, prompt = '', startPrefix = '', autoTrainning = true } = options
+		const { outputLength = this.endToken ? Infinity : 256, prompt = '', startPrefix = '', autoTraining = true } = options
 
-		if (autoTrainning) this.train(prompt + startPrefix)
+		if (autoTraining) this.train(prompt + startPrefix)
 
 		// --- 前置检查 ---
 		if (!this.model.size)  // 检查模型是否已训练
