@@ -179,9 +179,9 @@ ${chatLogEntry.content}
 				try {
 					while (true) {
 						if (signal?.aborted) {
-							reader.cancel()
 							const err = new Error('Aborted by user')
 							err.name = 'AbortError'
+							reader.cancel(err).catch(() => { })
 							throw err
 						}
 

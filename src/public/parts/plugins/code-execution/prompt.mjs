@@ -174,7 +174,7 @@ ${codePluginPrompts}
 系统输出不会显示在回复中，需要你总结。
 鼓励在回答输出较多时用<inline-js>以避免大段复述。
 **只是解释说明或举例时使用普通代码块（如\`\`\`js）而不是执行代码。**
-需要注意的是run-js执行的是后端代码而不是前端代码，若需要执行前端代码请使用浏览器相关插件${args.supported_functions.unsafe_html ? `或直接输出script标签` : ''}。
+需要注意的是run-js执行的是后端代码而不是前端代码，若需要执行前端代码请使用浏览器相关插件${args.supported_functions.unsafe_html ? '或直接输出script标签' : ''}。
 `
 
 	return {
