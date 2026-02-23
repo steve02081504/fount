@@ -163,6 +163,27 @@ function formatEmbed(embed) {
 }
 
 /**
+ * 从 Discord 消息的 components（如 ContainerComponent、TextDisplayComponent 等）中递归提取文本。
+ * 用于处理 content 为空但内容在 components 中的消息（如共享协议询问等新 UI 消息）。
+ * @param {import('npm:discord.js').Component[]} components - 消息的 components 数组。
+ * @returns {string} - 提取出的文本，用换行拼接。
+ */
+function extractTextFromComponents(components) {
+	if (!Array.isArray(components) || !components.length) return ''
+	const parts = []
+	for (const comp of components) {
+		if (!comp) continue
+		if (comp.data?.content) parts.push(comp.data.content)
+		if (comp.data?.label) parts.push(comp.data.label)
+		if (comp.components?.length)
+			parts.push(extractTextFromComponents(comp.components))
+		if (comp.accessory)
+			parts.push(extractTextFromComponents([comp.accessory]))
+	}
+	return parts.filter(Boolean).join('\n')
+}
+
+/**
  * 格式化消息内容。
  * @param {import('npm:discord.js').Message} message - Discord 消息对象。
  * @returns {string} 格式化后的消息内容字符串。
@@ -194,6 +215,15 @@ function formatMessageContent(message) {
 			if (content) content += '\n'
 			content += `[附件] ${attachment.url}\n`
 		}
+
+	// 若存在 components（如共享协议询问等新 UI 消息），从 components 提取文本
+	if (message.components?.length) {
+		const componentText = extractTextFromComponents(message.components)
+		if (componentText) {
+			if (content) content += '\n\n'
+			content += componentText
+		}
+	}
 
 	// 如果已编辑
 	if (message.edited_timestamp) content += '（已编辑）'
