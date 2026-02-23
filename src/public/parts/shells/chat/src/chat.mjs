@@ -1,11 +1,12 @@
-/** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
-/** @typedef {import('../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
-/** @typedef {import('../../../../decl/basedefs.ts').locale_t} locale_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
+/** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
+import { inspect } from 'node:util'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
@@ -1209,9 +1210,19 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 			await finalizeEntry(placeholderEntry, false)
 		}
 		else {
-			stream.abort(e.message)
+			stream.abort(e?.message)
 
-			placeholderEntry.content = `\`\`\`\nError:\n${e.stack || e.message}\n\`\`\``
+			/**
+			 * 将错误转换为文本。
+			 * @param {Error | Error[] | any} e - 错误对象。
+			 * @returns {string} 错误文本。
+			 */
+			function ErrorText(e) {
+				if (e instanceof Error) return e.stack || e.message || inspect(e)
+				if (Array.isArray(e)) return e.map(ErrorText).join('\n---\n')
+				return inspect(e)
+			}
+			placeholderEntry.content = `\`\`\`\nError:\n${ErrorText(e)}\n\`\`\``
 			await finalizeEntry(placeholderEntry, true)
 		}
 	}
@@ -1240,7 +1251,6 @@ export async function modifyTimeLine(chatid, delta) {
 	// 之前的逻辑这里有Bug，导致可能算出一个触发生成的索引
 	if (newTimeLineIndex < 0)
 		newTimeLineIndex = chatMetadata.timeLines.length - 1
-
 
 	let entry
 

@@ -108,7 +108,7 @@ async function GetSource(config, { SaveConfig }) {
 		signal?.addEventListener?.('abort', () => {
 			const err = new Error('User Aborted')
 			err.name = 'AbortError'
-			reader.cancel(err)
+			reader.cancel(err).catch(() => { })
 		}, { once: true })
 
 		const decoder = new TextDecoder()

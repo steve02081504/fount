@@ -27,7 +27,7 @@ function resolvePath(relativePath) {
  * @returns {string} - 转义后的字符串。
  */
 function escapeRegExp(str) {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+	return str.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&')
 }
 
 /**
