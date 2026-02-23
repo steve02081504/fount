@@ -623,7 +623,12 @@ export default {
 				// 如果传入了AI源的配置
 				if (data.AIsource) AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
 				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
-				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
+				data.plugins ??= [
+					'file-operations',
+					'code-execution',
+					'fount-api',
+				]
+				plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
 		},
 		// 角色的聊天接口
