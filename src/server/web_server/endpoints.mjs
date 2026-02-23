@@ -354,7 +354,8 @@ export function registerEndpoints(router) {
 	router.post('/api/setusersetting', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { key, value } = req.body
-		user[key] = value
+		if (key === null) delete user[key]
+		else user[key] = value
 		save_config()
 		res.status(200).json({ message: 'success' })
 	})
