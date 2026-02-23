@@ -255,12 +255,11 @@ function setupDefaultCheckbox(itemElement, parttype, partname, signal) {
 
 	defaultCheckbox.addEventListener('change', async event => {
 		const isChecked = event.target.checked
-		const response = await (isChecked ? setDefaultPart : unsetDefaultPart)(parttype, partname)
-
-		if (response.ok) {
+		try {
+			await (isChecked ? setDefaultPart : unsetDefaultPart)(parttype, partname)
 			if (parttype === 'personas' && isChecked) unlockAchievement('shells/home', 'set_default_persona')
-		} else {
-			console.error('Failed to update default part:', await response.text())
+		} catch (err) {
+			console.error('Failed to update default part:', err)
 			event.target.checked = !isChecked
 		}
 	}, { signal })

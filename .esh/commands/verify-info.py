@@ -3,7 +3,8 @@
 对 info.dynamic.json 中缺少 provider 的 locale 发出警告；
 当 info 的 emoji 对象内字符串内容包含中文、英文、俄文、日文任一时，对 emoji 本地化发出警告；
 对 info.json / info.dynamic.json 中的 avatar URL 进行网络请求检查，若返回 404 则发出警告；
-对 emoji 无 avatar（无字段或空串）的 info 发出警告，每文件一次。
+对 emoji 无 avatar（无字段或空串）的 info 发出警告，每文件一次；
+对 achievements_registry.json 中成就的 icon / locked_icon URL 进行网络请求检查，若返回 404 则发出警告。
 
 用法：在项目根目录执行 python .esh/commands/verify-info.py
 """
@@ -127,6 +128,26 @@ def collect_avatar_refs(parts_dir: Path) -> list[tuple[Path, int, str]]:
 	return refs
 
 
+def collect_achievement_icon_refs(parts_dir: Path) -> list[tuple[Path, str, str, str]]:
+	"""从 parts 目录下所有 achievements_registry.json 中收集 (路径, 成就id, icon类型, url)。"""
+	refs = []
+	for path in sorted(parts_dir.rglob("achievements_registry.json")):
+		data = load_json(path)
+		if not data or not isinstance(data, dict):
+			continue
+		achievements = data.get("achievements")
+		if not isinstance(achievements, dict):
+			continue
+		for ach_id, ach in achievements.items():
+			if not isinstance(ach, dict):
+				continue
+			for key in ("icon", "locked_icon"):
+				url = ach.get(key)
+				if isinstance(url, str) and url.strip():
+					refs.append((path, ach_id, key, url.strip()))
+	return refs
+
+
 def is_avatar_url_404(url: str, timeout: float = 10.0) -> bool:
 	"""先 HEAD（不拉 body，更友好），失败再回退 GET。仅当确认为 404 或两次都失败时返回 True。只允许 http/https 协议。"""
 	parsed = urlparse(url)
@@ -176,6 +197,7 @@ def main():
 	emoji_warnings = []
 	emoji_no_avatar_paths = []  # 每文件一次
 	avatar_404_refs = []  # [(path, url), ...]，每个文件每个 URL 仅一条
+	achievement_icon_404_refs = []  # [(path, achievement_id, icon_type, url), ...]
 
 	for info_path in info_files:
 		data = load_json(info_path)
@@ -233,6 +255,30 @@ def main():
 					seen_path_url.add(key)
 					avatar_404_refs.append((path, url))
 
+	# 5. 收集成就 icon / locked_icon URL 并检查 404（每个 URL 只请求一次，每个文件每条仅警告一次）
+	ach_icon_refs = collect_achievement_icon_refs(parts_dir)
+	ach_url_to_refs = {}
+	for path, ach_id, icon_type, url in ach_icon_refs:
+		ach_url_to_refs.setdefault(url, []).append((path, ach_id, icon_type))
+	for url, refs in ach_url_to_refs.items():
+		if url in checked_404_urls:
+			# 该 URL 已在 avatar 检查中判为 404，直接记录成就 icon 警告
+			seen_key = set()
+			for path, ach_id, icon_type in refs:
+				key = (path, ach_id, icon_type, url)
+				if key not in seen_key:
+					seen_key.add(key)
+					achievement_icon_404_refs.append((path, ach_id, icon_type, url))
+			continue
+		if is_avatar_url_404(url):
+			checked_404_urls.add(url)
+			seen_key = set()
+			for path, ach_id, icon_type in refs:
+				key = (path, ach_id, icon_type, url)
+				if key not in seen_key:
+					seen_key.add(key)
+					achievement_icon_404_refs.append((path, ach_id, icon_type, url))
+
 	# 输出 info.dynamic.json 警告
 	if dynamic_warnings:
 		print("\n--- info.dynamic.json 缺少 provider 的 locale ---")
@@ -272,10 +318,22 @@ def main():
 			print(f"[!] {rel.as_posix()}")
 		print("-" * 20)
 
+	# 输出成就 icon / locked_icon URL 404 警告
+	if achievement_icon_404_refs:
+		print("\n--- achievements_registry.json 成就 icon / locked_icon URL 返回 404 ---")
+		for path, ach_id, icon_type, url in achievement_icon_404_refs:
+			try:
+				rel = path.relative_to(root)
+			except ValueError:
+				rel = path
+			print(f"[!] {rel.as_posix()}")
+			print(f"    成就 '{ach_id}' 的 {icon_type} 不可用: {url}")
+		print("-" * 20)
+
 	print("\n--- 处理完成 ---")
 	print(f"已从 {removed_count} 个 info.json 中移除 provider 字段。")
-	if not dynamic_warnings and not emoji_warnings and not avatar_404_refs and not emoji_no_avatar_paths:
-		print("未发现 info.dynamic.json 缺 provider、emoji 本地化问题、avatar 404 或 emoji 无 avatar。")
+	if not dynamic_warnings and not emoji_warnings and not avatar_404_refs and not emoji_no_avatar_paths and not achievement_icon_404_refs:
+		print("未发现 info.dynamic.json 缺 provider、emoji 本地化问题、avatar 404、emoji 无 avatar 或成就 icon 404。")
 	else:
 		if dynamic_warnings:
 			print(f"发现 {len(dynamic_warnings)} 个 info.dynamic.json 存在缺少 provider 的 locale。")
@@ -285,6 +343,8 @@ def main():
 			print(f"发现 {len(avatar_404_refs)} 处 avatar URL 返回 404 或请求失败。")
 		if emoji_no_avatar_paths:
 			print(f"发现 {len(emoji_no_avatar_paths)} 个 info 的 emoji 无 avatar。")
+		if achievement_icon_404_refs:
+			print(f"发现 {len(achievement_icon_404_refs)} 处成就 icon / locked_icon URL 返回 404 或请求失败。")
 
 
 if __name__ == "__main__":
