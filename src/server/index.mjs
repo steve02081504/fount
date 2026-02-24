@@ -12,7 +12,7 @@ import { console } from '../scripts/i18n.mjs'
 
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
-import { IdleManager } from './idle.mjs'
+import { startIdleCheck, stopIdleCheck } from './idle.mjs'
 import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
@@ -93,8 +93,8 @@ fs.watch(__dirname, (event, filename) => {
 		if (fs.existsSync(__dirname + '/.notimers')) stopTimerHeartbeat()
 		else startTimerHeartbeat()
 	if (filename == '.noidle')
-		if (fs.existsSync(__dirname + '/.noidle')) IdleManager.stop()
-		else IdleManager.start()
+		if (fs.existsSync(__dirname + '/.noidle')) stopIdleCheck()
+		else startIdleCheck()
 	if (filename == '.noupdate')
 		if (fs.existsSync(__dirname + '/.noupdate')) disableAutoUpdate()
 		else enableAutoUpdate()
