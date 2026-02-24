@@ -7,23 +7,17 @@ import process from 'node:process'
 import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
-import { StartRPC } from '../scripts/discordrpc.mjs'
 import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
-import { createTray } from '../scripts/tray.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
-import { enableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, startTime } from './base.mjs'
-import idleManager from './idle.mjs'
 import { info } from './info.mjs'
-import { ReStartJobs } from './jobs.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
-import { startTimerHeartbeat } from './timers.mjs'
 
 /**
  * 应用程序数据目录的路径。
@@ -263,7 +257,10 @@ export async function init(start_config) {
 		} catch (e) { /* ignore */ }
 	} catch (e) { console.error(e) }
 
-	if (starts.Tray) iconPromise.then(() => createTray()).then(t => tray = t)
+	if (starts.Tray) iconPromise.then(async () => {
+		const { createTray } = await import('../scripts/tray.mjs')
+		tray = createTray()
+	})
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		const titleBackup = process.title
@@ -282,15 +279,25 @@ export async function init(start_config) {
 			const Interval = setInterval(async () => {
 				if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
 				clearInterval(Interval)
-				if (starts.Base.Jobs) await ReStartJobs()
+				if (starts.Base.Jobs) {
+					const { ReStartJobs } = await import('./jobs.mjs')
+					await ReStartJobs()
+				}
 				await shallowLoadAllDefaultParts()
 			}, 1000)
 		}, 2000)
-		if (starts.Base.Timers) startTimerHeartbeat()
-		if (starts.Base.Idle) idleManager.start()
-		if (starts.Base.AutoUpdate) enableAutoUpdate()
-		idleManager.onIdle(setDefaultStuff)
-		idleManager.onIdle(() => {
+		if (starts.Base.Timers) {
+			const { startTimerHeartbeat } = await import('./timers.mjs')
+			startTimerHeartbeat()
+		}
+		const { startIdleCheck, onIdle } = await import('./idle.mjs')
+		if (starts.Base.Idle) startIdleCheck()
+		if (starts.Base.AutoUpdate) {
+			const { enableAutoUpdate } = await import('./autoupdate.mjs')
+			enableAutoUpdate()
+		}
+		onIdle(setDefaultStuff)
+		onIdle(() => {
 			config.prelaunch ??= {}
 			const currentHeap = getMemoryUsage()
 			const oldHeap = config.prelaunch.heapSize / 1.5 || currentHeap
@@ -298,7 +305,10 @@ export async function init(start_config) {
 			save_config()
 		})
 	}
-	if (starts.DiscordRPC) StartRPC()
+	if (starts.DiscordRPC) {
+		const { StartRPC } = await import('../scripts/discordrpc.mjs')
+		StartRPC()
+	}
 	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
 	return true

@@ -4,7 +4,7 @@ import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 
 import { __dirname } from './base.mjs'
-import idleManager from './idle.mjs'
+import { onIdle, offIdle } from './idle.mjs'
 import { restartor } from './server.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
@@ -58,7 +58,7 @@ async function checkUpstreamAndRestart() {
  * @returns {void}
  */
 export function enableAutoUpdate() {
-	idleManager.onIdle(checkUpstreamAndRestart)
+	onIdle(checkUpstreamAndRestart)
 }
 
 /**
@@ -66,5 +66,5 @@ export function enableAutoUpdate() {
  * @returns {void}
  */
 export function disableAutoUpdate() {
-	idleManager.offIdle(checkUpstreamAndRestart)
+	offIdle(checkUpstreamAndRestart)
 }
