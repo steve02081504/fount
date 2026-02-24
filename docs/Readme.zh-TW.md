@@ -1,3 +1,50 @@
+<details>
+<summary><small>太長不看</small></summary>
+
+fount 是一個可程式化的標準化部件化客製化智能體運行平台，載入各種部件來提供服務。  
+程式碼相關的問題請參考 [deepwiki](https://deepwiki.com/steve02081504/fount)。  
+<small>fount 名稱使用全小寫，是 `f`ount 而不是 `F`ount。</small>
+
+#### 為什麼 fount？
+
+- 標準化、現有豐富、強大的生態可開箱即用，避免重複造輪子和除錯惡夢
+- 客製化 agent 邏輯，而不只是 prompt 和 UI 工程
+- 使用和參考社群中其他強大的 fount agent
+- 辦公友好，快速匯出報告
+- 無縫整合角色到各種軟體如 IDE、瀏覽器、終端、discord 等
+- 其他 llm 對話前端所沒有的，社群中各種面向 agent 的插件
+- 只需配置 api，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等一切使用者操作，無需學習和上手
+
+#### 為什麼不 fount？
+
+- 精通成本較高，需要程式知識
+- 有的社群部件可能有惡意程式碼，需要判斷和篩選
+
+##### 我該用什麼？
+
+使用 [OpenClaw](https://openclaw.ai/)，當你：
+
+- 想嘗鮮而不想深度客製化、高效化 agent 時
+
+使用 [ChatGPT](https://chatgpt.com/) 或類似線上 llm 聊天平台，當你：
+
+- 只想聊天
+- 無需深度訂製 ai 的角色
+- 不在乎聊天記錄被在雲端保存而無法匯出和遷移
+- 不在乎廣告
+
+使用 [character.ai](https://character.ai/) 或類似的線上 llm 角色扮演聊天平台，當你：
+
+- 想運行一個 llm 驅動的角色，而不是使用 agent 功能
+- 覺得會員的錢可以接受
+- 懶得配置程式
+
+使用 [SillyTavern](https://github.com/SillyTavern/SillyTavern/)，當你：
+
+- 想運行一個需要 STscript 或 SillyTavern 插件才能運行的角色或功能
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">靈犀一點，應念而生</p>
@@ -34,14 +81,19 @@ fount 是一個**現代化、可擴展的 AI 智能體運行時環境**。
 
 fount 將互動轉化為生產力資產，一切皆可拖曳，一切皆為檔案，邏輯由程式碼驅動。
 
-### 1. 知識資產化與無縫分享
+### 1. 無需學習，開箱即用
+
+- 只需配置 api，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等**一切使用者操作**，無需學習和上手
+  ![圖片](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. 知識資產化與無縫分享
 
 - **即時報告生成**：將對話氣泡直接拖曳至資料夾，瞬間生成獨立的 HTML 報告。適合快速整理技術文件、會議紀錄或靈感片段。
   ![圖片](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **工作流封裝與分發**：將你創建好的角色直接拖曳至桌面，生成可分享的檔案。讓你的 Prompt 工程和工作流邏輯輕鬆分發給同事或社群。
   ![圖片](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. 實時程式碼執行環境
+### 3. 實時程式碼執行環境
 
 不再僅僅是 Markdown 高亮。在 fount 中，角色發送的程式碼區塊是**鮮活的**。
 
@@ -50,7 +102,7 @@ fount 將互動轉化為生產力資產，一切皆可拖曳，一切皆為檔�
 - 讓 AI 成為你結對編程的實時驗證者。
   ![圖片](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. 開發者友好
+### 4. 開發者友好
 
 fount 的專案架構設計充分考慮了開發者的習慣。
 [想知道專案儲存庫架構嗎？快來看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)

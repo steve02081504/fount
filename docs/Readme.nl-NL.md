@@ -1,3 +1,50 @@
+<details>
+<summary><small>TL;DR</small></summary>
+
+fount is een programmeerbare, gestandaardiseerde, modulaire en aanpasbare agent-runtimeplatform dat verschillende onderdelen laadt om diensten te leveren.  
+Voor code-gerelateerde vragen, zie [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>De naam fount is volledig in kleine letters—het is `f`ount, niet `F`ount.</small>
+
+#### Waarom fount?
+
+- Gestandaardiseerd, rijk en krachtig ecosysteem out-of-the-box; vermijd het wiel opnieuw uitvinden en debug-nightmares
+- Pas agentlogica aan, niet alleen prompts en UI
+- Gebruik en leer van andere krachtige fount-agenten in de community
+- Kantoorvriendelijk, snelle rapportexport
+- Naadloze integratie van personages in IDE's, browsers, terminals, Discord, enz.
+- Agent-georiënteerde plug-ins uit de community die andere LLM-chatfrontends niet hebben
+- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en **alle gebruikershandelingen** via gesprek te voltooien—zonder leren of onboarding
+
+#### Waarom niet fount?
+
+- Steilere leercurve, codekennis nodig
+- Sommige community-onderdelen kunnen kwaadaardige code bevatten; beoordeel en kies zorgvuldig
+
+##### Wat moet ik gebruiken?
+
+Gebruik [OpenClaw](https://openclaw.ai/) wanneer je:
+
+- AI-agenten wilt proberen zonder diepe aanpassing of efficiëntietuning
+
+Gebruik [ChatGPT](https://chatgpt.com/) of vergelijkbare online LLM-chatplatforms wanneer je:
+
+- Alleen wilt chatten
+- Geen diepe aanpassing van AI-personages nodig hebt
+- Het niet erg vindt dat chatgeschiedenis in de cloud wordt opgeslagen zonder export of migratie
+- Het niet erg vindt om advertenties te zien
+
+Gebruik [character.ai](https://character.ai/) of vergelijkbare online LLM-personage-roleplayplatforms wanneer je:
+
+- Een LLM-gestuurd personage wilt draaien zonder agentfuncties
+- Abonnementskosten acceptabel vindt
+- Geen software wilt configureren
+
+Gebruik [SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
+
+- Een personage of functie nodig hebt die STscript of SillyTavern-plugins vereist
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Een Vonk van de Geest, een Vriend voor het Leven</p>
@@ -34,14 +81,19 @@ Als u wilt configureren, instellen en vanaf nul wilt beginnen, kunt u de communi
 
 fount transformeert interactie in productiviteitsassets. Alles is te slepen en neer te zetten (drag-and-drop), alles is een bestand en de logica wordt aangedreven door code.
 
-### 1. Kennis als Asset en Naadloos Delen
+### 1. Geen leren nodig, direct te gebruiken
+
+- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en **alle gebruikershandelingen** via gesprek te voltooien—zonder leren of onboarding.
+  ![Afbeelding](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Kennis als Asset en Naadloos Delen
 
 - **Directe Rapportgeneratie**: Sleep een conversatiebel direct naar een map om direct een onafhankelijk HTML-rapport te genereren. Dit is ideaal voor het snel organiseren van technische documenten, vergaderverslagen of flarden van inspiratie.
   ![Afbeelding](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **Workflow-inkapseling en -distributie**: Sleep de door u gecreëerde rol (agent) direct naar het bureaublad om een deelbaar bestand te genereren. Verspreid uw Prompt-engineering en workflow-logica moeiteloos naar collega's of de gemeenschap.
   ![Afbeelding](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. Realtime Code-uitvoeringsomgeving
+### 3. Realtime Code-uitvoeringsomgeving
 
 Niet langer alleen Markdown-markering. In fount zijn de codeblokken die door de rol (agent) worden verzonden **levend**.
 
@@ -50,7 +102,7 @@ Niet langer alleen Markdown-markering. In fount zijn de codeblokken die door de 
 - Laat de AI uw realtime verificator worden voor pair programming.
   ![Afbeelding](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. Ontwikkelaarsvriendelijk
+### 4. Ontwikkelaarsvriendelijk
 
 De projectarchitectuur van fount is ontworpen met volledige inachtneming van de gewoonten van ontwikkelaars.
 [Wilt u de architectuur van de projectrepository weten? Neem een kijkje op DeepWiki!](https://deepwiki.com/steve02081504/fount)

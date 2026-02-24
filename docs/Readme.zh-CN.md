@@ -1,3 +1,50 @@
+<details>
+<summary><small>太长不看</small></summary>
+
+fount是一个可编程的标准化部件化客制化智能体运行平台，加载各种部件来提供服务。  
+代码相关的问题请参考[deepwiki](https://deepwiki.com/steve02081504/fount)。  
+<small>fount名称使用全小写，是`f`ount而不是`F`ount。</small>
+
+#### 为什么fount？
+
+- 标准化、现有丰富、强大的生态可开箱即用，避免重复造轮子和调试恶梦
+- 客制化agent逻辑，而不只是prompt和UI工程
+- 使用和参考社区中的其他强大的fount agent
+- 办公友好，快速导出报告
+- 无缝集成角色到各种软件如IDE、浏览器、终端、discord等
+- 其他llm对话前端所没有的，社区中各种面向agent的插件
+- 只需配置api，随后即可使用默认角色ZL-31来用对话完成部件配置、创建部件等一切用户操作，无需学习和上手
+
+#### 为什么不fount？
+
+- 精通成本较高，需要代码知识
+- 有的社区部件可能有恶意代码，需要判断和筛选
+
+##### 我该用什么？
+
+使用[OpenClaw](https://openclaw.ai/)，当你：
+
+- 想尝鲜而不想深度客制化、高效化agent时
+
+使用[ChatGPT](https://chatgpt.com/)或类似在线llm聊天平台，当你：
+
+- 只想聊天
+- 无需深度定制ai的角色
+- 不在乎聊天记录被在云端保存而无法导出和迁移
+- 不在乎广告
+
+使用[character.ai](https://character.ai/)或类似的在线llm角色扮演聊天平台，当你：
+
+- 想运行一个llm驱动的角色，而不是使用agent功能
+- 觉得会员的钱可以接受
+- 懒得配置程序
+
+使用[SillyTavern](https://github.com/SillyTavern/SillyTavern/)，当你：
+
+- 想运行一个需要STscript或SillyTavern插件才能运行的角色或功能
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">灵犀一点，应念而生</p>
@@ -34,14 +81,19 @@ fount 是一个**现代化的、可扩展的 AI 智能体运行时环境**。
 
 fount 将交互转化为生产力资产，一切皆可拖拽，一切皆为文件，逻辑由代码驱动。
 
-### 1. 知识资产化与无缝分享
+### 1. 无需学习，开箱即用
+
+- 只需配置api，随后即可使用默认角色ZL-31来用对话完成部件配置、创建部件等**一切用户操作**，无需学习和上手
+  ![图片](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. 知识资产化与无缝分享
 
 - **即时报告生成**：将对话气泡直接拖拽至文件夹，瞬间生成独立的 HTML 报告。适合快速整理技术文档、会议记录或灵感片段。
   ![图片](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **工作流封装与分发**：将你创建好的角色直接拖拽至桌面，生成可分享的文件。让你的 Prompt 工程和工作流逻辑轻松分发给同事或社区。
   ![图片](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. 实时代码执行环境
+### 3. 实时代码执行环境
 
 不再仅仅是 Markdown 高亮。在 fount 中，角色发送的代码块是**鲜活的**。
 
@@ -50,7 +102,7 @@ fount 将交互转化为生产力资产，一切皆可拖拽，一切皆为文�
 - 让 AI 成为你结对编程的实时验证者。
   ![图片](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. 开发友好
+### 4. 开发友好
 
 fount 的项目架构设计充分考虑了开发者的习惯。
 [想知道项目仓库架构吗？快来看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)

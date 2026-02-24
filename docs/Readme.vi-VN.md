@@ -1,3 +1,50 @@
+<details>
+<summary><small>Tóm tắt</small></summary>
+
+fount là nền tảng chạy agent lập trình được, chuẩn hóa, modular và tùy chỉnh, tải các phần khác nhau để cung cấp dịch vụ.  
+Với câu hỏi liên quan đến mã, xem [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>Tên fount viết toàn chữ thường—là `f`ount, không phải `F`ount.</small>
+
+#### Tại sao fount?
+
+- Hệ sinh thái chuẩn hóa, phong phú, mạnh mẽ dùng ngay; tránh phát minh lại bánh xe và cơn ác mộng gỡ lỗi
+- Tùy chỉnh logic agent, không chỉ prompt và giao diện
+- Dùng và học từ các agent fount mạnh khác trong cộng đồng
+- Thân thiện văn phòng, xuất báo cáo nhanh
+- Tích hợp nhân vật liền mạch vào IDE, trình duyệt, terminal, Discord, v.v.
+- Plugin hướng agent từ cộng đồng mà các giao diện chat LLM khác không có
+- Chỉ cần cấu hình API, sau đó dùng nhân vật mặc định ZL-31 để hoàn thành cấu hình phần, tạo phần và **mọi thao tác người dùng** qua hội thoại—không cần học hay làm quen
+
+#### Tại sao không fount?
+
+- Đường cong học tập dốc hơn, cần kiến thức mã
+- Một số phần cộng đồng có thể chứa mã độc; cần đánh giá và chọn lọc
+
+##### Tôi nên dùng gì?
+
+Dùng [OpenClaw](https://openclaw.ai/) khi bạn:
+
+- Muốn thử agent AI mà không cần tùy chỉnh sâu hay tinh chỉnh hiệu suất
+
+Dùng [ChatGPT](https://chatgpt.com/) hoặc nền tảng chat LLM trực tuyến tương tự khi bạn:
+
+- Chỉ muốn trò chuyện
+- Không cần tùy chỉnh sâu nhân vật AI
+- Không ngại lịch sử chat lưu trên cloud không xuất hay di chuyển được
+- Không ngại quảng cáo
+
+Dùng [character.ai](https://character.ai/) hoặc nền tảng nhập vai nhân vật LLM trực tuyến tương tự khi bạn:
+
+- Muốn chạy nhân vật điều khiển bởi LLM mà không cần tính năng agent
+- Chấp nhận chi phí đăng ký
+- Không muốn cấu hình phần mềm
+
+Dùng [SillyTavern](https://github.com/SillyTavern/SillyTavern/) khi bạn:
+
+- Cần nhân vật hoặc tính năng yêu cầu STscript hoặc plugin SillyTavern
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Từ Ý Niệm, đến Tri Kỷ</p>
@@ -34,14 +81,19 @@ Nếu bạn muốn cấu hình, thiết lập và bắt đầu từ con số kh�
 
 fount biến tương tác thành tài sản năng suất, mọi thứ đều có thể kéo thả, mọi thứ đều là tệp tin, logic được điều khiển bằng mã.
 
-### 1. Tài sản hóa Kiến thức và Chia sẻ Liền Mạch
+### 1. Không cần học, dùng ngay
+
+- Chỉ cần cấu hình API, sau đó dùng nhân vật mặc định ZL-31 để hoàn thành cấu hình phần, tạo phần và **mọi thao tác người dùng** qua hội thoại—không cần học hay làm quen.
+  ![Hình ảnh](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Tài sản hóa Kiến thức và Chia sẻ Liền Mạch
 
 - **Tạo Báo cáo Tức thì**: Kéo bong bóng hội thoại trực tiếp vào thư mục, tạo ngay lập tức một báo cáo HTML độc lập. Thích hợp để nhanh chóng sắp xếp tài liệu kỹ thuật, ghi chú cuộc họp hoặc các đoạn cảm hứng.
   ![Hình ảnh](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **Đóng gói và Phân phối Quy trình làm việc**: Kéo vai trò (agent) bạn đã tạo trực tiếp ra màn hình nền, tạo ra tệp tin có thể chia sẻ. Giúp việc phân phối Prompt Engineering và logic quy trình làm việc của bạn cho đồng nghiệp hoặc cộng đồng trở nên dễ dàng.
   ![Hình ảnh](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. Môi trường Thực thi Mã trong Thời gian Thực
+### 3. Môi trường Thực thi Mã trong Thời gian Thực
 
 Không còn chỉ là làm nổi bật Markdown. Trong fount, các khối mã được vai trò (agent) gửi đi là **sống động**.
 
@@ -50,7 +102,7 @@ Không còn chỉ là làm nổi bật Markdown. Trong fount, các khối mã đ
 - Biến AI thành trình xác minh theo thời gian thực cho lập trình cặp của bạn.
   ![Hình ảnh](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. Thân thiện với Nhà phát triển
+### 4. Thân thiện với Nhà phát triển
 
 Kiến trúc dự án của fount được thiết kế với sự cân nhắc đầy đủ thói quen của nhà phát triển.
 [Muốn biết kiến trúc kho lưu trữ dự án? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)

@@ -1,3 +1,50 @@
+<details>
+<summary><small>TL;DR</small></summary>
+
+fount is a programmable, standardised, modular, customisable agent runtime platform that loads various parts to provide services.  
+For code-related questions, see [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>The name fount is all lowercase—it's `f`ount, not `F`ount.</small>
+
+#### Why fount?
+
+- Standardised, rich, powerful ecosystem out of the box; avoid reinventing the wheel and debugging nightmares
+- Customise agent logic, not just prompts and UI
+- Use and learn from other powerful fount agents in the community
+- Office-friendly, quick report export
+- Seamless integration of characters into IDEs, browsers, terminals, Discord, etc.
+- Agent-oriented plugins from the community that other LLM chat frontends don't have
+- Just configure the API, then use the default character ZL-31 to complete part configuration, part creation, and all user operations via conversation—no learning or onboarding required
+
+#### Why not fount?
+
+- Steeper learning curve, code knowledge needed
+- Some community parts may contain malicious code; judge and choose carefully
+
+##### What should I use?
+
+Use [OpenClaw](https://openclaw.ai/) when you:
+
+- Want to try AI agents without deep customisation or efficiency tuning
+
+Use [ChatGPT](https://chatgpt.com/) or similar online LLM chat platforms when you:
+
+- Just want to chat
+- Don't need deep customisation of AI characters
+- Don't mind chat history being stored in the cloud with no export or migration
+- Don't mind ads
+
+Use [character.ai](https://character.ai/) or similar online LLM character role-play platforms when you:
+
+- Want to run an LLM-driven character without agent features
+- Are fine with subscription costs
+- Don't want to configure software
+
+Use [SillyTavern](https://github.com/SillyTavern/SillyTavern/) when you:
+
+- Need a character or feature that requires STscript or SillyTavern plugins
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Imagination, Given Voice.</p>
@@ -54,14 +101,19 @@ If you wish to configure, set up, and get started from scratch, you can refer to
 
 fount transforms interaction into productivity assets. Everything is drag-and-drop, everything is a file, and logic is driven by code.
 
-### 1. Knowledge Assetisation and Seamless Sharing
+### 1. No Learning Required, Use Out of the Box
+
+- Just configure the API, then use the default character ZL-31 to complete part configuration, part creation, and **all user operations** via conversation—no learning or onboarding required.
+  ![Image](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Knowledge Assetisation and Seamless Sharing
 
 - **Instant Report Generation**: Drag a conversation bubble directly to a folder to instantly generate an independent HTML report. This is ideal for quickly organising technical documents, meeting records, or fragments of inspiration.
   ![Image](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **Workflow Encapsulation and Distribution**: Drag your created agent (role) directly to the desktop to generate a shareable file. Easily distribute your Prompt engineering and workflow logic to colleagues or the community.
   ![Image](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. Real-time Code Execution Environment
+### 3. Real-time Code Execution Environment
 
 No longer just Markdown highlighting. In fount, the code blocks sent by the agent (role) are **live**.
 
@@ -70,7 +122,7 @@ No longer just Markdown highlighting. In fount, the code blocks sent by the agen
 - Let the AI become your real-time verifier for pair programming.
   ![Image](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. Developer-Friendly
+### 4. Developer-Friendly
 
 fount's project architecture is designed with full consideration for developers' habits.
 [Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)

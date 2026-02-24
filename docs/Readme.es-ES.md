@@ -1,3 +1,50 @@
+<details>
+<summary><small>En resumen</small></summary>
+
+fount es una plataforma de ejecución de agentes programable, estandarizada, modular y personalizable que carga diversas partes para ofrecer servicios.  
+Para consultas sobre código, consulta [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>El nombre fount se escribe todo en minúsculas—es `f`ount, no `F`ount.</small>
+
+#### ¿Por qué fount?
+
+- Ecosistema estandarizado, rico y potente listo para usar; evita reinventar la rueda y pesadillas de depuración
+- Personaliza la lógica del agente, no solo los prompts y la interfaz
+- Usa y aprende de otros agentes fount potentes de la comunidad
+- Amigable con la oficina, exportación rápida de informes
+- Integración fluida de personajes en IDEs, navegadores, terminales, Discord, etc.
+- Plugins orientados a agentes de la comunidad que otras interfaces de chat LLM no tienen
+- Configure la API y use el personaje por defecto ZL-31 para completar la configuración de partes, creación y **todas las operaciones de usuario** por conversación—sin aprendizaje ni incorporación
+
+#### ¿Por qué no fount?
+
+- Curva de aprendizaje más pronunciada, se necesitan conocimientos de código
+- Algunas partes de la comunidad pueden contener código malicioso; juzga y elige con cuidado
+
+##### ¿Qué debería usar?
+
+Usa [OpenClaw](https://openclaw.ai/) cuando:
+
+- Quieras probar agentes de IA sin personalización profunda ni ajuste de eficiencia
+
+Usa [ChatGPT](https://chatgpt.com/) o plataformas de chat LLM en línea similares cuando:
+
+- Solo quieras chatear
+- No necesites personalización profunda de personajes IA
+- No te importe que el historial se guarde en la nube sin exportación ni migración
+- No te importen los anuncios
+
+Usa [character.ai](https://character.ai/) o plataformas de rol con personajes LLM en línea similares cuando:
+
+- Quieras ejecutar un personaje impulsado por LLM sin funciones de agente
+- Te parezca bien pagar suscripción
+- No quieras configurar software
+
+Usa [SillyTavern](https://github.com/SillyTavern/SillyTavern/) cuando:
+
+- Necesites un personaje o función que requiera STscript o plugins de SillyTavern
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Donde la Imaginación Cobra Vida.</p>
@@ -34,14 +81,19 @@ Si deseas configurar, instalar y empezar desde cero, puedes consultar el tutoria
 
 fount transforma la interacción en activos de productividad. Todo es arrastrar y soltar, todo es un archivo, y la lógica está impulsada por código.
 
-### 1. Activos de Conocimiento y Compartición sin Fisuras
+### 1. Sin aprendizaje previo, listo para usar
+
+- Configure la API y use el personaje por defecto ZL-31 para completar la configuración de partes, creación y **todas las operaciones de usuario** por conversación—sin aprendizaje ni incorporación.
+  ![Imagen](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Activos de Conocimiento y Compartición sin Fisuras
 
 - **Generación Instantánea de Informes**: Arrastre una burbuja de conversación directamente a una carpeta para generar instantáneamente un informe HTML independiente. Esto es ideal para organizar rápidamente documentos técnicos, registros de reuniones o fragmentos de inspiración.
   ![Imagen](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **Encapsulación y Distribución de Flujos de Trabajo**: Arrastre el rol (agente) que ha creado directamente al escritorio para generar un archivo que se puede compartir. Distribuya fácilmente su ingeniería de Prompts y la lógica del flujo de trabajo a colegas o a la comunidad.
   ![Imagen](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. Entorno de Ejecución de Código en Tiempo Real
+### 3. Entorno de Ejecución de Código en Tiempo Real
 
 Ya no es sólo resaltado de Markdown. En fount, los bloques de código enviados por el rol (agente) están **vivos**.
 
@@ -50,7 +102,7 @@ Ya no es sólo resaltado de Markdown. En fount, los bloques de código enviados 
 - Deje que la IA se convierta en su verificador en tiempo real para la programación en pareja.
   ![Imagen](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. Amigable para Desarrolladores
+### 4. Amigable para Desarrolladores
 
 La arquitectura del proyecto de fount está diseñada teniendo en cuenta los hábitos de los desarrolladores.
 [¿Quiere conocer la arquitectura del repositorio del proyecto? ¡Eche un vistazo a DeepWiki!](https://deepwiki.com/steve02081504/fount)
