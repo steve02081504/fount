@@ -4,11 +4,11 @@ import { Client } from 'npm:@xhayper/discord-rpc'
 
 import { startTime } from '../server/base.mjs'
 import { info } from '../server/info.mjs'
+import { config } from '../server/server.mjs'
 
 import { in_docker, in_termux } from './env.mjs'
 import { ms } from './ms.mjs'
 
-const FountStartTimestamp = new Date()
 let activity = {
 }
 /**
@@ -18,7 +18,7 @@ async function setActivity() {
 	if (!client) return
 	for (const key in activity) if (activity[key] === undefined) delete activity[key]
 	await client.user?.setActivity({
-		startTimestamp: FountStartTimestamp,
+		startTimestamp: config.reboot?.sessionStartTime || startTime.getTime(),
 		...activity || defaultActivity()
 	})
 }
@@ -35,7 +35,7 @@ function defaultActivity() {
 	return {
 		details: info.activity,
 		state: info.logotext,
-		startTimestamp: startTime.getTime(),
+		stateUrl: info.shortlinkUrl,
 		largeImageKey: 'icon',
 		largeImageText: info.shortlinkUrl.split('://')[1],
 		smallImageKey: undefined,
