@@ -1,3 +1,50 @@
+<details>
+<summary><small>Kurzfassung</small></summary>
+
+fount ist eine programmierbare, standardisierte, modulare und anpassbare Agent-Runtime-Plattform, die verschiedene Teile lädt, um Dienste bereitzustellen.  
+Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>Der Name fount wird ausschließlich kleingeschrieben—also `f`ount, nicht `F`ount.</small>
+
+#### Warum fount?
+
+- Standardisiertes, reiches, leistungsstarkes Ökosystem sofort nutzbar; kein Rad neu erfinden, keine Debug-Alpträume
+- Agent-Logik anpassen, nicht nur Prompts und UI
+- Andere starke fount-Agenten der Community nutzen und als Referenz verwenden
+- Bürotauglich, schneller Report-Export
+- Nahtlose Integration von Charakteren in IDEs, Browser, Terminals, Discord usw.
+- Agent-orientierte Plugins aus der Community, die andere LLM-Chat-Frontends nicht haben
+- API konfigurieren, dann den Standard-Charakter ZL-31 nutzen, um Teile-Konfiguration, Erstellung und **alle Benutzeraktionen** per Dialog zu erledigen—ohne Einarbeitung
+
+#### Warum nicht fount?
+
+- Höhere Einarbeitungskosten, Code-Kenntnisse nötig
+- Einige Community-Teile können schädlichen Code enthalten; prüfen und auswählen
+
+##### Was soll ich verwenden?
+
+[OpenClaw](https://openclaw.ai/) nutzen, wenn du:
+
+- Agenten ohne tiefe Anpassung oder Effizienz-Tuning ausprobieren möchtest
+
+[ChatGPT](https://chatgpt.com/) oder ähnliche Online-LLM-Chat-Plattformen nutzen, wenn du:
+
+- Nur chatten möchtest
+- Keine tiefe Anpassung von KI-Charakteren brauchst
+- Mit Cloud-Speicherung ohne Export/Migration einverstanden bist
+- Mit Werbung einverstanden bist
+
+[character.ai](https://character.ai/) oder ähnliche Online-LLM-Rollenspiel-Plattformen nutzen, wenn du:
+
+- Einen LLM-gesteuerten Charakter ohne Agent-Funktionen betreiben möchtest
+- Mit Abo-Kosten einverstanden bist
+- Keine Software konfigurieren möchtest
+
+[SillyTavern](https://github.com/SillyTavern/SillyTavern/) nutzen, wenn du:
+
+- Einen Charakter oder eine Funktion brauchst, die STscript oder SillyTavern-Plugins erfordert
+
+</details>
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Ein Funke der Fantasie, zum Leben erweckt</p>
@@ -34,14 +81,19 @@ Wenn Sie von Grund auf konfigurieren, einrichten und loslegen möchten, können 
 
 fount verwandelt Interaktion in Produktivitäts-Assets. Alles ist ziehbar (Drag-and-Drop), alles ist eine Datei, die Logik wird durch Code angetrieben.
 
-### 1. Wissens-Asset-Erstellung und nahtloses Teilen
+### 1. Kein Lernen nötig, sofort nutzbar
+
+- API konfigurieren, dann den Standard-Charakter ZL-31 nutzen, um Teile-Konfiguration, Erstellung und **alle Benutzeraktionen** per Dialog zu erledigen—ohne Einarbeitung.
+  ![Bild](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Wissens-Asset-Erstellung und nahtloses Teilen
 
 - **Sofortige Berichtserstellung**: Ziehen Sie eine Dialogblase direkt in einen Ordner, um sofort einen unabhängigen HTML-Bericht zu generieren. Ideal für die schnelle Organisation von technischen Dokumenten, Besprechungsprotokollen oder Ideenfragmenten.
   ![Bild](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
 - **Workflow-Kapselung und -Verteilung**: Ziehen Sie die von Ihnen erstellte Rolle direkt auf den Desktop, um eine teilbare Datei zu erzeugen. Verteilen Sie Ihr Prompt-Engineering und Ihre Workflow-Logik mühelos an Kollegen oder die Community.
   ![Bild](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 2. Echtzeit-Codeausführungsumgebung
+### 3. Echtzeit-Codeausführungsumgebung
 
 Nicht mehr nur Markdown-Hervorhebung. In fount sind die vom Agenten gesendeten Codeblöcke **lebendig**.
 
@@ -50,7 +102,7 @@ Nicht mehr nur Markdown-Hervorhebung. In fount sind die vom Agenten gesendeten C
 - Lassen Sie die KI zum Echtzeit-Verifizierer für Ihre Pair-Programming-Sitzungen werden.
   ![Bild](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 3. Entwicklerfreundlich
+### 4. Entwicklerfreundlich
 
 Die Projektarchitektur von fount wurde unter umfassender Berücksichtigung der Gewohnheiten von Entwicklern konzipiert.
 [Möchten Sie die Architektur des Projekt-Repositorys kennen? Werfen Sie einen Blick auf DeepWiki!](https://deepwiki.com/steve02081504/fount)
