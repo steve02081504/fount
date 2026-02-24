@@ -93,15 +93,15 @@ function preBuiltWIEntries(WIentries) {
 		 * @param {any} chatLog 聊天记录
 		 * @param {any} recursion_WIs 递归世界信息
 		 * @param {any} memory 内存
-		 * @param {any} entryIndex 条目索引
+		 * @param {number} entryKey 条目稳定键（用于 enabled_WI_entries）
 		 * @returns {boolean} 如果条目已激活，则返回 true。
 		 */
-		entry.isActivated = (chatLog, recursion_WIs, memory, entryIndex) => { // 传递 memory 和 entryIndex
-			const last_enabled_chat_length = memory?.enabled_WI_entries?.[entryIndex] ?? 0 // 使用 entryIndex 访问激活状态
+		entry.isActivated = (chatLog, recursion_WIs, memory, entryKey) => { // 使用稳定 entryKey 访问激活状态，避免过滤后下标错位
+			const last_enabled_chat_length = memory?.enabled_WI_entries?.[entryKey] // 未激活过为 undefined，不默认 0 以免 sticky 误判为“已激活”
 
 			if (entry.extensions.delay && entry.extensions.delay > chatLog.length) return false // 如果有延迟，并且延迟大于对话长度，则不激活
-			if (entry.extensions.sticky && last_enabled_chat_length + entry.extensions.sticky >= chatLog.length) return true // 如果是粘性的，并且上次激活时间加上粘性持续时间大于当前对话长度，则激活
-			if (entry.extensions.cooldown && last_enabled_chat_length + entry.extensions.cooldown <= chatLog.length) return false // 如果有冷却时间，并且上次激活时间加上冷却时间小于等于当前对话长度，则不激活
+			if (entry.extensions.sticky && last_enabled_chat_length != null && last_enabled_chat_length + entry.extensions.sticky >= chatLog.length) return true // 仅当此前真正激活过时，才在粘性期内保持激活
+			if (entry.extensions.cooldown && last_enabled_chat_length != null && chatLog.length < last_enabled_chat_length + entry.extensions.cooldown) return false // 冷却期内不再次激活
 			if (entry.extensions.useProbability && seedrandom(
 				entry.keys.join() + entry.secondary_keys.join() + entry.content, { entropy: true }
 			)() > entry.extensions.probability / 100) return false // 如果有概率，并且随机数大于概率，则不激活
@@ -142,6 +142,9 @@ export function GetActivatedWorldInfoEntries(
 	let WIdata_copy = structuredClone(WIentries.filter(e => e.enabled)) // 使用 structuredClone 进行深拷贝
 	let aret = [] // 存储激活的 WI 条目
 
+	// 为每条目分配稳定 key，避免 do-while 内过滤导致下标变化、enabled_WI_entries 错位（条件世界书激活一次就永久激活）
+	WIdata_copy.forEach((e, i) => { e.enable_index = i })
+
 	// 初始化内存中的 enabled_WI_entries，如果不存在的话
 	memory.enabled_WI_entries ??= {}
 
@@ -164,12 +167,12 @@ export function GetActivatedWorldInfoEntries(
 		do {
 			let WIdata_new = [...WIdata_copy]
 			new_entries = []
-			for (let i = 0; i < WIdata_copy.length; i++) { // 使用索引循环
+			for (let i = 0; i < WIdata_copy.length; i++) {
 				const entry = WIdata_copy[i]
-				if (entry.constant || entry.isActivated(chatLog, recursion_WIs, memory, i)) { // 传递索引 i
+				if (entry.constant || entry.isActivated(chatLog, recursion_WIs, memory, entry.enable_index)) {
 					if (entry.extensions.delay_until_recursion > currentRecursionDelayLevel) continue
 
-					memory.enabled_WI_entries[i] = chatLog.length // 存储激活回合数，使用索引 i
+					memory.enabled_WI_entries[entry.enable_index] = chatLog.length // 用稳定 key 存储，避免过滤后下标错位
 
 					entry.content = evaluateMacros(entry.content, env, memory) // 替换 WI 内容中的宏
 					new_entries.push(entry) // 添加到新激活的 WI 条目
@@ -182,6 +185,9 @@ export function GetActivatedWorldInfoEntries(
 		} while (new_entries.length) // 如果有新的激活条目，则继续
 	}
 
-	for (const entry of aret) delete entry.isActivated // 清理 isActivated 函数
+	for (const entry of aret) {
+		delete entry.isActivated
+		delete entry.enable_index
+	}
 	return aret // 返回激活的 WI 条目列表
 }
