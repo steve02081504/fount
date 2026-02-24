@@ -1,19 +1,19 @@
 <details>
 <summary><small>太長不看</small></summary>
 
-fount 是一個可程式化的標準化部件化客製化智能體運行平台，載入各種部件來提供服務。  
+fount 是一個可程式化的標準化部件化客製化 Agent 運行平台，載入各種部件來提供服務。  
 程式碼相關的問題請參考 [deepwiki](https://deepwiki.com/steve02081504/fount)。  
 <small>fount 名稱使用全小寫，是 `f`ount 而不是 `F`ount。</small>
 
 #### 為什麼 fount？
 
 - 標準化、現有豐富、強大的生態可開箱即用，避免重複造輪子和除錯惡夢
-- 客製化 agent 邏輯，而不只是 prompt 和 UI 工程
-- 使用和參考社群中其他強大的 fount agent
+- 客製化 Agent 邏輯，而不只是 prompt 和 UI 工程
+- 使用和參考社群中其他強大的 fount Agent
 - 辦公友好，快速匯出報告
 - 無縫整合角色到各種軟體如 IDE、瀏覽器、終端、discord 等
-- 其他 llm 對話前端所沒有的，社群中各種面向 agent 的插件
-- 只需配置 api，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等一切使用者操作，無需學習和上手
+- 其他 LLM 對話前端所沒有的，社群中各種面向 Agent 的外掛
+- 只需配置 API，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等一切使用者操作，無需學習和上手
 
 #### 為什麼不 fount？
 
@@ -24,24 +24,24 @@ fount 是一個可程式化的標準化部件化客製化智能體運行平台�
 
 使用 [OpenClaw](https://openclaw.ai/)，當你：
 
-- 想嘗鮮而不想深度客製化、高效化 agent 時
+- 想嘗鮮而不想深度客製化、高效化 Agent 時
 
-使用 [ChatGPT](https://chatgpt.com/) 或類似線上 llm 聊天平台，當你：
+使用 [ChatGPT](https://chatgpt.com/) 或類似線上 LLM 聊天平台，當你：
 
 - 只想聊天
-- 無需深度訂製 ai 的角色
+- 無需深度客製化 AI 的角色
 - 不在乎聊天記錄被在雲端保存而無法匯出和遷移
 - 不在乎廣告
 
-使用 [character.ai](https://character.ai/) 或類似的線上 llm 角色扮演聊天平台，當你：
+使用 [character.ai](https://character.ai/) 或類似的線上 LLM 角色扮演聊天平台，當你：
 
-- 想運行一個 llm 驅動的角色，而不是使用 agent 功能
+- 想運行一個 LLM 驅動的角色，而不是使用 Agent 功能
 - 覺得會員的錢可以接受
 - 懶得配置程式
 
 使用 [SillyTavern](https://github.com/SillyTavern/SillyTavern/)，當你：
 
-- 想運行一個需要 STscript 或 SillyTavern 插件才能運行的角色或功能
+- 想運行一個需要 STscript 或 SillyTavern 外掛才能運行的角色或功能
 
 </details>
 
@@ -65,7 +65,7 @@ fount 是一個可程式化的標準化部件化客製化智能體運行平台�
 
 ## fount 是什麼？
 
-fount 是一個**現代化、可擴展的 AI 智能體運行時環境**。
+fount 是一個**現代化、可擴展的 AI Agent 運行時環境**。
 
 我們認為，**高效率的生產力工具**與**沉浸式的情感互動**並非水火不容。fount 是一座橋樑：白天，它可以是輔助你編寫複雜程式碼、整理會議紀錄的得力助手；夜晚，它可以是能理解你情緒、與之共鳴的數位知己。
 
@@ -83,7 +83,7 @@ fount 將互動轉化為生產力資產，一切皆可拖曳，一切皆為檔�
 
 ### 1. 無需學習，開箱即用
 
-- 只需配置 api，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等**一切使用者操作**，無需學習和上手
+- 只需配置 API，隨後即可使用預設角色 ZL-31 來用對話完成部件配置、建立部件等**一切使用者操作**，無需學習和上手
   ![圖片](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
 
 ### 2. 知識資產化與無縫分享
@@ -93,13 +93,13 @@ fount 將互動轉化為生產力資產，一切皆可拖曳，一切皆為檔�
 - **工作流封裝與分發**：將你創建好的角色直接拖曳至桌面，生成可分享的檔案。讓你的 Prompt 工程和工作流邏輯輕鬆分發給同事或社群。
   ![圖片](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 3. 實時程式碼執行環境
+### 3. 即時程式碼執行環境
 
-不再僅僅是 Markdown 高亮。在 fount 中，角色發送的程式碼區塊是**鮮活的**。
+不再僅僅是 Markdown 語法突顯。在 fount 中，角色發送的程式碼區塊是**鮮活的**。
 
-- 支援多種語言（C/C++/Rust/Python/JS 等）的實時編譯與運行。
-- 直接查看 stdout 輸出，甚至查看編譯語言的 ASM 反彙編結果。
-- 讓 AI 成為你結對編程的實時驗證者。
+- 支援多種語言（C/C++/Rust/Python/JS 等）的即時編譯與執行。
+- 直接查看 stdout 輸出，甚至查看編譯語言的 ASM 反組譯結果。
+- 讓 AI 成為你協同程式設計 (Pair Programming) 的即時驗證者。
   ![圖片](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
 ### 4. 開發者友好
@@ -123,7 +123,7 @@ fount 的專案架構設計充分考慮了開發者的習慣。
   fount 藉由 HTML 的力量，允許角色透過富文本、圖像甚至互動式元素來表達自我，讓每一次對話都生動而深刻。
 
 - **思想的聚會：原生群組聊天**
-  邀請多個角色加入同一場對話，見證他們之間動態且引人入勝的互動，無論是工作上的頭腦風暴，還是角色間的故事演繹。
+  邀請多個角色加入同一場對話，見證他們之間動態且引人入勝的互動，無論是工作上的腦力激盪，還是角色間的故事演繹。
   ![圖片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
 
 - **美觀、可客製化的介面**
@@ -134,7 +134,7 @@ fount 的專案架構設計充分考慮了開發者的習慣。
   fount 可在 Windows、macOS、Linux 甚至 Android 上無縫運行，透過直接安裝或 Docker 的靈活性來滿足你的不同需求。
 
 - **無拘無束的 AI 源整合：擁抱無限**
-  fount 在連接 AI 源方面，提供了無與倫比的*選擇*與*靈活性*。在 AI 源生成器中，自定義的 JavaScript 程式碼允許你連接到*任何* AI 源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在程式碼的流動中，你可以精心設計複雜的正規表達式，呼叫龐大的 API 函式庫，嵌入多媒體資源。fount 亦原生支援創建 API 池，以實現智能的請求路由。通訊的邏輯，聽憑*你*的意願，由程式碼的力量來塑造。
+  fount 在連接 AI 源方面，提供了無與倫比的*選擇*與*靈活性*。在 AI 源生成器中，自定義的 JavaScript 程式碼允許你連接到*任何* AI 源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在程式碼的流動中，你可以精心設計複雜的正規表示式，呼叫龐大的 API 函式庫，嵌入多媒體資源。fount 亦原生支援創建 API 池，以實現智慧的請求路由。通訊的邏輯，聽憑*你*的意願，由程式碼的力量來塑造。
   ![圖片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 倘若你感到迷失於角色的海洋，或是在尋覓被遺忘的故事，我們[**充滿活力且友好的社群**](https://discord.gg/GtR9Quzq2v)期待你的到來。那是一個志同道合者的港灣，開發者與創作者們在此分享他們的智慧與創作。
@@ -306,7 +306,7 @@ fount 的世界不止是文字與程式碼，它更是一場視覺與連結的�
 
 ### fount 徽章：榮耀的印記
 
-你可以自豪地在你的倉庫或任何希望展示的地方，使用這枚徽章。你可以在[此處](../imgs/)找到 fount logo 的 SVG 檔案。
+你可以自豪地在你的儲存庫或任何希望展示的地方，使用這枚徽章。你可以在[此處](../imgs/)找到 fount logo 的 SVG 檔案。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -330,7 +330,7 @@ fount 的世界不止是文字與程式碼，它更是一場視覺與連結的�
 
 ### 自動安裝連結：指尖上的魔法
 
-想像一下，其他使用者只需輕輕一點，就能將你的創作直接安裝到他們的 fount 世界中。只需將你的組件 zip 連結或 Git 倉庫連結與 fount 的協定連結組合即可。
+想像一下，其他使用者只需輕輕一點，就能將你的創作直接安裝到他們的 fount 世界中。只需將你的組件 zip 連結或 Git 儲存庫連結與 fount 的協定連結組合即可。
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `你的組件連結`
 
