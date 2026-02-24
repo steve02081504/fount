@@ -5,46 +5,66 @@ import seedrandom from 'npm:seedrandom'
 
 import { ms } from '../scripts/ms.mjs'
 
+/**
+ * 像假面骑士decade的音效一样在字符串前面添加一些磕绊感
+ * @param {string} str 要添加磕绊感的字符串
+ * @param {number} [repeat_count=Math.floor(Math.random() * 7)] 开始部分的重复次数，默认随机生成0-7次
+ * @returns {string} 添加磕绊感后的字符串
+ */
+function decadeString(str, repeat_count = Math.floor(Math.random() * 7)) {
+	return Array(repeat_count).fill(str.slice(0, 2) + '-').join('') + str
+}
 
-const defaultInfo = {
-	title: 'fount',
-	activity: 'fountting',
-	logotext: Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!',
-	logotextColor: '#0e3c5c',
-	shortlinkName: 'GitHub',
-	shortlinkUrl: 'https://bit.ly/get-fount',
-	xPoweredBy: 'PHP/4.2.0',
-}
-const steveInfo = {
-	...defaultInfo,
-	title: 'Steve',
-	activity: 'Steveing',
-	logotext: Array(Math.floor(Math.random() * 7)).fill('St-').join('') + 'Steve!',
-	logotextColor: '#ab3fab',
-	shortlinkUrl: 'https://youtu.be/dQw4w9WgXcQ',
-	xPoweredBy: 'steve/0.2.0.8.1.5.0.4',
-}
-const trollInfos = [
-	steveInfo,
-	{
-		...defaultInfo,
+/**
+ * 软件信息对象
+ * @type {Record<string, {
+ * 	title: string
+ * 	activity: string
+ * 	logotext: string
+ * 	logotextColor: `#${string}`
+ * 	shortlinkUrl: `${string}://${string}`
+ * 	xPoweredBy: `${string}/${string}`
+ * }}
+ * @readonly
+ */
+const infos = {
+	fount: {
+		title: 'fount',
+		activity: 'fountting',
+		logotext: decadeString('fount!'),
+		logotextColor: '#0e3c5c',
+		shortlinkName: 'GitHub',
+		shortlinkUrl: 'https://tinyurl.com/get-fount',
+		xPoweredBy: 'PHP/4.2.0',
+	},
+	steve: {
+		title: 'Steve',
+		activity: 'Steveing',
+		logotext: decadeString('Steve!'),
+		logotextColor: '#ab3fab',
+		shortlinkName: 'GitHub',
+		shortlinkUrl: 'https://youtu.be/dQw4w9WgXcQ',
+		xPoweredBy: 'steve/0.2.0.8.1.5.0.4',
+	},
+	terraria: {
+		title: 'Terraria',
+		activity: 'Terraring',
+		logotext: decadeString('Terraria!'),
+		logotextColor: '#25d46c',
+		shortlinkName: 'GitHub',
+		shortlinkUrl: 'https://youtu.be/dQw4w9WgXcQ',
+		xPoweredBy: 'Terraria/1.4.5.0',
+	},
+	sillytavern: {
 		title: 'SillyTavern',
 		activity: 'SillyTaverning',
-		logotext: Array(Math.floor(Math.random() * 7)).fill('Si-').join('') + 'SillyTavern!',
+		logotext: decadeString('SillyTavern!'),
 		logotextColor: '#7c1d1d',
+		shortlinkName: 'GitHub',
 		shortlinkUrl: 'https://youtu.be/dQw4w9WgXcQ',
 		xPoweredBy: 'Skynet/0.2',
 	},
-	{
-		...defaultInfo,
-		title: 'Terraria',
-		activity: 'Terraring',
-		logotext: Array(Math.floor(Math.random() * 7)).fill('Te-').join('') + 'Terraria!',
-		logotextColor: '#25d46c',
-		shortlinkUrl: 'https://youtu.be/dQw4w9WgXcQ',
-		xPoweredBy: 'Terraria/1.4.5.0',
-	}
-]
+}
 /**
  * 获取软件信息对象
  * @returns {{
@@ -59,20 +79,23 @@ const trollInfos = [
  */
 function getInfo() {
 	if (new Date().getDate() === 1 && new Date().getMonth() === 0) return {
-		...defaultInfo,
+		...infos.fount,
 		logotext: 'Happy New Year!',
 		logotextColor: '#ff0000',
 	}
 	if (new Date().getDate() === 1 && new Date().getMonth() === 3) {
 		const random = seedrandom(new Date().toISOString().slice(0, 10))()
-		return trollInfos[Math.floor(random * trollInfos.length)]
+		let randkey
+		do randkey = Object.keys(infos)[Math.floor(random * Object.keys(infos).length)]
+		while (randkey === 'fount')
+		return infos[randkey]
 	}
 	if (new Date().getDate() === 31 && new Date().getMonth() === 10) return {
-		...defaultInfo,
+		...infos.fount,
 		logotext: 'fount or fount?',
 	}
-	if (fs.existsSync('im.steve')) return steveInfo
-	return defaultInfo
+	if (fs.existsSync('im.steve')) return infos.steve
+	return infos.fount
 }
 /**
  * 软件信息对象
