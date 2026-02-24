@@ -362,7 +362,7 @@
 				"locked_description": "Complete an introductory tutorial."
 			},
 			"skip_tutorial": {
-				"name": "Instructions unclear",
+				"name": "TL;DR",
 				"description": "\"Tutorial? What is that? Can it be eaten?\"",
 				"locked_description": "Skip the introductory tutorial once."
 			}
@@ -656,7 +656,7 @@
 				"locked_description": "Open the function list once."
 			},
 			"set_default_persona": {
-				"name": "This Is The Way.",
+				"name": "This Is Who I Truly Am.",
 				"description": "Set an identity for your actions in this world.",
 				"locked_description": "Set a default profile."
 			}
@@ -838,7 +838,7 @@
 			},
 			"share": {
 				"uploading": "Creating link...",
-				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
+				"success": "Link created successfully! Copied to clipboard. <br>This feature is powered by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
 			"commonToolCalling": "Calling tool",
 			"noReplyContent": "(No reply content)"
@@ -1471,7 +1471,7 @@
 			"selectSubfountLabel": "Select Subfount",
 			"selectSubfountPlaceholder": "Please select the Subfount to execute the code on...",
 			"hostOption": "Host (ID: ${id})",
-			"subfountOption": "Extension ${id}${deviceId}",
+			"subfountOption": "Node ${id}${deviceId}",
 			"scriptLabel": "JavaScript code",
 			"executeButton": "Execute",
 			"executing": "Executing...",
@@ -1570,7 +1570,7 @@
 			"cancelButton": "Cancel",
 			"saveApplyButton": "Save and apply",
 			"themeName": "Theme name (ID)",
-			"autoPaletteTitle": "Automatic color correction from images",
+			"autoPaletteTitle": "Auto-generated Palette",
 			"autoPaletteInstruction": "Click on a color above to automatically fill primary/secondary/accent/neutral colors.",
 			"coreColors": "Core colors",
 			"baseBackground": "Basics and Background",
@@ -1765,7 +1765,7 @@
 		},
 		"achievements": {
 			"set_default_aisource": {
-				"name": "The law of victory has been determined!",
+				"name": "The law of victory has been decided!",
 				"description": "A default AI is designated as the mana supply source.",
 				"locked_description": "Set a default AI source once."
 			}
@@ -1992,7 +1992,7 @@
 				"locked_description": "Install the browser integration script once."
 			},
 			"run_js": {
-				"name": "code chant",
+				"name": "Word Made Flesh",
 				"description": "\"In my name, command the browser...\"",
 				"locked_description": "Run the JavaScript code once in the browser."
 			},
@@ -2078,7 +2078,7 @@
 		},
 		"achievements": {
 			"start_deskpet": {
-				"name": "A new companion to your desktop",
+				"name": "A Wild Companion Appears!",
 				"description": "It's dangerous to go alone! Take this.",
 				"locked_description": "Start a desktop pet."
 			}
@@ -2220,7 +2220,7 @@
 				"locked_description": "Open the achievements page."
 			},
 			"relock_by_clicking": {
-				"name": "Seriously, mate??",
+				"name": "Bruh...",
 				"description": "You successfully re-locked an unlocked achievement by repeatedly clicking it. Why?",
 				"locked_description": "???"
 			}
