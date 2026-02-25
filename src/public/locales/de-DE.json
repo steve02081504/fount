@@ -12,7 +12,7 @@
 				"http": "HTTP-Server läuft auf ${url}"
 			},
 			"mdns": {
-				"description": "Ein Funke der Fantasie, zum Leben erweckt",
+				"description": "Ein Geistesblitz, aus Gedanken geboren",
 				"failed": "mDNS-Registrierung fehlgeschlagen: ${error}",
 				"bonjourFailed": "Erstellung des Bonjour-Dienstes fehlgeschlagen: ${error}"
 			},
@@ -24,7 +24,7 @@
 		"jobs": {
 			"restartingJob": "Starte Aufgabe ${partpath} für Benutzer ${username} neu: ${uid}",
 			"pausingJob": "Pausiere ${partpath}-Aufgabe für Benutzer ${username}: ${uid}",
-			"preloadingParts": "${count} Teile werden vorab geladen"
+			"preloadingParts": "${count} Komponenten werden vorab geladen"
 		},
 		"ipc": {
 			"serverStarted": "IPC-Server gestartet",
@@ -125,7 +125,7 @@
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter ${path}",
 				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter ${path}",
 				"protocolHandlerRegistered": "fount:// Protokollhandler registriert.",
-				"shortcutNotSupported": "Warnung: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht.",
+				"shortcutNotSupported": "Hinweis: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht.",
 				"osacompileNotFound": "Fehler: „osacompile“ nicht gefunden. Die macOS-App kann nicht erstellt werden.",
 				"lsregisterFailed": "Warnung: Die Verwendung von lsregister zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
 				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden."
@@ -223,7 +223,7 @@
 		"title": "Willkommen bei fount!",
 		"description": "Verfolgen Sie den Installationsfortschritt und werfen Sie einen Blick auf die darin enthaltenen Funktionen. fount ist in Kürze startbereit.",
 		"hero": {
-			"title": "Ein Funke der Fantasie, zum Leben erweckt",
+			"title": "Ein Geistesblitz, aus Gedanken geboren",
 			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
 		},
 		"feature1": {
@@ -259,7 +259,7 @@
 		},
 		"mini_game": {
 			"title": "Spielen Sie ein kleines Spiel",
-			"description1": "Ist die Installation zu langsam?",
+			"description1": "Dauert die Installation zu lange?",
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
 		"data_showcase": {
@@ -303,7 +303,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "fount-Protokoll verarbeiten",
+		"title": "Verarbeitung des fount-Protokolls",
 		"description": "Still und effizient übersetzt diese Seite Ihre Absicht in einen nahtlosen Übergang innerhalb von fount. Betrachten Sie es als die stille Magie hinter dem Vorhang.",
 		"processing": "Protokoll wird verarbeitet...",
 		"shellCommandSent": "Shell-Befehl gesendet",
@@ -357,7 +357,7 @@
 		},
 		"achievements": {
 			"complete_tutorial": {
-				"name": "Perfektes Arithmetik-Klassenzimmer",
+				"name": "Die perfekte Mathestunde",
 				"description": "Endlich ist das Tutorial für Anfänger fertig.",
 				"locked_description": "Absolvieren Sie ein Einführungstutorial."
 			},
@@ -440,10 +440,10 @@
 		"title": "Anmeldeinformationen",
 		"description": "Ein sicherer Bereich zum Verwalten Ihrer fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
 		"modal": {
-			"title": "Zertifikatübertragungsfehler",
-			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",
-			"transfer_error": "Beim Versuch, Ihre Anmeldeinformationen zu übertragen, trat ein Fehler auf:\n${error}\nSie können fortfahren, können jedoch keine Anmeldeinformationen abrufen.",
-			"no_credentials": "Keine gespeicherten Anmeldedaten gefunden.\nBitte melden Sie sich in fount erneut an, um Ihre Anmeldeinformationen zu aktualisieren, oder klicken Sie auf die Schaltfläche unten, um ohne Anmeldeinformationen zur Zielseite fortzufahren.",
+			"title": "Fehler bei Anmeldedaten-Übertragung",
+			"retrieve_error": "Beim Versuch, Ihre Anmeldedaten zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Daten jedoch nicht speichern.",
+			"transfer_error": "Beim Versuch, Ihre Anmeldedaten zu übertragen, trat ein Fehler auf:\n${error}\nSie können fortfahren, können jedoch keine Anmeldedaten abrufen.",
+			"no_credentials": "Keine gespeicherten Anmeldedaten gefunden.\nBitte melden Sie sich in fount erneut an, um Ihre Anmeldedaten zu aktualisieren, oder klicken Sie auf die Schaltfläche unten, um ohne Anmeldedaten zur Zielseite fortzufahren.",
 			"missing_params": "Dem Link fehlt ein erforderlicher Parameter.",
 			"buttons": {
 				"ignore": "Ignorieren und fortfahren",
@@ -464,10 +464,10 @@
 		"sfwToggle": "Sichere Inhalte",
 		"partTypeDropdown": {
 			"button": {
-				"title": "Teiletyp-Menü"
+				"title": "Komponententyp-Menü"
 			},
 			"icon": {
-				"alt": "Teiletyp-Menü"
+				"alt": "Komponententyp-Menü"
 			}
 		},
 		"functionMenu": {
@@ -482,12 +482,12 @@
 			}
 		},
 		"emptyList": {
-			"message": "Leer...<br/>Vielleicht können Sie [einen neuen Teil erstellen](${newpartLink}) oder zum [Discord-Server von fount](${discordLink}) gehen, um etwas Spaß zu haben?"
+			"message": "Leer...<br/>Vielleicht können Sie [eine neue Komponente erstellen](${newpartLink}) oder zum [Discord-Server von fount](${discordLink}) gehen, um etwas Spaß zu haben?"
 		},
 		"part_pages": {
 			"default": {
 				"title": "Komponentenauswahl",
-				"subtitle": "Nehmen Sie ein Blatt und beginnen Sie Ihre Reise.",
+				"subtitle": "Wählen Sie ein Fragment und beginnen Sie Ihre Reise.",
 				"card": {
 					"noTags": "Keine Tags",
 					"version": "Version",
@@ -621,7 +621,7 @@
 				}
 			},
 			"shells": {
-				"title": "Interaktive Schnittstellenauswahl",
+				"title": "Shell-Auswahl",
 				"subtitle": "Wählen Sie ein Fenster und sehen Sie eine neue Welt.",
 				"card": {
 					"defaultCheckbox": {
@@ -636,12 +636,12 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hallo, fount!",
+				"name": "Hallo Welt, hallo fount!",
 				"description": "Auf dem Weg in die neue Welt, loggen Sie sich zum ersten Mal ein!",
 				"locked_description": "Melden Sie sich einmal am fount an."
 			},
 			"sfw_mode_on": {
-				"name": "Da ist jemand hinter dir!",
+				"name": "Chef im Anmarsch!",
 				"description": "Wechseln Sie schnell in den Modus „Alle Altersgruppen“, ich bin so ein schlaues kleines Kind.",
 				"locked_description": "Aktivieren Sie den sicheren Inhaltsmodus einmal."
 			},
@@ -940,13 +940,13 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "Ungültige Teiledaten.",
+			"invalidPartData": "Ungültige Komponentendaten.",
 			"charAdded": "Die Rolle ${partName} wurde dem Chat hinzugefügt.",
 			"personaSet": "Persona ${partName} wurde als aktuelle Persona festgelegt.",
 			"worldSet": "Welt ${partName} ist auf die aktuelle Welt eingestellt.",
 			"pluginAdded": "Das Plugin ${partName} wurde dem Chat hinzugefügt.",
-			"unsupportedPartType": "Nicht unterstützter Teiletyp: ${partType}.",
-			"errorAddingPart": "Fehler beim Hinzufügen von Teil ${partName}: ${error}"
+			"unsupportedPartType": "Nicht unterstützter Komponententyp: ${partType}.",
+			"errorAddingPart": "Fehler beim Hinzufügen von Komponente ${partName}: ${error}"
 		},
 		"home_char_interfaces": {
 			"main": {
@@ -1104,7 +1104,7 @@
 			"create_part": {
 				"name": "Die Alchemiewerkstatt ist geöffnet",
 				"description": "Beginnen Sie bei Null und erstellen Sie Ihre erste Komponente.",
-				"locked_description": "Erstellen Sie ein Teil mit der Quick New-Funktion."
+				"locked_description": "Erstellen Sie eine Komponente mit der Quick New-Funktion."
 			}
 		},
 		"home_function_buttons": {
@@ -1164,7 +1164,7 @@
 		},
 		"dragAndDrop": {
 			"fileDropDescription": "Komponenten aus Dateien installieren",
-			"textDropDescription": "Teile aus Text installieren"
+			"textDropDescription": "Komponenten aus Text installieren"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1178,7 +1178,7 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "Teile aus Text installieren"
+				"description": "Komponenten aus Text installieren"
 			},
 			"handleFileDrop": {
 				"description": "Komponenten aus Dateien installieren"
@@ -1189,7 +1189,7 @@
 		"title": "Komponenten-Exporter",
 		"pageTitle": "Komponenten-Exporter",
 		"pageSubtitle": "Exportieren Sie Ihre Lieblingsinhalte",
-		"description": "Exportieren Sie Ihre Font-Kreationen. Dieses Tool sammelt Ihre ausgewählten Teile in einer einfachen ZIP-Datei zur sicheren Aufbewahrung oder Weitergabe.",
+		"description": "Exportieren Sie Ihre Font-Kreationen. Dieses Tool sammelt Ihre ausgewählten Komponenten in einer einfachen ZIP-Datei zur sicheren Aufbewahrung oder Weitergabe.",
 		"steps": {
 			"part": "Wählen Sie Komponenten aus",
 			"action": "Export"
@@ -1258,7 +1258,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "Teile herunterladen"
+			"downloadPartDescription": "Komponenten herunterladen"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1272,7 +1272,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "Teile herunterladen"
+				"description": "Komponenten herunterladen"
 			}
 		},
 		"home_common_interfaces": {
@@ -1471,7 +1471,7 @@
 			"selectSubfountLabel": "Wählen Sie die Subfount aus",
 			"selectSubfountPlaceholder": "Bitte wählen Sie die Subfount aus, auf der der Code ausgeführt werden soll...",
 			"hostOption": "Host (ID: ${id})",
-			"subfountOption": "Erweiterung ${id}${deviceId}",
+			"subfountOption": "Client ${id}${deviceId}",
 			"scriptLabel": "JavaScript-Code",
 			"executeButton": "ausführen",
 			"executing": "Ausführen...",
@@ -1933,7 +1933,7 @@
 		"description": "Überbrücken Sie die Lücke zwischen Quelle und Internet. Diese Seite stellt das Benutzerskript bereit, um eine nahtlose Integration zu ermöglichen und Ihre KI-Begleiter in Ihr Surferlebnis einzubeziehen.",
 		"pageHeader": "Browserintegration",
 		"pageDescription": "Damit Ihre fount -Rolle mit der Webseite interagieren kann, müssen Sie dieses Browser -Integrationsskript installieren. Es fungiert als Brücke zwischen dem Charakter und dem Browser, sodass sie den Seiteninhalt anzeigen und Aktionen ausführen können.",
-		"install_script_title": "Installationsskript",
+		"install_script_title": "Skript installieren",
 		"install_script_description": "Klicken Sie auf die Schaltfläche unten, um das Browser -Integrationsskript zu installieren. Sie müssen zuerst einen Tampermonkey (oder einen ähnlichen Skript-Manager) installieren.",
 		"install_button": "Installieren",
 		"install_from_url_tip": "Ermöglicht Ihr Browser die Installation nicht? Kopieren Sie diese URL und importieren Sie das Skript aus der URL im Tampermonkey-Plugin.",
@@ -2354,9 +2354,9 @@
 			"sequences": "Gemeinsame Zeichensequenzen wie \"ABC\" sind leicht zu erraten.",
 			"recentYears": "Die letzten Jahre sind leicht zu erraten.",
 			"dates": "Datum ist leicht zu erraten.",
-			"topTen": "Dies ist ein überstrapaziertes Passwort.",
-			"topHundred": "Dies ist ein Passwort, das häufig verwendet wird.",
-			"common": "Dies ist ein häufig verwendetes Passwort.",
+			"topTen": "Dies ist eines der 10 häufigsten Passwörter.",
+			"topHundred": "Dies ist ein sehr häufig verwendetes Passwort.",
+			"common": "Dies ist ein häufiges Passwort.",
 			"similarToCommon": "Dies ähnelt einem häufig verwendeten Passwort.",
 			"wordByItself": "Ein einzelnes Wort ist leicht zu erraten.",
 			"namesByThemselves": "Ein einzelner Vor- oder Nachname ist leicht zu erraten.",
