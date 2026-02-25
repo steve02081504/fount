@@ -9,6 +9,7 @@ exit 0
 
 :Batch
 if "%1"=="" (
+	set FOUNT_CLICK=1
 	cmd /c "%~dp0/path/fount.bat" open keepalive
 ) else (
 	cmd /c "%~dp0/path/fount.bat" %*
