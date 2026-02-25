@@ -257,6 +257,9 @@ function Get-WTfountCmd($ArgumentList = @()) {
 	$FilePath = "powershell.exe"
 	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
 	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+		if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
+			Register-FountTerminalProfile
+		}
 		$FilePath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 		$ArgumentList = "-p fount powershell.exe $ArgumentList"
 	}
@@ -393,6 +396,11 @@ function Update-FountAndDeno {
 	}
 }
 
+if ($env:FOUNT_CLICK) {
+	Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
+	Start-WTfountCmd $args
+	exit $LastExitCode
+}
 if ($args[0] -eq 'nop') {
 	exit 0
 }
@@ -444,6 +452,7 @@ elseif ($args[0] -eq 'open') {
 }
 elseif ($args[0] -eq 'background') {
 	Invoke-DockerPassthrough -CurrentArgs $args
+	$env:FOUNT_BACKGROUND = 1
 	$runargs = $args[1..$args.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
 		$TargetPath = "powershell.exe"
@@ -778,6 +787,37 @@ function debug_on {
 		Set-Clipboard -Value $originalClipboard
 	}
 }
+# 智能自启动：向 Windows 注册“系统重启/更新后恢复”
+function Register-FountApplicationRestart {
+	if (!$IsWindows) { return }
+	$restartArgs = ''
+	if ($env:FOUNT_BACKGROUND) {
+		$restartArgs += " background"
+	}
+	if ($env:FOUNT_KEEPALIVE) {
+		$restartArgs += " keepalive"
+	}
+	$restartArgs = " -NoProfile -ExecutionPolicy Bypass -Command `".{ `$env:FOUNT_CLICK = 1; .\`"$FOUNT_DIR/path/fount.ps1\`" $restartArgs }`""
+
+	Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public class FountRestart {
+	[DllImport("kernel32.dll", SetLastError = false, CharSet = CharSet.Unicode)]
+	public static extern int RegisterApplicationRestart(string pwzCommandline, uint dwFlags);
+	[DllImport("kernel32.dll", SetLastError = false)]
+	public static extern int UnregisterApplicationRestart();
+}
+'@ -ErrorAction SilentlyContinue | Out-Null
+	[FountRestart]::RegisterApplicationRestart($restartArgs, 3) | Out-Null
+}
+
+# 程序正常或 Ctrl+C 退出时取消“系统重启后恢复”注册，避免被系统再次拉起
+function Unregister-FountApplicationRestart {
+	if (!$IsWindows) { return }
+	[FountRestart]::UnregisterApplicationRestart() | Out-Null
+}
+
 function run {
 	if ($IsWindows) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
@@ -924,49 +964,57 @@ elseif ($args[0] -eq 'keepalive') {
 		debug_on
 	}
 
-	$startTime = Get-Date
-	$initAttempted = $false
-	$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
+	$env:FOUNT_KEEPALIVE = 1
+	try {
+		Register-FountApplicationRestart
+		$startTime = Get-Date
+		$initAttempted = $false
+		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-	run @runargs
-	while ($LastExitCode) {
-		if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
-		if ($LastExitCode -ne 131) {
-			$elapsedTime = (Get-Date) - $startTime
-			if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
-				Write-Error (Get-I18n -key 'keepalive.failedToStart')
-				exit 1
-			} else { $initAttempted = $false }
+		run @runargs
+		while ($LastExitCode) {
+			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
+			if ($LastExitCode -ne 131) {
+				$elapsedTime = (Get-Date) - $startTime
+				if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
+					Write-Error (Get-I18n -key 'keepalive.failedToStart')
+					exit 1
+				} else { $initAttempted = $false }
 
-			$current_time = Get-Date
-			$restart_timestamps.Add($current_time)
+				$current_time = Get-Date
+				$restart_timestamps.Add($current_time)
 
-			$three_minutes_ago = $current_time.AddMinutes(-3)
-			for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
-				if ($restart_timestamps[$i] -lt $three_minutes_ago) {
-					$restart_timestamps.RemoveAt($i)
+				$three_minutes_ago = $current_time.AddMinutes(-3)
+				for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
+					if ($restart_timestamps[$i] -lt $three_minutes_ago) {
+						$restart_timestamps.RemoveAt($i)
+					}
+				}
+
+				if ($restart_timestamps.Count -ge 7) {
+					if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
+						Write-Warning (Get-I18n -key 'keepalive.autoInitDisabled')
+						exit 1
+					}
+					Write-Warning (Get-I18n -key 'keepalive.restartingTooFast')
+					$restart_timestamps.Clear()
+
+					& $PSScriptRoot/fount.ps1 init
+					if ($LastExitCode -ne 0) {
+						Write-Error (Get-I18n -key 'keepalive.initFailed')
+						exit 1
+					}
+					$initAttempted = $true
+					Write-Host (Get-I18n -key 'keepalive.initComplete')
 				}
 			}
-
-			if ($restart_timestamps.Count -ge 7) {
-				if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
-					Write-Warning (Get-I18n -key 'keepalive.autoInitDisabled')
-					exit 1
-				}
-				Write-Warning (Get-I18n -key 'keepalive.restartingTooFast')
-				$restart_timestamps.Clear()
-
-				& $PSScriptRoot/fount.ps1 init
-				if ($LastExitCode -ne 0) {
-					Write-Error (Get-I18n -key 'keepalive.initFailed')
-					exit 1
-				}
-				$initAttempted = $true
-				Write-Host (Get-I18n -key 'keepalive.initComplete')
-			}
+			Update-FountAndDeno
+			run
 		}
-		Update-FountAndDeno
-		run
+	}
+	finally {
+		Remove-Item Env:\FOUNT_KEEPALIVE -Force -ErrorAction Ignore
+		Unregister-FountApplicationRestart
 	}
 }
 elseif ($args[0] -eq 'remove') {
@@ -1138,10 +1186,16 @@ else {
 		$runargs = $runargs[1..$runargs.Count]
 		debug_on
 	}
-	run @runargs
-	while ($LastExitCode -eq 131) {
-		Update-FountAndDeno
-		run
+	try {
+		Register-FountApplicationRestart
+		run @runargs
+		while ($LastExitCode -eq 131) {
+			Update-FountAndDeno
+			run
+		}
+	}
+	finally {
+		Unregister-FountApplicationRestart
 	}
 }
 
