@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Personalización avanzada",
 			"customCSS": "CSS personalizado (anulación)",
 			"customMjsScript": "Script MJS personalizado (opcional)",
-			"mjsSyntaxHint": "Utilice [sintaxis async-eval](${asyncDocLink}). Devuelve un objeto que contiene las funciones <code>load()</code> y <code>unload()</code>.",
+			"mjsSyntaxHint": "Utilice [sintaxis async-eval](${asyncDocLink}). Devuelve un objeto que contiene las funciones `load()` y `unload()`.",
 			"themeIdRequired": "Se requiere ID de tema",
 			"newThemeName": "Nuevo nombre del tema:",
 			"deleteConfirm": " ¿Estás seguro de que quieres eliminar el tema ${id}?",

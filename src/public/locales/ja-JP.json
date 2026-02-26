@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "高度なカスタマイズ",
 			"customCSS": "カスタム CSS (上書き)",
 			"customMjsScript": "カスタム MJS スクリプト (任意)",
-			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 <code>load()</code> および <code>unload()</code> 関数を含むオブジェクトを返してください。",
+			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 `load()` および `unload()` 関数を含むオブジェクトを返してください。",
 			"themeIdRequired": "テーマIDが必要です",
 			"newThemeName": "新しいテーマ名:",
 			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",

@@ -120,6 +120,61 @@ function getNestedValue(obj, key) {
 	return value
 }
 
+/**
+ * 对单条翻译字符串做插值（链接、占位符、反引号）。
+ * 链接 [text](${param}) → <a>；`xxx` → <code>xxx</code>。
+ * 若 translation 非字符串（如嵌套对象），则原样返回。
+ * @param {string|string[]|object|undefined} translation - 原始翻译字符串或嵌套对象。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {string|string[]|object|undefined} 替换后的翻译或原值。
+ */
+function applyParamsToTranslation(translation, params) {
+	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
+	if (!translation || !(Object(translation) instanceof String)) return translation
+	let result = translation
+	for (const param in params)
+		result = result?.replace?.(
+			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
+			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)?.replaceAll?.(`\${${param}}`, params[param])
+	result = result?.replace?.(/`([^`]*)`/g, '<code>$1</code>')
+	return result
+}
+
+/**
+ * 为翻译数组创建代理：toString 随机选一项并渲染，下标访问返回该项的渲染结果。
+ * @param {string[]} arr - 原始翻译字符串数组。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {string[]} 代理后的数组（toString 与下标访问为渲染结果）。
+ */
+function createI18nArrayProxy(arr, params) {
+	return new Proxy(arr, {
+		get(target, prop) {
+			if (prop === 'toString')
+				return function toString() {
+					if (!target.length) throw new Error('I18n array is empty')
+					const i = Math.floor(Math.random() * target.length)
+					return applyParamsToTranslation(target[i], params)
+				}
+			try {
+				const n = Number(prop)
+				if (Number.isInteger(n) && n >= 0 && n < target.length)
+					return applyParamsToTranslation(target[n], params)
+			} catch (_) { }
+			return Reflect.get(target, prop)
+		},
+	})
+}
+
+/**
+ * 将值转换为字符串。
+ * @param {any} value - 要转换的值。
+ * @returns {string} 转换后的字符串。
+ */
+function toString(value) {
+	return value + ''
+}
+
 let translationsInitialized = false
 /**
  * 获取翻译字符串。
@@ -146,17 +201,8 @@ async function geti18n_nowarn(key, params = {}) {
 		await initTranslations()
 		translationsInitialized = true
 	}
-	let translation = getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key)
-	if (translation === undefined) return
-
-	// Interpolation for links and variables
-	for (const param in params)
-		translation = translation?.replace?.(
-			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-			(m, text) => `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
-		)?.replaceAll?.(`\${${param}}`, params[param])
-
-	return translation
+	const raw = getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key)
+	return applyParamsToTranslation(raw, params)
 }
 
 /**
@@ -187,12 +233,13 @@ async function translateSingularElement(element) {
 		updated = true
 	}
 	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
+		const keyValue = getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key)
 		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
 			// deno-lint-ignore no-cond-assign
 			if (element.textContent ||= literal_value) updated = true
 		}
-		else if (getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key) instanceof Object) {
+		else if (!Array.isArray(keyValue) && keyValue instanceof Object && Object.keys(keyValue).length) {
 			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 			for (const attr of attributes) {
 				const specificKey = `${key}.${attr}`
@@ -210,7 +257,7 @@ async function translateSingularElement(element) {
 			updated = true
 		}
 		else if (await geti18n_nowarn(key)) {
-			const translation = await geti18n_nowarn(key, element.dataset)
+			const translation = toString(await geti18n_nowarn(key, element.dataset))
 			if (element.innerHTML !== translation) {
 				element.innerHTML = translation
 				updated = true

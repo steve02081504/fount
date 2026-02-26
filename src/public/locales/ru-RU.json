@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Расширенная настройка",
 			"customCSS": "Пользовательский CSS (переопределение)",
 			"customMjsScript": "Пользовательский скрипт MJS (необязательно)",
-			"mjsSyntaxHint": "Используйте [синтаксис async-eval](${asyncDocLink}). Должен возвращать объект, содержащий функции <code>load()</code> и <code>unload()</code>.",
+			"mjsSyntaxHint": "Используйте [синтаксис async-eval](${asyncDocLink}). Должен возвращать объект, содержащий функции `load()` и `unload()`.",
 			"themeIdRequired": "Требуется ID темы",
 			"newThemeName": "Новое название темы:",
 			"deleteConfirm": "Вы уверены, что хотите удалить тему ${id}?",

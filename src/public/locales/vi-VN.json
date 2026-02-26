@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Tùy chỉnh nâng cao",
 			"customCSS": "CSS tùy chỉnh (ghi đè)",
 			"customMjsScript": "Tập lệnh MJS tùy chỉnh (tùy chọn)",
-			"mjsSyntaxHint": "Sử dụng [cú pháp async-eval](${asyncDocLink}). Trả về một đối tượng chứa các hàm <code>load()</code> và <code>unload()</code>.",
+			"mjsSyntaxHint": "Sử dụng [cú pháp async-eval](${asyncDocLink}). Trả về một đối tượng chứa các hàm `load()` và `unload()`.",
 			"themeIdRequired": "Cần có ID chủ đề",
 			"newThemeName": "Tên chủ đề mới:",
 			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",

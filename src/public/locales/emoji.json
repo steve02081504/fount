@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "🛠️🔧",
 			"customCSS": "🎨📝 (CSS)",
 			"customMjsScript": "📜 (MJS)",
-			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}). ↩️ 📦 { <code>load()</code>, <code>unload()</code> }.",
+			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}). ↩️ 📦 { `load()`, `unload()` }.",
 			"themeIdRequired": "🆔❓",
 			"newThemeName": "🆕🎨:",
 			"deleteConfirm": "🗑️🎨 ${id}❓",

@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Ítarleg aðlögun",
 			"customCSS": "Sérsniðin CSS (yfirskrifa)",
 			"customMjsScript": "Sérsniðið MJS forskrift (valfrjálst)",
-			"mjsSyntaxHint": "Notaðu [async-eval setningafræði](${asyncDocLink}). Skilar hlut sem inniheldur <code>load()</code> og <code>unload()</code> föllin.",
+			"mjsSyntaxHint": "Notaðu [async-eval setningafræði](${asyncDocLink}). Skilar hlut sem inniheldur `load()` og `unload()` föllin.",
 			"themeIdRequired": "Þemaauðkenni krafist",
 			"newThemeName": "Nýtt þemaheiti:",
 			"deleteConfirm": "Ertu viss um að þú viljir eyða þemanu ${id}?",

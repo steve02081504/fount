@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "التخصيص المتقدم",
 			"customCSS": "CSS مخصص (تجاوز)",
 			"customMjsScript": "برنامج نصي MJS مخصص (اختياري)",
-			"mjsSyntaxHint": "استخدم [بناء جملة التقييم غير المتزامن](${asyncDocLink}). تُرجع كائنًا يحتوي على الدالتين <code>load()</code> و<code>unload()</code>.",
+			"mjsSyntaxHint": "استخدم [بناء جملة التقييم غير المتزامن](${asyncDocLink}). تُرجع كائنًا يحتوي على الدالتين `load()` و`unload()`.",
 			"themeIdRequired": "معرف الموضوع مطلوب",
 			"newThemeName": "اسم المظهر الجديد:",
 			"deleteConfirm": "هل أنت متأكد أنك تريد حذف المظهر ${id}؟",
