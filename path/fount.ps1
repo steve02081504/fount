@@ -111,9 +111,14 @@ function Get-I18n {
 
 $ErrorCount = $Error.Count
 
-if ($PSEdition -eq "Desktop") {
-	try { $IsWindows = $true } catch {}
+function Set-MissingVariablesForWindowsPowershell {
+	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
+	param()
+	if ($PSEdition -eq "Desktop") {
+		try { $global:IsWindows = $true } catch {}
+	}
 }
+Set-MissingVariablesForWindowsPowershell
 
 Start-Job -ScriptBlock {
 	param($FOUNT_DIR)
