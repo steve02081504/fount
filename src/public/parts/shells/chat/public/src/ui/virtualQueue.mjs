@@ -195,13 +195,13 @@ export async function handleMessageAdded(message) {
 			}
 			streamingMessages.set(message.id, itemState)
 
-			// 设置 200ms 超时，如果超时还没收到 stream_update，强制渲染骨架屏
+			// 设置 500ms 超时，若仍未收到 stream_update，先渲染空泡并注册流式渲染器，以便后续 stream_update 能更新内容
 			setTimeout(async () => {
 				if (itemState.pendingRender) {
 					itemState.pendingRender = false
 					const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
 					await virtualList.appendItem(message, shouldScroll)
-					// 这里不注册 streamRenderer，因为内容为空，等待真正的 stream_update 更新内容
+					streamRenderer.register(message.id, message.content ?? '')
 				}
 			}, 500)
 		} else {
