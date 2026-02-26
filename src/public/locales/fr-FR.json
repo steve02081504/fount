@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Configuration des sources de services",
+		"needsConfigReminder": "Une fois la source de service configurée, vous devez généralement renseigner le nom de la source de service dans le champ correspondant dans la configuration du composant qui utilise cette source de service.",
+		"needsConfigLink": "Aller à la configuration des widgets",
 		"subtypeSelect": {
 			"label": "Sous-catégorie Générateur",
 			"placeholder": "Veuillez sélectionner une catégorie de générateur"

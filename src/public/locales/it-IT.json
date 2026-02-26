@@ -1538,7 +1538,7 @@
 	},
 	"themeManage": {
 		"title": "Gestione temi",
-		"description": "Scegli l'estetica che rispecchia il tuo umore o la tua storia. Visualizza l'anteprima e seleziona da una tavolozza di temi, ognuno dei quali offre un ambiente diverso per le tue interazioni con le fonti. Il tuo mondo, il tuo stile.",
+		"description": "Scegli l'estetica che rispecchia il tuo umore o la tua storia. Visualizza l'anteprima e seleziona da una tavolozza di temi, ognuno dei quali offre un ambiente diverso per le tue interazioni con fount. Il tuo mondo, il tuo stile.",
 		"instruction": "Scegli un tema!",
 		"search": {
 			"placeholder": "Cerca temi...",
@@ -1697,7 +1697,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Gestione delle fonti di servizio",
-		"description": "Qui dirigerai una sinfonia di suoni dell'intelligenza artificiale. Aggiungi, scolpisci o silenzia le fonti per dare vita alle tue fonti associate: una sottile danza di codice e immaginazione.",
+		"description": "Qui dirigerai una sinfonia di suoni dell'intelligenza artificiale. Aggiungi, scolpisci o silenzia fount per dare vita alle tue fonti associate: una sottile danza di codice e immaginazione.",
 		"fileList": {
 			"title": "Elenco delle fonti del servizio",
 			"addButton": {
@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Configurazione dell'origine del servizio",
+		"needsConfigReminder": "Dopo aver configurato l'origine del servizio, in genere è necessario inserire il nome dell'origine del servizio nel campo corrispondente nella configurazione del componente che utilizza questa origine del servizio.",
+		"needsConfigLink": "Vai alla configurazione del widget",
 		"subtypeSelect": {
 			"label": "Sottocategoria del generatore",
 			"placeholder": "Seleziona una categoria di generatori"

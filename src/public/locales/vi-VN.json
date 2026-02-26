@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Cấu hình nguồn dịch vụ",
+		"needsConfigReminder": "Sau khi định cấu hình nguồn dịch vụ, thông thường bạn cần điền tên nguồn dịch vụ vào trường tương ứng trong cấu hình của thành phần sử dụng nguồn dịch vụ này.",
+		"needsConfigLink": "Đi tới cấu hình tiện ích",
 		"subtypeSelect": {
 			"label": "Danh mục con trình tạo",
 			"placeholder": "Vui lòng chọn danh mục trình tạo"

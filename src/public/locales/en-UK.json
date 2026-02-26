@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Service source configuration",
+		"needsConfigReminder": "After the service source is configured, you generally need to fill in the service source name in the corresponding field in the configuration of the component that uses this service source.",
+		"needsConfigLink": "Go to widget configuration",
 		"subtypeSelect": {
 			"label": "Generator subcategory",
 			"placeholder": "Please select a generator category"
