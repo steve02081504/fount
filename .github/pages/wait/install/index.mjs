@@ -521,8 +521,8 @@ const whenFountInstallerFails = () => {
  * 处理 fount 安装程序流程。
  */
 async function handleInstallerFlow() {
-	document.getElementById('theme-selection-section').style.display = 'block'
-	document.getElementById('mini-game-section').style.display = 'block'
+	for (const section of ['theme-selection-section', 'mini-game-section', 'tips-section'])
+		document.getElementById(section).style.display = 'block'
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
 	whenFountInstallerFails().then(() => {
@@ -596,6 +596,30 @@ async function main() {
 	onLanguageChange(updateRotatingSubtitles)
 	populateLanguageSelector()
 	renderThemePreviews()
+
+	// Tips: random one, rotate
+	const tipsWrapper = document.getElementById('tips-display')
+	if (tipsWrapper) {
+		const [tipCurrent, tipNext] = tipsWrapper.querySelectorAll('.tip-slide')
+
+		/**
+		 * 显示随机提示。
+		 * @returns {void}
+		 */
+		const showRandomTip = () => {
+			tipNext.innerHTML = geti18n('tips.data')
+			tipCurrent.classList.add('tip-exit-left')
+			tipNext.classList.add('tip-enter-from-right')
+			setTimeout(() => {
+				tipCurrent.classList.remove('tip-exit-left')
+				tipNext.classList.remove('tip-enter-from-right')
+				tipCurrent.innerHTML = tipNext.innerHTML
+				tipNext.innerHTML = ''
+			}, 400)
+		}
+		showRandomTip()
+		setInterval(showRandomTip, 13000)
+	}
 
 	// --- Easter Egg ---
 	const shakeStates = new Map()

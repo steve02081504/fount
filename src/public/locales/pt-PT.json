@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
 	},
+	"tips": {
+		"title": "Você sabia?",
+		"data": [
+			"Use a tecla `esc` em qualquer página do fount para retornar à página anterior.",
+			"Você pode usar `ctrl+s` para salvar a configuração na página de configuração.",
+			"Manter pressionada a tecla `shift` na página de bate-papo pode ajudá-lo a excluir mensagens rapidamente.",
+			"Se você não contar aos desenvolvedores, eles talvez nunca saibam qual problema você encontrou.",
+			"Se de repente você encontrar um problema estranho e o desenvolvedor não responder por um tempo, você pode tentar usar o comando `fount init` para redefinir o fount.",
+			"Se você encontrar um problema particularmente estranho, tente reiniciar o computador.",
+			"Usar o comando `fount remove` para desinstalar o fount é mais limpo do que excluir a pasta.",
+			"Digite `fount cake` na linha de comando para obter um bolo delicioso e grátis!",
+			"Quaisquer arquivos de dados do fount são salvos no diretório `fount/data` e você pode visualizá-los, modificá-los e fazer backup deles a qualquer hora e em qualquer lugar.",
+			"O nome do fount está todo em letras minúsculas, é `f`ount, não `F`ount.",
+			"Faça backup de todos os dados nos quais seu agente opera regularmente antes de usar o novo modelo - você nunca sabe se o novo modelo terá um desempenho péssimo em alguns lugares.",
+			"O principal público do fount são desenvolvedores de software e entusiastas de RPG, mas também é usado na construção de agentes comerciais, assistência médica, militar, finanças e outras áreas.",
+			"O nome do personagem embutido de fount, ZL-31, não tem significado e foi apenas um golpe no cérebro.",
+			"As imagens nos arquivos do fount são todas armazenadas no formato SVG e renderizadas em PNG ou ico quando necessário. Não há arquivos binários exceto LICENSE.",
+			"Qualquer código no fount pode ser executado diretamente sem compilação, o que você vê é o que obtém.",
+			"O fount já teve um fundo de página interativo dinâmico muito legal, mas foi excluído posteriormente porque ocupava muita CPU.",
+			"O fount foi originalmente desenvolvido para um agente NSFW chamado \"GentianAphrodite\".",
+			"Uma das diferenças entre agentes e humanos é que os humanos fazem cocô.",
+			"Os agentes só ficam conscientes no momento em que são chamados, enquanto os humanos ficam conscientes a qualquer hora e em qualquer lugar quando estão acordados.",
+			"Algumas pessoas se apaixonam ou até se casam com seus agentes!",
+			"A IA é usada para escrever poemas, apaixonar-se e fazer desenhos para as pessoas. Carregar tijolos, varrer o chão e levar o lixo para fora são o que os humanos deveriam fazer.",
+			"Hoje não é o Dia da Mentira.",
+			"Não, você não sabia."
+		]
+	},
 	"directoryListing": {
 		"title": "índice de diretório",
 		"description": "Navegue e explore os arquivos e pastas na área de trabalho do fount.",

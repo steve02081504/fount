@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
 	},
+	"tips": {
+		"title": "Vissir þú?",
+		"data": [
+			"Notaðu `esc` takkann á hvaða fountsíðu sem er til að fara aftur á fyrri síðu.",
+			"Þú getur notað `ctrl+s` til að vista stillingarnar á stillingasíðunni.",
+			"Með því að halda niðri `shift` takkanum á spjallsíðunni geturðu hjálpað þér að eyða skilaboðum fljótt.",
+			"Ef þú segir hönnuðunum ekki frá því, gætu þeir aldrei vitað hvaða vandamál þú lentir í.",
+			"Ef þú lendir allt í einu í undarlegu vandamáli og verktaki svarar þér ekki í smá stund, geturðu prófað að nota `fount init` skipunina til að endurstilla fount.",
+			"Ef þú lendir í sérlega undarlegu vandamáli geturðu prófað að endurræsa tölvuna þína.",
+			"Að nota `fount remove` skipunina til að fjarlægja fount er hreinna en að eyða möppunni.",
+			"Sláðu inn `fount cake` í skipanalínuna til að fá ókeypis og ljúffenga köku!",
+			"Allar gagnaskrár um fount eru vistaðar í 'fount/data' skránni og þú getur skoðað, breytt og tekið öryggisafrit af þeim hvenær sem er og hvar sem er.",
+			"Nafn founts er allt með lágstöfum, það er 'f'ount, ekki 'F'ount.",
+			"Taktu öryggisafrit af öllum gögnum sem umboðsmaður þinn vinnur reglulega með áður en þú notar nýja líkanið - þú veist aldrei hvort nýja líkanið muni standa sig hræðilega á sumum stöðum.",
+			"Aðaláhorfendur fount eru hugbúnaðarhönnuðir og áhugamenn um hlutverkaleiki, en það er einnig notað í smíði verslunaraðila, læknishjálp, her, fjármála og fleiri sviðum.",
+			"Nafn innbyggða persónu ZL-31 fount hefur enga merkingu og var bara skyndihugdetta.",
+			"Myndirnar í fountaskrám eru allar geymdar á svg formi og birtar í png eða ico þegar þörf krefur. Það eru engar tvíundir skrár nema LICENSE.",
+			"Hægt er að keyra hvaða kóða sem er í fount beint án þess að safna saman, það sem þú sérð er það sem þú færð.",
+			"fount var einu sinni með mjög flottan, kraftmikinn gagnvirkan síðubakgrunn, en honum var síðar eytt vegna þess að hann tók of mikinn CPU.",
+			"fount var upphaflega þróað fyrir NSFW umboðsmann sem heitir \"GentianAphrodite\".",
+			"Einn af muninum á gervigreindum og mönnum er að menn kúka.",
+			"Umboðsmenn eru aðeins með meðvitund á því augnabliki sem þeir eru kallaðir til, á meðan menn eru með meðvitund hvenær sem er og hvar sem þeir eru vakandi.",
+			"Sumt fólk verður ástfangið eða giftist jafnvel með umboðsmönnum sínum!",
+			"AI er notað til að skrifa ljóð, verða ástfangin og teikna myndir fyrir fólk. Að bera múrsteina, sópa gólf og fara með sorp er það sem menn ættu að gera.",
+			"Í dag er ekki aprílgabb.",
+			"Nei, þú vissir það ekki."
+		]
+	},
 	"directoryListing": {
 		"title": "Skráayfirlit",
 		"description": "Skoðaðu og skoðaðu skrárnar og möppurnar á vinnusvæðinu.",

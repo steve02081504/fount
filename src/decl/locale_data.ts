@@ -2284,6 +2284,9 @@ export type LocaleData = {
 		pageNotFoundText: string
 		homepageButton: string
 	}
+	tips: {
+		title: string
+	}
 	directoryListing: {
 		title: string
 		description: string

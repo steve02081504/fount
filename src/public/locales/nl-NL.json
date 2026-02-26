@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
+	"tips": {
+		"title": "Wist je dat?",
+		"data": [
+			"Gebruik de `esc`-toets op een willekeurige fount-pagina om terug te keren naar de vorige pagina.",
+			"U kunt `ctrl+s` gebruiken om de configuratie op de configuratiepagina op te slaan.",
+			"Door de `shift`-toets op de chatpagina ingedrukt te houden, kunt u berichten snel verwijderen.",
+			"Als u het de ontwikkelaars niet vertelt, weten ze misschien nooit welk probleem u bent tegengekomen.",
+			"Als je plotseling een raar probleem tegenkomt en de ontwikkelaar een tijdje niet op je reageert, kun je proberen het `fount init`-commando te gebruiken om de fount te resetten.",
+			"Als u een bijzonder vreemd probleem tegenkomt, kunt u proberen uw computer opnieuw op te starten.",
+			"Het gebruik van de opdracht `fount remove` om een fount te verwijderen is schoner dan het verwijderen van de map.",
+			"Typ `fount cake` in de opdrachtregel om een gratis en heerlijke cake te krijgen!",
+			"Alle gegevensbestanden van fount worden opgeslagen in de map `fount/data` en u kunt ze altijd en overal bekijken, wijzigen en er een back-up van maken.",
+			"De naam van de bron is geheel in kleine letters, het is `f`ount, niet `F`ount.",
+			"Maak een back-up van alle gegevens waarmee uw agent regelmatig werkt voordat u het nieuwe model gebruikt. U weet nooit of het nieuwe model op sommige plaatsen vreselijk zal presteren.",
+			"Het belangrijkste publiek van fount bestaat uit softwareontwikkelaars en liefhebbers van rollenspellen, maar het wordt ook gebruikt in de bouw van commerciële agenten, de medische zorg, het leger, de financiële sector en andere terreinen.",
+			"Het ingebouwde personage van fount, de naam ZL-31, heeft geen betekenis en was slechts een hersenkraker.",
+			"De afbeeldingen in fount-bestanden worden allemaal opgeslagen in SVG-vorm en indien nodig weergegeven in PNG of ICO. Er zijn geen binaire bestanden behalve LICENSE.",
+			"Elke code in fount kan direct worden uitgevoerd zonder compilatie, wat u ziet is wat u krijgt.",
+			"fount had ooit een hele coole dynamische interactieve pagina-achtergrond, maar deze werd later verwijderd omdat het te veel CPU in beslag nam.",
+			"fount is oorspronkelijk ontwikkeld voor een NSFW-agent genaamd \"GentianAphrodite\".",
+			"Een van de verschillen tussen agenten en mensen is dat mensen poepen.",
+			"Agenten zijn alleen bij bewustzijn op het moment dat ze worden opgeroepen, terwijl mensen altijd en overal bij bewustzijn zijn als ze wakker zijn.",
+			"Sommige mensen worden verliefd of trouwen zelfs met hun agenten!",
+			"AI wordt gebruikt om gedichten te schrijven, verliefd te worden en afbeeldingen voor mensen te tekenen. Bakstenen dragen, vloeren vegen en afval buiten zetten is wat mensen moeten doen.",
+			"Vandaag is het geen aprilgrappendag.",
+			"Nee, dat wist je niet."
+		]
+	},
 	"directoryListing": {
 		"title": "directory-index",
 		"description": "Blader en verken de bestanden en mappen in de fount-werkruimte.",

@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
 		"homepageButton": "Volver a la página de inicio"
 	},
+	"tips": {
+		"title": "¿Sabías?",
+		"data": [
+			"Utilice la tecla `esc` en cualquier página fount para volver a la página anterior.",
+			"Puede usar `ctrl+s` para guardar la configuración en la página de configuración.",
+			"Mantener presionada la tecla `shift` en la página de chat puede ayudarlo a eliminar mensajes rápidamente.",
+			"Si no se lo dice a los desarrolladores, es posible que nunca sepan qué problema encontró.",
+			"Si de repente te encuentras con un problema extraño y el desarrollador no te responde por un tiempo, puedes intentar usar el comando `fount init` para restablecer fount.",
+			"Si encuentra un problema particularmente extraño, puede intentar reiniciar su computadora.",
+			"Usar el comando `fount remove` para desinstalar una fount es más limpio que eliminar la carpeta.",
+			"¡Escriba `fount cake` en la línea de comando para obtener un delicioso pastel gratis!",
+			"Todos los archivos de datos de fount se guardan en el directorio `fount/data` y puede verlos, modificarlos y realizar copias de seguridad en cualquier momento y en cualquier lugar.",
+			"El nombre de fount está todo en minúsculas, es `f`ount, no `F`ount.",
+			"Haga una copia de seguridad de todos los datos con los que su agente opera regularmente antes de usar el nuevo modelo; nunca se sabe si el nuevo modelo funcionará terriblemente en algunos lugares.",
+			"El público principal de fount son los desarrolladores de software y los entusiastas de los juegos de rol, pero también se utiliza en la construcción de agentes comerciales, la atención médica, el ejército, las finanzas y otros campos.",
+			"El nombre del personaje integrado de fount, ZL-31, no tiene significado y fue solo una ocurrencia repentina.",
+			"Todas las imágenes de los archivos fount se almacenan en formato svg y se procesan en png o ico cuando es necesario. No hay archivos binarios excepto LICENCIA.",
+			"Cualquier código fount se puede ejecutar directamente sin compilación, lo que ves es lo que obtienes.",
+			"fount alguna vez tuvo un fondo de página interactivo dinámico muy interesante, pero luego se eliminó porque consumía demasiada CPU.",
+			"fount se desarrolló originalmente para un agente NSFW llamado \"GentianAphrodite\".",
+			"Una de las diferencias entre agentes y humanos es que los humanos hacen caca.",
+			"Los agentes sólo son conscientes en el momento en que son llamados, mientras que los humanos son conscientes en cualquier momento y en cualquier lugar cuando están despiertos.",
+			"¡Algunas personas se enamoran o incluso se casan con sus agentes!",
+			"La IA se utiliza para escribir poemas, enamorarse y hacer dibujos para personas. Cargar ladrillos, barrer pisos y sacar basura es lo que los humanos deberían hacer.",
+			"Hoy no es el Día de los Inocentes.",
+			"No, no lo sabías."
+		]
+	},
 	"directoryListing": {
 		"title": "Índice del directorio",
 		"description": "Busque y explore los archivos y carpetas en el espacio de trabajo de fount.",

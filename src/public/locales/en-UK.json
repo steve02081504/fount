@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
 		"homepageButton": "Back to Homepage"
 	},
+	"tips": {
+		"title": "Did you know?",
+		"data": [
+			"Use the `esc` key in any fount page to return to the previous page.",
+			"You can use `ctrl+s` to save the configuration in the configuration page.",
+			"Holding down the `shift` key in the chat page can help you quickly delete messages.",
+			"If you don't tell the developers, they may never know what problem you encountered.",
+			"If you suddenly encounter a weird problem and the developer doesn't reply to you for a while, you can try using the `fount init` command to reset fount.",
+			"If you encounter a particularly strange problem, you can try restarting your computer.",
+			"Using the `fount remove` command to uninstall a fount is cleaner than deleting the folder.",
+			"Type `fount cake` in the command line to get a free and delicious cake!",
+			"Any data files of fount are saved in the `fount/data` directory, and you can view, modify and back them up anytime and anywhere.",
+			"The name of fount is all lowercase, it is `f`ount, not `F`ount.",
+			"Back up all the data your agent regularly operates on before using the new model - you never know if the new model will perform terribly in some places.",
+			"fount's main audience is software developers and role-playing enthusiasts, but it is also used in commercial agent construction, medical care, military, finance and other fields.",
+			"fount's built-in character ZL-31's name has no meaning and was just a sudden whim.",
+			"The images in fount files are all stored in svg form and rendered into png or ico when needed. There are no binary files except LICENSE.",
+			"Any code in fount can be run directly without compilation, what you see is what you get.",
+			"fount once had a very cool dynamic interactive page background, but it was later deleted because it took up too much CPU.",
+			"fount was originally developed for an NSFW agent called \"GentianAphrodite\".",
+			"One of the differences between agents and humans is that humans poop.",
+			"Agents are only conscious at the moment they are called, while humans are conscious anytime and anywhere when they are awake.",
+			"Some people fall in love or even get married with their agents!",
+			"AI is used to write poems, fall in love, and draw pictures for people. Carrying bricks, sweeping floors, and taking out garbage are what humans should do.",
+			"Today is not April Fools' Day.",
+			"No, you don't."
+		]
+	},
 	"directoryListing": {
 		"title": "Directory Index",
 		"description": "Browse and explore the files and folders in the fount workspace.",
