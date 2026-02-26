@@ -1704,7 +1704,9 @@
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuração da fount de serviço",
+		"configTitle": "Configuração da fonte de serviço",
+		"needsConfigReminder": "Depois que a fonte de serviço for configurada, geralmente será necessário preencher o nome da fonte de serviço no campo correspondente na configuração do componente que usa essa fonte de serviço.",
+		"needsConfigLink": "Vá para a configuração do widget",
 		"subtypeSelect": {
 			"label": "Subcategoria Gerador",
 			"placeholder": "Selecione uma categoria de gerador"

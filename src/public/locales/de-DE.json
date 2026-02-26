@@ -1509,7 +1509,7 @@
 	"languageSettings": {
 		"title": "Spracheinstellungen",
 		"pageTitle": "Spracheinstellungen",
-		"description": "Verwalten Sie Ihre Spracheinstellungen für die Schriftartenanwendung. Passen Sie Ihr Erlebnis mit den verfügbaren Sprachoptionen an.",
+		"description": "Verwalten Sie Ihre Spracheinstellungen für die fount-Anwendung. Passen Sie Ihr Erlebnis mit den verfügbaren Sprachoptionen an.",
 		"pageDescription": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
 		"availableLanguages": "Verfügbare Sprachen",
 		"preferredLanguages": "Prioritätssprachliste",
@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Konfiguration der Dienstquelle",
+		"needsConfigReminder": "Nachdem die Dienstquelle konfiguriert wurde, müssen Sie im Allgemeinen den Namen der Dienstquelle in das entsprechende Feld in der Konfiguration der Komponente eingeben, die diese Dienstquelle verwendet.",
+		"needsConfigLink": "Gehen Sie zur Widget-Konfiguration",
 		"subtypeSelect": {
 			"label": "Unterkategorie „Generator“.",
 			"placeholder": "Bitte wählen Sie eine Generatorkategorie aus"

@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Configuratie van de servicebron",
+		"needsConfigReminder": "Nadat de servicebron is geconfigureerd, moet u doorgaans de naam van de servicebron invullen in het overeenkomstige veld in de configuratie van het onderdeel dat deze servicebron gebruikt.",
+		"needsConfigLink": "Ga naar widgetconfiguratie",
 		"subtypeSelect": {
 			"label": "Subcategorie van generator",
 			"placeholder": "Selecteer een generatorcategorie"

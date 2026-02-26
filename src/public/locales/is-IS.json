@@ -638,7 +638,7 @@
 			"first_login": {
 				"name": "Halló, fontur!",
 				"description": "Stefnir í nýja heiminn, skráir þig inn í fyrsta skipti!",
-				"locked_description": "Skráðu þig einu sinni inn í gosbrunninn."
+				"locked_description": "Skráðu þig einu sinni inn í fount."
 			},
 			"sfw_mode_on": {
 				"name": "Það er einhver fyrir aftan þig!",
@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "Uppsetning þjónustugjafa",
+		"needsConfigReminder": "Eftir að þjónustugjafinn hefur verið stilltur þarftu almennt að fylla út heiti þjónustugjafans í samsvarandi reit í uppsetningu íhlutans sem notar þennan þjónustugjafa.",
+		"needsConfigLink": "Farðu í stillingar græju",
 		"subtypeSelect": {
 			"label": "Rafall undirflokkur",
 			"placeholder": "Vinsamlegast veldu flokk rafala"

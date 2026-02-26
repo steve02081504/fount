@@ -1704,7 +1704,9 @@
 				"title": "+"
 			}
 		},
-		"configTitle": "源流法式",
+		"configTitle": "源流配置",
+		"needsConfigReminder": "源流既設，常需於用此源流之部件配置中，填其名於相應之處。",
+		"needsConfigLink": "往設部件",
 		"subtypeSelect": {
 			"label": "化生器之類",
 			"placeholder": "請擇化生器之類"

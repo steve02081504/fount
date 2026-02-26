@@ -1694,6 +1694,8 @@ export type LocaleData = {
 			}
 		}
 		configTitle: string
+		needsConfigReminder: string
+		needsConfigLink: string
 		subtypeSelect: {
 			label: string
 			placeholder: string

@@ -1705,6 +1705,8 @@
 			}
 		},
 		"configTitle": "🚰⚙️",
+		"needsConfigReminder": "🚰✅ ➡️ 📝🚰📛 ➡️ 🧩⚙️",
+		"needsConfigLink": "➡️🧩⚙️",
 		"subtypeSelect": {
 			"label": "⚙️🗂️",
 			"placeholder": "❓⚙️🗂️"
