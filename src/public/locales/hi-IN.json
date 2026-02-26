@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "उन्नत अनुकूलन",
 			"customCSS": "कस्टम CSS (ओवरराइड)",
 			"customMjsScript": "कस्टम MJS स्क्रिप्ट (वैकल्पिक)",
-			"mjsSyntaxHint": "[async-eval सिंटेक्स](${asyncDocLink}) का उपयोग करें। एक ऑब्जेक्ट लौटाता है जिसमें <code>load()</code> और <code>unload()</code> फ़ंक्शन होते हैं।",
+			"mjsSyntaxHint": "[async-eval सिंटेक्स](${asyncDocLink}) का उपयोग करें। एक ऑब्जेक्ट लौटाता है जिसमें `load()` और `unload()` फ़ंक्शन होते हैं।",
 			"themeIdRequired": "थीम आईडी आवश्यक है",
 			"newThemeName": "नई थीम का नाम:",
 			"deleteConfirm": "क्या आप वाकई थीम ${id} हटाना चाहते हैं?",

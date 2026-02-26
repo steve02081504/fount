@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Розширене налаштування",
 			"customCSS": "Спеціальний CSS (перевизначення)",
 			"customMjsScript": "Спеціальний сценарій MJS (необов'язково)",
-			"mjsSyntaxHint": "Використовуйте [синтаксис async-eval](${asyncDocLink}). Повертає об’єкт, що містить функції <code>load()</code> і <code>unload()</code>.",
+			"mjsSyntaxHint": "Використовуйте [синтаксис async-eval](${asyncDocLink}). Повертає об’єкт, що містить функції `load()` і `unload()`.",
 			"themeIdRequired": "Потрібен ідентифікатор теми",
 			"newThemeName": "Нова назва теми:",
 			"deleteConfirm": "Ви впевнені, що хочете видалити тему ${id}?",

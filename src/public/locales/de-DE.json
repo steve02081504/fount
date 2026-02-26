@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Erweiterte Anpassung",
 			"customCSS": "Benutzerdefiniertes CSS (Überschreibung)",
 			"customMjsScript": "Benutzerdefiniertes MJS-Skript (optional)",
-			"mjsSyntaxHint": "Verwenden Sie [async-eval-Syntax](${asyncDocLink}). Gibt ein Objekt zurück, das die Funktionen <code>load()</code> und <code>unload()</code> enthält.",
+			"mjsSyntaxHint": "Verwenden Sie [async-eval-Syntax](${asyncDocLink}). Gibt ein Objekt zurück, das die Funktionen `load()` und `unload()` enthält.",
 			"themeIdRequired": "Themen-ID erforderlich",
 			"newThemeName": "Name des neuen Themas:",
 			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",

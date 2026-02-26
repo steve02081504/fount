@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "고급 사용자 정의",
 			"customCSS": "사용자 정의 CSS (재정의)",
 			"customMjsScript": "사용자 정의 MJS 스크립트 (선택 사항)",
-			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. <code>load()</code> 및 <code>unload()</code> 함수가 포함된 객체를 반환합니다.",
+			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. `load()` 및 `unload()` 함수가 포함된 객체를 반환합니다.",
 			"themeIdRequired": "테마 ID가 필요합니다.",
 			"newThemeName": "새 테마 이름:",
 			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",

@@ -23,8 +23,9 @@ export function onLanguageChange(callback) {
 	return callback()
 }
 /**
- * 注销一个语言变化回调函数。
- * @param {Function} callback - 要注销的回调函数。
+ * 注销一个语言更改回调。
+ * @param {Function} callback - 回调函数。
+ * @returns {void}
  */
 export function offLanguageChange(callback) {
 	const index = languageChangeCallbacks.indexOf(callback)
@@ -45,14 +46,9 @@ async function runLanguageChange() {
 const LocalizeLogics = new Map()
 /**
  * 设置元素的本地化逻辑。
- * @param {HTMLElement} element - 要设置本地化逻辑的 DOM 元素。
- * @param {Function} logic - 本地化逻辑函数。
- */
-/**
- * 设置元素的本地化逻辑。
- * @param {HTMLElement} element - 要设置本地化逻辑的 DOM 元素。
- * @param {Function} logic - 本地化逻辑函数。
- * @returns {any} - `onLanguageChange` 函数的执行结果。
+ * @param {HTMLElement} element - 元素。
+ * @param {Function} logic - 本地化逻辑。
+ * @returns {any} 语言更改回调的返回值。
  */
 export function setLocalizeLogic(element, logic) {
 	if (LocalizeLogics.has(element)) offLanguageChange(LocalizeLogics.get(element))
@@ -63,14 +59,33 @@ export function setLocalizeLogic(element, logic) {
 
 let i18n
 let saved_pageid
+let lastKnownLangs
 let availableLocales = []
 const localeNames = new Map()
+
+/**
+ * 主要区域设置。
+ * @type {string}
+ */
+export let main_locale = 'en-UK'
 
 /**
  * Sets the application's language.
  * @param {string[]} langs - The language codes (e.g., 'en-UK', 'zh-CN').
  */
 export async function setLocales(langs) {
+	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs || []))
+	await initTranslations()
+}
+
+/**
+ * 保存首选语言。
+ * @param {string[]} langs - 首选语言列表。
+ * @returns {Promise<void>}
+ */
+export async function savePreferredLangs(langs) {
+	const oldLangs = loadPreferredLangs()
+	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
 	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs || []))
 	await initTranslations()
 }
@@ -101,11 +116,13 @@ export function loadPreferredLangs() {
 
 /**
  * 从服务器获取多语言数据并初始化翻译。
- * @param {string} [pageid] - 当前页面的 ID。
- * @param {string[]} preferredlocales - 优先的语言环境列表。
+ * @param {string} [pageid] - 页面 ID。
+ * @param {string[]} [preferredLangs] - 用户手动设置的优先语言列表
+ * @returns {Promise<void>}
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = loadPreferredLangs()) {
+export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
 	saved_pageid = pageid
+	lastKnownLangs = preferredLangs
 
 	try {
 		const listRes = await fetch(base_dir + '/locales/list.csv')
@@ -125,7 +142,8 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 		else
 			console.warn('Could not fetch locales list.csv, language names will not be available.')
 
-		const lang = getbestlocale([...preferredlocales, ...navigator.languages || [navigator.language]], availableLocales)
+		const lang = getbestlocale([...preferredLangs, ...navigator.languages || [navigator.language]], availableLocales)
+		main_locale = lang
 
 		const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
 		if (!translationResponse.ok)
@@ -177,6 +195,60 @@ function getNestedValue(obj, key) {
 
 	return value
 }
+
+/**
+ * 对单条翻译字符串做插值（链接、占位符、反引号）。
+ * 链接 [text](${param}) → <a>；`xxx` → <code>xxx</code>。
+ * 若 translation 非字符串（如嵌套对象），则原样返回。
+ * @template TTranslation - 翻译字符串或嵌套对象的类型。
+ * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {TTranslation} 替换后的翻译字符串或原对象。
+ */
+function applyParamsToTranslation(translation, params) {
+	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
+	if (!translation || !(Object(translation) instanceof String)) return translation
+	let result = translation
+	for (const param in params)
+		result = result?.replace?.(
+			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
+			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)?.replaceAll?.(`\${${param}}`, params[param])
+	result = result?.replace?.(/`([^`]*)`/g, '<code>$1</code>')
+	return result
+}
+
+/**
+ * 为翻译数组创建代理：toString 随机选一项并渲染，下标访问返回该项的渲染结果。
+ * @param {string[]} arr - 原始翻译字符串数组。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {string[]} 代理后的数组（toString 与下标访问为渲染结果）。
+ */
+function createI18nArrayProxy(arr, params) {
+	return new Proxy(arr, {
+		/**
+		 * 获取翻译数组代理的值。
+		 * @param {string[]} target - 原始翻译字符串数组。
+		 * @param {string} prop - 属性名。
+		 * @returns {string} - 属性值。
+		 */
+		get(target, prop) {
+			if (prop === 'toString')
+				return function toString() {
+					if (!target.length) throw new Error('I18n array is empty')
+					const i = Math.floor(Math.random() * target.length)
+					return applyParamsToTranslation(target[i], params)
+				}
+			try {
+				const n = Number(prop)
+				if (Number.isInteger(n) && n >= 0 && n < target.length)
+					return applyParamsToTranslation(target[n], params)
+			} catch (_) { }
+			return Reflect.get(target, prop)
+		},
+	})
+}
+
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -192,24 +264,13 @@ function getNestedValue(obj, key) {
  * @returns {string | undefined}
  */
 /**
- * 根据提供的键（key）获取翻译后的文本，不发出警告。
+ * 根据提供的键（key）获取翻译后的文本（未找到时不警告）。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
- * @returns {string|undefined} - 翻译后的文本，如果未找到则返回 undefined。
+ * @returns {string | undefined} - 翻译后的文本，如果未找到则返回 undefined。
  */
 export function geti18n_nowarn(key, params = {}) {
-	let translation = getNestedValue(i18n, key)
-
-	if (!translation) return
-
-	// 简单的插值处理
-	for (const param in params)
-		translation = translation?.replace?.(
-			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
-		)?.replaceAll?.(`\${${param}}`, params[param])
-
-	return translation
+	return applyParamsToTranslation(getNestedValue(i18n, key), params)
 }
 
 /**
@@ -235,16 +296,21 @@ export function geti18n_nowarn(key, params = {}) {
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
 
-	if (translation !== undefined) return translation
+	if (translation) return translation
 
 	console.warn(`Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
+	return key
 }
+const { console } = globalThis
 /**
- * 重新导出 `console` 对象。
- * @type {Console}
+ * 将值转换为字符串。
+ * @param {any} value - 要转换的值。
+ * @returns {string} - 转换后的字符串。
  */
-export const { console } = globalThis
+function toString(value) {
+	return value + ''
+}
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -265,7 +331,7 @@ export const { console } = globalThis
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
+console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -286,7 +352,7 @@ console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
+console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -307,7 +373,7 @@ console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
+console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -328,7 +394,7 @@ console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
+console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -352,7 +418,7 @@ console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
+console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -368,13 +434,13 @@ console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(
  * @returns {void}
  */
 /**
- * 显示国际化警告框。
+ * 使用 i18n 显示 alert。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 export function alertI18n(key, params = {}) {
-	return alert(geti18n(key, params))
+	return alert(toString(geti18n(key, params)))
 }
 /**
  * @overload
@@ -391,13 +457,13 @@ export function alertI18n(key, params = {}) {
  * @returns {string|null}
  */
 /**
- * 显示国际化输入框。
+ * 使用 i18n 显示 prompt。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
- * @returns {string|null} - 用户输入的值，如果取消则为 null。
+ * @returns {string|null} 用户输入的文本或 null。
  */
 export function promptI18n(key, params = {}) {
-	return prompt(geti18n(key, params))
+	return prompt(toString(geti18n(key, params)))
 }
 /**
  * @overload
@@ -414,14 +480,19 @@ export function promptI18n(key, params = {}) {
  * @returns {boolean}
  */
 /**
- * 显示国际化确认框。
+ * 使用 i18n 显示 confirm。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
- * @returns {boolean} - 如果用户点击“确定”则为 true，否则为 false。
+ * @returns {boolean} 如果用户点击“确定”则返回 true，否则返回 false。
  */
 export function confirmI18n(key, params = {}) {
-	return confirm(geti18n(key, params))
+	return confirm(toString(geti18n(key, params)))
 }
+/**
+ * 导出的控制台对象。
+ * @type {Console}
+ */
+export { console }
 
 /**
  * 翻译单个元素。
@@ -458,7 +529,7 @@ function translateSingularElement(element) {
 			// deno-lint-ignore no-cond-assign
 			if (element.textContent ||= literal_value) updated = true
 		}
-		else if (getNestedValue(i18n, key) instanceof Object) {
+		else if (!Array.isArray(getNestedValue(i18n, key)) && (getNestedValue(i18n, key) instanceof Object)) {
 			if (!Object.keys(getNestedValue(i18n, key)).length) break
 			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 			for (const attr of attributes) {
@@ -477,11 +548,11 @@ function translateSingularElement(element) {
 			updated = true
 		}
 		else if (geti18n_nowarn(key)) {
-			const translation = geti18n_nowarn(key, element.dataset)
-			if (element.innerHTML !== translation) {
+			const translation = toString(geti18n_nowarn(key, element.dataset))
+			if (element.innerHTML !== translation)
 				element.innerHTML = translation
-				updated = true
-			}
+
+			updated = true
 		}
 		if (updated) break
 	}
@@ -530,6 +601,13 @@ export function i18nElement(element, {
 
 window.addEventListener('languagechange', async () => {
 	await initTranslations()
+})
+window.addEventListener('visibilitychange', async () => {
+	if (document.visibilityState != 'visible') return
+
+	const preferredLangs = loadPreferredLangs()
+	if (saved_pageid && JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
+		await initTranslations()
 })
 
 // Watch for changes in the DOM

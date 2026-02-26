@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "高级自定义",
 			"customCSS": "自定义 CSS (覆盖)",
 			"customMjsScript": "自定义 MJS 脚本 (可选)",
-			"mjsSyntaxHint": "使用 [async-eval 语法](${asyncDocLink})。返回一个包含 <code>load()</code> 和 <code>unload()</code> 函数的对象。",
+			"mjsSyntaxHint": "使用 [async-eval 语法](${asyncDocLink})。返回一个包含 `load()` 和 `unload()` 函数的对象。",
 			"themeIdRequired": "需要主题 ID",
 			"newThemeName": "新主题名称：",
 			"deleteConfirm": "确定要删除主题 ${id} 吗？",

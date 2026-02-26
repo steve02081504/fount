@@ -5,10 +5,10 @@ import { onElementRemoved } from './onElementRemoved.mjs'
 import { onServerEvent } from './server_events.mjs'
 
 /**
- * @typedef {import('../../decl/locale_data.ts').LocaleKey} LocaleKey
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
- * @typedef {import('../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
+ * @typedef {import('../../../decl/locale_data.ts').LocaleKey} LocaleKey
+ * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * @typedef {import('../../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
 
 const languageChangeCallbacks = []
@@ -140,6 +140,59 @@ function getNestedValue(obj, key) {
 }
 
 /**
+ * 对单条翻译字符串做插值（链接、占位符、反引号）。
+ * 链接 [text](${param}) → <a>；`xxx` → <code>xxx</code>。
+ * 若 translation 非字符串（如嵌套对象）。
+ * @template TTranslation - 翻译字符串或嵌套对象的类型。
+ * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {TTranslation} 替换后的翻译字符串或原对象。
+ */
+function applyParamsToTranslation(translation, params) {
+	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
+	if (!translation || !(Object(translation) instanceof String)) return translation
+	let result = translation
+	for (const param in params)
+		result = result?.replace?.(
+			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
+			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)?.replaceAll?.(`\${${param}}`, params[param])
+	result = result?.replace?.(/`([^`]*)`/g, '<code>$1</code>')
+	return result
+}
+
+/**
+ * 为翻译数组创建代理：toString 随机选一项并渲染，下标访问返回该项的渲染结果。
+ * @param {string[]} arr - 原始翻译字符串数组。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {string[]} 代理后的数组（toString 与下标访问为渲染结果）。
+ */
+function createI18nArrayProxy(arr, params) {
+	return new Proxy(arr, {
+		/**
+		 * 获取翻译数组代理的值。
+		 * @param {string[]} target - 原始翻译字符串数组。
+		 * @param {string} prop - 属性名。
+		 * @returns {string} - 属性值。
+		 */
+		get(target, prop) {
+			if (prop === 'toString')
+				return function toString() {
+					if (!target.length) throw new Error('I18n array is empty')
+					const i = Math.floor(Math.random() * target.length)
+					return applyParamsToTranslation(target[i], params)
+				}
+			try {
+				const n = Number(prop)
+				if (Number.isInteger(n) && n >= 0 && n < target.length)
+					return applyParamsToTranslation(target[n], params)
+			} catch (_) { }
+			return Reflect.get(target, prop)
+		},
+	})
+}
+
+/**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -160,18 +213,7 @@ function getNestedValue(obj, key) {
  * @returns {string | undefined} - 翻译后的文本，如果未找到则返回 undefined。
  */
 export function geti18n_nowarn(key, params = {}) {
-	let translation = getNestedValue(i18n, key)
-
-	if (translation === undefined) return
-
-	// 简单的插值处理
-	for (const param in params)
-		translation = translation?.replace?.(
-			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
-		)?.replaceAll?.(`\${${param}}`, params[param])
-
-	return translation
+	return applyParamsToTranslation(getNestedValue(i18n, key), params)
 }
 
 /**
@@ -196,14 +238,22 @@ export function geti18n_nowarn(key, params = {}) {
  */
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
-
 	if (translation) return translation
 
 	console.warn(`Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
+	return key
 }
 const { console } = globalThis
 
+/**
+ * 将值转换为字符串。
+ * @param {any} value - 要转换的值。
+ * @returns {string} - 转换后的字符串。
+ */
+function toString(value) {
+	return value + ''
+}
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
@@ -224,7 +274,7 @@ const { console } = globalThis
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
+console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
 
 /**
  * @overload
@@ -246,7 +296,7 @@ console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
+console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
 
 /**
  * @overload
@@ -268,7 +318,7 @@ console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
+console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
 
 /**
  * @overload
@@ -290,7 +340,7 @@ console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
+console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
 
 /**
  * @overload
@@ -315,7 +365,7 @@ console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
+console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
 
 /**
  * @overload
@@ -338,7 +388,7 @@ console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(
  * @returns {void}
  */
 export function alertI18n(key, params = {}) {
-	return alert(geti18n(key, params))
+	return alert(toString(geti18n(key, params)))
 }
 
 /**
@@ -362,7 +412,7 @@ export function alertI18n(key, params = {}) {
  * @returns {string|null} 用户输入的文本或 null。
  */
 export function promptI18n(key, params = {}) {
-	return prompt(geti18n(key, params))
+	return prompt(toString(geti18n(key, params)))
 }
 
 /**
@@ -386,7 +436,7 @@ export function promptI18n(key, params = {}) {
  * @returns {boolean} 如果用户点击“确定”则返回 true，否则返回 false。
  */
 export function confirmI18n(key, params = {}) {
-	return confirm(geti18n(key, params))
+	return confirm(toString(geti18n(key, params)))
 }
 /**
  * 导出的控制台对象。
@@ -429,7 +479,7 @@ function translateSingularElement(element) {
 			// deno-lint-ignore no-cond-assign
 			if (element.textContent ||= literal_value) updated = true
 		}
-		else if (getNestedValue(i18n, key) instanceof Object) {
+		else if (!Array.isArray(getNestedValue(i18n, key)) && (getNestedValue(i18n, key) instanceof Object)) {
 			if (!Object.keys(getNestedValue(i18n, key)).length) break
 			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 			for (const attr of attributes) {
@@ -448,7 +498,7 @@ function translateSingularElement(element) {
 			updated = true
 		}
 		else if (geti18n_nowarn(key)) {
-			const translation = geti18n_nowarn(key, element.dataset)
+			const translation = toString(geti18n_nowarn(key, element.dataset))
 			if (element.innerHTML !== translation)
 				element.innerHTML = translation
 

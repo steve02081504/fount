@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "深層定制",
 			"customCSS": "自定 CSS (覆蓋)",
 			"customMjsScript": "自定 MJS 腳本 (選填)",
-			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。須傳回一含 <code>load()</code> 與 <code>unload()</code> 函數之物件。",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。須傳回一含 `load()` 與 `unload()` 函數之物件。",
 			"themeIdRequired": "須有風貌 ID",
 			"newThemeName": "新風貌之名：",
 			"deleteConfirm": "欲刪風貌 ${id} 乎？",

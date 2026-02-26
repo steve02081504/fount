@@ -1580,7 +1580,7 @@
 			"advancedCustomization": "Geavanceerd aanpassen",
 			"customCSS": "Aangepaste CSS (overschrijven)",
 			"customMjsScript": "Aangepast MJS-script (optioneel)",
-			"mjsSyntaxHint": "Gebruik [async-eval syntaxis](${asyncDocLink}). Retourneert een object dat de functies <code>load()</code> en <code>unload()</code> bevat.",
+			"mjsSyntaxHint": "Gebruik [async-eval syntaxis](${asyncDocLink}). Retourneert een object dat de functies `load()` en `unload()` bevat.",
 			"themeIdRequired": "Thema-ID vereist",
 			"newThemeName": "Nieuwe themanaam:",
 			"deleteConfirm": "Weet je zeker dat je het thema ${id} wilt verwijderen?",
