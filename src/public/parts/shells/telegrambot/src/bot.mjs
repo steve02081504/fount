@@ -9,7 +9,7 @@ import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs' // fount 的数据加载/保存工具
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
-/** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
 /**
  * Telegram Bot 的核心逻辑。

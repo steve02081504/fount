@@ -163,6 +163,7 @@ export async function displayItemInfo(part) {
 	itemDescription.innerHTML = ''
 	if (part.partdetails.info.description_markdown) {
 		const fragment = await renderMarkdown(part.partdetails.info.description_markdown)
+		itemDescription.innerHTML = ''
 		itemDescription.appendChild(fragment)
 	}
 	else

@@ -17,9 +17,15 @@ if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 }
 
 #_if PSScript
-if ($PSEdition -eq "Desktop") {
-	try { $IsWindows = $true } catch {}
+function Set-MissingVariablesForWindowsPowershell {
+	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
+	param()
+	if ($PSEdition -eq "Desktop") {
+		try { $global:IsWindows = $true } catch {}
+	}
 }
+Set-MissingVariablesForWindowsPowershell
+
 if (!$IsWindows) {
 	function install_package {
 		param(

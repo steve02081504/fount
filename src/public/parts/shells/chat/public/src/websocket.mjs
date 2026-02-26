@@ -118,7 +118,6 @@ async function handleBroadcastEvent(event) {
 			await handleTypingStatus(payload.typingList)
 			break
 		case 'stream_start':
-			console.log('Stream started for message:', payload.messageId)
 			break
 		case 'stream_update':
 			await handleStreamUpdate(payload)
