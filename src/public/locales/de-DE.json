@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
+	"tips": {
+		"title": "Wussten Sie?",
+		"data": [
+			"Verwenden Sie die Taste `esc` auf einer beliebigen fount-Seite, um zur vorherigen Seite zurückzukehren.",
+			"Sie können `ctrl+s` verwenden, um die Konfiguration auf der Konfigurationsseite zu speichern.",
+			"Wenn Sie auf der Chat-Seite die Umschalttaste gedrückt halten, können Sie Nachrichten schnell löschen.",
+			"Wenn Sie es den Entwicklern nicht sagen, erfahren sie möglicherweise nie, auf welches Problem Sie gestoßen sind.",
+			"Wenn Sie plötzlich auf ein seltsames Problem stoßen und der Entwickler eine Weile nicht antwortet, können Sie versuchen, den fount mit dem Befehl `fount init` zurückzusetzen.",
+			"Wenn Sie auf ein besonders seltsames Problem stoßen, können Sie versuchen, Ihren Computer neu zu starten.",
+			"Die Verwendung des Befehls `fount remove` zum Deinstallieren eines fount ist sauberer als das Löschen des Ordners.",
+			"Geben Sie `fount cake` in die Befehlszeile ein, um einen kostenlosen und köstlichen Kuchen zu erhalten!",
+			"Alle Datendateien von fount werden im Verzeichnis `fount/data` gespeichert und Sie können sie jederzeit und überall anzeigen, ändern und sichern.",
+			"Der Name von fount besteht ausschließlich aus Kleinbuchstaben, es heißt `f`ount und nicht `F`ount.",
+			"Sichern Sie alle Daten, mit denen Ihr Agent regelmäßig arbeitet, bevor Sie das neue Modell verwenden – Sie wissen nie, ob das neue Modell an manchen Stellen eine schlechte Leistung erbringen wird.",
+			"Die Hauptzielgruppe von fount sind Softwareentwickler und Rollenspielbegeisterte, es wird aber auch in der Handelsagentenkonstruktion, der medizinischen Versorgung, dem Militär, dem Finanzwesen und anderen Bereichen eingesetzt.",
+			"Der Name des in fount integrierten Charakters ZL-31 hat keine Bedeutung und war nur eine spontane Idee.",
+			"Die Bilder in den Quelldateien werden alle im SVG-Format gespeichert und bei Bedarf in PNG oder ICO gerendert. Es gibt keine Binärdateien außer LICENSE.",
+			"Jeder Code in fount kann ohne Kompilierung direkt ausgeführt werden. Was Sie sehen, ist das, was Sie erhalten.",
+			"fount hatte einst einen sehr coolen dynamischen interaktiven Seitenhintergrund, der jedoch später gelöscht wurde, weil er zu viel CPU beanspruchte.",
+			"fount wurde ursprünglich für einen NSFW-Agenten namens „GentianAphrodite“ entwickelt.",
+			"Einer der Unterschiede zwischen Agenten und Menschen besteht darin, dass Menschen kacken.",
+			"Agenten sind nur in dem Moment bei Bewusstsein, in dem sie aufgerufen werden, während Menschen jederzeit und überall bei Bewusstsein sind, wenn sie wach sind.",
+			"Manche Menschen verlieben sich in ihre Agenten oder heiraten sogar in sie!",
+			"KI wird verwendet, um Gedichte zu schreiben, sich zu verlieben und Bilder für Menschen zu zeichnen. Das Tragen von Ziegelsteinen, das Fegen von Böden und das Herausbringen von Müll ist das, was Menschen tun sollten.",
+			"Heute ist nicht der 1. April.",
+			"Nein, das wussten Sie nicht."
+		]
+	},
 	"directoryListing": {
 		"title": "Verzeichnisindex",
 		"description": "Durchsuchen und erkunden Sie die Dateien und Ordner im fount-Arbeitsbereich.",

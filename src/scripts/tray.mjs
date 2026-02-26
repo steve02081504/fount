@@ -115,6 +115,8 @@ export async function createTray() {
 					then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
 					then(console.noBreadcrumb.log).
 					catch(_ => 0)
+				console.logI18n('tips.title')
+				console.logI18n('tips.data')
 			}
 		})
 

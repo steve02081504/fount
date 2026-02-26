@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil"
 	},
+	"tips": {
+		"title": "Saviez-vous?",
+		"data": [
+			"Utilisez la touche `esc` dans n'importe quelle page de fount pour revenir à la page précédente.",
+			"Vous pouvez utiliser `ctrl+s` pour enregistrer la configuration dans la page de configuration.",
+			"Maintenir la touche `shift` enfoncée dans la page de discussion peut vous aider à supprimer rapidement des messages.",
+			"Si vous ne le dites pas aux développeurs, ils ne sauront peut-être jamais quel problème vous avez rencontré.",
+			"Si vous rencontrez soudainement un problème étrange et que le développeur ne vous répond pas pendant un moment, vous pouvez essayer d'utiliser la commande `fount init` pour réinitialiser fount.",
+			"Si vous rencontrez un problème particulièrement étrange, vous pouvez essayer de redémarrer votre ordinateur.",
+			"Utiliser la commande `fount remove` pour désinstaller fount est plus propre que de supprimer le dossier.",
+			"Tapez `fount cake` dans la ligne de commande pour obtenir un gâteau gratuit et délicieux !",
+			"Tous les fichiers de données de fount sont enregistrés dans le répertoire `fount/data` et vous pouvez les visualiser, les modifier et les sauvegarder à tout moment et n'importe où.",
+			"Le nom de fount est entièrement en minuscules, c'est `f`ount, pas `F`ount.",
+			"Sauvegardez toutes les données sur lesquelles votre agent opère régulièrement avant d'utiliser le nouveau modèle - vous ne savez jamais si le nouveau modèle fonctionnera terriblement à certains endroits.",
+			"Le public principal de fount est constitué de développeurs de logiciels et de passionnés de jeux de rôle, mais il est également utilisé dans la construction d'agents commerciaux, les soins médicaux, l'armée, la finance et d'autres domaines.",
+			"Le nom du personnage intégré de fount, ZL-31, n'a aucune signification et n'était qu'un caprice.",
+			"Les images des fichiers de fount sont toutes stockées au format SVG et rendues au format PNG ou ICO si nécessaire. Il n'y a pas de fichiers binaires sauf LICENSE.",
+			"N'importe quel code en fount peut être exécuté directement sans compilation, ce que vous voyez est ce que vous obtenez.",
+			"fount avait autrefois un arrière-plan de page interactif dynamique très cool, mais il a ensuite été supprimé car il consommait trop de CPU.",
+			"fount a été initialement développé pour un agent NSFW appelé \"GentianAphrodite\".",
+			"L’une des différences entre les agents et les humains est que les humains font caca.",
+			"Les agents ne sont conscients qu’au moment où ils sont appelés, tandis que les humains le sont à tout moment et en tout lieu lorsqu’ils sont éveillés.",
+			"Certaines personnes tombent amoureuses ou même se marient avec leurs agents !",
+			"L’IA est utilisée pour écrire des poèmes, tomber amoureux et dessiner pour les gens. Transporter des briques, balayer les sols et sortir les déchets sont ce que les humains devraient faire.",
+			"Aujourd'hui, ce n'est pas le poisson d'avril.",
+			"Non, vous ne le saviez pas."
+		]
+	},
 	"directoryListing": {
 		"title": "Index du répertoire",
 		"description": "Parcourez et explorez les fichiers et dossiers dans l'espace de travail de fount.",

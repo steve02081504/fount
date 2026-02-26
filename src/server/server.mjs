@@ -8,7 +8,7 @@ import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { getMemoryUsage } from '../scripts/gc.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
@@ -171,7 +171,7 @@ export async function init(start_config) {
 		}
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object(starts.Base)
-		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
+		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate', 'Tips']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
 	}
 
@@ -303,6 +303,10 @@ export async function init(start_config) {
 		on_shutdown(() => setWindowTitle(titleBackup))
 		setDefaultStuff()
 		if (start_config.needs_output) console.freshLine('server start', await logoPromise)
+		if (starts.Base.Tips) {
+			console.logI18n('tips.title')
+			console.logI18n('tips.data')
+		}
 	}
 	const endtime = new Date()
 	console.log({

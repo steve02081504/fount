@@ -217,27 +217,42 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Mini Game Section -->
+			<div id="mini-game-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+				<!-- Section Header -->
+				<div class="text-center mb-12">
+					<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.mini_game.title"></h2>
+					<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto" data-i18n="installer_wait_screen.mini_game.description1"></p>
+					<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto mt-2" data-i18n="installer_wait_screen.mini_game.description2"></p>
+				</div>
+
+				<!-- Game Iframe -->
+				<div class="flex justify-center">
+					<iframe id="mini-game" class="w-full max-w-md h-[450px] rounded-lg shadow-2xl border border-base-300" src="https://aaarafat.github.io/JS-Flappy-Bird/" title="Flappy Bird Mini Game" sandbox="allow-scripts">
+					</iframe>
+				</div>
+			</div>
+
+			<!-- Tips Section -->
+			<div id="tips-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+				<div class="alert alert-info shadow-sm mb-4">
+					<img src="https://api.iconify.design/line-md/alert-circle.svg" class="h-6 w-6 flex-shrink-0" alt="" />
+					<div>
+						<span data-i18n="tips.title"></span>
+						<br>
+						<div id="tips-display" class="tips-rotating-container">
+							<span class="tip-slide"></span>
+							<span class="tip-slide"></span>
+						</div>
+					</div>
+				</div>
+			</div>
 		</main>
-
-		<!-- Mini Game Section -->
-		<div id="mini-game-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
-			<!-- Section Header -->
-			<div class="text-center mb-12">
-				<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.mini_game.title"></h2>
-				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto" data-i18n="installer_wait_screen.mini_game.description1"></p>
-				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto mt-2" data-i18n="installer_wait_screen.mini_game.description2"></p>
-			</div>
-
-			<!-- Game Iframe -->
-			<div class="flex justify-center">
-				<iframe id="mini-game" class="w-full max-w-md h-[450px] rounded-lg shadow-2xl border border-base-300" src="https://aaarafat.github.io/JS-Flappy-Bird/" title="Flappy Bird Mini Game" sandbox="allow-scripts">
-				</iframe>
-			</div>
-		</div>
 	</div>
 
 	<!-- Sticky Footer / Launch Bar -->
-	<footer class="footer items-center p-4 bg-neutral text-neutral-content" role="contentinfo">
+	<footer class="footer items-center p-4 bg-neutral text-neutral-content gap-2" role="contentinfo">
 		<div class="items-center grid-flow-col">
 			<p id="footerReadyText" class="text-lg font-bold" data-i18n="installer_wait_screen.footer.ready_text"></p>
 		</div>

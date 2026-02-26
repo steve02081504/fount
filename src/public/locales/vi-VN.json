@@ -2295,6 +2295,34 @@
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
+	"tips": {
+		"title": "Bạn có biết không?",
+		"data": [
+			"Sử dụng phím `esc` trong bất kỳ trang fount nào để quay lại trang trước.",
+			"Bạn có thể sử dụng `ctrl+s` để lưu cấu hình trong trang cấu hình.",
+			"Giữ phím `shift` trong trang trò chuyện có thể giúp bạn xóa tin nhắn nhanh chóng.",
+			"Nếu bạn không nói với các nhà phát triển, họ có thể không bao giờ biết bạn gặp phải vấn đề gì.",
+			"Nếu bạn đột nhiên gặp phải một sự cố kỳ lạ và nhà phát triển không trả lời bạn trong một thời gian, bạn có thể thử sử dụng lệnh `fount init` để đặt lại fount.",
+			"Nếu gặp phải sự cố đặc biệt lạ, bạn có thể thử khởi động lại máy tính của mình.",
+			"Sử dụng lệnh `fount remove` để gỡ cài đặt một fount sẽ sạch hơn việc xóa thư mục.",
+			"Gõ `fount cake` vào dòng lệnh để nhận được một chiếc bánh ngon và miễn phí!",
+			"Mọi tệp dữ liệu của fount đều được lưu trong thư mục `fount/data` và bạn có thể xem, sửa đổi và sao lưu chúng mọi lúc, mọi nơi.",
+			"Tên của fount đều là chữ thường, là `f`ount chứ không phải `F`ount.",
+			"Sao lưu tất cả dữ liệu mà agent của bạn thường xuyên vận hành trước khi sử dụng mô hình mới - bạn không bao giờ biết liệu mô hình mới có hoạt động kém ở một số nơi hay không.",
+			"Đối tượng chính của fount là các nhà phát triển phần mềm và những người đam mê nhập vai, nhưng nó cũng được sử dụng trong xây dựng đại lý thương mại, chăm sóc y tế, quân sự, tài chính và các lĩnh vực khác.",
+			"Tên của nhân vật ZL-31 được cài sẵn trong fount không có ý nghĩa gì và chỉ là một ý tưởng bất chợt.",
+			"Các hình ảnh trong file fount đều được lưu trữ ở dạng svg và hiển thị thành png hoặc ico khi cần. Không có tệp nhị phân nào ngoại trừ LICENSE.",
+			"Bất kỳ mã nào trong fount đều có thể được chạy trực tiếp mà không cần biên dịch, những gì bạn thấy là những gì bạn nhận được.",
+			"fount từng có nền trang tương tác động rất thú vị nhưng sau đó đã bị xóa vì chiếm quá nhiều CPU.",
+			"fount ban đầu được phát triển cho một đặc vụ NSFW có tên là \"GentianAphrodite\".",
+			"Một trong những khác biệt giữa tác nhân và con người là con người ị.",
+			"Các tác nhân chỉ có ý thức vào thời điểm được gọi, trong khi con người có ý thức mọi lúc, mọi nơi khi họ thức.",
+			"Một số người yêu hoặc thậm chí kết hôn với người đại diện của họ!",
+			"AI được dùng để làm thơ, yêu và vẽ tranh cho con người. Mang gạch, quét nhà, đổ rác là những việc con người nên làm.",
+			"Hôm nay không phải ngày cá tháng tư.",
+			"Không, bạn không biết đâu."
+		]
+	},
 	"directoryListing": {
 		"title": "chỉ mục thư mục",
 		"description": "Duyệt và khám phá các tệp và thư mục trong không gian làm việc của fount.",
