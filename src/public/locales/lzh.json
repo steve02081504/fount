@@ -153,7 +153,7 @@
 				"missing": "Deno 未尋得，自動安裝之...",
 				"isRequired": "Deno 未尋得，無之則 fount 不可運行",
 				"installingTermux": "正為 Termux 安裝 Deno...",
-				"installFailedFallback": "Deno 安裝未果，嘗試安裝至 fount 之 path 目錄...",
+				"installFailedFallback": "Deno 安裝未果，嘗試安裝至 fount 之 path 徑錄...",
 				"notWorking": "未知何故 Deno 不動，可往 https://discord.gg/deno 求助",
 				"upgradeFailed": "警：Deno 之晉級或已失利，請察其誤",
 				"upgradeFailedTermux": "Deno 晉級之命失利，嘗試為 Termux 重裝...",
@@ -291,7 +291,7 @@
 			"wait_text": "稍安勿躁...",
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
-			"error_message": "嗚呼哀哉 :(\n\n禍起蕭牆：\n${error}"
+			"error_message": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}"
 		},
 		"error": {
 			"title": "安設失利。",
@@ -531,11 +531,11 @@
 				}
 			},
 			"plugins": {
-				"title": "插件选择",
+				"title": "機巧擇選",
 				"subtitle": "如虎添翼，法力無邊。",
 				"card": {
 					"defaultCheckbox": {
-						"title": "定為恆常插件"
+						"title": "定為恆常機巧"
 					}
 				}
 			},
@@ -685,8 +685,8 @@
 			"description": "靜待未書之篇，新言將啟。與君所擇之友，共譜新章。"
 		},
 		"typingIndicator": {
-			"isTyping": "${names} 書寫中...",
-			"multipleMembers": "眾人書寫中..."
+			"isTyping": "${names} 揮毫中...",
+			"multipleMembers": "眾人筆耕不輟..."
 		},
 		"sidebar": {
 			"noSelection": "未選",
@@ -719,15 +719,15 @@
 			},
 			"pluginList": {
 				"icon": {
-					"alt": "附益名錄符"
+					"alt": "機巧名錄符"
 				},
-				"title": "附益名錄",
+				"title": "機巧名錄",
 				"buttons": {
 					"addPlugin": {
-						"title": "增附益"
+						"title": "增機巧"
 					},
 					"addPluginIcon": {
-						"alt": "增附益符"
+						"alt": "增機巧符"
 					}
 				}
 			}
@@ -759,16 +759,16 @@
 				"alt": "傳"
 			},
 			"voiceButton": {
-				"title": "錄音"
+				"title": "留聲"
 			},
 			"voiceButtonIcon": {
-				"alt": "錄音"
+				"alt": "留聲"
 			},
 			"photoButton": {
-				"title": "照片"
+				"title": "留影"
 			},
 			"photoButtonIcon": {
-				"alt": "照片"
+				"alt": "留影"
 			}
 		},
 		"messageList": {
@@ -910,10 +910,10 @@
 		"pluginCard": {
 			"buttons": {
 				"removePlugin": {
-					"title": "除附益"
+					"title": "除機巧"
 				},
 				"removePluginIcon": {
-					"alt": "除附益符"
+					"alt": "除機巧符"
 				}
 			}
 		},
@@ -1219,8 +1219,8 @@
 			"disabledIndicatorHint": "請擇欲出之器類與器"
 		},
 		"buttons": {
-			"export": "導出",
-			"exportWithData": "導出 (含載錄)",
+			"export": "付梓",
+			"exportWithData": "付梓 (含載錄)",
 			"copyShareLink": "謄錄傳閱之鑰",
 			"generateShareLink": "生分享之鑰",
 			"generateShareLinkWithData": "生分享之鑰 (含載錄)"
@@ -1354,7 +1354,7 @@
 			"noDevicesFound": "未尋獲任何器或會話。",
 			"deviceInfo": "器ID: ${deviceId}",
 			"thisDevice": "此器",
-			"deviceDetails": "末次現蹤: ${lastSeen} | IP: ${ipAddress} | 用戶代庖: ${userAgent}",
+			"deviceDetails": "末次現蹤: ${lastSeen} | IP: ${ipAddress} | 謁者: ${userAgent}",
 			"revokeButton": "撤銷",
 			"revokeConfirm": "確欲從此器/會話告退乎？",
 			"revokeSuccess": "器/會話已撤銷。",
@@ -1439,12 +1439,12 @@
 		"hostConnectionCode": {
 			"title": "東道連繫碼",
 			"connectionCodeLabel": "連繫碼 (朋輩ID)",
-			"passwordLabel": "通行語",
+			"passwordLabel": "連繫信物",
 			"copyButton": "謄錄",
 			"regenerateButton": "更造",
 			"infoMessage": "以此符信示於客，以建連繫。",
 			"connectionCodeCopied": "連繫碼已謄於剪貼板",
-			"passwordCopied": "通行語已謄於剪貼板",
+			"passwordCopied": "連繫信物已謄於剪貼板",
 			"regenerateSuccess": "連繫碼已更造"
 		},
 		"connectedSubfounts": {
@@ -1594,7 +1594,7 @@
 			"cupcake": "瓊漿",
 			"bumblebee": "蜜釀",
 			"emerald": "翡翠",
-			"corporate": "雅仕",
+			"corporate": "經世",
 			"synthwave": "幻波",
 			"retro": "流金",
 			"cyberpunk": "詭械",
@@ -1609,7 +1609,7 @@
 			"wireframe": "經緯",
 			"black": "玄黑",
 			"luxury": "奢華",
-			"dracula": "魔裔",
+			"dracula": "夜擁",
 			"cmyk": "四色",
 			"autumn": "金秋",
 			"business": "商務",
@@ -1958,7 +1958,7 @@
 		},
 		"autorun": {
 			"title": "術自運",
-			"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由插件，以利遊覽。",
+			"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由機巧，以利遊覽。",
 			"form_title": "添新術",
 			"comment_label": "註（可略）",
 			"url_regex_label": "網址定式",
@@ -1972,7 +1972,7 @@
 			"delete_success": "術已去矣。",
 			"no_scripts": {
 				"title": "術自運",
-				"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由插件，以利遊覽。"
+				"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由機巧，以利遊覽。"
 			},
 			"table": {
 				"comment": "註",
@@ -2303,7 +2303,7 @@
 			"於相談頁按住 `shift` 鍵，可速刪消息。",
 			"若不告匠人以疾，恐其終不知君所遇之患。",
 			"若忽遇怪狀且匠人未覆，可試 `fount init` 令以重置 fount。",
-			"若遇甚怪之狀，可試重啟計算機。",
+			"若遇怪力亂神之狀，不妨重啟乾坤。",
 			"以 `fount remove` 令卸 fount，勝於刪其卷宗。",
 			"於敕令行以此 `fount cake` 輸之，可得甘味！",
 			"fount 之數據皆存於 `fount/data`，君可隨時觀、改、備之。",
@@ -2313,7 +2313,7 @@
 			"fount 內置 ZL-31 者，其名無義，偶得之耳。",
 			"fount 文件之圖皆 SVG，需時方化 PNG 或 ICO。除 LICENSE 外無二進制檔。",
 			"fount 之碼無需編譯，即行即見，所得即所見。",
-			"昔 fount 有動態背景，甚炫，然耗算力（CPU）過甚，遂刪。",
+			"昔 fount 有動態背景，甚炫，然耗算力過甚，遂刪。",
 			"fount 初乃因一風月傀儡「龍膽」而製。",
 			"傀儡與人異者有一，人需出恭。",
 			"傀儡唯被召之時有識，人若清醒，無時無處不覺。",
@@ -2383,8 +2383,8 @@
 			"extendedRepeat": "疊詞為鑰，易窺。",
 			"sequences": "連字為鑰，易窺。",
 			"recentYears": "近年之數，易窺。",
-			"dates": "以期為鑰，易窺。",
-			"topTen": "斯鑰甚為常用。",
+			"dates": "以生辰為鑰，易為人算。",
+			"topTen": "此鑰路人皆知。",
 			"topHundred": "斯鑰頗為常用。",
 			"common": "斯鑰甚常。",
 			"similarToCommon": "近似常用之鑰。",
@@ -2392,7 +2392,7 @@
 			"namesByThemselves": "單名獨姓，易窺。",
 			"commonNames": "尋常姓名，易窺。",
 			"userInputs": "密鑰勿涉私密。",
-			"pwned": "此鑰已洩於網。"
+			"pwned": "此鑰已洩於江湖，勿復用之。"
 		},
 		"suggestions": {
 			"l33t": "勿以符代字，其法易循。",
@@ -2408,7 +2408,7 @@
 			"anotherWord": "宜增僻字。",
 			"useWords": "宜用數詞，然避俗語。",
 			"noNeed": "強鑰何須符數大寫。",
-			"pwned": "此符節已洩於江湖，勿復用之。"
+			"pwned": "此符節已洩於江湖，切勿復用。"
 		},
 		"timeEstimation": {
 			"ltSecond": "瞬息之內",
