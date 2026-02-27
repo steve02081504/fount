@@ -223,7 +223,7 @@ export function setOpenAIAPIEndpoints(router) {
 	router.get(basePath + '/v1/models', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
-			const modelList = await getPartList(username, 'AIsources')
+			const modelList = await getPartList(username, 'serviceSources/AI')
 			const formattedModels = {
 				object: 'list',
 				data: modelList.map(model => ({

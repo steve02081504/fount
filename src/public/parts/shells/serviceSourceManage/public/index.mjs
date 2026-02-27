@@ -216,8 +216,6 @@ async function fetchGeneratorList() {
  */
 async function fetchDefaultParts() {
 	defaultParts = await getAllDefaultParts().catch(handleFetchError('serviceSource_manager.alerts.fetchDefaultsFailed'))
-	if (!defaultParts?.[currentServiceSourcePath] && defaultParts?.AIsources)
-		defaultParts[currentServiceSourcePath] = [...defaultParts.AIsources]
 	updateDefaultPartDisplay()
 }
 

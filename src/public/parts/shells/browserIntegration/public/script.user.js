@@ -149,6 +149,12 @@ function applyParamsToTranslation(translation, params) {
  */
 function createI18nArrayProxy(arr, params) {
 	return new Proxy(arr, {
+		/**
+		 * 获取代理的值。
+		 * @param {string[]} target - 原始翻译字符串数组。
+		 * @param {string} prop - 要获取的属性。
+		 * @returns {string} 获取的值。
+		 */
 		get(target, prop) {
 			if (prop === 'toString')
 				return function toString() {

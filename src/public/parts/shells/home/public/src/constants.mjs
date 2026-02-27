@@ -6,8 +6,8 @@ export const defaultIcons = {
 	chars: 'https://api.iconify.design/line-md/person.svg',
 	worlds: 'https://api.iconify.design/line-md/map-marker-radius.svg',
 	personas: 'https://api.iconify.design/line-md/emoji-grin.svg',
-	AIsourceGenerators: 'https://api.iconify.design/material-symbols/factory.svg',
-	AIsources: 'https://api.iconify.design/line-md/engine.svg',
+	serviceGenerators: 'https://api.iconify.design/material-symbols/factory.svg',
+	serviceSources: 'https://api.iconify.design/line-md/engine.svg',
 	plugins: 'https://api.iconify.design/mdi/puzzle-outline.svg',
 	shells: 'https://api.iconify.design/mynaui/shell.svg',
 }
