@@ -6,7 +6,7 @@
 			"start": "🚀✨",
 			"starting": "⏳",
 			"ready": "✅🎉",
-			"standingBy": "👀",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
@@ -359,12 +359,12 @@
 			"complete_tutorial": {
 				"name": "🎓✅",
 				"description": "👨‍🏫➡️👨‍🎓",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 📖✅"
 			},
 			"skip_tutorial": {
 				"name": "🤷‍♂️⏭️",
 				"description": "📖➡️🗑️",
-				"locked_description": "🔒"
+				"locked_description": "🔒: ⏭️📖"
 			}
 		},
 		"home_function_buttons": {
@@ -390,9 +390,9 @@
 		"passwordInput": {
 			"placeholder": "✍️🔑"
 		},
-		"confirmPasswordLabel": "🔑🔑:",
+		"confirmPasswordLabel": "🔑🔁:",
 		"confirmPasswordInput": {
-			"placeholder": "✍️🔑🔑"
+			"placeholder": "✍️🔑🔁"
 		},
 		"verificationCodeLabel": "🔢:",
 		"verificationCodeInput": {
@@ -423,7 +423,7 @@
 			"veryStrong": "😎"
 		},
 		"error": {
-			"passwordMismatch": "🔑 ≠ 🔑🔑",
+			"passwordMismatch": "🔑 ≠ 🔑🔁",
 			"loginError": "🚪➡️❌",
 			"registrationError": "🆕👤❌",
 			"verificationCodeError": "🔢❌/⏳",
@@ -475,10 +475,10 @@
 				"placeholder": "🔎..."
 			},
 			"button": {
-				"title": "⚙️"
+				"title": "🧰"
 			},
 			"icon": {
-				"alt": "⚙️"
+				"alt": "🧰"
 			}
 		},
 		"emptyList": {
@@ -486,7 +486,7 @@
 		},
 		"part_pages": {
 			"default": {
-				"title": "🧩👈",
+				"title": "📂🧩",
 				"subtitle": "🍂🤲 ➡️ 🚶‍♂️✨",
 				"card": {
 					"noTags": "🏷️🚫",
@@ -504,7 +504,7 @@
 				}
 			},
 			"chars": {
-				"title": "🤖👈",
+				"title": "📂🤖",
 				"subtitle": "👻🤝 ➡️ 💬✨",
 				"card": {
 					"defaultCheckbox": {
@@ -513,7 +513,7 @@
 				}
 			},
 			"worlds": {
-				"title": "🌍👈",
+				"title": "📂🌍",
 				"subtitle": "🌍🦶 ➡️ ✨♾️",
 				"card": {
 					"defaultCheckbox": {
@@ -522,7 +522,7 @@
 				}
 			},
 			"personas": {
-				"title": "🎭👈",
+				"title": "📂🎭",
 				"subtitle": "🎭🔄 ➡️ 🆕🧬",
 				"card": {
 					"defaultCheckbox": {
@@ -531,7 +531,7 @@
 				}
 			},
 			"plugins": {
-				"title": "🔌👈",
+				"title": "📂🔌",
 				"subtitle": "➕🪽 ➡️ ♾️✨",
 				"card": {
 					"defaultCheckbox": {
@@ -638,27 +638,27 @@
 			"first_login": {
 				"name": "👋⛲",
 				"description": "➡️🌍✨",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🚪➡️⛲"
 			},
 			"sfw_mode_on": {
 				"name": "🫣😇",
 				"description": "🤫👨‍👩‍👧‍👦",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🫣"
 			},
 			"sfw_mode_off": {
 				"name": "🧐😎",
 				"description": "🚪➡️😈",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🧐➡️"
 			},
 			"open_function_list": {
 				"name": "📜👀",
 				"description": "🤔🎁❓",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 📜👀"
 			},
 			"set_default_persona": {
 				"name": "👆🫵",
 				"description": "👤➡️👑",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 📌🎭"
 			}
 		},
 		"dragAndDrop": {
@@ -809,9 +809,9 @@
 				"deleteIcon": {
 					"alt": "🗑️"
 				},
-				"copyMarkdown": "📋 M↓",
+				"copyMarkdown": "📋⬇️",
 				"copyMarkdownIcon": {
-					"alt": "📋 M↓"
+					"alt": "📋⬇️"
 				},
 				"copyText": "📋📝",
 				"copyTextIcon": {
@@ -827,10 +827,10 @@
 				},
 				"share": {
 					"textContent": "🔗",
-					"1h": "1 ⏳",
-					"12h": "12 ⏳",
-					"24h": "24 ⏳",
-					"72h": "72 ⏳"
+					"1h": "⏳1h",
+					"12h": "⏳12h",
+					"24h": "⏳24h",
+					"72h": "⏳72h"
 				},
 				"shareIcon": {
 					"alt": "🔗"
@@ -921,22 +921,22 @@
 			"first_chat": {
 				"name": "👋👤",
 				"description": "💬➡️📖",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 💬1️⃣"
 			},
 			"multiplayer_chat": {
 				"name": "🧑‍🤝‍🧑💔",
 				"description": "💬👱‍♀️💬🧑💬👱‍♂️",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🗣️👥"
 			},
 			"photo_chat": {
 				"name": "🖼️➡️✨",
 				"description": "💬➡️🏞️",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 💬➕🖼️"
 			},
 			"code_greeting": {
 				"name": "👋💻",
 				"description": "💬💧",
-				"locked_description": "✅ 'hello fount!'"
+				"locked_description": "🔒: ▶️ 'hello fount!'"
 			}
 		},
 		"dragAndDrop": {
@@ -1104,7 +1104,7 @@
 			"create_part": {
 				"name": "🧪👨‍🔬",
 				"description": "⚪️➡️🧩",
-				"locked_description": "🔒"
+				"locked_description": "🔒: ✨🧩"
 			}
 		},
 		"home_function_buttons": {
@@ -1227,10 +1227,10 @@
 		},
 		"shareMenu": {
 			"title": "🤔⏳",
-			"1h": "1 ⏳",
-			"12h": "12 ⏳",
-			"24h": "24 ⏳",
-			"72h": "72 ⏳",
+			"1h": "⏳1h",
+			"12h": "⏳12h",
+			"24h": "⏳24h",
+			"72h": "⏳72h",
 			"cancel": "❌"
 		},
 		"litterbox": {
@@ -1254,7 +1254,7 @@
 			"share_part": {
 				"name": "🤝❤️",
 				"description": "🧩➡️🧑‍🤝‍🧑",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🔗🧩"
 			}
 		},
 		"dragAndDrop": {
@@ -1606,7 +1606,7 @@
 			"lofi": "🎶",
 			"pastel": "🌸",
 			"fantasy": "🧙",
-			"wireframe": "🕸️",
+			"wireframe": "📐",
 			"black": "🖤",
 			"luxury": "👑",
 			"dracula": "🧛",
@@ -1629,7 +1629,7 @@
 			"change_theme": {
 				"name": "🎨🖌️",
 				"description": "😐➡️🤩",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🎨🔄"
 			}
 		},
 		"home_function_buttons": {
@@ -1835,7 +1835,7 @@
 			"start_bot": {
 				"name": "🤖🎮",
 				"description": "👤✨➡️🎮",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🤖🎮"
 			}
 		},
 		"home_function_buttons": {
@@ -1911,7 +1911,7 @@
 			"start_bot": {
 				"name": "🤖✈️",
 				"description": "👤✨➡️✈️",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🤖✈️"
 			}
 		},
 		"home_function_buttons": {
@@ -1991,12 +1991,12 @@
 			"install_script": {
 				"name": "🧩➡️🌐",
 				"description": "🖱️➡️🪄",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🧩🌐"
 			},
 			"run_js": {
 				"name": "🗣️📜",
 				"description": "⌨️➡️⚡️",
-				"locked_description": "🔒"
+				"locked_description": "🔒: ⌨️⚡"
 			},
 			"star_fount": {
 				"name": "⭐💻",
@@ -2036,7 +2036,7 @@
 			"invoke_shell_assist": {
 				"name": "👋💻",
 				"description": "⚫️➡️💡",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 💻▶️"
 			}
 		},
 		"home_function_buttons": {
@@ -2082,7 +2082,7 @@
 			"start_deskpet": {
 				"name": "🐾🖥️",
 				"description": "💥➡️🐈",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🐾🖥️"
 			}
 		},
 		"home_char_interfaces": {
@@ -2219,7 +2219,7 @@
 			"open_achievements_page": {
 				"name": "🏆🏃‍♂️",
 				"description": "🚪➡️📜",
-				"locked_description": "🔒"
+				"locked_description": "🔒: 🏆📜"
 			},
 			"relock_by_clicking": {
 				"name": "🤨",
@@ -2244,7 +2244,7 @@
 			"local": "🏠:",
 			"remote": "☁️:",
 			"upToDate": "✅✨",
-			"outdated": "🆕📦",
+			"outdated": "🆕🚀",
 			"checkFailed": "❌🆚"
 		},
 		"systemInfo": {
@@ -2317,7 +2317,7 @@
 			"🐣 ➡️ 🤖🔞 \"🪻\"",
 			"🤖 🆚 🧍 ➡️ 🧍💩",
 			"🤖📞💡 🆚 🧍👀💡",
-			"🧍❤️🤖 ➡️ 💍❓",
+			"🧍❤️🤖 ➡️ 💒💍",
 			"🤖🎨❤️📝 🆚 🧍🧱🧹🗑️",
 			"📅 🚫 🤡🤪",
 			"🙅‍♂️ 👉 🚫🧠"
