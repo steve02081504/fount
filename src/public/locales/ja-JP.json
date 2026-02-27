@@ -12,7 +12,7 @@
 				"http": "HTTPサーバーが ${url} で実行されています。"
 			},
 			"mdns": {
-				"description": "想いを形に、心を繋ぐ",
+				"description": "心に通じ、想いより生ず",
 				"failed": "mDNS 登録に失敗しました: ${error}",
 				"bonjourFailed": "Bonjour サービスの作成に失敗しました: ${error}"
 			},
@@ -118,7 +118,7 @@
 				"noUrl": "エラー: プロトコルハンドラーの URL が指定されていません。"
 			},
 			"update": {
-				"skippingFountUpdate": ".noupdate ファイルが存在するため、カウントの更新はスキップされます",
+				"skippingFountUpdate": ".noupdate ファイルが存在するため、fountの更新はスキップされます",
 				"skippingDenoUpgradeDocker": "Docker環境でのDenoアップグレードのスキップ"
 			},
 			"shortcut": {
@@ -223,7 +223,7 @@
 		"title": "fountへようこそ！",
 		"description": "インストールの進行状況を追跡し、その機能を垣間見てみましょう。すぐに fount を起動する準備が整います。",
 		"hero": {
-			"title": "想いを形に、心を繋ぐ",
+			"title": "心に通じ、想いより生ず",
 			"description": "fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
 		},
 		"feature1": {
@@ -443,7 +443,7 @@
 			"title": "証明書転送エラー",
 			"retrieve_error": "ログイン情報を保存しようとしているときにエラーが発生しました。\n${error}\n続行できますが、ログイン情報を保存できません。",
 			"transfer_error": "ログイン情報を転送しようとしているときにエラーが発生しました。\n${error}\n続行できますが、ログイン情報を取得できません。",
-			"no_credentials": "保存された認証情報が見つかりません。\nfount 内から再度ログインして認証情報を更新するか、下のボタンをクリックして認証情報なしで対象のページに進んでください。",
+			"no_credentials": "保存されたログイン情報が見つかりません。\nfount 内から再度ログインしてログイン情報を更新するか、下のボタンをクリックしてログイン情報なしで対象のページに進んでください。",
 			"missing_params": "リンクに必須パラメーターが不足しています。",
 			"buttons": {
 				"ignore": "無視して続行",
@@ -453,7 +453,7 @@
 	},
 	"home": {
 		"title": "ホーム",
-		"description": "あなたの泉体験の中心。ここでは、想像力の住人であるキャラクター、世界、ペルソナを管理します。あなたの物語は、この中心的なつながりから始まり、分岐していきます。",
+		"description": "あなたのfount体験の中心。ここでは、想像の世界の住人であるキャラクター、世界、ペルソナを管理します。あなたの物語は、この中心的なつながりから始まり、分岐していきます。",
 		"sidebarTitle": "詳細",
 		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
 		"noDescription": "説明はありません。",
@@ -482,7 +482,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空です...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
+			"message": "空っぽです...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
 		},
 		"part_pages": {
 			"default": {
@@ -540,7 +540,7 @@
 				}
 			},
 			"ImportHandlers": {
-				"title": "輸入加工業者",
+				"title": "インポートハンドラー",
 				"subtitle": "海はすべての川に開かれており、すべてが含まれます。",
 				"card": {
 					"defaultCheckbox": {
@@ -568,7 +568,7 @@
 			},
 			"serviceGenerators/search": {
 				"title": "検索サービスジェネレーター",
-				"subtitle": "情報の海に、あなたに光を灯してください。",
+				"subtitle": "あなたのための明かりを灯す。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "デフォルトの検索ジェネレーターとして設定"
@@ -586,7 +586,7 @@
 			},
 			"serviceSources": {
 				"title": "サービスソース",
-				"subtitle": "しずくを集めれば、大きな川になります。",
+				"subtitle": "細流を集めて大河と為す。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "デフォルトのサービスソースとして設定"
@@ -641,13 +641,13 @@
 				"locked_description": "一度ファウンテンにログインしてください。"
 			},
 			"sfw_mode_on": {
-				"name": "後ろ！後ろ！",
+				"name": "親フラ回避！",
 				"description": "すぐに全年齢モードに切り替えてください、私はとても賢い子供です。",
 				"locked_description": "セーフ コンテンツ モードを一度オンにします。"
 			},
 			"sfw_mode_off": {
 				"name": "リミッター解除",
-				"description": "「先生、時代は変わりましたね。」",
+				"description": "「大人、時代は変わったのです。」",
 				"locked_description": "安全なコンテンツ モードを一度オフにします。"
 			},
 			"open_function_list": {
@@ -673,7 +673,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "カウントコンポーネント情報の生成"
+				"description": "fountコンポーネント情報の生成"
 			}
 		}
 	},
@@ -738,7 +738,7 @@
 		"chatArea": {
 			"title": "チャット",
 			"input": {
-				"placeholder": "メッセージを入力...\nCtrl+Enterで送信"
+				"placeholder": "メッセージを入力...\nCtrl + Enter で送信"
 			},
 			"menuButton": {
 				"title": "メニュー"
@@ -929,7 +929,7 @@
 				"locked_description": "2 人以上のキャラクターが同じチャットで話します。"
 			},
 			"photo_chat": {
-				"name": "写真と真実があります",
+				"name": "証拠写真あり",
 				"description": "絵を使って次元の壁を壊しましょう。",
 				"locked_description": "チャットで写真を送信します。"
 			},
@@ -941,7 +941,7 @@
 		},
 		"dragAndDrop": {
 			"invalidPartData": "部品データが無効です。",
-			"charAdded": "ロール ${partName} がチャットに追加されました。",
+			"charAdded": "キャラクター ${partName} がチャットに追加されました。",
 			"personaSet": "ペルソナ ${partName} が現在のペルソナとして設定されました。",
 			"worldSet": "ワールド ${partName} は現在のワールドに設定されます。",
 			"pluginAdded": "プラグイン ${partName} がチャットに追加されました。",
@@ -1318,7 +1318,7 @@
 	"userSettings": {
 		"title": "ユーザー設定",
 		"PageTitle": "ユーザー設定",
-		"description": "あなたの財団のアイデンティティの詳細に注意してください。プロファイルを管理し、アクセスを保護し、接続されているデバイスを表示します。あなたのアカウントのための静かな聖域。",
+		"description": "fountのアイデンティティの詳細に注意してください。プロファイルを管理し、アクセスを保護し、接続されているデバイスを表示します。あなたのアカウントのための静かな聖域。",
 		"userInfo": {
 			"title": "ユーザー情報",
 			"usernameLabel": "ユーザー名:",
@@ -1435,7 +1435,7 @@
 	"subfounts": {
 		"title": "Subfount - ピアツーピアデバイス管理",
 		"pageTitle": "Subfount",
-		"description": "ピアツーピアのファウンテン接続を管理する",
+		"description": "ピアツーピアのfount接続を管理する",
 		"hostConnectionCode": {
 			"title": "ホスト接続コード",
 			"connectionCodeLabel": "接続コード（ピアID）",
@@ -1481,7 +1481,7 @@
 			"executionFailed": "コードの実行に失敗しました: ${message}"
 		},
 		"downloadClient": {
-			"title": "サブファウントクライアントをダウンロードする",
+			"title": "サブfountクライアントをダウンロードする",
 			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
 			"downloadButton": "subfount.mjsをダウンロード"
 		},
@@ -1627,7 +1627,7 @@
 		},
 		"achievements": {
 			"change_theme": {
-				"name": "新しいスキン、ゲットだぜ！",
+				"name": "イメチェン完了！",
 				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
 				"locked_description": "テーマを一度切り替えます。"
 			}
@@ -1789,7 +1789,7 @@
 			"placeholder": "ボットを検索..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "ロールを選択"
+			"placeholder": "キャラクターを選択"
 		},
 		"charSearch": {
 			"placeholder": "ロールを検索..."
@@ -1856,7 +1856,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegramボット",
-		"description": "あなたのフォントキャラクターがテレグラムの瞬時の波を横断しましょう。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
+		"description": "あなたのfountキャラクターがテレグラムの瞬時の波を横断しましょう。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
 		"cardTitle": "Telegramボット管理",
 		"botSelectDropdown": {
 			"placeholder": "ボットを選択"
@@ -1865,7 +1865,7 @@
 			"placeholder": "ボットを検索..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "ロールを選択"
+			"placeholder": "キャラクターを選択"
 		},
 		"charSearch": {
 			"placeholder": "ロールを検索..."
@@ -1932,7 +1932,7 @@
 	},
 	"browser_integration": {
 		"title": "ブラウザの統合",
-		"description": "噴水とウェブの間のギャップを埋めます。このページには、シームレスな統合を可能にし、AI コンパニオンをブラウジング エクスペリエンスに組み込むためのユーザー スクリプトが提供されます。",
+		"description": "fountとウェブの間のギャップを埋めます。このページには、シームレスな統合を可能にし、AI コンパニオンをブラウジング エクスペリエンスに組み込むためのユーザー スクリプトが提供されます。",
 		"pageHeader": "ブラウザの統合",
 		"pageDescription": "fountロールがWebページと対話するには、このブラウザ統合スクリプトをインストールする必要があります。キャラクターとブラウザの間のブリッジとして機能し、ページコンテンツを表示してアクションを実行できるようにします。",
 		"install_script_title": "インストールスクリプト",
@@ -2022,9 +2022,9 @@
 		"csp_warning": "fount Browser Integration Scriptは、CSPポリシーがページに存在することを検出し、統合スクリプトが適切に機能しない可能性があります。 CSPを無効にするためにプラグインをインストールすることを検討してください。",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安全警告---",
-			"message": "現在のページ（ \"${origin}\"）は、ファウントホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏れやアカウントの盗難につながる可能性があります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行う必要があります（たとえば、fount サーバーの移行）。\n\nこの変更を許可したいですか？",
+			"message": "現在のページ（ \"${origin}\"）は、fountホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏れやアカウントの盗難につながる可能性があります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行う必要があります（たとえば、fount サーバーの移行）。\n\nこの変更を許可したいですか？",
 			"uuidMismatchError": "fount セキュリティエラー：ホスト${newHost}のID（UUID）は、既存のものと一致しません。操作はキャンセルされました。",
-			"verificationError": "セキュリティエラーのファウント：新しいホスト「${newHost}」を確認できません。住所が正しいかどうか、およびサービスが実行されているかどうかを確認してください。"
+			"verificationError": "セキュリティエラーのfount：新しいホスト「${newHost}」を確認できません。住所が正しいかどうか、およびサービスが実行されているかどうかを確認してください。"
 		}
 	},
 	"terminal_assistant": {
@@ -2034,9 +2034,9 @@
 		"initialMessageLink": "詳細はこちら",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "「やあ、ファウント」",
+				"name": "「やあ、fount」",
 				"description": "暗いターミナルの中で、AIパートナーの名前が呼ばれた。",
-				"locked_description": "ターミナル アシスタンスに一度電話してください。"
+				"locked_description": "ターミナル アシスタンスを一度呼び出してください。"
 			}
 		},
 		"home_function_buttons": {
@@ -2052,7 +2052,7 @@
 	},
 	"deskpet": {
 		"title": "デスクトップペット",
-		"description": "あなたのデスクトップ上に住むインタラクティブなペットとして、あなたのフォントキャラクターを起動します。",
+		"description": "あなたのデスクトップ上に住むインタラクティブなペットとして、あなたのfountキャラクターを起動します。",
 		"launcherCard": {
 			"title": "ペットスターター",
 			"buttons": {
@@ -2060,7 +2060,7 @@
 			}
 		},
 		"charSelectDropdown": {
-			"placeholder": "ロールを選択してください"
+			"placeholder": "キャラクターを選択してください"
 		},
 		"charSearch": {
 			"placeholder": "ロールを検索..."
@@ -2108,7 +2108,7 @@
 	},
 	"access": {
 		"title": "他のデバイスからfountにアクセス",
-		"description": "単一の画面を超えてファウントの範囲を拡張します。ここには、他のデバイスから仲間と接続するためのゲートウェイ (URL や QR コード) があり、ローカル イーサを渡る単純なブリッジとなります。",
+		"description": "単一の画面を超えてfountの範囲を拡張します。ここには、他のデバイスから仲間と接続するためのゲートウェイ (URL や QR コード) があり、ローカル イーサを渡る単純なブリッジとなります。",
 		"heading": "他のデバイスからfountにアクセスしますか？",
 		"instruction": {
 			"sameLAN": "デバイスとfountホストが同じローカルネットワーク上にあることを確認してください。",
@@ -2198,7 +2198,7 @@
 		},
 		"achievements": {
 			"first_ide_use": {
-				"name": "工欲善其事",
+				"name": "環境構築完了",
 				"description": "初めて、fount ロールを使用して、Zed、JetBrains、Neovim などの ACP 対応エディターでのプログラミングを支援します。",
 				"locked_description": "外部 IDE で fount ロールに接続し、セッションを完了します。"
 			}
