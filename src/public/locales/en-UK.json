@@ -18,7 +18,7 @@
 			},
 			"localUrl": "Accessing fount from other devices on the same network: ${url}",
 			"update": {
-				"restarting": "A new version was discovered and the update is being restarted..."
+				"restarting": "New version found. Restarting to update..."
 			}
 		},
 		"jobs": {
@@ -446,7 +446,7 @@
 			"no_credentials": "No saved login credentials found.\nPlease log in again from within fount to update them, or click the button below to continue to the target page without login credentials.",
 			"missing_params": "The link is missing a required parameter.",
 			"buttons": {
-				"ignore": "Ignore and continue",
+				"ignore": "Skip and Continue",
 				"retry": "Try again"
 			}
 		}
@@ -459,7 +459,7 @@
 		"noDescription": "No description available.",
 		"filterInput": {
 			"placeholder": "Search...",
-			"aria-label": "Search widgets"
+			"aria-label": "Search parts"
 		},
 		"sfwToggle": "Safe for Work",
 		"partTypeDropdown": {
@@ -482,11 +482,11 @@
 			}
 		},
 		"emptyList": {
-			"message": "Empty...<br/>Maybe you can [create a new part](${newpartLink}) or go to [fount's Discord server](${discordLink}) to have some fun?"
+			"message": "Nothing here yet...<br/>Maybe you can [create a new part](${newpartLink}) or go to [fount's Discord server](${discordLink}) to have some fun?"
 		},
 		"part_pages": {
 			"default": {
-				"title": "Component selection",
+				"title": "Part selection",
 				"subtitle": "Pick up a leaf and start your journey.",
 				"card": {
 					"noTags": "No tags",
@@ -513,7 +513,7 @@
 				}
 			},
 			"worlds": {
-				"title": "world choice",
+				"title": "World Selection",
 				"subtitle": "Step into a world and immerse yourself in countless possibilities.",
 				"card": {
 					"defaultCheckbox": {
@@ -522,7 +522,7 @@
 				}
 			},
 			"personas": {
-				"title": "Character selection",
+				"title": "Persona selection",
 				"subtitle": "Change your identity and experience another life.",
 				"card": {
 					"defaultCheckbox": {
@@ -541,7 +541,7 @@
 			},
 			"ImportHandlers": {
 				"title": "Import processor",
-				"subtitle": "The sea is open to all rivers and inclusive.",
+				"subtitle": "Vast as the ocean, embracing all streams.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Set as default import processor"
@@ -621,7 +621,7 @@
 				}
 			},
 			"shells": {
-				"title": "Interactive interface selection",
+				"title": "Shell Selection",
 				"subtitle": "Choose a window and see a new world.",
 				"card": {
 					"defaultCheckbox": {
@@ -641,7 +641,7 @@
 				"locked_description": "Log in to the fount once."
 			},
 			"sfw_mode_on": {
-				"name": "There's someone behind you!",
+				"name": "Boss Key!",
 				"description": "Quickly switch to all-ages mode, I am such a clever little kid.",
 				"locked_description": "Turn on safe content mode once."
 			},
@@ -682,7 +682,7 @@
 		"description": "Where words take flight and stories unfold. Engage with your AI companions, shape the narrative, and lose yourself in the ebb and flow of digital dialogue. The heart of fount beats here.",
 		"new": {
 			"title": "New Chat",
-			"description": "The quiet anticipation of a story yet unwritten. A new chat begins, a clean slate for fresh interactions and unfolding narratives with your chosen companions."
+			"description": "Awaiting a chapter yet to be written. A new chat begins, a clean slate for fresh interactions and unfolding narratives with your chosen companions."
 		},
 		"typingIndicator": {
 			"isTyping": "${names} is typing...",
@@ -838,7 +838,7 @@
 			},
 			"share": {
 				"uploading": "Creating link...",
-				"success": "Link created successfully! Copied to clipboard. <br>This feature is powered by ${provider}. <br>[Sponsor them.](${sponsorLink})"
+				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
 			"commonToolCalling": "Calling tool",
 			"noReplyContent": "(No reply content)"
@@ -924,12 +924,12 @@
 				"locked_description": "Send your first message with any character."
 			},
 			"multiplayer_chat": {
-				"name": "White Album Season",
+				"name": "Season of White Album",
 				"description": "\"Why did it become like this...\"",
 				"locked_description": "Have two or more characters speak in the same chat."
 			},
 			"photo_chat": {
-				"name": "There are pictures and the truth",
+				"name": "Pics or it didn't happen",
 				"description": "Use pictures to break the dimensional wall.",
 				"locked_description": "Send a picture in chat."
 			},
@@ -1371,7 +1371,7 @@
 			"input": {
 				"placeholder": "New key description"
 			},
-			"createButton": "create",
+			"createButton": "Create",
 			"noKeysFound": "No API keys were found.",
 			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
 			"neverUsed": "Never used",
@@ -1456,7 +1456,7 @@
 				"deviceId": "Device ID",
 				"connectedAt": "Connection time",
 				"status": "Status",
-				"actions": "operate",
+				"actions": "Actions",
 				"connected": "Connected",
 				"disconnected": "Disconnected",
 				"save": "save",
@@ -1627,7 +1627,7 @@
 		},
 		"achievements": {
 			"change_theme": {
-				"name": "A Fresh Coat of Paint!",
+				"name": "Itasha Style!",
 				"description": "The fount had a new look and a completely new mood.",
 				"locked_description": "Switch the theme once."
 			}
@@ -1696,7 +1696,7 @@
 		}
 	},
 	"serviceSource_manager": {
-		"title": "Service source management",
+		"title": "Service Source Management",
 		"description": "Here, you will conduct a symphony of artificial intelligence sounds. Add, carve or silence sources to bring life to your source companions - a subtle dance of code and imagination.",
 		"fileList": {
 			"title": "Service source list",
@@ -1789,15 +1789,15 @@
 			"placeholder": "Search for a bot..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "Select a role"
+			"placeholder": "Select a character"
 		},
 		"charSearch": {
-			"placeholder": "Search for roles..."
+			"placeholder": "Search for characters..."
 		},
 		"configCard": {
 			"title": "Bot Configuration",
 			"labels": {
-				"character": "Character",
+				"character": "Linked Character",
 				"apiKey": "Discord API Key",
 				"config": "Configuration"
 			},
@@ -1865,10 +1865,10 @@
 			"placeholder": "Search for a bot..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "Select a role"
+			"placeholder": "Select a character"
 		},
 		"charSearch": {
-			"placeholder": "Search for roles..."
+			"placeholder": "Search for characters..."
 		},
 		"configCard": {
 			"title": "Bot Configuration",
@@ -2060,10 +2060,10 @@
 			}
 		},
 		"charSelectDropdown": {
-			"placeholder": "Choose a role"
+			"placeholder": "Choose a character"
 		},
 		"charSearch": {
-			"placeholder": "Search for roles..."
+			"placeholder": "Search for characters..."
 		},
 		"runningCard": {
 			"title": "running pet",
