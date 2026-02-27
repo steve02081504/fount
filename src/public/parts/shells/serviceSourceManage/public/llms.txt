@@ -1,21 +1,21 @@
 # serviceSourceManage shell 支持的 Web 端点说明
 
-本 shell 管理 AI 服务源（AIsources）等类型的 part：列表、详情、增删改、默认设置及模板/展示。
-路径中的 :type 为 part 类型（如 AIsources），:name 为 part 名称。
+本 shell 管理 服务源（serviceSources）类型的 part：列表、详情、增删改、默认设置及模板/展示。
+路径中的 :type 为 part 类型（如 serviceSources/AI），:name 为 part 名称。
 
 ---
 
 ## 提供的页面
 
 ### GET /parts/shells:serviceSourceManage/
-- 用途：AI 服务源管理页面，用于管理 AI 服务源（AIsources）等类型的 part。支持查看列表、创建/编辑/删除服务源、设置默认服务源、查看模板和展示信息等功能。
+- 用途：服务源管理页面，用于管理 服务源（serviceSources）等类型的 part。支持查看列表、创建/编辑/删除服务源、设置默认服务源、查看模板和展示信息等功能。
 
 ---
 
 ## 列表与单资源
 
 ### GET /api/parts/shells:serviceSourceManage/:type
-- 路径：type 如 AIsources
+- 路径：type 如 AI
 - 用途：获取该类型下所有 part 名称列表。
 
 ### GET /api/parts/shells:serviceSourceManage/:type/:name
