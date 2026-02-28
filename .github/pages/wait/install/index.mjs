@@ -6,6 +6,10 @@ import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } fro
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
+import {
+	applyThemeWithViewTransition,
+	createAutoPreview,
+} from '../../scripts/themeViewTransition.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 
 usingTemplates('wait/install/templates')
@@ -95,26 +99,6 @@ async function playHeroAnimation() {
 }
 
 /**
- * 创建自动主题预览元素。
- * @returns {Promise<HTMLElement>} - 自动主题预览的 DOM 元素。
- */
-async function createAutoPreview() {
-	const container = document.createElement('div')
-	container.className = 'theme-preview-card cursor-pointer auto-theme-container'
-
-	const [darkHalf, lightHalf] = await Promise.all([
-		renderTemplate('theme_preview', { theme: 'dark', name: 'auto' }),
-		renderTemplate('theme_preview', { theme: 'light', name: 'auto' })
-	])
-
-	darkHalf.className = 'auto-theme-half auto-theme-dark'
-	lightHalf.className = 'auto-theme-half auto-theme-light'
-
-	container.append(lightHalf, darkHalf)
-	return container
-}
-
-/**
  * 渲染主题预览。
  */
 async function renderThemePreviews() {
@@ -139,7 +123,7 @@ async function renderThemePreviews() {
 	}
 
 	const autoPreview = await createAutoPreview()
-	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
+	autoPreview.addEventListener('click', (e) => handleThemeClick(e, autoPreview, 'auto'))
 	if (!theme_now) autoPreview.classList.add('selected-theme')
 	allPreviews.push({ element: autoPreview, name: 'auto' })
 
@@ -149,7 +133,7 @@ async function renderThemePreviews() {
 			console.error(`Failed to render preview for theme: ${theme}`)
 			return null
 		}
-		preview.addEventListener('click', () => handleThemeClick(preview, theme))
+		preview.addEventListener('click', (e) => handleThemeClick(e, preview, theme))
 		if (theme_now === theme) preview.classList.add('selected-theme')
 		return { element: preview, name: theme }
 	})
@@ -161,7 +145,7 @@ async function renderThemePreviews() {
 	if (customThemeName && customThemeCss) {
 		const customPreview = await renderTemplate('theme_preview', { theme: customThemeName, name: customThemeName })
 		if (customPreview) {
-			customPreview.addEventListener('click', () => handleThemeClick(customPreview, customThemeName))
+			customPreview.addEventListener('click', (e) => handleThemeClick(e, customPreview, customThemeName))
 			if (theme_now === customThemeName) customPreview.classList.add('selected-theme')
 			allPreviews.push({ element: customPreview, name: customThemeName })
 		}
@@ -193,26 +177,18 @@ async function renderThemePreviews() {
 }
 
 /**
- * 处理主题点击事件。
+ * 处理主题点击事件（与 theme.mjs 共用一套圆圈扩散动画逻辑）。
+ * @param {MouseEvent} e - 点击事件。
  * @param {HTMLElement} previewElement - 被点击的预览元素。
  * @param {string} theme - 选中的主题名称。
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function handleThemeClick(previewElement, theme) {
-	/**
-	 * 应用新主题
-	 */
-	const applyNewTheme = () => {
+async function handleThemeClick(e, previewElement, theme) {
+	await applyThemeWithViewTransition(e, () => {
 		setTheme(theme)
 		document.querySelectorAll('.theme-preview-card.selected-theme').forEach(el => el.classList.remove('selected-theme'))
 		previewElement.classList.add('selected-theme')
-	}
-
-	const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-	if (!document.startViewTransition || prefersReducedMotion)
-		applyNewTheme()
-	else
-		document.startViewTransition(applyNewTheme)
+	})
 }
 
 /**
