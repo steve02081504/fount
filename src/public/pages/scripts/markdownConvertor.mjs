@@ -246,7 +246,7 @@ const languageExecutors = {
 	 */
 	py: async (code) => {
 		try {
-			const { loadPyodide } = await import('https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.mjs')
+			const { loadPyodide } = await import('https://cdn.jsdelivr.net/npm/pyodide/pyodide.mjs')
 			const pyodide = await loadPyodide()
 
 			pyodide.runPython(`
