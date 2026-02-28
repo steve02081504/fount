@@ -229,13 +229,13 @@ export async function codeExecutionReplyHandler(result, args) {
 				return '文件已发送'
 			}
 
-		// 从其他插件获取 JS 代码上下文（排除自己以避免无限递归）
+		// 从其他插件获取 JS 代码上下文
 		const pluginContexts = await Promise.all(
-			Object.entries(args.plugins || {})
-				.filter(([pluginId]) => pluginId !== 'code-execution')
-				.map(([, plugin]) => plugin.interfaces?.chat?.GetJSCodeContext?.(args, args.prompt_struct))
+			Object.values(args.plugins || {}).map(plugin =>
+				plugin.interfaces?.chat?.GetJSCodeContext?.(args, args.prompt_struct)
+			).filter(Boolean)
 		)
-		return Object.assign(js_eval_context, ...pluginContexts.filter(Boolean))
+		return Object.assign(js_eval_context, ...pluginContexts)
 	}
 
 	/**
