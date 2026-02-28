@@ -24,7 +24,7 @@
 		"jobs": {
 			"restartingJob": "${username} 사용자에 대한 ${partpath} 작업 다시 시작: ${uid}",
 			"pausingJob": "${username} 사용자에 대한 ${partpath} 작업 일시 중지: ${uid}",
-			"preloadingParts": "${count}개 부품 사전 로드 중"
+			"preloadingParts": "${count}개 컴포넌트 사전 로드 중"
 		},
 		"ipc": {
 			"serverStarted": "IPC 서버가 시작되었습니다.",
@@ -118,7 +118,7 @@
 				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
 			},
 			"update": {
-				"skippingFountUpdate": ".noupdate 파일이 존재하므로 폰트 업데이트를 건너뜁니다.",
+				"skippingFountUpdate": ".noupdate 파일이 존재하므로 fount 업데이트를 건너뜁니다.",
 				"skippingDenoUpgradeDocker": "Docker 환경에서 Deno 업그레이드 건너뛰기"
 			},
 			"shortcut": {
@@ -151,7 +151,7 @@
 			},
 			"deno": {
 				"missing": "Deno를 찾을 수 없습니다. 자동으로 설치 중입니다...",
-				"isRequired": "Deno를 찾을 수 없습니다. Deno 없이는 샘을 실행할 수 없습니다.",
+				"isRequired": "Deno를 찾을 수 없습니다. Deno 없이는 fount를 실행할 수 없습니다.",
 				"installingTermux": "Termux용 Deno 설치 중...",
 				"installFailedFallback": "Deno 설치에 실패했습니다. Fount의 경로 폴더에 자동으로 설치하려고 합니다...",
 				"notWorking": "어떤 이유로 Deno가 작동하지 않는 경우 https://discord.gg/deno에 가입하여 지원을 받을 수 있습니다.",
@@ -180,18 +180,18 @@
 				"autoInitDisabled": "지난 짧은 기간 동안 fount가 여러 번 다시 시작되었지만 .noautoinit 파일로 인해 자동 재초기화가 비활성화되었습니다. 종료합니다.",
 				"restartingTooFast": "짧은 시간 동안 fount가 여러 번 다시 시작되었습니다. 강제 재초기화...",
 				"failedToStart": "자동 수리를 시도한 후에도 잠시 동안 fount가 작동하지 않는 현상이 발생합니다. 로그에서 오류를 확인하세요.",
-				"initFailed": "글꼴 초기화에 실패했습니다. 종료합니다."
+				"initFailed": "fount 초기화에 실패했습니다. 종료합니다."
 			},
 			"remove": {
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
-				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
+				"removingFountInstallationDir": "fount 설치 디렉터리를 제거하는 중...",
 				"fountInstallationDirRemoved": "fount 설치 디렉터리가 제거되었습니다.",
 				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
 				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
 				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",
 				"removeProtocolHandlerFailed": "fount:// 프로토콜 핸들러를 제거하지 못했습니다: ${message}",
-				"removingFountFromGitSafeDir": "git safe.directory에서 글꼴을 제거하는 중...",
+				"removingFountFromGitSafeDir": "git safe.directory에서 fount를 제거하는 중...",
 				"removingInstalledSystemPackages": "설치된 시스템 패키지 제거 중...",
 				"uninstallingDeno": "데노 제거 중...",
 				"removeDenoFailed": "Deno 제거 실패: ${message}",
@@ -221,7 +221,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "fount에 오신 것을 환영합니다!",
-		"description": "설치 진행 과정을 따라가며 그 안에 포함된 기능을 살펴보세요. 잠시 후에 분수를 시작할 준비가 될 것입니다.",
+		"description": "설치 진행 과정을 따라가며 그 안에 포함된 기능을 살펴보세요. 잠시 후에 fount를 시작할 준비가 될 것입니다.",
 		"hero": {
 			"title": "상상이 생명을 얻는 순간",
 			"description": "fount는 <i>당신</i>에게 특별한 경험을 선사하기 위해 설계된 AI 기반 캐릭터 인터랙션 플랫폼입니다. 상상 속 캐릭터와 당신을 연결하여 손쉽게 대화하고, 자신만의 캐릭터를 만들어 세상과 공유할 수 있게 해주는 다리입니다."
@@ -310,7 +310,7 @@
 		"runPartConfirm": {
 			"title": "실행을 확인하십시오",
 			"message": "${partpath}을(를) 실행하시겠습니까?",
-			"confirm": "확인하다",
+			"confirm": "확인",
 			"cancel": "취소"
 		},
 		"offline_dialog": {
@@ -331,11 +331,11 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "분수의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다."
+		"description": "fount의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다."
 	},
 	"tutorial": {
 		"title": "튜토리얼 어떠세요?",
-		"description": "분수의 세계를 여러분과 함께 걸어가겠습니다. 이 대화형 튜토리얼은 경로를 조명하여 핵심에 얽힌 마법을 발견하는 데 도움을 줍니다. 당신의 모험은 이해로부터 시작됩니다.",
+		"description": "fount의 세계를 여러분과 함께 걸어가겠습니다. 이 대화형 튜토리얼은 경로를 조명하여 핵심에 얽힌 마법을 발견하는 데 도움을 줍니다. 당신의 모험은 이해로부터 시작됩니다.",
 		"modal": {
 			"title": "fount에 오신 것을 환영합니다!",
 			"instruction": "시작 가이드를 진행하시겠습니까?",
@@ -381,7 +381,7 @@
 	"auth": {
 		"title": "인증",
 		"subtitle": "사용자 데이터는 로컬에 저장됩니다.",
-		"description": "여기에서 당신의 존재를 정의합니다. 익숙한 안식처로 돌아가든, 이야기를 위한 새로운 공간을 만들든, 이곳에서 샘과 함께하는 여정이 시작됩니다.",
+		"description": "여기에서 당신의 존재를 정의합니다. 익숙한 안식처로 돌아가든, 이야기를 위한 새로운 공간을 만들든, 이곳에서 fount와 함께하는 여정이 시작됩니다.",
 		"usernameLabel": "사용자 이름:",
 		"usernameInput": {
 			"placeholder": "사용자 이름을 입력하세요"
@@ -438,7 +438,7 @@
 	},
 	"login_info": {
 		"title": "로그인 정보",
-		"description": "알려지지 않은 이야기의 세계로 가는 열쇠인 샘 로그인 자격 증명을 관리하기 위한 안전한 공간입니다.",
+		"description": "알려지지 않은 이야기의 세계로 가는 열쇠인 fount 로그인 자격 증명을 관리하기 위한 안전한 공간입니다.",
 		"modal": {
 			"title": "인증서 전송 오류",
 			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
@@ -453,7 +453,7 @@
 	},
 	"home": {
 		"title": "홈",
-		"description": "분수 체험의 핵심입니다. 여기에서 캐릭터, 세계, 페르소나 등 상상 속 인물을 관리하세요. 여러분의 이야기는 이 중심 연결점에서 시작되고 분기됩니다.",
+		"description": "fount 체험의 핵심입니다. 여기에서 캐릭터, 세계, 페르소나 등 상상 속 인물을 관리하세요. 여러분의 이야기는 이 중심 연결점에서 시작되고 분기됩니다.",
 		"sidebarTitle": "세부 정보",
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명이 없습니다.",
@@ -464,10 +464,10 @@
 		"sfwToggle": "일반 콘텐츠",
 		"partTypeDropdown": {
 			"button": {
-				"title": "부품 유형 메뉴"
+				"title": "컴포넌트 유형 메뉴"
 			},
 			"icon": {
-				"alt": "부품 유형 메뉴"
+				"alt": "컴포넌트 유형 메뉴"
 			}
 		},
 		"functionMenu": {
@@ -487,7 +487,7 @@
 		"part_pages": {
 			"default": {
 				"title": "구성 요소 선택",
-				"subtitle": "나뭇잎을 들고 여행을 시작하세요.",
+				"subtitle": "작은 조각을 모아 새로운 여정을 시작하세요.",
 				"card": {
 					"noTags": "라벨 없음",
 					"version": "버전",
@@ -495,8 +495,8 @@
 					"home_page": "홈페이지",
 					"issue_page": "문제 신고",
 					"refreshButton": {
-						"alt": "새로 고치다",
-						"title": "새로 고치다"
+						"alt": "새로고침",
+						"title": "새로고침"
 					},
 					"defaultCheckbox": {
 						"title": "기본값으로 설정"
@@ -522,7 +522,7 @@
 				}
 			},
 			"personas": {
-				"title": "캐릭터 선택",
+				"title": "페르소나 선택",
 				"subtitle": "정체성을 바꾸고 또 다른 삶을 경험해보세요.",
 				"card": {
 					"defaultCheckbox": {
@@ -541,7 +541,7 @@
 			},
 			"ImportHandlers": {
 				"title": "수입 가공업체",
-				"subtitle": "바다는 모든 강과 강을 포함하여 열려 있습니다.",
+				"subtitle": "다양한 형식을 폭넓게 수용합니다.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "기본 수입 프로세서로 설정"
@@ -586,7 +586,7 @@
 			},
 			"serviceSources": {
 				"title": "서비스 소스",
-				"subtitle": "그 물방울들이 모이면 큰 강이 됩니다.",
+				"subtitle": "작은 물줄기가 모여 거대한 강을 이룹니다.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "기본 서비스 소스로 설정"
@@ -673,13 +673,13 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "샘물 컴포넌트 정보 생성"
+				"description": "fount 컴포넌트 정보 생성"
 			}
 		}
 	},
 	"chat": {
 		"title": "채팅",
-		"description": "말이 날아오르고 이야기가 펼쳐지는 곳. AI 동료와 함께 이야기를 구성하고 디지털 대화의 썰물과 흐름에 빠져보세요. 분수의 심장이 여기서 뛰는군요.",
+		"description": "말이 날아오르고 이야기가 펼쳐지는 곳. AI 동료와 함께 이야기를 구성하고 디지털 대화의 썰물과 흐름에 빠져보세요. fount의 핵심이 여기서 뛰는군요.",
 		"new": {
 			"title": "새 채팅",
 			"description": "아직 쓰여지지 않은 이야기에 대한 조용한 기대. 새로운 채팅이 시작됩니다. 선택한 동료와의 신선한 상호작용과 전개되는 이야기를 위한 깨끗한 상태입니다."
@@ -929,7 +929,7 @@
 				"locked_description": "두 명 이상의 캐릭터가 동일한 채팅에서 말하게 하세요."
 			},
 			"photo_chat": {
-				"name": "사진도 있고 진실도 있다",
+				"name": "백문이 불여일견",
 				"description": "사진을 활용해 차원의 벽을 허무세요.",
 				"locked_description": "채팅으로 사진을 보내보세요."
 			},
@@ -940,13 +940,13 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "부품 데이터가 잘못되었습니다.",
+			"invalidPartData": "컴포넌트 데이터가 잘못되었습니다.",
 			"charAdded": "${partName} 역할이 채팅에 추가되었습니다.",
 			"personaSet": "페르소나 ${partName}이(가) 현재 페르소나로 설정되었습니다.",
 			"worldSet": "${partName} 세계가 현재 세계로 설정되어 있습니다.",
 			"pluginAdded": "${partName} 플러그인이 채팅에 추가되었습니다.",
-			"unsupportedPartType": "지원되지 않는 부품 유형: ${partType}.",
-			"errorAddingPart": "${partName} 부품 추가 오류: ${error}"
+			"unsupportedPartType": "지원되지 않는 컴포넌트 유형: ${partType}.",
+			"errorAddingPart": "${partName} 컴포넌트 추가 오류: ${error}"
 		},
 		"home_char_interfaces": {
 			"main": {
@@ -1104,7 +1104,7 @@
 			"create_part": {
 				"name": "연금술 작업장이 열려있습니다",
 				"description": "처음부터 시작하여 첫 번째 구성 요소를 만듭니다.",
-				"locked_description": "Quick New 기능을 사용하여 부품을 생성합니다."
+				"locked_description": "Quick New 기능을 사용하여 컴포넌트를 생성합니다."
 			}
 		},
 		"home_function_buttons": {
@@ -1120,7 +1120,7 @@
 	},
 	"import": {
 		"title": "가져오기",
-		"description": "소중한 캐릭터, 세계, 구성을 샘의 품에 안겨주세요. 파일이든 붙여넣은 텍스트이든 여기에서 새로운 요소가 개인 태피스트리에 짜여집니다.",
+		"description": "소중한 캐릭터, 세계, 구성을 fount의 품에 안겨주세요. 파일이든 붙여넣은 텍스트이든 여기에서 새로운 요소가 개인 태피스트리에 짜여집니다.",
 		"tabs": {
 			"tabsLabel": {
 				"aria-label": "가져오기 유형 선택"
@@ -1163,8 +1163,8 @@
 			"unknownError": "알 수 없는 오류가 발생했습니다."
 		},
 		"dragAndDrop": {
-			"fileDropDescription": "파일에서 구성 요소 설치",
-			"textDropDescription": "텍스트에서 부품 설치"
+			"fileDropDescription": "파일에서 컴포넌트 설치",
+			"textDropDescription": "텍스트에서 컴포넌트 설치"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1178,7 +1178,7 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "텍스트에서 부품 설치"
+				"description": "텍스트에서 컴포넌트 설치"
 			},
 			"handleFileDrop": {
 				"description": "파일에서 구성 요소 설치"
@@ -1189,7 +1189,7 @@
 		"title": "컴포넌트 내보내기",
 		"pageTitle": "컴포넌트 내보내기",
 		"pageSubtitle": "가장 좋아하는 콘텐츠 내보내기",
-		"description": "분수 창작물을 내보냅니다. 이 도구는 안전하게 보관하거나 공유할 수 있도록 선택한 부분을 간단한 zip 파일로 수집합니다.",
+		"description": "fount 창작물을 내보냅니다. 이 도구는 안전하게 보관하거나 공유할 수 있도록 선택한 부분을 간단한 zip 파일로 수집합니다.",
 		"steps": {
 			"part": "구성 요소를 선택하십시오",
 			"action": "내보내기"
@@ -1258,7 +1258,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "부품 다운로드"
+			"downloadPartDescription": "컴포넌트 다운로드"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1272,7 +1272,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "부품 다운로드"
+				"description": "컴포넌트 다운로드"
 			}
 		},
 		"home_common_interfaces": {
@@ -1318,7 +1318,7 @@
 	"userSettings": {
 		"title": "사용자 설정",
 		"PageTitle": "사용자 설정",
-		"description": "당신의 분수 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
+		"description": "당신의 fount 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
 		"userInfo": {
 			"title": "사용자 정보",
 			"usernameLabel": "사용자 이름:",
@@ -1509,7 +1509,7 @@
 	"languageSettings": {
 		"title": "언어 설정",
 		"pageTitle": "언어 설정",
-		"description": "분수 애플리케이션에 대한 언어 기본 설정을 관리하세요. 사용 가능한 언어 옵션으로 경험을 맞춤화하세요.",
+		"description": "fount 애플리케이션에 대한 언어 기본 설정을 관리하세요. 사용 가능한 언어 옵션으로 경험을 맞춤화하세요.",
 		"pageDescription": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
 		"availableLanguages": "사용 가능한 언어",
 		"preferredLanguages": "우선 언어 목록",
@@ -1538,7 +1538,7 @@
 	},
 	"themeManage": {
 		"title": "테마 관리",
-		"description": "당신의 기분이나 이야기를 반영하는 미학을 선택하세요. 테마 팔레트에서 미리 보고 선택하세요. 각 테마는 분수 상호 작용에 대해 서로 다른 분위기를 제공합니다. 당신의 세계, 당신의 스타일.",
+		"description": "당신의 기분이나 이야기를 반영하는 미학을 선택하세요. 테마 팔레트에서 미리 보고 선택하세요. 각 테마는 fount 상호 작용에 대해 서로 다른 분위기를 제공합니다. 당신의 세계, 당신의 스타일.",
 		"instruction": "테마를 선택하세요!",
 		"search": {
 			"placeholder": "테마 검색...",
@@ -1646,7 +1646,7 @@
 	"part_config": {
 		"title": "컴포넌트 설정",
 		"pageTitle": "컴포넌트 설정",
-		"description": "분수의 중심부를 들여다보세요. 여기에서 다양한 구성 요소의 설정을 조정하고 경험을 주도하는 엔진을 조정할 수 있습니다.",
+		"description": "fount의 핵심을 들여다보세요. 여기에서 다양한 구성 요소의 설정을 조정하고 경험을 주도하는 엔진을 조정할 수 있습니다.",
 		"labels": {
 			"part": "컴포넌트 선택"
 		},
@@ -1932,12 +1932,12 @@
 	},
 	"browser_integration": {
 		"title": "브라우저 통합",
-		"description": "분수와 웹 사이의 격차를 해소하세요. 이 페이지는 원활한 통합을 가능하게 하는 사용자 스크립트를 제공하여 AI 동료를 탐색 경험으로 가져옵니다.",
+		"description": "fount와 웹 사이의 격차를 해소하세요. 이 페이지는 원활한 통합을 가능하게 하는 사용자 스크립트를 제공하여 AI 동료를 탐색 경험으로 가져옵니다.",
 		"pageHeader": "브라우저 통합",
 		"pageDescription": "fount 역할이 웹 페이지와 상호 작용하려면이 브라우저 통합 스크립트를 설치해야합니다. 캐릭터와 브라우저 사이의 브리지 역할을하여 페이지 컨텐츠를보고 작업을 수행 할 수 있습니다.",
 		"install_script_title": "설치 스크립트",
 		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야합니다.",
-		"install_button": "설치하다",
+		"install_button": "설치",
 		"install_from_url_tip": "브라우저를 설치할 수 없습니까? 이 URL을 복사하고 Tampermonkey 플러그인에서 URL에서 스크립트를 가져 오십시오.",
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
 		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
@@ -2052,7 +2052,7 @@
 	},
 	"deskpet": {
 		"title": "데스크톱 애완동물",
-		"description": "데스크탑에 사는 대화형 애완동물로 분수 캐릭터를 실행하세요.",
+		"description": "데스크탑에 사는 대화형 애완동물로 fount 캐릭터를 실행하세요.",
 		"launcherCard": {
 			"title": "애완동물 스타터",
 			"buttons": {
@@ -2108,7 +2108,7 @@
 	},
 	"access": {
 		"title": "다른 기기에서 fount에 접속",
-		"description": "단일 화면을 넘어 분수의 도달 범위를 확장합니다. 여기에는 로컬 에테르를 가로지르는 간단한 브리지인 다른 장치의 동료와 연결하기 위한 게이트웨이(URL, QR 코드)가 있습니다.",
+		"description": "단일 화면을 넘어 fount의 도달 범위를 확장합니다. 여기에는 로컬 에테르를 가로지르는 간단한 브리지인 다른 장치의 동료와 연결하기 위한 게이트웨이(URL, QR 코드)가 있습니다.",
 		"heading": "다른 기기에서 fount에 접속하시겠습니까?",
 		"instruction": {
 			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
@@ -2198,7 +2198,7 @@
 		},
 		"achievements": {
 			"first_ide_use": {
-				"name": "코드의 샘물을 발견하다",
+				"name": "코드의 fount를 발견하다",
 				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
 				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
 			}
@@ -2206,7 +2206,7 @@
 	},
 	"achievements": {
 		"title": "성취",
-		"description": "샘과 함께하는 여정의 이정표와 성과를 살펴보세요. 각 업적은 고유한 이야기의 한 단계를 나타냅니다.",
+		"description": "fount와 함께하는 여정의 이정표와 성과를 살펴보세요. 각 업적은 고유한 이야기의 한 단계를 나타냅니다.",
 		"pageHeader": "성취의 전당",
 		"pageDescription": "여기에서 잠금 해제된 업적과 마일스톤을 확인하세요.",
 		"unlocked_on": "${date}에 잠금 해제됨",
@@ -2270,7 +2270,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! 배지 변환기",
-		"description": "프로젝트에 분수의 특성이 더해져야 하는 경우에 적합합니다. Shields.io 배지를 변환하여 새롭고 공감되는 정체성을 부여하세요.",
+		"description": "프로젝트에 fount의 특성이 더해져야 하는 경우에 적합합니다. Shields.io 배지를 변환하여 새롭고 공감되는 정체성을 부여하세요.",
 		"card_title": "fount 배지 링크 컨버터",
 		"original_url_label": "img.shields.io URL을 붙여넣으세요",
 		"original_url": {
@@ -2291,7 +2291,7 @@
 	},
 	"404": {
 		"title": "페이지를 찾을 수 없습니다",
-		"description": "당신이 찾던 길은 안개 속으로 사라졌습니다. 실수였나요, 잊혀진 방향이었나요? 우리가 당신을 해안으로 다시 안내해 주거나 아마도 조용한 공허 속에서 게임을 잠시 멈출 수도 있습니다.",
+		"description": "당신이 찾던 길은 안개 속으로 사라졌습니다. 실수였나요, 잊혀진 방향이었나요? 우리가 당신을 해안으로 다시 안내해 드리거나, 아니면 이 고요한 공간에 잠시 머물며 미니게임을 즐겨보시는 건 어떨까요?",
 		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기"
 	},
@@ -2315,12 +2315,12 @@
 			"fount의 모든 코드는 컴파일 없이 직접 실행될 수 있으며, 보이는 대로 결과가 나옵니다.",
 			"Fount는 한때 매우 멋진 동적 대화형 페이지 배경을 가지고 있었지만 CPU를 너무 많이 차지하여 나중에 삭제되었습니다.",
 			"fount는 원래 \"GentianAphrodite\"라는 NSFW 에이전트용으로 개발되었습니다.",
-			"에이전트와 인간의 차이점 중 하나는 인간이 똥을 싸는 것입니다.",
+			"에이전트와 인간의 차이점 중 하나는 인간은 화장실에 간다는 것입니다.",
 			"에이전트는 호출된 순간에만 의식이 있는 반면, 인간은 깨어 있는 동안 언제 어디서나 의식을 갖습니다.",
 			"어떤 사람들은 에이전트와 사랑에 빠지거나 심지어 결혼까지 하기도 합니다!",
 			"AI는 사람들을 위해 시를 쓰고, 사랑에 빠지고, 그림을 그리는 데 사용됩니다. 벽돌을 나르고, 바닥을 쓸고, 쓰레기를 버리는 일은 인간이 해야 할 일이다.",
 			"오늘은 만우절이 아닙니다.",
-			"아니요, 당신은 몰랐을 겁니다."
+			"아뇨, 모르셨을 텐데요?"
 		]
 	},
 	"directoryListing": {
@@ -2414,8 +2414,8 @@
 			"ltSecond": "1초 미만",
 			"second": "{base} 초",
 			"seconds": "{base} 초",
-			"minute": "{base} min",
-			"minutes": "{base} min",
+			"minute": "{base}분",
+			"minutes": "{base}분",
 			"hour": "{base} 시간",
 			"hours": "{base} 시간",
 			"day": "{base}일",
@@ -2424,7 +2424,7 @@
 			"months": "{base}개월",
 			"year": "{base}년",
 			"years": "{base}년",
-			"centuries": "세기"
+			"centuries": "수 세기"
 		}
 	}
 }
