@@ -10,6 +10,10 @@ import {
 	setCustomTheme,
 	setTheme,
 } from '/scripts/theme.mjs'
+import {
+	applyThemeWithViewTransition,
+	createAutoPreview,
+} from '/scripts/themeViewTransition.mjs'
 
 import { extractColorsFromImage } from './colorUtils.mjs'
 
@@ -50,35 +54,6 @@ async function fetchCustomThemes() {
 }
 
 // --- List View Logic ---
-
-/**
- * 创建「自动」主题预览卡片（亮/暗各占一半）。
- * @returns {Promise<HTMLElement>} 自动主题预览卡片。
- */
-async function createAutoPreview() {
-	const container = document.createElement('div')
-	container.classList.add('theme-preview-card', 'cursor-pointer', 'auto-theme-container')
-	container.dataset.theme = 'auto'
-
-	const darkHalf = await renderTemplate('theme_preview', {
-		theme: 'dark',
-		name: 'auto',
-		isCustom: false,
-	})
-	const lightHalf = await renderTemplate('theme_preview', {
-		theme: 'light',
-		name: 'auto',
-		isCustom: false,
-	})
-
-	darkHalf.classList.add('auto-theme-half', 'auto-theme-dark')
-	lightHalf.classList.add('auto-theme-half', 'auto-theme-light')
-
-	container.appendChild(lightHalf)
-	container.appendChild(darkHalf)
-
-	return container
-}
 
 /**
  * 渲染主题列表，包括自定义主题和内置主题，并设置搜索功能。
@@ -146,12 +121,10 @@ async function renderList() {
 					isCustom,
 				})
 
-				// Click to Apply
+				// Click to Apply (with circle-reveal animation)
 				preview.addEventListener('click', (e) => {
-					// Don't apply if clicked on action buttons
 					if (e.target.closest('button')) return
-					handleThemeApply(item.id, isCustom)
-					updateSelectedUI(item.id)
+					applyThemeWithAnimation(e, item.id, isCustom)
 				})
 
 				// Highlight selected
@@ -198,15 +171,26 @@ function updateSelectedUI(id) {
 }
 
 /**
- * 应用指定的主题。
+ * 使用 View Transition API：从点击处圆圈扩散，圈内直接显示新主题内容。
+ * @param {MouseEvent} e - 点击事件（取坐标）
+ * @param {string} id - 主题ID
+ * @param {boolean} isCustom - 是否自定义主题
+ */
+async function applyThemeWithAnimation(e, id, isCustom) {
+	await applyThemeWithViewTransition(e, async () => {
+		await handleThemeApply(id, isCustom)
+		updateSelectedUI(id)
+	})
+}
+
+/**
+ * 应用指定的主题（无动画，供编辑器保存等场景使用）。
  * @param {string} id - 要应用的主题ID。
  * @param {boolean} isCustom - 主题是否为自定义主题。
  * @returns {Promise<void>}
  */
 async function handleThemeApply(id, isCustom) {
 	if (isCustom) {
-		// Use the URL endpoint to load it via theme.mjs
-		// Note: The URL is constructed based on the endpoint we defined
 		const url = `/api/parts/shells:themeManage/theme/${id}`
 		await setCustomTheme(id, url)
 	} else
