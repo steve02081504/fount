@@ -42,6 +42,8 @@ export default {
 		chat: {
 			GetPrompt: getFountApiPrompt,
 			ReplyHandler: fountApiReplyHandler,
+		},
+		code_execution: {
 			/**
 			 * 获取 JS 代码上下文，提供 fountApiKey 变量。
 			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
