@@ -1,7 +1,7 @@
 <details>
 <summary><small>In breve</small></summary>
 
-fount è una piattaforma di runtime per agenti programmabile, standardizzata, modulare e personalizzabile che carica varie parti per fornire servizi.  
+fount è una piattaforma di runtime per agenti programmabile, standardizzata, modulare e personalizzabile che carica vari componenti per fornire servizi.  
 Per domande relative al codice, consulta [deepwiki](https://deepwiki.com/steve02081504/fount).  
 <small>Il nome fount è tutto in minuscolo—è `f`ount, non `F`ount.</small>
 
@@ -13,12 +13,12 @@ Per domande relative al codice, consulta [deepwiki](https://deepwiki.com/steve02
 - Adatto all'ufficio, export rapido dei report
 - Integrazione fluida dei personaggi in IDE, browser, terminali, Discord, ecc.
 - Plugin orientati agli agenti dalla community che altre interfacce di chat LLM non hanno
-- Configura l'API e usa il personaggio predefinito ZL-31 per completare configurazione parti, creazione e **tutte le operazioni utente** tramite conversazione—senza apprendimento o onboarding
+- Configura l'API e usa il personaggio predefinito ZL-31 per completare configurazione componenti, creazione e **tutte le operazioni utente** tramite conversazione—senza apprendimento o onboarding
 
 #### Perché non fount?
 
 - Curva di apprendimento più ripida, conoscenze di codice necessarie
-- Alcune parti della community possono contenere codice malevolo; valuta e scegli con attenzione
+- Alcuni componenti della community possono contenere codice malevolo; valuta e scegli con attenzione
 
 ##### Cosa dovrei usare?
 
@@ -83,32 +83,32 @@ fount trasforma l'interazione in risorse di produttività. Tutto è trascinabile
 
 ### 1. Nessun apprendimento richiesto, pronto all'uso
 
-- Configura l'API e usa il personaggio predefinito ZL-31 per completare configurazione parti, creazione e **tutte le operazioni utente** tramite conversazione—senza apprendimento o onboarding.
+- Configura l'API e usa il personaggio predefinito ZL-31 per completare configurazione componenti, creazione e **tutte le operazioni utente** tramite conversazione—senza apprendimento o onboarding.
   ![Immagine](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
 
-### 2. Assetizzazione della Conoscenza e Condivisione Senza Interruzioni
+### 2. Valorizzazione della conoscenza e condivisione senza interruzioni
 
-- **Generazione Immediata di Rapporti**: Trascina una bolla di conversazione direttamente in una cartella per generare istantaneamente un rapporto HTML indipendente. Questo è l'ideale per organizzare rapidamente documenti tecnici, registri di riunioni o frammenti di ispirazione.
+- **Generazione immediata di rapporti**: Trascina una bolla di conversazione direttamente in una cartella per generare istantaneamente un rapporto HTML indipendente. Questo è l'ideale per organizzare rapidamente documenti tecnici, registri di riunioni o frammenti di ispirazione.
   ![Immagine](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
-- **Incapsulamento e Distribuzione del Flusso di Lavoro**: Trascina il ruolo (agente) che hai creato direttamente sul desktop per generare un file condivisibile. Distribuisci facilmente la tua ingegneria dei Prompt e la logica del flusso di lavoro a colleghi o alla comunità.
+- **Incapsulamento e distribuzione del flusso di lavoro**: Trascina il personaggio (agente) che hai creato direttamente sul desktop per generare un file condivisibile. Distribuisci facilmente la tua ingegneria dei Prompt e la logica del flusso di lavoro a colleghi o alla comunità.
   ![Immagine](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-### 3. Ambiente di Esecuzione del Codice in Tempo Reale
+### 3. Ambiente di esecuzione del codice in tempo reale
 
-Non è più solo l'evidenziazione di Markdown. In fount, i blocchi di codice inviati dal ruolo (agente) sono **vivi**.
+Non è più solo l'evidenziazione di Markdown. In fount, i blocchi di codice inviati dal personaggio (agente) sono **vivi**.
 
 - Supporta la compilazione e l'esecuzione in tempo reale per più linguaggi (C/C++/Rust/Python/JS, ecc.).
 - Visualizza direttamente l'output stdout, e anche i risultati del disassemblaggio ASM per i linguaggi compilati.
-- Lascia che l'AI diventi il tuo verificatore in tempo reale per la programmazione in coppia.
+- Lascia che l'AI diventi il tuo verificatore in tempo reale per il pair programming.
   ![Immagine](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. A Misura di Sviluppatore
+### 4. A misura di sviluppatore
 
 L'architettura del progetto fount è progettata tenendo pienamente conto delle abitudini degli sviluppatori.
 [Vuoi conoscere l'architettura del repository del progetto? Dai un'occhiata a DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Guidato da Git**: Tutti i componenti possono essere gestiti tramite Git.
-- **Integrazione VSCode**: La struttura del progetto è chiara. In combinazione con la guida fornita in [AGENTS.md](../AGENTS.md), puoi sviluppare ed eseguire il debug della logica del tuo Agente direttamente nel tuo IDE preferito.
+- **Integrazione VSCode**: La struttura del progetto è chiara. In combinazione con la guida fornita in [AGENTS.md](../AGENTS.md), puoi sviluppare ed eseguire il debug della logica del tuo agente direttamente nel tuo IDE preferito.
 
 ---
 
@@ -116,21 +116,21 @@ L'architettura del progetto fount è progettata tenendo pienamente conto delle a
 
 Quando il lavoro è finito, fount fornisce una connessione che trascende l'ordinario. Abbandoniamo la rigidità degli strumenti tradizionali, perseguendo un'interazione "ad alta fedeltà" naturale, fluida e profonda.
 
-- **Conversazioni Senza Interruzioni, Sempre e Ovunque**
-  Una chat iniziata su un computer può continuare senza problemi su un telefono cellulare o tablet. fount mantiene le tue conversazioni sincronizzate, assicurandoti di rimanere strettamente connesso con il tuo ruolo, ovunque tu sia.
+- **Conversazioni senza interruzioni, sempre e ovunque**
+  Una chat iniziata su un computer può continuare senza problemi su un telefono cellulare o tablet. fount mantiene le tue conversazioni sincronizzate, assicurandoti di rimanere strettamente connesso con il tuo personaggio, ovunque tu sia.
 
-- **Chat Espressiva e Immersiva**
-  Sfruttando la potenza dell'HTML, fount consente al ruolo (agente) di esprimersi attraverso testo ricco, immagini e persino elementi interattivi, rendendo ogni conversazione vivida e profonda.
+- **Chat espressiva e immersiva**
+  Sfruttando la potenza dell'HTML, fount consente al personaggio (agente) di esprimersi attraverso testo ricco, immagini e persino elementi interattivi, rendendo ogni conversazione vivida e profonda.
 
-- **Un Incontro di Menti: Chat di Gruppo Nativa**
-  Invita più ruoli a unirsi alla stessa conversazione e assisti alle loro interazioni dinamiche e coinvolgenti, sia per un brainstorming di lavoro che per la messa in scena di una storia tra i ruoli.
+- **Un incontro di menti: chat di gruppo nativa**
+  Invita più personaggi a unirsi alla stessa conversazione e assisti alle loro interazioni dinamiche e coinvolgenti, sia per un brainstorming di lavoro che per la messa in scena di una storia tra i personaggi.
   ![Immagine](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
 
-- **Interfaccia Bella e Personalizzabile**
+- **Interfaccia bella e personalizzabile**
   Scegli tra oltre 30 temi sbalorditivi, o crea i tuoi colori. fount è la tua tela esclusiva.
   ![Immagine](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
 
-- **Disponibile Ovunque**
+- **Disponibile ovunque**
   fount funziona senza problemi su Windows, macOS, Linux e persino Android, soddisfacendo le tue diverse esigenze tramite l'installazione diretta o la flessibilità di Docker.
 
 - **Integrazione di Sorgenti AI Senza Vincoli: Abbraccia l'Infinito**
@@ -151,20 +151,20 @@ fount si impegna a tessere i personaggi nel tessuto stesso della tua vita, offre
   ![Immagine](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
   ![Immagine](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
-- **Integrazione Browser**
-  Integra i personaggi nelle estensioni del browser, permettendo loro di **vedere e modificare** il contenuto delle pagine nel tuo browser, realizzando veramente la "navigazione web con l'IA".
+- **Integrazione browser**
+  Integra i personaggi nelle estensioni del browser, consentendo loro di **vedere e modificare** il contenuto delle pagine nel tuo browser, realizzando veramente la "navigazione web con l'IA".
   Puoi dire al tuo personaggio: Ehi XX, aiutami a cambiare il colore di questa pagina e aggiungi qualche decorazione.
   ![Immagine](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
 
 - **Integrazione IDE**
-  Integra i personaggi in IDE come JetBrains, neovim, Zed, ecc., permettendo loro di fornire assistenza e suggerimenti contestuali mentre scrivi codice, proprio come Cursor Agent o GitHub Copilot.
+  Integra i personaggi in IDE come JetBrains, neovim, Zed, ecc., consentendo loro di fornire assistenza e suggerimenti contestuali mentre scrivi codice, proprio come Cursor Agent o GitHub Copilot.
   ![Immagine](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
 
-- **La Quiete del Terminale (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
+- **La serenità nel terminale** (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
   Quando un comando del terminale fallisce, lascia che il tuo personaggio ti offra una parola di guida silenziosa, alleviando la solitudine del mondo digitale.
   ![Immagine](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-- **Estensioni Shell Illimitate**
+- **Estensioni shell illimitate**
   Con un tocco di abilità di programmazione, crea le tue fount Shells, estendendo la portata dei tuoi personaggi in ogni angolo che puoi immaginare.
 
 ---
@@ -173,20 +173,20 @@ fount si impegna a tessere i personaggi nel tessuto stesso della tua vita, offre
 
 Per il creatore, fount offre un percorso più chiaro per dare vita ai tuoi personaggi AI.
 
-- **Creazione Rivoluzionaria Assistita da AI**
+- **Creazione rivoluzionaria assistita da AI**
   Descrivi il tuo personaggio in una sola frase, e il nostro assistente AI intelligente creerà una personalità completa. Questo semplifica la configurazione iniziale, permettendoti di concentrarti sul perfezionamento e sull'interazione con la tua creazione.
 
-- **La Magia del Codice, Più Semplice di Quanto Immagini**
+- **La magia del codice, più semplice di quanto immagini**
   In fount, il codice è una forma di magia moderna. Con la guida gentile della nostra comunità e l'aiuto illuminante dell'AI, impararlo è sorprendentemente facile. Scoprirai che definire la logica di un personaggio con il codice può essere un modo intuitivo e manutenibile per creare personaggi le cui risposte sono _tessute_ dalla tua stessa logica.
 
 - **Inizia con la Magia Pronta all'Uso: Un Tesoro di Modelli**
   La comunità di fount offre una vasta gamma di modelli di personaggi e persone predefiniti. Agiscono come "progetti viventi", facili da adattare e personalizzare, offrendo un fantastico punto di partenza.
 
-- **Risorse Integrate**
+- **Risorse integrate**
   Intreccia immagini, audio e altre risorse direttamente nei tuoi personaggi, rendendo la loro presenza ancora più tangibile.
   ![Immagine](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-- **Integrazione Continua**
+- **Integrazione continua**
   Usa [fount-charCI](https://github.com/marketplace/actions/fount-charci) per salvaguardare lo sviluppo dei tuoi personaggi. Esegue automaticamente test ad ogni commit e segnala i problemi in tempo reale.
   ![Immagine](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
   ![Immagine](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
@@ -200,7 +200,7 @@ Per il creatore, fount offre un percorso più chiaro per dare vita ai tuoi perso
 
 fount è costruito su un'architettura robusta e scalabile. Il backend sfrutta la potenza e la velocità di [Deno](https://deno.com/), con [Express](https://expressjs.com/) per un routing efficiente. Il frontend è stato plasmato con HTML, CSS e JavaScript per un'interfaccia intuitiva e accattivante.
 
-### Estensione: Un Arazzo Intessuto con Fili Diversi
+### Estensioni: Un arazzo di innovazioni intrecciate
 
 Nel mondo di fount, la modularità regna sovrana. Un ricco ecosistema di componenti si intreccia per creare l'arazzo della tua esperienza. Tutti possono essere installati, estesi e personalizzati senza sforzo dagli utenti.
 
@@ -254,7 +254,7 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 
 - **Diretto e Semplice (Raccomandato):** Scarica il file `.exe` dalle [Releases](https://github.com/steve02081504/fount/releases) ed eseguilo.
 
-- **La Potenza di PowerShell:**
+- **La potenza di PowerShell:**
 
   ```powershell
   # Se necessario, definisci la variabile d'ambiente $env:FOUNT_DIR per specificare la directory di fount
@@ -288,7 +288,7 @@ docker pull ghcr.io/steve02081504/fount
 fount remove
 ```
 
-## Incontro con un'Ombra? Non Temere
+## Problemi all'orizzonte? Niente panico
 
 Se dovessi incontrare difficoltà nel tuo viaggio, non esitare a contattarci. Siamo qui per aiutarti e ci impegniamo a risolvere la maggior parte dei problemi entro 10 minuti o 24 ore.
 
@@ -299,13 +299,13 @@ La tua voce sarà ascoltata. Riavvia semplicemente fount, e le ombre si dissolve
 
 ---
 
-## Stemmi e Collegamenti: Lascia che le Tue Creazioni Brillino, Rendi il Mondo Raggiungibile
+## Badge e Link: Lascia che le tue creazioni brillino, rendi il mondo raggiungibile
 
-Il mondo di fount è più di parole e codice; è una festa per gli occhi e un invito alla connessione. Abbiamo preparato stemmi raffinati e collegamenti comodi per far brillare i tuoi componenti fount e permettere ad altri di scoprire facilmente i tuoi capolavori.
+Il mondo di fount è più di parole e codice; è una festa per gli occhi e un invito alla connessione. Abbiamo preparato badge raffinati e link comodi per far brillare i tuoi componenti fount e permettere ad altri di scoprire facilmente i tuoi capolavori.
 
-### Stemma fount: Il Sigillo della Gloria
+### Badge fount: Il sigillo della gloria
 
-Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mostrare il tuo lavoro. Trova i file SVG del logo fount [qui](../imgs/).
+Puoi esporre con orgoglio questo badge nel tuo repository o ovunque desideri mostrare il tuo lavoro. Trova i file SVG del logo fount [qui](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -325,9 +325,9 @@ Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mo
 |      RGB       |  `rgb(14, 60, 92)`   |
 |      HSL       | `hsl(205, 74%, 21%)` |
 
-Puoi anche usare l'[Aggiungi Badge](https://steve02081504.github.io/fount/badges/) per aggiungere il logo di fount a qualsiasi badge di shields.io.
+Puoi anche usare il [Generatore di badge](https://steve02081504.github.io/fount/badges/) per aggiungere il logo di fount a qualsiasi badge di shields.io.
 
-### Collegamenti di Installazione Automatica: Magia a Portata di Mano
+### Link di installazione automatica: magia a portata di mano
 
 Immagina altri che installano le tue creazioni nel loro mondo fount con un solo clic. Combina semplicemente il link ZIP o del repository Git del tuo componente con il link di protocollo di fount.
 
@@ -350,7 +350,7 @@ Tuttavia, alcuni browser percorrono un sentiero diverso, e il loro incontro con 
   - Secondo i rapporti di errore del backend, è solo nel mondo di Firefox che le pagine di fount a volte cadono in errori misteriosi o appaiono strane — quando succede, prova ad aggiornare; potrebbe dissolvere la nebbia.
 
 - **Apple Safari**: Il suo supporto per gli standard web "emergenti" (vecchi di diversi anni) potrebbe essere un po' meglio di quello di Firefox, ma non di molto.
-  - Manca anche il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), il che significa che l'avvio di fount subirà comunque un leggero ritardo, sprecando i tuoi preziosi momenti.
+  - Manca anche il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), il che significa che l'avvio di fount subirà comunque un leggero ritardo, rubando secondi preziosi al tuo tempo.
 
 - **Brave**: Sebbene basato su Chromium, il suo formidabile scudo della privacy può talvolta oscurare inavvertitamente parte della luce di fount, influenzando il normale funzionamento di alcune funzionalità.
 
