@@ -165,7 +165,7 @@
 				"installingDependencies": "Installazione delle dipendenze...",
 				"packageFailed": "Errore: installazione di ${package} non riuscita.",
 				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
-				"untrustedPartsWarning": "Non installare componenti di font non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
+				"untrustedPartsWarning": "Non installare componenti di fount non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
 				"rootWarning1": "Non consigliato: l'esecuzione del fount come root garantisce l'accesso completo al sistema a tutti i componenti del fount.",
 				"rootWarning2": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale."
 			},
@@ -178,8 +178,8 @@
 			"keepalive": {
 				"initComplete": "Reinizializzazione completata. Tentativo di riavviare fount...",
 				"autoInitDisabled": "fount è stato riavviato più volte nell'ultimo breve periodo di tempo, ma la reinizializzazione automatica è stata disabilitata a causa della presenza del file .noautoinit. In uscita.",
-				"restartingTooFast": "La fonte è stata riavviata più volte in un breve periodo di tempo. Reinizializzazione forzata...",
-				"failedToStart": "Anche dopo i tentativi di riparazione automatica, la fontana non si avvia per un breve periodo di tempo. Si prega di verificare la presenza di errori nei log.",
+				"restartingTooFast": "fount è stato riavviato più volte in un breve periodo di tempo. Reinizializzazione forzata...",
+				"failedToStart": "Anche dopo i tentativi di riparazione automatica, fount non si avvia. Si prega di verificare la presenza di errori nei log.",
 				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
 			"remove": {
@@ -191,7 +191,7 @@
 				"removingProtocolHandler": "Rimozione del gestore del protocollo fount:// in corso...",
 				"protocolHandlerRemoved": "Il gestore del protocollo fount:// è stato rimosso.",
 				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo fount://: ${message}",
-				"removingFountFromGitSafeDir": "Rimozione di font da git safe.directory...",
+				"removingFountFromGitSafeDir": "Rimozione di fount da git safe.directory...",
 				"removingInstalledSystemPackages": "Rimozione dei pacchetti di sistema installati...",
 				"uninstallingDeno": "Disinstallazione di Deno...",
 				"removeDenoFailed": "Impossibile rimuovere Deno: ${message}",
@@ -221,7 +221,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Benvenuto in fount!",
-		"description": "Segui l'avanzamento dell'installazione e scopri le funzionalità all'interno. font sarà pronto per il lancio in un attimo.",
+		"description": "Segui l'avanzamento dell'installazione e scopri le funzionalità all'interno. fount sarà pronto per il lancio in un attimo.",
 		"hero": {
 			"title": "Una Scintilla di Pensiero, un Compagno per l'Anima.",
 			"description": "fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Integrazione illimitata con sorgenti IA",
-			"description": "fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. La logica di comunicazione sarà modellata dalla potenza del codice, secondo i <i>tuoi</i> desideri."
+			"description": "fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. Grazie alla potenza del codice, la logica di comunicazione prenderà forma esattamente secondo i <i>tuoi</i> desideri."
 		},
 		"language_selector": {
 			"button": {
@@ -310,7 +310,7 @@
 		"runPartConfirm": {
 			"title": "Conferma esecuzione",
 			"message": "Sei sicuro di voler eseguire ${partpath}?",
-			"confirm": "confermare",
+			"confirm": "Conferma",
 			"cancel": "Annulla"
 		},
 		"offline_dialog": {
@@ -335,7 +335,7 @@
 	},
 	"tutorial": {
 		"title": "Ti va un tutorial?",
-		"description": "Camminiamo con voi attraverso il mondo di font. Questo tutorial interattivo illuminerà il percorso, aiutandoti a scoprire la magia intessuta nel suo nucleo. La tua avventura inizia con la comprensione.",
+		"description": "Camminiamo con voi attraverso il mondo di fount. Questo tutorial interattivo illuminerà il percorso, aiutandoti a scoprire la magia intessuta nel suo nucleo. La tua avventura inizia con la comprensione.",
 		"modal": {
 			"title": "Benvenuto in fount!",
 			"instruction": "Vuoi seguire il tutorial per principianti?",
@@ -438,12 +438,12 @@
 	},
 	"login_info": {
 		"title": "Informazioni di accesso",
-		"description": "Uno spazio sicuro per gestire le credenziali di accesso ai font: le chiavi per accedere al tuo mondo di storie non raccontate.",
+		"description": "Uno spazio sicuro per gestire le credenziali di accesso a fount: le chiavi per accedere al tuo mondo di storie non raccontate.",
 		"modal": {
 			"title": "Errore di trasferimento del certificato",
 			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",
 			"transfer_error": "Si è verificato un errore durante il tentativo di trasferire le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi ottenere informazioni di accesso.",
-			"no_credentials": "Nessuna credenziale di accesso salvata trovata.\nAccedi nuovamente da Font per aggiornare le tue credenziali di accesso oppure fai clic sul pulsante in basso per continuare alla pagina di destinazione senza credenziali di accesso.",
+			"no_credentials": "Nessuna credenziale di accesso salvata trovata.\nAccedi nuovamente da fount per aggiornare le tue credenziali di accesso oppure fai clic sul pulsante in basso per continuare alla pagina di destinazione senza credenziali di accesso.",
 			"missing_params": "Nel collegamento manca un parametro obbligatorio.",
 			"buttons": {
 				"ignore": "Ignora e continua",
@@ -453,7 +453,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"description": "Il cuore della tua esperienza di font. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e personaggi. Le tue storie iniziano e si diramano da questo nesso centrale.",
+		"description": "Il cuore della tua esperienza di fount. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e personaggi. Le tue storie iniziano e si diramano da questo nesso centrale.",
 		"sidebarTitle": "Dettagli",
 		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
 		"noDescription": "Nessuna descrizione disponibile.",
@@ -487,16 +487,16 @@
 		"part_pages": {
 			"default": {
 				"title": "Selezione dei componenti",
-				"subtitle": "Prendi una foglia e inizia il tuo viaggio.",
+				"subtitle": "Scegli un frammento e inizia il tuo viaggio.",
 				"card": {
 					"noTags": "nessuna etichetta",
 					"version": "Versione",
-					"author": "autore",
+					"author": "Autore",
 					"home_page": "Pagina iniziale",
 					"issue_page": "Segnala un problema",
 					"refreshButton": {
 						"alt": "Aggiorna",
-						"title": "aggiornare"
+						"title": "Aggiorna"
 					},
 					"defaultCheckbox": {
 						"title": "Imposta come predefinito"
@@ -508,7 +508,7 @@
 				"subtitle": "Incontra un'anima e inizia una conversazione.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Imposta come ruolo predefinito"
+						"title": "Imposta come personaggio predefinito"
 					}
 				}
 			},
@@ -541,7 +541,7 @@
 			},
 			"ImportHandlers": {
 				"title": "Importa processore",
-				"subtitle": "Il mare è aperto a tutti i fiumi e compreso.",
+				"subtitle": "Come l'oceano che accoglie ogni fiume, abbraccia ogni possibilità.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Imposta come processore di importazione predefinito"
@@ -636,12 +636,12 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Ciao, fonte!",
+				"name": "Ciao, fount!",
 				"description": "Dirigiti verso il nuovo mondo, accedi per la prima volta!",
-				"locked_description": "Accedi alla fontana una volta."
+				"locked_description": "Accedi a fount per la prima volta."
 			},
 			"sfw_mode_on": {
-				"name": "C'è qualcuno dietro di te!",
+				"name": "Attenzione al capo!",
 				"description": "Passa rapidamente alla modalità per tutte le età, sono un ragazzino così intelligente.",
 				"locked_description": "Attiva la modalità contenuto sicuro una volta."
 			},
@@ -838,7 +838,7 @@
 			},
 			"share": {
 				"uploading": "Creazione collegamento...",
-				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili. ](${sponsorLink})"
+				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili.](${sponsorLink})"
 			},
 			"commonToolCalling": "Esecuzione strumento",
 			"noReplyContent": "(Nessun contenuto della risposta)"
@@ -929,7 +929,7 @@
 				"locked_description": "Fai parlare due o più personaggi nella stessa chat."
 			},
 			"photo_chat": {
-				"name": "Ci sono le immagini e la verità",
+				"name": "Un'immagine vale mille parole",
 				"description": "Usa le immagini per rompere il muro dimensionale.",
 				"locked_description": "Invia una foto in chat."
 			},
@@ -941,7 +941,7 @@
 		},
 		"dragAndDrop": {
 			"invalidPartData": "Dati della parte non validi.",
-			"charAdded": "Il ruolo ${partName} è stato aggiunto alla chat.",
+			"charAdded": "Il personaggio ${partName} è stato aggiunto alla chat.",
 			"personaSet": "La persona ${partName} è stata impostata come persona attuale.",
 			"worldSet": "Mondo ${partName} è impostato sul mondo attuale.",
 			"pluginAdded": "Il plugin ${partName} è stato aggiunto alla chat.",
@@ -1005,9 +1005,9 @@
 	},
 	"easynew": {
 		"title": "Creazione rapida",
-		"description": "Impalca rapidamente nuove parti di font come personaggi, mondi e plug-in utilizzando modelli predefiniti o personalizzati. La tua prossima creazione è a pochi clic di distanza.",
+		"description": "Impalca rapidamente nuove parti di fount come personaggi, mondi e plug-in utilizzando modelli predefiniti o personalizzati. La tua prossima creazione è a pochi clic di distanza.",
 		"info": {
-			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente componenti semplici; i componenti complessi devono ancora essere create manualmente."
+			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente componenti semplici; i componenti complessi devono ancora essere creati manualmente."
 		},
 		"cardTitle": "Crea un nuovo componente da un modello",
 		"templateSelect": {
@@ -1189,7 +1189,7 @@
 		"title": "Esportatore di Componenti",
 		"pageTitle": "Esportatore di Componenti",
 		"pageSubtitle": "Esporta i tuoi contenuti preferiti",
-		"description": "Esporta le tue creazioni di font. Questo strumento raccoglie le parti selezionate in un semplice file zip per conservarle o condividerle.",
+		"description": "Esporta le tue creazioni da fount. Questo strumento raccoglie le parti selezionate in un semplice file zip per conservarle o condividerle.",
 		"steps": {
 			"part": "Seleziona i componenti",
 			"action": "Esporta"
@@ -1254,7 +1254,7 @@
 			"share_part": {
 				"name": "Condividere è prendersi cura",
 				"description": "\"Ora ti darò una copia di questa bella cosa.\"",
-				"locked_description": "Condividi il widget una volta."
+				"locked_description": "Condividi un componente una volta."
 			}
 		},
 		"dragAndDrop": {
@@ -1318,7 +1318,7 @@
 	"userSettings": {
 		"title": "Impostazioni utente",
 		"PageTitle": "Impostazioni utente",
-		"description": "Cura i dettagli della tua identità di fonte. Gestisci il tuo profilo, proteggi il tuo accesso e visualizza i dispositivi connessi. Un santuario tranquillo per il tuo account.",
+		"description": "Cura i dettagli della tua identità su fount. Gestisci il tuo profilo, proteggi il tuo accesso e visualizza i dispositivi connessi. Un santuario tranquillo per il tuo account.",
 		"userInfo": {
 			"title": "Informazioni utente",
 			"usernameLabel": "Nome utente:",
@@ -1371,11 +1371,11 @@
 			"input": {
 				"placeholder": "Nuova descrizione chiave"
 			},
-			"createButton": "creare",
+			"createButton": "Crea",
 			"noKeysFound": "Non sono state trovate chiavi API.",
 			"keyDetails": "Descrizione: ${description} | Creato in: ${createdAt} | Ultimo usato: ${lastUsed}",
 			"neverUsed": "Mai usato",
-			"revokeButton": "Revocare",
+			"revokeButton": "Revoca",
 			"revokeConfirm": "Sei sicuro di voler revocare questa chiave API?",
 			"revokeSuccess": "La chiave API è stata revocata con successo.",
 			"errorDescriptionRequired": "È richiesta una descrizione.",
@@ -1435,45 +1435,45 @@
 	"subfounts": {
 		"title": "subfounts: gestione dei dispositivi peer-to-peer",
 		"pageTitle": "subfounts",
-		"description": "Gestisci le connessioni di fontane peer-to-peer",
+		"description": "Gestisci le connessioni subfount peer-to-peer",
 		"hostConnectionCode": {
 			"title": "Codice di connessione all'host",
 			"connectionCodeLabel": "Codice di connessione (ID peer)",
-			"passwordLabel": "password",
-			"copyButton": "copia",
+			"passwordLabel": "Password",
+			"copyButton": "Copia",
 			"regenerateButton": "Rigenerare",
-			"infoMessage": "Condividi queste credenziali con i client dei font secondari per stabilire connessioni.",
+			"infoMessage": "Condividi queste credenziali con i client subfount per stabilire connessioni.",
 			"connectionCodeCopied": "Il codice di connessione è stato copiato negli appunti",
 			"passwordCopied": "Password copiata negli appunti",
 			"regenerateSuccess": "Il codice di connessione è stato rigenerato"
 		},
 		"connectedSubfounts": {
-			"title": "Sottofonte collegata",
-			"noSubfountsConnected": "Nessuna fonte secondaria è collegata",
+			"title": "Subfount collegato",
+			"noSubfountsConnected": "Nessun subfount collegato",
 			"table": {
 				"id": "ID",
 				"description": "Osservazione",
 				"deviceId": "ID del dispositivo",
-				"connectedAt": "tempo di connessione",
-				"status": "stato",
+				"connectedAt": "Tempo di connessione",
+				"status": "Stato",
 				"actions": "Azioni",
 				"connected": "Collegato",
 				"disconnected": "Disconnesso",
-				"save": "salva",
+				"save": "Salva",
 				"na": "N / A"
 			},
 			"descriptionSaved": "Nota salvata",
 			"descriptionSaveFailed": "Impossibile salvare la nota: ${message}"
 		},
 		"codeExecution": {
-			"title": "esecuzione del codice",
+			"title": "Esecuzione del codice",
 			"description": "Esegui il codice JavaScript sulla subfount selezionata",
 			"selectSubfountLabel": "Seleziona la subfount",
 			"selectSubfountPlaceholder": "Seleziona la subfount su cui eseguire il codice...",
 			"hostOption": "Ospite (ID: ${id})",
 			"subfountOption": "Estensione ${id}${deviceId}",
 			"scriptLabel": "Codice JavaScript",
-			"executeButton": "esegui",
+			"executeButton": "Esegui",
 			"executing": "In esecuzione...",
 			"noSubfountSelected": "Seleziona prima una subfount",
 			"noScriptProvided": "Inserisci il codice da eseguire",
@@ -1481,8 +1481,8 @@
 			"executionFailed": "Esecuzione del codice non riuscita: ${message}"
 		},
 		"downloadClient": {
-			"title": "Scarica il client dei font secondari",
-			"description": "Scarica lo script client del subfont autonomo da eseguire sul dispositivo remoto.",
+			"title": "Scarica il client subfount",
+			"description": "Scarica lo script client subfount autonomo da eseguire sul dispositivo remoto.",
 			"downloadButton": "Scarica subfount.mjs"
 		},
 		"errors": {
@@ -1628,7 +1628,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "Una rinfrescata al look!",
-				"description": "La fontana aveva un nuovo aspetto e un'atmosfera completamente nuova.",
+				"description": "fount aveva un nuovo aspetto e un'atmosfera completamente nuova.",
 				"locked_description": "Cambia il tema una volta."
 			}
 		},
@@ -1706,7 +1706,7 @@
 		},
 		"configTitle": "Configurazione dell'origine del servizio",
 		"needsConfigReminder": "Dopo aver configurato l'origine del servizio, in genere è necessario inserire il nome dell'origine del servizio nel campo corrispondente nella configurazione del componente che utilizza questa origine del servizio.",
-		"needsConfigLink": "Vai alla configurazione del widget",
+		"needsConfigLink": "Vai alla configurazione del componente",
 		"subtypeSelect": {
 			"label": "Sottocategoria del generatore",
 			"placeholder": "Seleziona una categoria di generatori"
@@ -1789,10 +1789,10 @@
 			"placeholder": "Cerca bot..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "Seleziona un ruolo"
+			"placeholder": "Seleziona un personaggio"
 		},
 		"charSearch": {
-			"placeholder": "Cerca ruoli..."
+			"placeholder": "Cerca personaggi..."
 		},
 		"configCard": {
 			"title": "Configurazione Bot",
@@ -1865,10 +1865,10 @@
 			"placeholder": "Cerca bot..."
 		},
 		"charSelectDropdown": {
-			"placeholder": "Seleziona un ruolo"
+			"placeholder": "Seleziona un personaggio"
 		},
 		"charSearch": {
-			"placeholder": "Cerca ruoli..."
+			"placeholder": "Cerca personaggi..."
 		},
 		"configCard": {
 			"title": "Configurazione Bot",
@@ -1932,9 +1932,9 @@
 	},
 	"browser_integration": {
 		"title": "Integrazione del browser",
-		"description": "Colma il divario tra font e web. Questa pagina fornisce lo script utente per consentire un'integrazione perfetta, portando i tuoi compagni AI nella tua esperienza di navigazione.",
+		"description": "Colma il divario tra fount e web. Questa pagina fornisce lo script utente per consentire un'integrazione perfetta, portando i tuoi compagni AI nella tua esperienza di navigazione.",
 		"pageHeader": "Integrazione del browser",
-		"pageDescription": "Affinché il ruolo di fount interagisca con la pagina Web, è necessario installare questo script di integrazione del browser. Agisce come un ponte tra il personaggio e il browser, consentendo loro di visualizzare il contenuto della pagina ed eseguire azioni.",
+		"pageDescription": "Affinché il personaggio di fount interagisca con la pagina Web, è necessario installare questo script di integrazione del browser. Agisce come un ponte tra il personaggio e il browser, consentendo loro di visualizzare il contenuto della pagina ed eseguire azioni.",
 		"install_script_title": "Script di installazione",
 		"install_script_description": "Fai clic sul pulsante in basso per installare lo script di integrazione del browser. È necessario prima installare un gestore di userscript come Tampermonkey.",
 		"install_button": "Installare",
@@ -1942,15 +1942,15 @@
 		"what_is_manager": "Cos'è un gestore di userscript?",
 		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
 		"popular_managers": "Scelte popolari:",
-		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare [questo plug-in](${link}).",
+		"csp_warning": "Potrebbe essere necessario installare il plug-in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare [questo plug-in](${link}).",
 		"connected_pages_title": "Pagina connessa",
 		"fetch_pages_error": "Impossibile caricare l'elenco delle pagine collegate.",
 		"page_title": "Titolo della pagina",
 		"page_url": "URL",
-		"page_status": "stato",
+		"page_status": "Stato",
 		"status_focused": "Finestra corrente",
 		"status_unfocused": "In background",
-		"copy_button": "copia",
+		"copy_button": "Copia",
 		"copied_message": "Copiato negli appunti",
 		"no_pages_connected": {
 			"title": "Nessuna connessione ancora",
@@ -1958,7 +1958,7 @@
 		},
 		"autorun": {
 			"title": "Esegui automaticamente script",
-			"description": "Gestisci frammenti JavaScript che vengono eseguiti automaticamente quando si abbinano un sito Web specifico. Questi script possono essere forniti dal ruolo di AI o dal plug-in per migliorare o automatizzare l'esperienza di navigazione.",
+			"description": "Gestisci frammenti JavaScript che vengono eseguiti automaticamente quando si abbinano un sito Web specifico. Questi script possono essere forniti dal personaggio AI o dal plug-in per migliorare o automatizzare l'esperienza di navigazione.",
 			"form_title": "Aggiungi un nuovo script",
 			"comment_label": "Commenti (opzionale)",
 			"url_regex_label": "URL Espressione regolare",
@@ -1966,7 +1966,7 @@
 			"add_button": "Aggiungi script",
 			"list_title": "Script configurati",
 			"view_script_button": "Visualizza lo script",
-			"delete_button": "eliminare",
+			"delete_button": "Elimina",
 			"confirm_delete": "Sei sicuro di voler eliminare questo script? Questa operazione non può essere annullata.",
 			"add_success": "Lo script automatico in esecuzione è stato aggiunto correttamente!",
 			"delete_success": "Lo script è stato eliminato con successo.",
@@ -2019,7 +2019,7 @@
 		"update": {
 			"prompt": "È disponibile una nuova versione dello script di integrazione del browser fount. La pagina di aggiornamento è ora aperta?"
 		},
-		"csp_warning": "Lo script di integrazione del browser fount rileva che la politica CSP esiste sulla pagina, che può impedire il corretto funzionamento dello script di integrazione. Si prega di considerare l'installazione del plug -in per disattivare il CSP.",
+		"csp_warning": "Lo script di integrazione del browser fount rileva che la politica CSP esiste sulla pagina, che può impedire il corretto funzionamento dello script di integrazione. Si prega di considerare l'installazione del plug-in per disattivare il CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- Avviso di sicurezza fount ---",
 			"message": "La pagina corrente (\"${origin}\") sta cercando di modificare l'indirizzo host di fount in:\n\n\"${newHost}\"\n\nATTENZIONE: l'approvazione di questa azione consentirà al nuovo host di controllare completamente le funzionalità di integrazione del browser, che possono portare a perdite di informazioni sensibili o furto di account.\nL'approvazione dovrebbe essere effettuata solo se sei sicuro che questa è la tua operazione (ad esempio, migrare un server fount).\n\nSei sicuro di voler consentire questo cambiamento?",
@@ -2034,7 +2034,7 @@
 		"initialMessageLink": "Clicca qui per saperne di più.",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Ehi, Fonte.\"",
+				"name": "\"Ehi, fount.\"",
 				"description": "Nel terminale buio è stato chiamato il nome del partner AI.",
 				"locked_description": "Chiama l'assistenza del terminale una volta."
 			}
@@ -2052,7 +2052,7 @@
 	},
 	"deskpet": {
 		"title": "Animali domestici da scrivania",
-		"description": "Lancia i tuoi personaggi font come animali domestici interattivi che vivono sul tuo desktop.",
+		"description": "Lancia i tuoi personaggi di fount come animali domestici interattivi che vivono sul tuo desktop.",
 		"launcherCard": {
 			"title": "antipasto per animali domestici",
 			"buttons": {
@@ -2060,10 +2060,10 @@
 			}
 		},
 		"charSelectDropdown": {
-			"placeholder": "Scegli un ruolo"
+			"placeholder": "Scegli un personaggio"
 		},
 		"charSearch": {
-			"placeholder": "Cerca ruoli..."
+			"placeholder": "Cerca personaggi..."
 		},
 		"runningCard": {
 			"title": "animale domestico che corre",
@@ -2163,27 +2163,27 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Connetti il ruolo fount agli editor supportati (come Zed, JetBrains, Neovim) tramite il protocollo Agent Client, configura chiavi e ruoli API e coinvolgi i partner AI nel flusso di lavoro di sviluppo.",
+		"description": "Integra i tuoi compagni IA nel flusso di lavoro di sviluppo. Connetti il personaggio fount agli editor supportati (come Zed, JetBrains, Neovim) tramite il protocollo Agent Client e configura chiavi API.",
 		"title": "Integrazione dell'IDE",
 		"heading": "Integrazione dell'IDE",
-		"instruction": "Utilizzare i ruoli fount per assistere nella programmazione negli editor abilitati ACP (come Zed, JetBrains, Neovim, ecc.).",
+		"instruction": "Utilizzare i personaggi fount per assistere nella programmazione negli editor abilitati ACP (come Zed, JetBrains, Neovim, ecc.).",
 		"supportedEditorsTitle": "Editor e clienti supportati",
 		"supportedEditorsIntro": "I seguenti client funzionano con fount:",
 		"supportedEditorsLoading": "caricamento…",
 		"supportedEditorsError": "Impossibile caricare l'elenco: ${message}",
 		"acpTitle": "Configura lo script ACP fount",
 		"acpDesc": "Fare riferimento al seguente esempio per configurare lo script ACP fount:",
-		"acpCharLabel": "Ruolo",
-		"acpCharPlaceholder": "Seleziona ruolo",
-		"charListError": "Impossibile ottenere l'elenco dei ruoli",
+"acpCharLabel": "Personaggio",
+			"acpCharPlaceholder": "Seleziona personaggio",
+			"charListError": "Impossibile ottenere l'elenco dei personaggi",
 		"acpScriptLabel": "URL dello script ACP",
-		"acpConfigPlaceholder": "Seleziona prima un ruolo e genera una chiave API",
+		"acpConfigPlaceholder": "Seleziona prima un personaggio e genera una chiave API",
 		"acpConfigSample": "Esempio di configurazione:",
-		"acpConfigHint": "L'ID del ruolo viene visualizzato nel menu a discesa dei ruoli in questa pagina e la chiave API può essere gestita nelle impostazioni dell'utente.",
-		"copyButton": "copia",
+		"acpConfigHint": "L'ID del personaggio viene visualizzato nel menu a discesa dei personaggi in questa pagina e la chiave API può essere gestita nelle impostazioni dell'utente.",
+		"copyButton": "Copia",
 		"copied": "Copiato negli appunti",
 		"apiKeySectionTitle": "Chiave API",
-		"apiKeyHint": "Utilizzato per la fonte di connessione dello script ACP (lo stesso set di chiavi del proxy API, può essere creato nelle impostazioni dell'utente).",
+		"apiKeyHint": "Utilizzato per la connessione dello script ACP a fount (lo stesso set di chiavi del proxy API, può essere creato nelle impostazioni dell'utente).",
 		"generateApiKeyButton": "Genera nuova chiave",
 		"apiKeyCopied": "Chiave API copiata",
 		"apiKeyCreateError": "Impossibile creare la chiave API: ${message}",
@@ -2199,14 +2199,14 @@
 		"achievements": {
 			"first_ide_use": {
 				"name": "Prima volta che utilizzo il fount in un IDE esterno",
-				"description": "Per la prima volta, utilizza i ruoli fount per assistere nella programmazione negli editor abilitati ACP come Zed, JetBrains, Neovim e altri.",
-				"locked_description": "Connettersi al ruolo fount in un IDE esterno e completare una sessione."
+				"description": "Per la prima volta, utilizza i personaggi fount per assistere nella programmazione negli editor abilitati ACP come Zed, JetBrains, Neovim e altri.",
+				"locked_description": "Connettersi al personaggio fount in un IDE esterno e completare una sessione."
 			}
 		}
 	},
 	"achievements": {
 		"title": "Risultato",
-		"description": "Esplora le tappe fondamentali e i risultati del tuo viaggio con font. Ogni risultato segna un passo nella tua narrativa unica.",
+		"description": "Esplora le tappe fondamentali e i risultati del tuo viaggio con fount. Ogni risultato segna un passo nella tua narrativa unica.",
 		"pageHeader": "Sala dei risultati",
 		"pageDescription": "Controlla qui gli obiettivi e i traguardi sbloccati.",
 		"unlocked_on": "Sbloccato il ${date}",
@@ -2270,7 +2270,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Convertitore di Badge",
-		"description": "Per quando il tuo progetto richiede un tocco di carattere di font. Converti i badge Shields.io, conferendo loro una nuova identità risonante.",
+		"description": "Per quando il tuo progetto richiede un tocco di fount. Converti i badge Shields.io, conferendo loro una nuova identità risonante.",
 		"card_title": "Convertitore di Link Badge fount",
 		"original_url_label": "Incolla URL img.shields.io",
 		"original_url": {
@@ -2304,7 +2304,7 @@
 			"Se non lo dici agli sviluppatori, potrebbero non sapere mai quale problema hai riscontrato.",
 			"Se all'improvviso riscontri un problema strano e lo sviluppatore non ti risponde per un po', puoi provare a utilizzare il comando `fount init` per resettare il fount.",
 			"Se riscontri un problema particolarmente strano, puoi provare a riavviare il computer.",
-			"Usare il comando `fount remove` per disinstallare un fount è più semplice che eliminare la cartella.",
+			"Usare il comando `fount remove` per disinstallare fount è più semplice che eliminare la cartella.",
 			"Digita `fount cake` nella riga di comando per ottenere una torta deliziosa e gratuita!",
 			"Tutti i file di dati di fount vengono salvati nella directory `fount/data` e puoi visualizzarli, modificarli ed eseguirne il backup sempre e ovunque.",
 			"Il nome del fount è tutto minuscolo, è `f`ount, non `F`ount.",
@@ -2377,7 +2377,7 @@
 	},
 	"zxcvbn": {
 		"warnings": {
-			"straightRow": "Le tasti continue sulla tastiera sono facilmente indovinate.",
+			"straightRow": "I tasti contigui sulla tastiera sono facili da indovinare.",
 			"keyPattern": "Un breve motivo della tastiera è facile da indovinare.",
 			"simpleRepeat": "caratteri ripetuti come \"AAA\" sono facilmente indovinati.",
 			"extendedRepeat": "I modelli di personaggi ripetuti come \"Abcabcabc\" sono facilmente indovinati.",
@@ -2404,7 +2404,7 @@
 			"associatedYears": "Evita di usare anni relativi a te.",
 			"sequences": "Evita sequenze di caratteri comuni.",
 			"repeated": "Evita parole e personaggi ripetitivi.",
-			"longerKeyboardPattern": "Utilizzare la schemi di tastiera più lunga e modificare più volte le direzioni di input.",
+			"longerKeyboardPattern": "Utilizzare uno schema di tastiera più lungo e modificare più volte le direzioni di input.",
 			"anotherWord": "Aggiungi più parole non comuni.",
 			"useWords": "Usa più parole, ma evita frasi comuni.",
 			"noNeed": "Non è necessario utilizzare simboli, numeri o lettere maiuscole per creare password forti.",
@@ -2414,8 +2414,8 @@
 			"ltSecond": "Meno di un secondo",
 			"second": "{base} secondo",
 			"seconds": "{base} secondi",
-			"minute": "{base} min",
-			"minutes": "{base} min",
+			"minute": "{base} minuto",
+			"minutes": "{base} minuti",
 			"hour": "{base} ore",
 			"hours": "{base} ore",
 			"day": "{base} giorno",
