@@ -1,4 +1,4 @@
-import { chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/shells/chat/decl/chatLog.ts'
+import { chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -106,6 +106,17 @@ export class PluginAPI_t {
 			ReplyHandler?: ReplyHandler_t
 
 			/**
+			 * 获取回复预览更新器。
+			 * @param {CharReplyPreviewUpdater_t} [updater] - 上一个更新器。
+			 * @returns {CharReplyPreviewUpdater_t} - 新的更新器。
+			 */
+			GetReplyPreviewUpdater?: (updater?: CharReplyPreviewUpdater_t) => CharReplyPreviewUpdater_t
+		},
+		/**
+		 * 代码执行接口，用于处理代码执行相关的功能。
+		 */
+		code_execution?: {
+			/**
 			 * 此函数在合适时机扩充至角色的有关代码运行的提示中，为角色更好掌握代码运行的上下文提供基础。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @returns {Promise<string | undefined>} - JavaScript 代码提示或 undefined。
@@ -114,17 +125,9 @@ export class PluginAPI_t {
 			/**
 			 * 此函数为角色的代码运行提供特殊变量或函数，允许其在代码中使用。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {prompt_struct_t} prompt_struct - 提示结构。
 			 * @returns {Promise<Record<string, any>>} - 包含特殊变量或函数的对象。
 			 */
-			GetJSCodeContext?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t) => Promise<Record<string, any>>;
-
-			/**
-			 * 获取回复预览更新器。
-			 * @param {CharReplyPreviewUpdater_t} [updater] - 上一个更新器。
-			 * @returns {CharReplyPreviewUpdater_t} - 新的更新器。
-			 */
-			GetReplyPreviewUpdater?: (updater?: CharReplyPreviewUpdater_t) => CharReplyPreviewUpdater_t
+			GetJSCodeContext?: (arg: chatReplyRequest_t) => Promise<Record<string, any>>;
 		}
 	}
 }

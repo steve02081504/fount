@@ -230,11 +230,13 @@ export async function codeExecutionReplyHandler(result, args) {
 			}
 
 		// 从其他插件获取 JS 代码上下文
-		const pluginContexts = await Promise.all(
-			Object.values(args.plugins || {}).map(plugin =>
-				plugin.interfaces?.chat?.GetJSCodeContext?.(args, args.prompt_struct)
-			).filter(Boolean)
-		)
+		const pluginContexts = (
+			await Promise.all(
+				Object.values(args.plugins || {}).map(plugin =>
+					plugin.interfaces?.code_execution?.GetJSCodeContext?.(args)
+				)
+			)
+		).filter(Boolean)
 		return Object.assign(js_eval_context, ...pluginContexts)
 	}
 

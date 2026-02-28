@@ -14,9 +14,9 @@ export async function getCodeExecutionPrompt(args) {
 	// 从其他插件获取 JS 代码提示（排除自己以避免无限递归）
 	const codePluginPrompts = (
 		await Promise.all(
-			Object.entries(args.plugins || {})
-				.filter(([pluginId]) => pluginId !== 'code-execution')
-				.map(([, plugin]) => plugin.interfaces?.chat?.GetJSCodePrompt?.(args))
+			Object.values(args.plugins || {}).map(plugin =>
+				plugin.interfaces?.code_execution?.GetJSCodePrompt?.(args)
+			)
 		)
 	).filter(Boolean).join('\n')
 
