@@ -12,7 +12,8 @@
 	navigation: auto;
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
+::view-transition-old(root),
+::view-transition-new(root) {
 	animation-duration: 0.3s;
 	animation-timing-function: ease-in-out;
 }

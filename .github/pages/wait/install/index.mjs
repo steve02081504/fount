@@ -15,7 +15,7 @@ import { showToastI18n } from '../../scripts/toast.mjs'
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
 
-// --- DOM Element Selection ---
+// --- DOM 元素引用 ---
 const launchButton = document.getElementById('launchButton')
 const launchButtonText = document.getElementById('launchButtonText')
 const launchButtonSpinner = document.getElementById('launchButtonSpinner')
@@ -25,6 +25,21 @@ const themeList = document.getElementById('theme-list')
 const themeSearch = document.getElementById('theme-search')
 const activeUsersCountEl = document.getElementById('active-users-count')
 const starsCountEl = document.getElementById('stars-count')
+const heroElement = document.querySelector('.hero')
+const heroAnimationBg = document.getElementById('hero-animation-bg')
+const heroOverlay = document.querySelector('.hero-overlay')
+const heroContent = document.querySelector('.hero-content')
+const languageSelector = document.getElementById('language-selector')
+const languageSearch = document.getElementById('language-search')
+const themeSelectionSection = document.getElementById('theme-selection-section')
+const miniGameSection = document.getElementById('mini-game-section')
+const tipsSection = document.getElementById('tips-section')
+const rotatingAdjectiveEl = document.getElementById('rotating-adjective')
+const rotatingNounEl = document.getElementById('rotating-noun')
+const rotatingPlatformEl = document.getElementById('rotating-platform')
+const tipsDisplay = document.getElementById('tips-display')
+const dataShowcaseSection = document.getElementById('data-showcase')
+const starThankYouEl = document.getElementById('star-thank-you')
 
 /**
  * 从指定 URL 获取 JSON 数据。
@@ -55,20 +70,15 @@ const starNum = initialRepoData?.stargazers_count ?? NaN
  * 播放英雄动画。
  */
 async function playHeroAnimation() {
-	const heroElement = document.querySelector('.hero')
-	const animationContainer = document.getElementById('hero-animation-bg')
-	const heroOverlay = document.querySelector('.hero-overlay')
-	const heroContent = document.querySelector('.hero-content')
-
 	/**
-	 * 显示英雄动画的最终状态。
+	 * 显示最终状态。
 	 * @returns {void}
 	 */
 	const showFinalState = () => {
 		heroOverlay.classList.add('visible-after-intro')
 		heroContent.classList.add('visible-after-intro')
 		heroElement.classList.add('bg-image-loaded')
-		if (animationContainer) animationContainer.remove()
+		heroAnimationBg.remove()
 		document.body.classList.remove('scroll-lock')
 	}
 
@@ -81,15 +91,15 @@ async function playHeroAnimation() {
 
 		const svgElement = new DOMParser().parseFromString(svgText, 'image/svg+xml').documentElement
 		svgElement.setAttribute('preserveAspectRatio', 'xMidYMid slice')
-		animationContainer.appendChild(svgElement)
+		heroAnimationBg.appendChild(svgElement)
 
 		animateSVG(svgElement)
 		const durationMs = 3100
 
 		setTimeout(() => {
 			showFinalState()
-			animationContainer.style.opacity = '0'
-			animationContainer.addEventListener('transitionend', () => animationContainer.remove(), { once: true })
+			heroAnimationBg.style.opacity = '0'
+			heroAnimationBg.addEventListener('transitionend', () => heroAnimationBg.remove(), { once: true })
 		}, durationMs)
 	}
 	catch (error) {
@@ -412,10 +422,6 @@ function updateRotatingSubtitles() {
  * 填充语言选择器。
  */
 function populateLanguageSelector() {
-	const languageSelector = document.getElementById('language-selector')
-	const languageSearch = document.getElementById('language-search')
-	if (!languageSelector || !languageSearch) return
-
 	languageSelector.innerHTML = '' // Clear existing items
 	const locales = getAvailableLocales()
 	const localeNames = getLocaleNames()
@@ -497,8 +503,8 @@ const whenFountInstallerFails = () => {
  * 处理 fount 安装程序流程。
  */
 async function handleInstallerFlow() {
-	for (const section of ['theme-selection-section', 'mini-game-section', 'tips-section'])
-		document.getElementById(section).style.display = 'block'
+	for (const section of [themeSelectionSection, miniGameSection, tipsSection])
+		section.style.display = 'block'
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
 	whenFountInstallerFails().then(() => {
@@ -523,7 +529,7 @@ async function handleInstallerFlow() {
 			})
 			window.location.href = `${hostUrl}?${params}`
 		}
-		footer?.classList.replace('fixed', 'sticky')
+		footer.classList.replace('fixed', 'sticky')
 	})
 }
 
@@ -568,37 +574,33 @@ async function main() {
 		playHeroAnimation()
 	])
 
-	adjectiveRotator = createRotatingText(document.getElementById('rotating-adjective'), [], 2500)
-	nounRotator = createRotatingText(document.getElementById('rotating-noun'), [], 2500)
-	platformRotator = createRotatingText(document.getElementById('rotating-platform'), [], 2500)
+	adjectiveRotator = createRotatingText(rotatingAdjectiveEl, [], 2500)
+	nounRotator = createRotatingText(rotatingNounEl, [], 2500)
+	platformRotator = createRotatingText(rotatingPlatformEl, [], 2500)
 
 	onLanguageChange(updateRotatingSubtitles)
 	populateLanguageSelector()
 	renderThemePreviews()
 
 	// Tips: random one, rotate
-	const tipsWrapper = document.getElementById('tips-display')
-	if (tipsWrapper) {
-		const [tipCurrent, tipNext] = tipsWrapper.querySelectorAll('.tip-slide')
-
-		/**
-		 * 显示随机提示。
-		 * @returns {void}
-		 */
-		const showRandomTip = () => {
-			tipNext.innerHTML = geti18n('tips.data')
-			tipCurrent.classList.add('tip-exit-left')
-			tipNext.classList.add('tip-enter-from-right')
-			setTimeout(() => {
-				tipCurrent.classList.remove('tip-exit-left')
-				tipNext.classList.remove('tip-enter-from-right')
-				tipCurrent.innerHTML = tipNext.innerHTML
-				tipNext.innerHTML = ''
-			}, 400)
-		}
-		showRandomTip()
-		setInterval(showRandomTip, 13000)
+	const [tipCurrent, tipNext] = tipsDisplay.querySelectorAll('.tip-slide')
+	/**
+	 * 显示随机提示。
+	 * @returns {void}
+	 */
+	const showRandomTip = () => {
+		tipNext.innerHTML = geti18n('tips.data')
+		tipCurrent.classList.add('tip-exit-left')
+		tipNext.classList.add('tip-enter-from-right')
+		setTimeout(() => {
+			tipCurrent.classList.remove('tip-exit-left')
+			tipNext.classList.remove('tip-enter-from-right')
+			tipCurrent.innerHTML = tipNext.innerHTML
+			tipNext.innerHTML = ''
+		}, 400)
 	}
+	showRandomTip()
+	setInterval(showRandomTip, 13000)
 
 	// --- Easter Egg ---
 	const shakeStates = new Map()
@@ -635,7 +637,6 @@ async function main() {
 	 * @returns {void}
 	 */
 	function setupClickToShake(element) {
-		if (!element) return
 		element.style.cursor = 'pointer'
 
 		element.addEventListener('click', () => {
@@ -690,19 +691,15 @@ async function main() {
 
 	document.querySelectorAll('.feature-section').forEach(section => observer.observe(section))
 
-	const dataShowcaseSection = document.getElementById('data-showcase')
-	if (dataShowcaseSection) {
-		const dataObserver = new IntersectionObserver(entries => {
-			if (entries[0].isIntersecting) {
-				startDataShowcaseAnimation()
-				dataObserver.unobserve(dataShowcaseSection)
-			}
-		}, { threshold: 0.2 })
-		dataObserver.observe(dataShowcaseSection)
-	}
+	const dataObserver = new IntersectionObserver(entries => {
+		if (entries[0].isIntersecting) {
+			startDataShowcaseAnimation()
+			dataObserver.unobserve(dataShowcaseSection)
+		}
+	}, { threshold: 0.2 })
+	dataObserver.observe(dataShowcaseSection)
 
-	const starThankYouEl = document.getElementById('star-thank-you')
-	if (starThankYouEl && window.fount?.hasStar)
+	if (window.fount?.hasStar)
 		starThankYouEl.classList.remove('hidden')
 
 	// Start fount service check
