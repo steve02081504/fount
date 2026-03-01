@@ -291,7 +291,8 @@
 			"wait_text": "Vinsamlegast bíðið augnablik...",
 			"open_fount": "Opna fount",
 			"open_or_install_fount": "Opna/setja upp fount",
-			"error_message": "Æji :(\n\nVilla kom upp:\n${error}"
+			"error_message": "Æji :(\n\nVilla kom upp:\n${error}",
+			"star_thank_you": "Takk fyrir að gefa fount stjörnu!"
 		},
 		"error": {
 			"title": "Uppsetning mistókst!",

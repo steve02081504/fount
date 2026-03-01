@@ -291,7 +291,8 @@
 			"wait_text": "يرجى الانتظار لحظة...",
 			"open_fount": "فتح fount",
 			"open_or_install_fount": "فتح/تثبيت fount",
-			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}"
+			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}",
+			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!"
 		},
 		"error": {
 			"title": "فشل التثبيت!",

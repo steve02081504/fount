@@ -291,7 +291,8 @@
 			"wait_text": "Veuillez patienter un instant...",
 			"open_fount": "Ouvrir fount",
 			"open_or_install_fount": "Ouvrir/Installer fount",
-			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
+			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
+			"star_thank_you": "Merci d'avoir donné une étoile à fount !"
 		},
 		"error": {
 			"title": "Échec de l'installation !",

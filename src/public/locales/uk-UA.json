@@ -291,7 +291,8 @@
 			"wait_text": "Зачекайте хвилинку...",
 			"open_fount": "Відкрити fount",
 			"open_or_install_fount": "Відкрити/Встановити fount",
-			"error_message": "От халепа :(\n\nСталася помилка:\n${error}"
+			"error_message": "От халепа :(\n\nСталася помилка:\n${error}",
+			"star_thank_you": "Дякуємо, що позначили fount зіркою!"
 		},
 		"error": {
 			"title": "Встановлення не вдалося!",

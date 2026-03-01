@@ -236,7 +236,10 @@ export function saveFountHostUrl(hostUrl) {
  * @param {string} [hostUrl] - 初始主机 URL。
  * @returns {Promise<string>} - 获取到的 fount 主机 URL。
  */
-export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
+export async function getFountHostUrl(hostUrl = window.fount?.hostUrl ??
+	urlParams.get('hostUrl') ??
+	localStorage.getItem('fountHostUrl')
+) {
 	if (!String(hostUrl).startsWith('http')) hostUrl = null
 	const result = await mappingFountHostUrl(hostUrl)
 	saveFountHostUrl(result)

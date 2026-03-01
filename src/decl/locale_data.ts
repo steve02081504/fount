@@ -281,6 +281,7 @@ export type LocaleData = {
 			open_fount: string
 			open_or_install_fount: string
 			error_message: string
+			star_thank_you: string
 		}
 		error: {
 			title: string

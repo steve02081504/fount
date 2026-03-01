@@ -291,7 +291,8 @@
 			"wait_text": "Attendi un momento...",
 			"open_fount": "Apri fount",
 			"open_or_install_fount": "Apri/Installa fount",
-			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}"
+			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}",
+			"star_thank_you": "Grazie per aver aggiunto una stella a fount!"
 		},
 		"error": {
 			"title": "Installazione non riuscita!",

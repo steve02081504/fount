@@ -533,7 +533,10 @@ async function handleInstallerFlow() {
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
 
-	launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
+	launchButtonText.dataset.i18n = window.fount
+		? 'installer_wait_screen.footer.open_fount'
+		: 'installer_wait_screen.footer.open_or_install_fount'
+
 	/**
 	 * 在 fount 服务不可用时打开主页。
 	 */
@@ -697,6 +700,10 @@ async function main() {
 		}, { threshold: 0.2 })
 		dataObserver.observe(dataShowcaseSection)
 	}
+
+	const starThankYouEl = document.getElementById('star-thank-you')
+	if (starThankYouEl && window.fount?.hasStar)
+		starThankYouEl.classList.remove('hidden')
 
 	// Start fount service check
 	if (await checkFountInstallerAlive())

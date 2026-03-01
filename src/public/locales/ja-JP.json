@@ -291,7 +291,8 @@
 			"wait_text": "しばらくお待ちください...",
 			"open_fount": "fountを開く",
 			"open_or_install_fount": "fountを開く/インストール",
-			"error_message": "あらら…\n\nエラーが発生しました：\n${error}"
+			"error_message": "あらら…\n\nエラーが発生しました：\n${error}",
+			"star_thank_you": "fountにスターを付けていただきありがとうございます！"
 		},
 		"error": {
 			"title": "インストールに失敗しました！",

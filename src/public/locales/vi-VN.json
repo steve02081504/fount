@@ -291,7 +291,8 @@
 			"wait_text": "Vui lòng đợi một lát...",
 			"open_fount": "Mở fount",
 			"open_or_install_fount": "Mở/Cài đặt fount",
-			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"
+			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
+			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!"
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",

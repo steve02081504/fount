@@ -30,7 +30,7 @@ function useUrlProtocol(hostUrl) {
  * @returns {Promise<void>}
  */
 async function attemptConnection() {
-	const hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
+	const hostUrl = window.fount?.hostUrl ?? urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
 	if (hostUrl) {
 		const isOnline = await pingFount(hostUrl)
 		if (isOnline) return useUrlProtocol(hostUrl)
