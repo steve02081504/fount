@@ -33,6 +33,8 @@ EMOJI_LANG_PATTERNS = [
 ]
 # emoji 语言检查时跳过这些键对应的值（不参与中/英/俄/日检测）
 EMOJI_SKIP_KEYS = {"author", "avatar", "version", "home_page"}
+# 检测前只剔除 Markdown 链接里的 URL 部分，保留 [text] 供语言检测
+EMOJI_STRIP_MD_LINK_URL_RE = re.compile(r"(\[[^\]]*\]\()[^)]*(\))")
 
 
 def _collect_strings(obj, out: list[str]) -> None:
@@ -60,7 +62,8 @@ def has_emoji_locale_warning(emoji_block: dict) -> tuple[bool, list[str]]:
 			continue
 		_collect_strings(value, strings)
 	text = " ".join(strings)
-	found = [name for name, pat in EMOJI_LANG_PATTERNS if pat.search(text)]
+	text_no_md_links = EMOJI_STRIP_MD_LINK_URL_RE.sub(r"\1\2", text)
+	found = [name for name, pat in EMOJI_LANG_PATTERNS if pat.search(text_no_md_links)]
 	return (len(found) > 0, found)
 
 
