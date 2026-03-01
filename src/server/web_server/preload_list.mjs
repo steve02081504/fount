@@ -100,7 +100,7 @@ function extractFromJs(content) {
 function extractFromHtml(content) {
 	const out = []
 	// 只匹配 src=，且限定在 script/img/iframe/video/audio/source 等标签上下文中
-	const tagSrcRe = /<(script|img|iframe|video|audio|source)(\s[^>]*)?\ssrc\s*=\s*["'](https?:\/\/[^"']+)["']/gi
+	const tagSrcRe = /<(script|img|iframe|video|audio|source)(\s[^>]*)?\s*src\s*=\s*["'](https?:\/\/[^"']+)["']/gi
 	let m
 	while ((m = tagSrcRe.exec(content)) !== null) {
 		const tag = (m[1] || '').toLowerCase()
@@ -291,7 +291,6 @@ function buildUserPreloadUrls(username) {
 	const userRoot = getUserDictionary(username)
 	const lists = []
 	for (const publicDir of collectPublicDirs(userRoot)) {
-		if (!fs.existsSync(publicDir)) continue
 		lists.push(scanDirectoryForTypedUrls(publicDir))
 	}
 	return mergeAndDedupe(lists)

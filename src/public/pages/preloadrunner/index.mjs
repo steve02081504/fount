@@ -30,7 +30,7 @@ function loadOne(item) {
 	const { url, type } = item
 	return new Promise((resolve) => {
 		const el = document.createElement('link')
-		Object.assign(el, typeMap[type])
+		Object.assign(el, typeMap[type] || typeMap.resource)
 		el.href = url
 		/**
 		 * 加载完成时 resolve。
@@ -53,4 +53,8 @@ async function run() {
 	try { window.parent.postMessage({ type: 'preloadrunner-done' }, window.location.origin) } catch (_) {}
 }
 
-run()
+run().catch(async (error) => {
+	const Sentry = await import('https://esm.sh/@sentry/browser')
+	Sentry.captureException(error)
+	window.parent.postMessage({ type: 'preloadrunner-done' }, window.location.origin)
+})

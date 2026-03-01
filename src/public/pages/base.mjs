@@ -126,7 +126,7 @@ onServerEvent('page-modified', ({ path }) => {
  * @returns {void}
  */
 onServerEvent('show-toast', ({ type, message, duration }) => {
-	showToast(type, message, duration)
+	if (window.innerHeight && window.innerWidth) showToast(type, message, duration)
 })
 
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
