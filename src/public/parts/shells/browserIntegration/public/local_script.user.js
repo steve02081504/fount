@@ -12,6 +12,10 @@
 // @connect      steve02081504.github.io
 // @connect      *
 // @homepage     https://github.com/steve02081504/fount
+// @run-at       document-start
+// @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @grant        GM.setValue
 // @grant        GM.getValue
 // @grant        GM.xmlHttpRequest

@@ -291,7 +291,8 @@
 			"wait_text": "稍安勿躁...",
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
-			"error_message": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}"
+			"error_message": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
+			"star_thank_you": "承蒙星標，不勝感激。"
 		},
 		"error": {
 			"title": "安設失利。",

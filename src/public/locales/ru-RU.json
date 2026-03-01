@@ -291,7 +291,8 @@
 			"wait_text": "Пожалуйста, подождите немного...",
 			"open_fount": "Открыть fount",
 			"open_or_install_fount": "Открыть/Установить fount",
-			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}"
+			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}",
+			"star_thank_you": "Спасибо, что поставили звезду fount!"
 		},
 		"error": {
 			"title": "Установка не удалась!",

@@ -291,7 +291,8 @@
 			"wait_text": "⏳...",
 			"open_fount": "▶️ ⛲",
 			"open_or_install_fount": "▶️/📥 ⛲",
-			"error_message": "😢\n\n❌:\n${error}"
+			"error_message": "😢\n\n❌:\n${error}",
+			"star_thank_you": "🙏⭐"
 		},
 		"error": {
 			"title": "📥❌❗️",

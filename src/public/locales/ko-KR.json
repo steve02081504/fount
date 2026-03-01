@@ -291,7 +291,8 @@
 			"wait_text": "잠시만 기다려주세요...",
 			"open_fount": "fount 열기",
 			"open_or_install_fount": "fount 열기/설치하기",
-			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}"
+			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}",
+			"star_thank_you": "fount에 스타를 눌러주셔서 감사합니다!"
 		},
 		"error": {
 			"title": "설치 실패!",

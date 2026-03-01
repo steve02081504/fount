@@ -291,7 +291,8 @@
 			"wait_text": "Bitte warten Sie einen Moment...",
 			"open_fount": "fount öffnen",
 			"open_or_install_fount": "fount öffnen/installieren",
-			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
+			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
+			"star_thank_you": "Danke, dass du fount einen Stern gegeben hast!"
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",

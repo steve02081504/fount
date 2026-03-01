@@ -291,7 +291,8 @@
 			"wait_text": "請稍候片刻...",
 			"open_fount": "開啟 fount",
 			"open_or_install_fount": "開啟/安裝 fount",
-			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}"
+			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}",
+			"star_thank_you": "感謝您為 fount 加上星號！"
 		},
 		"error": {
 			"title": "安裝失敗！",

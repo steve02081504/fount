@@ -291,7 +291,8 @@
 			"wait_text": "Espera un momento...",
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
-			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}"
+			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
+			"star_thank_you": "¡Gracias por darle una estrella a fount!"
 		},
 		"error": {
 			"title": "¡Error en la instalación!",

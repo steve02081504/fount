@@ -291,7 +291,8 @@
 			"wait_text": "Een ogenblik geduld...",
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Installeer fount",
-			"error_message": "Oeps :(\n\nEr is een fout opgetreden:\n${error}"
+			"error_message": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
+			"star_thank_you": "Bedankt voor het geven van een ster aan fount!"
 		},
 		"error": {
 			"title": "Installatie mislukt!",

@@ -291,7 +291,8 @@
 			"wait_text": "कृपया थोड़ा इंतज़ार करें...",
 			"open_fount": "fount खोलें",
 			"open_or_install_fount": "fount खोलें/इंस्टॉल करें",
-			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"
+			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
+			"star_thank_you": "fount को स्टार देने के लिए धन्यवाद!"
 		},
 		"error": {
 			"title": "इंस्टॉलेशन विफल!",

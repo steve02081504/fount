@@ -12,6 +12,10 @@
 // @connect      steve02081504.github.io
 // @connect      *
 // @homepage     https://github.com/steve02081504/fount
+// @run-at       document-start
+// @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @grant        GM.setValue
 // @grant        GM.getValue
 // @grant        GM.xmlHttpRequest
@@ -25,7 +29,7 @@
 /* eslint-disable curly */
 /* eslint-disable no-return-assign */
 // eslint-disable-next-line no-redeclare
-/* global GM, GM_info */
+/* global unsafeWindow, GM, GM_info, GM_setValue, GM_getValue */
 
 // --- 辅助函数 ---
 
@@ -337,6 +341,21 @@ async function initTranslations() {
 	}
 }
 
+unsafeWindow.fount = {
+	hostUrl: null,
+	hasStar: false,
+}
+
+/**
+ * 更新全局 window.fount 的 hostUrl。
+ * @param {string|null} host - 主机。
+ * @param {string} protocol - 协议。
+ * @returns {string|null} - 主机 URL。
+ */
+function updateFountObjectHost(host, protocol) {
+	return unsafeWindow.fount.hostUrl = host && protocol ? `${protocol}//${host}` : null
+}
+
 const AUTORUN_SCRIPTS_KEY = 'fount_autorun_scripts'
 window.addEventListener('fount-autorun-script-update', async (e) => {
 	const { action, script } = e.detail
@@ -443,7 +462,22 @@ async function getStoredData() {
 	const uuid = await GM.getValue('fount_uuid', null)
 	const protocol = await GM.getValue('fount_protocol', 'http:')
 	const apikey = await GM.getValue('fount_apikey', null)
+	const starred = await GM.getValue('has_github_star', false)
 	return fountDataCache = { host, uuid, protocol, apikey }
+}
+
+/**
+ * 同步获取存储的数据。
+ * @returns {object} - 存储的数据。
+ */
+function getStoredDataSync() {
+	if (fountDataCache) return fountDataCache
+	const host = GM_getValue('fount_host', null)
+	const uuid = GM_getValue('fount_uuid', null)
+	const protocol = GM_getValue('fount_protocol', 'http:')
+	const apikey = GM_getValue('fount_apikey', null)
+	const starred = GM_getValue('has_github_star', false)
+	return fountDataCache = { host, uuid, protocol, apikey, starred }
 }
 
 /**
@@ -460,11 +494,28 @@ async function setStoredData(host, uuid, protocol, apikey) {
 	await GM.setValue('fount_uuid', uuid)
 	await GM.setValue('fount_protocol', protocol)
 	await GM.setValue('fount_apikey', apikey)
+	updateFountObjectHost(host, protocol)
 	const previousHosts = await GM.getValue('fount_previous_hosts', [])
 	const newHostEntry = { host, protocol }
 	const updatedHosts = [newHostEntry, ...previousHosts.filter(p => p.host !== host)]
 	await GM.setValue('fount_previous_hosts', updatedHosts.slice(0, 13))
 }
+
+/**
+ * 更新全局 window.fount 的 hasStar。
+ * @param {boolean} value - 是否已 Star。
+ * @returns {boolean} - 是否已 Star。
+ */
+function updateFountObjectHasStar(value) {
+	return unsafeWindow.fount.hasStar = !!value
+}
+
+(() => {
+	const { host, protocol, starred } = getStoredDataSync()
+	updateFountObjectHost(host, protocol)
+	updateFountObjectHasStar(starred)
+	console.log('fount userscript: Initialized fount object.')
+})()
 
 // --- API Communication ---
 
@@ -1359,6 +1410,7 @@ async function checkAndUnlockGitHubStarAchievement() {
 
 	const starredButton = document.querySelector('.starred-button-icon')
 	if (starredButton) {
+		await GM.setValue('has_github_star', updateFountObjectHasStar(true))
 		const { host, protocol } = await getStoredData()
 		if (host) try {
 			await makeApiRequest(host, protocol, '/api/parts/shells:achievements/unlock/parts/shells:browserIntegration/star_fount', { method: 'POST' })

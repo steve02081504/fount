@@ -63,10 +63,9 @@ body.scroll-lock {
 
 /* === End: Hero Animation Styles === */
 
-
 .content-wrapper {
 	/* Adjust padding to accommodate the footer and theme selector */
-	padding-bottom: 200px;
+	padding-bottom: 13vh;
 }
 
 /* Animation for feature sections */
