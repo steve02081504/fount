@@ -4,6 +4,7 @@ import { initTranslations, console, savePreferredLangs, onLanguageChange } from 
 import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
+import { runPreloadIfNotSaveData } from '../scripts/preloadUrls.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
@@ -310,6 +311,7 @@ async function initializeApp() {
 try {
 	await initializeApp()
 	navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
+	runPreloadIfNotSaveData()
 }
 catch (error) {
 	showToast('error', error.message)
