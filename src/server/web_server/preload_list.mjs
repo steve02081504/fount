@@ -275,7 +275,7 @@ function getCommonPreloadUrls() {
 }
 
 /**
- * 获取公用预加载 URL 列表。
+ * 清除公用预加载缓存（下次 getCommonPreloadUrls 时会重新构建）。
  * @returns {void}
  */
 function clearCommonCache() {

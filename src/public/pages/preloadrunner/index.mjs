@@ -50,7 +50,7 @@ async function run() {
 	if (!response.ok) return
 	const list = await response.json()
 	await Promise.all(list.map(loadOne))
-	try { window.parent.postMessage({ type: 'preloadrunner-done' }, '*') } catch (_) {}
+	try { window.parent.postMessage({ type: 'preloadrunner-done' }, window.location.origin) } catch (_) {}
 }
 
 run()
