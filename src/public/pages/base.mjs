@@ -4,7 +4,6 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './scripts/server_events.mjs'
-import { showToast } from './scripts/toast.mjs'
 
 let skipBreadcrumb = false
 Sentry.init({
@@ -125,7 +124,9 @@ onServerEvent('page-modified', ({ path }) => {
  * @param {number} param0.duration - toast 的持续时间。
  * @returns {void}
  */
-onServerEvent('show-toast', ({ type, message, duration }) => {
+onServerEvent('show-toast', async ({ type, message, duration }) => {
+	if (!window.innerHeight || !window.innerWidth) return
+	const { showToast } = await import('./scripts/toast.mjs')
 	showToast(type, message, duration)
 })
 

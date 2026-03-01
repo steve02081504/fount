@@ -2,9 +2,11 @@ import fs from 'node:fs'
 
 import express from 'npm:express'
 
+import { auth_request } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 
 import { handleLlmsTxt } from './llms.txt.mjs'
+import { getUserPreloadUrls } from './preload_list.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
 /**
@@ -37,6 +39,10 @@ export function registerResources(router) {
 		switch (req.path) {
 			case '/llms.txt':
 				return handleLlmsTxt(req, res)
+			case '/preloadrunner/data.json': {
+				await auth_request(req, res)
+				return res.json(getUserPreloadUrls(req.user?.username))
+			}
 			case '/apple-touch-icon-precomposed.png':
 			case '/apple-touch-icon.png':
 				if (fs.existsSync(__dirname + '/src/public/pages/favicon.png'))
