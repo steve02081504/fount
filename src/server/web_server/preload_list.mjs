@@ -22,7 +22,7 @@ const EXTERNAL_URL_REG = /^https?:\/\//
  */
 function typeFromUrlSuffix(url) {
 	try {
-		const {pathname} = new URL(url)
+		const { pathname } = new URL(url)
 		if (/\.mjs(\?|$)/i.test(pathname)) return 'mjs'
 		if (/\.js(\?|$)/i.test(pathname)) return 'js'
 		if (/\.css(\?|$)/i.test(pathname)) return 'css'
@@ -291,9 +291,9 @@ function clearCommonCache() {
 function buildUserPreloadUrls(username) {
 	const userRoot = getUserDictionary(username)
 	const lists = []
-	for (const publicDir of collectPublicDirs(userRoot)) {
+	for (const publicDir of collectPublicDirs(userRoot))
 		lists.push(scanDirectoryForTypedUrls(publicDir))
-	}
+
 	return mergeAndDedupe(lists)
 }
 

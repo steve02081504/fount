@@ -160,7 +160,7 @@ fount si impegna a tessere i personaggi nel tessuto stesso della tua vita, offre
   Integra i personaggi in IDE come JetBrains, neovim, Zed, ecc., consentendo loro di fornire assistenza e suggerimenti contestuali mentre scrivi codice, proprio come Cursor Agent o GitHub Copilot.
   ![Immagine](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
 
-- **La serenità nel terminale** (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
+- **La serenità nel terminale** (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))
   Quando un comando del terminale fallisce, lascia che il tuo personaggio ti offra una parola di guida silenziosa, alleviando la solitudine del mondo digitale.
   ![Immagine](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 

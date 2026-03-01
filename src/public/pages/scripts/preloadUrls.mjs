@@ -29,7 +29,7 @@ export function runPreloadIfNotSaveData() {
 				window.removeEventListener('message', onMessage)
 				iframe.remove()
 				resolve()
-			} catch (_) {}
+			} catch (_) { }
 		}
 		window.addEventListener('message', onMessage)
 		document.body.appendChild(iframe)
