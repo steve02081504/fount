@@ -1,7 +1,7 @@
 {
 	"en-UK": {
 		"name": "File Operations",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Provides file operation capabilities for AI characters.",
 		"description_markdown": "The **File Operations** plugin provides AI characters with file system operation capabilities. It supports viewing, replacing, and overriding files.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -15,7 +15,7 @@
 	},
 	"zh-CN": {
 		"name": "文件操作",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "为 AI 角色提供文件操作能力",
 		"description_markdown": "**文件操作**插件为 AI 角色提供了文件系统操作能力。支持查看、替换和覆写文件。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
 		"version": "0.0.0",
@@ -29,7 +29,7 @@
 	},
 	"ar-SA": {
 		"name": "عمليات الملفات",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "توفير إمكانيات التعامل مع الملفات لشخصيات الذكاء الاصطناعي.",
 		"description_markdown": "يوفر المكون الإضافي **File Operations** لشخصيات الذكاء الاصطناعي إمكانيات التعامل مع نظام الملفات. يدعم عرض الملفات واستبدالها والكتابة فوقها.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -43,7 +43,7 @@
 	},
 	"de-DE": {
 		"name": "Dateioperationen",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Ermöglicht KI-Charakteren das Ausführen von Dateioperationen.",
 		"description_markdown": "Das **File Operations**-Plugin bietet KI-Charakteren Funktionen zur Interaktion mit dem Dateisystem. Es unterstützt das Anzeigen, Ersetzen und Überschreiben von Dateien.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -57,9 +57,9 @@
 	},
 	"emoji": {
 		"name": "📂🛠️",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "🤖➕📂➡️📖✍️",
-		"description_markdown": "**📂🛠️** ➡️ 🤖✨.\n✅ 👁️ 📂 (view).\n✅ 🔄 📂 (replace).\n✅ 💾 📂 (overwrite).\n\n💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).\n",
+		"description_markdown": "**📂🛠️** ➡️ 🤖✨.\n✅ 👁️ 📂.\n✅ 🔄 📂.\n✅ 💾 📂.\n\n💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).\n",
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
@@ -72,7 +72,7 @@
 	},
 	"es-ES": {
 		"name": "Operaciones de archivos",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Proporciona capacidades de manipulación de archivos para personajes de IA.",
 		"description_markdown": "El complemento **File Operations** dota a los personajes de IA de capacidades para operar en el sistema de archivos. Permite visualizar, reemplazar y sobrescribir archivos.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -86,7 +86,7 @@
 	},
 	"fr-FR": {
 		"name": "Opérations sur les fichiers",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Fournit des capacités de manipulation de fichiers pour les personnages IA.",
 		"description_markdown": "Le plugin **File Operations** permet aux personnages IA d'interagir avec le système de fichiers. Il prend en charge la consultation, le remplacement et l'écrasement de fichiers.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -100,7 +100,7 @@
 	},
 	"hi-IN": {
 		"name": "फ़ाइल संचालन",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "AI पात्रों के लिए फ़ाइल संचालन क्षमताएं प्रदान करता है।",
 		"description_markdown": "**File Operations** प्लगइन AI पात्रों को फ़ाइल सिस्टम संचालन की शक्ति देता है। यह फ़ाइलों को देखने, बदलने और ओवरराइट करने का समर्थन करता है।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
 		"version": "0.0.0",
@@ -114,7 +114,7 @@
 	},
 	"is-IS": {
 		"name": "Skráaraðgerðir",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Veitir gervigreindarkarakterum getu til að sýsla með skrár.",
 		"description_markdown": "**File Operations** viðbótin veitir gervigreindarkarakterum aðgang að skráakerfisaðgerðum. Styður að skoða, skipta út og skrifa yfir skrár.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -128,7 +128,7 @@
 	},
 	"it-IT": {
 		"name": "Operazioni sui file",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Fornisce funzionalità di gestione dei file per i personaggi IA.",
 		"description_markdown": "Il plugin **File Operations** consente ai personaggi IA di operare sul file system. Supporta la visualizzazione, la sostituzione e la sovrascrittura dei file.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -142,7 +142,7 @@
 	},
 	"ja-JP": {
 		"name": "ファイル操作",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "AI キャラクターにファイル操作機能を提供します。",
 		"description_markdown": "**ファイル操作**プラグインは、AI キャラクターにファイルシステム操作機能を提供します。ファイルの表示、置換、および上書きをサポートします。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
 		"version": "0.0.0",
@@ -156,7 +156,7 @@
 	},
 	"ko-KR": {
 		"name": "파일 작업",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "AI 캐릭터에게 파일 작업 기능을 제공합니다.",
 		"description_markdown": "**파일 작업** 플러그인은 AI 캐릭터에게 파일 시스템 조작 능력을 부여합니다. 파일 보기, 교체 및 덮어쓰기를 지원합니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
 		"version": "0.0.0",
@@ -170,7 +170,7 @@
 	},
 	"lzh": {
 		"name": "卷帙操治",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "賦予化身治卷閱案之能",
 		"description_markdown": "此**卷帙操治**插件，使化身得理文件系統。凡閱覽、更替、覆寫卷帙之事，悉皆能之。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。\n",
 		"version": "0.0.0",
@@ -185,7 +185,7 @@
 	},
 	"nl-NL": {
 		"name": "Bestandsbewerkingen",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Biedt bestandsbeheerfuncties voor AI-personages.",
 		"description_markdown": "De **File Operations**-plugin geeft AI-personages de mogelijkheid om het bestandssysteem te beheren. Ondersteunt het bekijken, vervangen en overschrijven van bestanden.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -199,7 +199,7 @@
 	},
 	"pt-PT": {
 		"name": "Operações de ficheiros",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Fornece capacidades de manipulação de ficheiros para personagens de IA.",
 		"description_markdown": "O plugin **File Operations** dota os personagens de IA de capacidades para operar no sistema de ficheiros. Permite visualizar, substituir e sobrescrever ficheiros.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -213,7 +213,7 @@
 	},
 	"ru-RU": {
 		"name": "Операции с файлами",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Обеспечивает возможность работы с файлами для ИИ-персонажей.",
 		"description_markdown": "Плагин **File Operations** дает ИИ-персонажам возможность управлять файловой системой. Поддерживает просмотр, замену и перезапись файлов.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -227,7 +227,7 @@
 	},
 	"uk-UA": {
 		"name": "Файлові операції",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Забезпечує можливість роботи з файлами для ШІ-персонажів.",
 		"description_markdown": "Плагін **File Operations** надає ШІ-персонажам можливість взаємодіяти з файловою системою. Підтримує перегляд, заміну та перезапис файлів.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -241,7 +241,7 @@
 	},
 	"vi-VN": {
 		"name": "Thao tác tệp tin",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "Cung cấp khả năng thao tác với hệ thống tệp cho các nhân vật AI.",
 		"description_markdown": "Plugin **File Operations** cung cấp cho các nhân vật AI khả năng thao tác với hệ thống tệp. Hỗ trợ xem, thay thế và ghi đè tệp tin.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 		"version": "0.0.0",
@@ -255,7 +255,7 @@
 	},
 	"zh-TW": {
 		"name": "檔案操作",
-		"avatar": "",
+		"avatar": "https://api.iconify.design/line-md/file-document.svg",
 		"description": "為 AI 角色提供檔案操作能力",
 		"description_markdown": "**檔案操作**外掛程式為 AI 角色提供了檔案系統操作能力。支援檢視、取代和覆寫檔案。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
 		"version": "0.0.0",
