@@ -2,6 +2,7 @@
  * 主页 shell 的客户端入口点。
  * 负责初始化和启动 Home shell 的核心逻辑。
  */
+import { runPreloadIfNotSaveData } from '../../scripts/preloadUrls.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
 import { initializeApp, refreshApp } from './src/home.mjs'
@@ -24,6 +25,7 @@ initializeApp().then(async () => {
 			}
 		}
 	}
+	runPreloadIfNotSaveData()
 }).catch(error => {
 	showToast('error', error.message)
 })
