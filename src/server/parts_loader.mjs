@@ -658,7 +658,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 	const parts_config = loadData(username, 'parts_config')
 	try {
 		if (!parts_init[partpath]) {
-			const profile = await doProfile(async () => {
+			const profile = await doProfile(`part:${partpath}:init`, async () => {
 				parts_init[partpath] = initPart(username, partpath, Initargs, { pathGetter, Initer, afterInit })
 				parts_init[partpath] = await parts_init[partpath]
 			})
@@ -672,7 +672,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 		if (parts_init[partpath] instanceof Promise)
 			parts_init[partpath] = await parts_init[partpath]
 		if (!parts_set[username][partpath]) {
-			const profile = await doProfile(async () => {
+			const profile = await doProfile(`part:${partpath}:load`, async () => {
 				parts_set[username][partpath] = (async () => {
 					/** @type {T} */
 					const part = await baseloadPart(username, partpath, {

@@ -17,6 +17,8 @@ import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
+console.profile('server start')
+
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
 /**
@@ -158,5 +160,8 @@ if (command_obj) try {
 	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
 	throw err
 }
+
+console.profileEnd('server start')
+
 // 如果初始化失败则退出。
 if (!okey) process.exit(0)
