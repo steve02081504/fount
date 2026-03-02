@@ -6,7 +6,10 @@ import { __dirname } from '../server/base.mjs'
  * @returns {Worker} 新的工作线程实例。
  */
 export function runWorker(name) {
-	return new Worker(new URL(`./${name}.mjs`, import.meta.url), { type: 'module' })
+	return new Worker(new URL(`./${name}.mjs`, import.meta.url), {
+		name,
+		type: 'module'
+	})
 }
 /**
  * 运行一个简单的工作线程并返回一个Promise。
