@@ -1,8 +1,9 @@
 import { events } from '../../../../server/events.mjs'
 
-import info from './info.json' with { type: 'json' }
 import { onPartInstalled, onPartUninstalled } from './src/api.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 成就Shell

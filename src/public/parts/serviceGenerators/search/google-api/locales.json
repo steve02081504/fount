@@ -1,0 +1,631 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Google API Search Generator",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "A generator factory for Google Custom Search API service sources.",
+			"description_markdown": "This **service generator** creates instances of Google Custom Search API. It provides a highly customizable search solution, enabling characters to access targeted web information. Requires an **API key** and a **Search Engine ID** to function.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"search",
+				"custom",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "Google API 搜索生成器",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "生产 Google Custom Search API 服务源的工厂组件",
+			"description_markdown": "这是基于 **Google Custom Search API** 的服务生成器。它作为生产定制化搜索实例的工厂，为角色提供精确、可控的互联网信息获取能力。使用时需要配置 **API 密钥**和**搜索引擎 ID**。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"API",
+				"搜索",
+				"定制",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولد بحث Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "مصنع مولد لمصادر خدمة Google Custom Search API.",
+			"description_markdown": "ينشئ **مولد الخدمة** هذا مثيلات Google Custom Search API. يوفر حل بحث قابل للتخصيص بدرجة عالية، مما يتيح الوصول إلى معلومات ويب مستهدفة. يتطلب **مفتاح API** و**معرف محرك البحث** للتشغيل.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"بحث",
+				"مخصص",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Google API-Suchgenerator",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Eine Generatorenfabrik für Google Custom Search API-Dienstquellen.",
+			"description_markdown": "Dieser **Service-Generator** erstellt Instanzen der Google Custom Search API. Er bietet eine hochgradig anpassbare Suchlösung. Erfordert einen **API-Schlüssel** und eine **Suchmaschinen-ID**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"suche",
+				"benutzerdefiniert",
+				"generator"
+			]
+		},
+		"emoji": {
+			"name": "🌐⚙️🔑",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "🌐 ➕ ⚙️ ➡️ 🔍🔑🪪",
+			"description_markdown": "🌐⚙️🔑 ➡️ 🏗️🔍. \n🔐 ➡️ 🔑, 🪪. \n🚀 ➡️ ✨🔎.\n\n✨ ⚙️ 🌐 🔑",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"🌐",
+				"⚙️",
+				"🔑",
+				"🪪"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de Búsqueda de la API de Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Una fábrica de generadores para fuentes de servicio de la API de Google Custom Search.",
+			"description_markdown": "Este **generador de servicios** crea instancias de la API de Google Custom Search. Ofrece una solución de búsqueda altamente personalizable. Requiere una **clave API** y un **ID de motor de búsqueda**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"búsqueda",
+				"personalizado",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de Recherche API Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Une usine de génération pour les sources de service Google Custom Search API.",
+			"description_markdown": "Ce **générateur de services** crée des instances de l'API Google Custom Search. Il offre une solution de recherche hautement personnalisable. Nécessite une **clé API** et un **ID de moteur de recherche**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"recherche",
+				"personnalisé",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "Google API खोज जेनरेटर",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API सेवा स्रोतों के लिए एक जेनरेटर फैक्ट्री।",
+			"description_markdown": "यह **सेवा जेनरेटर** Google Custom Search API के उदाहरण बनाता है। यह अत्यधिक अनुकूलन योग्य खोज समाधान प्रदान करता है। इसके लिए **API कुंजी** और **खोज इंजन ID** की आवश्यकता होती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"खोज",
+				"अनुकूलित",
+				"जेनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Google API Leitarrafall",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Verksmiðja sem framleiðir Google Custom Search API þjónustuheimildir.",
+			"description_markdown": "Þessi **þjónusturafall** býr til tilvik af Google Custom Search API. Hún veitir mjög sérhannaða leitlausn. Krefst **API lykils** og **leitarvélarauðkennis**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"leit",
+				"sérsniðin",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di Ricerca Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Una fabbrica di generatori per fonti di servizio Google Custom Search API.",
+			"description_markdown": "Questo **generatore di servizi** crea istanze di Google Custom Search API. Offre una soluzione di ricerca altamente personalizzabile. Richiede una **chiave API** e un **ID motore di ricerca**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"ricerca",
+				"personalizzato",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "Google API 検索ジェネレーター",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API サービスソースを生産する工場コンポーネント。",
+			"description_markdown": "この**サービスジェネレーター**は Google Custom Search API のインスタンスを作成します。高度にカスタマイズ可能な検索ソリューションを提供します。機能するには**API キー**と**検索エンジン ID** が必要です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"検索",
+				"カスタム",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "Google API 검색 생성기",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API 서비스 소스를 생산하는 공장 컴포넌트.",
+			"description_markdown": "이 **서비스 생성기**는 Google Custom Search API 인스턴스를 생성합니다. 고도로 맞춤 설정 가능한 검색 솔루션을 제공합니다. 작동하려면 **API 키**와 **검색 엔진 ID**가 필요합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"검색",
+				"맞춤형",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "谷歌客制寻索肆",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "循谷歌客製之術，創尋索之源",
+			"description_markdown": "此乃基於 **Google Custom Search API** 之智工肆。其能創谷歌尋索之實例，為化身供以專屬之網際資訊。然運作必備**金鑰**與**尋索引擎編碼**，方可驅動。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"谷歌",
+				"API",
+				"寻索",
+				"客制",
+				"肆"
+			]
+		},
+		"nl-NL": {
+			"name": "Google API Search Generator",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Een generatorfabriek voor Google Custom Search API-servicebronnen.",
+			"description_markdown": "Deze **servicegenerator** creëert instanties van Google Custom Search API. Het biedt een zeer aanpasbare zoekoplossing. Vereist een **API-sleutel** en een **zoekmachine-ID** om te functioneren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"zoeken",
+				"aangepast",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de Pesquisa da API do Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Uma fábrica de geradores para fontes de serviço da API de Pesquisa Personalizada do Google.",
+			"description_markdown": "Este **gerador de serviços** cria instâncias da API de Pesquisa Personalizada do Google. Ele fornece uma solução de pesquisa altamente personalizável. Requer uma **chave de API** e um **ID de Motor de Pesquisa** para funcionar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"pesquisa",
+				"personalizado",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор Поиска Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Завод-генератор для источников сервиса Google Custom Search API.",
+			"description_markdown": "Этот **генератор сервиса** создает экземпляры Google Custom Search API. Он предоставляет настраиваемое решение для поиска. Требуется **ключ API** и **идентификатор поисковой системы** для работы.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"поиск",
+				"пользовательский",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор Пошуку Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Завод-генератор для джерел сервісу Google Custom Search API.",
+			"description_markdown": "Цей **генератор сервісу** створює екземпляри Google Custom Search API. Він надає високоналаштовуване рішення для пошуку. Потребує **ключ API** та **ідентифікатор пошукової системи** для функціонування.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"пошук",
+				"користувацький",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Tìm kiếm API của Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Nhà máy sản xuất các nguồn dịch vụ Google Custom Search API.",
+			"description_markdown": "Trình tạo dịch vụ này tạo ra các thực thể của Google Custom Search API. Nó cung cấp một giải pháp tìm kiếm có thể tùy chỉnh cao. Yêu cầu **khóa API** và **ID Công cụ Tìm kiếm** để hoạt động.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"api",
+				"tìm_kiếm",
+				"tùy_chỉnh",
+				"trình_tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "Google API 搜尋生成器",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "生產 Google Custom Search API 服務源的工廠組件",
+			"description_markdown": "這是基於 **Google Custom Search API** 的服務生成器。它作為生產定制化搜尋實例的工廠，為角色提供精確、可控的網際網路資訊獲取能力。使用時需要配置 **API 金鑰**和**搜尋引擎 ID**。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"tags": [
+				"google",
+				"API",
+				"搜尋",
+				"定制",
+				"生成器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Google API Search Source",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "A customized search service instance powered by Google Custom Search API.",
+			"description_markdown": "This is an active instance of the **Google Custom Search API**. It provides characters with tailored web search capabilities, requiring both an **API key** and a **Search Engine ID** for operation, allowing for highly specific and controllable search results.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"search",
+				"google",
+				"api",
+				"custom",
+				"source"
+			]
+		},
+		"zh-CN": {
+			"name": "Google API 搜索源",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "由 Google Custom Search API 提供支持的定制搜索服务实例",
+			"description_markdown": "这是 **Google Custom Search API** 的一个活动实例。它为角色提供定制化的互联网搜索能力，需要配置 **API 密钥**和**搜索引擎 ID** 才能运行，以实现更精确和可控的搜索结果。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"搜索",
+				"Google",
+				"API",
+				"定制",
+				"服务源"
+			]
+		},
+		"ar-SA": {
+			"name": "مصدر بحث Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "مثيل خدمة بحث مخصصة مدعوم من Google Custom Search API.",
+			"description_markdown": "هذا مثيل نشط لـ **Google Custom Search API**. يوفر للشخصيات قدرات بحث مخصصة، ويتطلب **مفتاح API** و**معرف محرك البحث** للتشغيل.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"بحث",
+				"Google",
+				"api",
+				"مخصص",
+				"مصدر"
+			]
+		},
+		"de-DE": {
+			"name": "Google API-Suchquelle",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Eine angepasste Suchdienstinstanz, die von der Google Custom Search API betrieben wird.",
+			"description_markdown": "Dies ist eine aktive Instanz der **Google Custom Search API**. Sie bietet Charakteren maßgeschneiderte Web-Suchfunktionen und erfordert sowohl einen **API-Schlüssel** als auch eine **Suchmaschinen-ID**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"Suche",
+				"Google",
+				"API",
+				"benutzerdefiniert",
+				"Quelle"
+			]
+		},
+		"emoji": {
+			"name": "🌐🔍🔑",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "🌐🔍 ➕ 🔑ID",
+			"description_markdown": "🌐🔍🔑 ➡️ 🛠️. \n🔐 ➡️ 🔑, ID. \n🚀 ➡️ ✨🔎.\n\n✨ 🔍 🌐 🔑",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"🌐",
+				"🔍",
+				"🔑",
+				"ID"
+			]
+		},
+		"es-ES": {
+			"name": "Fuente de Búsqueda de la API de Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Una instancia de servicio de búsqueda personalizada impulsada por la API de búsqueda personalizada de Google.",
+			"description_markdown": "Esta es una instancia activa de la **API de búsqueda personalizada de Google**. Proporciona capacidades de búsqueda web personalizadas, requiriendo una **clave API** y un **ID de motor de búsqueda**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"búsqueda",
+				"google",
+				"api",
+				"personalizado",
+				"fuente"
+			]
+		},
+		"fr-FR": {
+			"name": "Source de Recherche API Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Une instance de service de recherche personnalisée alimentée par l'API Google Custom Search.",
+			"description_markdown": "Il s'agit d'une instance active de l'**API Google Custom Search**. Elle fournit des capacités de recherche web personnalisées, nécessitant une **clé API** et un **ID de moteur de recherche**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"recherche",
+				"google",
+				"api",
+				"personnalisé",
+				"source"
+			]
+		},
+		"hi-IN": {
+			"name": "Google API खोज स्रोत",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API द्वारा संचालित एक अनुकूलित खोज सेवा उदाहरण।",
+			"description_markdown": "यह **Google Custom Search API** का एक सक्रिय उदाहरण है। यह अनुकूलित वेब खोज क्षमताएं प्रदान करता है, जिसके लिए **API कुंजी** और **खोज इंजन आईडी** दोनों की आवश्यकता होती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"खोज",
+				"Google",
+				"API",
+				"अनुकूलित",
+				"स्रोत"
+			]
+		},
+		"is-IS": {
+			"name": "Google API Leitarheimild",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Sérsniðin leitarþjónusta knúin af Google Custom Search API.",
+			"description_markdown": "Þetta er virkt tilvik af **Google Custom Search API**. Hún veitir karakterum sérsniðna vefleitarmöguleika, sem krefst bæði **API lykils** og **leitarvélarauðkennis**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"leit",
+				"google",
+				"api",
+				"sérsniðin",
+				"heimild"
+			]
+		},
+		"it-IT": {
+			"name": "Fonte di Ricerca Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Un'istanza di servizio di ricerca personalizzata alimentata da Google Custom Search API.",
+			"description_markdown": "Questa è un'istanza attiva di **Google Custom Search API**. Fornisce ai personaggi capacità di ricerca web personalizzate, richiedendo sia una **chiave API** che un **ID motore di ricerca**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"ricerca",
+				"google",
+				"api",
+				"personalizzato",
+				"fonte"
+			]
+		},
+		"ja-JP": {
+			"name": "Google API 検索ソース",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API を利用したカスタマイズされた検索サービスインスタンス。",
+			"description_markdown": "これは **Google Custom Search API** のアクティブなインスタンスです。キャラクターにカスタマイズされたウェブ検索機能を提供し、動作には**API キー**と**検索エンジン ID** の両方が必要です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"検索",
+				"Google",
+				"API",
+				"カスタム",
+				"ソース"
+			]
+		},
+		"ko-KR": {
+			"name": "Google API 검색 소스",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Google Custom Search API로 구동되는 맞춤형 검색 서비스 인스턴스.",
+			"description_markdown": "이것은 **Google Custom Search API**의 활성 인스턴스입니다. 맞춤형 웹 검색 기능을 제공하며, 작동을 위해서는 **API 키**와 **검색 엔진 ID**가 모두 필요합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"검색",
+				"Google",
+				"API",
+				"맞춤형",
+				"소스"
+			]
+		},
+		"lzh": {
+			"name": "谷歌客制寻源",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "循谷歌客製之術，尋索專屬之訊",
+			"description_markdown": "此乃基於 **Google Custom Search API** 所建之谷歌尋索實例。其能為化身定制網際搜尋之功能，然須配備**金鑰**及**尋索引擎編碼**方可運作，以得精準之結果。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"寻索",
+				"谷歌",
+				"API",
+				"客制",
+				"实例"
+			]
+		},
+		"nl-NL": {
+			"name": "Google API Zoekbron",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Een aangepaste zoekservice-instantie aangedreven door Google Custom Search API.",
+			"description_markdown": "Dit is een actieve instantie van de **Google Custom Search API**. Het biedt karakters op maat gemaakte webzoekmogelijkheden, waarvoor zowel een **API-sleutel** als een **zoekmachine-ID** nodig zijn.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"zoeken",
+				"google",
+				"api",
+				"aangepast",
+				"bron"
+			]
+		},
+		"pt-PT": {
+			"name": "Fonte de Pesquisa da API do Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Uma instância de serviço de pesquisa personalizada alimentada pela API de Pesquisa Personalizada do Google.",
+			"description_markdown": "Esta é uma instância ativa da **API de Pesquisa Personalizada do Google**. Ela fornece às personagens capacidades de pesquisa na web personalizadas, exigindo tanto uma **chave de API** quanto um **ID de Motor de Pesquisa**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"pesquisa",
+				"google",
+				"api",
+				"personalizado",
+				"fonte"
+			]
+		},
+		"ru-RU": {
+			"name": "Источник Поиска Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Настраиваемый экземпляр поискового сервиса на базе Google Custom Search API.",
+			"description_markdown": "Это активный экземпляр **Google Custom Search API**. Он предоставляет персонажам возможности индивидуального веб-поиска, требуя **ключ API** и **идентификатор поисковой системы**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"поиск",
+				"google",
+				"api",
+				"пользовательский",
+				"источник"
+			]
+		},
+		"uk-UA": {
+			"name": "Джерело Пошуку Google API",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Налаштований екземпляр пошукового сервісу на базі Google Custom Search API.",
+			"description_markdown": "Це активний екземпляр **Google Custom Search API**. Він надає персонажам можливості індивідуального веб-пошуку, вимагаючи **ключ API** та **ідентифікатор пошукової системи**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"пошук",
+				"google",
+				"api",
+				"користувацький",
+				"джерело"
+			]
+		},
+		"vi-VN": {
+			"name": "Nguồn Tìm kiếm API của Google",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "Một thực thể dịch vụ tìm kiếm tùy chỉnh được cung cấp bởi API Tìm kiếm tùy chỉnh của Google.",
+			"description_markdown": "Đây là một thực thể hoạt động của **API Tìm kiếm tùy chỉnh của Google**. Nó cung cấp cho các nhân vật khả năng tìm kiếm web tùy chỉnh, yêu cầu cả **khóa API** và **ID Công cụ Tìm kiếm**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"tìm_kiếm",
+				"google",
+				"api",
+				"tùy_chỉnh",
+				"nguồn"
+			]
+		},
+		"zh-TW": {
+			"name": "Google API 搜尋源",
+			"avatar": "https://api.iconify.design/logos/google-icon.svg",
+			"description": "由 Google Custom Search API 提供支持的定制搜尋服務實例",
+			"description_markdown": "這是 **Google Custom Search API** 的一個活動實例。它為角色提供定制化的網際網路搜尋能力，需要配置 **API 金鑰**和**搜尋引擎 ID** 才能運行，以實現更精確和可控的搜尋結果。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.google.com/custom-search",
+			"provider": "Google API",
+			"tags": [
+				"搜尋",
+				"Google",
+				"API",
+				"定制",
+				"服務源"
+			]
+		}
+	}
+}

@@ -45,8 +45,8 @@ MAX_SYNC_ITERATIONS = 10
 PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7
 PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3
 
-# --- 新增配置: Info 文件处理 ---
-INFO_FILENAMES = {"info.json", "info.dynamic.json"}
+# --- 配置: Parts 下的 locales.json 中的 info 块 ---
+LOCALES_JSON_FILENAME = "locales.json"
 # 仅翻译这些字段，其他字段（如 version, author, home_page）直接复制
 TRANSLATABLE_INFO_FIELDS = {"name", "description", "description_markdown", "summary", "tags"}
 # ----------- 配置结束 -----------
@@ -420,12 +420,61 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
 
 
-# --- Info File Sync Logic ---
+# --- Locales.json Sync Logic ---
+
+def _is_locale_keyed_block(block):
+	"""判断是否为按语言分组的块（键为 zh-CN、en-UK、emoji 等）。"""
+	if not isinstance(block, (dict, OrderedDict)) or len(block) == 0:
+		return False
+	return any(k in REFERENCE_LANG_CODES or k == "emoji" for k in block.keys())
+
+
+def sync_localized_block(block_data, available_lang_codes):
+	"""
+	同步按语言分组的通用块（如 greeting、groupGreeting、noAISourceFeedback）。
+	结构为 { "zh-CN": value, "en-UK": value, "emoji": value, ... }，value 可为 str、list 或 dict。
+	缺失的 locale 会从参考语言翻译补充；emoji 作为目标时直接复制不翻译。
+	"""
+	changed = False
+	source_lang = None
+	for ref in REFERENCE_LANG_CODES:
+		if ref in block_data:
+			source_lang = ref
+			break
+	if not source_lang:
+		source_lang = next((k for k in block_data if k in available_lang_codes), None)
+	if not source_lang:
+		return False
+
+	source_val = block_data[source_lang]
+
+	for target_lang in available_lang_codes:
+		if target_lang == source_lang or target_lang in block_data:
+			continue
+		print(f"      + 为 '{target_lang}' 补充内容 (基于 '{source_lang}')")
+		if target_lang == "emoji":
+			block_data[target_lang] = copy.deepcopy(source_val)
+		else:
+			translated = translate_value(copy.deepcopy(source_val), source_lang, target_lang)
+			if translated is not None:
+				block_data[target_lang] = translated
+			else:
+				block_data[target_lang] = copy.deepcopy(source_val)
+		changed = True
+
+	if changed:
+		sorted_keys = sorted(block_data.keys(), key=lambda k: (0 if k in REFERENCE_LANG_CODES else 1, k))
+		if list(block_data.keys()) != sorted_keys:
+			new_block = OrderedDict((k, block_data[k]) for k in sorted_keys)
+			block_data.clear()
+			block_data.update(new_block)
+	return changed
+
 
 def sync_info_content(info_data, available_lang_codes):
 	"""
-	同步 info.json 类型的内容。
-	结构通常为: { "en-UK": {...}, "zh-CN": {...} }
+	同步 locales.json 内 info 块的内容。
+	结构通常为: { "en-UK": {...}, "zh-CN": {...}, "emoji": {...}, ... }
 	"""
 	changed = False
 
@@ -502,7 +551,7 @@ def sync_info_content(info_data, available_lang_codes):
 			# 如果键存在，暂时不做覆盖更新，假设已有的是手动修正过的
 			# 除非值为空字符串且源不为空？这里暂保持保守策略。
 
-	# 4. (可选) 排序：让 info.json 的语言顺序好看一点
+	# 4. (可选) 排序：让 info 块的语言顺序好看一点
 	# 这里简单对顶层 key (语言) 排序，把非语言的 key 留着
 	sorted_keys = sorted(info_data.keys(), key=lambda k: (0 if k in REFERENCE_LANG_CODES else 1, k))
 	if list(info_data.keys()) != sorted_keys:
@@ -513,13 +562,14 @@ def sync_info_content(info_data, available_lang_codes):
 
 	return changed
 
-def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
+def process_locales_json_files(fount_dir, gitignore_spec, available_lang_codes):
 	"""
-	扫描并同步所有的 info.json / info.dynamic.json 文件
-	不仅同步内容，还会强制统一缩进格式（缩进使用 Tab，末尾有空行）。
+	扫描并同步所有 parts 下的 locales.json。
+	- info 块：使用 sync_info_content（字段级翻译/复制）
+	- 其它按语言分组的块（如 greeting、groupGreeting、noAISourceFeedback）：使用 sync_localized_block 补充缺失 locale
 	"""
-	print(f"\n--- 开始扫描并同步 Info JSON 文件 ---")
-	print(f"目标文件名: {INFO_FILENAMES}")
+	print(f"\n--- 开始扫描并同步 locales.json ---")
+	print(f"目标文件名: {LOCALES_JSON_FILENAME}")
 
 	count_processed = 0
 	count_changed = 0
@@ -529,7 +579,7 @@ def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
 			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), fount_dir))]
 
 		for filename in files:
-			if filename not in INFO_FILENAMES:
+			if filename != LOCALES_JSON_FILENAME:
 				continue
 
 			filepath = os.path.join(root, filename)
@@ -537,47 +587,51 @@ def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
 				continue
 
 			try:
-				# 1. 读取原始文件内容（字符串）以便后续比较格式
 				with open(filepath, "r", encoding="utf-8") as f:
 					original_content_str = f.read()
 
-				# 2. 解析数据
-				# 使用 loads 而不是 load，因为我们已经读取了字符串
 				try:
 					data = json5.loads(original_content_str, object_pairs_hook=OrderedDict)
 				except Exception as e:
 					print(f"    ! 解析 JSON5 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
 					continue
 
-				print(f"  正在处理: {os.path.relpath(filepath, fount_dir)}")
+				if not isinstance(data, (dict, OrderedDict)):
+					continue
 
-				# 3. 执行内容同步逻辑 (sync_info_content 会修改 data 对象)
-				content_has_logical_changes = sync_info_content(data, available_lang_codes)
+				content_has_logical_changes = False
+				has_any_locale_block = False
 
-				# 4. 生成标准格式的新字符串
-				# 强制使用 Tab 缩进，且末尾附加一个换行符
-				new_content_str = json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n"
+				for top_key, top_value in list(data.items()):
+					if not isinstance(top_value, (dict, OrderedDict)):
+						continue
+					if top_key == "info":
+						has_any_locale_block = True
+						if sync_info_content(top_value, available_lang_codes):
+							content_has_logical_changes = True
+					elif _is_locale_keyed_block(top_value):
+						has_any_locale_block = True
+						if sync_localized_block(top_value, available_lang_codes):
+							content_has_logical_changes = True
 
-				# 5. 判定是否需要写入
-				# 条件：(内容逻辑有变化) 或者 (原始文本与标准格式文本不一致)
-				if content_has_logical_changes or original_content_str != new_content_str:
-					action = "更新内容" if content_has_logical_changes else "格式化"
+				if has_any_locale_block:
+					print(f"  正在处理: {os.path.relpath(filepath, fount_dir)}")
+					new_content_str = json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n"
 
-					with open(filepath, "w", encoding="utf-8", newline="\n") as f:
-						f.write(new_content_str)
-
-					print(f"    -> 已保存 ({action})。")
-					count_changed += 1
-				else:
-					print("    -> 无需变更。")
-					pass
-
-				count_processed += 1
+					if content_has_logical_changes or original_content_str != new_content_str:
+						action = "更新内容" if content_has_logical_changes else "格式化"
+						with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+							f.write(new_content_str)
+						print(f"    -> 已保存 ({action})。")
+						count_changed += 1
+					else:
+						print("    -> 无需变更。")
+					count_processed += 1
 
 			except Exception as e:
 				print(f"    ! 错误处理文件 {filepath}: {e}")
 
-	print(f"--- Info 文件处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
+	print(f"--- locales.json 处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
 
 def normalize_and_sync_dicts(
 	dict_a,
@@ -1263,7 +1317,7 @@ def main():
 
 	save_locale_files(all_data, ref_path)
 
-	process_info_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
+	process_locales_json_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
 
 	ts_decl_path = os.path.join(LOCALE_DIR, "../../decl/locale_data.ts")
 	generate_locale_data_ts(all_data[ref_path], ts_decl_path)

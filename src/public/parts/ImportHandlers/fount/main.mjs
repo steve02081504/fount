@@ -11,10 +11,10 @@ import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
 import { loadPart, isPartLoaded } from '../../../../server/parts_loader.mjs'
 
 import { cloneRepo } from './git.mjs'
-import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
 import { isFountPart, unzipDirectory } from './zip.mjs'
 
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 合并移动文件或目录。

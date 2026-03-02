@@ -2,8 +2,8 @@ import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
-import info_dynamic from './info.dynamic.json' with { type: 'json' }
-import info from './info.json' with { type: 'json' }
+
+const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
@@ -49,7 +49,7 @@ async function GetSource(config) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
 			v.name = config.name || config.model
 			return [k, v]
 		})),

@@ -1,4 +1,5 @@
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
 /**
  * 语言设置Shell
  */

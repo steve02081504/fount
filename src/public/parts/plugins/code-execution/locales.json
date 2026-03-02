@@ -1,0 +1,289 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Code Execution",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Provides code execution capabilities for AI characters.",
+			"description_markdown": "The **Code Execution** plugin provides AI characters with the ability to execute JavaScript and Shell code, including inline code execution.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"code-execution",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "代码执行",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "为 AI 角色提供代码执行能力",
+			"description_markdown": "**代码执行**插件为 AI 角色提供了执行 JavaScript 和 Shell 代码的能力，包括内联代码执行。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"代码执行",
+				"javascript",
+				"shell",
+				"插件"
+			]
+		},
+		"ar-SA": {
+			"name": "تنفيذ التعليمات البرمجية",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "يوفر قدرات تنفيذ التعليمات البرمجية لشخصيات الذكاء الاصطناعي",
+			"description_markdown": "يوفر المكون الإضافي **Code Execution** لشخصيات الذكاء الاصطناعي القدرة على تنفيذ أكواد JavaScript و Shell، بما في ذلك التنفيذ المباشر للأكواد.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"تنفيذ_البرمجيات",
+				"جافا_سكربت",
+				"Shell",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Code-Ausführung",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Ermöglicht KI-Charakteren das Ausführen von Code.",
+			"description_markdown": "Das **Code Execution**-Plugin gibt KI-Charakteren die Fähigkeit, JavaScript- und Shell-Code auszuführen, einschließlich Inline-Code-Ausführung.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Code-Ausführung",
+				"JavaScript",
+				"Shell",
+				"Plugin"
+			]
+		},
+		"emoji": {
+			"name": "💻🏃",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "🤖➕💻➡️✅",
+			"description_markdown": "**💻🏃** ➡️ 🤖✨.\n✅ 🟨📜 & 🐚.\n⚡️ 📝➡️🏃.\n\n💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"💻",
+				"📜",
+				"⚡",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Ejecución de código",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Proporciona capacidades de ejecución de código para personajes de IA.",
+			"description_markdown": "El complemento **Code Execution** dota a los personajes de IA de la capacidad de ejecutar código JavaScript y Shell, incluida la ejecución de código en línea.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ejecución de código",
+				"javascript",
+				"shell",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Exécution de code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Fournit des capacités d'exécution de code pour les personnages IA.",
+			"description_markdown": "Le plugin **Code Execution** permet aux personnages IA d'exécuter du code JavaScript et Shell, y compris l'exécution de code en ligne.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"exécution de code",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "कोड निष्पादन",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI पात्रों के लिए कोड निष्पादन क्षमताएं प्रदान करता है।",
+			"description_markdown": "**Code Execution** प्लगइन AI पात्रों को JavaScript और Shell कोड निष्पादित करने की क्षमता देता है, जिसमें इनलाइन कोड निष्पादन भी शामिल है।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"कोड_निष्पादन",
+				"जावास्क्रिप्ट",
+				"shell",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Kóðakeyrsla",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Gerir gervigreindarkarakterum kleift að keyra kóða.",
+			"description_markdown": "**Code Execution** viðbótin veitir gervigreindarkarakterum getu til að keyra JavaScript og Shell kóða, þar á meðal beina kóðakeyrslu.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kóðakeyrsla",
+				"javascript",
+				"shell",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Esecuzione codice",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Fornisce funzionalità di esecuzione del codice per i personaggi IA.",
+			"description_markdown": "Il plugin **Code Execution** fornisce ai personaggi IA la possibilità di eseguire codice JavaScript e Shell, inclusa l'esecuzione di codice inline.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"esecuzione codice",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "コード実行",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI キャラクターにコード実行機能を提供します。",
+			"description_markdown": "**コード実行**プラグインは、インライン実行を含む JavaScript および Shell コードの実行機能を AI キャラクターに提供します。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"コード実行",
+				"javascript",
+				"shell",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "코드 실행",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI 캐릭터에게 코드 실행 기능을 제공합니다.",
+			"description_markdown": "**코드 실행** 플러그인은 AI 캐릭터에게 인라인 코드 실행을 포함한 JavaScript 및 Shell 코드 실행 능력을 부여합니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"코드실행",
+				"자바스크립트",
+				"shell",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "演機執碼",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "賦予化身演機執碼之能",
+			"description_markdown": "此**演機執碼**插件，使化身得行 JavaScript 及 Shell 之術，亦可於文中即時演之。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"執碼",
+				"JavaScript",
+				"Shell",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Code-uitvoering",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Biedt mogelijkheden voor code-uitvoering voor AI-personages.",
+			"description_markdown": "De **Code Execution**-plugin geeft AI-personages de mogelijkheid om JavaScript- en Shell-code uit te voeren, inclusief inline code-uitvoering.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"code-uitvoering",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Execução de código",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Fornece capacidades de execução de código para personagens de IA.",
+			"description_markdown": "O plugin **Code Execution** fornece aos personagens de IA a capacidade de executar código JavaScript e Shell, incluindo execução de código in-line.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"execução de código",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Выполнение кода",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Обеспечивает возможность выполнения кода для ИИ-персонажей.",
+			"description_markdown": "Плагин **Code Execution** дает ИИ-персонажам возможность выполнять код JavaScript и Shell, включая выполнение встроенного кода.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"выполнение_кода",
+				"javascript",
+				"shell",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Виконання коду",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Забезпечує можливість виконання коду для ШІ-персонажів.",
+			"description_markdown": "Плагін **Code Execution** надає ШІ-персонажам можливість виконувати код JavaScript та Shell, включаючи вбудоване виконання коду.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"виконання_коду",
+				"javascript",
+				"shell",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Thực thi mã",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Cung cấp khả năng thực thi mã cho các nhân vật AI.",
+			"description_markdown": "Plugin **Code Execution** cung cấp cho các nhân vật AI khả năng thực thi mã JavaScript và Shell, bao gồm cả thực thi mã nội tuyến.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"thực thi mã",
+				"javascript",
+				"shell",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "程式碼執行",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "為 AI 角色提供程式碼執行能力",
+			"description_markdown": "**程式碼執行**外掛程式為 AI 角色提供了執行 JavaScript 和 Shell 程式碼的能力，包括內嵌程式碼執行。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"程式碼執行",
+				"javascript",
+				"shell",
+				"外掛"
+			]
+		}
+	}
+}

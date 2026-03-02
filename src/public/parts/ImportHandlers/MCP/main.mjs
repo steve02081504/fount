@@ -8,9 +8,9 @@ import { saveJsonFile } from '../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../server/auth.mjs'
 import { isPartLoaded, reloadPart } from '../../../../server/parts_loader.mjs'
 
-const templateDir = path.join(import.meta.dirname, 'Template')
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
+const templateDir = path.join(import.meta.dirname, 'Template')
 /**
  * 将 MCP 配置文件作为数据导入。
  * @param {string} username - 用户名。

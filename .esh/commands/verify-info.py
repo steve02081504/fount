@@ -1,8 +1,8 @@
 """
-从所有 info.json 中移除 provider 字段；
-对 info.dynamic.json 中缺少 provider 的 locale 发出警告；
+从所有 parts 下的 locales.json 的 info 块中移除 provider 字段；
+对 info 块中缺少 provider 的 locale 发出警告；
 当 info 的 emoji 对象内字符串内容包含中文、英文、俄文、日文任一时，对 emoji 本地化发出警告；
-对 info.json / info.dynamic.json 中的 avatar URL 进行网络请求检查，若返回 404 则发出警告；
+对 locales.json 的 info 块中的 avatar URL 进行网络请求检查，若返回 404 则发出警告；
 对 emoji 无 avatar（无字段或空串）的 info 发出警告，每文件一次；
 对 achievements_registry.json 中成就的 icon / locked_icon URL 进行网络请求检查，若返回 404 则发出警告。
 
@@ -98,36 +98,21 @@ def remove_provider_from_info(data: dict) -> bool:
 	return modified
 
 
-def check_dynamic_provider(dynamic_path: Path) -> list[str]:
-	"""检查 info.dynamic.json 中各 locale 是否包含 provider，返回缺少 provider 的 locale 列表。"""
-	data = load_json(dynamic_path)
-	if data is None or not isinstance(data, dict):
-		return []
-	missing = []
-	for key, value in data.items():
-		if isinstance(value, dict) and "provider" not in value:
-			missing.append(key)
-	return missing
-
-
-# 匹配 "avatar": "https://..." 或 "avatar": "http://..."
-AVATAR_LINE_RE = re.compile(r'^\s*"avatar"\s*:\s*"(https?://[^"]+)"\s*,?\s*$')
-
-
-def collect_avatar_refs(parts_dir: Path) -> list[tuple[Path, int, str]]:
-	"""从 parts 目录下所有 info.json 与 info.dynamic.json 中收集 (路径, 行号, avatar_url)。"""
+def collect_info_avatar_refs(parts_dir: Path) -> list[tuple[Path, str]]:
+	"""从 parts 目录下所有 locales.json 的 info 块中收集 (路径, avatar_url)。"""
 	refs = []
-	for name in ("info.json", "info.dynamic.json"):
-		for path in sorted(parts_dir.rglob(name)):
-			try:
-				text = path.read_text(encoding="utf-8")
-			except Exception as e:
-				print(f"[!] 无法读取 '{path.as_posix()}': {e}")
-				continue
-			for line_no, line in enumerate(text.splitlines(), start=1):
-				m = AVATAR_LINE_RE.match(line)
-				if m:
-					refs.append((path, line_no, m.group(1)))
+	for path in sorted(parts_dir.rglob("locales.json")):
+		data = load_json(path)
+		if not data or not isinstance(data, dict):
+			continue
+		info = data.get("info")
+		if not isinstance(info, dict):
+			continue
+		for value in info.values():
+			if isinstance(value, dict):
+				url = value.get("avatar")
+				if isinstance(url, str) and url.strip():
+					refs.append((path, url.strip()))
 	return refs
 
 
@@ -191,60 +176,51 @@ def main():
 		print(f"错误: 未找到目录 {parts_dir.as_posix()}，请在项目根目录执行本脚本。")
 		return
 
-	info_files = sorted(parts_dir.rglob("info.json"))
-	print("--- 开始处理 info.json（移除 provider）---")
-	print(f"共找到 {len(info_files)} 个 info.json 文件。\n")
+	locales_files = sorted(parts_dir.rglob("locales.json"))
+	print("--- 开始处理 locales.json 的 info 块（移除 provider）---")
+	print(f"共找到 {len(locales_files)} 个含 info 的 locales.json 文件。\n")
 
 	removed_count = 0
-	dynamic_warnings = []
+	missing_provider_warnings = []  # (path, [locale, ...])
 	emoji_warnings = []
 	emoji_no_avatar_paths = []  # 每文件一次
 	avatar_404_refs = []  # [(path, url), ...]，每个文件每个 URL 仅一条
 	achievement_icon_404_refs = []  # [(path, achievement_id, icon_type, url), ...]
 
-	for info_path in info_files:
-		data = load_json(info_path)
-		if data is None:
+	for path in locales_files:
+		data = load_json(path)
+		if data is None or not isinstance(data, dict):
+			continue
+		info = data.get("info")
+		if not isinstance(info, dict):
 			continue
 
-		# 1. 检查 emoji 对象内字符串是否含中/英/俄/日任一种，若有则建议核对 emoji 本地化
-		if isinstance(data, dict):
-			emoji_block = data.get("emoji")
-			if isinstance(emoji_block, dict):
-				should_warn, found_langs = has_emoji_locale_warning(emoji_block)
-				if should_warn:
-					emoji_warnings.append((info_path, found_langs))
-				# emoji 无 avatar（无字段或空串）警告，每文件一次
-				av = emoji_block.get("avatar")
-				if av is None or av == "":
-					emoji_no_avatar_paths.append(info_path)
+		# 1. 检查 emoji 对象内字符串是否含中/英/俄/日任一种
+		emoji_block = info.get("emoji")
+		if isinstance(emoji_block, dict):
+			should_warn, found_langs = has_emoji_locale_warning(emoji_block)
+			if should_warn:
+				emoji_warnings.append((path, found_langs))
+			av = emoji_block.get("avatar")
+			if av is None or av == "":
+				emoji_no_avatar_paths.append(path)
 
 		# 2. 移除 provider 并写回
-		if remove_provider_from_info(data):
-			if save_json(info_path, data):
+		if remove_provider_from_info(info):
+			if save_json(path, data):
 				removed_count += 1
-				print(f"  已移除 provider: {info_path.as_posix()}")
+				print(f"  已移除 provider: {path.as_posix()}")
 
-		# 3. 检查同目录下的 info.dynamic.json 是否缺少 provider，以及 emoji 无 avatar
-		parent = info_path.parent
-		dynamic_path = parent / "info.dynamic.json"
-		if dynamic_path.is_file():
-			data_dyn = load_json(dynamic_path)
-			if data_dyn is not None and isinstance(data_dyn, dict):
-				missing_locales = [k for k, v in data_dyn.items() if isinstance(v, dict) and "provider" not in v]
-				if missing_locales:
-					dynamic_warnings.append((dynamic_path, missing_locales))
-				emoji_block = data_dyn.get("emoji")
-				if isinstance(emoji_block, dict):
-					av = emoji_block.get("avatar")
-					if av is None or av == "":
-						emoji_no_avatar_paths.append(dynamic_path)
+		# 3. 检查 info 块中缺少 provider 的 locale
+		missing_locales = [k for k, v in info.items() if isinstance(v, dict) and "provider" not in v]
+		if missing_locales:
+			missing_provider_warnings.append((path, missing_locales))
 
 	# 4. 收集 avatar URL 并检查 404（每个文件每个 URL 只警告一次）
-	avatar_refs = collect_avatar_refs(parts_dir)
+	avatar_refs = collect_info_avatar_refs(parts_dir)
 	url_to_refs = {}
-	for path, line_no, url in avatar_refs:
-		url_to_refs.setdefault(url, []).append((path, line_no))
+	for path, url in avatar_refs:
+		url_to_refs.setdefault(url, []).append((path, url))
 	checked_404_urls = set()
 	for url, refs in url_to_refs.items():
 		if url in checked_404_urls:
@@ -252,7 +228,7 @@ def main():
 		if is_avatar_url_404(url):
 			checked_404_urls.add(url)
 			seen_path_url = set()
-			for path, line_no in refs:
+			for path, _ in refs:
 				key = (path, url)
 				if key not in seen_path_url:
 					seen_path_url.add(key)
@@ -282,10 +258,10 @@ def main():
 					seen_key.add(key)
 					achievement_icon_404_refs.append((path, ach_id, icon_type, url))
 
-	# 输出 info.dynamic.json 警告
-	if dynamic_warnings:
-		print("\n--- info.dynamic.json 缺少 provider 的 locale ---")
-		for path, locales in dynamic_warnings:
+	# 输出 info 块缺少 provider 的 locale 警告
+	if missing_provider_warnings:
+		print("\n--- locales.json 的 info 块中缺少 provider 的 locale ---")
+		for path, locales in missing_provider_warnings:
 			print(f"[!] {path.as_posix()}")
 			print(f"    缺少 provider 的 locale: {', '.join(locales)}")
 		print("-" * 20)
@@ -334,12 +310,12 @@ def main():
 		print("-" * 20)
 
 	print("\n--- 处理完成 ---")
-	print(f"已从 {removed_count} 个 info.json 中移除 provider 字段。")
-	if not dynamic_warnings and not emoji_warnings and not avatar_404_refs and not emoji_no_avatar_paths and not achievement_icon_404_refs:
-		print("未发现 info.dynamic.json 缺 provider、emoji 本地化问题、avatar 404、emoji 无 avatar 或成就 icon 404。")
+	print(f"已从 {removed_count} 个 locales.json 的 info 块中移除 provider 字段。")
+	if not missing_provider_warnings and not emoji_warnings and not avatar_404_refs and not emoji_no_avatar_paths and not achievement_icon_404_refs:
+		print("未发现 info 缺 provider、emoji 本地化问题、avatar 404、emoji 无 avatar 或成就 icon 404。")
 	else:
-		if dynamic_warnings:
-			print(f"发现 {len(dynamic_warnings)} 个 info.dynamic.json 存在缺少 provider 的 locale。")
+		if missing_provider_warnings:
+			print(f"发现 {len(missing_provider_warnings)} 个 locales.json 的 info 块存在缺少 provider 的 locale。")
 		if emoji_warnings:
 			print(f"发现 {len(emoji_warnings)} 个 info 的 emoji 内字符串含中/英/俄/日，请核对 emoji 本地化。")
 		if avatar_404_refs:

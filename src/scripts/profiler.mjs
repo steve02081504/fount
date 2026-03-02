@@ -14,6 +14,7 @@ function getProfilerStack() {
 
 /**
  * 开始一个新的性能分析帧。
+ * @param {string} name - 分析帧名称
  */
 function startProfile(name) {
 	console.profile(name)
@@ -68,6 +69,7 @@ function endProfile() {
 
 /**
  * 执行一个函数并对其进行性能分析。
+ * @param {string} name - 分析帧名称
  * @param {Function} fn - 要进行性能分析的函数。
  * @returns {Promise<any>} 一个解析为性能分析结果的承诺。
  */

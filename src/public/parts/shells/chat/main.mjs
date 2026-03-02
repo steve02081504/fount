@@ -1,8 +1,9 @@
 import { hosturl } from '../../../../server/server.mjs'
 
-import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
 import { cleanFilesInterval } from './src/files.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 let loading_count = 0
 

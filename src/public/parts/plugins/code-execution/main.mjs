@@ -1,6 +1,7 @@
 import { codeExecutionReplyHandler, GetCodeExecutionPreviewUpdater } from './handler.mjs'
-import info from './info.json' with { type: 'json' }
 import { getCodeExecutionPrompt } from './prompt.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 代码执行插件主模块。

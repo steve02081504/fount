@@ -9,8 +9,10 @@ import { saveJsonFile } from '../../../../scripts/json_loader.mjs'
 import { downloadCharacter } from './char-download.mjs'
 import data_reader from './data_reader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
-import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
 /**
  * @typedef {import('../../../../decl/import.ts').import_handler_t} import_handler_t
  */

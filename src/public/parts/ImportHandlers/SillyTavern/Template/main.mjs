@@ -10,6 +10,28 @@ import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/s
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'
 
+import locales from './locales.json' with { type: 'json' }
+
+/**
+ * 全称优先，再按 `-` 前前缀匹配。
+ * @param {string[]} localesParam - 首选 locale 列表
+ * @param {string} key - locales 中的键名
+ * @returns {*} 匹配到的本地化内容
+ */
+function getLocale(localesParam, key) {
+	const preferred = [...localesParam, 'en-UK']
+	const available = Object.keys(locales[key] || {})
+	for (const p of preferred)
+		if (available.includes(p)) return locales[key]?.[p]
+
+	for (const p of preferred) {
+		const prefix = p.split('-')[0]
+		const found = available.find(a => a?.startsWith(prefix + '-'))
+		if (found) return locales[key]?.[found]
+	}
+	return locales[key]?.['en-UK'] || Object.values(locales[key] || {})[0]
+}
+
 /** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
@@ -147,9 +169,7 @@ export default {
 			 * @param {chatReplyRequest_t} args 参数
 			 */
 			GetReply: async args => {
-				if (!AIsource) return {
-					content: 'this character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage) first',
-				}
+				if (!AIsource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构

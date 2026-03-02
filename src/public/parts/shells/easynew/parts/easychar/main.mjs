@@ -64,9 +64,13 @@ export async function New(context) {
 	await fs.ensureDir(targetPath)
 
 	// Copy template files
-	const templateMainPath = path.join(templateDir, 'template/main.mjs')
+	const templateSubDir = path.join(templateDir, 'template')
+	const templateMainPath = path.join(templateSubDir, 'main.mjs')
 	if (fs.existsSync(templateMainPath))
 		await fs.copy(templateMainPath, path.join(targetPath, 'main.mjs'))
+	const templateLocalesPath = path.join(templateSubDir, 'locales.json')
+	if (fs.existsSync(templateLocalesPath))
+		await fs.copy(templateLocalesPath, path.join(targetPath, 'locales.json'))
 
 
 	// Save uploaded image

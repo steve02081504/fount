@@ -1,0 +1,298 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Translation Sources",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "The mounting hub for instantiated translation service units.",
+			"description_markdown": "This is the **root component** for active translation service instances. It serves as the primary repository where instantiated translation engines, produced by the Translation Service Generators, are mounted and prepared for multi-language processing.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"translate",
+				"sources",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "翻译服务源",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "已实例化的翻译服务组件挂载点",
+			"description_markdown": "这是翻译服务实例的**根节点**。所有由“翻译服务生成器”生产出的成品翻译驱动都挂载于此，作为系统实现多语言预处理与文本转译的直接动力源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"翻译",
+				"服务源",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مصادر الترجمة",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "مركز التثبيت لوحدات خدمة الترجمة المثيل",
+			"description_markdown": "هذا هو **المكون الجذري** لمثيلات خدمة الترجمة النشطة. إنه يعمل كمستودع أساسي حيث يتم تثبيت محركات الترجمة الناتجة عن المولدات وتجهيزها للمعالجة متعددة اللغات.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"ترجمة",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Übersetzungsquellen",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Der Montage-Knotenpunkt für instanziierte Übersetzungsdienst-Einheiten.",
+			"description_markdown": "Dies ist die **Stammkomponente** für aktive Übersetzungsdienst-Instanzen. Sie dient als Haupt-Repository, in dem die von den Generatoren erzeugten Übersetzungs-Engines für die mehrsprachige Verarbeitung bereitgestellt werden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Übersetzung",
+				"Quellen",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🗣️💎",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "🌍🔄🏭 ➡️ 📦 ➡️ 🗣️✨",
+			"description_markdown": "🌍🔄🏭 ➡️ 📦. \n📦 📥 🗣️. \n🔄 ➡️ ⚓ ➡️ 🚀.\n\n✨ 🗣️ 💎",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🗣️",
+				"🔄",
+				"⚓",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Fuentes de Traducción",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "El centro de montaje para unidades de servicio de traducción instanciadas.",
+			"description_markdown": "Este es el **componente raíz** para las instancias activas de traducción. Actúa como el repositorio principal donde se montan los motores de traducción listos para el procesamiento de idiomas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"traducción",
+				"fuentes",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Sources de Traduction",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Le concentrateur de montage pour les unités de service de traduction instanciées.",
+			"description_markdown": "Il s'agit du **composant racine** pour les instances de traduction actives. Il sert de dépôt pour les outils de traduction produits par les générateurs.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"traduction",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "अनुवाद स्रोत",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "इंस्टेंटिएटेड अनुवाद सेवा इकाइयों के लिए माउंटिंग हब।",
+			"description_markdown": "यह सक्रिय अनुवाद सेवा उदाहरणों के लिए **मूल घटक** है। यह प्राथमिक भंडार के रूप में कार्य करता है जहाँ अनुवाद इंजन स्रोतों को भाषा प्रसंस्करण के लिए रखा जाता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"अनुवाद",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Þýðingarheimildir",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Tengingarmiðstöð fyrir tilbúnar þýðingarvinnslueiningar.",
+			"description_markdown": "Þetta er **rótareiningin** fyrir virkar þýðingarþjónustur. Hún þjónar sem geymsla fyrir þýðingarvélar sem eru tilbúnar til að brúa tungumálabil.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"þýðing",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Fonti di Traduzione",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "L'hub di montaggio per le unità di servizio di traduzione istanziate.",
+			"description_markdown": "Questo è il **componente radice** per le istanze di traduzione attive. Funge da repository principale in cui sono montati i motori di traduzione pronti all'uso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"traduzione",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "翻訳ソース",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "インスタンス化された翻訳サービスユニットのマウントハブ",
+			"description_markdown": "これはアクティブな翻訳サービスインスタンスの**ルートコンポーネント**です。翻訳サービスジェネレーターから出力された「翻訳エンジン」がマウントされ、多言語処理が可能になる貯蔵庫として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"翻訳",
+				"ソース",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "번역 소스",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "인스턴스화된 번역 서비스 단위의 마운트 허브",
+			"description_markdown": "이것은 활성화된 번역 서비스 인스턴스의 **루트 컴포넌트**입니다. 번역 서비스 생성기에서 생산된 '번역 엔진'들이 마운트되어 다국어 처리를 준비하는 저장소 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"번역",
+				"소스",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "译源",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "诸成物通译服务之聚所",
+			"description_markdown": "此乃 fount **译源**之府。凡由“通译肆”所产之译舌成品，皆聚于此，以充万化通言之用，为角色跨域之舌也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"译源",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Vertaalbronnen",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "De montagehub voor geïnstantieerde vertaalservice-eenheden.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor actieve vertaalservice-instanties. Het fungeert als de primaire opslagplaats voor de geproduceerde vertaalengines.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"vertaling",
+				"bronnen",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Fontes de Tradução",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "O centro de montagem para unidades de serviço de tradução instanciadas.",
+			"description_markdown": "Este é o **componente raiz** para instâncias ativas de tradução. Serve como o repositório principal onde os motores de tradução são montados.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"tradução",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Источники Перевода",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Монтажный узел для созданных экземпляров блоков перевода.",
+			"description_markdown": "Это **корневой компонент** для активных экземпляров перевода. Он служит репозиторием, где размещаются готовые инструменты для преодоления языковых барьеров.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"перевод",
+				"источники",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Джерела Перекладу",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Монтажний вузол для створених екземплярів блоків перекладу.",
+			"description_markdown": "Це **кореневий компонент** для активних екземплярів перекладу. Він виступає репозиторієм, де розміщуються готові інструменти для багатомовна обробки.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"переклад",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Nguồn Dịch thuật",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Trung tâm gắn kết cho các đơn vị dịch vụ dịch thuật thực thể.",
+			"description_markdown": "Đây là **thành phần gốc** của các thực thể dịch thuật đang hoạt động. Nó đóng vai trò là kho lưu trữ nơi tập hợp các công cụ dịch thuật để hỗ trợ xử lý ngôn ngữ.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"dịch_thuật",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "翻譯服務源",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "已實例化的翻譯服務組件掛載點",
+			"description_markdown": "這是翻譯服務實例的**根節點**。所有由「翻譯服務生成器」生產出的成品翻譯驅動都掛載於此，作為系統實現多語言預處理與文本轉譯的直接動力源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"翻譯",
+				"服務源",
+				"fount"
+			]
+		}
+	}
+}

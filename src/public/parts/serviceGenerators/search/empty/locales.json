@@ -1,0 +1,585 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Empty Generator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "A factory that produces empty search placeholders.",
+			"description_markdown": "This **service generator** acts as a fallback factory. It produces 'Empty' search sources when a specific generator is missing or failed, preventing system errors.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"generator",
+				"empty",
+				"placeholder",
+				"system"
+			]
+		},
+		"zh-CN": {
+			"name": "空搜索生成器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生产空搜索占位符的工厂组件",
+			"description_markdown": "这是系统的**备选生成器**。当指定的搜索生成器缺失或失效时，它会介入生产“空”实例，从而避免系统逻辑中断。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"生成器",
+				"空",
+				"占位符",
+				"系统"
+			]
+		},
+		"ar-SA": {
+			"name": "مولد فارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "مصنع ينتج عناصر نائبة للبحث الفارغ.",
+			"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع احتياطي. ينتج مصادر بحث 'فارغة' في حالة فقدان المولد المحدد.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"مولد",
+				"فارغ",
+				"نظام"
+			]
+		},
+		"de-DE": {
+			"name": "Leerer Generator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Eine Fabrik, die leere Such-Platzhalter erzeugt.",
+			"description_markdown": "Dieser **Service-Generator** fungiert als Fallback-Fabrik, wenn ein spezifischer Generator fehlt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"generator",
+				"leer",
+				"system"
+			]
+		},
+		"emoji": {
+			"name": "🚫⚙️",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "⚙️ ➡️ 🕳️",
+			"description_markdown": "⚙️🚫 ➡️ 🏗️🕳️. \n🛠️🤷‍♂️ ➡️ 📦.\n\n✨ 🚫 🏭",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"⚙️",
+				"🚫",
+				"🏗️"
+			]
+		},
+		"es-ES": {
+			"name": "Generador Vacío",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Fábrica que produce marcadores de búsqueda vacíos.",
+			"description_markdown": "Este **generador de servicios** actúa como una fábrica de respaldo cuando falta un generador específico.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"generador",
+				"vacío",
+				"sistema"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de service vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Composant d'usine qui produit des espaces réservés de recherche vides",
+			"description_markdown": "Il s'agit du **générateur alternatif** du système. Lorsque le générateur de recherche spécifié est manquant ou invalide, il intervient pour produire des instances « vides », évitant ainsi l'interruption de la logique du système.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"générateur",
+				"nul",
+				"espace réservé",
+				"système"
+			]
+		},
+		"hi-IN": {
+			"name": "ख़ाली सेवा जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "फ़ैक्टरी घटक जो खाली खोज प्लेसहोल्डर उत्पन्न करता है",
+			"description_markdown": "यह सिस्टम का **वैकल्पिक जनरेटर** है। जब निर्दिष्ट खोज जनरेटर गुम या अमान्य है, तो यह \"खाली\" उदाहरण उत्पन्न करने के लिए कदम उठाएगा, इस प्रकार सिस्टम तर्क में रुकावट से बचा जाएगा।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"जनरेटर",
+				"व्यर्थ",
+				"प्लेसहोल्डर",
+				"प्रणाली"
+			]
+		},
+		"is-IS": {
+			"name": "Tómur þjónusturafall",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Verksmiðjuíhluti sem framleiðir tóma leitarstaðsetningar",
+			"description_markdown": "Þetta er **val rafall** kerfisins. Þegar tilgreindur leitarvél vantar eða er ógildur mun hann stíga inn til að framleiða „tóm“ tilvik og forðast þannig truflun á rökfræði kerfisins.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"rafall",
+				"núll",
+				"staðgengill",
+				"kerfi"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di servizi vuoto",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Componente di fabbrica che produce segnaposto di ricerca vuoti",
+			"description_markdown": "Questo è il **generatore alternativo** del sistema. Quando il generatore di ricerca specificato è mancante o non valido, interverrà per produrre istanze \"vuote\", evitando così l'interruzione della logica del sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"generatore",
+				"nullo",
+				"segnaposto",
+				"sistema"
+			]
+		},
+		"ja-JP": {
+			"name": "空ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "空の検索プレースホルダーを生産する工場",
+			"description_markdown": "この**サービスジェネレーター**は、特定のジェネレーターが不足している場合のフォールバック工場として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ジェネレーター",
+				"空",
+				"システム"
+			]
+		},
+		"ko-KR": {
+			"name": "빈 검색 생성기",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "빈 검색 자리 표시자를 생성하는 팩토리 구성 요소",
+			"description_markdown": "이것은 시스템의 **대체 발전기**입니다. 지정된 검색 생성기가 없거나 유효하지 않은 경우 \"빈\" 인스턴스를 생성하여 시스템 로직의 중단을 방지합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"발전기",
+				"null",
+				"자리 표시자",
+				"체계"
+			]
+		},
+		"lzh": {
+			"name": "补阙肆",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "名器未就，设位补缺",
+			"description_markdown": "此乃**虚位之肆**。凡名器未就、术法阙如者，以此肆代产虚无之源，先设其位，以备完全。 \n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"肆",
+				"补阙",
+				"系统",
+				"虚位"
+			]
+		},
+		"nl-NL": {
+			"name": "Lege servicegenerator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Fabriekscomponent die lege tijdelijke aanduidingen voor zoeken produceert",
+			"description_markdown": "Dit is de **alternatieve generator** van het systeem. Wanneer de opgegeven zoekgenerator ontbreekt of ongeldig is, zal deze tussenbeide komen om \"lege\" instanties te produceren, waardoor onderbreking van de systeemlogica wordt voorkomen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"generator",
+				"nul",
+				"tijdelijke aanduiding",
+				"systeem"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de serviço vazio",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Componente de fábrica que produz espaços reservados de pesquisa vazios",
+			"description_markdown": "Este é o **gerador alternativo** do sistema. Quando o gerador de pesquisa especificado estiver ausente ou for inválido, ele intervirá para produzir instâncias \"vazias\", evitando assim a interrupção da lógica do sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"gerador",
+				"nulo",
+				"espaço reservado",
+				"sistema"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор пустых сервисов",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Фабричный компонент, создающий пустые заполнители поиска.",
+			"description_markdown": "Это **альтернативный генератор** системы. Когда указанный генератор поиска отсутствует или недействителен, он вмешается и создаст «пустые» экземпляры, избегая таким образом прерывания системной логики.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"генератор",
+				"нулевой",
+				"заполнитель",
+				"система"
+			]
+		},
+		"uk-UA": {
+			"name": "Порожній сервісний генератор",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Фабричний компонент, який створює порожні заповнювачі пошуку",
+			"description_markdown": "Це **альтернативний генератор** системи. Якщо вказаний генератор пошуку відсутній або недійсний, він втрутиться, щоб створити «порожні» екземпляри, таким чином уникаючи переривання системної логіки.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"генератор",
+				"нульовий",
+				"заповнювач",
+				"система"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo dịch vụ trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Thành phần gốc tạo ra các phần giữ chỗ tìm kiếm trống",
+			"description_markdown": "Đây là **trình tạo thay thế** của hệ thống. Khi trình tạo tìm kiếm được chỉ định bị thiếu hoặc không hợp lệ, nó sẽ bước vào để tạo ra các trường hợp \"trống\", do đó tránh được sự gián đoạn logic hệ thống.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"trình tạo",
+				"null",
+				"phần giữ chỗ",
+				"hệ thống"
+			]
+		},
+		"zh-TW": {
+			"name": "空服務產生器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生產空搜索佔位符的工廠組件",
+			"description_markdown": "這是系統的**備選產生器**。當指定的搜索產生器缺失或失效時，它會介入生產「空」實例，從而避免系統邏輯中斷。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"產生器",
+				"空",
+				"佔位符",
+				"系統"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Empty Source Instance",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "An active instance of a null search source.",
+			"description_markdown": "This is an **active placeholder instance**. It represents a state where no search source is available or configured, ensuring system stability by returning null results.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"empty",
+				"null",
+				"instance",
+				"placeholder"
+			]
+		},
+		"zh-CN": {
+			"name": "空搜索源实例",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "一个活跃的空搜索服务实例",
+			"description_markdown": "这是一个**活跃的占位符实例**。它代表当前没有任何可用的搜索源配置，通过返回空结果来维持系统的稳定性。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"虚无",
+				"实例",
+				"占位符"
+			]
+		},
+		"ar-SA": {
+			"name": "مثيل مصدر فارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "مثيل نشط لمصدر بحث فارغ.",
+			"description_markdown": "هذا **مثيل نائب نشط**. يمثل حالة لا يتوفر فيها مصدر بحث، مما يضمن استقرار النظام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"فارغ",
+				"نائب",
+				"مثيل"
+			]
+		},
+		"de-DE": {
+			"name": "Leere Quellinstanz",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Eine aktive Instanz einer Null-Suchquelle.",
+			"description_markdown": "Dies ist eine **aktive Platzhalter-Instanz**. Sie stellt einen Zustand dar, in dem keine Suchquelle konfiguriert ist.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"leer",
+				"null",
+				"instanz",
+				"platzhalter"
+			]
+		},
+		"emoji": {
+			"name": "👻🕳️",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "0️⃣ ➡️ 👻",
+			"description_markdown": "🚫🔍 ➡️ 🕳️. \n⚓ ➡️ 😶. \n✨ ➡️ 🤷‍♂️.\n\n✨ 👻 ✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"👻",
+				"🚫",
+				"🕳️"
+			]
+		},
+		"es-ES": {
+			"name": "Instancia de Fuente Vacía",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Instancia activa de una fuente de búsqueda nula.",
+			"description_markdown": "Esta es una **instancia de marcador de posición activa**. Representa la ausencia de configuración de búsqueda.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vacío",
+				"nulo",
+				"instancia"
+			]
+		},
+		"fr-FR": {
+			"name": "Instance de Source Vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Une instance active d'une source de recherche nulle.",
+			"description_markdown": "Il s'agit d'une **instance d'espace réservé active**. Elle assure la stabilité du système en cas d'absence de source.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vide",
+				"nul",
+				"instance"
+			]
+		},
+		"hi-IN": {
+			"name": "खाली सेवा स्रोत उदाहरण",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "एक सक्रिय, खाली खोज सेवा उदाहरण",
+			"description_markdown": "यह एक सक्रिय प्लेसहोल्डर उदाहरण है. यह इंगित करता है कि वर्तमान में कोई खोज स्रोत कॉन्फ़िगरेशन उपलब्ध नहीं है और खाली परिणाम लौटाकर सिस्टम स्थिरता बनाए रखता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"व्यर्थ",
+				"शून्य",
+				"इंस्टेंस",
+				"प्लेसहोल्डर"
+			]
+		},
+		"is-IS": {
+			"name": "Tómt tilvik þjónustugjafa",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Virkt, tómt leitarþjónustutilvik",
+			"description_markdown": "Þetta er virkt staðsetningartilvik. Það gefur til kynna að það séu engar tiltækar uppsetningar fyrir leitaruppsprettu sem stendur og viðheldur stöðugleika kerfisins með því að skila tómum niðurstöðum.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"núll",
+				"ekki neitt",
+				"tilvik",
+				"staðgengill"
+			]
+		},
+		"it-IT": {
+			"name": "Istanza di origine del servizio vuota",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Un'istanza del servizio di ricerca attiva e vuota",
+			"description_markdown": "Questa è un'istanza segnaposto attiva. Indica che al momento non sono disponibili configurazioni dell'origine di ricerca e mantiene la stabilità del sistema restituendo risultati vuoti.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"nullo",
+				"nulla",
+				"istanza",
+				"segnaposto"
+			]
+		},
+		"ja-JP": {
+			"name": "空ソースインスタンス",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "アクティブな空の検索ソースインスタンス",
+			"description_markdown": "これは**プレースホルダー用インスタンス**です。検索ソースが設定されていない状態を表し、システムを保護します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"インスタンス",
+				"プレースホルダー"
+			]
+		},
+		"ko-KR": {
+			"name": "빈 검색 소스 인스턴스",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "활성 상태의 빈 검색 서비스 인스턴스",
+			"description_markdown": "이는 플레이스홀더 인스턴스입니다. 이는 현재 사용 가능한 검색 소스 구성이 없음을 나타내며 빈 결과를 반환하여 시스템 안정성을 유지합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"null",
+				"없음",
+				"인스턴스",
+				"자리 표시자"
+			]
+		},
+		"lzh": {
+			"name": "虚无源",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "万化归空，虚位以待",
+			"description_markdown": "此乃**虚无之实例**。凡寻索无门、源起未立者，暂寄于此，以全系统之运化，不致崩殂。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"虚无",
+				"空",
+				"实例",
+				"补缺"
+			]
+		},
+		"nl-NL": {
+			"name": "Leeg servicebroninstantie",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Een actief, leeg exemplaar van de zoekservice",
+			"description_markdown": "Dit is een actieve tijdelijke aanduiding. Het geeft aan dat er momenteel geen beschikbare zoekbronconfiguraties zijn en handhaaft de systeemstabiliteit door lege resultaten te retourneren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"nul",
+				"niets",
+				"instantie",
+				"tijdelijke aanduiding"
+			]
+		},
+		"pt-PT": {
+			"name": "Instância de origem de serviço vazia",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Uma instância de serviço de pesquisa ativa e vazia",
+			"description_markdown": "Esta é uma instância de espaço reservado ativa. Indica que atualmente não há configurações de origem de pesquisa disponíveis e mantém a estabilidade do sistema retornando resultados vazios.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"nulo",
+				"nada",
+				"exemplo",
+				"espaço reservado"
+			]
+		},
+		"ru-RU": {
+			"name": "Пустой экземпляр поиска",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Активный пустой экземпляр службы поиска.",
+			"description_markdown": "Это активный экземпляр заполнителя. Это указывает на то, что в настоящее время нет доступных конфигураций источника поиска, и поддерживает стабильность системы, возвращая пустые результаты.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"нулевой",
+				"пустота",
+				"экземпляр",
+				"заполнитель"
+			]
+		},
+		"uk-UA": {
+			"name": "Порожній екземпляр джерела служби",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Активний порожній екземпляр служби пошуку",
+			"description_markdown": "Це активний екземпляр заповнювача. Це вказує на те, що наразі немає доступних конфігурацій джерела пошуку, і підтримує стабільність системи, повертаючи порожні результати.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"null",
+				"порожній",
+				"екземпляр",
+				"заповнювач"
+			]
+		},
+		"vi-VN": {
+			"name": "Phiên bản nguồn dịch vụ trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Một phiên bản dịch vụ tìm kiếm trống, đang hoạt động",
+			"description_markdown": "Đây là một phiên bản giữ chỗ đang hoạt động. Nó chỉ ra rằng hiện tại không có cấu hình nguồn tìm kiếm nào và duy trì sự ổn định của hệ thống bằng cách trả về các kết quả trống.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"null",
+				"rỗng",
+				"thực thể",
+				"phần giữ chỗ"
+			]
+		},
+		"zh-TW": {
+			"name": "空服務源實例",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "一個活躍的空搜索服務實例",
+			"description_markdown": "這是一個**活躍的佔位符實例**。它代表當前沒有任何可用的搜索源配置，通過返回空結果來維持系統的穩定性。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"虛無",
+				"實例",
+				"佔位符"
+			]
+		}
+	}
+}

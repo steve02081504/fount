@@ -1,4 +1,6 @@
-import info from './info.json' with { type: 'json' }
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
 /**
  * 处理传入的预加载动作请求。
  * @param {string} user - 用户名。

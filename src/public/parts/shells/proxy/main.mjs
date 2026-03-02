@@ -1,6 +1,7 @@
-import info from './info.json' with { type: 'json' }
 import { actions } from './src/actions.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 处理传入的代理动作请求。

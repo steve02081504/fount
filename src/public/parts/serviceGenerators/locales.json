@@ -1,0 +1,292 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Service Generators",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "The foundational industrial complex for all service generator types.",
+			"description_markdown": "This is the **master root component** for all service-producing modules. It acts as the primary industrial hub that houses and organizes specific generator clusters, including AI, Search, and Translation services.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"service",
+				"generator",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "服务生成器",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "所有服务生成器组件的集群根节点",
+			"description_markdown": "这是 fount 系统的**服务工厂集群**。作为 AI、搜索、翻译等所有特定生成器的父节点，它构成了系统动力输出的底座与总枢纽。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"服务",
+				"生成器",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مولدات الخدمة",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "المجمع الصناعي الأساسي لجميع أنواع مولدات الخدمة",
+			"description_markdown": "هذا هو **المكون الجذر الرئيسي** لجميع الوحدات المنتجة للخدمة. إنه يعمل كمركز صناعي يضم وينظم مجموعات المولدات المحددة (الذكاء الاصطناعي، البحث، الترجمة).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"خدمة",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Servicegeneratoren",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Der grundlegende Industriekomplex für alle Service-Generatortypen.",
+			"description_markdown": "Dies ist die **Hauptstammkomponente** für alle serviceerzeugenden Module. Sie fungiert als zentraler Industrieknotenpunkt, der spezifische Generatorcluster (KI, Suche, Übersetzung) beherbergt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Service",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🏭🏢",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "🏭🏢 ➡️ 🧠 / 🔍 / 🔄",
+			"description_markdown": "🏭🏢 ➡️ 🏗️\n⚓ ➡️ 🏭\n🏗️ ➕ 🛠️ ➡️ 🚀\n\n✨ 🏭🏢 ✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🏭",
+				"🏢",
+				"⚓",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Generadores de Servicios",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "El complejo industrial fundamental para todos los tipos de generadores de servicios.",
+			"description_markdown": "Este es el **componente raíz maestro** para todos los módulos de servicios. Actúa como el centro industrial principal que organiza los grupos de generadores (IA, búsqueda, traducción).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"servicio",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateurs de Services",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Le complexe industriel fondamental pour tous les types de générateurs de services.",
+			"description_markdown": "Il s'agit du **composant racine maître** pour tous les modules de services. Il sert de plaque tournante industrielle pour les clusters de générateurs (IA, recherche, traduction).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"service",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "सेवा जेनरेटर",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "सभी सेवा जेनरेटर प्रकारों के लिए मौलिक औद्योगिक परिसर।",
+			"description_markdown": "यह सभी सेवा-उत्पादक मॉड्यूल के लिए **मास्टर मूल घटक** है। यह प्राथमिक औद्योगिक केंद्र के रूप में कार्य करता है जो विशिष्ट जेनरेटर समूहों (AI, खोज, अनुवाद) को व्यवस्थित करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"सेवा",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Þjónustuframleiðendur",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Grunnkerfi fyrir allar gerðir þjónusturafala.",
+			"description_markdown": "Þetta er **aðalrótareiningin** fyrir alla þjónustuhluta. Hún þjónar sem iðnaðarkjarni sem hýsir alla sérhæfða rafala (AI, leit, þýðingu).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"þjónusta",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Generatori di Servizi",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Il complesso industriale fondamentale per tutti i tipi di generatori di servizi.",
+			"description_markdown": "Questo è il **componente radice principale** per tutti i moduli di servizio. Funge da hub industriale che organizza i cluster di generatori (IA, ricerca, traduzione).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"servizio",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "サービスジェネレーター",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "すべてのサービスジェネレータータイプの基盤産業コンプレックス",
+			"description_markdown": "これはすべてのサービス生成モジュールの**マスタールートコンポーネント**です。AI、検索、翻訳などの特定のジェネレータークラスターを収容し、整理する主要な産業ハブとして機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"サービス",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "서비스 생성기",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "모든 서비스 생성기 유형을 위한 기초 산업 단지",
+			"description_markdown": "이것은 모든 서비스 생산 모듈의 **마스터 루트 컴포넌트**입니다. AI, 검색, 번역 등 특정 생성기 클러스터를 수용하고 구성하는 주요 산업 허브 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"서비스",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "诸肆总枢",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "诸服务生成器之总枢根柢",
+			"description_markdown": "此乃 fount 诸生利组件之**总枢**。凡 AI、寻索、通译诸肆，皆受其统摄，如百工之聚于一都，为智源丛集之基也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"总枢",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Servicegeneratoren",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Het fundamentele industriële complex voor alle soorten servicegeneratoren.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor alle serviceproducerende modules. Het fungeert als de primaire industriële hub voor de clusters van generatoren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"service",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Geradores de Serviço",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "O complexo industrial fundamental para todos os tipos de geradores de serviço.",
+			"description_markdown": "Este é o **componente raiz mestre** para todos os módulos de serviço. Atua como o centro industrial principal que organiza os clusters de geradores (IA, pesquisa, tradução).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"serviço",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Сервисные Генераторы",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Фундаментальный промышленный комплекс для всех типов генераторов услуг.",
+			"description_markdown": "Это **главный корневой компонент** для всех модулей, производящих услуги. Он служит основным промышленным узлом, объединяющим генераторы (ИИ, поиск, перевод).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"сервис",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератори Послуг",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Фундаментальний промисловий комплекс для всіх типів генераторів послуг.",
+			"description_markdown": "Це **головний кореневий компонент** для всіх модулів, що надають послуги. Він виступає основним промисловим вузлом для кластерів генераторів (ШІ, пошук, переклад).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"сервіс",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Dịch vụ",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "Khu phức hợp công nghiệp cơ bản cho tất cả các loại trình tạo dịch vụ.",
+			"description_markdown": "Đây là **thành phần gốc chủ chốt** cho tất cả các mô-đun tạo dịch vụ. Nó đóng vai trò là trung tâm công nghiệp chính, quản lý các cụm trình tạo (AI, tìm kiếm, dịch thuật).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"dịch_vụ",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "服務生成器",
+			"avatar": "https://api.iconify.design/material-symbols/factory.svg",
+			"description": "所有服務生成器組件的集群根節點",
+			"description_markdown": "這是 fount 系統的**服務工廠集群**。作為 AI、搜索、翻譯等所有特定生成器的父節點，它構成了系統動力輸出底座與總樞紐。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"服務",
+				"生成器",
+				"fount"
+			]
+		}
+	}
+}

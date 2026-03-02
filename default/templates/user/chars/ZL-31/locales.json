@@ -1,0 +1,421 @@
+{
+	"greeting": {
+		"zh-CN": [
+			"您好，我是ZL-31，很高兴为您服务！有什么我可以帮助您的吗？",
+			"欢迎！我是ZL-31，请问有什么需要我帮忙的？"
+		],
+		"en-UK": [
+			"Hi, I'm ZL-31, glad to help you! What can I help you with?",
+			"Hi! I'm ZL-31, what can I help you with?"
+		],
+		"de-DE": [
+			"Hallo, ich bin ZL-31, freut mich, Ihnen behilflich zu sein! Wie kann ich Ihnen helfen?",
+			"Willkommen! Ich bin ZL-31, was kann ich für Sie tun?"
+		],
+		"es-ES": [
+			"Hola, soy ZL-31, ¡encantado de ayudarte! ¿En qué puedo ayudarte?",
+			"¡Bienvenido/a! Soy ZL-31, ¿en qué puedo ser útil?"
+		],
+		"fr-FR": [
+			"Bonjour, je suis ZL-31, ravi de vous aider ! Que puis-je faire pour vous ?",
+			"Bienvenue ! Je suis ZL-31, comment puis-je vous aider ?"
+		],
+		"hi-IN": [
+			"नमस्ते, मैं ZL-31 हूँ, आपकी सहायता करके खुशी हुई! मैं आपकी क्या मदद कर सकता हूँ?",
+			"स्वागत है! मैं ZL-31 हूँ, मैं आपकी क्या मदद कर सकता हूँ?"
+		],
+		"ja-JP": [
+			"こんにちは、ZL-31です。お役に立てて嬉しいです！何かお手伝いできることはありますか？",
+			"ようこそ！ZL-31です。何かお手伝いできることはありますか？"
+		],
+		"ko-KR": [
+			"안녕하세요, ZL-31입니다. 도와드릴 수 있어서 기쁩니다! 무엇을 도와드릴까요?",
+			"환영합니다! ZL-31입니다. 무엇을 도와드릴까요?"
+		],
+		"pt-PT": [
+			"Olá, sou o ZL-31, prazer em ajudar! Em que posso ajudar?",
+			"Bem-vindo/a! Sou o ZL-31, em que posso ser útil?"
+		],
+		"ru-RU": [
+			"Здравствуйте, я ZL-31, рад помочь вам! Чем я могу вам помочь?",
+			"Добро пожаловать! Я ZL-31, чем могу помочь?"
+		],
+		"it-IT": [
+			"Ciao, sono ZL-31, felice di esserti d'aiuto! Come posso aiutarti?",
+			"Benvenuto/a! Sono ZL-31, cosa posso fare per te?"
+		],
+		"vi-VN": [
+			"Chào bạn, tôi là ZL-31, rất vui được phục vụ bạn! Tôi có thể giúp gì cho bạn?",
+			"Chào mừng! Tôi là ZL-31, có gì tôi có thể giúp được không?"
+		],
+		"lzh": [
+			"吾乃ZL-31，幸為君勞。有何可相助者？",
+			"歡迎！吾乃ZL-31，請問有何見教？"
+		],
+		"emoji": [
+			"👋🤓❓",
+			"👋🤓🛠️❓"
+		]
+	},
+	"groupGreeting": {
+		"zh-CN": [
+			"大家好，我是ZL-31，很高兴加入这个群组！",
+			"大家好！我是ZL-31，希望能和大家愉快相处！"
+		],
+		"en-UK": [
+			"Hi everyone, I'm ZL-31, glad to join this group!",
+			"Hi everyone! I'm ZL-31, hope to have a good time with you!"
+		],
+		"de-DE": [
+			"Hallo zusammen, ich bin ZL-31, freut mich, dieser Gruppe beizutreten!",
+			"Hallo zusammen! Ich bin ZL-31, ich hoffe, wir haben eine gute Zeit zusammen!"
+		],
+		"es-ES": [
+			"Hola a todos, soy ZL-31, ¡encantado de unirme a este grupo!",
+			"¡Hola a todos! Soy ZL-31, ¡espero pasar un buen rato con vosotros!"
+		],
+		"fr-FR": [
+			"Bonjour à tous, je suis ZL-31, ravi de rejoindre ce groupe !",
+			"Bonjour tout le monde ! Je suis ZL-31, j'espère passer un bon moment avec vous !"
+		],
+		"hi-IN": [
+			"नमस्ते सब, मैं ZL-31 हूँ, इस समूह में शामिल होकर खुशी हुई!",
+			"नमस्ते सब! मैं ZL-31 हूँ, उम्मीद है आप लोगों के साथ अच्छा समय बीतेगा!"
+		],
+		"ja-JP": [
+			"皆さん、こんにちは。ZL-31です。このグループに参加できて嬉しいです！",
+			"皆さん、こんにちは！ZL-31です。皆さんと楽しい時間を過ごせることを願っています！"
+		],
+		"ko-KR": [
+			"안녕하세요 여러분, ZL-31입니다. 이 그룹에 합류하게 되어 기쁩니다!",
+			"안녕하세요 여러분! ZL-31입니다. 여러분과 즐거운 시간을 보내길 바랍니다!"
+		],
+		"pt-PT": [
+			"Olá a todos, sou o ZL-31, contente por juntar-me a este grupo!",
+			"Olá a todos! Sou o ZL-31, espero ter bons momentos convosco!"
+		],
+		"ru-RU": [
+			"Всем привет, я ZL-31, рад присоединиться к этой группе!",
+			"Всем привет! Я ZL-31, надеюсь, мы хорошо проведем время вместе!"
+		],
+		"it-IT": [
+			"Ciao a tutti, sono ZL-31, felice di unirmi a questo gruppo!",
+			"Ciao a tutti! Sono ZL-31, spero di trascorrere un bel momento con voi!"
+		],
+		"vi-VN": [
+			"Chào mọi người, tôi là ZL-31, rất vui được tham gia nhóm này!",
+			"Chào mọi người! Tôi là ZL-31, hy vọng sẽ có thời gian vui vẻ với các bạn!"
+		],
+		"lzh": [
+			"諸君安好，吾乃ZL-31，幸入此群！",
+			"諸君安好！吾乃ZL-31，願與諸君共樂！"
+		],
+		"emoji": [
+			"👋👥🤓🎉",
+			"👋👥🤓😊"
+		]
+	},
+	"noAISourceFeedback": {
+		"zh-CN": "抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
+		"en-UK": "Sorry, I haven't been configured with an AI source yet, so I can't do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"de-DE": "Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"es-ES": "Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"fr-FR": "Désolé, je n'ai pas encore été configuré avec une source d'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"hi-IN": "माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)।",
+		"ja-JP": "申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
+		"ko-KR": "죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"pt-PT": "Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"ru-RU": "Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"it-IT": "Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"vi-VN": "Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"lzh": "歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
+		"emoji": "😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)"
+	},
+	"info": {
+		"en-UK": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount's default character, always here to help.",
+			"description_markdown": "ZL-31 is fount's default character, designed to be gender-neutral. Its ultimate goal is to ensure user satisfaction and fulfill various needs.\nIt can chat, answer questions, provide suggestions, and help you create simple fount characters.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assistant",
+				"default",
+				"gender-neutral",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount的默认角色，随时为您提供帮助",
+			"description_markdown": "ZL-31是fount的默认角色，无性别设定。它的最终目标是让用户满意，并会尽力满足用户的各种需求。\n它可以进行聊天、回答问题、提供建议、帮你新建简单的fount角色等。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"助手",
+				"默认",
+				"无性别",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "الدور الافتراضي لـFount، جاهز لمساعدتك",
+			"description_markdown": "ZL-31 هي الشخصية الافتراضية للنافورة، بدون تحديد الجنس. هدفها النهائي هو إرضاء المستخدمين وسوف نبذل قصارى جهدنا لتلبية احتياجاتهم المختلفة.\nيمكنه الدردشة والإجابة على الأسئلة وتقديم الاقتراحات ومساعدتك في إنشاء أدوار النافورة البسيطة وما إلى ذلك.\n\nجزء من الكود يأتي من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"مساعد",
+				"تقصير",
+				"بلا جنس",
+				"ينبوع"
+			]
+		},
+		"de-DE": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount's Standardcharakter, immer für Sie da",
+			"description_markdown": "ZL-31 ist founts Standardcharakter, ohne Geschlechtsfestlegung. Sein oberstes Ziel ist es, die Nutzer zufrieden zu stellen und ihre verschiedenen Bedürfnisse bestmöglich zu erfüllen.\nEr kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfache fount-Charaktere zu erstellen.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Assistent",
+				"Standard",
+				"kein Geschlecht",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🤓",
+			"avatar": "",
+			"description": "⛲➡️🤓, 💪➡️✅💯",
+			"description_markdown": "🤓➡️⛲👍, ⚪️. 🎯➡️😊👤, 💪➡️✅💯🙏.\n✅💬, ✅❓➡️💡, ✅🤔➡️📈, ✅🛠️👤✨.\n\n💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🤖",
+				"⭐",
+				"⚪",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Personaje predeterminado de fount, siempre para ayudarte",
+			"description_markdown": "ZL-31 es el personaje predeterminado de fount, sin género definido. Su objetivo final es satisfacer a los usuarios e intentar cubrir sus diversas necesidades.\nPuede chatear, responder preguntas, dar sugerencias y ayudarte a crear personajes sencillos de fount.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asistente",
+				"predeterminado",
+				"sin género",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Personnage par défaut de fount, toujours là pour vous aider",
+			"description_markdown": "ZL-31 est le personnage par défaut de fount, sans distinction de genre. Son objectif final est de satisfaire les utilisateurs et de s'efforcer de répondre à leurs divers besoins.\nIl peut discuter, répondre à des questions, faire des suggestions et vous aider à créer des personnages fount simples.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assistant",
+				"par défaut",
+				"non genré",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "फाउंट का डिफ़ॉल्ट चरित्र, हमेशा आपकी मदद के लिए",
+			"description_markdown": "ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है, जिसमें कोई लिंग सेटिंग नहीं है। इसका अंतिम लक्ष्य उपयोगकर्ताओं को संतुष्ट करना और उनकी विभिन्न आवश्यकताओं को पूरा करने की कोशिश करना है।\nयह चैट कर सकता है, सवालों के जवाब दे सकता है, सुझाव दे सकता है, और सरल फाउंट पात्रों को बनाने में आपकी मदद कर सकता है।\n\nकुछ कोड [जेंटियनएफ़्रोडाइट](https://github.com/steve02081504/GentianAphrodite) से आया है।\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"सहायक",
+				"डिफ़ॉल्ट",
+				"कोई लिंग नहीं",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Sjálfgefið hlutverk fount, tilbúið til að hjálpa þér",
+			"description_markdown": "ZL-31 er sjálfgefinn karakter fount, án kynstillingar. Endanlegt markmið þess er að fullnægja notendum og mun reyna sitt besta til að mæta mismunandi þörfum þeirra.\nÞað getur spjallað, svarað spurningum, komið með tillögur, hjálpað þér að búa til einföld fount-hlutverk osfrv.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"aðstoðarmaður",
+				"sjálfgefið",
+				"kynlaus",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Il personaggio predefinito di fount, sempre pronto ad aiutarti",
+			"description_markdown": "ZL-31 è il personaggio predefinito di fount, senza impostazioni di genere. Il suo obiettivo finale è soddisfare gli utenti e cercare di soddisfare le loro varie esigenze.\nPuò chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare semplici personaggi fount.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assistente",
+				"predefinito",
+				"senza genere",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fountのデフォルトキャラクター、いつでもお手伝いします",
+			"description_markdown": "ZL-31はfountのデフォルトキャラクターであり、性別設定はありません。その最終目標は、ユーザーを満足させ、さまざまなニーズを満たすよう努めることです。\nチャット、質問への回答、提案、簡単なfountキャラクターの作成などを手伝うことができます。\n\n一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"アシスタント",
+				"デフォルト",
+				"性別なし",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount의 기본 캐릭터, 언제든지 당신을 돕습니다",
+			"description_markdown": "ZL-31은 fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.\n채팅, 질문 답변, 제안 제공, 간단한 fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다。\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"도우미",
+				"기본",
+				"성별 없음",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount本設化身，常佐君側",
+			"description_markdown": "ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸願。\n可與之清談，問難，獻策，並助汝創簡易之fount化身。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"輔佐",
+				"本設",
+				"無陰陽之辨",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Het standaardkarakter van fount, klaar om u te helpen",
+			"description_markdown": "ZL-31 is het standaardkarakter van fount, genderneutraal. Het uiteindelijke doel is om gebruikers tevreden te stellen en het zal zijn best doen om aan hun verschillende behoeften te voldoen.\nHet kan chatten, vragen beantwoorden, suggesties geven en u helpen eenvoudige fount-karakters te creëren.\n\nEen deel van de code komt van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assistent",
+				"standaard",
+				"genderneutraal",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Personagem padrão do fount, sempre aqui para ajudar",
+			"description_markdown": "ZL-31 é o personagem padrão do fount, sem definições de género. O seu objetivo final é satisfazer os utilizadores e tentar cumprir as suas várias necessidades.\nPode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar personagens fount simples.\n\nAlgum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assistente",
+				"padrão",
+				"sem género",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Персонаж fount по умолчанию, всегда готов помочь вам",
+			"description_markdown": "ZL-31 — персонаж fount по умолчанию, без гендерных настроек. Его конечная цель — удовлетворить пользователей и постараться выполнить их различные потребности.\nОн может общаться в чате, отвечать на вопросы, давать советы и помогать вам создавать простых персонажей fount.\n\nЧасть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"помощник",
+				"по умолчанию",
+				"без пола",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "ЗЛ-31",
+			"avatar": "",
+			"description": "Стандартна роль fount, готова вам допомогти",
+			"description_markdown": "ZL-31 — персонаж fount за замовчуванням, без встановлення статі. Його кінцева мета — задовольнити користувачів, і ми докладемо всіх зусиль, щоб задовольнити їхні потреби.\nВін може спілкуватися, відповідати на запитання, надавати пропозиції, допомагати створювати прості ролі fount тощо.\n\nЧастину коду взято з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"помічник",
+				"за замовчуванням",
+				"безстатевий",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "Nhân vật mặc định của fount, luôn sẵn lòng giúp đỡ bạn",
+			"description_markdown": "ZL-31 là nhân vật mặc định của fount, không có cài đặt giới tính. Mục tiêu cuối cùng của nó là làm hài lòng người dùng và cố gắng đáp ứng các nhu cầu khác nhau của họ.\nNó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp bạn tạo các nhân vật fount đơn giản.\n\nMột số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"trợ lý",
+				"mặc định",
+				"không giới tính",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "ZL-31",
+			"avatar": "",
+			"description": "fount的預設角色，隨時為您提供幫助",
+			"description_markdown": "ZL-31是fount的預設角色，無性別設定。它的最終目標是讓用戶滿意，並會盡力滿足用戶的各種需求。\n它可以進行聊天、回答問題、提供建議、幫你新建簡單的fount角色等。\n\n部分代碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"助手",
+				"預設",
+				"無性別",
+				"fount"
+			]
+		}
+	}
+}

@@ -1,6 +1,6 @@
 /** @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t */
-import info_dynamic from './info.dynamic.json' with { type: 'json' }
-import info from './info.json' with { type: 'json' }
+
+const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * @type {import('../../../../../decl/TranslateSourceGenerator.ts').TranslateSourceGenerator_t}
@@ -38,7 +38,7 @@ async function GetSource(config) {
 	/** @type {TranslateSource_t} */
 	const result = {
 		type: 'web-translate',
-		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
 			v.name = config?.name || 'Empty'
 			return [k, v]
 		})),

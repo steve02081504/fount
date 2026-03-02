@@ -14,12 +14,11 @@ import { isPartLoaded, loadPart } from '../../../../server/parts_loader.mjs'
 import { convertCCv3ToSTv2 } from './ccv3-converter.mjs'
 import { unzipCharx } from './charx-parser.mjs'
 import { matchCharxEmbeddedPrefix } from './charx-uri.mjs'
-import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
 import { extractPngCardData } from './png-parser.mjs'
 import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 
-
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 保存资源并规范化 URI。
@@ -198,14 +197,17 @@ async function ImportAsData(username, dataBuffer) {
 
 		const templateMainMjsPath = path.join(import.meta.dirname, 'Template', 'main.mjs')
 		const targetMainMjsPath = path.join(targetPath, 'main.mjs')
-		const templateContent = fs.readFileSync(templateMainMjsPath, 'utf-8')
-		await writeFile(targetMainMjsPath, templateContent)
+		await fs.promises.copyFile(templateMainMjsPath, targetMainMjsPath)
+		const templateLocalesPath = path.join(import.meta.dirname, 'Template', 'locales.json')
+		const targetLocalesPath = path.join(targetPath, 'locales.json')
+		if (fs.existsSync(templateLocalesPath))
+			await fs.promises.copyFile(templateLocalesPath, targetLocalesPath)
 
 		const needsReload = isPartLoaded(username, 'chars', charName)
 		if (needsReload)
 			await loadPart(username, 'chars/' + charName)
 		else
-			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
+			import(url.pathToFileURL(targetMainMjsPath)).catch(_ => 0)
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
 		return [`chars/${charName}`]
