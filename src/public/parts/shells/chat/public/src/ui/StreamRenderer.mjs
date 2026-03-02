@@ -48,7 +48,7 @@ class StreamRenderer {
 	}
 
 	/**
-	 *
+	 * 开始循环渲染。
 	 */
 	startLoop() {
 		if (this.animationFrameId || !this.streamingMessages.size) return
@@ -67,7 +67,7 @@ class StreamRenderer {
 	}
 
 	/**
-	 *
+	 * 渲染一帧。
 	 */
 	async renderFrame() {
 		for (const [id, state] of this.streamingMessages) {

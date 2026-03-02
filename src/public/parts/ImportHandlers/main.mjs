@@ -6,16 +6,18 @@ import { loadPartBase, unloadPartBase } from '../../../server/parts_loader.mjs'
 import info from './info.json' with { type: 'json' }
 
 /**
- *
+ * 导入处理器根部件。
  */
 export default {
 	info,
 	/**
-	 *
+	 * 加载导入处理器根部件。
+	 * @returns {Promise<void>} 加载导入处理器根部件的承诺。
 	 */
 	Load: async () => { },
 	/**
-	 *
+	 * 卸载导入处理器根部件。
+	 * @returns {Promise<void>} 卸载导入处理器根部件的承诺。
 	 */
 	Unload: async () => { },
 	interfaces: {

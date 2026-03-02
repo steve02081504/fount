@@ -359,7 +359,10 @@ export async function loadPart(username, partpath, Initargs, functions) {
 }
 
 /**
- *
+ * 获取部件列表。
+ * @param {string} username - 用户的用户名。
+ * @param {string} partpath - 部件的路径。
+ * @returns {string[]} 部件列表。
  */
 export const getPartList = getPartListBase
 
