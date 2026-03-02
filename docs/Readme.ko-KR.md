@@ -128,7 +128,7 @@ fount의 프로젝트 아키텍처는 개발자의 습관을 충분히 고려하
 
 - **아름답고 사용자 정의 가능한 인터페이스**
   30가지 이상의 놀라운 테마 중에서 선택하거나, 자신만의 색상을 직접 만들어보세요. fount는 당신만의 캔버스입니다.
-  ![이미지](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![이미지](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **어디서든 사용 가능**
   fount는 Windows, macOS, Linux, 심지어 Android에서도 원활하게 실행되며, 직접 설치 또는 Docker의 유연성을 통해 다양한 요구를 충족합니다.

@@ -128,7 +128,7 @@ fount 的專案架構設計充分考慮了開發者的習慣。
 
 - **美觀、可客製化的介面**
   從 30 餘款令人驚嘆的主題中挑選，或親手創造屬於你的色彩。fount 是你專屬的畫布。
-  ![圖片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![圖片](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **隨處可用**
   fount 可在 Windows、macOS、Linux 甚至 Android 上無縫運行，透過直接安裝或 Docker 的靈活性來滿足你的不同需求。

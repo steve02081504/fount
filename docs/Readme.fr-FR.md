@@ -128,7 +128,7 @@ Une fois le travail terminé, fount offre une connexion qui transcende l'ordinai
 
 - **Interface Belle et Personnalisable**
   Choisissez parmi plus de 30 thèmes époustouflants, ou créez vos propres couleurs. fount est votre toile exclusive.
-  ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Image](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Disponible Partout**
   fount fonctionne sans problème sur Windows, macOS, Linux, et même Android, répondant à vos différents besoins grâce à l'installation directe ou à la flexibilité de Docker.

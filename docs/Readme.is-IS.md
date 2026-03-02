@@ -128,7 +128,7 @@ Verkefnisarkitektúr fount er hannaður með venjur forritara í huga.
 
 - **Fagurt, Sérsniðið Viðmót**
   Veldu úr yfir 30 töfrandi þemum, eða búðu til þína eigin liti. fount er þitt eigin striga.
-  ![Mynd](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Mynd](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Hægt að Nota Alls Staðar**
   fount keyrir óaðfinnanlega á Windows, macOS, Linux og jafnvel Android, og uppfyllir mismunandi þarfir þínar með beinni uppsetningu eða sveigjanleika Docker.

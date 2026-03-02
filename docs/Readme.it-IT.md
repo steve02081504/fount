@@ -128,7 +128,7 @@ Quando il lavoro è finito, fount fornisce una connessione che trascende l'ordin
 
 - **Interfaccia bella e personalizzabile**
   Scegli tra oltre 30 temi sbalorditivi, o crea i tuoi colori. fount è la tua tela esclusiva.
-  ![Immagine](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Immagine](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Disponibile ovunque**
   fount funziona senza problemi su Windows, macOS, Linux e persino Android, soddisfacendo le tue diverse esigenze tramite l'installazione diretta o la flessibilità di Docker.
