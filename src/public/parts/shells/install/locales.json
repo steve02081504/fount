@@ -17,7 +17,7 @@
 		"zh-CN": {
 			"name": "安装",
 			"avatar": "https://api.iconify.design/material-symbols/install-desktop.svg",
-			"description": "一个用于安装部件的shell。",
+			"description": "一个用于安装组件的shell。",
 			"description_markdown": "从文件或 URL 安装新角色、角色、世界和其他组件。",
 			"version": "0.0.0",
 			"author": "steve02081504",

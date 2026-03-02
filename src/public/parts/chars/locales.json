@@ -19,7 +19,7 @@
 			"name": "角色",
 			"avatar": "https://api.iconify.design/line-md/account.svg",
 			"description": "所有角色组件的挂载中心",
-			"description_markdown": "这是角色模块的**根节点**。它作为基础承载空间，用户所关注和喜爱的所有角色部件都挂载于此。",
+			"description_markdown": "这是角色模块的**根节点**。它作为基础承载空间，用户所关注和喜爱的所有角色组件都挂载于此。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

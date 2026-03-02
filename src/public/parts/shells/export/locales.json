@@ -16,7 +16,7 @@
 		"zh-CN": {
 			"name": "导出组件",
 			"avatar": "https://api.iconify.design/material-symbols/export-notes-outline.svg",
-			"description": "用于导出部件的shell。",
+			"description": "用于导出组件的shell。",
 			"description_markdown": "允许您将角色、角色和世界导出为文件以进行备份或共享。",
 			"version": "0.0.0",
 			"author": "steve02081504",

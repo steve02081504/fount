@@ -16,7 +16,7 @@
 		"zh-CN": {
 			"name": "快速新建",
 			"avatar": "https://api.iconify.design/material-symbols/add-circle-outline.svg",
-			"description": "从模板轻松创建新部件。",
+			"description": "从模板轻松创建新组件。",
 			"description_markdown": "一个简化的工具，用于从预定义的模板快速生成新的角色、角色或世界。",
 			"version": "0.0.0",
 			"author": "steve02081504",

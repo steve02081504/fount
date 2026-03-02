@@ -94,9 +94,15 @@ def _readme_from_yaml(text: str) -> str:
 
 def write_if_changed(path: Path, content: str) -> bool:
     path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists() and path.read_text(encoding="utf-8") == content:
-        return False
-    path.write_text(content, encoding="utf-8")
+    if path.exists():
+        raw = path.read_bytes()
+        if b"\r\n" in raw or raw.endswith(b"\r"):
+            # 存在 CRLF 或尾随 \r，需要写回以统一为 LF
+            pass
+        elif raw.decode("utf-8") == content:
+            return False
+    with path.open("w", encoding="utf-8", newline="\n") as f:
+        f.write(content)
     return True
 
 

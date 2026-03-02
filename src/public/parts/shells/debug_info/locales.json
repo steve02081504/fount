@@ -18,7 +18,7 @@
 			"name": "调试信息",
 			"avatar": "https://api.iconify.design/material-symbols/bug-report.svg",
 			"description": "用于系统诊断和版本检查的工具。",
-			"description_markdown": "提供有关系统、部件版本和其他诊断数据的详细信息，以帮助进行故障排除。",
+			"description_markdown": "提供有关系统、组件版本和其他诊断数据的详细信息，以帮助进行故障排除。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

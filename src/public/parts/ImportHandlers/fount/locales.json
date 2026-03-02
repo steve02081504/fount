@@ -17,14 +17,14 @@
 		"zh-CN": {
 			"name": "fount 导入器",
 			"avatar": "/favicon.svg",
-			"description": "从压缩文件或 git 仓库导入 fount 部件。",
-			"description_markdown": "从压缩文件 (例如 `.zip`, `.7z`) 或 git 仓库导入 fount 部件。",
+			"description": "从压缩文件或 git 仓库导入 fount 组件。",
+			"description_markdown": "从压缩文件 (例如 `.zip`, `.7z`) 或 git 仓库导入 fount 组件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://steve02081504.github.io/fount/",
 			"tags": [
 				"fount",
-				"部件",
+				"组件",
 				"导入"
 			]
 		},
