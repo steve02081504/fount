@@ -1,16 +1,24 @@
 {
 	"greeting": {
-		"zh-CN": [
-			"您好，我是ZL-31，很高兴为您服务！有什么我可以帮助您的吗？",
-			"欢迎！我是ZL-31，请问有什么需要我帮忙的？"
-		],
 		"en-UK": [
 			"Hi, I'm ZL-31, glad to help you! What can I help you with?",
 			"Hi! I'm ZL-31, what can I help you with?"
 		],
+		"zh-CN": [
+			"您好，我是ZL-31，很高兴为您服务！有什么我可以帮助您的吗？",
+			"欢迎！我是ZL-31，请问有什么需要我帮忙的？"
+		],
+		"ar-SA": [
+			"مرحبًا، أنا ZL-31، ويسعدني أن أخدمك! هل هناك أي شيء يمكنني القيام به لمساعدتك؟",
+			"مرحباً! اسمي ZL-31. كيف يمكنني مساعدك؟"
+		],
 		"de-DE": [
 			"Hallo, ich bin ZL-31, freut mich, Ihnen behilflich zu sein! Wie kann ich Ihnen helfen?",
 			"Willkommen! Ich bin ZL-31, was kann ich für Sie tun?"
+		],
+		"emoji": [
+			"👋🤓❓",
+			"👋🤓🛠️❓"
 		],
 		"es-ES": [
 			"Hola, soy ZL-31, ¡encantado de ayudarte! ¿En qué puedo ayudarte?",
@@ -24,6 +32,14 @@
 			"नमस्ते, मैं ZL-31 हूँ, आपकी सहायता करके खुशी हुई! मैं आपकी क्या मदद कर सकता हूँ?",
 			"स्वागत है! मैं ZL-31 हूँ, मैं आपकी क्या मदद कर सकता हूँ?"
 		],
+		"is-IS": [
+			"Halló, ég er ZL-31, ég er ánægður með að þjóna þér! Er eitthvað sem ég get gert til að hjálpa þér?",
+			"velkomin! Ég heiti ZL-31. Hvernig get ég hjálpað þér?"
+		],
+		"it-IT": [
+			"Ciao, sono ZL-31, felice di esserti d'aiuto! Come posso aiutarti?",
+			"Benvenuto/a! Sono ZL-31, cosa posso fare per te?"
+		],
 		"ja-JP": [
 			"こんにちは、ZL-31です。お役に立てて嬉しいです！何かお手伝いできることはありますか？",
 			"ようこそ！ZL-31です。何かお手伝いできることはありますか？"
@@ -31,6 +47,14 @@
 		"ko-KR": [
 			"안녕하세요, ZL-31입니다. 도와드릴 수 있어서 기쁩니다! 무엇을 도와드릴까요?",
 			"환영합니다! ZL-31입니다. 무엇을 도와드릴까요?"
+		],
+		"lzh": [
+			"吾乃ZL-31，幸為君勞。有何可相助者？",
+			"歡迎！吾乃ZL-31，請問有何見教？"
+		],
+		"nl-NL": [
+			"Hallo, ik ben ZL-31, ik ben u graag van dienst! Kan ik iets doen om u te helpen?",
+			"welkom! Mijn naam is ZL-31. Hoe kan ik je helpen?"
 		],
 		"pt-PT": [
 			"Olá, sou o ZL-31, prazer em ajudar! Em que posso ajudar?",
@@ -40,35 +64,39 @@
 			"Здравствуйте, я ZL-31, рад помочь вам! Чем я могу вам помочь?",
 			"Добро пожаловать! Я ZL-31, чем могу помочь?"
 		],
-		"it-IT": [
-			"Ciao, sono ZL-31, felice di esserti d'aiuto! Come posso aiutarti?",
-			"Benvenuto/a! Sono ZL-31, cosa posso fare per te?"
+		"uk-UA": [
+			"Привіт, я ZL-31, я радий вам служити! Чи можу я чимось вам допомогти?",
+			"ласкаво просимо! Мене звати ZL-31. Чим я можу вам допомогти?"
 		],
 		"vi-VN": [
 			"Chào bạn, tôi là ZL-31, rất vui được phục vụ bạn! Tôi có thể giúp gì cho bạn?",
 			"Chào mừng! Tôi là ZL-31, có gì tôi có thể giúp được không?"
 		],
-		"lzh": [
-			"吾乃ZL-31，幸為君勞。有何可相助者？",
-			"歡迎！吾乃ZL-31，請問有何見教？"
-		],
-		"emoji": [
-			"👋🤓❓",
-			"👋🤓🛠️❓"
+		"zh-TW": [
+			"您好，我是ZL-31，很高興為您服務！有什麼我可以幫助您的嗎？",
+			"歡迎！我是ZL-31，請問有什麼需要我幫忙的？"
 		]
 	},
 	"groupGreeting": {
-		"zh-CN": [
-			"大家好，我是ZL-31，很高兴加入这个群组！",
-			"大家好！我是ZL-31，希望能和大家愉快相处！"
-		],
 		"en-UK": [
 			"Hi everyone, I'm ZL-31, glad to join this group!",
 			"Hi everyone! I'm ZL-31, hope to have a good time with you!"
 		],
+		"zh-CN": [
+			"大家好，我是ZL-31，很高兴加入这个群组！",
+			"大家好！我是ZL-31，希望能和大家愉快相处！"
+		],
+		"ar-SA": [
+			"مرحبًا بالجميع، أنا ZL-31، ويسعدني جدًا الانضمام إلى هذه المجموعة!",
+			"أهلا بالجميع! اسمي ZL-31، وآمل أن أتمكن من التواصل معكم جميعًا بسعادة!"
+		],
 		"de-DE": [
 			"Hallo zusammen, ich bin ZL-31, freut mich, dieser Gruppe beizutreten!",
 			"Hallo zusammen! Ich bin ZL-31, ich hoffe, wir haben eine gute Zeit zusammen!"
+		],
+		"emoji": [
+			"👋👥🤓🎉",
+			"👋👥🤓😊"
 		],
 		"es-ES": [
 			"Hola a todos, soy ZL-31, ¡encantado de unirme a este grupo!",
@@ -82,6 +110,14 @@
 			"नमस्ते सब, मैं ZL-31 हूँ, इस समूह में शामिल होकर खुशी हुई!",
 			"नमस्ते सब! मैं ZL-31 हूँ, उम्मीद है आप लोगों के साथ अच्छा समय बीतेगा!"
 		],
+		"is-IS": [
+			"Halló allir, ég er ZL-31, ég er mjög ánægður með að slást í þennan hóp!",
+			"Halló allir! Ég heiti ZL-31 og ég vona að ég geti umgengist ykkur öll með ánægju!"
+		],
+		"it-IT": [
+			"Ciao a tutti, sono ZL-31, felice di unirmi a questo gruppo!",
+			"Ciao a tutti! Sono ZL-31, spero di trascorrere un bel momento con voi!"
+		],
 		"ja-JP": [
 			"皆さん、こんにちは。ZL-31です。このグループに参加できて嬉しいです！",
 			"皆さん、こんにちは！ZL-31です。皆さんと楽しい時間を過ごせることを願っています！"
@@ -89,6 +125,14 @@
 		"ko-KR": [
 			"안녕하세요 여러분, ZL-31입니다. 이 그룹에 합류하게 되어 기쁩니다!",
 			"안녕하세요 여러분! ZL-31입니다. 여러분과 즐거운 시간을 보내길 바랍니다!"
+		],
+		"lzh": [
+			"諸君安好，吾乃ZL-31，幸入此群！",
+			"諸君安好！吾乃ZL-31，願與諸君共樂！"
+		],
+		"nl-NL": [
+			"Hallo allemaal, ik ben ZL-31, ik ben erg blij om lid te worden van deze groep!",
+			"Hallo allemaal! Mijn naam is ZL-31 en ik hoop dat ik goed met jullie overweg kan!"
 		],
 		"pt-PT": [
 			"Olá a todos, sou o ZL-31, contente por juntar-me a este grupo!",
@@ -98,38 +142,39 @@
 			"Всем привет, я ZL-31, рад присоединиться к этой группе!",
 			"Всем привет! Я ZL-31, надеюсь, мы хорошо проведем время вместе!"
 		],
-		"it-IT": [
-			"Ciao a tutti, sono ZL-31, felice di unirmi a questo gruppo!",
-			"Ciao a tutti! Sono ZL-31, spero di trascorrere un bel momento con voi!"
+		"uk-UA": [
+			"Всім привіт, я ZL-31, я дуже радий приєднатися до цієї групи!",
+			"Всім привіт! Мене звуть ZL-31, і я сподіваюся, що я зможу порозумітися з вами всіма щасливо!"
 		],
 		"vi-VN": [
 			"Chào mọi người, tôi là ZL-31, rất vui được tham gia nhóm này!",
 			"Chào mọi người! Tôi là ZL-31, hy vọng sẽ có thời gian vui vẻ với các bạn!"
 		],
-		"lzh": [
-			"諸君安好，吾乃ZL-31，幸入此群！",
-			"諸君安好！吾乃ZL-31，願與諸君共樂！"
-		],
-		"emoji": [
-			"👋👥🤓🎉",
-			"👋👥🤓😊"
+		"zh-TW": [
+			"大家好，我是ZL-31，很高興能加入這個群組！",
+			"大家好！我是ZL-31，希望能和大家愉快相处！"
 		]
 	},
 	"noAISourceFeedback": {
-		"zh-CN": "抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
 		"en-UK": "Sorry, I haven't been configured with an AI source yet, so I can't do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"zh-CN": "抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在[设置中为我配置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
+		"ar-SA": "عذرًا، لم يتم تكويني باستخدام مصدر الذكاء الاصطناعي حتى الآن، لذا لا يمكنني إجراء محادثات أكثر تعقيدًا حتى الآن. يرجى تكوين مصدر الذكاء الاصطناعي لي في [الإعدادات](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"de-DE": "Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte [konfigurieren Sie eine KI-Quelle in den Einstellungen](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"emoji": "😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)",
 		"es-ES": "Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, [configúrame con una fuente de IA en los ajustes](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"fr-FR": "Désolé, je n'ai pas encore été configuré avec une source d'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. [Veuillez me configurer avec une source d'IA dans les paramètres](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"hi-IN": "माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया [मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)।",
+		"is-IS": "Því miður, ég hef ekki verið stilltur með gervigreindarheimild ennþá, svo ég get ekki átt flóknari samtöl ennþá. Vinsamlega stilltu gervigreindargjafann fyrir mig í [Stillingar](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"it-IT": "Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"ja-JP": "申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。[設定でAIソースを設定してください](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
 		"ko-KR": "죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. [설정에서 AI 소스를 구성해 주세요](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"lzh": "歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
+		"nl-NL": "Sorry, ik ben nog niet geconfigureerd met een AI-bron, dus ik kan nog geen complexere gesprekken voeren. Configureer de AI-bron voor mij in [Instellingen](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"pt-PT": "Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, [configure-me com uma fonte de IA nas definições](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"ru-RU": "Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. [Пожалуйста, настройте источник ИИ в настройках](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
-		"it-IT": "Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, [configurami con una fonte AI nelle impostazioni](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
+		"uk-UA": "Вибачте, я ще не налаштував джерело штучного інтелекту, тому я поки не можу вести складніші розмови. Будь ласка, налаштуйте для мене джерело ШІ в [Налаштуваннях](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
 		"vi-VN": "Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. [Vui lòng cấu hình nguồn AI cho tôi trong cài đặt](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage).",
-		"lzh": "歉哉，智源未設，暫難深談。[請於規度中為吾置之](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。",
-		"emoji": "😢🤖❌➡️[⚙️🔧](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)"
+		"zh-TW": "抱歉，我還沒有被配置AI來源，暫時無法進行更複雜的對話。請在[設定中為我配置AI來源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)。"
 	},
 	"info": {
 		"en-UK": {
