@@ -11,7 +11,7 @@ import info from './info.json' with { type: 'json' }
  */
 
 /**
- *
+ * DuckDuckGo AI 来源生成器部件。
  */
 export default {
 	info,

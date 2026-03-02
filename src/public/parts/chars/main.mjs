@@ -32,16 +32,18 @@ function saveCharData(username) {
 }
 
 /**
- *
+ * 角色根部件。
  */
 export default {
 	info,
 	/**
-	 *
+	 * 加载角色根部件。
+	 * @returns {Promise<void>} 加载角色根部件的承诺。
 	 */
 	Load: async () => { },
 	/**
-	 *
+	 * 卸载角色根部件。
+	 * @returns {Promise<void>} 卸载角色根部件的承诺。
 	 */
 	Unload: async () => { },
 	interfaces: {

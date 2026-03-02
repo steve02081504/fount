@@ -6,16 +6,18 @@ import { loadPartBase, unloadPartBase } from '../../../../server/parts_loader.mj
 import info from './info.json' with { type: 'json' }
 
 /**
- *
+ * 搜索源生成器根部件。
  */
 export default {
 	info,
 	/**
-	 *
+	 * 加载搜索源生成器根部件。
+	 * @returns {Promise<void>} 加载搜索源生成器根部件的承诺。
 	 */
 	Load: async () => { },
 	/**
-	 *
+	 * 卸载搜索源生成器根部件。
+	 * @returns {Promise<void>} 卸载搜索源生成器根部件的承诺。
 	 */
 	Unload: async () => { },
 	interfaces: {
