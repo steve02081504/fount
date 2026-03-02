@@ -128,7 +128,7 @@ Nach Feierabend bietet fount eine Verbindung, die über das Übliche hinausgeht.
 
 - **Ästhetische, anpassbare Oberfläche**
   Wählen Sie aus über 30 atemberaubenden Themen oder gestalten Sie Ihre eigenen Farben. fount ist Ihre exklusive Leinwand.
-  ![Bild](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Bild](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Überall einsetzbar**
   fount läuft nahtlos auf Windows, macOS, Linux und sogar Android und erfüllt Ihre unterschiedlichen Anforderungen durch direkte Installation oder die Flexibilität von Docker.

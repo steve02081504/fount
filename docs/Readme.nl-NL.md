@@ -128,7 +128,7 @@ Wanneer het werk erop zit, biedt fount een verbinding die het gewone overstijgt.
 
 - **Mooie, Aanpasbare Interface**
   Kies uit meer dan 30 verbluffende thema's, of creëer uw eigen kleuren. fount is uw exclusieve canvas.
-  ![Afbeelding](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Afbeelding](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Overal Beschikbaar**
   fount draait naadloos op Windows, macOS, Linux en zelfs Android, en voldoet aan uw verschillende behoeften door middel van directe installatie of de flexibiliteit van Docker.

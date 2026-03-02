@@ -128,7 +128,7 @@ Quando o trabalho termina, fount oferece uma conexão que transcende o comum. Ab
 
 - **Interface Bonita e Personalizável**
   Escolha entre mais de 30 temas impressionantes ou crie suas próprias cores. fount é sua tela exclusiva.
-  ![Imagem](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Imagem](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Disponível em Todos os Lugares**
   fount é executado perfeitamente em Windows, macOS, Linux e até mesmo Android, atendendo às suas diferentes necessidades através de instalação direta ou da flexibilidade do Docker.

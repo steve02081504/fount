@@ -128,7 +128,7 @@ When work is done, fount provides a connection that transcends the ordinary. We 
 
 - **Beautiful, Customisable Interface**
   Choose from over 30 stunning themes, or create your own colours. fount is your exclusive canvas.
-  ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+  ![Image](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
 
 - **Available Everywhere**
   fount runs seamlessly on Windows, macOS, Linux, and even Android, meeting your different needs through direct installation or the flexibility of Docker.
