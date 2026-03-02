@@ -46,12 +46,18 @@ function set_sentry_enabled(new_sentry_enabled) {
 set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
 console.noBreadcrumb = {
 	/**
-	 * 写入日志并跳过面包屑记录
+	 * 写入日志并跳过面包屑和调试器记录
 	 * @param {...any} args - 要记录的日志
 	 */
 	log: (...args) => {
 		skipBreadcrumb = true
+		console.options.realConsoleOutput = false
+		console.options.recordOutput = true
+		console.outputs = console.outputsHtml = ''
 		console.log(...args)
+		process.stdout.write(console.outputs)
+		console.options.recordOutput = false
+		console.options.realConsoleOutput = true
 		skipBreadcrumb = false
 	}
 }
