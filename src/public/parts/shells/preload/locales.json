@@ -16,7 +16,7 @@
 		"zh-CN": {
 			"name": "预加载",
 			"avatar": "https://api.iconify.design/material-symbols/play-for-work.svg",
-			"description": "一个用于预加载部件的shell。",
+			"description": "一个用于预加载组件的shell。",
 			"description_markdown": "预加载常用组件以提高性能并减少加载时间。",
 			"version": "0.0.0",
 			"author": "steve02081504",

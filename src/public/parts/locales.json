@@ -19,7 +19,7 @@
 			"name": "fount 根组件",
 			"avatar": "/favicon.svg",
 			"description": "fount 的核心基础组件",
-			"description_markdown": "这是 fount 系统的**根部组件**，负责承载并加载系统中的所有功能部件。",
+			"description_markdown": "这是 fount 系统的**根部组件**，负责承载并加载系统中的所有功能组件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

@@ -20,7 +20,7 @@
 			"name": "交互界面",
 			"avatar": "https://api.iconify.design/line-md/monitor.svg",
 			"description": "所有交互组件的根节点",
-			"description_markdown": "这是 fount 交互层的**根节点**。它作为 UI 的基础容器，承载并挂载诸如主页、用户设置等所有功能性交互部件。",
+			"description_markdown": "这是 fount 交互层的**根节点**。它作为 UI 的基础容器，承载并挂载诸如主页、用户设置等所有功能性交互组件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

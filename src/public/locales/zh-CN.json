@@ -24,7 +24,7 @@
 		"jobs": {
 			"restartingJob": "正在重启用户 ${username} 的 ${partpath} 任务：${uid}",
 			"pausingJob": "正在暂停用户 ${username} 的 ${partpath} 任务：${uid}",
-			"preloadingParts": "正在预加载 ${count} 个部件"
+			"preloadingParts": "正在预加载 ${count} 个组件"
 		},
 		"ipc": {
 			"serverStarted": "IPC 服务器已启动",
@@ -363,8 +363,8 @@
 				"locked_description": "完成一次入门教程。"
 			},
 			"skip_tutorial": {
-				"name": "P键已扣",
-				"description": "“教程？那是什么，能吃吗？”",
+				"name": "我已出仓，感觉良好",
+				"description": "跳过新手教程，直接进入广阔的未知领域。",
 				"locked_description": "跳过一次入门教程。"
 			}
 		},
@@ -454,21 +454,21 @@
 	},
 	"home": {
 		"title": "主页",
-		"description": "这里是您 fount 体验的核心。管理您想象国度中的一切——无论是鲜活的角色、宏大的世界，还是独特的身份。您的所有故事，都将以此为原点，衍生出无限可能。",
+		"description": "这里是您 fount 体验的起点。无论是鲜活的角色、宏大的世界，还是独特的身份，您想象国度中的一切尽在掌握。所有故事，将从这里开始。",
 		"sidebarTitle": "详情",
 		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
 		"filterInput": {
 			"placeholder": "搜索...",
-			"aria-label": "搜索部件"
+			"aria-label": "搜索组件"
 		},
 		"sfwToggle": "安全内容",
 		"partTypeDropdown": {
 			"button": {
-				"title": "部件类型菜单"
+				"title": "组件类型菜单"
 			},
 			"icon": {
-				"alt": "部件类型菜单"
+				"alt": "组件类型菜单"
 			}
 		},
 		"functionMenu": {
@@ -483,7 +483,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空空如也...<br/>或许你可以[新建一个部件](${newpartLink})或到[fount的Discord服务器](${discordLink})找点乐子？"
+			"message": "空空如也...<br/>不如[创建一个新组件](${newpartLink})，或去 [fount 的 Discord 社区](${discordLink}) 发现更多可能？"
 		},
 		"part_pages": {
 			"default": {
@@ -506,7 +506,7 @@
 			},
 			"chars": {
 				"title": "角色选择",
-				"subtitle": "邂逅一个灵魂，开启一段对话。",
+				"subtitle": "邂逅一个灵魂，开启一段故事。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "设为默认角色"
@@ -637,8 +637,8 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hello, fount!",
-				"description": "向着新世界，初次登录！",
+				"name": "你好，世界！",
+				"description": "writeln('Hello, World!').",
 				"locked_description": "登录fount一次。"
 			},
 			"sfw_mode_on": {
@@ -674,13 +674,13 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "生成 fount 部件信息"
+				"description": "生成 fount 组件信息"
 			}
 		}
 	},
 	"chat": {
 		"title": "聊天",
-		"description": "言语飞扬，故事展开。与您的人工智能伙伴互动，塑造叙事，并在数字对话的潮起潮落中迷失自我。fount的心脏在这里跳动。",
+		"description": "言语飞扬，故事在此展开。与您的 AI 伙伴互动，共同塑造叙事，沉浸在数字对话的潮起潮落中。fount 的心跳，于此间回响。",
 		"new": {
 			"title": "新聊天",
 			"description": "静待一篇尚未写就的篇章。开启新的对话，与您选定的伙伴在一片空白之上，描绘全新的互动与叙事。"
@@ -892,7 +892,7 @@
 			}
 		},
 		"charCard": {
-			"frequencyLabel": "频率",
+			"frequencyLabel": "发言权重",
 			"buttons": {
 				"removeChar": {
 					"title": "移出对话"
@@ -936,18 +936,18 @@
 			},
 			"code_greeting": {
 				"name": "用代码问好",
-				"description": "“你好，fount！”",
+				"description": "你让 fount 中的代码发出了第一声问候。`// \"hello fount!\"`",
 				"locked_description": "通过执行代码块，成功输出 'hello fount!'。"
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "无效的部件数据。",
+			"invalidPartData": "无效的组件数据。",
 			"charAdded": "角色 ${partName} 已添加到聊天。",
 			"personaSet": "已将 ${partName} 设置为当前人设。",
 			"worldSet": "世界 ${partName} 已设置为当前世界。",
 			"pluginAdded": "插件 ${partName} 已添加到聊天。",
-			"unsupportedPartType": "不支持的部件类型：${partType}。",
-			"errorAddingPart": "添加部件 ${partName} 时出错：${error}"
+			"unsupportedPartType": "不支持的组件类型：${partType}。",
+			"errorAddingPart": "添加组件 ${partName} 时出错：${error}"
 		},
 		"home_char_interfaces": {
 			"main": {
@@ -1008,7 +1008,7 @@
 		"title": "快速新建",
 		"description": "使用预定义或自定义模板快速构建新的fount部分，例如角色、世界和插件。只需点击几下即可完成您的下一个创作。",
 		"info": {
-			"description": "模板适用于快速创建基础组件。对于更复杂的创作，仍需您亲手雕琢。"
+			"description": "模板适用于快速创建基础组件。更复杂的创作仍需您亲手雕琢。"
 		},
 		"cardTitle": "从模板创建一个新组件",
 		"templateSelect": {
@@ -1020,7 +1020,7 @@
 		},
 		"form": {
 			"partName": {
-				"label": "组件名称",
+				"label": "组件名",
 				"placeholder": "为你的新组件起个名字"
 			},
 			"description": {
@@ -1103,9 +1103,9 @@
 		},
 		"achievements": {
 			"create_part": {
-				"name": "最初的造物",
-				"description": "从零开始，创造属于自己的第一个组件。",
-				"locked_description": "使用快速新建功能创建一个部件。"
+				"name": "神说，要有光",
+				"description": "从一开始，不，从零开始，创造属于自己的第一个组件。",
+				"locked_description": "使用快速新建功能创建一个组件。"
 			}
 		},
 		"home_function_buttons": {
@@ -1164,8 +1164,8 @@
 			"unknownError": "未知错误"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": "从文件安装部件",
-			"textDropDescription": "从文本安装部件"
+			"fileDropDescription": "从文件安装组件",
+			"textDropDescription": "从文本安装组件"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1179,10 +1179,10 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "从文本安装部件"
+				"description": "从文本安装组件"
 			},
 			"handleFileDrop": {
-				"description": "从文件安装部件"
+				"description": "从文件安装组件"
 			}
 		}
 	},
@@ -1190,7 +1190,7 @@
 		"title": "组件导出器",
 		"pageTitle": "组件导出器",
 		"pageSubtitle": "导出你喜欢的内容",
-		"description": "导出您的fount创作。该工具将您选择的部件收集到一个简单的 zip 文件中，以便妥善保存或共享。",
+		"description": "导出您的fount创作。该工具将您选择的组件收集到一个简单的 zip 文件中，以便妥善保存或共享。",
 		"steps": {
 			"part": "选择组件",
 			"action": "导出"
@@ -1255,11 +1255,11 @@
 			"share_part": {
 				"name": "一个人探索太危险了，带上这个！",
 				"description": "“呐，这个好东西也给你一份。”",
-				"locked_description": "分享一次部件。"
+				"locked_description": "分享一次组件。"
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "下载部件"
+			"downloadPartDescription": "下载组件"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1273,7 +1273,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "下载部件"
+				"description": "下载组件"
 			}
 		},
 		"home_common_interfaces": {
@@ -1707,7 +1707,7 @@
 		},
 		"configTitle": "服务源配置",
 		"needsConfigReminder": "服务源配置好后，一般需要在使用此服务源的组件的配置中的对应字段填写服务源名称。",
-		"needsConfigLink": "前往部件配置",
+		"needsConfigLink": "前往组件配置",
 		"subtypeSelect": {
 			"label": "生成器子类别",
 			"placeholder": "请选择生成器类别"
@@ -1760,7 +1760,7 @@
 			"deleteFileFailed": "删除文件失败: ${error}",
 			"addFileFailed": "添加文件失败: ${error}",
 			"setDefaultFailed": "设置默认服务源失败: ${error}",
-			"fetchBranchesFailed": "获取部件树失败: ${error}",
+			"fetchBranchesFailed": "获取组件树失败: ${error}",
 			"noFileSelectedSave": "没有选择要保存的文件。",
 			"noFileSelectedDelete": "没有选择要删除的文件。",
 			"noGeneratorSelectedSave": "请选择生成器后再保存",
@@ -1935,7 +1935,7 @@
 		"title": "浏览器集成",
 		"description": "弥合fount和网络之间的差距。此页面提供用户脚本以实现无缝集成，将您的 AI 伴侣带入您的浏览体验中。",
 		"pageHeader": "浏览器集成",
-		"pageDescription": "为了让您的 fount 角色能够与网页互动，需要安装此浏览器集成脚本。它充当角色与浏览器之间的桥梁，使他们能够查看页面内容并执行操作。",
+		"pageDescription": "要让您的 fount 角色「看懂」并操作网页，就需要安装这个集成脚本。它如同一座桥梁，连接着角色与您的浏览器，使角色能够查看页面内容并执行操作。",
 		"install_script_title": "安装脚本",
 		"install_script_description": "点击下面的按钮来安装浏览器集成脚本。您必须先安装一个像油猴 (Tampermonkey) 一样的用户脚本管理器。",
 		"install_button": "安装",
@@ -1943,7 +1943,7 @@
 		"what_is_manager": "什么是油猴脚本管理器？",
 		"manager_explanation": "油猴脚本管理器是一个浏览器扩展，允许您安装和运行修改网页的脚本。要使用 fount 集成脚本，您需要其中一个扩展。",
 		"popular_managers": "热门选择：",
-		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于${browser}可以使用[这个插件](${link})。",
+		"csp_warning": "为了确保所有功能正常，您可能需要安装插件来管理或禁用页面的内容安全策略 (CSP)。对于 ${browser} 可使用 [此插件](${link})。集成功能方可正常运行。",
 		"connected_pages_title": "已连接的页面",
 		"fetch_pages_error": "加载已连接页面列表失败。",
 		"page_title": "页面标题",
@@ -1995,13 +1995,13 @@
 				"locked_description": "安装一次浏览器集成脚本。"
 			},
 			"run_js": {
-				"name": "言出法随",
-				"description": "“以我之名，命令浏览器……”",
+				"name": "前端，启动！",
+				"description": "你向浏览器下达了第一道指令，万物皆可控。",
 				"locked_description": "在浏览器中运行一次JavaScript代码。"
 			},
 			"star_fount": {
-				"name": "开源之星",
-				"description": "在GitHub上为fount点亮星星（Star），感谢您的支持！",
+				"name": "为爱发电！",
+				"description": "感谢你为 fount 的星海添上一颗闪亮的 Star！",
 				"locked_description": "访问fount的GitHub仓库并点亮星星。"
 			}
 		},
@@ -2020,7 +2020,7 @@
 		"update": {
 			"prompt": "fount 浏览器集成脚本的新版本可用。是否现在打开更新页面？"
 		},
-		"csp_warning": "fount 浏览器集成脚本检测到页面存在CSP策略，这可能导致集成脚本无法正常运行。请考虑安装插件以停用 CSP。",
+		"csp_warning": "fount 浏览器集成脚本检测到页面存在内容安全策略 (CSP)，这可能导致集成脚本无法正常运行。为保障功能正常，请考虑安装插件来管理或禁用页面的 CSP。",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安全警告 ---",
 			"message": "当前页面 (\"${origin}\") 正试图将您的 fount 主机地址更改为:\n\n\"${newHost}\"\n\n警告：批准此操作将允许新主机完全控制您的浏览器集成功能，可能导致敏感信息泄露或账户被盗用。\n只有在您确信这是您本人操作（例如，迁移 fount 服务器）时才应批准。\n\n您确定要允许这次更改吗？",
