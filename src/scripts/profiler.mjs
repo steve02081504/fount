@@ -15,8 +15,10 @@ function getProfilerStack() {
 /**
  * 开始一个新的性能分析帧。
  */
-function startProfile() {
+function startProfile(name) {
+	console.profile(name)
 	getProfilerStack().push({
+		name,
 		startTime: new Date(),
 		startMemory: getMemoryUsage(),
 		exclusiveTime: 0,
@@ -35,6 +37,7 @@ function startProfile() {
  * }} 性能分析结果。
  */
 function endProfile() {
+	console.profileEnd(name)
 	const profilerStack = getProfilerStack()
 
 	const endTime = new Date()
@@ -68,9 +71,9 @@ function endProfile() {
  * @param {Function} fn - 要进行性能分析的函数。
  * @returns {Promise<any>} 一个解析为性能分析结果的承诺。
  */
-export function doProfile(fn) {
+export function doProfile(name, fn) {
 	return asyncLocalStorage.run([...getProfilerStack()], async () => {
-		startProfile()
+		startProfile(name)
 		await fn()
 		return endProfile()
 	})
