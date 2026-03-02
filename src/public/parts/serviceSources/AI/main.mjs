@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { getUserDictionary } from '../../../../server/auth.mjs'
 import { loadPartBase, unloadPartBase } from '../../../../server/parts_loader.mjs'
 
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 获取 AI 服务源路径。

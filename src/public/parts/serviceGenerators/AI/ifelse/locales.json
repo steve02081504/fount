@@ -1,0 +1,657 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Conditional Generator",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "A factory for creating conditional source instances with if-then-else logic.",
+			"description_markdown": "This **service generator** acts as a logic factory. It enables users to configure a conditional branching rule by defining a 'condition', a 'then' source, and an 'else' source. It then produces an active instance capable of dynamically routing requests based on this user-defined logic, creating highly adaptive characters.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"conditional",
+				"generator",
+				"routing",
+				"logic",
+				"meta",
+				"utility"
+			]
+		},
+		"zh-CN": {
+			"name": "条件路由生成器",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "用于创建具备 if-then-else 逻辑的条件源实例的工厂。",
+			"description_markdown": "这是一个**逻辑构建工厂**。它允许用户通过定义“条件”、“then 源”和“else 源”来配置条件分支规则。然后，它会生产一个能够根据此用户定义逻辑动态路由请求的活跃实例，从而创建出高度自适应的角色。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"条件",
+				"生成器",
+				"路由",
+				"逻辑",
+				"元",
+				"实用工具"
+			]
+		},
+		"ar-SA": {
+			"name": "مولد شرطي",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "مصنع لإنشاء مثيلات مصدر شرطية بمنطق if-then-else.",
+			"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع منطقي. يمكّن المستخدمين من تكوين قاعدة تفريع شرطية عن طريق تحديد 'شرط'، ومصدر 'then'، ومصدر 'else'. ثم ينتج مثيلًا نشطًا قادرًا على توجيه الطلبات ديناميكيًا بناءً على هذا المنطق المعرف من قبل المستخدم.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"شرطي",
+				"مولد",
+				"توجيه",
+				"منطق"
+			]
+		},
+		"de-DE": {
+			"name": "Bedingter Generator",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Eine Fabrik zum Erstellen von bedingten Quellinstanzen mit if-then-else-Logik.",
+			"description_markdown": "Dieser **Service-Generator** fungiert als Logikfabrik. Er ermöglicht es Benutzern, eine bedingte Verzweigungsregel zu konfigurieren, indem sie eine 'Bedingung', eine 'dann'-Quelle und eine 'sonst'-Quelle definieren. Anschließend wird eine aktive Instanz erzeugt, die in der Lage ist, Anfragen basierend auf dieser benutzerdefinierten Logik dynamisch weiterzuleiten.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"bedingt",
+				"generator",
+				"routing",
+				"logik",
+				"meta"
+			]
+		},
+		"emoji": {
+			"name": "🏗️❓🔀",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "🏗️(❓➡️🅰️/🅱️)",
+			"description_markdown": "🏗️❓🔀 ➡️ 🏭. \n📐➡️❓, 🅰️, 🅱️. \n⚙️➡️✨🧠🔀. \n\n✨ 🏭 🤖🧠",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"🏗️",
+				"❓",
+				"🔀",
+				"⚙️"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de selección condicional",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Fábrica para crear instancias fuente condicionales con lógica if-then-else.",
+			"description_markdown": "Esta es una **fábrica de lógica**. Permite a los usuarios configurar reglas de bifurcación condicional definiendo \"condición\", \"luego fuente\" y \"de lo contrario fuente\". Luego genera una instancia activa que puede enrutar solicitudes dinámicamente según esta lógica definida por el usuario, creando un rol altamente adaptable.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"condición",
+				"generador",
+				"enrutamiento",
+				"lógica",
+				"meta",
+				"utilidad"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de sélection conditionnelle",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Fabrique pour créer des instances source conditionnelles avec une logique if-then-else.",
+			"description_markdown": "Il s'agit d'une **usine logique**. Il permet aux utilisateurs de configurer des règles de branchement conditionnel en définissant « condition », « puis source » et « sinon source ». Il génère ensuite une instance active capable d'acheminer dynamiquement les requêtes en fonction de cette logique définie par l'utilisateur, créant ainsi un rôle hautement adaptatif.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"condition",
+				"générateur",
+				"routage",
+				"logique",
+				"meta",
+				"utilitaire"
+			]
+		},
+		"hi-IN": {
+			"name": "सशर्त चयन जनरेटर",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "यदि-तब-अन्यथा तर्क के साथ सशर्त स्रोत उदाहरण बनाने के लिए फ़ैक्टरी।",
+			"description_markdown": "यह एक **तर्क फ़ैक्टरी** है। यह उपयोगकर्ताओं को \"स्थिति\", \"तब स्रोत\" और \"अन्य स्रोत\" को परिभाषित करके सशर्त शाखा नियमों को कॉन्फ़िगर करने की अनुमति देता है। इसके बाद यह एक सक्रिय उदाहरण उत्पन्न करता है जो इस उपयोगकर्ता-परिभाषित तर्क के आधार पर अनुरोधों को गतिशील रूप से रूट कर सकता है, जिससे अत्यधिक अनुकूली भूमिका बन सकती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"स्थिति",
+				"जनरेटर",
+				"मार्ग",
+				"तर्क",
+				"मेटा",
+				"उपयोगिता उपकरण"
+			]
+		},
+		"is-IS": {
+			"name": "Skilyrt val rafall",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Verksmiðja til að búa til skilyrt upprunatilvik með ef-þá-annar rökfræði.",
+			"description_markdown": "Þetta er **rökverksmiðja**. Það gerir notendum kleift að stilla skilyrtar greiningarreglur með því að skilgreina \"skilyrði\", \"þá uppspretta\" og \"annar uppspretta\". Það hleypir síðan af sér virku tilviki sem getur beint beiðnum á virkan hátt út frá þessari notendaskilgreindu rökfræði, sem skapar mjög aðlögunarhlutverk.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"ástandi",
+				"rafall",
+				"leiðsögn",
+				"rökfræði",
+				"meta",
+				"tól"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di selezione condizionale",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Fabbrica per la creazione di istanze di origine condizionali con logica if-then-else.",
+			"description_markdown": "Questa è una **fabbrica logica**. Consente agli utenti di configurare regole di diramazione condizionale definendo \"condizione\", \"allora origine\" e \"altrimenti origine\". Quindi genera un'istanza attiva che può instradare dinamicamente le richieste in base a questa logica definita dall'utente, creando un ruolo altamente adattivo.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"condizione",
+				"generatore",
+				"instradamento",
+				"logica",
+				"meta",
+				"utilità"
+			]
+		},
+		"ja-JP": {
+			"name": "条件分岐ジェネレーター",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "if-then-else ロジックを使用して条件付きソース インスタンスを作成するためのファクトリ。",
+			"description_markdown": "これは **ロジック生成ファクトリー**です。これにより、ユーザーは「条件」、「then ソース」、および「else ソース」を定義することで条件付き分岐ルールを構成できます。次に、このユーザー定義のロジックに基づいてリクエストを動的にルーティングできるアクティブなインスタンスを生成し、適応性の高いロールを作成します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"状態",
+				"ジェネレータ",
+				"ルーティング",
+				"ロジック",
+				"メタ",
+				"ユーティリティ"
+			]
+		},
+		"ko-KR": {
+			"name": "조건부 분기 생성기",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "if-then-else 논리를 사용하여 조건부 소스 인스턴스를 생성하기 위한 팩토리입니다.",
+			"description_markdown": "이것은 **논리 공장**입니다. 이를 통해 사용자는 \"조건\", \"다음 소스\" 및 \"다른 소스\"를 정의하여 조건부 분기 규칙을 구성할 수 있습니다. 그런 다음 이 사용자 정의 논리를 기반으로 요청을 동적으로 라우팅하여 적응성이 뛰어난 역할을 생성할 수 있는 활성 인스턴스를 생성합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"상태",
+				"발전기",
+				"라우팅",
+				"논리",
+				"메타",
+				"유틸리티"
+			]
+		},
+		"lzh": {
+			"name": "因事制宜肆",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "制權變之器，設規矩以應萬變。",
+			"description_markdown": "此乃**因事制宜之肆**。其職在於創製能隨機應變之源。用戶可於此處設定規矩，指定「若然」與「不然」所用之源。一經設定，即可產生能審時度勢、應變無窮之實例，使AI應答更具智慧。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"條件",
+				"生成器",
+				"權變",
+				"元"
+			]
+		},
+		"nl-NL": {
+			"name": "Voorwaardelijke selectiegenerator",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Fabriek voor het maken van voorwaardelijke broninstanties met if-then-else-logica.",
+			"description_markdown": "Dit is een **logische fabriek**. Hiermee kunnen gebruikers voorwaardelijke vertakkingsregels configureren door \"voorwaarde\", \"dan bron\" en \"anders bron\" te definiëren. Vervolgens wordt er een actieve instantie gegenereerd die aanvragen dynamisch kan routeren op basis van deze door de gebruiker gedefinieerde logica, waardoor een zeer adaptieve rol ontstaat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"voorwaarde",
+				"generator",
+				"routering",
+				"logica",
+				"meta",
+				"hulpprogramma"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de seleção condicional",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Fábrica para criar instâncias de origem condicionais com lógica if-then-else.",
+			"description_markdown": "Esta é uma **fábrica lógica**. Ele permite que os usuários configurem regras de ramificação condicional definindo \"condição\", \"então origem\" e \"outra origem\". Em seguida, ele gera uma instância ativa que pode rotear solicitações dinamicamente com base nessa lógica definida pelo usuário, criando uma função altamente adaptável.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"condição",
+				"gerador",
+				"roteamento",
+				"lógica",
+				"meta",
+				"utilitário"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор условного выбора",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Фабрика для создания экземпляров условного источника с логикой if-then-else.",
+			"description_markdown": "Это **фабрика логики**. Он позволяет пользователям настраивать правила условного ветвления, определяя «условие», «тогда источник» и «еще источник». Затем он создает активный экземпляр, который может динамически маршрутизировать запросы на основе определяемой пользователем логики, создавая высокоадаптируемую роль.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"состояние",
+				"генератор",
+				"маршрутизация",
+				"логика",
+				"мета",
+				"утилита"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор умовного вибору",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Фабрика для створення екземплярів умовного джерела з логікою if-then-else.",
+			"description_markdown": "Це **фабрика логіки**. Це дозволяє користувачам налаштовувати правила умовного розгалуження, визначаючи «умова», «тоді джерело» та «інше джерело». Потім він породжує активний екземпляр, який може динамічно маршрутизувати запити на основі цієї визначеної користувачем логіки, створюючи дуже адаптивну роль.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"умова",
+				"генератор",
+				"маршрутизація",
+				"логіка",
+				"мета",
+				"утиліта"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo lựa chọn có điều kiện",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Nhà máy để tạo các phiên bản nguồn có điều kiện bằng logic if-then-else.",
+			"description_markdown": "Đây là **nhà máy logic**. Nó cho phép người dùng định cấu hình các quy tắc phân nhánh có điều kiện bằng cách xác định \"điều kiện\", \"sau đó là nguồn\" và \"nguồn khác\". Sau đó, nó tạo ra một phiên bản hoạt động có thể định tuyến động các yêu cầu dựa trên logic do người dùng xác định này, tạo ra vai trò có khả năng thích ứng cao.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"điều kiện",
+				"trình tạo",
+				"lộ trình",
+				"logic",
+				"meta",
+				"tiện ích"
+			]
+		},
+		"zh-TW": {
+			"name": "條件選擇生成器",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "用於創建具備 if-then-else 邏輯的條件源實例的工廠。",
+			"description_markdown": "這是一個**邏輯工廠**。它允許用戶通過定義“條件”、“then 源”和“else 源”來配置條件分支規則。然後，它會生產一個能夠根據此用戶定義邏輯動態路由請求的活躍實例，從而創建出高度自適應的角色。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"tags": [
+				"條件",
+				"生成器",
+				"路由",
+				"邏輯",
+				"元",
+				"實用工具"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Conditional Source Instance",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "An active instance that dynamically selects sources based on predefined conditions.",
+			"description_markdown": "This is an **active conditional routing instance**. When a request is received, it evaluates a set of predefined conditions. If a condition is met (`if-then`), it routes the request to one source; otherwise (`else`), it routes to another. This enables characters to respond intelligently and adapt their behavior based on context.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"conditional",
+				"routing",
+				"if-else",
+				"logic",
+				"instance",
+				"utility"
+			]
+		},
+		"zh-CN": {
+			"name": "条件路由实例",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "一个根据预设条件动态选择源的活跃实例。",
+			"description_markdown": "这是一个**条件路由实例**。当接收到请求时，它会评估预设的条件：如果条件满足，则将请求路由到“then”源；否则，路由到“else”源。这使得角色能够根据上下文智能地调整其行为和响应。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"条件",
+				"路由",
+				"if-else",
+				"逻辑",
+				"实例",
+				"实用工具"
+			]
+		},
+		"ar-SA": {
+			"name": "مثيل المصدر الشرطي",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "مثيل نشط يختار المصادر ديناميكيًا بناءً على شروط محددة مسبقًا.",
+			"description_markdown": "هذا **مثيل توجيه شرطي نشط**. عند استلام طلب، يقوم بتقييم مجموعة من الشروط المحددة مسبقًا. إذا تم استيفاء الشرط (`if-then`)، فإنه يوجه الطلب إلى مصدر واحد؛ وإلا (`else`)، يوجهه إلى آخر. وهذا يمكّن الشخصيات من الاستجابة بذكاء وتكييف سلوكها بناءً على السياق.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"شرطي",
+				"توجيه",
+				"منطق",
+				"مثيل"
+			]
+		},
+		"de-DE": {
+			"name": "Bedingte Quellinstanz",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Eine aktive Instanz, die Quellen basierend auf vordefinierten Bedingungen dynamisch auswählt.",
+			"description_markdown": "Dies ist eine **aktive bedingte Routing-Instanz**. Wenn eine Anfrage empfangen wird, wertet sie eine Reihe vordefinierter Bedingungen aus. Wenn eine Bedingung erfüllt ist (`if-then`), leitet sie die Anfrage an eine Quelle weiter; andernfalls (`else`) an eine andere. Dies ermöglicht es Charakteren, intelligent zu reagieren und ihr Verhalten kontextabhängig anzupassen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"bedingt",
+				"routing",
+				"logik",
+				"instanz",
+				"dienstprogramm"
+			]
+		},
+		"emoji": {
+			"name": "❓➡️🔀",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "❓✅➡️🅰️, ❌➡️🅱️",
+			"description_markdown": "📥➡️❓. \n❓✅ ➡️ 🤖🅰️. \n❓❌ ➡️ 🤖🅱️. \n\n✨🧠🔀",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"❓",
+				"🔀",
+				"🧠",
+				"✨"
+			]
+		},
+		"es-ES": {
+			"name": "Instancia de selección condicional",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Una instancia activa que selecciona fuentes dinámicamente según condiciones preestablecidas.",
+			"description_markdown": "Esta es una instancia de enrutamiento condicional activa. Cuando se recibe una solicitud, evalúa las condiciones preestablecidas: si se cumplen las condiciones, la solicitud se enruta a la fuente \"entonces\"; de lo contrario, se enruta a la fuente \"else\". Esto permite a los personajes adaptar inteligentemente su comportamiento y respuestas según el contexto.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"condición",
+				"enrutamiento",
+				"si no",
+				"lógica",
+				"instancia",
+				"utilidad"
+			]
+		},
+		"fr-FR": {
+			"name": "Instance de sélection conditionnelle",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Une instance active qui sélectionne dynamiquement les sources en fonction de conditions prédéfinies.",
+			"description_markdown": "Il s'agit d'une instance de routage conditionnel active. Lorsqu'une requête est reçue, il évalue les conditions prédéfinies : si les conditions sont remplies, la requête est acheminée vers la source « alors » ; sinon, il est acheminé vers la source « else ». Cela permet aux personnages d'adapter intelligemment leur comportement et leurs réponses en fonction du contexte.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"condition",
+				"routage",
+				"si-sinon",
+				"logique",
+				"instance",
+				"utilitaire"
+			]
+		},
+		"hi-IN": {
+			"name": "सशर्त चयन उदाहरण",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "एक सक्रिय उदाहरण जो पूर्व निर्धारित स्थितियों के आधार पर गतिशील रूप से स्रोतों का चयन करता है।",
+			"description_markdown": "यह एक सक्रिय सशर्त रूटिंग उदाहरण है। जब कोई अनुरोध प्राप्त होता है, तो यह पूर्व निर्धारित शर्तों का मूल्यांकन करता है: यदि शर्तें पूरी हो जाती हैं, तो अनुरोध \"तत्कालीन\" स्रोत पर भेज दिया जाता है; अन्यथा, इसे \"अन्य\" स्रोत पर भेज दिया जाता है। यह पात्रों को संदर्भ के आधार पर अपने व्यवहार और प्रतिक्रियाओं को समझदारी से अनुकूलित करने में सक्षम बनाता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"स्थिति",
+				"मार्ग",
+				"यदि-अन्यथा",
+				"तर्क",
+				"इंस्टेंस",
+				"उपयोगिता उपकरण"
+			]
+		},
+		"is-IS": {
+			"name": "Skilyrt val tilvik",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Virkt tilvik sem velur heimildir á virkan hátt út frá forstilltum skilyrðum.",
+			"description_markdown": "Þetta er virkt skilyrt leiðartilvik. Þegar beiðni er móttekin, metur það forstilltu skilyrðin: ef skilyrðin eru uppfyllt er beiðninni beint til „þá“ upprunans; annars er það beint til „annað“ uppsprettu. Þetta gerir persónum kleift að laga hegðun sína og viðbrögð á skynsamlegan hátt út frá samhengi.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"ástandi",
+				"leiðsögn",
+				"ef-annað",
+				"rökfræði",
+				"tilvik",
+				"tól"
+			]
+		},
+		"it-IT": {
+			"name": "Istanza di selezione condizionale",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Un'istanza attiva che seleziona dinamicamente le fonti in base a condizioni preimpostate.",
+			"description_markdown": "Questa è un'istanza di routing condizionale attiva. Quando viene ricevuta una richiesta, valuta le condizioni preimpostate: se le condizioni sono soddisfatte, la richiesta viene instradata alla sorgente \"allora\"; in caso contrario, viene instradato alla sorgente \"else\". Ciò consente ai personaggi di adattare in modo intelligente il proprio comportamento e le risposte in base al contesto.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"condizione",
+				"instradamento",
+				"se-altro",
+				"logica",
+				"istanza",
+				"utilità"
+			]
+		},
+		"ja-JP": {
+			"name": "条件分岐インスタンス",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "事前に設定された条件に基づいてソースを動的に選択するアクティブなインスタンス。",
+			"description_markdown": "これは条件に応じてリクエストを振り分けるインスタンスです。リクエストを受信すると、事前に設定された条件が評価されます。条件が満たされる場合、リクエストは「then」ソースにルーティングされます。それ以外の場合は、「else」ソースにルーティングされます。これにより、キャラクターはコンテキストに基づいて行動や反応をインテリジェントに適応させることができます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"状態",
+				"ルーティング",
+				"if-else",
+				"論理",
+				"インスタンス",
+				"ユーティリティ"
+			]
+		},
+		"ko-KR": {
+			"name": "조건부 분기 인스턴스",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "미리 설정된 조건에 따라 소스를 동적으로 선택하는 활성 인스턴스입니다.",
+			"description_markdown": "이는 활성 조건부 라우팅 인스턴스입니다. 요청이 수신되면 사전 설정된 조건을 평가합니다. 조건이 충족되면 요청이 \"then\" 소스로 라우팅됩니다. 그렇지 않으면 \"else\" 소스로 라우팅됩니다. 이를 통해 캐릭터는 상황에 따라 자신의 행동과 반응을 지능적으로 조정할 수 있습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"상태",
+				"라우팅",
+				"if-else",
+				"논리",
+				"인스턴스",
+				"유틸리티"
+			]
+		},
+		"lzh": {
+			"name": "因事制宜源",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "審時度勢，擇源而應，變化無窮。",
+			"description_markdown": "此乃**因事制宜之實例**。其能審時度勢，依預設之規矩，判斷當下情狀。若合，則取甲源應之；若不合，則取乙源應之。如良將用兵，變化無窮，使應答各得其宜也。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"條件",
+				"權變",
+				"路由",
+				"實例"
+			]
+		},
+		"nl-NL": {
+			"name": "Instantie van voorwaardelijke selectie",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Een actieve instantie die bronnen dynamisch selecteert op basis van vooraf ingestelde voorwaarden.",
+			"description_markdown": "Dit is een actieve instantie van voorwaardelijke routering. Wanneer een verzoek wordt ontvangen, worden de vooraf ingestelde voorwaarden geëvalueerd: als aan de voorwaarden is voldaan, wordt het verzoek doorgestuurd naar de \"toen\"-bron; anders wordt het doorgestuurd naar de bron \"else\". Hierdoor kunnen personages hun gedrag en reacties op intelligente wijze aanpassen op basis van de context.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"voorwaarde",
+				"routering",
+				"als-anders",
+				"logica",
+				"instantie",
+				"hulpprogramma"
+			]
+		},
+		"pt-PT": {
+			"name": "Instância de seleção condicional",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Uma instância ativa que seleciona fontes dinamicamente com base em condições predefinidas.",
+			"description_markdown": "Esta é uma instância de roteamento condicional ativa. Quando uma solicitação é recebida, ele avalia as condições predefinidas: se as condições forem atendidas, a solicitação é encaminhada para a origem “então”; caso contrário, ele será roteado para a fonte \"se-senão\". Isso permite que os personagens adaptem de forma inteligente seu comportamento e respostas com base no contexto.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"condição",
+				"roteamento",
+				"se-senão",
+				"lógica",
+				"instância",
+				"utilitário"
+			]
+		},
+		"ru-RU": {
+			"name": "Экземпляр условного выбора",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Активный экземпляр, который динамически выбирает источники на основе заданных условий.",
+			"description_markdown": "Это активный экземпляр условной маршрутизации. При получении запроса он оценивает заданные условия: если условия выполняются, запрос направляется к источнику «тогда»; в противном случае оно направляется в источник «else». Это позволяет персонажам разумно адаптировать свое поведение и реакции в зависимости от контекста.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"состояние",
+				"маршрутизация",
+				"если-еще",
+				"логика",
+				"экземпляр",
+				"утилита"
+			]
+		},
+		"uk-UA": {
+			"name": "Екземпляр умовного вибору",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Активний екземпляр, який динамічно вибирає джерела на основі попередньо встановлених умов.",
+			"description_markdown": "Це активний екземпляр умовної маршрутизації. Коли запит отримано, він оцінює попередньо встановлені умови: якщо умови виконуються, запит направляється до джерела «тоді»; інакше він направляється до джерела «інше». Це дозволяє персонажам розумно адаптувати свою поведінку та відповіді на основі контексту.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"умова",
+				"маршрутизація",
+				"якщо-інакше",
+				"логіка",
+				"екземпляр",
+				"утиліта"
+			]
+		},
+		"vi-VN": {
+			"name": "Thực thể lựa chọn có điều kiện",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "Một phiên bản đang hoạt động tự động chọn các nguồn dựa trên các điều kiện đặt trước.",
+			"description_markdown": "Đây là một trường hợp định tuyến có điều kiện đang hoạt động. Khi nhận được yêu cầu, nó sẽ đánh giá các điều kiện đặt trước: nếu các điều kiện được đáp ứng, yêu cầu sẽ được chuyển đến nguồn \"then\"; nếu không, nó sẽ được chuyển đến nguồn \"khác\". Điều này cho phép các nhân vật điều chỉnh hành vi và phản ứng của họ một cách thông minh dựa trên ngữ cảnh.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"điều kiện",
+				"lộ trình",
+				"nếu-khác",
+				"logic",
+				"thực thể",
+				"tiện ích"
+			]
+		},
+		"zh-TW": {
+			"name": "條件選擇實例",
+			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
+			"description": "一個根據預設條件動態選擇源的活躍實例。",
+			"description_markdown": "這是一個**活躍的條件路由實例**。當接收到請求時，它會評估預設的條件：如果條件滿足，則將請求路由到“then”源；否則，路由到“else”源。這使得角色能夠根據上下文智能地調整其行為和響應。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount",
+			"tags": [
+				"條件",
+				"路由",
+				"if-else",
+				"邏輯",
+				"實例",
+				"實用工具"
+			]
+		}
+	}
+}

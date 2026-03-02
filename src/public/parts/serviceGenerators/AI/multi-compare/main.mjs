@@ -5,8 +5,7 @@ import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../server/auth.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 
-import info_dynamic from './info.dynamic.json' with { type: 'json' }
-import info from './info.json' with { type: 'json' }
+const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
@@ -57,7 +56,7 @@ async function GetSource(config, { username, SaveConfig }) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
 			v.name = config.name
 			v.provider = config.provider || 'unknown'
 			return [k, v]

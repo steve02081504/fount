@@ -1,4 +1,6 @@
-import info from './info.json' with { type: 'json' }
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
 /** @typedef {import('../../../../decl/basedefs.ts').info_t} info_t */
 
 /**

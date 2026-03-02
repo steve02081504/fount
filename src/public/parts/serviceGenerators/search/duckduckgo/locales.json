@@ -1,0 +1,597 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "DuckDuckGo Search Generator",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "A generator factory for DuckDuckGo service sources (HTML-based).",
+			"description_markdown": "This is a **service generator** based on DuckDuckGo HTML search. It functions as a factory to produce search sources that require **no API key**, allowing characters to retrieve web information anonymously and instantly.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"search",
+				"generator",
+				"privacy",
+				"free"
+			]
+		},
+		"zh-CN": {
+			"name": "DuckDuckGo 搜索生成器",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "生产 DuckDuckGo 搜索服务源的工厂组件（基于网页抓取）",
+			"description_markdown": "这是基于 **DuckDuckGo HTML** 网页搜索的服务生成器。它作为生产搜索实例的工厂，**无需 API 密钥**即可为角色提供隐私友好的互联网检索能力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"搜索",
+				"生成器",
+				"隐私",
+				"免密钥"
+			]
+		},
+		"ar-SA": {
+			"name": "مولد بحث DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "مصنع مولد لمصادر خدمة بحث DuckDuckGo (عبر HTML).",
+			"description_markdown": "هذا **مولد خدمة** يعتمد على بحث DuckDuckGo HTML. يعمل كمصنع لإنتاج مصادر بحث **لا تتطلب مفتاح API**، مما يسمح للشخصيات باسترداد المعلومات بشكل مجهول.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"بحث",
+				"مولد",
+				"خصوصية"
+			]
+		},
+		"de-DE": {
+			"name": "DuckDuckGo Such-Generator",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Eine Generatorenfabrik für DuckDuckGo-Suchquellen (HTML-basiert).",
+			"description_markdown": "Dies ist ein **Service-Generator**, der auf der DuckDuckGo-HTML-Suche basiert. Er fungiert als Fabrik für Suchinstanzen, die **keinen API-Schlüssel** benötigen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"suche",
+				"generator",
+				"privatsphäre"
+			]
+		},
+		"emoji": {
+			"name": "🦆⚙️",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "🦆 ➕ ⚙️ ➡️ 🔍 (🚫🔑)",
+			"description_markdown": "🦆⚙️ ➡️ 🏗️🔍. \n🆓 ➡️ 🚫🔑. \n⚙️ ➡️ 🔍✨.\n\n✨ 🦆 🏭",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"🦆",
+				"⚙️",
+				"🔍",
+				"🆓"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de Búsqueda DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Una fábrica de generadores para fuentes de búsqueda DuckDuckGo (vía HTML).",
+			"description_markdown": "Este es un **generador de servicios** basado en la búsqueda HTML de DuckDuckGo. Funciona como una fábrica para producir fuentes de búsqueda **sin necesidad de clave API**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"búsqueda",
+				"generador",
+				"privacidad"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de Recherche DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Une usine de génération pour les sources de recherche DuckDuckGo (basée sur HTML).",
+			"description_markdown": "Il s'agit d'un **générateur de services** utilisant la recherche HTML de DuckDuckGo. Il produit des instances de recherche **sans clé API requise**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"recherche",
+				"générateur",
+				"vie-privée"
+			]
+		},
+		"hi-IN": {
+			"name": "DuckDuckGo खोज जेनरेटर",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo खोज स्रोतों के लिए एक जेनरेटर फैक्ट्री (HTML-आधारित)।",
+			"description_markdown": "यह **DuckDuckGo HTML** खोज पर आधारित एक सेवा जेनरेटर है। यह ऐसी खोज इकाइयाँ बनाता है जिन्हें **API कुंजी की आवश्यकता नहीं** होती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"खोज",
+				"जेनरेटर",
+				"गोपनीयता"
+			]
+		},
+		"is-IS": {
+			"name": "DuckDuckGo leitarrafall",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Verksmiðja sem framleiðir DuckDuckGo leitarheimildir (HTML-byggt).",
+			"description_markdown": "Þetta er **þjónusturafall** byggður á DuckDuckGo HTML leit. Hann framleiðir leitarvinnslueiningar sem **þurfa engan API lykil**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"leit",
+				"rafall",
+				"persónuvernd"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di Ricerca DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Una fabbrica di generatori per fonti DuckDuckGo (basata su HTML).",
+			"description_markdown": "Questo è un **generatore di servizi** basato sulla ricerca HTML di DuckDuckGo. Crea istanze di ricerca **senza necessità di chiavi API**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"ricerca",
+				"generatore",
+				"privacy"
+			]
+		},
+		"ja-JP": {
+			"name": "DuckDuckGo 検索ジェネレーター",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo 検索サービスソースを生産する工場コンポーネント（HTMLベース）",
+			"description_markdown": "これは **DuckDuckGo HTML** 検索に基づくサービスジェネレーターです。**API キー不要**で検索インスタンスを生産する工場として機能し、匿名での情報取得を可能にします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"検索",
+				"ジェネレーター",
+				"プライバシー"
+			]
+		},
+		"ko-KR": {
+			"name": "DuckDuckGo 검색 생성기",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo 검색 서비스 소스를 생산하는 공장 컴포넌트 (HTML 기반)",
+			"description_markdown": "이것은 **DuckDuckGo HTML** 검색을 기반으로 하는 서비스 생성기입니다. **API 키 없이** 검색 인스턴스를 생산하는 공장 역할을 하며 캐릭터에게 익명 검색 능력을 제공합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"검색",
+				"생성기",
+				"개인정보보호"
+			]
+		},
+		"lzh": {
+			"name": "潜凫寻索肆",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "依潜凫之术，产寻索之源",
+			"description_markdown": "此乃基于 **DuckDuckGo HTML** 之智工肆。其能产“寻索实例”，**不假金钥**，即可探幽索隐、遍索万方。其行如凫潜水，不留踪迹。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"潜凫",
+				"寻索",
+				"肆",
+				"免金钥"
+			]
+		},
+		"nl-NL": {
+			"name": "DuckDuckGo Zoekgenerator",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Een fabriek voor DuckDuckGo-servicebronnen (HTML-gebaseerd).",
+			"description_markdown": "Dit is een **servicegenerator** gebaseerd op DuckDuckGo HTML-zoekopdrachten. Er is **geen API-sleutel vereist** om zoekinstanties te produceren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"zoeken",
+				"generator",
+				"privacy"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de Pesquisa DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Uma fábrica de geradores para fontes de pesquisa DuckDuckGo (via HTML).",
+			"description_markdown": "Este é um **gerador de serviços** baseado na pesquisa HTML do DuckDuckGo. Funciona como uma fábrica para produzir instâncias de pesquisa **sem necessidade de chave API**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"pesquisa",
+				"gerador",
+				"privacidade"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор поиска DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Завод-генератор для поисковых источников DuckDuckGo (на базе HTML).",
+			"description_markdown": "Это **генератор сервиса**, основанный на HTML-поиске DuckDuckGo. Он работает как завод по производству экземпляров поиска, которым **не требуется API-ключ**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"поиск",
+				"генератор",
+				"конфиденциальность"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор пошуку DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Завод-генератор для джерел пошуку DuckDuckGo (на базі HTML).",
+			"description_markdown": "Це **генератор сервісу**, що базується на пошуку HTML DuckDuckGo. Він створює примірники пошуку, які **не потребують ключа API**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"пошук",
+				"генератор",
+				"конфіденційність"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Tìm kiếm DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Nhà máy sản xuất các nguồn dịch vụ tìm kiếm DuckDuckGo (dựa trên HTML).",
+			"description_markdown": "Đây là **trình tạo dịch vụ** dựa trên tìm kiếm HTML của DuckDuckGo. Nó tạo ra các thực thể tìm kiếm mà **không cần khóa API**.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"tìm kiếm",
+				"trình tạo",
+				"bảo mật"
+			]
+		},
+		"zh-TW": {
+			"name": "DuckDuckGo 搜尋生成器",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "生產 DuckDuckGo 搜尋服務源的工廠組件（基於網頁抓取）",
+			"description_markdown": "這是基於 **DuckDuckGo HTML** 網頁搜尋的服務生成器。它作為生產搜尋實例的工廠，**無需 API 金鑰**即可為角色提供隱私友好的互聯網檢索能力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"tags": [
+				"duckduckgo",
+				"搜尋",
+				"生成器",
+				"隱私",
+				"免金鑰"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "DuckDuckGo Search Source",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "A privacy-focused search service instance powered by DuckDuckGo.",
+			"description_markdown": "This is an active instance of the **DuckDuckGo** search engine. It provides characters with search capabilities that prioritize user privacy, ensuring no tracking while retrieving information from the web.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"search",
+				"duckduckgo",
+				"privacy",
+				"source"
+			]
+		},
+		"zh-CN": {
+			"name": "DuckDuckGo 搜索源",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "由 DuckDuckGo 提供支持的隐私优先搜索实例",
+			"description_markdown": "这是 **DuckDuckGo** 搜索引擎的一个活动实例。它为角色提供注重隐私的互联网检索能力，确保在获取外部信息时不进行任何追踪。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"搜索",
+				"DuckDuckGo",
+				"隐私",
+				"服务源"
+			]
+		},
+		"ar-SA": {
+			"name": "مصدر بحث DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "مثيل خدمة بحث يركز على الخصوصية مدعوم من DuckDuckGo.",
+			"description_markdown": "هذا مثيل نشط لمحرك بحث **DuckDuckGo**. يوفر للشخصيات قدرات بحث تعطي الأولوية لخصوصية المستخدم، مما يضمن عدم التتبع.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"بحث",
+				"DuckDuckGo",
+				"خصوصية",
+				"مصدر"
+			]
+		},
+		"de-DE": {
+			"name": "DuckDuckGo Suchquelle",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Eine datenschutzorientierte Suchdienstinstanz von DuckDuckGo.",
+			"description_markdown": "Dies ist eine aktive Instanz der **DuckDuckGo**-Suchmaschine. Sie bietet Charakteren Suchfunktionen, bei denen die Privatsphäre an erster Stelle steht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"Suche",
+				"DuckDuckGo",
+				"Privatsphäre",
+				"Quelle"
+			]
+		},
+		"emoji": {
+			"name": "🦆🔍",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "🦆 ➡️ 🔍 ➡️ 🛡️",
+			"description_markdown": "🦆🔍 ➡️ 🌐🛡️. \n🚀 ➡️ 🧠.\n🦆 ✨ 🚫👣.\n\n✨ 🔍 🦆",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"🦆",
+				"🔍",
+				"🛡️"
+			]
+		},
+		"es-ES": {
+			"name": "Fuente de Búsqueda DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Instancia de servicio de búsqueda centrada en la privacidad de DuckDuckGo.",
+			"description_markdown": "Esta es una instancia activa del motor de búsqueda **DuckDuckGo**. Ofrece capacidades de búsqueda que priorizan la privacidad, sin rastreo.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"búsqueda",
+				"duckduckgo",
+				"privacidad",
+				"fuente"
+			]
+		},
+		"fr-FR": {
+			"name": "Source de Recherche DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Instance de service de recherche respectueuse de la vie privée DuckDuckGo.",
+			"description_markdown": "Il s'agit d'une instance active du moteur de recherche **DuckDuckGo**, offrant des capacités de recherche sans suivi.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"recherche",
+				"duckduckgo",
+				"vie privée",
+				"source"
+			]
+		},
+		"hi-IN": {
+			"name": "DuckDuckGo खोज स्रोत",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo द्वारा संचालित गोपनीयता-केंद्रित खोज सेवा उदाहरण।",
+			"description_markdown": "यह **DuckDuckGo** खोज इंजन का एक सक्रिय उदाहरण है, जो बिना किसी ट्रैकिंग के गोपनीयता को प्राथमिकता देता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"खोज",
+				"DuckDuckGo",
+				"गोपनीयता",
+				"स्रोत"
+			]
+		},
+		"is-IS": {
+			"name": "DuckDuckGo Leitarheimild",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Leitarþjónusta með áherslu á persónuvernd frá DuckDuckGo.",
+			"description_markdown": "Þetta er virkt tilvik af **DuckDuckGo** leitarvélinni, sem tryggir leit án eftirtektar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"leit",
+				"duckduckgo",
+				"persónuvernd",
+				"heimild"
+			]
+		},
+		"it-IT": {
+			"name": "Fonte di Ricerca DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Istanza di servizio di ricerca DuckDuckGo incentrata sulla privacy.",
+			"description_markdown": "Questa è un'istanza attiva del motore di ricerca **DuckDuckGo**, che garantisce ricerche senza tracciamento.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"ricerca",
+				"duckduckgo",
+				"privacy",
+				"fonte"
+			]
+		},
+		"ja-JP": {
+			"name": "DuckDuckGo 検索ソース",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo によるプライバシー重視の検索サービスインスタンス",
+			"description_markdown": "これは **DuckDuckGo** 検索エンジンのアクティブなインスタンスです。トラッキングを行わず、プライバシーを保護しながら情報を取得します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"検索",
+				"DuckDuckGo",
+				"プライバシー",
+				"ソース"
+			]
+		},
+		"ko-KR": {
+			"name": "DuckDuckGo 검색 소스",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "DuckDuckGo에서 제공하는 개인정보 보호 중심 검색 인스턴스",
+			"description_markdown": "이것은 **DuckDuckGo** 검색 엔진의 활성 인스턴스입니다. 추적 없이 개인정보를 보호하며 정보를 검색합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"검색",
+				"DuckDuckGo",
+				"개인정보보호",
+				"소스"
+			]
+		},
+		"lzh": {
+			"name": "潜凫寻",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "绝迹索讯，弗存垢迹",
+			"description_markdown": "此乃 **“DuckDuckGo”** 寻索之实例。资凫之术，入水无波，索讯而不留行迹，为化身守卫隐秘、博采万方之具也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"寻索",
+				"潜凫",
+				"隐秘",
+				"实例"
+			]
+		},
+		"nl-NL": {
+			"name": "DuckDuckGo Zoekbron",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Privacyvriendelijke zoekservice-instantie van DuckDuckGo.",
+			"description_markdown": "Dit is een actieve instantie van **DuckDuckGo**, voor zoekopdrachten zonder tracking.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"zoeken",
+				"duckduckgo",
+				"privacy",
+				"bron"
+			]
+		},
+		"pt-PT": {
+			"name": "Fonte de Pesquisa DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Instância de serviço de pesquisa DuckDuckGo focada na privacidade.",
+			"description_markdown": "Esta é uma instância ativa do motor de busca **DuckDuckGo**, permitindo pesquisas sem rastreio.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"pesquisa",
+				"duckduckgo",
+				"privacidade",
+				"fonte"
+			]
+		},
+		"ru-RU": {
+			"name": "Источник Поиска DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Конфиденциальный экземпляр поискового сервиса DuckDuckGo.",
+			"description_markdown": "Это активный экземпляр поисковой системы **DuckDuckGo**, обеспечивающий поиск без отслеживания.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"поиск",
+				"duckduckgo",
+				"конфиденциальность",
+				"источник"
+			]
+		},
+		"uk-UA": {
+			"name": "Джерело Пошуку DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Конфіденційний екземпляр пошукового сервісу DuckDuckGo.",
+			"description_markdown": "Це активний екземпляр пошукової системи **DuckDuckGo** для пошуку без відстеження.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"пошук",
+				"duckduckgo",
+				"конфіденційність",
+				"джерело"
+			]
+		},
+		"vi-VN": {
+			"name": "Nguồn Tìm kiếm DuckDuckGo",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "Thực thể dịch vụ tìm kiếm bảo mật từ DuckDuckGo.",
+			"description_markdown": "Đây là thực thể hoạt động của **DuckDuckGo**, đảm bảo tìm kiếm không để lại dấu vết.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"tìm_kiếm",
+				"duckduckgo",
+				"bảo_mật",
+				"nguồn"
+			]
+		},
+		"zh-TW": {
+			"name": "DuckDuckGo 搜尋源",
+			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
+			"description": "由 DuckDuckGo 提供支持的隱私優先搜尋實例",
+			"description_markdown": "這是 **DuckDuckGo** 搜尋引擎的一個活動實例。它為角色提供注重隱私的互聯網檢索能力，確保在獲取外部信息時不進行任何追蹤。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://duckduckgo.com/",
+			"provider": "DuckDuckGo",
+			"tags": [
+				"搜尋",
+				"DuckDuckGo",
+				"隱私",
+				"服務源"
+			]
+		}
+	}
+}

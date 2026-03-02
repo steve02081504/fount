@@ -1,0 +1,292 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Translation Service Generators",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "The foundational factory hub for producing translation service sources.",
+			"description_markdown": "This is the **root component** for all translation generator modules. It functions as a structural factory where translation sources are produced. These sources enable pre-processing of inputs for keyword matching, multilingual prompt activation, or turning characters into dedicated translators.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"translate",
+				"generator",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "翻译服务生成器",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "生产翻译服务源组件的工厂根节点",
+			"description_markdown": "这是翻译生成器模块的**根节点**。它扮演着“语言通译工厂”的角色，所有负责产生翻译驱动源的组件都挂载于此。它可用于输入预处理、多语言关键词匹配或构建纯翻译功能，帮助系统跨越语言障碍。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"翻译",
+				"生成器",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مولدات خدمة الترجمة",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "مركز المصنع الأساسي لإنتاج مصادر خدمة الترجمة",
+			"description_markdown": "هذا هو **المكون الجذر** لجميع وحدات توليد الترجمة. إنه يعمل كمصنع هيكلي حيث يتم إنتاج مصادر الترجمة التي تمكن من المعالجة المسبقة للمدخلات أو بناء أدوات ترجمة مخصصة.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"ترجمة",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Übersetzungs-Servicegeneratoren",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Der zentrale Fabrik-Knotenpunkt zur Erzeugung von Übersetzungsquellen.",
+			"description_markdown": "Dies ist die **Stammkomponente** für alle Übersetzungsgenerator-Module. Sie fungiert als strukturelle Fabrik, in der Übersetzungsquellen erzeugt werden, um Eingaben vorzuverarbeiten oder reine Übersetzungsfunktionen zu ermöglichen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Übersetzung",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🌍🔄🏭",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "🌐 ➡️ 🔄 ➡️ ✍️",
+			"description_markdown": "🌐 ➡️ 🏗️. \n⚙️ ➕ 🗣️. \n⚓ ➡️ 🔄✨.\n\n✨ 🗣️ 🏭",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🌐",
+				"🔄",
+				"⚙️",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Generadores de Servicios de Traducción",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "El centro de fábrica fundamental para producir fuentes de servicios de traducción.",
+			"description_markdown": "Este es el **componente raíz** de todos los módulos generadores de traducción. Funciona como una fábrica estructural donde se producen fuentes de traducción para el procesamiento de entradas o funciones de traducción pura.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"traducción",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateurs de Services de Traduction",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Le centre de fabrication fondamental pour produire des sources de traduction.",
+			"description_markdown": "Il s'agit du **composant racine** pour tous les modules générateurs de traduction. Il sert d'usine structurelle pour produire les sources permettant le prétraitement des langues ou la traduction pure.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"traduction",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "अनुवाद सेवा जेनरेटर",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "अनुवाद सेवा स्रोतों के उत्पादन के लिए मौलिक फैक्ट्री हब।",
+			"description_markdown": "यह सभी अनुवाद जनरेटर मॉड्यूल के लिए **मूल घटक** है। यह एक संरचनात्मक फैक्ट्री के रूप में कार्य करता है जहाँ अनुवाद स्रोत तैयार किए जाते हैं, जो भाषा प्रसंस्करण और अनुवाद क्षमताओं को सक्षम करते हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"अनुवाद",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Þýðingarþjónustuframleiðendur",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Aðalverksmiðja fyrir myndun þýðingarvinnslueininga.",
+			"description_markdown": "Þetta er **rótareiningin** fyrir alla þýðingar-rafala. Hún virkar sem verksmiðja þar sem þýðingarvélar eru búnar til svo kerfið geti skilið mörg tungumál.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"þýðing",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Generatori di Servizi di Traduzione",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "L'hub di fabbrica fondamentale per la produzione di motori di traduzione.",
+			"description_markdown": "Questo è il **componente radice** per tutti i moduli generatori di traduzione. Funziona come una fabbrica strutturale in cui vengono prodotti i motori per superare le barriere linguistiche.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"traduzione",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "翻訳サービス ジェネレーター",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "翻訳サービスソースを生成する基盤ファクトリーハブ",
+			"description_markdown": "これはすべての翻訳ジェネレーターモジュールの**ルートコンポーネント**です。入力のプリプロセス、多言語キーワードマッチング、または純粋な翻訳機能を提供するためのソースを生産する「工場」として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"翻訳",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "번역 서비스 생성기",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "번역 서비스 소스를 생산하는 기초 팩토리 허브",
+			"description_markdown": "이것은 모든 번역 생성기 모듈의 **루트 컴포넌트**입니다. 입력 전처리, 다국어 키워드 매칭 또는 순수 번역 기능을 제공하기 위한 소스를 생산하는 구조적 공장 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"번역",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "通译肆",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "诸翻译服务生成器之根柢",
+			"description_markdown": "此乃 fount 之**通译肆**。凡欲通语言之障、化异域之言者，皆取准于此。此间聚诸生成器，如工坊之产译舌，为言辞无界、万方通行之基也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"通译",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Vertaalservicegeneratoren",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "De fundamentele fabriekshub voor het produceren van vertaalbronnen.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor alle vertaalgeneratormodules. Het fungeert als een structurele fabriek waar vertaalengines worden geproduceerd om taalbarrières te doorbreken.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"vertaling",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Geradores de Serviços de Tradução",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "O centro de fábrica fundamental para produzir fontes de serviços de tradução.",
+			"description_markdown": "Este é o **componente raiz** para todos os módulos geradores de tradução. Funciona como uma fábrica estrutural onde os motores de tradução são produzidos para permitir o processamento de idiomas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"tradução",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Генераторы Сервисов Перевода",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Фундаментальный заводской узел для производства источников перевода.",
+			"description_markdown": "Это **корневой компонент** для всех модулей генераторов перевода. Он работает как структурный завод, где производятся инструменты для преодоления языковых барьеров.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"перевод",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератори Сервісів Перекладу",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Фундаментальний заводський вузол для виробництва джерел перекладу.",
+			"description_markdown": "Це **кореневий компонент** для всіх модулів генерації перекладу. Він функціонує як структурний завод, де створюються інструменти для подолання мовних бар'єрів.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"переклад",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Dịch vụ Dịch thuật",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "Trung tâm nhà máy cơ bản để sản xuất các nguồn dịch thuật.",
+			"description_markdown": "Đây là **thành phần gốc** của tất cả các mô-đun tạo dịch thuật. Nó đóng vai trò là nhà máy cấu trúc sản xuất các công cụ dịch thuật để hỗ trợ xử lý ngôn ngữ đầu vào.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"dịch_thuật",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "翻譯服務生成器",
+			"avatar": "https://api.iconify.design/heroicons/language.svg",
+			"description": "生產翻譯服務源組件的工廠根節點",
+			"description_markdown": "這是翻譯生成器模組的**根節點**。它扮演著「語言通譯工廠」的角色，所有負責產生翻譯驅動源的組件都掛載於此。它可用於輸入預處理、多語言關鍵詞匹配或構建純翻譯功能，幫助系統跨越語言障礙。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"翻譯",
+				"生成器",
+				"fount"
+			]
+		}
+	}
+}

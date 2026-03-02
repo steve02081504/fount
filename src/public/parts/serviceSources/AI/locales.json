@@ -1,0 +1,298 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "AI Sources",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "The mounting hub for instantiated AI service engines.",
+			"description_markdown": "This is the **root component** for active AI service instances. It serves as the primary repository where the 'outputs' (instantiated engines) from the AI Service Generators are mounted and prepared for character use.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"AI",
+				"sources",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "AI 服务源",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "已实例化的 AI 动力源组件挂载点",
+			"description_markdown": "这是 AI 服务实例的**根节点**。所有由“AI 服务生成器”生产出的成品动力源都挂载于此，作为角色可以直接调用的“对话引擎”仓库。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"AI",
+				"服务源",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مصادر الذكاء الاصطناعي",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "مركز التثبيت لمحركات خدمة الذكاء الاصطناعي المثيل",
+			"description_markdown": "هذا هو **المكون الجذري** لمثيلات خدمة الذكاء الاصطناعي النشطة. إنه يعمل كمستودع أساسي حيث يتم تثبيت 'المخرجات' من مولدات خدمة الذكاء الاصطناعي وتجهيزها للاستخدام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"ذكاء_اصطناعي",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "KI-Quellen",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Der Montage-Knotenpunkt für instanziierte KI-Dienst-Engines.",
+			"description_markdown": "Dies ist die **Stammkomponente** für aktive KI-Dienstinstanzen. Sie dient als Haupt-Repository, in dem die 'Ergebnisse' der KI-Servicegeneratoren für die Charaktere bereitgestellt werden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"KI",
+				"Quellen",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🧠💎",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "🏭 ➡️ 🥚 ➡️ 🧠✨",
+			"description_markdown": "🏭 ➡️ 🥚. \n🥚 📥 🧠. \n🧠 ➡️ ⚓ ➡️ 👤💬.\n\n✨ 🧠 💎",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🧠",
+				"🥚",
+				"⚓",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Fuentes de IA",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "El centro de montaje para motores de servicio de IA instanciados.",
+			"description_markdown": "Este es el **componente raíz** para las instancias activas de servicios de IA. Actúa como el repositorio principal donde se montan los 'productos' de los generadores de IA.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"IA",
+				"fuentes",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Sources d'IA",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Le concentrateur de montage pour les moteurs de service IA instanciés.",
+			"description_markdown": "Il s'agit du **composant racine** pour les instances de service IA actives. Il sert de dépôt principal pour les moteurs produits par les générateurs.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"IA",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "एआई स्रोत",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "इंस्टेंटिएटेड एआई सेवा इंजनों के लिए माउंटिंग हब।",
+			"description_markdown": "यह सक्रिय एआई सेवा उदाहरणों के लिए **मूल घटक** है। यह प्राथमिक भंडार के रूप में कार्य करता है जहाँ एआई जेनरेटरों के 'आउटपुट' को पात्रों के उपयोग के लिए रखा जाता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"एआई",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "AI Heimildir",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Tengingarmiðstöð fyrir tilbúnar AI þjónustuvélar.",
+			"description_markdown": "Þetta er **rótareiningin** fyrir virkar AI þjónustur. Hún virkar sem geymsla fyrir 'afurðirnar' sem koma úr AI-rafölunum.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"AI",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Fonti AI",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "L'hub di montaggio per i motori di servizio IA istanziati.",
+			"description_markdown": "Questo è il **componente radice** per le istanze di servizio IA attive. Funge da repository principale in cui sono montati i 'prodotti' dei generatori di IA.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"IA",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "AI ソース",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "インスタンス化された AI サービスエンジンのマウントハブ",
+			"description_markdown": "これはアクティブな AI サービスインスタンスの**ルートコンポーネント**です。AI サービスジェネレーターから出力された「エンジン」がマウントされ、キャラクターが利用できる状態になる貯蔵庫として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"AI",
+				"ソース",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "AI 소스",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "인스턴스화된 AI 서비스 엔진의 마운트 허브",
+			"description_markdown": "이것은 활성화된 AI 서비스 인스턴스의 **루트 컴포넌트**입니다. AI 서비스 생성기에서 생산된 '결과물'들이 마운트되어 캐릭터가 사용할 준비를 마치는 저장소 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"AI",
+				"소스",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "智源",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "诸成物 AI 智源之聚所",
+			"description_markdown": "此乃 fount **智源**之府。凡由“智源肆”所产之引擎成品，皆聚于此，以充万化之用，为角色之魂也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"智源",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "AI-bronnen",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "De montagehub voor geïnstantieerde AI-service-engines.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor actieve AI-service-instanties. Het dient als de primaire opslagplaats waar de 'outputs' van de generatoren worden ondergebracht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"AI",
+				"bronnen",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Fontes de IA",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "O centro de montagem para motores de serviço de IA instanciados.",
+			"description_markdown": "Este é o **componente raiz** para instâncias ativas de serviços de IA. Serve como o repositório principal onde os 'produtos' dos geradores de IA são montados.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"IA",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Источники ИИ",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Монтажный узел для созданных экземпляров движков ИИ.",
+			"description_markdown": "Это **корневой компонент** для активных экземпляров сервисов ИИ. Он служит основным репозиторием, где размещаются готовые 'продукты' генераторов ИИ.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"ИИ",
+				"источники",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Джерела ШІ",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Монтажний вузол для створених екземплярів рушіїв ШІ.",
+			"description_markdown": "Це **кореневий компонент** для активних екземплярів сервісів ШІ. Він виступає основним репозиторієм, де розміщуються готові 'продукти' генераторів ШІ.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"ШІ",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Nguồn AI",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "Trung tâm gắn kết cho các thực thể động cơ dịch vụ AI.",
+			"description_markdown": "Đây là **thành phần gốc** cho các phiên bản dịch vụ AI đang hoạt động. Nó đóng vai trò là kho lưu trữ chính, nơi các 'sản phẩm' từ trình tạo AI được tập hợp để sử dụng.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"AI",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "AI 服務源",
+			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
+			"description": "已實例化的 AI 動力源組件掛載點",
+			"description_markdown": "這是 AI 服務實例的**根節點**。所有由「AI 服務生成器」生產出的成品動力源都掛載於此，作為角色可以直接調用的「對話引擎」倉庫。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"AI",
+				"服務源",
+				"fount"
+			]
+		}
+	}
+}

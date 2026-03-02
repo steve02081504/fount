@@ -1,0 +1,292 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Import Handlers",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "The structural root for all data import components.",
+			"description_markdown": "This is the **root node** for import processing modules. It serves as the primary gateway and structural base where all specific handlers for importing characters, worlds, or other data types are attached.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"import",
+				"handler",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "导入处理器",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "所有导入处理组件的根节点",
+			"description_markdown": "这是 fount 导入模块的**根节点**。它作为基础承载结构，所有负责从外部引入角色、世界或其他数据的处理组件都挂载于此。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"导入",
+				"处理器",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "معالجات الاستيراد",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "الجذر الهيكلي لجميع مكونات استيراد البيانات",
+			"description_markdown": "هذا هو **المكون الجذر** لوحدات معالجة الاستيراد. إنه يمثل البوابة الهيكلية التي يتم فيها تثبيت جميع المعالجات المسؤولة عن إدخال البيانات الخارجية.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"استيراد",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Import-Handler",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Der strukturelle Stammknoten für alle Import-Komponenten.",
+			"description_markdown": "Dies ist die **Stammkomponente** für Import-Verarbeitungsmodule. Sie dient als strukturelle Basis, an der alle spezifischen Handler für den Import von Daten angehängt sind.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Import",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "📥",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "📥 ➡️ ⚙️ ➡️ 🧱",
+			"description_markdown": "📥 ➡️ 🏗️. \n📩 ➕ ⚙️. \n⚓ ➡️ 🧩🧩🧩.\n\n🌐 📥 ✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"📥",
+				"⚙️",
+				"⚓",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Procesadores de Importación",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "El nodo raíz estructural para todos los componentes de importación.",
+			"description_markdown": "Este es el **componente raíz** para los módulos de procesamiento de importación. Actúa como la base estructural donde se conectan todos los controladores de datos externos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"importación",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Gestionnaires d'Importation",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Le nœud racine structurel pour tous les composants d'importation.",
+			"description_markdown": "Il s'agit du **composant racine** pour les modules de traitement d'importation. Il sert de base structurelle pour tous les gestionnaires de données externes.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"importation",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "आयात प्रोसेसर",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "सभी डेटा आयात घटकों के लिए संरचनात्मक मूल नोड।",
+			"description_markdown": "यह आयात प्रसंस्करण मॉड्यूल के लिए **मूल घटक** है। यह उस संरचनात्मक आधार के रूप में कार्य करता है जहाँ सभी बाहरी डेटा प्रोसेसर जुड़े होते हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"आयात",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Innflutningsstjórar",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Grunnstýrieining fyrir allan innflutning gagna.",
+			"description_markdown": "Þetta er **rótareiningin** fyrir innflutningshluta fount. Hún þjónar sem grunnur fyrir allar einingar sem sjá um að flytja inn gögn.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"innflutningur",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Gestori Importazione",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Il nodo radice strutturale per tutti i componenti di importazione.",
+			"description_markdown": "Questo è il **componente radice** per i moduli di elaborazione delle importazioni. Funge da base strutturale a cui sono collegati tutti i gestori di dati esterni.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"importazione",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "インポートハンドラー",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "すべてのインポートコンポーネントの構造的ルートノード",
+			"description_markdown": "これはインポート処理モジュールの**ルートコンポーネント**です。外部データの取り込みを担当するすべてのハンドラーがアタッチされる構造的基盤として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"インポート",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "가져오기 처리기",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "모든 데이터 가져오기 구성 요소의 구조적 루트 노드",
+			"description_markdown": "이것은 데이터 가져오기 모듈의 **루트 컴포넌트**입니다. 외부 데이터를 시스템으로 도입하는 모든 처리기가 부착되는 구조적 기반 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"가져오기",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "纳入枢",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "诸移入组见之根柢",
+			"description_markdown": "此乃 fount **纳入枢**。凡移入外物、化他界之卷者，皆受于此，由此起行也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"纳入",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Import-handlers",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "De structurele wortel voor alle importcomponenten.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor importverwerkingsmodules. Het dient als de structurele basis waaraan alle specifieke data-handlers zijn verbonden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"import",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Manipuladores de Importação",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "O nó raiz estrutural para todos os componentes de importação.",
+			"description_markdown": "Este é o **componente raiz** para os módulos de processamento de importação. Serve como a base estrutural onde todos os manipuladores de dados externos são anexados.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"importação",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Обработчики Импорта",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Структурный корневой узел для всех компонентов импорта.",
+			"description_markdown": "Это **корневой компонент** для модулей обработки импорта. Он служит структурной базой, к которой прикрепляются все обработчики внешних данных.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"импорт",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Обробники Імпорту",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Структурний кореневий вузол для всіх компонентів імпорту.",
+			"description_markdown": "Це **кореневий компонент** для модулів обробки імпорту. Він виступає структурною основою, до якої приєднуються всі обробники зовнішніх даних.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"імпорт",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình xử lý Nhập",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "Nút gốc cấu trúc cho tất cả các thành phần nhập dữ liệu.",
+			"description_markdown": "Đây là **thành phần gốc** của các mô-đun xử lý nhập. Nó đóng vai trò là nền tảng cấu trúc nơi tất cả các trình xử lý dữ liệu từ bên ngoài được gắn vào.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"nhập",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "匯入處理器",
+			"avatar": "https://api.iconify.design/line-md/download.svg",
+			"description": "所有匯入處理組件的根節點",
+			"description_markdown": "這是 fount 匯入模組的**根節點**。它作為基礎承載結構，所有負責從外部引入角色、世界或其他數據的處理組件都掛載於此。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"匯入",
+				"處理器",
+				"fount"
+			]
+		}
+	}
+}

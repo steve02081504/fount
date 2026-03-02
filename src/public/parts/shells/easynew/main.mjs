@@ -1,5 +1,6 @@
-import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/main.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 处理传入的快速新建动作请求。

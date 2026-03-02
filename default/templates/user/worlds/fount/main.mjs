@@ -1,6 +1,7 @@
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
 /** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 

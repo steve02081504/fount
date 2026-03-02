@@ -1,0 +1,598 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Empty Translate Generator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "A factory for creating placeholder translation source instances.",
+			"description_markdown": "This **service generator** acts as a fallback factory for translation services. When a designated translation source generator is missing or fails to provide an active instance, this generator steps in to produce an 'Empty' placeholder, maintaining system stability without a functional translation component.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"empty",
+				"placeholder",
+				"generator",
+				"translation",
+				"fallback"
+			]
+		},
+		"zh-CN": {
+			"name": "空翻译生成器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生产翻译服务占位符实例的工厂组件。",
+			"description_markdown": "这是一个**翻译服务备用生成器**。当指定的翻译源生成器缺失或无法提供活跃实例时，它将介入生产“空”占位符，从而在缺乏实际翻译功能时维持系统稳定性。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"空",
+				"占位符",
+				"生成器",
+				"翻译",
+				"备用"
+			]
+		},
+		"ar-SA": {
+			"name": "مولد ترجمة فارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "مصنع لإنشاء مثيلات مصدر ترجمة وهمية.",
+			"description_markdown": "يعمل **مولد الخدمة** هذا كمصنع احتياطي لخدمات الترجمة. عندما يكون مولد مصدر الترجمة المعين مفقودًا أو يفشل في توفير مثيل نشط، يتدخل هذا المولد لإنتاج عنصر نائب 'فارغ'، مما يحافظ على استقرار النظام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"فارغ",
+				"عنصر_نائب",
+				"مولد",
+				"ترجمة"
+			]
+		},
+		"de-DE": {
+			"name": "Leerer Übersetzungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Eine Fabrik zum Erstellen von Platzhalter-Übersetzungsquellinstanzen.",
+			"description_markdown": "Dieser **Service-Generator** fungiert als Fallback-Fabrik für Übersetzungsdienste. Wenn ein bestimmter Übersetzungsquellengenerator fehlt oder keine aktive Instanz bereitstellt, tritt dieser Generator in Aktion, um einen 'leeren' Platzhalter zu erzeugen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"leer",
+				"platzhalter",
+				"generator",
+				"übersetzung"
+			]
+		},
+		"emoji": {
+			"name": "🏗️🚫🗣️",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "🏗️ ➡️ 🗣️🚫",
+			"description_markdown": "🏗️🗣️🚫. \n🚫📦➡️🛠️.\n⬜➡️✅.\n\n✨🛠️👻",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🏗️",
+				"🚫",
+				"🗣️",
+				"⚙️"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de Traducción Vacío",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Una fábrica para crear instancias de fuentes de traducción de marcador de posición.",
+			"description_markdown": "Este **generador de servicios** actúa como una fábrica de respaldo para los servicios de traducción. Cuando un generador de fuente de traducción designado falta o no proporciona una instancia activa, este generador interviene para producir un marcador de posición 'vacío', manteniendo la estabilidad del sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vacío",
+				"marcador_de_posición",
+				"generador",
+				"traducción"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de Traduction Vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Une usine pour créer des instances de sources de traduction de substitution.",
+			"description_markdown": "Ce **générateur de services** agit comme une usine de secours pour les services de traduction. Lorsqu'un générateur de source de traduction désigné est manquant ou ne parvient pas à fournir une instance active, ce générateur intervient pour produire un espace réservé 'vide'.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vide",
+				"espace_réservé",
+				"générateur",
+				"traduction"
+			]
+		},
+		"hi-IN": {
+			"name": "खाली अनुवाद जेनरेटर",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "प्लेसहोल्डर अनुवाद स्रोत उदाहरण बनाने के लिए एक फैक्ट्री।",
+			"description_markdown": "यह **सेवा जेनरेटर** अनुवाद सेवाओं के लिए एक फॉलबैक फैक्ट्री के रूप में कार्य करता है। जब एक निर्दिष्ट अनुवाद स्रोत जेनरेटर गुम होता है या एक सक्रिय उदाहरण प्रदान करने में विफल रहता है, तो यह जेनरेटर 'खाली' प्लेसहोल्डर बनाने के लिए हस्तक्षेप करता है, जिससे सिस्टम स्थिरता बनी रहती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"खाली",
+				"प्लेसहोल्डर",
+				"जेनरेटर",
+				"अनुवाद"
+			]
+		},
+		"is-IS": {
+			"name": "Tómt Þýðingarrafall",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Verksmiðja sem býr til staðgengiltilvik fyrir þýðingarheimildir.",
+			"description_markdown": "Þetta **þjónusturafall** virkar sem varaverksmiðja fyrir þýðingaþjónustu. Þegar tilnefndur þýðingaheimildarrafall vantar eða tekst ekki að útvega virkt tilvik, kemur þessi rafall inn til að búa til 'Tómt' staðgengil.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"tómt",
+				"staðgengil",
+				"rafall",
+				"þýðing"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di Traduzione Vuoto",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Una fabbrica per la creazione di istanze di sorgenti di traduzione segnaposto.",
+			"description_markdown": "Questo **generatore di servizi** funge da fabbrica di fallback per i servizi di traduzione. Quando un generatore di sorgenti di traduzione designato manca o non riesce a fornire un'istanza attiva, questo generatore interviene per produrre un segnaposto 'vuoto', mantenendo la stabilità del sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vuoto",
+				"segnaposto",
+				"generatore",
+				"traduzione"
+			]
+		},
+		"ja-JP": {
+			"name": "空の翻訳ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "プレースホルダー翻訳ソースインスタンスを作成する工場。",
+			"description_markdown": "この**サービスジェネレーター**は、翻訳サービスのフォールバックファクトリとして機能します。指定された翻訳ソースジェネレーターが見つからないか、アクティブなインスタンスを提供できない場合、このジェネレーターは「空」のプレースホルダーを生成するために介入し、機能する翻訳コンポーネントなしでシステムの安定性を維持します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"空",
+				"プレースホルダー",
+				"ジェネレーター",
+				"翻訳"
+			]
+		},
+		"ko-KR": {
+			"name": "빈 번역 생성기",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "자리 표시자 번역 소스 인스턴스를 생성하는 팩토리입니다.",
+			"description_markdown": "이 **서비스 생성기**는 번역 서비스의 대체 팩토리 역할을 합니다. 지정된 번역 소스 생성기가 누락되거나 활성 인스턴스를 제공하지 못하는 경우, 이 생성기는 '빈' 자리 표시자를 생성하여 기능하는 번역 구성 요소 없이 시스템 안정성을 유지합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"빈",
+				"자리_표시자",
+				"생성기",
+				"번역"
+			]
+		},
+		"lzh": {
+			"name": "補闕譯肆",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "譯源闕如，則造虛源以補之。",
+			"description_markdown": "此乃**譯事補闕之肆**。凡譯源之肆，若其未備，或其失其效用，此肆即應而作，造一「虛無」之譯源，以補其位，使系統不致紛亂，雖無真譯之功，亦能維其緒也。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"空",
+				"補闕",
+				"生成器",
+				"翻譯"
+			]
+		},
+		"nl-NL": {
+			"name": "Lege Vertaalgenerator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Een fabriek voor het maken van plaatsaanduidingen voor vertaalbroninstanties.",
+			"description_markdown": "Deze **servicegenerator** fungeert als een terugvalfabriek voor vertaaldiensten. Wanneer een aangewezen vertaalbrongenerator ontbreekt of geen actieve instantie kan leveren, springt deze generator in om een 'Lege' plaatsaanduiding te produceren, waardoor de systeemstabiliteit zonder een functionele vertaalcomponent behouden blijft.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"leeg",
+				"plaatsaanduiding",
+				"generator",
+				"vertaling"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de Tradução Vazio",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Uma fábrica para criar instâncias de fonte de tradução de marcador de posição.",
+			"description_markdown": "Este **gerador de serviços** atua como uma fábrica de fallback para serviços de tradução. Quando um gerador de fonte de tradução designado está ausente ou não consegue fornecer uma instância ativa, este gerador entra em ação para produzir um marcador de posição 'Vazio', mantendo a estabilidade do sistema sem um componente de tradução funcional.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vazio",
+				"marcador_de_posição",
+				"gerador",
+				"tradução"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор пустого перевода",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Фабрика для создания экземпляров источников-заполнителей перевода.",
+			"description_markdown": "Этот **генератор сервиса** действует как фабрика запасного варианта для служб перевода. Когда назначенный генератор источника перевода отсутствует или не может предоставить активный экземпляр, этот генератор вступает в действие для создания 'пустого' заполнителя, поддерживая стабильность системы без функционального компонента перевода.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"пустой",
+				"заполнитель",
+				"генератор",
+				"перевод"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор порожнього перекладу",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Фабрика для створення екземплярів джерел-заповнювачів перекладу.",
+			"description_markdown": "Цей **генератор сервісу** діє як фабрика запасного варіанту для служб перекладу. Коли призначений генератор джерела перекладу відсутній або не може надати активний екземпляр, цей генератор вступає в дію для створення 'порожнього' заповнювача, підтримуючи стабільність системи без функціонального компонента перекладу.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"порожній",
+				"заповнювач",
+				"генератор",
+				"переклад"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Dịch Trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Một nhà máy để tạo các phiên bản nguồn dịch thuật giữ chỗ.",
+			"description_markdown": "Trình tạo dịch vụ này hoạt động như một nhà máy dự phòng cho các dịch vụ dịch thuật. Khi một trình tạo nguồn dịch thuật được chỉ định bị thiếu hoặc không cung cấp được một phiên bản hoạt động, trình tạo này sẽ can thiệp để tạo ra một trình giữ chỗ 'Trống', duy trì sự ổn định của hệ thống mà không cần một thành phần dịch thuật chức năng.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"trống",
+				"trình_giữ_chỗ",
+				"trình_tạo",
+				"dịch_thuật"
+			]
+		},
+		"zh-TW": {
+			"name": "空翻譯生成器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生產翻譯服務佔位符實例的工廠組件。",
+			"description_markdown": "這是一個**翻譯服務備用生成器**。當指定的翻譯源生成器缺失或無法提供活躍實例時，它將介入生產「空」佔位符，從而維持系統穩定性。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"空",
+				"佔位符",
+				"生成器",
+				"翻譯",
+				"備用"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Empty Translate Source Instance",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "An active placeholder for a missing or inactive translate source.",
+			"description_markdown": "This is an **active placeholder instance** for a translation service. It signifies that no actual translation source is configured or available, ensuring that the system can gracefully handle requests without a live translation engine by returning null or empty translation results.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"empty",
+				"placeholder",
+				"translation",
+				"instance"
+			]
+		},
+		"zh-CN": {
+			"name": "空翻译源实例",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "一个表示翻译源缺失或不活跃的占位符实例。",
+			"description_markdown": "这是一个**活跃的翻译服务占位符实例**。它表明当前没有可用的翻译源配置或服务，确保系统在没有实时翻译引擎的情况下，能够优雅地处理请求，通常返回空或无效的翻译结果。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"占位符",
+				"翻译",
+				"实例"
+			]
+		},
+		"ar-SA": {
+			"name": "مثيل مصدر ترجمة فارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "عنصر نائب نشط لمصدر ترجمة مفقود أو غير نشط.",
+			"description_markdown": "هذا **مثيل عنصر نائب نشط** لخدمة الترجمة. يشير إلى عدم وجود مصدر ترجمة فعلي مكوّن أو متاح، مما يضمن أن النظام يمكنه التعامل بسلاسة مع الطلبات عن طريق إرجاع نتائج ترجمة فارغة أو غير صالحة.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"فارغ",
+				"عنصر_نائب",
+				"ترجمة",
+				"مثيل"
+			]
+		},
+		"de-DE": {
+			"name": "Leere Übersetzungsquellinstanz",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Ein aktiver Platzhalter für eine fehlende oder inaktive Übersetzungsquelle.",
+			"description_markdown": "Dies ist eine **aktive Platzhalterinstanz** für einen Übersetzungsdienst. Sie zeigt an, dass keine tatsächliche Übersetzungsquelle konfiguriert oder verfügbar ist, wodurch das System Anfragen ohne eine Live-Übersetzungsengine elegant verarbeiten kann, indem es Null- oder leere Übersetzungsergebnisse zurückgibt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"leer",
+				"platzhalter",
+				"übersetzung",
+				"instanz"
+			]
+		},
+		"emoji": {
+			"name": "🚫🗣️🕳️",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "🗣️🚫👻",
+			"description_markdown": "🗣️🚫🕳️. \n無🔄.\n無果➡️穩.\n\n✨👻🗣️",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"🚫",
+				"🗣️",
+				"🕳️",
+				"👻"
+			]
+		},
+		"es-ES": {
+			"name": "Instancia de Fuente de Traducción Vacía",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Un marcador de posición activo para una fuente de traducción faltante o inactiva.",
+			"description_markdown": "Esta es una **instancia de marcador de posición activa** para un servicio de traducción. Significa que no hay una fuente de traducción real configurada o disponible, asegurando que el sistema pueda manejar elegantemente las solicitudes sin un motor de traducción en vivo, devolviendo resultados de traducción nulos o vacíos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vacío",
+				"marcador_de_posición",
+				"traducción",
+				"instancia"
+			]
+		},
+		"fr-FR": {
+			"name": "Instance de Source de Traduction Vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Un espace réservé actif pour une source de traduction manquante ou inactive.",
+			"description_markdown": "Ceci est une **instance d'espace réservé active** pour un service de traduction. Cela signifie qu'aucune source de traduction réelle n'est configurée ou disponible, garantissant que le système peut gérer élégamment les requêtes sans moteur de traduction en direct en renvoyant des résultats de traduction nuls ou vides.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vide",
+				"espace_réservé",
+				"traduction",
+				"instance"
+			]
+		},
+		"hi-IN": {
+			"name": "खाली अनुवाद स्रोत उदाहरण",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "एक सक्रिय प्लेसहोल्डर जो एक गुम या निष्क्रिय अनुवाद स्रोत के लिए है।",
+			"description_markdown": "यह एक **सक्रिय अनुवाद सेवा प्लेसहोल्डर उदाहरण** है। यह दर्शाता है कि कोई वास्तविक अनुवाद स्रोत कॉन्फ़िगर या उपलब्ध नहीं है, जिससे यह सुनिश्चित होता है कि सिस्टम लाइव अनुवाद इंजन के बिना अनुरोधों को आसानी से संभाल सकता है और शून्य या खाली अनुवाद परिणाम लौटा सकता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"खाली",
+				"प्लेसहोल्डर",
+				"अनुवाद",
+				"उदाहरण"
+			]
+		},
+		"is-IS": {
+			"name": "Tómt Þýðingaheimildartilvik",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Virkt staðgengil fyrir vantar eða óvirka þýðingaheimild.",
+			"description_markdown": "Þetta er **virkt staðgengil** fyrir þýðingaþjónustu. Það táknar að engin raunveruleg þýðingaheimild er stillt eða tiltæk, sem tryggir að kerfið geti meðhöndlað beiðnir án rauntíma þýðingarvélar með því að skila tómum eða ógildum þýðingarárangri.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"tómt",
+				"staðgengil",
+				"þýðing",
+				"tilvik"
+			]
+		},
+		"it-IT": {
+			"name": "Istanza di Sorgente di Traduzione Vuota",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Un segnaposto attivo per una sorgente di traduzione mancante o inattiva.",
+			"description_markdown": "Questa è un'**istanza segnaposto attiva** per un servizio di traduzione. Significa che nessuna sorgente di traduzione reale è configurata o disponibile, garantendo che il sistema possa gestire elegantemente le richieste senza un motore di traduzione in tempo reale, restituendo risultati di traduzione nulli o vuoti.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vuoto",
+				"segnaposto",
+				"traduzione",
+				"istanza"
+			]
+		},
+		"ja-JP": {
+			"name": "空の翻訳ソースインスタンス",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "欠落または非アクティブな翻訳ソースのアクティブなプレースホルダー。",
+			"description_markdown": "これは、翻訳サービスのアクティブなプレースホルダーインスタンスです。実際の翻訳ソースが構成または利用できないことを示し、システムがライブ翻訳エンジンなしで要求を適切に処理できるようにします。これにより、nullまたは空の翻訳結果が返されます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"プレースホルダー",
+				"翻訳",
+				"インスタンス"
+			]
+		},
+		"ko-KR": {
+			"name": "빈 번역 소스 인스턴스",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "누락되거나 비활성화된 번역 소스의 활성 자리 표시자입니다.",
+			"description_markdown": "이것은 번역 서비스의 **활성 자리 표시자 인스턴스**입니다. 실제 번역 소스가 구성되지 않거나 사용할 수 없음을 나타내며, 시스템이 라이브 번역 엔진 없이 요청을 정상적으로 처리하여 null 또는 빈 번역 결과를 반환할 수 있도록 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"빈",
+				"자리_표시자",
+				"번역",
+				"인스턴스"
+			]
+		},
+		"lzh": {
+			"name": "虚无譯源",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "譯源闕如，虛位以待，不致中輟。",
+			"description_markdown": "此乃**虛無譯源之實例**。蓋譯事之本源未立或已歇，則以此代之，使系統不致中輟，雖無真譯，亦可報虛，以示其無也。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"虛無",
+				"譯",
+				"位之所"
+			]
+		},
+		"nl-NL": {
+			"name": "Lege Vertaalbroninstantie",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Een actieve plaatsaanduiding voor een ontbrekende of inactieve vertaalbron.",
+			"description_markdown": "Dit is een **actieve plaatsaanduiding** voor een vertaalservice. Het geeft aan dat er geen daadwerkelijke vertaalbron is geconfigureerd of beschikbaar, waardoor het systeem verzoeken zonder een live vertaalengine elegant kan afhandelen door null- of lege vertaalresultaten te retourneren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"leeg",
+				"plaatsaanduiding",
+				"vertaling",
+				"instantie"
+			]
+		},
+		"pt-PT": {
+			"name": "Instância de Fonte de Tradução Vazia",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Um marcador de posição ativo para uma fonte de tradução ausente ou inativa.",
+			"description_markdown": "Esta é uma **instância de marcador de posição ativa** para um serviço de tradução. Significa que nenhuma fonte de tradução real está configurada ou disponível, garantindo que o sistema possa lidar elegantemente com as requisições sem um motor de tradução em tempo real, retornando resultados de tradução nulos ou vazios.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"vazio",
+				"marcador_de_posição",
+				"tradução",
+				"instância"
+			]
+		},
+		"ru-RU": {
+			"name": "Экземпляр пустого источника перевода",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Активный заполнитель для отсутствующего или неактивного источника перевода.",
+			"description_markdown": "Это **активный экземпляр заполнителя** для службы перевода. Он означает, что фактический источник перевода не настроен или недоступен, что позволяет системе корректно обрабатывать запросы без активного движка перевода, возвращая нулевые или пустые результаты перевода.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"пустой",
+				"заполнитель",
+				"перевод",
+				"экземпляр"
+			]
+		},
+		"uk-UA": {
+			"name": "Порожній екземпляр джерела перекладу",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Активний заповнювач для відсутнього або неактивного джерела перекладу.",
+			"description_markdown": "Це **активний екземпляр заповнювача** для служби перекладу. Він означає, що фактичне джерело перекладу не налаштоване або недоступне, що дозволяє системі коректно обробляти запити без активного рушія перекладу, повертаючи нульові або порожні результати перекладу.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"порожній",
+				"заповнювач",
+				"переклад",
+				"екземпляр"
+			]
+		},
+		"vi-VN": {
+			"name": "Phiên bản Nguồn Dịch Trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Một trình giữ chỗ hoạt động cho một nguồn dịch bị thiếu hoặc không hoạt động.",
+			"description_markdown": "Đây là **một phiên bản trình giữ chỗ hoạt động** cho dịch vụ dịch thuật. Nó chỉ ra rằng không có nguồn dịch thuật thực tế nào được cấu hình hoặc khả dụng, đảm bảo hệ thống có thể xử lý tốt các yêu cầu mà không có công cụ dịch thuật trực tiếp bằng cách trả về kết quả dịch thuật rỗng hoặc trống.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"trống",
+				"trình_giữ_chỗ",
+				"dịch_thuật",
+				"phiên_bản"
+			]
+		},
+		"zh-TW": {
+			"name": "空翻譯源實例",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "一個表示翻譯源缺失或不活躍的佔位符實例。",
+			"description_markdown": "這是一個**活躍的翻譯服務佔位符實例**。它表明當前沒有可用的翻譯源配置或服務，確保系統在沒有實時翻譯引擎的情況下，能夠優雅地處理請求，通常返回空或無效的翻譯結果。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"provider": "fount",
+			"tags": [
+				"空",
+				"佔位符",
+				"翻譯",
+				"實例"
+			]
+		}
+	}
+}

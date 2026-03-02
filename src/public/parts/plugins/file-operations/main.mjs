@@ -1,8 +1,9 @@
 import { defineToolUseBlocks } from '../../shells/chat/src/stream.mjs'
 
 import { fileOperationsReplyHandler } from './handler.mjs'
-import info from './info.json' with { type: 'json' }
 import { getFileOperationsPrompt } from './prompt.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 文件操作插件主模块。

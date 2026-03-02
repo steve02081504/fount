@@ -1,5 +1,6 @@
-import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 解析命令行参数，支持更直观的命令语法。

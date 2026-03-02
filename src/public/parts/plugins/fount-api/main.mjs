@@ -1,8 +1,9 @@
 import { loadData } from '../../../../server/setting_loader.mjs'
 
 import { fountApiReplyHandler } from './handler.mjs'
-import info from './info.json' with { type: 'json' }
 import { getFountApiPrompt } from './prompt.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /** 插件配置：按角色存储的 fount API 密钥 */
 let pluginData = { apikeys: {} }

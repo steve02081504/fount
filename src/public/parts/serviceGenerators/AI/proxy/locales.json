@@ -1,0 +1,576 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Access any OpenAI-compatible API endpoint.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utility"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"zh-CN": {
+			"name": "代理",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "代理",
+			"description_markdown": "访问任何与 OpenAI 兼容的 API 端点。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"代理",
+				"openai",
+				"api",
+				"实用工具"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"ar-SA": {
+			"name": "وكيل",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "وكيل",
+			"description_markdown": "الوصول إلى أي نقطة نهاية API متوافقة مع OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"وكيل",
+				"openai",
+				"api",
+				"أداة"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"de-DE": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Greifen Sie auf jeden OpenAI-kompatiblen API-Endpunkt zu.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"dienstprogramm"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"emoji": {
+			"name": "🔌🌐",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "🔗🌍🤖",
+			"description_markdown": "🌍🔌➡️🤖✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"🔌",
+				"🌐",
+				"🔗",
+				"🛠️"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"es-ES": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Acceda a cualquier punto final de API compatible con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilidad"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"fr-FR": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Accédez à n'importe quel point de terminaison d'API compatible avec OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilitaire"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"hi-IN": {
+			"name": "प्रॉक्सी",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "प्रॉक्सी",
+			"description_markdown": "किसी भी OpenAI-संगत API समापन बिंदु तक पहुँचें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"प्रॉक्सी",
+				"ओपनएआई",
+				"एपीआई",
+				"उपयोगिता"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"is-IS": {
+			"name": "Umboð",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Umboð",
+			"description_markdown": "Fáðu aðgang að hvaða OpenAI-samhæfðu API endapunkti sem er.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"umboð",
+				"openai",
+				"api",
+				"gagnsemi"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"it-IT": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Accedi a qualsiasi endpoint API compatibile con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilità"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"ja-JP": {
+			"name": "プロキシ",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "プロキシ",
+			"description_markdown": "OpenAI 互換の API エンドポイントにアクセスします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"プロキシ",
+				"openai",
+				"api",
+				"ユーティリティ"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"ko-KR": {
+			"name": "프록시",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "프록시",
+			"description_markdown": "OpenAI와 호환되는 모든 API 엔드포인트에 액세스합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"프록시",
+				"openai",
+				"api",
+				"유틸리티"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"lzh": {
+			"name": "通靈中介",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "通靈中介",
+			"description_markdown": "通 OpenAI 兼容之靈脈，以達彼岸。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"中介",
+				"openai",
+				"靈脈",
+				"器用"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"nl-NL": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Toegang tot elk OpenAI-compatibel API-eindpunt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"hulpprogramma"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"pt-PT": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Aceda a qualquer ponto final de API compatível com OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilitário"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"ru-RU": {
+			"name": "Прокси",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Прокси",
+			"description_markdown": "Доступ к любой конечной точке API, совместимой с OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"прокси",
+				"openai",
+				"api",
+				"утилита"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"uk-UA": {
+			"name": "Проксі",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Проксі",
+			"description_markdown": "Доступ до будь-якої кінцевої точки API, сумісної з OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"проксі",
+				"openai",
+				"api",
+				"утиліта"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"vi-VN": {
+			"name": "Proxy",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Truy cập bất kỳ điểm cuối API nào tương thích với OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"tiện ích"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		},
+		"zh-TW": {
+			"name": "代理",
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "代理",
+			"description_markdown": "存取任何與 OpenAI 相容的 API 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"代理",
+				"openai",
+				"api",
+				"實用程式"
+			],
+			"home_page": "https://github.com/steve02081504/fount"
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Access any OpenAI-compatible API endpoint.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utility"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "代理",
+			"description_markdown": "访问任何与 OpenAI 兼容的 API 端点。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"代理",
+				"openai",
+				"api",
+				"实用工具"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "وكيل",
+			"description_markdown": "الوصول إلى أي نقطة نهاية API متوافقة مع OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"وكيل",
+				"openai",
+				"api",
+				"أداة"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Greifen Sie auf jeden OpenAI-kompatiblen API-Endpunkt zu.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"dienstprogramm"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "🔗🌍🤖",
+			"description_markdown": "🌍🔌➡️🤖✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"🔌",
+				"🌐",
+				"🔗",
+				"🛠️"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Acceda a cualquier punto final de API compatible con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilidad"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Accédez à n'importe quel point de terminaison d'API compatible avec OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilitaire"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "प्रॉक्सी",
+			"description_markdown": "किसी भी OpenAI-संगत API समापन बिंदु तक पहुँचें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"प्रॉक्सी",
+				"ओपनएआई",
+				"एपीआई",
+				"उपयोगिता"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Umboð",
+			"description_markdown": "Fáðu aðgang að hvaða OpenAI-samhæfðu API endapunkti sem er.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"umboð",
+				"openai",
+				"api",
+				"gagnsemi"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Accedi a qualsiasi endpoint API compatibile con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilità"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "プロキシ",
+			"description_markdown": "OpenAI 互換の API エンドポイントにアクセスします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"プロキシ",
+				"openai",
+				"api",
+				"ユーティリティ"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "프록시",
+			"description_markdown": "OpenAI와 호환되는 모든 API 엔드포인트에 액세스합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"프록시",
+				"openai",
+				"api",
+				"유틸리티"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "通靈中介",
+			"description_markdown": "通 OpenAI 兼容之靈脈，以達彼岸。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"中介",
+				"openai",
+				"靈脈",
+				"器用"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Toegang tot elk OpenAI-compatibel API-eindpunt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"hulpprogramma"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Aceda a qualquer ponto final de API compatível com OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"utilitário"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Прокси",
+			"description_markdown": "Доступ к любой конечной точке API, совместимой с OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"прокси",
+				"openai",
+				"api",
+				"утилита"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Проксі",
+			"description_markdown": "Доступ до будь-якої кінцевої точки API, сумісної з OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"проксі",
+				"openai",
+				"api",
+				"утиліта"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "Proxy",
+			"description_markdown": "Truy cập bất kỳ điểm cuối API nào tương thích với OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"proxy",
+				"openai",
+				"api",
+				"tiện ích"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/mdi/earth-arrow-right.svg",
+			"description": "代理",
+			"description_markdown": "存取任何與 OpenAI 相容的 API 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"代理",
+				"openai",
+				"api",
+				"實用程式"
+			],
+			"home_page": "https://github.com/steve02081504/fount",
+			"provider": "fount"
+		}
+	}
+}

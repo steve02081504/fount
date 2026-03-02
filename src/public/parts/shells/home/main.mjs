@@ -1,8 +1,9 @@
 import { events } from '../../../../server/events.mjs'
 
-import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
 import { onPartInstalled, onPartUninstalled } from './src/home.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * @type {import('../../../../decl/shell.ts').shell_t}

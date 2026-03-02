@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { loadPartBase } from '../../../server/parts_loader.mjs'
 
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 服务源根部件。

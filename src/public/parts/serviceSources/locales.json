@@ -1,0 +1,293 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Service Sources",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "The foundational inventory hub for all active service instances.",
+			"description_markdown": "This is the **master root component** for instantiated services. It serves as the primary repository housing all active AI, Search, and Translation engines, providing the fount system with ready-to-use functional power.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"service",
+				"sources",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "服务源",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "所有已实例化服务组件的集群根节点",
+			"description_markdown": "这是 fount 系统的**服务实例总库**。作为 AI、搜索、翻译等所有特定服务源的父节点，它构成了系统功能输出的资源池与能源总闸。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"服务",
+				"服务源",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مصادر الخدمة",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "مركز المخزون الأساسي لجميع مثيلات الخدمة النشطة",
+			"description_markdown": "هذا هو **المكون الجذري الرئيسي** للخدمات الممثلة. إنه يعمل كمستودع أساسي يضم جميع محركات الذكاء الاصطناعي والبحث والترجمة النشطة، مما يوفر للنظام طاقة وظيفية جاهزة للاستخدام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"خدمة",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Servicequellen",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Der zentrale Inventar-Knotenpunkt für alle aktiven Serviceinstanzen.",
+			"description_markdown": "Dies ist die **Hauptstammkomponente** für instanziierte Dienste. Sie dient als primäres Repository für alle aktiven KI-, Such- und Übersetzungs-Engines und stellt dem System einsatzbereite funktionale Leistung zur Verfügung.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Service",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🔋💎",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "🔋💎 ➡️ 🧠 / 🔍 / 🔄",
+			"description_markdown": "💎🔋 ➡️ 🏗️\n⚓ ➡️ 💎\n⚡ ➡️ 🚀✨\n\n✨ 💎🔋 ✨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"💎",
+				"🔋",
+				"⚓",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Fuentes de Servicio",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "El centro de inventario fundamental para todas las instancias de servicio activas.",
+			"description_markdown": "Este es el **componente raíz maestro** para los servicios instanciados. Actúa como el repositorio principal que alberga todos los motores activos de IA, búsqueda y traducción.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"servicio",
+				"fuentes",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Sources de Services",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Le centre d'inventaire fondamental pour toutes les instances de service actives.",
+			"description_markdown": "Il s'agit du **composant racine maître** pour les services instanciés. Il sert de dépôt principal abritant tous les moteurs actifs d'IA, de recherche et de traduction.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"service",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "सेवा स्रोत",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "सभी सक्रिय सेवा उदाहरणों के लिए मौलिक इन्वेंट्री हब।",
+			"description_markdown": "यह इंस्टेंटिएटेड सेवाओं के लिए **मास्टर मूल घटक** है। यह प्राथमिक भंडार के रूप में कार्य करता है जिसमें सभी सक्रिय AI, खोज और अनुवाद इंजन शामिल हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"सेवा",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Þjónustuheimildir",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Aðalgeymsla fyrir allar virkar þjónustueiningar.",
+			"description_markdown": "Þetta er **aðalrótareiningin** fyrir virkar þjónustur. Hún þjónar sem aðallager fyrir allar AI-, leitar- og þýðingarvélar kerfisins.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"þjónusta",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Fonti di Servizio",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "L'hub di inventario fondamentale per tutte le istanze di servizio attive.",
+			"description_markdown": "Questo è il **componente radice principale** per i servizi istanziati. Funge da repository primario che ospita tutti i motori attivi di IA, ricerca e traduzione.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"servizio",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "サービスソース",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "すべてのアクティブなサービスインスタンスの基盤インベントリハブ",
+			"description_markdown": "これはインスタンス化されたサービスの**マスタールートコンポーネント**です。アクティブな AI、検索、翻訳エンジンをすべて収容する主要なリポジトリとして機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"サービス",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "서비스 소스",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "모든 활성 서비스 인스턴스를 위한 기초 인벤토리 허브",
+			"description_markdown": "이것은 인스턴스화된 서비스를 위한 **마스터 루트 컴포넌트**입니다. 활성화된 모든 AI, 검색, 번역 엔진을 수용하는 기본 저장소 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"서비스",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "诸源总枢",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "诸服务源实例之总枢根柢",
+			"description_markdown": "此乃 fount 诸实例之**总府**。凡 AI、寻索、通译诸源成品，皆藏于此库，如百宝之聚于一殿，为万化资取、灵动运化之基也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"诸源",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Servicebronnen",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "De fundamentele inventarishub für alle actieve service-instanties.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor geïnstantieerde services. Het fungeert als de primaire opslagplaats voor alle actieve AI-, zoek- en vertaalengines.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"service",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Fontes de Serviço",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "O centro de inventário fundamental para todas as instâncias de serviço ativas.",
+			"description_markdown": "Este é o **componente raiz mestre** para serviços instanciados. Atua como o repositório principal que abriga todos os motores ativos de IA, pesquisa e tradução.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"serviço",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Источники Услуг",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Фундаментальный инвентарный узел для всех активных экземпляров услуг.",
+			"description_markdown": "Это **главный корневой компонент** для созданных экземпляров услуг. Он служит основным репозиторием, где хранятся все активные движки ИИ, поиска и перевода.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"сервис",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Джерела Послуг",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Фундаментальний вузол інвентаризації для всіх активних екземплярів послуг.",
+			"description_markdown": "Це **головний кореневий компонент** для створених екземплярів послуг. Він виступає основним репозиторієм для всіх активних рушіїв ШІ, пошуку та перекладу.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"сервіс",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Nguồn Dịch vụ",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "Trung tâm kiểm kê cơ bản cho tất cả các thực thể dịch vụ đang hoạt động.",
+			"description_markdown": "Đây là **thành phần gốc chủ chốt** cho các dịch vụ đã thực thể hóa. Nó đóng vai trò là kho lưu trữ chính chứa tất cả các động cơ AI, tìm kiếm và dịch thuật đang hoạt động.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"dịch_vụ",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "服務源",
+			"avatar": "https://api.iconify.design/line-md/engine.svg",
+			"description": "所有已實例化服務組件的集群根節點",
+			"description_markdown": "這是 fount 系統的**服務實例總庫**。作為 AI、搜索、翻譯等所有特定服務源的父節點，它構成了系統功能輸出的資源池與能源總閘。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"服務",
+				"服務源",
+				"fount"
+			]
+		}
+	}
+}

@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { loadPartBase, unloadPartBase } from '../../../../server/parts_loader.mjs'
 
-import info from './info.json' with { type: 'json' }
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * AI 源生成器根部件。

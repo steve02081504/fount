@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises'
 
-import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
+
+const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * 处理传入的导出动作请求。

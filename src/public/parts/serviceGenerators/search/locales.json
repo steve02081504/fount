@@ -1,0 +1,292 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Search Service Generators",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "The foundational factory hub for producing search service sources.",
+			"description_markdown": "This is the **root component** for all search generator modules. It functions as a structural factory where various search engine sources are produced, allowing characters and the system to retrieve information from the web or external databases.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"search",
+				"generator",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "搜索服务生成器",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "生产搜索服务源组件的工厂根节点",
+			"description_markdown": "这是搜索生成器模块的**根节点**。它扮演着“信息检索工厂”的角色，所有负责产生搜索驱动源的组件都挂载于此。系统或角色通过加载此处生成的搜索源，方可获得检索互联网信息的能力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"搜索",
+				"生成器",
+				"fount"
+			]
+		},
+		"ar-SA": {
+			"name": "مولدات خدمة البحث",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "مركز المصنع الأساسي لإنتاج مصادر خدمة البحث",
+			"description_markdown": "هذا هو **المكون الجذر** لجميع وحدات توليد البحث. إنه يعمل كمصنع هيكلي حيث يتم إنتاج مصادر محركات البحث المختلفة، مما يسمح للنظام باسترداد المعلومات.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"نظام",
+				"جذر",
+				"بحث",
+				"fount"
+			]
+		},
+		"de-DE": {
+			"name": "Suchdienstgeneratoren",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Der zentrale Fabrik-Knotenpunkt zur Erzeugung von Suchdienstquellen.",
+			"description_markdown": "Dies ist die **Stammkomponente** für alle Suchgenerator-Module. Sie fungiert als strukturelle Fabrik, in der Suchmaschinenquellen erzeugt werden, die den Informationsabruf ermöglichen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"System",
+				"Stamm",
+				"Suche",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🔍🏭",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "🔍 ➡️ 🌐 ➡️ 📑",
+			"description_markdown": "🔍 ➡️ 🏗️. \n⚙️ ➕ 🌐. \n⚓ ➡️ 📑✨.\n\n✨ 🔍 🏭",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🔍",
+				"🌐",
+				"⚙️",
+				"⛲"
+			]
+		},
+		"es-ES": {
+			"name": "Generadores de Servicios de Búsqueda",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "El centro de fábrica fundamental para producir fuentes de servicios de búsqueda.",
+			"description_markdown": "Este es el **componente raíz** de todos los módulos generadores de búsqueda. Funciona como una fábrica estructural donde se producen fuentes de motores de búsqueda para recuperar información.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raíz",
+				"búsqueda",
+				"fount"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateurs de Services de Recherche",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Le centre de fabrication fondamental pour produire des sources de recherche.",
+			"description_markdown": "Il s'agit du **composant racine** pour tous les modules générateurs de recherche. Il sert d'usine structurelle pour produire les sources permettant de récupérer des informations.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"système",
+				"racine",
+				"recherche",
+				"fount"
+			]
+		},
+		"hi-IN": {
+			"name": "खोज सेवा जेनरेटर",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "खोज सेवा स्रोतों के उत्पादन के लिए मौलिक फैक्ट्री हब।",
+			"description_markdown": "यह सभी खोज जनरेटर मॉड्यूल के लिए **मूल घटक** है। यह एक संरचनात्मक फैक्ट्री के रूप में कार्य करता है जहाँ खोज इंजन स्रोत तैयार किए जाते हैं, जिससे जानकारी प्राप्त की जा सकती है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"प्रणाली",
+				"मूल",
+				"खोज",
+				"fount"
+			]
+		},
+		"is-IS": {
+			"name": "Leitarþjónustuframleiðendur",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Aðalverksmiðja fyrir myndun leitarvinnslueininga.",
+			"description_markdown": "Þetta er **rótareiningin** fyrir alla leitar-rafala. Hún virkar sem verksmiðja þar sem leitarvélar eru búnar til svo kerfið geti sótt upplýsingar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kerfi",
+				"rót",
+				"leit",
+				"fount"
+			]
+		},
+		"it-IT": {
+			"name": "Generatori di Servizi di Ricerca",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "L'hub di fabbrica fondamentale per la produzione di motori di ricerca.",
+			"description_markdown": "Questo è il **componente radice** per tutti i moduli generatori di ricerca. Funziona come una fabbrica strutturale in cui vengono prodotti i motori per il recupero delle informazioni.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"radice",
+				"ricerca",
+				"fount"
+			]
+		},
+		"ja-JP": {
+			"name": "検索サービス ジェネレーター",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "検索サービスソースを生成する基盤ファクトリーハブ",
+			"description_markdown": "これはすべての検索ジェネレーターモジュールの**ルートコンポーネント**です。キャラクターやシステムが情報を取得するための検索エンジンソースを生産する「工場」として機能します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"システム",
+				"ルート",
+				"検索",
+				"fount"
+			]
+		},
+		"ko-KR": {
+			"name": "검색 서비스 생성기",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "검색 서비스 소스를 생산하는 기초 팩토리 허브",
+			"description_markdown": "이것은 모든 검색 생성기 모듈의 **루트 컴포넌트**입니다. 캐릭터나 시스템이 정보를 검색할 수 있도록 검색 엔진 소스를 생산하는 구조적 공장 역할을 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"시스템",
+				"루트",
+				"검색",
+				"fount"
+			]
+		},
+		"lzh": {
+			"name": "寻索肆",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "诸搜索服务生成器之根柢",
+			"description_markdown": "此乃 fount 之**寻索肆**。凡欲索天下之实、通四海之讯者，皆取准于此。此间聚诸生成器，如工坊之产罗盘，为博闻广识之基也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根柢",
+				"寻索",
+				"fount"
+			]
+		},
+		"nl-NL": {
+			"name": "Zoekservicegeneratoren",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "De fundamentele fabriekshub voor het produceren van zoekbronnen.",
+			"description_markdown": "Dit is de **hoofdcomponent** voor alle zoekgeneratormodules. Het fungeert als een structurele fabriek waar zoekmachines worden geproduceerd om informatie op te halen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"systeem",
+				"wortel",
+				"zoeken",
+				"fount"
+			]
+		},
+		"pt-PT": {
+			"name": "Geradores de Serviços de Pesquisa",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "O centro de fábrica fundamental para produzir fontes de serviços de pesquisa.",
+			"description_markdown": "Este é o **componente raiz** para todos os módulos geradores de pesquisa. Funciona como uma fábrica estrutural onde os motores de busca são produzidos para recuperar informações.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sistema",
+				"raiz",
+				"pesquisa",
+				"fount"
+			]
+		},
+		"ru-RU": {
+			"name": "Генераторы Поисковых Сервисов",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Фундаментальный заводской узел для производства поисковых источников.",
+			"description_markdown": "Это **корневой компонент** для всех модулей генераторов поиска. Он работает как структурный завод, где производятся поисковые движки для извлечения информации.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корень",
+				"поиск",
+				"fount"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератори Служби Пошуку",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Фундаментальний заводський вузол для виробництва джерел пошуку.",
+			"description_markdown": "Це **кореневий компонент** для всіх модулів генерації пошуку. Він функціонує як структурний завод, де створюються пошукові рушії для отримання інформації.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"система",
+				"корінь",
+				"пошук",
+				"fount"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo Dịch vụ Tìm kiếm",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Trung tâm nhà máy cơ bản để sản xuất các nguồn dịch vụ tìm kiếm.",
+			"description_markdown": "Đây là **thành phần gốc** của tất cả các mô-đun tạo tìm kiếm. Nó đóng vai trò là nhà máy cấu trúc sản xuất các công cụ tìm kiếm để truy xuất thông tin.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hệ thống",
+				"gốc",
+				"tìm kiếm",
+				"fount"
+			]
+		},
+		"zh-TW": {
+			"name": "搜索服務生成器",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "生產搜索服務源組件的工廠根節點",
+			"description_markdown": "這是搜索生成器模組的**根節點**。它扮演著「信息檢索工廠」的角色，所有負責產生搜索驅動源的組件都掛載於此。系統或角色透過加載此處生成的搜索源，方可獲得檢索互聯網信息的能力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系統",
+				"根節點",
+				"搜索",
+				"生成器",
+				"fount"
+			]
+		}
+	}
+}
