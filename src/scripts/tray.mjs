@@ -36,6 +36,18 @@ on_shutdown(() => {
 })
 
 /**
+ * 打印自云端拉取的fount logo图像。
+ * @returns {Promise<void>} 打印fount logo图像的承诺。
+ */
+async function printTerminalImage() {
+	const terminalImage = await import('npm:terminal-image')
+	await fetch('https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b').
+		then(res => res.arrayBuffer()).
+		then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
+		then(console.noBreadcrumb.log)
+}
+
+/**
  * 创建系统托盘菜单。
  * @returns {Promise<object|undefined>} 创建的托盘对象或在出错时返回undefined。
  */
@@ -104,17 +116,15 @@ export async function createTray() {
 			if (!action_id--) open(hosturl)
 			else if (!action_id--) open('https://github.com/steve02081504/fount')
 			else if (!action_id--) open('https://discord.gg/GtR9Quzq2v')
-			else if (!action_id--) restartor()
+			else if (!action_id--) {
+				await printTerminalImage().catch(_ => 0)
+				restartor()
+			}
 			else if (!action_id--) process.exit(0)
 			else if (terminalWorks && !action_id--) {
-				const terminalImage = await import('npm:terminal-image').catch(_ => 0)
 				if (supportsAnsi) process.stdout.write('\x1Bc')
 				else console.clear()
-				await fetch('https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b').
-					then(res => res.arrayBuffer()).
-					then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
-					then(console.noBreadcrumb.log).
-					catch(_ => 0)
+				await printTerminalImage().catch(_ => 0)
 				console.logI18n('tips.title')
 				console.logI18n('tips.data')
 			}
