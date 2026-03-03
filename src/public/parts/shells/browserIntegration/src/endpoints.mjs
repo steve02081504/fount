@@ -40,6 +40,16 @@ export function setEndpoints(router) {
 		}
 	})
 
+	router.get('/virtual_files/parts/shells\\:browserIntegration/script.meta.js', async (_req, res) => {
+		const scriptPublicPath = path.join(import.meta.dirname, '..', 'public')
+		const publicScriptPath = path.join(scriptPublicPath, 'script.user.js')
+		const content = await fs.promises.readFile(publicScriptPath, 'utf-8')
+		const metaEnd = content.indexOf('// ==/UserScript==')
+		const meta = metaEnd === -1 ? content : content.slice(0, metaEnd + '// ==/UserScript=='.length)
+		res.setHeader('Content-Type', 'application/x-userscript; charset=utf-8')
+		res.status(200).send(meta + '\n')
+	})
+
 	router.ws('/ws/parts/shells\\:browserIntegration/page', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
 		handleConnection(ws, username)
