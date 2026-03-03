@@ -16,6 +16,9 @@
 ### GET /virtual_files/parts/shells:browserIntegration/script.user.js
 - 用途：获取用于浏览器集成的用户脚本内容。
 
+### GET /virtual_files/parts/shells:browserIntegration/script.meta.js
+- 用途：仅返回用户脚本的元数据块（UserScript 头），供 Tampermonkey 等扩展做更新检查用。
+
 ### GET /api/parts/shells:browserIntegration/history
 - 用途：获取浏览器集成相关操作历史。
 
