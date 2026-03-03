@@ -1,5 +1,9 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
+if (-not $env:FOUNT_START_TIME) {
+	$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+}
+
 # --- 国际化函数 ---
 # 获取系统区域设置
 function Get-SystemLocales {
@@ -848,11 +852,22 @@ function run {
 		}
 	}
 	$v8Flags += ",--initial-heap-size=${heapSizeMB}"
-	if ($Script:is_debug) {
-		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
+
+	if (-not $env:FOUNT_START_TIME) {
+		$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	}
-	else {
-		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
+	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+	try {
+		if ($Script:is_debug) {
+			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
+		}
+		else {
+			deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
+		}
+	}
+	finally {
+		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
+		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
 	}
 }
 

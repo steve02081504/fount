@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z "$FOUNT_START_TIME" ]; then
+	FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+fi
+export FOUNT_START_TIME
+
 # fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
 
 # --- 彩色输出定义 ---
@@ -1317,11 +1322,19 @@ run() {
 		fi
 	fi
 	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
+	if [ -z "$FOUNT_START_TIME" ]; then
+		FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+	fi
+	export FOUNT_START_TIME
+	FOUNT_DENO_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+	export FOUNT_DENO_START_TIME
 	if [[ $is_debug -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
+	unset FOUNT_START_TIME
+	unset FOUNT_DENO_START_TIME
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
 	return $exit_code

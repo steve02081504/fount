@@ -15,7 +15,7 @@ import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
-import { __dirname, startTime } from './base.mjs'
+import { __dirname, baseScriptLoadedTime, startTime } from './base.mjs'
 import { info } from './info.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
 
@@ -308,10 +308,17 @@ export async function init(start_config) {
 			console.logI18n('tips.data')
 		}
 	}
-	const endtime = new Date()
+	const endtime = new Date(),
+	denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
 	console.log({
-		startTime,
 		sessionStartTime: new Date(config.reboot?.sessionStartTime ?? startTime.getTime()),
+		startTime,
+		shellScriptTimeInMs: denoStartTime - startTime,
+		denoStartTime,
+		denoLoadingTimeInMs: baseScriptLoadedTime - denoStartTime,
+		baseScriptLoadedTime,
+		serverStartingTimeInMs: endtime - baseScriptLoadedTime,
+		serverStartTime: endtime,
 		totalTimeInMs: endtime - startTime,
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
