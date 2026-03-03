@@ -196,6 +196,7 @@ export function createVirtualList({
 				return Promise.resolve(renderItem(item, itemIndex))
 			})
 			const newElements = await Promise.all(renderPromises)
+			if (!container.contains(state.sentinelTop)) return
 			newElements.forEach((element, i) => {
 				if (element) {
 					const itemIndex = state.startIndex + i
@@ -237,6 +238,7 @@ export function createVirtualList({
 				return Promise.resolve(renderItem(item, itemIndex))
 			})
 			const newElements = await Promise.all(renderPromises)
+			if (!container.contains(state.sentinelBottom)) return
 			newElements.forEach((element, i) => {
 				if (element) {
 					const itemIndex = state.startIndex + oldQueueLength + i
@@ -348,6 +350,7 @@ export function createVirtualList({
 			const itemIndex = state.startIndex + state.queue.length
 			state.queue.push(item)
 			const newElement = await Promise.resolve(renderItem(item, itemIndex))
+			if (!container.contains(state.sentinelBottom)) return
 			if (newElement) {
 				state.renderedElements.set(itemIndex, newElement)
 				container.insertBefore(newElement, state.sentinelBottom)

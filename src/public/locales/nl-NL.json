@@ -1523,9 +1523,21 @@
 			"placeholder": "Taal zoeken..."
 		},
 		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
+		"moveUpButton": {
+			"aria-label": "omhoog bewegen",
+			"alt": "pictogram omhoog bewegen"
+		},
+		"moveDownButton": {
+			"aria-label": "ga naar beneden",
+			"alt": "pictogram naar beneden verplaatsen"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Verwijder deze taal",
+			"alt": "pictogram verwijderen"
+		},
 		"savedMessage": "Taalinstellingen worden opgeslagen!",
 		"resetMessage": "Taalinstellingen zijn gereset!",
-		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!",
+		"fetchLocalesFailed": "Kan beschikbare talen niet ophalen!",
 		"home_function_buttons": {
 			"settings": {
 				"title": "Instellingen",
@@ -1739,10 +1751,14 @@
 			"save": "Opslaan",
 			"delete": "Verwijderen",
 			"setDefault": {
-				"dataset": {
-					"tip": "Als standaard instellen"
+				"tooltip": {
+					"dataset": {
+						"tip": "Als standaard instellen"
+					}
 				},
-				"aria-label": "Stel \"${fileName}\" in als de standaard servicebron"
+				"checkbox": {
+					"aria-label": "Stel \"${fileName}\" in als de standaard servicebron"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Klik op de onderstaande knop om het script van de browserintegratie te installeren. U moet eerst een userscriptmanager zoals Tampermonkey installeren.",
 		"install_button": "Installeren",
 		"install_from_url_tip": "Staat uw browser u niet toe het te installeren? Kopieer deze URL en importeer het script vanuit de URL in de Tampermonkey-plug-in.",
+		"script_url_input": {
+			"aria-label": "URL van browserintegratiescript"
+		},
 		"what_is_manager": "Wat is een userscriptbeheerder?",
 		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
 		"popular_managers": "Populaire keuzes:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} jaar",
 			"years": "{base} jaar",
 			"centuries": "Eeuwen"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Selecteer..."
+		},
+		"search": {
+			"placeholder": "Zoeken..."
 		}
 	}
 }

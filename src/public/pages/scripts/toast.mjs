@@ -84,6 +84,7 @@ function base_showToast(type, message, duration = defaultToastDuration) {
 		const iconUrl = icons[type] || icons.info
 		const iconElement = document.createElement('img')
 		iconElement.src = iconUrl
+		iconElement.alt = type
 		iconElement.className = 'h-6 w-6 flex-shrink-0'
 
 		const textElement = document.createElement('div')

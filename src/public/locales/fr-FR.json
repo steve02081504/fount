@@ -1523,6 +1523,18 @@
 			"placeholder": "Rechercher une langue..."
 		},
 		"noPreferredLanguages": "Pas encore de langue antérieure. Les paramètres par défaut du navigateur seront utilisés.",
+		"moveUpButton": {
+			"aria-label": "monter",
+			"alt": "icône monter"
+		},
+		"moveDownButton": {
+			"aria-label": "descendre",
+			"alt": "icône descendre"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Supprimer cette langue",
+			"alt": "icône de suppression"
+		},
 		"savedMessage": "Les paramètres de langue ont été enregistrés !",
 		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
 		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!",
@@ -1739,10 +1751,14 @@
 			"save": "Sauvegarder",
 			"delete": "Supprimer",
 			"setDefault": {
-				"dataset": {
-					"tip": "Définir par défaut"
+				"tooltip": {
+					"dataset": {
+						"tip": "Définir par défaut"
+					}
 				},
-				"aria-label": "Définir \"${fileName}\" comme source de service par défaut"
+				"checkbox": {
+					"aria-label": "Définir \"${fileName}\" comme source de service par défaut"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Cliquez sur le bouton ci-dessous pour installer le script d'intégration du navigateur. Vous devez d'abord installer un gestionnaire de scripts utilisateur comme Tampermonkey.",
 		"install_button": "Installer",
 		"install_from_url_tip": "Votre navigateur ne vous permet-il pas de l'installer? Copiez cette URL et importez le script de l'URL dans le plugin Tampermonkey.",
+		"script_url_input": {
+			"aria-label": "URL du script d'intégration du navigateur"
+		},
 		"what_is_manager": "Qu'est-ce qu'un gestionnaire de scripts utilisateur ?",
 		"manager_explanation": "Un gestionnaire de scripts utilisateur est une extension de navigateur qui vous permet d'installer et d'exécuter des scripts qui modifient les pages Web. Pour utiliser le script d'intégration fount, vous avez besoin d'une des extensions.",
 		"popular_managers": "Choix populaires:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} an",
 			"years": "{base} années",
 			"centuries": "Siècles"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Sélectionner..."
+		},
+		"search": {
+			"placeholder": "Rechercher..."
 		}
 	}
 }

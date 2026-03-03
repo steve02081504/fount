@@ -1523,6 +1523,18 @@
 			"placeholder": "Pesquisar idioma..."
 		},
 		"noPreferredLanguages": "Ainda não há idioma anterior. As configurações padrão do navegador serão usadas.",
+		"moveUpButton": {
+			"aria-label": "subir",
+			"alt": "Ícone de mover para cima"
+		},
+		"moveDownButton": {
+			"aria-label": "descer",
+			"alt": "Ícone de mover para baixo"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Excluir este idioma",
+			"alt": "Ícone de eliminar"
+		},
 		"savedMessage": "As configurações de idioma são salvas!",
 		"resetMessage": "As configurações de idioma foram redefinidas!",
 		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!",
@@ -1739,10 +1751,14 @@
 			"save": "Guardar",
 			"delete": "Eliminar",
 			"setDefault": {
-				"dataset": {
-					"tip": "Definir como padrão"
+				"tooltip": {
+					"dataset": {
+						"tip": "Definir como padrão"
+					}
 				},
-				"aria-label": "Defina \"${fileName}\" como fount de serviço padrão"
+				"checkbox": {
+					"aria-label": "Defina \"${fileName}\" como fount de serviço padrão"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Clique no botão abaixo para instalar o script de integração do navegador. Você deve primeiro instalar um gestor de scripts de utilizador como o Tampermonkey.",
 		"install_button": "Instalar",
 		"install_from_url_tip": "Seu navegador não permite que você o instale? Copie este URL e importe o script do URL no plugin Tampermonkey.",
+		"script_url_input": {
+			"aria-label": "URL do script de integração do navegador"
+		},
 		"what_is_manager": "O que é um gestor de scripts de utilizador?",
 		"manager_explanation": "Um gestor de scripts de utilizador é uma extensão do navegador que permite instalar e executar scripts que modificam as páginas da Web. Para usar o script de integração fount, você precisa de uma das extensões.",
 		"popular_managers": "Escolhas populares:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} anos",
 			"years": "{base} anos",
 			"centuries": "Séculos"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Selecionar..."
+		},
+		"search": {
+			"placeholder": "Pesquisar..."
 		}
 	}
 }

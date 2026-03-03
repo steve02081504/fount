@@ -1523,6 +1523,18 @@
 			"placeholder": "搜索语言..."
 		},
 		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
+		"moveUpButton": {
+			"aria-label": "上移",
+			"alt": "上移图标"
+		},
+		"moveDownButton": {
+			"aria-label": "下移",
+			"alt": "下移图标"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "删除该语言",
+			"alt": "删除图标"
+		},
 		"savedMessage": "语言设置已保存！",
 		"resetMessage": "语言设置已重置！",
 		"fetchLocalesFailed": "获取可用语言失败！",
@@ -1739,10 +1751,14 @@
 			"save": "保存",
 			"delete": "删除",
 			"setDefault": {
-				"dataset": {
-					"tip": "设为默认"
+				"tooltip": {
+					"dataset": {
+						"tip": "设为默认"
+					}
 				},
-				"aria-label": "将“${fileName}”设为默认服务源"
+				"checkbox": {
+					"aria-label": "将“${fileName}”设为默认服务源"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "点击下面的按钮来安装浏览器集成脚本。您必须先安装一个像油猴 (Tampermonkey) 一样的用户脚本管理器。",
 		"install_button": "安装",
 		"install_from_url_tip": "浏览器不允许你安装？复制这个网址并在油猴插件中通过 URL 导入脚本。",
+		"script_url_input": {
+			"aria-label": "浏览器集成脚本 URL"
+		},
 		"what_is_manager": "什么是油猴脚本管理器？",
 		"manager_explanation": "油猴脚本管理器是一个浏览器扩展，允许您安装和运行修改网页的脚本。要使用 fount 集成脚本，您需要其中一个扩展。",
 		"popular_managers": "热门选择：",
@@ -2426,6 +2445,14 @@
 			"year": "{base}年",
 			"years": "{base}年",
 			"centuries": "几个世纪"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "请选择..."
+		},
+		"search": {
+			"placeholder": "搜索..."
 		}
 	}
 }

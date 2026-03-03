@@ -1523,6 +1523,18 @@
 			"placeholder": "🔍🗣️"
 		},
 		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
+		"moveUpButton": {
+			"aria-label": "⬆️",
+			"alt": "⬆️"
+		},
+		"moveDownButton": {
+			"aria-label": "⬇️",
+			"alt": "⬇️"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "🗑️",
+			"alt": "🗑️"
+		},
 		"savedMessage": "🗣️⚙️💾✅❗️",
 		"resetMessage": "🗣️⚙️🔄✅❗️",
 		"fetchLocalesFailed": "🗣️📥❌❗️",
@@ -1739,10 +1751,14 @@
 			"save": "💾",
 			"delete": "🗑️",
 			"setDefault": {
-				"dataset": {
-					"tip": "❤️"
+				"tooltip": {
+					"dataset": {
+						"tip": "❤️"
+					}
 				},
-				"aria-label": "❤️${fileName}"
+				"checkbox": {
+					"aria-label": "❤️${fileName}"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "📝📜➕",
 		"install_button": "📥",
 		"install_from_url_tip": "💡🔗",
+		"script_url_input": {
+			"aria-label": "🔗📜"
+		},
 		"what_is_manager": "❓🐒🔧",
 		"manager_explanation": "ℹ️🐒🔧",
 		"popular_managers": "⭐",
@@ -2426,6 +2445,14 @@
 			"year": "🗓️{base}y",
 			"years": "🗓️{base}y",
 			"centuries": "🏛️"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Select an option..."
+		},
+		"search": {
+			"placeholder": "Search..."
 		}
 	}
 }

@@ -1523,6 +1523,18 @@
 			"placeholder": "寻雅言…"
 		},
 		"noPreferredLanguages": "尚無所尚雅言。將循觀器之常設。",
+		"moveUpButton": {
+			"aria-label": "上移",
+			"alt": "上移之圖"
+		},
+		"moveDownButton": {
+			"aria-label": "下移",
+			"alt": "下移之圖"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "刪此雅言",
+			"alt": "刪除之圖"
+		},
 		"savedMessage": "雅言之序已存！",
 		"resetMessage": "雅言之序已復初！",
 		"fetchLocalesFailed": "取諸雅言備選失利！",
@@ -1739,10 +1751,14 @@
 			"save": "存",
 			"delete": "刪",
 			"setDefault": {
-				"dataset": {
-					"tip": "設為預設"
+				"tooltip": {
+					"dataset": {
+						"tip": "設為預設"
+					}
 				},
-				"aria-label": "設“${fileName}”為預設源流"
+				"checkbox": {
+					"aria-label": "設“${fileName}”為預設源流"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "點此置覽器統合之策。然須先置油猴策管。",
 		"install_button": "置",
 		"install_from_url_tip": "覽器不允？錄此網址，於油猴策管中取之。",
+		"script_url_input": {
+			"aria-label": "統合之策網址"
+		},
 		"what_is_manager": "油猴策管何物也？",
 		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先有此物。",
 		"popular_managers": "常用者：",
@@ -2426,6 +2445,14 @@
 			"year": "{base}載",
 			"years": "{base}載",
 			"centuries": "百代"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "擇一..."
+		},
+		"search": {
+			"placeholder": "搜..."
 		}
 	}
 }

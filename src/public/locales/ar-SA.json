@@ -1523,7 +1523,19 @@
 			"placeholder": "ابحث عن لغة..."
 		},
 		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
-		"savedMessage": "يتم حفظ إعدادات اللغة!",
+		"moveUpButton": {
+			"aria-label": "تحرك للأعلى",
+			"alt": "أيقونة التحرك لأعلى"
+		},
+		"moveDownButton": {
+			"aria-label": "تحرك للأسفل",
+			"alt": "أيقونة التحرك للأسفل"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "احذف هذه اللغة",
+			"alt": "رمز الحذف"
+		},
+		"savedMessage": "تم حفظ إعدادات اللغة!",
 		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
 		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
 		"home_function_buttons": {
@@ -1739,10 +1751,14 @@
 			"save": "يحفظ",
 			"delete": "يمسح",
 			"setDefault": {
-				"dataset": {
-					"tip": "تعيين كافتراضي"
+				"tooltip": {
+					"dataset": {
+						"tip": "تعيين كافتراضي"
+					}
 				},
-				"aria-label": "قم بتعيين \"${fileName}\" كمصدر الخدمة الافتراضي"
+				"checkbox": {
+					"aria-label": "قم بتعيين \"${fileName}\" كمصدر الخدمة الافتراضي"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "انقر فوق الزر أدناه لتثبيت البرنامج النصي لتكامل المتصفح. يجب أولاً تثبيت مدير نصوص مستخدم مثل Tampermonkey.",
 		"install_button": "تثبيت",
 		"install_from_url_tip": "ألا يسمح لك متصفحك بتثبيته؟ انسخ عنوان URL هذا واستيراد البرنامج النصي من عنوان URL في المكون الإضافي Tampermonkey.",
+		"script_url_input": {
+			"aria-label": "عنوان URL للبرنامج النصي لتكامل المتصفح"
+		},
 		"what_is_manager": "ما هو مدير نصوص المستخدم (Userscript Manager)؟",
 		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل fount ، تحتاج إلى واحدة من الامتدادات.",
 		"popular_managers": "الخيارات الشعبية:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} سنة",
 			"years": "{base} سنوات",
 			"centuries": "قرون"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "اختر..."
+		},
+		"search": {
+			"placeholder": "بحث..."
 		}
 	}
 }

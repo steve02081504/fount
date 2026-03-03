@@ -7,6 +7,7 @@ import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { unlockAchievement, getPartList, getAllDefaultParts, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
@@ -197,7 +198,7 @@ async function setSubtype(nextSubtype) {
  */
 async function fetchFileList() {
 	fileList = await getPartList(currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetchFileListFailed'))
-	renderFileList()
+	await renderFileList()
 }
 
 /**
@@ -222,30 +223,13 @@ async function fetchDefaultParts() {
 /**
  * 根据 `fileList` 变量渲染文件列表 UI。
  */
-function renderFileList() {
+async function renderFileList() {
 	fileListContainer.innerHTML = ''
-	fileList.forEach(fileName => {
-		const listItem = document.createElement('div')
-		listItem.classList.add('file-list-item')
-		listItem.dataset.name = fileName // Add data-name attribute
+	for (const fileName of fileList) {
+		const listItem = await renderTemplate('file_list_item', { fileName })
 
-		const p = document.createElement('p')
-		p.textContent = fileName
-		p.classList.add('flex-grow') // Allow text to take up space
-		listItem.appendChild(p)
-
-		// Default item checkbox
-		const checkboxContainer = document.createElement('div')
-		checkboxContainer.classList.add('tooltip', 'tooltip-left')
-		checkboxContainer.dataset.i18n = 'serviceSource_manager.buttons.setDefault'
-
-		const checkbox = document.createElement('input')
-		checkbox.type = 'checkbox'
-		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
-		Object.assign(checkbox.dataset, { fileName }) // for i18n
-		i18nElement(checkboxContainer)
-		checkboxContainer.appendChild(checkbox)
-		listItem.appendChild(checkboxContainer)
+		const checkbox = listItem.querySelector('.default-checkbox')
+		const checkboxContainer = listItem.querySelector('.tooltip')
 
 		checkbox.addEventListener('change', async event => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
@@ -275,7 +259,7 @@ function renderFileList() {
 		checkboxContainer.addEventListener('click', event => event.stopPropagation())
 		listItem.addEventListener('click', () => loadEditor(fileName))
 		fileListContainer.appendChild(listItem)
-	})
+	}
 
 	updateDefaultPartDisplay() // Apply styles for default item
 
@@ -593,6 +577,7 @@ function isValidFileName(fileName) {
 // Initialization
 applyTheme()
 await initTranslations('serviceSource_manager')
+usingTemplates('/parts/shells:serviceSourceManage/src/templates')
 disableEditor()
 await loadPartBranches()
 

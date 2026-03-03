@@ -29,15 +29,15 @@
 
 		<div class="flex flex-col lg:flex-row gap-8 w-full px-4">
 			<!-- Preview Area -->
-			<div id="preview-area" aria-hidden="true" class="lg:w-1/2 lg:sticky lg:top-4 max-h-[80vh] overflow-y-auto p-4 lg:p-6 rounded-box bg-base-100/30 shadow-md">
+			<div id="preview-area" aria-hidden="true" tabindex="-1" class="lg:w-1/2 lg:sticky lg:top-4 max-h-[80vh] overflow-y-auto p-4 lg:p-6 rounded-box bg-base-100/30 shadow-md">
 				<div class="w-full space-y-4">
 					<h2 class="text-2xl font-bold text-center">Preview</h2>
 
 					<div class="flex justify-center space-x-2">
-						<button class="btn btn-primary">Primary</button>
-						<button class="btn btn-secondary">Secondary</button>
-						<button class="btn btn-accent">Accent</button>
-						<button class="btn btn-ghost">Ghost</button>
+						<button class="btn btn-primary" tabindex="-1" >Primary</button>
+						<button class="btn btn-secondary" tabindex="-1" >Secondary</button>
+						<button class="btn btn-accent" tabindex="-1" >Accent</button>
+						<button class="btn btn-ghost" tabindex="-1" >Ghost</button>
 					</div>
 					<div class="rounded-box border border-base-300 p-2">
 						<ul class="menu">
@@ -47,7 +47,7 @@
 						</ul>
 					</div>
 					<fieldset class="fieldset">
-						<select class="select">
+						<select class="select" tabindex="-1" >
 							<option disabled selected>1000-7 = ?</option>
 							<option>993</option>
 							<option>hanbaobao</option>
@@ -56,7 +56,7 @@
 					</fieldset>
 
 					<label class="label cursor-pointer flex items-center">
-						<input type="checkbox" class="checkbox checkbox-primary" checked />
+						<input type="checkbox" class="checkbox checkbox-primary" checked tabindex="-1" />
 						<span class="ml-2">我将身来在了大街前 把你来想念</span>
 						<span class="ml-2">只惜今生恐难再相见</span>
 					</label>
@@ -76,19 +76,19 @@
 					</div>
 
 					<fieldset class="fieldset">
-						<input type="text" placeholder="Type here" class="input" />
+						<input type="text" placeholder="Type here" class="input" tabindex="-1" />
 					</fieldset>
 
 					<div class="flex justify-center space-x-4">
 						<fieldset class="fieldset">
 							<label class="label cursor-pointer">
-								<input type="radio" name="radio-group" class="radio" checked />
+								<input type="radio" name="radio-group" class="radio" checked tabindex="-1" />
 								<span class="ml-2">Radio 1</span>
 							</label>
 						</fieldset>
 						<fieldset class="fieldset">
 							<label class="label cursor-pointer">
-								<input type="radio" name="radio-group" class="radio" />
+								<input type="radio" name="radio-group" class="radio" tabindex="-1" />
 								<span class="ml-2">Radio 2</span>
 							</label>
 						</fieldset>
