@@ -1,7 +1,10 @@
 """
-locales-full: 合并/回写 locales。无参数合并所有语言；带 back 则回写。
-  python locales-full.py        → 合并到 full_locales/<lang>.full.yaml（跳过无变更）
-  python locales-full.py back   → 从 full_locales/*.full.yaml 回写（仅写有变更的文件）
+locales-full: 合并/回写 locales。可指定语言，不指定则处理全部。
+  python locales-full.py              → 合并所有语言到 full_locales/<lang>.full.yaml（跳过无变更）
+  python locales-full.py back         → 从 full_locales/*.full.yaml 回写所有语言（仅写有变更的文件）
+  python locales-full.py zh-CN        → 仅合并 zh-CN
+  python locales-full.py back zh-CN   → 仅回写 zh-CN
+  python locales-full.py zh-CN en     → 仅合并 zh-CN 与 en
 """
 
 import copy
@@ -194,16 +197,34 @@ def discover_langs() -> list[str]:
 
 
 def main():
-    cmd = sys.argv[1] if len(sys.argv) > 1 else ""
+    argv = sys.argv[1:]
+    cmd = argv[0] if argv else ""
+    if cmd == "back":
+        langs_arg = argv[1:]  # back 之后的均为语言
+    else:
+        langs_arg = argv if argv else []  # 无 back 则全部为语言（空=全部）
+
     FULL_LOCALES_DIR.mkdir(parents=True, exist_ok=True)
+    all_langs = discover_langs()
 
     if cmd == "back":
-        for p in sorted(FULL_LOCALES_DIR.glob("*.full.yaml")):
+        if not langs_arg:
+            candidates = sorted(FULL_LOCALES_DIR.glob("*.full.yaml"))
+        else:
+            candidates = [FULL_LOCALES_DIR / f"{lang}.full.yaml" for lang in langs_arg]
+        for p in candidates:
+            if not p.exists():
+                print(f"Skip (missing): {p.name}")
+                continue
             lang = p.stem.removesuffix(".full")
             if lang:
                 back_cmd(lang, p)
     else:
-        for lang in discover_langs():
+        langs = langs_arg if langs_arg else all_langs
+        for lang in langs:
+            if lang not in all_langs:
+                print(f"Skip (unknown lang): {lang}")
+                continue
             merge_cmd(lang, FULL_LOCALES_DIR / f"{lang}.full.yaml")
 
 
