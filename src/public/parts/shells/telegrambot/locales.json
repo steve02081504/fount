@@ -256,7 +256,7 @@
 			"name": "Telegram Bot",
 			"avatar": "https://api.iconify.design/line-md/telegram.svg",
 			"description": "將您的角色作為 Telegram Bot 運行。",
-			"description_markdown": "將您的 fount 角色與 Telegram 集成，以便在該平台上與用戶互動。",
+			"description_markdown": "將您的 fount 角色與 Telegram 集成，以便在該平台上與使用者互動。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

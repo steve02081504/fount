@@ -256,7 +256,7 @@
 			"name": "桌面寵物",
 			"avatar": "https://api.iconify.design/material-symbols/pets.svg",
 			"description": "將您的角色作為桌面寵物運行。",
-			"description_markdown": "允許角色在無邊框、透明的窗口中顯示為交互式桌面寵物。",
+			"description_markdown": "允許角色在無邊框、透明的視窗中顯示為互動式桌面寵物。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

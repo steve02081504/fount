@@ -451,7 +451,7 @@
 			"name": "ZL-31",
 			"avatar": "",
 			"description": "fount的預設角色，隨時為您提供幫助",
-			"description_markdown": "ZL-31是fount的預設角色，無性別設定。它的最終目標是讓用戶滿意，並會盡力滿足用戶的各種需求。\n它可以進行聊天、回答問題、提供建議、幫你新建簡單的fount角色等。\n\n部分代碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"description_markdown": "ZL-31是fount的預設角色，無性別設定。它的最終目標是讓使用者滿意，並會盡力滿足使用者的各種需求。\n它可以進行聊天、回答問題、提供建議、幫你新建簡單的fount角色等。\n\n部分代碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

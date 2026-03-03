@@ -274,10 +274,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "IDE 集成",
+			"name": "IDE 整合",
 			"avatar": "https://api.iconify.design/simple-icons/zedindustries.svg",
-			"description": "通過 ACP 將 fount 角色集成到支持 ACP 的 IDE 中，提升開發效率。",
-			"description_markdown": "此插件提供 **Agent Client Protocol (ACP)** 服務，實現 fount 角色與支持 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）的無縫集成。對於無界面的角色，它提供預設聊天界面；同時包含 ACP 使用說明及受支持客戶端列表，鼓勵開發者在多種編輯器中探索 fount 角色的潛力。",
+			"description": "通過 ACP 將 fount 角色集成到支援 ACP 的 IDE 中，提升開發效率。",
+			"description_markdown": "此外掛提供 **Agent Client Protocol (ACP)** 服務，實現 fount 角色與支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）的無縫整合。對於無介面的角色，它提供預設聊天介面；同時包含 ACP 使用說明及受支援客戶端列表，鼓勵開發者在多種編輯器中探索 fount 角色的潛力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://agentclientprotocol.com/",

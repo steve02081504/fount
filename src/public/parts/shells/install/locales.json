@@ -255,8 +255,8 @@
 		"zh-TW": {
 			"name": "安裝",
 			"avatar": "https://api.iconify.design/material-symbols/install-desktop.svg",
-			"description": "一個用於安裝部件的shell。",
-			"description_markdown": "從文件或 URL 安裝新角色、角色、世界和其他組件。",
+			"description": "一個用於安裝組件的shell。",
+			"description_markdown": "從檔案或 URL 安裝新角色、世界和其他組件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

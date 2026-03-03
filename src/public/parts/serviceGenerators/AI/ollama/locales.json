@@ -256,7 +256,7 @@
 			"name": "Ollama",
 			"avatar": "https://api.iconify.design/simple-icons/ollama.svg",
 			"description": "Ollama",
-			"description_markdown": "在本地運行大型語言模型。",
+			"description_markdown": "在本機運行大型語言模型。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -523,7 +523,7 @@
 		"zh-TW": {
 			"avatar": "https://api.iconify.design/simple-icons/ollama.svg",
 			"description": "Ollama",
-			"description_markdown": "在本地運行大型語言模型。",
+			"description_markdown": "在本機運行大型語言模型。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

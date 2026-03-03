@@ -272,7 +272,7 @@
 			"name": "輪詢搜索生成器",
 			"avatar": "https://api.iconify.design/mdi/format-list-numbered.svg",
 			"description": "生產輪詢式服務源的工廠組件",
-			"description_markdown": "這是一個**服務生成器**，用於生產“輪詢”服務源實例。它允許用戶定義一個資源列表，系統會按順序依次使用列表中的源來響應每個請求，從而實現資源的循環分配。",
+			"description_markdown": "這是一個**服務生成器**，用於生產“輪詢”服務源實例。它允許使用者定義一個資源列表，系統會按順序依次使用列表中的源來響應每個請求，從而實現資源的循環分配。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://github.com/steve02081504/fount",

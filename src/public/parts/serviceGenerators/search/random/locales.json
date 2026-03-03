@@ -290,7 +290,7 @@
 			"name": "加權隨機服務產生器",
 			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
 			"description": "生產加權隨機服務源實例的工廠組件。",
-			"description_markdown": "這是一個**服務產生器**，用於生產「加權隨機」服務源實例。它允許用戶為每個源配置其被選中的權重（機率），從而創建出具備靈活調度和個性化分配能力的資源選擇機制。",
+			"description_markdown": "這是一個**服務產生器**，用於生產「加權隨機」服務源實例。它允許使用者為每個源配置其被選中的權重（機率），從而創建出具備靈活調度和個性化分配能力的資源選擇機制。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://github.com/steve02081504/fount",

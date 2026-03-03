@@ -274,7 +274,7 @@
 			"name": "fount 根組件",
 			"avatar": "/favicon.svg",
 			"description": "fount 的核心基礎組件",
-			"description_markdown": "這是 fount 系統的**根部組件**，負責承載並加載系統中的所有功能部件。",
+			"description_markdown": "這是 fount 系統的**根部組件**，負責承載並加載系統中的所有功能組件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

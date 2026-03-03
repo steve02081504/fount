@@ -256,7 +256,7 @@
 			"name": "偵錯資訊",
 			"avatar": "https://api.iconify.design/material-symbols/bug-report.svg",
 			"description": "用於系統診斷和版本檢查的工具。",
-			"description_markdown": "提供有關系統、部件版本和其他診斷數據的詳細信息，以幫助進行故障排除。",
+			"description_markdown": "提供有關系統、組件版本和其他診斷資料的詳細資訊，以幫助進行故障排除。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

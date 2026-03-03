@@ -610,7 +610,7 @@
 		"zh-TW": {
 			"name": "Google 搜尋源",
 			"avatar": "https://api.iconify.design/logos/google-icon.svg",
-			"description": "由 Google 搜尋提供支持的搜尋服務實例（透過 google-sr 庫）",
+			"description": "由 Google 搜尋提供支援的搜尋服務實例（透過 google-sr 庫）",
 			"description_markdown": "這是基於 `google-sr` 庫實現的 **Google 搜尋**引擎的一個活動實例。它為角色提供全面的網際網路搜尋能力，**無需 API 金鑰**即可運行。",
 			"version": "0.0.0",
 			"author": "steve02081504",

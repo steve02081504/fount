@@ -275,8 +275,8 @@
 		"zh-TW": {
 			"name": "子設備管理",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": "遠端分散式 fount 子設備管理插件",
-			"description_markdown": "此插件支持 fount 主系統通過 Trystero（點對點）連接管理遠端**子設備**。它能顯示主機連接碼，遠端執行程式碼，並協調連接設備間的分散式任務。",
+			"description": "遠端分散式 fount 子設備管理外掛",
+			"description_markdown": "此外掛支援 fount 主系統透過 Trystero（點對點）連接管理遠端**子設備**。它能顯示主機連接碼，遠端執行程式碼，並協調連接設備間的分散式任務。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

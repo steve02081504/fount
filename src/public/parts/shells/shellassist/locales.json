@@ -255,8 +255,8 @@
 		"zh-TW": {
 			"name": "終端輔助",
 			"avatar": "https://api.iconify.design/line-md/laptop.svg",
-			"description": "在 fount 內進行交互式終端訪問。",
-			"description_markdown": "提供連接到 fount 服務器環境的交互式終端，允許直接進行命令行操作。",
+			"description": "在 fount 內進行互動式終端存取。",
+			"description_markdown": "提供連接到 fount 服務器環境的互動式終端，允許直接進行命令行操作。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

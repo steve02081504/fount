@@ -273,17 +273,17 @@
 			]
 		},
 		"zh-TW": {
-			"name": "插件",
+			"name": "外掛",
 			"avatar": "https://api.iconify.design/mdi/puzzle-outline.svg",
 			"description": "角色能力擴展組件的根節點",
-			"description_markdown": "這是功能擴展模塊的**根節點**。它作為基礎承載結構，所有用於增強角色智能、調用外部工具或拓展系統功能的插件均掛載於此。",
+			"description_markdown": "這是功能擴展模塊的**根節點**。它作為基礎承載結構，所有用於增強角色智能、調用外部工具或拓展系統功能的外掛均掛載於此。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"系統",
 				"根節點",
-				"插件",
+				"外掛",
 				"擴展",
 				"fount"
 			]

@@ -613,7 +613,7 @@
 		"zh-TW": {
 			"name": "Google API 搜尋源",
 			"avatar": "https://api.iconify.design/logos/google-icon.svg",
-			"description": "由 Google Custom Search API 提供支持的定制搜尋服務實例",
+			"description": "由 Google Custom Search API 提供支援的定制搜尋服務實例",
 			"description_markdown": "這是 **Google Custom Search API** 的一個活動實例。它為角色提供定制化的網際網路搜尋能力，需要配置 **API 金鑰**和**搜尋引擎 ID** 才能運行，以實現更精確和可控的搜尋結果。",
 			"version": "0.0.0",
 			"author": "steve02081504",

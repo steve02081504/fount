@@ -255,15 +255,15 @@
 		"zh-TW": {
 			"name": "教程",
 			"avatar": "https://api.iconify.design/line-md/backup-restore.svg",
-			"description": "一個引導用戶完成初始設置和基本功能的shell。",
-			"description_markdown": "為新用戶提供分步教程，以熟悉 fount。",
+			"description": "一個引導使用者完成初始設置和基本功能的shell。",
+			"description_markdown": "為新使用者提供分步教程，以熟悉 fount。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
 				"教程",
 				"指南",
 				"幫助",
-				"新用戶"
+				"新使用者"
 			]
 		}
 	}

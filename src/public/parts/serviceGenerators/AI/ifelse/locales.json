@@ -303,7 +303,7 @@
 			"name": "條件選擇生成器",
 			"avatar": "https://api.iconify.design/fluent-mdl2/branch-fork.svg",
 			"description": "用於創建具備 if-then-else 邏輯的條件源實例的工廠。",
-			"description_markdown": "這是一個**邏輯工廠**。它允許用戶通過定義“條件”、“then 源”和“else 源”來配置條件分支規則。然後，它會生產一個能夠根據此用戶定義邏輯動態路由請求的活躍實例，從而創建出高度自適應的角色。",
+			"description_markdown": "這是一個**邏輯工廠**。它允許使用者通過定義“條件”、“then 源”和“else 源”來配置條件分支規則。然後，它會生產一個能夠根據此使用者定義邏輯動態路由請求的活躍實例，從而創建出高度自適應的角色。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://github.com/steve02081504/fount",

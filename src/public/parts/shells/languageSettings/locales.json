@@ -235,10 +235,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "語言設置",
+			"name": "語言設定",
 			"avatar": "https://api.iconify.design/heroicons/language.svg",
-			"description": "用於管理用戶語言首選項的shell。",
-			"description_markdown": "允許用戶為界面選擇其首選語言。",
+			"description": "用於管理使用者語言首選項的shell。",
+			"description_markdown": "允許使用者為介面選擇其首選語言。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

@@ -255,14 +255,14 @@
 		"zh-TW": {
 			"name": "fount 匯入器",
 			"avatar": "/favicon.svg",
-			"description": "從壓縮檔案或 git 倉庫匯入 fount 部件。",
-			"description_markdown": "從壓縮檔案 (例如 `.zip`, `.7z`) 或 git 倉庫匯入 fount 部件。",
+			"description": "從壓縮檔案或 git 儲存庫匯入 fount 組件。",
+			"description_markdown": "從壓縮檔案 (例如 `.zip`, `.7z`) 或 git 儲存庫匯入 fount 組件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://steve02081504.github.io/fount/",
 			"tags": [
 				"fount",
-				"部件",
+				"組件",
 				"匯入"
 			]
 		}
