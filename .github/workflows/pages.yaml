@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - '.github/pages/**'
+      - '.github/workflows/pages.yaml'
       - 'src/public/locales/**'
       - 'src/public/pages/scripts/**'
       - 'imgs/**'
@@ -41,6 +42,88 @@ jobs:
           cp -r ./src/public/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
           cp -rn ./src/public/pages/scripts ./.github/pages/
+      - name: Inline GitHub user-attachments to avoid CSP
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          PAGES='.github/pages'
+          ASSETS_DIR="$PAGES/assets"
+          mkdir -p "$ASSETS_DIR"
+          CURL_AUTH=( -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream, image/*" )
+          echo "::group::Collecting user-attachments URLs from $PAGES"
+          grep -rohE 'https://github\.com/user-attachments/assets/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$PAGES" 2>/dev/null | sort -u > /tmp/urls.txt || true
+          n=$(wc -l < /tmp/urls.txt)
+          echo "Found $n unique URL(s)"
+          cat /tmp/urls.txt
+          echo "::endgroup::"
+
+          # Pre-fetch rendered README HTML via GitHub API to get fresh JWT-signed CDN URLs.
+          # Some assets (e.g. GIFs from private-user-images CDN) return 404 without a browser
+          # session, but are embedded in rendered Markdown as pre-signed URLs with a short-lived JWT.
+          echo "::group::Pre-fetching rendered Markdown for JWT URLs"
+          JWT_HTML_FILE=/tmp/rendered_pages.html
+          for mdfile in README.md docs/Readme.*.md; do
+            [ -f "$mdfile" ] || continue
+            api_path=$(echo "$mdfile" | sed 's|^\./||')
+            gh api "/repos/$GITHUB_REPOSITORY/contents/$api_path" \
+              -H "Accept: application/vnd.github.html" >> "$JWT_HTML_FILE" 2>/dev/null || true
+          done
+          jwt_url_count=$(grep -oE 'https://private-user-images\.githubusercontent\.com/[^"]+' "$JWT_HTML_FILE" 2>/dev/null | wc -l)
+          echo "JWT-signed CDN URLs found: $jwt_url_count"
+          echo "::endgroup::"
+
+          while IFS= read -r url; do
+            [ -z "$url" ] && continue
+            uid=$(basename "$url")
+            echo "::group::Fetch $uid"
+            tmp="$ASSETS_DIR/${uid}.tmp"
+
+            # Primary: token → redirect → fetch pre-signed URL without Auth header.
+            location=$(curl -s -w '%{redirect_url}' "${CURL_AUTH[@]}" --max-redirs 0 -o /dev/null "$url" || echo '')
+            if [ -n "$location" ]; then
+              echo "Redirect obtained: ${location:0:80}..."
+              code=$(curl -sL -w '%{http_code}' -o "$tmp" "$location")
+            else
+              code=$(curl -sL -w '%{http_code}' "${CURL_AUTH[@]}" -o "$tmp" "$url")
+            fi
+
+            # Fallback: extract a fresh JWT URL from the pre-fetched rendered Markdown HTML.
+            if [ "$code" != "200" ] || [ ! -s "$tmp" ]; then
+              echo "Direct fetch failed (HTTP $code), trying JWT URL from rendered Markdown..."
+              rm -f "$tmp"
+              jwt_url=$(grep -oE "https://private-user-images\.githubusercontent\.com/[^\"]*${uid}[^\"]*" \
+                "$JWT_HTML_FILE" 2>/dev/null | head -1 || echo '')
+              if [ -n "$jwt_url" ]; then
+                echo "JWT URL: ${jwt_url:0:80}..."
+                code=$(curl -sL -w '%{http_code}' -o "$tmp" "$jwt_url")
+              fi
+            fi
+
+            if [ "$code" != "200" ] || [ ! -s "$tmp" ]; then
+              echo "Failed to fetch $url (HTTP $code)"
+              rm -f "$tmp"
+              echo "::endgroup::"
+              continue
+            fi
+            mime=$(file -b --mime-type "$tmp" || echo '')
+            case "$mime" in
+              image/png) ext=png;;
+              image/jpeg) ext=jpg;;
+              image/gif) ext=gif;;
+              image/webp) ext=webp;;
+              image/svg+xml) ext=svg;;
+              *) echo "Response not an image ($mime), skipping"; rm -f "$tmp"; echo "::endgroup::"; continue;;
+            esac
+            out="$ASSETS_DIR/${uid}.${ext}"
+            mv "$tmp" "$out"
+            echo "Saved $out ($mime)"
+            base_path="/$REPO_NAME/assets/${uid}.${ext}"
+            find "$PAGES" -type f \( -name '*.html' -o -name '*.css' -o -name '*.mjs' -o -name '*.json' \) -exec sed -i "s|$url|$base_path|g" {} +
+            echo "Replaced with $base_path"
+            echo "::endgroup::"
+          done < /tmp/urls.txt
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
