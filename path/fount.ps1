@@ -286,7 +286,7 @@ function Start-WTfountCmd($ArgumentList = @()) {
 function New-FountShortcut {
 	$shell = New-Object -ComObject WScript.Shell
 
-	$shortcutCmd = Get-WTfountCmd -args @('open', 'keepalive')
+	$shortcutCmd = Get-WTfountCmd -ArgumentList @('open', 'keepalive')
 	$shortcutIconLocation = "$FOUNT_DIR\src\public\pages\favicon.ico"
 
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
