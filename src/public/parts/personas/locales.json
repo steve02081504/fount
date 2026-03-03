@@ -275,8 +275,8 @@
 		"zh-TW": {
 			"name": "人設",
 			"avatar": "https://api.iconify.design/line-md/emoji-grin.svg",
-			"description": "用戶所有個人設定組件的根節點",
-			"description_markdown": "這是人設模組的**根節點**。它作為基礎承載結構，用戶定義的所有個人身份、性格設定及交互檔案都掛載於此。",
+			"description": "使用者所有個人設定組件的根節點",
+			"description_markdown": "這是人設模組的**根節點**。它作為基礎承載結構，使用者定義的所有個人身份、性格設定及互動檔案都掛載於此。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

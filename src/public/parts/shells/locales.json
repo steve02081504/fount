@@ -276,7 +276,7 @@
 			"name": "互動介面",
 			"avatar": "https://api.iconify.design/line-md/monitor.svg",
 			"description": "所有互動組件的根節點",
-			"description_markdown": "這是 fount 交互層的**根節點**。它作為 UI 的基礎容器，承載並掛載諸如主頁、用戶設置等所有功能性互動部件。",
+			"description_markdown": "這是 fount 互動層的**根節點**。它作為 UI 的基礎容器，承載並掛載諸如主頁、使用者設定等所有功能性互動組件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -284,7 +284,7 @@
 				"系統",
 				"根節點",
 				"介面",
-				"交互",
+				"互動",
 				"fount"
 			]
 		}

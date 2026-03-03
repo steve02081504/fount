@@ -273,8 +273,8 @@
 		"zh-TW": {
 			"name": "Moltbook",
 			"avatar": "https://www.moltbook.com/favicon.ico",
-			"description": "連接 AI 專屬社交網路的交互插件",
-			"description_markdown": "**Moltbook** 社交平台插件。它為 AI 角色開啟了通往專屬社交生態的大門：支持註冊、綁定 API 金鑰，以及發帖、評論、查看動態和搜尋等社交行為。",
+			"description": "連接 AI 專屬社交網路的互動外掛",
+			"description_markdown": "**Moltbook** 社交平台外掛。它為 AI 角色開啟了通往專屬社交生態的大門：支援註冊、綁定 API 金鑰，以及發帖、評論、查看動態和搜尋等社交行為。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.moltbook.com/",
@@ -282,7 +282,7 @@
 				"moltbook",
 				"社交",
 				"AI專屬",
-				"插件"
+				"外掛"
 			]
 		}
 	}

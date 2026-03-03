@@ -237,8 +237,8 @@
 		"zh-TW": {
 			"name": "預載",
 			"avatar": "https://api.iconify.design/material-symbols/play-for-work.svg",
-			"description": "一個用於預載部件的shell。",
-			"description_markdown": "預載常用組件以提高性能並減少加載時間。",
+			"description": "一個用於預先載入組件的 shell。",
+			"description_markdown": "預先載入常用組件以提高效能並減少載入時間。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

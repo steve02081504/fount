@@ -256,7 +256,7 @@
 			"name": "主題管理",
 			"avatar": "https://api.iconify.design/line-md/mushroom.svg",
 			"description": "用於管理主題的shell。",
-			"description_markdown": "允許用戶在界面的不同視覺主題之間切換。",
+			"description_markdown": "允許使用者在界面的不同視覺主題之間切換。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

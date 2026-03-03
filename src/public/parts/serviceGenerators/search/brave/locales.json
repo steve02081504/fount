@@ -577,7 +577,7 @@
 		"zh-TW": {
 			"name": "Brave 搜索源",
 			"avatar": "https://api.iconify.design/logos/brave.svg",
-			"description": "由 Brave Search 提供支持的搜索服務實例",
+			"description": "由 Brave Search 提供支援的搜索服務實例",
 			"description_markdown": "這是 **Brave Search** 引擎的一個活動實例。它為角色提供獨立、隱私且準確的互聯網搜索結果，用於增強角色的知識儲備和實時信息獲取能力。",
 			"version": "0.0.0",
 			"author": "steve02081504",

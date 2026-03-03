@@ -253,16 +253,16 @@
 			]
 		},
 		"zh-TW": {
-			"name": "用戶設置",
+			"name": "使用者設定",
 			"avatar": "https://api.iconify.design/line-md/account.svg",
-			"description": "管理用戶帳戶設置，例如密碼、用戶名和 API 密鑰。",
-			"description_markdown": "允許用戶管理其帳戶設置，包括更改密碼、重命名帳戶以及管理用於集成的 API 密鑰。",
+			"description": "管理使用者帳號設定，例如密碼、使用者名稱和 API 金鑰。",
+			"description_markdown": "允許使用者管理其帳號設定，包括變更密碼、重新命名帳號以及管理用於整合的 API 金鑰。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"用戶",
+				"使用者",
 				"設置",
-				"帳戶",
+				"帳號",
 				"個人資料"
 			]
 		}

@@ -256,7 +256,7 @@
 			"name": "黑盒子 AI",
 			"avatar": "https://www.blackbox.ai/favicon.svg",
 			"description": "黑盒子 AI",
-			"description_markdown": "一個可以回答問題和編寫程式碼的人工智慧。",
+			"description_markdown": "一個可以回答問題和撰寫程式碼的人工智慧。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -523,7 +523,7 @@
 		"zh-TW": {
 			"avatar": "https://www.blackbox.ai/favicon.svg",
 			"description": "黑盒子 AI",
-			"description_markdown": "一個可以回答問題和編寫程式碼的人工智慧。",
+			"description_markdown": "一個可以回答問題和撰寫程式碼的人工智慧。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

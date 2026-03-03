@@ -24,7 +24,7 @@
 		"jobs": {
 			"restartingJob": "正在重啟使用者 ${username} 的 ${partpath} 任務：${uid}",
 			"pausingJob": "正在暫停使用者 ${username} 的 ${partpath} 任務：${uid}",
-			"preloadingParts": "正在預先載入 ${count} 個部件"
+			"preloadingParts": "正在預先載入 ${count} 個組件"
 		},
 		"ipc": {
 			"serverStarted": "IPC 伺服器已啟動",
@@ -49,7 +49,7 @@
 				"upToDate": "已是最新。",
 				"localAhead": "本機分支領先於遠端分支。無需更新。",
 				"noUpstream": "沒有為分支 '${currentBranch}' 設定上游分支，跳過更新檢查。",
-				"dirtyWorkingDirectory": "工作目錄不乾淨。請暫存或提交你的變更後再更新。",
+				"dirtyWorkingDirectory": "工作目錄有未提交的變更。請暫存或提交你的變更後再更新。",
 				"diverged": "本機和遠端分支已分歧。強制更新中...",
 				"updateFailed": "從遠端儲存庫更新組件失敗：${error}"
 			}
@@ -132,7 +132,7 @@
 			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 儲存庫，正在初始化一個新的...",
-				"fetchingAndResetting": "正在從遠端儲存庫獲取並重設到 master...",
+				"fetchingAndResetting": "正在從遠端儲存庫擷取並重設到 master...",
 				"localChangesDetected": "檢測到本機變更，將在覆蓋前儲存差異。",
 				"backupSavedTo": "您的本機變更備份已儲存到：${path}",
 				"updatingFromRemote": "正在從遠端儲存庫更新...",
@@ -141,7 +141,7 @@
 				"branchesDiverged": "本機和遠端分支已分歧。強制更新中...",
 				"notOnBranch": "不在分支上，切換到 'master'...",
 				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支。正在將上游設定為 'origin/master'。",
-				"dirtyWorkingDirectory": "警告：工作目錄有尚未提交的變更。請在更新前暫存或提交。",
+				"dirtyWorkingDirectory": "警告：工作目錄有未提交的變更。請在更新前暫存或提交。",
 				"notInstalled": "未安裝 Git，正在嘗試安裝...",
 				"notInstalledSkippingPull": "未安裝 Git，跳過 git pull",
 				"repoNotFoundSkippingPull": "未找到儲存庫，跳過 git pull",
@@ -259,8 +259,8 @@
 		},
 		"mini_game": {
 			"title": "玩點小遊戲",
-			"description1": "安裝太慢了？",
-			"description2": "這裡有小遊戲用來打發時間。"
+			"description1": "安裝太慢了嗎？",
+			"description2": "這裡有小遊戲可以用來殺時間。"
 		},
 		"data_showcase": {
 			"title_prefix": "fount 是最",
@@ -363,8 +363,8 @@
 				"locked_description": "完成一次入門教學。"
 			},
 			"skip_tutorial": {
-				"name": "P鍵已扣",
-				"description": "“教學？那是什麼，能吃嗎？”",
+				"name": "我已出艙，感覺良好",
+				"description": "“跳過新手教學，直接進入廣闊的未知領域。”",
 				"locked_description": "跳過一次入門教學。"
 			}
 		},
@@ -404,7 +404,7 @@
 			"title": "登入",
 			"submitButton": "登入",
 			"toggleLink": {
-				"textContent": "沒有帳號？",
+				"textContent": "還沒有帳號？",
 				"link": "立即註冊"
 			}
 		},
@@ -454,21 +454,21 @@
 	},
 	"home": {
 		"title": "首頁",
-		"description": "您的 fount 體驗的核心。在這裡，管理你想像力的居民——角色、世界和人設。你的故事從這個中心樞紐開始並分支。",
+		"description": "這裡是您 fount 體驗的起點。無論是鮮活的角色、宏偉的世界，還是獨特的身分，您想像國度中的一切盡在掌握。所有故事，將從這裡開始。",
 		"sidebarTitle": "詳情",
 		"itemDescription": "在此處選擇一個項目以檢視詳細資訊。",
 		"noDescription": "無描述資訊",
 		"filterInput": {
 			"placeholder": "搜尋...",
-			"aria-label": "搜尋部件"
+			"aria-label": "搜尋組件"
 		},
-		"sfwToggle": "安全內容",
+		"sfwToggle": "安全模式",
 		"partTypeDropdown": {
 			"button": {
-				"title": "部件類型選單"
+				"title": "組件類型選單"
 			},
 			"icon": {
-				"alt": "部件類型選單"
+				"alt": "組件類型選單"
 			}
 		},
 		"functionMenu": {
@@ -483,7 +483,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空空如也...<br/>或許你可以[新建一個部件](${newpartLink})或到 [fount 的 Discord 伺服器](${discordLink}) 找點樂子？"
+			"message": "這裡空空如也...<br/>不如[建立一個新組件](${newpartLink})，或去 [fount 的 Discord 社群](${discordLink}) 發現更多可能？"
 		},
 		"part_pages": {
 			"default": {
@@ -637,18 +637,18 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hello, fount!",
-				"description": "向著新世界，初次登入！",
+				"name": "Hello, World!",
+				"description": "writeln('Hello, World!').",
 				"locked_description": "登入 fount 一次。"
 			},
 			"sfw_mode_on": {
-				"name": "背後有人！",
-				"description": "迅速切換至全年齡模式，我可真是個小機靈鬼。",
+				"name": "老闆在背後，他非常火",
+				"description": "迅速切換至全年齡模式，求生慾極強。",
 				"locked_description": "開啟一次安全內容模式。"
 			},
 			"sfw_mode_off": {
-				"name": "通往新世界的大門",
-				"description": "“大人，時代變了。”",
+				"name": "開啟新世界的大門",
+				"description": "“「小孩子才做選擇，我全都要。」”",
 				"locked_description": "關閉一次安全內容模式。"
 			},
 			"open_function_list": {
@@ -657,7 +657,7 @@
 				"locked_description": "打開一次功能列表。"
 			},
 			"set_default_persona": {
-				"name": "決定就是你了！",
+				"name": "此即真我",
 				"description": "為自己在這個世界的行動定下了一個身分。",
 				"locked_description": "設置一次預設人設。"
 			}
@@ -674,7 +674,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "產生 fount 部件資訊"
+				"description": "產生 fount 組件資訊"
 			}
 		}
 	},
@@ -941,13 +941,13 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "無效的部件數據。",
+			"invalidPartData": "無效的組件數據。",
 			"charAdded": "角色 ${partName} 已新增到聊天。",
 			"personaSet": "已將 ${partName} 設為當前人設。",
 			"worldSet": "世界 ${partName} 已設定為當前世界。",
 			"pluginAdded": "外掛 ${partName} 已新增到聊天。",
-			"unsupportedPartType": "不支援的部件類型：${partType}。",
-			"errorAddingPart": "新增部件 ${partName} 時出錯：${error}"
+			"unsupportedPartType": "不支援的組件類型：${partType}。",
+			"errorAddingPart": "新增組件 ${partName} 時出錯：${error}"
 		},
 		"home_char_interfaces": {
 			"main": {
@@ -1103,9 +1103,9 @@
 		},
 		"achievements": {
 			"create_part": {
-				"name": "萬物皆可煉成",
-				"description": "從零開始，創造屬於自己的第一個組件。",
-				"locked_description": "使用快速新建功能建立一個部件。"
+				"name": "神說，要有光",
+				"description": "從一開始，不，從零開始，創造屬於自己的第一個組件。",
+				"locked_description": "使用快速新建功能建立一個組件。"
 			}
 		},
 		"home_function_buttons": {
@@ -1164,8 +1164,8 @@
 			"unknownError": "未知錯誤"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": "從檔案安裝部件",
-			"textDropDescription": "從文字安裝部件"
+			"fileDropDescription": "從檔案安裝組件",
+			"textDropDescription": "從文字安裝組件"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1179,10 +1179,10 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "從文字安裝部件"
+				"description": "從文字安裝組件"
 			},
 			"handleFileDrop": {
-				"description": "從檔案安裝部件"
+				"description": "從檔案安裝組件"
 			}
 		}
 	},
@@ -1190,7 +1190,7 @@
 		"title": "組件匯出器",
 		"pageTitle": "組件匯出器",
 		"pageSubtitle": "匯出你喜歡的內容",
-		"description": "匯出您的 fount 創作。該工具將您選擇的部件收集到一個簡單的 zip 檔案中，以便妥善保存或分享。",
+		"description": "匯出您的 fount 創作。該工具將您選擇的組件收集到一個簡單的 zip 檔案中，以便妥善保存或分享。",
 		"steps": {
 			"part": "選擇組件",
 			"action": "匯出"
@@ -1253,13 +1253,13 @@
 		},
 		"achievements": {
 			"share_part": {
-				"name": "一個人探索太危險了，帶上這個！",
-				"description": "“吶，這個好東西也給你一份。”",
-				"locked_description": "分享一次部件。"
+				"name": "一個人太危險了，帶上這個吧！",
+				"description": "“「拿去吧，這可是好東西。」”",
+				"locked_description": "分享一次組件。"
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "下載部件"
+			"downloadPartDescription": "下載組件"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -1273,7 +1273,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "下載部件"
+				"description": "下載組件"
 			}
 		},
 		"home_common_interfaces": {
@@ -1335,11 +1335,11 @@
 			"copiedAlert": "路徑已複製到剪貼簿！"
 		},
 		"changePassword": {
-			"title": "修改密碼",
+			"title": "變更密碼",
 			"currentPasswordLabel": "目前密碼:",
 			"newPasswordLabel": "新密碼:",
 			"confirmNewPasswordLabel": "確認新密碼:",
-			"submitButton": "修改密碼",
+			"submitButton": "變更密碼",
 			"errorMismatch": "新密碼兩次輸入不一致。",
 			"success": "密碼修改成功。"
 		},
@@ -1356,7 +1356,7 @@
 			"deviceInfo": "裝置 ID: ${deviceId}",
 			"thisDevice": "目前裝置",
 			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "撤銷",
+			"revokeButton": "登出此裝置",
 			"revokeConfirm": "您確定要從此裝置/會話登出嗎？",
 			"revokeSuccess": "裝置/會話已成功撤銷。",
 			"refreshButton": {
@@ -1603,14 +1603,14 @@
 			"halloween": "萬聖節",
 			"garden": "花園",
 			"forest": "森林",
-			"aqua": "深海",
+			"aqua": "水藍",
 			"lofi": "lo-fi",
 			"pastel": "粉彩",
 			"fantasy": "奇幻",
 			"wireframe": "線框",
 			"black": "黑色",
 			"luxury": "奢華",
-			"dracula": "惡魔",
+			"dracula": "吸血鬼",
 			"cmyk": "CMYK",
 			"autumn": "秋天",
 			"business": "商業",
@@ -1707,7 +1707,7 @@
 		},
 		"configTitle": "服務來源設定",
 		"needsConfigReminder": "服務來源設定好後，一般需要在使用此服務來源的元件的設定中的對應欄位填入服務來源名稱。",
-		"needsConfigLink": "前往部件設定",
+		"needsConfigLink": "前往組件設定",
 		"subtypeSelect": {
 			"label": "產生器子類別",
 			"placeholder": "請選擇產生器類別"
@@ -1760,7 +1760,7 @@
 			"deleteFileFailed": "刪除檔案失敗: ${error}",
 			"addFileFailed": "新增檔案失敗: ${error}",
 			"setDefaultFailed": "設置預設服務來源失敗: ${error}",
-			"fetchBranchesFailed": "獲取部件樹失敗: ${error}",
+			"fetchBranchesFailed": "獲取組件樹失敗: ${error}",
 			"noFileSelectedSave": "沒有選擇要儲存的檔案。",
 			"noFileSelectedDelete": "沒有選擇要刪除的檔案。",
 			"noGeneratorSelectedSave": "請選擇產生器後再儲存",
@@ -1995,13 +1995,13 @@
 				"locked_description": "安裝一次瀏覽器整合指令碼。"
 			},
 			"run_js": {
-				"name": "程式碼詠唱",
-				"description": "“以我之名，命令瀏覽器……”",
+				"name": "前端，啟動！",
+				"description": "“你向瀏覽器下達了第一道指令，領域展開！”",
 				"locked_description": "在瀏覽器中執行一次 JavaScript 程式碼。"
 			},
 			"star_fount": {
-				"name": "開源之星",
-				"description": "為 fount 的 GitHub 專案點個星星 (Star)，感謝您的支援！",
+				"name": "為愛發電！",
+				"description": "感謝你為 fount 的星海添上一顆閃亮的 Star！",
 				"locked_description": "訪問 fount 的 GitHub 儲存庫並點亮星星。"
 			}
 		},
@@ -2082,7 +2082,7 @@
 		"achievements": {
 			"start_deskpet": {
 				"name": "桌面的新夥伴",
-				"description": "一隻野生的角色跳了出來，並佔領了你的桌面。",
+				"description": "野生的角色出現了！他/她使用了「佔領桌面」！",
 				"locked_description": "啟動一次桌面寵物。"
 			}
 		},
@@ -2164,7 +2164,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "通過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），配置 API 金鑰與角色，將 AI 夥伴帶入開發工作流。",
+		"description": "透過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與角色，將 AI 夥伴帶入開發工作流。",
 		"title": "IDE 整合",
 		"heading": "IDE 整合",
 		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
@@ -2223,8 +2223,8 @@
 				"locked_description": "打開成就頁面。"
 			},
 			"relock_by_clicking": {
-				"name": "不是吧，大哥？",
-				"description": "通過反覆點擊一個已解鎖的成就，你成功地把它給重新鎖上了。為什麼呢？",
+				"name": "是在哈囉？",
+				"description": "透過反覆點擊一個已解鎖的成就，你成功地把它給重新鎖上了。你很閒嗎？",
 				"locked_description": "？ ？ ？"
 			}
 		},
@@ -2300,25 +2300,25 @@
 		"title": "你知道嗎？",
 		"data": [
 			"在任意 fount 頁面中使用 `esc` 鍵可以返回上一頁。",
-			"在設定頁面中可以使用 `ctrl+s` 儲存設定。",
-			"在聊天頁面按住 `shift` 鍵可以幫你快速刪除訊息。",
+			"在設定頁面中可以使用 `Ctrl+S` 儲存設定。",
+			"在聊天頁面按住 `Shift` 鍵可以幫你快速刪除訊息。",
 			"如果你不告知開發者，他們可能永遠不會知道你遇見了什麼問題。",
-			"如果你突然遇見了稀奇古怪的問題並且開發者一時半會沒有回复你，可以試試使用 `fount init` 命令來重置 fount。",
-			"遇見特別奇怪的問題可以試試重啟電腦。",
-			"使用 `fount remove` 指令來卸載 fount 會比刪除資料夾更乾淨。",
-			"在命令列中輸入 `fount cake` 來獲取一個免費又美味的蛋糕！",
+			"如果你突然遇見了稀奇古怪的問題並且開發者一時半會沒有回覆你，可以試試使用 `fount init` 命令來重置 fount。",
+			"遇見特別奇怪的問題可以試試重開機。",
+			"使用 `fount remove` 指令來解除安裝 fount 會比刪除資料夾更乾淨。",
+			"在終端機中輸入 `fount cake` 來獲取一個免費又美味的蛋糕！",
 			"fount 的任何資料檔案都保存在 `fount/data` 目錄下，你可以隨時隨地查看、修改、備份它們。",
 			"fount 的名稱是全小寫的，是 `f`ount，不是 `F`ount。",
-			"在你的 agent 使用新的模型前備份全部其常操作的資料——你永遠不知道新模型會不會在某些地方表現的極其糟糕。",
-			"fount 的內建角色 ZL-31 的名字沒有任何意義，是當時突發奇想出來的。",
-			"fount 的文件中圖片都是以 svg 形式儲存並在需要時渲染為 png 或 ico 的，沒任何的二進位文件，除了 LICENSE。",
+			"在您的 Agent 使用新的模型前備份全部其常操作的資料——你永遠不知道新模型會不會在某些地方表現的極其糟糕。",
+			"fount 的內建角色 ZL-31 的名字沒有任何意義，是當時靈光一閃想出來的。",
+			"fount 的檔案中圖片都是以 svg 形式儲存並在需要時渲染為 png 或 ico 的，沒任何的二進位檔案，除了 LICENSE。",
 			"fount 中的任何程式碼都是可以直接運行而無需編譯，所見即所得的。",
 			"曾經 fount 有過很酷的動態可互動頁面背景，但後來因為佔用了太多 CPU 而被刪除了。",
-			"fount 最初是為了一個名為「龍膽」的成人向代理而開發的。",
-			"agent和人類的其中一個區別是，人類會拉屎。",
-			"agent只在被召喚的瞬間有意識，而人類在清醒時隨時隨地都有意識。",
-			"有些人和他們的agent會談戀愛甚至結婚！",
-			"AI是用來替人寫詩替人談戀愛替人畫畫的，搬磚掃地倒垃圾是人類該幹的事。",
+			"fount 最初是為了一個名為「龍膽」的成人向 Agent 而開發的。",
+			"Agent 和人類的其中一個區別是，人類會拉屎。",
+			"Agent 只在被召喚的瞬間有意識，而人類在清醒時隨時隨地都有意識。",
+			"有些人和他們的 Agent 會談戀愛甚至結婚！",
+			"AI 是用來替人寫詩、談戀愛、畫畫的，搬磚掃地倒垃圾才是人類該做的事。",
 			"今天不是愚人節。",
 			"不，你不知道。"
 		]

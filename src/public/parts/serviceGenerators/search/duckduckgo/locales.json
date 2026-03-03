@@ -275,7 +275,7 @@
 		"zh-TW": {
 			"name": "DuckDuckGo 搜尋生成器",
 			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
-			"description": "生產 DuckDuckGo 搜尋服務源的工廠組件（基於網頁抓取）",
+			"description": "生產 DuckDuckGo 搜尋服務源的工廠組件（基於網頁擷取）",
 			"description_markdown": "這是基於 **DuckDuckGo HTML** 網頁搜尋的服務生成器。它作為生產搜尋實例的工廠，**無需 API 金鑰**即可為角色提供隱私友好的互聯網檢索能力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
@@ -580,7 +580,7 @@
 		"zh-TW": {
 			"name": "DuckDuckGo 搜尋源",
 			"avatar": "https://api.iconify.design/logos/duckduckgo.svg",
-			"description": "由 DuckDuckGo 提供支持的隱私優先搜尋實例",
+			"description": "由 DuckDuckGo 提供支援的隱私優先搜尋實例",
 			"description_markdown": "這是 **DuckDuckGo** 搜尋引擎的一個活動實例。它為角色提供注重隱私的互聯網檢索能力，確保在獲取外部信息時不進行任何追蹤。",
 			"version": "0.0.0",
 			"author": "steve02081504",

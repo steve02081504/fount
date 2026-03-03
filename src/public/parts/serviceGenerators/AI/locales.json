@@ -279,7 +279,7 @@
 			"name": "AI 服務生成器",
 			"avatar": "https://api.iconify.design/icon-park-outline/brain.svg",
 			"description": "生產 AI 驅動源組件的工廠根節點",
-			"description_markdown": "這是 AI 生成器模組的**根節點**。它扮演著「引擎工廠」的角色，所有負責產生 AI 驅動源的組件都掛載於此。角色透過加載此處生成的 AI 源，方可獲得對話與交互的能力。",
+			"description_markdown": "這是 AI 生成器模組的**根節點**。它扮演著「引擎工廠」的角色，所有負責產生 AI 驅動源的組件都掛載於此。角色透過加載此處生成的 AI 源，方可獲得對話與互動的能力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
