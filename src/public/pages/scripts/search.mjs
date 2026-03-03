@@ -135,9 +135,21 @@ export async function createSearchableDropdown({
 	disabled = false,
 }) {
 	const is_builted_dropdown = dropdownElement.querySelector('.dropdown-content')
-	const triggerPlaceholder = is_builted_dropdown ? dropdownElement.querySelector('input').placeholder : dropdownElement.placeholder || 'Select an option...'
-	const oldSearchInput = is_builted_dropdown ? dropdownElement.querySelector('.dropdown-content').querySelector('input') : dropdownElement.querySelector('input') || { dataset: {} }
-	const searchPlaceholder = oldSearchInput.placeholder || 'Search...'
+
+	// Capture i18n keys and dataset from originals before innerHTML is overwritten
+	const oldTriggerInput = is_builted_dropdown
+		? dropdownElement.querySelector('input:not(.dropdown-content input)')
+		: null
+	const triggerI18n = oldTriggerInput?.dataset.i18n
+		?? dropdownElement.dataset.i18n
+		?? 'searchableDropdown.trigger'
+	const triggerDataset = { ...(oldTriggerInput ?? dropdownElement).dataset, i18n: triggerI18n }
+
+	const oldSearchInput = is_builted_dropdown
+		? dropdownElement.querySelector('.dropdown-content input')
+		: dropdownElement.querySelector('input') || { dataset: {} }
+	const searchI18n = oldSearchInput.dataset?.i18n ?? 'searchableDropdown.search'
+	const searchDataset = { ...oldSearchInput.dataset, i18n: searchI18n }
 
 	// Ensure the dropdownElement has the 'dropdown' class
 	dropdownElement.classList.add('dropdown', 'searchable-dropdown')
@@ -145,33 +157,34 @@ export async function createSearchableDropdown({
 	dropdownElement.ariaHaspopup = 'listbox'
 	dropdownElement.ariaExpanded = false
 
-	if (disabled)
-		dropdownElement.innerHTML = /* html */ `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
-	else {
-		const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
+	if (disabled) {
+		dropdownElement.innerHTML = /* html */ `<input type="text" class="input input-bordered w-full" tabindex="-1" readonly disabled />`
+		Object.assign(dropdownElement.querySelector('input').dataset, triggerDataset)
+		return dropdownElement
+	}
 
-		// Create the dropdown content HTML structure
-		dropdownElement.innerHTML = /* html */ `\
-<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-controls="${uniqueId}" />
+	const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
+
+	// Create the dropdown content HTML structure
+	dropdownElement.innerHTML = /* html */ `\
+<input type="text" class="input input-bordered w-full cursor-pointer" tabindex="0" readonly aria-controls="${uniqueId}" />
 <div tabindex="0" id="${uniqueId}" class="dropdown-content z-50 p-4 shadow bg-base-100 rounded-box w-full flex flex-col gap-4 mt-2" role="listbox">
-	<input type="text" placeholder="${searchPlaceholder}" class="input input-bordered w-full" />
+	<input type="text" class="input input-bordered w-full" />
 	<ul class="flex flex-col w-full p-0 max-h-48 overflow-y-auto bg-base-100 rounded-box">
 		<!-- Options will be inserted here -->
 	</ul>
 </div>
 `
-	}
+
 	const dropdownContent = dropdownElement.querySelector('.dropdown-content')
-	const searchInput = (disabled ? dropdownElement : dropdownContent).querySelector('input')
 
-	// Placeholders are now set in the template string, but we can still respect oldInput for search
-	searchInput.placeholder = oldSearchInput.placeholder || searchInput.placeholder
-	Object.assign(searchInput.dataset, oldSearchInput.dataset)
-
-	if (disabled) return dropdownElement
-
-	// Get references to the newly created elements
+	// Sync datasets (including data-i18n); MutationObserver handles translation automatically
 	const triggerInput = dropdownElement.querySelector('input:not(.dropdown-content input)')
+	Object.assign(triggerInput.dataset, triggerDataset)
+
+	const searchInput = dropdownContent.querySelector('input')
+	Object.assign(searchInput.dataset, searchDataset)
+
 	const optionsList = dropdownContent.querySelector('ul')
 
 	/**

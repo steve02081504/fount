@@ -1523,9 +1523,21 @@
 			"placeholder": "Sprache suchen..."
 		},
 		"noPreferredLanguages": "Noch keine bevorzugte Sprache festgelegt. Es werden die Standardeinstellungen des Browsers verwendet.",
-		"savedMessage": "Spracheinstellungen werden gespeichert!",
+		"moveUpButton": {
+			"aria-label": "nach oben bewegen",
+			"alt": "Symbol „Nach oben verschieben“."
+		},
+		"moveDownButton": {
+			"aria-label": "nach unten bewegen",
+			"alt": "Symbol „Nach unten verschieben“."
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Diese Sprache löschen",
+			"alt": "Symbol „Löschen“."
+		},
+		"savedMessage": "Spracheinstellungen wurden gespeichert!",
 		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
-		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!",
+		"fetchLocalesFailed": "Abrufen der verfügbaren Sprachen fehlgeschlagen!",
 		"home_function_buttons": {
 			"settings": {
 				"title": "Einstellungen",
@@ -1739,10 +1751,14 @@
 			"save": "speichern",
 			"delete": "löschen",
 			"setDefault": {
-				"dataset": {
-					"tip": "Als Standard festlegen"
+				"tooltip": {
+					"dataset": {
+						"tip": "Als Standard festlegen"
+					}
 				},
-				"aria-label": "Legen Sie „${fileName}“ als Standarddienstquelle fest"
+				"checkbox": {
+					"aria-label": "Legen Sie „${fileName}“ als Standarddienstquelle fest"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Klicken Sie auf die Schaltfläche unten, um das Browser -Integrationsskript zu installieren. Sie müssen zuerst einen Tampermonkey (oder einen ähnlichen Skript-Manager) installieren.",
 		"install_button": "Installieren",
 		"install_from_url_tip": "Ermöglicht Ihr Browser die Installation nicht? Kopieren Sie diese URL und importieren Sie das Skript aus der URL im Tampermonkey-Plugin.",
+		"script_url_input": {
+			"aria-label": "URL des Browser-Integrationsskripts"
+		},
 		"what_is_manager": "Was ist ein Userscript-Manager?",
 		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount -Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
 		"popular_managers": "Beliebte Entscheidungen:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} Jahr",
 			"years": "{base} Jahre",
 			"centuries": "Jahrhunderte"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Auswählen..."
+		},
+		"search": {
+			"placeholder": "Suchen..."
 		}
 	}
 }

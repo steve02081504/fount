@@ -1523,7 +1523,19 @@
 			"placeholder": "言語を検索..."
 		},
 		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
-		"savedMessage": "言語設定が保存されます！",
+		"moveUpButton": {
+			"aria-label": "上に移動",
+			"alt": "上に移動アイコン"
+		},
+		"moveDownButton": {
+			"aria-label": "下に移動",
+			"alt": "下に移動アイコン"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "この言語を削除",
+			"alt": "削除"
+		},
+		"savedMessage": "言語設定が保存されました！",
 		"resetMessage": "言語設定がリセットされました！",
 		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
 		"home_function_buttons": {
@@ -1739,10 +1751,14 @@
 			"save": "保存",
 			"delete": "削除",
 			"setDefault": {
-				"dataset": {
-					"tip": "デフォルトとして設定"
+				"tooltip": {
+					"dataset": {
+						"tip": "デフォルトとして設定"
+					}
 				},
-				"aria-label": "「${fileName}」をデフォルトのサービスソースとして設定します"
+				"checkbox": {
+					"aria-label": "「${fileName}」をデフォルトのサービスソースとして設定します"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "下のボタンをクリックして、ブラウザ統合スクリプトをインストールします。最初にTampermonkey のようなユーザースクリプトマネージャーをインストールする必要があります。",
 		"install_button": "インストール",
 		"install_from_url_tip": "ブラウザはインストールできませんか？このURLをコピーして、Tampermonkey プラグインのURLからスクリプトをインポートします。",
+		"script_url_input": {
+			"aria-label": "ブラウザ統合スクリプトの URL"
+		},
 		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
 		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
 		"popular_managers": "人気のある選択肢：",
@@ -2426,6 +2445,14 @@
 			"year": "{base}年",
 			"years": "{base}年",
 			"centuries": "何世紀も"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "選択してください..."
+		},
+		"search": {
+			"placeholder": "検索..."
 		}
 	}
 }

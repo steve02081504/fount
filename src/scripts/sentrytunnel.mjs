@@ -7,7 +7,7 @@ import { sentry_enabled } from '../server/index.mjs'
  * @returns {Promise<void>}
  */
 export async function sentrytunnel(req, res) {
-	if (!sentry_enabled) return res.status(418).json({ error: 'Sentry is disabled' })
+	if (!sentry_enabled) return res.status(200).json({ error: 'Sentry is disabled' })
 	try {
 		const envelopeBytes = req.body
 

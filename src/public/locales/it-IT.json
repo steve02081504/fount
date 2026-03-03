@@ -1523,7 +1523,19 @@
 			"placeholder": "Cerca lingua..."
 		},
 		"noPreferredLanguages": "Nessuna lingua preferita impostata. Verranno utilizzate le impostazioni predefinite del browser.",
-		"savedMessage": "Le impostazioni della lingua vengono salvate!",
+		"moveUpButton": {
+			"aria-label": "salire",
+			"alt": "icona sposta su"
+		},
+		"moveDownButton": {
+			"aria-label": "spostarsi verso il basso",
+			"alt": "icona sposta verso il basso"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Elimina questa lingua",
+			"alt": "Elimina icona"
+		},
+		"savedMessage": "Le impostazioni della lingua sono state salvate!",
 		"resetMessage": "Le impostazioni della lingua sono state ripristinate!",
 		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!",
 		"home_function_buttons": {
@@ -1739,10 +1751,14 @@
 			"save": "Salva",
 			"delete": "Elimina",
 			"setDefault": {
-				"dataset": {
-					"tip": "Imposta come predefinito"
+				"tooltip": {
+					"dataset": {
+						"tip": "Imposta come predefinito"
+					}
 				},
-				"aria-label": "Imposta \"${fileName}\" come origine del servizio predefinita"
+				"checkbox": {
+					"aria-label": "Imposta \"${fileName}\" come origine del servizio predefinita"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Fai clic sul pulsante in basso per installare lo script di integrazione del browser. È necessario prima installare un gestore di userscript come Tampermonkey.",
 		"install_button": "Installare",
 		"install_from_url_tip": "Il tuo browser non ti consente di installarlo? Copia questo URL e importa lo script dall'URL nel plugin Tampermonkey.",
+		"script_url_input": {
+			"aria-label": "URL dello script di integrazione del browser"
+		},
 		"what_is_manager": "Cos'è un gestore di userscript?",
 		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
 		"popular_managers": "Scelte popolari:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} anno",
 			"years": "{base} anni",
 			"centuries": "Secoli"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Seleziona..."
+		},
+		"search": {
+			"placeholder": "Cerca..."
 		}
 	}
 }

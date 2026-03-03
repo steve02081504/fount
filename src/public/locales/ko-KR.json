@@ -1523,6 +1523,18 @@
 			"placeholder": "언어 검색..."
 		},
 		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
+		"moveUpButton": {
+			"aria-label": "위로 이동",
+			"alt": "위로 이동 아이콘"
+		},
+		"moveDownButton": {
+			"aria-label": "아래로 이동",
+			"alt": "아래로 이동 아이콘"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "이 언어 삭제",
+			"alt": "삭제 아이콘"
+		},
 		"savedMessage": "언어 설정이 저장됩니다!",
 		"resetMessage": "언어 설정이 재설정되었습니다!",
 		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
@@ -1739,10 +1751,14 @@
 			"save": "저장",
 			"delete": "삭제",
 			"setDefault": {
-				"dataset": {
-					"tip": "기본값으로 설정"
+				"tooltip": {
+					"dataset": {
+						"tip": "기본값으로 설정"
+					}
 				},
-				"aria-label": "\"${fileName}\"을 기본 서비스 소스로 설정"
+				"checkbox": {
+					"aria-label": "\"${fileName}\"을 기본 서비스 소스로 설정"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야합니다.",
 		"install_button": "설치",
 		"install_from_url_tip": "브라우저를 설치할 수 없습니까? 이 URL을 복사하고 Tampermonkey 플러그인에서 URL에서 스크립트를 가져 오십시오.",
+		"script_url_input": {
+			"aria-label": "브라우저 통합 스크립트 URL"
+		},
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
 		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
 		"popular_managers": "인기있는 선택 :",
@@ -2426,6 +2445,14 @@
 			"year": "{base}년",
 			"years": "{base}년",
 			"centuries": "수 세기"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "선택..."
+		},
+		"search": {
+			"placeholder": "검색..."
 		}
 	}
 }

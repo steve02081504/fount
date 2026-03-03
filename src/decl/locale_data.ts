@@ -1512,6 +1512,18 @@ export type LocaleData = {
 			placeholder: string
 		}
 		noPreferredLanguages: string
+		moveUpButton: {
+			'aria-label': string
+			alt: string
+		}
+		moveDownButton: {
+			'aria-label': string
+			alt: string
+		}
+		deleteLocaleButton: {
+			'aria-label': string
+			alt: string
+		}
 		savedMessage: string
 		resetMessage: string
 		fetchLocalesFailed: string
@@ -1728,10 +1740,14 @@ export type LocaleData = {
 			save: string
 			delete: string
 			setDefault: {
-				dataset: {
-					tip: string
+				tooltip: {
+					dataset: {
+						tip: string
+					}
 				}
-				'aria-label': string
+				checkbox: {
+					'aria-label': string
+				}
 			}
 		}
 		confirm: {
@@ -1929,6 +1945,9 @@ export type LocaleData = {
 		install_script_description: string
 		install_button: string
 		install_from_url_tip: string
+		script_url_input: {
+			'aria-label': string
+		}
 		what_is_manager: string
 		manager_explanation: string
 		popular_managers: string
@@ -2392,6 +2411,14 @@ export type LocaleData = {
 			centuries: string
 		}
 	}
+	searchableDropdown: {
+		trigger: {
+			placeholder: string
+		}
+		search: {
+			placeholder: string
+		}
+	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
@@ -2530,7 +2557,7 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.alerts.fetchGeneratorListFailed': { error: string | number }
 	'serviceSource_manager.alerts.saveFileFailed': { error: string | number }
 	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
-	'serviceSource_manager.buttons.setDefault.aria-label': { fileName: string | number }
+	'serviceSource_manager.buttons.setDefault.checkbox.aria-label': { fileName: string | number }
 	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
 	'subfounts.codeExecution.executionFailed': { message: string | number }
 	'subfounts.codeExecution.hostOption': { id: string | number }

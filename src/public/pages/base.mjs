@@ -47,7 +47,9 @@ if ('serviceWorker' in navigator)
 			console.error('Service Worker registration failed: ', error)
 		})
 
-if (new Date().getDate() === 1 && new Date().getMonth() === 3)
+const is_hidden_page = !window.innerHeight || !window.innerWidth
+
+if (!is_hidden_page && new Date().getDate() === 1 && new Date().getMonth() === 3)
 	if (Math.random() < 0.01)
 		if (navigator.userLanguage == 'zh-CN' || navigator.userLanguage == 'zh' || navigator.language == 'zh-CN' || navigator.language == 'zh')
 			window.location.href = 'https://96110.pages.dev/CloudFlare/CF'
@@ -55,7 +57,7 @@ if (new Date().getDate() === 1 && new Date().getMonth() === 3)
 			window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 
 // set prerender rules
-if (HTMLScriptElement.supports?.('speculationrules')) {
+if (!is_hidden_page && HTMLScriptElement.supports?.('speculationrules')) {
 	const specScript = document.createElement('script')
 	specScript.type = 'speculationrules'
 	specScript.textContent = JSON.stringify({
@@ -74,7 +76,7 @@ if (HTMLScriptElement.supports?.('speculationrules')) {
  * @param {KeyboardEvent} event - 键盘事件。
  * @returns {void}
  */
-document.addEventListener('keydown', event => {
+if (!is_hidden_page) document.addEventListener('keydown', event => {
 	switch (event.key) {
 		case 'Escape':
 			if (history.length > 1) history.back()
@@ -97,7 +99,7 @@ function setUpdateNeeded() {
 		window.location.reload(true)
 	}, 5000)
 }
-window.addEventListener('focus', () => {
+if (!is_hidden_page) window.addEventListener('focus', () => {
 	if (updateTimeout) window.location.reload(true)
 })
 /**
@@ -124,13 +126,12 @@ onServerEvent('page-modified', ({ path }) => {
  * @param {number} param0.duration - toast 的持续时间。
  * @returns {void}
  */
-onServerEvent('show-toast', async ({ type, message, duration }) => {
-	if (!window.innerHeight || !window.innerWidth) return
+if (!is_hidden_page) onServerEvent('show-toast', async ({ type, message, duration }) => {
 	const { showToast } = await import('./scripts/toast.mjs')
 	showToast(type, message, duration)
 })
 
-; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
+if (!is_hidden_page) (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
 		console.noBreadcrumb.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	} catch (error) { console.error(error) }

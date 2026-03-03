@@ -514,7 +514,6 @@ function updateFountObjectHasStar(value) {
 	const { host, protocol, starred } = getStoredDataSync()
 	updateFountObjectHost(host, protocol)
 	updateFountObjectHasStar(starred)
-	console.log('fount userscript: Initialized fount object.')
 })()
 
 // --- API Communication ---

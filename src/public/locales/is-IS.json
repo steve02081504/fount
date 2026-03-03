@@ -1523,6 +1523,18 @@
 			"placeholder": "Leita að tungumáli..."
 		},
 		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
+		"moveUpButton": {
+			"aria-label": "færa sig upp",
+			"alt": "færa upp táknið"
+		},
+		"moveDownButton": {
+			"aria-label": "færa sig niður",
+			"alt": "færa niður táknið"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Eyða þessu tungumáli",
+			"alt": "eyða tákni"
+		},
 		"savedMessage": "Tungumálastillingar eru vistaðar!",
 		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
 		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!",
@@ -1739,10 +1751,14 @@
 			"save": "vista",
 			"delete": "eyða",
 			"setDefault": {
-				"dataset": {
-					"tip": "Stillt sem sjálfgefið"
+				"tooltip": {
+					"dataset": {
+						"tip": "Stillt sem sjálfgefið"
+					}
 				},
-				"aria-label": "Stilltu „${fileName}“ sem sjálfgefna þjónustugjafa"
+				"checkbox": {
+					"aria-label": "Stilltu „${fileName}“ sem sjálfgefna þjónustugjafa"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Smelltu á hnappinn hér að neðan til að setja upp samþættingarhandrit vafrans. Þú verður fyrst að setja upp notandaforskriftarstjóra eins og Tampermonkey.",
 		"install_button": "Settu upp",
 		"install_from_url_tip": "Leyfir vafrinn þér ekki að setja hann upp? Afritaðu þessa slóð og fluttu handritið frá slóðinni í Tampermonkey viðbótinni.",
+		"script_url_input": {
+			"aria-label": "Slóð vafrasamþættingarhandrits"
+		},
 		"what_is_manager": "Hvað er notandaforskriftarstjóri?",
 		"manager_explanation": "Notandaforskriftarstjóri er vafralenging sem gerir þér kleift að setja upp og keyra forskriftir sem breyta vefsíðum. Til að nota fount Integration handritið þarftu eina af viðbætunum.",
 		"popular_managers": "Vinsælir kostir:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} ár",
 			"years": "{base} ár",
 			"centuries": "Aldir"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Velja..."
+		},
+		"search": {
+			"placeholder": "Leita..."
 		}
 	}
 }

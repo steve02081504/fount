@@ -1523,6 +1523,18 @@
 			"placeholder": "Tìm kiếm ngôn ngữ..."
 		},
 		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
+		"moveUpButton": {
+			"aria-label": "Di chuyển lên",
+			"alt": "biểu tượng di chuyển lên"
+		},
+		"moveDownButton": {
+			"aria-label": "di chuyển xuống",
+			"alt": "biểu tượng di chuyển xuống"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Xóa ngôn ngữ này",
+			"alt": "Xóa"
+		},
 		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
 		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
 		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!",
@@ -1739,10 +1751,14 @@
 			"save": "Lưu",
 			"delete": "xóa bỏ",
 			"setDefault": {
-				"dataset": {
-					"tip": "Đặt làm mặc định"
+				"tooltip": {
+					"dataset": {
+						"tip": "Đặt làm mặc định"
+					}
 				},
-				"aria-label": "Đặt \"${fileName}\" làm nguồn dịch vụ mặc định"
+				"checkbox": {
+					"aria-label": "Đặt \"${fileName}\" làm nguồn dịch vụ mặc định"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "Nhấp vào nút bên dưới để cài đặt tập lệnh tích hợp trình duyệt. Trước tiên bạn phải cài đặt một trình quản lý userscript như Tampermonkey.",
 		"install_button": "Cài đặt",
 		"install_from_url_tip": "Trình duyệt của bạn không cho phép bạn cài đặt nó? Sao chép URL này và nhập tập lệnh từ URL trong plugin Tampermonkey.",
+		"script_url_input": {
+			"aria-label": "URL tập lệnh tích hợp trình duyệt"
+		},
 		"what_is_manager": "Trình quản lý userscript là gì?",
 		"manager_explanation": "Một trình quản lý userscript là một tiện ích mở rộng trình duyệt cho phép bạn cài đặt và chạy các tập lệnh sửa đổi các trang web. Để sử dụng tập lệnh tích hợp fount, bạn cần một trong các tiện ích mở rộng.",
 		"popular_managers": "Lựa chọn phổ biến:",
@@ -2426,6 +2445,14 @@
 			"year": "{base} năm",
 			"years": "{base} năm",
 			"centuries": "Hàng thế kỷ"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "Chọn..."
+		},
+		"search": {
+			"placeholder": "Tìm kiếm..."
 		}
 	}
 }

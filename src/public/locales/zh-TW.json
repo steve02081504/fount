@@ -1523,6 +1523,18 @@
 			"placeholder": "搜尋語言..."
 		},
 		"noPreferredLanguages": "尚未設定偏好語言。將使用瀏覽器預設設定。",
+		"moveUpButton": {
+			"aria-label": "上移",
+			"alt": "上移圖示"
+		},
+		"moveDownButton": {
+			"aria-label": "下移",
+			"alt": "下移圖示"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "刪除該語言",
+			"alt": "刪除圖示"
+		},
 		"savedMessage": "語言設定已儲存！",
 		"resetMessage": "語言設定已重設！",
 		"fetchLocalesFailed": "獲取可用語言失敗！",
@@ -1739,10 +1751,14 @@
 			"save": "儲存",
 			"delete": "刪除",
 			"setDefault": {
-				"dataset": {
-					"tip": "設為預設"
+				"tooltip": {
+					"dataset": {
+						"tip": "設為預設"
+					}
 				},
-				"aria-label": "將「${fileName}」設為預設服務來源"
+				"checkbox": {
+					"aria-label": "將「${fileName}」設為預設服務來源"
+				}
 			}
 		},
 		"confirm": {
@@ -1940,6 +1956,9 @@
 		"install_script_description": "點擊下面的按鈕來安裝瀏覽器整合指令碼。您必須先安裝一個像油猴 (Tampermonkey) 一樣的使用者指令碼管理器。",
 		"install_button": "安裝",
 		"install_from_url_tip": "瀏覽器不允許你安裝？複製這個網址並在油猴擴充功能中從 url 中匯入指令碼。",
+		"script_url_input": {
+			"aria-label": "瀏覽器整合腳本 URL"
+		},
 		"what_is_manager": "什麼是油猴指令碼管理器？",
 		"manager_explanation": "油猴指令碼管理器是一個瀏覽器擴充功能，允許您安裝和執行修改網頁的指令碼。要使用 fount 整合指令碼，您需要其中一個擴充功能。",
 		"popular_managers": "熱門選擇：",
@@ -2425,6 +2444,14 @@
 			"year": "{base}年",
 			"years": "{base}年",
 			"centuries": "幾個世紀"
+		}
+	},
+	"searchableDropdown": {
+		"trigger": {
+			"placeholder": "請選擇..."
+		},
+		"search": {
+			"placeholder": "搜尋..."
 		}
 	}
 }

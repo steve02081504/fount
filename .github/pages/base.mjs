@@ -156,12 +156,16 @@ export function setTheme(theme) {
 	}
 	metaThemeColor.content = bcColor
 }
-setTheme(localStorage.getItem('fountTheme') ?? 'dark')
+const is_hidden_page = !window.innerHeight || !window.innerWidth
 
-svgInliner(document)
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-	setTheme(localStorage.getItem('fountTheme'))
-})
+if (!is_hidden_page) {
+	setTheme(localStorage.getItem('fountTheme') ?? 'dark')
+
+	svgInliner(document)
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+		setTheme(localStorage.getItem('fountTheme'))
+	})
+}
 
 /**
  * 设置预渲染。
@@ -202,7 +206,7 @@ if ('serviceWorker' in navigator)
  * @param {KeyboardEvent} event - 键盘事件。
  * @returns {void}
  */
-document.addEventListener('keydown', event => {
+if (!is_hidden_page) document.addEventListener('keydown', event => {
 	switch (event.key) {
 		case 'Escape':
 			if (history.length > 1) history.back()
@@ -214,7 +218,7 @@ document.addEventListener('keydown', event => {
 	}
 })
 
-; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
+if (!is_hidden_page) (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
 		console.noBreadcrumb.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	} catch (error) { console.error(error) }
