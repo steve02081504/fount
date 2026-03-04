@@ -307,12 +307,21 @@
 		"title": "Meðhöndla fount samskiptareglu",
 		"description": "Á hljóðlátan og skilvirkan hátt þýðir þessi síða fyrirætlanir þínar í óaðfinnanlega umskipti innan fonts. Líttu á það sem rólega töfrana á bak við fortjaldið.",
 		"processing": "Vinn úr samskiptareglu...",
-		"shellCommandSent": "Skeljarskipun send",
-		"runPartConfirm": {
-			"title": "Staðfesta keyrslu",
-			"message": "Ertu viss um að þú viljir keyra ${partpath}?",
-			"confirm": "Staðfestu",
-			"cancel": "Hætta við"
+		"invalidProtocol": "Ógild samskiptaregla",
+		"insufficientParams": "Ófullnægjandi færibreytur",
+		"unknownCommand": "Óþekkt skipun",
+		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
+		"runPart": {
+			"commandSent": "Hlutaskipun send",
+			"commandError": "Villa við sendingu hlutaskipunar: ${error}",
+			"retry": "Reyna aftur",
+			"back": "Til baka",
+			"confirm": {
+				"title": "Staðfesta keyrslu",
+				"message": "Ertu viss um að þú viljir keyra ${partpath}?",
+				"confirm": "Staðfestu",
+				"cancel": "Hætta við"
+			}
 		},
 		"offline_dialog": {
 			"title": "Hýsill ótengdur",
@@ -322,13 +331,7 @@
 				"retry": "Reyndu aftur"
 			}
 		},
-		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
-		"invalidProtocol": "Ógild samskiptaregla",
-		"insufficientParams": "Ófullnægjandi færibreytur",
-		"unknownCommand": "Óþekkt skipun",
-		"shellCommandFailed": "Mistókst að senda skeljarskipun",
-		"shellCommandError": "Villa við sendingu skeljarskipunar",
-		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}"
+		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?"
 	},
 	"startPage": {
 		"title": "fount!",

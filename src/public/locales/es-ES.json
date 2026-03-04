@@ -307,12 +307,21 @@
 		"title": "Procesando Protocolo fount",
 		"description": "De manera silenciosa y eficiente, esta página traduce su intención en una transición perfecta dentro de font. Considérelo la magia silenciosa detrás de la cortina.",
 		"processing": "Procesando protocolo...",
-		"shellCommandSent": "Comando de shell enviado",
-		"runPartConfirm": {
-			"title": "Confirmar ejecución",
-			"message": "¿Está seguro de que desea ejecutar ${partpath}?",
-			"confirm": "confirmar",
-			"cancel": "Cancelar"
+		"invalidProtocol": "Protocolo inválido",
+		"insufficientParams": "Parámetros insuficientes",
+		"unknownCommand": "Comando desconocido",
+		"unknownError": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
+		"runPart": {
+			"commandSent": "Comando de parte enviado",
+			"commandError": "Error al enviar el comando de parte: ${error}",
+			"retry": "Reintentar",
+			"back": "Volver",
+			"confirm": {
+				"title": "Confirmar ejecución",
+				"message": "¿Está seguro de que desea ejecutar ${partpath}?",
+				"confirm": "confirmar",
+				"cancel": "Cancelar"
+			}
 		},
 		"offline_dialog": {
 			"title": "Host sin conexión",
@@ -322,13 +331,7 @@
 				"retry": "Reintentar"
 			}
 		},
-		"fountNotFound": "Ay ay ay :(\n\nfount no encontrado, ¿quizás necesites instalarlo primero?",
-		"invalidProtocol": "Protocolo inválido",
-		"insufficientParams": "Parámetros insuficientes",
-		"unknownCommand": "Comando desconocido",
-		"shellCommandFailed": "Error al enviar el comando de shell",
-		"shellCommandError": "Error enviando el comando de shell",
-		"unknownError": "Ay ay ay :(\n\nOcurrió un error:\n${error}"
+		"fountNotFound": "Ay ay ay :(\n\nfount no encontrado, ¿quizás necesites instalarlo primero?"
 	},
 	"startPage": {
 		"title": "¡fount!",

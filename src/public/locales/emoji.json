@@ -307,12 +307,21 @@
 		"title": "⚙️ ⛲",
 		"description": "🤫🪄🔗➡️🏛️",
 		"processing": "⚙️⏳",
-		"shellCommandSent": "💻➡️✅",
-		"runPartConfirm": {
-			"title": "🤔❓",
-			"message": "🤔▶️ 🧩${partpath} ❓",
-			"confirm": "✅",
-			"cancel": "❌"
+		"invalidProtocol": "🚫🔗",
+		"insufficientParams": "❓🔢",
+		"unknownCommand": "🤷‍♂️➡️",
+		"unknownError": "😢\n\n❌:\n${error}",
+		"runPart": {
+			"commandSent": "🧩➡️✅",
+			"commandError": "🧩➡️⁉️ ${error}",
+			"retry": "🔄",
+			"back": "⬅️",
+			"confirm": {
+				"title": "🤔❓",
+				"message": "🤔▶️ 🧩${partpath} ❓",
+				"confirm": "✅",
+				"cancel": "❌"
+			}
 		},
 		"offline_dialog": {
 			"title": "🖥️🚫🌐",
@@ -322,13 +331,7 @@
 				"retry": "🔄"
 			}
 		},
-		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
-		"invalidProtocol": "🚫🔗",
-		"insufficientParams": "❓🔢",
-		"unknownCommand": "🤷‍♂️➡️",
-		"shellCommandFailed": "💻➡️❌",
-		"shellCommandError": "💻➡️⁉️",
-		"unknownError": "😢\n\n❌:\n${error}"
+		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓"
 	},
 	"startPage": {
 		"title": "⛲❗️",

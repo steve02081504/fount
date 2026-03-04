@@ -307,12 +307,21 @@
 		"title": "處理 fount 協定",
 		"description": "該頁面安靜而高效地將您的意圖轉化為 fount 內的無縫過渡。認為這是幕後的安靜魔法。",
 		"processing": "正在處理協定...",
-		"shellCommandSent": "Shell 指令已傳送",
-		"runPartConfirm": {
-			"title": "確認執行",
-			"message": "您確定要執行 ${partpath} 嗎？",
-			"confirm": "確認",
-			"cancel": "取消"
+		"invalidProtocol": "無效的協定",
+		"insufficientParams": "參數不足",
+		"unknownCommand": "未知的指令",
+		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}",
+		"runPart": {
+			"commandSent": "部件指令已傳送",
+			"commandError": "傳送部件指令時出錯：${error}",
+			"retry": "重試",
+			"back": "返回",
+			"confirm": {
+				"title": "確認執行",
+				"message": "您確定要執行 ${partpath} 嗎？",
+				"confirm": "確認",
+				"cancel": "取消"
+			}
 		},
 		"offline_dialog": {
 			"title": "主機離線",
@@ -322,13 +331,7 @@
 				"retry": "重試"
 			}
 		},
-		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
-		"invalidProtocol": "無效的協定",
-		"insufficientParams": "參數不足",
-		"unknownCommand": "未知的指令",
-		"shellCommandFailed": "傳送 Shell 指令失敗",
-		"shellCommandError": "傳送 Shell 指令時出錯",
-		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}"
+		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？"
 	},
 	"startPage": {
 		"title": "fount!",

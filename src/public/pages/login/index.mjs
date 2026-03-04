@@ -203,6 +203,14 @@ async function handleFormSubmit(event) {
 				else
 					finalRedirectUrl = `/parts/shells:${defaultShell}`
 
+				// 若 redirect 已含 gobackNum，则在其基础上 +1 再传下去
+				if (redirect) try {
+					const url = new URL(finalRedirectUrl, window.location.origin)
+					const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
+					if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
+					finalRedirectUrl = url.href
+				} catch { /* URL 解析失败时保持原样 */ }
+
 				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			}
 			else toggleForm() // 注册成功后自动切换到登录表单

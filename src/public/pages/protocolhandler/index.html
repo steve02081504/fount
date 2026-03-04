@@ -27,15 +27,19 @@
 		<div class="text-center">
 			<p id="message" class="text-lg mb-4" data-i18n="protocolhandler.processing"></p>
 			<progress class="progress w-56"></progress>
+			<div id="error_actions" class="flex gap-2 justify-center mt-4" hidden>
+				<button type="button" class="btn btn-primary" id="retry_btn" data-i18n="protocolhandler.runPart.retry"></button>
+				<button type="button" class="btn" id="back_btn" data-i18n="protocolhandler.runPart.back"></button>
+			</div>
 		</div>
 	</main>
 	<dialog id="confirmation_modal" class="modal">
 		<div class="modal-box">
-			<h3 class="font-bold text-lg" data-i18n="protocolhandler.runPartConfirm.title"></h3>
+			<h3 class="font-bold text-lg" data-i18n="protocolhandler.runPart.confirm.title"></h3>
 			<p class="py-4" id="confirmation_message"></p>
 			<div class="modal-action">
-				<button class="btn btn-primary" id="confirm_btn" data-i18n="protocolhandler.runPartConfirm.confirm"></button>
-				<button class="btn" id="cancel_btn" data-i18n="protocolhandler.runPartConfirm.cancel"></button>
+				<button class="btn btn-primary" id="confirm_btn" data-i18n="protocolhandler.runPart.confirm.confirm"></button>
+				<button class="btn" id="cancel_btn" data-i18n="protocolhandler.runPart.confirm.cancel"></button>
 			</div>
 		</div>
 	</dialog>

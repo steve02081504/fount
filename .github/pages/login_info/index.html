@@ -29,6 +29,19 @@
 		// Get fileId and from from hash params for security (not sent to server)
 		const fileId = hashParams.get('fileId')
 		const from = hashParams.get('from')
+
+		/**
+		 * 对编码后的 URL 进行处理。
+		 * @param {string} urlEncoded - 经过 encodeURIComponent 编码的 URL。
+		 * @returns {string} 处理后的 URL 字符串。
+		 */
+		function processUrl(urlEncoded) {
+			const url = new URL(decodeURIComponent(urlEncoded))
+			const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
+			if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
+			return url.href
+		}
+
 		const errorModal = document.getElementById('error_modal')
 		const errorMessageElement = document.getElementById('error_modal_message')
 		const ignoreBtn = document.getElementById('ignore_and_continue_btn')
@@ -67,7 +80,7 @@
 			if (fileId || from) try { // save
 				const encryptedData = await receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid)
 				localStorage.setItem(`fount-login-${instanceId}`, encryptedData)
-				const targetUrl = new URL(decodeURIComponent(redirectUrl))
+				const targetUrl = new URL(processUrl(redirectUrl))
 				if (urlParams.has('forward')) {
 					const newHashParams = new URLSearchParams()
 					if (fileId) newHashParams.set('fileId', fileId)
@@ -81,7 +94,7 @@
 				throw error
 			}
 			else if (localStorage.getItem(`fount-login-${instanceId}`)) try {// load
-				await transferEncryptedCredentials(uuid, redirectUrl)
+				await transferEncryptedCredentials(uuid, processUrl(redirectUrl))
 			} catch (error) {
 				console.error('Failed to transfer credentials:', error)
 				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
@@ -102,7 +115,7 @@
 				onIgnore: () => {
 					errorModal.close()
 					if (!redirectUrl) return window.location.reload()
-					const targetUrl = new URL(decodeURIComponent(redirectUrl))
+					const targetUrl = new URL(processUrl(redirectUrl))
 					targetUrl.searchParams.set('login_status', 'failed')
 					targetUrl.searchParams.set('reason', error.message)
 					window.location.href = targetUrl.href

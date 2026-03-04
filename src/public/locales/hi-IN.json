@@ -307,12 +307,21 @@
 		"title": "fount प्रोटोकॉल संसाधित हो रहा है",
 		"description": "चुपचाप और कुशलता से, यह पृष्ठ आपके इरादे को स्रोत के भीतर एक निर्बाध परिवर्तन में बदल देता है। इसे पर्दे के पीछे का शांत जादू समझें।",
 		"processing": "प्रोटोकॉल संसाधित हो रहा है...",
-		"shellCommandSent": "शेल कमांड भेज दिया गया है।",
-		"runPartConfirm": {
-			"title": "चलाने की पुष्टि करें",
-			"message": "क्या आप वाकई ${partpath} चलाना चाहते हैं?",
-			"confirm": "पुष्टि करना",
-			"cancel": "रद्द करना"
+		"invalidProtocol": "अमान्य प्रोटोकॉल।",
+		"insufficientParams": "अपर्याप्त पैरामीटर।",
+		"unknownCommand": "अज्ञात कमांड।",
+		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
+		"runPart": {
+			"commandSent": "पार्ट कमांड भेज दिया गया है।",
+			"commandError": "पार्ट कमांड भेजने में त्रुटि: ${error}",
+			"retry": "पुनः प्रयास करें",
+			"back": "वापस",
+			"confirm": {
+				"title": "चलाने की पुष्टि करें",
+				"message": "क्या आप वाकई ${partpath} चलाना चाहते हैं?",
+				"confirm": "पुष्टि करना",
+				"cancel": "रद्द करना"
+			}
 		},
 		"offline_dialog": {
 			"title": "होस्ट ऑफ़लाइन",
@@ -322,13 +331,7 @@
 				"retry": "पुनः प्रयास करें"
 			}
 		},
-		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
-		"invalidProtocol": "अमान्य प्रोटोकॉल।",
-		"insufficientParams": "अपर्याप्त पैरामीटर।",
-		"unknownCommand": "अज्ञात कमांड।",
-		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
-		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
-		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"
+		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?"
 	},
 	"startPage": {
 		"title": "fount!",

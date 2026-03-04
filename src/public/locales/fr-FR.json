@@ -307,12 +307,21 @@
 		"title": "Traitement du Protocole fount",
 		"description": "Silencieusement et efficacement, cette page traduit votre intention en une transition transparente au sein de fount. Considérez cela comme la magie tranquille derrière le rideau.",
 		"processing": "Traitement du protocole en cours...",
-		"shellCommandSent": "Commande shell envoyée.",
-		"runPartConfirm": {
-			"title": "Confirmer l'exécution",
-			"message": "Êtes-vous sûr de vouloir exécuter ${partpath} ?",
-			"confirm": "confirmer",
-			"cancel": "Annuler"
+		"invalidProtocol": "Protocole invalide.",
+		"insufficientParams": "Paramètres insuffisants.",
+		"unknownCommand": "Commande inconnue.",
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
+		"runPart": {
+			"commandSent": "Commande de partie envoyée.",
+			"commandError": "Erreur lors de l'envoi de la commande de partie : ${error}",
+			"retry": "Réessayer",
+			"back": "Retour",
+			"confirm": {
+				"title": "Confirmer l'exécution",
+				"message": "Êtes-vous sûr de vouloir exécuter ${partpath} ?",
+				"confirm": "confirmer",
+				"cancel": "Annuler"
+			}
 		},
 		"offline_dialog": {
 			"title": "Hôte hors ligne",
@@ -322,13 +331,7 @@
 				"retry": "Essayer à nouveau"
 			}
 		},
-		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
-		"invalidProtocol": "Protocole invalide.",
-		"insufficientParams": "Paramètres insuffisants.",
-		"unknownCommand": "Commande inconnue.",
-		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
-		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
-		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
+		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?"
 	},
 	"startPage": {
 		"title": "fount !",

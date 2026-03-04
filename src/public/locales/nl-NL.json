@@ -307,12 +307,21 @@
 		"title": "fount-protocol verwerken",
 		"description": "Geruisloos en efficiënt vertaalt deze pagina uw intentie naar een naadloze overgang binnen font. Beschouw het als de stille magie achter het gordijn.",
 		"processing": "Protocol wordt verwerkt...",
-		"shellCommandSent": "Shell-commando verzonden",
-		"runPartConfirm": {
-			"title": "Uitvoering bevestigen",
-			"message": "Weet u zeker dat u ${partpath} wilt uitvoeren?",
-			"confirm": "Bevestigen",
-			"cancel": "Annuleren"
+		"invalidProtocol": "Ongeldig protocol",
+		"insufficientParams": "Onvoldoende parameters",
+		"unknownCommand": "Onbekend commando",
+		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
+		"runPart": {
+			"commandSent": "Onderdeelcommando verzonden",
+			"commandError": "Fout bij verzenden van onderdeelcommando: ${error}",
+			"retry": "Probeer opnieuw",
+			"back": "Terug",
+			"confirm": {
+				"title": "Uitvoering bevestigen",
+				"message": "Weet u zeker dat u ${partpath} wilt uitvoeren?",
+				"confirm": "Bevestigen",
+				"cancel": "Annuleren"
+			}
 		},
 		"offline_dialog": {
 			"title": "Host offline",
@@ -322,13 +331,7 @@
 				"retry": "Probeer het opnieuw"
 			}
 		},
-		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
-		"invalidProtocol": "Ongeldig protocol",
-		"insufficientParams": "Onvoldoende parameters",
-		"unknownCommand": "Onbekend commando",
-		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
-		"shellCommandError": "Fout bij verzenden van Shell-commando",
-		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}"
+		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?"
 	},
 	"startPage": {
 		"title": "fount!",

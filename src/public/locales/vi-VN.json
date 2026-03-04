@@ -307,12 +307,21 @@
 		"title": "Xử lý giao thức fount",
 		"description": "Một cách âm thầm và hiệu quả, trang này chuyển ý định của bạn thành một quá trình chuyển đổi liền mạch trong fount. Hãy coi đó là phép thuật thầm lặng đằng sau bức màn.",
 		"processing": "Đang xử lý giao thức...",
-		"shellCommandSent": "Lệnh Shell đã được gửi.",
-		"runPartConfirm": {
-			"title": "Xác nhận đang chạy",
-			"message": "Bạn có chắc chắn muốn chạy ${partpath} không?",
-			"confirm": "xác nhận",
-			"cancel": "Hủy bỏ"
+		"invalidProtocol": "Giao thức không hợp lệ.",
+		"insufficientParams": "Không đủ tham số.",
+		"unknownCommand": "Lệnh không xác định.",
+		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
+		"runPart": {
+			"commandSent": "Lệnh phần đã được gửi.",
+			"commandError": "Đã xảy ra lỗi khi gửi lệnh phần: ${error}",
+			"retry": "Thử lại",
+			"back": "Quay lại",
+			"confirm": {
+				"title": "Xác nhận đang chạy",
+				"message": "Bạn có chắc chắn muốn chạy ${partpath} không?",
+				"confirm": "xác nhận",
+				"cancel": "Hủy bỏ"
+			}
 		},
 		"offline_dialog": {
 			"title": "Máy chủ ngoại tuyến",
@@ -322,13 +331,7 @@
 				"retry": "Thử lại"
 			}
 		},
-		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
-		"invalidProtocol": "Giao thức không hợp lệ.",
-		"insufficientParams": "Không đủ tham số.",
-		"unknownCommand": "Lệnh không xác định.",
-		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
-		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
-		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"
+		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?"
 	},
 	"startPage": {
 		"title": "fount!",

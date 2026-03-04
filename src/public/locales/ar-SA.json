@@ -307,12 +307,21 @@
 		"title": "معالجة بروتوكول fount",
 		"description": "بصمت وكفاءة، تترجم هذه الصفحة نيتك إلى انتقال سلس داخل fount. اعتبره السحر الهادئ خلف الستار.",
 		"processing": "جاري معالجة البروتوكول...",
-		"shellCommandSent": "تم إرسال أمر الواجهة",
-		"runPartConfirm": {
-			"title": "تأكيد التشغيل",
-			"message": "هل أنت متأكد أنك تريد تشغيل ${partpath}؟",
-			"confirm": "تأكيد",
-			"cancel": "إلغاء"
+		"invalidProtocol": "بروتوكول غير صالح",
+		"insufficientParams": "معلمات غير كافية",
+		"unknownCommand": "أمر غير معروف",
+		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
+		"runPart": {
+			"commandSent": "تم إرسال أمر الجزء",
+			"commandError": "حدث خطأ أثناء إرسال أمر الجزء: ${error}",
+			"retry": "حاول ثانية",
+			"back": "رجوع",
+			"confirm": {
+				"title": "تأكيد التشغيل",
+				"message": "هل أنت متأكد أنك تريد تشغيل ${partpath}؟",
+				"confirm": "تأكيد",
+				"cancel": "إلغاء"
+			}
 		},
 		"offline_dialog": {
 			"title": "المضيف غير متصل",
@@ -322,13 +331,7 @@
 				"retry": "حاول ثانية"
 			}
 		},
-		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
-		"invalidProtocol": "بروتوكول غير صالح",
-		"insufficientParams": "معلمات غير كافية",
-		"unknownCommand": "أمر غير معروف",
-		"shellCommandFailed": "فشل إرسال أمر الواجهة",
-		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
-		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}"
+		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟"
 	},
 	"startPage": {
 		"title": "fount!",
