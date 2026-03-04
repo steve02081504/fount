@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+FOUNT_SESSION_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+export FOUNT_SESSION_START_TIME
 if [ -z "$FOUNT_START_TIME" ]; then
 	FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
 fi

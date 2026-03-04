@@ -1,5 +1,6 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
+$env:FOUNT_SESSION_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 if (-not $env:FOUNT_START_TIME) {
 	$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 }
