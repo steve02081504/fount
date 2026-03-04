@@ -169,7 +169,7 @@ export function registerEndpoints(router) {
 		res.status(result.status).json(result)
 	})
 
-	router.post('/api/logout', logout)
+	router.post('/api/logout', authenticate, logout)
 
 	router.post('/api/apikey/create', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
