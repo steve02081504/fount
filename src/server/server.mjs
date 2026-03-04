@@ -44,6 +44,7 @@ function get_config() {
 export function save_config() {
 	saveJsonFile(data_path + '/config.json', config)
 }
+on_shutdown(save_config)
 
 /**
  * 应用程序的配置，从 `config.json` 加载。
@@ -117,48 +118,12 @@ function handleError(err) {
 }
 
 /**
- * 设置重启应用程序的函数。
- * @param {() => never} base_restartor - 基础重启应用程序的函数。
- * @returns {void}
- */
-function set_restartor(base_restartor) {
-	/**
-	 * 默认的关闭应用程序时的清理函数，负责删除reboot对象并保存至config。
-	 * @returns {void}
-	 */
-	let shutdown_do = () => {
-		if (!config.reboot) return
-		delete config.reboot
-		save_config()
-	}
-	/**
-	 * 重启应用程序时的调用函数。
-	 * @returns {never} 不会返回，因为进程会退出。
-	 */
-	restartor = () => {
-		/**
-		 * 新设置的应用程序重启时清理函数，负责记录reboot对象并保存至config。
-		 * @returns {void}
-		 */
-		shutdown_do = () => {
-			config.reboot ??= {}
-			config.reboot.sessionStartTime = Date.now()
-			save_config()
-		}
-		base_restartor?.()
-	}
-	on_shutdown(() => {
-		shutdown_do()
-	})
-}
-
-/**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
  * @returns {Promise<boolean>} 如果初始化成功，则解析为 true，否则为 false。
  */
 export async function init(start_config) {
-	set_restartor(start_config.restartor)
+	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC']) starts[start] ??= true
@@ -309,9 +274,9 @@ export async function init(start_config) {
 		}
 	}
 	const endtime = new Date(),
-	denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
+		denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
 	console.log({
-		sessionStartTime: new Date(config.reboot?.sessionStartTime ?? startTime.getTime()),
+		sessionStartTime: new Date(process.env.FOUNT_SESSION_START_TIME ?? startTime.getTime()),
 		startTime,
 		shellScriptTimeInMs: denoStartTime - startTime,
 		denoStartTime,
