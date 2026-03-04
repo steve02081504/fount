@@ -153,6 +153,7 @@ async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get fount host URL. Initial hostUrl: ${hostUrl}`)
 
 	for (const host of new Set([
+		'http://fount.local:8931', // mDNS 主机工作正常时优先使用 fount.local 来提供更好的跨设备体验
 		'http://localhost:8931', // 永远先检查 localhost —— 要不然用户为什么要运行本地服务器?
 		'http://10.0.2.2:8931', // 安卓模拟器到本机
 		hostUrl,
