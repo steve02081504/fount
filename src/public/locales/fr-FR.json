@@ -167,7 +167,9 @@
 				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
 				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",
 				"rootWarning1": "Non recommandé : exécuter fount en tant qu'utilisateur root accorde un accès complet au système à tous les composants de fount.",
-				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal."
+				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal.",
+				"permissionDeniedAsRoot": "Erreur : Impossible d'écrire dans le répertoire fount '${path}'. Vous utilisez le compte root mais l'accès est toujours refusé. Veuillez vérifier et corriger les autorisations de sécurité sur ce dossier pour accorder un contrôle total à l'utilisateur actuel.",
+				"permissionDeniedNotRoot": "Erreur : Impossible d'écrire dans le répertoire fount '${path}'. Veuillez corriger les autorisations de sécurité sur le dossier pour accorder l'accès en écriture à l'utilisateur actuel, ou exécuter fount en tant qu'utilisateur root."
 			},
 			"clean": {
 				"removingCaches": "Suppression du cache...",

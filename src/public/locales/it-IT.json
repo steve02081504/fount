@@ -167,7 +167,9 @@
 				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
 				"untrustedPartsWarning": "Non installare componenti di fount non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
 				"rootWarning1": "Non consigliato: l'esecuzione del fount come root garantisce l'accesso completo al sistema a tutti i componenti del fount.",
-				"rootWarning2": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale."
+				"rootWarning2": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale.",
+				"permissionDeniedAsRoot": "Errore: impossibile scrivere nella directory fount '${path}'. Stai eseguendo come root ma l'accesso è ancora negato: controlla e correggi le autorizzazioni di sicurezza su questa cartella per concedere all'utente corrente il controllo completo.",
+				"permissionDeniedNotRoot": "Errore: impossibile scrivere nella directory fount '${path}'. Correggi le autorizzazioni di sicurezza sulla cartella per concedere all'utente corrente l'accesso in scrittura, o esegui fount come root."
 			},
 			"clean": {
 				"removingCaches": "Rimozione cache...",

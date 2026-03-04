@@ -167,7 +167,9 @@
 				"browserMissing": "기본 브라우저가 감지되지 않습니다. 설치를 시도 중입니다...",
 				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 요소 구성 요소를 설치하지 마십시오. 그들은 무엇이든 할 수 있습니다.",
 				"rootWarning1": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
-				"rootWarning2": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다."
+				"rootWarning2": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다.",
+				"permissionDeniedAsRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. root로 실행 중이지만 액세스가 여전히 거부되었습니다. 현재 사용자에게 모든 권한을 부여하려면 이 폴더의 보안 권한을 확인하고 수정하십시오.",
+				"permissionDeniedNotRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. 폴더의 보안 권한을 수정하여 현재 사용자에게 쓰기 액세스 권한을 부여하거나, root로 fount를 실행하십시오."
 			},
 			"clean": {
 				"removingCaches": "캐시 삭제 중...",

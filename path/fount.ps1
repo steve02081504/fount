@@ -188,7 +188,7 @@ function Test-Winget {
 				try {
 					Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile "$env:TEMP/winget.msixbundle"
 					Add-AppxPackage -Path "$env:TEMP/winget.msixbundle"
-					Remove-Item winget.msixbundle
+					Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 				}
 				catch {
 					Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix
@@ -758,7 +758,53 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	}
 }
 
+function isRoot {
+	if ($IsWindows) {
+		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+	}
+	else {
+		$UID -eq 0
+	}
+}
+
+function Test-FountDirWritable {
+	param([string]$dir)
+	if (-not (Test-Path $dir)) {
+		try { New-Item -Path $dir -ItemType Directory -Force -ErrorAction Stop | Out-Null } catch { return $false }
+	}
+	if (-not $IsWindows) { return $true }
+	try {
+		$acl = Get-Acl -Path $dir -ErrorAction Stop
+		$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+		$writeRights = [System.Security.AccessControl.FileSystemRights]::Write
+		$modifyRights = [System.Security.AccessControl.FileSystemRights]::Modify
+		foreach ($rule in $acl.Access) {
+			if ($rule.AccessControlType -ne 'Allow') { continue }
+			$ruleSid = try { $rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]) } catch { $null }
+			if (-not $ruleSid) { continue }
+			$hasWrite = ($rule.FileSystemRights -band $writeRights) -ne 0 -or ($rule.FileSystemRights -band $modifyRights) -ne 0
+			if ($hasWrite -and ($ruleSid -eq $identity.User -or $identity.Groups -contains $ruleSid)) {
+				return $true
+			}
+		}
+		return $false
+	} catch { return $false }
+}
+
+function Assert-FountDirWritable {
+	param([string]$dir)
+	if (-not (Test-FountDirWritable $dir)) {
+		if (isRoot) {
+			Write-Error (Get-I18n -key 'install.permissionDeniedAsRoot' -params @{path = $dir })
+		} else {
+			Write-Error (Get-I18n -key 'install.permissionDeniedNotRoot' -params @{path = $dir })
+		}
+		exit 1
+	}
+}
+
 if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+	Assert-FountDirWritable $FOUNT_DIR
 	Update-FountAndDeno
 }
 if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
@@ -773,14 +819,6 @@ if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe'))
 }
 
 # 执行 fount
-function isRoot {
-	if ($IsWindows) {
-		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-	}
-	else {
-		$UID -eq 0
-	}
-}
 $Script:is_debug = $false
 function debug_on {
 	$Script:is_debug = $true
@@ -1172,7 +1210,7 @@ elseif ($args[0] -eq 'remove') {
 
 		$UserPath = [System.Environment]::GetEnvironmentVariable('PATH', [System.EnvironmentVariableTarget]::User)
 		$UserPath = $UserPath -split ';'
-		$UserPath = $UserPath | Where-Object { !$_.Contains("/.deno") }
+		$UserPath = $UserPath | Where-Object { $_ -notmatch '[/\\]\.deno[\\/]?' }
 		$UserPath = $UserPath -join ';'
 		[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 	}

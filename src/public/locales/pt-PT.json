@@ -167,7 +167,9 @@
 				"browserMissing": "Navegador padrão não detectado, tentando instalar...",
 				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa.",
 				"rootWarning1": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
-				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o fount como um usuário normal."
+				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o fount como um usuário normal.",
+				"permissionDeniedAsRoot": "Erro: Não é possível escrever no diretório fount '${path}'. Está a executar como root, mas o acesso continua a ser negado — verifique e corrija as permissões de segurança nesta pasta para conceder controlo total ao utilizador atual.",
+				"permissionDeniedNotRoot": "Erro: Não é possível escrever no diretório fount '${path}'. Corrija as permissões de segurança na pasta para conceder acesso de escrita ao utilizador atual ou execute fount como root."
 			},
 			"clean": {
 				"removingCaches": "Removendo cache...",
