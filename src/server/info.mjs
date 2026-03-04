@@ -29,8 +29,8 @@ function decadeString(str, repeat_count = Math.floor(Math.random() * 7)) {
  */
 const infos = {
 	fount: {
-		title: 'fount',
-		activity: 'fountting',
+		title: '𝓯𝓸𝓾𝓷𝓽',
+		activity: '𝒻ℴ𝓊𝓃𝓉𝓉𝒾𝓃ℊ',
 		logotext: decadeString('fount!'),
 		logotextColor: '#0e3c5c',
 		shortlinkName: 'GitHub',
@@ -38,8 +38,8 @@ const infos = {
 		xPoweredBy: 'PHP/4.2.0',
 	},
 	steve: {
-		title: 'Steve',
-		activity: 'Steveing',
+		title: '𝕊𝕥𝕖𝕧𝕖',
+		activity: '𝕊𝕥𝕖𝕧𝕖𝕚𝕟𝕘',
 		logotext: decadeString('Steve!'),
 		logotextColor: '#ab3fab',
 		shortlinkName: 'GitHub',
@@ -47,8 +47,8 @@ const infos = {
 		xPoweredBy: 'steve/0.2.0.8.1.5.0.4',
 	},
 	terraria: {
-		title: 'Terraria',
-		activity: 'Terraring',
+		title: '𝕿𝖊𝖗𝖗𝖆𝖗𝖎𝖆',
+		activity: '𝔗𝔢𝔯𝔯𝔞𝔯𝔦𝔫𝔤',
 		logotext: decadeString('Terraria!'),
 		logotextColor: '#25d46c',
 		shortlinkName: 'GitHub',
@@ -56,8 +56,8 @@ const infos = {
 		xPoweredBy: 'Terraria/1.4.5.0',
 	},
 	sillytavern: {
-		title: 'SillyTavern',
-		activity: 'SillyTaverning',
+		title: '𝑺𝒊𝒍𝒍𝒚𝑻𝒂𝒗𝒆𝒓𝒏',
+		activity: '𝑆𝑖𝑙𝑙𝑦𝑇𝑎𝑣𝑒𝑟𝑛𝑖𝑛𝑔',
 		logotext: decadeString('SillyTavern!'),
 		logotextColor: '#7c1d1d',
 		shortlinkName: 'GitHub',
