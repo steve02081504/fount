@@ -307,12 +307,21 @@
 		"title": "Verarbeitung des fount-Protokolls",
 		"description": "Still und effizient übersetzt diese Seite Ihre Absicht in einen nahtlosen Übergang innerhalb von fount. Betrachten Sie es als die stille Magie hinter dem Vorhang.",
 		"processing": "Protokoll wird verarbeitet...",
-		"shellCommandSent": "Shell-Befehl gesendet",
-		"runPartConfirm": {
-			"title": "Ausführung bestätigen",
-			"message": "Sind Sie sicher, dass Sie ${partpath} ausführen möchten?",
-			"confirm": "bestätigen",
-			"cancel": "Abbrechen"
+		"invalidProtocol": "Ungültiges Protokoll",
+		"insufficientParams": "Unzureichende Parameter",
+		"unknownCommand": "Unbekannter Befehl",
+		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
+		"runPart": {
+			"commandSent": "Teilbefehl gesendet",
+			"commandError": "Fehler beim Senden des Teilbefehls: ${error}",
+			"retry": "Erneut versuchen",
+			"back": "Zurück",
+			"confirm": {
+				"title": "Ausführung bestätigen",
+				"message": "Sind Sie sicher, dass Sie ${partpath} ausführen möchten?",
+				"confirm": "bestätigen",
+				"cancel": "Abbrechen"
+			}
 		},
 		"offline_dialog": {
 			"title": "Host offline",
@@ -322,13 +331,7 @@
 				"retry": "Erneut versuchen"
 			}
 		},
-		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
-		"invalidProtocol": "Ungültiges Protokoll",
-		"insufficientParams": "Unzureichende Parameter",
-		"unknownCommand": "Unbekannter Befehl",
-		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
-		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
-		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
+		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?"
 	},
 	"startPage": {
 		"title": "fount!",

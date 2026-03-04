@@ -307,12 +307,21 @@
 		"title": "Handling fount Protocol",
 		"description": "Silently and efficiently, this page translates your intent into a seamless transition within fount. Consider it the quiet magic behind the curtain.",
 		"processing": "Processing protocol...",
-		"shellCommandSent": "Shell command sent",
-		"runPartConfirm": {
-			"title": "Confirm running",
-			"message": "Are you sure you want to run ${partpath}?",
-			"confirm": "confirm",
-			"cancel": "Cancel"
+		"invalidProtocol": "Invalid protocol",
+		"insufficientParams": "Insufficient parameters",
+		"unknownCommand": "Unknown command",
+		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}",
+		"runPart": {
+			"commandSent": "Part command sent",
+			"commandError": "Error sending part command: ${error}",
+			"retry": "Retry",
+			"back": "Back",
+			"confirm": {
+				"title": "Confirm running",
+				"message": "Are you sure you want to run ${partpath}?",
+				"confirm": "confirm",
+				"cancel": "Cancel"
+			}
 		},
 		"offline_dialog": {
 			"title": "Host offline",
@@ -322,13 +331,7 @@
 				"retry": "Try again"
 			}
 		},
-		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
-		"invalidProtocol": "Invalid protocol",
-		"insufficientParams": "Insufficient parameters",
-		"unknownCommand": "Unknown command",
-		"shellCommandFailed": "Failed to send shell command",
-		"shellCommandError": "Error sending shell command",
-		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}"
+		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?"
 	},
 	"startPage": {
 		"title": "fount!",

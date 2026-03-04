@@ -296,12 +296,21 @@ export type LocaleData = {
 		title: string
 		description: string
 		processing: string
-		shellCommandSent: string
-		runPartConfirm: {
-			title: string
-			message: string
-			confirm: string
-			cancel: string
+		invalidProtocol: string
+		insufficientParams: string
+		unknownCommand: string
+		unknownError: string
+		runPart: {
+			commandSent: string
+			commandError: string
+			retry: string
+			back: string
+			confirm: {
+				title: string
+				message: string
+				confirm: string
+				cancel: string
+			}
 		}
 		offline_dialog: {
 			title: string
@@ -312,12 +321,6 @@ export type LocaleData = {
 			}
 		}
 		fountNotFound: string
-		invalidProtocol: string
-		insufficientParams: string
-		unknownCommand: string
-		shellCommandFailed: string
-		shellCommandError: string
-		unknownError: string
 	}
 	startPage: {
 		title: string
@@ -2546,7 +2549,8 @@ export type LocaleKeyParams = {
 	'part_config.alerts.saveConfigFailed': { message: string | number }
 	'pow_captcha.errorMessage': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
-	'protocolhandler.runPartConfirm.message': { partpath: string | number }
+	'protocolhandler.runPart.commandError': { error: string | number }
+	'protocolhandler.runPart.confirm.message': { partpath: string | number }
 	'protocolhandler.unknownError': { error: string | number }
 	'serviceSource_manager.alerts.addFileFailed': { error: string | number }
 	'serviceSource_manager.alerts.deleteFileFailed': { error: string | number }

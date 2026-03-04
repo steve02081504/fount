@@ -1,10 +1,10 @@
 import { authenticate } from '../scripts/endpoints.mjs'
-import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
+import { initTranslations, console } from '../scripts/i18n.mjs'
 import { runPart } from '../scripts/parts.mjs'
 import { applyTheme } from '../scripts/theme.mjs'
 
 const urlParams = new URL(window.location.href)
-const from = urlParams.searchParams.get('from')
+const gobackNum = Number(urlParams.searchParams.get('gobackNum') || 1)
 
 /**
  * 处理协议。
@@ -23,7 +23,9 @@ async function handleProtocol() {
 
 	const authResponse = await authenticate()
 	if (!authResponse.ok) {
-		window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`
+		const selfUrl = new URL(window.location.href)
+		selfUrl.searchParams.set('gobackNum', gobackNum + 1)
+		window.location.href = `/login?redirect=${encodeURIComponent(selfUrl.href)}`
 		return
 	}
 
@@ -60,7 +62,8 @@ async function handleRunPart(parts) {
 		messageEl.style.display = 'none'
 		progressEl.style.display = 'none'
 
-		confirmation_message.textContent = geti18n('protocolhandler.runPartConfirm.message', { partpath })
+		confirmation_message.dataset.i18n = 'protocolhandler.runPart.confirm.message'
+		confirmation_message.dataset.partpath = partpath
 		confirmation_modal.showModal()
 
 		/**
@@ -87,38 +90,62 @@ async function handleRunPart(parts) {
 	 */
 	const goBack = () => {
 		try {
-			if (from == 'jumppage')
-				if (history.length > 2) history.go(-2)
-				else throw new Error('No history')
-			else history.back()
+			if (history.length > gobackNum) history.go(-gobackNum)
+			else throw new Error('No history')
 		}
 		catch {
 			window.location.href = '/'
 		}
 	}
 
-	if (!confirmed) {
-		goBack()
-		return
-	}
+	if (!confirmed) return goBack()
 
 	messageEl.style.display = 'block'
 	progressEl.style.display = 'block'
 	messageEl.dataset.i18n = 'protocolhandler.processing'
+	const errorActionsEl = document.getElementById('error_actions')
+	const retryBtn = document.getElementById('retry_btn')
+	const backBtn = document.getElementById('back_btn')
 
-	try {
-		const response = await runPart(partpath, args)
+	/**
+	 * 显示运行错误：隐藏进度条，显示错误信息与重试/返回按钮。
+	 * @param {unknown} error - 错误对象。
+	 * @returns {void}
+	 */
+	const showRunError = (error) => {
+		progressEl.style.display = 'none'
+		messageEl.dataset.i18n = 'protocolhandler.runPart.commandError'
+		messageEl.dataset.error = String(error?.message ?? error)
+		errorActionsEl.hidden = false
+	}
 
-		if (response.ok)
-			messageEl.dataset.i18n = 'protocolhandler.shellCommandSent'
-		else
-			messageEl.dataset.i18n = 'protocolhandler.shellCommandFailed'
+	/**
+	 * 运行部件并处理错误。
+	 * @returns {Promise<void>}
+	 */
+	const doRun = async () => {
+		try {
+			await runPart(partpath, args)
+			progressEl.style.display = 'none'
+			messageEl.dataset.i18n = 'protocolhandler.runPart.commandSent'
+			setTimeout(goBack, 2000)
+		}
+		catch (error) {
+			console.errorI18n('protocolhandler.runPart.commandError', { error })
+			showRunError(error)
+		}
 	}
-	catch (error) {
-		console.error('Error sending shell command:', error)
-		messageEl.dataset.i18n = 'protocolhandler.shellCommandError'
+
+	retryBtn.onclick = () => {
+		errorActionsEl.hidden = true
+		progressEl.style.display = 'block'
+		messageEl.dataset.i18n = 'protocolhandler.processing'
+		delete messageEl.dataset.error
+		doRun()
 	}
-	setTimeout(goBack, 1000)
+	backBtn.onclick = goBack
+
+	doRun()
 }
 
 /**

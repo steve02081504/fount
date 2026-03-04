@@ -21,7 +21,8 @@ const retryBtn = document.getElementById('retry_btn')
 function useUrlProtocol(hostUrl) {
 	const redirectUrl = new URL('/protocolhandler', hostUrl)
 	redirectUrl.searchParams.set('url', fountProtocolUrl)
-	redirectUrl.searchParams.set('from', 'jumppage')
+	const gobackNum = Number(urlParams.get('gobackNum') || 1)
+	redirectUrl.searchParams.set('gobackNum', gobackNum + 1)
 	window.location.href = redirectUrl.href
 }
 

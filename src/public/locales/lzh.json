@@ -307,12 +307,21 @@
 		"title": "處 fount 規儀",
 		"description": "潛移默化，無縫自達。此乃幕後之妙法玄通也。",
 		"processing": "處規儀中...",
-		"shellCommandSent": "外令已發",
-		"runPartConfirm": {
-			"title": "請君三思",
-			"message": "君果欲行 ${partpath} 乎？",
-			"confirm": "然",
-			"cancel": "否"
+		"invalidProtocol": "規儀無效",
+		"insufficientParams": "參數不足，難為無米之炊",
+		"unknownCommand": "未知之令",
+		"unknownError": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
+		"runPart": {
+			"commandSent": "部件之令已發",
+			"commandError": "發部件之令有誤：${error}",
+			"retry": "復試",
+			"back": "返",
+			"confirm": {
+				"title": "請君三思",
+				"message": "君果欲行 ${partpath} 乎？",
+				"confirm": "然",
+				"cancel": "否"
+			}
 		},
 		"offline_dialog": {
 			"title": "主機未繫",
@@ -322,13 +331,7 @@
 				"retry": "復試"
 			}
 		},
-		"fountNotFound": "嗚呼哀哉 :(\n\n未尋獲 fount，莫非需先安設之？",
-		"invalidProtocol": "規儀無效",
-		"insufficientParams": "參數不足，難為無米之炊",
-		"unknownCommand": "未知之令",
-		"shellCommandFailed": "發外令失利",
-		"shellCommandError": "發外令有誤",
-		"unknownError": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}"
+		"fountNotFound": "嗚呼哀哉 :(\n\n未尋獲 fount，莫非需先安設之？"
 	},
 	"startPage": {
 		"title": "fount!",

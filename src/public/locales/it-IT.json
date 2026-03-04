@@ -307,12 +307,21 @@
 		"title": "Gestione Protocollo fount",
 		"description": "Silenziosamente ed efficientemente, questa pagina traduce il tuo intento in una transizione senza soluzione di continuità all'interno di fount. Considerala la magia silenziosa dietro le quinte.",
 		"processing": "Elaborazione del protocollo in corso...",
-		"shellCommandSent": "Comando shell inviato.",
-		"runPartConfirm": {
-			"title": "Conferma esecuzione",
-			"message": "Sei sicuro di voler eseguire ${partpath}?",
-			"confirm": "Conferma",
-			"cancel": "Annulla"
+		"invalidProtocol": "Protocollo non valido.",
+		"insufficientParams": "Parametri insufficienti.",
+		"unknownCommand": "Comando sconosciuto.",
+		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}",
+		"runPart": {
+			"commandSent": "Comando parte inviato.",
+			"commandError": "Errore durante l'invio del comando parte: ${error}",
+			"retry": "Riprova",
+			"back": "Indietro",
+			"confirm": {
+				"title": "Conferma esecuzione",
+				"message": "Sei sicuro di voler eseguire ${partpath}?",
+				"confirm": "Conferma",
+				"cancel": "Annulla"
+			}
 		},
 		"offline_dialog": {
 			"title": "Host offline",
@@ -322,13 +331,7 @@
 				"retry": "Riprova"
 			}
 		},
-		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?",
-		"invalidProtocol": "Protocollo non valido.",
-		"insufficientParams": "Parametri insufficienti.",
-		"unknownCommand": "Comando sconosciuto.",
-		"shellCommandFailed": "Impossibile inviare il comando shell.",
-		"shellCommandError": "Errore durante l'invio del comando shell.",
-		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}"
+		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?"
 	},
 	"startPage": {
 		"title": "fount!",
