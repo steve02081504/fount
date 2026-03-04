@@ -9,6 +9,7 @@ import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
 import { applyUrlParamsTransferStrategy } from '../../../scripts/urlDataTransfer.mjs'
 
+import { preloadAllPartTypeDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
 import { setHomeRegistry, setDefaultParts, setIsSfw, setPartBranches, homeRegistry, preloadDragGenerators } from './state.mjs'
@@ -29,6 +30,10 @@ export async function loadDataAndRender(initialPath) {
 		setPartBranches(await getPartBranches(true))
 		await preloadDragGenerators(homeRegistry)
 		setDefaultParts(await getAllDefaultParts())
+		await preloadAllPartTypeDetails([
+			'', // root types
+			...homeRegistry.part_types?.map?.(pt => pt.name)
+		])
 		await setupPartTypeUI(homeRegistry.part_types, initialPath)
 		displayFunctionButtons()
 		setIsSfw(await getUserSetting('sfw').catch(() => false))

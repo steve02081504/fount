@@ -48,14 +48,23 @@ export async function getAllpartNames(partRoot) {
 	const uncachedNames = result?.uncachedNames || []
 
 	for (const partName in cachedDetails) {
-		const partPath = `${partRoot}/${partName}`
+		const partPath = [partRoot, partName].filter(Boolean).join('/')
 		partDetailsCache[partPath] = cachedDetails[partName]
 	}
 
 	const allNames = [
 		...Object.keys(cachedDetails),
 		...uncachedNames,
-	].map(name => `${partRoot}/${name}`)
+	].map(name => [partRoot, name].filter(Boolean).join('/'))
 
 	return allNames.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+}
+
+/**
+ * 用 /api/getallcacheddetails/:path 批量预填各部件类型下的详情缓存，减少后续逐条 getdetails 请求。
+ * @param {string[]} partRoots - 部件类型根路径列表（例如 ['chars', 'shells', 'worlds']）。
+ * @returns {Promise<void>}
+ */
+export async function preloadAllPartTypeDetails(partRoots) {
+	await Promise.all(partRoots?.map?.(getAllpartNames))
 }
