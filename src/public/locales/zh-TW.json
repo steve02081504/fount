@@ -167,7 +167,9 @@
 				"browserMissing": "未檢測到預設瀏覽器，正在嘗試安裝...",
 				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。",
 				"rootWarning1": "不推薦：以 root 身分執行 fount 會授予所有 fount 元件完全的系統存取權限。",
-				"rootWarning2": "除非您清楚自己在做什麼，否則建議以一般使用者身分執行 fount。"
+				"rootWarning2": "除非您清楚自己在做什麼，否則建議以一般使用者身分執行 fount。",
+				"permissionDeniedAsRoot": "錯誤：無法寫入 fount 目錄 '${path}'。您正以 root 身分執行，但存取仍被拒絕—請檢查並修正該資料夾的安全權限，為目前使用者授予完全控制權限。",
+				"permissionDeniedNotRoot": "錯誤：無法寫入 fount 目錄 '${path}'。請修正該資料夾的安全權限以授予目前使用者寫入權限，或以 root 身分執行 fount。"
 			},
 			"clean": {
 				"removingCaches": "正在移除快取...",

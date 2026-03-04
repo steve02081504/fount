@@ -167,7 +167,9 @@
 				"browserMissing": "Default browser not detected, trying to install...",
 				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything.",
 				"rootWarning1": "Not recommended: running fount as root grants full system access to all fount components.",
-				"rootWarning2": "Unless you know what you are doing, it is recommended to run fount as a normal user."
+				"rootWarning2": "Unless you know what you are doing, it is recommended to run fount as a normal user.",
+				"permissionDeniedAsRoot": "Error: Cannot write to fount directory '${path}'. You are running as root but access is still denied — please check and fix the folder's security permissions to grant the current user full control.",
+				"permissionDeniedNotRoot": "Error: Cannot write to fount directory '${path}'. Please fix the folder's security permissions to grant the current user write access, or run fount as root."
 			},
 			"clean": {
 				"removingCaches": "Removing cache...",

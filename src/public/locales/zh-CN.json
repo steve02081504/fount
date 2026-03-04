@@ -55,7 +55,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "接受到请求：${method} ${url}",
+			"requestReceived": "接收到请求：${method} ${url}",
 			"frontendFilesChanged": "前端文件 [${path}] 已更改，正在通知客户端重新加载。"
 		},
 		"route": {
@@ -167,7 +167,9 @@
 				"browserMissing": "未检测到默认浏览器，正在尝试安装...",
 				"untrustedPartsWarning": "不要在您的系统上安装任何不受信任的 fount 组件，它们可以做任何事情。",
 				"rootWarning1": "不推荐：以 root 身份运行 fount 会授予所有 fount 组件完全的系统访问权限。",
-				"rootWarning2": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。"
+				"rootWarning2": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。",
+				"permissionDeniedAsRoot": "错误：无法写入 fount 目录 '${path}'。您正以 root 身份运行，但访问仍被拒绝——请检查并修正该文件夹的安全权限，为当前用户授予完全控制权限。",
+				"permissionDeniedNotRoot": "错误：无法写入 fount 目录 '${path}'。请修正该文件夹的安全权限以授予当前用户写入权限，或以 root 身份运行 fount。"
 			},
 			"clean": {
 				"removingCaches": "正在移除缓存...",

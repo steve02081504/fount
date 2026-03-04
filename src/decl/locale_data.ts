@@ -175,6 +175,8 @@ export type LocaleData = {
 				untrustedPartsWarning: string
 				rootWarning1: string
 				rootWarning2: string
+				permissionDeniedAsRoot: string
+				permissionDeniedNotRoot: string
 			}
 			clean: {
 				removingCaches: string
@@ -2512,6 +2514,8 @@ export type LocaleKeyParams = {
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number }
 	'fountConsole.path.install.packageFailed': { package: string | number }
+	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
+	'fountConsole.path.install.permissionDeniedNotRoot': { path: string | number }
 	'fountConsole.path.protocol.registerFailed': { message: string | number }
 	'fountConsole.path.remove.moduleRemoved': { module: string | number }
 	'fountConsole.path.remove.removeBackgroundRunnerFailed': { message: string | number }

@@ -167,7 +167,9 @@
 				"browserMissing": "Không tìm thấy trình duyệt mặc định, đang cố gắng cài đặt...",
 				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì.",
 				"rootWarning1": "Không được khuyến nghị: chạy fount với quyền root cấp quyền truy cập toàn bộ hệ thống vào tất cả các thành phần của fount.",
-				"rootWarning2": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường."
+				"rootWarning2": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường.",
+				"permissionDeniedAsRoot": "Lỗi: Không thể ghi vào thư mục fount '${path}'. Bạn đang chạy với quyền root nhưng quyền truy cập vẫn bị từ chối — vui lòng kiểm tra và sửa các quyền bảo mật trên thư mục này để cấp cho người dùng hiện tại quyền kiểm soát hoàn toàn.",
+				"permissionDeniedNotRoot": "Lỗi: Không thể ghi vào thư mục fount '${path}'. Vui lòng sửa các quyền bảo mật trên thư mục để cấp quyền ghi cho người dùng hiện tại, hoặc chạy fount với quyền root."
 			},
 			"clean": {
 				"removingCaches": "Đang xóa bộ nhớ đệm...",

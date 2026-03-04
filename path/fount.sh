@@ -646,6 +646,26 @@ handle_docker_termux_passthrough() {
 	fi
 }
 
+check_dir_writable() {
+	local dir="$1"
+	if [ ! -d "$dir" ]; then
+		mkdir -p "$dir" 2>/dev/null || return 1
+	fi
+	[ -w "$dir" ]
+}
+
+assert_fount_dir_writable() {
+	local dir="$1"
+	if ! check_dir_writable "$dir"; then
+		if [ "$(id -u)" -eq 0 ]; then
+			echo -e "${C_RED}$(get_i18n 'install.permissionDeniedAsRoot' 'path' "$dir")${C_RESET}" >&2
+		else
+			echo -e "${C_RED}$(get_i18n 'install.permissionDeniedNotRoot' 'path' "$dir")${C_RESET}" >&2
+		fi
+		exit 1
+	fi
+}
+
 update_fount_if_not_noupdate() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'update.skippingFountUpdate'
@@ -1116,6 +1136,7 @@ fount_upgrade() {
 
 # 更新 fount
 if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+	assert_fount_dir_writable "$FOUNT_DIR"
 	update_fount_if_not_noupdate
 fi
 

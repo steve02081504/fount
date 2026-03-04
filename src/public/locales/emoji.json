@@ -167,7 +167,9 @@
 				"browserMissing": "🚫🌐, 🔄📥...",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
 				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
-				"rootWarning2": "🙂👍 ⛲ ✅"
+				"rootWarning2": "🙂👍 ⛲ ✅",
+				"permissionDeniedAsRoot": "❌✍️ ⛲📁 '${path}' 👑✅❌🔒 — 🔧🔐📁 ➡️ 👤💯",
+				"permissionDeniedNotRoot": "❌✍️ ⛲📁 '${path}' 🔧🔐📁 ➡️ 👤✍️ 🔄 👑 ⛲"
 			},
 			"clean": {
 				"removingCaches": "🧹🗑️...",

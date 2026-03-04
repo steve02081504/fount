@@ -167,7 +167,9 @@
 				"browserMissing": "Standaardbrowser niet gedetecteerd, probeert te installeren...",
 				"untrustedPartsWarning": "Installeer geen onbetrouwbare fountcomponenten op uw systeem; deze kunnen alles doen.",
 				"rootWarning1": "Niet aanbevolen: het uitvoeren van fount als root geeft volledige systeemtoegang tot alle fountcomponenten.",
-				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren."
+				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren.",
+				"permissionDeniedAsRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. U werkt als root, maar de toegang wordt nog steeds geweigerd. Controleer en corrigeer de beveiligingsmachtigingen van deze map om de huidige gebruiker volledige controle te geven.",
+				"permissionDeniedNotRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. Corrigeer de beveiligingsmachtigingen van de map om schrijftoegang te verlenen aan de huidige gebruiker, of voer fount uit als root."
 			},
 			"clean": {
 				"removingCaches": "Cache verwijderen...",
