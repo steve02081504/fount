@@ -1,6 +1,7 @@
 import net from 'node:net'
 import process from 'node:process'
 
+import * as Sentry from 'npm:@sentry/deno'
 import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import { console, geti18n } from '../../scripts/i18n.mjs'
@@ -58,6 +59,7 @@ export async function processIPCCommand(command, data) {
 		}
 	}
 	catch (err) {
+		Sentry.captureException(err)
 		console.errorI18n('fountConsole.ipc.processMessageError', { error: err })
 		if (err.errors) console.dir(err.errors)
 		else if (err.error) console.dir(err.error)
