@@ -34,6 +34,7 @@ let client = null
 function defaultActivity() {
 	return {
 		details: info.activity,
+		detailsUrl: info.shortlinkUrl,
 		state: info.logotext,
 		stateUrl: info.shortlinkUrl,
 		largeImageKey: 'icon',
