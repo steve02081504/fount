@@ -321,3 +321,9 @@ fs.watch(PUBLIC_ROOT, { recursive: true }, () => { commonCache = null })
 
 events.on('part-installed', ({ username }) => userCaches.delete(username))
 events.on('part-uninstalled', ({ username }) => userCaches.delete(username))
+
+events.on('AfterUserDeleted', ({ username }) => userCaches.delete(username))
+events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
+	if (userCaches.has(oldUsername)) userCaches.set(newUsername, userCaches.get(oldUsername))
+	userCaches.delete(oldUsername)
+})

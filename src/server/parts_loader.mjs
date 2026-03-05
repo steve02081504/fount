@@ -1001,3 +1001,15 @@ export async function getAllCachedPartDetails(username, partpath) {
 	// 5. Return the new structure
 	return { cachedDetails, uncachedNames }
 }
+
+events.on('AfterUserDeleted', ({ username }) => {
+	delete parts_set[username]
+	delete parts_load_results[username]
+})
+
+events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
+	parts_set[newUsername] = parts_set[oldUsername]
+	delete parts_set[oldUsername]
+	parts_load_results[newUsername] = parts_load_results[oldUsername]
+	delete parts_load_results[oldUsername]
+})
