@@ -136,6 +136,10 @@ async function handleRunPart(parts) {
 		}
 	}
 
+	/**
+	 * 重试按钮点击事件。
+	 * @returns {void}
+	 */
 	retryBtn.onclick = () => {
 		errorActionsEl.hidden = true
 		progressEl.style.display = 'block'

@@ -158,7 +158,7 @@ export async function createSearchableDropdown({
 	dropdownElement.ariaExpanded = false
 
 	if (disabled) {
-		dropdownElement.innerHTML = /* html */ `<input type="text" class="input input-bordered w-full" tabindex="-1" readonly disabled />`
+		dropdownElement.innerHTML = /* html */ '<input type="text" class="input input-bordered w-full" tabindex="-1" readonly disabled />'
 		Object.assign(dropdownElement.querySelector('input').dataset, triggerDataset)
 		return dropdownElement
 	}
