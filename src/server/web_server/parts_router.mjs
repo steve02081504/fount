@@ -2,6 +2,7 @@ import express from 'npm:express'
 
 import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
 import { auth_request, getUserByReq } from '../auth.mjs'
+import { events } from '../events.mjs'
 import { loadPart } from '../parts_loader.mjs'
 
 /**
@@ -55,3 +56,12 @@ export function deletePartRouter(username, partpath) {
 	delete PartsRouters[username][partpath]
 	if (!Object.keys(PartsRouters[username]).length) delete PartsRouters[username]
 }
+
+events.on('AfterUserDeleted', ({ username }) => {
+	delete PartsRouters[username]
+})
+
+events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
+	PartsRouters[newUsername] = PartsRouters[oldUsername]
+	delete PartsRouters[oldUsername]
+})
