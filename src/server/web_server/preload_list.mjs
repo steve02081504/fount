@@ -13,7 +13,20 @@ import { events } from '../events.mjs'
 
 const EXTERNAL_URL_REG = /^https?:\/\//
 
+/** 匹配 node:/npm:/jsr: 的静态或动态 import，用于排除整文件（非前端用） */
+const BACKEND_IMPORT_REG = /(?:from\s+["']|import\s*\(\s*["'])(?:node|npm|jsr):/m
+
 /** @typedef {'mjs'|'css'|'js'|'resource'} PreloadResourceType */
+
+/**
+ * 判断文件内容是否包含仅后端可用的导入（node:/npm:/jsr:）。此类文件整文件排除，不参与预加载列表。
+ * @param {string} content - 文件内容。
+ * @returns {boolean} - 是否应排除整文件。
+ */
+function hasBackendOnlyImports(content) {
+	const noBlock = stripBlockComments(content)
+	return BACKEND_IMPORT_REG.test(noBlock)
+}
 
 /**
  * 从 URL 路径推断资源类型（用于 JSON 等无上下文场景）。
@@ -221,6 +234,7 @@ function scanDirectoryForTypedUrls(rootDir) {
 	const all = []
 	for (const file of files) try {
 		const content = fs.readFileSync(file, 'utf8')
+		if (hasBackendOnlyImports(content)) continue
 		all.push(extractTypedUrls(file, content))
 	} catch (_) { /* ignore */ }
 
