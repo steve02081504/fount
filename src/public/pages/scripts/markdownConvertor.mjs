@@ -911,7 +911,7 @@ ${diagram}`
 				langs: [
 					...options.langs,
 					async () => ({
-						...await fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files@master/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json()),
+						...await fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json()),
 						name: 'brainfuck',
 						displayName: 'Brainfuck',
 						aliases: ['bf'],

@@ -11,342 +11,305 @@ import { getUserDictionary } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { events } from '../events.mjs'
 
-const EXTERNAL_URL_REG = /^https?:\/\//
-
-/** 匹配 node:/npm:/jsr: 的静态或动态 import，用于排除整文件（非前端用） */
+const EXTERNAL_URL_REG = /^https?:\/\//i
 const BACKEND_IMPORT_REG = /(?:from\s+["']|import\s*\(\s*["'])(?:node|npm|jsr):/m
-
-/** @typedef {'mjs'|'css'|'js'|'resource'} PreloadResourceType */
+const BLOCK_COMMENT_REG = /\/\*[\S\s]*?\*\//g
 
 /**
- * 判断文件内容是否包含仅后端可用的导入（node:/npm:/jsr:）。此类文件整文件排除，不参与预加载列表。
- * @param {string} content - 文件内容。
- * @returns {boolean} - 是否应排除整文件。
+ * @typedef {'mjs'|'css'|'js'|'resource'} PreloadResourceType
+ *
+ * @typedef {Object} PreloadResource
+ * @property {string} url - 资源的完整 URL
+ * @property {PreloadResourceType} type - 资源类型
+ * @property {number} [count] - 出现次数（合并后存在）
+ */
+
+/**
+ * 判断文件内容是否包含仅后端可用的导入（node:/npm:/jsr:），用于整文件排除
+ * @param {string} content - 文件内容
+ * @returns {boolean}
  */
 function hasBackendOnlyImports(content) {
-	const noBlock = stripBlockComments(content)
-	return BACKEND_IMPORT_REG.test(noBlock)
+	return BACKEND_IMPORT_REG.test(content.replace(BLOCK_COMMENT_REG, ''))
 }
 
 /**
- * 从 URL 路径推断资源类型（用于 JSON 等无上下文场景）。
- * @param {string} url - 完整 URL。
- * @returns {PreloadResourceType} - 资源类型。
+ * 从 URL 路径推断资源类型
+ * @param {string} url - 完整 URL
+ * @returns {PreloadResourceType}
  */
 function typeFromUrlSuffix(url) {
 	try {
 		const { pathname } = new URL(url)
-		if (/\.mjs(\?|$)/i.test(pathname)) return 'mjs'
-		if (/\.js(\?|$)/i.test(pathname)) return 'js'
-		if (/\.css(\?|$)/i.test(pathname)) return 'css'
-	} catch (_) { /* ignore */ }
+		if (/\.mjs$/i.test(pathname)) return 'mjs'
+		if (/\.js$/i.test(pathname)) return 'js'
+		if (/\.css$/i.test(pathname)) return 'css'
+	} catch { /* ignore */ }
 	return 'resource'
 }
 
 /**
- * 去掉 JS 中的多行注释（不处理字符串内的）。
- * @param {string} s - 源码。
- * @returns {string} - 去掉注释后的源码。
- */
-function stripBlockComments(s) {
-	return s.replace(/\/\*[\S\s]*?\*\//g, '')
-}
-
-/**
- * 从 .mjs / .js 中提取外部 URL 并分类：仅 import/import() 与 // @fetch-resource，排除注释与 location 赋值。
- * @param {string} content - 文件内容。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
+ * 提取 JS/MJS 中的外部 URL（支持 import, import(), fetch, // @fetch-resource）
+ * @param {string} content - 文件内容
+ * @returns {PreloadResource[]}
  */
 function extractFromJs(content) {
 	const out = []
-	const noBlock = stripBlockComments(content)
-	const lines = noBlock.split(/\r?\n/)
-	/**
-	 * 跳过注释和 location 赋值。
-	 * @param {string} line - 行内容。
-	 * @returns {boolean} - 是否跳过。
-	 */
-	const skipLine = (line) => {
-		if (/@fetch-resource/i.test(line)) return false
-		const t = line.trim()
-		if (t.startsWith('//')) return true
-		if (/\.href\s*=\s*["']|window\.location\s*\.href\s*=|location\.href\s*=\s*["']|window\.location\s*=\s*["']/i.test(line)) return true
-		return false
-	}
+	const lines = content.replace(BLOCK_COMMENT_REG, '').split(/\r?\n/)
+
 	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
-		if (skipLine(line)) continue
-		// import X from 'url' / import('url')
-		const importFrom = line.match(/import\s+(?:[\s\w*,{}]+\s+from\s+)?["'](https?:\/\/[^"']+)["']/)
-		if (importFrom) {
-			out.push({ url: importFrom[1].trim(), type: 'mjs' })
+		const line = lines[i].trim()
+		if (!line) continue
+
+		const isComment = line.startsWith('//')
+
+		// 忽略页面跳转赋值 (非注释场景)
+		if (!isComment && /(?:window\.)?location(?:\.href)?\s*=|(?:\.href)\s*=/.test(line))
 			continue
-		}
-		const importCall = line.match(/import\s*\(\s*["'](https?:\/\/[^"']+)["']\s*\)/)
-		if (importCall) {
-			out.push({ url: importCall[1].trim(), type: 'mjs' })
-			continue
-		}
-		// // @fetch-resource [url] 或下一行含 http(s) URL
-		const fetchResource = line.match(/\/\/\s*@fetch-resource\s+(https?:\/\/\S+)/)
-		if (fetchResource) {
-			out.push({ url: fetchResource[1].trim(), type: typeFromUrlSuffix(fetchResource[1]) })
-			continue
-		}
-		if (line.trim().startsWith('//') && /@fetch-resource/i.test(line)) {
-			const next = lines[i + 1]
-			if (next) {
-				const urlMatch = next.match(/(https?:\/\/[^\s"']+)/)
-				if (urlMatch) out.push({ url: urlMatch[1].trim(), type: typeFromUrlSuffix(urlMatch[1]) })
+
+		if (isComment) {
+			if (/@fetch-resource/i.test(line)) {
+				const inlineMatch = line.match(/@fetch-resource\s+(https?:\/\/\S+)/)
+				if (inlineMatch)
+					out.push({ url: inlineMatch[1], type: typeFromUrlSuffix(inlineMatch[1]) })
+				else if (lines[i + 1]) {
+					// 匹配下一行的 URL
+					const nextMatch = lines[i + 1].match(/(https?:\/\/[^\s"']+)/)
+					if (nextMatch) out.push({ url: nextMatch[1], type: typeFromUrlSuffix(nextMatch[1]) })
+					i++ // 跳过已处理的下一行
+				}
 			}
-			i++
 			continue
+		}
+
+		// 匹配 import, import(), fetch()
+		const urlMatch = line.match(/(?:import\s+(?:[^"']+\s+from\s+)?|import\s*\(\s*|fetch\s*\(\s*)["'](https?:\/\/[^"']+)["']/)
+		if (urlMatch) {
+			const url = urlMatch[1]
+			const type = line.includes('import') ? 'mjs' : typeFromUrlSuffix(url)
+			out.push({ url, type })
 		}
 	}
 	return out
 }
 
 /**
- * 从 HTML 中仅提取带 src 的标签的外部 URL，按标签类型分类；不匹配 href/placeholder 等。
- * @param {string} content - 文件内容。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
+ * 提取 HTML 中的外部 URL (script, img, video, audio, source 等标签)
+ * @param {string} content - 文件内容
+ * @returns {PreloadResource[]}
  */
 function extractFromHtml(content) {
 	const out = []
-	// 只匹配 src=，且限定在 script/img/iframe/video/audio/source 等标签上下文中
-	const tagSrcRe = /<(script|img|iframe|video|audio|source)(\s[^>]*)?\s*src\s*=\s*["'](https?:\/\/[^"']+)["']/gi
-	let m
-	while ((m = tagSrcRe.exec(content)) !== null) {
-		const tag = (m[1] || '').toLowerCase()
-		if (tag === 'iframe') continue
-		const url = m[3]
+	const tagSrcRe = /<(script|img|video|audio|source)(\s[^>]*)?\s*src\s*=\s*["'](https?:\/\/[^"']+)["']/gi
+
+	for (const match of content.matchAll(tagSrcRe)) {
+		const tag = match[1].toLowerCase()
 		let type = 'resource'
 		if (tag === 'script')
-			type = /type\s*=\s*["']module["']/i.test(m[2] || '') ? 'mjs' : 'js'
-
-		out.push({ url, type })
+			type = /type\s*=\s*["']module["']/i.test(match[2] || '') ? 'mjs' : 'js'
+		out.push({ url: match[3], type })
 	}
 	return out
 }
 
 /**
- * 从 JSON 中提取 "https?://..."，按 URL 后缀分类。
- * @param {string} content - 文件内容。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
+ * 提取 JSON 中的外部 URL
+ * @param {string} content - 文件内容
+ * @returns {PreloadResource[]}
  */
 function extractFromJson(content) {
 	const out = []
-	const re = /"(https?:\/\/[^"]+)"/g
-	let m
-	while ((m = re.exec(content)) !== null) {
-		const url = m[1]
-		out.push({ url, type: typeFromUrlSuffix(url) })
-	}
+	for (const match of content.matchAll(/"(https?:\/\/[^"]+)"/g))
+		out.push({ url: match[1], type: typeFromUrlSuffix(match[1]) })
 	return out
 }
 
 /**
- * 从 CSS 中仅提取 @import 的外部 URL，类型为 css。
- * @param {string} content - 文件内容。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
+ * 提取 CSS 中的 @import 外部 URL
+ * @param {string} content - 文件内容
+ * @returns {PreloadResource[]}
  */
 function extractFromCss(content) {
 	const out = []
-	const re1 = /@import\s+url\s*\(\s*["']?(https?:\/\/[^\s"')]+)["']?\s*\)/g
-	const re2 = /@import\s+["'](https?:\/\/[^"']+)["']/g
-	let m
-	while ((m = re1.exec(content)) !== null) out.push({ url: m[1].trim(), type: 'css' })
-	while ((m = re2.exec(content)) !== null) out.push({ url: m[1].trim(), type: 'css' })
+	const re = /@import\s+(?:url\s*\(\s*)?["']?(https?:\/\/[^\s"'()]+)["']?\)?/g
+	for (const match of content.matchAll(re))
+		out.push({ url: match[1], type: 'css' })
 	return out
 }
 
+// 提取器映射表，提升扩展性与可读性
+const EXTRACTORS = {
+	'.mjs': extractFromJs,
+	'.js': extractFromJs,
+	'.html': extractFromHtml,
+	'.json': extractFromJson,
+	'.css': extractFromCss
+}
+
 /**
- * 按文件扩展名选择提取器并返回带类型的 URL 列表。
- * @param {string} filePath - 文件路径（用于判断扩展名）。
- * @param {string} content - 文件内容。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
+ * 动态分发提取器获取带类型的 URL 列表
+ * @param {string} filePath - 文件路径
+ * @param {string} content - 文件内容
+ * @returns {PreloadResource[]}
  */
 function extractTypedUrls(filePath, content) {
 	const ext = path.extname(filePath).toLowerCase()
-	if (ext === '.mjs' || ext === '.js') return extractFromJs(content)
-	if (ext === '.html') return extractFromHtml(content)
-	if (ext === '.json') return extractFromJson(content)
-	if (ext === '.css') return extractFromCss(content)
-	return []
+	return EXTRACTORS[ext] ? EXTRACTORS[ext](content) : []
 }
 
 /**
- * 合并多条结果并去重（按 url，保留首次出现的类型）。
- * @param {{ url: string, type: PreloadResourceType }[][]} lists - 多条结果。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 合并后的资源列表。
+ * 合并多条结果并去重，累加出现次数，按次数降序排列
+ * @param {PreloadResource[][]} lists - 多条结果的二维数组（支持携带基础 count）
+ * @returns {PreloadResource[]} 合并后的资源列表
  */
 function mergeAndDedupe(lists) {
-	const byUrl = new Map()
-	for (const list of lists)
-		for (const { url, type } of list) {
-			if (!EXTERNAL_URL_REG.test(url)) continue
-			if (!byUrl.has(url)) byUrl.set(url, type)
-		}
+	const map = new Map()
 
-	return [...byUrl.entries()].map(([url, type]) => ({ url, type }))
+	for (const list of lists) for (const { url, type, count = 1 } of list) {
+		if (!EXTERNAL_URL_REG.test(url)) continue
+
+		const cur = map.get(url) || { type, count: 0 }
+		cur.count += count
+		map.set(url, cur)
+	}
+
+	return Array.from(map.entries(), ([url, { type, count }]) => ({ url, type, count }))
+		.sort((a, b) => b.count - a.count)
 }
 
-// --- 公用缓存（所有用户共享）
-/** @type {{ url: string, type: PreloadResourceType }[] | null} */
-let commonCache = null
-
-// --- 用户缓存
-/** @type {Record<string, { url: string, type: PreloadResourceType }[] | null>} */
-const userCaches = {}
+// =======================
+// 文件扫描与目录遍历
+// =======================
 
 /**
- * 递归收集目录下匹配指定扩展名的文件路径。
- * @param {string} dir - 根目录。
- * @param {string[]} exts - 扩展名列表（如 ['.mjs', '.html']）。
- * @returns {string[]} 文件绝对路径数组。
+ * 递归收集目录下指定的扩展名文件
+ * @param {string} dir - 根目录
+ * @param {string[]} exts - 扩展名列表 (包含点，如 ['.mjs'])
+ * @returns {string[]} 文件绝对路径数组
  */
 function collectFiles(dir, exts) {
-	const normalized = exts.map(e => e.startsWith('.') ? e : '.' + e)
 	const out = []
-	if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return out
-	const walk = /** @param {string} d - 目录路径。 */ (d) => {
+	const walk = (d) => {
 		try {
-			const entries = fs.readdirSync(d, { withFileTypes: true })
-			for (const e of entries) {
+			for (const e of fs.readdirSync(d, { withFileTypes: true })) {
 				const full = path.join(d, e.name)
 				if (e.isDirectory()) walk(full)
-				else if (normalized.some(ext => e.name.endsWith(ext))) out.push(full)
+				else if (exts.includes(path.extname(e.name).toLowerCase())) out.push(full)
 			}
-		} catch (_) { /* ignore */ }
+		} catch { /* ignore */ }
 	}
 	walk(dir)
 	return out
 }
 
 /**
- * 扫描目录树中 .mjs/.html/.json/.css，提取外部 URL 并带类型去重。
- * @param {string} rootDir - 根目录。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 提取到的资源列表。
- */
-function scanDirectoryForTypedUrls(rootDir) {
-	const exts = ['.mjs', '.js', '.html', '.json', '.css']
-	const files = collectFiles(rootDir, exts)
-	const all = []
-	for (const file of files) try {
-		const content = fs.readFileSync(file, 'utf8')
-		if (hasBackendOnlyImports(content)) continue
-		all.push(extractTypedUrls(file, content))
-	} catch (_) { /* ignore */ }
-
-	return mergeAndDedupe(all)
-}
-
-/**
- * 递归收集目录下所有名为 public 的子目录路径（不进入 public 内再找 public）。
- * @param {string} root - 根目录（如用户目录或 parts 根）。
- * @returns {string[]} public 目录的绝对路径列表。
+ * 递归寻找名为 public 的目录 (一旦找到就不再进入其内部寻找)
+ * @param {string} root - 根目录
+ * @returns {string[]} public 目录绝对路径数组
  */
 function collectPublicDirs(root) {
 	const out = []
-	if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) return out
-	const walk = /** @param {string} d - 目录路径。 */ (d) => {
+	const walk = (d) => {
 		try {
-			const entries = fs.readdirSync(d, { withFileTypes: true })
-			for (const e of entries) {
+			for (const e of fs.readdirSync(d, { withFileTypes: true })) {
 				if (!e.isDirectory()) continue
 				const full = path.join(d, e.name)
 				if (e.name === 'public') out.push(full)
 				else walk(full)
 			}
-		} catch (_) { /* ignore */ }
+		} catch { /* ignore */ }
 	}
 	walk(root)
 	return out
 }
 
 /**
- * 构建公用预加载列表：扫描 pages 与 parts 下所有 public 目录。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 公用预加载 URL 列表。
+ * 扫描指定目录下的文件，并提取资源
+ * @param {string} rootDir - 根目录
+ * @returns {PreloadResource[]}
  */
-function buildCommonPreloadUrls() {
-	const publicRoot = path.join(__dirname, 'src', 'public')
+function scanDirectoryForTypedUrls(rootDir) {
+	const EXTS = ['.mjs', '.js', '.html', '.json', '.css']
+	const all = []
+
+	for (const file of collectFiles(rootDir, EXTS)) try {
+		const content = fs.readFileSync(file, 'utf8')
+		if (!hasBackendOnlyImports(content)) {
+			all.push(extractTypedUrls(file, content))
+		}
+	} catch { /* ignore */ }
+	return mergeAndDedupe(all)
+}
+
+// =======================
+// 缓存与核心业务逻辑
+// =======================
+
+const PUBLIC_ROOT = path.join(__dirname, 'src', 'public')
+
+/** @type {PreloadResource[] | null} */
+let commonCache = null
+
+/** @type {Map<string, PreloadResource[]>} */
+const userCaches = new Map()
+
+/**
+ * 获取或构建全局共用预加载列表
+ * @returns {PreloadResource[]}
+ */
+function getCommonPreloadUrls() {
+	if (commonCache) return commonCache
+
 	const lists = []
-	const pagesDir = path.join(publicRoot, 'pages')
+	const pagesDir = path.join(PUBLIC_ROOT, 'pages')
+	const partsDir = path.join(PUBLIC_ROOT, 'parts')
+
 	if (fs.existsSync(pagesDir)) lists.push(scanDirectoryForTypedUrls(pagesDir))
-	const partsDir = path.join(publicRoot, 'parts')
 	if (fs.existsSync(partsDir))
 		for (const publicDir of collectPublicDirs(partsDir))
 			lists.push(scanDirectoryForTypedUrls(publicDir))
 
-	return mergeAndDedupe(lists)
+	return commonCache = mergeAndDedupe(lists)
 }
 
 /**
- * 获取公用预加载 URL 列表。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 公用预加载 URL 列表。
+ * 获取或构建指定用户的预加载列表
+ * @param {string} username - 用户名
+ * @returns {PreloadResource[]}
  */
-function getCommonPreloadUrls() {
-	return commonCache ??= buildCommonPreloadUrls()
-}
+function getCachedUserPreloadUrls(username) {
+	if (userCaches.has(username)) return userCaches.get(username)
 
-/**
- * 清除公用预加载缓存（下次 getCommonPreloadUrls 时会重新构建）。
- * @returns {void}
- */
-function clearCommonCache() {
-	commonCache = null
-}
-
-/**
- * 构建指定用户的预加载列表：仅扫描该用户目录下各 public 子目录。
- * @param {string} username - 用户名。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 用户预加载 URL 列表。
- */
-function buildUserPreloadUrls(username) {
-	const userRoot = getUserDictionary(username)
 	const lists = []
+	const userRoot = getUserDictionary(username)
 	for (const publicDir of collectPublicDirs(userRoot))
 		lists.push(scanDirectoryForTypedUrls(publicDir))
 
-	return mergeAndDedupe(lists)
+	const result = mergeAndDedupe(lists)
+	userCaches.set(username, result)
+	return result
 }
 
 /**
- * 获取用户预加载 URL 列表。
- * @param {string} username - 用户名。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 用户预加载 URL 列表。
- */
-function getCachedUserPreloadUrls(username) {
-	return userCaches[username] ??= buildUserPreloadUrls(username)
-}
-
-/**
- * 清除用户预加载 URL 列表缓存。
- * @param {string} username - 用户名。
- * @returns {void}
- */
-function clearUserPreloadCache(username) {
-	delete userCaches[username]
-}
-
-/**
- * 获取预加载 URL 列表（带类型）。username 为 undefined 时仅返回公用列表；否则合并公用与对应用户列表并去重。
- * @param {string | undefined} [username] - 已登录用户名，未登录或不传为 undefined。
- * @returns {{ url: string, type: PreloadResourceType }[]} - 预加载 URL 列表。
+ * 获取预加载 URL 列表。
+ * username 为空仅返回公用列表；否则将公用列表与用户级列表合并，累加 count 后降序返回。
+ *
+ * @param {string} [username] - 已登录用户名
+ * @returns {PreloadResource[]}
  */
 export function getUserPreloadUrls(username) {
 	const common = getCommonPreloadUrls()
 	if (!username) return common
+
 	const user = getCachedUserPreloadUrls(username)
-	const byUrl = new Map(common.map(({ url, type }) => [url, type]))
-	for (const { url, type } of user) if (!byUrl.has(url)) byUrl.set(url, type)
-	return [...byUrl.entries()].map(([url, type]) => ({ url, type }))
+	return mergeAndDedupe([common, user])
 }
 
-fs.watch(path.join(__dirname, 'src', 'public'), { recursive: true }, clearCommonCache)
-events.on('part-installed', ({ username }) => {
-	clearUserPreloadCache(username)
-})
-events.on('part-uninstalled', ({ username }) => {
-	clearUserPreloadCache(username)
-})
+// =======================
+// 缓存清理与监听
+// =======================
+
+fs.watch(PUBLIC_ROOT, { recursive: true }, () => { commonCache = null })
+
+events.on('part-installed', ({ username }) => userCaches.delete(username))
+events.on('part-uninstalled', ({ username }) => userCaches.delete(username))
