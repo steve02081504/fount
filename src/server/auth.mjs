@@ -167,7 +167,6 @@ export async function initAuth() {
 			config.data.users[user].auth.apiRefreshTokens ??= []
 		}
 
-
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
 }
