@@ -3,9 +3,6 @@ import path from 'node:path'
 import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
-import { FullProxy } from 'npm:full-proxy'
-import trash from 'npm:trash'
-
 import { run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
@@ -19,7 +16,6 @@ import { events } from './events.mjs'
 import { restartor, save_config, setDefaultStuff, skip_report } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { sendEventToUser } from './web_server/event_dispatcher.mjs'
-import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
 
 /**
  * 为用户设置默认部件。
@@ -519,16 +515,20 @@ export async function baseloadPart(username, partpath, {
 async function shallowLoadDefaultPartsForUser(user) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
 	const defaultParts = user.defaultParts ??= {}
-	for (const parent in defaultParts)
-		for (const child of defaultParts[parent] ?? [])
-			await baseloadPart(user.username, parent + '/' + child).catch(_ => 0)
+	await Promise.all(
+		Object.entries(defaultParts).flatMap(([parent, children]) =>
+			(children ?? []).map(child =>
+				baseloadPart(user.username, parent + '/' + child).catch(_ => 0)
+			)
+		)
+	)
 }
 /**
  * 浅加载所有用户的默认部件，以此实现默认部件的快速启动
  * @returns {Promise<void>}
  */
 export async function shallowLoadAllDefaultParts() {
-	for (const user of Object.values(getAllUsers())) await shallowLoadDefaultPartsForUser(user)
+	await Promise.all(Object.values(getAllUsers()).map(user => shallowLoadDefaultPartsForUser(user)))
 }
 
 /**
@@ -648,6 +648,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 	},
 	afterInit = part => { },
 } = {}) {
+	const { getPartRouter } = await import('./web_server/parts_router.mjs')
 	Initargs = {
 		router: getPartRouter(username, partpath),
 		username,
@@ -708,7 +709,11 @@ export async function loadPartBase(username, partpath, Initargs, {
 		setDefaultStuff()
 	}
 	parts_load_results[username] ??= {}
-	return parts_load_results[username][partpath] ??= new FullProxy(() => parts_set[username][partpath])
+	if (!parts_load_results[username][partpath]) {
+		const { FullProxy } = await import('npm:full-proxy')
+		parts_load_results[username][partpath] ??= new FullProxy(() => parts_set[username][partpath])
+	}
+	return parts_load_results[username][partpath]
 }
 
 /**
@@ -765,6 +770,7 @@ export async function unloadPartBase(username, partpath, unLoadargs, {
 	if (!part) return
 	try {
 		await unLoader(part)
+		const { deletePartRouter } = await import('./web_server/parts_router.mjs')
 		await deletePartRouter(username, partpath)
 	}
 	catch (error) {
@@ -802,6 +808,7 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	Uninstaller = async (part, path) => {
 		await part?.Uninstall?.(uninstallArgs)
 		try {
+			const { default: trash } = await import('npm:trash')
 			await trash(path)
 		}
 		catch (error) {

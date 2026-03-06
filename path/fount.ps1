@@ -643,7 +643,7 @@ function fount_upgrade {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
 		return
 	}
-	if ($FOUNT_DIR -in $(git config --global --get-all safe.directory)) {} else {
+	if ($FOUNT_DIR -notin $(git config --global --get-all safe.directory)) {
 		git config --global --add safe.directory "$FOUNT_DIR"
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {

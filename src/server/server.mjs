@@ -143,8 +143,11 @@ export async function init(start_config) {
 	config = get_config()
 	if (starts.Base) initAuth()
 
+	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
+	const mdnsModulePromise = starts.Web?.mDNS ? import('./web_server/mdns.mjs') : null
+
 	if (starts.IPC) {
-		const { IPCManager } = await import('./ipc_server/index.mjs')
+		const { IPCManager } = await ipcModulePromise
 		if (!await new IPCManager().startServer()) return false
 	}
 	let iconPromise
@@ -157,7 +160,6 @@ export async function init(start_config) {
 		let server
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
-		const { initMdns } = starts.Web?.mDNS ? await import('./web_server/mdns.mjs') : {}
 		let appPromise
 		/**
 		 * 懒加载地获取 Express 应用程序实例。
@@ -215,19 +217,20 @@ export async function init(start_config) {
 			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 
 			const listen = [port, listenAddress].filter(Boolean)
+
 			if (httpsConfig?.enabled)
 				server = https.createServer({
 					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'https', mdnsConfig)
+					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'https', mdnsConfig))
 					resolve(listenAddress == 'localhost')
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'http', mdnsConfig)
+					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'http', mdnsConfig))
 					resolve(listenAddress == 'localhost')
 				})
 
@@ -267,7 +270,6 @@ export async function init(start_config) {
 		const titleBackup = process.title
 		on_shutdown(() => setWindowTitle(titleBackup))
 		setDefaultStuff()
-		if (start_config.needs_output) console.freshLine('server start', await logoPromise)
 		if (starts.Base.Tips) {
 			console.logI18n('tips.title')
 			console.logI18n('tips.data')
@@ -299,29 +301,25 @@ export async function init(start_config) {
 				await shallowLoadAllDefaultParts()
 			}, 1000)
 		}, 2000)
-		if (starts.Base.Timers) {
-			const { startTimerHeartbeat } = await import('./timers.mjs')
-			startTimerHeartbeat()
-		}
-		const { startIdleCheck, onIdle } = await import('./idle.mjs')
-		if (starts.Base.Idle) startIdleCheck()
-		if (starts.Base.AutoUpdate) {
-			const { enableAutoUpdate } = await import('./autoupdate.mjs')
-			enableAutoUpdate()
-		}
-		onIdle(setDefaultStuff)
-		onIdle(() => {
-			config.prelaunch ??= {}
-			const currentHeap = getMemoryUsage()
-			const oldHeap = config.prelaunch.heapSize / 1.5 || currentHeap
-			config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13 * 1.5)
-			save_config()
+		if (starts.Base.Timers)
+			import('./timers.mjs').then(({ startTimerHeartbeat }) => startTimerHeartbeat())
+		if (starts.Base.AutoUpdate)
+			import('./autoupdate.mjs').then(({ enableAutoUpdate }) => enableAutoUpdate())
+		import('./idle.mjs').then(({ startIdleCheck, onIdle }) => {
+			if (starts.Base.Idle) startIdleCheck()
+			onIdle(setDefaultStuff)
+			onIdle(() => {
+				config.prelaunch ??= {}
+				const currentHeap = getMemoryUsage()
+				const oldHeap = config.prelaunch.heapSize / 1.5 || currentHeap
+				config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13 * 1.5)
+				save_config()
+			})
 		})
 	}
-	if (starts.DiscordRPC) {
-		const { StartRPC } = await import('../scripts/discordrpc.mjs')
-		StartRPC()
-	}
+	if (starts.DiscordRPC)
+		import('../scripts/discordrpc.mjs').then?.(({ StartRPC }) => StartRPC())
+	if (start_config.needs_output) logoPromise?.then(logo => console.freshLine('server start', logo))
 	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
 	return true
