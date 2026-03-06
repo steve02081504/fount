@@ -8,6 +8,7 @@ import {
 	modifyTimeLine,
 	deleteMessage,
 	editMessage,
+	triggerCharacterReply,
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { getfile } from '../files.mjs'
@@ -17,6 +18,7 @@ import { SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION, arrayBufferToBase
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
 	getQueueIndex,
+	getQueue,
 	replaceMessageInQueue,
 	getChatLogIndexByQueueIndex,
 	getMessageElementByQueueIndex,
@@ -362,6 +364,24 @@ export async function renderMessage(message) {
 }
 
 /**
+ * 判断用户消息编辑确认后应执行的后续动作。
+ * 当编辑的消息是最后一条用户消息且其后只有零条或一条角色回复时，返回对应的动作类型。
+ * @param {object} message - 被编辑的消息对象。
+ * @param {number} queueIndex - 该消息在队列中的索引。
+ * @returns {'trigger-reply'|'modify-timeline'|null} 后续动作类型，null 表示无需额外操作。
+ */
+function getPostEditActionForUserMessage(message, queueIndex) {
+	if (message.role !== 'user') return null
+	const queue = getQueue()
+	const messagesAfter = queue.slice(queueIndex + 1)
+	if (messagesAfter.some(m => m.role === 'user')) return null
+	const charCount = messagesAfter.filter(m => m.role === 'char').length
+	if (charCount === 0) return 'trigger-reply'
+	if (charCount === 1) return 'modify-timeline'
+	return null
+}
+
+/**
  * 开始编辑指定消息。
  * @param {object} message - 原始消息。
  * @param {number} queueIndex - 在队列中的索引。
@@ -416,7 +436,12 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	// --- 确认编辑 ---
 	confirmButton.addEventListener('click', async () => {
 		const newMessage = { ...message, content: editInput.value, files: selectedFiles }
-		await editMessage(chatLogIndex, newMessage) // 后端编辑
+		const postEditAction = getPostEditActionForUserMessage(message, queueIndex)
+		await editMessage(chatLogIndex, newMessage)
+		if (postEditAction === 'trigger-reply')
+			triggerCharacterReply(null).catch(() => { })
+		else if (postEditAction === 'modify-timeline')
+			modifyTimeLine(Infinity).catch(() => { })
 	})
 
 	// --- 取消编辑 ---
