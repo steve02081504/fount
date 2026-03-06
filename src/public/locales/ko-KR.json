@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC 서버가 시작되었습니다.",
 			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다.",
+			"noInstanceRunning": "실행 중인 인스턴스가 감지되지 않았습니다. 먼저 fount를 시작하세요.",
 			"runPartLog": "${partpath}으로 ${username}를 실행합니다. 인수: ${args}",
 			"invokePartLog": "${partpath}으로 ${username}를 호출합니다. 매개변수: ${invokedata}",
 			"invalidCommand": "잘못된 명령입니다. \"fount run <컴포넌트 유형> <사용자 이름> <컴포넌트 이름> <매개변수...>\" 형식을 사용하십시오.",

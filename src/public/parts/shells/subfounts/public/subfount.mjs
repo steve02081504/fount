@@ -438,5 +438,4 @@ on_shutdown(() => {
 	console.log('\nShutting down...')
 	clearInterval(deviceInfoUpdateInterval)
 	if (room) room.leave()
-	process.exit(0)
 })

@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC सर्वर शुरू हो गया है",
 			"instanceRunning": "एक और इंस्टेंस पहले से ही चल रहा है",
+			"noInstanceRunning": "चल रहा कोई इंस्टेंस नहीं मिला, कृपया पहले fount शुरू करें।",
 			"runPartLog": "${partpath} को ${username} के रूप में चलाएँ, तर्क: ${args}",
 			"invokePartLog": "${partpath} को ${username} के रूप में कॉल करें, पैरामीटर: ${invokedata}",
 			"invalidCommand": "अमान्य कमांड, कृपया \"fount run <घटक प्रकार> <उपयोगकर्ता नाम> <घटक नाम> <पैरामीटर...>‌\" का उपयोग करें",

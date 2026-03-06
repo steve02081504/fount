@@ -36,6 +36,7 @@ export type LocaleData = {
 		ipc: {
 			serverStarted: string
 			instanceRunning: string
+			noInstanceRunning: string
 			runPartLog: string
 			invokePartLog: string
 			invalidCommand: string

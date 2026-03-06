@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "🖥️✅",
 			"instanceRunning": "🏃‍♂️💨",
+			"noInstanceRunning": "🚫🏃‍♂️💨 ❓ ▶️ ⛲",
 			"runPartLog": "▶️ 🧩${partpath} 👤${username}, 📝: ${args}",
 			"invokePartLog": "📞 🧩${partpath} 👤${username}, 📝: ${invokedata}",
 			"invalidCommand": "❓➡️ \"⛲ ▶️ <🧩> <👤> <🏷️> <...>",

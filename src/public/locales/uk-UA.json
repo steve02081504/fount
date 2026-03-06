@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC-сервер запущено",
 			"instanceRunning": "Інший екземпляр вже запущено",
+			"noInstanceRunning": "Запущений екземпляр не виявлено, спочатку запустіть fount.",
 			"runPartLog": "Запустіть ${partpath} як ${username}, аргументи: ${args}",
 			"invokePartLog": "Виклик ${partpath} як ${username}, параметр: ${invokedata}",
 			"invalidCommand": "Невірна команда, будь ласка, використовуйте \"fount run <тип компонента> <ім'я користувача> <назва компонента> <параметри...>\"",

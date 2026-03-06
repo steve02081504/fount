@@ -8,7 +8,7 @@ set_start()
 const fount_config = {
 	/**
 	 * 重新启动服务器。
-	 * @returns {never} 不会返回，因为进程会退出。
+	 * @returns {undefined} 开始重启服务器。
 	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/.github/workflows/default_data',
@@ -25,30 +25,32 @@ const fount_config = {
 	},
 }
 
-console.log('starting fount server')
+(async () => {
+	console.log('starting fount server')
 
-const okey = await init(fount_config)
+	const okey = await init(fount_config)
 
-if (!okey) {
-	console.error('server init failed')
-	process.exit(1)
-}
+	if (!okey) {
+		console.error('server init failed')
+		return process.exit(1)
+	}
 
-const pingUrl = hosturl + '/api/ping'
-console.log('pinging', pingUrl)
+	const pingUrl = hosturl + '/api/ping'
+	console.log('pinging', pingUrl)
 
-const res = await fetch(pingUrl, { method: 'GET', cache: 'no-store' })
+	const res = await fetch(pingUrl, { method: 'GET', cache: 'no-store' })
 
-if (!res.ok) {
-	console.error('api/ping failed:', res.status, res.statusText)
-	process.exit(1)
-}
+	if (!res.ok) {
+		console.error('api/ping failed:', res.status, res.statusText)
+		return process.exit(1)
+	}
 
-const data = await res.json()
-if (data?.message !== 'pong') {
-	console.error('api/ping unexpected response:', data)
-	process.exit(1)
-}
+	const data = await res.json()
+	if (data?.message !== 'pong') {
+		console.error('api/ping unexpected response:', data)
+		return process.exit(1)
+	}
 
-console.log('api/ping OK:', data.message)
-process.exit(0)
+	console.log('api/ping OK:', data.message)
+	process.exit(0)
+})()

@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC netþjónn er ræstur",
 			"instanceRunning": "Annað tilvik er þegar í gangi",
+			"noInstanceRunning": "Ekkert hlaupandi tilvik fannst, vinsamlegast hafið fount fyrst.",
 			"runPartLog": "Keyra ${partpath} sem ${username}, rök: ${args}",
 			"invokePartLog": "Hringdu í ${partpath} sem ${username}, færibreyta: ${invokedata}",
 			"invalidCommand": "Ógild skipun, vinsamlegast notaðu \"fount run <íhlutagerð> <notandanafn> <íhlutarheiti> <færibreytur...>\"",

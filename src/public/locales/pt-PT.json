@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "Servidor IPC iniciado.",
 			"instanceRunning": "Outra instância já está em execução.",
+			"noInstanceRunning": "Nenhuma instância em execução foi detectada. Inicie o fount primeiro.",
 			"runPartLog": "Execute ${partpath} como ${username}, argumentos: ${args}",
 			"invokePartLog": "Chame ${partpath} como ${username}, parâmetro: ${invokedata}",
 			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetros...>\".",
