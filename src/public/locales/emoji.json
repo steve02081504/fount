@@ -2455,10 +2455,10 @@
 	},
 	"searchableDropdown": {
 		"trigger": {
-			"placeholder": "Select an option..."
+			"placeholder": "👉..."
 		},
 		"search": {
-			"placeholder": "Search..."
+			"placeholder": "🔍..."
 		}
 	}
 }
