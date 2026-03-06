@@ -1264,6 +1264,7 @@ export async function modifyTimeLine(chatid, delta) {
 		newEntry.id = crypto.randomUUID() // 必须生成新ID
 		newEntry.timeSlice = timeSlice.copy() // 复制上下文
 		newEntry.timeSlice.greeting_type = greeting_type
+		newEntry.timeSlice.charname = timeSlice.charname // 保留发言角色ID，确保重生成时能找到正确的char
 
 		// 继承视觉信息保持UI稳定
 		newEntry.role = previousEntry.role
