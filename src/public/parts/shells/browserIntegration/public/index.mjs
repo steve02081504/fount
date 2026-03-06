@@ -1,10 +1,10 @@
 /**
  * 浏览器集成页面的主要客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement } from '../../../scripts/i18n.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
+import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { showToast, showToastI18n } from '/scripts/toast.mjs'
 
 import * as api from './src/endpoints.mjs'
 
@@ -44,10 +44,7 @@ function connectWebSocket() {
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/parts/shells:browserIntegration/ui`
 	const ws = new WebSocket(wsUrl)
 
-	/**
-	 * WebSocket 'message' 事件处理程序。
-	 * @param {MessageEvent} event - WebSocket 消息事件。
-	 */
+	/** @param {MessageEvent} event - 收到的 WebSocket 消息事件。 */
 	ws.onmessage = async (event) => {
 		try {
 			const msg = JSON.parse(event.data)
@@ -70,8 +67,6 @@ function connectWebSocket() {
 	 * WebSocket 'close' 事件处理程序。
 	 */
 	ws.onclose = async () => {
-		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
-		// Clear the list to show a disconnected/error state
 		pagesListDiv.innerHTML = ''
 		pagesListDiv.appendChild(await renderTemplate('error_message'))
 		setTimeout(connectWebSocket, RECONNECT_DELAY)
@@ -79,11 +74,11 @@ function connectWebSocket() {
 
 	/**
 	 * WebSocket 'error' 事件处理程序。
-	 * @param {Event} err - WebSocket 错误事件。
+	 * @param {Event} error - WebSocket 错误事件。
+	 * @returns {void}
 	 */
-	ws.onerror = (err) => {
-		console.error('UI WebSocket error:', err)
-		// Don't call ws.close() here, as onclose will be called automatically.
+	ws.onerror = (error) => {
+		console.error('UI WebSocket error:', error)
 	}
 }
 
@@ -109,16 +104,11 @@ function showViewScriptModal(scriptId) {
  */
 async function handleDeleteScript(scriptId) {
 	if (confirm(geti18n('browser_integration.autorun.confirm_delete'))) try {
-		// 1. Delete metadata from server
 		const deleteResult = await api.deleteAutoRunScript(scriptId)
 		if (!deleteResult.success) throw new Error(deleteResult.message)
 
-		// 2. Dispatch event to userscript
 		window.dispatchEvent(new CustomEvent('fount-autorun-script-update', {
-			detail: {
-				action: 'delete',
-				script: { id: scriptId } // Only need ID for deletion
-			}
+			detail: { action: 'delete', script: { id: scriptId } }
 		}))
 
 		showToastI18n('success', 'browser_integration.autorun.delete_success')
@@ -168,25 +158,14 @@ async function handleAddScript(e) {
 		script: autorunScript.value,
 	}
 
-	// This object is for the userscript (includes the script content)
-	const fullScriptPayload = {
-		...scriptData,
-	}
-
 	try {
-		// 1. Save metadata to the server
 		const result = await api.addAutoRunScript(scriptData)
 		if (!result.success) throw new Error(result.message)
 
-		// The backend returns the metadata including the new ID
-		const newId = result.script.id
-		fullScriptPayload.id = newId
-
-		// 2. Dispatch event to userscript
 		window.dispatchEvent(new CustomEvent('fount-autorun-script-update', {
 			detail: {
 				action: 'add',
-				script: fullScriptPayload
+				script: { ...scriptData, id: result.script.id }
 			}
 		}))
 
