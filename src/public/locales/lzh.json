@@ -2286,6 +2286,12 @@
 		"failed": "敗",
 		"copySuccess": "糾錯報告已謄於剪貼板",
 		"copyFailed": "謄錄未果",
+		"updateNow": "當即更新並重啟",
+		"alreadyLatest": "已是最新，無需再動。",
+		"updateRestarting": "革故鼎新中…",
+		"updateSuccess": "伺服正重啟",
+		"updateFailed": "更新之請未果",
+		"autoUpdateNotEnabled": "自動更新未啟",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

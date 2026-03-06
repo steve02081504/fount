@@ -2286,6 +2286,12 @@
 		"failed": "エラー",
 		"copySuccess": "デバッグ レポートがクリップボードにコピーしました",
 		"copyFailed": "レポートのコピーに失敗しました",
+		"updateNow": "今すぐ更新して再起動",
+		"alreadyLatest": "すでに最新バージョンです",
+		"updateRestarting": "再起動中...",
+		"updateSuccess": "サーバーが再起動中です",
+		"updateFailed": "更新リクエストが失敗しました",
+		"autoUpdateNotEnabled": "自動更新が有効になっていません",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

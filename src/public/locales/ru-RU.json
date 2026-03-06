@@ -2286,6 +2286,12 @@
 		"failed": "Ошибка",
 		"copySuccess": "Отчет об отладке скопирован в буфер обмена.",
 		"copyFailed": "Копировать отчет не удалось",
+		"updateNow": "Обновите и перезапустите сейчас",
+		"alreadyLatest": "Уже последняя версия",
+		"updateRestarting": "Перезапуск...",
+		"updateSuccess": "Сервер перезагружается",
+		"updateFailed": "Запрос на обновление не выполнен",
+		"autoUpdateNotEnabled": "Автоматические обновления не включены",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2286,6 +2286,12 @@
 		"failed": "Failed",
 		"copySuccess": "Debug report copied to clipboard",
 		"copyFailed": "Failed to copy report",
+		"updateNow": "Update and restart now",
+		"alreadyLatest": "Already the latest version",
+		"updateRestarting": "Restarting...",
+		"updateSuccess": "Server is restarting",
+		"updateFailed": "Update request failed",
+		"autoUpdateNotEnabled": "Automatic updates are not enabled",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

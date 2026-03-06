@@ -36,13 +36,17 @@
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title" data-i18n="debug_info.versionStatus.title"></h2>
-				<div class="flex items-center gap-4 mt-2">
+				<div class="flex flex-wrap items-center gap-4 mt-2">
 					<div id="version-indicator" class="badge badge-lg badge-warning gap-2" data-i18n="debug_info.versionStatus.checking">
 					</div>
 					<div class="text-sm opacity-70">
 						<div><span data-i18n="debug_info.versionStatus.local"></span> <span id="local-version" class="font-mono">...</span></div>
 						<div><span data-i18n="debug_info.versionStatus.remote"></span> <span id="remote-version" class="font-mono">...</span></div>
 					</div>
+					<button id="update-btn" class="btn btn-sm btn-primary gap-2" disabled>
+						<img id="update-btn-icon" src="https://api.iconify.design/line-md/chevron-triple-up.svg" class="w-4 h-4" alt="" />
+						<span id="update-btn-label" data-i18n="debug_info.updateNow"></span>
+					</button>
 				</div>
 			</div>
 		</div>

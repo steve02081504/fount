@@ -2286,6 +2286,12 @@
 		"failed": "失敗",
 		"copySuccess": "除錯報告已複製到剪貼簿",
 		"copyFailed": "複製報告失敗",
+		"updateNow": "立即更新並重啟",
+		"alreadyLatest": "目前已是最新版本",
+		"updateRestarting": "正在重啟…",
+		"updateSuccess": "正在重啟伺服器",
+		"updateFailed": "更新請求失敗",
+		"autoUpdateNotEnabled": "未啟用自動更新",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

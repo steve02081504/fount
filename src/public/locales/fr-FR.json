@@ -2286,6 +2286,12 @@
 		"failed": "Échec",
 		"copySuccess": "Rapport de débogage copié dans le presse-papiers",
 		"copyFailed": "Échec de la copie du rapport",
+		"updateNow": "Mettre à jour et redémarrer maintenant",
+		"alreadyLatest": "Déjà la dernière version",
+		"updateRestarting": "Redémarrage...",
+		"updateSuccess": "Le serveur redémarre",
+		"updateFailed": "La demande de mise à jour a échoué",
+		"autoUpdateNotEnabled": "Les mises à jour automatiques ne sont pas activées",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

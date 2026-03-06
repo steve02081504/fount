@@ -2286,6 +2286,12 @@
 		"failed": "Mislukt",
 		"copySuccess": "Foutopsporingsrapport gekopieerd naar klembord",
 		"copyFailed": "Kopieer rapport mislukt",
+		"updateNow": "Update en start nu opnieuw",
+		"alreadyLatest": "Al de nieuwste versie",
+		"updateRestarting": "Opnieuw opstarten...",
+		"updateSuccess": "De server wordt opnieuw opgestart",
+		"updateFailed": "Updateverzoek is mislukt",
+		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2286,6 +2286,12 @@
 		"failed": "실패",
 		"copySuccess": "디버그 보고서가 클립보드에 복사되었습니다.",
 		"copyFailed": "보고서 복사 실패",
+		"updateNow": "지금 업데이트하고 다시 시작하세요",
+		"alreadyLatest": "이미 최신 버전입니다",
+		"updateRestarting": "다시 시작하는 중...",
+		"updateSuccess": "서버를 다시 시작하는 중입니다.",
+		"updateFailed": "업데이트 요청 실패",
+		"autoUpdateNotEnabled": "자동 업데이트가 활성화되지 않았습니다.",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2286,6 +2286,12 @@
 		"failed": "Fallito",
 		"copySuccess": "Rapporto di debug copiato negli appunti",
 		"copyFailed": "Copia rapporto non riuscita",
+		"updateNow": "Aggiorna e riavvia ora",
+		"alreadyLatest": "Già l'ultima versione",
+		"updateRestarting": "Riavvio...",
+		"updateSuccess": "Il server si sta riavviando",
+		"updateFailed": "Richiesta di aggiornamento non riuscita",
+		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2286,6 +2286,12 @@
 		"failed": "Mistókst",
 		"copySuccess": "Villuleitarskýrsla afrituð á klippiborð",
 		"copyFailed": "Afritun skýrslu mistókst",
+		"updateNow": "Uppfærðu og endurræstu núna",
+		"alreadyLatest": "Nú þegar nýjasta útgáfan",
+		"updateRestarting": "Endurræsir...",
+		"updateSuccess": "Þjónninn er að endurræsa",
+		"updateFailed": "Uppfærslubeiðni mistókst",
+		"autoUpdateNotEnabled": "Sjálfvirkar uppfærslur eru ekki virkar",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

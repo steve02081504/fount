@@ -2286,6 +2286,12 @@
 		"failed": "❌",
 		"copySuccess": "✅📋",
 		"copyFailed": "❌📋",
+		"updateNow": "🆕🔄▶️",
+		"alreadyLatest": "👍",
+		"updateRestarting": "🔄...",
+		"updateSuccess": "🔄✅",
+		"updateFailed": "❌🔄",
+		"autoUpdateNotEnabled": "🚫🔄",
 		"home_function_buttons": {
 			"debug": {
 				"main": {
