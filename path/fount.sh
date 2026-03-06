@@ -668,22 +668,6 @@ assert_fount_dir_writable() {
 	fi
 }
 
-update_fount_if_not_noupdate() {
-	if [ -f "$FOUNT_DIR/.noupdate" ]; then
-		get_i18n 'update.skippingFountUpdate'
-	else
-		fount_upgrade
-	fi
-}
-
-upgrade_deno_if_not_docker() {
-	if [ $IN_DOCKER -eq 1 ]; then
-		get_i18n 'update.skippingDenoUpgradeDocker'
-	else
-		deno_upgrade
-	fi
-}
-
 open_url_in_browser() {
 	local url="$1"
 	if [ "$OS_TYPE" = "Linux" ]; then
@@ -1136,12 +1120,6 @@ fount_upgrade() {
 	fi
 }
 
-# 更新 fount
-if [[ $# -eq 0 || $1 != "shutdown" ]]; then
-	assert_fount_dir_writable "$FOUNT_DIR"
-	update_fount_if_not_noupdate
-fi
-
 # 函数: 安装 Deno
 install_deno() {
 	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 0 || -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
@@ -1282,9 +1260,28 @@ deno_upgrade() {
 }
 
 if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
-	upgrade_deno_if_not_docker
+	if [ $IN_DOCKER -eq 1 ]; then
+		get_i18n 'update.skippingDenoUpgradeDocker'
+	else
+		deno_upgrade
+	fi
 	run_deno -V
 fi
+update_fount_and_deno() {
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		get_i18n 'update.skippingFountUpdate'
+	else
+		fount_upgrade
+		deno_upgrade
+	fi
+}
+
+# 更新 fount 和 Deno
+if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+	assert_fount_dir_writable "$FOUNT_DIR"
+	update_fount_and_deno
+fi
+
 is_debug=0
 debug_on() {
 	is_debug=1
@@ -1442,8 +1439,7 @@ keepalive)
 			fi
 		fi
 
-		update_fount_if_not_noupdate
-		upgrade_deno_if_not_docker
+		update_fount_and_deno
 		run
 		exit_code=$?
 	done
@@ -1513,12 +1509,7 @@ remove)
 	run "${runargs[@]}"
 	exit_code=$?
 	while [ $exit_code -eq 131 ]; do
-		if [ -f "$FOUNT_DIR/.noupdate" ]; then
-			get_i18n 'update.skippingFountUpdate'
-		else
-			deno_upgrade
-			fount_upgrade
-		fi
+		update_fount_and_deno
 		run
 		exit_code=$?
 	done
