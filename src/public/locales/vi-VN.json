@@ -2286,6 +2286,12 @@
 		"failed": "Thất bại",
 		"copySuccess": "Đã sao chép báo cáo gỡ lỗi vào bảng nhớ tạm",
 		"copyFailed": "Sao chép báo cáo không thành công",
+		"updateNow": "Cập nhật và khởi động lại ngay",
+		"alreadyLatest": "Đã là phiên bản mới nhất",
+		"updateRestarting": "Đang khởi động lại...",
+		"updateSuccess": "Máy chủ đang khởi động lại",
+		"updateFailed": "Yêu cầu cập nhật không thành công",
+		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2286,6 +2286,12 @@
 		"failed": "Помилка",
 		"copySuccess": "Звіт про налагодження скопійовано в буфер обміну",
 		"copyFailed": "Не вдалося скопіювати звіт",
+		"updateNow": "Оновіть і перезапустіть зараз",
+		"alreadyLatest": "Вже остання версія",
+		"updateRestarting": "Перезапуск...",
+		"updateSuccess": "Сервер перезавантажується",
+		"updateFailed": "Помилка запиту на оновлення",
+		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

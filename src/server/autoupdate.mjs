@@ -74,12 +74,19 @@ async function checkDenoUpdate() {
 }
 
 /**
+ * 自动更新是否启用。
+ * @type {boolean}
+ */
+export let autoUpdateEnabled = false
+
+/**
  * 启用空闲时自动检查上游并重启（供 .noupdate 切换使用）。
  * @returns {void}
  */
 export function enableAutoUpdate() {
 	onIdle(checkUpstream)
 	onIdle(checkDenoUpdate)
+	autoUpdateEnabled = true
 }
 
 /**
@@ -89,4 +96,5 @@ export function enableAutoUpdate() {
 export function disableAutoUpdate() {
 	offIdle(checkUpstream)
 	offIdle(checkDenoUpdate)
+	autoUpdateEnabled = false
 }

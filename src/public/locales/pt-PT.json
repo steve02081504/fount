@@ -2286,6 +2286,12 @@
 		"failed": "Falha",
 		"copySuccess": "Relatório de depuração copiado para a área de transferência",
 		"copyFailed": "Falha ao copiar relatório",
+		"updateNow": "Atualize e reinicie agora",
+		"alreadyLatest": "Já é a versão mais recente",
+		"updateRestarting": "Reiniciando...",
+		"updateSuccess": "O servidor está reiniciando",
+		"updateFailed": "Falha na solicitação de atualização",
+		"autoUpdateNotEnabled": "As atualizações automáticas não estão habilitadas",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

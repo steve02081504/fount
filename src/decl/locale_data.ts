@@ -2275,6 +2275,12 @@ export type LocaleData = {
 		failed: string
 		copySuccess: string
 		copyFailed: string
+		updateNow: string
+		alreadyLatest: string
+		updateRestarting: string
+		updateSuccess: string
+		updateFailed: string
+		autoUpdateNotEnabled: string
 		home_function_buttons: {
 			debug: {
 				main: {

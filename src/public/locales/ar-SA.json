@@ -2286,6 +2286,12 @@
 		"failed": "فشل",
 		"copySuccess": "تم نسخ تقرير التصحيح إلى الحافظة",
 		"copyFailed": "فشل نسخ التقرير",
+		"updateNow": "قم بالتحديث وإعادة التشغيل الآن",
+		"alreadyLatest": "بالفعل أحدث إصدار",
+		"updateRestarting": "جارٍ إعادة التشغيل...",
+		"updateSuccess": "يتم إعادة تشغيل الخادم",
+		"updateFailed": "فشل طلب التحديث",
+		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -1,12 +1,24 @@
 import os from 'node:os'
 
 import { authenticate } from '../../../../../server/auth.mjs'
+import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
+import { restartor } from '../../../../../server/server.mjs'
 
 /**
  * 设置端点。
  * @param {Object} router - Express 路由器。
  */
 export function setEndpoints(router) {
+	router.get('/api/parts/shells\\:debug_info/auto_update_enabled', authenticate, (req, res) => {
+		res.status(200).json({ enabled: autoUpdateEnabled })
+	})
+
+	router.post('/api/parts/shells\\:debug_info/restart', authenticate, (req, res) => {
+		if (!autoUpdateEnabled) return res.status(403).json({ error: 'auto_update_disabled' })
+		res.status(202).json({ status: 'restarting' })
+		res.on('finish', () => restartor())
+	})
+
 	router.get('/api/parts/shells\\:debug_info/system_info', authenticate, async (req, res) => {
 		const checks = [
 			{ name: 'npm Registry', url: 'https://registry.npmjs.org' },

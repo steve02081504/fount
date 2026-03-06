@@ -2286,6 +2286,12 @@
 		"failed": "Fehlgeschlagen",
 		"copySuccess": "Debug-Bericht in die Zwischenablage kopiert",
 		"copyFailed": "Fehler beim Kopieren des Berichts",
+		"updateNow": "Jetzt aktualisieren und neu starten",
+		"alreadyLatest": "Bereits die neueste Version",
+		"updateRestarting": "Neustart...",
+		"updateSuccess": "Der Server wird neu gestartet",
+		"updateFailed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
+		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
 		"home_function_buttons": {
 			"debug": {
 				"main": {

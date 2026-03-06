@@ -2286,6 +2286,12 @@
 		"failed": "असफल",
 		"copySuccess": "डिबग रिपोर्ट क्लिपबोर्ड पर कॉपी की गई",
 		"copyFailed": "प्रतिलिपि रिपोर्ट विफल रही",
+		"updateNow": "अभी अद्यतन करें और पुनः प्रारंभ करें",
+		"alreadyLatest": "पहले से ही नवीनतम संस्करण",
+		"updateRestarting": "पुनः प्रारंभ हो रहा है...",
+		"updateSuccess": "सर्वर पुनः प्रारंभ हो रहा है",
+		"updateFailed": "अद्यतन अनुरोध विफल रहा",
+		"autoUpdateNotEnabled": "स्वचालित अपडेट सक्षम नहीं हैं",
 		"home_function_buttons": {
 			"debug": {
 				"main": {
