@@ -815,7 +815,6 @@ if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe'))
 	else {
 		deno_upgrade
 	}
-
 	deno -V
 }
 
