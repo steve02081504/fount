@@ -985,11 +985,11 @@ ${diagram}`
 }
 
 [color-scheme="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-light)
+	color: var(--shiki-light);
 }
 
 [color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-dark)
+	color: var(--shiki-dark);
 }
 `
 	document.head.prepend(markdown_style)

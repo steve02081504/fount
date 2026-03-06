@@ -56,18 +56,9 @@ ${
 
 		.text-icon {
 			color: var(--color-base-content);
-		}${messageHtml.includes('markdown-code-block') ? `\
+		}${messageHtml.includes('markdown-code-block') ? `
 
-		/* Styles for rehype-pretty-code (Shiki) */
-		pre[style*="--shiki-light-bg"] {
-			background-color: var(--shiki-light-bg);
-		}
-
-		[color-scheme="dark"] pre[style*="--shiki-dark-bg"] {
-			background-color: var(--shiki-dark-bg);
-		}
-
-		[style*="--shiki-light"][style*="--shiki-dark"] {
+		[color-scheme="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
 			color: var(--shiki-light);
 		}
 
