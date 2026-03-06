@@ -14,7 +14,8 @@ import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
-const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(async error => {
+let hash, verify, Algorithm
+const argon2Loaded = import('npm:@node-rs/argon2').catch(async error => {
 	globalThis.console.warn(error)
 	const fallback = await import('npm:argon2')
 	return {
@@ -24,6 +25,10 @@ const { hash, verify, Algorithm } = await import('npm:@node-rs/argon2').catch(as
 			Argon2id: fallback.argon2id
 		}
 	}
+}).then(mod => {
+	hash = mod.hash
+	verify = mod.verify
+	Algorithm = mod.Algorithm
 })
 /**
  * 此文件处理应用程序的所有认证相关逻辑，
@@ -674,6 +679,7 @@ async function createUser(username, password) {
  * @returns {Promise<string>} 哈希后的密码。
  */
 export async function hashPassword(password) {
+	if (!hash) await argon2Loaded
 	return await hash(password, { algorithm: Algorithm.Argon2id })
 }
 
@@ -685,6 +691,7 @@ export async function hashPassword(password) {
  */
 export async function verifyPassword(password, hashedPassword) {
 	if (!password || !hashedPassword) return false
+	if (!verify) await argon2Loaded
 	return await verify(hashedPassword, password)
 }
 
@@ -903,12 +910,13 @@ export function getUserDictionary(username) {
 	return path.resolve(user?.UserDictionary || path.join(data_path, 'users', username))
 }
 
+// 预热 argon2，使 avgVerifyTime 在首次登录前已有参考值，用于暴力破解时序保护
 let avgVerifyTime = 0
-{
+const timingCalibrated = argon2Loaded.then(async () => {
 	const startTime = Date.now()
 	await verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
 	avgVerifyTime = Date.now() - startTime
-}
+})
 
 /**
  * 用户登录。
@@ -919,6 +927,7 @@ let avgVerifyTime = 0
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
 export async function login(username, password, deviceId = 'unknown', req) {
+	await timingCalibrated
 	const { ip } = req
 	const user = getUserByUsername(username)
 

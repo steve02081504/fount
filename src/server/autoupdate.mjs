@@ -12,7 +12,8 @@ import { sendEventToAll } from './web_server/event_dispatcher.mjs'
  * 当前的 Git 提交哈希。
  * @type {string|null}
  */
-export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+export let currentGitCommit = null
+git('rev-parse', 'HEAD').catch(() => null).then(commit => { currentGitCommit = commit })
 
 /**
  * 检查上游 git 存储库的更新，并在必要时重新启动应用程序。
