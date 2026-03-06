@@ -1,5 +1,7 @@
 import fs from 'node:fs'
 
+import { exec } from 'npm:@steve02081504/exec'
+
 import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 
@@ -19,38 +21,55 @@ git('rev-parse', 'HEAD').catch(() => null).then(commit => { currentGitCommit = c
  * 检查上游 git 存储库的更新，并在必要时重新启动应用程序。
  * @returns {Promise<void>}
  */
-async function checkUpstreamAndRestart() {
+async function checkUpstream() {
 	if (!fs.existsSync(__dirname + '/.git')) return
-	try {
-		await git('config', 'core.autocrlf', 'false')
-		await git('fetch')
+	await git('config', 'core.autocrlf', 'false')
+	await git('fetch')
 
-		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
+	if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
 
-		const remoteCommit = await git('rev-parse', '@{u}')
+	const remoteCommit = await git('rev-parse', '@{u}')
 
-		if (currentGitCommit === remoteCommit) return
-		const mergeBase = await git('merge-base', 'HEAD', '@{u}')
-		if (mergeBase !== currentGitCommit) return // Not a fast-forward merge
+	if (currentGitCommit === remoteCommit) return
+	const mergeBase = await git('merge-base', 'HEAD', '@{u}')
+	if (mergeBase !== currentGitCommit) return // Not a fast-forward merge
 
-		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
-		const needsRestart = changedFiles.some(file =>
-			file.endsWith('.mjs') && file.startsWith('src/') &&
-			['decl', 'pages', 'locales'].every(dir => !file.startsWith(`src/${dir}/`)) &&
-			!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
-		)
+	const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
+	const needsRestart = changedFiles.some(file =>
+		file.endsWith('.mjs') && file.startsWith('src/') &&
+		['decl', 'pages', 'locales'].every(dir => !file.startsWith(`src/${dir}/`)) &&
+		!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
+	)
 
-		if (needsRestart) {
-			console.logI18n('fountConsole.server.update.restarting')
-			await restartor()
-		}
-		else {
-			await git('reset', '--hard', '@{u}')
-			currentGitCommit = await git('rev-parse', 'HEAD')
-			sendEventToAll?.('server-updated', { commitId: currentGitCommit })
-		}
-	} catch (e) {
-		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
+	if (needsRestart) {
+		console.logI18n('fountConsole.server.update.restarting')
+		await restartor()
+	}
+	else {
+		await git('reset', '--hard', '@{u}')
+		currentGitCommit = await git('rev-parse', 'HEAD')
+		sendEventToAll?.('server-updated', { commitId: currentGitCommit })
+	}
+}
+
+/**
+ * 检查并升级 Deno，如果版本发生变化则重启 fount。
+ * @returns {Promise<void>}
+ */
+async function checkDenoUpdate() {
+	/* global Deno */
+	const versionBefore = 'deno ' + Deno.version.deno
+
+	let channel = 'stable'
+	if (versionBefore.includes('+')) channel = 'canary'
+	else if (versionBefore.includes('-rc')) channel = 'rc'
+
+	await exec(`deno upgrade -q ${channel}`).catch(() => null)
+
+	const versionAfter = (await exec('deno -V')).stdout.trim()
+	if (versionAfter !== versionBefore) {
+		console.logI18n('fountConsole.server.update.restarting')
+		await restartor()
 	}
 }
 
@@ -59,7 +78,8 @@ async function checkUpstreamAndRestart() {
  * @returns {void}
  */
 export function enableAutoUpdate() {
-	onIdle(checkUpstreamAndRestart)
+	onIdle(checkUpstream)
+	onIdle(checkDenoUpdate)
 }
 
 /**
@@ -67,5 +87,6 @@ export function enableAutoUpdate() {
  * @returns {void}
  */
 export function disableAutoUpdate() {
-	offIdle(checkUpstreamAndRestart)
+	offIdle(checkUpstream)
+	offIdle(checkDenoUpdate)
 }
