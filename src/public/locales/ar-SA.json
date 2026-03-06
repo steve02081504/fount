@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "بدأ خادم IPC",
 			"instanceRunning": "هناك نسخة أخرى قيد التشغيل بالفعل",
+			"noInstanceRunning": "لم يتم اكتشاف مثيل قيد التشغيل، يرجى تشغيل fount أولاً.",
 			"runPartLog": "قم بتشغيل ${partpath} كـ ${username}، الوسيطات: ${args}",
 			"invokePartLog": "اتصل بـ ${partpath} كـ ${username}، المعلمة: ${invokedata}",
 			"invalidCommand": "أمر غير صالح، الرجاء استخدام \"fount run <نوع المكون> <اسم المستخدم> <اسم المكون> <الوسائط...>\"",

@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "內令司已立",
 			"instanceRunning": "已有他體運行，請勿再擾",
+			"noInstanceRunning": "未察運行之體，請先啟 fount。",
 			"runPartLog": "以 ${username} 之名行 ${partpath}，其參曰：${args}",
 			"invokePartLog": "以 ${username} 之名召 ${partpath}，其數曰：${invokedata}",
 			"invalidCommand": "令式有誤，當循此法：\"fount run <類> <名> <件> <參...>\"",

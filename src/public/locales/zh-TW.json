@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC 伺服器已啟動",
 			"instanceRunning": "另一個實體正在執行",
+			"noInstanceRunning": "未偵測到運行中的實例，請先啟動 fount。",
 			"runPartLog": "執行 ${partpath} 作為 ${username}，參數：${args}",
 			"invokePartLog": "呼叫 ${partpath} 作為 ${username}，參數：${invokedata}",
 			"invalidCommand": "無效的指令，請使用 \"fount run <組件類型> <使用者名稱> <組件名稱> <參數...>\"",

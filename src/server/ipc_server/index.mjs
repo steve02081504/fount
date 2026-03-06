@@ -101,20 +101,19 @@ export class IPCManager {
 		const startServer = (server, address) => {
 			return new Promise((resolve, reject) => {
 				server.on('error', async err => {
-					if (err.code === 'EADDRINUSE') resolve(false)
-					else if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(true) // 不支持的地址族/地址，视为成功
+					if (['EADDRINUSE', 'EACCES'].includes(err.code)) resolve(false)
+					else if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(true)
 					else reject(err)
 				})
 
 				server.listen(IPC_PORT, address, _ => resolve(true))
 			})
 		}
-		// 使用 Promise.all 确保两个侦听器都成功后才返回 true
 		return Promise.all([
 			startServer(this.serverV6, '::1'),
 			startServer(this.serverV4, '127.0.0.1'),
 		]).then(async results => {
-			const result = results.every(result => result === true)
+			const result = results.some(result => result === true)
 			if (result) console.freshLineI18n('server start', 'fountConsole.ipc.serverStarted')
 			else console.logI18n('fountConsole.ipc.instanceRunning')
 			return result

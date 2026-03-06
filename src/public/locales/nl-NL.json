@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "IPC-server is gestart",
 			"instanceRunning": "Een andere instantie draait al",
+			"noInstanceRunning": "Er is geen actief exemplaar gedetecteerd. Start eerst fount.",
 			"runPartLog": "Voer ${partpath} uit als ${username}, argumenten: ${args}",
 			"invokePartLog": "Roep ${partpath} aan als ${username}, parameter: ${invokedata}",
 			"invalidCommand": "Ongeldig commando, gebruik \"fount run <componenttype> <gebruikersnaam> <componentnaam> <parameters...>\"",

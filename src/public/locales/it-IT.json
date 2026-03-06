@@ -29,6 +29,7 @@
 		"ipc": {
 			"serverStarted": "Server IPC avviato.",
 			"instanceRunning": "Un'altra istanza è già in esecuzione.",
+			"noInstanceRunning": "Nessuna istanza in esecuzione rilevata, avvia prima fount.",
 			"runPartLog": "Esegui ${partpath} come ${username}, argomenti: ${args}",
 			"invokePartLog": "Chiama ${partpath} come ${username}, parametro: ${invokedata}",
 			"invalidCommand": "Comando non valido. Usa \"fount run <tipo componente> <nome utente> <nome componente> <parametri...>\".",

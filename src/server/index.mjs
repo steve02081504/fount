@@ -77,7 +77,7 @@ let args = process.argv.slice(2)
 const fount_config = {
 	/**
 	 * 重新启动应用程序的函数。
-	 * @returns {never} 不会返回，因为进程会退出。
+	 * @returns {undefined} 开始重启应用程序。
 	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
@@ -131,6 +131,7 @@ if (args.length) {
 		}
 		fount_config.starts = {
 			Base: false,
+			IPC: false,
 			Web: false,
 			Tray: false,
 			DiscordRPC: false,
@@ -144,9 +145,8 @@ if (args.length) {
 // 初始化应用程序。
 const okey = await init(fount_config)
 
-// 如果提供了命令，则通过 IPC 发送。
-if (command_obj) try {
-	if (!fount_config.starts.IPC) throw new Error('cannot send command when IPC not enabled')
+// 如果提供了命令，则通过 IPC 发送到已运行的实例。
+if (command_obj) await (async () => { try {
 	const { IPCManager } = await import('./ipc_server/index.mjs')
 	const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
 	switch (command_obj.type) {
@@ -156,10 +156,15 @@ if (command_obj) try {
 		}
 	}
 } catch (err) {
-	if (['shutdown', 'reboot'].includes(command_obj.type) && String(err.message).endsWith('read ECONNRESET')) process.exit(0)
+	if (['shutdown', 'reboot'].includes(command_obj.type))
+		if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
+		else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
+			console.errorI18n('fountConsole.ipc.noInstanceRunning')
+			return process.exit(1)
+		}
 	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
 	throw err
-}
+}})()
 
 console.profileEnd('server start')
 
