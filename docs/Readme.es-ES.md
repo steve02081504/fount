@@ -43,6 +43,10 @@ Usa [SillyTavern](https://github.com/SillyTavern/SillyTavern/) cuando:
 
 - Necesites un personaje o función que requiera STscript o plugins de SillyTavern
 
+Usa [SSP](https://ssp.shillest.net/) cuando:
+
+- Quieras ejecutar varios escritorios mascota y no necesariamente requieras que usen IA
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>
