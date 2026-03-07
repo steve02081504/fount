@@ -98,6 +98,7 @@ async function fetchSystemInfo() {
  */
 async function checkFrontendConnectivity() {
 	const checks = [
+		{ id: 'check-fount-server', name: 'fount Server', url: '/api/ping' },
 		{ id: 'check-esm', name: 'esm.sh', url: 'https://esm.sh' },
 		{ id: 'check-jsdelivr', name: 'jsDelivr', url: 'https://cdn.jsdelivr.net' },
 		{ id: 'check-iconify', name: 'Iconify', url: 'https://api.iconify.design' },
