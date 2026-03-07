@@ -43,6 +43,10 @@ fount是一个可编程的标准化组件化客制化智能体运行平台，加
 
 - 想运行一个需要STscript或SillyTavern插件才能运行的角色或功能
 
+使用[SSP](https://ssp.shillest.net/)，当你：
+
+- 想运行各种桌面宠物，并且不一定需要其使用AI
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>

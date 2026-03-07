@@ -43,6 +43,10 @@ Notaðu [SillyTavern](https://github.com/SillyTavern/SillyTavern/) þegar þú:
 
 - Þarft persónu eða eiginleika sem krefst STscript eða SillyTavern viðbóta
 
+Notaðu [SSP](https://ssp.shillest.net/) þegar þú:
+
+- Vill keyra ýmsar skjáborðsdýr og þarf ekki endilega að þau noti gervigreind
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>

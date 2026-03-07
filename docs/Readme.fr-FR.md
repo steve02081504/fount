@@ -43,6 +43,10 @@ Utilisez [SillyTavern](https://github.com/SillyTavern/SillyTavern/) lorsque vous
 
 - Avez besoin d'un personnage ou d'une fonction nécessitant STscript ou les plugins SillyTavern
 
+Utilisez [SSP](https://ssp.shillest.net/) lorsque vous :
+
+- Souhaitez faire tourner des animaux de bureau et n'avez pas nécessairement besoin qu'ils utilisent l'IA
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>

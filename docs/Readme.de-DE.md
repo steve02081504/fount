@@ -43,6 +43,10 @@ Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fou
 
 - Einen Charakter oder eine Funktion brauchst, die STscript oder SillyTavern-Plugins erfordert
 
+[SSP](https://ssp.shillest.net/) nutzen, wenn du:
+
+- Verschiedene Desktop-Haustiere betreiben möchtest und sie nicht unbedingt KI nutzen müssen
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>

@@ -43,6 +43,10 @@ Gebruik [SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
 
 - Een personage of functie nodig hebt die STscript of SillyTavern-plugins vereist
 
+Gebruik [SSP](https://ssp.shillest.net/) wanneer je:
+
+- Verschillende desktop pets wilt draaien en het niet per se nodig is dat ze AI gebruiken
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>

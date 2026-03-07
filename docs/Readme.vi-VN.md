@@ -43,6 +43,10 @@ Dùng [SillyTavern](https://github.com/SillyTavern/SillyTavern/) khi bạn:
 
 - Cần nhân vật hoặc tính năng yêu cầu STscript hoặc plugin SillyTavern
 
+Dùng [SSP](https://ssp.shillest.net/) khi bạn:
+
+- Muốn chạy các thú cưng desktop đa dạng và không nhất thiết cần chúng sử dụng AI
+
 </details>
 
 <h1 align="center">⛲fount💪</h1>
