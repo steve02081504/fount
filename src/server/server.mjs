@@ -42,8 +42,10 @@ function get_config() {
  * @returns {void}
  */
 export function save_config() {
+	if (!data_path) return
 	saveJsonFile(data_path + '/config.json', config)
 }
+on_shutdown(save_config)
 
 /**
  * 应用程序的配置，从 `config.json` 加载。
@@ -140,10 +142,7 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
-	if (starts.Base) {
-		on_shutdown(save_config)
-		initAuth()
-	}
+	if (starts.Base) initAuth()
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
 	const mdnsModulePromise = starts.Web?.mDNS ? import('./web_server/mdns.mjs') : null
