@@ -6,6 +6,7 @@ import md5 from 'https://esm.sh/md5'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
 import rehypeMermaid from 'https://esm.sh/rehype-mermaid'
 import rehypePrettyCode from 'https://esm.sh/rehype-pretty-code'
+import rehypeRaw from 'https://esm.sh/rehype-raw'
 import rehypeStringify from 'https://esm.sh/rehype-stringify'
 import remarkBreaks from 'https://esm.sh/remark-breaks'
 import remarkGfm from 'https://esm.sh/remark-gfm'
@@ -871,6 +872,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkBreaks)
 		.use(remarkMath)
 		.use(remarkRehype, { allowDangerousHtml: true })
+		.use(rehypeRaw)
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeDiscordSpoiler)
