@@ -128,6 +128,7 @@ if (args.length) {
 	else if (command == 'shutdown' || command == 'reboot') {
 		command_obj = {
 			type: command,
+			exit: true,
 		}
 		fount_config.starts = {
 			Base: false,
@@ -156,7 +157,7 @@ if (command_obj) await (async () => { try {
 		}
 	}
 } catch (err) {
-	if (['shutdown', 'reboot'].includes(command_obj.type))
+	if (command_obj.exit)
 		if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
 		else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
 			console.errorI18n('fountConsole.ipc.noInstanceRunning')
@@ -168,5 +169,5 @@ if (command_obj) await (async () => { try {
 
 console.profileEnd('server start')
 
-// 如果初始化失败则退出。
-if (!okey) process.exit(0)
+if (!okey) process.exit(1)
+else if (command_obj?.exit) process.exit(0)
