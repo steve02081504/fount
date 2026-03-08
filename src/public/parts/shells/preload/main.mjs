@@ -1,4 +1,3 @@
-
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**

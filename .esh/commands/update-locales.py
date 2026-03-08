@@ -422,6 +422,7 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 
 # --- Locales.json Sync Logic ---
 
+
 def _is_locale_keyed_block(block):
 	"""判断是否为按语言分组的块（键为 zh-CN、en-UK、emoji 等）。"""
 	if not isinstance(block, (dict, OrderedDict)) or len(block) == 0:
@@ -562,6 +563,7 @@ def sync_info_content(info_data, available_lang_codes):
 
 	return changed
 
+
 def process_locales_json_files(fount_dir, gitignore_spec, available_lang_codes):
 	"""
 	扫描并同步所有 parts 下的 locales.json。
@@ -632,6 +634,7 @@ def process_locales_json_files(fount_dir, gitignore_spec, available_lang_codes):
 				print(f"    ! 错误处理文件 {filepath}: {e}")
 
 	print(f"--- locales.json 处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
+
 
 def normalize_and_sync_dicts(
 	dict_a,
@@ -922,7 +925,9 @@ def attempt_placeholder_name_fix(original_text: str, current_ph_list_ordered: li
 	return None, False
 
 
-def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None) -> bool:
+def align_single_translation_placeholders(
+	lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None
+) -> bool:
 	"""对单个语言条目的占位符进行对齐，返回是否发生更改。"""
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
 
@@ -1300,7 +1305,7 @@ def main():
 	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
 
 	all_data, languages, lang_to_path = load_locale_files()
-	available_lang_codes = list(lang_to_path.keys()) # 收集所有可用语言代码
+	available_lang_codes = list(lang_to_path.keys())  # 收集所有可用语言代码
 
 	ref_path, ref_lang = find_reference_language(lang_to_path, all_data, languages)
 

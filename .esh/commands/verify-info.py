@@ -8,6 +8,7 @@
 
 用法：在项目根目录执行 python .esh/commands/verify-info.py
 """
+
 from pathlib import Path
 import contextlib
 import json

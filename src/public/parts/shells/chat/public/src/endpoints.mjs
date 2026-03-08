@@ -186,7 +186,7 @@ export function getChatLogLength() {
  * @returns {Promise<any>} - 响应数据。
  */
 export function modifyTimeLine(delta) {
-	if (isNaN(delta)) throw new TypeError(`modifyTimeLine: delta must not be NaN`)
+	if (isNaN(delta)) throw new TypeError('modifyTimeLine: delta must not be NaN')
 	const safeDelta = delta === Infinity ? Number.MAX_SAFE_INTEGER : delta === -Infinity ? Number.MIN_SAFE_INTEGER : delta
 	return callApi('timeline', 'PUT', { delta: safeDelta })
 }
