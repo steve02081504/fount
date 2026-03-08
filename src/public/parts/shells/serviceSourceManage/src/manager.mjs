@@ -5,7 +5,7 @@ import sanitize from 'npm:sanitize-filename'
 
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
-import { initPart, isPartLoaded, loadPart } from '../../../../../server/parts_loader.mjs'
+import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 
 /**
@@ -194,8 +194,6 @@ export async function saveServiceSourceFile(username, fileName, data, serviceSou
 	const parts_config = loadData(username, 'parts_config')
 	parts_config[partpath] = { ...dataToSave }
 	saveData(username, 'parts_config')
-
-	if (isPartLoaded(username, partpath)) await initPart(username, partpath)
 }
 
 /**
