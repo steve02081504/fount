@@ -241,7 +241,7 @@ function stopPollTimer() {
 document.addEventListener('visibilitychange', () => {
 	if (document.hidden)
 		stopPollTimer()
-	 else {
+	else {
 		if (Date.now() - lastVersionCheckTime >= VERSION_POLL_INTERVAL) pollVersionInfo()
 		startPollTimer()
 	}

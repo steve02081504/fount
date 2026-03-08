@@ -158,12 +158,35 @@ body.scroll-lock {
 }
 
 /* Tips: left-right slide */
-.tips-rotating-container { position: relative; overflow: hidden; min-height: 1.5em; }
-.tips-rotating-container .tip-slide { display: block; width: 100%; transition: transform .4s ease-in-out; }
-.tips-rotating-container .tip-slide:first-child { position: relative; }
-.tips-rotating-container .tip-slide:last-child { position: absolute; inset: 0; transform: translateX(100%); }
-.tips-rotating-container .tip-slide.tip-exit-left { transform: translateX(-100%); }
-.tips-rotating-container .tip-slide.tip-enter-from-right { transform: translateX(0); }
+.tips-rotating-container {
+	position: relative;
+	overflow: hidden;
+	min-height: 1.5em;
+}
+
+.tips-rotating-container .tip-slide {
+	display: block;
+	width: 100%;
+	transition: transform .4s ease-in-out;
+}
+
+.tips-rotating-container .tip-slide:first-child {
+	position: relative;
+}
+
+.tips-rotating-container .tip-slide:last-child {
+	position: absolute;
+	inset: 0;
+	transform: translateX(100%);
+}
+
+.tips-rotating-container .tip-slide.tip-exit-left {
+	transform: translateX(-100%);
+}
+
+.tips-rotating-container .tip-slide.tip-enter-from-right {
+	transform: translateX(0);
+}
 
 /* --- Easter Egg Shake Animation --- */
 @keyframes shake {
