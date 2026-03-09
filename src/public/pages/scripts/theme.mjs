@@ -66,9 +66,9 @@ function parseRgb(colorString) {
 	const rgbaRegex = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/
 	if (rgbRegex.test(colorString) || rgbaRegex.test(colorString)) {
 		const match = colorString.match(rgbRegex) || colorString.match(rgbaRegex)
-		const r = parseInt(match[1], 10)
-		const g = parseInt(match[2], 10)
-		const b = parseInt(match[3], 10)
+		const r = Number(match[1])
+		const g = Number(match[2])
+		const b = Number(match[3])
 		// sRGB luminance calculation
 		const a = [r, g, b].map(v => {
 			v /= 255

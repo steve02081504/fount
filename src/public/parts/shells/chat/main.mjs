@@ -75,7 +75,7 @@ export default {
 						console.log(`Continue chat at: ${hosturl}/parts/shells:chat/#${result}`)
 						break
 					case 'tail':
-						params = { chatId: args[1], n: parseInt(args[2] || '5', 10) }
+						params = { chatId: args[1], n: Number(args[2] || '5') }
 						result = await handleAction(user, command, params)
 						result.forEach(log => {
 							console.log(`[${new Date(log.time_stamp).toLocaleString()}] ${log.name}: ${log.content}`)
@@ -87,7 +87,7 @@ export default {
 						console.log(`Message sent to chat ${args[1]}`)
 						break
 					case 'edit-message':
-						params = { chatId: args[1], index: parseInt(args[2], 10), newContent: { content: args.slice(3).join(' ') } }
+						params = { chatId: args[1], index: Number(args[2]), newContent: { content: args.slice(3).join(' ') } }
 						await handleAction(user, command, params)
 						console.log(`Message at index ${args[2]} in chat ${args[1]} edited.`)
 						break
@@ -99,8 +99,8 @@ export default {
 							'set-world': { worldName: rest[0] },
 							'set-char-frequency': { charName: rest[0], frequency: parseFloat(rest[1]) },
 							'trigger-reply': { charName: rest[0] },
-							'delete-message': { index: parseInt(rest[0], 10) },
-							'modify-timeline': { delta: parseInt(rest[0], 10) }
+							'delete-message': { index: Number(rest[0]) },
+							'modify-timeline': { delta: Number(rest[0]) }
 						}
 						params = { chatId, ...paramMap[command] }
 						result = await handleAction(user, command, params)
