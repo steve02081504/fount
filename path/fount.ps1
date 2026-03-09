@@ -136,8 +136,14 @@ Start-Job -ScriptBlock {
 	}
 
 	if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
-		Set-Location $FOUNT_DIR
-		compact.exe /c /s /q
+		$qualifier = Split-Path -Qualifier $FOUNT_DIR
+		if ($qualifier) {
+			$driveInfo = [System.IO.DriveInfo]::new($qualifier)
+			if ($driveInfo.IsReady -and $driveInfo.DriveFormat -eq 'NTFS') {
+				Set-Location $FOUNT_DIR
+				compact.exe /c /s /q
+			}
+		}
 	}
 } -ArgumentList $FOUNT_DIR | Out-Null
 
