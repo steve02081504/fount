@@ -775,20 +775,34 @@ function Test-FountDirWritable {
 	}
 	if (-not $IsWindows) { return $true }
 	try {
-		$acl = Get-Acl -Path $dir -ErrorAction Stop
-		$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
-		$writeRights = [System.Security.AccessControl.FileSystemRights]::Write
-		$modifyRights = [System.Security.AccessControl.FileSystemRights]::Modify
-		foreach ($rule in $acl.Access) {
-			if ($rule.AccessControlType -ne 'Allow') { continue }
-			$ruleSid = try { $rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]) } catch { $null }
-			if (-not $ruleSid) { continue }
-			$hasWrite = ($rule.FileSystemRights -band $writeRights) -ne 0 -or ($rule.FileSystemRights -band $modifyRights) -ne 0
-			if ($hasWrite -and ($ruleSid -eq $identity.User -or $identity.Groups -contains $ruleSid)) {
-				return $true
-			}
+		if (-not ([System.Management.Automation.PSTypeName]'FountDirAccessCheck').Type) {
+			Add-Type -Language CSharp @"
+using System;
+using System.Runtime.InteropServices;
+public static class FountDirAccessCheck {
+	[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+	static extern IntPtr CreateFileW(
+		string lpFileName, uint dwDesiredAccess, uint dwShareMode,
+		IntPtr lpSecurityAttributes, uint dwCreationDisposition,
+		uint dwFlagsAndAttributes, IntPtr hTemplateFile);
+	[DllImport("kernel32.dll")]
+	static extern bool CloseHandle(IntPtr hObject);
+	public static bool CanWriteDirectory(string path) {
+		IntPtr h = CreateFileW(path,
+			0x40000000u,  /* GENERIC_WRITE */
+			0x00000007u,  /* FILE_SHARE_READ | WRITE | DELETE */
+			IntPtr.Zero,
+			3u,           /* OPEN_EXISTING */
+			0x02000000u,  /* FILE_FLAG_BACKUP_SEMANTICS */
+			IntPtr.Zero);
+		if (h == new IntPtr(-1)) return false;
+		CloseHandle(h);
+		return true;
+	}
+}
+"@
 		}
-		return $false
+		return [FountDirAccessCheck]::CanWriteDirectory($dir)
 	} catch { return $false }
 }
 
