@@ -145,7 +145,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 
 			switch (name) {
 				case 'activate_only_after':
-					stWiEntry.extensions.delay_until_recursion = parseInt(value, 10) || 0
+					stWiEntry.extensions.delay_until_recursion = Number(value) || 0
 					break
 				case 'keep_activate_after_match':
 					stWiEntry.extensions.sticky = 9999 // 一个很大的数表示持久
@@ -156,7 +156,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 					break
 				case 'depth':
 					stWiEntry.extensions.position = world_info_position.atDepth
-					stWiEntry.extensions.depth = parseInt(value, 10) || 0
+					stWiEntry.extensions.depth = Number(value) || 0
 					break
 				case 'role':
 					if (value === 'user') stWiEntry.extensions.role = extension_prompt_roles.USER
@@ -164,7 +164,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 					else stWiEntry.extensions.role = extension_prompt_roles.SYSTEM
 					break
 				case 'scan_depth':
-					stWiEntry.extensions.scan_depth = parseInt(value, 10)
+					stWiEntry.extensions.scan_depth = Number(value)
 					break
 				case 'position': // "after_desc", "before_desc", "personality", "scenario"
 					// ST WI 没有这么细致的插入点。这些内容可以考虑在导入时预合并，或作为普通WI。

@@ -169,7 +169,7 @@ async function renderCharList(data) {
 		const charCard = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
 		if (!charCard) continue
 		const frequencySlider = charCard.querySelector('.frequency-slider')
-		const currentFrequency = parseInt(frequencySlider.value)
+		const currentFrequency = Number(frequencySlider.value)
 		const newFrequency = Math.round((data.frequency_data[char] ?? 0.5) * 100)
 
 		if (currentFrequency !== newFrequency)

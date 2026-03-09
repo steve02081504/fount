@@ -10,7 +10,7 @@ export function ms(duration) {
 	if (!match)
 		throw new Error('Invalid duration format')
 
-	const value = parseInt(match[1], 10)
+	const value = Number(match[1])
 	const unit = match[2]
 
 	switch (unit) {

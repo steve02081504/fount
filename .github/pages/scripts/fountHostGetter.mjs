@@ -26,7 +26,7 @@ function extractIpAndPortFromUrl(urlString) {
 		const url = new URL(urlString)
 		const extractedData = {
 			ip: url.hostname,
-			port: parseInt(url.port || DEFAULT_FOUNT_PORT),
+			port: Number(url.port || DEFAULT_FOUNT_PORT),
 		}
 		console.debug(`[extractIpAndPortFromUrl] Extracted IP: ${extractedData.ip}, Port: ${extractedData.port}`)
 		return extractedData

@@ -291,7 +291,7 @@ async function startDataShowcaseAnimation() {
 		 * @returns {void}
 		 */
 		const updateStat = (element, newValue, shortDuration) => {
-			const currentDisplayed = parseInt(element.textContent.replace(/,/g, ''), 10)
+			const currentDisplayed = Number(element.textContent.replace(/,/g, ''))
 			if (!isNaN(newValue) && newValue !== currentDisplayed)
 				animateCounter(element, isNaN(currentDisplayed) ? 0 : currentDisplayed, newValue, shortDuration, 3)
 		}

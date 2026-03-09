@@ -364,7 +364,7 @@ class UserSubfountManager {
 		const descriptionsData = loadShellData(this.username, 'subfounts', 'device_descriptions')
 		const descriptionsMap = new Map()
 		for (const [key, value] of Object.entries(descriptionsData)) {
-			const id = parseInt(key, 10)
+			const id = Number(key)
 			if (!isNaN(id))
 				descriptionsMap.set(id, value)
 		}
