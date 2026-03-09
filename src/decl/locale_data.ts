@@ -838,6 +838,22 @@ export type LocaleData = {
 			}
 			commonToolCalling: string
 			noReplyContent: string
+			feedback: {
+				thumbsUp: {
+					title: string
+				}
+				thumbsDown: {
+					title: string
+				}
+				regenerate: {
+					title: string
+				}
+				reason: {
+					placeholder: string
+				}
+				submit: string
+				cancel: string
+			}
 		}
 		messageEdit: {
 			input: {

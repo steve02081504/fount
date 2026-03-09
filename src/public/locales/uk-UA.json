@@ -848,7 +848,23 @@
 				"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
 			},
 			"commonToolCalling": "Виклик інструменту",
-			"noReplyContent": "(Немає вмісту відповіді)"
+			"noReplyContent": "(Немає вмісту відповіді)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Подобається"
+				},
+				"thumbsDown": {
+					"title": "Не подобається"
+				},
+				"regenerate": {
+					"title": "Перегенерувати"
+				},
+				"reason": {
+					"placeholder": "За бажанням: вкажіть причину"
+				},
+				"submit": "Надіслати",
+				"cancel": "Скасувати"
+			}
 		},
 		"messageEdit": {
 			"input": {

@@ -848,7 +848,23 @@
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 			},
 			"commonToolCalling": "Đang gọi công cụ",
-			"noReplyContent": "(Không có nội dung trả lời)"
+			"noReplyContent": "(Không có nội dung trả lời)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Thích"
+				},
+				"thumbsDown": {
+					"title": "Không thích"
+				},
+				"regenerate": {
+					"title": "Tạo lại"
+				},
+				"reason": {
+					"placeholder": "Tùy chọn: giải thích lý do"
+				},
+				"submit": "Gửi",
+				"cancel": "Hủy"
+			}
 		},
 		"messageEdit": {
 			"input": {

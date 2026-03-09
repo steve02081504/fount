@@ -848,7 +848,23 @@
 				"success": "Ссылка успешно создана! Скопирована в буфер обмена. <br>Эта функция поддерживается ${provider}. <br>[Поддержать их.](${sponsorLink})"
 			},
 			"commonToolCalling": "Вызов инструмента...",
-			"noReplyContent": "(Нет содержимого)"
+			"noReplyContent": "(Нет содержимого)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Нравится"
+				},
+				"thumbsDown": {
+					"title": "Не нравится"
+				},
+				"regenerate": {
+					"title": "Перегенерировать"
+				},
+				"reason": {
+					"placeholder": "Необязательно: укажите причину"
+				},
+				"submit": "Отправить",
+				"cancel": "Отмена"
+			}
 		},
 		"messageEdit": {
 			"input": {

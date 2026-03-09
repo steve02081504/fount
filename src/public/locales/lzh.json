@@ -848,7 +848,23 @@
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 			},
 			"commonToolCalling": "方召工具",
-			"noReplyContent": "（未有覆言）"
+			"noReplyContent": "（未有覆言）",
+			"feedback": {
+				"thumbsUp": {
+					"title": "善"
+				},
+				"thumbsDown": {
+					"title": "劣"
+				},
+				"regenerate": {
+					"title": "再造"
+				},
+				"reason": {
+					"placeholder": "可略：陳其由"
+				},
+				"submit": "呈",
+				"cancel": "罷"
+			}
 		},
 		"messageEdit": {
 			"input": {

@@ -848,7 +848,23 @@
 				"success": "लिंक साझा किया गया! लिंक को क्लिपबोर्ड पर कॉपी किया गया. <br>यह सुविधा ${provider} द्वारा समर्थित है। <br>[उन्हें प्रायोजित करें। ](${sponsorLink})"
 			},
 			"commonToolCalling": "टूल कॉल किया जा रहा है",
-			"noReplyContent": "(कोई उत्तर सामग्री नहीं)"
+			"noReplyContent": "(कोई उत्तर सामग्री नहीं)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "पसंद"
+				},
+				"thumbsDown": {
+					"title": "नापसंद"
+				},
+				"regenerate": {
+					"title": "पुनः जेनरेट"
+				},
+				"reason": {
+					"placeholder": "वैकल्पिक: कारण बताएं"
+				},
+				"submit": "भेजें",
+				"cancel": "रद्द करें"
+			}
 		},
 		"messageEdit": {
 			"input": {

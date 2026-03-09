@@ -848,7 +848,23 @@
 				"success": "Partilhado com sucesso! Ligação copiada para a área de transferência. <br>Esta funcionalidade é suportada por ${provider}. <br>[Patrocine-os.](${sponsorLink})"
 			},
 			"commonToolCalling": "A chamar ferramenta",
-			"noReplyContent": "(Sem conteúdo de resposta)"
+			"noReplyContent": "(Sem conteúdo de resposta)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Gosto"
+				},
+				"thumbsDown": {
+					"title": "Não gosto"
+				},
+				"regenerate": {
+					"title": "Regenerar"
+				},
+				"reason": {
+					"placeholder": "Opcional: explique o motivo"
+				},
+				"submit": "Enviar",
+				"cancel": "Cancelar"
+			}
 		},
 		"messageEdit": {
 			"input": {

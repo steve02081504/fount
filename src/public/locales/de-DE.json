@@ -848,7 +848,23 @@
 				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool wird aufgerufen",
-			"noReplyContent": "(Kein Inhalt)"
+			"noReplyContent": "(Kein Inhalt)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Gefällt mir"
+				},
+				"thumbsDown": {
+					"title": "Gefällt mir nicht"
+				},
+				"regenerate": {
+					"title": "Neu generieren"
+				},
+				"reason": {
+					"placeholder": "Optional: Grund angeben"
+				},
+				"submit": "Absenden",
+				"cancel": "Abbrechen"
+			}
 		},
 		"messageEdit": {
 			"input": {
