@@ -498,7 +498,7 @@ export async function try_auth_request(req, res) {
 	if (apiKey) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
-		return Unauthorized('Invalid API Key')
+		return Unauthorized('Invalid API Key: ' + apiKey)
 	}
 
 	// 2. Cookie 令牌认证
