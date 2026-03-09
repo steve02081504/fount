@@ -848,7 +848,23 @@
 				"success": "分享成功！链接已复制到剪贴板。<br>此功能由 ${provider} 提供支持。<br>[赞助他们。](${sponsorLink})"
 			},
 			"commonToolCalling": "正在调用工具",
-			"noReplyContent": "（无回复内容）"
+			"noReplyContent": "（无回复内容）",
+			"feedback": {
+				"thumbsUp": {
+					"title": "赞"
+				},
+				"thumbsDown": {
+					"title": "踩"
+				},
+				"regenerate": {
+					"title": "重新生成"
+				},
+				"reason": {
+					"placeholder": "可选：说明原因"
+				},
+				"submit": "提交",
+				"cancel": "取消"
+			}
 		},
 		"messageEdit": {
 			"input": {

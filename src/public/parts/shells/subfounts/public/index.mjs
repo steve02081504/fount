@@ -255,7 +255,7 @@ async function executeCode() {
 	executionResult.classList.add('hidden')
 
 	try {
-		const data = await api.executeCode(parseInt(subfountId, 10), script)
+		const data = await api.executeCode(Number(subfountId), script)
 		executionResult.classList.remove('hidden')
 		resultAlert.className = 'alert alert-success'
 		resultContent.textContent = JSON.stringify(data.result, null, '\t')

@@ -848,7 +848,23 @@
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
-			"noReplyContent": "💬🍃"
+			"noReplyContent": "💬🍃",
+			"feedback": {
+				"thumbsUp": {
+					"title": "👍"
+				},
+				"thumbsDown": {
+					"title": "👎"
+				},
+				"regenerate": {
+					"title": "🔄"
+				},
+				"reason": {
+					"placeholder": "💬❓"
+				},
+				"submit": "✅",
+				"cancel": "❌"
+			}
 		},
 		"messageEdit": {
 			"input": {

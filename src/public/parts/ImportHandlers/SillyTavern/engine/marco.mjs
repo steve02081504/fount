@@ -259,7 +259,7 @@ export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	content = content.replace(/{{isodate}}/gi, () => moment().format('YYYY-MM-DD'))
 	content = content.replace(/{{datetimeformat +([^}]*)}}/gi, (_, format) => moment().format(format))
 	content = content.replace(/{{idle_duration}}/gi, () => getTimeSinceLastMessage(chatLog))
-	content = content.replace(/{{time_utc([+-]\d+)}}/gi, (_, offset) => moment().utc().utcOffset(parseInt(offset, 10)).format('LT'))
+	content = content.replace(/{{time_utc([+-]\d+)}}/gi, (_, offset) => moment().utc().utcOffset(Number(offset)).format('LT'))
 
 	content = timeDiffReplace(content)
 	content = bannedWordsReplace(content)

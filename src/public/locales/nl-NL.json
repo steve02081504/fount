@@ -848,7 +848,23 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
-			"noReplyContent": "(Geen antwoordinhoud)"
+			"noReplyContent": "(Geen antwoordinhoud)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Vind ik leuk"
+				},
+				"thumbsDown": {
+					"title": "Vind ik niet leuk"
+				},
+				"regenerate": {
+					"title": "Opnieuw genereren"
+				},
+				"reason": {
+					"placeholder": "Optioneel: geef een reden"
+				},
+				"submit": "Verzenden",
+				"cancel": "Annuleren"
+			}
 		},
 		"messageEdit": {
 			"input": {

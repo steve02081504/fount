@@ -848,7 +848,23 @@
 				"success": "共有に成功しました！リンクがクリップボードにコピーしました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
 			},
 			"commonToolCalling": "ツールを呼び出し中",
-			"noReplyContent": "（返信内容なし）"
+			"noReplyContent": "（返信内容なし）",
+			"feedback": {
+				"thumbsUp": {
+					"title": "いいね"
+				},
+				"thumbsDown": {
+					"title": "よくないね"
+				},
+				"regenerate": {
+					"title": "再生成"
+				},
+				"reason": {
+					"placeholder": "任意：理由を入力"
+				},
+				"submit": "送信",
+				"cancel": "キャンセル"
+			}
 		},
 		"messageEdit": {
 			"input": {

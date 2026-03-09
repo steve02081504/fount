@@ -25,6 +25,7 @@ import {
 	triggerCharReply,
 	deleteMessage,
 	editMessage,
+	setMessageFeedback,
 	GetChatLogLength,
 	setCharSpeakingFrequency,
 	getInitialData,
@@ -61,7 +62,7 @@ export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:chat/:chatid/log', authenticate, async (req, res) => {
 		const { params: { chatid }, query: { start, end } } = req
 		const { username } = await getUserByReq(req)
-		const log = await GetChatLog(chatid, parseInt(start, 10), parseInt(end, 10))
+		const log = await GetChatLog(chatid, Number(start), Number(end))
 		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
 	})
 
@@ -88,7 +89,7 @@ export function setEndpoints(router) {
 
 	router.delete('/api/parts/shells\\:chat/:chatid/message/:index', authenticate, async (req, res) => {
 		const { chatid, index } = req.params
-		await deleteMessage(chatid, parseInt(index, 10))
+		await deleteMessage(chatid, Number(index))
 		res.status(200).json({ success: true })
 	})
 
@@ -98,7 +99,13 @@ export function setEndpoints(router) {
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		const entry = await editMessage(chatid, parseInt(index, 10), content)
+		const entry = await editMessage(chatid, Number(index), content)
+		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+	})
+
+	router.put('/api/parts/shells\\:chat/:chatid/message/:index/feedback', authenticate, async (req, res) => {
+		const { params: { chatid, index }, body: feedback } = req
+		const entry = await setMessageFeedback(chatid, Number(index), feedback)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
 

@@ -232,8 +232,8 @@ export function buildACPClientToolsPlugin(connection, sessionId, clientCapabilit
 		for (const match of readMatches) {
 			addCallLog(match[0])
 			const filePath = match[1]
-			const line = match[2] ? parseInt(match[2], 10) : undefined
-			const limit = match[3] ? parseInt(match[3], 10) : undefined
+			const line = match[2] ? Number(match[2]) : undefined
+			const limit = match[3] ? Number(match[3]) : undefined
 			const callId = `acp_read_${++toolCallCounter}`
 
 			if (acp) reportToolCallStart(acp, callId, `Read ${filePath}`, 'read')

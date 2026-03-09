@@ -78,6 +78,26 @@
 			${content}
 		</div>
 		<div class="attachments"></div>
+		${role === 'char' ? `<div class="message-feedback-bar" data-feedback-bar>
+			<div class="feedback-actions join">
+				<button type="button" class="feedback-btn feedback-up btn btn-ghost btn-xs join-item ${extension?.feedback?.type === 'up' ? 'text-success' : ''}" data-i18n="chat.messageView.feedback.thumbsUp">
+					<img src="https://api.iconify.design/line-md/thumbs-up.svg" class="w-4 h-4" />
+				</button>
+				<button type="button" class="feedback-btn feedback-down btn btn-ghost btn-xs join-item ${extension?.feedback?.type === 'down' ? 'text-error' : ''}" data-i18n="chat.messageView.feedback.thumbsDown">
+					<img src="https://api.iconify.design/line-md/thumbs-down.svg" class="w-4 h-4" />
+				</button>
+				<button type="button" class="regenerate-btn btn btn-ghost btn-xs join-item" data-i18n="chat.messageView.feedback.regenerate">
+					<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-4 h-4" />
+				</button>
+			</div>
+			<div class="feedback-input-wrap" data-feedback-input-wrap>
+				<textarea class="feedback-input textarea textarea-bordered textarea-xs w-full resize-none" data-feedback-input rows="2" data-i18n="chat.messageView.feedback.reason"></textarea>
+				<div class="flex gap-1 mt-1">
+					<button type="button" class="feedback-submit btn btn-xs btn-primary" data-feedback-submit data-i18n="chat.messageView.feedback.submit"></button>
+					<button type="button" class="feedback-cancel btn btn-xs btn-ghost" data-feedback-cancel data-i18n="chat.messageView.feedback.cancel"></button>
+				</div>
+			</div>
+		</div>` : ''}
 	</div>
 	<div class="chat-footer opacity-50 mt-[5px]">
 		${time_stamp}

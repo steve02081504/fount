@@ -848,7 +848,23 @@
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 			},
 			"commonToolCalling": "جارٍ استدعاء الأداة",
-			"noReplyContent": "(لا يوجد محتوى الرد)"
+			"noReplyContent": "(لا يوجد محتوى الرد)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "إعجاب"
+				},
+				"thumbsDown": {
+					"title": "عدم إعجاب"
+				},
+				"regenerate": {
+					"title": "إعادة التوليد"
+				},
+				"reason": {
+					"placeholder": "اختياري: اشرح السبب"
+				},
+				"submit": "إرسال",
+				"cancel": "إلغاء"
+			}
 		},
 		"messageEdit": {
 			"input": {

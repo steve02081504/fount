@@ -151,6 +151,10 @@ export interface prompt_struct_t {
 	 */
 	chat_log: chatLogEntry_t[]
 	/**
+	 * 当前消息的平行时间线条目。
+	 */
+	timelines: chatLogEntry_t[]
+	/**
 	 * 扩展对象。
 	 */
 	extension?: object
