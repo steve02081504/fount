@@ -122,6 +122,10 @@
 - 路径：chatid、index（消息索引）。
 - 用途：删除指定索引的消息。
 
+### PUT /api/parts/shells:chat/:chatid/message/:index/feedback
+- 路径：chatid、index（消息索引，整数）。Body：JSON。`type`（`'up'` 或 `'down'`，必填）和可选的 `content`（字符串，反馈原因说明）。
+- 用途：为指定索引的消息设置用户反馈（赞/踩及可选说明）。反馈会被注入到 LLM 上下文中，引导模型在后续对话中自我修正。
+
 ### POST /api/parts/shells:chat/:chatid/trigger-reply
 - 路径：chatid 为会话 ID。Body：JSON。`charname`（字符串，可选），指定要回复的角色；不传则按会话逻辑触发回复。
 - 用途：触发角色在该聊天中生成回复。

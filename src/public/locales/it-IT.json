@@ -848,7 +848,23 @@
 				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili.](${sponsorLink})"
 			},
 			"commonToolCalling": "Esecuzione strumento",
-			"noReplyContent": "(Nessun contenuto della risposta)"
+			"noReplyContent": "(Nessun contenuto della risposta)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Mi piace"
+				},
+				"thumbsDown": {
+					"title": "Non mi piace"
+				},
+				"regenerate": {
+					"title": "Rigenera"
+				},
+				"reason": {
+					"placeholder": "Facoltativo: spiega il motivo"
+				},
+				"submit": "Invia",
+				"cancel": "Annulla"
+			}
 		},
 		"messageEdit": {
 			"input": {

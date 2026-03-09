@@ -767,6 +767,7 @@ async function getChatRequest(chatid, charname) {
 		Charname: charinfo.name || charname,
 		locales,
 		chat_log: chatMetadata.chatLog,
+		timelines: chatMetadata.timeLines,
 		/**
 		 * 更新聊天请求。
 		 * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} - 更新后的聊天请求。
@@ -1816,6 +1817,27 @@ export async function editMessage(chatid, index, new_content) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	broadcastChatEvent(chatid, { type: 'message_edited', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 
+	return entry
+}
+
+/**
+ * 设置消息的用户反馈（赞/踩及可选说明）。
+ * @param {string} chatid - 聊天ID。
+ * @param {number} index - 消息在 chatLog 中的索引。
+ * @param {{ type: 'up'|'down'; content?: string }} feedback - 反馈内容。
+ * @returns {Promise<chatLogEntry_t>} 更新后的消息条目。
+ */
+export async function setMessageFeedback(chatid, index, feedback) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
+	const entry = chatMetadata.chatLog[index]
+	entry.extension ??= {}
+	entry.extension.feedback = feedback
+	if (index === chatMetadata.chatLog.length - 1 && chatMetadata.timeLines[chatMetadata.timeLineIndex]?.id === entry.id)
+		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'message_replaced', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 	return entry
 }
 

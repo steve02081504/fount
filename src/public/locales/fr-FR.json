@@ -848,7 +848,23 @@
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
 			"commonToolCalling": "Appel de l'outil",
-			"noReplyContent": "(Pas de contenu de réponse)"
+			"noReplyContent": "(Pas de contenu de réponse)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "J'aime"
+				},
+				"thumbsDown": {
+					"title": "Je n'aime pas"
+				},
+				"regenerate": {
+					"title": "Régénérer"
+				},
+				"reason": {
+					"placeholder": "Facultatif : expliquez pourquoi"
+				},
+				"submit": "Envoyer",
+				"cancel": "Annuler"
+			}
 		},
 		"messageEdit": {
 			"input": {

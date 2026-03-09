@@ -1,3 +1,4 @@
+import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
@@ -9,6 +10,7 @@ import {
 	deleteMessage,
 	editMessage,
 	triggerCharacterReply,
+	setMessageFeedback,
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { getfile } from '../files.mjs'
@@ -25,20 +27,43 @@ import {
 	addDeletionListener,
 } from './virtualQueue.mjs'
 
-// 用于存储滑动事件监听器的 Map
+/**
+ * 保存每个消息元素的滑动监听器，便于后续移除。
+ * @type {WeakMap<HTMLElement, { touchstart: (event: TouchEvent) => void, touchmove: (event: TouchEvent) => void, touchend: (event: TouchEvent) => Promise<void>, touchcancel: () => void }>}
+ */
 const swipeListenersMap = new WeakMap()
+
+/**
+ * 待删除消息元素的串行队列。
+ * @type {HTMLElement[]}
+ */
 const deletionQueue = []
 
 /**
- * 为每个消息对象存储其专属的 markdown 渲染缓存
+ * 追踪正在编辑反馈的消息状态，跨重渲染保持输入框与输入内容。
+ * @type {Map<string, {type: 'up'|'down', inputValue: string}>}
+ */
+const activeFeedbackEdits = new Map()
+
+/**
+ * 每条消息对应的渲染缓存。
  * @type {WeakMap<object, object>}
  */
 const messageRenderCacheMap = new WeakMap()
 
 /**
- * 获取或创建消息的渲染缓存对象
+ * 统一展示异步错误，避免静默失败。
+ * @param {any} error - 捕获到的错误
+ */
+function reportAsyncError(error) {
+	Sentry.captureException(error)
+	showToast('error', error?.stack || error?.message || error)
+}
+
+/**
+ * 获取或创建指定消息的渲染缓存对象。
  * @param {object} message - 消息对象
- * @returns {object} 缓存对象
+ * @returns {object} 渲染缓存
  */
 function getMessageCache(message) {
 	let cache = messageRenderCacheMap.get(message)
@@ -47,7 +72,7 @@ function getMessageCache(message) {
 }
 
 /**
- * 按顺序处理删除队列。
+ * 按顺序处理删除队列中的下一条消息。
  */
 async function processDeletionQueue() {
 	const messageElement = deletionQueue.shift()
@@ -62,37 +87,34 @@ async function processDeletionQueue() {
 	}
 	catch (error) {
 		console.error('Error processing deletion:', error)
-		showToast('error', error.stack || error.message || error)
+		reportAsyncError(error)
 	}
 }
-setTimeout(async () => {
-	while (true) {
-		await processDeletionQueue()
-		await new Promise(resolve => setTimeout(resolve, 1000))
-	}
+setTimeout(async function loop() {
+	await processDeletionQueue()
+	setTimeout(loop, 1000)
 })
 
 /**
- * 将消息元素添加到删除队列。
- * @param {HTMLElement} messageElement - 要删除的消息元素。
+ * 将消息元素加入删除队列，等待后台串行处理。
+ * @param {HTMLElement} messageElement - 要删除的消息元素
  */
 function enqueueDeletion(messageElement) {
 	deletionQueue.push(messageElement)
 }
 
 /**
- * 为消息生成完整的 HTML 文档，包括样式表和附件以正确呈现。
- * 如果消息内容包含 H1 标签，其文本将用作文档标题。
- * @param {object} message - 消息对象。
- * @param {object} cache - 缓存对象（与普通渲染共享）。
- * @returns {Promise<string>} 完整的 HTML 字符串。
+ * 生成可离线查看的完整消息 HTML 文档。
+ * @param {object} message - 消息对象
+ * @param {object} [cache] - 渲染缓存（与普通渲染共享）
+ * @returns {Promise<string>} 完整 HTML 字符串
  */
 async function generateFullHtmlForMessage(message, cache) {
 	return renderTemplateAsHtmlString('standalone_message', {
 		main_locale,
 		message,
 		/**
-		 * 渲染 Markdown 为 HTML 字符串（带缓存复用）
+		 * 将 Markdown 渲染为独立 HTML 字符串。
 		 * @param {string} markdown - Markdown 文本
 		 * @returns {Promise<string>} HTML 字符串
 		 */
@@ -196,15 +218,14 @@ export async function renderMessage(message) {
 		})
 	})
 
-	// --- Shift key detection for button visibility ---
+	// --- Shift 键切换按钮组 ---
 	const buttonGroup = messageElement.querySelector('.button-group')
 	const normalButtons = buttonGroup.querySelector('.normal-buttons')
 	const shiftButtons = buttonGroup.querySelector('.shift-buttons')
-
 	let isShiftPressed = false
 
 	/**
-	 * 更新按钮可见性
+	 * 根据 Shift 按键状态切换按钮组显示。
 	 */
 	const updateButtonVisibility = () => {
 		if (isShiftPressed) {
@@ -215,57 +236,54 @@ export async function renderMessage(message) {
 			shiftButtons.style.display = 'none'
 		}
 	}
-
 	/**
-	 * 处理按下 Shift 键
-	 * @param {KeyboardEvent} e 事件
+	 * 处理 Shift 按下事件。
+	 * @param {KeyboardEvent} e - 键盘事件
 	 */
 	const handleKeyDown = (e) => {
-		if (e.key === 'Shift' && !isShiftPressed) {
-			isShiftPressed = true
-			updateButtonVisibility()
-		}
+		if (e.key !== 'Shift' || isShiftPressed) return
+		isShiftPressed = true
+		updateButtonVisibility()
 	}
-
 	/**
-	 * 处理松开 Shift 键
-	 * @param {KeyboardEvent} e 事件
+	 * 处理 Shift 松开事件。
+	 * @param {KeyboardEvent} e - 键盘事件
 	 */
 	const handleKeyUp = (e) => {
-		if (e.key === 'Shift' && isShiftPressed) {
-			isShiftPressed = false
-			updateButtonVisibility()
-		}
+		if (e.key !== 'Shift' || !isShiftPressed) return
+		isShiftPressed = false
+		updateButtonVisibility()
+	}
+	const handleBlur = () => {
+		if (!isShiftPressed) return
+		isShiftPressed = false
+		updateButtonVisibility()
 	}
 
-	// Add keyboard event listeners
 	document.addEventListener('keydown', handleKeyDown)
 	document.addEventListener('keyup', handleKeyUp)
-
-	// Clean up listeners when element is removed
+	window.addEventListener('blur', handleBlur)
 	onElementRemoved(messageElement, () => {
 		document.removeEventListener('keydown', handleKeyDown)
 		document.removeEventListener('keyup', handleKeyUp)
+		window.removeEventListener('blur', handleBlur)
 	})
-
-	// Initialize button visibility
 	updateButtonVisibility()
 
 	// --- Direct Download HTML button (shift mode) ---
-	const downloadHtmlButtonDirect = messageElement.querySelector('.download-html-button-direct')
-	downloadHtmlButtonDirect.addEventListener('click', async () => {
-		try {
-			const a = document.createElement('a')
-			a.href = standaloneMessageUrl
-			a.download = `message-${message.id}.html`
-			document.body.appendChild(a)
-			a.click()
-			document.body.removeChild(a)
-		}
-		catch (error) {
-			showToast('error', error.stack || error.message || error)
-		}
-	})
+	/**
+	 * 下载当前消息为独立 HTML 文件。
+	 */
+	const triggerDownload = () => {
+		const a = Object.assign(document.createElement('a'), {
+			href: standaloneMessageUrl,
+			download: `message-${message.id}.html`,
+		})
+		document.body.appendChild(a)
+		a.click()
+		document.body.removeChild(a)
+	}
+	messageElement.querySelector('.download-html-button-direct').addEventListener('click', triggerDownload)
 
 	// 获取 dropdown 菜单元素
 	const dropdownMenu = messageElement.querySelector('.dropdown')
@@ -275,37 +293,26 @@ export async function renderMessage(message) {
 	dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
 		try {
 			await navigator.clipboard.writeText(messageMarkdownContent)
-		} catch (error) { showToast('error', error.stack || error.message || error) }
+		} catch (error) { reportAsyncError(error) }
 		dropdownMenu.hidePopover()
 	})
 	dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
 		try {
 			await navigator.clipboard.writeText(messageContentElement.textContent.trim())
-		} catch (error) { showToast('error', error.stack || error.message || error) }
+		} catch (error) { reportAsyncError(error) }
 		dropdownMenu.hidePopover()
 	})
 	dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
 		try {
-			const fullHtml = await generateFullHtmlForMessage(message)
+			const fullHtml = await generateFullHtmlForMessage(message, cache)
 			await navigator.clipboard.writeText(fullHtml)
-		} catch (error) { showToast('error', error.stack || error.message || error) }
+		} catch (error) { reportAsyncError(error) }
 		dropdownMenu.hidePopover()
 	})
 
 	// --- Download as HTML button ---
-	const downloadHtmlButton = dropdownMenu.querySelector('.download-html-button')
-	downloadHtmlButton.addEventListener('click', async () => {
-		try {
-			const a = document.createElement('a')
-			a.href = standaloneMessageUrl
-			a.download = `message-${message.id}.html`
-			document.body.appendChild(a)
-			a.click()
-			document.body.removeChild(a)
-		}
-		catch (error) {
-			showToast('error', error.stack || error.message || error)
-		}
+	dropdownMenu.querySelector('.download-html-button').addEventListener('click', () => {
+		triggerDownload()
 		dropdownMenu.hidePopover()
 	})
 
@@ -326,7 +333,7 @@ export async function renderMessage(message) {
 				})
 			}
 			catch (error) {
-				showToast('error', error.stack || error.message || error)
+				reportAsyncError(error)
 			}
 			dropdownMenu.hidePopover()
 		})
@@ -341,6 +348,118 @@ export async function renderMessage(message) {
 		if (chatLogIndex === -1) return
 		await editMessageStart(message, queueIndex, chatLogIndex) // 显示编辑界面
 	})
+
+	// --- 消息反馈栏（仅角色消息）---
+	const feedbackBar = messageElement.querySelector('[data-feedback-bar]')
+	if (feedbackBar) {
+		const feedbackUp = feedbackBar.querySelector('.feedback-up')
+		const feedbackDown = feedbackBar.querySelector('.feedback-down')
+		const regenerateBtn = feedbackBar.querySelector('.regenerate-btn')
+		const inputWrap = feedbackBar.querySelector('[data-feedback-input-wrap]')
+		const feedbackInput = feedbackBar.querySelector('[data-feedback-input]')
+		const feedbackSubmit = feedbackBar.querySelector('[data-feedback-submit]')
+		const feedbackCancel = feedbackBar.querySelector('[data-feedback-cancel]')
+
+		/**
+		 * 展示反馈原因输入框并记录当前反馈类型。
+		 * @param {'up'|'down'} type - 反馈类型
+		 */
+		const showFeedbackInput = (type) => {
+			inputWrap?.classList.add('visible')
+			feedbackInput?.focus()
+			feedbackInput?.setAttribute('data-pending-type', type)
+		}
+		/**
+		 * 隐藏原因输入框并清理挂起状态与编辑追踪。
+		 */
+		const hideFeedbackInput = () => {
+			inputWrap?.classList.remove('visible')
+			feedbackInput?.removeAttribute('data-pending-type')
+			activeFeedbackEdits.delete(message.id)
+		}
+
+		/**
+		 * 根据已保存的反馈状态还原按钮颜色。
+		 */
+		const restoreButtonColors = () => {
+			const savedType = message.extension?.feedback?.type
+			feedbackUp?.classList.toggle('text-success', savedType === 'up')
+			feedbackDown?.classList.toggle('text-error', savedType === 'down')
+		}
+
+		/**
+		 * 提交反馈到服务器。本地状态仅在 API 成功后更新。
+		 * @param {'up'|'down'} type - 反馈类型
+		 * @param {string} [content] - 可选说明
+		 * @returns {Promise<void>}
+		 */
+		const doFeedback = async (type, content) => {
+			const queueIndex = getQueueIndex(messageElement)
+			if (queueIndex === -1) return
+			const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+			if (chatLogIndex === -1) return
+			const feedback = { type, content: content?.trim() || undefined }
+			await setMessageFeedback(chatLogIndex, feedback)
+			message.extension ??= {}
+			message.extension.feedback = feedback
+		}
+
+		/**
+		 * 点击按钮时展示原因输入框，但不立即提交反馈。
+		 * @param {'up'|'down'} type - 反馈类型
+		 */
+		const handleFeedbackClick = (type) => {
+			feedbackUp?.classList.toggle('text-success', type === 'up')
+			feedbackDown?.classList.toggle('text-error', type === 'down')
+			if (feedbackInput) feedbackInput.value = ''
+			showFeedbackInput(type)
+			activeFeedbackEdits.set(message.id, { type, inputValue: '' })
+		}
+		feedbackUp?.addEventListener('click', () => handleFeedbackClick('up'))
+		feedbackDown?.addEventListener('click', () => handleFeedbackClick('down'))
+		regenerateBtn?.addEventListener('click', () => {
+			modifyTimeLine(Infinity).catch(reportAsyncError)
+		})
+
+		/**
+		 * 关闭输入框并提交含原因的反馈。
+		 * 先隐藏表单再提交——确保重渲染时表单已隐藏，不会闪烁。
+		 * @param {string} [content] - 可选反馈原因
+		 */
+		const closeFeedbackAndSubmit = (content) => {
+			const type = feedbackInput?.getAttribute('data-pending-type')
+			if (type !== 'up' && type !== 'down') return
+			hideFeedbackInput()
+			doFeedback(type, content).catch(reportAsyncError)
+		}
+		feedbackSubmit?.addEventListener('click', () => closeFeedbackAndSubmit(feedbackInput?.value))
+		feedbackCancel?.addEventListener('click', () => {
+			hideFeedbackInput()
+			restoreButtonColors()
+		})
+		feedbackInput?.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' && e.ctrlKey) {
+				e.preventDefault()
+				closeFeedbackAndSubmit(feedbackInput?.value)
+			}
+			else if (e.key === 'Escape') {
+				hideFeedbackInput()
+				restoreButtonColors()
+			}
+		})
+
+		feedbackInput?.addEventListener('input', () => {
+			const edit = activeFeedbackEdits.get(message.id)
+			if (edit) edit.inputValue = feedbackInput.value
+		})
+
+		// 重渲染后恢复活跃的反馈编辑状态
+		const activeEdit = activeFeedbackEdits.get(message.id)
+		if (activeEdit) {
+			showFeedbackInput(activeEdit.type)
+			if (feedbackInput) feedbackInput.value = activeEdit.inputValue || ''
+		}
+	}
 
 	// --- 渲染附件 ---
 	if (message.files?.length) {
@@ -388,7 +507,7 @@ function getPostEditActionForUserMessage(message, queueIndex) {
  * @param {number} chatLogIndex - 在聊天记录中的绝对索引。
  */
 export async function editMessageStart(message, queueIndex, chatLogIndex) {
-	const selectedFiles = [...message.files || []] // 文件副本
+	const selectedFiles = [...message.files ?? []]
 	const editRenderedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
@@ -439,9 +558,9 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 		const postEditAction = getPostEditActionForUserMessage(message, queueIndex)
 		await editMessage(chatLogIndex, newMessage)
 		if (postEditAction === 'trigger-reply')
-			triggerCharacterReply(null).catch(() => { })
+			triggerCharacterReply(null).catch(reportAsyncError)
 		else if (postEditAction === 'modify-timeline')
-			modifyTimeLine(Infinity).catch(() => { })
+			modifyTimeLine(Infinity).catch(reportAsyncError)
 	})
 
 	// --- 取消编辑 ---
@@ -475,12 +594,11 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 
 /**
  * 公开接口：替换指定索引的消息。
- * @param {number} index - 队列索引 (queueIndex)。
- * @param {object} message - 新消息对象。
+ * @param {number} queueIndex - 队列中的索引
+ * @param {object} message - 消息对象
+ * @returns {Promise<void>}
  */
-export async function replaceMessage(index, message) {
-	await replaceMessageInQueue(index, message)
-}
+export const replaceMessage = replaceMessageInQueue
 
 /**
  * 为消息元素启用左右滑动切换时间线的功能。
@@ -491,10 +609,9 @@ export function enableSwipe(messageElement) {
 
 	let touchStartX = 0, touchStartY = 0, isDragging = false, swipeHandled = false
 
-	// --- 定义命名的监听器函数 ---
 	/**
-	 * 处理触摸开始事件。
-	 * @param {TouchEvent} event - 触摸事件对象。
+	 * 记录触摸起点并初始化滑动状态。
+	 * @param {TouchEvent} event - 触摸开始事件
 	 */
 	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
@@ -504,57 +621,50 @@ export function enableSwipe(messageElement) {
 		swipeHandled = false
 	}
 	/**
-	 * 处理触摸移动事件。
-	 * @param {TouchEvent} event - 触摸事件对象。
+	 * 在触摸移动过程中判断是否仍视为横向滑动。
+	 * @param {TouchEvent} event - 触摸移动事件
 	 */
 	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
 		const deltaX = event.touches[0].clientX - touchStartX
 		const deltaY = event.touches[0].clientY - touchStartY
-		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
+		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false
 	}
 	/**
-	 * 处理触摸结束事件。
-	 * @param {TouchEvent} event - 触摸事件对象。
+	 * 在触摸结束时触发时间线切换逻辑。
+	 * @param {TouchEvent} event - 触摸结束事件
 	 */
 	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
 		const deltaX = event.changedTouches[0].clientX - touchStartX
 		const deltaY = event.changedTouches[0].clientY - touchStartY
 		isDragging = false
-
 		if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
-			const targetElement = event.target
-			if (checkForHorizontalScrollbar(targetElement)) return // 忽略带水平滚动的元素
-
+			if (checkForHorizontalScrollbar(event.target)) return
 			swipeHandled = true
-			const direction = deltaX > 0 ? -1 : 1 // 右滑-1(后退), 左滑+1(前进)
-			await modifyTimeLine(direction)
+			await modifyTimeLine(deltaX > 0 ? -1 : 1) // 右滑后退，左滑前进
 		}
 	}
 	/**
-	 * 处理触摸取消事件。
+	 * 触摸流程被系统中断时重置拖拽状态。
 	 */
 	const handleTouchCancel = () => { isDragging = false }
+
 	/**
-	 * 检查元素是否包含水平滚动条。
-	 * @param {HTMLElement} element - 要检查的 DOM 元素。
-	 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
+	 * 递归检查元素是否有水平滚动条（避免误触发滑动）
+	 * @param {HTMLElement} element - 要检查的元素
+	 * @returns {boolean} 是否包含水平滚动条
 	 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true
 		for (let i = 0; i < element.children.length; i++)
 			if (checkForHorizontalScrollbar(element.children[i])) return true
-
 		return false
 	}
-	// --- 监听器定义结束 ---
 
 	const listeners = { touchstart: handleTouchStart, touchmove: handleTouchMove, touchend: handleTouchEnd, touchcancel: handleTouchCancel }
-	swipeListenersMap.set(messageElement, listeners) // 存储监听器引用
-
-	// 添加事件监听
+	swipeListenersMap.set(messageElement, listeners)
 	messageElement.addEventListener('touchstart', listeners.touchstart, { passive: true })
 	messageElement.addEventListener('touchmove', listeners.touchmove, { passive: true })
 	messageElement.addEventListener('touchend', listeners.touchend, { passive: true })

@@ -27,7 +27,7 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
+	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname, timelines } = args
 	/** @type {prompt_struct_t} */
 	const result = {
 		char_id,
@@ -40,6 +40,7 @@ export async function buildPromptStruct(
 		world_prompt: getSinglePartPrompt(),
 		plugin_prompts: {},
 		chat_log,
+		timelines: timelines || [],
 	}
 
 	if (world?.interfaces?.chat) result.world_prompt = world.interfaces.chat.GetPrompt(args)
@@ -143,7 +144,23 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 	for (const entry of result) {
 		if (entry.logContextBefore) flat_result.push(...entry.logContextBefore)
 		flat_result.push(entry)
+		const feedback = entry.extension?.feedback
+		if (feedback) {
+			const label = feedback.type === 'up' ? '赞' : '踩'
+			const content = `用户对此消息进行了${label}，附加信息：${feedback.content || '无'}`
+			flat_result.push({ role: 'system', name: 'feedback', content })
+		}
 		if (entry.logContextAfter) flat_result.push(...entry.logContextAfter)
+	}
+	for (const entry of (prompt.timelines || [])) {
+		const feedback = entry.extension?.feedback
+		if (!feedback?.content) continue
+		const label = feedback.type === 'up' ? '赞' : '踩'
+		flat_result.push({
+			role: 'system',
+			name: 'feedback',
+			content: `用户对另一时间线中的此次回复进行了${label}，原因：${feedback.content}。`
+		})
 	}
 	return flat_result.filter(entry => !entry.charVisibility || entry.charVisibility.includes(prompt.char_id))
 }

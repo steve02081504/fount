@@ -93,6 +93,7 @@ export class chatReplyRequest_t {
 	locales: locale_t[] // 常见用法：switch (args.locales[0].split('-')[0]) 来多语言info或开场白
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
+	timelines: chatLogEntry_t[]
 	AddChatLogEntry?: (entry: chatReply_t) => Promise<chatLogEntry_t> // 调用这个来主动或定时发信息
 	Update?: () => Promise<chatReplyRequest_t> // 调用这个来在定时任务时获取最新args
 	world: WorldAPI_t
@@ -133,6 +134,7 @@ export class chatReplyRequest_t {
  * @property {string} extension.timeSlice.summary - 摘要。
  * @property {WorldAPI_t} extension.timeSlice.world - 世界。
  * @property {UserAPI_t} extension.timeSlice.player - 玩家。
+ * @property {{ type: 'up'|'down'; content?: string }} [extension.feedback] - 用户反馈（赞/踩及可选说明）。
  */
 export class chatLogEntry_t {
 	id: string
@@ -160,7 +162,8 @@ export class chatLogEntry_t {
 			summary: string;
 			world: WorldAPI_t;
 			player: UserAPI_t;
-		}
+		};
+		feedback?: { type: 'up' | 'down'; content?: string };
 	}
 }
 /**

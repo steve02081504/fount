@@ -25,6 +25,7 @@ import {
 	triggerCharReply,
 	deleteMessage,
 	editMessage,
+	setMessageFeedback,
 	GetChatLogLength,
 	setCharSpeakingFrequency,
 	getInitialData,
@@ -99,6 +100,12 @@ export function setEndpoints(router) {
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
 		const entry = await editMessage(chatid, parseInt(index, 10), content)
+		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+	})
+
+	router.put('/api/parts/shells\\:chat/:chatid/message/:index/feedback', authenticate, async (req, res) => {
+		const { params: { chatid, index }, body: feedback } = req
+		const entry = await setMessageFeedback(chatid, parseInt(index, 10), feedback)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
 

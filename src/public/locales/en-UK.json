@@ -848,7 +848,23 @@
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
 			"commonToolCalling": "Calling tool",
-			"noReplyContent": "(No reply content)"
+			"noReplyContent": "(No reply content)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Like"
+				},
+				"thumbsDown": {
+					"title": "Dislike"
+				},
+				"regenerate": {
+					"title": "Regenerate"
+				},
+				"reason": {
+					"placeholder": "Optional: explain why"
+				},
+				"submit": "Submit",
+				"cancel": "Cancel"
+			}
 		},
 		"messageEdit": {
 			"input": {

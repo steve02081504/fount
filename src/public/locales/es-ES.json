@@ -848,7 +848,23 @@
 				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Este rol es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
 			},
 			"commonToolCalling": "Llamando a la herramienta",
-			"noReplyContent": "(Sin contenido de respuesta)"
+			"noReplyContent": "(Sin contenido de respuesta)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Me gusta"
+				},
+				"thumbsDown": {
+					"title": "No me gusta"
+				},
+				"regenerate": {
+					"title": "Regenerar"
+				},
+				"reason": {
+					"placeholder": "Opcional: explica por qué"
+				},
+				"submit": "Enviar",
+				"cancel": "Cancelar"
+			}
 		},
 		"messageEdit": {
 			"input": {

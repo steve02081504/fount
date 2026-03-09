@@ -195,6 +195,64 @@
 	object-fit: contain;
 }
 
+/* 消息反馈栏（赞/踩/重新生成），hover 或输入框聚焦时平滑展开 */
+.chat-message .message-feedback-bar {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	overflow: hidden;
+	max-height: 0;
+	margin-top: 0;
+	padding: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		max-height 0.25s ease-in-out,
+		margin-top 0.25s ease-in-out,
+		padding 0.25s ease-in-out,
+		opacity 0.2s ease-in-out;
+}
+
+.chat-message:hover .message-feedback-bar,
+.chat-message .message-feedback-bar:focus-within {
+	max-height: 180px;
+	margin-top: 8px;
+	padding: 2px 2px 6px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 赞/踩/重新生成按钮点击动画 */
+.chat-message .message-feedback-bar .feedback-btn,
+.chat-message .message-feedback-bar .regenerate-btn {
+	transition: color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.chat-message .message-feedback-bar .feedback-btn:active,
+.chat-message .message-feedback-bar .regenerate-btn:active {
+	transform: scale(0.85);
+}
+
+.chat-message .message-feedback-bar .feedback-input-wrap {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	overflow: hidden;
+	max-height: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		max-height 0.2s ease-in-out,
+		opacity 0.15s ease-in-out;
+}
+
+.chat-message .message-feedback-bar .feedback-input-wrap.visible {
+	max-height: 140px;
+	padding: 3px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
 /* 角色名平滑过渡 */
 .char-name {
 	transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, margin 0.3s ease-in-out, padding 0.3s ease-in-out, transform 0.3s ease-in-out;

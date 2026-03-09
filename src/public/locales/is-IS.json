@@ -848,7 +848,23 @@
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			},
 			"commonToolCalling": "Kallar á tól",
-			"noReplyContent": "(Ekkert svar innihald)"
+			"noReplyContent": "(Ekkert svar innihald)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Líkar"
+				},
+				"thumbsDown": {
+					"title": "Líkar ekki"
+				},
+				"regenerate": {
+					"title": "Endurgera"
+				},
+				"reason": {
+					"placeholder": "Valfrjálst: gefðu ástæðu"
+				},
+				"submit": "Senda",
+				"cancel": "Hætta við"
+			}
 		},
 		"messageEdit": {
 			"input": {
