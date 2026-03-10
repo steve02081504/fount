@@ -265,6 +265,10 @@
 			"description1": "⏳🐌❓",
 			"description2": "🎮⏰"
 		},
+		"testimonials": {
+			"anonymous": "匿名用户",
+			"submit_link": "我也要写一条评语 →"
+		},
 		"data_showcase": {
 			"title_prefix": "⛲➡️",
 			"title_of": "",

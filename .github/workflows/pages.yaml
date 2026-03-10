@@ -12,6 +12,10 @@ on:
       - 'imgs/**'
     branches: ['master']
 
+  # Daily: fetch JotForm feedback and redeploy
+  schedule:
+    - cron: '0 0 * * *'
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -37,6 +41,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Fetch JotForm comments
+        env:
+          JOTFORM_API_KEY: ${{ secrets.JOTFORM_API_KEY }}
+        run: |
+          PAGES='.github/pages'
+          DATA_DIR="$PAGES/data"
+          OUT="$DATA_DIR/comments.json"
+          mkdir -p "$DATA_DIR"
+          fallback() {
+            echo "Fetch failed or invalid response, falling back to existing deployment."
+            wget -q -O "$OUT" "https://steve02081504.github.io/fount/data/comments.json" || echo '[]' > "$OUT"
+          }
+          if [ -z "$JOTFORM_API_KEY" ]; then
+            fallback
+          else
+            curl -sf "https://api.jotform.com/form/260680715143050/submissions?apiKey=${JOTFORM_API_KEY}" | python3 -c "
+          import json, sys
+          try:
+            d = json.load(sys.stdin)
+          except Exception:
+            sys.exit(1)
+          content = d.get('content') or []
+          out = []
+          for s in content:
+            a = s.get('answers') or {}
+            fullname = (a.get('2') or {}).get('prettyFormat') or ''
+            feedback = (a.get('4') or {}).get('answer') or ''
+            display_opt = (a.get('5') or {}).get('answer') or ''
+            show_name = 'Yes' in (display_opt or '')
+            avatar = (a.get('7') or {}).get('answer') or None
+            if (feedback or '').strip():
+              out.append({
+                'name': fullname if show_name else None,
+                'avatar': avatar,
+                'feedback': feedback.strip(),
+                'created_at': s.get('created_at')
+              })
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          " > "$OUT" || fallback
+          fi
       - name: Copy local files
         run: |
           cp -r ./src/public/locales ./.github/pages/

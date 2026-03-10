@@ -265,6 +265,10 @@
 			"description1": "L'installazione è troppo lenta?",
 			"description2": "Ecco un mini-gioco per passare il tempo."
 		},
+		"testimonials": {
+			"anonymous": "utente anonimo",
+			"submit_link": "Voglio anche scrivere un commento →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount è il più ",
 			"title_of": " ",

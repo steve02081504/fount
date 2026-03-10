@@ -35,6 +35,36 @@ app.use('/fount/scripts', express.static(githubScriptsPath))
 const srcScriptsPath = path.join(projectRoot, 'src', 'public', 'pages', 'scripts')
 app.use('/fount/scripts', express.static(srcScriptsPath))
 
+// Proxy data/comments.json from GitHub Pages when available, otherwise fall through to local static file.
+const GITHUB_PAGES_COMMENTS_URL = 'https://steve02081504.github.io/fount/data/comments.json'
+app.get('/fount/data/comments.json', async (_req, res, next) => {
+	const response = await fetch(GITHUB_PAGES_COMMENTS_URL).catch(() => null)
+	if (response?.ok) {
+		const data = await response.json()
+		return res.json(data)
+	}
+	return res.json([
+		{
+			"name": "test user",
+			"avatar": null,
+			"feedback": "test feedback",
+			"created_at": "2026-03-07 18:45:12"
+		},
+		{
+			"name": "测试用户",
+			"avatar": null,
+			"feedback": "测试反馈",
+			"created_at": "2026-03-08 18:45:12"
+		},
+		{
+			"name": "ユーザー",
+			"avatar": null,
+			"feedback": "フィードバック",
+			"created_at": "2026-03-09 18:45:12"
+		}
+	])
+})
+
 // Serve the main content from `.github/pages` as the root.
 // This comes after the specific routes to not intercept them.
 const pagesRootPath = path.join(projectRoot, '.github', 'pages')

@@ -265,6 +265,10 @@
 			"description1": "Установка идет слишком долго?",
 			"description2": "Здесь есть мини-игры, чтобы скоротать время."
 		},
+		"testimonials": {
+			"anonymous": "анонимный пользователь",
+			"submit_link": "Я тоже хочу написать комментарий →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount — самый ",
 			"title_of": " ",
