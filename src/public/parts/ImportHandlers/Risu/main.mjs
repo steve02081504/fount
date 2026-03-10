@@ -75,7 +75,7 @@ async function ImportAsData(username, dataBuffer) {
 			sourceSpec = pngData.spec // 'ccv3', 'ccv2', or 'ccv2_generic'
 		} catch (err) { errors.push(err) }
 		try {
-			ccv3Card = JSON.parse(dataBuffer.toString('utf-8'))
+			ccv3Card = JSON.parse(dataBuffer.toString('utf-8').replace(/^\uFEFF/, ''))
 			// JSON 文件没有内嵌资源或主图片文件，依赖 card.data.assets 中的 HTTP/Data URI
 			sourceSpec = ccv3Card.spec === 'chara_card_v3' ? 'ccv3' : ccv3Card.spec === 'chara_card_v2' ? 'ccv2' : 'unknown_json'
 		} catch (err) { errors.push(err) }
