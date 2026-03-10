@@ -272,6 +272,10 @@ export type LocaleData = {
 			description1: string
 			description2: string
 		}
+		testimonials: {
+			anonymous: string
+			submit_link: string
+		}
 		data_showcase: {
 			title_prefix: string
 			title_of: string

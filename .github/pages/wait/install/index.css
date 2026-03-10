@@ -1,3 +1,7 @@
+:root {
+	--hero-transition: 0.8s ease-in;
+}
+
 body {
 	scroll-behavior: smooth;
 }
@@ -6,73 +10,57 @@ body.scroll-lock {
 	overflow: hidden;
 }
 
-/* === Hero 动画和过渡样式 === */
 .hero {
 	position: relative;
 }
 
 .hero.bg-image-loaded {
 	background-image: url("https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b");
-	/* 确保背景图的显示方式与SVG的模拟方式一致 */
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	/* 添加过渡效果 */
-	transition: background-image 0.8s ease-in;
+	transition: background-image var(--hero-transition);
 }
 
-/* SVG动画的容器 */
 #hero-animation-bg {
 	position: absolute;
 	inset: 0;
 	z-index: 1;
 	display: flex;
-	/* 保持flex以便居中 */
 	align-items: center;
 	justify-content: center;
-	transition: opacity 0.8s ease-in;
+	transition: opacity var(--hero-transition);
 	overflow: hidden;
 }
 
 #hero-animation-bg svg {
-	/* SVG将尽可能大地填充容器，同时保持其宽高比，可能会被裁切 */
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	/* 确保SVG在容器内居中，这与 background-position: center 对应 */
 	object-position: center;
 }
 
-/* Hero's overlay and content */
 .hero .hero-overlay,
 .hero .hero-content {
 	position: relative;
 	z-index: 2;
-	/* Ensures it's above the SVG animation */
 	opacity: 0;
-	/* Initially transparent */
-	transition: opacity 0.8s ease-in;
-	/* Ready for fade-in effect */
+	transition: opacity var(--hero-transition);
 }
 
-/* Class to make elements visible after the animation */
 .visible-after-intro {
 	opacity: 1 !important;
-	/* !important ensures it overrides daisyUI's bg-opacity-60 */
 }
 
-/* === End: Hero Animation Styles === */
-
 .content-wrapper {
-	/* Adjust padding to accommodate the footer and theme selector */
 	padding-bottom: 13vh;
 }
 
-/* Animation for feature sections */
 .feature-section {
+	--ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	opacity: 0;
 	transform: translateY(30px);
-	transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	transition: opacity 0.8s var(--ease-out-quad), transform 0.8s var(--ease-out-quad);
 	transition-delay: 0.2s;
 }
 
@@ -94,9 +82,7 @@ body.scroll-lock {
 }
 
 .selected-theme {
-	outline: 4px solid;
-	outline-color: oklch(var(--p));
-	/* Use oklch for better compatibility with daisyUI */
+	outline: 4px solid oklch(var(--p));
 	outline-offset: 2px;
 }
 
@@ -122,15 +108,13 @@ body.scroll-lock {
 	clip-path: polygon(0 0, 0 100%, 100% 100%);
 }
 
-/* Data Showcase Section */
 .rotating-text-container {
 	position: relative;
 	display: inline-block;
 	vertical-align: bottom;
 	text-align: left;
-	transition: width 0.3s ease-in-out;
 	height: 1.2em;
-	/* Match line-height to prevent jump */
+	transition: width 0.3s ease-in-out;
 }
 
 .rotating-text-container>span {
@@ -151,6 +135,40 @@ body.scroll-lock {
 .rotating-text-container>span.exiting {
 	opacity: 0;
 	transform: translateY(-100%);
+}
+
+/* Testimonials carousel */
+.testimonials-carousel {
+	position: relative;
+}
+
+.testimonial-slide {
+	transition: opacity 0.5s ease-in-out;
+}
+
+.testimonial-slide.testimonial-exit {
+	opacity: 0;
+}
+
+.testimonial-next {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.testimonial-next.testimonial-enter {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 重置轮播角色时关闭过渡，避免双元素同时过渡造成闪烁 */
+.testimonials-carousel.testimonial-reset .testimonial-slide {
+	transition: none;
 }
 
 #data-showcase .stat-value {

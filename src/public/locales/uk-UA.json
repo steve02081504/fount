@@ -265,6 +265,10 @@
 			"description1": "Встановлення занадто повільне?",
 			"description2": "Ось невеличка гра, щоб згаяти час."
 		},
+		"testimonials": {
+			"anonymous": "анонімний користувач",
+			"submit_link": "Я теж хочу написати коментар →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount - це ",
 			"title_of": " ",

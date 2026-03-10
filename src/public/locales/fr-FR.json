@@ -265,6 +265,10 @@
 			"description1": "L'installation est trop longue ?",
 			"description2": "Voici un mini-jeu pour passer le temps."
 		},
+		"testimonials": {
+			"anonymous": "utilisateur anonyme",
+			"submit_link": "Je veux aussi écrire un commentaire →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount est l'expérience la plus ",
 			"title_of": " ",

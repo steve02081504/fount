@@ -265,6 +265,10 @@
 			"description1": "⏳🐌❓",
 			"description2": "🎮⏰"
 		},
+		"testimonials": {
+			"anonymous": "🙈",
+			"submit_link": "✍️💬 →"
+		},
 		"data_showcase": {
 			"title_prefix": "⛲➡️",
 			"title_of": "",

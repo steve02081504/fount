@@ -265,6 +265,10 @@
 			"description1": "क्या इंस्टॉलेशन बहुत धीमा है?",
 			"description2": "समय बिताने के लिए यहाँ एक मिनी गेम है।"
 		},
+		"testimonials": {
+			"anonymous": "अनाम उपयोगकर्ता",
+			"submit_link": "मैं भी एक टिप्पणी लिखना चाहता हूँ →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount सबसे ",
 			"title_of": " है ",

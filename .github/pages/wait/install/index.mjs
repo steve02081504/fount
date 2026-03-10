@@ -40,6 +40,9 @@ const rotatingPlatformEl = document.getElementById('rotating-platform')
 const tipsDisplay = document.getElementById('tips-display')
 const dataShowcaseSection = document.getElementById('data-showcase')
 const starThankYouEl = document.getElementById('star-thank-you')
+const testimonialsBlock = document.getElementById('testimonials-block')
+const testimonialCurrent = document.getElementById('testimonial-current')
+const testimonialNext = document.getElementById('testimonial-next')
 
 /**
  * 从指定 URL 获取 JSON 数据。
@@ -58,6 +61,9 @@ const fetchJson = async (url, fallback = null) => {
 		return fallback
 	}
 }
+
+/** Comments JSON URL: same path works for GitHub Pages and pages-server proxy */
+const COMMENTS_JSON_URL = new URL('../../data/comments.json', import.meta.url).href
 
 const [initialUserData, initialRepoData] = await Promise.all([
 	fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
@@ -253,6 +259,19 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 }
 
 /**
+ * 更新统计数据展示（用于轮询刷新）。
+ * @param {HTMLElement} element - 显示统计数据的 DOM 元素。
+ * @param {number} newValue - 新的统计值。
+ * @param {number} shortDuration - 短动画持续时间（毫秒）。
+ * @returns {void}
+ */
+function updateStatDisplay(element, newValue, shortDuration) {
+	const currentDisplayed = Number(element.textContent.replace(/,/g, ''))
+	if (!isNaN(newValue) && newValue !== currentDisplayed)
+		animateCounter(element, isNaN(currentDisplayed) ? 0 : currentDisplayed, newValue, shortDuration, 3)
+}
+
+/**
  * 启动数据展示动画。
  */
 async function startDataShowcaseAnimation() {
@@ -265,12 +284,10 @@ async function startDataShowcaseAnimation() {
 	else
 		activeUsersCountEl.textContent = '?'
 
-
 	if (!isNaN(starNum))
 		initialAnimations.push(animateCounter(starsCountEl, 0.8 * starNum, starNum, LONG_ANIMATION_DURATION))
 	else
 		starsCountEl.textContent = '?'
-
 
 	await Promise.all(initialAnimations)
 
@@ -279,25 +296,10 @@ async function startDataShowcaseAnimation() {
 			fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
 			fetchJson('https://api.github.com/repos/steve02081504/fount')
 		])
-
 		const newActiveUserNum = userData?.hits?.total ?? NaN
 		const newStarNum = repoData?.stargazers_count ?? NaN
-
-		/**
-		 * 更新统计数据。
-		 * @param {HTMLElement} element - 显示统计数据的 DOM 元素。
-		 * @param {number} newValue - 新的统计值。
-		 * @param {number} shortDuration - 短动画持续时间。
-		 * @returns {void}
-		 */
-		const updateStat = (element, newValue, shortDuration) => {
-			const currentDisplayed = Number(element.textContent.replace(/,/g, ''))
-			if (!isNaN(newValue) && newValue !== currentDisplayed)
-				animateCounter(element, isNaN(currentDisplayed) ? 0 : currentDisplayed, newValue, shortDuration, 3)
-		}
-
-		updateStat(activeUsersCountEl, newActiveUserNum, SHORT_ANIMATION_DURATION)
-		updateStat(starsCountEl, newStarNum, SHORT_ANIMATION_DURATION)
+		updateStatDisplay(activeUsersCountEl, newActiveUserNum, SHORT_ANIMATION_DURATION)
+		updateStatDisplay(starsCountEl, newStarNum, SHORT_ANIMATION_DURATION)
 	}, 60 * 1000)
 }
 
@@ -405,6 +407,76 @@ function createRotatingText(container, initialWords, interval) {
 	}
 }
 
+/**
+ * 渲染单条评语到轮播 slide 容器。
+ * @param {HTMLElement} slideEl - 单个 slide 的容器元素。
+ * @param {{ name?: string | null, avatar?: string | null, feedback: string }} item - 评语项。
+ * @returns {Promise<void>}
+ */
+async function renderTestimonial(slideEl, item) {
+	const avatarUrl = (item.avatar && escapeHtml(item.avatar)) || 'https://api.iconify.design/line-md/account.svg'
+	const fragment = await renderTemplate('testimonial_slide', {
+		feedback: item.feedback,
+		avatarUrl,
+		authorName: item.name || geti18n('installer_wait_screen.testimonials.anonymous')
+	})
+	slideEl.replaceChildren(...fragment.childNodes)
+}
+
+/**
+ * 转义 HTML 特殊字符，避免注入。
+ * @param {string} s - 原始字符串。
+ * @returns {string}
+ */
+function escapeHtml(s) {
+	const div = document.createElement('div')
+	div.textContent = s
+	return div.innerHTML
+}
+
+/**
+ * 启动评语轮播：拉取 comments.json，带淡入淡出切换。
+ */
+function startTestimonialsCarousel() {
+	let list = []
+	let index = 0
+	const INTERVAL_MS = 8000
+	const ANIMATION_MS = 500
+
+	/**
+	 * 切换到下一条并播动画。
+	 */
+	async function advance() {
+		if (list.length === 0) return
+		const nextIndex = (index + 1) % list.length
+		await renderTestimonial(testimonialNext, list[nextIndex])
+		testimonialCurrent.classList.add('testimonial-exit')
+		testimonialNext.classList.add('testimonial-enter')
+		setTimeout(async () => {
+			await renderTestimonial(testimonialCurrent, list[nextIndex])
+			const carousel = testimonialCurrent.parentElement
+			carousel.classList.add('testimonial-reset')
+			testimonialCurrent.classList.remove('testimonial-exit')
+			testimonialNext.classList.remove('testimonial-enter')
+			index = nextIndex
+			requestAnimationFrame(() => {
+				carousel.classList.remove('testimonial-reset')
+			})
+		}, ANIMATION_MS)
+	}
+
+	fetchJson(COMMENTS_JSON_URL, []).then(async data => {
+		list = Array.isArray(data) ? data : []
+		if (list.length === 0) {
+			testimonialsBlock.classList.add('hidden')
+			return
+		}
+		index = Math.floor(Math.random() * list.length)
+		await renderTestimonial(testimonialCurrent, list[index])
+		setInterval(advance, INTERVAL_MS)
+	})
+}
+
 let adjectiveRotator, nounRotator, platformRotator
 
 /**
@@ -421,30 +493,35 @@ function updateRotatingSubtitles() {
 /**
  * 填充语言选择器。
  */
-function populateLanguageSelector() {
-	languageSelector.innerHTML = '' // Clear existing items
+async function populateLanguageSelector() {
+	languageSelector.innerHTML = ''
 	const locales = getAvailableLocales()
 	const localeNames = getLocaleNames()
 
-	const items = locales.map(locale => {
-		const li = document.createElement('li')
-		const a = document.createElement('div')
-		a.textContent = localeNames.get(locale) || locale
-		/**
-		 * 处理语言选择点击事件。
-		 * @param {Event} e - 点击事件对象。
-		 * @returns {Promise<void>}
-		 */
-		a.onclick = async e => {
-			e.preventDefault()
-			await setLocales([locale])
-			document.activeElement?.blur()
-		}
-		li.appendChild(a)
-		return { element: li, locale, name: a.textContent }
-	})
+	/**
+	 * 处理语言选择点击/键盘事件。
+	 * @param {Event} e - 点击或按键事件对象。
+	 * @param {string} locale - 语言代码。
+	 * @returns {Promise<void>}
+	 */
+	async function selectLocale(e, locale) {
+		if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return
+		e.preventDefault()
+		await setLocales([locale])
+		document.activeElement?.blur()
+	}
 
-	languageSelector.append(...items.map(item => item.element))
+	const items = []
+	for (const locale of locales) {
+		const localeName = localeNames.get(locale) || locale
+		const node = await renderTemplate('locale_item', { localeName })
+		const li = node.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? node.firstElementChild : node
+		const btn = li.querySelector('.locale-item-button')
+		btn.onclick = e => selectLocale(e, locale)
+		btn.onkeydown = e => selectLocale(e, locale)
+		items.push({ element: li, locale, name: localeName })
+		languageSelector.appendChild(li)
+	}
 
 	makeSearchable({
 		searchInput: languageSearch,
@@ -504,7 +581,7 @@ const whenFountInstallerFails = () => {
  */
 async function handleInstallerFlow() {
 	for (const section of [themeSelectionSection, miniGameSection, tipsSection])
-		section.style.display = 'block'
+		section.classList.remove('hidden')
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
 	whenFountInstallerFails().then(() => {
@@ -579,8 +656,9 @@ async function main() {
 	platformRotator = createRotatingText(rotatingPlatformEl, [], 2500)
 
 	onLanguageChange(updateRotatingSubtitles)
-	populateLanguageSelector()
+	await populateLanguageSelector()
 	renderThemePreviews()
+	startTestimonialsCarousel()
 
 	// Tips: random one, rotate
 	const [tipCurrent, tipNext] = tipsDisplay.querySelectorAll('.tip-slide')

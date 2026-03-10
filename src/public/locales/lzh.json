@@ -265,6 +265,10 @@
 			"description1": "佈設需時，可有煩憂？",
 			"description2": "此有小物可遣時日，聊博一粲。"
 		},
+		"testimonials": {
+			"anonymous": "匿名客",
+			"submit_link": "吾亦欲書一評 →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount 乃",
 			"title_of": "之",

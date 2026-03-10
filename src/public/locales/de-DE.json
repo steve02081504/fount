@@ -265,6 +265,10 @@
 			"description1": "Dauert die Installation zu lange?",
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
+		"testimonials": {
+			"anonymous": "anonymer Benutzer",
+			"submit_link": "Ich möchte auch einen Kommentar schreiben →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount ist ",
 			"title_of": " ",

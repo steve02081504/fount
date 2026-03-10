@@ -265,6 +265,10 @@
 			"description1": "Er uppsetningin of hæg?",
 			"description2": "Hér er smáleikur til að drepa tímann."
 		},
+		"testimonials": {
+			"anonymous": "nafnlaus notandi",
+			"submit_link": "Ég vil líka skrifa athugasemd →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount er ",
 			"title_of": " ",

@@ -265,6 +265,10 @@
 			"description1": "安裝太慢了嗎？",
 			"description2": "這裡有小遊戲可以用來殺時間。"
 		},
+		"testimonials": {
+			"anonymous": "匿名用戶",
+			"submit_link": "我也要寫一則評語 →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount 是最",
 			"title_of": "的",
