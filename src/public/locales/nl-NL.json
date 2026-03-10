@@ -265,6 +265,10 @@
 			"description1": "Duurt de installatie te lang?",
 			"description2": "Hier is een spelletje om de tijd te doden."
 		},
+		"testimonials": {
+			"anonymous": "anonieme gebruiker",
+			"submit_link": "Ik wil ook een reactie schrijven →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount is het meest ",
 			"title_of": " e ",

@@ -265,6 +265,10 @@
 			"description1": "설치가 너무 오래 걸리나요?",
 			"description2": "시간을 보낼 수 있는 미니 게임이 준비되어 있습니다."
 		},
+		"testimonials": {
+			"anonymous": "익명의 사용자",
+			"submit_link": "나도 후기를 남기고 싶다 →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount는 가장 ",
 			"title_of": " ",
