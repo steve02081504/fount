@@ -30,7 +30,7 @@ async function ImportAsData(username, data) {
  */
 async function ImportByText(username, text) {
 	try {
-		const config = JSON.parse(text)
+		const config = JSON.parse(text.replace(/^\uFEFF/, ''))
 		if (!config.mcpServers)
 			throw new Error('Invalid MCP config: missing mcpServers')
 
