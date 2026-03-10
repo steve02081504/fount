@@ -265,6 +265,10 @@
 			"description1": "インストールに時間がかかりすぎていませんか？",
 			"description2": "ここでミニゲームをして、少し時間を潰しましょう。"
 		},
+		"testimonials": {
+			"anonymous": "匿名ユーザー",
+			"submit_link": "私もコメントを書きたい→"
+		},
 		"data_showcase": {
 			"title_prefix": "fountは最も",
 			"title_of": "",

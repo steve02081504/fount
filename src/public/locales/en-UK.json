@@ -265,6 +265,10 @@
 			"description1": "Installation taking too long?",
 			"description2": "Here's a mini game to pass the time."
 		},
+		"testimonials": {
+			"anonymous": "anonymous user",
+			"submit_link": "I also want to write a comment →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount is the most ",
 			"title_of": " ",

@@ -265,6 +265,10 @@
 			"description1": "Cài đặt quá chậm chạp?",
 			"description2": "Có những trò chơi nhỏ ở đây để bạn giải trí trong lúc chờ đợi."
 		},
+		"testimonials": {
+			"anonymous": "người dùng ẩn danh",
+			"submit_link": "Tôi cũng muốn viết bình luận →"
+		},
 		"data_showcase": {
 			"title_prefix": "fount là nền tảng ",
 			"title_of": " ",
