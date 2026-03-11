@@ -1,7 +1,7 @@
-<blockquote class="text-lg italic text-base-content/90">${feedback}</blockquote>
+<blockquote class="text-lg italic text-base-content/90">${feedback.replaceAll('\n', '<br />')}</blockquote>
 <div class="mt-4 flex items-center justify-center gap-3">
 	<div class="avatar">
-		<img src="${avatarUrl}" alt="" class="w-10 rounded-full" />
+		<img src="${avatarUrl}" alt="avatar of ${authorName}" class="w-10 rounded-full" />
 	</div>
 	<cite class="not-italic font-medium">${authorName}</cite>
 </div>
