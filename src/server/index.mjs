@@ -144,7 +144,7 @@ if (args.length) {
 	}
 }
 // 初始化应用程序。
-const okey = await init(fount_config)
+const result = await init(fount_config)
 
 // 如果提供了命令，则通过 IPC 发送到已运行的实例。
 if (command_obj) await (async () => { try {
@@ -169,5 +169,5 @@ if (command_obj) await (async () => { try {
 
 console.profileEnd('server start')
 
-if (!okey) process.exit(1)
-else if (command_obj?.exit) process.exit(0)
+if (!result) process.exit(1)
+else if (result === 'already_running' || command_obj?.exit) process.exit(0)

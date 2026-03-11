@@ -121,7 +121,7 @@ function handleError(err) {
 /**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
- * @returns {Promise<boolean>} 如果初始化成功，则解析为 true，否则为 false。
+ * @returns {Promise<'started' | 'already_running' | false>} 在已启动时返回'already_running'，否则返回'started'表示启动成功或false表示启动失败。
  */
 export async function init(start_config) {
 	restartor = start_config.restartor
@@ -149,7 +149,7 @@ export async function init(start_config) {
 
 	if (starts.IPC) {
 		const { IPCManager } = await ipcModulePromise
-		if (!await new IPCManager().startServer()) return false
+		if (!await new IPCManager().startServer()) return 'already_running'
 	}
 	let iconPromise
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
@@ -323,5 +323,5 @@ export async function init(start_config) {
 	if (start_config.needs_output) logoPromise?.then(logo => console.freshLine('server start', logo))
 	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
-	return true
+	return 'started'
 }
