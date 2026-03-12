@@ -12,6 +12,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
+import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
@@ -121,9 +122,11 @@ function handleError(err) {
 /**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
- * @returns {Promise<'started' | 'already_running' | false>} 在已启动时返回'already_running'，否则返回'started'表示启动成功或false表示启动失败。
+ * @returns {Promise<'started' | 'already_running'>} 在已启动时返回'already_running'，否则返回'started'表示启动成功或false表示启动失败。
  */
 export async function init(start_config) {
+	// 启动进度：0–25 shell，25–55 deno 预热，55–100 server 阶段
+	SetTaskbarProgress(60)
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
@@ -143,19 +146,25 @@ export async function init(start_config) {
 
 	config = get_config()
 	if (starts.Base) initAuth()
+	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
 	const mdnsModulePromise = starts.Web?.mDNS ? import('./web_server/mdns.mjs') : null
 
 	if (starts.IPC) {
 		const { IPCManager } = await ipcModulePromise
-		if (!await new IPCManager().startServer()) return 'already_running'
+		if (!await new IPCManager().startServer()) {
+			ClearTaskbarProgress()
+			return 'already_running'
+		}
+		SetTaskbarProgress(70)
 	}
 	let iconPromise
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) try {
+		SetTaskbarProgress(75)
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
@@ -209,6 +218,7 @@ export async function init(start_config) {
 			}
 		}
 
+		SetTaskbarProgress(78)
 		/**
 		 * 监听特定地址
 		 * @param {String} listenAddress 要监听的地址
@@ -224,12 +234,14 @@ export async function init(start_config) {
 					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
+					SetTaskbarProgress(80)
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'https', mdnsConfig))
 					resolve(listenAddress == 'localhost')
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
+					SetTaskbarProgress(80)
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'http', mdnsConfig))
 					resolve(listenAddress == 'localhost')
@@ -253,6 +265,7 @@ export async function init(start_config) {
 				is_localhost = await listen('localhost')
 			else throw error
 		}
+		SetTaskbarProgress(82)
 
 		if (start_config.needs_output && !is_localhost) try {
 			const local_url = get_hosturl_in_local_ip()
@@ -260,12 +273,14 @@ export async function init(start_config) {
 			const qrcode = await import('npm:qrcode-terminal')
 			qrcode.generate(local_url, { small: true }, console.noBreadcrumb.log)
 		} catch (e) { /* ignore */ }
-	} catch (e) { console.error(e) }
+		SetTaskbarProgress(85)
+	} catch (e) { handleError(e) }
 
 	if (starts.Tray) iconPromise.then(async () => {
 		const { createTray } = await import('../scripts/tray.mjs')
 		tray = createTray()
 	})
+	SetTaskbarProgress(88)
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		const titleBackup = process.title
@@ -275,6 +290,7 @@ export async function init(start_config) {
 			console.logI18n('tips.title')
 			console.logI18n('tips.data')
 		}
+		SetTaskbarProgress(90)
 	}
 	const endtime = new Date(),
 		denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
@@ -323,5 +339,7 @@ export async function init(start_config) {
 	if (start_config.needs_output) logoPromise?.then(logo => console.freshLine('server start', logo))
 	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
+	SetTaskbarProgress(100)
+	ClearTaskbarProgress()
 	return 'started'
 }

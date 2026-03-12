@@ -12,6 +12,17 @@ C_CYAN='\033[0;36m'
 # 若未定义，则默认 fount 安装分支
 FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 
+# 任务栏进度
+taskbar_progress_enabled() { [ -t 1 ]; }
+write_taskbar_progress() {
+	if ! taskbar_progress_enabled; then return; fi
+	if [ -n "${1:-}" ]; then printf "\033]9;4;1;%s\033\\" "$1"; else printf "\033]9;4;3;0\033\\"; fi
+}
+write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0;0\033\\"; }
+write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\033\\"; }
+
+write_taskbar_progress 0
+
 if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
 (
 	TARGETS="github.com cdn.jsdelivr.net"
@@ -43,12 +54,13 @@ fi
 STATUS_SERVER_PID=""
 OS_TYPE=$(uname -s)
 
-# 确保在脚本退出时，状态服务器进程能被清理
+# 确保在脚本退出时，状态服务器进程能被清理，并清除任务栏进度
 cleanup() {
 	if [[ -n "$STATUS_SERVER_PID" ]]; then
 		kill "$STATUS_SERVER_PID" 2>/dev/null
 		STATUS_SERVER_PID=""
 	fi
+	write_taskbar_progress_clear
 }
 trap cleanup EXIT
 
@@ -196,6 +208,7 @@ else
 
 	if [[ $IN_DOCKER -eq 0 && $IN_TERMUX -eq 0 && "${new_args[*]}" == *'open'* ]]; then
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+		write_taskbar_progress 5
 
 		if command -v nc &>/dev/null; then
 			while true; do {
@@ -207,6 +220,7 @@ else
 			(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}'") >/dev/null 2>&1 &
 			STATUS_SERVER_PID=$!
 		fi
+		write_taskbar_progress 10
 
 		if [[ -n "$STATUS_SERVER_PID" ]]; then
 			test_browser
@@ -229,20 +243,27 @@ else
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
+	write_taskbar_progress 20
 
 	if install_package "git" "git git-core"; then
+		write_taskbar_progress 25
 		echo "Cloning fount repository..."
 		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
+			write_taskbar_progress 40
 		else
 			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"
 			rm -rf "$FOUNT_DIR"
+			write_taskbar_progress 25
 		fi
 	fi
 
 	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+		write_taskbar_progress 25
 		install_package "curl" "curl" || install_package "wget" "wget" || exit 1
+		write_taskbar_progress 30
 		install_package "unzip" "unzip" || exit 1
+		write_taskbar_progress 35
 
 		TMP_DIR=$(mktemp -d)
 		trap 'rm -rf "$TMP_DIR"' EXIT
@@ -256,6 +277,7 @@ else
 		else
 			wget -q --show-progress -O "$ZIP_FILE" "$ZIP_URL"
 		fi
+		write_taskbar_progress 40
 
 		# shellcheck disable=SC2181
 		if [ $? -ne 0 ]; then
@@ -268,6 +290,7 @@ else
 			echo -e "${C_RED}Error: Unzip failed.${C_RESET}" >&2
 			exit 1
 		fi
+		write_taskbar_progress 50
 
 		extracted_dir=$(find "$TMP_DIR" -maxdepth 1 -type d -name "fount-*" | head -n 1)
 
@@ -281,10 +304,12 @@ else
 	fi
 
 	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+		write_taskbar_progress_error
 		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
 		exit 1
 	fi
 
+	write_taskbar_progress 60
 	echo "Setting permissions..."
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
@@ -292,6 +317,7 @@ else
 	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
 	find "$FOUNT_DIR/path" -maxdepth 1 -type f -print0 | xargs -0 chmod +x
 	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
+	write_taskbar_progress 70
 
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
 

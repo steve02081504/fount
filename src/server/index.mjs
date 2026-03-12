@@ -9,6 +9,7 @@ import process from 'node:process'
 import * as Sentry from 'npm:@sentry/deno'
 
 import { console } from '../scripts/i18n.mjs'
+import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
@@ -18,6 +19,7 @@ import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
 console.profile('server start')
+SetTaskbarProgress(50)
 
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
@@ -32,6 +34,7 @@ export let sentry_enabled
  * @returns {void}
  */
 function set_sentry_enabled(new_sentry_enabled) {
+	// deno-lint-ignore no-cond-assign
 	if (sentry_enabled = new_sentry_enabled) Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 		/**
@@ -65,6 +68,8 @@ console.noBreadcrumb = {
 }
 
 set_start()
+
+SetTaskbarProgress(55)
 
 console.logI18n('fountConsole.server.standingBy')
 
