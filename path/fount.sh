@@ -148,6 +148,15 @@ fi
 # 转义后的fount路径用于sed
 ESCAPED_FOUNT_DIR=$(echo "$FOUNT_DIR" | sed 's/\//\\\//g')
 
+# 任务栏进度（ANSI 序列 \x1b]9;4;...\x1b\\ ，仅 stdout 为 TTY 时输出）
+taskbar_progress_enabled() { [ -t 1 ]; }
+write_taskbar_progress() {
+	if ! taskbar_progress_enabled; then return; fi
+	if [ -n "${1:-}" ]; then printf "\033]9;4;1;%s\033\\" "$1"; else printf "\033]9;4;3;0\033\\"; fi
+}
+write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0;0\033\\"; }
+write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\033\\"; }
+
 # 自动安装包列表文件及标记文件
 INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
 INSTALLED_SYSTEM_PACKAGES_FILE="$INSTALLER_DATA_DIR/auto_installed_system_packages"
@@ -1319,6 +1328,7 @@ run() {
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning2')${C_RESET}" >&2
 	fi
+	write_taskbar_progress 5
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		local LANG_BACKUP
 		LANG_BACKUP="$LANG"
@@ -1342,12 +1352,14 @@ run() {
 		fi
 	fi
 	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
+	write_taskbar_progress 10
 	if [ -z "$FOUNT_START_TIME" ]; then
 		FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
 	fi
 	export FOUNT_START_TIME
 	FOUNT_DENO_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
 	export FOUNT_DENO_START_TIME
+	write_taskbar_progress 25
 	if [[ $is_debug -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
@@ -1356,6 +1368,7 @@ run() {
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
 	local exit_code=$?
+	if [ "$exit_code" -ne 0 ]; then write_taskbar_progress_error; fi
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
 	return $exit_code
 }
@@ -1367,19 +1380,23 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 		git_reset_and_clean
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
+	write_taskbar_progress 70
 	get_i18n 'install.installingDependencies'
 	run_deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	write_taskbar_progress 85
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
 	fi
 	echo -e "${C_GREEN}======================================================${C_RESET}"
 	echo -e "${C_YELLOW}$(get_i18n 'install.untrustedPartsWarning')${C_RESET}"
 	echo -e "${C_GREEN}======================================================${C_RESET}"
+	write_taskbar_progress_clear
 fi
 
 # 主要参数处理逻辑
 case "$1" in
 init)
+	write_taskbar_progress_clear
 	exit 0
 	;;
 clean)
@@ -1445,8 +1462,11 @@ keepalive)
 	done
 	;;
 remove)
+	write_taskbar_progress 0
 	run shutdown
+	write_taskbar_progress 5
 	run_deno clean
+	write_taskbar_progress 15
 	get_i18n 'remove.removingFount'
 
 	get_i18n 'remove.removingFountFromPath'
@@ -1462,6 +1482,7 @@ remove)
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
 
+	write_taskbar_progress 25
 	get_i18n 'remove.removingProtocolHandler'
 	remove_desktop_shortcut
 
@@ -1470,6 +1491,7 @@ remove)
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	fi
 
+	write_taskbar_progress 45
 	get_i18n 'remove.removingInstalledSystemPackages'
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		for package in "${INSTALLED_PACMAN_PACKAGES_ARRAY[@]}"; do pacman -R --noconfirm "$package"; done
@@ -1487,8 +1509,11 @@ remove)
 		export PATH
 		rm -f "$AUTO_INSTALLED_DENO_FLAG"
 	fi
+	write_taskbar_progress 60
 
 	get_i18n 'remove.removingFountInstallationDir'
+	write_taskbar_progress 75
+	write_taskbar_progress 90
 	rm -rf "$FOUNT_DIR"
 	# 只要父目录为空，继续删他妈的
 	parent_dir=$(dirname "$FOUNT_DIR")
@@ -1498,6 +1523,7 @@ remove)
 	get_i18n 'remove.fountInstallationDirRemoved'
 
 	get_i18n 'remove.fountUninstallationComplete'
+	write_taskbar_progress_clear
 	exit 0
 	;;
 *)
