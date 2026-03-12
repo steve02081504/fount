@@ -45,22 +45,22 @@ app.get('/fount/data/comments.json', async (_req, res, next) => {
 	}
 	return res.json([
 		{
-			"name": "test user",
-			"avatar": null,
-			"feedback": "test feedback",
-			"created_at": "2026-03-07 18:45:12"
+			name: 'test user',
+			avatar: null,
+			feedback: 'test feedback',
+			created_at: '2026-03-07 18:45:12'
 		},
 		{
-			"name": "测试用户",
-			"avatar": null,
-			"feedback": "测试反馈",
-			"created_at": "2026-03-08 18:45:12"
+			name: '测试用户',
+			avatar: null,
+			feedback: '测试反馈',
+			created_at: '2026-03-08 18:45:12'
 		},
 		{
-			"name": "ユーザー",
-			"avatar": null,
-			"feedback": "フィードバック",
-			"created_at": "2026-03-09 18:45:12"
+			name: 'ユーザー',
+			avatar: null,
+			feedback: 'フィードバック',
+			created_at: '2026-03-09 18:45:12'
 		}
 	])
 })

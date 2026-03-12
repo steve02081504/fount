@@ -152,7 +152,7 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		}
 		if (entry.logContextAfter) flat_result.push(...entry.logContextAfter)
 	}
-	for (const entry of (prompt.timelines || [])) {
+	for (const entry of prompt.timelines || []) {
 		const feedback = entry.extension?.feedback
 		if (!feedback?.content) continue
 		const label = feedback.type === 'up' ? '赞' : '踩'
