@@ -1365,9 +1365,9 @@ run() {
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
+	local exit_code=$?
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
-	local exit_code=$?
 	if [ "$exit_code" -ne 0 ]; then write_taskbar_progress_error; fi
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
 	return $exit_code

@@ -9,7 +9,7 @@ import process from 'node:process'
 import * as Sentry from 'npm:@sentry/deno'
 
 import { console } from '../scripts/i18n.mjs'
-import { SetTaskbarProgressPercent } from '../scripts/taskbar_progress.mjs'
+import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
@@ -19,7 +19,7 @@ import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
 console.profile('server start')
-SetTaskbarProgressPercent(50)
+SetTaskbarProgress(50)
 
 // 初始化 Sentry 进行错误报告。
 let skipBreadcrumb = false
@@ -69,7 +69,7 @@ console.noBreadcrumb = {
 
 set_start()
 
-SetTaskbarProgressPercent(55)
+SetTaskbarProgress(55)
 
 console.logI18n('fountConsole.server.standingBy')
 

@@ -12,7 +12,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
-import { ClearTaskbarProgress, SetTaskbarProgressPercent } from '../scripts/taskbar_progress.mjs'
+import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
@@ -126,7 +126,7 @@ function handleError(err) {
  */
 export async function init(start_config) {
 	// 启动进度：0–25 shell，25–55 deno 预热，55–100 server 阶段
-	SetTaskbarProgressPercent(60)
+	SetTaskbarProgress(60)
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
@@ -146,7 +146,7 @@ export async function init(start_config) {
 
 	config = get_config()
 	if (starts.Base) initAuth()
-	SetTaskbarProgressPercent(65)
+	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
 	const mdnsModulePromise = starts.Web?.mDNS ? import('./web_server/mdns.mjs') : null
@@ -157,14 +157,14 @@ export async function init(start_config) {
 			ClearTaskbarProgress()
 			return 'already_running'
 		}
-		SetTaskbarProgressPercent(70)
+		SetTaskbarProgress(70)
 	}
 	let iconPromise
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) try {
-		SetTaskbarProgressPercent(75)
+		SetTaskbarProgress(75)
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
@@ -218,7 +218,7 @@ export async function init(start_config) {
 			}
 		}
 
-		SetTaskbarProgressPercent(78)
+		SetTaskbarProgress(78)
 		/**
 		 * 监听特定地址
 		 * @param {String} listenAddress 要监听的地址
@@ -234,14 +234,14 @@ export async function init(start_config) {
 					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
-					SetTaskbarProgressPercent(80)
+					SetTaskbarProgress(80)
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'https', mdnsConfig))
 					resolve(listenAddress == 'localhost')
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
-					SetTaskbarProgressPercent(80)
+					SetTaskbarProgress(80)
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
 					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'http', mdnsConfig))
 					resolve(listenAddress == 'localhost')
@@ -265,7 +265,7 @@ export async function init(start_config) {
 				is_localhost = await listen('localhost')
 			else throw error
 		}
-		SetTaskbarProgressPercent(82)
+		SetTaskbarProgress(82)
 
 		if (start_config.needs_output && !is_localhost) try {
 			const local_url = get_hosturl_in_local_ip()
@@ -273,14 +273,14 @@ export async function init(start_config) {
 			const qrcode = await import('npm:qrcode-terminal')
 			qrcode.generate(local_url, { small: true }, console.noBreadcrumb.log)
 		} catch (e) { /* ignore */ }
-		SetTaskbarProgressPercent(85)
+		SetTaskbarProgress(85)
 	} catch (e) { handleError(e) }
 
 	if (starts.Tray) iconPromise.then(async () => {
 		const { createTray } = await import('../scripts/tray.mjs')
 		tray = createTray()
 	})
-	SetTaskbarProgressPercent(88)
+	SetTaskbarProgress(88)
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		const titleBackup = process.title
@@ -290,7 +290,7 @@ export async function init(start_config) {
 			console.logI18n('tips.title')
 			console.logI18n('tips.data')
 		}
-		SetTaskbarProgressPercent(90)
+		SetTaskbarProgress(90)
 	}
 	const endtime = new Date(),
 		denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
@@ -339,7 +339,7 @@ export async function init(start_config) {
 	if (start_config.needs_output) logoPromise?.then(logo => console.freshLine('server start', logo))
 	if (!fs.existsSync(__dirname + '/src/public/pages/favicon.ico')) await iconPromise
 
-	SetTaskbarProgressPercent(100)
+	SetTaskbarProgress(100)
 	ClearTaskbarProgress()
 	return 'started'
 }

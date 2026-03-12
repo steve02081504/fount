@@ -246,7 +246,7 @@ else
 	write_taskbar_progress 20
 
 	if install_package "git" "git git-core"; then
-		write_taskbar_progress 15
+		write_taskbar_progress 25
 		echo "Cloning fount repository..."
 		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
