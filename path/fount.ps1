@@ -1,5 +1,15 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
+# 任务栏进度（ANSI \x1b]9;4;...\x1b\\ ，仅 VT 且 stdout 未重定向时输出）
+$script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
+function Write-TaskbarProgress { param([int]$Percent)
+	if (-not $script:TaskbarProgressEnabled) { return }
+	if ($PSBoundParameters.ContainsKey('Percent')) { $p = [Math]::Max(0, [Math]::Min(100, $Percent)); Write-Host -NoNewline "`e]9;4;1;$p`e\" }
+	else { Write-Host -NoNewline "`e]9;4;3;0`e\" }
+}
+function Write-TaskbarProgressClear { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;0;0`e\" } }
+function Write-TaskbarProgressError { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;2;100`e\" } }
+
 $env:FOUNT_SESSION_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 if (-not $env:FOUNT_START_TIME) {
 	$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
@@ -893,6 +903,7 @@ function run {
 		Write-Warning (Get-I18n -key 'install.rootWarning1')
 		Write-Warning (Get-I18n -key 'install.rootWarning2')
 	}
+	Write-TaskbarProgress -Percent 5
 	$v8Flags = "--expose-gc"
 	$heapSizeMB = 100 # Default to 100MB
 	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
@@ -909,12 +920,14 @@ function run {
 			# Could not read or parse, will use the default 100MB.
 		}
 	}
+	Write-TaskbarProgress -Percent 10
 	$v8Flags += ",--initial-heap-size=${heapSizeMB}"
 
 	if (-not $env:FOUNT_START_TIME) {
 		$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	}
 	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+	Write-TaskbarProgress -Percent 25
 	try {
 		if ($Script:is_debug) {
 			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
@@ -926,6 +939,7 @@ function run {
 	finally {
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
+		if ($LastExitCode) { Write-TaskbarProgressError }
 	}
 }
 
@@ -943,11 +957,14 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 		run shutdown
 	}
 	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
+	Write-TaskbarProgress -Percent 70
 	Write-Host (Get-I18n -key 'install.installingDependencies')
 	deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	Write-TaskbarProgress -Percent 85
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning (Get-I18n -key 'install.untrustedPartsWarning')
 	Write-Host "======================================================" -ForegroundColor Green
+	Write-TaskbarProgressClear
 
 	# 隐藏文件设置和desktop.ini生效
 	if ((Test-Path "$FOUNT_DIR/.git") -and (-not (Test-Path "$FOUNT_DIR/.git/desktop.ini"))) {
@@ -1033,6 +1050,7 @@ elseif ($args[0] -eq 'geneexe') {
 	exit $LastExitCode
 }
 elseif ($args[0] -eq 'init') {
+	Write-TaskbarProgressClear
 	exit 0
 }
 elseif ($args[0] -eq 'keepalive') {
@@ -1096,8 +1114,11 @@ elseif ($args[0] -eq 'keepalive') {
 	}
 }
 elseif ($args[0] -eq 'remove') {
+	Write-TaskbarProgress -Percent 0
 	run shutdown
+	Write-TaskbarProgress -Percent 5
 	deno clean
+	Write-TaskbarProgress -Percent 15
 	Write-Host (Get-I18n -key 'remove.removingFount')
 
 	# Remove fount from PATH
@@ -1116,6 +1137,7 @@ elseif ($args[0] -eq 'remove') {
 	if ((Get-Command git -ErrorAction Ignore) -and ($FOUNT_DIR -in $(git config --global --get-all safe.directory))) {
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	}
+	Write-TaskbarProgress -Percent 25
 
 	# Remove fount-pwsh from PowerShell Profile
 	Write-Host (Get-I18n -key 'remove.removingFountPwshFromProfile')
@@ -1141,6 +1163,7 @@ elseif ($args[0] -eq 'remove') {
 	catch {
 		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
 	}
+	Write-TaskbarProgress -Percent 45
 
 	# Remove fount protocol handler
 	if (-not $IN_DOCKER) {
@@ -1187,6 +1210,7 @@ elseif ($args[0] -eq 'remove') {
 	else {
 		Write-Host (Get-I18n -key 'remove.startMenuShortcutNotFound')
 	}
+	Write-TaskbarProgress -Percent 60
 
 	# Remove Installed pwsh modules
 	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
@@ -1204,6 +1228,7 @@ elseif ($args[0] -eq 'remove') {
 			Write-Warning (Get-I18n -key 'remove.removeModuleFailed' -params @{module = $_; message = $_.Exception.Message })
 		}
 	}
+	Write-TaskbarProgress -Percent 75
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
 		Write-Host (Get-I18n -key 'remove.uninstallingGit')
@@ -1245,6 +1270,7 @@ elseif ($args[0] -eq 'remove') {
 		}
 	}
 
+	Write-TaskbarProgress -Percent 90
 	# Remove fount installation directory
 	Write-Host (Get-I18n -key 'remove.removingFountInstallationDir')
 	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
@@ -1256,6 +1282,7 @@ elseif ($args[0] -eq 'remove') {
 	Write-Host (Get-I18n -key 'remove.fountInstallationDirRemoved')
 
 	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
+	Write-TaskbarProgressClear
 	exit 0
 }
 else {

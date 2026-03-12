@@ -6,6 +6,18 @@ if (!$env:FOUNT_BRANCH) {
 	$env:FOUNT_BRANCH = "master"
 }
 
+# 任务栏进度
+$script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
+function Write-TaskbarProgress { param([int]$Percent)
+	if (-not $script:TaskbarProgressEnabled) { return }
+	if ($PSBoundParameters.ContainsKey('Percent')) { $p = [Math]::Max(0, [Math]::Min(100, $Percent)); Write-Host -NoNewline "`e]9;4;1;$p`e\" }
+	else { Write-Host -NoNewline "`e]9;4;3;0`e\" }
+}
+function Write-TaskbarProgressClear { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;0;0`e\" } }
+function Write-TaskbarProgressError { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;2;100`e\" } }
+
+Write-TaskbarProgress -Percent 0
+
 if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 	Start-Job {
 		# 随手之劳之经验医学之clash的tun没开
@@ -92,6 +104,7 @@ if (!$IsWindows) {
 		}
 	}
 	install_package "bash" @("bash", "gnu-bash")
+	Write-TaskbarProgress -Percent 5
 	Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/$env:FOUNT_BRANCH/src/runner/main.sh | bash -s -- $args
 	exit $LastExitCode
 }
@@ -197,14 +210,19 @@ try {
 			Test-Browser
 			Start-Process 'https://steve02081504.github.io/fount/wait/install'
 		}
+		Write-TaskbarProgress -Percent 0
 		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 		if (Get-Command git -ErrorAction Ignore) {
+			Write-TaskbarProgress -Percent 20
 			git clone -c core.autocrlf=false https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
 			if ($LastExitCode) {
 				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
+				Write-TaskbarProgress -Percent 25
 			}
+			else { Write-TaskbarProgress -Percent 40 }
 		}
 		if (!(Test-Path $env:FOUNT_DIR)) {
+			Write-TaskbarProgress -Percent 25
 			Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
 			try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
 			catch {
@@ -216,12 +234,15 @@ try {
 			# 确保父文件夹存在
 			New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
 			Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
+			Write-TaskbarProgress -Percent 50
 		}
 		if (!(Test-Path $env:FOUNT_DIR)) {
+			Write-TaskbarProgressError
 			$Host.UI.WriteErrorLine("Failed to install fount")
 			exit 1
 		}
 		$Script:fountDir = $env:FOUNT_DIR
+		Write-TaskbarProgress -Percent 60
 		if ($Script:Installed_winget) {
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
@@ -232,6 +253,8 @@ try {
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
 			$Script:Installed_chrome = 0
 		}
+		Write-TaskbarProgress -Percent 70
+		# 安装阶段结束，进度由后续 run.bat / path 脚本与 server 接续
 	}
 	else {
 		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
@@ -253,6 +276,7 @@ try {
 	& "$Script:fountDir/run.bat" @newargs
 }
 finally {
+	Write-TaskbarProgressClear
 	if ($null -ne $statusServerJob) {
 		Write-Host "Shutting down installation status server..."
 		$statusServerJob | Stop-Job

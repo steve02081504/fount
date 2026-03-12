@@ -426,7 +426,7 @@ async function renderTestimonial(slideEl, item) {
 /**
  * 转义 HTML 特殊字符，避免注入。
  * @param {string} s - 原始字符串。
- * @returns {string}
+ * @returns {string} 转义后的 HTML 字符串。
  */
 function escapeHtml(s) {
 	const div = document.createElement('div')
@@ -517,7 +517,17 @@ async function populateLanguageSelector() {
 		const node = await renderTemplate('locale_item', { localeName })
 		const li = node.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? node.firstElementChild : node
 		const btn = li.querySelector('.locale-item-button')
+		/**
+		 * 处理语言选择点击事件。
+		 * @param {Event} e - 点击事件对象。
+		 * @returns {void}
+		 */
 		btn.onclick = e => selectLocale(e, locale)
+		/**
+		 * 处理语言选择键盘事件。
+		 * @param {Event} e - 键盘事件对象。
+		 * @returns {void}
+		 */
 		btn.onkeydown = e => selectLocale(e, locale)
 		items.push({ element: li, locale, name: localeName })
 		languageSelector.appendChild(li)
@@ -534,7 +544,6 @@ async function populateLanguageSelector() {
 		dataAccessor: item => ({ name: item.name, locale: item.locale }),
 		/**
 		 * 更新回调函数，用于根据过滤后的项目更新显示。
-
 		 * @param {Array<object>} filteredItems - 过滤后的项目列表。
 		 * @returns {void}
 		 */
