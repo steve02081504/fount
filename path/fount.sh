@@ -1368,7 +1368,9 @@ run() {
 	local exit_code=$?
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
-	if [ "$exit_code" -ne 0 ]; then write_taskbar_progress_error; fi
+	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ]; then
+		write_taskbar_progress_error
+	fi
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
 	return $exit_code
 }

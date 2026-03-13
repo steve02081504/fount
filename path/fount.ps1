@@ -939,7 +939,7 @@ function run {
 	finally {
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
-		if ($LastExitCode) { Write-TaskbarProgressError }
+		if ($LastExitCode -and $LastExitCode -ne 130) { Write-TaskbarProgressError }
 	}
 }
 
