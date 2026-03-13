@@ -140,7 +140,7 @@ ${chatLogEntry.content}
 					)).pop().split(/<\/content>\s*<\/message/).shift()
 				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
 					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-				// 清理可能出现的不完整的结束标签
+				text = text.replace(/^\s*<message[^>]*>\s*/, '').replace(/^\s*<content>\s*/, '')
 				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
 				res.content = text
 				return res
