@@ -168,6 +168,10 @@ function rehypeMermaid() {
 		securityLevel: 'loose',
 		suppressErrorRendering: true,
 	})
+	const container = document.getElementById('mermaid-render-container') || document.body.appendChild(Object.assign(document.createElement('div'), {
+		id: 'mermaid-render-container',
+		style: 'position: absolute; top: 0; left: 0;'
+	}))
 
 	return async (tree) => {
 		/** @type {{ node: any, index: number, parent: any }[]} */
@@ -183,15 +187,16 @@ function rehypeMermaid() {
 			targets.push({ node, index, parent })
 		})
 
-		for (const { node, index, parent } of targets) {
+		// 按索引降序处理，避免 splice 使后续索引失效
+		for (const { node, index, parent } of [...targets].sort((a, b) => b.index - a.index)) {
 			const codeNode = node.children?.[0]
 			const mermaidCode = codeNode?.children?.[0]?.value || ''
 			if (!mermaidCode.trim()) continue
 
 			try {
 				const id = `mermaid-${md5(mermaidCode)}`
-				const renderResult = await mermaid.render(id, mermaidCode)
-				const svgString = typeof renderResult === 'string' ? renderResult : renderResult.svg
+				const renderResult = await mermaid.render(id, mermaidCode, container)
+				const svgString = renderResult.svg
 
 				const svgHast = fromHtml(svgString, { fragment: true }).children
 
@@ -199,41 +204,30 @@ function rehypeMermaid() {
 				for (const node of svgHast) {
 					visit(node, 'element', el => {
 						const className = el.properties?.className
-						const classes = Array.isArray(className)
-							? className
-							: className
-								? String(className).split(/\s+/)
-								: []
+						const classes = el.properties?.className?.split?.(/\s+/) ?? el.properties?.className ?? []
 
 						// 整体 SVG：让文字/描边默认跟随 base-content
 						if (el.tagName === 'svg') {
-							el.properties = el.properties || {}
-							const svgClasses = new Set([
-								...(Array.isArray(el.properties.className)
-									? el.properties.className
-									: el.properties.className
-										? String(el.properties.className).split(/\s+/)
-										: []),
-								'text-base-content',
-							])
-							el.properties.className = [...svgClasses]
+							el.properties ??= {}
+							const arr = el.properties?.className?.split?.(/\s+/) ?? el.properties?.className ?? []
+							el.properties.className = [...new Set([...arr, 'text-base-content'])]
 						}
 
 						// 节点矩形：用 neutral 作为背景，neutral-content 作为前景
 						if (el.tagName === 'rect' && classes.some(c => c.includes('node'))) {
-							el.properties = el.properties || {}
+							el.properties ??= {}
 							el.properties.style = 'fill: var(--color-neutral); stroke: var(--color-neutral-content);'
 						}
 
 						// 连线与箭头：使用 base-content 作为描边颜色
 						if (el.tagName === 'path' && classes.some(c => c.includes('edge') || c.includes('arrow'))) {
-							el.properties = el.properties || {}
+							el.properties ??= {}
 							el.properties.style = 'stroke: var(--color-base-content); fill: none;'
 						}
 
 						// 文本：统一使用 base-content
 						if (el.tagName === 'text') {
-							el.properties = el.properties || {}
+							el.properties ??= {}
 							el.properties.style = 'fill: var(--color-base-content);'
 						}
 					})
