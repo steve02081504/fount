@@ -182,7 +182,7 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
  * @returns {boolean} 是否为 API key 非法错误。
  */
 function isGeminiApiKeyError(err) {
-	if (!err || typeof err !== 'object') return false
+	if (!err) return false
 	const msg = err.message || err.cause?.message || String(err)
 	const isApiError = err.status === 400 || err.name === 'ApiError'
 	const hasApiKeyInvalid = /API key not valid|API_KEY_INVALID|INVALID_ARGUMENT/.test(msg) ||
