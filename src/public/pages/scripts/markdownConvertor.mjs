@@ -3,8 +3,8 @@ import { toHtml } from 'https://esm.sh/hast-util-to-html'
 import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
+import mermaid from 'https://esm.sh/mermaid'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
-import rehypeMermaid from 'https://esm.sh/rehype-mermaid'
 import rehypePrettyCode from 'https://esm.sh/rehype-pretty-code'
 import rehypeStringify from 'https://esm.sh/rehype-stringify'
 import remarkBreaks from 'https://esm.sh/remark-breaks'
@@ -153,6 +153,146 @@ function rehypeAddDaisyuiClass() {
 			}
 			node.properties.className = [...newClasses, ...existingClasses]
 		})
+	}
+}
+
+/**
+ * 渲染 Mermaid 图表为 SVG。
+ * @returns {Function} - Unified.js 插件。
+ */
+function rehypeMermaid() {
+	mermaid.initialize({
+		startOnLoad: false,
+		theme: 'base',
+		securityLevel: 'loose',
+		suppressErrorRendering: true,
+		themeCSS: /* css */ `
+.node rect, .node circle, .node polygon, .node ellipse, .node path,
+.cluster rect, .cluster polygon,
+.section0 rect, .section1 rect, .section2 rect, .section3 rect,
+.actor rect, .actor line,
+.title rect, .title polygon,
+g.classGroup rect, g.stateGroup rect, .statediagram-cluster rect {
+	fill: var(--color-base-200) !important;
+	stroke: var(--color-base-content) !important;
+	stroke-opacity: 0.35 !important;
+}
+
+.title rect, .title polygon,
+g.stateGroup .composit, .statediagram-cluster .inner {
+	fill: var(--color-base-100) !important;
+}
+.statediagram-cluster.statediagram-cluster-alt .inner { fill: var(--color-base-300) !important; }
+
+.nodeLabel, .node .label, .edgeLabel, .cluster-label, .label span,
+.title .label, .title text, g.stateGroup text, .stateLabel text,
+.statediagramTitleText, .classTitleText {
+	fill: var(--color-base-content) !important;
+	color: var(--color-base-content) !important;
+}
+
+.edgePath path, .edgePath line, .marker path, .arrowheadPath,
+.relation, .transition, g.stateGroup line, .statediagram-cluster .divider,
+[id$="-compositionStart"], [id$="-compositionEnd"],
+[id$="-dependencyStart"], [id$="-dependencyEnd"],
+[id$="-extensionStart"], [id$="-extensionEnd"],
+[id$="-aggregationStart"], [id$="-aggregationEnd"],
+[id$="-lollipopStart"], [id$="-lollipopEnd"],
+defs [id$="-barbEnd"] {
+	stroke: var(--color-base-content) !important;
+	fill: var(--color-base-content) !important;
+}
+[id$="-extensionStart"], [id$="-extensionEnd"], [id$="-aggregationStart"], [id$="-aggregationEnd"] { fill: transparent !important; }
+[id$="-lollipopStart"], [id$="-lollipopEnd"] { fill: var(--color-base-200) !important; }
+
+.edgeLabel .label rect, .stateLabel .box, .classLabel .box {
+	fill: var(--color-base-200) !important;
+	opacity: 0.5 !important;
+	stroke: none !important;
+}
+.divider, g.classGroup line { stroke: var(--color-base-content) !important; stroke-opacity: 0.35 !important; }
+.statediagram-state rect.divider { stroke-dasharray: 10,10 !important; fill: var(--color-base-300) !important; }
+
+.note rect, .note polygon, .state-note, .statediagram-note rect {
+	fill: var(--color-warning) !important;
+	stroke: var(--color-warning) !important;
+}
+.note .label, .note text, .state-note text, .statediagram-note text, .statediagram-note .nodeLabel {
+	fill: var(--color-warning-content) !important;
+	color: var(--color-warning-content) !important;
+}
+
+.activation0, .activation1, .activation2,
+g.stateGroup .alt-composit, .statediagram-state rect.divider {
+	fill: var(--color-base-300) !important;
+}
+
+.node circle.state-start, .node .fork-join {
+	fill: var(--color-primary) !important;
+	stroke: var(--color-primary) !important;
+}
+.node circle.state-end, .end-state-inner {
+	fill: var(--color-base-content) !important;
+	stroke: var(--color-base-100) !important;
+	stroke-width: 1.5 !important;
+}
+.actor-man line { stroke: var(--color-base-content) !important; }
+
+.text-muted {
+	fill: var(--color-base-content) !important;
+	color: var(--color-base-content) !important;
+	opacity: 0.7;
+}
+.statediagram-state rect.basic { rx: 5px !important; ry: 5px !important; }
+.statediagram-cluster rect.outer { rx: 5px !important; ry: 5px !important; }
+g.classGroup .title { font-weight: bolder !important; }
+.classTitle { font-weight: bolder !important; }
+`,
+	})
+	const container = document.getElementById('mermaid-render-container') || document.body.appendChild(Object.assign(document.createElement('div'), {
+		id: 'mermaid-render-container',
+		style: 'position: absolute; top: 0; left: 0;'
+	}))
+
+	return async (tree) => {
+		/** @type {{ node: any, index: number, parent: any }[]} */
+		const targets = []
+
+		visit(tree, 'element', (node, index, parent) => {
+			if (!parent || node.tagName !== 'pre') return
+			const codeNode = node.children?.[0]
+			if (!codeNode || codeNode.tagName !== 'code') return
+			const className = codeNode.properties?.className || []
+			if (!className.includes('language-mermaid')) return
+
+			targets.push({ node, index, parent })
+		})
+
+		// 按索引降序处理，避免 splice 使后续索引失效
+		for (const { node, index, parent } of [...targets].sort((a, b) => b.index - a.index)) {
+			const codeNode = node.children?.[0]
+			const mermaidCode = codeNode?.children?.[0]?.value || ''
+			if (!mermaidCode.trim()) continue
+
+			try {
+				const id = `mermaid-${md5(mermaidCode)}`
+				const renderResult = await mermaid.render(id, mermaidCode, container)
+				const svgString = renderResult.svg
+
+				const svgHast = fromHtml(svgString, { fragment: true }).children
+
+				parent.children.splice(index, 1, ...svgHast)
+			} catch (error) {
+				console.error('Mermaid diagram render failed:', error)
+				const fallback = h('pre.mermaid-error-fallback', `\
+❌ Mermaid Diagram Failed to Render
+Error: ${error.message}
+--- Diagram Source ---
+${mermaidCode}`
+				)
+				parent.children[index] = fallback
+			}
+		}
 	}
 }
 
@@ -874,28 +1014,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeDiscordSpoiler)
-		.use(rehypeMermaid, {
-			dark: true,
-			/**
-			 * Mermaid 错误回退。
-			 * @param {object} element - 元素。
-			 * @param {string} diagram - 图表。
-			 * @param {Error} error - 错误。
-			 * @returns {object} - 回退元素。
-			 */
-			errorFallback: (element, diagram, error) => {
-				// https://github.com/remcohaszing/rehype-mermaid/issues/31
-				document.getElementById('dmermaid-0')?.remove()
-				document.getElementById('dmermaid-dark-0')?.remove()
-
-				return h('pre.mermaid-error-fallback', `\
-❌ Mermaid Diagram Failed to Render
-Error: ${error.message}
---- Diagram Source ---
-${diagram}`
-				)
-			}
-		})
+		.use(rehypeMermaid)
 		.use(rehypePrettyCode, {
 			theme: {
 				dark: 'github-dark-dimmed',
