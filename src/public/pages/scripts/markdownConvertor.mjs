@@ -4,7 +4,6 @@ import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
-import rehypeMermaid from 'https://esm.sh/rehype-mermaid'
 import rehypePrettyCode from 'https://esm.sh/rehype-pretty-code'
 import rehypeStringify from 'https://esm.sh/rehype-stringify'
 import remarkBreaks from 'https://esm.sh/remark-breaks'
@@ -15,6 +14,7 @@ import remarkRehype from 'https://esm.sh/remark-rehype'
 import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
+import mermaid from 'https://esm.sh/mermaid'
 
 import { geti18n } from './i18n.mjs'
 import { onThemeChange } from './theme.mjs'
@@ -153,6 +153,104 @@ function rehypeAddDaisyuiClass() {
 			}
 			node.properties.className = [...newClasses, ...existingClasses]
 		})
+	}
+}
+
+/**
+ * 渲染 Mermaid 图表为 SVG。
+ * @returns {Function} - Unified.js 插件。
+ */
+function rehypeMermaid() {
+	// 使用 Mermaid 内建主题生成 SVG，但实际颜色在后处理中用 CSS 变量覆盖
+	mermaid.initialize({
+		startOnLoad: false,
+		theme: 'base',
+		securityLevel: 'loose',
+		suppressErrorRendering: true,
+	})
+
+	return async (tree) => {
+		/** @type {{ node: any, index: number, parent: any }[]} */
+		const targets = []
+
+		visit(tree, 'element', (node, index, parent) => {
+			if (!parent || node.tagName !== 'pre') return
+			const codeNode = node.children?.[0]
+			if (!codeNode || codeNode.tagName !== 'code') return
+			const className = codeNode.properties?.className || []
+			if (!className.includes('language-mermaid')) return
+
+			targets.push({ node, index, parent })
+		})
+
+		for (const { node, index, parent } of targets) {
+			const codeNode = node.children?.[0]
+			const mermaidCode = codeNode?.children?.[0]?.value || ''
+			if (!mermaidCode.trim()) continue
+
+			try {
+				const id = `mermaid-${md5(mermaidCode)}`
+				const renderResult = await mermaid.render(id, mermaidCode)
+				const svgString = typeof renderResult === 'string' ? renderResult : renderResult.svg
+
+				const svgHast = fromHtml(svgString, { fragment: true }).children
+
+				// 使用 DaisyUI / Tailwind 的 CSS 变量为 Mermaid SVG 着色，以支持主题切换
+				for (const node of svgHast) {
+					visit(node, 'element', el => {
+						const className = el.properties?.className
+						const classes = Array.isArray(className)
+							? className
+							: className
+								? String(className).split(/\s+/)
+								: []
+
+						// 整体 SVG：让文字/描边默认跟随 base-content
+						if (el.tagName === 'svg') {
+							el.properties = el.properties || {}
+							const svgClasses = new Set([
+								...(Array.isArray(el.properties.className)
+									? el.properties.className
+									: el.properties.className
+										? String(el.properties.className).split(/\s+/)
+										: []),
+								'text-base-content',
+							])
+							el.properties.className = [...svgClasses]
+						}
+
+						// 节点矩形：用 neutral 作为背景，neutral-content 作为前景
+						if (el.tagName === 'rect' && classes.some(c => c.includes('node'))) {
+							el.properties = el.properties || {}
+							el.properties.style = 'fill: var(--color-neutral); stroke: var(--color-neutral-content);'
+						}
+
+						// 连线与箭头：使用 base-content 作为描边颜色
+						if (el.tagName === 'path' && classes.some(c => c.includes('edge') || c.includes('arrow'))) {
+							el.properties = el.properties || {}
+							el.properties.style = 'stroke: var(--color-base-content); fill: none;'
+						}
+
+						// 文本：统一使用 base-content
+						if (el.tagName === 'text') {
+							el.properties = el.properties || {}
+							el.properties.style = 'fill: var(--color-base-content);'
+						}
+					})
+				}
+
+				parent.children.splice(index, 1, ...svgHast)
+			} catch (error) {
+				console.error('Mermaid diagram render failed:', error)
+				const fallback = h('pre.mermaid-error-fallback', `\
+❌ Mermaid Diagram Failed to Render
+Error: ${error.message}
+--- Diagram Source ---
+${mermaidCode}`
+				)
+				parent.children[index] = fallback
+			}
+		}
 	}
 }
 
@@ -874,28 +972,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeDiscordSpoiler)
-		.use(rehypeMermaid, {
-			dark: true,
-			/**
-			 * Mermaid 错误回退。
-			 * @param {object} element - 元素。
-			 * @param {string} diagram - 图表。
-			 * @param {Error} error - 错误。
-			 * @returns {object} - 回退元素。
-			 */
-			errorFallback: (element, diagram, error) => {
-				// https://github.com/remcohaszing/rehype-mermaid/issues/31
-				document.getElementById('dmermaid-0')?.remove()
-				document.getElementById('dmermaid-dark-0')?.remove()
-
-				return h('pre.mermaid-error-fallback', `\
-❌ Mermaid Diagram Failed to Render
-Error: ${error.message}
---- Diagram Source ---
-${diagram}`
-				)
-			}
-		})
+		.use(rehypeMermaid)
 		.use(rehypePrettyCode, {
 			theme: {
 				dark: 'github-dark-dimmed',
