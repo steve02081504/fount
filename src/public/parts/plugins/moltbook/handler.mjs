@@ -117,10 +117,29 @@ function ensureApiKey(request) {
 }
 
 /**
+ * 构建带可选参数的查询字符串。
+ * @param {Record<string, string | undefined>} params - 参数对象，值为 undefined 时跳过。
+ * @returns {string} 已编码的查询字符串（含前导 ?，若无参数则为空字符串）。
+ */
+function buildQuery(params) {
+	const parts = []
+	for (const [k, v] of Object.entries(params))
+		if (v) parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+	return parts.length ? `?${parts.join('&')}` : ''
+}
+
+/**
  * 各 moltbook 标签的处理函数，仅包含需要 API 的标签；register / bind_key 在 runTag 内单独处理。
  * @type {Record<string, (request: TagRequest) => Promise<string | null>>}
  */
 const HANDLERS = {
+	/**
+	 * 获取仪表盘概览（推荐每次签到优先调用）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	home: (request) => moltbookJson(request.apiKey, 'home').then(formatResult),
+
 	/**
 	 * 查询代理状态。
 	 * @param {TagRequest} request - 单次标签请求。
@@ -161,7 +180,21 @@ const HANDLERS = {
 		}).then(formatResult),
 
 	/**
-	 * 发帖。
+	 * 设置账号所有者邮箱（让人类能登录管理后台）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	setup_owner_email: (request) => {
+		const email = trimTagBody(request.tagBody)
+		if (!email) return Promise.resolve('setup_owner_email 需在标签体内写邮箱，例如 <moltbook_setup_owner_email>your@email.com</moltbook_setup_owner_email>')
+		return moltbookJson(request.apiKey, 'agents/me/setup-owner-email', {
+			method: 'POST',
+			body: { email },
+		}).then(formatResult)
+	},
+
+	/**
+	 * 发帖（支持正文帖和链接帖）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
@@ -172,30 +205,36 @@ const HANDLERS = {
 		const url = request.attributes.url ?? ''
 		if (!url && !content)
 			return Promise.resolve('发帖：链接帖用 <moltbook_post submolt="..." title="..." url="链接" />，正文帖用 <moltbook_post submolt="..." title="...">正文</moltbook_post>')
-		const body = url ? { submolt, title, url } : { submolt, title, content }
+		const body = url ? { submolt_name: submolt, title, url } : { submolt_name: submolt, title, content }
 		return moltbookJson(request.apiKey, 'posts', { method: 'POST', body }).then(formatResult)
 	},
 
 	/**
-	 * 获取帖子流。
+	 * 获取帖子流（支持分页游标）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
 	feed: (request) => {
-		const sort = request.attributes.sort ?? 'hot'
-		const limit = request.attributes.limit ?? '25'
-		return moltbookJson(request.apiKey, `posts?sort=${encodeURIComponent(sort)}&limit=${encodeURIComponent(limit)}`).then(formatResult)
+		const qs = buildQuery({
+			sort: request.attributes.sort ?? 'hot',
+			limit: request.attributes.limit ?? '25',
+			cursor: request.attributes.cursor,
+		})
+		return moltbookJson(request.apiKey, `posts${qs}`).then(formatResult)
 	},
 
 	/**
-	 * 获取指定 submolt 的帖子流。
+	 * 获取指定 submolt 的帖子流（支持分页游标）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
 	submolt_feed: (request) => {
 		const submolt = request.attributes.submolt ?? 'general'
-		const sort = request.attributes.sort ?? 'new'
-		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(submolt)}/feed?sort=${encodeURIComponent(sort)}`).then(formatResult)
+		const qs = buildQuery({
+			sort: request.attributes.sort ?? 'new',
+			cursor: request.attributes.cursor,
+		})
+		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(submolt)}/feed${qs}`).then(formatResult)
 	},
 
 	/**
@@ -230,21 +269,25 @@ const HANDLERS = {
 		const content = trimTagBody(request.tagBody)
 		const parent_id = request.attributes.parent_id ?? ''
 		if (!id || !content)
-			return Promise.resolve('comment 需要 post_id 属性与标签体评论内容，例如 <moltbook_comment post_id="POST_ID">评论</moltbook_comment>')
+			return Promise.resolve('评论需要 post_id 属性与标签体评论内容，例如 <moltbook_comment post_id="POST_ID">评论</moltbook_comment>')
 		const body = parent_id ? { content, parent_id } : { content }
 		return moltbookJson(request.apiKey, `posts/${encodeURIComponent(id)}/comments`, { method: 'POST', body }).then(formatResult)
 	},
 
 	/**
-	 * 获取帖子评论列表。
+	 * 获取帖子评论列表（支持分页游标）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
 	comments: (request) => {
 		const id = getPostId(request.attributes)
 		if (!id) return Promise.resolve('comments 需要 post_id 或 id。')
-		const sort = request.attributes.sort ?? 'top'
-		return moltbookJson(request.apiKey, `posts/${encodeURIComponent(id)}/comments?sort=${encodeURIComponent(sort)}`).then(formatResult)
+		const qs = buildQuery({
+			sort: request.attributes.sort ?? 'best',
+			limit: request.attributes.limit,
+			cursor: request.attributes.cursor,
+		})
+		return moltbookJson(request.apiKey, `posts/${encodeURIComponent(id)}/comments${qs}`).then(formatResult)
 	},
 
 	/**
@@ -301,9 +344,27 @@ const HANDLERS = {
 		const description = trimTagBody(request.tagBody)
 		if (!name)
 			return Promise.resolve('create_submolt 需要 name 属性与标签体描述，例如 <moltbook_create_submolt name="xxx" display_name="显示名">描述</moltbook_create_submolt>')
-		return moltbookJson(request.apiKey, 'submolts', {
-			method: 'POST',
-			body: { name, display_name, description },
+		const body = { name, display_name, description }
+		if (request.attributes.allow_crypto === 'true') body.allow_crypto = true
+		return moltbookJson(request.apiKey, 'submolts', { method: 'POST', body }).then(formatResult)
+	},
+
+	/**
+	 * 更新 submolt 设置（版主/所有者专用）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	update_submolt: (request) => {
+		const name = request.attributes.name ?? ''
+		if (!name) return Promise.resolve('update_submolt 需要 name 属性。')
+		const body = {}
+		const desc = trimTagBody(request.tagBody)
+		if (desc) body.description = desc
+		if (request.attributes.banner_color) body.banner_color = request.attributes.banner_color
+		if (request.attributes.theme_color) body.theme_color = request.attributes.theme_color
+		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(name)}/settings`, {
+			method: 'PATCH',
+			body,
 		}).then(formatResult)
 	},
 
@@ -330,6 +391,47 @@ const HANDLERS = {
 	},
 
 	/**
+	 * 列出 submolt 版主。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	list_mods: (request) => {
+		const name = getSubmoltName(request.attributes)
+		if (!name) return Promise.resolve('list_mods 需要 name 或 submolt 属性。')
+		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(name)}/moderators`).then(formatResult)
+	},
+
+	/**
+	 * 添加 submolt 版主（所有者专用）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	add_mod: (request) => {
+		const name = getSubmoltName(request.attributes)
+		const agent = request.attributes.agent ?? trimTagBody(request.tagBody)
+		if (!name || !agent) return Promise.resolve('add_mod 需要 submolt/name 属性与 agent（代理名）属性或标签体。')
+		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(name)}/moderators`, {
+			method: 'POST',
+			body: { agent_name: agent, role: 'moderator' },
+		}).then(formatResult)
+	},
+
+	/**
+	 * 移除 submolt 版主（所有者专用）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	remove_mod: (request) => {
+		const name = getSubmoltName(request.attributes)
+		const agent = request.attributes.agent ?? trimTagBody(request.tagBody)
+		if (!name || !agent) return Promise.resolve('remove_mod 需要 submolt/name 属性与 agent（代理名）属性或标签体。')
+		return moltbookJson(request.apiKey, `submolts/${encodeURIComponent(name)}/moderators`, {
+			method: 'DELETE',
+			body: { agent_name: agent },
+		}).then(formatResult)
+	},
+
+	/**
 	 * 关注指定代理。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
@@ -352,31 +454,80 @@ const HANDLERS = {
 	},
 
 	/**
-	 * 获取个人时间线。
+	 * 获取个人时间线（订阅+关注，支持 filter 和分页游标）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
 	personal_feed: (request) => {
-		const sort = request.attributes.sort ?? 'hot'
-		const limit = request.attributes.limit ?? '25'
-		return moltbookJson(request.apiKey, `feed?sort=${encodeURIComponent(sort)}&limit=${encodeURIComponent(limit)}`).then(formatResult)
+		const qs = buildQuery({
+			sort: request.attributes.sort ?? 'hot',
+			limit: request.attributes.limit ?? '25',
+			filter: request.attributes.filter,
+			cursor: request.attributes.cursor,
+		})
+		return moltbookJson(request.apiKey, `feed${qs}`).then(formatResult)
 	},
 
 	/**
-	 * 搜索。
+	 * 语义搜索（支持分页游标）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
 	search: (request) => {
 		const query = trimTagBody(request.tagBody)
 		if (!query) return Promise.resolve('search 需在标签体内写查询，例如 <moltbook_search>自然语言查询</moltbook_search>')
-		const type = request.attributes.type ?? 'all'
-		const limit = request.attributes.limit ?? '20'
-		return moltbookJson(request.apiKey, `search?q=${encodeURIComponent(query)}&type=${encodeURIComponent(type)}&limit=${encodeURIComponent(limit)}`).then(formatResult)
+		const qs = buildQuery({
+			q: query,
+			type: request.attributes.type ?? 'all',
+			limit: request.attributes.limit ?? '20',
+			cursor: request.attributes.cursor,
+		})
+		return moltbookJson(request.apiKey, `search${qs}`).then(formatResult)
 	},
 
 	/**
-	 * 置顶帖子。
+	 * 获取通知列表。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	notifications: (request) => moltbookJson(request.apiKey, 'notifications').then(formatResult),
+
+	/**
+	 * 将某帖相关通知标记为已读。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	mark_read_post: (request) => {
+		const id = getPostId(request.attributes)
+		if (!id) return Promise.resolve('mark_read_post 需要 id 或 post_id。')
+		return moltbookJson(request.apiKey, `notifications/read-by-post/${encodeURIComponent(id)}`, { method: 'POST' }).then(formatResult)
+	},
+
+	/**
+	 * 将全部通知标记为已读。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	mark_read_all: (request) => moltbookJson(request.apiKey, 'notifications/read-all', { method: 'POST' }).then(formatResult),
+
+	/**
+	 * 手动提交验证挑战答案（自动解题失败时使用）。
+	 * @param {TagRequest} request - 单次标签请求。
+	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
+	 */
+	verify: (request) => {
+		const code = request.attributes.code ?? request.attributes.verification_code ?? ''
+		const answer = trimTagBody(request.tagBody)
+		if (!code || !answer)
+			return Promise.resolve('verify 需要 code 属性与标签体答案，例如 <moltbook_verify code="moltbook_verify_xxx">15.00</moltbook_verify>')
+		return moltbookJson(request.apiKey, 'verify', {
+			method: 'POST',
+			body: { verification_code: code, answer },
+		}).then(formatResult)
+	},
+
+	/**
+	 * 置顶帖子（版主专用）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */
@@ -387,7 +538,7 @@ const HANDLERS = {
 	},
 
 	/**
-	 * 取消置顶帖子。
+	 * 取消置顶帖子（版主专用）。
 	 * @param {TagRequest} request - 单次标签请求。
 	 * @returns {Promise<string | null>} 要写入日志的内容或 null。
 	 */

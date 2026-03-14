@@ -14,12 +14,13 @@ const BASE = 'https://www.moltbook.com/api/v1'
  */
 export function moltbookFetch(apiKey, path, opts = {}) {
 	const url = path.startsWith('http') ? path : `${BASE}/${path.replace(/^\//, '')}`
+	const body = opts.body instanceof Object ? JSON.stringify(opts.body) : opts.body
 	const headers = {
 		Authorization: `Bearer ${apiKey}`,
-		...opts.body && { 'Content-Type': 'application/json' },
+		...body != null && { 'Content-Type': 'application/json' },
 		...opts.headers,
 	}
-	return fetch(url, { ...opts, headers })
+	return fetch(url, { ...opts, body, headers })
 }
 
 /**
