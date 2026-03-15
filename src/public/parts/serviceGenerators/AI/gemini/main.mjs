@@ -711,7 +711,7 @@ ${is_ImageGeneration
 					if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
 						text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
 					text = text.replace(/^\s*<message[^>]*>\s*/, '').replace(/^\s*<content>\s*/, '')
-					text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+					text = text.replace(/<\/content\s*>/, '').replace(/<\/message[^>]*>/, '').replace(/<\/\s*$/, '')
 					// 清理 declare 标签
 					text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
 					res.content = text
