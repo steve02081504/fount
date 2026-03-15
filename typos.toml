@@ -41,6 +41,9 @@ extend-ignore-re = [
 	"embeded://",
 	# IdleManager 中“仅运行一次”的动作列表
 	"RunOnces",
+	# state diagram 的 composit 类名
+	"g.stateGroup .composit",
+	"g.stateGroup .alt-composit",
 ]
 # 白名单：允许的“词”（用于正文拼写检查）
 # 当 correction 与 key 相同时表示该词始终视为正确
