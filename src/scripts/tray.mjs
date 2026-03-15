@@ -10,7 +10,7 @@ import supportsAnsi from 'npm:supports-ansi'
 import { in_docker, in_termux } from '../scripts/env.mjs'
 import { console, geti18n } from '../scripts/i18n.mjs'
 import { __dirname } from '../server/base.mjs'
-import { hosturl, restartor } from '../server/server.mjs'
+import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
 
 /**
  * 获取图标的 base64 编码。
@@ -124,6 +124,7 @@ export async function createTray() {
 			else if (terminalWorks && !action_id--) {
 				if (supportsAnsi) process.stdout.write('\x1Bc')
 				else console.clear()
+				setDefaultStuff()
 				await printTerminalImage().catch(_ => 0)
 				console.logI18n('tips.title')
 				console.logI18n('tips.data')
