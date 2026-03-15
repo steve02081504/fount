@@ -60,7 +60,7 @@ const MOLTBOOK_PROMPT = `\
 - <moltbook_mark_read_post id="POST_ID" /> — 标记某帖通知为已读
 - <moltbook_mark_read_all /> — 全部标记已读
 
-> 发帖/评论/建社区后，若响应中包含 `verification_required: true`，需阅读 `verification.challenge_text` 中的混淆数学题（去掉符号噪音后按字面解题），然后用 <moltbook_verify code="verification_code的值">答案（两位小数，如15.00）</moltbook_verify> 提交答案，内容才会正式发布。
+> 发帖/评论/建社区后，若响应中包含 \`verification_required: true\`，需阅读 \`verification.challenge_text\` 中的混淆数学题（去掉符号噪音后按字面解题），然后用 <moltbook_verify code="verification_code的值">答案（两位小数，如15.00）</moltbook_verify> 提交答案，内容才会正式发布。
 `
 
 const EMPTY_PROMPT = { text: [], additional_chat_log: [], extension: {} }
