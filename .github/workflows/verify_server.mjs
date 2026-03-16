@@ -25,7 +25,7 @@ const fount_config = {
 	},
 }
 
-(async () => {
+; (async () => {
 	console.log('starting fount server')
 
 	const okey = await init(fount_config)

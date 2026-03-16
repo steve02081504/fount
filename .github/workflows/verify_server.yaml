@@ -26,6 +26,33 @@ jobs:
         with:
           path: ./node_modules
           key: fount-CI-node-modules
-      - name: Start server and ping api/ping
+      - name: Install server dependencies
         run: |
-          deno run --allow-scripts --allow-all --unstable-npm-lazy-caching --node-modules-dir=auto --v8-flags=--expose-gc ./.github/workflows/verify_server.mjs
+          for i in $(seq 1 13); do
+            deno install --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
+            echo "Attempt $i/13 failed, retrying..."
+          done
+      - name: Start server and ping api/ping
+        run: deno run --allow-scripts --allow-all -c "./deno.json" --v8-flags=--expose-gc ./.github/workflows/verify_server.mjs
+      - name: Delete Previous Cache # 删除之前的缓存确保缓存随着项目运行而更新
+        continue-on-error: true
+        shell: bash
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "fount-CI-node-modules" --confirm
+          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ./node_modules
+          key: fount-CI-node-modules
+      - name: get deno dir
+        shell: bash
+        run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}
