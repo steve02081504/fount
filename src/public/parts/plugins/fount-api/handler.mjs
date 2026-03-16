@@ -51,7 +51,7 @@ async function ensureApiKey(username, charId) {
 
 /**
  * fount API ReplyHandler：检查是否需要自动申请 API key。
- * @type {import('../../../../decl/PluginAPI.ts').ReplyHandler_t}
+ * @type {import('../../../../../src/decl/PluginAPI.ts').ReplyHandler_t}
  * @returns {Promise<boolean>} 若处理了则返回 false（不需要重新生成）。
  */
 export async function fountApiReplyHandler(reply, args) {

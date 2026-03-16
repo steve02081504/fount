@@ -126,7 +126,7 @@ export default {
 		chat: {
 			/**
 			 * 获取提示。
-			 * @param {import('../../../../../src/public/parts/shells:chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
+			 * @param {import('../../../../../src/public/parts/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
 			 * @returns {Promise<{text: {content: string, description: string, important: number}[], additional_chat_log: [], extension: {}}>} 返回一个包含提示信息的 Promise。
 			 */
 			async GetPrompt(args) {
@@ -158,7 +158,7 @@ export default {
 			},
 			/**
 			 * 获取问候语。
-			 * @param {import('../../../../../src/public/parts/shells:chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
+			 * @param {import('../../../../../src/public/parts/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
 			 * @param {number} index - 索引。
 			 * @returns {Promise<{content: string}>} 返回一个包含问候语内容的 Promise。
 			 */
@@ -174,8 +174,8 @@ export default {
 			},
 			/**
 			 * 获取回复。
-			 * @param {import('../../../../../src/public/parts/shells:chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
-			 * @returns {Promise<import("../../../../../src/public/parts/shells:chat/decl/chatLog.ts").chatReply_t>} 返回一个包含聊天回复的 Promise。
+			 * @param {import('../../../../../src/public/parts/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
+			 * @returns {Promise<import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t>} 返回一个包含聊天回复的 Promise。
 			 */
 			async GetReply(args) {
 				if (!AIsource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
@@ -183,7 +183,7 @@ export default {
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/parts/shells:chat/decl/chatLog.ts").chatReply_t} */
+				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
@@ -194,7 +194,7 @@ export default {
 				// 构建插件可能需要的追加上下文函数
 				/**
 				 * 添加长时间日志。
-				 * @param {import('../../../../../src/public/parts/shells:chat/decl/chatLog.ts').chatLogEntry_t} entry - 聊天日志条目。
+				 * @param {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} entry - 聊天日志条目。
 				 * @returns {void}
 				 */
 				function AddLongTimeLog(entry) {
@@ -208,7 +208,7 @@ export default {
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
-				 * @type {import('../../../../../src/public/parts/shells:chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
 				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
@@ -218,7 +218,7 @@ export default {
 
 				/**
 				 * 更新回复预览。
-				 * @param {import('../../../../../../src/public/parts/shells:chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
+				 * @param {import('../../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
 				 * @returns {void}
 				 */
 				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)

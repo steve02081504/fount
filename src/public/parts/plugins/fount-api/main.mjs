@@ -10,7 +10,7 @@ let pluginData = { apikeys: {} }
 
 /**
  * fount API 插件主模块。
- * @returns {import('../../../../decl/pluginAPI.ts').PluginAPI_t} 插件 API 对象。
+ * @returns {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} 插件 API 对象。
  */
 export default {
 	info,

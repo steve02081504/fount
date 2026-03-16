@@ -442,8 +442,8 @@ export async function codeExecutionReplyHandler(result, args) {
 
 /**
  * 获取代码运行器的预览更新器。
- * @param {import("../../../../decl/public/shells/chat/decl/chatLog.ts").CharReplyPreviewUpdater_t} [next] - 上一个更新器。
- * @returns {import("../../../../decl/public/shells/chat/decl/chatLog.ts").CharReplyPreviewUpdater_t} - 新的更新器。
+ * @param {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").CharReplyPreviewUpdater_t} [next] - 上一个更新器。
+ * @returns {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").CharReplyPreviewUpdater_t} - 新的更新器。
  */
 export function GetCodeExecutionPreviewUpdater(next) {
 	const toolDefs = [

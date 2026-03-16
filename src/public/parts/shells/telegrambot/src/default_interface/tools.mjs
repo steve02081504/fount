@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { getPartInfo } from '../../../../../scripts/locale.mjs'
+import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 
 /**
  * @typedef {import('npm:telegraf/typings/core/types/typegram').UserFromGetMe} TelegramBotInfo
@@ -11,7 +11,7 @@ import { getPartInfo } from '../../../../../scripts/locale.mjs'
 /**
  * @typedef {import('npm:telegraf/typings/core/types/typegram').MessageEntity} TelegramMessageEntity
  */
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 

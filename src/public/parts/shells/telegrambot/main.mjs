@@ -25,7 +25,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * @type {import('../../../../decl/shell.ts').shell_t}
+ * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {
 	/**

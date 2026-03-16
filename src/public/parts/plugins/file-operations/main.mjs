@@ -7,7 +7,7 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
 
 /**
  * 文件操作插件主模块。
- * @returns {import('../../../../decl/pluginAPI.ts').PluginAPI_t} 插件 API 对象。
+ * @returns {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} 插件 API 对象。
  */
 export default {
 	info,

@@ -606,7 +606,7 @@ const MOLTBOOK_TAG_REGEX = /<moltbook_(?<tag>\w+)(?<attrs>\s*[^>]*?)(?:\/>|>(?<b
 
 /**
  * Moltbook ReplyHandler：解析 result.content 中所有 <moltbook_*> 标签。
- * @type {import('../../../../decl/PluginAPI.ts').ReplyHandler_t}
+ * @type {import('../../../../../src/decl/PluginAPI.ts').ReplyHandler_t}
  * @returns {Promise<boolean>} 若处理了标签并需重新生成则为 true，否则 false。
  */
 export async function moltbookReplyHandler(reply, args) {

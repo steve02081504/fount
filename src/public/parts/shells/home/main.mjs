@@ -6,7 +6,7 @@ import { onPartInstalled, onPartUninstalled } from './src/home.mjs'
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
- * @type {import('../../../../decl/shell.ts').shell_t}
+ * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {
 	info,

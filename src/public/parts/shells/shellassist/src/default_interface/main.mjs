@@ -1,14 +1,14 @@
-import { localhostLocales } from '../../../../../../src/scripts/i18n.mjs'
-import { getPartInfo } from '../../../../../scripts/locale.mjs'
-import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
+import { localhostLocales } from '../../../../../../../src/scripts/i18n.mjs'
+import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
+import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/server/parts_loader.mjs'
 
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { GetShellWorld } from './world.mjs'
-/** @typedef {import('../../../../../../src/public/parts/shells:chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
+/** @typedef {import('../../../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 /**
  * 获取默认的 ShellAssist 接口。
- * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} char_API - 角色 API。
+ * @param {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} char_API - 角色 API。
  * @param {string} username - 用户名。
  * @param {string} char_name - 角色名称。
  * @returns {object} - ShellAssist 接口。

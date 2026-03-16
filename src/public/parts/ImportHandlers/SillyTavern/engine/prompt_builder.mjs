@@ -7,10 +7,10 @@ const DEFAULT_DEPTH = 0
 
 /**
  * 提示词构建器
- * @param {import('../../../../decl/prompt_struct.ts').prompt_struct_t} arg 参数
+ * @param {import('../../../../../../src/decl/prompt_struct.ts').prompt_struct_t} arg 参数
  * @param {v2CharData} charData 角色数据
  * @param {string} modelName 模型名称
- * @returns {import('../../../../decl/prompt_struct.ts').single_part_prompt_t} 构建好的提示结构部分。
+ * @returns {import('../../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} 构建好的提示结构部分。
  */
 export function promptBuilder(
 	arg,
@@ -134,7 +134,7 @@ export function promptBuilder(
 	mes_examples = [...before_EMEntries, ...mes_examples, ...after_EMEntries].filter(e => e)
 	aret.mes_examples = mes_examples
 
-	/** @type {import('../../../../decl/prompt_struct.ts').single_part_prompt_t} */
+	/** @type {import('../../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} */
 	const char_prompt_result = {
 		text: [],
 		additional_chat_log: additional_chat_log.map(e => ({

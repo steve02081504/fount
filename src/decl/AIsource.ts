@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { chatReply_t } from '../public/shells/chat/decl/chatLog.ts'
+import { chatReply_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { info_t, locale_t } from './basedefs.ts'
 import { prompt_struct_t } from './prompt_struct.ts'

@@ -67,8 +67,8 @@ async function getFileObjFormPathOrUrl(pathOrUrl) {
 		return { name, buffer, mime_type }
 	}
 }
-/** @typedef {import("../../../../decl/pluginAPI.ts").ReplyHandler_t} ReplyHandler_t */
-/** @typedef {import("../../../../decl/public/shells/chat/decl/chatLog.ts").chatLogEntry_t} chatLogEntry_t */
+/** @typedef {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} ReplyHandler_t */
+/** @typedef {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatLogEntry_t} chatLogEntry_t */
 
 /**
  * 处理来自 AI 的文件更改请求。
