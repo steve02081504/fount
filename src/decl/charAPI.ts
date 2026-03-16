@@ -1,7 +1,7 @@
 import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js'
 import { Telegraf } from 'npm:telegraf'
 
-import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts'
+import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { info_t, locale_t, role_t, timeStamp_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'

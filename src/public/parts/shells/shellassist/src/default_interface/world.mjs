@@ -1,11 +1,11 @@
 /**
  * 获取 Shell 世界。
  * @param {string} shelltype - Shell 类型。
- * @returns {import('../../../../../../src/decl/worldAPI.ts').WorldAPI_t} - Shell 世界。
+ * @returns {import('../../../../../../../src/decl/worldAPI.ts').WorldAPI_t} - Shell 世界。
  */
 export function GetShellWorld(shelltype) {
 	/**
-	* @type {import('../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
+	* @type {import('../../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
 	*/
 	const world = {
 		info: {

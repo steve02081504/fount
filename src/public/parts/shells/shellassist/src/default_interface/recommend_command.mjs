@@ -1,7 +1,7 @@
 import { defineToolUseBlocks } from '../../../chat/src/stream.mjs'
 
 /**
- * @type {import('../../../../../../src/decl/pluginAPI.ts').PluginAPI_t}
+ * @type {import('../../../../../../../src/decl/pluginAPI.ts').PluginAPI_t}
  */
 export const recommend_command_plugin = {
 	info: {

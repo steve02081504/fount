@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 
-import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts'
-import { CharAPI_t } from '../../../../decl/charAPI.ts'
-import { PluginAPI_t } from '../../../../decl/pluginAPI.ts'
-import { UserAPI_t } from '../../../../decl/userAPI.ts'
-import { WorldAPI_t } from '../../../../decl/worldAPI.ts'
+import { locale_t, role_t, timeStamp_t } from '../../../../../decl/basedefs.ts'
+import { CharAPI_t } from '../../../../../decl/charAPI.ts'
+import { PluginAPI_t } from '../../../../../decl/pluginAPI.ts'
+import { UserAPI_t } from '../../../../../decl/userAPI.ts'
+import { WorldAPI_t } from '../../../../../decl/worldAPI.ts'
 
 /**
  * @class chatReply_t

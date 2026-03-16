@@ -14,7 +14,7 @@ import { getAvailablePath } from './path.mjs'
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
- * @typedef {import('../../../../decl/import.ts').import_handler_t} import_handler_t
+ * @typedef {import('../../../../../src/decl/ImportHandlerAPI.ts').importHandlerAPI_t} import_handler_t
  */
 
 /**
@@ -82,7 +82,7 @@ async function ImportByText(username, text) {
 }
 
 /**
- * @type {import('../../../../decl/import.ts').import_handler_t}
+ * @type {import('../../../../../src/decl/ImportHandlerAPI.ts').importHandlerAPI_t}
  */
 export default {
 	info,

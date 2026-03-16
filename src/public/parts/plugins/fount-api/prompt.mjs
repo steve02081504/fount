@@ -35,8 +35,8 @@ const EMPTY_PROMPT = { text: [], additional_chat_log: [], extension: {} }
 
 /**
  * 始终返回 fount API 使用说明的 prompt 片段（无需关键词触发）。
- * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
- * @returns {Promise<import('../../../../decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt。
+ * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
+ * @returns {Promise<import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt。
  */
 export async function getFountApiPrompt(args) {
 	return {

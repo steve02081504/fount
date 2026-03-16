@@ -1,6 +1,6 @@
 import { Router } from 'npm:websocket-express'
 
-import { locale_t, info_t } from './basedefs'
+import { locale_t, info_t } from './basedefs.ts'
 
 /**
  * @class shellAPI_t
