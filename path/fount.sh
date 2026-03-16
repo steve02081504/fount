@@ -148,14 +148,18 @@ fi
 # 转义后的fount路径用于sed
 ESCAPED_FOUNT_DIR=$(echo "$FOUNT_DIR" | sed 's/\//\\\//g')
 
-# 任务栏进度（ANSI 序列 \x1b]9;4;...\x1b\\ ，仅 stdout 为 TTY 时输出）
+# 任务栏进度
 taskbar_progress_enabled() { [ -t 1 ]; }
 write_taskbar_progress() {
 	if ! taskbar_progress_enabled; then return; fi
-	if [ -n "${1:-}" ]; then printf "\033]9;4;1;%s\033\\" "$1"; else printf "\033]9;4;3;0\033\\"; fi
+	if [ -n "${1:-}" ]; then
+		printf "\033]9;4;1;%s\007" "$1"
+	else
+		printf "\033]9;4;3\007"
+	fi
 }
-write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0;0\033\\"; }
-write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\033\\"; }
+write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
+write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
 
 # 自动安装包列表文件及标记文件
 INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"

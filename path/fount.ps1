@@ -1,14 +1,28 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
-# 任务栏进度（ANSI \x1b]9;4;...\x1b\\ ，仅 VT 且 stdout 未重定向时输出）
 $script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
-function Write-TaskbarProgress { param([int]$Percent)
+$script:TaskbarProgressEsc = [char]27
+$script:TaskbarProgressBel = [char]7
+function Write-TaskbarProgress([int]$Percent) {
 	if (-not $script:TaskbarProgressEnabled) { return }
-	if ($PSBoundParameters.ContainsKey('Percent')) { $p = [Math]::Max(0, [Math]::Min(100, $Percent)); Write-Host -NoNewline "`e]9;4;1;$p`e\" }
-	else { Write-Host -NoNewline "`e]9;4;3;0`e\" }
+	if ($PSBoundParameters.ContainsKey('Percent')) {
+		$p = [Math]::Max(0, [Math]::Min(100, $Percent))
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;1;$p" + $script:TaskbarProgressBel)
+	}
+	else {
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;3" + $script:TaskbarProgressBel)
+	}
 }
-function Write-TaskbarProgressClear { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;0;0`e\" } }
-function Write-TaskbarProgressError { if ($script:TaskbarProgressEnabled) { Write-Host -NoNewline "`e]9;4;2;100`e\" } }
+function Write-TaskbarProgressClear {
+	if ($script:TaskbarProgressEnabled) {
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;0" + $script:TaskbarProgressBel)
+	}
+}
+function Write-TaskbarProgressError {
+	if ($script:TaskbarProgressEnabled) {
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
+	}
+}
 
 $env:FOUNT_SESSION_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 if (-not $env:FOUNT_START_TIME) {
