@@ -10,6 +10,7 @@ import supportsAnsi from 'npm:supports-ansi'
 import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
+import { ms } from '../scripts/ms.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
@@ -110,13 +111,29 @@ export function webRequestHappened() {
 }
 
 /**
+ * 上次错误对象。
+ * @type {Error}
+ */
+let lastError = null
+/**
+ * 标记上次错误的时间戳。
+ * @type {number}
+ */
+let lastErrorTime = 0
+/**
  * 处理错误。
  * @param {Error} err - 错误对象。
  * @returns {void}
  */
 function handleError(err) {
-	notify('Error', err.message)
+	// avoid notify spam like https://github.com/denoland/deno/issues/32803
+	if (
+		lastError?.message !== err?.message &&
+		Date.now() - lastErrorTime > ms('30m')
+	) notify('Error', err.message)
 	console.error(err)
+	lastError = err
+	lastErrorTime = Date.now()
 }
 
 /**
