@@ -1,0 +1,286 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Provides Discord API context for AI characters in Discord chats.",
+			"description_markdown": "The **Discord API** plugin exposes the running Discord.js Client instance to AI characters via JavaScript code execution, enabling advanced Discord operations such as managing roles, kicking/banning users, and sending proactive messages.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "为在 Discord 聊天中的 AI 角色提供 API 操作上下文",
+			"description_markdown": "**Discord API** 插件将正在运行的 Discord.js Client 实例暴露给 AI 角色的 JS 代码执行环境，使角色能够执行设置身份组、踢人/封禁、管理服务器、主动发消息等高级 Discord 操作。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"api",
+				"插件"
+			]
+		},
+		"ar-SA": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "يوفّر سياق Discord API لشخصيات الذكاء الاصطناعي.",
+			"description_markdown": "يعرض ملحق **Discord API** مثيل Discord.js Client الجاري تشغيله عبر تنفيذ JavaScript، مما يتيح عمليات Discord المتقدمة مثل إدارة الأدوار، الطرد/الحظر، وإرسال الرسائل بشكل استباقي.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"api",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Stellt KI-Charakteren Discord-API-Kontext bereit.",
+			"description_markdown": "Das **Discord API**-Plugin stellt den laufenden Discord.js Client via JavaScript-Ausführung bereit und ermöglicht erweiterte Discord-Aktionen wie Rollenverwaltung, Kicken/Bannen und proaktives Senden von Nachrichten.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "💬🤖",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "🤖➡️💬⚙️✅",
+			"description_markdown": "**💬🤖** 🔌 ➡️ 🤖✨.\n✅ 🎭🛠️.\n✅ 🚫👤.\n✅ 📩➡️.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"💬",
+				"🤖",
+				"🔌",
+				"⚙️"
+			]
+		},
+		"es-ES": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Proporciona contexto de Discord Bot API para personajes de IA.",
+			"description_markdown": "El complemento **Discord API** expone la instancia en ejecución de Discord.js Client mediante ejecución de JavaScript, permitiendo operaciones avanzadas en Discord como gestionar roles, expulsar/bloquear usuarios y enviar mensajes proactivos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Fournit un contexte d'API de bot Discord aux personnages IA.",
+			"description_markdown": "Le plugin **Discord API** expose l'instance Discord.js Client en cours d'exécution via l'exécution JavaScript, permettant des opérations Discord avancées telles que la gestion des rôles, l'expulsion/le bannissement et l'envoi de messages proactifs.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "AI पात्रों के लिए Discord API संदर्भ प्रदान करता है।",
+			"description_markdown": "**Discord API** प्लगइन चल रहे Discord.js Client को JavaScript निष्पादन के माध्यम से उपलब्ध कराता है, जिससे रोल प्रबंधन, किक/बैन और प्रॉएक्टिव संदेश भेजने जैसी उन्नत Discord कार्रवाइयाँ संभव होती हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Veitir gervigreindarkarakterum Discord API samhengi.",
+			"description_markdown": "**Discord API** viðbótin birtir Discord.js Client sem er í gangi í gegnum JavaScript keyrslu og gerir mögulegar þróaðar Discord-aðgerðir eins og hlutverkastjórnun, að sparka/banna og frumkvæðissendingu skilaboða.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Fornisce contesto API bot Discord per personaggi IA.",
+			"description_markdown": "Il plugin **Discord API** espone l'istanza Discord.js Client in esecuzione tramite esecuzione JavaScript, abilitando operazioni Discord avanzate come gestione ruoli, kick/ban e invio di messaggi proattivi.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "AI キャラクターに Discord API のコンテキストを提供します。",
+			"description_markdown": "**Discord API** プラグインは、実行中の Discord.js Client を JavaScript 実行を通じて公開し、ロール管理、キック/BAN、プロアクティブな送信などの高度な Discord 操作を可能にします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "AI 캐릭터에게 Discord API 컨텍스트를 제공합니다.",
+			"description_markdown": "**Discord API** 플러그인은 실행 중인 Discord.js Client를 JavaScript 실행을 통해 노출하여, 역할 관리, 킥/밴, 선제 메시지 전송 등 고급 Discord 작업을 가능하게 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "Discord 接口",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "爲化身啓 Discord 機器人之權柄",
+			"description_markdown": "此 **Discord API** 插件，使化身得御 Discord.js 之 client。可行身分組、踢封、及主動傳訊等諸事也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"接口",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Biedt Discord API-context voor AI-personages.",
+			"description_markdown": "De **Discord API**-plugin stelt de draaiende Discord.js Client beschikbaar via JavaScript-uitvoering en maakt geavanceerde Discord-acties mogelijk zoals rollen beheren, kicken/bannen en proactief berichten verzenden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Fornece contexto de Discord API para personagens de IA.",
+			"description_markdown": "O plugin **Discord API** expõe a instância Discord.js Client em execução via execução JavaScript, permitindo operações avançadas no Discord como gerir cargos, expulsar/banir utilizadores e enviar mensagens proativas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Предоставляет контекст Discord API для ИИ-персонажей.",
+			"description_markdown": "Плагин **Discord API** предоставляет доступ к запущенному Discord.js Client через выполнение JavaScript, позволяя выполнять продвинутые действия в Discord: управление ролями, кик/бан пользователей и проактивную отправку сообщений.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Надає контекст Discord API для ШІ-персонажів.",
+			"description_markdown": "Плагін **Discord API** надає доступ до запущеного Discord.js Client через виконання JavaScript і дозволяє виконувати розширені дії в Discord: керування ролями, кік/бан та проактивне надсилання повідомлень.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "Cung cấp ngữ cảnh Discord API cho nhân vật AI.",
+			"description_markdown": "Plugin **Discord API** cung cấp quyền truy cập vào Discord.js Client đang chạy thông qua thực thi JavaScript, cho phép thao tác Discord nâng cao như quản lý vai trò, kick/ban và gửi tin nhắn chủ động.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "Discord API",
+			"avatar": "https://api.iconify.design/logos/discord-icon.svg",
+			"description": "為在 Discord 聊天中的 AI 角色提供 API 操作情境",
+			"description_markdown": "**Discord API** 外掛程式將正在執行的 Discord.js Client 實例提供給 AI 角色的 JS 程式碼執行環境，使角色能進行身分組管理、踢除/封禁與主動發訊等進階 Discord 操作。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"discord",
+				"bot",
+				"api",
+				"外掛"
+			]
+		}
+	}
+}

@@ -9,6 +9,7 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/p
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
 
 /** @typedef {import('npm:discord.js').Message} Message */
+/** @typedef {import('npm:discord.js').Client} DiscordClient */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
 /**
  *  @typedef { (FountChatLogEntryBase & {
@@ -16,6 +17,25 @@ import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
  * })} chatLogEntry_t_simple
  */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
+
+/**
+ * 按用户/角色索引当前正在运行的默认 Discord Bot 客户端实例。
+ * 结构为 registry[username][charname] = DiscordClient
+ * @type {Record<string, Record<string, DiscordClient>>}
+ */
+const charClientRegistry = {}
+
+/**
+ * 获取指定用户下指定角色当前正在运行的默认 Discord Bot 客户端实例。
+ * 供插件或外部代码访问 Discord.js Client（如主动发消息、管理服务器等）。
+ * 注意：若同一角色同时绑定了多个 Bot，此处返回最近启动的那个。
+ * @param {string} username - 角色所属的 fount 用户名。
+ * @param {string} charname - 角色名称（fount charname）。
+ * @returns {DiscordClient | undefined}
+ */
+export function getDiscordClientForChar(username, charname) {
+	return charClientRegistry[username]?.[charname]
+}
 
 /**
  * 尝试执行一个函数几次，如果失败则等待一段时间后重试。
@@ -347,7 +367,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
 					 */
 					Update: async () => await generateChatReplyRequest(),
-					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id }
+					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id, discord_trigger_message_obj: triggerMessage }
 				})
 
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
@@ -462,7 +482,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			GatewayIntentBits.GuildMembers,
 		],
 		Partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember],
-		OnceClientReady: SimpleDiscordBotMain,
+		OnceClientReady: async (client, config) => {
+			charClientRegistry[ownerUsername] ??= {}
+			charClientRegistry[ownerUsername][botCharname] = client
+			await SimpleDiscordBotMain(client, config)
+		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}
 }
