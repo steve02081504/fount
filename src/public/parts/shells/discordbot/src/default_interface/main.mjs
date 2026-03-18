@@ -112,34 +112,57 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 			const content = await getMessageFullContent(fullMessage, client)
 			const files = []
-			const attachmentSources = [
-				fullMessage.attachments.values(),
-				...fullMessage.messageSnapshots?.flatMap(s => s.attachments.values()) || []
-			]
-			for (const source of attachmentSources)
-				for (const attachment of source)
-					if (attachment.url) try {
-						const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
-						files.push({ name: attachment.name, buffer, description: attachment.description, mime_type: attachment.contentType })
-					} catch (error) { console.error(`[SimpleDiscord] 获取附件 ${attachment.name} 失败:`, error) }
+			const processedUrls = new Set()
 
+			// 附件（含 messageSnapshots 转发消息中的附件）
+			const allAttachments = [
+				...fullMessage.attachments.values(),
+				...fullMessage.messageSnapshots.flatMap(s => [...s.attachments.values()])
+			]
+			for (const attachment of allAttachments)
+				if (attachment?.url && !processedUrls.has(attachment.url)) {
+					processedUrls.add(attachment.url)
+					try {
+						const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
+						files.push({ name: attachment.name, buffer, description: attachment.description || '', mime_type: attachment.contentType })
+					} catch (error) { console.error(`[SimpleDiscord] 获取附件 ${attachment.name} 失败:`, error) }
+				}
+
+			// embed 图片和缩略图
 			for (const embed of fullMessage.embeds)
-				if (embed.image?.url) try {
-					const { url } = embed.image
-					files.push({
-						name: url.substring(url.lastIndexOf('/') + 1) || 'embedded_image.png',
-						buffer: Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer()))),
-						description: embed.title || embed.description || '',
-						mime_type: 'image/png'
-					})
-				} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${embed.image.url} 失败:`, error) }
+				for (const url of [embed.image?.url, embed.thumbnail?.url].filter(Boolean))
+					if (!processedUrls.has(url)) {
+						processedUrls.add(url)
+						try {
+							const buffer = Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer())))
+							files.push({
+								name: url.substring(url.lastIndexOf('/') + 1).split('?')[0] || 'embedded_image.png',
+								buffer,
+								description: embed.title || embed.description || '',
+								mime_type: 'image/png'
+							})
+						} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${url} 失败:`, error) }
+					}
+
+			// 贴纸（跳过 Lottie 格式，其无法作为图片下载）
+			for (const [, sticker] of fullMessage.stickers)
+				if (sticker.url && sticker.format !== 3 && !processedUrls.has(sticker.url)) {
+					processedUrls.add(sticker.url)
+					try {
+						const buffer = Buffer.from(await tryFewTimes(() => fetch(sticker.url).then(r => r.arrayBuffer())))
+						const fileName = sticker.url.split('/').pop()?.split('?')[0] || `${sticker.name}.png`
+						files.push({ name: fileName, buffer, description: `贴纸: ${sticker.name}`, mime_type: 'image/png' })
+					} catch (error) { console.error(`[SimpleDiscord] 获取贴纸 ${sticker.name} 失败:`, error) }
+				}
+
+			const isFromOwner = author.username === config.OwnerUserName
 
 			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
 			/** @type {chatLogEntry_t_simple} */
 			const entry = {
 				...cachedAIReply,
 				time_stamp: fullMessage.createdTimestamp,
-				role: author.id === client.user.id ? 'char' : author.username === config.OwnerUserName ? 'user' : 'char',
+				role: author.id === client.user.id ? 'char' : isFromOwner ? 'user' : 'char',
 				name: author.id === client.user.id ? client.user.displayName || client.user.username : finalDisplayName,
 				content,
 				files: files.filter(Boolean),
@@ -160,9 +183,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			const newlog = []
 			let last = null
 			for (const currentEntry of log) {
-				const entry = { ...currentEntry } //浅拷贝，防止修改原数组
-				if (entry.files) entry.files = [...entry.files] // 深拷贝文件数组
-				if (entry.extension) entry.extension = { ...entry.extension } // 深拷贝extension
+				const entry = { ...currentEntry }
+				if (entry.files) entry.files = [...entry.files]
+				if (entry.extension) entry.extension = { ...entry.extension }
 
 				if (last && last.name === entry.name && last.role === entry.role &&
 					entry.time_stamp - last.time_stamp < 3 * 60000 && !last.files?.length) {
@@ -402,14 +425,17 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				if (!channelLogs) return
 
 				const messageId = message.id
-				const indexToRemove = channelLogs.findIndex(entry =>
+				const deletedIndex = channelLogs.findIndex(entry =>
 					entry.extension?.discord_message_id === messageId
 				)
 
-				if (indexToRemove >= 0) {
-					const removed = channelLogs.splice(indexToRemove, 1)[0]
-					delete aiReplyObjectCache[removed?.extension?.discord_message_id]
-					console.log(`[SimpleDiscord] Removed deleted message ${messageId} from chat log.`)
+				if (deletedIndex >= 0) {
+					// 标记为已删除而非直接移除，保留上下文供 AI 感知
+					const entry = channelLogs[deletedIndex]
+					entry.content += '（已删除）'
+					if (entry.extension?.content_parts?.length)
+						entry.extension.content_parts = entry.extension.content_parts.map(p => p + '（已删除）')
+					console.log(`[SimpleDiscord] Marked deleted message ${messageId} in chat log.`)
 				}
 			}
 			catch (error) {

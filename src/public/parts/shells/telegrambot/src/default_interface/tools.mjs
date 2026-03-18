@@ -226,13 +226,56 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 
 	const rawText = message.text || message.caption
 	const entities = message.entities || message.caption_entities
-	const content = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
+
+	// 实体转 AI Markdown，同时嵌入回复引用
+	let content = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
+	// 贴纸追加文本描述标记，格式与龙胆一致，可被平台层解析为实物贴纸 file_id
+	if (message.sticker) {
+		const { sticker } = message
+		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`
+		content = [content, stickerDesc].filter(Boolean).join('\n\n')
+	}
+
+	const isFromOwner = role === 'user'
 
 	const files = []
 	try {
 		const telegramApi = ctx.telegram || (ctx.botInfo ? ctx : null)?.telegram
 		if (!telegramApi)
 			console.warn('[TelegramDefaultInterface] telegram API object not found in context for file processing.')
+
+		if (telegramApi && message.sticker) {
+			const { sticker } = message
+			let fileIdToDownload = sticker.file_id
+			let fileName, mimeType
+			const description = `贴纸${sticker.emoji ? `: ${sticker.emoji}` : ''}`
+
+			if (sticker.is_animated) {
+				if (sticker.thumbnail) {
+					fileIdToDownload = sticker.thumbnail.file_id
+					fileName = `${sticker.file_unique_id}.jpg`
+					mimeType = 'image/jpeg'
+				}
+				else fileIdToDownload = null
+			}
+			else if (sticker.is_video) {
+				fileName = `${sticker.file_unique_id}.webm`
+				mimeType = 'video/webm'
+			}
+			else {
+				fileName = `${sticker.file_unique_id}.webp`
+				mimeType = 'image/webp'
+			}
+
+			if (fileIdToDownload) try {
+				const fileLink = await telegramApi.getFileLink(fileIdToDownload)
+				const response = await fetch(fileLink.href)
+				const buffer = Buffer.from(await response.arrayBuffer())
+				files.push({ name: fileName, buffer, mime_type: mimeType, description })
+			} catch (e) {
+				console.error(`[TelegramDefaultInterface] 贴纸下载失败 (${sticker.file_unique_id}):`, e)
+			}
+		}
 
 		if (telegramApi && 'photo' in message && message.photo) {
 			const photo = message.photo.reduce((prev, current) => (prev.file_size || 0) > (current.file_size || 0) ? prev : current)
@@ -316,8 +359,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			platform_message_ids: [message.message_id],
 			platform_channel_id: chat.id,
 			platform_user_id: fromUser.id,
+			is_from_owner: isFromOwner,
 			...message.message_thread_id && { telegram_message_thread_id: message.message_thread_id },
-			is_from_owner: role === 'user',
 			telegram_message_obj: message,
 			...message.reply_to_message && { telegram_reply_to_message_id: message.reply_to_message.message_id }
 		}
