@@ -26,7 +26,7 @@ const charBotRegistry = {}
  * 注意：若同一角色同时绑定了多个 Bot，此处返回最近启动的那个。
  * @param {string} username - 角色所属的 fount 用户名。
  * @param {string} charname - 角色名称（fount charname）。
- * @returns {TelegrafInstance | undefined}
+ * @returns {TelegrafInstance | undefined} Telegraf Instance 实例或 undefined
  */
 export function getTelegramBotForChar(username, charname) {
 	return charBotRegistry[username]?.[charname]
@@ -64,9 +64,7 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
  * @returns {string} 逻辑频道 ID。
  */
 function constructLogicalChannelIdForDefault(chatId, threadId) {
-	if (threadId !== undefined && threadId !== null)
-		return `${chatId}_${threadId}`
-
+	if (String(threadId)) return `${chatId}_${threadId}`
 	return String(chatId)
 }
 
@@ -404,6 +402,11 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	}
 
 	return {
+		/**
+		 * 设置 Telegram Bot 实例。
+		 * @param {TelegrafInstance} bot - Telegram Bot 实例。
+		 * @param {object} config - Bot 配置。
+		 */
 		BotSetup: async (bot, config) => {
 			charBotRegistry[ownerUsername] ??= {}
 			charBotRegistry[ownerUsername][botCharname] = bot

@@ -250,14 +250,13 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			let fileName, mimeType
 			const description = `贴纸${sticker.emoji ? `: ${sticker.emoji}` : ''}`
 
-			if (sticker.is_animated) {
+			if (sticker.is_animated)
 				if (sticker.thumbnail) {
 					fileIdToDownload = sticker.thumbnail.file_id
 					fileName = `${sticker.file_unique_id}.jpg`
 					mimeType = 'image/jpeg'
 				}
 				else fileIdToDownload = null
-			}
 			else if (sticker.is_video) {
 				fileName = `${sticker.file_unique_id}.webm`
 				mimeType = 'video/webm'

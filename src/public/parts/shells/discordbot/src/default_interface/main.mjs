@@ -31,7 +31,7 @@ const charClientRegistry = {}
  * 注意：若同一角色同时绑定了多个 Bot，此处返回最近启动的那个。
  * @param {string} username - 角色所属的 fount 用户名。
  * @param {string} charname - 角色名称（fount charname）。
- * @returns {DiscordClient | undefined}
+ * @returns {DiscordClient | undefined} Discord Client 实例或 undefined
  */
 export function getDiscordClientForChar(username, charname) {
 	return charClientRegistry[username]?.[charname]
@@ -482,6 +482,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			GatewayIntentBits.GuildMembers,
 		],
 		Partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember],
+		/**
+		 * 设置 Discord Bot 实例。
+		 * @param {import('npm:discord.js').Client} client - Discord Client 实例。
+		 * @param {object} config - Bot 配置。
+		 */
 		OnceClientReady: async (client, config) => {
 			charClientRegistry[ownerUsername] ??= {}
 			charClientRegistry[ownerUsername][botCharname] = client

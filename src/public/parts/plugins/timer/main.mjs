@@ -1,4 +1,5 @@
 import { getTimers, removeTimer, setTimer } from '../../../../server/timers.mjs'
+
 import { timerReplyHandler, PLUGIN_PATH } from './handler.mjs'
 import { getCharTimerPrompt } from './prompt.mjs'
 import { getChannels, setPendingNotification } from './state.mjs'
@@ -7,10 +8,10 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
 
 /**
  * 构造定时器到期时注入聊天上下文的系统条目（符合 chatLogEntry_t 接口的纯对象）。
- * @param {string} reason
- * @param {string} chat_log_snip
- * @param {string} char_id
- * @returns {object}
+ * @param {string} reason 定时器到期原因
+ * @param {string} chat_log_snip 聊天记录节选
+ * @param {string} char_id 角色 ID
+ * @returns {object} 符合 chatLogEntry_t 接口的纯对象
  */
 function makeTimerSystemEntry(reason, chat_log_snip, char_id) {
 	return {
@@ -33,10 +34,10 @@ ${chat_log_snip}
 /**
  * 通过活跃频道（level 1）触发角色回复。
  * @param {object} channel - 活跃的 chatReplyRequest_t。
- * @param {string} char_id
- * @param {string} reason
- * @param {string} chat_log_snip
- * @returns {Promise<boolean>} 是否成功触发。
+ * @param {string} char_id 角色 ID
+ * @param {string} reason 定时器到期原因
+ * @param {string} chat_log_snip 聊天记录节选
+ * @returns {Promise<boolean>} 是否成功触发
  */
 async function replyViaChannel(channel, char_id, reason, chat_log_snip) {
 	const updatedChannel = await channel.Update()
@@ -57,7 +58,13 @@ async function replyViaChannel(channel, char_id, reason, chat_log_snip) {
  */
 export default {
 	info,
+	/**
+	 * 加载插件
+	 */
 	Load: async () => { },
+	/**
+	 * 卸载插件
+	 */
 	Unload: async () => { },
 	interfaces: {
 		chat: {
@@ -70,9 +77,9 @@ export default {
 			 *  1. 进程内存中的活跃频道（支持所有平台：Discord/Telegram/Shell/fount 网页聊天）
 			 *  2. 通过 chatid 加载 fount 网页聊天（重启后长定时器的回落）
 			 *  3. 新建 fount 网页聊天（最终回落，并更新重复定时器的 chatid）
-			 * @param {string} username
-			 * @param {string} uid
-			 * @param {object} callbackdata
+			 * @param {string} username 用户名
+			 * @param {string} uid 定时器 ID
+			 * @param {object} callbackdata 回调数据
 			 */
 			TimerCallback: async (username, uid, callbackdata) => {
 				const { type, char_id, chatid, reason, chat_log_snip } = callbackdata
@@ -82,32 +89,27 @@ export default {
 				}
 
 				// ── Level 1：进程内活跃频道 ─────────────────────────────────────
-				for (const channel of getChannels(username, char_id)) {
-					try {
-						if (await replyViaChannel(channel, char_id, reason, chat_log_snip)) {
-							console.info(`timer: 定时器"${reason}"通过活跃频道触发成功`)
-							return
-						}
+				for (const channel of getChannels(username, char_id)) try {
+					if (await replyViaChannel(channel, char_id, reason, chat_log_snip)) {
+						console.info(`timer: 定时器"${reason}"通过活跃频道触发成功`)
+						return
 					}
-					catch (e) { console.error('timer: 活跃频道触发失败，尝试下一个', e) }
 				}
+				catch (e) { console.error('timer: 活跃频道触发失败，尝试下一个', e) }
 
 				// ── Level 2：通过 chatid 加载 fount 网页聊天 ────────────────────
-				const { loadChat, triggerCharReply, newChat, addchar } =
-					await import('../shells/chat/src/chat.mjs')
+				const { loadChat, triggerCharReply, newChat, addchar } = await import('../../shells/chat/src/chat.mjs')
 
-				if (chatid) {
-					try {
-						const chatMetadata = await loadChat(chatid)
-						if (chatMetadata?.LastTimeSlice.chars[char_id]) {
-							setPendingNotification(chatid, char_id, makeTimerSystemEntry(reason, chat_log_snip, char_id))
-							await triggerCharReply(chatid, char_id)
-							console.info(`timer: 定时器"${reason}"通过 chatid 触发成功`)
-							return
-						}
+				if (chatid) try {
+					const chatMetadata = await loadChat(chatid)
+					if (chatMetadata?.LastTimeSlice.chars[char_id]) {
+						setPendingNotification(chatid, char_id, makeTimerSystemEntry(reason, chat_log_snip, char_id))
+						await triggerCharReply(chatid, char_id)
+						console.info(`timer: 定时器"${reason}"通过 chatid 触发成功`)
+						return
 					}
-					catch (e) { console.error('timer: 通过 chatid 触发失败，尝试新建对话', e) }
 				}
+				catch (e) { console.error('timer: 通过 chatid 触发失败，尝试新建对话', e) }
 
 				// ── Level 3：新建 fount 网页聊天（最终回落） ────────────────────
 				console.warn(`timer: 定时器"${reason}"回落至新建对话`)
@@ -120,16 +122,15 @@ export default {
 
 					// 若为重复定时器，更新 callbackdata 中的 chatid 以便后续直接复用
 					const timerRecord = getTimers(username, PLUGIN_PATH)[uid]
-					if (timerRecord)
-						try {
-							removeTimer(username, PLUGIN_PATH, uid)
-							setTimer(username, PLUGIN_PATH, uid, {
-								trigger: timerRecord.trigger,
-								callbackdata: { ...callbackdata, chatid: newChatid },
-								repeat: true,
-							})
-						}
-						catch (e) { console.error('timer: 更新重复定时器 chatid 失败', e) }
+					if (timerRecord) try {
+						removeTimer(username, PLUGIN_PATH, uid)
+						setTimer(username, PLUGIN_PATH, uid, {
+							trigger: timerRecord.trigger,
+							callbackdata: { ...callbackdata, chatid: newChatid },
+							repeat: true,
+						})
+					}
+					catch (e) { console.error('timer: 更新重复定时器 chatid 失败', e) }
 				}
 				catch (e) { console.error(`timer: 定时器"${reason}"所有触发策略均失败`, e) }
 			},

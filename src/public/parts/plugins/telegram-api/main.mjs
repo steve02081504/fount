@@ -9,13 +9,19 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  */
 export default {
 	info,
+	/**
+	 * 加载插件
+	 */
 	Load: async () => { },
+	/**
+	 * 卸载插件
+	 */
 	Unload: async () => { },
 	interfaces: {
 		code_execution: {
 			/**
-			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args
-			 * @returns {Promise<string | undefined>}
+			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args 聊天回复请求
+			 * @returns {Promise<string | undefined>} 返回 JS 代码提示或 undefined
 			 */
 			GetJSCodePrompt: async (args) => {
 				const bot = getTelegramBotForChar(args.username, args.char_id)
@@ -42,8 +48,8 @@ Telegram API 插件已启用，但你尚未被接入任何 Telegram Bot，无法
 `
 			},
 			/**
-			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args
-			 * @returns {Promise<Record<string, any>>}
+			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args 聊天回复请求
+			 * @returns {Promise<Record<string, any>>} 返回 JS 代码上下文对象
 			 */
 			GetJSCodeContext: async (args) => {
 				const bot = getTelegramBotForChar(args.username, args.char_id)
