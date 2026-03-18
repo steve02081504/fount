@@ -815,6 +815,13 @@
 					"alt": "Icône de téléchargement HTML"
 				}
 			},
+			"copyButton": {
+				"title": "Copier"
+			},
+			"copyButtonIcon": {
+				"alt": "Copier"
+			},
+			"copySuccess": "Copié dans le presse-papiers",
 			"dropdown": {
 				"delete": "Supprimer",
 				"deleteIcon": {

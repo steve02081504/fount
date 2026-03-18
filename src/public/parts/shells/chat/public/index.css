@@ -195,8 +195,8 @@
 	object-fit: contain;
 }
 
-/* 消息反馈栏（赞/踩/重新生成），hover 或输入框聚焦时平滑展开 */
-.chat-message .message-feedback-bar {
+/* 消息操作栏（复制、赞/踩/重新生成等），hover 或输入框聚焦时平滑展开 */
+.chat-message .message-actions-bar {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
@@ -213,8 +213,8 @@
 		opacity 0.2s ease-in-out;
 }
 
-.chat-message:hover .message-feedback-bar,
-.chat-message .message-feedback-bar:focus-within {
+.chat-message:hover .message-actions-bar,
+.chat-message .message-actions-bar:focus-within {
 	max-height: 180px;
 	margin-top: 8px;
 	padding: 2px 2px 6px;
@@ -222,18 +222,16 @@
 	pointer-events: auto;
 }
 
-/* 赞/踩/重新生成按钮点击动画 */
-.chat-message .message-feedback-bar .feedback-btn,
-.chat-message .message-feedback-bar .regenerate-btn {
+/* 操作栏内按钮统一样式与点击动画 */
+.chat-message .message-actions-bar button {
 	transition: color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
 }
 
-.chat-message .message-feedback-bar .feedback-btn:active,
-.chat-message .message-feedback-bar .regenerate-btn:active {
+.chat-message .message-actions-bar button:active {
 	transform: scale(0.85);
 }
 
-.chat-message .message-feedback-bar .feedback-input-wrap {
+.chat-message .message-actions-bar .feedback-input-wrap {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
@@ -246,7 +244,7 @@
 		opacity 0.15s ease-in-out;
 }
 
-.chat-message .message-feedback-bar .feedback-input-wrap.visible {
+.chat-message .message-actions-bar .feedback-input-wrap.visible {
 	max-height: 140px;
 	padding: 3px;
 	opacity: 1;

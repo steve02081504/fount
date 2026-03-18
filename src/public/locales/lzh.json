@@ -815,6 +815,13 @@
 					"alt": "下載織文圖示"
 				}
 			},
+			"copyButton": {
+				"title": "錄"
+			},
+			"copyButtonIcon": {
+				"alt": "錄"
+			},
+			"copySuccess": "已謄於剪貼",
 			"dropdown": {
 				"delete": "刪",
 				"deleteIcon": {
@@ -2226,7 +2233,7 @@
 		"acpConfigPlaceholder": "請先擇其司職並製 API 符節",
 		"acpConfigSample": "置设之例：",
 		"acpConfigHint": "角 ID 见此页下拉，API 符节可于用户设中理之。",
-		"copyButton": "誊录",
+		"copyButton": "謄錄",
 		"copied": "已存简帖",
 		"apiKeySectionTitle": "API 符节",
 		"apiKeyHint": "用于 ACP 脚本连 fount（与 API 代理同符，可于用户设中制）。",

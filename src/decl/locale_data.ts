@@ -804,6 +804,13 @@ export type LocaleData = {
 					alt: string
 				}
 			}
+			copyButton: {
+				title: string
+			}
+			copyButtonIcon: {
+				alt: string
+			}
+			copySuccess: string
 			dropdown: {
 				delete: string
 				deleteIcon: {

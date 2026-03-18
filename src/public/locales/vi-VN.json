@@ -815,6 +815,13 @@
 					"alt": "Biểu tượng tải xuống HTML"
 				}
 			},
+			"copyButton": {
+				"title": "Sao chép"
+			},
+			"copyButtonIcon": {
+				"alt": "Sao chép"
+			},
+			"copySuccess": "Đã sao chép vào bảng nhớ tạm",
 			"dropdown": {
 				"delete": "Xóa",
 				"deleteIcon": {
@@ -1467,7 +1474,7 @@
 			"title": "Mã kết nối máy chủ",
 			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
 			"passwordLabel": "mật khẩu",
-			"copyButton": "sao chép",
+			"copyButton": "Sao chép",
 			"regenerateButton": "Tạo lại",
 			"infoMessage": "Chia sẻ những thông tin xác thực này với các máy khách phụ để thiết lập kết nối.",
 			"connectionCodeCopied": "Mã kết nối đã được sao chép vào clipboard",
@@ -2226,7 +2233,7 @@
 		"acpConfigPlaceholder": "Vui lòng chọn một vai trò và tạo khóa API trước",
 		"acpConfigSample": "Ví dụ về cấu hình:",
 		"acpConfigHint": "Id vai trò được hiển thị trong menu thả xuống vai trò trên trang này và khóa API có thể được quản lý trong cài đặt người dùng.",
-		"copyButton": "sao chép",
+		"copyButton": "Sao chép",
 		"copied": "Đã sao chép vào bảng nhớ tạm",
 		"apiKeySectionTitle": "Khóa API",
 		"apiKeyHint": "Được sử dụng cho nguồn kết nối tập lệnh ACP (cùng bộ khóa với proxy API, có thể được tạo trong cài đặt người dùng).",

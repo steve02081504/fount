@@ -815,6 +815,13 @@
 					"alt": "Ícone de descarga HTML"
 				}
 			},
+			"copyButton": {
+				"title": "Copiar"
+			},
+			"copyButtonIcon": {
+				"alt": "Copiar"
+			},
+			"copySuccess": "Copiado para a área de transferência",
 			"dropdown": {
 				"delete": "Eliminar",
 				"deleteIcon": {
@@ -2226,7 +2233,7 @@
 		"acpConfigPlaceholder": "Selecione uma função e gere uma chave de API primeiro",
 		"acpConfigSample": "Exemplo de configuração:",
 		"acpConfigHint": "O ID da função é mostrado no menu suspenso da função nesta página, e a chave de API pode ser gerenciada nas configurações do usuário.",
-		"copyButton": "cópia",
+		"copyButton": "Copiar",
 		"copied": "Copiado para a área de transferência",
 		"apiKeySectionTitle": "Chave de API",
 		"apiKeyHint": "Usado para fount de conexão de script ACP (mesmo conjunto de chaves do proxy API, pode ser criado nas configurações do usuário).",
