@@ -226,7 +226,7 @@ function formatMessageContent(message) {
 	}
 
 	// 如果已编辑
-	if (message.edited_timestamp) content += '（已编辑）'
+	if (message.editedTimestamp) content += '（已编辑）'
 
 	return content
 }
