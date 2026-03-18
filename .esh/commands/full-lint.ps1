@@ -18,9 +18,9 @@ Get-ChildItem -Path "$psscriptroot/../.." -Recurse -File | Where-Object { $_.Ful
 	if ($originalContent.IndexOf([char]0, 0, [System.Math]::Min($originalContent.Length, 10)) -ge 0) {
 		return
 	}
-	$modifiedContent = $originalContent -replace '\r\n', '\n'
-	$modifiedContent = $modifiedContent -replace '\r', '\n'
-	$modifiedContent = $modifiedContent -replace '^\n+', ''
+	$modifiedContent = $originalContent -replace "`r`n", "`n"
+	$modifiedContent = $modifiedContent -replace "`r", "`n"
+	$modifiedContent = $modifiedContent -replace "^(?:`n)+", ""
 	$modifiedContent = $modifiedContent.TrimEnd() + "`n"
 	if ($modifiedContent -ne $originalContent) {
 		try {
