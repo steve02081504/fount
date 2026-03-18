@@ -1,0 +1,272 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Timer",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Provides timer capabilities for AI characters.",
+			"description_markdown": "The **Timer** plugin provides AI characters with the ability to schedule automatic replies triggered at a specified time or condition.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"timer",
+				"scheduled",
+				"auto-reply",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "定时器",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "为 AI 角色提供定时触发回复的能力",
+			"description_markdown": "**定时器**插件为 AI 角色提供了在指定时间或条件满足时自动触发回复的能力。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"定时器",
+				"自动回复",
+				"插件"
+			]
+		},
+		"ar-SA": {
+			"name": "المؤقت",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "يوفر قدرات المؤقت لشخصيات الذكاء الاصطناعي.",
+			"description_markdown": "يوفر المكون الإضافي **Timer** لشخصيات الذكاء الاصطناعي القدرة على جدولة ردود تلقائية يتم تشغيلها في وقت محدد أو عند استيفاء شرط معين.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"مؤقت",
+				"رد_تلقائي",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Timer",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Ermöglicht KI-Charakteren das Planen automatischer Antworten.",
+			"description_markdown": "Das **Timer**-Plugin gibt KI-Charakteren die Fähigkeit, automatische Antworten zu einem festgelegten Zeitpunkt oder bei einer erfüllten Bedingung auszulösen.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Timer",
+				"Auto-Antwort",
+				"Plugin"
+			]
+		},
+		"emoji": {
+			"name": "⏰🤖",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "⏰➡️🤖💬",
+			"description_markdown": "**⏰** ➡️ 🤖💬.\n⏱️ + 🎯 ➡️ 🗣️✨.\n\n⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"⏰",
+				"🤖",
+				"💬",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Temporizador",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Proporciona capacidades de temporizador para personajes de IA.",
+			"description_markdown": "El complemento **Timer** dota a los personajes de IA de la capacidad de programar respuestas automáticas activadas en un momento o condición específicos.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"temporizador",
+				"respuesta-auto",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Minuterie",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Fournit des capacités de minuterie pour les personnages IA.",
+			"description_markdown": "Le plugin **Timer** permet aux personnages IA de planifier des réponses automatiques déclenchées à un moment ou une condition spécifique.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"minuterie",
+				"réponse-auto",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "टाइमर",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "AI पात्रों के लिए टाइमर क्षमताएं प्रदान करता है।",
+			"description_markdown": "**Timer** प्लगइन AI पात्रों को निर्दिष्ट समय या शर्त पूरी होने पर स्वचालित उत्तर शेड्यूल करने की क्षमता देता है।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"टाइमर",
+				"स्वचालित-उत्तर",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Tímari",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Veitir gervigreindarkarakterum tímaragetu.",
+			"description_markdown": "**Timer** viðbótin veitir gervigreindarkarakterum getu til að skipuleggja sjálfvirk svör sem kveikjast á tilgreindum tíma eða skilyrði.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"tímari",
+				"sjálfvirkt-svar",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Timer",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Fornisce funzionalità di timer per i personaggi IA.",
+			"description_markdown": "Il plugin **Timer** fornisce ai personaggi IA la possibilità di programmare risposte automatiche attivate a un'ora o condizione specificata.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"timer",
+				"risposta-auto",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "タイマー",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "AI キャラクターにタイマー機能を提供します。",
+			"description_markdown": "**タイマー**プラグインは、指定した時刻または条件が満たされたときに自動返信をスケジュールする機能を AI キャラクターに提供します。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"タイマー",
+				"自動返信",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "타이머",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "AI 캐릭터에게 타이머 기능을 제공합니다.",
+			"description_markdown": "**타이머** 플러그인은 AI 캐릭터에게 지정된 시간 또는 조건이 충족될 때 자동으로 답장을 예약하는 능력을 부여합니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"타이머",
+				"자동답장",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "計時器",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "使化身得以依時或依條件自動發言",
+			"description_markdown": "此**計時器**插件，使化身得以於指定時刻或條件成就時自動觸發回覆。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"計時器",
+				"自動回覆",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Timer",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Biedt timermogelijkheden voor AI-personages.",
+			"description_markdown": "De **Timer**-plugin geeft AI-personages de mogelijkheid om automatische antwoorden te plannen die worden geactiveerd op een bepaald tijdstip of wanneer een voorwaarde is vervuld.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"timer",
+				"automatisch-antwoord",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Temporizador",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Fornece capacidades de temporizador para personagens de IA.",
+			"description_markdown": "O plugin **Timer** fornece aos personagens de IA a capacidade de agendar respostas automáticas acionadas em um horário ou condição especificados.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"temporizador",
+				"resposta-auto",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Таймер",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Обеспечивает возможности таймера для ИИ-персонажей.",
+			"description_markdown": "Плагин **Timer** даёт ИИ-персонажам возможность планировать автоматические ответы, срабатывающие в указанное время или при выполнении условия.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"таймер",
+				"авто-ответ",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Таймер",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Забезпечує можливості таймера для ШІ-персонажів.",
+			"description_markdown": "Плагін **Timer** надає ШІ-персонажам можливість планувати автоматичні відповіді, що спрацьовують у вказаний час або при виконанні умови.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"таймер",
+				"авто-відповідь",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Bộ hẹn giờ",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "Cung cấp khả năng hẹn giờ cho các nhân vật AI.",
+			"description_markdown": "Plugin **Timer** cung cấp cho các nhân vật AI khả năng lên lịch trả lời tự động được kích hoạt vào thời điểm hoặc điều kiện được chỉ định.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"hẹn giờ",
+				"tự động trả lời",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "定時器",
+			"avatar": "https://api.iconify.design/line-md/watch.svg",
+			"description": "為 AI 角色提供定時觸發回覆的能力",
+			"description_markdown": "**定時器**外掛程式為 AI 角色提供了在指定時間或條件滿足時自動觸發回覆的能力。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"定時器",
+				"自動回覆",
+				"外掛"
+			]
+		}
+	}
+}
