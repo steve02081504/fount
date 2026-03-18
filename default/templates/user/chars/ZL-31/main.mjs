@@ -647,6 +647,7 @@ export default {
 					'file-operations',
 					'code-execution',
 					'fount-api',
+					'timer',
 				]
 				plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
