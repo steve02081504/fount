@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import os from 'node:os'
 import path from 'node:path'
+import process from 'node:process'
 import util from 'node:util'
 
 import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
@@ -110,17 +111,12 @@ ${code}
 		logger = new_req.AddChatLogEntry
 		new_req.chat_log = [...new_req.chat_log, feedback]
 		new_req.extension.from_callback = true
-		if (new_req.char?.interfaces?.chat?.GetReply) {
-			const reply = await new_req.char.interfaces.chat.GetReply(new_req)
-			if (reply) {
-				reply.logContextBefore ??= []
-				reply.logContextBefore.push(feedback)
-				await logger({ name: args.Charname ?? args.char_id ?? 'char', ...reply })
-			}
+		const reply = await new_req.char.interfaces.chat.GetReply(new_req)
+		if (reply) {
+			reply.logContextBefore ??= []
+			reply.logContextBefore.push(feedback)
+			await logger({ name: args.Charname, ...reply })
 		}
-		else
-			// 如果没有角色的 GetReply，只记录反馈
-			logger(feedback)
 
 	}
 	catch (error) {
@@ -138,7 +134,6 @@ ${code}
  */
 export async function codeExecutionReplyHandler(result, args) {
 	const { AddLongTimeLog } = args
-	if (!AddLongTimeLog) return false
 
 	result.extension ??= {}
 	result.extension.execed_codes ??= {}
@@ -250,7 +245,7 @@ export async function codeExecutionReplyHandler(result, args) {
 		return async_eval(code, await get_js_eval_context(code))
 	}
 
-	const content = result?.content ?? ''
+	const { content } = result
 	// 将 run-* 作为步骤，按在 content 中的出现顺序排列
 	const steps = []
 	for (const m of content.matchAll(/<run-js>(?<code>[^]*?)<\/run-js>/g))
@@ -266,7 +261,7 @@ export async function codeExecutionReplyHandler(result, args) {
 	let processed = false
 	if (steps.length > 0)
 		AddLongTimeLog({
-			name: args.Charname ?? args.char_id ?? 'char',
+			name: args.Charname,
 			role: 'char',
 			content: steps.map(s => s.fullText).join('\n'),
 			files: []
@@ -332,7 +327,7 @@ export async function codeExecutionReplyHandler(result, args) {
 		let i = 0
 		result.logContextBefore ??= []
 		result.logContextBefore.push({
-			name: args.Charname ?? args.char_id ?? 'char',
+			name: args.Charname,
 			role: 'char',
 			content: original,
 			files: result.files,
@@ -349,7 +344,7 @@ export async function codeExecutionReplyHandler(result, args) {
 	catch (error) {
 		console.error('内联js代码执行失败：', error)
 		AddLongTimeLog({
-			name: args.Charname ?? args.char_id ?? 'char',
+			name: args.Charname,
 			role: 'char',
 			content: result.content,
 			files: result.files,
@@ -404,7 +399,7 @@ export async function codeExecutionReplyHandler(result, args) {
 			let i = 0
 			result.logContextBefore ??= []
 			result.logContextBefore.push({
-				name: args.Charname ?? args.char_id ?? 'char',
+				name: args.Charname,
 				role: 'char',
 				content: original,
 				files: result.files,
@@ -422,7 +417,7 @@ export async function codeExecutionReplyHandler(result, args) {
 		catch (error) {
 			console.error(`内联${shell_name}代码执行失败：`, error)
 			AddLongTimeLog({
-				name: args.Charname ?? args.char_id ?? 'char',
+				name: args.Charname,
 				role: 'char',
 				content: result.content,
 				files: result.files,

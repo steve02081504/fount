@@ -610,14 +610,12 @@ const MOLTBOOK_TAG_REGEX = /<moltbook_(?<tag>\w+)(?<attrs>\s*[^>]*?)(?:\/>|>(?<b
  * @returns {Promise<boolean>} 若处理了标签并需重新生成则为 true，否则 false。
  */
 export async function moltbookReplyHandler(reply, args) {
-	const content = reply?.content ?? ''
+	const { content } = reply
 	const matches = [...content.matchAll(MOLTBOOK_TAG_REGEX)]
 	if (matches.length === 0) return false
 
 	const addLog = args.AddLongTimeLog
-	if (!addLog) return false
-
-	const charName = args.Charname ?? args.char_id ?? 'char'
+	const charName = args.Charname
 
 	addLog({
 		name: charName,
