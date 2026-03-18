@@ -1,0 +1,285 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Provides Telegram API context for AI characters in Telegram chats.",
+			"description_markdown": "The **Telegram API** plugin exposes the running Telegraf bot instance to AI characters via JavaScript code execution, enabling advanced Telegram operations such as managing groups, banning users, and sending proactive messages.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "为在 Telegram 聊天中的 AI 角色提供 API 操作上下文",
+			"description_markdown": "**Telegram API** 插件将正在运行的 Telegraf Bot 实例暴露给 AI 角色的 JS 代码执行环境，使角色能够执行禁言、踢人、管理群组、主动发消息等高级 Telegram 操作。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"api",
+				"插件"
+			]
+		},
+		"ar-SA": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "يوفّر سياق Telegram API لشخصيات الذكاء الاصطناعي.",
+			"description_markdown": "يعرض ملحق **Telegram API** مثيل Telegraf Bot الجاري تشغيله لشخصيات الذكاء الاصطناعي عبر تنفيذ JavaScript، مما يتيح عمليات Telegram المتقدمة مثل إدارة المجموعات، الحظر، وإرسال الرسائل بشكل استباقي.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"api",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Stellt KI-Charakteren Telegram-API-Kontext bereit.",
+			"description_markdown": "Das **Telegram API**-Plugin stellt die laufende Telegraf-Bot-Instanz via JavaScript-Ausführung bereit und ermöglicht erweiterte Telegram-Aktionen wie Gruppenverwaltung, Sperren und proaktives Senden von Nachrichten.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"api",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "✈️🤖",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "🤖➡️✈️⚙️✅",
+			"description_markdown": "**✈️🤖** 🔌 ➡️ 🤖✨.\n✅ 👥🛠️.\n✅ 🚫👤.\n✅ 📩➡️.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"✈️",
+				"🤖",
+				"🔌",
+				"⚙️"
+			]
+		},
+		"es-ES": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Proporciona contexto de la API de bot de Telegram para personajes de IA.",
+			"description_markdown": "El complemento **Telegram API** expone la instancia en ejecución de Telegraf mediante ejecución de JavaScript, permitiendo operaciones avanzadas de Telegram como administrar grupos, vetar usuarios y enviar mensajes proactivos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Fournit un contexte d'API de bot Telegram aux personnages IA.",
+			"description_markdown": "Le plugin **Telegram API** expose l'instance Telegraf en cours d'exécution via l'exécution JavaScript, permettant des opérations Telegram avancées telles que la gestion de groupes, le bannissement et l'envoi de messages proactifs.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "AI पात्रों के लिए Telegram API संदर्भ प्रदान करता है।",
+			"description_markdown": "**Telegram API** प्लगइन चल रहे Telegraf Bot इंस्टेंस को JavaScript निष्पादन के माध्यम से उपलब्ध कराता है, जिससे समूह प्रबंधन, उपयोगकर्ता प्रतिबंध और प्रॉएक्टिव संदेश भेजने जैसी उन्नत Telegram कार्रवाइयाँ संभव होती हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Veitir gervigreindarkarakterum Telegram API samhengi.",
+			"description_markdown": "**Telegram API** viðbótin birtir Telegraf bot-tilvik sem er í gangi í gegnum JavaScript keyrslu og gerir mögulegar þróaðar Telegram-aðgerðir eins og hópastjórnun, bann og frumkvæðissendingu skilaboða.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Fornisce contesto API bot di Telegram per personaggi IA.",
+			"description_markdown": "Il plugin **Telegram API** espone l'istanza Telegraf in esecuzione tramite esecuzione JavaScript, abilitando operazioni Telegram avanzate come gestione gruppi, ban e invio di messaggi proattivi.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "AI キャラクターに Telegram API のコンテキストを提供します。",
+			"description_markdown": "**Telegram API** プラグインは、実行中の Telegraf Bot インスタンスを JavaScript 実行を通じて公開し、グループ管理、BAN、プロアクティブな送信などの高度な Telegram 操作を可能にします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "AI 캐릭터에게 Telegram API 컨텍스트를 제공합니다.",
+			"description_markdown": "**Telegram API** 플러그인은 실행 중인 Telegraf Bot 인스턴스를 JavaScript 실행을 통해 노출하여, 그룹 관리, 사용자 차단, 선제 메시지 전송 등 고급 Telegram 작업을 가능하게 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "Telegram 接口",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "爲化身啓 Telegram 機器人之權柄",
+			"description_markdown": "此 **Telegram API** 插件，使化身得御 Telegraf 之 bot。可行羣務、禁封、及主動傳訊等諸事也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"接口",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Biedt Telegram API-context voor AI-personages.",
+			"description_markdown": "De **Telegram API**-plugin stelt de draaiende Telegraf-bot beschikbaar via JavaScript-uitvoering en maakt geavanceerde Telegram-acties mogelijk zoals groepsbeheer, bannen en proactief berichten verzenden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Fornece contexto de Telegram API para personagens de IA.",
+			"description_markdown": "O plugin **Telegram API** expõe a instância Telegraf em execução via execução JavaScript, permitindo operações avançadas no Telegram como gerir grupos, banir utilizadores e enviar mensagens proativas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Предоставляет контекст Telegram API для ИИ-персонажей.",
+			"description_markdown": "Плагин **Telegram API** предоставляет доступ к запущенному Telegraf-боту через выполнение JavaScript, позволяя выполнять продвинутые действия в Telegram: управление группами, бан пользователей и проактивную отправку сообщений.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Надає контекст Telegram API для ШІ-персонажів.",
+			"description_markdown": "Плагін **Telegram API** надає доступ до запущеного Telegraf-бота через виконання JavaScript і дозволяє виконувати розширені дії в Telegram: керування групами, бан та проактивне надсилання повідомлень.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "Cung cấp ngữ cảnh Telegram API cho nhân vật AI.",
+			"description_markdown": "Plugin **Telegram API** cung cấp quyền truy cập vào bot Telegraf đang chạy thông qua thực thi JavaScript, cho phép thao tác Telegram nâng cao như quản lý nhóm, cấm người dùng và gửi tin nhắn chủ động.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "Telegram API",
+			"avatar": "https://api.iconify.design/logos/telegram.svg",
+			"description": "為在 Telegram 聊天中的 AI 角色提供 API 操作情境",
+			"description_markdown": "**Telegram API** 外掛程式將正在執行的 Telegraf Bot 實例提供給 AI 角色的 JS 程式碼執行環境，使角色能進行群組管理、封禁與主動發訊等進階 Telegram 操作。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"telegram",
+				"bot",
+				"api",
+				"外掛"
+			]
+		}
+	}
+}
