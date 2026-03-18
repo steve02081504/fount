@@ -8,6 +8,9 @@
 		],
 		"serviceSources/search": [
 			"google-sr"
+		],
+		"serviceGenerators/AI": [
+			"proxy"
 		]
 	}
 }

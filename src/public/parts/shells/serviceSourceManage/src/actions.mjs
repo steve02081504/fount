@@ -1,4 +1,4 @@
-import { getPartList, setDefaultPart } from '../../../../../server/parts_loader.mjs'
+import { getPartList, setDefaultPart, getAnyPreferredDefaultPart } from '../../../../../server/parts_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addServiceSourceFile, deleteServiceSourceFile, getServiceSourceFile, saveServiceSourceFile } from './manager.mjs'
@@ -40,8 +40,8 @@ export const actions = {
 		if (!sourceName) throw new Error('Service source name is required for create action.')
 		const serviceSourcePath = inferServiceSourcePath(type)
 		await addServiceSourceFile(user, sourceName, serviceSourcePath)
+		generator ||= getAnyPreferredDefaultPart(user, `serviceGenerators/${type}`)
 		if (generator) {
-			// 如果提供了生成器，自动设置配置
 			const data = await getServiceSourceFile(user, sourceName, serviceSourcePath)
 			data.generator = generator
 			await saveServiceSourceFile(user, sourceName, data, serviceSourcePath)

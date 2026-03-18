@@ -1,4 +1,5 @@
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { getAnyPreferredDefaultPart } from '../../../../../server/parts_loader.mjs'
 
 import { getServiceSourceFile, saveServiceSourceFile, addServiceSourceFile, deleteServiceSourceFile, getConfigTemplate, getConfigDisplay } from './manager.mjs'
 
@@ -58,6 +59,7 @@ export function setEndpoints(router) {
 		else {
 			// 创建新服务源
 			await addServiceSourceFile(username, name, serviceSourcePath)
+			generator ||= getAnyPreferredDefaultPart(username, `serviceGenerators/${type}`)
 			if (generator || config) {
 				const data = await getServiceSourceFile(username, name, serviceSourcePath)
 				if (generator) data.generator = generator
