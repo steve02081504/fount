@@ -815,6 +815,13 @@
 					"alt": "एचटीएमएल डाउनलोड आइकन"
 				}
 			},
+			"copyButton": {
+				"title": "कॉपी करें"
+			},
+			"copyButtonIcon": {
+				"alt": "कॉपी करें"
+			},
+			"copySuccess": "क्लिपबोर्ड में कॉपी किया गया",
 			"dropdown": {
 				"delete": "हटाएँ",
 				"deleteIcon": {

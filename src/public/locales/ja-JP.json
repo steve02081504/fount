@@ -815,6 +815,13 @@
 					"alt": "HTMLダウンロードアイコン"
 				}
 			},
+			"copyButton": {
+				"title": "コピー"
+			},
+			"copyButtonIcon": {
+				"alt": "コピー"
+			},
+			"copySuccess": "クリップボードにコピーしました",
 			"dropdown": {
 				"delete": "削除",
 				"deleteIcon": {

@@ -815,6 +815,13 @@
 					"alt": "html-downloadpictogram"
 				}
 			},
+			"copyButton": {
+				"title": "Kopiëren"
+			},
+			"copyButtonIcon": {
+				"alt": "Kopiëren"
+			},
+			"copySuccess": "Gekopieerd naar klembord",
 			"dropdown": {
 				"delete": "Verwijderen",
 				"deleteIcon": {
@@ -1467,7 +1474,7 @@
 			"title": "Hostverbindingscode",
 			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
 			"passwordLabel": "wachtwoord",
-			"copyButton": "kopiëren",
+			"copyButton": "Kopiëren",
 			"regenerateButton": "Regenereer",
 			"infoMessage": "Deel deze inloggegevens met subfount-clients om verbindingen tot stand te brengen.",
 			"connectionCodeCopied": "De verbindingscode is naar het klembord gekopieerd",
@@ -2226,7 +2233,7 @@
 		"acpConfigPlaceholder": "Selecteer een rol en genereer eerst een API-sleutel",
 		"acpConfigSample": "Configuratievoorbeeld:",
 		"acpConfigHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
-		"copyButton": "kopiëren",
+		"copyButton": "Kopiëren",
 		"copied": "Gekopieerd naar klembord",
 		"apiKeySectionTitle": "API-sleutel",
 		"apiKeyHint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",

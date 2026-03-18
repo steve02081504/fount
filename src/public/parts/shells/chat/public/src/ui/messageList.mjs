@@ -199,7 +199,7 @@ export async function renderMessage(message) {
 		event.dataTransfer.effectAllowed = 'copy'
 
 		event.dataTransfer.setData('text/plain', messageContentElement.textContent.trim())
-		event.dataTransfer.setData('text/markdown', message.content)
+		event.dataTransfer.setData('text/markdown', messageMarkdownContent)
 		event.dataTransfer.setData('text/html', preprocessedMessage.content)
 	})
 
@@ -291,6 +291,15 @@ export async function renderMessage(message) {
 	}
 	messageElement.querySelector('.download-html-button-direct').addEventListener('click', triggerDownload)
 
+	// --- 操作栏内复制按钮 ---
+	const copyDirectBtn = messageElement.querySelector('.copy-markdown-direct-button')
+	copyDirectBtn.addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(messageMarkdownContent)
+			showToastI18n('success', 'chat.messageView.copySuccess')
+		} catch (error) { reportAsyncError(error) }
+	})
+
 	// 获取 dropdown 菜单元素
 	const dropdownMenu = messageElement.querySelector('.dropdown')
 	messageElement.addEventListener('mouseleave', () => dropdownMenu.hidePopover())
@@ -355,16 +364,17 @@ export async function renderMessage(message) {
 		await editMessageStart(message, queueIndex, chatLogIndex) // 显示编辑界面
 	})
 
-	// --- 消息反馈栏（仅角色消息）---
-	const feedbackBar = messageElement.querySelector('[data-feedback-bar]')
-	if (feedbackBar) {
-		const feedbackUp = feedbackBar.querySelector('.feedback-up')
-		const feedbackDown = feedbackBar.querySelector('.feedback-down')
-		const regenerateBtn = feedbackBar.querySelector('.regenerate-btn')
-		const inputWrap = feedbackBar.querySelector('[data-feedback-input-wrap]')
-		const feedbackInput = feedbackBar.querySelector('[data-feedback-input]')
-		const feedbackSubmit = feedbackBar.querySelector('[data-feedback-submit]')
-		const feedbackCancel = feedbackBar.querySelector('[data-feedback-cancel]')
+	// --- 角色消息的赞/踩/重新生成及原因输入（以存在 .feedback-input-wrap 判定）---
+	const feedbackInputWrap = messageElement.querySelector('.feedback-input-wrap')
+	if (feedbackInputWrap) {
+		const actionsBar = feedbackInputWrap.closest('.message-actions-bar')
+		const feedbackUp = actionsBar?.querySelector('.feedback-up-button')
+		const feedbackDown = actionsBar?.querySelector('.feedback-down-button')
+		const regenerateBtn = actionsBar?.querySelector('.regenerate-button')
+		const inputWrap = feedbackInputWrap
+		const feedbackInput = feedbackInputWrap.querySelector('.feedback-input')
+		const feedbackSubmit = feedbackInputWrap.querySelector('.feedback-submit-button')
+		const feedbackCancel = feedbackInputWrap.querySelector('.feedback-cancel-button')
 
 		/**
 		 * 展示反馈原因输入框并记录当前反馈类型。

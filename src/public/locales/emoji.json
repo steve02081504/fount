@@ -815,6 +815,13 @@
 					"alt": "💾🌐"
 				}
 			},
+			"copyButton": {
+				"title": "📋"
+			},
+			"copyButtonIcon": {
+				"alt": "📋"
+			},
+			"copySuccess": "✅📋",
 			"dropdown": {
 				"delete": "🗑️",
 				"deleteIcon": {

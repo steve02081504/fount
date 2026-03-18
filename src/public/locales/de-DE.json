@@ -815,6 +815,13 @@
 					"alt": "HTML-Download-Symbol"
 				}
 			},
+			"copyButton": {
+				"title": "Kopieren"
+			},
+			"copyButtonIcon": {
+				"alt": "Kopieren"
+			},
+			"copySuccess": "In die Zwischenablage kopiert",
 			"dropdown": {
 				"delete": "Löschen",
 				"deleteIcon": {

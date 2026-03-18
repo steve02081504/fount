@@ -815,6 +815,13 @@
 					"alt": "Sæktu HTML táknmynd"
 				}
 			},
+			"copyButton": {
+				"title": "Afrita"
+			},
+			"copyButtonIcon": {
+				"alt": "Afrita"
+			},
+			"copySuccess": "Afritað í klippiborð",
 			"dropdown": {
 				"delete": "Eyða",
 				"deleteIcon": {
@@ -1467,7 +1474,7 @@
 			"title": "Tengikóði gestgjafa",
 			"connectionCodeLabel": "Tengikóði (peer ID)",
 			"passwordLabel": "lykilorð",
-			"copyButton": "afrit",
+			"copyButton": "Afrita",
 			"regenerateButton": "Endurnýja",
 			"infoMessage": "Deildu þessum skilríkjum með undirstofnum viðskiptavinum til að koma á tengingum.",
 			"connectionCodeCopied": "Tengikóði hefur verið afritaður á klemmuspjaldið",
@@ -2226,7 +2233,7 @@
 		"acpConfigPlaceholder": "Vinsamlegast veldu hlutverk og búðu til API lykil fyrst",
 		"acpConfigSample": "Dæmi um stillingar:",
 		"acpConfigHint": "Hlutaauðkenni er sýnt í fellilistanum fyrir hlutverk á þessari síðu og hægt er að stjórna API lyklinum í notendastillingum.",
-		"copyButton": "afrit",
+		"copyButton": "Afrita",
 		"copied": "Afritað á klippiborð",
 		"apiKeySectionTitle": "API lykill",
 		"apiKeyHint": "Notað fyrir ACP forskriftartengingarfont (sama lyklasett og API umboð, hægt að búa til í notendastillingum).",

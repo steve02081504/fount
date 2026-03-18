@@ -815,6 +815,13 @@
 					"alt": "下载html图标"
 				}
 			},
+			"copyButton": {
+				"title": "复制"
+			},
+			"copyButtonIcon": {
+				"alt": "复制"
+			},
+			"copySuccess": "已复制到剪贴板",
 			"dropdown": {
 				"delete": "删除",
 				"deleteIcon": {

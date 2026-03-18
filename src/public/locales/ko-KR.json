@@ -815,6 +815,13 @@
 					"alt": "HTML 다운로드 아이콘"
 				}
 			},
+			"copyButton": {
+				"title": "복사"
+			},
+			"copyButtonIcon": {
+				"alt": "복사"
+			},
+			"copySuccess": "클립보드에 복사됨",
 			"dropdown": {
 				"delete": "삭제",
 				"deleteIcon": {

@@ -815,6 +815,13 @@
 					"alt": "أيقونة تنزيل html"
 				}
 			},
+			"copyButton": {
+				"title": "نسخ"
+			},
+			"copyButtonIcon": {
+				"alt": "نسخ"
+			},
+			"copySuccess": "تم النسخ إلى الحافظة",
 			"dropdown": {
 				"delete": "حذف",
 				"deleteIcon": {
