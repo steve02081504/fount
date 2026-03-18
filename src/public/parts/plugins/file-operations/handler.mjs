@@ -74,15 +74,16 @@ async function getFileObjFormPathOrUrl(pathOrUrl) {
  * 处理来自 AI 的文件更改请求。
  * @type {ReplyHandler_t}
  */
-export async function fileOperationsReplyHandler(result, { AddLongTimeLog }) {
-	if (!AddLongTimeLog) return false
+export async function fileOperationsReplyHandler(result, args) {
+	const { AddLongTimeLog, Charname } = args
 
-	const content = result?.content ?? ''
+	const { content } = result
 	let regen = false
 	const tool_calling_log = {
-		name: result.name ?? 'char',
+		name: Charname,
 		role: 'char',
-		content: ''
+		content: '',
+		files: [],
 	}
 
 	const view_files_matches = [...content.matchAll(/<view-file>(?<paths>[^]*?)<\/view-file>/g)]
