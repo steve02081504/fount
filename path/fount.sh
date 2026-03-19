@@ -1315,14 +1315,25 @@ debug_on() {
 		if [ -n "$browser" ]; then
 			install_package xdotool "xdotool" || true
 			install_package xclip "xclip" || true
+			if
+				xdotool search --onlyvisible --name '.*- Node\.js[：:].*' &>/dev/null ||
+				xdotool search --onlyvisible --name '^DevTools$' &>/dev/null;
+			then
+				return
+			fi
 			original_clip=$(xclip -o -selection clipboard 2>/dev/null)
 			echo -n "chrome://inspect" | xclip -selection clipboard
 			"$browser" --new-window &
 			sleep 2
 			xdotool key ctrl+l
 			xdotool key ctrl+v
+			echo -n "$original_clip" | xclip -selection clipboard || true
 			xdotool key Return
-			echo -n "$original_clip" | xclip -selection clipboard
+			sleep 0.3
+			for _ in {1..5}; do
+				xdotool key Tab
+			done
+			xdotool key Return
 		fi
 	fi
 }
@@ -1421,6 +1432,7 @@ clean)
 	exit 0
 	;;
 keepalive)
+	trap 'write_taskbar_progress_clear' EXIT INT TERM
 	runargs=("${@:2}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
 		debug_on
@@ -1533,6 +1545,7 @@ remove)
 	exit 0
 	;;
 *)
+	trap 'write_taskbar_progress_clear' EXIT INT TERM
 	runargs=("${@}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
 		debug_on

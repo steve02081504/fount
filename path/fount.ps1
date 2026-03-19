@@ -867,6 +867,11 @@ $Script:is_debug = $false
 function debug_on {
 	$Script:is_debug = $true
 	if (Get-Command chrome -ErrorAction Ignore) {
+		$hasNodeDevtoolsWindow = Get-Process chrome -ErrorAction Ignore | Where-Object {
+			$title = $_.MainWindowTitle
+			$title -and ($title -match '\- Node\.js[：:]' -or $title -eq 'DevTools')
+		}
+		if ($hasNodeDevtoolsWindow) { return }
 		$originalClipboard = Get-Clipboard
 		Set-Clipboard -Value "chrome://inspect"
 		Start-Process "chrome.exe" "--new-window"
@@ -874,8 +879,13 @@ function debug_on {
 		Start-Sleep -Seconds 2
 		[System.Windows.Forms.SendKeys]::SendWait("^{l}")
 		[System.Windows.Forms.SendKeys]::SendWait("^{v}")
-		[System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
 		Set-Clipboard -Value $originalClipboard
+		[System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+		Start-Sleep -Milliseconds 300
+		for ($i = 0; $i -lt 5; $i++) {
+			[System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+		}
+		[System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
 	}
 }
 # 智能自启动：向 Windows 注册“系统重启/更新后恢复”
@@ -1069,14 +1079,14 @@ elseif ($args[0] -eq 'init') {
 }
 elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
-	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
-		$runargs = $runargs[1..$runargs.Count]
-		debug_on
-	}
 
 	$env:FOUNT_KEEPALIVE = 1
 	try {
 		Register-FountApplicationRestart
+		if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
+			$runargs = $runargs[1..$runargs.Count]
+			debug_on
+		}
 		$startTime = Get-Date
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
@@ -1125,6 +1135,7 @@ elseif ($args[0] -eq 'keepalive') {
 	finally {
 		Remove-Item Env:\FOUNT_KEEPALIVE -Force -ErrorAction Ignore
 		Unregister-FountApplicationRestart
+		Write-TaskbarProgressClear
 	}
 }
 elseif ($args[0] -eq 'remove') {
@@ -1301,12 +1312,12 @@ elseif ($args[0] -eq 'remove') {
 }
 else {
 	$runargs = $args
-	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
-		$runargs = $runargs[1..$runargs.Count]
-		debug_on
-	}
 	try {
 		Register-FountApplicationRestart
+		if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
+			$runargs = $runargs[1..$runargs.Count]
+			debug_on
+		}
 		run @runargs
 		while ($LastExitCode -eq 131) {
 			Update-FountAndDeno
@@ -1315,6 +1326,7 @@ else {
 	}
 	finally {
 		Unregister-FountApplicationRestart
+		Write-TaskbarProgressClear
 	}
 }
 
