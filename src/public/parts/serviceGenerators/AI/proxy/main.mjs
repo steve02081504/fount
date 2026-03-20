@@ -79,6 +79,10 @@ async function GetSource(config, { SaveConfig }) {
 				Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined,
 				'HTTP-Referer': 'https://steve02081504.github.io/fount/',
 				'X-Title': 'fount',
+				...(config.url.includes('openrouter.ai') ? {
+					'X-OpenRouter-Title': 'fount',
+					"X-OpenRouter-Categories": 'personal-agent,productivity,roleplay',
+				} : {}),
 				...config?.custom_headers
 			},
 			body: JSON.stringify({
