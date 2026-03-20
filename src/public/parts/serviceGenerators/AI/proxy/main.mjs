@@ -46,6 +46,9 @@ const configTemplate = {
 	convert_config: {
 		roleReminding: true,
 		ignoreFiles: false,
+		forceRoleAlternation: false,
+		forceUserMessageEnding: false,
+		forceNoSystemMessages: false,
 	},
 	use_stream: true,
 }
@@ -282,7 +285,12 @@ async function GetSource(config, { SaveConfig }) {
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			return await fetchChatCompletionWithRetry([
+			return await fetchChatCompletionWithRetry(config.convert_config?.forceNoSystemMessages ? [
+				{
+					role: 'user',
+					content: 'system: ' + prompt
+				}
+			] : [
 				{
 					role: 'system',
 					content: prompt
@@ -300,7 +308,7 @@ async function GetSource(config, { SaveConfig }) {
 
 			const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
 
-			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+			let messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				let textContent = `\
 <message "${uid}">
@@ -393,6 +401,36 @@ ${chatLogEntry.content}
 						role: 'system',
 						content: `现在请以${prompt_struct.Charname}的身份续写对话。`
 					})
+			}
+
+			if (config.convert_config?.forceNoSystemMessages)
+				messages = messages.map(m => {
+					if (m.role !== 'system') return m
+					return { role: 'user', content: 'system: ' + m.content }
+				})
+
+			if (config.convert_config?.forceUserMessageEnding)
+				if (messages[messages.length - 1]?.role !== 'user')
+					messages.push({
+						role: 'user',
+						content: '(继续)'
+					})
+
+			if (config.convert_config?.forceRoleAlternation) {
+				const oldMessages = messages
+				messages = []
+				/** @type {'user'|'assistant'|'system'|null} */
+				let lastRole = null
+
+				for (const m of oldMessages) {
+					if (m.role === lastRole) messages.push({
+						role: lastRole === 'assistant' ? 'user' : 'assistant',
+						content: `(${lastRole === 'assistant' ? '继续' : '收到'})`
+					})
+
+					messages.push(m)
+					lastRole = m.role
+				}
 			}
 
 			/**
