@@ -367,14 +367,24 @@ function Register-FountTerminalProfile {
 		profiles  = @(
 			[ordered]@{
 				name              = "fount"
+				guid              = "{780ca695-2d01-5e08-834e-1e9bfd14d3ee}"
+				tabTitle          = "𝓯𝓸𝓾𝓷𝓽"
+				tabColor          = "#0e3c5c"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
 				icon              = "$FOUNT_DIR\src\public\pages\favicon.ico"
+				font              = @{
+					face   = "FiraCode Nerd Font"
+					weight = "semi-light"
+				}
+				historySize = 100000
+				opacity     = 72
+				"experimental.retroTerminalEffect" = $true
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress
 	if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
-		Set-Content -Path $WTjsonPath -Value $jsonContent
+		Set-Content -Path $WTjsonPath -Value $jsonContent -Encoding UTF8
 	}
 }
 
