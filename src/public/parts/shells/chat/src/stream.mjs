@@ -1,5 +1,6 @@
 import { escapeRegExp } from '../../../../../scripts/escape.mjs'
 import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n.mjs'
+import { handleError } from '../../../../../server/server.mjs'
 
 /**
  * 将异步的回复预览更新器包装为同步接口：内部维护最新 reply 的 buffer，
@@ -26,7 +27,7 @@ export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
 			drainScheduled = false
 			const reply = lastReply
 			if (!reply) return
-			return Promise.resolve(asyncPreviewUpdater(reply)).catch(() => { })
+			return Promise.resolve(asyncPreviewUpdater(reply)).catch(handleError)
 		})
 	}
 
@@ -182,14 +183,31 @@ function generateTextDiff(oldContent = '', newContent = '') {
 
 /**
  * 生成两个消息对象之间的差异切片，包括文本和文件。
+ * 对 content 和 content_for_show 分别独立差分，切片中携带各自字段的变化值，
+ * 前端通过 slice.add[key] 精确更新对应字段，避免将 HTML 展示内容写入纯文本字段。
  * @param {object} oldMessage - 旧消息对象。
  * @param {object} newMessage - 新消息对象。
  * @returns {Array<object>} - 包含文本和文件差异切片的数组。
  */
 export function generateDiff(oldMessage, newMessage) {
-	const oldContent = oldMessage?.content_for_show ?? oldMessage?.content ?? ''
-	const newContent = newMessage?.content_for_show ?? newMessage?.content ?? ''
-	const textSlices = generateTextDiff(oldContent, newContent)
+	const appendAdd = {}
+	const separateSlices = []
+
+	for (const key of ['content', 'content_for_show']) {
+		const oldVal = oldMessage?.[key] ?? ''
+		const newVal = newMessage?.[key] ?? ''
+		if (oldVal === newVal) continue
+
+		const fieldSlices = generateTextDiff(oldVal, newVal)
+		for (const slice of fieldSlices) if (slice.type === 'append')
+			appendAdd[key] = slice.add.content
+		else
+			separateSlices.push({ ...slice, field: key })
+	}
+
+	const textSlices = []
+	if (Object.keys(appendAdd).length > 0)
+		textSlices.push({ type: 'append', add: appendAdd })
 
 	const fileSlices = []
 	const oldFiles = oldMessage?.files || []
@@ -201,7 +219,7 @@ export function generateDiff(oldMessage, newMessage) {
 			files: newFiles
 		})
 
-	return [...textSlices, ...fileSlices]
+	return [...textSlices, ...separateSlices, ...fileSlices]
 }
 
 /**
