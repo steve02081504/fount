@@ -52,6 +52,9 @@ export class chatReply_t {
  * @property {boolean} supported_functions.unsafe_html - 是否支持不安全的 HTML。
  * @property {boolean} supported_functions.files - 是否支持文件。
  * @property {boolean} supported_functions.add_message - 是否支持添加消息。
+ * @property {boolean} supported_functions.fount_i18nkeys - 是否支持国际化键。
+ * @property {boolean} supported_functions.fount_assets - 是否支持资产。
+ * @property {boolean} supported_functions.fount_themes - 是否支持fount主题的css样式，为假时代表不能使用任何daisyui和tailwind css样式。
  * @property {string} chat_name - 聊天名称。
  * @property {string} char_id - 角色 ID。
  * @property {string} username - 用户名。
@@ -83,6 +86,7 @@ export class chatReplyRequest_t {
 		add_message: boolean;
 		fount_i18nkeys: boolean;
 		fount_assets: boolean;
+		fount_themes: boolean;
 	}
 	chat_name: string
 	char_id: string
@@ -192,6 +196,17 @@ export type ReplyPreviewUpdater_t = (reply: chatReply_t) => void
 export class GenerationOptions_t {
 	replyPreviewUpdater?: ReplyPreviewUpdater_t
 	signal?: AbortSignal
+	supported_functions?: {
+		markdown?: boolean
+		mathjax?: boolean
+		html?: boolean
+		unsafe_html?: boolean
+		files?: boolean
+		add_message?: boolean
+		fount_i18nkeys?: boolean
+		fount_assets?: boolean
+		fount_themes?: boolean
+	}
 	base_result?: {
 		content: string,
 		files: {

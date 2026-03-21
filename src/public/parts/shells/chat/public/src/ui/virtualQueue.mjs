@@ -17,6 +17,14 @@ const deletionListeners = []
 // which is necessary for applying slices correctly.
 const streamingMessages = new Map()
 
+/**
+ * 获取消息当前应展示的文本（优先 content_for_show）。
+ * @param {object} message - 消息对象。
+ * @returns {string}
+ */
+function getDisplayContent(message) {
+	return message?.content_for_show ?? message?.content ?? ''
+}
 
 /**
  * 添加一个在从 UI 中删除消息后将被调用的监听器。
@@ -201,7 +209,7 @@ export async function handleMessageAdded(message) {
 					itemState.pendingRender = false
 					const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
 					await virtualList.appendItem(message, shouldScroll)
-					streamRenderer.register(message.id, message.content ?? '')
+					streamRenderer.register(message.id, getDisplayContent(message))
 				}
 			}, 500)
 		} else {
@@ -254,7 +262,7 @@ export async function handleMessageReplaced(index, message) {
 		// If the newly replaced message is a generating one
 		if (message.is_generating) {
 			streamingMessages.set(message.id, { messageData: message })
-			streamRenderer.register(message.id, message.content)
+			streamRenderer.register(message.id, getDisplayContent(message))
 		}
 
 		updateLastCharMessageArrows()
@@ -365,7 +373,7 @@ export async function handleStreamUpdate({ messageId, slices }) {
 			await virtualList.appendItem(itemState.messageData, shouldScroll)
 			itemState.pendingRender = false
 			// 注册到 streamRenderer
-			streamRenderer.register(messageId, itemState.messageData.content)
+			streamRenderer.register(messageId, getDisplayContent(itemState.messageData))
 		}
 
 		// Apply patches to the data model
@@ -373,6 +381,6 @@ export async function handleStreamUpdate({ messageId, slices }) {
 			applySlice(itemState.messageData, slice)
 
 		// Notify the renderer of the new target content
-		streamRenderer.updateTarget(messageId, itemState.messageData.content)
+		streamRenderer.updateTarget(messageId, getDisplayContent(itemState.messageData))
 	})
 }
