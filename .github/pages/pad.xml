@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XML_DIZ_INFO>
+	<MASTER_PAD_VERSION_INFO>
+		<MASTER_PAD_VERSION>4.0</MASTER_PAD_VERSION>
+		<MASTER_PAD_EDITOR>manual</MASTER_PAD_EDITOR>
+		<MASTER_PAD_INFO>Portable Application Description (PAD) 4.0 for fount.</MASTER_PAD_INFO>
+	</MASTER_PAD_VERSION_INFO>
+	<Company_Info>
+		<Company_Name>steve02081504</Company_Name>
+		<Address_1 />
+		<Address_2 />
+		<City_Town />
+		<State_Province />
+		<Zip_Postal_Code />
+		<Country />
+		<Company_WebSite_URL>https://github.com/steve02081504/fount</Company_WebSite_URL>
+		<Contact_Info>
+			<Author_First_Name>steve</Author_First_Name>
+			<Author_Last_Name>green</Author_Last_Name>
+			<Author_Email />
+			<Contact_First_Name>steve</Contact_First_Name>
+			<Contact_Last_Name>green</Contact_Last_Name>
+			<Contact_Email>steve_green@qq.com</Contact_Email>
+		</Contact_Info>
+		<Support_Info>
+			<Sales_Email />
+			<Support_Email />
+			<General_Email />
+			<Sales_Phone />
+			<Support_Phone />
+			<General_Phone />
+			<Fax_Phone />
+		</Support_Info>
+	</Company_Info>
+	<Program_Info>
+		<Program_Name>fount</Program_Name>
+		<Program_Version>0.0.0</Program_Version>
+		<Program_Release_Month>04</Program_Release_Month>
+		<Program_Release_Day>29</Program_Release_Day>
+		<Program_Release_Year>2024</Program_Release_Year>
+		<Program_Cost_Dollars>0</Program_Cost_Dollars>
+		<Program_Cost_Other_Code />
+		<Program_Cost_Other />
+		<Program_Type>Freeware</Program_Type>
+		<Program_Release_Status>Major Release</Program_Release_Status>
+		<Program_Install_Support>Y</Program_Install_Support>
+		<Program_OS_Support>Windows, Linux, macOS</Program_OS_Support>
+		<Program_Language>Multilingual</Program_Language>
+		<File_Info>
+			<File_Size_Bytes>2297163</File_Size_Bytes>
+			<File_Size_K>2243</File_Size_K>
+			<File_Size_MB>2.19</File_Size_MB>
+		</File_Info>
+		<Expire_Info>
+			<Has_Expire_Info>N</Has_Expire_Info>
+			<Expire_Count />
+			<Expire_Based_On />
+			<Expire_Other_Info />
+			<Expire_Month />
+			<Expire_Day />
+			<Expire_Year />
+		</Expire_Info>
+		<Program_Change_Info />
+		<Program_Category_Class>Development::Other</Program_Category_Class>
+		<Program_Specific_Category>Agent runtime</Program_Specific_Category>
+		<Program_System_Requirements>Deno; Node-compatible runtime for server; modern browser for web UI.</Program_System_Requirements>
+	</Program_Info>
+	<Program_Descriptions>
+		<Arabic>
+			<Keywords>fount, وكيل, ذكاء اصطناعي, LLM, معياري, منصة تشغيل, Deno, إضافة, دردشة, IDE, متصفح</Keywords>
+			<Char_Desc_45>منصة تشغيل وكلاء معيارية لرفيق ذكاء اصطناعي.</Char_Desc_45>
+			<Char_Desc_80>منصة تشغيل وكلاء قابلة للبرمجة؛ تحمّل المكونات للخدمات والواجهة والوكلاء.</Char_Desc_80>
+			<Char_Desc_250>fount منصة تشغيل وكلاء قابلة للبرمجة ومعيارية وقابلة للتخصيص؛ تحمّل مكونات مختلفة لتقديم الخدمات. خصّص منطق الوكيل لا المحفزات فقط؛ تكامل مع IDE والمتصفحات والمحطات وDiscord.</Char_Desc_250>
+			<Char_Desc_450>fount منصة تشغيل وكلاء قابلة للبرمجة ومعيارية ووحدوية وقابلة للتخصيص تحمّل مكونات متعددة لتقديم الخدمات. نظام بيئي غني، وكلاء وإضافات من المجتمع، مناسب للمكتب وتصدير التقارير، وتكامل سلس للشخصيات عبر أدوات المطورين والمتصفحات والطرفيات. المصدر على GitHub: steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount منصة تشغيل وكلاء قابلة للبرمجة ومعيارية ووحدوية وقابلة للتخصيص، تحمّل مكونات مختلفة لتقديم الخدمات. تشمل المكونات: الأصداف (واجهات)، والشخصيات (AI)، والعوالم (طبقات السياق)، والشخصيات المفترضة، والإضافات ومصادر الخدمة — كل منها مستقل وقابل للاستبدال الفوري. يمكنك تخصيص منطق الوكيل عبر الكود مباشرة، لا المحفزات والواجهة فقط؛ تحكم تاماً في طريقة تفكير الشخصيات وتذكّرها واستجابتها. يوفر النظام بيئة مجتمعية غنية بالشخصيات والإضافات الجاهزة للاستخدام. يتكامل fount بسلاسة مع IDEs والمتصفحات والمحطات وDiscord وغيرها، مما يتيح لنفس الشخصية التواجد عبر جميع الأنظمة. مناسب للمكتب مع تصدير سريع للتقارير الهيكلية. المصدر على GitHub: steve02081504/fount.</Char_Desc_2000>
+		</Arabic>
+		<German>
+			<Keywords>fount, KI, Agent, LLM, modular, Laufzeitumgebung, Deno, Plugin, Chat, IDE, Browser</Keywords>
+			<Char_Desc_45>Modulare Agenten-Laufzeit für KI-Begleiter.</Char_Desc_45>
+			<Char_Desc_80>Programmierbare modulare Agenten-Runtime: lädt Teile für Dienste, UI, Agenten.</Char_Desc_80>
+			<Char_Desc_250>fount ist eine programmierbare, standardisierte, modulare Laufzeitumgebung für Agenten; sie lädt Komponenten für Dienste. Passe Agentenlogik an, nicht nur Prompts; Integration in IDE, Browser, Terminals, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount ist eine programmierbare, standardisierte, modulare und anpassbare Agenten-Runtime, die verschiedene Teile lädt, um Dienste bereitzustellen. Reiches Ökosystem, Community-Agenten und Plugins, bürotauglich mit schnellem Report-Export, nahtlose Einbindung von Charakteren in IDE, Browser, Terminals und mehr. Quellcode: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount ist eine programmierbare, standardisierte, modulare und anpassbare Laufzeitumgebung für KI-Agenten, die verschiedene Komponenten dynamisch lädt, um Dienste bereitzustellen. Die Komponenten umfassen Shells (Oberflächen), Chars (KI-Charaktere), Worlds (Kontextschichten), Personas, Plugins und Service-Sources — jeweils eigenständig und live austauschbar. Du kannst Agentenlogik per Code steuern, nicht nur über Prompts und UI; bestimme, wie Charaktere denken, erinnern und antworten. Ein reiches Community-Ökosystem aus Charakteren und Plugins ist sofort verfügbar. fount integriert sich nahtlos in IDEs, Browser, Terminals und Discord und ermöglicht denselben Charakter auf jeder Plattform. Bürotaugliche Funktionen wie schneller strukturierter Berichtsexport inklusive. Quellcode: GitHub steve02081504/fount.</Char_Desc_2000>
+		</German>
+		<Emoji>
+			<Keywords>⛲, 🤖, 🧠, 🧩, ⚙️, 🔄, 🔌, 💬, 💻, 🌐, ⌨️</Keywords>
+			<Char_Desc_45>⛲🤖✨ 🧩🔄 💻🌐⌨️💬✈️📱</Char_Desc_45>
+			<Char_Desc_80>⛲🤖✨ 🧩🔄 🖥️🤖🌍🎭🔌 💻🎯🧠📚💬 🎨🖼️🎮 🔗🤖 🌐♾️</Char_Desc_80>
+			<Char_Desc_250>⛲✨ 🧩🔄 🖥️🤖🌍🎭🔌 🔧 | 💻🎯🧠📚💬 🚫📋 | 🔗🤖 OpenAI Claude Ollama ♾️ | 🎨30+ 🖌️ | 📝🖼️🎮 | 🏪🤖🧩 | 💻🌐⌨️💬✈️ | 🪟🍎🐧📱 | 📊⚡ | 🐙 steve02081504/fount</Char_Desc_250>
+			<Char_Desc_450>⛲💪✨ 🧩🔄 🖥️🤖🌍🎭🔌🔧 | 💻🎯🧠📚💬 🚫📋🚫🖱️ | 🔗🤖 OpenAI Claude OpenRouter NovelAI Ollama ♾️ | 🎨30+🖌️ | 📝🖼️🎮💥 | 🏪🤖🧩⚡ | 💻 Cursor VS Code 🌐⌨️💬✈️ | 🤖1️⃣🌐♾️ | 🪟🍎🐧📱 | 📊⚡🏢 | 🐙 steve02081504/fount</Char_Desc_450>
+			<Char_Desc_2000>⛲🤖✨💪 | 🧩🔄 🖥️🤖🌍🎭🔌🔧 | 💻🎯🧠📚💬 🚫📋🚫🖱️ | 🔗🤖 OpenAI Claude OpenRouter NovelAI Ollama ♾️ | 🎨30+🖌️ 📝🖼️🎮💥 | 🏪🤖🧩⚡ | 💻 Cursor VS Code + 🌐 + ⌨️ + 💬 Discord + ✈️ Telegram = 🤖1️⃣🌐♾️ | 🪟🍎🐧📱 Android | 📊⚡🏢 | 🐙 steve02081504/fount 🚀</Char_Desc_2000>
+		</Emoji>
+		<English>
+			<Keywords>fount, AI agent, LLM, modular, runtime, Deno, character, plugin, chat, IDE, browser</Keywords>
+			<Char_Desc_45>Modular agent runtime for AI companions.</Char_Desc_45>
+			<Char_Desc_80>Programmable modular agent runtime: load parts for services, UI, and agents.</Char_Desc_80>
+			<Char_Desc_250>fount is a programmable, standardised, modular agent runtime. It loads parts (shells, chars, worlds, plugins) to provide services. Customise agent logic beyond prompts; integrate with IDEs, browsers, terminals, and Discord.</Char_Desc_250>
+			<Char_Desc_450>fount is a programmable, standardised, modular, customisable agent runtime platform. It dynamically loads parts to provide services: rich ecosystem out of the box, customise agent behaviour (not only prompts and UI), community agents and plugins, office-friendly reporting, and integration across environments. Source: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount is a programmable, standardised, modular, customisable agent runtime platform that dynamically loads parts to provide services. Parts include shells (interfaces), chars (AI characters), worlds (context layers), personas, plugins, and service sources — each self-contained and hot-swappable. Customise agent logic beyond prompts and UI: write code to control how characters think, remember, and respond across sessions. A rich community ecosystem of characters and plugins is available out of the box. fount integrates seamlessly into IDEs (Cursor, VS Code), web browsers, terminals, and Discord, letting the same character participate across every surface. Office-friendly features include fast structured report export. Source: GitHub steve02081504/fount.</Char_Desc_2000>
+		</English>
+		<Spanish>
+			<Keywords>fount, agente, IA, LLM, modular, entorno de ejecución, Deno, plugin, chat, IDE, navegador</Keywords>
+			<Char_Desc_45>Plataforma modular de agentes para compañeros IA.</Char_Desc_45>
+			<Char_Desc_80>Runtime modular programable: carga partes para servicios, UI y agentes.</Char_Desc_80>
+			<Char_Desc_250>fount es una plataforma de ejecución de agentes programable, estandarizada y modular que carga partes para ofrecer servicios. Personaliza la lógica del agente, no solo prompts; integración con IDE, navegadores, terminales y Discord.</Char_Desc_250>
+			<Char_Desc_450>fount es una plataforma de ejecución de agentes programable, estandarizada, modular y personalizable que carga diversas partes para ofrecer servicios. Ecosistema rico, agentes y plugins de la comunidad, exportación rápida de informes, integración fluida de personajes en IDE, navegadores, terminales y más. Fuente: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount es una plataforma de ejecución de agentes programable, estandarizada, modular y personalizable que carga dinámicamente diversas partes para ofrecer servicios. Las partes incluyen shells (interfaces), chars (personajes IA), worlds (capas de contexto), personas, plugins y fuentes de servicio — cada una autónoma e intercambiable en caliente. Personaliza la lógica del agente mediante código, no solo prompts e interfaz; controla cómo piensan, recuerdan y responden los personajes. Ecosistema comunitario rico en personajes y plugins disponibles de inmediato. fount se integra en IDEs, navegadores, terminales y Discord, permitiendo que el mismo personaje esté presente en todas las plataformas. Exportación rápida de informes estructurados para uso profesional. Fuente: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Spanish>
+		<French>
+			<Keywords>fount, agent, IA, LLM, modulaire, environnement d'execution, Deno, plugin, chat, IDE, navigateur</Keywords>
+			<Char_Desc_45>Runtime modulaire d'agents pour compagnons IA.</Char_Desc_45>
+			<Char_Desc_80>Plateforme d'agents modulaire : charge des pièces pour services, UI, agents.</Char_Desc_80>
+			<Char_Desc_250>fount est une plateforme d'agents programmable et modulaire qui charge des pièces pour fournir des services. Personnalisez la logique des agents, pas seulement les prompts ; intégration IDE, navigateurs, terminaux, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount est une plateforme d'exécution d'agents programmable, standardisée, modulaire et personnalisable qui charge diverses pièces pour fournir des services. Écosystème riche, agents et plugins communautaires, export de rapports rapide, intégration fluide dans IDE, navigateurs, terminaux et plus. Source : GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount est une plateforme d'exécution d'agents programmable, standardisée, modulaire et personnalisable qui charge dynamiquement diverses pièces pour fournir des services. Les pièces comprennent des shells (interfaces), chars (personnages IA), worlds (couches de contexte), personas, plugins et sources de service — chacune autonome et interchangeable à chaud. Personnalisez la logique des agents par code, pas seulement via les prompts et l'interface ; contrôlez comment les personnages pensent, mémorisent et répondent. Riche écosystème communautaire de personnages et plugins prêts à l'emploi. fount s'intègre dans les IDE, navigateurs, terminaux et Discord, permettant au même personnage d'être présent partout. Export rapide de rapports structurés pour une utilisation professionnelle. Source : GitHub steve02081504/fount.</Char_Desc_2000>
+		</French>
+		<Hindi>
+			<Keywords>fount, एआई, एजेंट, LLM, मॉड्यूलर, रनटाइम, Deno, प्लगइन, चैट, IDE, ब्राउज़र</Keywords>
+			<Char_Desc_45>AI साथियों के लिए मॉड्यूलर एजेंट रनटाइम।</Char_Desc_45>
+			<Char_Desc_80>प्रोग्रामेबल मॉड्यूलर एजेंट रनटाइम: सेवाओं व एजेंटों के लिए भाग लोड करता है।</Char_Desc_80>
+			<Char_Desc_250>fount एक प्रोग्रामेबल, मानकीकृत, मॉड्यूलर एजेंट रनटाइम प्लेटफॉर्म है जो सेवाएं देने के लिए भाग लोड करता है। एजेंट लॉजिक कस्टमाइज़ करें, सिर्फ प्रॉम्प्ट नहीं; IDE, ब्राउज़र, टर्मिनल, Discord में एकीकरण।</Char_Desc_250>
+			<Char_Desc_450>fount एक प्रोग्रामेबल, मानकीकृत, मॉड्यूलर और अनुकूलन योग्य एजेंट रनटाइम प्लेटफॉर्म है जो सेवाएं प्रदान करने के लिए विभिन्न भागों को लोड करता है। समृद्ध इकोसिस्टम, समुदाय के एजेंट और प्लगइन, त्वरित रिपोर्ट एक्सपोर्ट, IDE, ब्राउज़र, टर्मिनल आदि में किरदारों का सहज एकीकरण। स्रोत: GitHub steve02081504/fount।</Char_Desc_450>
+			<Char_Desc_2000>fount एक प्रोग्रामेबल, मानकीकृत, मॉड्यूलर और अनुकूलन योग्य एजेंट रनटाइम प्लेटफॉर्म है जो गतिशील रूप से विभिन्न भागों को लोड करके सेवाएं प्रदान करता है। भागों में shells (इंटरफेस), chars (AI किरदार), worlds (संदर्भ परतें), personas, plugins और service sources शामिल हैं — प्रत्येक स्वतंत्र और तुरंत बदलने योग्य। कोड के ज़रिए agent का लॉजिक नियंत्रित करें, न केवल प्रॉम्प्ट और UI; किरदारों की सोच, याददाश्त और प्रतिक्रिया स्वयं तय करें। सामुदायिक किरदारों और plugins का समृद्ध इकोसिस्टम तुरंत उपलब्ध। fount IDE, ब्राउज़र, टर्मिनल और Discord में सहजता से एकीकृत होता है, जिससे एक ही किरदार हर जगह उपस्थित रह सकता है। कार्यालय उपयोग के लिए त्वरित संरचित रिपोर्ट एक्सपोर्ट भी उपलब्ध। स्रोत: GitHub steve02081504/fount।</Char_Desc_2000>
+		</Hindi>
+		<Icelandic>
+			<Keywords>fount, gervigreind, hugbúnaðarfulltrúi, LLM, einingakerfi, keyrsluumhverfi, Deno, viðbót, spjall, IDE, vafri</Keywords>
+			<Char_Desc_45>Modular reikniritaumhverfi fyrir AI félaga.</Char_Desc_45>
+			<Char_Desc_80>Forritanlegt reikniritaumhverfi: hleður hlutum fyrir þjónustu og reiknirit.</Char_Desc_80>
+			<Char_Desc_250>fount er forritanlegt, staðlað og stillanlegt umhverfi fyrir reiknirit sem hleður hlutum til að veita þjónustu. Sérsníða rökfræði reiknirits, ekki bara prompt; samþætting í IDE, vöfrum, endastöðvum og Discord.</Char_Desc_250>
+			<Char_Desc_450>fount er forritanlegt, staðlað, einingarlegt og stillanlegt umhverfi fyrir reiknirit sem hleður ýmsum hlutum til að veita þjónustu. Ríkt vistkerfi, reiknirit og viðbætur frá samfélaginu, fljótur skýrsluútflutningur, óaðskiljanleg samþætting persóna í IDE, vöfrum, endastöðvum og fleira. Uppruni: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount er forritanlegt, staðlað, einingarlegt og stillanlegt umhverfi fyrir reiknirit sem hleður inn ýmsum hlutum til að veita þjónustu. Hlutarnir eru m.a. shells (viðmót), chars (AI persónur), worlds (samhengi), personas, plugins og þjónustulínur — sérhver sjálfstæður og skiptanlegur í gangi. Sérsníddu rökfræði reiknirits með kóða, ekki bara prompt og viðmóti; stjórnaðu hvernig persónur hugsa, muna og svara. Ríkt samfélagsvistkerfi af persónum og plugins tilbúið til notkunar. fount samþættist í IDE, vöfrum, endastöðvum og Discord þannig að sama persóna er til staðar á öllum kerfum. Skjótur útflutningur á skipulegum skýrslum fyrir skrifstofunotkun. Uppruni: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Icelandic>
+		<Italian>
+			<Keywords>fount, agente, IA, LLM, modulare, runtime, Deno, plugin, chat, IDE, browser</Keywords>
+			<Char_Desc_45>Runtime modulare di agenti per compagni IA.</Char_Desc_45>
+			<Char_Desc_80>Runtime modulare: carica componenti per servizi, UI e agenti.</Char_Desc_80>
+			<Char_Desc_250>fount è una piattaforma di runtime per agenti programmabile e modulare che carica componenti per fornire servizi. Personalizza la logica degli agenti, non solo i prompt; integrazione con IDE, browser, terminali, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount è una piattaforma di runtime per agenti programmabile, standardizzata, modulare e personalizzabile che carica vari componenti per fornire servizi. Ecosistema ricco, agenti e plugin della community, export rapido dei report, integrazione fluida dei personaggi in IDE, browser, terminali e altro. Sorgente: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount è una piattaforma di runtime per agenti programmabile, standardizzata, modulare e personalizzabile che carica dinamicamente vari componenti per fornire servizi. I componenti includono shells (interfacce), chars (personaggi IA), worlds (livelli di contesto), personas, plugin e sorgenti di servizio — ognuno autonomo e sostituibile a caldo. Personalizza la logica degli agenti tramite codice, non solo prompt e interfaccia; controlla come i personaggi pensano, ricordano e rispondono. Ricco ecosistema comunitario di personaggi e plugin immediatamente disponibili. fount si integra in IDE, browser, terminali e Discord, permettendo allo stesso personaggio di essere presente ovunque. Esportazione rapida di report strutturati per uso professionale. Sorgente: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Italian>
+		<Japanese>
+			<Keywords>fount, エージェント, AI, LLM, モジュール, ランタイム, Deno, プラグイン, チャット, IDE, ブラウザ</Keywords>
+			<Char_Desc_45>AIコンパニオン向けモジュール型エージェント実行基盤。</Char_Desc_45>
+			<Char_Desc_80>プログラム可能なモジュール型エージェントRT：パーツを読み込みサービス・UI・エージェントを提供。</Char_Desc_80>
+			<Char_Desc_250>fount はプログラム可能な標準化モジュール型エージェント実行プラットフォームで、パーツを読み込みサービスを提供します。プロンプトだけでなくエージェントロジックを調整；IDE・ブラウザ・ターミナル・Discord へ統合。</Char_Desc_250>
+			<Char_Desc_450>fount は各種パーツを読み込んでサービスを提供する、プログラム可能な標準化・モジュール型・カスタマイズ可能なエージェント実行プラットフォームです。豊富なエコシステム、コミュニティのエージェントとプラグイン、レポートの迅速エクスポート、IDE・ブラウザ・ターミナルなどへのシームレスな統合。ソース: GitHub steve02081504/fount。</Char_Desc_450>
+			<Char_Desc_2000>fount は各種パーツを動的に読み込んでサービスを提供する、プログラム可能な標準化・モジュール化・カスタマイズ可能なエージェント実行プラットフォームです。パーツにはシェル（インターフェース）、キャラクター（AI キャラ）、ワールド（コンテキスト層）、ペルソナ、プラグイン、サービスソースが含まれ、それぞれ独立してホットスワップ可能です。プロンプトや UI だけでなくコードでエージェントロジックを制御でき、キャラクターの思考・記憶・応答を自由にカスタマイズできます。豊富なコミュニティのキャラクターとプラグインがすぐに利用可能です。fount は IDE・ブラウザ・ターミナル・Discord などにシームレスに統合でき、同じキャラクターをあらゆる環境で活用できます。オフィス向けの高速構造化レポート出力機能も搭載。ソース: GitHub steve02081504/fount。</Char_Desc_2000>
+		</Japanese>
+		<Korean>
+			<Keywords>fount, 에이전트, AI, LLM, 모듈형, 런타임, Deno, 플러그인, 채팅, IDE, 브라우저</Keywords>
+			<Char_Desc_45>AI 동반자를 위한 모듈형 에이전트 런타임.</Char_Desc_45>
+			<Char_Desc_80>프로그래밍 가능한 모듈형 에이전트 RT: 컴포넌트를 로드해 서비스·UI·에이전트 제공.</Char_Desc_80>
+			<Char_Desc_250>fount는 서비스를 제공하기 위해 컴포넌트를 로드하는 프로그래밍 가능한 표준화·모듈형 에이전트 런타임 플랫폼입니다. 프롬프트뿐 아니라 에이전트 로직을 조정; IDE·브라우저·터미널·Discord 통합.</Char_Desc_250>
+			<Char_Desc_450>fount는 다양한 컴포넌트를 로드하여 서비스를 제공하는 프로그래밍 가능한 표준화·모듈화·커스터마이징 에이전트 런타임 플랫폼입니다. 풍부한 생태계, 커뮤니티 에이전트와 플러그인, 빠른 보고서 내보내기, IDE·브라우저·터미널 등에 캐릭터 통합. 소스: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount는 다양한 컴포넌트를 동적으로 로드하여 서비스를 제공하는 프로그래밍 가능한 표준화·모듈화·커스터마이징 에이전트 런타임 플랫폼입니다. 컴포넌트는 셸(인터페이스), 캐릭터(AI 캐릭터), 월드(컨텍스트 레이어), 페르소나, 플러그인, 서비스 소스로 구성되며 각각 독립적으로 핫스왑 가능합니다. 프롬프트와 UI뿐 아니라 코드로 에이전트 로직을 직접 제어하고 캐릭터의 사고·기억·응답 방식을 자유롭게 설정할 수 있습니다. 풍부한 커뮤니티 캐릭터와 플러그인 생태계를 바로 활용할 수 있습니다. fount는 IDE, 브라우저, 터미널, Discord 등에 통합되어 동일한 캐릭터를 모든 환경에서 사용할 수 있습니다. 업무용 빠른 구조화 보고서 내보내기 기능 포함. 소스: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Korean>
+		<Chinese_Classical>
+			<Keywords>fount, 智能體, LLM, 模組化, 運行靈臺, Deno, 插件, 對談, IDE, 瀏覽器</Keywords>
+			<Char_Desc_45>fount者，靈臺也；載諸件以成務，幻身代言，跨境咸宜。</Char_Desc_45>
+			<Char_Desc_80>可編程之靈臺，載殼、角色、世界、插件以成服務；以代碼主宰智能體之機，非徒提示與界面。</Char_Desc_80>
+			<Char_Desc_250>fount者，可編程、有定式、模組化、可客製之智能體運行靈臺也，動態載諸件以成務。可以代碼直理智能體之機，非徒提示與界面；主掌角色之思維、記憶與回應。接任意AI源，三十餘種風貌任擇。無縫入IDE、瀏覽器、終端、Discord、Telegram。Windows、macOS、Linux、Android皆宜。</Char_Desc_250>
+			<Char_Desc_450>fount者，可編程之靈臺，動態載殼（界面）、角色（AI人物）、世界（情境層）、人設、插件以成務，各自獨立，可動態換替。生態豐厚，社群角色與插件開箱即用。可以代碼直理智能體之機，非徒提示；主掌角色之思考、記憶與回應。接任意AI源——OpenAI、Claude、Ollama等。三十餘種風貌任君擇，富文、圖像乃至互動之法皆宜。無縫入IDE、瀏覽器、終端、Discord、Telegram。Windows、macOS、Linux、Android無不咸宜。支援速導結構化報章，適辦公之用。源出GitHub之倉steve02081504/fount。</Char_Desc_450>
+			<Char_Desc_2000>fount乃可編程、有定式、模組化、可客製之智能體運行靈臺，動態載諸件以成務。件分殼（界面）、角色（AI人物）、世界（情境層）、人設、插件、服務源之屬，各自獨立，可動態換替。可以代碼直理智能體之機，非徒提示與界面；主掌角色如何思考、記憶與回應。可接任意AI源——OpenAI、Claude、OpenRouter、NovelAI、Ollama等，通靈之法皆由代碼之力隨心塑造。三十餘種風貌任君擇選，亦可自成一家；化身得以富文、圖像乃至互動之法表情達意，意通神會，身臨其境。社群之角色與插件，生態豐厚，可即取用。fount通於IDE（Cursor、VS Code）、瀏覽器、終端、Discord、Telegram諸境，同一角色跨境皆在。Windows、macOS、Linux、Android無不咸宜。亦宜公務，可速導結構化報章。源出GitHub之倉steve02081504/fount。</Char_Desc_2000>
+		</Chinese_Classical>
+		<Dutch>
+			<Keywords>fount, agent, AI, LLM, modulair, runtime, Deno, plugin, chat, IDE, browser</Keywords>
+			<Char_Desc_45>Modulaire agent-runtime voor AI-metgezellen.</Char_Desc_45>
+			<Char_Desc_80>Modulaire agent-runtime: laadt onderdelen voor diensten, UI en agenten.</Char_Desc_80>
+			<Char_Desc_250>fount is een programmeerbare, gestandaardiseerde, modulaire agent-runtime die onderdelen laadt om diensten te leveren. Pas agentlogica aan, niet alleen prompts; integratie in IDE's, browsers, terminals, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount is een programmeerbare, gestandaardiseerde, modulaire en aanpasbare agent-runtime die verschillende onderdelen laadt om diensten te leveren. Rijk ecosysteem, community-agenten en plug-ins, snelle rapportexport, naadloze integratie van personages in IDE's, browsers, terminals en meer. Bron: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount is een programmeerbare, gestandaardiseerde, modulaire en aanpasbare agent-runtime die dynamisch verschillende onderdelen laadt om diensten te leveren. Onderdelen omvatten shells (interfaces), chars (AI-personages), worlds (contextlagen), persona's, plug-ins en servicebronnen — elk zelfstandig en live vervangbaar. Pas agentlogica aan via code, niet alleen prompts en UI; bepaal hoe personages denken, onthouden en reageren. Rijke community-ecosysteem van personages en plug-ins direct beschikbaar. fount integreert in IDE's, browsers, terminals en Discord zodat hetzelfde personage overal aanwezig kan zijn. Snelle gestructureerde rapportexport voor kantoorgebruik. Bron: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Dutch>
+		<Portuguese_Standard>
+			<Keywords>fount, agente, IA, LLM, modular, runtime, Deno, plugin, chat, IDE, navegador</Keywords>
+			<Char_Desc_45>Plataforma modular de agentes para companheiros IA.</Char_Desc_45>
+			<Char_Desc_80>Runtime modular: carrega partes para serviços, UI e agentes.</Char_Desc_80>
+			<Char_Desc_250>fount é uma plataforma de runtime de agentes programável, padronizada e modular que carrega partes para fornecer serviços. Personalize a lógica do agente, não apenas prompts; integração em IDE, navegadores, terminais, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount é uma plataforma de runtime de agentes programável, padronizada, modular e personalizável que carrega várias partes para fornecer serviços. Ecossistema rico, agentes e plugins da comunidade, exportação rápida de relatórios, integração transparente de personagens em IDE, navegadores, terminais e mais. Fonte: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount é uma plataforma de runtime de agentes programável, padronizada, modular e personalizável que carrega dinamicamente várias partes para fornecer serviços. As partes incluem shells (interfaces), chars (personagens IA), worlds (camadas de contexto), personas, plugins e fontes de serviço — cada uma autónoma e intercambiável em tempo real. Personalize a lógica do agente por código, não apenas prompts e interface; controle como os personagens pensam, lembram e respondem. Ecossistema comunitário rico em personagens e plugins disponíveis imediatamente. fount integra-se em IDEs, navegadores, terminais e Discord, permitindo o mesmo personagem em todas as plataformas. Exportação rápida de relatórios estruturados para uso profissional. Fonte: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Portuguese_Standard>
+		<Russian>
+			<Keywords>fount, агент, ИИ, LLM, модульный, среда выполнения, Deno, плагин, чат, IDE, браузер</Keywords>
+			<Char_Desc_45>Модульная платформа агентов для ИИ-компаньонов.</Char_Desc_45>
+			<Char_Desc_80>Модульная платформа агентов: загружает компоненты для сервисов и агентов.</Char_Desc_80>
+			<Char_Desc_250>fount — программируемая стандартизированная модульная платформа агентов, загружающая компоненты для услуг. Настраивайте логику агента, не только промпты; интеграция с IDE, браузерами, терминалами, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount — программируемая стандартизированная модульная настраиваемая платформа агентов, загружающая различные компоненты для услуг. Богатая экосистема, агенты и плагины сообщества, быстрый экспорт отчётов, бесшовная интеграция персонажей в IDE, браузеры, терминалы и т.д. Исходники: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount — это программируемая стандартизированная модульная настраиваемая платформа для агентов, которая динамически загружает различные компоненты для предоставления услуг. Компоненты включают оболочки (интерфейсы), персонажей (AI-персонажи), миры (слои контекста), персоны, плагины и источники служб — каждый независим и заменяем на лету. Настраивайте логику агента через код, а не только промпты и интерфейс; управляйте тем, как персонажи думают, запоминают и отвечают. Богатая экосистема персонажей и плагинов от сообщества доступна сразу. fount интегрируется в IDE, браузеры, терминалы и Discord, позволяя одному персонажу присутствовать везде. Быстрый экспорт структурированных отчётов для офисного использования. Исходники: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Russian>
+		<Ukrainian>
+			<Keywords>fount, агент, ШІ, LLM, модульний, середовище виконання, Deno, плагін, чат, IDE, браузер</Keywords>
+			<Char_Desc_45>Модульна платформа агентів для ШІ-супутників.</Char_Desc_45>
+			<Char_Desc_80>Модульна платформа агентів: завантажує компоненти для сервісів і агентів.</Char_Desc_80>
+			<Char_Desc_250>fount — програмована стандартизована модульна платформа агентів, яка завантажує компоненти для послуг. Налаштовуйте логіку агента, не лише промпти; інтеграція з IDE, браузерами, терміналами, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount — програмована стандартизована модульна налаштовувана платформа агентів, яка завантажує різні компоненти для надання послуг. Багата екосистема, агенти й плагіни спільноти, швидкий експорт звітів, безшовна інтеграція персонажів у IDE, браузери, термінали тощо. Джерело: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount — це програмована стандартизована модульна налаштовувана платформа для агентів, яка динамічно завантажує різні компоненти для надання послуг. Компоненти включають оболонки (інтерфейси), персонажів (AI-персонажі), світи (шари контексту), персони, плагіни та джерела служб — кожен незалежний і замінний на льоту. Налаштовуйте логіку агента через код, а не лише промпти та інтерфейс; керуйте тим, як персонажі думають, запам'ятовують і відповідають. Багата екосистема персонажів і плагінів від спільноти доступна одразу. fount інтегрується в IDE, браузери, термінали та Discord, дозволяючи одному персонажу бути присутнім скрізь. Швидкий експорт структурованих звітів для офісного використання. Джерело: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Ukrainian>
+		<Vietnamese>
+			<Keywords>fount, tác tử, AI, LLM, mô-đun, môi trường chạy, Deno, plugin, chat, IDE, trình duyệt</Keywords>
+			<Char_Desc_45>Nền tảng agent module cho đồng hành AI.</Char_Desc_45>
+			<Char_Desc_80>Runtime agent module lập trình được: tải phần cho dịch vụ, UI và agent.</Char_Desc_80>
+			<Char_Desc_250>fount là nền tảng chạy agent lập trình được, chuẩn hóa và modular, tải phần để cung cấp dịch vụ. Tùy chỉnh logic agent, không chỉ prompt; tích hợp IDE, trình duyệt, terminal, Discord.</Char_Desc_250>
+			<Char_Desc_450>fount là nền tảng chạy agent lập trình được, chuẩn hóa, modular và tùy chỉnh, tải các phần khác nhau để cung cấp dịch vụ. Hệ sinh thái phong phú, agent và plugin cộng đồng, xuất báo cáo nhanh, tích hợp nhân vật vào IDE, trình duyệt, terminal và hơn. Nguồn: GitHub steve02081504/fount.</Char_Desc_450>
+			<Char_Desc_2000>fount là nền tảng chạy agent lập trình được, chuẩn hóa, modular và tùy chỉnh, tải động các phần khác nhau để cung cấp dịch vụ. Các phần gồm shells (giao diện), chars (nhân vật AI), worlds (lớp ngữ cảnh), personas, plugins và nguồn dịch vụ — mỗi phần độc lập và có thể thay thế nóng. Tùy chỉnh logic agent bằng code, không chỉ prompt và giao diện; kiểm soát cách nhân vật suy nghĩ, ghi nhớ và phản hồi. Hệ sinh thái cộng đồng phong phú với nhân vật và plugin sẵn sàng sử dụng. fount tích hợp vào IDE, trình duyệt, terminal và Discord, cho phép cùng một nhân vật hiện diện trên mọi nền tảng. Xuất báo cáo cấu trúc nhanh cho công việc văn phòng. Nguồn: GitHub steve02081504/fount.</Char_Desc_2000>
+		</Vietnamese>
+		<Chinese_Simplified>
+			<Keywords>fount, 智能体, 人工智能, LLM, 模块化, 运行时, Deno, 插件, 聊天, IDE, 浏览器</Keywords>
+			<Char_Desc_45>面向 AI 伙伴的可编程模块化智能体运行平台。</Char_Desc_45>
+			<Char_Desc_80>可编程模块化智能体运行时：加载组件以提供服务、界面与智能体。</Char_Desc_80>
+			<Char_Desc_250>fount 是可编程的标准化模块化可定制智能体运行平台，加载各组件提供服务。可定制 agent 逻辑而非仅提示词；可接入 IDE、浏览器、终端、Discord。</Char_Desc_250>
+			<Char_Desc_450>fount 是可编程的标准化组件化客制化智能体运行平台，动态加载组件提供服务：生态丰富，可定制智能体行为（不仅是提示与界面），社区角色与插件，办公友好、快速导出报告，并无缝集成到 IDE、浏览器、终端等环境。源码：GitHub steve02081504/fount。</Char_Desc_450>
+			<Char_Desc_2000>fount 是一个可编程的标准化组件化客制化智能体运行平台，动态加载各种组件来提供服务。组件包括 shells（界面）、chars（AI 角色）、worlds（情境层）、personas、plugins 和 service sources，各自独立、支持热替换。可以用代码直接控制 agent 逻辑，而不只是调整提示词和界面；自定义角色的思考、记忆与回应方式。社区提供丰富的角色和插件，开箱即用。fount 无缝接入 IDE、浏览器、终端和 Discord，同一角色可跨平台在线。支持快速导出结构化报告，适合日常办公。源码：GitHub steve02081504/fount。</Char_Desc_2000>
+		</Chinese_Simplified>
+		<Chinese_Traditional>
+			<Keywords>fount, 智能體, 人工智慧, LLM, 模組化, 執行階段, Deno, 外掛, 聊天, IDE, 瀏覽器</Keywords>
+			<Char_Desc_45>面向 AI 夥伴的可程式化模組化 Agent 運行平台。</Char_Desc_45>
+			<Char_Desc_80>可程式化模組化 Agent 執行環境：載入組件以提供服務、介面與 Agent。</Char_Desc_80>
+			<Char_Desc_250>fount 是可程式化的標準化模組化可客製化 Agent 運行平台，載入各組件提供服務。可客製 Agent 邏輯而非僅提示詞；可整合 IDE、瀏覽器、終端、Discord。</Char_Desc_250>
+			<Char_Desc_450>fount 是可程式化的標準化組件化客製化 Agent 運行平台，動態載入組件提供服務：生態豐富，可客製 Agent 行為（不只是提示與介面），社群角色與外掛，辦公友善、快速匯出報告，並無縫整合至 IDE、瀏覽器、終端等環境。原始碼：GitHub steve02081504/fount。</Char_Desc_450>
+			<Char_Desc_2000>fount 是一個可程式化的標準化組件化客製化 Agent 運行平台，動態載入各種組件來提供服務。組件包含 shells（介面）、chars（AI 角色）、worlds（情境層）、personas、plugins 和 service sources，各自獨立、支援熱替換。可以用程式碼直接控制 Agent 邏輯，而不只是調整提示詞和介面；自訂角色的思考、記憶與回應方式。社群提供豐富的角色和外掛，開箱即用。fount 無縫整合至 IDE、瀏覽器、終端和 Discord，同一角色可跨平台在線。支援快速匯出結構化報告，適合日常辦公。原始碼：GitHub steve02081504/fount。</Char_Desc_2000>
+		</Chinese_Traditional>
+	</Program_Descriptions>
+	<Web_Info>
+		<Application_URLs>
+			<Application_Info_URL>https://github.com/steve02081504/fount</Application_Info_URL>
+			<Application_Order_URL />
+			<Application_Screenshot_URL>https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b</Application_Screenshot_URL>
+			<Application_Icon_URL>https://steve02081504.github.io/fount/imgs/icon.png</Application_Icon_URL>
+			<Application_XML_File_URL>https://steve02081504.github.io/fount/pad.xml</Application_XML_File_URL>
+		</Application_URLs>
+		<Download_URLs>
+			<Primary_Download_URL>https://codeload.github.com/steve02081504/fount/zip/refs/heads/master</Primary_Download_URL>
+			<Secondary_Download_URL />
+			<Additional_Download_URL_1 />
+			<Additional_Download_URL_2 />
+		</Download_URLs>
+	</Web_Info>
+	<Permissions>
+		<Distribution_Permissions>See the software license in the repository; redistribution terms apply per that license.</Distribution_Permissions>
+		<EULA />
+	</Permissions>
+</XML_DIZ_INFO>
