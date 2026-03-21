@@ -60,7 +60,7 @@ ${chatLogEntry.content}
 						'audio/mp4': 'mp4',
 						'audio/m4a': 'm4a',
 						'audio/webm': 'webm',
-						'audio/ogg': 'webm',
+						'audio/ogg': 'ogg',
 					}
 					const format = formatMap[file.mime_type.toLowerCase()] || 'wav'
 
