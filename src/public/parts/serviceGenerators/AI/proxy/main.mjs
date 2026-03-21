@@ -111,7 +111,6 @@ async function GetSource(config, { SaveConfig }) {
 				files: [...base_result?.files || []],
 				extension: { ...base_result?.extension },
 			}
-			const alternativeCharnames = prompt_struct.alternative_charnames || []
 
 			/**
 			 * 预览更新器
@@ -121,7 +120,7 @@ async function GetSource(config, { SaveConfig }) {
 			const previewUpdater = r => {
 				const previewReply = { ...r }
 				if (enableLogprobsShow) previewReply.content_for_show = buildContentForShowFromLogprobs(r, { useThemeStyles })
-				replyPreviewUpdater?.(clearFormat(previewReply, alternativeCharnames))
+				replyPreviewUpdater?.(clearFormat(previewReply, prompt_struct))
 			}
 
 			await fetchChatCompletionWithRetry(messages, {
@@ -130,7 +129,7 @@ async function GetSource(config, { SaveConfig }) {
 
 			if (enableLogprobsShow) result.content_for_show = buildContentForShowFromLogprobs(result, { useThemeStyles })
 
-			return Object.assign(base_result, clearFormat(result, alternativeCharnames))
+			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: {
 			/**
