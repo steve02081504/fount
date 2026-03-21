@@ -695,17 +695,17 @@ ${is_ImageGeneration
 
 				let thoughtSignature = undefined
 				/**
-			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
-			 * @param {object} res - 原始响应对象。
-			 * @param {string} res.content - 响应内容。
-			 * @returns {object} - 清理后的响应对象。
-			 */
+				 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+				 * @param {object} res - 原始响应对象。
+				 * @param {string} res.content - 响应内容。
+				 * @returns {object} - 清理后的响应对象。
+				 */
 				function clearFormat(res) {
 					let text = res.content
 					if (text.match(/<\/sender>\s*<content>/))
 						text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
-							`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-								s => s instanceof String ? escapeRegExp(s) : s.source
+							`(${(prompt_struct.alternative_charnames || []).map(
+								s => s instanceof RegExp ? s.source : escapeRegExp(s)
 							).join('|')})\\s*<\\/sender>\\s*<content>`
 						)).pop().split(/<\/content>\s*<\/message/).shift()
 					if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
@@ -719,19 +719,19 @@ ${is_ImageGeneration
 				}
 
 				/**
-			 * 处理 AI 响应的进度更新
-			 * @param {object} r - 响应
-			 * @returns {void}
-			 */
+				 * 处理 AI 响应的进度更新
+				 * @param {object} r - 响应
+				 * @returns {void}
+				 */
 				const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
 				const result = {
 					content: '',
 					files: [...base_result?.files || []],
 				}
 				/**
-			 * 处理部分。
-			 * @param {Array<object>} parts - 部分数组。
-			 */
+				 * 处理部分。
+				 * @param {Array<object>} parts - 部分数组。
+				 */
 				function handle_parts(parts) {
 					if (!parts) return
 					for (const part of parts) {
