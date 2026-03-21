@@ -41,21 +41,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Fetch JotForm comments
+
+      - name: Resolve comments.json and skip unchanged (schedule only)
+        id: pages_skip
         env:
           JOTFORM_API_KEY: ${{ secrets.JOTFORM_API_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          set -e
           PAGES='.github/pages'
           DATA_DIR="$PAGES/data"
           OUT="$DATA_DIR/comments.json"
-          mkdir -p "$DATA_DIR"
-          fallback() {
-            echo "Fetch failed or invalid response, falling back to existing deployment."
-            wget -q -O "$OUT" "https://steve02081504.github.io/fount/data/comments.json" || echo '[]' > "$OUT"
-          }
-          if [ -z "$JOTFORM_API_KEY" ]; then
-            fallback
-          else
+          PAGES_BASE='https://steve02081504.github.io/fount'
+
+          fetch_comments_to() {
+            local dest="$1"
+            mkdir -p "$(dirname "$dest")"
+            fallback() {
+              echo "Fetch failed or invalid response, falling back to existing deployment."
+              wget -q -O "$dest" "${PAGES_BASE}/data/comments.json" || echo '[]' > "$dest"
+            }
+            if [ -z "${JOTFORM_API_KEY:-}" ]; then
+              fallback
+              return
+            fi
             curl -sf "https://api.jotform.com/form/260680715143050/submissions?apiKey=${JOTFORM_API_KEY}" | python3 -c "
           import json, sys
           try:
@@ -79,14 +88,148 @@ jobs:
                 'created_at': s.get('created_at')
               })
           print(json.dumps(out, ensure_ascii=False, indent=2))
-          " > "$OUT" || fallback
+          " > "$dest" || fallback
+          }
+
+          json_equal() {
+            python3 -c "
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as f: a = json.load(f)
+          with open(sys.argv[2], encoding='utf-8') as f: b = json.load(f)
+
+          def norm(x):
+            if isinstance(x, list):
+              return sorted(x, key=lambda i: json.dumps(i, sort_keys=True, ensure_ascii=False))
+            return x
+          sys.exit(0 if norm(a) == norm(b) else 1)
+          " "$1" "$2"
+          }
+
+          if [ "$EVENT_NAME" != "schedule" ]; then
+            mkdir -p "$DATA_DIR"
+            fetch_comments_to "$OUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+
+          mkdir -p "$DATA_DIR"
+          fetch_comments_to /tmp/new_comments.json
+          wget -q -O /tmp/remote_comments.json "${PAGES_BASE}/data/comments.json" || echo '[]' > /tmp/remote_comments.json
+
+          if ! json_equal /tmp/new_comments.json /tmp/remote_comments.json; then
+            echo "Comments JSON differs from deployment; will deploy."
+            cp /tmp/new_comments.json "$OUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          svg_changed=0
+          shopt -s nullglob
+          for svg in imgs/*.svg; do
+            name=$(basename "$svg")
+            if ! curl -sf "${PAGES_BASE}/imgs/${name}" -o "/tmp/remote_${name}"; then
+              echo "Could not fetch deployed SVG: $name; will deploy."
+              svg_changed=1
+              break
+            fi
+            if ! python3 -c "
+          import pathlib, sys
+          a = pathlib.Path(sys.argv[1]).read_text(encoding='utf-8').replace('\r\n', '\n')
+          b = pathlib.Path(sys.argv[2]).read_text(encoding='utf-8').replace('\r\n', '\n')
+          sys.exit(0 if a == b else 1)
+          " "$svg" "/tmp/remote_${name}"; then
+              echo "SVG differs: $name; will deploy."
+              svg_changed=1
+              break
+            fi
+          done
+          shopt -u nullglob
+
+          if [ "$svg_changed" -eq 0 ]; then
+            echo "Schedule run: comments.json and all imgs/*.svg match live site; skipping deploy."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          cp /tmp/new_comments.json "$OUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Copy local files
+        if: steps.pages_skip.outputs.skip != 'true'
         run: |
           cp -r ./src/public/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
           cp -rn ./src/public/pages/scripts ./.github/pages/
+
+      - name: PNG/ICO from live site or local render
+        if: steps.pages_skip.outputs.skip != 'true'
+        run: |
+          set -e
+          PAGES_BASE='https://steve02081504.github.io/fount'
+          IMG_DIR='.github/pages/imgs'
+          cd "$IMG_DIR"
+          shopt -s nullglob
+          svgs=(./*.svg)
+          if [ "${#svgs[@]}" -eq 0 ] || [ ! -f "${svgs[0]}" ]; then
+            echo "No SVG files under imgs; nothing to rasterize."
+            shopt -u nullglob
+            exit 0
+          fi
+
+          svg_match_live=true
+          for svg in "${svgs[@]}"; do
+            name=$(basename "$svg")
+            if ! curl -sf "${PAGES_BASE}/imgs/${name}" -o "/tmp/raster_cmp_${name}"; then
+              echo "Could not fetch live SVG: $name - will render locally."
+              svg_match_live=false
+              break
+            fi
+            if ! python3 -c "
+          import pathlib, sys
+          a = pathlib.Path(sys.argv[1]).read_text(encoding='utf-8').replace('\r\n', '\n')
+          b = pathlib.Path(sys.argv[2]).read_text(encoding='utf-8').replace('\r\n', '\n')
+          sys.exit(0 if a == b else 1)
+          " "$svg" "/tmp/raster_cmp_${name}"; then
+              echo "SVG differs from live: $name - will render locally."
+              svg_match_live=false
+              break
+            fi
+          done
+
+          if [ "$svg_match_live" = true ]; then
+            fetch_ok=true
+            for svg in "${svgs[@]}"; do
+              base="${svg%.svg}"
+              stem="${base#./}"
+              if ! curl -sf "${PAGES_BASE}/imgs/${stem}.png" -o "${stem}.png" \
+                || ! curl -sf "${PAGES_BASE}/imgs/${stem}.ico" -o "${stem}.ico"; then
+                echo "Could not fetch live ${stem}.png/.ico - will render locally."
+                fetch_ok=false
+                break
+              fi
+            done
+            if [ "$fetch_ok" = true ]; then
+              echo "SVGs match live and PNG/ICO fetched from deployment."
+              shopt -u nullglob
+              exit 0
+            fi
+          fi
+
+          echo "Installing raster tools and rendering PNG/ICO locally."
+          sudo apt-get update -q && sudo apt-get install -y -q librsvg2-bin imagemagick
+          for svg in "${svgs[@]}"; do
+            base="${svg%.svg}"
+            rsvg-convert -w 512 "$svg" -o "${base}.png"
+            for dim in 16 32 48 64 128 256; do
+              rsvg-convert -w "$dim" "$svg" -o "/tmp/ico_${dim}.png"
+            done
+            convert /tmp/ico_16.png /tmp/ico_32.png /tmp/ico_48.png /tmp/ico_64.png /tmp/ico_128.png /tmp/ico_256.png "${base}.ico" \
+              || magick /tmp/ico_16.png /tmp/ico_32.png /tmp/ico_48.png /tmp/ico_64.png /tmp/ico_128.png /tmp/ico_256.png "${base}.ico"
+          done
+          shopt -u nullglob
+
       - name: Inline GitHub user-attachments to avoid CSP
+        if: steps.pages_skip.outputs.skip != 'true'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -168,12 +311,18 @@ jobs:
             echo "Replaced with $base_path"
             echo "::endgroup::"
           done < /tmp/urls.txt
+
       - name: Setup Pages
+        if: steps.pages_skip.outputs.skip != 'true'
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
+        if: steps.pages_skip.outputs.skip != 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.github/pages'
+
       - name: Deploy to GitHub Pages
+        if: steps.pages_skip.outputs.skip != 'true'
         id: deployment
         uses: actions/deploy-pages@v4
