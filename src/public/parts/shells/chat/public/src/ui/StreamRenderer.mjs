@@ -77,9 +77,9 @@ class StreamRenderer {
 				if (!state.domElement) continue
 			}
 
-			// 平滑算法逻辑
+			// 纯追加时平滑逼近；内容重写（包括 HTML 整帧替换）直接跳到目标避免无谓闪烁
 			const { targetContent, displayedContent } = state
-			if (targetContent.length > displayedContent.length) {
+			if (targetContent.startsWith(displayedContent)) {
 				const lag = targetContent.length - displayedContent.length
 				const step = Math.max(1, Math.ceil(lag / 5))
 				state.displayedContent = targetContent.substring(0, displayedContent.length + step)

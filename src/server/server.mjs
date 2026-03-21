@@ -125,7 +125,7 @@ let lastErrorTime = 0
  * @param {Error} err - 错误对象。
  * @returns {void}
  */
-function handleError(err) {
+export function handleError(err) {
 	// avoid notify spam like https://github.com/denoland/deno/issues/32803
 	if (
 		lastError?.message !== err?.message &&

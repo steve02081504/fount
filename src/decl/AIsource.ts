@@ -127,6 +127,18 @@ export class GenerationOptions {
 	replyPreviewUpdater?: (partial: chatReply_t) => void
 	/** 中断信号 (关键！) */
 	signal?: AbortSignal
+	/** 当前 shell 支持能力，用于决定响应渲染策略 */
+	supported_functions?: {
+		markdown?: boolean
+		mathjax?: boolean
+		html?: boolean
+		unsafe_html?: boolean
+		files?: boolean
+		add_message?: boolean
+		fount_i18nkeys?: boolean
+		fount_assets?: boolean
+		fount_themes?: boolean
+	}
 }
 
 /**

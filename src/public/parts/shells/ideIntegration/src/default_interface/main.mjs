@@ -105,8 +105,6 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 				unsafe_html: false,
 				files: true,
 				add_message: false,
-				fount_i18nkeys: false,
-				fount_assets: false,
 			},
 			chat_name: 'ide-integration-' + Date.now(),
 			char_id: charname,
