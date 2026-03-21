@@ -1,0 +1,576 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Local",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Local GGUF",
+			"description_markdown": "Run inference on a local GGUF model with node-llama-cpp (llama.cpp).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"zh-CN": {
+			"name": "本地",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本地 GGUF",
+			"description_markdown": "使用 node-llama-cpp（llama.cpp）加载本地 GGUF 模型并推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本地",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"ar-SA": {
+			"name": "محلي",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF محلي",
+			"description_markdown": "قم بتحميل نموذج GGUF محلي وتشغيل الاستدلال باستخدام node-llama-cpp (llama.cpp).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"محلي",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"de-DE": {
+			"name": "Lokal",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Lokales GGUF",
+			"description_markdown": "Lokales GGUF-Modell mit node-llama-cpp (llama.cpp) laden und Inferenz ausführen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"lokal",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"emoji": {
+			"name": "💻🏠",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "📦💾",
+			"description_markdown": "🏠💻📦⚙️💨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"💻",
+				"🏠",
+				"📦",
+				"⚙️"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"es-ES": {
+			"name": "Local",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Carga un modelo GGUF local con node-llama-cpp (llama.cpp) y ejecuta inferencia.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"fr-FR": {
+			"name": "Local",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Chargez un modèle GGUF local avec node-llama-cpp (llama.cpp) et exécutez l'inférence.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"hi-IN": {
+			"name": "स्थानीय",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "स्थानीय GGUF",
+			"description_markdown": "node-llama-cpp (llama.cpp) के साथ स्थानीय GGUF मॉडल लोड करें और अनुमान चलाएं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"स्थानीय",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"is-IS": {
+			"name": "Staðbundið",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Staðbundið GGUF",
+			"description_markdown": "Hlaða inn staðbundnu GGUF-líkani með node-llama-cpp (llama.cpp) og keyra ályktanir.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"staðbundið",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"it-IT": {
+			"name": "Locale",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF locale",
+			"description_markdown": "Carica un modello GGUF locale con node-llama-cpp (llama.cpp) ed esegui l'inferenza.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"locale",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"ja-JP": {
+			"name": "ローカル",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "ローカル GGUF",
+			"description_markdown": "node-llama-cpp（llama.cpp）でローカルの GGUF モデルを読み込み、推論します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"ローカル",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"ko-KR": {
+			"name": "로컬",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "로컬 GGUF",
+			"description_markdown": "node-llama-cpp(llama.cpp)로 로컬 GGUF 모델을 불러와 추론합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"로컬",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"lzh": {
+			"name": "本地",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本地 GGUF",
+			"description_markdown": "以 node-llama-cpp（llama.cpp）載本地 GGUF 模型而推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本地",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"nl-NL": {
+			"name": "Lokaal",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Lokaal GGUF",
+			"description_markdown": "Laad een lokaal GGUF-model met node-llama-cpp (llama.cpp) en voer inferentie uit.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"lokaal",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"pt-PT": {
+			"name": "Local",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Carregue um modelo GGUF local com node-llama-cpp (llama.cpp) e execute inferência.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"ru-RU": {
+			"name": "Локально",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Локальный GGUF",
+			"description_markdown": "Загрузите локальную модель GGUF с помощью node-llama-cpp (llama.cpp) и выполняйте вывод.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"локальный",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"uk-UA": {
+			"name": "Локально",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Локальний GGUF",
+			"description_markdown": "Завантажте локальну модель GGUF за допомогою node-llama-cpp (llama.cpp) і виконуйте висновок.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"локальний",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"vi-VN": {
+			"name": "Cục bộ",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF cục bộ",
+			"description_markdown": "Tải mô hình GGUF cục bộ bằng node-llama-cpp (llama.cpp) và suy luận.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"cục bộ",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		},
+		"zh-TW": {
+			"name": "本機",
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本機 GGUF",
+			"description_markdown": "使用 node-llama-cpp（llama.cpp）在本機載入 GGUF 模型並推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本機",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/"
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Local GGUF",
+			"description_markdown": "Run inference on a local GGUF model with node-llama-cpp (llama.cpp).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本地 GGUF",
+			"description_markdown": "使用 node-llama-cpp（llama.cpp）加载本地 GGUF 模型并推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本地",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF محلي",
+			"description_markdown": "قم بتحميل نموذج GGUF محلي وتشغيل الاستدلال باستخدام node-llama-cpp (llama.cpp).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"محلي",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Lokales GGUF",
+			"description_markdown": "Lokales GGUF-Modell mit node-llama-cpp (llama.cpp) laden und Inferenz ausführen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"lokal",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "📦💾",
+			"description_markdown": "🏠💻📦⚙️💨",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"💻",
+				"🏠",
+				"📦",
+				"⚙️"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Carga un modelo GGUF local con node-llama-cpp (llama.cpp) y ejecuta inferencia.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Chargez un modèle GGUF local avec node-llama-cpp (llama.cpp) et exécutez l'inférence.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "स्थानीय GGUF",
+			"description_markdown": "node-llama-cpp (llama.cpp) के साथ स्थानीय GGUF मॉडल लोड करें और अनुमान चलाएं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"स्थानीय",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Staðbundið GGUF",
+			"description_markdown": "Hlaða inn staðbundnu GGUF-líkani með node-llama-cpp (llama.cpp) og keyra ályktanir.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"staðbundið",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF locale",
+			"description_markdown": "Carica un modello GGUF locale con node-llama-cpp (llama.cpp) ed esegui l'inferenza.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"locale",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "ローカル GGUF",
+			"description_markdown": "node-llama-cpp（llama.cpp）でローカルの GGUF モデルを読み込み、推論します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"ローカル",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "로컬 GGUF",
+			"description_markdown": "node-llama-cpp(llama.cpp)로 로컬 GGUF 모델을 불러와 추론합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"로컬",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本地 GGUF",
+			"description_markdown": "以 node-llama-cpp（llama.cpp）載本地 GGUF 模型而推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本地",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Lokaal GGUF",
+			"description_markdown": "Laad een lokaal GGUF-model met node-llama-cpp (llama.cpp) en voer inferentie uit.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"lokaal",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF local",
+			"description_markdown": "Carregue um modelo GGUF local com node-llama-cpp (llama.cpp) e execute inferência.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"local",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Локальный GGUF",
+			"description_markdown": "Загрузите локальную модель GGUF с помощью node-llama-cpp (llama.cpp) и выполняйте вывод.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"локальный",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "Локальний GGUF",
+			"description_markdown": "Завантажте локальну модель GGUF за допомогою node-llama-cpp (llama.cpp) і виконуйте висновок.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"локальний",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "GGUF cục bộ",
+			"description_markdown": "Tải mô hình GGUF cục bộ bằng node-llama-cpp (llama.cpp) và suy luận.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"cục bộ",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/mdi/chip.svg",
+			"description": "本機 GGUF",
+			"description_markdown": "使用 node-llama-cpp（llama.cpp）在本機載入 GGUF 模型並推理。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"node-llama-cpp",
+				"本機",
+				"gguf",
+				"llama.cpp"
+			],
+			"home_page": "https://node-llama-cpp.withcat.ai/",
+			"provider": "local"
+		}
+	}
+}
