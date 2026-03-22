@@ -432,7 +432,7 @@ async function loadEditor(fileName) {
 		return loadEditor(fileName)
 	}
 
-	desiredGeneratorName = data?.generator || ''
+	desiredGeneratorName = data?.generator || await getAnyPreferredDefaultPart(`serviceGenerators/${currentSubtype}`).catch(() => '') || ''
 	renderSubtypeSelect()
 	renderGeneratorSelect()
 	generatorSelect.value = desiredGeneratorName
