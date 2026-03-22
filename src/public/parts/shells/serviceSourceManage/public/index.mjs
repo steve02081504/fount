@@ -473,7 +473,11 @@ async function loadEditor(fileName) {
 	}
 	else {
 		enableEditor()
-		await updateEditorContent(data.config || await fetchConfigTemplate(generatorSelect.value))
+		await updateEditorContent(
+			Object.keys(data.config || {}).length
+				? data.config
+				: await fetchConfigTemplate(generatorSelect.value)
+		)
 	}
 	isDirty = false
 }
