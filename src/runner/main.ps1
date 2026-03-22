@@ -196,6 +196,7 @@ function Test-Browser {
 }
 
 $statusServerJob = $null
+$fountExitCode = 1
 try {
 	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 		if ($newargs -contains "open") {
@@ -286,9 +287,21 @@ try {
 			#_!! Move-Item "$PSEXEpath" "${PSEXEpath}.old"
 			#_!! & "$Script:fountDir/run.bat" geneexe "$PSEXEpath"
 		#_!! }) 6> $null
+	#_else
+		# 仅当脚本来自可写文件时才执行自更新；例如 IEX/curl 管道执行时 $PSCommandPath 可能为空。
+		$canSelfModify = $PSCommandPath -and (Test-Path -LiteralPath $PSCommandPath -PathType Leaf)
+		if ($canSelfModify) {
+			$sourceFile = "$Script:fountDir/src/runner/main.ps1"
+			if ((Get-FileHash -LiteralPath $PSCommandPath).Hash -ne (Get-FileHash -LiteralPath $sourceFile).Hash) {
+				Write-Host "Doing runner updating..."
+				try { Copy-Item -LiteralPath $sourceFile -Destination $PSCommandPath -Force }
+				catch { <# 文件无写权限时静默跳过 #> }
+			}
+		}
 	#_endif
 	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
 	& "$Script:fountDir/run.bat" @newargs
+	$fountExitCode = $LastExitCode
 }
 finally {
 	Write-TaskbarProgressClear
@@ -311,7 +324,11 @@ finally {
 		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;Remove-Item `"${PSEXEpath}.old`"") -WindowStyle Hidden
 	#_!! }
 	#_!! if ($args[0] -eq 'remove') {
-		#_balus $LastExitCode
+		#_balus $fountExitCode
 	#_!! }
-	#_!! exit $LastExitCode
+#_else
+	if (($args[0] -eq 'remove') -and $canSelfModify) {
+		Remove-Item -LiteralPath $PSCommandPath -Force
+	}
 #_endif
+exit $fountExitCode
