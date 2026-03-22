@@ -59,10 +59,10 @@ const configTemplate = {
  * @returns {Array<{role: string, content: string}>}
  */
 function buildChatMessages(prompt_struct, config) {
-	let messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+	const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 		const images = (chatLogEntry.files || [])
 			.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
-		let content = chatLogEntry.content
+		let { content } = chatLogEntry
 		if (images.length)
 			content += '\n' + images.map(() => '[local GGUF: image input omitted]').join('\n')
 		return {
@@ -100,10 +100,10 @@ function buildChatMessages(prompt_struct, config) {
 function extractSystemAndDialog(messages, config) {
 	const systemParts = []
 	const dialog = []
-	for (const m of messages) {
+	for (const m of messages)
 		if (m.role === 'system') systemParts.push(String(m.content))
 		else dialog.push(m)
-	}
+
 	const extra = config.session_options?.systemPrompt
 	const merged = [extra, ...systemParts].filter(Boolean).join('\n\n').trim()
 	return {
@@ -152,6 +152,10 @@ function buildPromptCallOptions(config, ctx) {
 	else if (contextSize != null && merged.maxTokens == null)
 		merged.maxTokens = contextSize
 	if (useStream && previewUpdater && result)
+		/**
+		 * 流式文本块处理。
+		 * @param {string} chunk - 文本块。
+		 */
 		merged.onTextChunk = (chunk) => {
 			result.content += chunk
 			previewUpdater(result)
@@ -176,7 +180,7 @@ async function GetSource(config) {
 	const llama = await getLlama(config.llama_options ?? {})
 	const model = await llama.loadModel({
 		modelPath: resolvedPath,
-		...(config.load_model_options ?? {}),
+		...config.load_model_options ?? {},
 	})
 	const context = await model.createContext(config.context_options ?? {})
 
@@ -190,9 +194,14 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 提示。
+		 * @returns {Promise<{content: string}>} 结果。
+		 */
 		Call: async (prompt) => {
 			const sequence = context.getSequence()
-			const sessionOpts = buildLlamaSessionOptions({ ...(config.session_options ?? {}) }, sequence)
+			const sessionOpts = buildLlamaSessionOptions({ ...config.session_options ?? {} }, sequence)
 			const session = new LlamaChatSession(sessionOpts)
 			try {
 				const text = await session.prompt(prompt, buildPromptCallOptions(config, {
@@ -206,6 +215,12 @@ async function GetSource(config) {
 			}
 		},
 
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @param {object} options - 选项。
+		 * @returns {Promise<{content: string}>} 结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 			const messages = buildChatMessages(prompt_struct, config)
@@ -222,8 +237,8 @@ async function GetSource(config) {
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 			const sequence = context.getSequence()
 			const sessionOpts = buildLlamaSessionOptions({
-				...(config.session_options ?? {}),
-				...(mergedSystemPrompt ? { systemPrompt: mergedSystemPrompt } : {}),
+				...config.session_options ?? {},
+				...mergedSystemPrompt ? { systemPrompt: mergedSystemPrompt } : {},
 			}, sequence)
 			const session = new LlamaChatSession(sessionOpts)
 			try {
@@ -250,10 +265,34 @@ async function GetSource(config) {
 		},
 
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => prompt,
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - 令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - 令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 提示。
+			 * @returns {number} 令牌计数。
+			 */
 			get_token_count: (prompt) => {
 				if (!prompt) return 0
 				try {
@@ -265,6 +304,9 @@ async function GetSource(config) {
 			}
 		},
 
+		/**
+		 * 卸载 AI 源。
+		 */
 		Unload: async () => {
 			try {
 				await context.dispose?.()

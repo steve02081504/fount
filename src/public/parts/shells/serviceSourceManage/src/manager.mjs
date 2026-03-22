@@ -74,13 +74,40 @@ async function createScaffold(baseDir, serviceSourcePath, fileName) {
 		const mainContent = `\
 import path from 'node:path'
 
+import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../../src/server/parts_loader.mjs'
-import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
 
 const configPath = import.meta.dirname + '/config.json'
 const data = loadJsonFileIfExists(configPath, { generator: '', config: {} })
-const defaultInterfaces = {
+
+let username = ''
+
+/**
+ * 服务源模块。
+ */
+const self = {
+	filename: path.basename(import.meta.dirname),
+	/**
+	 * 加载服务源。
+	 * @param {object} initialData - 初始化参数对象。
+	 * @param {string} initialData.username - 用户名。
+	 * @returns {Promise<void>}
+	 */
+	async Load(initialData) {
+		username = initialData.username
+		const manager = await loadPart(username, '${normalizedServiceSourcePath}')
+		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
+			/**
+			 * 将当前配置保存到部件数据。
+			 * @returns {void}
+			 */
+			SaveConfig: () => setPartData(username, \`${normalizedServiceSourcePath}/\${my_name}\`, data)
+		}))
+		Object.assign(this.interfaces, defaultInterfaces)
+	},
+}
+const defaultInterfaces = self.interfaces = {
 	config: {
 		/**
 		 * 获取配置数据。
@@ -91,7 +118,7 @@ const defaultInterfaces = {
 		},
 		/**
 		 * 设置配置数据。
-		 * @param {any} data - 要设置的配置数据。
+		 * @param {any} new_data - 要设置的新配置数据。
 		 * @returns {Promise<void>}
 		 */
 		async SetData(new_data) {
@@ -101,32 +128,17 @@ const defaultInterfaces = {
 					for (const key in data.config ??= {}) delete data.config[key]
 					Object.assign(data.config, new_data.config)
 				}
+				await self.Load({ username })
 			}
 			saveJsonFile(configPath, data)
-		},
-		/**
-		 * 获取配置显示内容。
-		 * @returns {Promise<{ html: string, js: string }>} - 显示内容。
-		 */
-		async GetConfigDisplayContent() {
-			return { html: '', js: '' }
 		}
 	}
 }
 
-const my_name = path.basename(import.meta.dirname)
-
-export default {
-	filename: my_name,
-	async Load({ username }) {
-		const manager = await loadPart(username, '${normalizedServiceSourcePath}')
-		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
-			SaveConfig: () => setPartData(username, \`${normalizedServiceSourcePath}/\${my_name}\`, data)
-		}))
-		Object.assign(this.interfaces, defaultInterfaces)
-	},
-	interfaces: defaultInterfaces
-}
+/**
+ * 服务源模块。
+ */
+export default self
 `
 		await fs.promises.writeFile(mainPath, mainContent)
 	}
