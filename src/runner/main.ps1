@@ -279,13 +279,13 @@ try {
 	try { Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore }
 	catch { <# ignore #> }
 	#_if PSEXE
-		#_!! if (Test-Path "${PSEXEpath}.old") {
-			#_!! Remove-Item "${PSEXEpath}.old"
+		#_!! if (Test-Path "${PSCommandPath}.old") {
+			#_!! Remove-Item "${PSCommandPath}.old"
 		#_!! }
 		#_!! $(if ((Get-Command ps12exe -ErrorAction Ignore) -and ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly))) {
 			#_!! "Doing runner updating..."
-			#_!! Move-Item "$PSEXEpath" "${PSEXEpath}.old"
-			#_!! & "$Script:fountDir/run.bat" geneexe "$PSEXEpath"
+			#_!! Move-Item "$PSCommandPath" "${PSCommandPath}.old"
+			#_!! & "$Script:fountDir/run.bat" geneexe "$PSCommandPath"
 		#_!! }) 6> $null
 	#_else
 		# 仅当脚本来自可写文件时才执行自更新；例如 IEX/curl 管道执行时 $PSCommandPath 可能为空。
@@ -320,8 +320,8 @@ finally {
 }
 
 #_if PSEXE
-	#_!! if (Test-Path "${PSEXEpath}.old") {
-		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;Remove-Item `"${PSEXEpath}.old`"") -WindowStyle Hidden
+	#_!! if (Test-Path "${PSCommandPath}.old") {
+		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;Remove-Item `"${PSCommandPath}.old`"") -WindowStyle Hidden
 	#_!! }
 	#_!! if ($args[0] -eq 'remove') {
 		#_balus $fountExitCode
