@@ -644,10 +644,10 @@ export default {
 				if (data.AIsource) AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
 				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
 				data.plugins ??= [
-					'file-operations',
 					'code-execution',
-					'fount-api',
+					'file-operations',
 					'timer',
+					'fount-api',
 				]
 				plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
