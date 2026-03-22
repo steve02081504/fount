@@ -944,6 +944,9 @@ function run {
 	}
 	Write-TaskbarProgress -Percent 5
 	$v8Flags = "--expose-gc"
+	if ($env:FOUNT_V8_FLAGS) {
+		$v8Flags += ",$env:FOUNT_V8_FLAGS"
+	}
 	$heapSizeMB = 100 # Default to 100MB
 	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
 	if (Test-Path $configPath) {

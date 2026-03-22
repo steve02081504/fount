@@ -1366,6 +1366,9 @@ run() {
 		fi
 	fi
 	v8_flags="--expose-gc"
+	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
+		v8_flags="$v8_flags,$FOUNT_V8_FLAGS"
+	fi
 	heap_size_mb=100 # Default to 100MB
 	config_path="$FOUNT_DIR/data/config.json"
 	if [ -f "$config_path" ] && command -v jq &>/dev/null; then
