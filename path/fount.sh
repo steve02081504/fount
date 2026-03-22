@@ -9,6 +9,12 @@ export FOUNT_START_TIME
 
 # fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
 
+# 官方npm源，避免用户自定义源导致各种问题
+if [ -z "$NPM_CONFIG_REGISTRY" ]; then
+	NPM_CONFIG_REGISTRY="https://registry.npmjs.org"
+	export NPM_CONFIG_REGISTRY
+fi
+
 # --- 彩色输出定义 ---
 C_RESET='\033[0m'
 C_RED='\033[0;31m'
@@ -127,8 +133,11 @@ get_i18n() {
 	while [ $# -gt 0 ]; do
 		local param_name="$1"
 		local param_value="$2"
+		# 转义 sed 替换字符串中的特殊字符：\ & 及分隔符 |
+		local escaped_value
+		escaped_value=$(printf '%s' "$param_value" | sed 's/\\/\\\\/g; s/&/\\&/g; s/|/\\|/g')
 		# shellcheck disable=SC2001
-		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${param_value}|g")
+		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${escaped_value}|g")
 		shift 2
 	done
 
@@ -1135,12 +1144,12 @@ fount_upgrade() {
 
 # 函数: 安装 Deno
 install_deno() {
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 0 || -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
+	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
 	if [[ -z "$(command -v deno)" && -f "$HOME/.deno/env" ]]; then
 		# shellcheck source=/dev/null
 		. "$HOME/.deno/env"
 	fi
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 0 || -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
+	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
 
 	# 首先尝试使用包管理器安装
 	if install_package "deno" "deno"; then

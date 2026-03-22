@@ -5,7 +5,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { unlockAchievement, getPartList, getAllDefaultParts, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
+import { unlockAchievement, getPartList, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -270,7 +270,7 @@ async function renderFileList() {
 	if (fileFromURL && fileList.includes(fileFromURL))
 		fileToLoad = fileFromURL
 	else if (fileList.length)
-		fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : fileList[0]
+		fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : await getAnyPreferredDefaultPart(currentServiceSourcePath).catch(() => '') || fileList[0]
 
 	if (fileToLoad)
 		loadEditor(fileToLoad)
@@ -432,7 +432,7 @@ async function loadEditor(fileName) {
 		return loadEditor(fileName)
 	}
 
-	desiredGeneratorName = data?.generator || ''
+	desiredGeneratorName = data?.generator || await getAnyPreferredDefaultPart(`serviceGenerators/${currentSubtype}`).catch(() => '') || ''
 	renderSubtypeSelect()
 	renderGeneratorSelect()
 	generatorSelect.value = desiredGeneratorName
@@ -473,7 +473,11 @@ async function loadEditor(fileName) {
 	}
 	else {
 		enableEditor()
-		await updateEditorContent(data.config || await fetchConfigTemplate(generatorSelect.value))
+		await updateEditorContent(
+			Object.keys(data.config || {}).length
+				? data.config
+				: await fetchConfigTemplate(generatorSelect.value)
+		)
 	}
 	isDirty = false
 }

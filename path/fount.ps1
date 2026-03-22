@@ -29,6 +29,11 @@ if (-not $env:FOUNT_START_TIME) {
 	$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 }
 
+# 官方npm源，避免用户自定义源导致各种问题
+if (-not $env:NPM_CONFIG_REGISTRY) {
+	$env:NPM_CONFIG_REGISTRY = "https://registry.npmjs.org"
+}
+
 # --- 国际化函数 ---
 # 获取系统区域设置
 function Get-SystemLocales {
