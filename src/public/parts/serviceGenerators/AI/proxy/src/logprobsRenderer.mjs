@@ -114,7 +114,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	}
 	if (!htmlTokens) return cleanContent
 
-	const m = sourceResult.extension?.proxy_data?.logprobs_metrics ?? {}
+	const m = sourceResult.extension?.logprobs_metrics ?? {}
 	const ttft = m.ttftSeconds == null ? 'N/A' : `${m.ttftSeconds}s`
 	const timeSeconds = m.timeSeconds ?? 0
 	const tokensCount = m.tokensCount ?? 0

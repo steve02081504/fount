@@ -41,8 +41,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			const tokensCount = result.extension.logprobs.content.length
 			const speed = timeSeconds > 0 ? tokensCount / timeSeconds : 0
 
-			result.extension.proxy_data ??= {}
-			result.extension.proxy_data.logprobs_metrics = {
+			result.extension.logprobs_metrics = {
 				ttftSeconds: Math.max(0, (firstTokenAt - startedAt) / 1000),
 				timeSeconds,
 				tokensCount,
