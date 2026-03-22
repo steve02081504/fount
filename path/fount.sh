@@ -1135,12 +1135,12 @@ fount_upgrade() {
 
 # 函数: 安装 Deno
 install_deno() {
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 0 || -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
+	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
 	if [[ -z "$(command -v deno)" && -f "$HOME/.deno/env" ]]; then
 		# shellcheck source=/dev/null
 		. "$HOME/.deno/env"
 	fi
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 0 || -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
+	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
 
 	# 首先尝试使用包管理器安装
 	if install_package "deno" "deno"; then
