@@ -6,15 +6,15 @@
 export function splitLastUserPrompt(messages) {
 	/** @type {Array<{type: string, text?: string, response?: string[]}>} */
 	const history = []
-	for (const m of messages) {
+	for (const m of messages)
 		if (m.role === 'user') history.push({ type: 'user', text: String(m.content) })
 		else if (m.role === 'assistant') history.push({ type: 'model', response: [String(m.content)] })
-	}
+
 	if (history.length === 0) return { history: [], lastUser: '' }
 	const last = history[history.length - 1]
-	if (last.type !== 'user') {
+	if (last.type !== 'user')
 		return { history, lastUser: '(continue)' }
-	}
+
 	history.pop()
 	return { history, lastUser: last.text }
 }

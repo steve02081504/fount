@@ -3,7 +3,7 @@
  * @param {string} str - 待转义的字符串。
  * @returns {string} 转义后的安全字符串。
  */
-const escapeHtml = (str) => String(str).replace(/[&<>"']/g, s => ({
+const escapeHtml = (str) => String(str).replace(/["&'<>]/g, s => ({
 	'&': '&amp;',
 	'<': '&lt;',
 	'>': '&gt;',
