@@ -41,18 +41,16 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { type = 'AI', name } = req.params
 		const serviceSourcePath = inferServiceSourcePath(type)
-		const { generator, config } = req.body
+		let { generator, config } = req.body
 
 		// 检查服务源是否存在
 		const existing = await getServiceSourceFile(username, name, serviceSourcePath).catch(() => null)
 
 		if (existing && (existing.generator || existing.config)) {
 			// 更新现有服务源
-			const data = {
-				...existing,
-				config: config ? { ...existing.config, ...config } : existing.config
-			}
-			if (generator) data.generator = generator
+			config ||= existing.config
+			generator ||= existing.generator || getAnyPreferredDefaultPart(username, `serviceGenerators/${type}`)
+			const data = { generator, config }
 			await saveServiceSourceFile(username, name, data, serviceSourcePath)
 			res.status(200).json({ message: 'Service source updated successfully' })
 		}
