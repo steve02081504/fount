@@ -55,7 +55,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				...(requestConfig.apikey ? { Authorization: 'Bearer ' + requestConfig.apikey } : {}),
+				...requestConfig.apikey ? { Authorization: 'Bearer ' + requestConfig.apikey } : {},
 				'HTTP-Referer': 'https://steve02081504.github.io/fount/',
 				'X-Title': 'fount',
 				...requestConfig.url.includes('openrouter.ai') ? {
