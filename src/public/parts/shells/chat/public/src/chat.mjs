@@ -81,7 +81,7 @@ export async function initializeChat() {
 		frequency_data: initialData.frequency_data,
 	})
 
-	if (window.Notification && Notification?.permission != 'granted')
+	if (window.Notification?.permission != 'granted')
 		Notification.requestPermission()
 
 	setupSidebar()
