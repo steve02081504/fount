@@ -127,8 +127,11 @@ get_i18n() {
 	while [ $# -gt 0 ]; do
 		local param_name="$1"
 		local param_value="$2"
+		# 转义 sed 替换字符串中的特殊字符：\ & 及分隔符 |
+		local escaped_value
+		escaped_value=$(printf '%s' "$param_value" | sed 's/\\/\\\\/g; s/&/\\&/g; s/|/\\|/g')
 		# shellcheck disable=SC2001
-		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${param_value}|g")
+		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${escaped_value}|g")
 		shift 2
 	done
 
