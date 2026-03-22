@@ -9,6 +9,12 @@ export FOUNT_START_TIME
 
 # fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
 
+# 官方npm源，避免用户自定义源导致各种问题
+if [ -z "$NPM_CONFIG_REGISTRY" ]; then
+	NPM_CONFIG_REGISTRY="https://registry.npmjs.org"
+	export NPM_CONFIG_REGISTRY
+fi
+
 # --- 彩色输出定义 ---
 C_RESET='\033[0m'
 C_RED='\033[0;31m'
