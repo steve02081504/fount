@@ -11,7 +11,7 @@ function runFount(done) {
 	// Support `gulp -- nop` style argument forwarding.
 	const argv = process.argv.slice(2)
 	const dashIndex = argv.indexOf('--')
-	const extraArgs = dashIndex >= 0 ? argv.slice(dashIndex + 1) : argv
+	const extraArgs = dashIndex >= 0 ? argv.slice(dashIndex + 1) : []
 
 	const child = spawn(cmd, [...cmdArgs, ...extraArgs], {
 		cwd: process.cwd(),

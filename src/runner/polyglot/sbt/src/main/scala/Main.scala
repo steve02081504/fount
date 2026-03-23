@@ -4,8 +4,13 @@ object Main {
 
 		val scriptName = if (isWindows) "run.bat" else "run.sh"
 		val scriptDir = {
-			val location = getClass.getProtectionDomain.getCodeSource.getLocation
-			val codePath = new java.io.File(location.toURI).getAbsoluteFile
+			// In some runtime environments `getCodeSource` (or `getLocation`) can be null.
+			// Fall back to the current working directory in that case.
+			val codeSource = getClass.getProtectionDomain.getCodeSource
+			val location = if (codeSource != null) codeSource.getLocation else null
+			val codePath =
+				if (location != null) new java.io.File(location.toURI).getAbsoluteFile
+				else new java.io.File(".").getAbsoluteFile
 			val startDir = if (codePath.isFile) codePath.getParentFile else codePath
 
 			// Walk up from class/jar location so we can set the correct working directory

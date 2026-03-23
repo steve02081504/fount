@@ -53,6 +53,9 @@ on:
       - 'docker-compose.yml'
       - 'dockerfile'
 
+permissions:
+  contents: read
+
 jobs:
   detect-changes:
     name: Detect Changed Polyglots
@@ -247,7 +250,6 @@ jobs:
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
           fi
-
   powershell-fount:
     name: powershell ./path/fount.ps1 nop
     needs: detect-changes
@@ -370,7 +372,7 @@ jobs:
           fi
 
   deno-task-start:
-    name: deno task start -- nop
+    name: deno task start nop
     needs: detect-changes
     if: needs.detect-changes.outputs.run_deno_task == '1'
     runs-on: ubuntu-latest
@@ -385,7 +387,7 @@ jobs:
 
       - name: Run deno task (nop)
         shell: bash
-        run: deno task start -- nop
+        run: deno task start nop
 
       - name: Check git clean (tracked changes only)
         shell: bash
@@ -490,7 +492,7 @@ jobs:
           fi
 
   swift-fount:
-    name: swift run -- nop
+    name: swift run fount nop
     needs: detect-changes
     if: needs.detect-changes.outputs.run_swift == '1'
     runs-on: macos-latest
@@ -499,7 +501,7 @@ jobs:
 
       - name: Run swift launcher (nop)
         shell: bash
-        run: swift run fount -- nop
+        run: swift run fount nop
 
       - name: Check git clean (tracked changes only)
         shell: bash
@@ -583,7 +585,7 @@ jobs:
           fi
 
   gulp-fount:
-    name: npx gulp -- nop
+    name: npx gulp nop
     needs: detect-changes
     if: needs.detect-changes.outputs.run_gulp == '1'
     runs-on: ubuntu-latest
@@ -597,7 +599,7 @@ jobs:
 
       - name: Run gulp launcher (nop)
         shell: bash
-        run: npx gulp -- nop
+        run: npx gulp nop
 
       - name: Check git clean (tracked changes only)
         shell: bash
@@ -714,7 +716,7 @@ jobs:
           fi
 
   sbt-fount:
-    name: sbt run -- nop
+    name: sbt run nop
     needs: detect-changes
     if: needs.detect-changes.outputs.run_sbt == '1'
     runs-on: ubuntu-latest
@@ -741,7 +743,7 @@ jobs:
 
       - name: Run sbt launcher (nop)
         shell: bash
-        run: sbt -batch "run -- nop"
+        run: sbt -batch "run nop"
 
       - name: Check git clean (tracked changes only)
         shell: bash
@@ -791,4 +793,3 @@ jobs:
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
           fi
-
