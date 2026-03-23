@@ -1555,6 +1555,7 @@ remove)
 
 	get_i18n 'remove.fountUninstallationComplete'
 	write_taskbar_progress_clear
+	exit 0
 	;;
 *)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM

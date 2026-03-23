@@ -1333,6 +1333,7 @@ elseif ($args[0] -eq 'remove') {
 
 	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
 	Write-TaskbarProgressClear
+	exit 0
 }
 else {
 	$runargs = $args
