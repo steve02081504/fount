@@ -8,7 +8,7 @@ function runFount(done) {
 	const cmd = isWindows ? 'cmd.exe' : 'sh'
 	const cmdArgs = isWindows ? ['/c', script] : [script]
 
-	// Support `gulp -- nop` style argument forwarding.
+	// Support `gulp run -- nop` style argument forwarding.
 	const argv = process.argv.slice(2)
 	const dashIndex = argv.indexOf('--')
 	const extraArgs = dashIndex >= 0 ? argv.slice(dashIndex + 1) : []
