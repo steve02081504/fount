@@ -1,4 +1,12 @@
-﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+﻿#!/usr/bin/env pwsh
+echo " \`" > /dev/null # " | Out-Null <#
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+SH_EXEC=$(command -v sh)
+"$SH_EXEC" "$SCRIPT_DIR/fount" "$@"
+exit $?
+: << '__END_HEREDOC__'
+#>
+$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
 $script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
 $script:TaskbarProgressEsc = [char]27
@@ -1348,3 +1356,5 @@ else {
 
 if ($ErrorCount -ne $Error.Count) { exit 1 }
 exit $LastExitCode
+function __END_HEREDOC__() {}
+__END_HEREDOC__
