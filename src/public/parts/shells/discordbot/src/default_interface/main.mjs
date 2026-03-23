@@ -137,7 +137,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			// 附件（含 messageSnapshots 转发消息中的附件）
 			const allAttachments = [
 				...fullMessage.attachments.values(),
-				...fullMessage.messageSnapshots.flatMap(s => [...s.attachments.values()])
+				...fullMessage.messageSnapshots.values().flatMap(s => [...s.attachments.values()])
 			]
 			for (const attachment of allAttachments)
 				if (attachment?.url && !processedUrls.has(attachment.url)) {
