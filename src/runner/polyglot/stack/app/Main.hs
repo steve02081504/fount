@@ -3,7 +3,7 @@ module Main where
 import System.Environment (getArgs)
 import System.Info (os)
 import System.Exit (ExitCode(..), exitWith)
-import System.Process (StdStream(Inherit), createProcess, proc, waitForProcess)
+import System.Process (StdStream(Inherit), CreateProcess(..), createProcess, proc, waitForProcess)
 
 main :: IO ()
 main = do

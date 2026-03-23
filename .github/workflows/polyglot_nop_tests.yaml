@@ -595,7 +595,7 @@ jobs:
       - name: Install gulp (no package-lock)
         shell: bash
         run: |
-          npm install --no-package-lock --silent gulp gulp-cli
+          npm install --no-package-lock --no-save --silent gulp gulp-cli
 
       - name: Run gulp launcher (nop)
         shell: bash
