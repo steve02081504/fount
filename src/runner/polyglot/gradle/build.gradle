@@ -1,0 +1,31 @@
+import org.gradle.internal.os.OperatingSystem
+
+def isWindows = OperatingSystem.current().isWindows()
+
+tasks.register('run') {
+	group = 'application'
+	description = 'Run fount (delegates to run.sh/run.bat)'
+
+	doLast {
+		def argsStr = project.findProperty('ARGS')?.toString() ?: ''
+		def extraArgs = argsStr ? argsStr.split('\\s+') : []
+
+		if (isWindows) {
+			// Use cmd.exe to preserve Windows quoting behavior as much as possible.
+			exec {
+				commandLine 'cmd.exe', '/c', 'run.bat'
+				if (!extraArgs.isEmpty()) {
+					args extraArgs
+				}
+			}
+		} else {
+			exec {
+				commandLine 'sh', 'run.sh'
+				if (!extraArgs.isEmpty()) {
+					args extraArgs
+				}
+			}
+		}
+	}
+}
+
