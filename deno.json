@@ -4,6 +4,24 @@
 	"unstable": [
 		"npm-lazy-caching"
 	],
+	"tasks": {
+		"run": "deno run -A path/fount.mjs run",
+		"init": "deno run -A path/fount.mjs init",
+		"debug": "deno run -A path/fount.mjs debug",
+		"shutdown": "deno run -A path/fount.mjs shutdown",
+		"reboot": "deno run -A path/fount.mjs reboot",
+		"clean": "deno run -A path/fount.mjs clean",
+		"update": "git pull -f --rebase origin master",
+		"geneexe": "deno run -A path/fount.mjs geneexe",
+		"remove": "deno run -A path/fount.mjs remove",
+		"nop": "deno run -A path/fount.mjs nop",
+
+		"start": "deno run -A path/fount.mjs",
+		"stop": "deno run -A path/fount.mjs shutdown",
+		"restart": "deno run -A path/fount.mjs reboot",
+		"dev": "deno run -A path/fount.mjs debug",
+		"uninstall": "deno run -A path/fount.mjs remove"
+	},
 	"imports": {
 		"npm:estree": "npm:nop",
 		"npm:express": "npm:express@^5.1.0",

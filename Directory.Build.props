@@ -1,0 +1,28 @@
+<Project>
+	<PropertyGroup>
+		<!--
+		Redirect all dotnet build artifacts (including NuGet intermediate assets) to temp.
+		This prevents `bin/` and `obj/` from being created inside the repo.
+		-->
+		<!--
+		Cross-platform temp root:
+		- prefer TEMP (Windows) / TEMP (Unix)
+		- fallback to TMP
+		- last fallback: /tmp
+		-->
+		<_FountDotnetTempRoot
+			Condition="'$(OS)'=='Windows_NT' and '$(TEMP)'!=''">$(TEMP)\fount-dotnet-runner\</_FountDotnetTempRoot>
+		<_FountDotnetTempRoot
+			Condition="'$(OS)'!='Windows_NT' and '$(TEMP)'!=''">$(TEMP)/fount-dotnet-runner/</_FountDotnetTempRoot>
+		<_FountDotnetTempRoot
+			Condition="'$(_FountDotnetTempRoot)'=='' and '$(OS)'=='Windows_NT' and '$(TMP)'!=''">$(TMP)\fount-dotnet-runner\</_FountDotnetTempRoot>
+		<_FountDotnetTempRoot
+			Condition="'$(_FountDotnetTempRoot)'=='' and '$(OS)'!='Windows_NT' and '$(TMP)'!=''">$(TMP)/fount-dotnet-runner/</_FountDotnetTempRoot>
+		<_FountDotnetTempRoot
+			Condition="'$(_FountDotnetTempRoot)'==''">/tmp/fount-dotnet-runner/</_FountDotnetTempRoot>
+
+		<BaseOutputPath>$(_FountDotnetTempRoot)</BaseOutputPath>
+		<BaseIntermediateOutputPath>$(_FountDotnetTempRoot)obj/</BaseIntermediateOutputPath>
+		<MSBuildProjectExtensionsPath>$(_FountDotnetTempRoot)obj/</MSBuildProjectExtensionsPath>
+	</PropertyGroup>
+</Project>

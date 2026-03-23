@@ -12,6 +12,8 @@ on:
       - '**.ps1'
       - '**.bat'
       - 'path/**'
+      - 'gradlew'
+      - 'gradlew.bat'
     tags-ignore:
       - '*'
     branches:
@@ -28,6 +30,8 @@ jobs:
           find . -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
           find ./path -maxdepth 1 -type f -print0 | xargs -0 chmod +x
           chmod -x ./path/desktop.ini
+          chmod +x ./gradlew
+          chmod +x ./gradlew.bat
       - name: git add all
         run: git add -A
       - name: Push changes

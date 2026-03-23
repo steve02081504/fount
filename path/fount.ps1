@@ -1,4 +1,12 @@
-﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+﻿#!/usr/bin/env pwsh
+echo " \`" > /dev/null # " | Out-Null <#
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+SH_EXEC=$(command -v sh)
+"$SH_EXEC" "$SCRIPT_DIR/fount" "$@"
+exit $?
+: << '__END_HEREDOC__'
+#>
+$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
 $script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
 $script:TaskbarProgressEsc = [char]27
@@ -1093,6 +1101,7 @@ elseif ($args[0] -eq 'geneexe') {
 }
 elseif ($args[0] -eq 'init') {
 	Write-TaskbarProgressClear
+	exit 0
 }
 elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
@@ -1325,6 +1334,7 @@ elseif ($args[0] -eq 'remove') {
 
 	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
 	Write-TaskbarProgressClear
+	exit 0
 }
 else {
 	$runargs = $args
@@ -1348,3 +1358,5 @@ else {
 
 if ($ErrorCount -ne $Error.Count) { exit 1 }
 exit $LastExitCode
+function __END_HEREDOC__() {}
+__END_HEREDOC__

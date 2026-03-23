@@ -3,8 +3,8 @@
 goto Batch
 "
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
-BASH_EXEC=$(command -v bash)
-"$BASH_EXEC" "$SCRIPT_DIR/fount.sh" "$@"
+SH_EXEC=$(command -v sh)
+"$SH_EXEC" "$SCRIPT_DIR/fount" "$@"
 exit 0
 
 :Batch
