@@ -1,0 +1,9 @@
+[package]
+name = "fount"
+version = "0.0.0"
+edition = "2024"
+description = "a programmable, standardised, modular, customisable agent framework."
+
+[[bin]]
+name = "fount"
+path = "src/runner/polyglot/cargo/main.rs"
