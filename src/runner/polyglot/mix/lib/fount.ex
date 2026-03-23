@@ -3,6 +3,8 @@ defmodule Fount do
 
 	@impl true
 	def start(_type, _args) do
+		# One-shot runner: when `run.sh`/`run.bat` finishes, this linked task ends
+		# and the application should exit as well.
 		{:ok, pid} =
 			Task.start_link(fn ->
 				case :os.type() do

@@ -7,4 +7,3 @@ executables:
   fount:
     main: Main.hs
     source-dirs: app
-

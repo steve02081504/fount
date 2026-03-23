@@ -2,7 +2,7 @@ module Main where
 
 import System.Environment (getArgs)
 import System.Info (os)
-import System.Exit (ExitCode(..))
+import System.Exit (ExitCode(..), exitWith)
 import System.Process (Inherit, createProcess, proc, waitForProcess)
 
 main :: IO ()
@@ -22,6 +22,4 @@ main = do
 		}
 
 	exitCode <- waitForProcess ph
-	case exitCode of
-		ExitSuccess -> pure ()
-		ExitFailure n -> fail $ "fount exited with code " ++ show n
+	exitWith exitCode

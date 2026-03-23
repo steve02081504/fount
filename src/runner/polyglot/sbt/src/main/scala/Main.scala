@@ -7,7 +7,7 @@ object Main {
 			else Seq("sh", "run.sh") ++ args
 
 		val exitCode = new ProcessBuilder(cmd: _*).inheritIO().start().waitFor()
-		sys.exit(if (exitCode == 0) 0 else exitCode)
+		sys.exit(exitCode)
 	}
 }
 

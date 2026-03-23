@@ -20,8 +20,6 @@ LICENSE.txt
 *.exe
 .directory
 desktop.ini
-
-/src/runner/polyglot
 /path/fount.mjs
 /package.json
 /gradlew.bat

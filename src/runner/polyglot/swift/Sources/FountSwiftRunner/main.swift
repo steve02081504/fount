@@ -1,6 +1,28 @@
 import Foundation
+let fm = FileManager.default
 
-let rootDir = FileManager.default.currentDirectoryPath
+func repoRootDir(maxParents: Int = 10) -> String {
+	// Derive repo root from the executable location, not the process cwd.
+	let exeURL = (Bundle.main.executableURL ?? URL(
+		fileURLWithPath: CommandLine.arguments[0],
+		relativeTo: URL(fileURLWithPath: fm.currentDirectoryPath)
+	)).resolvingSymlinksInPath()
+
+	var dirURL = exeURL.deletingLastPathComponent()
+	for _ in 0...maxParents {
+		let pkgMarker = dirURL.appendingPathComponent("Package.swift")
+		let gitMarker = dirURL.appendingPathComponent(".git")
+		if fm.fileExists(atPath: pkgMarker.path) || fm.fileExists(atPath: gitMarker.path) {
+			return dirURL.path
+		}
+		dirURL = dirURL.deletingLastPathComponent()
+	}
+
+	// Fallback: keep old behaviour if markers aren't found.
+	return fm.currentDirectoryPath
+}
+
+let rootDir = repoRootDir()
 let args = Array(CommandLine.arguments.dropFirst())
 
 #if os(Windows)

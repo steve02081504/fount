@@ -1,14 +1,18 @@
-import org.gradle.internal.os.OperatingSystem
-
-def isWindows = OperatingSystem.current().isWindows()
+def osName = (System.getProperty('os.name') ?: '').toLowerCase()
+def isWindows = osName.contains('windows')
 
 tasks.register('run') {
 	group = 'application'
 	description = 'Run fount (delegates to run.sh/run.bat)'
 
 	doLast {
-		def argsStr = project.findProperty('ARGS')?.toString() ?: ''
-		def extraArgs = argsStr ? argsStr.split('\\s+') : []
+		def argsStr = project.findProperty('ARGS')?.toString()?.trim() ?: ''
+		def extraArgs = []
+		if (argsStr) {
+			// When ARGS contains commas, treat it as a comma-separated list.
+			// Otherwise, keep the whole string as a single argument so spaces can be preserved.
+			extraArgs = argsStr.contains(',') ? (argsStr.split(',')*.trim()*.findAll { it }) : [argsStr]
+		}
 
 		if (isWindows) {
 			// Use cmd.exe to preserve Windows quoting behavior as much as possible.
