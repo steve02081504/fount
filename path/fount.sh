@@ -1430,6 +1430,7 @@ fi
 case "$1" in
 init)
 	write_taskbar_progress_clear
+	exit 0
 	;;
 clean)
 	if [ -d "$FOUNT_DIR/node_modules" ]; then

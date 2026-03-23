@@ -1101,6 +1101,7 @@ elseif ($args[0] -eq 'geneexe') {
 }
 elseif ($args[0] -eq 'init') {
 	Write-TaskbarProgressClear
+	exit 0
 }
 elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
