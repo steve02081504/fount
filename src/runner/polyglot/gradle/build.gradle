@@ -16,14 +16,14 @@ tasks.register('run') {
 
 		if (isWindows) {
 			// Use cmd.exe to preserve Windows quoting behavior as much as possible.
-			exec {
+			project.exec {
 				commandLine 'cmd.exe', '/c', 'run.bat'
 				if (!extraArgs.isEmpty()) {
 					args extraArgs
 				}
 			}
 		} else {
-			exec {
+			project.exec {
 				commandLine 'sh', 'run.sh'
 				if (!extraArgs.isEmpty()) {
 					args extraArgs

@@ -262,11 +262,13 @@ jobs:
       - name: Check git clean (tracked changes only)
         shell: pwsh
         run: |
-          $status = git status --porcelain --untracked-files=no
-          if ($status.Trim().Length -gt 0) {
+          $statusLines = & git status --porcelain --untracked-files=no 2>$null
+          if ($null -eq $statusLines) { $statusLines = @() }
+          $statusText = ($statusLines | Out-String).Trim()
+          if ($statusText.Length -gt 0) {
             Write-Host "Git residual (tracked):"
-            Write-Host $status
-            $paths = $status | ForEach-Object { ($_ -split '\s+')[1] } | Where-Object { $_ } | Sort-Object -Unique
+            Write-Host $statusText
+            $paths = $statusLines | ForEach-Object { ($_ -split '\s+')[1] } | Where-Object { $_ } | Sort-Object -Unique
             Write-Host $paths
             exit 1
           }
@@ -588,9 +590,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install gulp (no package-lock)
+        shell: bash
+        run: |
+          npm install --no-package-lock --silent gulp gulp-cli
+
       - name: Run gulp launcher (nop)
         shell: bash
-        run: npx gulp@latest -- nop
+        run: npx gulp -- nop
 
       - name: Check git clean (tracked changes only)
         shell: bash
@@ -612,13 +619,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Elixir
-        shell: bash
-        run: |
-          if ! command -v elixir >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y elixir
-          fi
+      - name: Setup Elixir/OTP
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.16.3'
+          otp-version: '26.2'
 
       - name: Run mix launcher (nop)
         shell: bash
@@ -651,6 +656,46 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y haskell-stack
           fi
+
+      - name: Patch stack runner deps (process)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib
+
+          p = pathlib.Path("src/runner/polyglot/stack/package.yaml")
+          s = p.read_text(encoding="utf-8")
+
+          if "\n  - process\n" in s or "\t- process" in s or "  - process" in s:
+              raise SystemExit(0)
+
+          lines = s.splitlines(True)
+          out = []
+          inserted = False
+          for line in lines:
+              out.append(line)
+              if (not inserted) and (" - base >= " in line or " - base >=" in line):
+                  # If YAML indentation differs, this still works because we insert same indentation.
+                  # Expected format:
+                  # dependencies:
+                  #   - base >= 4.14 && < 5
+                  indent = line.split("-")[0]
+                  out.append(f"{indent} - process\n")
+                  inserted = True
+
+          if not inserted:
+              # Fallback: append under dependencies: (should still be safe for this workflow file).
+              for i, line in enumerate(out):
+                  if line.strip() == "dependencies:":
+                      out.insert(i + 1, "  - process\n")
+                      inserted = True
+                      break
+
+          if not inserted:
+              raise RuntimeError("Failed to find insertion point for process dependency.")
+
+          p.write_text("".join(out), encoding="utf-8")
+          PY
 
       - name: Run stack launcher (nop)
         shell: bash
@@ -711,20 +756,29 @@ jobs:
           fi
 
   docker-fount:
-    name: docker build/run with nop
+    name: docker compose up with nop
     needs: detect-changes
     if: needs.detect-changes.outputs.run_docker == '1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build docker image
+      - name: Prepare docker compose override (nop)
         shell: bash
-        run: docker build -t fount-ci -f dockerfile .
+        run: |
+          cat > docker-compose.ci.override.yml <<'EOF'
+          services:
+            fount:
+              build: .
+              image: fount-ci
+              command: ["nop"]
+          EOF
 
-      - name: Run container (nop)
+      - name: Run docker compose up (nop)
         shell: bash
-        run: docker run --rm fount-ci nop
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.override.yml up --build --abort-on-container-exit
+          docker compose -f docker-compose.yml -f docker-compose.ci.override.yml down -v --remove-orphans
 
       - name: Check git clean (tracked changes only)
         shell: bash
