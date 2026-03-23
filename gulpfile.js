@@ -8,10 +8,8 @@ function runFount(done) {
 	const cmd = isWindows ? 'cmd.exe' : 'sh'
 	const cmdArgs = isWindows ? ['/c', script] : [script]
 
-	// Support `gulp run -- nop` style argument forwarding.
-	const argv = process.argv.slice(2)
-	const dashIndex = argv.indexOf('--')
-	const extraArgs = dashIndex >= 0 ? argv.slice(dashIndex + 1) : []
+	// Support FOUNT_ARGS env var for passing arguments, e.g.: FOUNT_ARGS=nop gulp
+	const extraArgs = process.env.FOUNT_ARGS ? process.env.FOUNT_ARGS.split(' ') : []
 
 	const child = spawn(cmd, [...cmdArgs, ...extraArgs], {
 		cwd: process.cwd(),

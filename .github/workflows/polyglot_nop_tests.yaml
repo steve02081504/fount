@@ -585,7 +585,7 @@ jobs:
           fi
 
   gulp-fount:
-    name: npx gulp run -- nop
+    name: FOUNT_ARGS=nop npx gulp
     needs: detect-changes
     if: needs.detect-changes.outputs.run_gulp == '1'
     runs-on: ubuntu-latest
@@ -599,7 +599,7 @@ jobs:
 
       - name: Run gulp launcher (nop)
         shell: bash
-        run: npx gulp run -- nop
+        run: FOUNT_ARGS=nop npx gulp
 
       - name: Check git clean (tracked changes only)
         shell: bash
