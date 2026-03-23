@@ -992,6 +992,9 @@ EOF
 # 参数处理: open, background, protocolhandle
 if [[ $# -gt 0 ]]; then
 	case "$1" in
+	nop)
+		exit 0
+		;;
 	open)
 		handle_docker_termux_passthrough "$@"
 		# 若 $FOUNT_DIR/data 是目录

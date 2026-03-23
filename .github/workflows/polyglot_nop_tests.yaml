@@ -1,0 +1,740 @@
+name: Polyglot NOP Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'path/**'
+      - 'run.sh'
+      - 'run.bat'
+      - 'src/runner/polyglot/**'
+      - 'Makefile'
+      - 'package.json'
+      - 'deno.json'
+      - 'Cargo.toml'
+      - 'fount.csproj'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'Package.swift'
+      - 'Taskfile.yml'
+      - 'Justfile'
+      - 'gulpfile.js'
+      - 'mix.exs'
+      - 'stack.yaml'
+      - 'build.sbt'
+      - 'docker-compose.yml'
+      - 'dockerfile'
+  push:
+    tags-ignore:
+      - '*'
+    paths:
+      - 'path/**'
+      - 'run.sh'
+      - 'run.bat'
+      - 'src/runner/polyglot/**'
+      - 'Makefile'
+      - 'package.json'
+      - 'deno.json'
+      - 'Cargo.toml'
+      - 'fount.csproj'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'Package.swift'
+      - 'Taskfile.yml'
+      - 'Justfile'
+      - 'gulpfile.js'
+      - 'mix.exs'
+      - 'stack.yaml'
+      - 'build.sbt'
+      - 'docker-compose.yml'
+      - 'dockerfile'
+
+jobs:
+  detect-changes:
+    name: Detect Changed Polyglots
+    runs-on: ubuntu-latest
+    outputs:
+      run_bash: ${{ steps.set.outputs.run_bash }}
+      run_powershell: ${{ steps.set.outputs.run_powershell }}
+      run_deno: ${{ steps.set.outputs.run_deno }}
+      run_node: ${{ steps.set.outputs.run_node }}
+      run_make: ${{ steps.set.outputs.run_make }}
+      run_npm: ${{ steps.set.outputs.run_npm }}
+      run_deno_task: ${{ steps.set.outputs.run_deno_task }}
+      run_cargo: ${{ steps.set.outputs.run_cargo }}
+      run_dotnet: ${{ steps.set.outputs.run_dotnet }}
+      run_gradle: ${{ steps.set.outputs.run_gradle }}
+      run_swift: ${{ steps.set.outputs.run_swift }}
+      run_task: ${{ steps.set.outputs.run_task }}
+      run_just: ${{ steps.set.outputs.run_just }}
+      run_gulp: ${{ steps.set.outputs.run_gulp }}
+      run_mix: ${{ steps.set.outputs.run_mix }}
+      run_stack: ${{ steps.set.outputs.run_stack }}
+      run_sbt: ${{ steps.set.outputs.run_sbt }}
+      run_docker: ${{ steps.set.outputs.run_docker }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: set
+        name: Set job outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+
+          if [ -n "$BASE" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ]; then
+            git fetch --no-tags origin "$BASE" --depth=1 >/dev/null 2>&1 || true
+          fi
+
+          CHANGED_FILES="$(git diff --name-only "$BASE" "$HEAD" || true)"
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          core_changed=0
+          run_bash=0
+          run_powershell=0
+          run_deno=0
+          run_node=0
+          run_make=0
+          run_npm=0
+          run_deno_task=0
+          run_cargo=0
+          run_dotnet=0
+          run_gradle=0
+          run_swift=0
+          run_task=0
+          run_just=0
+          run_gulp=0
+          run_mix=0
+          run_stack=0
+          run_sbt=0
+          run_docker=0
+
+          while IFS= read -r f; do
+            case "$f" in
+              path/fount.sh|path/fount.ps1|run.sh|run.bat)
+                core_changed=1
+                ;;
+              path/fount.sh)
+                run_bash=1
+                ;;
+              path/fount.ps1)
+                run_powershell=1
+                ;;
+              path/fount.mjs|path/fount|path/fount.bat)
+                run_deno=1
+                run_node=1
+                ;;
+              Makefile)
+                run_make=1
+                ;;
+              package.json)
+                run_npm=1
+                ;;
+              deno.json)
+                run_deno_task=1
+                ;;
+              Cargo.toml|src/runner/polyglot/cargo/*)
+                run_cargo=1
+                ;;
+              fount.csproj|src/runner/polyglot/dotnet/*)
+                run_dotnet=1
+                ;;
+              build.gradle|settings.gradle|gradlew|gradlew.bat|src/runner/polyglot/gradle/*)
+                run_gradle=1
+                ;;
+              Package.swift|src/runner/polyglot/swift/*)
+                run_swift=1
+                ;;
+              Taskfile.yml)
+                run_task=1
+                ;;
+              Justfile)
+                run_just=1
+                ;;
+              gulpfile.js)
+                run_gulp=1
+                ;;
+              mix.exs|src/runner/polyglot/mix/*)
+                run_mix=1
+                ;;
+              stack.yaml|src/runner/polyglot/stack/*)
+                run_stack=1
+                ;;
+              build.sbt|src/runner/polyglot/sbt/*)
+                run_sbt=1
+                ;;
+              docker-compose.yml|dockerfile)
+                run_docker=1
+                ;;
+            esac
+          done <<< "$CHANGED_FILES"
+
+          # If the core fount launcher changes, we run all polyglot smoke tests
+          # to ensure `nop` truly avoids starting the server.
+          if [ "$core_changed" = "1" ]; then
+            run_bash=1
+            run_powershell=1
+            run_deno=1
+            run_node=1
+            run_make=1
+            run_npm=1
+            run_deno_task=1
+            run_cargo=1
+            run_dotnet=1
+            run_gradle=1
+            run_swift=1
+            run_task=1
+            run_just=1
+            run_gulp=1
+            run_mix=1
+            run_stack=1
+            run_sbt=1
+            run_docker=1
+          fi
+
+          {
+            echo "run_bash=$run_bash"
+            echo "run_powershell=$run_powershell"
+            echo "run_deno=$run_deno"
+            echo "run_node=$run_node"
+            echo "run_make=$run_make"
+            echo "run_npm=$run_npm"
+            echo "run_deno_task=$run_deno_task"
+            echo "run_cargo=$run_cargo"
+            echo "run_dotnet=$run_dotnet"
+            echo "run_gradle=$run_gradle"
+            echo "run_swift=$run_swift"
+            echo "run_task=$run_task"
+            echo "run_just=$run_just"
+            echo "run_gulp=$run_gulp"
+            echo "run_mix=$run_mix"
+            echo "run_stack=$run_stack"
+            echo "run_sbt=$run_sbt"
+            echo "run_docker=$run_docker"
+          } >> "$GITHUB_OUTPUT"
+
+  bash-fount:
+    name: bash ./path/fount.sh nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_bash == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run bash launcher (nop)
+        shell: bash
+        run: bash ./path/fount.sh nop
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  powershell-fount:
+    name: powershell ./path/fount.ps1 nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_powershell == '1'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run powershell launcher (nop)
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\path\fount.ps1" "nop"
+      - name: Check git clean (tracked changes only)
+        shell: pwsh
+        run: |
+          $status = git status --porcelain --untracked-files=no
+          if ($status.Trim().Length -gt 0) {
+            Write-Host "Git residual (tracked):"
+            Write-Host $status
+            $paths = $status | ForEach-Object { ($_ -split '\s+')[1] } | Where-Object { $_ } | Sort-Object -Unique
+            Write-Host $paths
+            exit 1
+          }
+
+  deno-fount:
+    name: deno run -A ./path/fount.mjs nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_deno == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (latest)
+        shell: bash
+        run: |
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
+
+      - name: Run Deno launcher (nop)
+        shell: bash
+        run: deno run -A ./path/fount.mjs nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  node-fount:
+    name: node ./path/fount.mjs nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_node == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run node launcher (nop)
+        shell: bash
+        run: node ./path/fount.mjs nop
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  make-fount:
+    name: make run ARGS=nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_make == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run make launcher (nop)
+        shell: bash
+        run: make run ARGS=nop
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  npm-fount:
+    name: npm start -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_npm == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run npm launcher (nop)
+        shell: bash
+        run: npm start -- nop
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  deno-task-start:
+    name: deno task start -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_deno_task == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (latest)
+        shell: bash
+        run: |
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
+
+      - name: Run deno task (nop)
+        shell: bash
+        run: deno task start -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  cargo-fount:
+    name: cargo run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_cargo == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run cargo launcher (nop)
+        shell: bash
+        run: cargo run -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  dotnet-fount:
+    name: dotnet run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_dotnet == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run dotnet launcher (nop)
+        shell: bash
+        run: dotnet run -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  gradle-fount:
+    name: ./gradlew run -PARGS=nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_gradle == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Ensure gradlew is executable
+        shell: bash
+        run: chmod +x ./gradlew
+
+      - name: Run gradle launcher (nop)
+        shell: bash
+        run: ./gradlew run -PARGS=nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  swift-fount:
+    name: swift run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_swift == '1'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run swift launcher (nop)
+        shell: bash
+        run: swift run fount -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  task-fount:
+    name: task run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_task == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Install go-task
+        shell: bash
+        run: |
+          if ! command -v task >/dev/null 2>&1; then
+            go install github.com/go-task/task/v3/cmd/task@latest
+            echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          fi
+
+      - name: Run task launcher (nop)
+        shell: bash
+        run: task run -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  just-fount:
+    name: just run nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_just == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install just
+        shell: bash
+        run: |
+          if ! command -v just >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y just
+          fi
+
+      - name: Run just launcher (nop)
+        shell: bash
+        run: just run nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  gulp-fount:
+    name: npx gulp -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_gulp == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run gulp launcher (nop)
+        shell: bash
+        run: npx gulp@latest -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  mix-fount:
+    name: mix run -e ensure_all_started(:fount) -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_mix == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Elixir
+        shell: bash
+        run: |
+          if ! command -v elixir >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y elixir
+          fi
+
+      - name: Run mix launcher (nop)
+        shell: bash
+        run: mix run -e "Application.ensure_all_started(:fount)" -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  stack-fount:
+    name: stack run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_stack == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Stack
+        shell: bash
+        run: |
+          if ! command -v stack >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y haskell-stack
+          fi
+
+      - name: Run stack launcher (nop)
+        shell: bash
+        run: stack run -- nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  sbt-fount:
+    name: sbt run -- nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_sbt == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install sbt
+        shell: bash
+        run: |
+          if ! command -v sbt >/dev/null 2>&1; then
+            # Use a fixed sbt version to avoid breaking on environment changes.
+            SBT_VERSION="1.10.2"
+            curl -fsSL "https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" -o /tmp/sbt.tgz
+            mkdir -p /tmp/sbt
+            tar -xzf /tmp/sbt.tgz -C /tmp/sbt --strip-components=1
+            echo "/tmp/sbt/bin" >> "$GITHUB_PATH"
+          fi
+
+      - name: Run sbt launcher (nop)
+        shell: bash
+        run: sbt -batch "run -- nop"
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
+  docker-fount:
+    name: docker build/run with nop
+    needs: detect-changes
+    if: needs.detect-changes.outputs.run_docker == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build docker image
+        shell: bash
+        run: docker build -t fount-ci -f dockerfile .
+
+      - name: Run container (nop)
+        shell: bash
+        run: docker run --rm fount-ci nop
+
+      - name: Check git clean (tracked changes only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(git status --porcelain --untracked-files=no)"
+          if [ -n "$status" ]; then
+            echo "Git residual (tracked):"
+            echo "$status"
+            echo "$status" | awk '{print $2}' | sort -u
+            exit 1
+          fi
+
