@@ -1,0 +1,6 @@
+version: '3'
+
+tasks:
+  run:
+    cmds:
+      - '{{if eq .GOOS "windows"}}cmd /c run.bat{{else}}sh ./run.sh{{end}} {{.CLI_ARGS}}'

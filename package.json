@@ -1,0 +1,32 @@
+{
+	"name": "fount",
+	"version": "dev",
+	"description": "a programmable, standardised, modular, customisable agent framework.",
+	"author": "steve02081504",
+	"homepage": "https://steve02081504.github.io/fount",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/steve02081504/fount.git"
+	},
+	"bin": {
+		"fount": "path/fount.mjs"
+	},
+	"scripts": {
+		"run": "node path/fount.mjs run",
+		"init": "node path/fount.mjs init",
+		"debug": "node path/fount.mjs debug",
+		"shutdown": "node path/fount.mjs shutdown",
+		"reboot": "node path/fount.mjs reboot",
+		"clean": "node path/fount.mjs clean",
+		"update": "git pull -f --rebase origin master",
+		"geneexe": "node path/fount.mjs geneexe",
+		"remove": "node path/fount.mjs remove",
+		"nop": "node path/fount.mjs nop",
+
+		"start": "node path/fount.mjs",
+		"stop": "node path/fount.mjs shutdown",
+		"restart": "node path/fount.mjs reboot",
+		"dev": "node path/fount.mjs debug",
+		"uninstall": "node path/fount.mjs remove"
+	}
+}
