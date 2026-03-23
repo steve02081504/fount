@@ -20,7 +20,7 @@ const streamingMessages = new Map()
 /**
  * 获取消息当前应展示的文本（优先 content_for_show）。
  * @param {object} message - 消息对象。
- * @returns {string}
+ * @returns {string} 消息当前应展示的文本。
  */
 function getDisplayContent(message) {
 	return message?.content_for_show ?? message?.content ?? ''

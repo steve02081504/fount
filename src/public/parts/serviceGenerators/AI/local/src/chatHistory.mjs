@@ -1,7 +1,7 @@
 /**
  * 将 OpenAI 风格消息转为 node-llama-cpp 的 ChatHistoryItem，并分离最后一次用户输入。
  * @param {Array<{role: string, content: string}>} messages - 不含独立 system 的消息（system 已并入会话选项）。
- * @returns {{ history: Array<{type: string, text?: string, response?: string[]}>, lastUser: string }}
+ * @returns {{ history: Array<{type: string, text?: string, response?: string[]}>, lastUser: string }} 分离最后一次用户输入。
  */
 export function splitLastUserPrompt(messages) {
 	/** @type {Array<{type: string, text?: string, response?: string[]}>} */

@@ -8,12 +8,13 @@ const configPath = import.meta.dirname + '/config.json'
 const data = loadJsonFileIfExists(configPath, { generator: '', config: {} })
 
 let username = ''
+const filename = path.basename(import.meta.dirname)
 
 /**
  * 服务源模块。
  */
 const self = {
-	filename: path.basename(import.meta.dirname),
+	filename,
 	/**
 	 * 加载服务源。
 	 * @param {object} initialData - 初始化参数对象。
@@ -28,7 +29,7 @@ const self = {
 			 * 将当前配置保存到部件数据。
 			 * @returns {void}
 			 */
-			SaveConfig: () => setPartData(username, `serviceSources/translate/${my_name}`, data)
+			SaveConfig: () => setPartData(username, `serviceSources/translate/${filename}`, data)
 		}))
 		Object.assign(this.interfaces, defaultInterfaces)
 	},
