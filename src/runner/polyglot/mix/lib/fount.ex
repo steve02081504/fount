@@ -7,11 +7,19 @@ defmodule Fount do
 		# and the application should exit as well.
 		{:ok, pid} =
 			Task.start_link(fn ->
+				argv = System.argv()
+
 				case :os.type() do
 					{:win32, _} ->
-						System.cmd("cmd.exe", ["/c", "run.bat"], into: IO.stream(:stdio, :line))
+						{_output, status} =
+							System.cmd("cmd.exe", ["/c", "run.bat" | argv], into: IO.stream(:stdio, :line))
+
+						System.halt(status)
 					_ ->
-						System.cmd("sh", ["run.sh"], into: IO.stream(:stdio, :line))
+						{_output, status} =
+							System.cmd("sh", ["run.sh" | argv], into: IO.stream(:stdio, :line))
+
+						System.halt(status)
 				end
 			end)
 
