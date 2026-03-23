@@ -944,6 +944,9 @@ function run {
 	}
 	Write-TaskbarProgress -Percent 5
 	$v8Flags = "--expose-gc"
+	if ($env:FOUNT_V8_FLAGS) {
+		$v8Flags += ",$env:FOUNT_V8_FLAGS"
+	}
 	$heapSizeMB = 100 # Default to 100MB
 	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
 	if (Test-Path $configPath) {
@@ -1078,6 +1081,7 @@ if ($args[0] -eq 'clean') {
 		Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
 	}
 	Set-FountFileAttributes
+	Write-TaskbarProgressClear
 }
 elseif ($args[0] -eq 'geneexe') {
 	$exepath = $args[1]
@@ -1086,11 +1090,9 @@ elseif ($args[0] -eq 'geneexe') {
 		Install-Module -Name ps12exe -Scope CurrentUser -Force
 	}
 	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $exepath
-	exit $LastExitCode
 }
 elseif ($args[0] -eq 'init') {
 	Write-TaskbarProgressClear
-	exit 0
 }
 elseif ($args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
@@ -1323,7 +1325,6 @@ elseif ($args[0] -eq 'remove') {
 
 	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
 	Write-TaskbarProgressClear
-	exit 0
 }
 else {
 	$runargs = $args

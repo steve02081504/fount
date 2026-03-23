@@ -196,6 +196,21 @@ if [[ "${#new_args[@]}" -eq 0 ]]; then
 	new_args=("open" "keepalive")
 fi
 
+SCRIPT_SELF_PATH=""
+if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
+	SCRIPT_SELF_PATH="${BASH_SOURCE[0]}"
+elif [[ "$0" == */* && -f "$0" ]]; then
+	SCRIPT_SELF_PATH="$0"
+fi
+
+can_self_modify=0
+if [[ -n "$SCRIPT_SELF_PATH" && -w "$SCRIPT_SELF_PATH" ]]; then
+	case "$SCRIPT_SELF_PATH" in
+	/dev/fd/* | /proc/self/fd/* | /dev/stdin | -) ;;
+	*) can_self_modify=1 ;;
+	esac
+fi
+
 if command -v fount.sh &>/dev/null; then
 	# 从现有命令推断出安装目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
@@ -332,10 +347,17 @@ else
 fi
 
 # 若脚本自身内容和$FOUNT_DIR/src/runner/main.sh的内容不同，则更新自身
-if [[ "$0" == */* ]] && [ -w "$0" ] && ! cmp -s "$FOUNT_DIR/src/runner/main.sh" "$0"; then
-	cp "$FOUNT_DIR/src/runner/main.sh" "$0"
-	chmod +x "$0"
+if [[ "$can_self_modify" -eq 1 && -f "$FOUNT_DIR/src/runner/main.sh" ]] && ! cmp -s "$FOUNT_DIR/src/runner/main.sh" "$SCRIPT_SELF_PATH"; then
+	cp "$FOUNT_DIR/src/runner/main.sh" "$SCRIPT_SELF_PATH"
+	chmod +x "$SCRIPT_SELF_PATH"
 fi
 
 # 执行真正的 fount 核心脚本
 "$FOUNT_DIR/run.sh" "${new_args[@]}"
+fountExitCode=$?
+
+if [[ "$can_self_modify" -eq 1 && "${new_args[0]}" == "remove" ]]; then
+	rm -f "$SCRIPT_SELF_PATH"
+fi
+
+exit $fountExitCode

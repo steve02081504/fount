@@ -1347,6 +1347,7 @@ debug_on() {
 	fi
 }
 # 函数: 运行 fount
+exit_code=0
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2
@@ -1366,6 +1367,9 @@ run() {
 		fi
 	fi
 	v8_flags="--expose-gc"
+	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
+		v8_flags="$v8_flags,$FOUNT_V8_FLAGS"
+	fi
 	heap_size_mb=100 # Default to 100MB
 	config_path="$FOUNT_DIR/data/config.json"
 	if [ -f "$config_path" ] && command -v jq &>/dev/null; then
@@ -1389,7 +1393,7 @@ run() {
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
-	local exit_code=$?
+	exit_code=$?
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ]; then
@@ -1423,7 +1427,6 @@ fi
 case "$1" in
 init)
 	write_taskbar_progress_clear
-	exit 0
 	;;
 clean)
 	if [ -d "$FOUNT_DIR/node_modules" ]; then
@@ -1438,7 +1441,7 @@ clean)
 	run shutdown
 	get_i18n 'clean.cleaningDenoCaches'
 	run_deno clean
-	exit 0
+	write_taskbar_progress_clear
 	;;
 keepalive)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
@@ -1453,7 +1456,6 @@ keepalive)
 	restart_timestamps=()
 
 	run "${runargs[@]}"
-	exit_code=$?
 	# shellcheck disable=SC2181
 	while [ $exit_code -ne 0 ]; do
 		if [ $exit_code -eq 130 ]; then exit 130; fi # ctrl+c
@@ -1485,7 +1487,6 @@ keepalive)
 
 		update_fount_and_deno
 		run
-		exit_code=$?
 	done
 	;;
 remove)
@@ -1540,8 +1541,8 @@ remove)
 
 	get_i18n 'remove.removingFountInstallationDir'
 	write_taskbar_progress 75
-	write_taskbar_progress 90
 	rm -rf "$FOUNT_DIR"
+	write_taskbar_progress 90
 	# 只要父目录为空，继续删他妈的
 	parent_dir=$(dirname "$FOUNT_DIR")
 	while rmdir "$parent_dir" 2>/dev/null; do
@@ -1551,7 +1552,6 @@ remove)
 
 	get_i18n 'remove.fountUninstallationComplete'
 	write_taskbar_progress_clear
-	exit 0
 	;;
 *)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
@@ -1561,12 +1561,11 @@ remove)
 		runargs=("${runargs[@]:1}")
 	fi
 	run "${runargs[@]}"
-	exit_code=$?
 	while [ $exit_code -eq 131 ]; do
 		update_fount_and_deno
 		run
-		exit_code=$?
 	done
-	exit $exit_code
 	;;
 esac
+
+exit "$exit_code"

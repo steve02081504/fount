@@ -1,12 +1,40 @@
 import path from 'node:path'
 
 import { setPartData } from '../../../../../../src/public/parts/shells/config/src/manager.mjs'
-import { loadJsonFile, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
+import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../../src/server/parts_loader.mjs'
 
 const configPath = import.meta.dirname + '/config.json'
-const data = loadJsonFile(configPath)
-const defaultInterfaces = {
+const data = loadJsonFileIfExists(configPath, { generator: '', config: {} })
+
+let username = ''
+const filename = path.basename(import.meta.dirname)
+
+/**
+ * 服务源模块。
+ */
+const self = {
+	filename,
+	/**
+	 * 加载服务源。
+	 * @param {object} initialData - 初始化参数对象。
+	 * @param {string} initialData.username - 用户名。
+	 * @returns {Promise<void>}
+	 */
+	async Load(initialData) {
+		username = initialData.username
+		const manager = await loadPart(username, 'serviceSources/translate')
+		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
+			/**
+			 * 将当前配置保存到部件数据。
+			 * @returns {void}
+			 */
+			SaveConfig: () => setPartData(username, `serviceSources/translate/${filename}`, data)
+		}))
+		Object.assign(this.interfaces, defaultInterfaces)
+	},
+}
+const defaultInterfaces = self.interfaces = {
 	config: {
 		/**
 		 * 获取配置数据。
@@ -27,42 +55,14 @@ const defaultInterfaces = {
 					for (const key in data.config ??= {}) delete data.config[key]
 					Object.assign(data.config, new_data.config)
 				}
+				await self.Load({ username })
 			}
 			saveJsonFile(configPath, data)
-		},
-		/**
-		 * 获取配置显示内容。
-		 * @returns {Promise<{ html: string, js: string }>} - 显示内容。
-		 */
-		async GetConfigDisplayContent() {
-			return { html: '', js: '' }
 		}
 	}
 }
 
-const my_name = path.basename(import.meta.dirname)
-
 /**
- * 翻译服务源模块。
+ * 服务源模块。
  */
-export default {
-	filename: my_name,
-	/**
-	 * 加载翻译服务源。
-	 * @param {object} root0 - 参数对象。
-	 * @param {string} root0.username - 用户名。
-	 * @returns {Promise<void>}
-	 */
-	async Load({ username }) {
-		const manager = await loadPart(username, 'serviceSources/translate')
-		Object.assign(this, await manager.interfaces.serviceSourceType.loadFromConfigData(username, data, {
-			/**
-			 * 将当前配置保存到部件数据。
-			 * @returns {void}
-			 */
-			SaveConfig: () => setPartData(username, `serviceSources/translate/${my_name}`, data)
-		}))
-		Object.assign(this.interfaces, defaultInterfaces)
-	},
-	interfaces: defaultInterfaces
-}
+export default self
