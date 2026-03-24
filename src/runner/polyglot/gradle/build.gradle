@@ -1,0 +1,39 @@
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
+
+abstract class RunFountTask extends DefaultTask {
+	@Inject
+	abstract ExecOperations getExecOperations()
+
+	@TaskAction
+	void execute() {
+		def osName = (System.getProperty('os.name') ?: '').toLowerCase()
+		def isWindows = osName.contains('windows')
+
+		def argsStr = project.findProperty('ARGS')?.toString()?.trim() ?: ''
+		def extraArgs = []
+		if (argsStr) {
+			// When ARGS contains commas, treat it as a comma-separated list.
+			// Otherwise, keep the whole string as a single argument so spaces can be preserved.
+			extraArgs = argsStr.contains(',') ? (argsStr.split(',')*.trim().findAll { it }) : [argsStr]
+		}
+
+		execOperations.exec {
+			if (isWindows) {
+				// Use cmd.exe to preserve Windows quoting behavior as much as possible.
+				commandLine 'cmd.exe', '/c', 'run.bat'
+			} else {
+				commandLine 'sh', 'run.sh'
+			}
+			if (!extraArgs.isEmpty()) {
+				args extraArgs
+			}
+		}
+	}
+}
+
+tasks.register('run', RunFountTask) {
+	group = 'application'
+	description = 'Run fount (delegates to run.sh/run.bat)'
+}
+
