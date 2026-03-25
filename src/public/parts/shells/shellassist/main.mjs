@@ -50,7 +50,7 @@ export default {
 					...data,
 					username,
 					UserCharname: data.UserCharname || username,
-					chat_scoped_char_memory: data.chat_scoped_char_memories[data.charname] || {},
+					chat_scoped_char_memory: data.chat_scoped_char_memories?.[data.charname] || {},
 					chat_scoped_char_memories: undefined
 				})
 				return {
