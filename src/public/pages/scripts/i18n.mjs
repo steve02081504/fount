@@ -5,9 +5,13 @@ import { onElementRemoved } from './onElementRemoved.mjs'
 import { onServerEvent } from './server_events.mjs'
 
 /**
+ * 本地化键
  * @typedef {import('../../../decl/locale_data.ts').LocaleKey} LocaleKey
+ * 无参数的本地化键
  * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * 有参数的本地化键
  * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * 对应键的本地化参数类型
  * @typedef {import('../../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
 
@@ -193,6 +197,7 @@ function createI18nArrayProxy(arr, params) {
 }
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -200,6 +205,7 @@ function createI18nArrayProxy(arr, params) {
  * @returns {string | undefined}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -217,6 +223,7 @@ export function geti18n_nowarn(key, params = {}) {
 }
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -224,6 +231,7 @@ export function geti18n_nowarn(key, params = {}) {
  * @returns {string}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -255,6 +263,7 @@ function toString(value) {
 	return value + ''
 }
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -262,6 +271,7 @@ function toString(value) {
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -277,6 +287,7 @@ function toString(value) {
 console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -284,6 +295,7 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -299,6 +311,7 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
 console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -306,6 +319,7 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -321,6 +335,7 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
 console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -328,6 +343,7 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -343,6 +359,7 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
 console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {string} id
@@ -351,6 +368,7 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {string} id
@@ -368,6 +386,7 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
 console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -375,6 +394,7 @@ console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString
  * @returns {void}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -392,6 +412,7 @@ export function alertI18n(key, params = {}) {
 }
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -399,6 +420,7 @@ export function alertI18n(key, params = {}) {
  * @returns {string|null}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
@@ -416,6 +438,7 @@ export function promptI18n(key, params = {}) {
 }
 
 /**
+ * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -423,6 +446,7 @@ export function promptI18n(key, params = {}) {
  * @returns {boolean}
  */
 /**
+ * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key

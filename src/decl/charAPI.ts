@@ -8,6 +8,7 @@ import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_
 
 
 /**
+ * 角色状态信息
  * @class charState_t
  * 记录角色的状态信息。
  */
@@ -27,6 +28,7 @@ export class charState_t {
 }
 
 /**
+ * 角色初始化时传递的参数
  * @class charInit_t
  * 角色初始化时传递的参数。
  */
@@ -46,6 +48,7 @@ export class charInit_t {
 }
 
 /**
+ * 角色API接口
  * @class CharAPI_t
  * 定义了角色插件的 API 结构。
  */

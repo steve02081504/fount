@@ -442,6 +442,7 @@ async function loadEditor(fileName) {
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
 			label: geti18n('serviceSource_manager.configTitle'),
 			/**
+			 * 处理 JSON 更新。
 			 * @param {any} updatedContent - 更新后的内容。
 			 * @param {any} previousContent - 之前的内容。
 			 * @param {object} root0 - 根对象。

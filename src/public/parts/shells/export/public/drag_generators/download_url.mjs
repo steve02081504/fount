@@ -1,4 +1,5 @@
 /**
+ * 下载 URL 生成器
  * @param {string} partpath - 部件路径 (例如 'chars/my-char', 'worlds/my-world')
  * @param {object} partdetails - 部件详情
  * @param {object} generatorConfig - 生成器配置

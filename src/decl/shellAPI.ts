@@ -3,6 +3,7 @@ import { Router } from 'npm:websocket-express'
 import { locale_t, info_t } from './basedefs.ts'
 
 /**
+ * Shell API 接口
  * @class shellAPI_t
  * 定义了 Shell 插件的 API 结构。
  */

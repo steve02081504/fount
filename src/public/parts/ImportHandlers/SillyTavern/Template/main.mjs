@@ -80,6 +80,7 @@ export default {
 	},
 
 	/**
+	 * 加载角色数据
 	 * @param {any} stat 状态
 	 */
 	Load: stat => {

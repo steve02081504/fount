@@ -20,6 +20,7 @@ export default {
 	interfaces: {
 		code_execution: {
 			/**
+			 * 获取 JS 代码提示
 			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args 聊天回复请求
 			 * @returns {Promise<string | undefined>} 返回 JS 代码提示或 undefined
 			 */
@@ -48,6 +49,7 @@ Telegram API 插件已启用，但你尚未被接入任何 Telegram Bot，无法
 `
 			},
 			/**
+			 * 获取 JS 代码上下文
 			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args 聊天回复请求
 			 * @returns {Promise<Record<string, any>>} 返回 JS 代码上下文对象
 			 */

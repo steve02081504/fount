@@ -10,6 +10,7 @@ export function splitDiscordReply(reply, split_length = 2000) {
 	let last = ''
 
 	/**
+	 * 映射结束。
 	 * @returns {void}
 	 */
 	function mapend() {

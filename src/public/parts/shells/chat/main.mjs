@@ -23,6 +23,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * 聊天Shell API
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

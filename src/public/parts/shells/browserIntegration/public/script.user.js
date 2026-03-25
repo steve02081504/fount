@@ -1275,6 +1275,7 @@ async function handleCommand(msg) {
 				let callback = null
 				if (callbackInfo)
 					/**
+					 * 回调函数。
 					 * @param {any} data - 回调数据。
 					 */
 					callback = async (data) => {
@@ -1341,11 +1342,13 @@ function getVisibleElementsHtml() {
 	const viewportHeight = document.documentElement.clientHeight
 	const viewportWidth = document.documentElement.clientWidth
 	/**
+	 * 检查元素是否在视口中。
 	 * @param {Element} el - 要检查的元素。
 	 * @returns {boolean} 如果元素在视口中则为 true，否则为 false。
 	 */
 	const isElementInViewport = (el) => { const rect = el.getBoundingClientRect(); return rect.top < viewportHeight && rect.bottom > 0 && rect.left < viewportWidth && rect.right > 0 }
 	/**
+	 * 检查元素是否可见。
 	 * @param {Element} el - 要检查的元素。
 	 * @returns {boolean} 如果元素可见则为 true，否则为 false。
 	 */

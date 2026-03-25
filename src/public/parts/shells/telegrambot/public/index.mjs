@@ -60,6 +60,7 @@ async function renderBotDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
+		 * 处理机器人选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 * @returns {Promise<void>}
 		 */
@@ -88,6 +89,7 @@ async function renderCharDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
+		 * 处理角色选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 */
 		onSelect: (selectedItem) => {
@@ -127,6 +129,7 @@ async function loadBotConfig(botname) {
 	if (!configEditor)
 		configEditor = createJsonEditor(configEditorContainer, {
 			/**
+			 * 处理配置更改。
 			 * @param {any} updatedContent - 更新后的内容。
 			 * @param {any} previousContent - 之前的内容。
 			 * @param {object} root0 - 根对象。

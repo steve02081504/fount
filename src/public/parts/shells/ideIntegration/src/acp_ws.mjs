@@ -99,6 +99,7 @@ class ServerFountAgent {
 	#iface = null
 
 	/**
+	 * 服务端 ACP Agent 构造函数。
 	 * @param {AgentSideConnection} connection - ACP 连接对象。
 	 * @param {string} username - 用户名。
 	 * @param {string} charname - 角色名。

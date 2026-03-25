@@ -6,6 +6,7 @@ import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
 /**
+ * 设备信息类型
  * @typedef {object} DeviceInfo
  * @property {string} hostname - 主机名
  * @property {object} os - 操作系统信息
@@ -16,6 +17,7 @@ import { loadShellData, saveShellData } from '../../../../../server/setting_load
  */
 
 /**
+ * 分机信息类型
  * @typedef {object} SubfountInfo
  * @property {number} id - 分机 ID
  * @property {string|null} peerId - 对等端 ID (远程对等端的 ID，本地为 null)

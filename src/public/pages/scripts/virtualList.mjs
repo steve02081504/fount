@@ -1,4 +1,5 @@
 /**
+ * 虚拟滚动列表
  * @module virtualList
  * @description 提供一个通用的虚拟滚动列表解决方案，用于高效渲染大量数据。
  */

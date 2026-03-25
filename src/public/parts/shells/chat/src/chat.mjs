@@ -524,6 +524,7 @@ class chatMetadata_t {
 	LastTimeSlice = new timeSlice_t()
 
 	/**
+	 * 聊天元数据构造函数。
 	 * @param {string} username - 聊天的所有者用户名。
 	 */
 	constructor(username) {

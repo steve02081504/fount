@@ -6,7 +6,9 @@ import { GrokAPI } from './grokAPI.mjs'
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * Grok AI 来源生成器模块定义。
  * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ * Grok AI 来源生成器结构化提示类型
  * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 

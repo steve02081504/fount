@@ -69,6 +69,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleDiscordInterface.')
 
 	/**
+	 * 获取简单机器人配置模板。
 	 * @returns {{OwnerUserName: string, MaxMessageDepth: number, MaxFetchCount: number, ReplyToAllMessages: boolean}} 返回一个包含简单机器人配置模板的对象。
 	 */
 	function GetSimpleBotConfigTemplate() {
@@ -364,6 +365,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					locales: localhostLocales, time: new Date(), world: null, user: await (async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })),
 					AddChatLogEntry, /**
+					 * 更新聊天回复请求。
 					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
 					 */
 					Update: async () => await generateChatReplyRequest(),

@@ -41,6 +41,7 @@ async function updateAvailableLanguagesDropdown() {
 		textKey: 'name',
 		valueKey: 'id',
 		/**
+		 * 处理选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 * @returns {boolean} - 是否成功。
 		 */
@@ -53,6 +54,7 @@ async function updateAvailableLanguagesDropdown() {
 			return false
 		},
 		/**
+		 * 数据访问器。
 		 * @param {object} item - 项目。
 		 * @returns {string} - 数据访问器。
 		 */

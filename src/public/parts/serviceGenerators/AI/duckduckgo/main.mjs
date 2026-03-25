@@ -6,6 +6,7 @@ import { DuckDuckGoAPI } from './duckduckgo.mjs'
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * DuckDuckGo AI 来源生成器模块定义。
  * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
  * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */

@@ -7,6 +7,7 @@ import { UserAPI_t } from '../../../../../decl/userAPI.ts'
 import { WorldAPI_t } from '../../../../../decl/worldAPI.ts'
 
 /**
+ * 聊天回复类型
  * @class chatReply_t
  * 聊天回复的数据结构。
  * @property {string} [name] - 回复者的名称。
@@ -43,6 +44,7 @@ export class chatReply_t {
 }
 
 /**
+ * 聊天回复请求类型
  * @class chatReplyRequest_t
  * 聊天回复请求的数据结构。
  * @property {object} supported_functions - 当前 shell 支持的功能。
@@ -112,6 +114,7 @@ export class chatReplyRequest_t {
 }
 
 /**
+ * 聊天日志条目类型
  * @class chatLogEntry_t
  * 聊天日志条目的数据结构。
  * @property {string} id - 永久唯一标识符 (UUID v4)。
@@ -171,6 +174,7 @@ export class chatLogEntry_t {
 	}
 }
 /**
+ * 聊天日志类型
  * @type {chatLogEntry_t[]}
  * 聊天日志。
  */
@@ -190,6 +194,7 @@ export type CharReplyPreviewUpdater_t = (args: chatReplyRequest_t, reply: chatRe
 export type ReplyPreviewUpdater_t = (reply: chatReply_t) => void
 
 /**
+ * 生成选项类型
  * @class GenerationOptions_t
  * 定义了生成时可以传递的选项。
  */

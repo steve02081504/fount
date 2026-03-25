@@ -5,6 +5,7 @@
  */
 
 /**
+ * 构建采样参数
  * @param {object} config - 含 prompt_options 的服务配置。
  * @returns {object} 传给 controlledEvaluate generateNext.options 的采样参数。
  */
@@ -22,6 +23,7 @@ export function buildSamplingReplayOptions(config) {
 }
 
 /**
+ * 构建 logprob 条目
  * @param {import('npm:node-llama-cpp@3.18.1').LlamaModel} model - 当前加载的 GGUF 模型。
  * @param {import('npm:node-llama-cpp@3.18.1').Token} selectedToken - 实际被选中的 token id。
  * @param {Map<import('npm:node-llama-cpp@3.18.1').Token, number>} probabilities - 下一 token 的完整概率表。

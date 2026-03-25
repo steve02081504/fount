@@ -8,6 +8,7 @@ import { loadShellData, saveShellData } from '../../../../../server/setting_load
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 /**
+ * 页面信息类型
  * @typedef {object} PageInfo
  * @property {number} id - 页面 ID
  * @property {import('npm:ws').WebSocket | null} ws - WebSocket 连接

@@ -2,6 +2,7 @@ import { locale_t, info_t } from './basedefs.ts'
 import { SearchSource_t } from './SearchSource.ts'
 
 /**
+ * 搜索数据源生成器接口
  * @class SearchSourceGenerator_t
  * 定义了搜索数据源生成器的结构，用于创建和管理搜索数据源。
  */

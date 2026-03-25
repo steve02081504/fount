@@ -8,6 +8,7 @@ import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/mai
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * IfElse AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
@@ -47,7 +48,7 @@ const configTemplate = {
 }
 
 /**
- * 获取 AI 源。
+ * 获取 IfElse AI 源。
  * @param {object} config - 配置对象。
  * @param {object} root0 - 根对象。
  * @param {string} root0.username - 用户名。

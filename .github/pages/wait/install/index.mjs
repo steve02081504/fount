@@ -606,6 +606,7 @@ async function handleInstallerFlow() {
 		launchButtonSpinner.style.display = 'none'
 
 		/**
+		 * 打开 fount 服务。
 		 * @type {() => void}
 		 */
 		launchButton.onclick = () => {

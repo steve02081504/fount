@@ -16,8 +16,10 @@ const BACKEND_IMPORT_REG = /(?:from\s+["']|import\s*\(\s*["'])(?:node|npm|jsr):/
 const BLOCK_COMMENT_REG = /\/\*[\S\s]*?\*\//g
 
 /**
+ * 预加载资源类型
  * @typedef {'mjs'|'css'|'js'|'resource'} PreloadResourceType
  *
+ * 预加载资源
  * @typedef {Object} PreloadResource
  * @property {string} url - 资源的完整 URL
  * @property {PreloadResourceType} type - 资源类型

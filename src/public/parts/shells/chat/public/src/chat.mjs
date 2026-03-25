@@ -18,6 +18,7 @@ import { sendWebsocketMessage, initializeWebSocket } from './websocket.mjs'
  */
 export let charList = []
 /**
+ * 插件列表。
  * @type {Array<string>}
  */
 export let pluginList = []

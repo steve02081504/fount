@@ -1,4 +1,5 @@
 /**
+ * 角色API
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 import fs from 'node:fs'
@@ -67,7 +68,9 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 这是一个简单的fount角色模板：
 <generate-char name="template">
 /**
+ * 角色API
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ * 插件API
  * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
  */
 
@@ -340,6 +343,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 ${args.UserCharname}: 帮我写一个复读角色，它总是复读上一句话。
 ZL-31: <generate-char name="repeater">
 /**
+ * 角色API
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 

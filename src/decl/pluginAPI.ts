@@ -18,6 +18,7 @@ export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & 
 }) => Promise<boolean>
 
 /**
+ * 插件API接口
  * @class PluginAPI_t
  * 定义了插件的 API 结构。
  */

@@ -6,6 +6,7 @@ import { info_t, locale_t } from './basedefs.ts'
 import { prompt_struct_t } from './prompt_struct.ts'
 
 /**
+ * 分词器接口
  * @class Tokenizer_t
  * @template InputType, TokenType
  * 定义了一个通用的分词器接口，用于处理输入数据的编码和解码。
@@ -43,6 +44,7 @@ class Tokenizer_t<InputType, TokenType> {
 }
 
 /**
+ * AI 数据源接口
  * @class AIsource_t
  * @template InputType, OutputType
  * 定义了 AI 数据源的基本结构，用于与不同类型的 AI 模型进行交互。
@@ -108,6 +110,7 @@ export class AIsource_t<InputType, OutputType> {
 }
 
 /**
+ * 生成选项
  * @class GenerationOptions
  * 定义了生成时可以传递的选项。
  */
@@ -142,6 +145,7 @@ export class GenerationOptions {
 }
 
 /**
+ * 文本 AI 数据源接口
  * @class textAISource_t
  * @augments AIsource_t<string, Promise<string>>
  * 专用于处理文本输入的 AI 数据源。

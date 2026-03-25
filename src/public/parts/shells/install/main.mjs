@@ -18,6 +18,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * 安装 shell
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

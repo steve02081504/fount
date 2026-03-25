@@ -13,6 +13,7 @@ export class TranslateResult_t {
 }
 
 /**
+ * 翻译数据源接口
  * @class TranslateSource_t
  * 定义了翻译数据源的基本结构，用于与不同类型的翻译服务进行交互。
  */

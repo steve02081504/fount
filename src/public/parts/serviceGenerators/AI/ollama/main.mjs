@@ -11,6 +11,7 @@ const { info, product_info } = (await import('./locales.json', { with: { type: '
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 /**
+ * Ollama AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
@@ -50,7 +51,7 @@ const configTemplate = {
 }
 
 /**
- * 获取 AI 源。
+ * 获取 Ollama AI 源。
  * @param {object} config - 配置对象。
  * @returns {Promise<AIsource_t>} AI 源。
  */

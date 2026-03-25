@@ -95,6 +95,7 @@ async function loadEditor(partpath) {
 				label: geti18n('part_config.editor.jsonEditor'),
 				readOnly: true,
 				/**
+				 * JSON 更新时的回调函数。
 				 * @param {any} updatedContent - 更新后的内容。
 				 * @param {any} previousContent - 之前的内容。
 				 * @param {object} root0 - 根对象。

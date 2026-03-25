@@ -5,6 +5,7 @@ import { loadSearchSourceFromNameOrConfigData } from '../../../serviceSources/se
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * 故障转移搜索源生成器模块定义。
  * @type {import('../../../../../decl/SearchSourceGenerator.ts').SearchSourceGenerator_t}
  */
 export default {

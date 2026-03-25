@@ -3,6 +3,7 @@
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * Google Translate 翻译源生成器模块定义。
  * @type {import('../../../../../decl/TranslateSourceGenerator.ts').TranslateSourceGenerator_t}
  */
 export default {

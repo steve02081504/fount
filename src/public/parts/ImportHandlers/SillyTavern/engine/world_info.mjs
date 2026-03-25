@@ -90,6 +90,7 @@ function preBuiltWIEntries(WIentries) {
 		entry.secondary_keys = buildKeyList(entry.secondary_keys, isSensitive, isFullWordMatch) // 构建辅助关键词正则表达式列表
 
 		/**
+		 * 判断世界信息条目是否激活
 		 * @param {any} chatLog 聊天记录
 		 * @param {any} recursion_WIs 递归世界信息
 		 * @param {any} memory 内存
