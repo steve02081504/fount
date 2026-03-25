@@ -16,10 +16,12 @@ const world_info_position = {
 	EMBottom: 6,
 }
 /**
+ * 正则表达式脚本放置位置
  * @enum {number} Where the regex script should be applied
  */
 const regex_placement = {
 	/**
+	 * 显示文本
 	 * @deprecated MD Display is deprecated. Do not use.
 	 */
 	MD_DISPLAY: 0,

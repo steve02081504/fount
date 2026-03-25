@@ -4,6 +4,7 @@ import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 /**
+ * 用户API接口
  * @class UserAPI_t
  * 定义了用户 API 的结构。
  */

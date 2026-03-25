@@ -3,12 +3,15 @@ import { Buffer } from 'node:buffer'
 import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 
 /**
+ * Telegram bot 信息类型
  * @typedef {import('npm:telegraf/typings/core/types/typegram').UserFromGetMe} TelegramBotInfo
  */
 /**
+ * Telegram 消息类型
  * @typedef {import('npm:telegraf/typings/core/types/typegram').Message} TelegramMessageType
  */
 /**
+ * Telegram 消息实体类型
  * @typedef {import('npm:telegraf/typings/core/types/typegram').MessageEntity} TelegramMessageEntity
  */
 /** @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */

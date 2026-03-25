@@ -51,8 +51,9 @@ export function compileFilter(filterString) {
 	})
 
 	/**
-	 * @param {object} item The data object to check.
-	 * @returns {boolean} True if the item matches the filter criteria.
+	 * 筛选函数
+	 * @param {object} item 要检查的数据对象。
+	 * @returns {boolean} 如果项目匹配筛选条件，则返回 true。
 	 */
 	return (item) => {
 		const itemString = JSON.stringify(item)

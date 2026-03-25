@@ -8,6 +8,7 @@
 export function createDefaultDeskpetInterface(charAPI, ownerUsername, charname) {
 	return {
 		/**
+		 * 获取宠物配置。
 		 * @returns {Promise<{url: string, windowOptions: {width: number, height: number}}>} 返回一个包含宠物配置的 Promise。
 		 */
 		GetPetConfig: async () => ({

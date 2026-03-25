@@ -87,6 +87,7 @@ async function ImportAsData(username, data) {
 	try {
 		const metaPath = path.join(tempDir, 'fount.json')
 		/**
+		 * fount.json 文件的内容。
 		 * @type {{type: string, dirname: string, data_files: string[]}}
 		 */
 		const meta = await loadJsonFile(metaPath)
@@ -130,6 +131,7 @@ async function ImportByText(username, text) {
 					await cloneRepo(line, tempDir)
 					const metaPath = path.join(tempDir, 'fount.json')
 					/**
+					 * fount.json 文件的内容。
 					 * @type {{type: string, dirname: string, data_files: string[]}}
 					 */
 					const meta = await loadJsonFile(metaPath)

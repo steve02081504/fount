@@ -25,6 +25,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * Telegram机器人Shell的入口点。
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

@@ -90,6 +90,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * 服务来源管理 shell
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

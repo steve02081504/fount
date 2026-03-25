@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { locale_t, info_t } from './basedefs.ts'
 
 /**
+ * 导入处理器API接口
  * @class importHandlerAPI_t
  * 定义了导入处理器的 API 结构，用于处理角色数据的导入和管理。
  */

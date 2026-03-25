@@ -2,6 +2,7 @@ import { AIsource_t } from './AIsource.ts'
 import { locale_t, info_t } from './basedefs.ts'
 
 /**
+ * AI 数据源生成器接口
  * @class AIsourceGenerator_t
  * 定义了 AI 数据源生成器的结构，用于创建和管理 AI 数据源。
  */

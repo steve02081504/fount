@@ -31,6 +31,7 @@ let isUpToDate = null
 let autoUpdateEnabled = false
 
 /**
+ * 将字节数转换为 GiB。
  * @param {number} bytes - 字节数。
  * @returns {string} 以 GiB 为单位保留两位小数的字符串。
  */

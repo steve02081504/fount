@@ -45,6 +45,7 @@ let partData = await loadJsonFile(partJsonPath)
 const info = {}
 
 /**
+ * 更新信息。
  * @returns {void}
  */
 function updateInfo() {

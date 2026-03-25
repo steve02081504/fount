@@ -18,6 +18,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * 配置Shell API
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

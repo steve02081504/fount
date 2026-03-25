@@ -2,6 +2,7 @@ import { locale_t, info_t } from './basedefs.ts'
 import { TranslateSource_t } from './TranslateSource.ts'
 
 /**
+ * 翻译数据源生成器接口
  * @class TranslateSourceGenerator_t
  * 定义了翻译数据源生成器的结构，用于创建和管理翻译数据源。
  */

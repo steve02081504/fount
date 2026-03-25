@@ -260,6 +260,7 @@ async function ImportByText(username, text) {
 
 
 /**
+ * Risu 导入器模块定义。
  * @type {import('../../../../../src/decl/ImportHandlerAPI.ts').importHandlerAPI_t}
  */
 export default {
