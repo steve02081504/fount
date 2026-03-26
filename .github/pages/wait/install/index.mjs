@@ -656,6 +656,8 @@ async function handleStandaloneFlow() {
 	 * 在 fount 服务不可用时打开主页。
 	 */
 	launchButton.onclick = () => {
+		if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+			return window.location.href = 'https://github.com/steve02081504/fount' // lol webkit
 		window.location.href = 'fount://page/'
 		setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 5000)
 	}
