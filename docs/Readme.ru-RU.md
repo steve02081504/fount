@@ -362,7 +362,7 @@ fount remove
 
 ### Станьте свидетелем роста: история звезд fount
 
-[![График истории звезд](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![График истории звезд](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Вкладчики
 

@@ -364,7 +364,7 @@ fountのフロントエンドは現代のウェブ技術で織られています
 
 ### 成長を見届けよう：fountのスター履歴
 
-[![スター履歴チャート](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![スター履歴チャート](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### 貢献者
 

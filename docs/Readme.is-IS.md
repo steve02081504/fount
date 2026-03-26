@@ -363,7 +363,7 @@ En sumir vafrar fara aðrar leiðir og fundur þeirra með fount gæti haft í f
 
 ### Fylgstu með vextinum: Stjörnusaga fount
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Framleggjendur
 

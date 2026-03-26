@@ -362,7 +362,7 @@ No entanto, alguns navegadores trilham um caminho diferente, e seu encontro com 
 
 ### Testemunhe o Crescimento: Histórico de Estrelas do fount
 
-[![Gráfico de Histórico de Estrelas](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Gráfico de Histórico de Estrelas](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Contribuidores
 

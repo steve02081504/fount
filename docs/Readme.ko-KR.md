@@ -364,7 +364,7 @@ fount의 프론트엔드는 현대 웹 기술로 짜여져 있지만, 모든 브
 
 ### 성장을 목격하세요: fount의 스타 기록
 
-[![스타 기록 차트](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![스타 기록 차트](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### 기여자
 

@@ -362,7 +362,7 @@ fount remove
 
 ### विकास देखें: फाउंट का स्टार इतिहास
 
-[![स्टार इतिहास चार्ट](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![स्टार इतिहास चार्ट](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### योगदानकर्ताओं
 
