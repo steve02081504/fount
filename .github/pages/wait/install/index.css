@@ -2,6 +2,15 @@
 	--hero-transition: 0.8s ease-in;
 }
 
+/* View Transition：hero-intro 类型 — SVG 动画末帧淡出，最终状态淡入 */
+@media (prefers-reduced-motion: no-preference) {
+	html:active-view-transition-type(hero-intro)::view-transition-old(root),
+	html:active-view-transition-type(hero-intro)::view-transition-new(root) {
+		animation-duration: 0.8s;
+		animation-timing-function: ease-in-out;
+	}
+}
+
 body {
 	scroll-behavior: smooth;
 }
