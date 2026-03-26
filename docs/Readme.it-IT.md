@@ -362,7 +362,7 @@ Tuttavia, alcuni browser percorrono un sentiero diverso, e il loro incontro con 
 
 ### Testimonia la Crescita: La Storia delle Star di fount
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Contributori
 

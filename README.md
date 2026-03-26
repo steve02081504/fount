@@ -382,7 +382,7 @@ Yet, some browsers walk a different path, and their encounter with fount may car
 
 ### Witness the Growth: fount's Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Contributors
 

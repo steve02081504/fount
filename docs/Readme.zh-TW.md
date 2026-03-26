@@ -363,7 +363,7 @@ fount 的前端由現代 Web 技術織成，但並非所有瀏覽器都能與它
 
 ### 見證成長：fount 的 Star 歷史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### 貢獻者們
 

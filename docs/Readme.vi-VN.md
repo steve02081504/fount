@@ -362,7 +362,7 @@ Tuy nhiên, một số trình duyệt lại đi một con đường khác, và c
 
 ### Chứng kiến sự trưởng thành: Lịch sử Star của fount
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Những người đóng góp
 

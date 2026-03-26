@@ -1,6 +1,7 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 
 /**
+ * 使用马尔可夫链生成文本的类。支持多次追加训练。
  * @class MarkovGenerator
  * @classdesc 使用马尔可夫链生成文本的类。支持多次追加训练。
  */
@@ -22,28 +23,34 @@ export class MarkovGenerator {
 		endToken: null,
 	}) {
 		/**
+		 * 马尔可夫链的阶数
 		 * @member {number | null} order - 马尔可夫链的阶数。首次训练时设定，后续训练必须使用相同阶数。初始为 null。
 		 */
 		this.order = order
 		/**
+		 * 马尔可夫模型的 Map
 		 * @member {Map<string, string[]>} model - 存储马尔可夫模型的 Map。键是前缀（JSON字符串化的数组），值是可能的后续 token 数组。
 		 * @private
 		 */
 		this.model = new Map()
 		/**
+		 * 训练数据中所有有效前缀的集合
 		 * @member {Set<string>} prefixes - 训练数据中所有有效前缀（JSON字符串化的数组）的集合，用于随机起始和去重。
 		 * @private
 		 */
 		this.prefixes = new Set()
 		/**
+		 * 记录总共训练了多少 token
 		 * @member {number} totalTrainedTokens - 记录总共训练了多少 token，用于状态显示。
 		 */
 		this.totalTrainedTokens = 0
 		/**
+		 * 结束 token
 		 * @member {string} endToken - 结束 token，用于标记文本生成的结束。
 		 */
 		this.endToken = endToken
 		/**
+		 * 特殊 token 数组
 		 * @member {string[]} specialTokens - 特殊 token 数组，用于标记特定的文本片段。
 		 */
 		this.specialTokens = [...new Set([...specialTokens, endToken])] // 去重

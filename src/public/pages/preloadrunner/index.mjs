@@ -23,6 +23,7 @@ const typeMap = {
 }
 
 /**
+ * 加载单个资源。
  * @param {{ url: string, type: keyof typeof typeMap }} item - 资源项。
  * @returns {Promise<void>} - 加载完成的 Promise。
  */

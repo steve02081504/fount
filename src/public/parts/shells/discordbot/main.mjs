@@ -19,6 +19,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
+ * Discord机器人Shell的入口点。
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

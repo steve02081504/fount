@@ -109,9 +109,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		/** @type {Record<string, any>} */
 		const ChannelCharScopedMemory = {}
 		/**
-		 * @type {Record<number, ChatReply_t>}
 		 * 缓存bot发送AI回复时，AI原始的回复对象。键是bot发出的Telegram消息ID。
 		 * 此缓存用于在处理bot自身发出的消息时，恢复AI返回的附加数据(如extension)。
+		 * @type {Record<number, ChatReply_t>}
 		 */
 		const aiReplyObjectCache = {}
 		/** @type {Record<number, string>} 用户 ID → 显示名称，附于 interfaceConfig 供 tools 使用。 */

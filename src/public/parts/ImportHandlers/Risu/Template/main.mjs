@@ -133,6 +133,7 @@ function buildCharInfo(charData) {
 }
 
 /**
+ * 格式化 Risu 输出
  * @param {string} text 要格式化的文本
  * @returns {string} 格式化后的文本
  */

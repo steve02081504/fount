@@ -60,6 +60,7 @@ async function renderBotDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
+		 * 处理机器人选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 * @returns {Promise<boolean|undefined>} - 返回一个 Promise，解析为布尔值或 undefined。
 		 */
@@ -88,6 +89,7 @@ async function renderCharDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
+		 * 处理角色选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 */
 		onSelect: (selectedItem) => {
@@ -130,6 +132,7 @@ async function loadBotConfig(botname) {
 			configEditor = createJsonEditor(configEditorContainer, {
 				label: geti18n('discord_bots.configCard.labels.config'),
 				/**
+				 * JSON 更新时的回调函数。
 				 * @param {any} updatedContent - 更新后的内容。
 				 * @param {any} previousContent - 之前的内容。
 				 * @param {object} root0 - 根对象。

@@ -6,6 +6,7 @@ import { onPartInstalled, onPartUninstalled } from './src/home.mjs'
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * 主页 shell
  * @type {import('../../../../../src/decl/shellAPI.ts').shellAPI_t}
  */
 export default {

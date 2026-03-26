@@ -5,6 +5,7 @@ import { ReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.
 import { role_t, timeStamp_t } from './basedefs.ts'
 
 /**
+ * 单部分提示
  * @class single_part_prompt_t
  * 定义了单部分提示的结构。
  */
@@ -36,6 +37,7 @@ export class single_part_prompt_t {
 	extension: object
 }
 /**
+ * 其他角色提示
  * @class other_chars_prompts_t
  * @augments single_part_prompt_t
  * 定义了其他角色提示的结构。
@@ -55,6 +57,7 @@ export class other_chars_prompts_t extends single_part_prompt_t {
 	last_active: timeStamp_t
 }
 /**
+ * 聊天记录条目
  * @interface chatLogEntry_t
  * 定义了聊天记录条目的结构。
  */
@@ -106,6 +109,7 @@ export interface chatLogEntry_t {
 	extension: object
 }
 /**
+ * 提示结构
  * @interface prompt_struct_t
  * 定义了提示结构的结构。
  */

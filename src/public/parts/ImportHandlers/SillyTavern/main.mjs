@@ -14,6 +14,7 @@ import { getAvailablePath } from './path.mjs'
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * 导入处理器 API 类型定义。
  * @typedef {import('../../../../../src/decl/ImportHandlerAPI.ts').importHandlerAPI_t} import_handler_t
  */
 
@@ -82,6 +83,7 @@ async function ImportByText(username, text) {
 }
 
 /**
+ * SillyTavern 导入器模块定义。
  * @type {import('../../../../../src/decl/ImportHandlerAPI.ts').importHandlerAPI_t}
  */
 export default {

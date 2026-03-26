@@ -362,7 +362,7 @@ Andere Browser jedoch gehen einen anderen Weg, und ihre Begegnung mit fount kann
 
 ### Erlebe das Wachstum: founts Sternen-Historie
 
-[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
 ### Mitwirkende
 

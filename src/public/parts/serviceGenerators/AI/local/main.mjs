@@ -16,6 +16,7 @@ const { info, product_info } = (await import('./locales.json', { with: { type: '
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 /**
+ * Local AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
@@ -59,6 +60,7 @@ const configTemplate = {
 }
 
 /**
+ * 构建聊天消息
  * @param {object} config - 配置。
  * @param {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
  * @returns {Array<{role: string, content: string}>} 供 Llama 会话使用的 role/content 消息数组。
@@ -98,6 +100,7 @@ function buildChatMessages(prompt_struct, config) {
 }
 
 /**
+ * 提取系统提示和对话消息
  * @param {Array<{role: string, content: string}>} messages - 含 system 的完整消息。
  * @param {object} config - 配置。
  * @returns {{ dialogMessages: Array<{role: string, content: string}>, mergedSystemPrompt: string|undefined }} 对话消息与合并后的 system 提示。
@@ -118,6 +121,7 @@ function extractSystemAndDialog(messages, config) {
 }
 
 /**
+ * 构建 Llama 会话选项
  * @param {object} sessionBase - 来自 config.session_options 的副本。
  * @param {object} contextSequence - 上下文序列。
  * @returns {object} 传入 `LlamaChatSession` 的选项对象。
@@ -136,6 +140,7 @@ function buildLlamaSessionOptions(sessionBase, contextSequence) {
 }
 
 /**
+ * 构建 prompt 调用选项
  * @param {object} config - 配置。
  * @param {object} ctx - 上下文。
  * @param {AbortSignal} [ctx.signal] - 中断信号。
@@ -174,7 +179,7 @@ function buildPromptCallOptions(config, ctx) {
 }
 
 /**
- * 获取 AI 源。
+ * 获取 Local AI 源。
  * @param {object} config - 配置对象。
  * @returns {Promise<AIsource_t>} AI 源。
  */
@@ -260,14 +265,14 @@ async function GetSource(config) {
 			const sequence = context.getSequence()
 			/** @type {import('npm:node-llama-cpp@3.18.1').LlamaContextSequence|null} */
 			let replaySequence = null
-			if (enableLogprobsShow && useStream) 
+			if (enableLogprobsShow && useStream)
 				try {
 					replaySequence = context.getSequence()
 				}
 				catch {
 					replaySequence = null
 				}
-			
+
 			const sessionOpts = buildLlamaSessionOptions({
 				...config.session_options ?? {},
 				...mergedSystemPrompt ? { systemPrompt: mergedSystemPrompt } : {},
@@ -385,12 +390,12 @@ async function GetSource(config) {
 				}
 			}
 			finally {
-				if (replaySequence) 
+				if (replaySequence)
 					try {
 						await replaySequence.dispose()
 					}
 					catch { /* empty */ }
-				
+
 				session.dispose({ disposeSequence: true })
 			}
 

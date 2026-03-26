@@ -27,6 +27,7 @@ export class SearchResults_t {
 }
 
 /**
+ * 搜索数据源接口
  * @class SearchSource_t
  * 定义了搜索数据源的基本结构，用于与不同类型的搜索服务进行交互。
  */

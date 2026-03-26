@@ -5,6 +5,7 @@ import { loadAIsourceFromNameOrConfigData, source_dead } from '../../../serviceS
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
+ * Polling AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
@@ -40,7 +41,7 @@ const configTemplate = {
 	dead_sources: [],
 }
 /**
- * 获取 AI 源。
+ * 获取 Polling AI 源。
  * @param {object} config - 配置对象。
  * @param {object} root0 - 根对象。
  * @param {string} root0.username - 用户名。

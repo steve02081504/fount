@@ -124,6 +124,7 @@ export function notifyPartInstall(username, partpath) {
 	invalidatePartBranchesCache(username)
 }
 /**
+ * 部件信息
  * @typedef {Object} PartInfo
  * @property {Record<string, string>} [name] - 部件的本地化名称。
  * @property {Record<string, string>} [avatar] - 部件的本地化头像URL。
@@ -133,6 +134,7 @@ export function notifyPartInstall(username, partpath) {
  */
 
 /**
+ * 部件接口
  * @typedef {Object} PartInterfaces
  * @property {Object} [config] - 配置界面。
  * @property {Function} [config.SetData] - 设置配置数据的函数。
@@ -143,6 +145,7 @@ export function notifyPartInstall(username, partpath) {
  */
 
 /**
+ * 部件
  * @typedef {Object} Part
  * @property {PartInfo} [info] - 关于部件的信息。
  * @property {PartInterfaces} [interfaces] - 部件提供的界面。
@@ -153,6 +156,7 @@ export function notifyPartInstall(username, partpath) {
  */
 
 /**
+ * 部件详细信息
  * @typedef {Object} PartDetails
  * @property {PartInfo} info - 关于部件的本地化信息。
  * @property {string[]} supportedInterfaces - 支持的界面列表。

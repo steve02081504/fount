@@ -44,6 +44,7 @@ async function renderCharDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
+		 * 处理角色选择更改。
 		 * @param {object} selectedItem - 选定的项目。
 		 */
 		onSelect: (selectedItem) => {
