@@ -37,29 +37,30 @@ export default {
 			 * 处理命令行参数。
 			 *
 			 * 支持的命令：
-			 *   install <uri> [source-name]
-			 *     从 URL 或 HuggingFace URI 下载模型并创建 AI 源。
+			 *   install <uri|path> [source-name]
+			 *     从 URL、HuggingFace URI 或本地文件路径安装模型并创建 AI 源。
 			 *     uri 支持：
 			 *       https://example.com/model.gguf
 			 *       hf:owner/model:Q4_K_M
 			 *       hf:owner/model/filename.gguf
 			 *       hf.co/owner/model:Q4_K_M
+			 *       ./models/my-model.gguf（本地文件路径）
 			 *
 			 *   create-from-path <path> [source-name]
-			 *     从已有的本地模型文件路径创建 AI 源（不下载）。
+			 *     install 的别名，等价于 install <path>。
 			 *
 			 * @param {string} user - 用户名。
 			 * @param {Array<string>} args - 命令行参数数组。
 			 * @returns {Promise<void>}
 			 */
-			ArgumentsHandler: async (user, args) => {
+			ArgumentsHandler: async (user, args, context = {}) => {
 				const action = args[0]
 				let params = {}
 
 				if (action === 'install')
-					params = { uri: args[1], sourceName: args[2] }
+					params = { uri: args[1], sourceName: args[2], cwd: context.cwd }
 				else if (action === 'create-from-path')
-					params = { modelPath: args[1], sourceName: args[2] }
+					params = { modelPath: args[1], sourceName: args[2], cwd: context.cwd }
 
 				const result = await handleAction(user, action, params)
 				console.log(result)

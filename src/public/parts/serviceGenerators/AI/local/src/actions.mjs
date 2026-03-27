@@ -1,5 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs'
+import process from 'node:process'
 
 import { addServiceSourceFile, saveServiceSourceFile } from '../../../../shells/serviceSourceManage/src/manager.mjs'
 import { downloadModel, deriveSourceName, isHttpUrl, isHfUri, normalizeModelUri } from './modelDownload.mjs'
@@ -14,8 +15,8 @@ const GENERATOR_NAME = 'local'
  * @param {string} [sourceName] - AI 源名称，默认从文件名推导。
  * @returns {Promise<string>} 操作结果描述。
  */
-async function createSourceFromPath(user, modelPath, sourceName) {
-	const resolvedPath = path.isAbsolute(modelPath) ? modelPath : path.resolve(modelPath)
+async function createSourceFromPath(user, modelPath, sourceName, cwd) {
+	const resolvedPath = path.isAbsolute(modelPath) ? modelPath : path.resolve(cwd || process.cwd(), modelPath)
 	if (!fs.existsSync(resolvedPath))
 		throw new Error(`Model file not found: ${resolvedPath}`)
 
@@ -50,11 +51,12 @@ export const actions = {
 	 * @param {string} [root0.sourceName] - 可选的 AI 源名称，默认从 URI 推导。
 	 * @returns {Promise<string>} 操作结果描述。
 	 */
-	install: async ({ user, uri, sourceName }) => {
+	install: async ({ user, uri, sourceName, cwd }) => {
 		if (!uri) throw new Error('Model URI is required.')
 		const normalizedUri = normalizeModelUri(uri)
+
 		if (!isHttpUrl(normalizedUri) && !isHfUri(normalizedUri))
-			throw new Error(`Unsupported URI format: ${uri}\nSupported: HTTP/HTTPS URL or HuggingFace URI with hf: prefix.`)
+			return createSourceFromPath(user, uri, sourceName, cwd)
 
 		console.log(`Downloading model: ${uri}`)
 		const modelPath = await downloadModel(user, uri)
@@ -81,8 +83,8 @@ export const actions = {
 	 * @param {string} [root0.sourceName] - 可选的 AI 源名称。
 	 * @returns {Promise<string>} 操作结果描述。
 	 */
-	'create-from-path': async ({ user, modelPath, sourceName }) => {
+	'create-from-path': async ({ user, modelPath, sourceName, cwd }) => {
 		if (!modelPath) throw new Error('modelPath is required.')
-		return createSourceFromPath(user, modelPath, sourceName)
+		return createSourceFromPath(user, modelPath, sourceName, cwd)
 	},
 }

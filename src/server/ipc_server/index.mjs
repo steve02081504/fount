@@ -20,11 +20,12 @@ export async function processIPCCommand(command, data) {
 	try {
 		switch (command) {
 			case 'runpart': {
-				const { username, partpath, args } = data
+				const { username, partpath, args, cwd } = data
 				console.logI18n('fountConsole.ipc.runPartLog', { partpath, username, args: JSON.stringify(args) })
 				const part = await loadPart(username, partpath)
 				const vc = new VirtualConsole()
-				const result = await vc.hookAsyncContext(async () => await part.interfaces.invokes.ArgumentsHandler(username, args))
+				const context = { cwd: cwd || process.cwd() }
+				const result = await vc.hookAsyncContext(async () => await part.interfaces.invokes.ArgumentsHandler(username, args, context))
 				return { status: 'ok', data: { result, outputs: vc.outputs } }
 			}
 			case 'invokepart': {
