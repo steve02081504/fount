@@ -4,16 +4,17 @@
 #   fount run <username> serviceGenerators/AI/local <action> [args...]
 #
 # 支持的 Action:
-#   - install <uri> [source-name]
-#       从 URL 或 HuggingFace URI 下载模型并创建 AI 源。
-#       URI 格式示例:
+#   - install <uri|path> [source-name]
+#       从 URL、HuggingFace URI 或本地文件路径安装模型并创建 AI 源。
+#       URI/路径格式示例:
 #         https://example.com/model.gguf
 #         hf:owner/model:Q4_K_M
 #         hf:owner/model/filename.gguf
 #         hf.co/owner/model:Q4_K_M
+#         ./models/my-model.gguf（本地文件路径）
 #
 #   - create-from-path <path> [source-name]
-#       从已有的本地 GGUF 文件路径创建 AI 源（不下载）。
+#       install 的别名，等价于 install <path>。
 #
 # fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
@@ -48,15 +49,22 @@ try {
 
 			switch ($action) {
 				'install' {
-					# URI 无法枚举，返回格式示例作为提示。
-					@(
-						[System.Management.Automation.CompletionResult]::new(
-							'hf:', 'hf:<owner>/<model>:<quant>', 'ParameterValue', 'HuggingFace URI, e.g. hf:Qwen/Qwen2-7B-Instruct-GGUF:Q4_K_M'
-						),
-						[System.Management.Automation.CompletionResult]::new(
-							'https://', 'https://<url>.gguf', 'ParameterValue', 'Direct HTTP/HTTPS URL to a .gguf file'
-						)
-					) | Where-Object { $_.CompletionText.StartsWith($WordToComplete) }
+					# 本地 .gguf 文件补全。
+					Get-ChildItem -Path "$($WordToComplete)*" -File -Filter '*.gguf' -ErrorAction SilentlyContinue |
+						ForEach-Object {
+							[System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'ProviderItem', $_.FullName)
+						}
+					# URI 格式示例提示（仅在未输入任何内容或以 hf/http 开头时显示）。
+					if (-not $WordToComplete -or $WordToComplete -match '^(hf|http)') {
+						@(
+							[System.Management.Automation.CompletionResult]::new(
+								'hf:', 'hf:<owner>/<model>:<quant>', 'ParameterValue', 'HuggingFace URI, e.g. hf:Qwen/Qwen2-7B-Instruct-GGUF:Q4_K_M'
+							),
+							[System.Management.Automation.CompletionResult]::new(
+								'https://', 'https://<url>.gguf', 'ParameterValue', 'Direct HTTP/HTTPS URL to a .gguf file'
+							)
+						) | Where-Object { $_.CompletionText.StartsWith($WordToComplete) }
+					}
 					break
 				}
 				'create-from-path' {

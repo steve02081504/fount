@@ -128,7 +128,7 @@ if (args.length) {
 
 		command_obj = {
 			type: 'runpart',
-			data: { username, partpath, args },
+			data: { username, partpath, args, cwd: process.cwd() },
 		}
 	}
 	else if (command == 'shutdown' || command == 'reboot') {
