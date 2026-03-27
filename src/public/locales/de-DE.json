@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Keine laufende Instanz erkannt, bitte starten Sie zuerst fount.",
 			"runPartLog": "Führen Sie ${partpath} als ${username} aus, Argumente: ${args}",
 			"invokePartLog": "Rufen Sie ${partpath} als ${username} auf, Parameter: ${invokedata}",
-			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Komponente-Typ> <Benutzername> <Komponente-Name> <Parameter...>\".",
+			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Benutzername> <Komponentenpfad> <Parameter...>\".",
 			"invalidCommandFormat": "Ungültiges Befehlsformat",
 			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",

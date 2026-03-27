@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'serviceSourceManage' shell。
 #
 # 使用方法:
-#   fount run shells <username> serviceSourceManage <action> [sourceName]
+#   fount run <username> shells/serviceSourceManage <action> [sourceName]
 #
 # 支持的 Action:
 #   - list: 列出所有可用的 AI 源。
@@ -28,7 +28,7 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取出 'run shells <username> serviceSourceManage' 之后的用户输入参数。
+	# 从命令 AST 中提取出 'run <username> shells/serviceSourceManage' 之后的用户输入参数。
 	$commandElements = $CommandAst.CommandElements
 	# 'serviceSourceManage' 这个 shell 名称本身位于 'run' 之后的第3个位置 (索引+3)。
 	$shellIndex = $runIndex + 3

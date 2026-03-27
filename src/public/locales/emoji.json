@@ -32,7 +32,7 @@
 			"noInstanceRunning": "🚫🏃‍♂️💨 ❓ ▶️ ⛲",
 			"runPartLog": "▶️ 🧩${partpath} 👤${username}, 📝: ${args}",
 			"invokePartLog": "📞 🧩${partpath} 👤${username}, 📝: ${invokedata}",
-			"invalidCommand": "❓➡️ \"⛲ ▶️ <🧩> <👤> <🏷️> <...>",
+			"invalidCommand": "❓➡️ \"⛲ ▶️ <👤> <🧩📍> <🏷️...>\"",
 			"invalidCommandFormat": "❓➡️📝",
 			"unsupportedCommand": "🚫➡️",
 			"processMessageError": "📨⚙️❌: ${error}",
