@@ -612,7 +612,7 @@ const MOLTBOOK_TAG_REGEX = /<moltbook_(?<tag>\w+)(?<attrs>\s*[^>]*?)(?:\/>|>(?<b
 export async function moltbookReplyHandler(reply, args) {
 	const { content } = reply
 	const matches = [...content.matchAll(MOLTBOOK_TAG_REGEX)]
-	if (matches.length === 0) return false
+	if (!matches.length) return false
 
 	const addLog = args.AddLongTimeLog
 	const charName = args.Charname

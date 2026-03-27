@@ -294,7 +294,7 @@ export function createPacedFakeStream(options) {
 	function runBatch(text, generationTimeMs) {
 		const lines = text.endsWith('\n') ? text.slice(0, -1).split('\n') : text.split('\n')
 		return new Promise(resolve => {
-			if (lines.length === 0) {
+			if (!lines.length) {
 				resolve()
 				return
 			}
@@ -318,7 +318,7 @@ export function createPacedFakeStream(options) {
 				const lineDuration = totalWeight > 0 ? durationMs * (weight / totalWeight) : durationMs
 				const numChunks = Math.max(1, Math.ceil(weight / 4))
 				const chunks = chunkLineByWeightFixed(line, numChunks)
-				if (chunks.length === 0) {
+				if (!chunks.length) {
 					onChunk('\n')
 					scheduleLine(lineIndex + 1)
 					return
