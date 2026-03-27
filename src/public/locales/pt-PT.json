@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Nenhuma instância em execução foi detectada. Inicie o fount primeiro.",
 			"runPartLog": "Execute ${partpath} como ${username}, argumentos: ${args}",
 			"invokePartLog": "Chame ${partpath} como ${username}, parâmetro: ${invokedata}",
-			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetros...>\".",
+			"invalidCommand": "Comando inválido. Utilize \"fount run <Nome de utilizador> <Caminho do Componente> <parâmetros...>\".",
 			"invalidCommandFormat": "Formato de comando inválido.",
 			"unsupportedCommand": "Tipo de comando não suportado.",
 			"processMessageError": "Erro ao processar a mensagem IPC: ${error}",

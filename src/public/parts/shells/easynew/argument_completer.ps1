@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'easynew' shell。
 #
 # 使用方法:
-#   fount run shells <username> easynew <action> [args...]
+#   fount run <username> shells/easynew <action> [args...]
 #
 # 支持的 Action:
 #   - list-templates: 列出所有可用的部件模板。
@@ -51,7 +51,7 @@ function Get-EasyNewTemplateList([string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run shells <username> easynew' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/easynew' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$shellIndex = $runIndex + 3
 

@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Работающий экземпляр не обнаружен, сначала запустите fount.",
 			"runPartLog": "Запустите ${partpath} от имени ${username}, аргументы: ${args}",
 			"invokePartLog": "Вызовите ${partpath} как ${username}, параметр: ${invokedata}",
-			"invalidCommand": "Неверная команда, пожалуйста, используйте \"fount run <Тип компонента> <имя пользователя> <Имя компонента> <параметры...>\".",
+			"invalidCommand": "Неверная команда, пожалуйста, используйте \"fount run <имя пользователя> <путь компонента> <параметры...>\".",
 			"invalidCommandFormat": "Неверный формат команды.",
 			"unsupportedCommand": "Неподдерживаемый тип команды.",
 			"processMessageError": "Ошибка при обработке IPC-сообщения: ${error}",

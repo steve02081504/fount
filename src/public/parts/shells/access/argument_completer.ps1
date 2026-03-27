@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'access' shell。
 #
 # 使用方法:
-#   fount run shells <username> access
+#   fount run <username> shells/access
 #
 # 此命令无需额外参数。
 #

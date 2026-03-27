@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'discordbot' shell。
 #
 # 使用方法:
-#   fount run shells <username> discordbot <action> [args...]
+#   fount run <username> shells/discordbot <action> [args...]
 #
 # 支持的 Action:
 #   - list: 列出所有已配置的 Discord Bot。
@@ -47,7 +47,7 @@ function Get-BotList([string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run shells <username> discordbot' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/discordbot' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$discordBotIndex = $runIndex + 3
 

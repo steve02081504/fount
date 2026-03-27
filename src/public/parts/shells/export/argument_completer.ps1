@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'export' shell。
 #
 # 使用方法:
-#   fount run shells <username> export <partpath> [withData] [outputPath]
+#   fount run <username> shells/export <partpath> [withData] [outputPath]
 #
 # 参数:
 #   <partpath>:   要导出的部件路径 (例如: chars/my-char, worlds/my-world)。
@@ -48,7 +48,7 @@ function Complete-PartPath([string]$WordToComplete, [string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run shells <username> export' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/export' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$shellIndex = $runIndex + 3
 

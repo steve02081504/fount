@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'config' shell。
 #
 # 使用方法:
-#   fount run shells <username> config <action> <partpath> [data]
+#   fount run <username> shells/config <action> <partpath> [data]
 #
 # 支持的 Action:
 #   - get <partpath>: 获取指定部件的配置。
@@ -47,7 +47,7 @@ function Complete-PartPath([string]$WordToComplete, [string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取出 'run shells <username> config' 之后的用户输入参数。
+	# 从命令 AST 中提取出 'run <username> shells/config' 之后的用户输入参数。
 	$commandElements = $CommandAst.CommandElements
 	$shellIndex = $runIndex + 3
 

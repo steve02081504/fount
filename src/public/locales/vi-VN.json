@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Không phát hiện phiên bản đang chạy, vui lòng khởi chạy fount trước.",
 			"runPartLog": "Chạy ${partpath} với tên ${username}, đối số: ${args}",
 			"invokePartLog": "Gọi ${partpath} là ${username}, tham số: ${invokedata}",
-			"invalidCommand": "Lệnh không hợp lệ. Vui lòng sử dụng \"fount run <loại thành phần> <tên người dùng> <tên thành phần> <tham số ...>\".",
+			"invalidCommand": "Lệnh không hợp lệ. Vui lòng sử dụng \"fount run <tên người dùng> <đường dẫn thành phần> <tham số ...>\".",
 			"invalidCommandFormat": "Định dạng lệnh không hợp lệ.",
 			"unsupportedCommand": "Loại lệnh không được hỗ trợ.",
 			"processMessageError": "Đã xảy ra lỗi khi xử lý tin nhắn IPC: ${error}",

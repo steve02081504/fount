@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'userSettings' shell。
 #
 # 使用方法:
-#   fount run shells <username> userSettings <action> [args...]
+#   fount run <username> shells/userSettings <action> [args...]
 #
 # 支持的 Action:
 #   - get-stats: 获取用户统计信息。
@@ -28,7 +28,7 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run shells <username> userSettings' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/userSettings' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$shellIndex = $runIndex + 3
 

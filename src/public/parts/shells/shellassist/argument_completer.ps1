@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'shellassist' shell。
 #
 # 使用方法:
-#   fount run shells <username> shellassist <charName>
+#   fount run <username> shells/shellassist <charName>
 #
 # fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
@@ -20,7 +20,7 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run shells <username> shellassist' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/shellassist' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$shellIndex = $runIndex + 3
 

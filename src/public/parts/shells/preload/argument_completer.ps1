@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'preload' shell。
 #
 # 使用方法:
-#   fount run shells <username> preload <partpath>
+#   fount run <username> shells/preload <partpath>
 #
 # 作用:
 #   提前加载一个部件到内存中，以便后续更快地访问。
@@ -35,7 +35,7 @@ function Complete-PartPath([string]$WordToComplete, [string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run shells <username> preload' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/preload' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$preloadIndex = $runIndex + 3 # 'preload' 命令的索引
 
