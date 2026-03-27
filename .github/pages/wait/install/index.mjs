@@ -76,16 +76,42 @@ const starNum = initialRepoData?.stargazers_count ?? NaN
  * 播放英雄动画。
  */
 async function playHeroAnimation() {
+	const BG_IMAGE_URL = 'https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b'
+
+	// 并行预加载背景图，最多等 5s，避免转场时背景图闪烁
+	const bgImageReady = Promise.race([
+		new Promise(resolve => {
+			const img = new Image()
+			img.onload = resolve
+			img.onerror = resolve
+			img.src = BG_IMAGE_URL
+		}),
+		new Promise(resolve => setTimeout(resolve, 5000)),
+	])
+
 	/**
-	 * 显示最终状态。
+	 * 将 DOM 切换到最终显示状态（无动画）。
 	 * @returns {void}
 	 */
-	const showFinalState = () => {
+	const applyFinalState = () => {
 		heroOverlay.classList.add('visible-after-intro')
 		heroContent.classList.add('visible-after-intro')
 		heroElement.classList.add('bg-image-loaded')
 		heroAnimationBg.remove()
 		document.body.classList.remove('scroll-lock')
+	}
+
+	/**
+	 * 使用 View Transition API 将 SVG 动画末帧平滑过渡到最终状态。
+	 * @returns {Promise<void>}
+	 */
+	const showFinalState = async () => {
+		await bgImageReady
+
+		if (document.startViewTransition)
+			await document.startViewTransition({ update: applyFinalState, types: ['hero-intro'] }).finished
+		else
+			applyFinalState()
 	}
 
 	try {
@@ -102,15 +128,11 @@ async function playHeroAnimation() {
 		animateSVG(svgElement)
 		const durationMs = 3100
 
-		setTimeout(() => {
-			showFinalState()
-			heroAnimationBg.style.opacity = '0'
-			heroAnimationBg.addEventListener('transitionend', () => heroAnimationBg.remove(), { once: true })
-		}, durationMs)
+		setTimeout(() => showFinalState(), durationMs)
 	}
 	catch (error) {
 		console.error('Hero animation failed:', error)
-		showFinalState()
+		await showFinalState()
 	}
 }
 
@@ -447,7 +469,7 @@ function startTestimonialsCarousel() {
 	 * 切换到下一条并播动画。
 	 */
 	async function advance() {
-		if (list.length === 0) return
+		if (!list.length) return
 		const nextIndex = (index + 1) % list.length
 		await renderTestimonial(testimonialNext, list[nextIndex])
 		testimonialCurrent.classList.add('testimonial-exit')
@@ -467,7 +489,7 @@ function startTestimonialsCarousel() {
 
 	fetchJson(COMMENTS_JSON_URL, []).then(async data => {
 		list = Array.isArray(data) ? data : []
-		if (list.length === 0) {
+		if (!list.length) {
 			testimonialsBlock.classList.add('hidden')
 			return
 		}
@@ -634,6 +656,8 @@ async function handleStandaloneFlow() {
 	 * 在 fount 服务不可用时打开主页。
 	 */
 	launchButton.onclick = () => {
+		if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+			return window.location.href = 'https://github.com/steve02081504/fount' // lol webkit
 		window.location.href = 'fount://page/'
 		setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 5000)
 	}
