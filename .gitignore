@@ -18,5 +18,6 @@
 /full_locales
 /path/deno
 /path/deno.exe
-project/*
-target/*
+target/
+project/target/
+project/project/

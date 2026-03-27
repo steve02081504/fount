@@ -9,8 +9,10 @@ import java.nio.file.Files
 	else 
 		"run.sh"
 	val codeSource = PathLocator.getClass.getProtectionDomain.getCodeSource
-	val codePath = Option(codeSource).map(cr => Paths.get(cr.getLocation().toURI()))
-		.getOrElse(Paths.get(".").toAbsolutePath())
+	val codePath = Option(codeSource).flatMap(cr => Option(cr.getLocation()))
+		.map(l => Paths.get(l.toURI()))
+	 	.getOrElse(Paths.get(".").toAbsolutePath())
+	
 	val startDir = if Files.isRegularFile(codePath) then
 		codePath.getParent
 	else 
@@ -22,21 +24,14 @@ import java.nio.file.Files
 		.find(d => Files.exists(d.resolve(scriptName)))
 	val scriptDir = maybeDir.getOrElse(Paths.get(System.getProperty("user.dir")))
 	val finalDir = scriptDir.toFile()
-			// In some runtime environments `getCodeSource` (or `getLocation`) can be null.
-			// Fall back to the current working directory in that case.
+	val cmd =
+		if (isWindows) Seq("cmd.exe", "/c", "run.bat") ++ args
+		else Seq("sh", "run.sh") ++ args
 
-			// Walk up from class/jar location so we can set the correct working directory
-			// (and avoid relying on the JVM current working directory).
-
-
-		val cmd =
-			if (isWindows) Seq("cmd.exe", "/c", "run.bat") ++ args
-			else Seq("sh", "run.sh") ++ args
-
-		val exitCode =
-			new ProcessBuilder(cmd*)
-				.directory(finalDir)
-				.inheritIO()
-				.start()
-				.waitFor()
-		sys.exit(exitCode)
+	val exitCode =
+		new ProcessBuilder(cmd*)
+			.directory(finalDir)
+			.inheritIO()
+			.start()
+			.waitFor()
+	sys.exit(exitCode)
