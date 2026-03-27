@@ -657,9 +657,9 @@ async function handleStandaloneFlow() {
 	 */
 	launchButton.onclick = () => {
 		if (/iPad|iPhone|iPod/.test(navigator.userAgent))
-			return window.location.href = 'https://github.com/steve02081504/fount' // lol webkit
+			return window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
 		window.location.href = 'fount://page/'
-		setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 5000)
+		setTimeout(() => { window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' }, 5000)
 	}
 
 	const savedHostUrl = await getFountHostUrl()
