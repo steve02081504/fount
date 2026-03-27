@@ -10,6 +10,8 @@ on:
       - 'src/public/locales/**'
       - 'src/public/pages/scripts/**'
       - 'imgs/**'
+      - 'src/runner/main.sh'
+      - 'src/runner/main.ps1'
     branches: ['master']
 
   # Daily: fetch JotForm feedback and redeploy
@@ -160,6 +162,8 @@ jobs:
           cp -r ./src/public/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
           cp -rn ./src/public/pages/scripts ./.github/pages/
+          cp ./src/runner/main.sh ./.github/pages/install.sh
+          cp ./src/runner/main.ps1 ./.github/pages/install.ps1
 
       - name: PNG/ICO from live site or local render
         if: steps.pages_skip.outputs.skip != 'true'
