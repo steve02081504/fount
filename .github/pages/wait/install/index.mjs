@@ -469,7 +469,7 @@ function startTestimonialsCarousel() {
 	 * 切换到下一条并播动画。
 	 */
 	async function advance() {
-		if (list.length === 0) return
+		if (!list.length) return
 		const nextIndex = (index + 1) % list.length
 		await renderTestimonial(testimonialNext, list[nextIndex])
 		testimonialCurrent.classList.add('testimonial-exit')
@@ -489,7 +489,7 @@ function startTestimonialsCarousel() {
 
 	fetchJson(COMMENTS_JSON_URL, []).then(async data => {
 		list = Array.isArray(data) ? data : []
-		if (list.length === 0) {
+		if (!list.length) {
 			testimonialsBlock.classList.add('hidden')
 			return
 		}
