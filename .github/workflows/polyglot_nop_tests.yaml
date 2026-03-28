@@ -97,15 +97,18 @@ jobs:
             HEAD="${{ github.sha }}"
           fi
 
-          if [ -n "$BASE" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ]; then
-            git fetch --no-tags origin "$BASE" --depth=1 >/dev/null 2>&1 || true
+          core_changed=0
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$(git merge-base origin/HEAD HEAD 2>/dev/null || true)"
+            if [ -z "$BASE" ]; then
+              core_changed=1
+            fi
           fi
 
           CHANGED_FILES="$(git diff --name-only "$BASE" "$HEAD" || true)"
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
-          core_changed=0
           run_bash=0
           run_powershell=0
           run_deno=0
@@ -127,7 +130,7 @@ jobs:
 
           while IFS= read -r f; do
             case "$f" in
-              path/fount.sh|path/fount.ps1|run.sh|run.bat)
+              path/fount.sh|path/fount.ps1|run.sh|run.bat|.github/workflows/polyglot_nop_tests.yaml)
                 core_changed=1
                 ;;
               path/fount.sh)
@@ -184,6 +187,11 @@ jobs:
                 ;;
             esac
           done <<< "$CHANGED_FILES"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual workflow_dispatch detected. Forcing all tests."
+            core_changed=1
+          fi
 
           # If the core fount launcher changes, we run all polyglot smoke tests
           # to ensure `nop` truly avoids starting the server.
@@ -239,13 +247,13 @@ jobs:
       - name: Run bash launcher (nop)
         shell: bash
         run: bash ./path/fount.sh nop
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -261,14 +269,14 @@ jobs:
         shell: pwsh
         run: |
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\path\fount.ps1" "nop"
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: pwsh
         run: |
-          $statusLines = & git status --porcelain --untracked-files=no 2>$null
+          $statusLines = & git status --porcelain=v1 -uall 2>$null
           if ($null -eq $statusLines) { $statusLines = @() }
           $statusText = ($statusLines | Out-String).Trim()
           if ($statusText.Length -gt 0) {
-            Write-Host "Git residual (tracked):"
+            Write-Host "Git working tree is dirty:"
             Write-Host $statusText
             $paths = $statusLines | ForEach-Object { ($_ -split '\s+')[1] } | Where-Object { $_ } | Sort-Object -Unique
             Write-Host $paths
@@ -293,13 +301,13 @@ jobs:
         shell: bash
         run: deno run -A ./path/fount.mjs nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -315,13 +323,13 @@ jobs:
       - name: Run node launcher (nop)
         shell: bash
         run: node ./path/fount.mjs nop
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -337,13 +345,13 @@ jobs:
       - name: Run make launcher (nop)
         shell: bash
         run: make run ARGS=nop
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -359,13 +367,13 @@ jobs:
       - name: Run npm launcher (nop)
         shell: bash
         run: npm start -- nop
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -389,13 +397,13 @@ jobs:
         shell: bash
         run: deno task start nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -416,13 +424,13 @@ jobs:
         shell: bash
         run: cargo run -- nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -445,13 +453,13 @@ jobs:
         shell: bash
         run: dotnet run -- nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -479,13 +487,13 @@ jobs:
         shell: bash
         run: ./gradlew run -PARGS=nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -503,13 +511,13 @@ jobs:
         shell: bash
         run: swift run fount nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -540,13 +548,13 @@ jobs:
         shell: bash
         run: task run -- nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -572,13 +580,13 @@ jobs:
         shell: bash
         run: just run nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -601,13 +609,13 @@ jobs:
         shell: bash
         run: FOUNT_ARGS=nop npx gulp
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -631,13 +639,13 @@ jobs:
         shell: bash
         run: mix run -e "Application.ensure_all_started(:fount)" -- nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -703,13 +711,13 @@ jobs:
         shell: bash
         run: stack run -- nop
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -745,13 +753,13 @@ jobs:
         shell: bash
         run: sbt -batch "run nop"
 
-      - name: Check git clean (tracked changes only)
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
@@ -781,14 +789,14 @@ jobs:
         run: |
           docker compose -f docker-compose.yml -f docker-compose.ci.override.yml up --build --abort-on-container-exit
           docker compose -f docker-compose.yml -f docker-compose.ci.override.yml down -v --remove-orphans
-
-      - name: Check git clean (tracked changes only)
+          rm -f docker-compose.ci.override.yml
+      - name: Check git clean
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain=v1 -uall)"
           if [ -n "$status" ]; then
-            echo "Git residual (tracked):"
+            echo "Git working tree is dirty:"
             echo "$status"
             echo "$status" | awk '{print $2}' | sort -u
             exit 1
