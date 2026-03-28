@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Запущений екземпляр не виявлено, спочатку запустіть fount.",
 			"runPartLog": "Запустіть ${partpath} як ${username}, аргументи: ${args}",
 			"invokePartLog": "Виклик ${partpath} як ${username}, параметр: ${invokedata}",
-			"invalidCommand": "Невірна команда, будь ласка, використовуйте \"fount run <тип компонента> <ім'я користувача> <назва компонента> <параметри...>\"",
+			"invalidCommand": "Невірна команда, будь ласка, використовуйте \"fount run <ім'я користувача> <шлях компонента> <параметри...>\"",
 			"invalidCommandFormat": "Невірний формат команди",
 			"unsupportedCommand": "Тип команди не підтримується",
 			"processMessageError": "Помилка при обробці IPC-повідомлення: ${error}",

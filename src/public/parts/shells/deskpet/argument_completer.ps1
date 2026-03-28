@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'deskpet' shell。
 #
 # 使用方法:
-#   fount run shells <username> deskpet <action> [charname]
+#   fount run <username> shells/deskpet <action> [charname]
 #
 # 支持的 Action:
 #   - list: 列出所有可用的角色。

@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Er is geen actief exemplaar gedetecteerd. Start eerst fount.",
 			"runPartLog": "Voer ${partpath} uit als ${username}, argumenten: ${args}",
 			"invokePartLog": "Roep ${partpath} aan als ${username}, parameter: ${invokedata}",
-			"invalidCommand": "Ongeldig commando, gebruik \"fount run <componenttype> <gebruikersnaam> <componentnaam> <parameters...>\"",
+			"invalidCommand": "Ongeldig commando, gebruik \"fount run <gebruikersnaam> <componentpad> <parameters...>\"",
 			"invalidCommandFormat": "Ongeldig commandoformaat",
 			"unsupportedCommand": "Niet-ondersteund commandotype",
 			"processMessageError": "Fout bij het verwerken van IPC-bericht: ${error}",

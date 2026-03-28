@@ -24,9 +24,9 @@ export function buildSamplingReplayOptions(config) {
 
 /**
  * 构建 logprob 条目
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaModel} model - 当前加载的 GGUF 模型。
- * @param {import('npm:node-llama-cpp@3.18.1').Token} selectedToken - 实际被选中的 token id。
- * @param {Map<import('npm:node-llama-cpp@3.18.1').Token, number>} probabilities - 下一 token 的完整概率表。
+ * @param {import('npm:node-llama-cpp').LlamaModel} model - 当前加载的 GGUF 模型。
+ * @param {import('npm:node-llama-cpp').Token} selectedToken - 实际被选中的 token id。
+ * @param {Map<import('npm:node-llama-cpp').Token, number>} probabilities - 下一 token 的完整概率表。
  * @param {number} topN - 保留的 top 候选条数上限。
  * @returns {{ token: string, logprob: number|null, top_logprobs: Array<{token: string, logprob: number|null}> }} OpenAI 风格的单条 logprob 记录。
  */
@@ -49,9 +49,9 @@ function buildLogprobEntry(model, selectedToken, probabilities, topN) {
 /**
  * 清空 sequence 上下文，将 prefixTokens[0..n-2] 写入 KV 缓存，
  * 返回最后一个前缀 token（作为首次 generateNext 的触发 token）。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaContextSequence} sequence - 用于重放的上下文序列。
- * @param {import('npm:node-llama-cpp@3.18.1').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
- * @returns {Promise<import('npm:node-llama-cpp@3.18.1').Token|null>} 首次 `generateNext` 的触发 token，无前缀时为 null。
+ * @param {import('npm:node-llama-cpp').LlamaContextSequence} sequence - 用于重放的上下文序列。
+ * @param {import('npm:node-llama-cpp').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
+ * @returns {Promise<import('npm:node-llama-cpp').Token|null>} 首次 `generateNext` 的触发 token，无前缀时为 null。
  */
 async function resetAndLoadPrefix(sequence, prefixTokens) {
 	await sequence.eraseContextTokenRanges([{ start: 0, end: sequence.nextTokenIndex }])
@@ -63,10 +63,10 @@ async function resetAndLoadPrefix(sequence, prefixTokens) {
 
 /**
  * 批量收集 tokens 的 logprobs，单次 controlledEvaluate 批量请求，O(1) 异步往返。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaModel} model - 当前加载的 GGUF 模型。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaContextSequence} sequence - 用于重放的上下文序列。
- * @param {import('npm:node-llama-cpp@3.18.1').Token} triggerToken - 序列的起始触发 token。
- * @param {import('npm:node-llama-cpp@3.18.1').Token[]} outTokens - 要收集 logprobs 的 token 序列。
+ * @param {import('npm:node-llama-cpp').LlamaModel} model - 当前加载的 GGUF 模型。
+ * @param {import('npm:node-llama-cpp').LlamaContextSequence} sequence - 用于重放的上下文序列。
+ * @param {import('npm:node-llama-cpp').Token} triggerToken - 序列的起始触发 token。
+ * @param {import('npm:node-llama-cpp').Token[]} outTokens - 要收集 logprobs 的 token 序列。
  * @param {number} topN - top_logprobs 条数上限。
  * @param {object} samplingOptions - 传给 `generateNext` 的采样选项。
  * @returns {Promise<(object|null)[]>} 与 outTokens 等长的 logprob 条目数组（无概率时为 null）。
@@ -84,10 +84,10 @@ async function evalBatchedLogprobs(model, sequence, triggerToken, outTokens, top
 
 /**
  * 批量收集回复的 logprobs（非流式），单次 controlledEvaluate 完成所有 token，O(1) 异步往返。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaModel} model - 当前加载的 GGUF 模型。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaContextSequence} sequence - 用于重放的上下文序列。
- * @param {import('npm:node-llama-cpp@3.18.1').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
- * @param {import('npm:node-llama-cpp@3.18.1').Token[]} outTokens - 模型回复的 token 序列。
+ * @param {import('npm:node-llama-cpp').LlamaModel} model - 当前加载的 GGUF 模型。
+ * @param {import('npm:node-llama-cpp').LlamaContextSequence} sequence - 用于重放的上下文序列。
+ * @param {import('npm:node-llama-cpp').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
+ * @param {import('npm:node-llama-cpp').Token[]} outTokens - 模型回复的 token 序列。
  * @param {number} topN - top_logprobs 条数上限。
  * @param {object} samplingOptions - 传给 `generateNext` 的采样选项。
  * @returns {Promise<{ content: object[], metrics: object }>} logprobs 内容与耗时类指标。
@@ -121,11 +121,11 @@ export async function collectLocalLogprobs(model, sequence, prefixTokens, outTok
 /**
  * 创建流式 logprobs 收集器，首次 collectBatch 前须调用 init。
  * KV 缓存跨 token 持续复用；collectBatch 将同一 chunk 内的所有 token 合并为单次 controlledEvaluate 调用。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaModel} model - 当前加载的 GGUF 模型。
- * @param {import('npm:node-llama-cpp@3.18.1').LlamaContextSequence} sequence - 用于重放的上下文序列。
+ * @param {import('npm:node-llama-cpp').LlamaModel} model - 当前加载的 GGUF 模型。
+ * @param {import('npm:node-llama-cpp').LlamaContextSequence} sequence - 用于重放的上下文序列。
  * @param {number} topN - top_logprobs 条数上限。
  * @param {object} samplingOptions - 传给 `generateNext` 的采样选项。
- * @returns {{ isReady: boolean, init: (prefixTokens: import('npm:node-llama-cpp@3.18.1').Token[]) => Promise<void>, collectBatch: (outTokens: import('npm:node-llama-cpp@3.18.1').Token[]) => Promise<(object|null)[]> }} 流式 logprobs 收集器。
+ * @returns {{ isReady: boolean, init: (prefixTokens: import('npm:node-llama-cpp').Token[]) => Promise<void>, collectBatch: (outTokens: import('npm:node-llama-cpp').Token[]) => Promise<(object|null)[]> }} 流式 logprobs 收集器。
  */
 export function createStreamingLogprobsCollector(model, sequence, topN, samplingOptions) {
 	let triggerToken = null
@@ -137,7 +137,7 @@ export function createStreamingLogprobsCollector(model, sequence, topN, sampling
 		get isReady() { return triggerToken != null },
 		/**
 		 * 清空重放序列并写入前缀，准备从指定位置重算概率。
-		 * @param {import('npm:node-llama-cpp@3.18.1').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
+		 * @param {import('npm:node-llama-cpp').Token[]} prefixTokens - 回复开始前上下文的 token 序列。
 		 * @returns {Promise<void>}
 		 */
 		async init(prefixTokens) {
@@ -145,7 +145,7 @@ export function createStreamingLogprobsCollector(model, sequence, topN, sampling
 		},
 		/**
 		 * 对一批输出 token 批量收集 logprobs（单次 controlledEvaluate）。
-		 * @param {import('npm:node-llama-cpp@3.18.1').Token[]} outTokens - 本 chunk 内新生成的 token id 数组。
+		 * @param {import('npm:node-llama-cpp').Token[]} outTokens - 本 chunk 内新生成的 token id 数组。
 		 * @returns {Promise<(object|null)[]>} 与 outTokens 等长的 logprob 条目（无概率时为 null）。
 		 */
 		async collectBatch(outTokens) {

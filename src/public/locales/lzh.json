@@ -32,7 +32,7 @@
 			"noInstanceRunning": "未察運行之體，請先啟 fount。",
 			"runPartLog": "以 ${username} 之名行 ${partpath}，其參曰：${args}",
 			"invokePartLog": "以 ${username} 之名召 ${partpath}，其數曰：${invokedata}",
-			"invalidCommand": "令式有誤，當循此法：\"fount run <類> <名> <件> <參...>\"",
+			"invalidCommand": "令式有誤，當循此法：\"fount run <名> <件徑> <參...>\"",
 			"invalidCommandFormat": "令式不合",
 			"unsupportedCommand": "此令未識，難以從命",
 			"processMessageError": "處內令有失：${error}",

@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'chat' shell。
 #
 # 使用方法:
-#   fount run shells <username> chat <command> [args...]
+#   fount run <username> shells/chat <command> [args...]
 #
 # 支持的 Command 及参数:
 #   - start [charName]: 开始一个新的聊天，可选择指定一个角色。
@@ -73,7 +73,7 @@ function Get-CharListFromChat([string]$Username, [string]$ChatId) {
 
 
 try {
-	# 从命令 AST 中提取 'run shells <username> chat' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/chat' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$chatIndex = $runIndex + 3
 

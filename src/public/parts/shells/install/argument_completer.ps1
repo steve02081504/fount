@@ -1,7 +1,7 @@
 # PowerShell 参数补全脚本，用于 fount 的 'install' shell。
 #
 # 使用方法:
-#   fount run shells <username> install <action> [args...]
+#   fount run <username> shells/install <action> [args...]
 #
 # 支持的 Action:
 #   - install <path/url/text>: 从文件、URL或文本安装一个部件。
@@ -24,7 +24,7 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run shells <username> install' 之后的参数。
+	# 从命令 AST 中提取 'run <username> shells/install' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	$installIndex = $runIndex + 3 # 'install' 命令的索引
 

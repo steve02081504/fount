@@ -32,7 +32,7 @@
 			"noInstanceRunning": "Aucune instance en cours d'exécution détectée, veuillez d'abord démarrer fount.",
 			"runPartLog": "Exécutez ${partpath} en tant que ${username}, arguments : ${args}",
 			"invokePartLog": "Appelez ${partpath} en tant que ${username}, paramètre : ${invokedata}",
-			"invalidCommand": "Commande non valide. Veuillez utiliser « fount run <type de composant> <nom d'utilisateur> <nom de composant> <paramètres...> ».",
+			"invalidCommand": "Commande non valide. Veuillez utiliser « fount run <nom d'utilisateur> <chemin du composant> <paramètres...> ».",
 			"invalidCommandFormat": "Format de commande invalide.",
 			"unsupportedCommand": "Type de commande non pris en charge.",
 			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",

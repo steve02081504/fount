@@ -124,11 +124,11 @@ if (args.length) {
 	if (command == 'run') {
 		const username = args[0]
 		const partpath = args[1]
-		args = args.slice(3)
+		args = args.slice(2)
 
 		command_obj = {
 			type: 'runpart',
-			data: { username, partpath, args },
+			data: { username, partpath, args, cwd: process.cwd() },
 		}
 	}
 	else if (command == 'shutdown' || command == 'reboot') {

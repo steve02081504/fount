@@ -32,7 +32,7 @@
 			"noInstanceRunning": "実行中のインスタンスが検出されませんでした。最初に fount を開始してください。",
 			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
 			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
-			"invalidCommand": "無効なコマンドです。「fount run <コンポーネントタイプ> <ユーザー名> <コンポーネント名> <パラメーター...>」を使用してください。",
+			"invalidCommand": "無効なコマンドです。「fount run <ユーザー名> <コンポーネントパス> <パラメーター...>」を使用してください。",
 			"invalidCommandFormat": "無効なコマンド形式です。",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
