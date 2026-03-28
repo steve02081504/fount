@@ -19,5 +19,11 @@
 /path/deno
 /path/deno.exe
 target/
-project/target/
-project/project/
+project/
+.gradle/
+build/
+_build/
+.stack-work/
+stack.yaml.lock
+fount-stack-runner.cabal
+docker-compose.ci.override.yml
