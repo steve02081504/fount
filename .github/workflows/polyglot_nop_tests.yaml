@@ -248,7 +248,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -269,7 +269,7 @@ jobs:
       - name: Check git clean (tracked changes only)
         shell: pwsh
         run: |
-          $statusLines = & git status --porcelain --untracked-files=no 2>$null
+          $statusLines = & git status --porcelain 2>$null
           if ($null -eq $statusLines) { $statusLines = @() }
           $statusText = ($statusLines | Out-String).Trim()
           if ($statusText.Length -gt 0) {
@@ -302,7 +302,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -324,7 +324,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -346,7 +346,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -368,7 +368,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -398,7 +398,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -454,7 +454,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -488,7 +488,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -512,7 +512,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -549,7 +549,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -581,7 +581,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -610,7 +610,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -640,7 +640,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -712,7 +712,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
@@ -791,7 +791,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
