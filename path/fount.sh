@@ -170,6 +170,54 @@ write_taskbar_progress() {
 write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
 write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
 
+# 终端窗口标题
+set_title() {
+	[ -c /dev/tty ] || return
+	printf '\033]0;%s\007' "$1" >/dev/tty 2>/dev/null || true
+}
+get_title() {
+	[ -c /dev/tty ] || {
+		echo ""
+		return
+	}
+	(
+		set +e
+		ss=$(stty -g </dev/tty 2>/dev/null) || {
+			echo ""
+			exit 0
+		}
+		trap 'stty "$ss" </dev/tty 2>/dev/null' EXIT
+		e=$(printf '\033')
+		st=$(printf '\234')
+		t=
+		stty -echo -icanon min 0 time "${2:-2}" </dev/tty 2>/dev/null || {
+			echo ""
+			exit 0
+		}
+		printf '\033[21t' >/dev/tty 2>/dev/null || {
+			echo ""
+			exit 0
+		}
+		while true; do
+			c=$(dd bs=1 count=1 2>/dev/null </dev/tty) || break
+			[ -n "$c" ] || break
+			t="$t$c"
+			case "$t" in
+			$e*$e\\ | $e*$st)
+				t=${t%"$e"\\}
+				t=${t%"$st"}
+				printf '%s\n' "${t#"$e"\][lL]}"
+				exit 0
+				;;
+			$e*) ;;
+			*) break ;;
+			esac
+		done
+		echo ""
+		exit 1
+	) 2>/dev/null
+}
+
 # 自动安装包列表文件及标记文件
 INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
 INSTALLED_SYSTEM_PACKAGES_FILE="$INSTALLER_DATA_DIR/auto_installed_system_packages"
@@ -1352,11 +1400,14 @@ debug_on() {
 # 函数: 运行 fount
 exit_code=0
 run() {
+	local original_title
 	if [[ $(id -u) -eq 0 ]]; then
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning2')${C_RESET}" >&2
 	fi
 	write_taskbar_progress 5
+	original_title=$(get_title)
+	set_title ""
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		local LANG_BACKUP
 		LANG_BACKUP="$LANG"
@@ -1391,12 +1442,14 @@ run() {
 	FOUNT_DENO_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
+	set_title "𝓯"
 	if [[ $is_debug -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	exit_code=$?
+	set_title "$original_title"
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ]; then
@@ -1494,6 +1547,8 @@ keepalive)
 	done
 	;;
 remove)
+	original_title=$(get_title)
+	set_title "𝓯𝓸𝓾𝓷𝓽"
 	write_taskbar_progress 0
 	run shutdown
 	write_taskbar_progress 5
@@ -1514,6 +1569,7 @@ remove)
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
 
+	set_title "𝓯𝓸𝓾𝓷"
 	write_taskbar_progress 25
 	get_i18n 'remove.removingProtocolHandler'
 	remove_desktop_shortcut
@@ -1523,6 +1579,7 @@ remove)
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	fi
 
+	set_title "𝓯𝓸𝓾"
 	write_taskbar_progress 45
 	get_i18n 'remove.removingInstalledSystemPackages'
 	if [[ $IN_TERMUX -eq 1 ]]; then
@@ -1541,12 +1598,15 @@ remove)
 		export PATH
 		rm -f "$AUTO_INSTALLED_DENO_FLAG"
 	fi
+	set_title "𝓯𝓸"
 	write_taskbar_progress 60
 
 	get_i18n 'remove.removingFountInstallationDir'
+	set_title "𝓯"
 	write_taskbar_progress 75
-	rm -rf "$FOUNT_DIR"
+	set_title ""
 	write_taskbar_progress 90
+	rm -rf "$FOUNT_DIR"
 	# 只要父目录为空，继续删他妈的
 	parent_dir=$(dirname "$FOUNT_DIR")
 	while rmdir "$parent_dir" 2>/dev/null; do
@@ -1556,6 +1616,7 @@ remove)
 
 	get_i18n 'remove.fountUninstallationComplete'
 	write_taskbar_progress_clear
+	set_title "$original_title"
 	exit 0
 	;;
 *)
