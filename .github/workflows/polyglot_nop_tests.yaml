@@ -97,15 +97,18 @@ jobs:
             HEAD="${{ github.sha }}"
           fi
 
+          core_changed=0
           if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            BASE="HEAD^"
+            BASE="$(git merge-base origin/HEAD HEAD 2>/dev/null || true)"
+            if [ -z "$BASE" ]; then
+              core_changed=1
+            fi
           fi
 
           CHANGED_FILES="$(git diff --name-only "$BASE" "$HEAD" || true)"
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
-          core_changed=0
           run_bash=0
           run_powershell=0
           run_deno=0
