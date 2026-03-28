@@ -425,7 +425,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status="$(git status --porcelain --untracked-files=no)"
+          status="$(git status --porcelain)"
           if [ -n "$status" ]; then
             echo "Git residual (tracked):"
             echo "$status"
