@@ -184,6 +184,11 @@ jobs:
                 ;;
             esac
           done <<< "$CHANGED_FILES"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual workflow_dispatch detected. Forcing all tests."
+            core_changed=1
+          fi
 
           # If the core fount launcher changes, we run all polyglot smoke tests
           # to ensure `nop` truly avoids starting the server.
