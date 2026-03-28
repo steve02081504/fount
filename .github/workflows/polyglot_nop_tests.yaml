@@ -130,7 +130,7 @@ jobs:
 
           while IFS= read -r f; do
             case "$f" in
-              path/fount.sh|path/fount.ps1|run.sh|run.bat)
+              path/fount.sh|path/fount.ps1|run.sh|run.bat|.github/workflows/polyglot_nop_tests.yaml)
                 core_changed=1
                 ;;
               path/fount.sh)
