@@ -18,3 +18,14 @@
 /full_locales
 /path/deno
 /path/deno.exe
+
+/target
+/.gradle
+/build
+/.build
+/_build
+/.stack-work
+/src/runner/polyglot/stack/.stack-work
+/src/runner/polyglot/stack/fount-stack-runner.cabal
+/stack.yaml.lock
+/project
