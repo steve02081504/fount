@@ -97,8 +97,8 @@ jobs:
             HEAD="${{ github.sha }}"
           fi
 
-          if [ -n "$BASE" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ]; then
-            git fetch --no-tags origin "$BASE" --depth=1 >/dev/null 2>&1 || true
+          if [ -z "$BASE" ] ||[ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="HEAD^"
           fi
 
           CHANGED_FILES="$(git diff --name-only "$BASE" "$HEAD" || true)"
