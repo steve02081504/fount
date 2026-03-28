@@ -1,21 +1,21 @@
 import java.io.File
 import java.nio.file.Paths
 import java.nio.file.Files
-@main def main(args: String*): Unit = 
+@main def main(args: String*): Unit =
 	object PathLocator
 	val isWindows = System.getProperty("os.name").toLowerCase.contains("windows")
 	val scriptName = if isWindows then
-		"run.bat" 
-	else 
+		"run.bat"
+	else
 		"run.sh"
 	val codeSource = PathLocator.getClass.getProtectionDomain.getCodeSource
 	val codePath = Option(codeSource).flatMap(cr => Option(cr.getLocation()))
 		.map(l => Paths.get(l.toURI()))
-	 	.getOrElse(Paths.get(".").toAbsolutePath())
-	
+		.getOrElse(Paths.get(".").toAbsolutePath())
+
 	val startDir = if Files.isRegularFile(codePath) then
 		codePath.getParent
-	else 
+	else
 		codePath
 	val maybeDir = Iterator
 		.iterate(startDir)(_.getParent())
