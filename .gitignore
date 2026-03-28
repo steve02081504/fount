@@ -27,3 +27,4 @@ _build/
 stack.yaml.lock
 fount-stack-runner.cabal
 docker-compose.ci.override.yml
+.build/
