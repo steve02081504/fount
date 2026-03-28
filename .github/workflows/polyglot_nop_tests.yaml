@@ -789,7 +789,7 @@ jobs:
         run: |
           docker compose -f docker-compose.yml -f docker-compose.ci.override.yml up --build --abort-on-container-exit
           docker compose -f docker-compose.yml -f docker-compose.ci.override.yml down -v --remove-orphans
-
+          rm -f docker-compose.ci.override.yml
       - name: Check git clean
         shell: bash
         run: |
