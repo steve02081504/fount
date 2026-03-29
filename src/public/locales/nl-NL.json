@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [fount's Telegram-server](${telegramLink}) gaan om wat plezier te hebben?"
+			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [de Telegram-server van fount](${telegramLink}) gaan om wat plezier te hebben?"
 		},
 		"part_pages": {
 			"default": {
