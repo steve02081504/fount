@@ -7,7 +7,7 @@ import supportsAnsi from 'npm:supports-ansi'
  */
 export function setWindowTitle(title) {
 	if (supportsAnsi && process.stdout.writable) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
-	else process.title = title
+	process.title = title
 }
 
 /**
