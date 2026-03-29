@@ -89,8 +89,8 @@
 					"tooltip": "fount의 GitHub 열기"
 				},
 				"telegram": {
-					"title": "Telegram",
-					"tooltip": "fount의 Telegram 열기"
+					"title": "텔레그램",
+					"tooltip": "fount의 텔레그램 열기"
 				},
 				"restart": {
 					"title": "재시작",
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 Telegram 서버](${telegramLink})로 가서 재미있게 놀 수 있을까요?"
+			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 텔레그램 서버](${telegramLink})로 가서 재미있게 놀아보는 건 어떨까요?"
 		},
 		"part_pages": {
 			"default": {
