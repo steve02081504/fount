@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Открыть fount на GitHub"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Открыть fount в Discord"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Открыть fount в Telegram"
 				},
 				"restart": {
 					"title": "Перезагрузить",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
-		},
 		"telegrambot": {
 			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
+		},
+		"discordbot": {
+			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Пусто...<br/>Может быть, вы можете [создать новую часть](${newpartLink}) или зайти на [Discord-сервер fount](${discordLink}), чтобы немного развлечься?"
+			"message": "Пусто...<br/>Может быть, вы можете [создать новую часть](${newpartLink}) или зайти на [Telegram-сервер fount](${telegramLink}), чтобы немного развлечься?"
 		},
 		"part_pages": {
 			"default": {

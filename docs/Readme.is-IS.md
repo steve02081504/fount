@@ -11,7 +11,7 @@ Fyrir spurningar varðandi kóða, sjá [deepwiki](https://deepwiki.com/steve020
 - Sérsníða reikniritaröksemdir, ekki bara prompt og viðmót
 - Nota og læra af öðrum öflugum fount-reikniritum í samfélaginu
 - Vinnustofuvænt, fljótur skýrsluútflutningur
-- Óaðskiljanleg samþætting persóna í IDE, vafra, endastöðvar, Discord o.s.frv.
+- Óaðskiljanleg samþætting persóna í IDE, vafra, endastöðvar, Telegram o.s.frv.
 - Miðill-stýrðar viðbætur frá samfélaginu sem aðrar LLM spjallviðmót hafa ekki
 - Stilltu API og notaðu sjálfgefið persónu ZL-31 til að ljúka hlutastillingu, sköpun og **öllum notendaaðgerðum** í gegnum samræður—án náms eða innleiðingar
 
@@ -58,7 +58,7 @@ Notaðu [SSP](https://ssp.shillest.net/) þegar þú:
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ Verkefnisarkitektúr fount er hannaður með venjur forritara í huga.
   fount býður upp á óviðjafnanlegt _val_ og _sveigjanleika_ í tengingu við AI-heimildir. Sérsniðinn JavaScript kóði í AI Source Generator gerir þér kleift að tengjast _hvaða_ AI-heimild sem er – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Í flæði kóðans geturðu hannað vandlega flóknar reglulegar segðir, kallað á mikil API bókasöfn og fellt inn margmiðlunarefni. fount styður einnig innfædda gerð API lauga til að ná fram snjöllum beiðnaleiðum. Rökfræði samskipta fylgir _þínum_ vilja, mótuð af krafti kóðans.
   ![Mynd](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-Ef þér finnst þú vera týndur í hafi miðla, eða ert að leita að gleymdum sögum, þá bíður [**kraftmikið og vinalegt samfélag okkar**](https://discord.gg/GtR9Quzq2v) komu þína. Það er athvarf fyrir samhugamenn, þar sem forritarar og skaparar deila visku sinni og sköpunarverkum.
+Ef þér finnst þú vera týndur í hafi miðla, eða ert að leita að gleymdum sögum, þá bíður [**kraftmikið og vinalegt samfélag okkar**](https://t.me/GentianAphrodite) komu þína. Það er athvarf fyrir samhugamenn, þar sem forritarar og skaparar deila visku sinni og sköpunarverkum.
 
 ---
 
@@ -149,11 +149,10 @@ Ef þér finnst þú vera týndur í hafi miðla, eða ert að leita að gleymdu
 
 fount leggur áherslu á að flétta persónur inn í vefnað lífs þíns, og veita félagsskap og stuðning sem nær út fyrir skjáinn.
 
-- **Discord/Telegram samþætting**
-  Með innbyggðum Bot Shells geturðu tengt persónurnar þínar við Discord eða Telegram samfélög, og gert þær að lifandi meðlimum.
-  ![Mynd](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![Mynd](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Telegram/Discord samþætting**
+  Með innbyggðum Bot Shells geturðu tengt persónurnar þínar við Telegram eða Discord samfélög, og gert þær að lifandi meðlimum.
   ![Mynd](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Mynd](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **Samþætting við vafra**
   Samþættu persónur í vafraviðbætur, sem gerir þeim kleift að **sjá og breyta** innihaldi síðna í vafranum þínum, og raungera þannig „vafra um vefinn með gervigreind“.
@@ -300,7 +299,7 @@ fount remove
 Ef þú lendir í erfiðleikum á ferðalaginu skaltu hafa samband við okkur. Við erum alltaf tilbúin til að hjálpa og leggjum metnað okkar í að leysa flest vandamál innan 10 mínútna til 24 klukkustunda.
 
 - **GitHub Issues:** Tilkynntu villur eða leggðu til nýja eiginleika í gegnum [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **Discord samfélag:** Vertu með í [okkar líflega Discord samfélagi](https://discord.gg/GtR9Quzq2v) til að fá stuðning og umræður í rauntíma.
+- **Telegram samfélag:** Vertu með í [okkar líflega Telegram samfélagi](https://t.me/GentianAphrodite) til að fá stuðning og umræður í rauntíma.
 
 Rödd þín mun heyrast. Endurræstu bara fount og skuggarnir hverfa.
 

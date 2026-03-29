@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Open de GitHub-pagina van fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Open de Discord-server van fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Open de Telegram-server van fount"
 				},
 				"restart": {
 					"title": "Herstarten",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [fount's Discord-server](${discordLink}) gaan om wat plezier te hebben?"
+			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [fount's Telegram-server](${telegramLink}) gaan om wat plezier te hebben?"
 		},
 		"part_pages": {
 			"default": {

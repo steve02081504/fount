@@ -88,9 +88,9 @@
 					"title": "🐙🐱",
 					"tooltip": "📂 ⛲ 🐙🐱"
 				},
-				"discord": {
-					"title": "💬",
-					"tooltip": "📂 ⛲ 💬"
+				"telegram": {
+					"title": "✈️",
+					"tooltip": "📂 ⛲ ✈️"
 				},
 				"restart": {
 					"title": "🔄",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "🤖 ${charname} ✅ ✈️ ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${discordLink})"
+			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${telegramLink})"
 		},
 		"part_pages": {
 			"default": {

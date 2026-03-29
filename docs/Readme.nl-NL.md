@@ -11,7 +11,7 @@ Voor code-gerelateerde vragen, zie [deepwiki](https://deepwiki.com/steve02081504
 - Pas agentlogica aan, niet alleen prompts en UI
 - Gebruik en leer van andere krachtige fount-agenten in de community
 - Kantoorvriendelijk, snelle rapportexport
-- Naadloze integratie van personages in IDE's, browsers, terminals, Discord, enz.
+- Naadloze integratie van personages in IDE's, browsers, terminals, Telegram, enz.
 - Agent-georiënteerde plug-ins uit de community die andere LLM-chatfrontends niet hebben
 - Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en **alle gebruikershandelingen** via gesprek te voltooien—zonder leren of onboarding
 
@@ -58,7 +58,7 @@ Gebruik [SSP](https://ssp.shillest.net/) wanneer je:
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ Wanneer het werk erop zit, biedt fount een verbinding die het gewone overstijgt.
   fount biedt ongeëvenaarde _keuze_ en _flexibiliteit_ bij het verbinden van AI-bronnen. Aangepaste JavaScript-code in de AI Source Generator stelt u in staat om verbinding te maken met _elke_ AI-bron – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In de stroom van de code kunt u zorgvuldig complexe reguliere expressies ontwerpen, uitgebreide API-bibliotheken aanroepen en multimedia-middelen insluiten. fount ondersteunt ook native het creëren van API Pools om intelligente verzoekroutering te bereiken. De logica van communicatie volgt _uw_ wil, gevormd door de kracht van code.
   ![Afbeelding](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten verhalen, dan wacht onze [**levendige en vriendelijke gemeenschap**](https://discord.gg/GtR9Quzq2v) op uw komst. Het is een toevluchtsoord voor gelijkgestemden, waar ontwikkelaars en makers hun wijsheid en creaties delen.
+Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten verhalen, dan wacht onze [**levendige en vriendelijke gemeenschap**](https://t.me/GentianAphrodite) op uw komst. Het is een toevluchtsoord voor gelijkgestemden, waar ontwikkelaars en makers hun wijsheid en creaties delen.
 
 ---
 
@@ -149,11 +149,10 @@ Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten ve
 
 fount streeft ernaar om personages te verweven in het weefsel van je leven, en biedt gezelschap en ondersteuning die verder gaan dan het scherm.
 
-- **Discord/Telegram-integratie**
-  Verbind je personages met Discord- of Telegram-community's via de ingebouwde Bot Shells, waardoor ze levende leden worden.
-  ![Afbeelding](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![Afbeelding](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Telegram/Discord-integratie**
+  Verbind je personages met Telegram of Discord community's via de ingebouwde Bot Shells, waardoor ze levende leden worden.
   ![Afbeelding](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Afbeelding](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **Browserintegratie**
   Integreer personages in browserextensies, waardoor ze de inhoud van pagina's in uw browser kunnen **zien en aanpassen**, waardoor "surfen op het web met AI" echt wordt gerealiseerd.
@@ -300,7 +299,7 @@ fount remove
 Als je tijdens je reis moeilijkheden ondervindt, neem dan contact met ons op. We staan altijd klaar om te helpen en streven ernaar de meeste problemen binnen 10 minuten tot 24 uur op te lossen.
 
 - **GitHub Issues:** Rapporteer eventuele bugs of stel nieuwe functies voor via [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **Discord Community:** Sluit je aan bij onze [levendige Discord-community](https://discord.gg/GtR9Quzq2v) voor realtime ondersteuning en discussies.
+- **Telegram Community:** Sluit je aan bij onze [levendige Telegram-community](https://t.me/GentianAphrodite) voor realtime ondersteuning en discussies.
 
 Je stem zal uiteindelijk gehoord worden. Start fount gewoon opnieuw op en de schaduwen zullen verdwijnen.
 

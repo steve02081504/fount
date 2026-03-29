@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Opna GitHub síðu fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Opna Discord þjón fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Opna Telegram þjón fount"
 				},
 				"restart": {
 					"title": "Endurræsa",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Persónan ${charname} hefur skráð sig inn á Discord Bot ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "Persónan ${charname} hefur skráð sig inn á Discord Bot ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Tómt...<br/>Geturðu kannski [búið til nýjan hluta](${newpartLink}) eða farið á Discord miðlara [fount](${discordLink}) til að skemmta þér?"
+			"message": "Tómt...<br/>Geturðu kannski [búið til nýjan hluta](${newpartLink}) eða farið á Telegram miðlara [fount](${telegramLink}) til að skemmta þér?"
 		},
 		"part_pages": {
 			"default": {
