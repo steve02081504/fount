@@ -298,7 +298,7 @@ fount remove
 旅の途中で困難に遭遇した場合は、私たちにご連絡ください。私たちは助けるためにここにいますし、ほとんどの問題を10分から24時間以内に解決することをお約束します。
 
 - **GitHub Issues：** [GitHub Issues](https://github.com/steve02081504/fount/issues)を通じてバグを報告するか、新機能を提案してください。
-- **Discordコミュニティ：** リアルタイムのサポートとディスカッションについては、私たちの[活気あるDiscordコミュニティ](https://t.me/GentianAphrodite)に参加してください。
+- **Telegramコミュニティ：** リアルタイムのサポートとディスカッションについては、私たちの[活気あるTelegramコミュニティ](https://t.me/GentianAphrodite)に参加してください。
 
 あなたの声は届きます。fountを再起動するだけで、影は消え去るでしょう。
 
