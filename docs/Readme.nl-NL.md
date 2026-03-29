@@ -150,7 +150,7 @@ Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten ve
 fount streeft ernaar om personages te verweven in het weefsel van je leven, en biedt gezelschap en ondersteuning die verder gaan dan het scherm.
 
 - **Telegram/Discord-integratie**
-  Verbind je personages met Telegram of Discord community's via de ingebouwde Bot Shells, waardoor ze levende leden worden.
+  Verbind je personages met Telegram- of Discord-communities via de ingebouwde Bot Shells, waardoor ze levende leden worden.
   ![Afbeelding](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
   ![Afbeelding](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
