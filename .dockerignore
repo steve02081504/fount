@@ -27,7 +27,7 @@ desktop.ini
 /stack.yaml
 /settings.gradle
 /mix.exs
-/gulpfile.js
+/gulpfile.mjs
 /fount.csproj
 /Directory.Build.props
 /build.sbt

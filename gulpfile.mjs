@@ -1,4 +1,5 @@
-const { spawn } = require('node:child_process')
+import { spawn } from 'node:child_process'
+import process from 'node:process'
 
 function runFount(done) {
 	const isWindows = process.platform === 'win32'
@@ -23,5 +24,5 @@ function runFount(done) {
 	})
 }
 
-exports.run = runFount
-exports.default = runFount
+export { runFount as run }
+export default runFount
