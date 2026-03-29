@@ -56,7 +56,7 @@ function remarkDisable(options = {}) {
  * 支持 ||文本|| 语法，将其转换为剧透文本。
  * @returns {Function} - Unified.js 插件。
  */
-function rehypeDiscordSpoiler() {
+function rehypeSpoiler() {
 	return tree => {
 		visit(tree, 'text', (node, index, parent) => {
 			if (!node.value || !(Object(node.value) instanceof String)) return
@@ -1013,7 +1013,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
-		.use(rehypeDiscordSpoiler)
+		.use(rehypeSpoiler)
 		.use(rehypeMermaid)
 		.use(rehypePrettyCode, {
 			theme: {
