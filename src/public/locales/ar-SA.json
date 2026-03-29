@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "فتح صفحة fount على GitHub"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "فتح سيرفر fount على Discord"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "فتح سيرفر fount على Telegram"
 				},
 				"restart": {
 					"title": "إعادة التشغيل",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount على Telegram](${telegramLink}) للحصول على بعض المتعة؟"
 		},
 		"part_pages": {
 			"default": {

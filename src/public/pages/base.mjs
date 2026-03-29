@@ -84,7 +84,7 @@ if (!is_hidden_page) document.addEventListener('keydown', event => {
 			else window.close()
 			break
 		case 'F1':
-			window.open('https://discord.gg/GtR9Quzq2v', '_blank')
+			window.open('https://t.me/GentianAphrodite', '_blank')
 			break
 	}
 })

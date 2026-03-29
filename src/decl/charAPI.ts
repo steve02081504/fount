@@ -211,6 +211,23 @@ export class CharAPI_t {
 			}) => Promise<void>
 		},
 		/**
+		 * Telegram 机器人接口。
+		 */
+		telegram?: {
+			/**
+			 * 设置 Telegram 机器人。
+			 * @param {Telegraf} bot - Telegraf 机器人实例。
+			 * @param {any} config - 配置。
+			 * @returns {Promise<void>}
+			 */
+			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
+			/**
+			 * 获取机器人配置模板。
+			 * @returns {Promise<any>} - 配置模板。
+			 */
+			GetBotConfigTemplate?: () => Promise<any>;
+		},
+		/**
 		 * Discord 机器人接口。
 		 */
 		discord?: {
@@ -234,23 +251,6 @@ export class CharAPI_t {
 			 * @returns {Promise<any>} - 配置模板。
 			 */
 			GetBotConfigTemplate: () => Promise<any>
-		},
-		/**
-		 * Telegram 机器人接口。
-		 */
-		telegram?: {
-			/**
-			 * 设置 Telegram 机器人。
-			 * @param {Telegraf} bot - Telegraf 机器人实例。
-			 * @param {any} config - 配置。
-			 * @returns {Promise<void>}
-			 */
-			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
-			GetBotConfigTemplate?: () => Promise<any>;
 		},
 		/**
 		 * 浏览器集成接口。

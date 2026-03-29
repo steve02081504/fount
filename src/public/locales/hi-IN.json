@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "fount का GitHub खोलें"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "fount का Discord खोलें"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "fount का Telegram खोलें"
 				},
 				"restart": {
 					"title": "रिस्टार्ट",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
-		},
 		"telegrambot": {
 			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
+		},
+		"discordbot": {
+			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "खाली...<br/>शायद आप कुछ मजा लेने के लिए [एक नया भाग बना सकते हैं](${newpartLink}) या [फाउंट्स के डिस्कॉर्ड सर्वर](${discordLink}) पर जा सकते हैं?"
+			"message": "खाली...<br/>शायद आप कुछ मजा लेने के लिए [एक नया भाग बना सकते हैं](${newpartLink}) या [फाउंट्स के Telegram सर्वर](${telegramLink}) पर जा सकते हैं?"
 		},
 		"part_pages": {
 			"default": {

@@ -74,7 +74,7 @@ export default {
 		timers: {
 			/**
 			 * 定时器到期时的回调，按以下优先级触发角色回复：
-			 *  1. 进程内存中的活跃频道（支持所有平台：Discord/Telegram/Shell/fount 网页聊天）
+			 *  1. 进程内存中的活跃频道（支持所有平台：Telegram/Shell/fount 网页聊天）
 			 *  2. 通过 chatid 加载 fount 网页聊天（重启后长定时器的回落）
 			 *  3. 新建 fount 网页聊天（最终回落，并更新重复定时器的 chatid）
 			 * @param {string} username 用户名

@@ -8,7 +8,7 @@
 			"sub_items": [
 				{
 					"info": "discord_bots.home_function_buttons.bot_related.sub_items.manage",
-					"level": 1,
+					"level": 10,
 					"url": "/parts/shells:discordbot/",
 					"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 				}
@@ -19,7 +19,7 @@
 		"chars": [
 			{
 				"info": "discord_bots.home_char_interfaces.configure",
-				"level": 1,
+				"level": 10,
 				"interface": "discord",
 				"url": "/parts/shells:discordbot/?name=${name}&char=${name}",
 				"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"

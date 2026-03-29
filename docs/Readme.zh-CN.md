@@ -58,7 +58,7 @@ fount是一个可编程的标准化组件化客制化智能体运行平台，加
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ fount 的项目架构设计充分考虑了开发者的习惯。
   fount 在连接 AI 源方面，提供了无与伦比的*选择*与*灵活性*。在 AI 源生成器中，自定义的 JavaScript 代码允许你连接到*任何* AI 源——OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在流动的代码中，你可以精心设计复杂的正则表达式，调用浩如烟海的 API 库，乃至嵌入多媒体资源。fount 亦原生支持创建 API 池，以实现智能的请求路由。通信的逻辑，听凭*你*的意愿，由代码的力量来塑造。
   ![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://discord.gg/GtR9Quzq2v)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
+倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://t.me/GentianAphrodite)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
 
 ---
 
@@ -149,11 +149,10 @@ fount 的项目架构设计充分考虑了开发者的习惯。
 
 fount 致力于将角色编织进你生活的纹理，提供超越屏幕的陪伴与支持。
 
-- **Discord/Telegram 集成**
-  通过内置的 Bot Shells，将你的角色连接到 Discord 或 Telegram 社区，让他们成为鲜活的成员。
-  ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![图片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Telegram/Discord 集成**
+  通过内置的 Bot Shells，将你的角色连接到 Telegram 或 Discord 社区，让他们成为鲜活的成员。
   ![图片](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **浏览器集成**
   将角色集成到浏览器扩展中，让角色能够**看到并修改**你浏览器中的页面内容，实现真正的「与 AI 一起上网」。
@@ -300,7 +299,7 @@ fount remove
 如果你在旅途中遇到任何困难，请联系我们。我们随时准备提供帮助，并致力于在 10 分钟到 24 小时内解决大多数问题。
 
 - **GitHub Issues：** 通过 [GitHub Issues](https://github.com/steve02081504/fount/issues) 报告任何错误或提出新功能的建议。
-- **Discord 社区：** 加入我们[充满活力的 Discord 社区](https://discord.gg/GtR9Quzq2v)，以获得实时的支持与讨论。
+- **Telegram 社区：** 加入我们[充满活力的 Telegram 社区](https://t.me/GentianAphrodite)，以获得实时的支持与讨论。
 
 你的声音终将被听到。只需重启 fount，阴影便会消散。
 

@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Abrir o GitHub do fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Abrir o Discord do fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Abrir o Telegram do fount"
 				},
 				"restart": {
 					"title": "Reiniciar",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "O personagem ${charname} ligou-se ao bot Discord ${botusername}."
-		},
 		"telegrambot": {
 			"botStarted": "O personagem ${charname} ligou-se ao bot Telegram ${botusername}."
+		},
+		"discordbot": {
+			"botStarted": "O personagem ${charname} ligou-se ao bot Discord ${botusername}."
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Vazio...<br/>Talvez você possa [criar uma nova parte](${newpartLink}) ou ir ao [servidor de Discord do fount](${discordLink}) para se divertir?"
+			"message": "Vazio...<br/>Talvez você possa [criar uma nova parte](${newpartLink}) ou ir ao [servidor de Telegram do fount](${telegramLink}) para se divertir?"
 		},
 		"part_pages": {
 			"default": {

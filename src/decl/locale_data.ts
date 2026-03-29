@@ -95,7 +95,7 @@ export type LocaleData = {
 					title: string
 					tooltip: string
 				}
-				discord: {
+				telegram: {
 					title: string
 					tooltip: string
 				}
@@ -113,10 +113,10 @@ export type LocaleData = {
 				}
 			}
 		}
-		discordbot: {
+		telegrambot: {
 			botStarted: string
 		}
-		telegrambot: {
+		discordbot: {
 			botStarted: string
 		}
 		path: {
@@ -2574,7 +2574,7 @@ export type LocaleKeyParams = {
 	'fountConsole.web.frontendFilesChanged': { path: string | number }
 	'fountConsole.web.requestReceived': { method: string | number; url: string | number }
 	'home.dragAndDrop.dropError': { error: string | number }
-	'home.emptyList.message': { discordLink: string | number; newpartLink: string | number }
+	'home.emptyList.message': { newpartLink: string | number; telegramLink: string | number }
 	'ide_integration.apiKeyCreateError': { message: string | number }
 	'ide_integration.supportedEditorsError': { message: string | number }
 	'import.alerts.importFailed': { error: string | number }

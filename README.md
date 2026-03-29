@@ -58,7 +58,7 @@ Use [SSP](https://ssp.shillest.net/) when you:
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -161,7 +161,7 @@ When work is done, fount provides a connection that transcends the ordinary. We 
   fount offers unparalleled _choice_ and _flexibility_ in connecting AI sources. Custom JavaScript code in the AI Source Generator allows you to connect to _any_ AI source – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In the flow of code, you can carefully design complex regular expressions, call extensive API libraries, and embed multimedia resources. fount also natively supports the creation of API Pools to achieve intelligent request routing. The logic of communication follows _your_ will, shaped by the power of code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-If you feel lost in the sea of agents, or are seeking forgotten stories, our [**vibrant and friendly community**](https://discord.gg/GtR9Quzq2v) awaits your arrival. It is a haven for like-minded individuals, where developers and creators share their wisdom and creations.
+If you feel lost in the sea of agents, or are seeking forgotten stories, our [**vibrant and friendly community**](https://t.me/GentianAphrodite) awaits your arrival. It is a haven for like-minded individuals, where developers and creators share their wisdom and creations.
 
 ---
 
@@ -169,11 +169,10 @@ If you feel lost in the sea of agents, or are seeking forgotten stories, our [**
 
 fount strives to weave characters into the very fabric of your life, offering companionship and support that transcends the screen.
 
-- **Discord/Telegram Integration**
-  Connect your characters to Discord or Telegram communities through built-in Bot Shells, making them living members of your circles.
-  ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Telegram/Discord Integration**
+  Connect your characters to Telegram or Discord communities through built-in Bot Shells, making them living members of your circles.
   ![Image](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **Browser Integration**
   Integrate characters into browser extensions, allowing them to **see and modify** the content of pages in your browser, truly realizing "surfing the web with AI".
@@ -319,7 +318,7 @@ fount remove
 Should you encounter any difficulties on your journey, please reach out. We are here to help and are committed to resolving most issues within 10 minutes to 24 hours.
 
 - **GitHub Issues:** Report any bugs or suggest new features through [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **Discord Community:** Join our [vibrant Discord community](https://discord.gg/GtR9Quzq2v) for real-time support and discussions.
+- **Telegram Community:** Join our [vibrant Telegram community](https://t.me/GentianAphrodite) for real-time support and discussions.
 
 Your voice will be heard. Simply restart fount, and the shadows will dissipate.
 

@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "fountのGitHubを開く"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "fountのDiscordを開く"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "fountのTelegramを開く"
 				},
 				"restart": {
 					"title": "再起動",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
-		},
 		"telegrambot": {
 			"botStarted": "キャラクター「${charname}」がTelegramボット「${botusername}」にログインしました。"
+		},
+		"discordbot": {
+			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空っぽです...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
+			"message": "空っぽです...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Telegram サーバー](${telegramLink}) に行って楽しんでみてはいかがでしょうか?"
 		},
 		"part_pages": {
 			"default": {

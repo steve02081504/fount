@@ -114,7 +114,7 @@ ${chatLog[0].extension.summary = newSummary}
 					text: [
 						{
 							content: `\
-当前环境为fount前端，支持*GitHub|| & Discord|| Flavored Markdown*、Mermaid图表
+当前环境为fount前端，支持*GitHub Flavored Markdown*、Mermaid图表
 
 \`\`\`mermaid
 graph TD;

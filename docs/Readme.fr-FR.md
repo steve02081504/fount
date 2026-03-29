@@ -11,7 +11,7 @@ Pour les questions liées au code, consultez [deepwiki](https://deepwiki.com/ste
 - Personnalisez la logique des agents, pas seulement les prompts et l'interface
 - Utilisez et inspirez-vous des autres agents fount puissants de la communauté
 - Adapté au bureau, export rapide de rapports
-- Intégration transparente des personnages dans les IDE, navigateurs, terminaux, Discord, etc.
+- Intégration transparente des personnages dans les IDE, navigateurs, terminaux, Telegram, etc.
 - Plugins orientés agent de la communauté que les autres frontends de chat LLM n'ont pas
 - Configurez l'API, puis utilisez le personnage par défaut ZL-31 pour accomplir la configuration des pièces, la création et **toutes les actions utilisateur** par conversation—sans apprentissage ni intégration
 
@@ -58,7 +58,7 @@ Utilisez [SSP](https://ssp.shillest.net/) lorsque vous :
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ Une fois le travail terminé, fount offre une connexion qui transcende l'ordinai
   fount offre un _choix_ et une _flexibilité_ inégalés pour la connexion aux sources d'IA. Le code JavaScript personnalisé dans le Générateur de Sources IA vous permet de vous connecter à _n'importe quelle_ source d'IA – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Dans le flux de code, vous pouvez concevoir soigneusement des expressions régulières complexes, appeler de vastes bibliothèques API et intégrer des ressources multimédias. fount prend également en charge nativement la création de pools d'API pour un routage intelligent des requêtes. La logique de la communication suit _votre_ volonté, façonnée par la puissance du code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-Si vous vous sentez perdu dans la mer des agents, ou si vous recherchez des histoires oubliées, notre [**communauté dynamique et amicale**](https://discord.gg/GtR9Quzq2v) attend votre arrivée. C'est un refuge pour les personnes partageant les mêmes idées, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
+Si vous vous sentez perdu dans la mer des agents, ou si vous recherchez des histoires oubliées, notre [**communauté dynamique et amicale**](https://t.me/GentianAphrodite) attend votre arrivée. C'est un refuge pour les personnes partageant les mêmes idées, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
 ---
 
@@ -149,11 +149,10 @@ Si vous vous sentez perdu dans la mer des agents, ou si vous recherchez des hist
 
 fount s'efforce de tisser des personnages dans le tissu même de votre vie, offrant une compagnie et un soutien qui transcendent l'écran.
 
-- **Intégration Discord/Telegram**
-  Connectez vos personnages à vos communautés Discord ou Telegram grâce aux Bot Shells intégrés, faisant d'eux des membres vivants de vos cercles.
-  ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Intégration Telegram/Discord**
+  Connectez vos personnages à vos communautés Telegram ou Discord grâce aux Bot Shells intégrés, faisant d'eux des membres vivants de vos cercles.
   ![Image](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **Intégration au Navigateur**
   Intégrez des personnages dans des extensions de navigateur, leur permettant de **voir et de modifier** le contenu des pages de votre navigateur, réalisant ainsi véritablement "surfer sur le web avec l'IA".
@@ -299,7 +298,7 @@ fount remove
 Si vous rencontrez des difficultés au cours de votre voyage, n'hésitez pas à nous contacter. Nous sommes là pour vous aider et nous nous engageons à résoudre la plupart des problèmes dans un délai de 10 minutes à 24 heures.
 
 - **GitHub Issues :** Signalez tout bogue ou suggérez de nouvelles fonctionnalités via les [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **Communauté Discord :** Rejoignez notre [communauté Discord dynamique](https://discord.gg/GtR9Quzq2v) pour une assistance et des discussions en temps réel.
+- **Communauté Telegram :** Rejoignez notre [communauté Telegram dynamique](https://t.me/GentianAphrodite) pour une assistance et des discussions en temps réel.
 
 Votre voix sera entendue. Redémarrez simplement fount, et les ombres se dissiperont.
 

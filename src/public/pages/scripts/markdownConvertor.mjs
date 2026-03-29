@@ -52,11 +52,11 @@ function remarkDisable(options = {}) {
 }
 
 /**
- * Discord 剧透文本插件（rehype 阶段）。
+ * 剧透文本插件（rehype 阶段）。
  * 支持 ||文本|| 语法，将其转换为剧透文本。
  * @returns {Function} - Unified.js 插件。
  */
-function rehypeDiscordSpoiler() {
+function rehypeSpoiler() {
 	return tree => {
 		visit(tree, 'text', (node, index, parent) => {
 			if (!node.value || !(Object(node.value) instanceof String)) return
@@ -77,7 +77,7 @@ function rehypeDiscordSpoiler() {
 					type: 'element',
 					tagName: 'span',
 					properties: {
-						className: ['discord-spoiler'],
+						className: ['spoiler'],
 						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
@@ -103,7 +103,7 @@ function rehypeDiscordSpoiler() {
 					type: 'element',
 					tagName: 'span',
 					properties: {
-						className: ['discord-spoiler'],
+						className: ['spoiler'],
 						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
@@ -1013,7 +1013,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
-		.use(rehypeDiscordSpoiler)
+		.use(rehypeSpoiler)
 		.use(rehypeMermaid)
 		.use(rehypePrettyCode, {
 			theme: {

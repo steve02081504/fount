@@ -58,7 +58,7 @@ fount منصة تشغيل وكلاء قابلة للبرمجة ومعيارية 
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ fount هو **بيئة تشغيل حديثة وقابلة للتوسع لوكلا
   يوفر fount مرونة و*اختيارًا* لا مثيل لهما في الاتصال بمصادر الذكاء الاصطناعي. تسمح لك التعليمات البرمجية المخصصة بلغة JavaScript في مولد مصادر الذكاء الاصطناعي بالاتصال _بأي_ مصدر ذكاء اصطناعي - OpenAI، Claude، OpenRouter، NovelAI، Horde، Ooba، Tabby، Mistral... في تدفق التعليمات البرمجية، يمكنك تصميم تعبيرات عادية معقدة بعناية، واستدعاء مكتبات API ضخمة، وتضمين موارد الوسائط المتعددة. يدعم fount أيضًا بشكل أصلي إنشاء مجمعات API لتحقيق توجيه ذكي للطلبات. منطق الاتصال، يتبع _رغبتك_، ويتشكل بقوة التعليمات البرمجية.
   ![صورة](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-إذا شعرت بالضياع في بحر الشخصيات، أو كنت تبحث عن قصص منسية، فإن [**مجتمعنا المفعم بالحيوية والود**](https://discord.gg/GtR9Quzq2v) يتطلع إلى قدومك. إنه ملاذ لذوي الاهتمامات المشتركة، حيث يشارك المطورون والمبدعون حكمتهم وإبداعاتهم.
+إذا شعرت بالضياع في بحر الشخصيات، أو كنت تبحث عن قصص منسية، فإن [**مجتمعنا المفعم بالحيوية والود**](https://t.me/GentianAphrodite) يتطلع إلى قدومك. إنه ملاذ لذوي الاهتمامات المشتركة، حيث يشارك المطورون والمبدعون حكمتهم وإبداعاتهم.
 
 ---
 
@@ -149,11 +149,10 @@ fount هو **بيئة تشغيل حديثة وقابلة للتوسع لوكلا
 
 يلتزم fount بنسج الشخصيات في نسيج حياتك، وتقديم الرفقة والدعم الذي يتجاوز الشاشة.
 
-- **تكامل Discord/Telegram**
-  من خلال Bot Shells المدمجة، قم بتوصيل شخصياتك بمجتمعات Discord أو Telegram، مما يجعلهم أعضاءً حيويين.
-  ![صورة](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![صورة](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **تكامل Telegram**
+  من خلال Bot Shells المدمجة، قم بتوصيل شخصياتك بمجتمعات Telegram أو Discord، مما يجعلهم أعضاءً حيويين.
   ![صورة](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![صورة](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **تكامل المتصفح**
   دمج الشخصيات في ملحقات المتصفح، مما يسمح لها بـ **رؤية وتعديل** محتوى الصفحات في متصفحك، مما يحقق حقًا "تصفح الويب مع الذكاء الاصطناعي".
@@ -300,7 +299,7 @@ fount remove
 إذا واجهت أي صعوبات في رحلتك، يرجى الاتصال بنا. نحن دائمًا على استعداد للمساعدة ونلتزم بحل معظم المشكلات في غضون 10 دقائق إلى 24 ساعة.
 
 - **GitHub Issues:** أبلغ عن أي أخطاء أو اقترح ميزات جديدة عبر [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **مجتمع Discord:** انضم إلى [مجتمعنا النابض بالحياة على Discord](https://discord.gg/GtR9Quzq2v) للحصول على دعم ومناقشات في الوقت الفعلي.
+- **مجتمع Telegram:** انضم إلى [مجتمعنا النابض بالحياة على Telegram](https://t.me/GentianAphrodite) للحصول على دعم ومناقشات في الوقت الفعلي.
 
 صوتك سيُسمع في النهاية. فقط أعد تشغيل fount، وستزول العقبات.
 

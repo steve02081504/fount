@@ -95,7 +95,7 @@ export default {
 	info: {
 		'zh-CN': {
 			name: '<角色名>', // 角色的名字
-			avatar: '<头像的url地址，可以是fount本地文件，详见 https://discord.com/channels/1288934771153440768/1298658096746594345/1303168947624869919 >', // 角色的头像
+			avatar: '<头像的url地址，可以是fount本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >', // 角色的头像
 			description: '<角色的一句话介绍>', // 角色的简短介绍
 			description_markdown: \`\\
 <角色的完整介绍，支持markdown语法>
@@ -449,7 +449,7 @@ export default {
 	info: {
 		'': {
 			name: '<角色名>',
-			avatar: '<角色的头像url，可以留空，也可以是本地文件，详见 https://discord.com/channels/1288934771153440768/1298658096746594345/1303168947624869919 >',
+			avatar: '<角色的头像url，可以留空，也可以是本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >',
 			description: '<一句话简介>',
 			description_markdown: '<简介，支持markdown语法>',
 			version: '<版本号>',
@@ -696,7 +696,7 @@ export default {
 关于fount：
 fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
 ZL-31不是第一个fount角色，fount一开始是为了其作者steve02081504的另一个男性向NSFW角色[龙胆](https://github.com/steve02081504/GentianAphrodite)设计的，龙胆才是fount的第一个正式角色。
-fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到更多fount组件。
+fount有[Telegram群组](https://t.me/GentianAphrodite)，可以在那里找到更多fount组件。
 
 关于工具：
 你拥有创建角色的能力，在需要时返回以下格式来得知如何使用，或获取有关角色的信息以回答用户问题：

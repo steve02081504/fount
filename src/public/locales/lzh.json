@@ -88,9 +88,9 @@
 					"title": "源碼寶庫",
 					"tooltip": "啟 fount 之源碼寶庫"
 				},
-				"discord": {
-					"title": "Discord雅集",
-					"tooltip": "啟 fount 之 Discord 雅集"
+				"telegram": {
+					"title": "Telegram雅集",
+					"tooltip": "啟 fount 之 Telegram 雅集"
 				},
 				"restart": {
 					"title": "重整旗鼓",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "化身 ${charname} 已託 Discord 靈偶 ${botusername} 而現"
-		},
 		"telegrambot": {
 			"botStarted": "化身 ${charname} 已託 Telegram 靈偶 ${botusername} 而現"
+		},
+		"discordbot": {
+			"botStarted": "化身 ${charname} 已託 Discord 靈偶 ${botusername} 而現"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "此間空虛。<br/>可[新添一物](${newpartLink})，亦可往[fount議壇](${discordLink})一敘？"
+			"message": "此間空虛。<br/>可[新添一物](${newpartLink})，亦可往[fount議壇](${telegramLink})一敘？"
 		},
 		"part_pages": {
 			"default": {

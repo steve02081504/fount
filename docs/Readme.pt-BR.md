@@ -11,7 +11,7 @@ Para dúvidas relacionadas a código, consulte [deepwiki](https://deepwiki.com/s
 - Personalize a lógica do agente, não apenas prompts e interface
 - Use e aprenda com outros agentes fount poderosos da comunidade
 - Amigável ao escritório, exportação rápida de relatórios
-- Integração transparente de personagens em IDEs, navegadores, terminais, Discord, etc.
+- Integração transparente de personagens em IDEs, navegadores, terminais, Telegram, etc.
 - Plugins orientados a agentes da comunidade que outras interfaces de chat LLM não têm
 - Configure a API e use o personagem padrão ZL-31 para completar configuração de partes, criação e **todas as operações do usuário** por conversa—sem aprendizado ou integração
 
@@ -58,7 +58,7 @@ Use [SSP](https://ssp.shillest.net/) quando você:
 <a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 <a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
 <a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
-<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
 <a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
 <a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
 </p>
@@ -141,7 +141,7 @@ Quando o trabalho termina, fount oferece uma conexão que transcende o comum. Ab
   fount oferece _escolha_ e _flexibilidade_ incomparáveis na conexão de fontes de IA. O código JavaScript personalizado no Gerador de Fontes de IA permite que você se conecte a _qualquer_ fonte de IA – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... No fluxo do código, você pode projetar cuidadosamente expressões regulares complexas, chamar extensas bibliotecas de API e incorporar recursos multimídia. fount também suporta nativamente a criação de Pools de API para obter roteamento inteligente de solicitações. A lógica da comunicação segue _sua_ vontade, moldada pelo poder do código.
   ![Imagem](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
-Se você se sentir perdido no mar de papéis, ou estiver procurando por histórias esquecidas, nossa [**comunidade vibrante e amigável**](https://discord.gg/GtR9Quzq2v) espera sua chegada. É um refúgio para pessoas com ideias semelhantes, onde desenvolvedores e criadores compartilham sua sabedoria e criações.
+Se você se sentir perdido no mar de papéis, ou estiver procurando por histórias esquecidas, nossa [**comunidade vibrante e amigável**](https://t.me/GentianAphrodite) espera sua chegada. É um refúgio para pessoas com ideias semelhantes, onde desenvolvedores e criadores compartilham sua sabedoria e criações.
 
 ---
 
@@ -149,11 +149,10 @@ Se você se sentir perdido no mar de papéis, ou estiver procurando por históri
 
 O fount se esforça para tecer personagens no tecido de sua vida, oferecendo companheirismo e suporte que transcendem a tela.
 
-- **Integração com Discord/Telegram**
-  Conecte seus personagens às comunidades do Discord ou Telegram através dos Bot Shells integrados, tornando-os membros vivos de seus círculos.
-  ![Imagem](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-  ![Imagem](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+- **Integração com Telegram/Discord**
+  Conecte seus personagens às comunidades do Telegram ou Discord através dos Bot Shells integrados, tornando-os membros vivos de seus círculos.
   ![Imagem](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Imagem](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
 - **Integração com o Navegador**
   Integre personagens em extensões de navegador, permitindo que eles **vejam e modifiquem** o conteúdo das páginas em seu navegador, realizando verdadeiramente o "navegar na web com IA".
@@ -299,7 +298,7 @@ fount remove
 Se encontrar qualquer dificuldade em sua jornada, por favor, entre em contato. Estamos aqui para ajudar e comprometidos a resolver a maioria dos problemas em um prazo de 10 minutos a 24 horas.
 
 - **GitHub Issues:** Relate quaisquer bugs ou sugira novas funcionalidades através das [GitHub Issues](https://github.com/steve02081504/fount/issues).
-- **Comunidade do Discord:** Junte-se à nossa [vibrante comunidade do Discord](https://discord.gg/GtR9Quzq2v) para suporte e discussões em tempo real.
+- **Comunidade do Telegram:** Junte-se à nossa [vibrante comunidade do Telegram](https://t.me/GentianAphrodite) para suporte e discussões em tempo real.
 
 Sua voz será ouvida. Simplesmente reinicie o fount, e as sombras se dissiparão.
 

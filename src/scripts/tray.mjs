@@ -82,8 +82,8 @@ export async function createTray() {
 						enabled: true
 					},
 					{
-						title: geti18n('fountConsole.tray.items.discord.title'),
-						tooltip: geti18n('fountConsole.tray.items.discord.tooltip'),
+						title: geti18n('fountConsole.tray.items.telegram.title'),
+						tooltip: geti18n('fountConsole.tray.items.telegram.tooltip'),
 						checked: false,
 						enabled: true
 					},
@@ -115,7 +115,7 @@ export async function createTray() {
 			let action_id = action.seq_id
 			if (!action_id--) open(hosturl)
 			else if (!action_id--) open('https://github.com/steve02081504/fount')
-			else if (!action_id--) open('https://discord.gg/GtR9Quzq2v')
+			else if (!action_id--) open('https://t.me/GentianAphrodite')
 			else if (!action_id--) {
 				await printTerminalImage().catch(_ => 0)
 				restartor()
