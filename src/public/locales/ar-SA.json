@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount's Telegram](${telegramLink}) للحصول على بعض المتعة؟"
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount على Telegram](${telegramLink}) للحصول على بعض المتعة؟"
 		},
 		"part_pages": {
 			"default": {
