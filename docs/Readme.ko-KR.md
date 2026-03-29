@@ -150,7 +150,7 @@ fount의 프로젝트 아키텍처는 개발자의 습관을 충분히 고려하
 fount는 캐릭터가 당신의 일상에 자연스럽게 스며들도록, 스크린을 넘어선 동반자 관계와 지원을 제공합니다.
 
 - **Telegram/Discord 통합**
-  내장된 봇 셸을 통해 당신의 캐릭터를 Telegram나 Discord 커뮤니티에 연결하여, 그들을 당신의 서클에 살아있는 멤버로 만들어보세요.
+  내장된 봇 셸을 통해 당신의 캐릭터를 Telegram이나 Discord 커뮤니티에 연결하여, 그들을 당신의 서클에 살아있는 멤버로 만들어보세요.
   ![이미지](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
   ![이미지](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
 
