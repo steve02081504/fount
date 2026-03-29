@@ -31,6 +31,12 @@ function Write-TaskbarProgressError {
 		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
 	}
 }
+function Set-Title($Title) {
+	$Host.UI.RawUI.WindowTitle = $Title
+}
+function Get-Title {
+	$Host.UI.RawUI.WindowTitle
+}
 
 $env:FOUNT_SESSION_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 if (-not $env:FOUNT_START_TIME) {
@@ -951,6 +957,8 @@ function run {
 		Write-Warning (Get-I18n -key 'install.rootWarning2')
 	}
 	Write-TaskbarProgress -Percent 5
+	$originalTitle = Get-Title
+	Set-Title ""
 	$v8Flags = "--expose-gc"
 	if ($env:FOUNT_V8_FLAGS) {
 		$v8Flags += ",$env:FOUNT_V8_FLAGS"
@@ -978,6 +986,7 @@ function run {
 	}
 	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	Write-TaskbarProgress -Percent 25
+	Set-Title "𝓯"
 	try {
 		if ($Script:is_debug) {
 			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
@@ -987,6 +996,7 @@ function run {
 		}
 	}
 	finally {
+		Set-Title $originalTitle
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
 		if ($LastExitCode -and $LastExitCode -ne 130) { Write-TaskbarProgressError }
@@ -1165,6 +1175,8 @@ elseif ($args[0] -eq 'keepalive') {
 	}
 }
 elseif ($args[0] -eq 'remove') {
+	$originalTitle = Get-Title
+	Set-Title "𝓯𝓸𝓾𝓷𝓽"
 	Write-TaskbarProgress -Percent 0
 	run shutdown
 	Write-TaskbarProgress -Percent 5
@@ -1188,6 +1200,7 @@ elseif ($args[0] -eq 'remove') {
 	if ((Get-Command git -ErrorAction Ignore) -and ($FOUNT_DIR -in $(git config --global --get-all safe.directory))) {
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	}
+	Set-Title "𝓯𝓸𝓾𝓷"
 	Write-TaskbarProgress -Percent 25
 
 	# Remove fount-pwsh from PowerShell Profile
@@ -1214,6 +1227,7 @@ elseif ($args[0] -eq 'remove') {
 	catch {
 		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
 	}
+	Set-Title "𝓯𝓸𝓾"
 	Write-TaskbarProgress -Percent 45
 
 	# Remove fount protocol handler
@@ -1261,6 +1275,7 @@ elseif ($args[0] -eq 'remove') {
 	else {
 		Write-Host (Get-I18n -key 'remove.startMenuShortcutNotFound')
 	}
+	Set-Title "𝓯𝓸"
 	Write-TaskbarProgress -Percent 60
 
 	# Remove Installed pwsh modules
@@ -1279,6 +1294,7 @@ elseif ($args[0] -eq 'remove') {
 			Write-Warning (Get-I18n -key 'remove.removeModuleFailed' -params @{module = $_; message = $_.Exception.Message })
 		}
 	}
+	Set-Title "𝓯"
 	Write-TaskbarProgress -Percent 75
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
@@ -1321,6 +1337,7 @@ elseif ($args[0] -eq 'remove') {
 		}
 	}
 
+	Set-Title ""
 	Write-TaskbarProgress -Percent 90
 	# Remove fount installation directory
 	Write-Host (Get-I18n -key 'remove.removingFountInstallationDir')
@@ -1334,6 +1351,7 @@ elseif ($args[0] -eq 'remove') {
 
 	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
 	Write-TaskbarProgressClear
+	Set-Title $originalTitle
 	exit 0
 }
 else {

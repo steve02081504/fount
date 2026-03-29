@@ -10,6 +10,7 @@ import * as Sentry from 'npm:@sentry/deno'
 
 import { console } from '../scripts/i18n.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
+import { setWindowTitle } from '../scripts/title.mjs'
 
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
@@ -19,6 +20,7 @@ import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
 console.profile('server start')
+setWindowTitle('𝓯𝓸')
 SetTaskbarProgress(50)
 
 // 初始化 Sentry 进行错误报告。
@@ -70,6 +72,7 @@ console.noBreadcrumb = {
 
 set_start()
 
+setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(55)
 
 console.logI18n('fountConsole.server.standingBy')

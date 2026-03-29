@@ -14,6 +14,7 @@ import { ms } from '../scripts/ms.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
+import { setWindowTitle, getWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
@@ -54,14 +55,6 @@ on_shutdown(save_config)
  * @type {object}
  */
 export let config
-
-/**
- * 设置终端窗口的标题。
- * @param {string} title - 窗口的期望标题。
- */
-function setWindowTitle(title) {
-	if (supportsAnsi && process.stdout.writable) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
-}
 
 /**
  * 设置应用程序的默认窗口标题。
@@ -144,6 +137,7 @@ export function handleError(err) {
  */
 export async function init(start_config) {
 	// 启动进度：0–25 shell，25–55 deno 预热，55–100 server 阶段
+	const originalTitle = getWindowTitle()
 	SetTaskbarProgress(60)
 	restartor = start_config.restartor
 	data_path = start_config.data_path
@@ -177,6 +171,7 @@ export async function init(start_config) {
 		}
 		SetTaskbarProgress(70)
 	}
+	setWindowTitle('𝓯𝓸𝓾𝓷')
 	let iconPromise
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/public/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
@@ -301,8 +296,7 @@ export async function init(start_config) {
 	SetTaskbarProgress(88)
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
-		const titleBackup = process.title
-		on_shutdown(() => setWindowTitle(titleBackup))
+		on_shutdown(() => setWindowTitle(originalTitle))
 		setDefaultStuff()
 		if (starts.Base.Tips) {
 			console.logI18n('tips.title')
@@ -324,6 +318,7 @@ export async function init(start_config) {
 		totalTimeInMs: endtime - startTime,
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
+	setWindowTitle('𝓯𝓸𝓾𝓷𝓽')
 	if (starts.Base) {
 		setTimeout(() => {
 			const Interval = setInterval(async () => {
