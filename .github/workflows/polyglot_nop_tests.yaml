@@ -20,7 +20,7 @@ on:
       - 'Package.swift'
       - 'Taskfile.yml'
       - 'Justfile'
-      - 'gulpfile.js'
+      - 'gulpfile.mjs'
       - 'mix.exs'
       - 'stack.yaml'
       - 'build.sbt'
@@ -46,7 +46,7 @@ on:
       - 'Package.swift'
       - 'Taskfile.yml'
       - 'Justfile'
-      - 'gulpfile.js'
+      - 'gulpfile.mjs'
       - 'mix.exs'
       - 'stack.yaml'
       - 'build.sbt'
@@ -170,7 +170,7 @@ jobs:
               Justfile)
                 run_just=1
                 ;;
-              gulpfile.js)
+              gulpfile.mjs)
                 run_gulp=1
                 ;;
               mix.exs|src/runner/polyglot/mix/*)

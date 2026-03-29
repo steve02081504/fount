@@ -72,14 +72,14 @@ def process_locale_files():
 				data = json.loads(file_content)
 
 				# Define get and set functions for the script to use
-				def get(key):
+				def get_locale_value(key):
 					return get_nested_value(data, key)
 
-				def set(key, value):
+				def set_locale_value(key, value):
 					set_nested_value(data, key, value)
 
 				# Create a dictionary for the script's global scope
-				script_globals = {"get": get, "set": set}
+				script_globals = {"get": get_locale_value, "set": set_locale_value}
 				exec(script_to_run, script_globals)
 
 				updated_content = json.dumps(data, indent="\t", ensure_ascii=False)  # Use indent=4 for tabs, ensure_ascii=False for non-ASCII chars
