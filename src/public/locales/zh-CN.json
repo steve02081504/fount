@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "打开 fount 的 GitHub"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "打开 fount 的 Discord"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "打开 fount 的 Telegram"
 				},
 				"restart": {
 					"title": "重启",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
-		},
 		"telegrambot": {
 			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登录"
+		},
+		"discordbot": {
+			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
 		},
 		"path": {
 			"protocol": {
@@ -493,7 +493,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空空如也...<br/>不如[创建一个新组件](${newpartLink})，或去 [fount 的 Discord 社区](${discordLink}) 发现更多可能？"
+			"message": "空空如也...<br/>不如[创建一个新组件](${newpartLink})，或去 [fount 的 Telegram 社区](${telegramLink}) 发现更多可能？"
 		},
 		"part_pages": {
 			"default": {
