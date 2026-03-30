@@ -1390,7 +1390,7 @@
 			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
 		},
 		"passkeys": {
-			"title": "Security keys and Passkey",
+			"title": "Security keys and Passkeys",
 			"description": "After you register a key, you can sign in with a hardware security key or this device’s Passkey. You need HTTPS or localhost; add keys in user settings first.",
 			"refreshButton": {
 				"title": "Refresh list"

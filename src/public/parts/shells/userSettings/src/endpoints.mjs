@@ -3,7 +3,6 @@ import path from 'node:path'
 
 import * as jose from 'npm:jose'
 
-import { ms } from '../../../../../scripts/ms.mjs'
 import {
 	authenticate, getUserByReq,
 	changeUserPassword, revokeUserDeviceByJti,
@@ -121,7 +120,7 @@ export function setEndpoints(router) {
 			deviceId: token.deviceId,
 			jti: token.jti,
 			expiry: token.expiry,
-			lastSeen: token.lastSeen || (token.expiry - ms(REFRESH_TOKEN_EXPIRY_DURATION)),
+			lastSeen: token.lastSeen || (token.expiry - REFRESH_TOKEN_EXPIRY_DURATION),
 			ipAddress: token.ipAddress,
 			userAgent: token.userAgent,
 			isCurrentSession: Boolean(currentRefreshJti && token.jti === currentRefreshJti),

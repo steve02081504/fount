@@ -31,6 +31,7 @@ let verificationCodeSent = false
 let sendCodeCooldown = false
 let powCaptcha = null
 let passwordStrengthMeter = null
+let isWebAuthnInProgress = false
 
 /**
  * 初始化表单状态。
@@ -140,6 +141,7 @@ async function loadWebAuthnBrowser() {
  */
 async function handleWebAuthnLogin() {
 	if (!isLoginForm) return
+	if (isWebAuthnInProgress) return
 	const powToken = powCaptcha?.token
 	if (!isLocalOrigin && !powToken) {
 		errorMessage.dataset.i18n = 'auth.error.powNotSolved'
@@ -158,6 +160,7 @@ async function handleWebAuthnLogin() {
 		return
 	}
 
+	isWebAuthnInProgress = true
 	try {
 		const beginRes = await webauthnLoginBegin(username, powToken)
 		const beginData = await beginRes.json()
@@ -183,6 +186,9 @@ async function handleWebAuthnLogin() {
 			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(err))
 			errorMessage.textContent = err?.message || String(err)
 		}
+	}
+	finally {
+		isWebAuthnInProgress = false
 	}
 }
 

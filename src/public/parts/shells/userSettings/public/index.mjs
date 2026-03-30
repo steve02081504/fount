@@ -182,10 +182,10 @@ renameUserForm.addEventListener('submit', async event => {
  * @returns {Promise<void>}
  */
 async function loadAndDisplayDevices() {
-	deviceList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 	noDevicesText.classList.add('hidden')
 
 	try {
+		deviceList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 		const result = await getDevices()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
@@ -286,10 +286,10 @@ deleteAccountBtn.addEventListener('click', async () => {
  * @returns {Promise<void>}
  */
 async function loadAndDisplayApiKeys() {
-	apiKeyList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 	noApiKeysText.classList.add('hidden')
 
 	try {
+		apiKeyList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 		const result = await getApiKeys()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 

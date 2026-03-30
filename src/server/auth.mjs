@@ -931,7 +931,7 @@ export function bumpUserFailedLoginAttempts(user) {
 		authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
 		authData.loginAttempts = 0
 		save_config()
-		console.logI18n('fountConsole.auth.accountLockedLog', { username: user.username })
+		console.warnI18n('fountConsole.auth.accountLockedLog', { username: user.username })
 		return {
 			locked: true,
 			response: { status: 403, success: false, message: 'Account locked due to too many failed attempts.' },

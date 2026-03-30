@@ -137,13 +137,14 @@ export function registerEndpoints(router) {
 		}
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid, req)
+		const { accessToken, refreshToken, ...safeResult } = result
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
 			const cookieOptions = getSecureCookieOptions(req)
-			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
-			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
+			res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
+			res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
 		}
-		res.status(result.status).json(result)
+		res.status(result.status).json(safeResult)
 	})
 
 	router.post('/api/webauthn/login/begin', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
@@ -167,20 +168,19 @@ export function registerEndpoints(router) {
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
 		}
 		const { username, credential, deviceid } = req.body
-		if (typeof username !== 'string' || !username.trim())
+		if (!username?.trim?.())
 			return res.status(400).json({ success: false, message: 'Username required' })
-		if (credential === undefined || credential === null || typeof credential !== 'object')
+		if (!credential)
 			return res.status(400).json({ success: false, message: 'Valid credential object required' })
-		if (deviceid !== undefined && deviceid !== null && typeof deviceid !== 'string')
-			return res.status(400).json({ success: false, message: 'deviceid must be a string when provided' })
-		const deviceId = typeof deviceid === 'string' && deviceid.trim() ? deviceid.trim() : 'unknown'
+		const deviceId = deviceid?.trim?.() || 'unknown'
 		const result = await webauthnLoginComplete(credential, username.trim(), deviceId, req)
+		const { accessToken, refreshToken, ...safeResult } = result
 		if (result.status === 200 && result.accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
-			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
-			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
+			res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
+			res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 		}
-		res.status(result.status).json(result)
+		res.status(result.status).json(safeResult)
 	})
 
 	router.post('/api/register/generateverificationcode', async (req, res) => {
