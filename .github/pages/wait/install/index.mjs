@@ -657,8 +657,7 @@ async function handleStandaloneFlow() {
 	 * @returns {void}
 	 */
 	launchButton.onclick = () => {
-		if (/iPad|iPhone|iPod/.test(navigator.userAgent))
-		{
+		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
 			window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
 			return
 		}
