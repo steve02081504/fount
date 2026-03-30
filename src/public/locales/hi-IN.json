@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "fount का GitHub खोलें"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "fount का Discord खोलें"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "fount का Telegram खोलें"
 				},
 				"restart": {
 					"title": "रिस्टार्ट",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
-		},
 		"telegrambot": {
 			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
+		},
+		"discordbot": {
+			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "खाता पहले से मौजूद है।",
 			"powNotSolved": "कृपया पहले POW सत्यापन पूरा करें",
 			"powError": "PoW सत्यापन त्रुटि"
+		},
+		"webauthn": {
+			"loginButton": "सुरक्षा कुंजी/पासकी का उपयोग करके लॉग इन करें",
+			"errorNoUsername": "कृपया पासकी का उपयोग करने से पहले अपना उपयोगकर्ता नाम भरें।",
+			"errorLoadLibrary": "WebAuthn सहायक लाइब्रेरी लोड करने में असमर्थ, कृपया नेटवर्क की जाँच करें और पुनः प्रयास करें।",
+			"errorCancelled": "सुरक्षा कुंजी रद्द कर दी गई है या उपयोग के लिए अधिकृत नहीं है।"
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "खाली...<br/>शायद आप कुछ मजा लेने के लिए [एक नया भाग बना सकते हैं](${newpartLink}) या [फाउंट्स के डिस्कॉर्ड सर्वर](${discordLink}) पर जा सकते हैं?"
+			"message": "खाली...<br/>शायद आप कुछ मजा लेने के लिए [एक नया भाग बना सकते हैं](${newpartLink}) या [फाउंट्स के Telegram सर्वर](${telegramLink}) पर जा सकते हैं?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "उपयोगकर्ता का नाम बदलें",
 			"confirmMessage": "क्या आप वाकई अपना उपयोगकर्ता नाम बदलना चाहते हैं? इसके लिए आपको फिर से लॉग इन करना होगा।",
 			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।"
+		},
+		"passkeys": {
+			"title": "सुरक्षा कुंजी और पासकी",
+			"description": "बाइंडिंग के बाद, आप सुरक्षा कुंजी या मूल पासकी से लॉग इन कर सकते हैं। HTTPS या लोकलहोस्ट के अंतर्गत उपयोग की आवश्यकता है; कृपया पहले उपयोगकर्ता सेटिंग्स में कुंजी जोड़ें।",
+			"refreshButton": {
+				"title": "सूची रीफ़्रेश करें"
+			},
+			"refreshButtonIcon": {
+				"alt": "ताज़ा करें आइकन"
+			},
+			"nameLabel": "टिप्पणियाँ (वैकल्पिक)",
+			"nameInput": {
+				"placeholder": "उदाहरण: काम के लिए YubiKey"
+			},
+			"addButton": "सुरक्षा कुंजी जोड़ें",
+			"noneFound": "अभी तक कोई सुरक्षा कुंजी बाध्य नहीं की गई है.",
+			"itemDetails": "जोड़ा गया समय: ${created}",
+			"removeButton": "हटाएँ",
+			"removeConfirm": "क्या आप वाकई इस कुंजी को हटाना चाहते हैं? एक बार हटाए जाने के बाद, आप इससे लॉग इन नहीं कर पाएंगे।",
+			"removeSuccess": "सुरक्षा कुंजी हटा दी गई.",
+			"addSuccess": "सुरक्षा कुंजी जोड़ी गई.",
+			"errorLoadLibrary": "WebAuthn लाइब्रेरी लोड करने में असमर्थ.",
+			"errorCancelled": "जोड़ना रद्द किया गया."
 		},
 		"userDevices": {
 			"title": "उपयोगकर्ता डिवाइस/सत्र",

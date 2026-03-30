@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Open de GitHub-pagina van fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Open de Discord-server van fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Open de Telegram-server van fount"
 				},
 				"restart": {
 					"title": "Herstarten",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Account bestaat al",
 			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
 			"powError": "PoW-verificatiefout"
+		},
+		"webauthn": {
+			"loginButton": "Aanmelden met beveiligingssleutel of passkey",
+			"errorNoUsername": "Vul uw gebruikersnaam in voordat u passkey gebruikt.",
+			"errorLoadLibrary": "Kan de WebAuthn-hulpbibliotheek niet laden. Controleer het netwerk en probeer het opnieuw.",
+			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [fount's Discord-server](${discordLink}) gaan om wat plezier te hebben?"
+			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [de Telegram-server van fount](${telegramLink}) gaan om wat plezier te hebben?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Gebruiker hernoemen",
 			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
 			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd."
+		},
+		"passkeys": {
+			"title": "Beveiligingssleutels en passkeys",
+			"description": "Na registratie van een sleutel kunt u inloggen met een hardwaresleutel of de passkey van dit apparaat. Vereist HTTPS of localhost; voeg sleutels eerst toe in de gebruikersinstellingen.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			},
+			"nameLabel": "Opmerkingen (optioneel)",
+			"nameInput": {
+				"placeholder": "Voorbeeld: YubiKey voor werk"
+			},
+			"addButton": "Beveiligingssleutel toevoegen",
+			"noneFound": "Er zijn nog geen beveiligingssleutels gebonden.",
+			"itemDetails": "Toegevoegde tijd: ${created}",
+			"removeButton": "Verwijderen",
+			"removeConfirm": "Weet u zeker dat u deze sleutel wilt verwijderen? Eenmaal verwijderd, kunt u er niet meer mee inloggen.",
+			"removeSuccess": "Beveiligingssleutel verwijderd.",
+			"addSuccess": "Beveiligingssleutel toegevoegd.",
+			"errorLoadLibrary": "Kan de WebAuthn-bibliotheek niet laden.",
+			"errorCancelled": "Toevoegen geannuleerd."
 		},
 		"userDevices": {
 			"title": "Gebruikersapparaten/sessies",

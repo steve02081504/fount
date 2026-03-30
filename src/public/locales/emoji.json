@@ -88,9 +88,9 @@
 					"title": "🐙🐱",
 					"tooltip": "📂 ⛲ 🐙🐱"
 				},
-				"discord": {
-					"title": "💬",
-					"tooltip": "📂 ⛲ 💬"
+				"telegram": {
+					"title": "✈️",
+					"tooltip": "📂 ⛲ ✈️"
 				},
 				"restart": {
 					"title": "🔄",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "🤖 ${charname} ✅ ✈️ ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
 			"powError": "⚙️💥"
+		},
+		"webauthn": {
+			"loginButton": "🔐🔑➡️🚪📱🔑",
+			"errorNoUsername": "✍️👤❓➡️📱🔑",
+			"errorLoadLibrary": "📚🔐❌🌐🔁",
+			"errorCancelled": "🙅🔑➕🚪❓"
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${discordLink})"
+			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${telegramLink})"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "✍️👤",
 			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
 			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪..."
+		},
+		"passkeys": {
+			"title": "🔐🔑📱",
+			"description": "🔗✅➡️🔑🖥️📱🔑🚪 🔒🌐➕🏠💻 ⚙️👤➕🔑",
+			"refreshButton": {
+				"title": "🔄📋"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄🖼️"
+			},
+			"nameLabel": "🏷️（➖）",
+			"nameInput": {
+				"placeholder": "💼🔐🔑"
+			},
+			"addButton": "➕🔐🔑",
+			"noneFound": "🔑📋🈳",
+			"itemDetails": "🕒➕: ${created}",
+			"removeButton": "🗑️🔑",
+			"removeConfirm": "🗑️🔑❓🚫🚪🔙",
+			"removeSuccess": "🗑️✅🔑",
+			"addSuccess": "➕✅🔑",
+			"errorLoadLibrary": "📚🔐❌",
+			"errorCancelled": "➕🚫"
 		},
 		"userDevices": {
 			"title": "👤💻",

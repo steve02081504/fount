@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "fount auf GitHub öffnen"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "fount auf Discord öffnen"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "fount auf Telegram öffnen"
 				},
 				"restart": {
 					"title": "Neu starten",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."
-		},
 		"telegrambot": {
 			"botStarted": "Char ${charname} hat sich beim Telegram-Bot ${botusername} angemeldet."
+		},
+		"discordbot": {
+			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Konto existiert bereits",
 			"powNotSolved": "Bitte schließen Sie zuerst die PoW-Überprüfung ab.",
 			"powError": "PoW-Überprüfungsfehler"
+		},
+		"webauthn": {
+			"loginButton": "Melden Sie sich mit dem Sicherheitsschlüssel/Passkey an",
+			"errorNoUsername": "Bitte geben Sie Ihren Benutzernamen ein, bevor Sie Passkey verwenden.",
+			"errorLoadLibrary": "Die WebAuthn-Hilfsbibliothek konnte nicht geladen werden. Bitte überprüfen Sie das Netzwerk und versuchen Sie es erneut.",
+			"errorCancelled": "Der Sicherheitsschlüssel wurde storniert oder nicht zur Verwendung autorisiert."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Leer...<br/>Vielleicht können Sie [eine neue Komponente erstellen](${newpartLink}) oder zum [Discord-Server von fount](${discordLink}) gehen, um etwas Spaß zu haben?"
+			"message": "Leer...<br/>Vielleicht können Sie [eine neue Komponente erstellen](${newpartLink}) oder zum [Telegram-Server von fount](${telegramLink}) gehen, um etwas Spaß zu haben?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Benutzer umbenennen",
 			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Sie müssen sich danach neu anmelden.",
 			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt abgemeldet."
+		},
+		"passkeys": {
+			"title": "Sicherheitsschlüssel und Passkey",
+			"description": "Nach der Bindung können Sie sich mit einem Sicherheitsschlüssel oder einem nativen Passkey anmelden. Erfordert die Verwendung unter HTTPS oder localhost; Bitte fügen Sie den Schlüssel zuerst in den Benutzereinstellungen hinzu.",
+			"refreshButton": {
+				"title": "Liste aktualisieren"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisierungssymbol"
+			},
+			"nameLabel": "Bemerkungen (optional)",
+			"nameInput": {
+				"placeholder": "Beispiel: YubiKey für die Arbeit"
+			},
+			"addButton": "Sicherheitsschlüssel hinzufügen",
+			"noneFound": "Es wurden noch keine Sicherheitsschlüssel gebunden.",
+			"itemDetails": "Hinzugefügt: ${created}",
+			"removeButton": "Entfernen",
+			"removeConfirm": "Möchten Sie diesen Schlüssel wirklich entfernen? Nach dem Entfernen können Sie sich damit nicht mehr anmelden.",
+			"removeSuccess": "Sicherheitsschlüssel entfernt.",
+			"addSuccess": "Sicherheitsschlüssel hinzugefügt.",
+			"errorLoadLibrary": "Die WebAuthn-Bibliothek kann nicht geladen werden.",
+			"errorCancelled": "Hinzufügen abgebrochen."
 		},
 		"userDevices": {
 			"title": "Benutzergeräte/-sitzungen",

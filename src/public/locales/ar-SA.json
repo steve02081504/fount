@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "فتح صفحة fount على GitHub"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "فتح سيرفر fount على Discord"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "فتح سيرفر fount على Telegram"
 				},
 				"restart": {
 					"title": "إعادة التشغيل",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
+		},
+		"discordbot": {
+			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "الحساب موجود بالفعل",
 			"powNotSolved": "يرجى إكمال التحقق من إثبات العمل (PoW) أولاً",
 			"powError": "خطأ في التحقق من إثبات العمل (PoW)"
+		},
+		"webauthn": {
+			"loginButton": "قم بتسجيل الدخول باستخدام مفتاح الأمان / مفتاح المرور",
+			"errorNoUsername": "يرجى ملء اسم المستخدم الخاص بك قبل استخدام مفتاح المرور.",
+			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn المساعدة، يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
+			"errorCancelled": "تم إلغاء مفتاح الأمان أو لم يتم التصريح باستخدامه."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount على Telegram](${telegramLink}) للحصول على بعض المتعة؟"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "إعادة تسمية المستخدم",
 			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
 			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك."
+		},
+		"passkeys": {
+			"title": "مفاتيح الأمان ومفتاح المرور",
+			"description": "بعد الربط، يمكنك تسجيل الدخول باستخدام مفتاح الأمان أو مفتاح المرور الأصلي. يتطلب الاستخدام ضمن HTTPS أو المضيف المحلي؛ الرجاء إضافة المفتاح في إعدادات المستخدم أولاً.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			},
+			"nameLabel": "ملاحظات (اختياري)",
+			"nameInput": {
+				"placeholder": "مثال: YubiKey للعمل"
+			},
+			"addButton": "إضافة مفتاح الأمان",
+			"noneFound": "لم يتم ربط أي مفاتيح أمان حتى الآن.",
+			"itemDetails": "الوقت الإضافي: ${created}",
+			"removeButton": "إزالة",
+			"removeConfirm": "هل أنت متأكد أنك تريد إزالة هذا المفتاح؟ بمجرد إزالتها، لن تتمكن بعد ذلك من تسجيل الدخول باستخدامها.",
+			"removeSuccess": "تمت إزالة مفتاح الأمان.",
+			"addSuccess": "تمت إضافة مفتاح الأمان.",
+			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn.",
+			"errorCancelled": "تم إلغاء الإضافة."
 		},
 		"userDevices": {
 			"title": "أجهزة/جلسات المستخدم",

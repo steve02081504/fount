@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Mở GitHub của fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Mở Discord của fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Mở Telegram của fount"
 				},
 				"restart": {
 					"title": "Khởi động lại",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."
-		},
 		"telegrambot": {
 			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Telegram ${botusername}."
+		},
+		"discordbot": {
+			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Tài khoản đã tồn tại.",
 			"powNotSolved": "Vui lòng hoàn thành xác minh POW trước",
 			"powError": "Lỗi xác minh POW"
+		},
+		"webauthn": {
+			"loginButton": "Đăng nhập bằng khóa bảo mật/Passkey",
+			"errorNoUsername": "Vui lòng điền tên người dùng của bạn trước khi sử dụng Passkey.",
+			"errorLoadLibrary": "Không thể tải thư viện phụ trợ WebAuthn, vui lòng kiểm tra mạng và thử lại.",
+			"errorCancelled": "Khóa bảo mật đã bị hủy hoặc không được phép sử dụng."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Vườn không nhà trống...<br/>Hay là [tạo một thành phần mới](${newpartLink}), hoặc ghé qua [Cộng đồng Discord của fount](${discordLink}) để khám phá thêm?"
+			"message": "Vườn không nhà trống...<br/>Hay là [tạo một thành phần mới](${newpartLink}), hoặc ghé qua [Cộng đồng Telegram của fount](${telegramLink}) để khám phá thêm?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Đổi tên người dùng",
 			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
 			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất."
+		},
+		"passkeys": {
+			"title": "Khóa bảo mật và Passkey",
+			"description": "Sau khi đăng ký khóa, bạn có thể đăng nhập bằng khóa vật lý hoặc Passkey trên thiết bị này. Cần HTTPS hoặc localhost; hãy thêm khóa trong cài đặt người dùng trước.",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "biểu tượng làm mới"
+			},
+			"nameLabel": "Ghi chú (tùy chọn)",
+			"nameInput": {
+				"placeholder": "Ví dụ: YubiKey cho công việc"
+			},
+			"addButton": "Thêm khóa bảo mật",
+			"noneFound": "Chưa có khóa bảo mật nào được liên kết.",
+			"itemDetails": "Đã thêm: ${created}",
+			"removeButton": "Gỡ",
+			"removeConfirm": "Bạn có chắc chắn muốn xóa khóa này không? Sau khi xóa, bạn sẽ không thể đăng nhập bằng nó nữa.",
+			"removeSuccess": "Đã xóa khóa bảo mật.",
+			"addSuccess": "Đã thêm khóa bảo mật.",
+			"errorLoadLibrary": "Không thể tải thư viện WebAuthn.",
+			"errorCancelled": "Việc thêm đã bị hủy."
 		},
 		"userDevices": {
 			"title": "Thiết bị/Phiên hoạt động",

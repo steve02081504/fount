@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "fount의 GitHub 열기"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "fount의 Discord 열기"
+				"telegram": {
+					"title": "텔레그램",
+					"tooltip": "fount의 텔레그램 열기"
 				},
 				"restart": {
 					"title": "재시작",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
-		},
 		"telegrambot": {
 			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
+		},
+		"discordbot": {
+			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "이미 존재하는 계정입니다.",
 			"powNotSolved": "먼저 PoW 인증을 완료해주세요",
 			"powError": "POW 검증 오류"
+		},
+		"webauthn": {
+			"loginButton": "보안키/패스키를 이용하여 로그인",
+			"errorNoUsername": "Passkey를 사용하기 전에 사용자 이름을 입력하십시오.",
+			"errorLoadLibrary": "WebAuthn 보조 라이브러리를 로드할 수 없습니다. 네트워크를 확인한 후 다시 시도해 주세요.",
+			"errorCancelled": "보안 키가 취소되었거나 사용이 승인되지 않았습니다."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 Discord 서버](${discordLink})로 가서 재미있게 놀 수 있을까요?"
+			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 텔레그램 서버](${telegramLink})로 가서 재미있게 놀아보는 건 어떨까요?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "사용자 이름 변경",
 			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
 			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
+		},
+		"passkeys": {
+			"title": "보안 키 및 패스키",
+			"description": "바인딩 후에는 보안 키나 기본 패스키를 사용하여 로그인할 수 있습니다. HTTPS 또는 localhost에서 사용해야 합니다. 먼저 사용자 설정에서 키를 추가하세요.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
+			"nameLabel": "비고(선택사항)",
+			"nameInput": {
+				"placeholder": "예: 업무용 YubiKey"
+			},
+			"addButton": "보안 키 추가",
+			"noneFound": "아직 바인딩된 보안 키가 없습니다.",
+			"itemDetails": "추가된 시간: ${created}",
+			"removeButton": "제거",
+			"removeConfirm": "이 키를 제거할까요? 제거 후에는 이 키로 로그인할 수 없습니다.",
+			"removeSuccess": "보안 키가 삭제되었습니다.",
+			"addSuccess": "보안 키가 추가되었습니다.",
+			"errorLoadLibrary": "WebAuthn 라이브러리를 로드할 수 없습니다.",
+			"errorCancelled": "추가가 취소되었습니다."
 		},
 		"userDevices": {
 			"title": "사용자 기기/세션",

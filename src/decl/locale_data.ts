@@ -95,7 +95,7 @@ export type LocaleData = {
 					title: string
 					tooltip: string
 				}
-				discord: {
+				telegram: {
 					title: string
 					tooltip: string
 				}
@@ -113,10 +113,10 @@ export type LocaleData = {
 				}
 			}
 		}
-		discordbot: {
+		telegrambot: {
 			botStarted: string
 		}
-		telegrambot: {
+		discordbot: {
 			botStarted: string
 		}
 		path: {
@@ -434,6 +434,12 @@ export type LocaleData = {
 			accountAlreadyExists: string
 			powNotSolved: string
 			powError: string
+		}
+		webauthn: {
+			loginButton: string
+			errorNoUsername: string
+			errorLoadLibrary: string
+			errorCancelled: string
 		}
 	}
 	login_info: {
@@ -1371,6 +1377,29 @@ export type LocaleData = {
 			submitButton: string
 			confirmMessage: string
 			success: string
+		}
+		passkeys: {
+			title: string
+			description: string
+			refreshButton: {
+				title: string
+			}
+			refreshButtonIcon: {
+				alt: string
+			}
+			nameLabel: string
+			nameInput: {
+				placeholder: string
+			}
+			addButton: string
+			noneFound: string
+			itemDetails: string
+			removeButton: string
+			removeConfirm: string
+			removeSuccess: string
+			addSuccess: string
+			errorLoadLibrary: string
+			errorCancelled: string
 		}
 		userDevices: {
 			title: string
@@ -2574,7 +2603,7 @@ export type LocaleKeyParams = {
 	'fountConsole.web.frontendFilesChanged': { path: string | number }
 	'fountConsole.web.requestReceived': { method: string | number; url: string | number }
 	'home.dragAndDrop.dropError': { error: string | number }
-	'home.emptyList.message': { discordLink: string | number; newpartLink: string | number }
+	'home.emptyList.message': { newpartLink: string | number; telegramLink: string | number }
 	'ide_integration.apiKeyCreateError': { message: string | number }
 	'ide_integration.supportedEditorsError': { message: string | number }
 	'import.alerts.importFailed': { error: string | number }
@@ -2624,6 +2653,7 @@ export type LocaleKeyParams = {
 	'userSettings.apiKeys.keyDetails': { createdAt: string | number; description: string | number; lastUsed: string | number }
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
 	'userSettings.generalError': { message: string | number }
+	'userSettings.passkeys.itemDetails': { created: string | number }
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }

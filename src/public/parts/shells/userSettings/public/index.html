@@ -106,6 +106,30 @@
 				</div>
 			</section>
 
+			<!-- 安全密钥 / Passkey -->
+			<section class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<div class="flex justify-between items-center mb-4">
+						<h2 class="card-title" data-i18n="userSettings.passkeys.title"></h2>
+						<button type="button" id="refreshPasskeysBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.passkeys.refreshButton">
+							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" aria-hidden="true" data-i18n="userSettings.passkeys.refreshButtonIcon" />
+						</button>
+					</div>
+					<p class="text-sm opacity-80" data-i18n="userSettings.passkeys.description"></p>
+					<form id="addPasskeyForm" class="flex flex-wrap items-end gap-2 pt-4">
+						<div class="form-control flex-grow min-w-[12rem]">
+							<label class="label py-0" for="newPasskeyName"><span class="label-text text-xs" data-i18n="userSettings.passkeys.nameLabel"></span></label>
+							<input type="text" id="newPasskeyName" name="newPasskeyName" class="input input-bordered input-sm w-full" data-i18n="userSettings.passkeys.nameInput" maxlength="64" />
+						</div>
+						<button type="submit" class="btn btn-sm btn-primary" data-i18n="userSettings.passkeys.addButton"></button>
+					</form>
+					<div id="passkeyListContainer" class="max-h-96 overflow-y-auto pt-4">
+						<p id="noPasskeysText" class="text-center hidden py-4" data-i18n="userSettings.passkeys.noneFound"></p>
+						<ul id="passkeyList" class="space-y-3"></ul>
+					</div>
+				</div>
+			</section>
+
 			<!-- API Keys -->
 			<section class="card bg-base-200 shadow-xl">
 				<div class="card-body">

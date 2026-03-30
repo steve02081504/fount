@@ -88,9 +88,9 @@
 					"title": "GitHub",
 					"tooltip": "Abrir el GitHub de fount"
 				},
-				"discord": {
-					"title": "Discord",
-					"tooltip": "Abrir el Discord de fount"
+				"telegram": {
+					"title": "Telegram",
+					"tooltip": "Abrir el Telegram de fount"
 				},
 				"restart": {
 					"title": "Reiniciar",
@@ -106,11 +106,11 @@
 				}
 			}
 		},
-		"discordbot": {
-			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Discord ${botusername}."
-		},
 		"telegrambot": {
 			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Telegram ${botusername}."
+		},
+		"discordbot": {
+			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Discord ${botusername}."
 		},
 		"path": {
 			"protocol": {
@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "La cuenta ya existe.",
 			"powNotSolved": "Complete la verificación de PoW primero",
 			"powError": "Error de verificación de PoW"
+		},
+		"webauthn": {
+			"loginButton": "Iniciar sesión con clave de seguridad o Passkey",
+			"errorNoUsername": "Introduzca su nombre de usuario antes de usar Passkey.",
+			"errorLoadLibrary": "No se puede cargar la biblioteca auxiliar de WebAuthn. Verifique la red e inténtelo nuevamente.",
+			"errorCancelled": "La clave de seguridad ha sido cancelada o no se ha autorizado su uso."
 		}
 	},
 	"login_info": {
@@ -493,7 +499,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Vacío...<br/>¿Quizás puedas [crear una nueva parte](${newpartLink}) o ir al [servidor de Discord de fount](${discordLink}) para divertirte un poco?"
+			"message": "Vacío...<br/>¿Quizás puedas [crear una nueva parte](${newpartLink}) o ir al [servidor de Telegram de fount](${telegramLink}) para divertirte un poco?"
 		},
 		"part_pages": {
 			"default": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Cambiar nombre de usuario",
 			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
 			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión."
+		},
+		"passkeys": {
+			"title": "Claves de seguridad y clave de acceso",
+			"description": "Después de la vinculación, puede iniciar sesión con una clave de seguridad o una clave de acceso nativa. Requiere uso bajo HTTPS o localhost; Primero agregue la clave en la configuración del usuario.",
+			"refreshButton": {
+				"title": "Actualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "icono de actualización"
+			},
+			"nameLabel": "Observaciones (opcional)",
+			"nameInput": {
+				"placeholder": "Ejemplo: YubiKey para el trabajo"
+			},
+			"addButton": "Agregar clave de seguridad",
+			"noneFound": "Aún no hay claves de seguridad vinculadas.",
+			"itemDetails": "Añadida: ${created}",
+			"removeButton": "Eliminar",
+			"removeConfirm": "¿Seguro que desea eliminar esta clave? Tras eliminarla, no podrá iniciar sesión con ella.",
+			"removeSuccess": "Se eliminó la clave de seguridad.",
+			"addSuccess": "Se agregó clave de seguridad.",
+			"errorLoadLibrary": "No se puede cargar la biblioteca WebAuthn.",
+			"errorCancelled": "Añadiendo cancelado."
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sesiones de usuario",

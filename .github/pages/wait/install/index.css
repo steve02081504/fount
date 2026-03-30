@@ -125,7 +125,7 @@ body.scroll-lock {
 .rotating-text-container>span {
 	position: absolute;
 	white-space: nowrap;
-	top: 0;
+	bottom: 0;
 	left: 0;
 	opacity: 0;
 	transform: translateY(100%);

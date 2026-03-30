@@ -1,5 +1,11 @@
-const { spawn } = require('node:child_process')
+import { spawn } from 'node:child_process'
+import process from 'node:process'
 
+/**
+ * 在子进程中启动 fount（run.bat / run.sh）。
+ * @param {(err?: Error) => void} done - Gulp 任务完成回调，出错时传入 Error。
+ * @returns {void}
+ */
 function runFount(done) {
 	const isWindows = process.platform === 'win32'
 	const script = isWindows ? 'run.bat' : 'run.sh'
@@ -23,5 +29,11 @@ function runFount(done) {
 	})
 }
 
-exports.run = runFount
-exports.default = runFount
+/**
+ * 启动 fount。
+ */
+export { runFount as run }
+/**
+ * 默认导出。
+ */
+export default runFount
