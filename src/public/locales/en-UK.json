@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Account already exists.",
 			"powNotSolved": "Please complete PoW verification first",
 			"powError": "PoW verification error"
+		},
+		"webauthn": {
+			"loginButton": "Sign in with security key / Passkey",
+			"errorNoUsername": "Enter your username before using Passkey.",
+			"errorLoadLibrary": "Could not load the WebAuthn helper library. Check your network and try again.",
+			"errorCancelled": "Security key sign-in was cancelled or not allowed."
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Rename User",
 			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
 			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
+		},
+		"passkeys": {
+			"title": "Security keys and Passkey",
+			"description": "After you register a key, you can sign in with a hardware security key or this device’s Passkey. You need HTTPS or localhost; add keys in user settings first.",
+			"refreshButton": {
+				"title": "Refresh list"
+			},
+			"refreshButtonIcon": {
+				"alt": "Refresh icon"
+			},
+			"nameLabel": "Label (optional)",
+			"nameInput": {
+				"placeholder": "e.g. work YubiKey"
+			},
+			"addButton": "Add security key",
+			"noneFound": "No security keys registered yet.",
+			"itemDetails": "Added: ${created}",
+			"removeButton": "Remove",
+			"removeConfirm": "Remove this key? You will not be able to sign in with it afterwards.",
+			"removeSuccess": "Security key removed.",
+			"addSuccess": "Security key added.",
+			"errorLoadLibrary": "Could not load the WebAuthn library.",
+			"errorCancelled": "Adding cancelled."
 		},
 		"userDevices": {
 			"title": "User Devices/Sessions",

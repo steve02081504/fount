@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Ce compte existe déjà.",
 			"powNotSolved": "Veuillez d'abord terminer la vérification PoW",
 			"powError": "Erreur de vérification PoW"
+		},
+		"webauthn": {
+			"loginButton": "Connexion avec clé de sécurité ou Passkey",
+			"errorNoUsername": "Saisissez votre nom d'utilisateur avant d'utiliser Passkey.",
+			"errorLoadLibrary": "Impossible de charger la bibliothèque auxiliaire WebAuthn, veuillez vérifier le réseau et réessayer.",
+			"errorCancelled": "La clé de sécurité a été annulée ou son utilisation n'est pas autorisée."
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Renommer l'utilisateur",
 			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
 			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
+		},
+		"passkeys": {
+			"title": "Clés de sécurité et Passkeys",
+			"description": "Après enregistrement d'une clé, vous pouvez vous connecter avec une clé matérielle ou la passkey de cet appareil. HTTPS ou localhost requis ; ajoutez d'abord une clé dans les paramètres utilisateur.",
+			"refreshButton": {
+				"title": "Actualiser la liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "icône d'actualisation"
+			},
+			"nameLabel": "Remarques (facultatif)",
+			"nameInput": {
+				"placeholder": "Exemple : YubiKey pour le travail"
+			},
+			"addButton": "Ajouter une clé de sécurité",
+			"noneFound": "Aucune clé de sécurité n'a encore été liée.",
+			"itemDetails": "Heure ajoutée : ${created}",
+			"removeButton": "Retirer",
+			"removeConfirm": "Supprimer cette clé ? Vous ne pourrez plus vous connecter avec celle-ci.",
+			"removeSuccess": "Clé de sécurité supprimée.",
+			"addSuccess": "Clé de sécurité ajoutée.",
+			"errorLoadLibrary": "Impossible de charger la bibliothèque WebAuthn.",
+			"errorCancelled": "Ajout annulé."
 		},
 		"userDevices": {
 			"title": "Appareils et sessions utilisateur",

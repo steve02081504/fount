@@ -165,6 +165,7 @@ export async function initAuth() {
 			config.data.users[user].auth.refreshTokens ??= []
 			config.data.users[user].auth.apiKeys ??= []
 			config.data.users[user].auth.apiRefreshTokens ??= []
+			config.data.users[user].auth.webauthnCredentials ??= []
 		}
 
 	cleanupRevokedTokens()
@@ -664,6 +665,7 @@ async function createUser(username, password) {
 			refreshTokens: [],
 			apiKeys: [],
 			apiRefreshTokens: [],
+			webauthnCredentials: [],
 		},
 		...loadJsonFile(path.join(__dirname, 'default', 'templates', 'user.json')),
 	}
@@ -918,6 +920,28 @@ const timingCalibrated = argon2Loaded.then(async () => {
 })
 
 /**
+ * 记录一次失败的密码或 WebAuthn 验证，必要时锁定账户。
+ * @param {object} user - 用户对象。
+ * @returns {Promise<{ locked: false } | { locked: true, response: object }>} 是否已触发锁定及可选 HTTP 响应体。
+ */
+export function bumpUserFailedLoginAttempts(user) {
+	const authData = user.auth
+	authData.loginAttempts = (authData.loginAttempts || 0) + 1
+	if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+		authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
+		authData.loginAttempts = 0
+		save_config()
+		console.logI18n('fountConsole.auth.accountLockedLog', { username: user.username })
+		return {
+			locked: true,
+			response: { status: 403, success: false, message: 'Account locked due to too many failed attempts.' },
+		}
+	}
+	save_config()
+	return { locked: false }
+}
+
+/**
  * 用户登录。
  * @param {string} username - 用户名。
  * @param {string} password - 密码。
@@ -964,23 +988,29 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	avgVerifyTime = (avgVerifyTime * 3 + (Date.now() - startTime)) / 4
 
 	if (!isValidPassword) {
-		authData.loginAttempts = (authData.loginAttempts || 0) + 1
-		if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-			authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
-			authData.loginAttempts = 0
-			save_config()
-			console.logI18n('fountConsole.auth.accountLockedLog', { username })
-			return { status: 403, success: false, message: 'Account locked due to too many failed attempts.' }
-		}
+		const bump = bumpUserFailedLoginAttempts(user)
+		if (bump.locked) return bump.response
 		return await handleFailedLogin()
 	}
 
 	// 登录成功
-	delete loginFailures[ip]
+	return await completeSuccessfulLogin(user, deviceId, req)
+}
+
+/**
+ * 密码或 WebAuthn 验证通过后：清除锁定与失败计数、确保用户目录、签发 JWT 并登记刷新令牌。
+ * @param {object} user - config 中的用户对象（含 username、auth）。
+ * @param {string} deviceId - 设备 ID。
+ * @param {import('npm:express').Request} req - 请求对象。
+ * @returns {Promise<{status: number, success: boolean, message: string, accessToken: string, refreshToken: string}>} 成功时的状态码、消息与一对 JWT。
+ */
+export async function completeSuccessfulLogin(user, deviceId, req) {
+	const username = user.username
+	const authData = user.auth
+	delete loginFailures[req.ip]
 	authData.loginAttempts = 0
 	authData.lockedUntil = null
 
-	// 创建用户目录
 	const userdir = getUserDictionary(username)
 	if (!fs.existsSync(userdir)) try {
 		fse.copySync(path.join(__dirname, '/default/templates/user'), userdir, { overwrite: false })

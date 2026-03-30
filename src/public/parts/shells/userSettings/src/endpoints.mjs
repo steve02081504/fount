@@ -9,6 +9,12 @@ import {
 	getUserDictionary, getUserByUsername as getUserConfig,
 	REFRESH_TOKEN_EXPIRY_DURATION
 } from '../../../../../server/auth.mjs'
+import {
+	listWebAuthnCredentials,
+	removeWebAuthnCredential,
+	webauthnRegistrationBegin,
+	webauthnRegistrationComplete,
+} from '../../../../../server/webauthn.mjs'
 
 /**
  * 用户设置 shell 的 API 端点。
@@ -150,6 +156,38 @@ export function setEndpoints(router) {
 			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
+		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
+	})
+
+	router.get('/api/parts/shells\\:userSettings/webauthn_credentials', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		res.json({ success: true, credentials: listWebAuthnCredentials(user.username) })
+	})
+
+	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const result = await webauthnRegistrationBegin(user.username, req)
+		res.status(result.status).json(result)
+	})
+
+	router.post('/api/parts/shells\\:userSettings/webauthn_register_complete', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { credential, nickname } = req.body
+		if (!credential) return res.status(400).json({ success: false, message: 'Missing credential.' })
+		const result = await webauthnRegistrationComplete(user.username, credential, nickname, req)
+		res.status(result.status).json(result)
+	})
+
+	router.post('/api/parts/shells\\:userSettings/webauthn_remove', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { credentialId, password } = req.body
+		if (!credentialId || !password) return res.status(400).json({ success: false, message: 'credentialId and password required.' })
+
+		const result = await removeWebAuthnCredential(user.username, credentialId, password)
 		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 }

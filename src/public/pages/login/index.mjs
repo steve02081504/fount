@@ -1,5 +1,5 @@
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
-import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
+import { ping, generateVerificationCode, login, register, webauthnLoginBegin, webauthnLoginComplete } from '../scripts/endpoints.mjs'
 import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
 import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
@@ -18,6 +18,11 @@ const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 const passwordInput = document.getElementById('password')
+const webauthnLoginRow = document.getElementById('webauthn-login-row')
+const webauthnLoginBtn = document.getElementById('webauthn-login-btn')
+
+/** @type {((opts: object) => Promise<object>) | null} */
+let startAuthenticationFn = null
 
 const isLocalOrigin = await ping().then(data => data.is_local_ip).catch(() => false)
 
@@ -77,12 +82,107 @@ function updateFormDisplay() {
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
 	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
+	webauthnLoginRow.style.display = isLoginForm ? 'block' : 'none'
 	passwordInput.autocomplete = isLoginForm ? 'current-password' : 'new-password'
 	errorMessage.textContent = ''
 
 	if (isLoginForm) {
 		verificationCodeSent = false
 		sendVerificationCodeBtn.disabled = false
+	}
+}
+
+/**
+ * 登录成功后跳转（与密码登录一致）。
+ * @returns {Promise<void>}
+ */
+async function finalizeLoginRedirect() {
+	const urlParams = new URLSearchParams(window.location.search)
+	const redirect = urlParams.get('redirect')
+	const defaultShell = await getAnyDefaultPart('shells') || 'home'
+
+	let finalRedirectUrl
+	if (redirect)
+		finalRedirectUrl = decodeURIComponent(redirect)
+	else
+		finalRedirectUrl = `/parts/shells:${defaultShell}`
+
+	if (redirect) try {
+		const url = new URL(finalRedirectUrl, window.location.origin)
+		const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
+		if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
+		finalRedirectUrl = url.href
+	} catch { /* URL 解析失败时保持原样 */ }
+
+	const username = document.getElementById('username').value
+	redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, passwordInput.value)
+}
+
+/**
+ * 按需加载 @simplewebauthn/browser。
+ * @returns {Promise<boolean>} 成功加载认证辅助库则为 true。
+ */
+async function loadWebAuthnBrowser() {
+	if (startAuthenticationFn) return true
+	try {
+		const mod = await import('https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13.3.0/+esm')
+		startAuthenticationFn = mod.startAuthentication
+		return true
+	} catch (err) {
+		console.error('Failed to load WebAuthn library:', err)
+		return false
+	}
+}
+
+/**
+ * 使用安全密钥 / Passkey 登录。
+ * @returns {Promise<void>}
+ */
+async function handleWebAuthnLogin() {
+	if (!isLoginForm) return
+	const powToken = powCaptcha?.token
+	if (!isLocalOrigin && !powToken) {
+		errorMessage.dataset.i18n = 'auth.error.powNotSolved'
+		return
+	}
+	const username = document.getElementById('username').value.trim()
+	if (!username) {
+		errorMessage.dataset.i18n = 'auth.webauthn.errorNoUsername'
+		return
+	}
+	errorMessage.textContent = ''
+	delete errorMessage.dataset.i18n
+
+	if (!await loadWebAuthnBrowser()) {
+		errorMessage.dataset.i18n = 'auth.webauthn.errorLoadLibrary'
+		return
+	}
+
+	try {
+		const beginRes = await webauthnLoginBegin(username, powToken)
+		const beginData = await beginRes.json()
+		if (!beginRes.ok) {
+			errorMessage.textContent = beginData.message || String(beginRes.status)
+			return
+		}
+		const credential = await startAuthenticationFn({ optionsJSON: beginData.options })
+		const deviceid = generateDeviceId()
+		const completeRes = await webauthnLoginComplete(username, credential, deviceid, powToken)
+		const completeData = await completeRes.json()
+		if (!completeRes.ok) {
+			errorMessage.textContent = completeData.message || String(completeRes.status)
+			return
+		}
+		await finalizeLoginRedirect()
+	}
+	catch (err) {
+		if (err?.name === 'NotAllowedError')
+			errorMessage.dataset.i18n = 'auth.webauthn.errorCancelled'
+		else {
+			console.error('WebAuthn login error:', err)
+			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(err))
+			errorMessage.textContent = err?.message || String(err)
+		}
 	}
 }
 
@@ -132,8 +232,8 @@ async function handleSendVerificationCode() {
 		else
 			errorMessage.dataset.i18n = 'auth.error.verificationCodeSendError'
 	}
-	catch (error) {
-		console.error('Error sending verification code:', error)
+	catch (err) {
+		console.error('Error sending verification code:', err)
 		errorMessage.dataset.i18n = 'auth.error.verificationCodeSendError'
 	}
 }
@@ -192,33 +292,14 @@ async function handleFormSubmit(event) {
 		const data = await response.json()
 
 		if (response.ok)
-			if (isLoginForm) {
-				const urlParams = new URLSearchParams(window.location.search)
-				const redirect = urlParams.get('redirect')
-				const defaultShell = await getAnyDefaultPart('shells') || 'home' // Fallback to 'home' if no default shell is set
-
-				let finalRedirectUrl
-				if (redirect)
-					finalRedirectUrl = decodeURIComponent(redirect)
-				else
-					finalRedirectUrl = `/parts/shells:${defaultShell}`
-
-				// 若 redirect 已含 gobackNum，则在其基础上 +1 再传下去
-				if (redirect) try {
-					const url = new URL(finalRedirectUrl, window.location.origin)
-					const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
-					if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
-					finalRedirectUrl = url.href
-				} catch { /* URL 解析失败时保持原样 */ }
-
-				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
-			}
+			if (isLoginForm)
+				await finalizeLoginRedirect()
 			else toggleForm() // 注册成功后自动切换到登录表单
 		else
 			errorMessage.textContent = data.message
 	}
-	catch (error) {
-		console.error('Error during form submission:', error)
+	catch (err) {
+		console.error('Error during form submission:', err)
 		errorMessage.dataset.i18n = isLoginForm
 			? 'auth.error.loginError'
 			: 'auth.error.registrationError'
@@ -233,6 +314,7 @@ function setupEventListeners() {
 	toggleLink.addEventListener('click', handleToggleClick)
 	submitBtn.addEventListener('click', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
+	webauthnLoginBtn.addEventListener('click', handleWebAuthnLogin)
 }
 
 /**
@@ -252,8 +334,8 @@ async function initializeApp() {
 		powCaptchaContainer.style.display = 'block'
 		powCaptcha = await createPOWCaptcha(powCaptchaContainer)
 	} catch (err) {
+		console.error('POW captcha initialization error:', err)
 		errorMessage.dataset.i18n = 'auth.error.powError'
-		console.error(err)
 	}
 
 	passwordStrengthMeter = initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback)
@@ -287,6 +369,8 @@ async function initializeApp() {
 	}
 	catch (e) {
 		console.error('Failed to obtain credentials for autologin.', e)
+		showToast('error', e?.message || String(e))
+		import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(e))
 	}
 	finally {
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
@@ -304,8 +388,8 @@ async function initializeApp() {
 			submitBtn.dataset.i18n = 'pow_captcha.verifying'
 			await powCaptcha.solve()
 		} catch (err) {
+			console.error('POW captcha solve error:', err)
 			errorMessage.dataset.i18n = 'auth.error.powError'
-			console.error(err)
 			return
 		} finally {
 			submitBtn.disabled = false

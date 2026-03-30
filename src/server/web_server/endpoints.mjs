@@ -25,6 +25,7 @@ import {
 	getPartBranches
 } from '../parts_loader.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
+import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -141,6 +142,38 @@ export function registerEndpoints(router) {
 			const cookieOptions = getSecureCookieOptions(req)
 			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
 			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
+		}
+		res.status(result.status).json(result)
+	})
+
+	router.post('/api/webauthn/login/begin', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
+		if (!is_local_ip_from_req(req)) {
+			const { pow } = await import('../../scripts/pow.mjs')
+			const { powToken } = req.body
+			const { success } = powToken && await pow.validateToken(powToken)
+			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
+		}
+		const { username } = req.body
+		if (!username) return res.status(400).json({ success: false, message: 'Username required' })
+		const result = await webauthnLoginBegin(username.trim(), req)
+		res.status(result.status).json(result)
+	})
+
+	router.post('/api/webauthn/login/complete', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
+		if (!is_local_ip_from_req(req)) {
+			const { pow } = await import('../../scripts/pow.mjs')
+			const { powToken } = req.body
+			const { success } = powToken && await pow.validateToken(powToken)
+			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
+		}
+		const { username, credential, deviceid } = req.body
+		if (!username || !credential) return res.status(400).json({ success: false, message: 'Username and credential required' })
+		const deviceId = deviceid?.trim() || 'unknown'
+		const result = await webauthnLoginComplete(credential, username.trim(), deviceId, req)
+		if (result.status === 200 && result.accessToken) {
+			const cookieOptions = getSecureCookieOptions(req)
+			res.cookie('accessToken', result.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
+			res.cookie('refreshToken', result.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 		}
 		res.status(result.status).json(result)
 	})

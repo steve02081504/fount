@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "账户已存在",
 			"powNotSolved": "请先完成 PoW 验证",
 			"powError": "PoW 验证出错"
+		},
+		"webauthn": {
+			"loginButton": "使用安全密钥 / Passkey 登录",
+			"errorNoUsername": "使用 Passkey 前请先填写用户名。",
+			"errorLoadLibrary": "无法加载 WebAuthn 辅助库，请检查网络后重试。",
+			"errorCancelled": "已取消或未获准使用安全密钥。"
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "重命名用户",
 			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
 			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。"
+		},
+		"passkeys": {
+			"title": "安全密钥与 Passkey",
+			"description": "绑定后可用安全密钥或本机 Passkey 登录。需在 HTTPS 或 localhost 下使用；请先在用户设置中添加密钥。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			},
+			"nameLabel": "备注（可选）",
+			"nameInput": {
+				"placeholder": "例如：工作用 YubiKey"
+			},
+			"addButton": "添加安全密钥",
+			"noneFound": "尚未绑定任何安全密钥。",
+			"itemDetails": "添加时间：${created}",
+			"removeButton": "移除",
+			"removeConfirm": "确定移除此密钥？移除后将无法用其登录。",
+			"removeSuccess": "已移除安全密钥。",
+			"addSuccess": "安全密钥已添加。",
+			"errorLoadLibrary": "无法加载 WebAuthn 库。",
+			"errorCancelled": "已取消添加。"
 		},
 		"userDevices": {
 			"title": "用户设备/会话",

@@ -4,9 +4,14 @@
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 
 import { getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice } from './src/endpoints.mjs'
+import { installPasskeysSection, loadPasskeysList } from './src/passkeysSection.mjs'
+import { escapeAttr } from './src/uiEscape.mjs'
+
+usingTemplates('/parts/shells:userSettings/templates')
 
 const REFRESH_TOKEN_EXPIRY_DURATION_STRING = 30 * 24 * 60 * 60 * 1000 // '30d'
 
@@ -35,6 +40,11 @@ const refreshApiKeysBtn = document.getElementById('refreshApiKeysBtn')
 const newApiKeyModal = document.getElementById('newApiKeyModal')
 const newApiKeyInput = document.getElementById('newApiKeyInput')
 const copyNewApiKeyBtn = document.getElementById('copyNewApiKeyBtn')
+const passkeyList = document.getElementById('passkeyList')
+const noPasskeysText = document.getElementById('noPasskeysText')
+const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
+const addPasskeyForm = document.getElementById('addPasskeyForm')
+const newPasskeyNameInput = document.getElementById('newPasskeyName')
 
 let passwordConfirmationContext = { resolve: null, reject: null }
 let cachedPassword = null // 用于短期缓存密码
@@ -118,8 +128,7 @@ copyFolderPathBtn.addEventListener('click', async () => {
 		showToastI18n('success', 'userSettings.userInfo.copiedAlert')
 	}
 	catch (err) {
-		console.error('Failed to copy path: ', err)
-		showToastI18n('error', 'userSettings.generalError', { message: 'Failed to copy path.' })
+		showToastI18n('error', 'userSettings.generalError', { message: err?.message || 'Failed to copy path.' })
 	}
 })
 
@@ -173,14 +182,14 @@ renameUserForm.addEventListener('submit', async event => {
  * @returns {Promise<void>}
  */
 async function loadAndDisplayDevices() {
-	deviceList.innerHTML = /* html */ '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	deviceList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 	noDevicesText.classList.add('hidden')
 
 	try {
 		const result = await getDevices()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
-		deviceList.innerHTML = ''
+		deviceList.replaceChildren()
 		if (!result.devices.length) {
 			noDevicesText.classList.remove('hidden')
 			return
@@ -194,38 +203,26 @@ async function loadAndDisplayDevices() {
 				const payload = JSON.parse(atob(tokenValue.split('.')[1]))
 				currentRefreshTokenJtiClient = payload.jti
 			}
-		} catch (e) { /* Quietly ignore */ }
+		} catch { /* Quietly ignore */ }
 
-		result.devices.forEach(device => {
-			const li = document.createElement('li')
-			li.className = 'p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'
-
-			const deviceInfoDiv = document.createElement('div')
-			const deviceIdText = geti18n('userSettings.userDevices.deviceInfo', { deviceId: device.deviceId })
-
-			let mainText = `${deviceIdText}`
-			if (device.jti === currentRefreshTokenJtiClient)
-				mainText += /* html */ ` <span class="badge badge-xs badge-success badge-outline">${geti18n('userSettings.userDevices.thisDevice')}</span>`
-
-			deviceInfoDiv.innerHTML = /* html */ `<strong class="block text-sm">${mainText}</strong>`
-
+		for (const device of result.devices) {
 			const lastSeenDate = new Date(device.lastSeen || (device.expiry - REFRESH_TOKEN_EXPIRY_DURATION_STRING))
-			const detailsText = geti18n('userSettings.userDevices.deviceDetails', {
+			const userAgent = device.userAgent
+				? device.userAgent.length > 50 ? device.userAgent.substring(0, 47) + '...' : device.userAgent
+				: 'N/A'
+			const li = await renderTemplate('deviceListItem', {
+				escapeAttr,
+				deviceId: device.deviceId,
+				isThisDevice: device.jti === currentRefreshTokenJtiClient,
 				lastSeen: lastSeenDate.toLocaleString(),
 				ipAddress: device.ipAddress || 'N/A',
-				userAgent: device.userAgent ? device.userAgent.length > 50 ? device.userAgent.substring(0, 47) + '...' : device.userAgent : 'N/A'
+				userAgent,
+				showRevoke: device.jti !== currentRefreshTokenJtiClient,
 			})
-			deviceInfoDiv.innerHTML += /* html */ `<small class="block text-xs opacity-70">${detailsText}</small>`
-			li.appendChild(deviceInfoDiv)
 
-			if (device.jti !== currentRefreshTokenJtiClient) {
-				const revokeButton = document.createElement('button')
-				revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
-				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
-				/**
-				 * 撤销按钮点击事件处理程序。
-				 */
-				revokeButton.onclick = async () => {
+			const revokeButton = li.querySelector('.device-revoke-btn')
+			if (revokeButton)
+				revokeButton.addEventListener('click', async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
 						const revokeResult = await revokeDevice(device.jti, password)
@@ -236,14 +233,13 @@ async function loadAndDisplayDevices() {
 						if (error.message.includes('cancelled') || error.message.includes('closed')) return
 						showToastI18n('error', 'userSettings.generalError', { message: error.message })
 					}
-				}
-				li.appendChild(revokeButton)
-			}
+				})
+
 			deviceList.appendChild(li)
-		})
+		}
 	}
 	catch (error) {
-		deviceList.innerHTML = ''
+		deviceList.replaceChildren()
 		noDevicesText.classList.remove('hidden')
 		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
@@ -299,60 +295,51 @@ deleteAccountBtn.addEventListener('click', async () => {
  * @returns {Promise<void>}
  */
 async function loadAndDisplayApiKeys() {
-	apiKeyList.innerHTML = /* html */ '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	apiKeyList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 	noApiKeysText.classList.add('hidden')
 
 	try {
 		const result = await getApiKeys()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 
-		apiKeyList.innerHTML = ''
+		apiKeyList.replaceChildren()
 		if (!result.apiKeys.length) {
 			noApiKeysText.classList.remove('hidden')
 			return
 		}
 
-		result.apiKeys.sort((a, b) => b.createdAt - a.createdAt).forEach(key => {
-			const li = document.createElement('li')
-			li.className = 'p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'
-
-			const keyInfoDiv = document.createElement('div')
-			keyInfoDiv.innerHTML = /* html */ `<strong class="block text-sm font-mono">${key.prefix}...</strong>`
-
-			const detailsText = geti18n('userSettings.apiKeys.keyDetails', {
+		const sorted = [...result.apiKeys].sort((a, b) => b.createdAt - a.createdAt)
+		for (const key of sorted) {
+			const li = await renderTemplate('apiKeyListItem', {
+				escapeAttr,
+				prefix: key.prefix,
 				description: key.description || 'N/A',
 				createdAt: new Date(key.createdAt).toLocaleString(),
 				lastUsed: key.lastUsed ? new Date(key.lastUsed).toLocaleString() : geti18n('userSettings.apiKeys.neverUsed'),
 			})
-			keyInfoDiv.innerHTML += /* html */ `<small class="block text-xs opacity-70">${detailsText.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</small>`
-			li.appendChild(keyInfoDiv)
 
-			const revokeButton = document.createElement('button')
-			revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
-			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
-			/**
-			 * 撤销按钮点击事件处理程序。
-			 */
-			revokeButton.onclick = async () => {
-				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
-					const password = await requestPasswordConfirmation()
-					const revokeResult = await revokeApiKey(key.jti, password)
-					if (!revokeResult.success)
-						throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
+			const revokeButton = li.querySelector('.apikey-revoke-btn')
+			if (revokeButton)
+				revokeButton.addEventListener('click', async () => {
+					if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
+						const password = await requestPasswordConfirmation()
+						const revokeResult = await revokeApiKey(key.jti, password)
+						if (!revokeResult.success)
+							throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
 
-					showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
-					loadAndDisplayApiKeys()
-				} catch (error) {
-					if (error.message.includes('cancelled') || error.message.includes('closed')) return
-					showToastI18n('error', 'userSettings.generalError', { message: error.message })
-				}
-			}
-			li.appendChild(revokeButton)
+						showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
+						loadAndDisplayApiKeys()
+					} catch (error) {
+						if (error.message.includes('cancelled') || error.message.includes('closed')) return
+						showToastI18n('error', 'userSettings.generalError', { message: error.message })
+					}
+				})
+
 			apiKeyList.appendChild(li)
-		})
+		}
 	}
 	catch (error) {
-		apiKeyList.innerHTML = ''
+		apiKeyList.replaceChildren()
 		noApiKeysText.classList.remove('hidden')
 		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
@@ -388,7 +375,7 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
 	}
 	catch (err) {
 		console.error('Failed to copy API key: ', err)
-		showToastI18n('error', 'userSettings.generalError', { message: 'Failed to copy API key.' })
+		showToastI18n('error', 'userSettings.generalError', { message: err?.message || 'Failed to copy API key.' })
 	}
 })
 
@@ -401,8 +388,22 @@ async function initializeApp() {
 	await initTranslations('userSettings')
 	applyTheme()
 
+	const passkeysDeps = {
+		passkeyList,
+		noPasskeysText,
+		refreshPasskeysBtn,
+		addPasskeyForm,
+		newPasskeyNameInput,
+		requestPasswordConfirmation,
+		confirmI18n,
+		geti18n,
+		showToastI18n,
+	}
+	installPasskeysSection(passkeysDeps)
+
 	await loadUserInfo()
 	await loadAndDisplayDevices()
+	await loadPasskeysList(passkeysDeps)
 	await loadAndDisplayApiKeys()
 }
 

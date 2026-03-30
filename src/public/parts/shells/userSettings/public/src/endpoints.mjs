@@ -81,3 +81,39 @@ export async function renameUser(newUsername, password) {
 export async function deleteAccount(password) {
 	return callApi('delete_account', 'POST', { password })
 }
+
+/**
+ * 列出已注册的安全密钥。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export async function getWebAuthnCredentials() {
+	return callApi('webauthn_credentials', 'GET')
+}
+
+/**
+ * 开始注册安全密钥。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export async function webauthnRegisterBegin() {
+	return callApi('webauthn_register_begin', 'POST')
+}
+
+/**
+ * 完成注册安全密钥。
+ * @param {object} credential - 浏览器凭证。
+ * @param {string} [nickname] - 显示名称。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export async function webauthnRegisterComplete(credential, nickname) {
+	return callApi('webauthn_register_complete', 'POST', { credential, nickname })
+}
+
+/**
+ * 移除安全密钥。
+ * @param {string} credentialId - 凭证 ID。
+ * @param {string} password - 当前密码。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export async function webauthnRemove(credentialId, password) {
+	return callApi('webauthn_remove', 'POST', { credentialId, password })
+}
