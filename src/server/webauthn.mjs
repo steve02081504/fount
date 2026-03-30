@@ -6,6 +6,7 @@ import {
 	verifyAuthenticationResponse,
 	verifyRegistrationResponse,
 } from 'npm:@simplewebauthn/server'
+import { on_shutdown } from 'npm:on-shutdown'
 
 import { ms } from '../scripts/ms.mjs'
 
@@ -21,6 +22,25 @@ const CHALLENGE_TTL_MS = ms('5m')
 
 /** @type {Map<string, { challenge: string, expires: number }>} */
 const webauthnChallenges = new Map()
+
+/**
+ * 清理已过期的 WebAuthn 挑战，避免 Map 无限增长。
+ * @returns {void}
+ */
+function sweepExpiredWebAuthnChallenges() {
+	const now = Date.now()
+	for (const [key, entry] of webauthnChallenges.entries())
+		if (entry.expires <= now) webauthnChallenges.delete(key)
+}
+
+const webauthnChallengeCleanupInterval = setInterval(
+	sweepExpiredWebAuthnChallenges,
+	Math.max(Math.floor(CHALLENGE_TTL_MS / 2), 60_000),
+)
+
+on_shutdown(() => {
+	clearInterval(webauthnChallengeCleanupInterval)
+})
 
 /**
  * @param {'registration' | 'authentication'} type - 挑战用途：注册或认证。

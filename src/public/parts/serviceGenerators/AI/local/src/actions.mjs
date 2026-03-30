@@ -1,8 +1,9 @@
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
 import process from 'node:process'
 
 import { addServiceSourceFile, saveServiceSourceFile } from '../../../../shells/serviceSourceManage/src/manager.mjs'
+
 import { downloadModel, deriveSourceName, isHttpUrl, isHfUri, normalizeModelUri } from './modelDownload.mjs'
 
 const SERVICE_SOURCE_PATH = 'serviceSources/AI'
@@ -13,6 +14,7 @@ const GENERATOR_NAME = 'local'
  * @param {string} user - 用户名。
  * @param {string} modelPath - 模型文件的本地路径。
  * @param {string} [sourceName] - AI 源名称，默认从文件名推导。
+ * @param {string} [cwd] - 解析相对路径时的当前工作目录。
  * @returns {Promise<string>} 操作结果描述。
  */
 async function createSourceFromPath(user, modelPath, sourceName, cwd) {
@@ -49,6 +51,7 @@ export const actions = {
 	 * @param {string} root0.user - 用户名。
 	 * @param {string} root0.uri - 模型 URI。
 	 * @param {string} [root0.sourceName] - 可选的 AI 源名称，默认从 URI 推导。
+	 * @param {string} [root0.cwd] - 解析相对路径时的当前工作目录。
 	 * @returns {Promise<string>} 操作结果描述。
 	 */
 	install: async ({ user, uri, sourceName, cwd }) => {
@@ -81,6 +84,7 @@ export const actions = {
 	 * @param {string} root0.user - 用户名。
 	 * @param {string} root0.modelPath - 模型文件的本地绝对或相对路径。
 	 * @param {string} [root0.sourceName] - 可选的 AI 源名称。
+	 * @param {string} [root0.cwd] - 解析相对路径时的当前工作目录。
 	 * @returns {Promise<string>} 操作结果描述。
 	 */
 	'create-from-path': async ({ user, modelPath, sourceName, cwd }) => {

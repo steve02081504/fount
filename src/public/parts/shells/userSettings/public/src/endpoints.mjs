@@ -92,20 +92,22 @@ export async function getWebAuthnCredentials() {
 
 /**
  * 开始注册安全密钥。
+ * @param {string} password - 当前账户密码（重新认证）。
  * @returns {Promise<any>} - 响应数据。
  */
-export async function webauthnRegisterBegin() {
-	return callApi('webauthn_register_begin', 'POST')
+export async function webauthnRegisterBegin(password) {
+	return callApi('webauthn_register_begin', 'POST', { password })
 }
 
 /**
  * 完成注册安全密钥。
  * @param {object} credential - 浏览器凭证。
  * @param {string} [nickname] - 显示名称。
+ * @param {string} password - 当前账户密码（重新认证）。
  * @returns {Promise<any>} - 响应数据。
  */
-export async function webauthnRegisterComplete(credential, nickname) {
-	return callApi('webauthn_register_complete', 'POST', { credential, nickname })
+export async function webauthnRegisterComplete(credential, nickname, password) {
+	return callApi('webauthn_register_complete', 'POST', { credential, nickname, password })
 }
 
 /**

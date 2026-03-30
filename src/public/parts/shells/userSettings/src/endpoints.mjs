@@ -1,13 +1,16 @@
 import fs_promises from 'node:fs/promises'
 import path from 'node:path'
 
+import * as jose from 'npm:jose'
+
 import { ms } from '../../../../../scripts/ms.mjs'
 import {
 	authenticate, getUserByReq,
 	changeUserPassword, revokeUserDeviceByJti,
 	renameUser, deleteUserAccount,
 	getUserDictionary, getUserByUsername as getUserConfig,
-	REFRESH_TOKEN_EXPIRY_DURATION
+	REFRESH_TOKEN_EXPIRY_DURATION,
+	verifyPassword,
 } from '../../../../../server/auth.mjs'
 import {
 	listWebAuthnCredentials,
@@ -109,6 +112,11 @@ export function setEndpoints(router) {
 		const userFullConfig = getUserConfig(userReqData.username)
 		if (!userFullConfig?.auth?.refreshTokens) return res.json({ success: true, devices: [] })
 
+		let currentRefreshJti = null
+		try {
+			currentRefreshJti = jose.decodeJwt(req.cookies?.refreshToken).jti ?? null
+		} catch { /* 无效 cookie，忽略 */ }
+
 		const devices = userFullConfig.auth.refreshTokens.map(token => ({
 			deviceId: token.deviceId,
 			jti: token.jti,
@@ -116,6 +124,7 @@ export function setEndpoints(router) {
 			lastSeen: token.lastSeen || (token.expiry - ms(REFRESH_TOKEN_EXPIRY_DURATION)),
 			ipAddress: token.ipAddress,
 			userAgent: token.userAgent,
+			isCurrentSession: Boolean(currentRefreshJti && token.jti === currentRefreshJti),
 		})).sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0))
 
 		res.json({ success: true, devices })
@@ -168,6 +177,9 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { password } = req.body
+		if (!await verifyPassword(password, user.auth.password))
+			return res.status(401).json({ success: false, message: 'Invalid password' })
 		const result = await webauthnRegistrationBegin(user.username, req)
 		res.status(result.status).json(result)
 	})
@@ -175,8 +187,11 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_complete', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
-		const { credential, nickname } = req.body
-		if (!credential) return res.status(400).json({ success: false, message: 'Missing credential.' })
+		const { credential, nickname, password } = req.body
+		if (!await verifyPassword(password, user.auth.password))
+			return res.status(401).json({ success: false, message: 'Invalid password' })
+		if (!credential)
+			return res.status(400).json({ success: false, message: 'Missing credential.' })
 		const result = await webauthnRegistrationComplete(user.username, credential, nickname, req)
 		res.status(result.status).json(result)
 	})

@@ -195,29 +195,20 @@ async function loadAndDisplayDevices() {
 			return
 		}
 
-		let currentRefreshTokenJtiClient = null
-		try {
-			const refreshTokenCookie = document.cookie.split('; ').find(row => row.startsWith('refreshToken='))
-			if (refreshTokenCookie) {
-				const tokenValue = refreshTokenCookie.split('=')[1]
-				const payload = JSON.parse(atob(tokenValue.split('.')[1]))
-				currentRefreshTokenJtiClient = payload.jti
-			}
-		} catch { /* Quietly ignore */ }
-
 		for (const device of result.devices) {
 			const lastSeenDate = new Date(device.lastSeen || (device.expiry - REFRESH_TOKEN_EXPIRY_DURATION_STRING))
 			const userAgent = device.userAgent
 				? device.userAgent.length > 50 ? device.userAgent.substring(0, 47) + '...' : device.userAgent
 				: 'N/A'
+			const isThisDevice = Boolean(device.isCurrentSession)
 			const li = await renderTemplate('deviceListItem', {
 				escapeAttr,
 				deviceId: device.deviceId,
-				isThisDevice: device.jti === currentRefreshTokenJtiClient,
+				isThisDevice,
 				lastSeen: lastSeenDate.toLocaleString(),
 				ipAddress: device.ipAddress || 'N/A',
 				userAgent,
-				showRevoke: device.jti !== currentRefreshTokenJtiClient,
+				showRevoke: !isThisDevice,
 			})
 
 			const revokeButton = li.querySelector('.device-revoke-btn')

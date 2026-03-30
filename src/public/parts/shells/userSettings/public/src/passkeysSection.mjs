@@ -110,17 +110,18 @@ async function onRemovePasskeyClick(cred, deps) {
  */
 async function onAddPasskeySubmit(event, deps) {
 	event.preventDefault()
-	const { newPasskeyNameInput, geti18n, showToastI18n } = deps
+	const { newPasskeyNameInput, geti18n, showToastI18n, requestPasswordConfirmation } = deps
 	if (!await loadWebAuthnBrowserRegistration()) {
 		showToastI18n('error', 'userSettings.passkeys.errorLoadLibrary')
 		return
 	}
 	const nickname = newPasskeyNameInput.value.trim()
 	try {
-		const begin = await webauthnRegisterBegin()
+		const password = await requestPasswordConfirmation()
+		const begin = await webauthnRegisterBegin(password)
 		if (!begin.success || !begin.options) throw new Error(begin.message || geti18n('userSettings.apiError', { message: 'Begin failed' }))
 		const credential = await startRegistrationFn({ optionsJSON: begin.options })
-		const complete = await webauthnRegisterComplete(credential, nickname || undefined)
+		const complete = await webauthnRegisterComplete(credential, nickname, password)
 		if (!complete.success) throw new Error(complete.message || geti18n('userSettings.apiError', { message: 'Complete failed' }))
 		showToastI18n('success', 'userSettings.passkeys.addSuccess')
 		newPasskeyNameInput.value = ''

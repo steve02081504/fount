@@ -654,6 +654,7 @@ async function handleStandaloneFlow() {
 
 	/**
 	 * 在 fount 服务不可用时打开主页。
+	 * @returns {void}
 	 */
 	launchButton.onclick = () => {
 		if (/iPad|iPhone|iPod/.test(navigator.userAgent))

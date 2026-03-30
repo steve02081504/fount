@@ -167,8 +167,13 @@ export function registerEndpoints(router) {
 			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
 		}
 		const { username, credential, deviceid } = req.body
-		if (!username || !credential) return res.status(400).json({ success: false, message: 'Username and credential required' })
-		const deviceId = deviceid?.trim() || 'unknown'
+		if (typeof username !== 'string' || !username.trim())
+			return res.status(400).json({ success: false, message: 'Username required' })
+		if (credential === undefined || credential === null || typeof credential !== 'object')
+			return res.status(400).json({ success: false, message: 'Valid credential object required' })
+		if (deviceid !== undefined && deviceid !== null && typeof deviceid !== 'string')
+			return res.status(400).json({ success: false, message: 'deviceid must be a string when provided' })
+		const deviceId = typeof deviceid === 'string' && deviceid.trim() ? deviceid.trim() : 'unknown'
 		const result = await webauthnLoginComplete(credential, username.trim(), deviceId, req)
 		if (result.status === 200 && result.accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)

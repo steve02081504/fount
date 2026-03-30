@@ -922,7 +922,7 @@ const timingCalibrated = argon2Loaded.then(async () => {
 /**
  * 记录一次失败的密码或 WebAuthn 验证，必要时锁定账户。
  * @param {object} user - 用户对象。
- * @returns {Promise<{ locked: false } | { locked: true, response: object }>} 是否已触发锁定及可选 HTTP 响应体。
+ * @returns {{ locked: false } | { locked: true, response: object }} 是否已触发锁定及可选 HTTP 响应体。
  */
 export function bumpUserFailedLoginAttempts(user) {
 	const authData = user.auth
