@@ -1,0 +1,9 @@
+<li class="p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+	<div>
+		<strong class="block text-sm">
+			<span data-i18n="userSettings.userDevices.deviceInfo" data-device-id="${escapeAttr(deviceId)}"></span>${isThisDevice ? ' <span class="badge badge-xs badge-success badge-outline" data-i18n="userSettings.userDevices.thisDevice"></span>' : ''}
+		</strong>
+		<small class="block text-xs opacity-70" data-i18n="userSettings.userDevices.deviceDetails" data-last-seen="${escapeAttr(lastSeen)}" data-ip-address="${escapeAttr(ipAddress)}" data-user-agent="${escapeAttr(userAgent)}"></small>
+	</div>
+	${showRevoke ? '<button type="button" class="btn btn-xs btn-error btn-outline self-start sm:self-center device-revoke-btn" data-i18n="userSettings.userDevices.revokeButton"></button>' : ''}
+</li>

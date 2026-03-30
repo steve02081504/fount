@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "A conta já existe.",
 			"powNotSolved": "Por favor, conclua a verificação PoW primeiro",
 			"powError": "Erro de verificação PoW"
+		},
+		"webauthn": {
+			"loginButton": "Iniciar sessão com chave de segurança ou Passkey",
+			"errorNoUsername": "Introduza o seu nome de utilizador antes de usar Passkey.",
+			"errorLoadLibrary": "Não foi possível carregar a biblioteca auxiliar WebAuthn. Verifique a rede e tente novamente.",
+			"errorCancelled": "A chave de segurança foi cancelada ou não foi autorizada para uso."
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Mudar nome de utilizador",
 			"confirmMessage": "Tem a certeza que quer mudar o seu nome de utilizador? Será necessário iniciar sessão novamente.",
 			"success": "Nome de utilizador alterado para \"${newUsername}\" com sucesso. Será agora desconectado."
+		},
+		"passkeys": {
+			"title": "Chaves de segurança e Passkeys",
+			"description": "Após associar uma chave, pode iniciar sessão com uma chave física ou com a passkey deste dispositivo. Requer HTTPS ou localhost; adicione primeiro uma chave nas definições de utilizador.",
+			"refreshButton": {
+				"title": "Atualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "ícone de atualização"
+			},
+			"nameLabel": "Observações (opcional)",
+			"nameInput": {
+				"placeholder": "Exemplo: YubiKey para trabalho"
+			},
+			"addButton": "Adicionar chave de segurança",
+			"noneFound": "Nenhuma chave de segurança foi vinculada ainda.",
+			"itemDetails": "Tempo adicionado: ${created}",
+			"removeButton": "Remover",
+			"removeConfirm": "Tem a certeza de que pretende remover esta chave? Depois de removida, já não poderá iniciar sessão com ela.",
+			"removeSuccess": "Chave de segurança removida.",
+			"addSuccess": "Chave de segurança adicionada.",
+			"errorLoadLibrary": "Não foi possível carregar a biblioteca WebAuthn.",
+			"errorCancelled": "Adição cancelada."
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sessões do utilizador",

@@ -654,10 +654,13 @@ async function handleStandaloneFlow() {
 
 	/**
 	 * 在 fount 服务不可用时打开主页。
+	 * @returns {void}
 	 */
 	launchButton.onclick = () => {
-		if (/iPad|iPhone|iPod/.test(navigator.userAgent))
-			return window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
+		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+			window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
+			return
+		}
 		window.location.href = 'fount://page/'
 		setTimeout(() => { window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' }, 5000)
 	}

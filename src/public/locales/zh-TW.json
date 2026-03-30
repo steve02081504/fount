@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "帳號已存在",
 			"powNotSolved": "請先完成 PoW 驗證",
 			"powError": "PoW 驗證出錯"
+		},
+		"webauthn": {
+			"loginButton": "使用安全金鑰 / Passkey 登入",
+			"errorNoUsername": "使用 Passkey 前請先填寫使用者名稱。",
+			"errorLoadLibrary": "無法載入 WebAuthn 輔助庫，請檢查網路後重試。",
+			"errorCancelled": "已取消或未獲準使用安全金鑰。"
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "重新命名使用者",
 			"confirmMessage": "您確定要變更使用者名稱嗎？這將需要您重新登入。",
 			"success": "使用者已成功重新命名為 「${newUsername}」。您現在將被登出。"
+		},
+		"passkeys": {
+			"title": "安全金鑰與 Passkey",
+			"description": "綁定後可用安全金鑰或本機 Passkey 登入。需在 HTTPS 或 localhost 下使用；請先在使用者設定中新增金鑰。",
+			"refreshButton": {
+				"title": "重新整理清單"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理圖示"
+			},
+			"nameLabel": "備註（可選）",
+			"nameInput": {
+				"placeholder": "例如：工作用 YubiKey"
+			},
+			"addButton": "新增安全金鑰",
+			"noneFound": "尚未綁定任何安全金鑰。",
+			"itemDetails": "新增時間：${created}",
+			"removeButton": "移除",
+			"removeConfirm": "確定移除此金鑰？移除後將無法以其登入。",
+			"removeSuccess": "已移除安全金鑰。",
+			"addSuccess": "安全金鑰已新增。",
+			"errorLoadLibrary": "無法載入 WebAuthn 庫。",
+			"errorCancelled": "已取消新增。"
 		},
 		"userDevices": {
 			"title": "使用者裝置/會話",

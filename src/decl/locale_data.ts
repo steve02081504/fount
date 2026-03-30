@@ -435,6 +435,12 @@ export type LocaleData = {
 			powNotSolved: string
 			powError: string
 		}
+		webauthn: {
+			loginButton: string
+			errorNoUsername: string
+			errorLoadLibrary: string
+			errorCancelled: string
+		}
 	}
 	login_info: {
 		title: string
@@ -1371,6 +1377,29 @@ export type LocaleData = {
 			submitButton: string
 			confirmMessage: string
 			success: string
+		}
+		passkeys: {
+			title: string
+			description: string
+			refreshButton: {
+				title: string
+			}
+			refreshButtonIcon: {
+				alt: string
+			}
+			nameLabel: string
+			nameInput: {
+				placeholder: string
+			}
+			addButton: string
+			noneFound: string
+			itemDetails: string
+			removeButton: string
+			removeConfirm: string
+			removeSuccess: string
+			addSuccess: string
+			errorLoadLibrary: string
+			errorCancelled: string
 		}
 		userDevices: {
 			title: string
@@ -2624,6 +2653,7 @@ export type LocaleKeyParams = {
 	'userSettings.apiKeys.keyDetails': { createdAt: string | number; description: string | number; lastUsed: string | number }
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
 	'userSettings.generalError': { message: string | number }
+	'userSettings.passkeys.itemDetails': { created: string | number }
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }

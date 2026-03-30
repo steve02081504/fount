@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "此名號已為捷足者所得。",
 			"powNotSolved": "請先竟功證之驗",
 			"powError": "功證之驗有誤"
+		},
+		"webauthn": {
+			"loginButton": "以安鑰 / Passkey 登臺",
+			"errorNoUsername": "用 Passkey 前，請先具名號。",
+			"errorLoadLibrary": "WebAuthn 輔庫難載，請察網絡而復試。",
+			"errorCancelled": "已止用安鑰，或未蒙允。"
 		}
 	},
 	"login_info": {
@@ -1383,6 +1389,29 @@
 			"confirmMessage": "確欲更易名號乎？此舉將需重新登臺。",
 			"success": "名號已更為 “${newUsername}”。君將告退。"
 		},
+		"passkeys": {
+			"title": "安鑰與 Passkey",
+			"description": "既綁，可以安鑰或本機 Passkey 登臺。須於 HTTPS 或 localhost 下方可用；請先於用者規度添鑰。",
+			"refreshButton": {
+				"title": "新其名錄"
+			},
+			"refreshButtonIcon": {
+				"alt": "復新之圖"
+			},
+			"nameLabel": "箋注（可略）",
+			"nameInput": {
+				"placeholder": "例：公幹用 YubiKey"
+			},
+			"addButton": "添安鑰",
+			"noneFound": "尚無安鑰相綁。",
+			"itemDetails": "添於：${created}",
+			"removeButton": "除此鑰",
+			"removeConfirm": "確除此鑰乎？除後不可復以此登臺。",
+			"removeSuccess": "安鑰已除。",
+			"addSuccess": "安鑰已添。",
+			"errorLoadLibrary": "WebAuthn 庫難載。",
+			"errorCancelled": "已止添鑰。"
+		},
 		"userDevices": {
 			"title": "用者之器/當席",
 			"noDevicesFound": "未尋獲任何器或會話。",
@@ -1961,7 +1990,7 @@
 			"start_bot": {
 				"name": "現身於群議之地",
 				"description": "召汝之化身於群議之界。",
-				"locked_description": "宜启飞书之仆一次。"
+				"locked_description": "宜啟 Telegram 靈偶一次。"
 			}
 		},
 		"home_function_buttons": {

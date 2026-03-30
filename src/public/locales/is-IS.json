@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "Aðgangur er þegar til",
 			"powNotSolved": "Vinsamlegast kláraðu PoW staðfestingu fyrst",
 			"powError": "PoW sannprófunarvilla"
+		},
+		"webauthn": {
+			"loginButton": "Skráðu þig inn með öryggislykil / lykillyki",
+			"errorNoUsername": "Vinsamlega fylltu inn notandanafn þitt áður en þú notar Passkey.",
+			"errorLoadLibrary": "Ekki er hægt að hlaða WebAuthn hjálparsafninu, vinsamlegast athugaðu netið og reyndu aftur.",
+			"errorCancelled": "Öryggislyklinum hefur verið hætt eða ekki heimilað til notkunar."
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "Endurnefna notanda",
 			"confirmMessage": "Ertu viss um að þú viljir breyta notandanafninu þínu? Þú þarft að skrá þig inn aftur.",
 			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út."
+		},
+		"passkeys": {
+			"title": "Öryggislyklar og aðgangslykill",
+			"description": "Eftir bindingu geturðu skráð þig inn með öryggislykli eða innfæddum aðgangslykli. Krefst notkunar undir HTTPS eða localhost; vinsamlegast bættu lyklinum við í notendastillingum fyrst.",
+			"refreshButton": {
+				"title": "Endurnýjaðu lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "endurnýja táknið"
+			},
+			"nameLabel": "Athugasemdir (valfrjálst)",
+			"nameInput": {
+				"placeholder": "Dæmi: YubiKey fyrir vinnu"
+			},
+			"addButton": "Bæta við öryggislykli",
+			"noneFound": "Engir öryggislyklar hafa verið bundnir ennþá.",
+			"itemDetails": "Tími bætt við: ${created}",
+			"removeButton": "Fjarlægja",
+			"removeConfirm": "Ertu viss um að þú viljir fjarlægja þennan lykil? Þegar það hefur verið fjarlægt muntu ekki lengur geta skráð þig inn með því.",
+			"removeSuccess": "Öryggislykill fjarlægður.",
+			"addSuccess": "Öryggislykli bætt við.",
+			"errorLoadLibrary": "Ekki tókst að hlaða WebAuthn bókasafni.",
+			"errorCancelled": "Hætt við að bæta við."
 		},
 		"userDevices": {
 			"title": "Tæki/Setur notanda",

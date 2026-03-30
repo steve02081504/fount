@@ -1,0 +1,7 @@
+<li class="p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+	<div>
+		<strong class="block text-sm font-mono">${prefix}...</strong>
+		<small class="block text-xs opacity-70" data-i18n="userSettings.apiKeys.keyDetails" data-description="${escapeAttr(description)}" data-created-at="${escapeAttr(createdAt)}" data-last-used="${escapeAttr(lastUsed)}"></small>
+	</div>
+	<button type="button" class="btn btn-xs btn-error btn-outline self-start sm:self-center apikey-revoke-btn" data-i18n="userSettings.apiKeys.revokeButton"></button>
+</li>

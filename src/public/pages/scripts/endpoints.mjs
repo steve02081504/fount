@@ -113,6 +113,37 @@ export async function login(username, password, deviceid, powToken) {
 }
 
 /**
+ * WebAuthn 登录：请求挑战选项。
+ * @param {string} username - 用户名。
+ * @param {string} [powToken] - POW 令牌。
+ * @returns {Promise<Response>} - 服务器响应。
+ */
+export async function webauthnLoginBegin(username, powToken) {
+	return await fetch('/api/webauthn/login/begin', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ username, powToken }),
+	})
+}
+
+/**
+ * WebAuthn 登录：提交断言并完成会话。
+ * @param {string} username - 用户名。
+ * @param {object} credential - 浏览器返回的凭证 JSON。
+ * @param {string} deviceid - 设备 ID。
+ * @param {string} [powToken] - POW 令牌。
+ * @returns {Promise<Response>} - 服务器响应。
+ */
+export async function webauthnLoginComplete(username, credential, deviceid, powToken) {
+	return await fetch('/api/webauthn/login/complete', {
+		method: 'POST',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ username, credential, deviceid, powToken }),
+	})
+}
+
+/**
  * 注册。
  * @param {string} username - 用户名。
  * @param {string} password - 密码。
