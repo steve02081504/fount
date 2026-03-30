@@ -82,10 +82,11 @@ function takeWebAuthnChallenge(type, username) {
  * @returns {{ rpID: string, origin: string, rpName: string }} 依赖方 ID、来源与显示名。
  */
 export function getWebAuthnRelyingParty(req) {
-	const host = req.headers.host?.split(':')[0] || 'localhost'
-	const proto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http')
-	const origin = req.headers.origin || `${proto}://${req.headers.host || 'localhost'}`
-	return { rpID: host, origin, rpName: 'fount' }
+	const proto = String(req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http')).split(',')[0].trim()
+	const forwardedHost = String(req.headers['x-forwarded-host'] || req.headers.host || 'localhost').split(',')[0].trim()
+	const rpID = req.hostname || 'localhost'
+	const origin = req.headers.origin || `${proto}://${forwardedHost}`
+	return { rpID, origin, rpName: 'fount' }
 }
 
 /**

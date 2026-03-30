@@ -92,13 +92,17 @@ confirmPasswordBtn.addEventListener('click', () => {
 })
 
 cancelPasswordBtn.addEventListener('click', () => {
-	passwordConfirmationContext.reject?.(new Error('Password confirmation cancelled by user.'))
+	passwordConfirmationContext.reject?.(Object.assign(new Error('Password confirmation cancelled by user.'), {
+		name: 'PasswordConfirmationCancelledError'
+	}))
 	passwordConfirmationModal.close()
 })
 
 passwordConfirmationModal.addEventListener('close', () => {
 	if (passwordConfirmationModal.returnValue !== 'confirmed_via_button_logic_which_is_not_set')
-		passwordConfirmationContext.reject?.(new Error('Password confirmation dialog closed.'))
+		passwordConfirmationContext.reject?.(Object.assign(new Error('Password confirmation dialog closed.'), {
+			name: 'PasswordConfirmationClosedError'
+		}))
 
 	passwordConfirmationContext = { resolve: null, reject: null }
 })

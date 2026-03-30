@@ -22,6 +22,15 @@ let startRegistrationFn = null
  */
 
 /**
+ * 判断 requestPasswordConfirmation() 的 reject 是否来自“密码弹窗取消/关闭”这类期望场景。
+ * @param {any} error - 捕获到的错误对象。
+ * @returns {boolean} - 是否为期望的取消/关闭错误。
+ */
+function isPasswordDialogCancellationError(error) {
+	return ['PasswordConfirmationCancelledError', 'PasswordConfirmationClosedError'].includes(error?.name)
+}
+
+/**
  * 加载 @simplewebauthn/browser 的注册方法。
  * @returns {Promise<boolean>} 成功加载则为 true。
  */
@@ -96,7 +105,7 @@ async function onRemovePasskeyClick(cred, deps) {
 		showToastI18n('success', 'userSettings.passkeys.removeSuccess')
 		await loadPasskeysList(deps)
 	} catch (error) {
-		if (error.message.includes('cancelled') || error.message.includes('closed')) return
+		if (isPasswordDialogCancellationError(error)) return
 		console.error('Failed to remove passkey:', error)
 		Sentry.captureException(error)
 		showToastI18n('error', 'userSettings.generalError', { message: error.message })
@@ -127,6 +136,7 @@ async function onAddPasskeySubmit(event, deps) {
 		newPasskeyNameInput.value = ''
 		await loadPasskeysList(deps)
 	} catch (error) {
+		if (isPasswordDialogCancellationError(error)) return
 		if (error?.name === 'NotAllowedError')
 			showToastI18n('error', 'userSettings.passkeys.errorCancelled')
 		else {
