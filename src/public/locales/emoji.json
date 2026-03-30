@@ -445,6 +445,12 @@
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
 			"powError": "⚙️💥"
+		},
+		"webauthn": {
+			"loginButton": "🔐🔑➡️🚪📱🔑",
+			"errorNoUsername": "✍️👤❓➡️📱🔑",
+			"errorLoadLibrary": "📚🔐❌🌐🔁",
+			"errorCancelled": "🙅🔑➕🚪❓"
 		}
 	},
 	"login_info": {
@@ -1382,6 +1388,29 @@
 			"submitButton": "✍️👤",
 			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
 			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪..."
+		},
+		"passkeys": {
+			"title": "🔐🔑📱",
+			"description": "🔗✅➡️🔑🖥️📱🔑🚪 🔒🌐➕🏠💻 ⚙️👤➕🔑",
+			"refreshButton": {
+				"title": "🔄📋"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄🖼️"
+			},
+			"nameLabel": "🏷️（➖）",
+			"nameInput": {
+				"placeholder": "💼🔐🔑"
+			},
+			"addButton": "➕🔐🔑",
+			"noneFound": "🔑📋🈳",
+			"itemDetails": "🕒➕: ${created}",
+			"removeButton": "🗑️🔑",
+			"removeConfirm": "🗑️🔑❓🚫🚪🔙",
+			"removeSuccess": "🗑️✅🔑",
+			"addSuccess": "➕✅🔑",
+			"errorLoadLibrary": "📚🔐❌",
+			"errorCancelled": "➕🚫"
 		},
 		"userDevices": {
 			"title": "👤💻",

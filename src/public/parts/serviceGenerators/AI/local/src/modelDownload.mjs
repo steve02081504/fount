@@ -19,7 +19,7 @@ export function normalizeModelUri(uri) {
 /**
  * 判断是否为 HuggingFace URI。
  * @param {string} uri - 规范化后的 URI。
- * @returns {boolean}
+ * @returns {boolean} 若以 `hf:` 或 `hf.co/` 开头则为 true。
  */
 export function isHfUri(uri) {
 	return uri.startsWith('hf:') || uri.startsWith('hf.co/')
@@ -28,7 +28,7 @@ export function isHfUri(uri) {
 /**
  * 判断是否为 HTTP/HTTPS URL。
  * @param {string} uri - URI 字符串。
- * @returns {boolean}
+ * @returns {boolean} 若以 `http://` 或 `https://` 开头则为 true。
  */
 export function isHttpUrl(uri) {
 	return uri.startsWith('http://') || uri.startsWith('https://')
@@ -56,7 +56,7 @@ export function deriveSourceName(uri) {
 		const last = segments.pop() || ''
 		return last.endsWith('.gguf') ? path.basename(last, '.gguf') : last || segments.pop() || 'local-model'
 	}
-	if (isHttpUrl(normalized)) {
+	if (isHttpUrl(normalized))
 		try {
 			const filename = new URL(normalized).pathname.split('/').pop() || 'model.gguf'
 			return path.basename(filename, '.gguf') || 'local-model'
@@ -64,7 +64,7 @@ export function deriveSourceName(uri) {
 		catch {
 			return 'local-model'
 		}
-	}
+
 	return path.basename(uri, '.gguf') || 'local-model'
 }
 
@@ -108,6 +108,13 @@ export async function downloadModel(_user, uri) {
 		modelUri: normalizedUri,
 		dirPath: cacheDir,
 		skipExisting: true,
+		/**
+		 * 下载进度回调。
+		 * @param {object} root0 - 进度数据。
+		 * @param {number} root0.downloadedSize - 已下载字节数。
+		 * @param {number} [root0.totalSize] - 总字节数（未知时可能为空）。
+		 * @returns {void}
+		 */
 		onProgress: ({ downloadedSize, totalSize }) => {
 			if (totalSize == null) return
 			const percent = Math.floor((downloadedSize / totalSize) * 100)

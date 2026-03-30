@@ -51,6 +51,7 @@ export default {
 			 *
 			 * @param {string} user - 用户名。
 			 * @param {Array<string>} args - 命令行参数数组。
+			 * @param {object} [context={}] - 调用上下文，可含 `cwd` 等工作目录信息。
 			 * @returns {Promise<void>}
 			 */
 			ArgumentsHandler: async (user, args, context = {}) => {
