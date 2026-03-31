@@ -1,0 +1,32 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "WeChat Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Run your fount character as a WeChat bot.",
+			"description_markdown": "Binds a fount character to WeChat using the iLink bot HTTP API (getUpdates / sendMessage). Configure gateway URL and token like the Discord bot shell.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"integration"
+			]
+		},
+		"zh-CN": {
+			"name": "微信 Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "将 fount 角色作为微信机器人运行。",
+			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填写渠道服务根地址与 Token。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"微信",
+				"机器人",
+				"集成"
+			]
+		}
+	}
+}

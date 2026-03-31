@@ -112,6 +112,9 @@
 		"discordbot": {
 			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
 		},
+		"weixinbot": {
+			"botStarted": "角色 ${charname} 已连接微信 Bot（${botusername}）"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",
@@ -1931,6 +1934,95 @@
 			"configure": {
 				"title": "配置Discord Bot"
 			}
+		}
+	},
+	"weixin_bots": {
+		"title": "微信 Bot",
+		"description": "将 fount 角色接入微信对话，用法与 Discord Bot 相同。推荐先点「扫码登录」，成功后会自动写入服务地址与 Token；也可手动填写。默认对接腾讯 iLink（ilinkai.weixin.qq.com），无需自建网关。",
+		"cardTitle": "微信 Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"configCard": {
+			"title": "Bot 配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiBaseUrl": "微信渠道服务根 URL",
+				"botToken": "iLink Bot Token",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiBaseUrlInput": {
+				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登录后获得的 Bearer Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切换显示 Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切换显示 Token"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "微信一线牵",
+				"description": "让 fount 角色在微信上与你对话。",
+				"locked_description": "启动一次微信 Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理微信 Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置微信 Bot"
+			}
+		},
+		"qrLogin": {
+			"hint": "使用微信扫描下方二维码完成登录，无需事先填写地址与 Token。登录成功后若已选择当前 Bot 名称，将自动写入配置。",
+			"button": "扫码登录",
+			"scanPrompt": "请使用微信扫描二维码",
+			"waiting": "正在获取二维码…",
+			"scanned": "已扫码，请在手机上确认…",
+			"success": "微信已连接，配置已更新。可直接启动 Bot。",
+			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
 		}
 	},
 	"telegram_bots": {

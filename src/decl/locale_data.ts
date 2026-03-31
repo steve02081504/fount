@@ -119,6 +119,9 @@ export type LocaleData = {
 		discordbot: {
 			botStarted: string
 		}
+		weixinbot: {
+			botStarted: string
+		}
 		path: {
 			protocol: {
 				description: string
@@ -1922,6 +1925,95 @@ export type LocaleData = {
 			}
 		}
 	}
+	weixin_bots: {
+		title: string
+		description: string
+		cardTitle: string
+		botSelectDropdown: {
+			placeholder: string
+		}
+		botSearch: {
+			placeholder: string
+		}
+		charSelectDropdown: {
+			placeholder: string
+		}
+		charSearch: {
+			placeholder: string
+		}
+		configCard: {
+			title: string
+			labels: {
+				character: string
+				apiBaseUrl: string
+				botToken: string
+				config: string
+			}
+			charSelectPlaceholder: string
+			apiBaseUrlInput: {
+				placeholder: string
+			}
+			botTokenInput: {
+				placeholder: string
+			}
+			toggleBotTokenButton: {
+				'aria-label': string
+			}
+			toggleBotTokenIcon: {
+				alt: string
+			}
+			buttons: {
+				saveConfig: string
+				startBot: string
+				stopBot: string
+			}
+		}
+		prompts: {
+			newBotName: string
+		}
+		buttons: {
+			newBot: string
+			deleteBot: string
+		}
+		alerts: {
+			configSaved: string
+			botExists: string
+			unsavedChanges: string
+			httpError: string
+			beforeUnload: string
+		}
+		achievements: {
+			start_bot: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
+			}
+		}
+		qrLogin: {
+			hint: string
+			button: string
+			scanPrompt: string
+			waiting: string
+			scanned: string
+			success: string
+			needBot: string
+		}
+	}
 	telegram_bots: {
 		title: string
 		description: string
@@ -2550,6 +2642,7 @@ export type LocaleKeyParams = {
 	'deskpet.toasts.stopped': { charname: string | number }
 	'directoryListing.indexOf': { path: string | number }
 	'discord_bots.alerts.botExists': { botname: string | number }
+	'weixin_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }
 	'export.alerts.exportFailed': { message: string | number }
@@ -2560,6 +2653,7 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
 	'fountConsole.discordbot.botStarted': { botusername: string | number; charname: string | number }
+	'fountConsole.weixinbot.botStarted': { botusername: string | number; charname: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
