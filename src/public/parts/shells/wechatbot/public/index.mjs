@@ -1,6 +1,8 @@
 /**
  * WeChat 机器人 shell 的客户端逻辑。
  */
+import qrcode from 'https://esm.sh/qrcode-generator'
+
 import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
@@ -27,7 +29,19 @@ const apiBaseUrlInput = document.getElementById('api-base-url')
 const qrStartButton = document.getElementById('qr-start')
 const qrStatusEl = document.getElementById('qr-status')
 const qrWrap = document.getElementById('qr-wrap')
-const qrImg = document.getElementById('qr-img')
+const qrContainer = document.getElementById('qr-img')
+
+/**
+ * 将二维码内容字符串渲染成图片并注入容器。
+ * @param {string} content 要编码的字符串（微信扫码 URL）。
+ */
+function renderQrCode(content) {
+	const qr = qrcode(0, 'M')
+	qr.addData(content)
+	qr.make()
+	qrContainer.innerHTML = qr.createImgTag(5)
+	qrWrap.classList.remove('hidden')
+}
 
 const newBotButton = document.getElementById('new-bot')
 const botListDropdown = document.getElementById('bot-list-dropdown')
@@ -400,10 +414,8 @@ async function handleQrPollResult(result) {
 	if (result.status === 'scaned')
 		qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.scanned')
 
-	if (result.qrcodeUrl) {
-		qrImg.src = result.qrcodeUrl
-		qrWrap.classList.remove('hidden')
-	}
+	if (result.qrcodeContent)
+		renderQrCode(result.qrcodeContent)
 
 	if (result.done && result.connected) {
 		if (result.token) tokenInput.value = result.token
@@ -464,8 +476,7 @@ async function handleQrStart() {
 		const result = await startWeixinQrLogin(selectedBot)
 		if (!result.sessionKey)
 			throw new Error(result.message || 'no sessionKey')
-		qrImg.src = result.qrcodeUrl
-		qrWrap.classList.remove('hidden')
+		renderQrCode(result.qrcodeContent)
 		qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.scanPrompt')
 		startQrPolling(result.sessionKey)
 	}

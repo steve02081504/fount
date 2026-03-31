@@ -17,7 +17,6 @@ const MAX_QR_REFRESH = 3
  *   username: string
  *   botname: string | null
  *   qrcode: string
- *   qrcodeUrl: string
  *   currentApiBaseUrl: string
  *   startedAt: number
  *   qrRefreshCount: number
@@ -80,7 +79,6 @@ export async function startQrSession({ username, botname }) {
 		username,
 		botname,
 		qrcode: qr.qrcode,
-		qrcodeUrl: qr.qrcode_img_content,
 		currentApiBaseUrl: DEFAULT_WEIXIN_ILINK_BASE,
 		startedAt: Date.now(),
 		qrRefreshCount: 0,
@@ -88,7 +86,7 @@ export async function startQrSession({ username, botname }) {
 
 	return {
 		sessionKey,
-		qrcodeUrl: qr.qrcode_img_content,
+		qrcodeContent: qr.qrcode,
 	}
 }
 
@@ -136,10 +134,9 @@ export async function pollQrSession(sessionKey, username) {
 			}
 			const qr = await fetchFreshQrCode()
 			session.qrcode = qr.qrcode
-			session.qrcodeUrl = qr.qrcode_img_content
 			session.startedAt = Date.now()
 			session.currentApiBaseUrl = DEFAULT_WEIXIN_ILINK_BASE
-			return { done: false, status: 'expired', qrcodeUrl: qr.qrcode_img_content }
+			return { done: false, status: 'expired', qrcodeContent: qr.qrcode }
 		}
 		case 'confirmed': {
 			if (!status.ilink_bot_id) {

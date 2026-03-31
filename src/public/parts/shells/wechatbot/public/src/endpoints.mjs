@@ -105,7 +105,7 @@ export async function getBotConfigTemplate(charname) {
 
 /**
  * @param {string} [botname] 目标机器人名称，不传则使用空字符串。
- * @returns {Promise<{ sessionKey: string, qrcodeUrl: string }>} 扫码会话初始化结果。
+ * @returns {Promise<{ sessionKey: string, qrcodeContent: string }>} 扫码会话初始化结果。
  */
 export async function startWeixinQrLogin(botname) {
 	return postJson(`${API_BASE}/qrcode/start`, { botname: botname || '' })
