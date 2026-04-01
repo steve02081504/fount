@@ -49,7 +49,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			}
 		}
 
-		let imgIndex = 0
+		let imageIndex = 0
 		const response = await fetch(requestConfig.url, {
 			method: 'POST',
 			headers: {
@@ -61,7 +61,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 					'X-OpenRouter-Title': 'fount',
 					'X-OpenRouter-Categories': 'personal-agent,productivity,roleplay',
 				} : {},
-				...requestConfig?.custom_headers
+				...requestConfig.custom_headers
 			},
 			body: JSON.stringify({
 				model: requestConfig.model,
@@ -72,18 +72,19 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			signal
 		})
 
-		if (!response.ok) try {
-			const text = await response.text()
+		if (!response.ok) {
+			let errorPayload
 			try {
-				const data = JSON.parse(text)
-				throw { data, response }
+				const text = await response.text()
+				try {
+					errorPayload = { data: JSON.parse(text), response }
+				} catch {
+					errorPayload = { text, response }
+				}
+			} catch {
+				errorPayload = response
 			}
-			catch {
-				throw { text, response }
-			}
-		}
-		catch {
-			throw response
+			throw errorPayload
 		}
 
 		const reader = response.body.getReader()
@@ -109,15 +110,15 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			const promise = (async () => {
 				const newFiles = await Promise.all(imageUrls.map(async (url) => {
 					try {
-						const resp = await fetch(url)
-						if (!resp.ok) return null
+						const imageResponse = await fetch(url)
+						if (!imageResponse.ok) return null
 						return {
-							name: `image${imgIndex++}.png`,
-							buffer: await resp.arrayBuffer(),
+							name: `image${imageIndex++}.png`,
+							buffer: await imageResponse.arrayBuffer(),
 							mimetype: 'image/png'
 						}
-					} catch (e) {
-						console.error('Failed to fetch image:', url, e)
+					} catch (error) {
+						console.error('Failed to fetch image:', url, error)
 						return null
 					}
 				}))
@@ -168,33 +169,72 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 								result.content += content
 
 							appendLogprobsFromChoice(json.choices?.[0])
-							if (content) previewUpdater(result)
+
+							// 提取 reasoning_content（DeepSeek / reasoning models，Chat Completions 格式）
+							const reasoningChunk = delta?.reasoning_content ?? message?.reasoning_content ?? ''
+							if (reasoningChunk) {
+								result.extension ??= {}
+								result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
+							}
+
+							// 提取 OpenAI Responses API 流式 reasoning summary delta
+							if (json.type === 'response.reasoning_summary_text.delta') {
+								result.extension ??= {}
+								result.extension.reasoning_summary ??= []
+								const idx = json.content_index ?? 0
+								while (result.extension.reasoning_summary.length <= idx)
+									result.extension.reasoning_summary.push('')
+								result.extension.reasoning_summary[idx] += json.delta ?? ''
+							}
+
+							if (content || reasoningChunk || json.type === 'response.reasoning_summary_text.delta')
+								previewUpdater(result)
 
 							const images = delta?.images || message?.images
 							if (images) processImages(images)
-						} catch (e) {
-							console.warn('Error parsing stream data:', e)
+						} catch (error) {
+							console.warn('Error parsing stream data:', error)
 						}
 					}
 				}
 			}
 
-			if (!isSSE && buffer.trim())
-				try {
-					const json = JSON.parse(buffer)
-					const message = json.choices?.[0]?.message
-					appendLogprobsFromChoice(json.choices?.[0])
-					if (message) {
-						result.content = message.content || ''
-						if (message.images) processImages(message.images)
+			if (!isSSE && buffer.trim()) try {
+				const json = JSON.parse(buffer)
+				const message = json.choices?.[0]?.message
+				appendLogprobsFromChoice(json.choices?.[0])
+				if (message) {
+					result.content = message.content || ''
+					if (message.images) processImages(message.images)
+					// 提取 reasoning_content（DeepSeek / reasoning models）
+					if (message.reasoning_content) {
+						result.extension ??= {}
+						result.extension.reasoning_content = message.reasoning_content
 					}
-				} catch (e) {
-					if (!result.content) console.error('Failed to parse response as JSON:', e)
 				}
-		} catch (e) {
-			if (e.name === 'AbortError') throw e
-			console.error('Stream reading error:', e)
-			throw e
+				// 提取 OpenAI Responses API 非流式格式（output 数组）
+				if (json.output) {
+					for (const item of json.output) {
+						if (item.type === 'reasoning') {
+							result.extension ??= {}
+							result.extension.reasoning_summary ??= []
+							for (const s of item.summary ?? [])
+								if (s.type === 'summary_text' && s.text)
+									result.extension.reasoning_summary.push(s.text)
+						}
+						if (item.type === 'message' && !result.content) {
+							for (const c of item.content ?? [])
+								if (c.type === 'output_text') result.content += c.text ?? ''
+						}
+					}
+				}
+			} catch (error) {
+				if (!result.content) console.error('Failed to parse response as JSON:', error)
+			}
+		} catch (error) {
+			if (error.name === 'AbortError') throw error
+			console.error('Stream reading error:', error)
+			throw error
 		} finally {
 			reader.releaseLock()
 		}
