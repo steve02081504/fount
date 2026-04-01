@@ -8,7 +8,7 @@ import * as jose from 'npm:jose'
 
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { ms } from '../scripts/ms.mjs'
+import { ms, msstr } from '../scripts/ms.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
@@ -979,7 +979,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
-		const timeLeft = ms(authData.lockedUntil - Date.now(), { long: true })
+		const timeLeft = msstr(authData.lockedUntil - Date.now())
 		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
 	}
 
