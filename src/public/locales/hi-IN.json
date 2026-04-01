@@ -865,6 +865,10 @@
 				"success": "लिंक साझा किया गया! लिंक को क्लिपबोर्ड पर कॉपी किया गया. <br>यह सुविधा ${provider} द्वारा समर्थित है। <br>[उन्हें प्रायोजित करें। ](${sponsorLink})"
 			},
 			"commonToolCalling": "टूल कॉल किया जा रहा है",
+			"reasoningDetailsTitle": "तर्क प्रक्रिया",
+			"logprobsNotApplicable": "लागू नहीं",
+			"logprobsTopLogprobsMeta": "Top_logprobs (चयनित: ${token})",
+			"logprobsMetricsFooter": "पहला शब्द विलंब: ${ttft} | समय: ${time} | टोकन: ${tokens} | गति: ${speed}",
 			"noReplyContent": "(कोई उत्तर सामग्री नहीं)",
 			"feedback": {
 				"thumbsUp": {

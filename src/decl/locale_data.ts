@@ -2542,9 +2542,9 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
-	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
+	'chat.messageView.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
 	'chat.messageView.logprobsTopLogprobsMeta': { token: string | number }
-	'chat.messageView.logprobsMetricsFooter': { ttft: string | number; time: string | number; tokens: string | number; speed: string | number }
+	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
 	'chat_history.confirmDeleteMultiChats': { count: string | number }
