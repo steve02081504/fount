@@ -8,7 +8,7 @@ import {
 } from 'npm:@simplewebauthn/server'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { ms } from '../scripts/ms.mjs'
+import { ms, msstr } from '../scripts/ms.mjs'
 
 import {
 	bumpUserFailedLoginAttempts,
@@ -188,7 +188,7 @@ export async function webauthnLoginBegin(username, req) {
 
 	if (!authData) return genericUnavailable
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
-		const timeLeft = ms(authData.lockedUntil - Date.now(), { long: true })
+		const timeLeft = msstr(authData.lockedUntil - Date.now())
 		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
 	}
 
@@ -228,7 +228,7 @@ export async function webauthnLoginComplete(credentialResponse, username, device
 
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
-		const timeLeft = ms(authData.lockedUntil - Date.now(), { long: true })
+		const timeLeft = msstr(authData.lockedUntil - Date.now())
 		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
 	}
 

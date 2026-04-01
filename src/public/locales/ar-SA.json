@@ -865,6 +865,10 @@
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 			},
 			"commonToolCalling": "جارٍ استدعاء الأداة",
+			"reasoningDetailsTitle": "عملية التفكير",
+			"logprobsNotApplicable": "لا ينطبق",
+			"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",
+			"logprobsMetricsFooter": "تأخير الكلمة الأولى: ${ttft} | الوقت: ${time} | الرمز المميز: ${tokens} | السرعة: ${speed}",
 			"noReplyContent": "(لا يوجد محتوى الرد)",
 			"feedback": {
 				"thumbsUp": {

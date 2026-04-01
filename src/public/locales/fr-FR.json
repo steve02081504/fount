@@ -865,6 +865,10 @@
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
 			"commonToolCalling": "Appel de l'outil",
+			"reasoningDetailsTitle": "processus de raisonnement",
+			"logprobsNotApplicable": "sans objet",
+			"logprobsTopLogprobsMeta": "top_logprobs (sélectionné : ${token})",
+			"logprobsMetricsFooter": "Délai du premier mot : ${ttft} | Heure : ${time} | Jeton : ${tokens} | Vitesse : ${speed}",
 			"noReplyContent": "(Pas de contenu de réponse)",
 			"feedback": {
 				"thumbsUp": {

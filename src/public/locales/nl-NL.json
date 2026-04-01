@@ -865,6 +865,10 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
+			"reasoningDetailsTitle": "redeneringsproces",
+			"logprobsNotApplicable": "niet van toepassing",
+			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
+			"logprobsMetricsFooter": "Vertraging eerste woord: ${ttft} | Tijd: ${time} | Token: ${tokens} | Snelheid: ${speed}",
 			"noReplyContent": "(Geen antwoordinhoud)",
 			"feedback": {
 				"thumbsUp": {
