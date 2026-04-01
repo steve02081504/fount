@@ -865,6 +865,10 @@
 				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool wird aufgerufen",
+			"reasoningDetailsTitle": "Argumentationsprozess",
+			"logprobsNotApplicable": "nicht anwendbar",
+			"logprobsTopLogprobsMeta": "top_logprobs (ausgewählt: ${token})",
+			"logprobsMetricsFooter": "Verzögerung des ersten Wortes: ${ttft} | Zeit: ${time} | Token: ${tokens} | Geschwindigkeit: ${speed}",
 			"noReplyContent": "(Kein Inhalt)",
 			"feedback": {
 				"thumbsUp": {

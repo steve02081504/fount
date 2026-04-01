@@ -26,3 +26,18 @@ export function ms(duration) {
 			throw new Error('Invalid duration unit')
 	}
 }
+
+/**
+ * 将毫秒数格式化为人类可读英文时长（用于错误提示等）。
+ * @param {number} msVal
+ * @returns {string}
+ */
+export function msstr(msVal) {
+	const msPositive = Math.max(0, msVal)
+	const totalSec = Math.max(1, Math.ceil(msPositive / 1000))
+	const m = Math.floor(totalSec / 60)
+	const rs = totalSec % 60
+	if (m === 0) return `${totalSec}s`
+	if (rs === 0) return `${m}min`
+	return `${m}m${rs}s`
+}
