@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { createFetchChatCompletionWithRetry } from './src/chatCompletion.mjs'
 import { buildContentForShowFromLogprobs } from './src/logprobsRenderer.mjs'
+import { buildReasoningDetailsHtml } from './src/reasoningRenderer.mjs'
 import { buildMessagesFromPromptStruct } from './src/messageBuilder.mjs'
 import { clearFormat } from './src/responseFormat.mjs'
 
@@ -70,9 +71,9 @@ async function GetSource(config, { SaveConfig }) {
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
-			v.name = config.name || config.model
-			return [k, v]
+		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
+			localeInfo.name = config.name || config.model
+			return [locale, localeInfo]
 		})),
 		is_paid: false,
 		extension: {},
@@ -104,6 +105,7 @@ async function GetSource(config, { SaveConfig }) {
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
 			const enableLogprobsShow = config.model_arguments?.logprobs && supported_functions?.html
+			const enableHtmlShow = supported_functions?.html ?? false
 			const useThemeStyles = supported_functions?.fount_themes ?? false
 			const messages = buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
 
@@ -114,13 +116,28 @@ async function GetSource(config, { SaveConfig }) {
 			}
 
 			/**
-			 * 预览更新器
-			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * 构建 content_for_show：先 logprobs，再在开头插入 reasoning details 块。
+			 * @param {{content: string, extension?: any}} partialResult - 结果对象
+			 * @param {boolean} [streaming] - 流式预览时为 true，details 默认展开；结束后为 false，默认折叠。
 			 * @returns {void}
 			 */
-			const previewUpdater = r => {
-				const previewReply = { ...r }
-				if (enableLogprobsShow) previewReply.content_for_show = buildContentForShowFromLogprobs(r, { useThemeStyles })
+			const buildShow = (partialResult, streaming = false) => {
+				let show = enableLogprobsShow ? buildContentForShowFromLogprobs(partialResult, { useThemeStyles }) : null
+				if (enableHtmlShow) {
+					const reasoningHtml = buildReasoningDetailsHtml(partialResult, { open: streaming })
+					if (reasoningHtml) show = reasoningHtml + (show ?? partialResult.content)
+				}
+				if (show != null) partialResult.content_for_show = show
+			}
+
+			/**
+			 * 预览更新器：将当前累积结果的快照（含 reasoning HTML）发送给上游。
+			 * @param {{content: string, files: any[]}} partialResult - 当前累积结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = partialResult => {
+				const previewReply = { ...partialResult }
+				buildShow(previewReply, true)
 				replyPreviewUpdater?.(clearFormat(previewReply, prompt_struct))
 			}
 
@@ -128,7 +145,7 @@ async function GetSource(config, { SaveConfig }) {
 				signal, previewUpdater, result
 			})
 
-			if (enableLogprobsShow) result.content_for_show = buildContentForShowFromLogprobs(result, { useThemeStyles })
+			buildShow(result)
 
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
