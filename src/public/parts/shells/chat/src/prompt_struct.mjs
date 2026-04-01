@@ -27,7 +27,7 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname, timelines } = args
+	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname, timelines, locales } = args
 	/** @type {prompt_struct_t} */
 	const result = {
 		char_id,
@@ -41,6 +41,7 @@ export async function buildPromptStruct(
 		plugin_prompts: {},
 		chat_log,
 		timelines: timelines || [],
+		locales,
 	}
 
 	if (world?.interfaces?.chat) result.world_prompt = world.interfaces.chat.GetPrompt(args)

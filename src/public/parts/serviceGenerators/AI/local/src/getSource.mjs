@@ -200,6 +200,7 @@ export async function GetSource(config) {
 			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
 			const enableLogprobsShow = config.prompt_options?.logprobs && supported_functions?.html
 			const useThemeStyles = supported_functions?.fount_themes ?? false
+			const logprobsRenderOpts = { useThemeStyles, locales: prompt_struct.locales, supported_functions }
 			const streamStartAt = Date.now()
 			let firstChunkAt = null
 			/** @type {import('npm:node-llama-cpp').Token[]} */
@@ -287,7 +288,7 @@ export async function GetSource(config) {
 						}
 						if (anyNew && !signal?.aborted) {
 							updateStreamingMetrics()
-							out.content_for_show = buildContentForShowFromLogprobs(out, { useThemeStyles })
+							out.content_for_show = buildContentForShowFromLogprobs(out, logprobsRenderOpts)
 							didApplyLogprobs = true
 							replyPreviewUpdater?.(clearFormat({ ...out }, prompt_struct))
 						}
@@ -315,7 +316,7 @@ export async function GetSource(config) {
 
 				if (enableLogprobsShow && streamedLp) {
 					updateStreamingMetrics((promptEndAt - streamStartAt) / 1000)
-					out.content_for_show = buildContentForShowFromLogprobs(out, { useThemeStyles })
+					out.content_for_show = buildContentForShowFromLogprobs(out, logprobsRenderOpts)
 					didApplyLogprobs = true
 					replyPreviewUpdater?.(clearFormat({ ...out }, prompt_struct))
 				}
@@ -340,7 +341,7 @@ export async function GetSource(config) {
 								? (firstChunkAt - streamStartAt) / 1000
 								: (promptEndAt - streamStartAt) / 1000,
 						}
-						out.content_for_show = buildContentForShowFromLogprobs(out, { useThemeStyles })
+						out.content_for_show = buildContentForShowFromLogprobs(out, logprobsRenderOpts)
 						didApplyLogprobs = true
 						replyPreviewUpdater?.(clearFormat({ ...out }, prompt_struct))
 					}

@@ -159,6 +159,10 @@ export interface prompt_struct_t {
 	 */
 	timelines: chatLogEntry_t[]
 	/**
+	 * 用户首选语言列表，用于服务端渲染时的文案本地化。
+	 */
+	locales?: string[]
+	/**
 	 * 扩展对象。
 	 */
 	extension?: object
