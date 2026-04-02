@@ -29,8 +29,8 @@ export function ms(duration) {
 
 /**
  * 将毫秒数格式化为人类可读英文时长（用于错误提示等）。
- * @param {number} msVal
- * @returns {string}
+ * @param {number} msVal - 毫秒数
+ * @returns {string} 人类可读英文时长
  */
 export function msstr(msVal) {
 	const msPositive = Math.max(0, msVal)
