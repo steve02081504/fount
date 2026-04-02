@@ -1,3 +1,5 @@
+import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n.mjs'
+
 /**
  * HTML 转义，防止 XSS。
  * @param {string} str - 待转义的字符串。
@@ -15,7 +17,7 @@ const escapeHtml = (str) => String(str).replace(/["&'<>]/g, s => ({
  * 从 logprobs 构建带 tooltip 的 content_for_show  HTML。
  * NOTE: 为保持 token 布局会牺牲 markdown 渲染保真度。
  * @param {{content: string, extension?: any}} sourceResult - 原始响应结果（含 extension.logprobs）。
- * @param {{ useThemeStyles?: boolean }} [renderOptions] - 渲染选项。
+ * @param {{ useThemeStyles?: boolean, locales?: string[], supported_functions?: { fount_i18nkeys?: boolean } }} [renderOptions] - 渲染选项。
  * @returns {string} 带 logprobs 可视化样式的 HTML 字符串。
  */
 export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}) {
@@ -24,6 +26,9 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	const cleanContent = sourceResult.content || ''
 	const tokenDecoder = new TextDecoder()
 	const useThemeStyles = renderOptions.useThemeStyles ?? true
+	const localeList = [...(renderOptions.locales ?? []), ...localhostLocales]
+	const useFountI18nKeys = !!renderOptions.supported_functions?.fount_i18nkeys
+	const naLabel = geti18nForLocales(localeList, 'chat.messageView.logprobsNotApplicable') ?? 'N/A'
 
 	/**
 	 * 从 logprob 条目提取 token 文本。
@@ -34,9 +39,9 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	/**
 	 * 将 logprob 转为百分比字符串。
 	 * @param {number|null} logprob - 对数概率。
-	 * @returns {string} 百分比字符串或 'N/A'。
+	 * @returns {string} 百分比字符串或本地化的「不适用」。
 	 */
-	const percentText = (logprob) => logprob == null ? 'N/A' : `${(Math.exp(logprob) * 100).toFixed(4)}%`
+	const percentText = (logprob) => logprob == null ? naLabel : `${(Math.exp(logprob) * 100).toFixed(4)}%`
 	/**
 	 * 计算置信度 (0–1)。
 	 * @param {number|null} logprob - 对数概率。
@@ -63,6 +68,33 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 		.replace(/\t/g, '⇥')
 		.replace(/\n/g, '↵\n')
 		.replace(/\r/g, '␍')
+
+	/**
+	 * top_logprobs 提示行（含模型 token，始终在服务端用插值生成，避免 data-i18n 动态参数的安全问题）。
+	 * @param {string} tokenVisibleForHtml - 已按 HTML 文本转义、用于展示的 token（可见空白符形式）。
+	 * @returns {string} 带 fount-logprob-meta 的 HTML 片段。
+	 */
+	const topLogprobsMetaHtml = (tokenVisibleForHtml) => {
+		const raw = geti18nForLocales(localeList, 'chat.messageView.logprobsTopLogprobsMeta', {
+			token: tokenVisibleForHtml,
+		})
+		const text = raw ?? `top_logprobs (selected: ${tokenVisibleForHtml})`
+		return `<span class="fount-logprob-meta">${text}</span>`
+	}
+
+	/**
+	 * 页脚指标行。服务端预填文案，支持 fount_i18nkeys 时附加 data-i18n + data-* 以便客户端语言切换时实时更新。
+	 * @param {{ ttft: string, time: string, tokens: string, speed: string }} parts - 已格式化的片段。
+	 * @returns {string} 页脚 span 的 HTML。
+	 */
+	const metricsFooterHtml = (parts) => {
+		const raw = geti18nForLocales(localeList, 'chat.messageView.logprobsMetricsFooter', parts)
+		const text = raw ?? `TTFT: ${parts.ttft} | Time: ${parts.time} | Tokens: ${parts.tokens} | Speed: ${parts.speed}`
+		const i18nAttrs = useFountI18nKeys
+			? ` data-i18n="chat.messageView.logprobsMetricsFooter" data-ttft="${escapeHtml(parts.ttft)}" data-time="${escapeHtml(parts.time)}" data-tokens="${escapeHtml(parts.tokens)}" data-speed="${escapeHtml(parts.speed)}"`
+			: ''
+		return /* html */ `<span class="fount-logprob-footer"${i18nAttrs}>${escapeHtml(text)}</span>`
+	}
 
 	const tokens = items.map(tokenTextOf)
 	const rawJoined = tokens.join('')
@@ -110,17 +142,22 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 			candLines.push(/* html */ `<span class="fount-logprob-line fount-logprob-chosen"><span class="fount-logprob-key">${shownTokenVisibleEsc}</span><span class="fount-logprob-sep">:</span><span class="fount-logprob-val">${selectedProb}</span></span>`)
 		}
 		const confidence = confidencePercent(item?.logprob)
-		htmlTokens += /* html */ `<span class="fount-logprob-token" style="--fount-logprob-confidence-percent:${confidence}%"><span class="fount-logprob-token-value">${shownTokenEsc}</span><span class="fount-logprob-token-tip"><span class="fount-logprob-meta">top_logprobs (selected: ${shownTokenVisibleEsc})</span><span class="fount-logprob-cand">${candLines.join('')}</span></span></span>`
+		htmlTokens += /* html */ `<span class="fount-logprob-token" style="--fount-logprob-confidence-percent:${confidence}%"><span class="fount-logprob-token-value">${shownTokenEsc}</span><span class="fount-logprob-token-tip">${topLogprobsMetaHtml(shownTokenVisibleEsc)}<span class="fount-logprob-cand">${candLines.join('')}</span></span></span>`
 	}
 	if (!htmlTokens) return cleanContent
 
 	const m = sourceResult.extension?.logprobs_metrics ?? {}
-	const ttft = m.ttftSeconds == null ? 'N/A' : `${m.ttftSeconds}s`
+	const ttftRaw = m.ttftSeconds == null ? naLabel : `${m.ttftSeconds}s`
 	const timeSeconds = m.timeSeconds ?? 0
 	const tokensCount = m.tokensCount ?? 0
 	const speed = m.speed ?? 0
 
-	const footer = /* html */ `<span class="fount-logprob-footer">TTFT: ${ttft} | Time: ${timeSeconds.toFixed(2)}s | Tokens: ${tokensCount} | Speed: ${speed.toFixed(2)} tok/s</span>`
+	const footer = metricsFooterHtml({
+		ttft: ttftRaw,
+		time: `${timeSeconds.toFixed(2)}s`,
+		tokens: String(tokensCount),
+		speed: `${speed.toFixed(2)} tok/s`,
+	})
 
 	return `${style}<span class="fount-logprob-root">${htmlTokens}${footer}</span>`
 }

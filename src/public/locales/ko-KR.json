@@ -865,6 +865,10 @@
 				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
 			},
 			"commonToolCalling": "도구 호출 중",
+			"reasoningDetailsTitle": "추론 과정",
+			"logprobsNotApplicable": "해당 없음",
+			"logprobsTopLogprobsMeta": "top_logprobs (선택됨: ${token})",
+			"logprobsMetricsFooter": "첫 토큰 지연: ${ttft} | 소요 시간: ${time} | 토큰: ${tokens} | 속도: ${speed}",
 			"noReplyContent": "(답장 내용 없음)",
 			"feedback": {
 				"thumbsUp": {

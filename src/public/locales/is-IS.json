@@ -865,6 +865,10 @@
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			},
 			"commonToolCalling": "Kallar á tól",
+			"reasoningDetailsTitle": "Rökhugsunarferli",
+			"logprobsNotApplicable": "ekki við",
+			"logprobsTopLogprobsMeta": "top_logprobs (valið: ${token})",
+			"logprobsMetricsFooter": "Töf á fyrsta orði: ${ttft} | Tími: ${time} | Tákn: ${tokens} | Hraði: ${speed}",
 			"noReplyContent": "(Ekkert svar innihald)",
 			"feedback": {
 				"thumbsUp": {

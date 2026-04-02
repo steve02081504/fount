@@ -865,6 +865,10 @@
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 			},
 			"commonToolCalling": "Đang gọi công cụ",
+			"reasoningDetailsTitle": "Quá trình suy luận",
+			"logprobsNotApplicable": "không áp dụng",
+			"logprobsTopLogprobsMeta": "top_logprobs (đã chọn: ${token})",
+			"logprobsMetricsFooter": "Độ trễ token đầu: ${ttft} | Thời gian: ${time} | Token: ${tokens} | Tốc độ: ${speed}",
 			"noReplyContent": "(Không có nội dung trả lời)",
 			"feedback": {
 				"thumbsUp": {

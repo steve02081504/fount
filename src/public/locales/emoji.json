@@ -865,6 +865,10 @@
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
+			"reasoningDetailsTitle": "🧠📜",
+			"logprobsNotApplicable": "N/A",
+			"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
+			"logprobsMetricsFooter": "1️⃣⏱️ ${ttft} | ⏱️ ${time} | 🪙 ${tokens} | 🚀 ${speed}",
 			"noReplyContent": "💬🍃",
 			"feedback": {
 				"thumbsUp": {

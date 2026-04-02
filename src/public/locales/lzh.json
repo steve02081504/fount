@@ -865,6 +865,10 @@
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 			},
 			"commonToolCalling": "方召工具",
+			"reasoningDetailsTitle": "推思本末",
+			"logprobsNotApplicable": "無涉",
+			"logprobsTopLogprobsMeta": "top_logprobs（所揀：${token}）",
+			"logprobsMetricsFooter": "首詞元遲延: ${ttft} | 歷時: ${time} | 詞元: ${tokens} | 速率: ${speed}",
 			"noReplyContent": "（未有覆言）",
 			"feedback": {
 				"thumbsUp": {

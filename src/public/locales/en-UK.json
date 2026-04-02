@@ -865,6 +865,10 @@
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
 			"commonToolCalling": "Calling tool",
+			"reasoningDetailsTitle": "Reasoning",
+			"logprobsNotApplicable": "N/A",
+			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
+			"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
 			"noReplyContent": "(No reply content)",
 			"feedback": {
 				"thumbsUp": {

@@ -865,6 +865,10 @@
 				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili.](${sponsorLink})"
 			},
 			"commonToolCalling": "Esecuzione strumento",
+			"reasoningDetailsTitle": "Processo di ragionamento",
+			"logprobsNotApplicable": "non applicabile",
+			"logprobsTopLogprobsMeta": "top_logprobs (selezionato: ${token})",
+			"logprobsMetricsFooter": "Latenza primo token: ${ttft} | Tempo: ${time} | Token: ${tokens} | Velocità: ${speed}",
 			"noReplyContent": "(Nessun contenuto della risposta)",
 			"feedback": {
 				"thumbsUp": {

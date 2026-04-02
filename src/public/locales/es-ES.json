@@ -865,6 +865,10 @@
 				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Este rol es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
 			},
 			"commonToolCalling": "Llamando a la herramienta",
+			"reasoningDetailsTitle": "Proceso de razonamiento",
+			"logprobsNotApplicable": "no aplicable",
+			"logprobsTopLogprobsMeta": "top_logprobs (seleccionado: ${token})",
+			"logprobsMetricsFooter": "Retraso del primer token: ${ttft} | Tiempo: ${time} | Tokens: ${tokens} | Velocidad: ${speed}",
 			"noReplyContent": "(Sin contenido de respuesta)",
 			"feedback": {
 				"thumbsUp": {
