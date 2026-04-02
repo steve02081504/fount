@@ -1103,11 +1103,11 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 	background-color: var(--color-base-100);
 }
 
-[color-scheme="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
+[color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
 	color: var(--shiki-light);
 }
 
-[color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
+[color-scheme*="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
 	color: var(--shiki-dark);
 }
 `

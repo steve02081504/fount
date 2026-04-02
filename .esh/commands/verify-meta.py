@@ -15,7 +15,6 @@ if sys.platform == "win32" and sys.stdout.encoding and sys.stdout.encoding.lower
 # 如果您只想检查属性是否存在，而不是值，请将值设置为 None。
 REQUIRED_TAGS = [
 	("meta", {"charset": None}),
-	("meta", {"name": "darkreader-lock"}),
 	("meta", {"name": "viewport"}),
 	("meta", {"property": "og:title"}),
 	("meta", {"property": "og:type"}),
