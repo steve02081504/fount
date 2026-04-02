@@ -489,7 +489,7 @@ function updateColors() {
 	else // 如果未定义背景色，回退到系统偏好
 		is_dark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 
-	document.documentElement.colorScheme = is_dark ? 'dark' : 'light'
+	document.documentElement.colorScheme = 'only ' + (is_dark ? 'dark' : 'light')
 
 	for (const func of functions) try {
 		func(theme_now, is_dark)
