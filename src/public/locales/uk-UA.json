@@ -865,6 +865,10 @@
 				"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
 			},
 			"commonToolCalling": "Виклик інструменту",
+			"reasoningDetailsTitle": "Процес міркування",
+			"logprobsNotApplicable": "н/д",
+			"logprobsTopLogprobsMeta": "top_logprobs (вибрано: ${token})",
+			"logprobsMetricsFooter": "Затримка першого токена: ${ttft} | Тривалість: ${time} | Токени: ${tokens} | Швидкість: ${speed}",
 			"noReplyContent": "(Немає вмісту відповіді)",
 			"feedback": {
 				"thumbsUp": {

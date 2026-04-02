@@ -865,6 +865,10 @@
 				"success": "Ссылка успешно создана! Скопирована в буфер обмена. <br>Эта функция поддерживается ${provider}. <br>[Поддержать их.](${sponsorLink})"
 			},
 			"commonToolCalling": "Вызов инструмента...",
+			"reasoningDetailsTitle": "Процесс рассуждения",
+			"logprobsNotApplicable": "н/д",
+			"logprobsTopLogprobsMeta": "top_logprobs (выбрано: ${token})",
+			"logprobsMetricsFooter": "Задержка первого токена: ${ttft} | Длительность: ${time} | Токены: ${tokens} | Скорость: ${speed}",
 			"noReplyContent": "(Нет содержимого)",
 			"feedback": {
 				"thumbsUp": {
