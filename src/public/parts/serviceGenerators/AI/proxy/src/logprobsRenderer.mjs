@@ -26,7 +26,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	const cleanContent = sourceResult.content || ''
 	const tokenDecoder = new TextDecoder()
 	const useThemeStyles = renderOptions.useThemeStyles ?? true
-	const localeList = [...(renderOptions.locales ?? []), ...localhostLocales]
+	const localeList = [...renderOptions.locales ?? [], ...localhostLocales]
 	const useFountI18nKeys = !!renderOptions.supported_functions?.fount_i18nkeys
 	const naLabel = geti18nForLocales(localeList, 'chat.messageView.logprobsNotApplicable') ?? 'N/A'
 

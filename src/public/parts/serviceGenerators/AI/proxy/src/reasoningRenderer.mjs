@@ -19,7 +19,7 @@ const escapeHtml = (str) => String(str).replace(/["&'<>]/g, char => ({
  * @returns {string} summary 元素 HTML。
  */
 function reasoningSummaryHtml(renderOptions = {}) {
-	const text = geti18nForLocales([...(renderOptions.locales ?? []), ...localhostLocales], 'chat.messageView.reasoningDetailsTitle') ?? 'Reasoning'
+	const text = geti18nForLocales([...renderOptions.locales ?? [], ...localhostLocales], 'chat.messageView.reasoningDetailsTitle') ?? 'Reasoning'
 	const i18nAttr = renderOptions.supported_functions?.fount_i18nkeys ? ' data-i18n="chat.messageView.reasoningDetailsTitle"' : ''
 	return `<summary><span${i18nAttr}>${escapeHtml(text)}</span></summary>`
 }

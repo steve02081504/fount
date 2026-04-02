@@ -1005,7 +1005,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
  * @returns {Promise<{status: number, success: boolean, message: string, accessToken: string, refreshToken: string}>} 成功时的状态码、消息与一对 JWT。
  */
 export async function completeSuccessfulLogin(user, deviceId, req) {
-	const username = user.username
+	const { username } = user
 	const authData = user.auth
 	delete loginFailures[req.ip]
 	authData.loginAttempts = 0

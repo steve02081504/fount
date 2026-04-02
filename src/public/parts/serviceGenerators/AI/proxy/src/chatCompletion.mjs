@@ -213,20 +213,17 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 					}
 				}
 				// 提取 OpenAI Responses API 非流式格式（output 数组）
-				if (json.output) {
-					for (const item of json.output) {
-						if (item.type === 'reasoning') {
-							result.extension ??= {}
-							result.extension.reasoning_summary ??= []
-							for (const s of item.summary ?? [])
-								if (s.type === 'summary_text' && s.text)
-									result.extension.reasoning_summary.push(s.text)
-						}
-						if (item.type === 'message' && !result.content) {
-							for (const c of item.content ?? [])
-								if (c.type === 'output_text') result.content += c.text ?? ''
-						}
+				if (json.output) for (const item of json.output) {
+					if (item.type === 'reasoning') {
+						result.extension ??= {}
+						result.extension.reasoning_summary ??= []
+						for (const s of item.summary ?? [])
+							if (s.type === 'summary_text' && s.text)
+								result.extension.reasoning_summary.push(s.text)
 					}
+					if (item.type === 'message' && !result.content)
+						for (const c of item.content ?? [])
+							if (c.type === 'output_text') result.content += c.text ?? ''
 				}
 			} catch (error) {
 				if (!result.content) console.error('Failed to parse response as JSON:', error)
