@@ -4,4 +4,3 @@ window.urlParams = await retrieveUrlParams(new URLSearchParams(window.location.s
 const colorScheme = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light'
 document.documentElement.colorScheme = 'only ' + colorScheme
 document.documentElement.dataset.theme = (urlParams.get('theme') ?? localStorage.getItem('fountTheme')) || colorScheme
-document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'darkreader-lock' }))
