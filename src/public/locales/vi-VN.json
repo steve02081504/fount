@@ -1856,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Bot Discord",
-		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
-		"cardTitle": "Bot Discord",
-		"botSelectDropdown": {
-			"placeholder": "Chọn một bot"
-		},
-		"botSearch": {
-			"placeholder": "Tìm kiếm bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Chọn một vai trò"
-		},
-		"charSearch": {
-			"placeholder": "Tìm kiếm nhân vật..."
-		},
-		"configCard": {
-			"title": "Cấu hình Bot",
-			"labels": {
-				"character": "Nhân vật",
-				"apiKey": "Khóa API Discord",
-				"config": "Cấu hình"
-			},
-			"charSelectPlaceholder": "Chọn nhân vật",
-			"apiKeyInput": {
-				"placeholder": "Nhập Khóa API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Chuyển đổi hiển thị khóa API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Hiện/ẩn Khóa API"
-			},
-			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			}
-		},
-		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
-		},
-		"buttons": {
-			"newBot": "Tạo mới",
-			"deleteBot": "Xóa"
-		},
-		"alerts": {
-			"configSaved": "Cấu hình đã được lưu thành công.",
-			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"httpError": "Lỗi HTTP.",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Đi đến sự bất hòa",
-				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
-				"locked_description": "Khởi chạy Discord Bot một lần."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Liên quan đến bot",
-				"sub_items": {
-					"manage": {
-						"title": "Cấu hình Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Cấu hình Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Bot Telegram",
 		"description": "Hãy để các ký tự nguồn của bạn vượt qua các làn sóng tức thời của Telegram. Định cấu hình sự hiện diện kỹ thuật số của họ, quản lý cuộc trò chuyện và mở rộng phạm vi tiếp cận của họ đến thế giới nhắn tin sôi động này.",
@@ -2005,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Cấu hình Telegram Bot"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "Bot WeChat",
+		"description": "Tích hợp vai trò nguồn vào các cuộc trò chuyện trên WeChat để cung cấp trải nghiệm hỗ trợ văn phòng phổ biến.",
+		"cardTitle": "Bot WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Chọn một Bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm vai trò..."
+		},
+		"configCard": {
+			"title": "Cấu hình bot",
+			"labels": {
+				"character": "Vai trò ràng buộc",
+				"apiBaseUrl": "URL gốc của dịch vụ kênh WeChat",
+				"botToken": "Mã thông báo iLink Bot",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn vai trò",
+			"apiBaseUrlInput": {
+				"placeholder": "Để trống để sử dụng mặc định https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Mã thông báo mang nhận được sau khi đăng nhập"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Chuyển đổi hiển thị Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Chuyển đổi hiển thị Token"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "khởi động",
+				"stopBot": "dừng lại"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"buttons": {
+			"newBot": "Mới",
+			"deleteBot": "xóa bỏ"
+		},
+		"alerts": {
+			"configSaved": "Đã lưu cấu hình thành công",
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy các thay đổi không?",
+			"httpError": "Lỗi HTTP",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Giúp tôi với công việc của tôi!",
+				"description": "Hãy để nhân vật đài phun nước nói chuyện với bạn trên WeChat.",
+				"locked_description": "Khởi chạy WeChat Bot một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "Quản lý Bot WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Định cấu hình Bot WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Sử dụng WeChat để quét mã QR bên dưới để hoàn tất đăng nhập.",
+			"button": "Quét mã để đăng nhập",
+			"scanPrompt": "Vui lòng sử dụng WeChat để quét mã QR",
+			"waiting": "Đang lấy mã QR...",
+			"scanned": "Mã đã được quét, vui lòng xác nhận trên điện thoại di động của bạn...",
+			"success": "WeChat đã được kết nối và cấu hình đã được cập nhật. Bot có thể được khởi chạy trực tiếp.",
+			"needBot": "Trước tiên, vui lòng chọn Bot trong hộp thả xuống hoặc sử dụng \"Mới\" để tạo một Bot."
+		}
+	},
+	"discord_bots": {
+		"title": "Bot Discord",
+		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
+		"cardTitle": "Bot Discord",
+		"botSelectDropdown": {
+			"placeholder": "Chọn một bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm nhân vật..."
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật",
+				"apiKey": "Khóa API Discord",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"apiKeyInput": {
+				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Chuyển đổi hiển thị khóa API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Hiện/ẩn Khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"alerts": {
+			"configSaved": "Cấu hình đã được lưu thành công.",
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"httpError": "Lỗi HTTP.",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Đi đến sự bất hòa",
+				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
+				"locked_description": "Khởi chạy Discord Bot một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Liên quan đến bot",
+				"sub_items": {
+					"manage": {
+						"title": "Cấu hình Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cấu hình Discord Bot"
 			}
 		}
 	},

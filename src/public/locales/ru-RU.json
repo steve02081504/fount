@@ -1856,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord боты",
-		"description": "Дайте своим друзьям голос в шумных залах Discord. Настраивайте их присутствие, управляйте их операциями и позволяйте им соединять миры, по одному серверу за раз.",
-		"cardTitle": "Discord боты",
-		"botSelectDropdown": {
-			"placeholder": "Выберите бота"
-		},
-		"botSearch": {
-			"placeholder": "Найти бота..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Выберите роль"
-		},
-		"charSearch": {
-			"placeholder": "Поиск персонажей..."
-		},
-		"configCard": {
-			"title": "Настройка бота",
-			"labels": {
-				"character": "Персонаж",
-				"apiKey": "API-ключ Discord",
-				"config": "Конфигурация"
-			},
-			"charSelectPlaceholder": "Выберите персонажа",
-			"apiKeyInput": {
-				"placeholder": "Введите API-ключ"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Переключить отображение ключей API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Показать/скрыть API-ключ"
-			},
-			"buttons": {
-				"saveConfig": "Сохранить конфигурацию",
-				"startBot": "Запустить",
-				"stopBot": "Остановить"
-			}
-		},
-		"prompts": {
-			"newBotName": "Пожалуйста, введите имя нового бота:"
-		},
-		"buttons": {
-			"newBot": "Создать",
-			"deleteBot": "Удалить"
-		},
-		"alerts": {
-			"configSaved": "Конфигурация успешно сохранена.",
-			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
-			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
-			"httpError": "Ошибка HTTP.",
-			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Приходя в Дискорд",
-				"description": "Призовите своего персонажа в мир Discord.",
-				"locked_description": "Запустите Discord Bot один раз."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Боты",
-				"sub_items": {
-					"manage": {
-						"title": "Настройка Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Настройка Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Боты Telegram",
 		"description": "Пусть ваши персонажи fount мгновенно перемещаются по волнам Telegram. Развивайте свое цифровое присутствие, управляйте своими разговорами и расширяйте свое присутствие в динамичном мире обмена сообщениями.",
@@ -2005,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Настройка Telegram Bot"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "WeChat Бот",
+		"description": "Интегрируйте роль источника в разговоры WeChat, чтобы обеспечить повсеместную помощь в офисе.",
+		"cardTitle": "WeChat Бот",
+		"botSelectDropdown": {
+			"placeholder": "Выберите бота"
+		},
+		"botSearch": {
+			"placeholder": "Поисковый бот..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Выберите роль"
+		},
+		"charSearch": {
+			"placeholder": "Поиск ролей..."
+		},
+		"configCard": {
+			"title": "Конфигурация бота",
+			"labels": {
+				"character": "Роль привязки",
+				"apiBaseUrl": "Корневой URL-адрес службы канала WeChat",
+				"botToken": "Токен бота iLink",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите роль",
+			"apiBaseUrlInput": {
+				"placeholder": "Оставьте поле пустым, чтобы использовать https://ilinkai.weixin.qq.com по умолчанию."
+			},
+			"botTokenInput": {
+				"placeholder": "Токен на предъявителя, полученный после входа в систему"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Переключить отображение токена"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Переключить отображение токена"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "запускать",
+				"stopBot": "останавливаться"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите новое имя бота:"
+		},
+		"buttons": {
+			"newBot": "Новый",
+			"deleteBot": "удалить"
+		},
+		"alerts": {
+			"configSaved": "Конфигурация успешно сохранена",
+			"botExists": "Бот с именем \"${botname}\" уже существует, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Вы хотите отменить изменения?",
+			"httpError": "Ошибка HTTP",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите уйти?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Помогите мне с моей работой!",
+				"description": "Позвольте главному персонажу поговорить с вами в WeChat.",
+				"locked_description": "Запустите WeChat Bot один раз."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "бот",
+				"sub_items": {
+					"manage": {
+						"title": "Управление ботом WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройка бота WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Используйте WeChat для сканирования QR-кода ниже, чтобы завершить вход.",
+			"button": "Сканируйте код, чтобы войти",
+			"scanPrompt": "Пожалуйста, используйте WeChat для сканирования QR-кода.",
+			"waiting": "Получение QR-кода...",
+			"scanned": "Код отсканирован, пожалуйста, подтвердите на своем мобильном телефоне...",
+			"success": "WeChat подключен, конфигурация обновлена. Бота можно запустить напрямую.",
+			"needBot": "Сначала выберите бота в раскрывающемся списке или используйте «Новый», чтобы создать его."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord боты",
+		"description": "Дайте своим друзьям голос в шумных залах Discord. Настраивайте их присутствие, управляйте их операциями и позволяйте им соединять миры, по одному серверу за раз.",
+		"cardTitle": "Discord боты",
+		"botSelectDropdown": {
+			"placeholder": "Выберите бота"
+		},
+		"botSearch": {
+			"placeholder": "Найти бота..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Выберите роль"
+		},
+		"charSearch": {
+			"placeholder": "Поиск персонажей..."
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Персонаж",
+				"apiKey": "API-ключ Discord",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"apiKeyInput": {
+				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Переключить отображение ключей API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Показать/скрыть API-ключ"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"alerts": {
+			"configSaved": "Конфигурация успешно сохранена.",
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Приходя в Дискорд",
+				"description": "Призовите своего персонажа в мир Discord.",
+				"locked_description": "Запустите Discord Bot один раз."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боты",
+				"sub_items": {
+					"manage": {
+						"title": "Настройка Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройка Discord Bot"
 			}
 		}
 	},

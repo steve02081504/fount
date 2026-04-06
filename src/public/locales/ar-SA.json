@@ -1856,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "بوتات Discord",
-		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
-		"cardTitle": "بوت Discord",
-		"botSelectDropdown": {
-			"placeholder": "اختر روبوت"
-		},
-		"botSearch": {
-			"placeholder": "ابحث عن بوت..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "اختر شخصية"
-		},
-		"charSearch": {
-			"placeholder": "ابحث عن شخصية..."
-		},
-		"configCard": {
-			"title": "تهيئة البوت",
-			"labels": {
-				"character": "ربط الشخصية",
-				"apiKey": "مفتاح API لـ Discord",
-				"config": "تهيئة"
-			},
-			"charSelectPlaceholder": "اختر شخصية",
-			"apiKeyInput": {
-				"placeholder": "الرجاء إدخال مفتاح API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "تبديل إظهار مفاتيح API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "تبديل عرض مفتاح API"
-			},
-			"buttons": {
-				"saveConfig": "حفظ التهيئة",
-				"startBot": "بدء",
-				"stopBot": "إيقاف"
-			}
-		},
-		"prompts": {
-			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
-		},
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
-		"alerts": {
-			"configSaved": "تم حفظ التهيئة بنجاح",
-			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "القادمة إلى الخلاف",
-				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
-				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "الروبوتات",
-				"sub_items": {
-					"manage": {
-						"title": "إدارة بوت ديسكورد"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "تكوين روبوت الخلاف"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "بوتات Telegram",
 		"description": "اسمح لشخصيات fount الخاصة بك باجتياز موجات Telegram الفورية. قم بتكوين تواجدهم الرقمي وإدارة محادثاتهم وتوسيع نطاق وصولهم إلى عالم المراسلة النابض بالحياة.",
@@ -2005,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "تكوين Telegram Bot"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "بوت وي شات",
+		"description": "قم بدمج الدور الأساسي في محادثات WeChat لتوفير تجربة المساعدة المكتبية في كل مكان.",
+		"cardTitle": "بوت وي شات",
+		"botSelectDropdown": {
+			"placeholder": "اختر بوت"
+		},
+		"botSearch": {
+			"placeholder": "بوت البحث..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر دورًا"
+		},
+		"charSearch": {
+			"placeholder": "البحث عن الأدوار..."
+		},
+		"configCard": {
+			"title": "تكوين بوت",
+			"labels": {
+				"character": "ربط الدور",
+				"apiBaseUrl": "عنوان URL الجذري لخدمة قناة WeChat",
+				"botToken": "رمز بوت iLink",
+				"config": "إعدادات"
+			},
+			"charSelectPlaceholder": "حدد الدور",
+			"apiBaseUrlInput": {
+				"placeholder": "اتركه فارغًا لاستخدام https://ilinkai.weixin.qq.com الافتراضي"
+			},
+			"botTokenInput": {
+				"placeholder": "تم الحصول على Bearer Token بعد تسجيل الدخول"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "تبديل عرض الرمز المميز"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "تبديل عرض الرمز المميز"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التكوين",
+				"startBot": ".بدء",
+				"stopBot": "قف"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم بوت جديد:"
+		},
+		"buttons": {
+			"newBot": "جديد",
+			"deleteBot": "يمسح"
+		},
+		"alerts": {
+			"configSaved": "تم حفظ التكوين بنجاح",
+			"botExists": "هناك روبوت اسمه \"${botname}\" موجود بالفعل، يرجى استخدام اسم مختلف.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد تجاهل التغييرات؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد المغادرة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "ساعدني في عملي!",
+				"description": "اسمح لشخصية الينبوع بالتحدث معك على WeChat.",
+				"locked_description": "قم بتشغيل WeChat Bot مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "بوت",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة WeChat Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "قم بتكوين WeChat Bot"
+			}
+		},
+		"qrLogin": {
+			"hint": "استخدم WeChat لمسح رمز الاستجابة السريعة أدناه لإكمال تسجيل الدخول.",
+			"button": "مسح الرمز لتسجيل الدخول",
+			"scanPrompt": "الرجاء استخدام WeChat لمسح رمز الاستجابة السريعة",
+			"waiting": "الحصول على رمز الاستجابة السريعة...",
+			"scanned": "تم مسح الرمز ضوئيًا، يرجى التأكيد على هاتفك المحمول...",
+			"success": "تم توصيل WeChat وتم تحديث التكوين. يمكن إطلاق البوت مباشرة.",
+			"needBot": "الرجاء تحديد روبوت في المربع المنسدل أولاً، أو استخدام \"جديد\" لإنشاء روبوت."
+		}
+	},
+	"discord_bots": {
+		"title": "بوتات Discord",
+		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
+		"cardTitle": "بوت Discord",
+		"botSelectDropdown": {
+			"placeholder": "اختر روبوت"
+		},
+		"botSearch": {
+			"placeholder": "ابحث عن بوت..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر شخصية"
+		},
+		"charSearch": {
+			"placeholder": "ابحث عن شخصية..."
+		},
+		"configCard": {
+			"title": "تهيئة البوت",
+			"labels": {
+				"character": "ربط الشخصية",
+				"apiKey": "مفتاح API لـ Discord",
+				"config": "تهيئة"
+			},
+			"charSelectPlaceholder": "اختر شخصية",
+			"apiKeyInput": {
+				"placeholder": "الرجاء إدخال مفتاح API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "تبديل عرض مفتاح API"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التهيئة",
+				"startBot": "بدء",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
+		},
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
+		"alerts": {
+			"configSaved": "تم حفظ التهيئة بنجاح",
+			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "القادمة إلى الخلاف",
+				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
+				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "الروبوتات",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة بوت ديسكورد"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "تكوين روبوت الخلاف"
 			}
 		}
 	},

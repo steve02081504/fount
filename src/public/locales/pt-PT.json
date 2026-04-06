@@ -1856,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Bots do Discord",
-		"description": "Dê voz aos seus companheiros de fount nos movimentados corredores do Discord. Configure sua presença, gerencie suas operações e permita que eles conectem mundos, um servidor por vez.",
-		"cardTitle": "Bots do Discord",
-		"botSelectDropdown": {
-			"placeholder": "Escolha um bot"
-		},
-		"botSearch": {
-			"placeholder": "Pesquisar bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Selecione uma personagem"
-		},
-		"charSearch": {
-			"placeholder": "Pesquisar personagens..."
-		},
-		"configCard": {
-			"title": "Configuração do Bot",
-			"labels": {
-				"character": "Personagem",
-				"apiKey": "Chave da API Discord",
-				"config": "Configuração"
-			},
-			"charSelectPlaceholder": "Selecionar Personagem",
-			"apiKeyInput": {
-				"placeholder": "Introduza a Chave da API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Alternar a exibição de chaves de API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Alternar Visibilidade da Chave da API"
-			},
-			"buttons": {
-				"saveConfig": "Guardar Configuração",
-				"startBot": "Iniciar",
-				"stopBot": "Parar"
-			}
-		},
-		"prompts": {
-			"newBotName": "Por favor, insira um novo nome para o Bot:"
-		},
-		"buttons": {
-			"newBot": "Novo",
-			"deleteBot": "Eliminar"
-		},
-		"alerts": {
-			"configSaved": "Configuração guardada com sucesso.",
-			"botExists": "Um bot com o nome \"${botname}\" já existe. Por favor, use outro nome.",
-			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
-			"httpError": "Erro HTTP.",
-			"beforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Chegando à discórdia",
-				"description": "Convoque seu personagem para o mundo do Discord.",
-				"locked_description": "Inicie o Discord Bot uma vez."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Configuração do Bot Discord"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Configuração do Bot Discord"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Bots do Telegram",
 		"description": "Deixe seus personagens originais atravessarem as ondas instantâneas do Telegram. Configure sua presença digital, gerencie suas conversas e estenda seu alcance a este vibrante mundo de mensagens.",
@@ -2005,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Configuração do Bot Telegram"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "Bot do WeChat",
+		"description": "Integre a função de fonte nas conversas do WeChat para fornecer uma experiência de assistência de escritório onipresente.",
+		"cardTitle": "Bot do WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Escolha um bot"
+		},
+		"botSearch": {
+			"placeholder": "Pesquisar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Escolha uma função"
+		},
+		"charSearch": {
+			"placeholder": "Procure papéis..."
+		},
+		"configCard": {
+			"title": "Configuração do bot",
+			"labels": {
+				"character": "Função de vinculação",
+				"apiBaseUrl": "URL raiz do serviço do canal WeChat",
+				"botToken": "Token de bot iLink",
+				"config": "Configuração"
+			},
+			"charSelectPlaceholder": "Selecione a função",
+			"apiBaseUrlInput": {
+				"placeholder": "Deixe em branco para usar o padrão https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer Token obtido após o login"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Alternar exibição do token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Alternar exibição do token"
+			},
+			"buttons": {
+				"saveConfig": "Salvar configuração",
+				"startBot": "comece",
+				"stopBot": "parar"
+			}
+		},
+		"prompts": {
+			"newBotName": "Insira um novo nome de bot:"
+		},
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "excluir"
+		},
+		"alerts": {
+			"configSaved": "Configuração salva com sucesso",
+			"botExists": "Já existe um bot chamado \"${botname}\", use um nome diferente.",
+			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
+			"httpError": "Erro HTTP",
+			"beforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Ajude-me com meu trabalho!",
+				"description": "Deixe o personagem fonte falar com você no WeChat.",
+				"locked_description": "Inicie o WeChat Bot uma vez."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "robô",
+				"sub_items": {
+					"manage": {
+						"title": "Gerenciar bot do WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configurar bot WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Use o WeChat para escanear o código QR abaixo para concluir o login.",
+			"button": "Digitalize o código para fazer login",
+			"scanPrompt": "Use o WeChat para escanear o código QR",
+			"waiting": "Obtendo o código QR...",
+			"scanned": "O código foi escaneado, confirme no seu celular...",
+			"success": "O WeChat está conectado e a configuração foi atualizada. O bot pode ser iniciado diretamente.",
+			"needBot": "Selecione primeiro um bot na caixa suspensa ou use \"Novo\" para criar um."
+		}
+	},
+	"discord_bots": {
+		"title": "Bots do Discord",
+		"description": "Dê voz aos seus companheiros de fount nos movimentados corredores do Discord. Configure sua presença, gerencie suas operações e permita que eles conectem mundos, um servidor por vez.",
+		"cardTitle": "Bots do Discord",
+		"botSelectDropdown": {
+			"placeholder": "Escolha um bot"
+		},
+		"botSearch": {
+			"placeholder": "Pesquisar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecione uma personagem"
+		},
+		"charSearch": {
+			"placeholder": "Pesquisar personagens..."
+		},
+		"configCard": {
+			"title": "Configuração do Bot",
+			"labels": {
+				"character": "Personagem",
+				"apiKey": "Chave da API Discord",
+				"config": "Configuração"
+			},
+			"charSelectPlaceholder": "Selecionar Personagem",
+			"apiKeyInput": {
+				"placeholder": "Introduza a Chave da API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Alternar a exibição de chaves de API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Alternar Visibilidade da Chave da API"
+			},
+			"buttons": {
+				"saveConfig": "Guardar Configuração",
+				"startBot": "Iniciar",
+				"stopBot": "Parar"
+			}
+		},
+		"prompts": {
+			"newBotName": "Por favor, insira um novo nome para o Bot:"
+		},
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "Eliminar"
+		},
+		"alerts": {
+			"configSaved": "Configuração guardada com sucesso.",
+			"botExists": "Um bot com o nome \"${botname}\" já existe. Por favor, use outro nome.",
+			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
+			"httpError": "Erro HTTP.",
+			"beforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Chegando à discórdia",
+				"description": "Convoque seu personagem para o mundo do Discord.",
+				"locked_description": "Inicie o Discord Bot uma vez."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuração do Bot Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuração do Bot Discord"
 			}
 		}
 	},

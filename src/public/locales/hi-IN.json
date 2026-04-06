@@ -1856,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "डिस्कॉर्ड बॉट",
-		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
-		"cardTitle": "डिस्कॉर्ड बॉट",
-		"botSelectDropdown": {
-			"placeholder": "एक बॉट चुनें"
-		},
-		"botSearch": {
-			"placeholder": "बॉट खोजें..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "एक भूमिका का चयन करें"
-		},
-		"charSearch": {
-			"placeholder": "पात्र खोजें..."
-		},
-		"configCard": {
-			"title": "बॉट कॉन्फ़िगरेशन",
-			"labels": {
-				"character": "कैरेक्टर",
-				"apiKey": "डिस्कॉर्ड API कुंजी",
-				"config": "कॉन्फ़िगरेशन"
-			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
-			"apiKeyInput": {
-				"placeholder": "API कुंजी दर्ज करें"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API कुंजी दृश्यता टॉगल करें"
-			},
-			"buttons": {
-				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
-				"startBot": "शुरू करें",
-				"stopBot": "बंद करें"
-			}
-		},
-		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
-		},
-		"buttons": {
-			"newBot": "नया",
-			"deleteBot": "हटाएँ"
-		},
-		"alerts": {
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
-			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
-			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"httpError": "HTTP त्रुटि।",
-			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "कलह की स्थिति आ रही है",
-				"description": "अपने चरित्र को कलह की दुनिया में बुलाएँ।",
-				"locked_description": "डिस्कॉर्ड बॉट को एक बार लॉन्च करें।"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "बॉट",
-				"sub_items": {
-					"manage": {
-						"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "टेलीग्राम बॉट",
 		"description": "अपने fount पात्रों को टेलीग्राम की त्वरित तरंगों को पार करने दें। उनकी डिजिटल उपस्थिति को कॉन्फ़िगर करें, उनकी बातचीत को प्रबंधित करें और इस जीवंत मैसेजिंग दुनिया तक उनकी पहुंच बढ़ाएं।",
@@ -2005,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "वीचैट बॉट",
+		"description": "सर्वव्यापी कार्यालय सहायता अनुभव प्रदान करने के लिए WeChat वार्तालापों में स्रोत भूमिका को एकीकृत करें।",
+		"cardTitle": "वीचैट बॉट",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका चुनें"
+		},
+		"charSearch": {
+			"placeholder": "भूमिकाएँ खोजें..."
+		},
+		"configCard": {
+			"title": "बॉट विन्यास",
+			"labels": {
+				"character": "बाइंड भूमिका",
+				"apiBaseUrl": "WeChat चैनल सेवा रूट URL",
+				"botToken": "आईलिंक बॉट टोकन",
+				"config": "विन्यास"
+			},
+			"charSelectPlaceholder": "भूमिका चुनें",
+			"apiBaseUrlInput": {
+				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com का उपयोग करने के लिए खाली छोड़ दें"
+			},
+			"botTokenInput": {
+				"placeholder": "लॉग इन करने के बाद बियरर टोकन प्राप्त हुआ"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "टोकन का प्रदर्शन टॉगल करें"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "टोकन का प्रदर्शन टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "चालू होना",
+				"stopBot": "रुकना"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "मिटाना"
+		},
+		"alerts": {
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेजा गया",
+			"botExists": "\"${botname}\" नाम का एक बॉट पहले से मौजूद है, कृपया एक अलग नाम का उपयोग करें।",
+			"unsavedChanges": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आप परिवर्तनों को त्यागना चाहते हैं?",
+			"httpError": "एचटीटीपी एरर",
+			"beforeUnload": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आपकी वाकई छोड़ने की इच्छा है?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "मेरे काम में मेरी मदद करो!",
+				"description": "फाउंटेन कैरेक्टर को WeChat पर आपसे बात करने दें।",
+				"locked_description": "एक बार WeChat बॉट लॉन्च करें।"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बीओटी",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat बॉट प्रबंधित करें"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat बॉट कॉन्फ़िगर करें"
+			}
+		},
+		"qrLogin": {
+			"hint": "लॉगिन पूरा करने के लिए नीचे दिए गए QR कोड को स्कैन करने के लिए WeChat का उपयोग करें।",
+			"button": "लॉग इन करने के लिए कोड स्कैन करें",
+			"scanPrompt": "QR कोड को स्कैन करने के लिए कृपया WeChat का उपयोग करें",
+			"waiting": "QR कोड प्राप्त हो रहा है...",
+			"scanned": "कोड स्कैन कर लिया गया है, कृपया अपने मोबाइल फोन पर पुष्टि करें...",
+			"success": "WeChat कनेक्ट हो गया है और कॉन्फ़िगरेशन अपडेट कर दिया गया है. बॉट को सीधे लॉन्च किया जा सकता है।",
+			"needBot": "कृपया पहले ड्रॉप-डाउन बॉक्स में एक बॉट चुनें, या एक बनाने के लिए \"नया\" का उपयोग करें।"
+		}
+	},
+	"discord_bots": {
+		"title": "डिस्कॉर्ड बॉट",
+		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
+		"cardTitle": "डिस्कॉर्ड बॉट",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका का चयन करें"
+		},
+		"charSearch": {
+			"placeholder": "पात्र खोजें..."
+		},
+		"configCard": {
+			"title": "बॉट कॉन्फ़िगरेशन",
+			"labels": {
+				"character": "कैरेक्टर",
+				"apiKey": "डिस्कॉर्ड API कुंजी",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "कैरेक्टर चुनें",
+			"apiKeyInput": {
+				"placeholder": "API कुंजी दर्ज करें"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API कुंजी दृश्यता टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "शुरू करें",
+				"stopBot": "बंद करें"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"alerts": {
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
+			"httpError": "HTTP त्रुटि।",
+			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "कलह की स्थिति आ रही है",
+				"description": "अपने चरित्र को कलह की दुनिया में बुलाएँ।",
+				"locked_description": "डिस्कॉर्ड बॉट को एक बार लॉन्च करें।"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
 			}
 		}
 	},

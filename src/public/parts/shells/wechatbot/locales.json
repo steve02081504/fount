@@ -235,7 +235,8 @@
 				"WeChat",
 				"робот",
 				"інтегрований"
-			]
+			],
+			"name": "Бот WeChat"
 		},
 		"vi-VN": {
 			"name": "Bot WeChat",
@@ -261,7 +262,9 @@
 				"微信",
 				"機器人",
 				"整合"
-			]
+			],
+			"name": "微信 Bot",
+			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填入頻道服務根位址與 Token。"
 		}
 	}
 }
