@@ -377,7 +377,7 @@ export function createWeixinApi(opts) {
 				mediaType: params.mediaType,
 				media: {
 					encrypt_query_param: encryptedQueryParam,
-					aes_key: aesKeyBuffer.toString('base64'),
+					aes_key: Buffer.from(aesKeyHex, 'utf-8').toString('base64'),
 				},
 				rawMd5,
 				rawSize,
