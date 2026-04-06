@@ -363,7 +363,7 @@ export function createWeixinApi(opts) {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/octet-stream' },
 				body: new Uint8Array(encryptedBody),
-				signal: buildFetchSignal(DEFAULT_API_TIMEOUT_MS, signal),
+				signal: signal ?? null,
 			})
 			if (!uploadResponse.ok) {
 				const errorBody = await uploadResponse.text().catch(() => '')
