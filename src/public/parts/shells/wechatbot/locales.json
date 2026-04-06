@@ -1,0 +1,270 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "WeChat Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Run your fount character as a WeChat bot—bind a role, manage bots, and chat in WeChat.",
+			"description_markdown": "Run your fount character as a WeChat bot—bind a role, manage bots, and chat in WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"integration"
+			]
+		},
+		"zh-CN": {
+			"name": "微信 Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
+			"description_markdown": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"微信",
+				"Bot",
+				"集成"
+			]
+		},
+		"ar-SA": {
+			"name": "بوت WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
+			"description_markdown": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"بوت",
+				"تكامل"
+			]
+		},
+		"de-DE": {
+			"name": "WeChat-Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
+			"description_markdown": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"Bot",
+				"Integration"
+			]
+		},
+		"emoji": {
+			"name": "🤖💚",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "🎭➡️💚💬 · 🤖",
+			"description_markdown": "🎭➡️💚💬 · 🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"💚",
+				"🤖",
+				"🔗"
+			]
+		},
+		"es-ES": {
+			"name": "Bot de WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Usa un personaje fount como bot de WeChat: vincula un rol, gestiona bots y chatea en WeChat.",
+			"description_markdown": "Usa un personaje fount como bot de WeChat: vincula un rol, gestiona bots y chatea en WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"integración"
+			]
+		},
+		"fr-FR": {
+			"name": "Bot WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Faites tourner un personnage fount comme bot WeChat : liez un rôle, gérez vos bots et discutez sur WeChat.",
+			"description_markdown": "Faites tourner un personnage fount comme bot WeChat : liez un rôle, gérez vos bots et discutez sur WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"intégration"
+			]
+		},
+		"hi-IN": {
+			"name": "WeChat बॉट",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+			"description_markdown": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"बॉट",
+				"एकीकरण"
+			]
+		},
+		"is-IS": {
+			"name": "WeChat-vélmenni",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+			"description_markdown": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"vélmenni",
+				"samþætting"
+			]
+		},
+		"it-IT": {
+			"name": "Bot WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Usa un personaggio fount come bot WeChat: associa un ruolo, gestisci i bot e chatta su WeChat.",
+			"description_markdown": "Usa un personaggio fount come bot WeChat: associa un ruolo, gestisci i bot e chatta su WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"integrazione"
+			]
+		},
+		"ja-JP": {
+			"name": "WeChat ボット",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
+			"description_markdown": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"ボット",
+				"連携"
+			]
+		},
+		"ko-KR": {
+			"name": "위챗 봇",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
+			"description_markdown": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"봇",
+				"연동"
+			]
+		},
+		"lzh": {
+			"name": "微信靈偶",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "以泉源化身為微信靈偶，周旋於對談之間，如輔弼之隨側。",
+			"description_markdown": "以泉源化身為微信靈偶，周旋於對談之間，如輔弼之隨側。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"微信",
+				"靈偶",
+				"通渠"
+			]
+		},
+		"nl-NL": {
+			"name": "WeChat-bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
+			"description_markdown": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"integratie"
+			]
+		},
+		"pt-PT": {
+			"name": "Bot WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Use uma personagem fount como bot WeChat: associe um papel, faça a gestão dos bots e converse no WeChat.",
+			"description_markdown": "Use uma personagem fount como bot WeChat: associe um papel, faça a gestão dos bots e converse no WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"integração"
+			]
+		},
+		"ru-RU": {
+			"name": "Бот WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Запускайте персонажа fount как бота WeChat: привяжите роль, управляйте ботами и общайтесь в WeChat.",
+			"description_markdown": "Запускайте персонажа fount как бота WeChat: привяжите роль, управляйте ботами и общайтесь в WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"бот",
+				"интеграция"
+			]
+		},
+		"uk-UA": {
+			"name": "Бот WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
+			"description_markdown": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"бот",
+				"інтеграція"
+			]
+		},
+		"vi-VN": {
+			"name": "Bot WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+			"description_markdown": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"bot",
+				"tích hợp"
+			]
+		},
+		"zh-TW": {
+			"name": "微信 Bot",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+			"description_markdown": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"微信",
+				"Bot",
+				"整合"
+			]
+		}
+	}
+}

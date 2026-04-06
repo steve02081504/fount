@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "Persónan ${charname} hefur skráð sig inn á Discord Bot ${botusername}"
-		},
+		"botStarted": "Persónan ${charname} hefur skráð sig inn á ${platform} Bot ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "URL:fount samskiptareglur",
@@ -1861,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "Gefðu félögum þínum rödd í iðandi sölum Discord. Stilltu viðveru þeirra, stjórnaðu rekstri þeirra og láttu þá brúa heima, einn netþjón í einu.",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "Veldu vélmenni"
-		},
-		"botSearch": {
-			"placeholder": "Leita að boti..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Veldu hlutverk"
-		},
-		"charSearch": {
-			"placeholder": "Leitaðu að hlutverkum..."
-		},
-		"configCard": {
-			"title": "Bot stillingar",
-			"labels": {
-				"character": "Tengd persóna",
-				"apiKey": "Discord API lykill",
-				"config": "Stillingar"
-			},
-			"charSelectPlaceholder": "Veldu persónu",
-			"apiKeyInput": {
-				"placeholder": "Sláðu inn API lykil"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Skipta um að sýna API lykla"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Sýna/fela API lykil"
-			},
-			"buttons": {
-				"saveConfig": "Vista stillingar",
-				"startBot": "Ræsa",
-				"stopBot": "Stöðva"
-			}
-		},
-		"prompts": {
-			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
-		},
-		"buttons": {
-			"newBot": "Nýr Bot",
-			"deleteBot": "Eyða Bot"
-		},
-		"alerts": {
-			"configSaved": "Stillingar vistaðar",
-			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
-			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"httpError": "HTTP villa",
-			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Að koma til Discord",
-				"description": "Kallaðu persónu þína inn í heim Discord.",
-				"locked_description": "Ræstu Discord Bot einu sinni."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bot tengt",
-				"sub_items": {
-					"manage": {
-						"title": "Stjórna Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Stilla Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"description": "Leyfðu upprunapersónunum þínum að fara yfir augnabliksbylgjur Telegram. Stilltu stafræna viðveru sína, stjórnaðu samtölum þeirra og stækkuðu umfang þeirra til þessa líflega skilaboðaheims.",
@@ -2010,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Stilla Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat-vélmenni",
+		"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+		"cardTitle": "WeChat-vélmenni",
+		"botSelectDropdown": {
+			"placeholder": "Veldu vélmenni"
+		},
+		"botSearch": {
+			"placeholder": "Leita að vélmenni…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leita að hlutverkum…"
+		},
+		"configCard": {
+			"title": "Stillingar vélmennis",
+			"labels": {
+				"character": "Tengt hlutverk",
+				"apiBaseUrl": "Grunnslóð WeChat-rása-API",
+				"botToken": "iLink Bot-teikn",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu hlutverk",
+			"apiBaseUrlInput": {
+				"placeholder": "Skildu autt fyrir sjálfgefna https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-teikn eftir innskráningu"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Sýna eða fela teikn"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Sýna eða fela teikn"
+			},
+			"buttons": {
+				"saveConfig": "Vista",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Nafn nýs vélmennis:"
+		},
+		"buttons": {
+			"newBot": "Nýtt",
+			"deleteBot": "Eyða"
+		},
+		"alerts": {
+			"configSaved": "Vistað",
+			"botExists": "Vélmenni með nafninu «${botname}» er þegar til. Veldu annað nafn.",
+			"unsavedChanges": "Óvistaðar breytingar. Henda þeim?",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Óvistaðar breytingar. Yfirgefa síðu?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Settu mig í vinnu!",
+				"description": "Spjallaðu við fount-persónuna á WeChat.",
+				"locked_description": "Ræstu WeChat-vélmennið einu sinni."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Vélmenni",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat-vélmenni"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Stilla WeChat-vélmenni"
+			}
+		},
+		"qrLogin": {
+			"hint": "Skannaðu QR-kóðann hér að neðan með WeChat til að ljúka innskráningu.",
+			"button": "Skanna til innskráningar",
+			"scanPrompt": "Opnaðu WeChat og skannaðu QR-kóðann",
+			"waiting": "Hleð QR-kóða…",
+			"scanned": "Skannað — staðfestu í símanum",
+			"success": "WeChat tengt. Stillingar vistaðar — þú getur ræst vélmennið núna.",
+			"needBot": "Veldu vélmenni úr listanum eða búðu til eitt með „Nýtt“."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "Gefðu félögum þínum rödd í iðandi sölum Discord. Stilltu viðveru þeirra, stjórnaðu rekstri þeirra og láttu þá brúa heima, einn netþjón í einu.",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "Veldu vélmenni"
+		},
+		"botSearch": {
+			"placeholder": "Leita að boti..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leitaðu að hlutverkum..."
+		},
+		"configCard": {
+			"title": "Bot stillingar",
+			"labels": {
+				"character": "Tengd persóna",
+				"apiKey": "Discord API lykill",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu persónu",
+			"apiKeyInput": {
+				"placeholder": "Sláðu inn API lykil"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Skipta um að sýna API lykla"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Sýna/fela API lykil"
+			},
+			"buttons": {
+				"saveConfig": "Vista stillingar",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
+		},
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
+		"alerts": {
+			"configSaved": "Stillingar vistaðar",
+			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Að koma til Discord",
+				"description": "Kallaðu persónu þína inn í heim Discord.",
+				"locked_description": "Ræstu Discord Bot einu sinni."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot tengt",
+				"sub_items": {
+					"manage": {
+						"title": "Stjórna Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Stilla Discord Bot"
 			}
 		}
 	},
