@@ -1,8 +1,8 @@
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 
 import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot, getBotConfigTemplate } from './bot.mjs'
-import { DEFAULT_WEIXIN_ILINK_BASE } from './weixin_api.mjs'
-import { pollQrSession, startQrSession } from './weixin_qr.mjs'
+import { DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
+import { pollQrSession, startQrSession } from './wechat_qr.mjs'
 
 /**
  * 将 QR 登录结果（token + apiBaseUrl + ilinkUserId）写回机器人保存的配置。
@@ -13,7 +13,7 @@ import { pollQrSession, startQrSession } from './weixin_qr.mjs'
 function applyQrLoginResult(username, pollResult) {
 	const existingConfig = getBotConfig(username, pollResult.botname)
 	const botSpecificConfig = { ...existingConfig.config || {} }
-	const normalizedUrl = String(pollResult.apiBaseUrl || DEFAULT_WEIXIN_ILINK_BASE).replace(/\/+$/, '')
+	const normalizedUrl = String(pollResult.apiBaseUrl || DEFAULT_WECHAT_ILINK_BASE).replace(/\/+$/, '')
 
 	if (pollResult.ilinkUserId && (!botSpecificConfig.OwnerWeChatId || String(botSpecificConfig.OwnerWeChatId).includes('your_')))
 		botSpecificConfig.OwnerWeChatId = pollResult.ilinkUserId

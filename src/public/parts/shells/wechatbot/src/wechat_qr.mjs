@@ -4,7 +4,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { apiGetFetch, DEFAULT_WEIXIN_ILINK_BASE, ensureTrailingSlash } from './weixin_api.mjs'
+import { apiGetFetch, DEFAULT_WECHAT_ILINK_BASE, ensureTrailingSlash } from './wechat_api.mjs'
 
 const DEFAULT_BOT_TYPE = '3'
 const GET_QRCODE_TIMEOUT_MS = 5000
@@ -49,7 +49,7 @@ function purgeExpired() {
  */
 function normalizeServiceBaseUrl(baseurl) {
 	if (!baseurl?.trim())
-		return ensureTrailingSlash(DEFAULT_WEIXIN_ILINK_BASE)
+		return ensureTrailingSlash(DEFAULT_WECHAT_ILINK_BASE)
 	const trimmed = baseurl.trim()
 	return ensureTrailingSlash(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed.replace(/^\/+/, '')}`)
 }
@@ -60,7 +60,7 @@ function normalizeServiceBaseUrl(baseurl) {
  */
 async function fetchFreshQrCode() {
 	const rawText = await apiGetFetch({
-		baseUrl: DEFAULT_WEIXIN_ILINK_BASE,
+		baseUrl: DEFAULT_WECHAT_ILINK_BASE,
 		endpoint: `ilink/bot/get_bot_qrcode?bot_type=${encodeURIComponent(DEFAULT_BOT_TYPE)}`,
 		timeoutMs: GET_QRCODE_TIMEOUT_MS,
 	})
@@ -85,7 +85,7 @@ export async function startQrSession({ username, botname }) {
 		username,
 		botname,
 		qrcode: qr.qrcode,
-		currentApiBaseUrl: DEFAULT_WEIXIN_ILINK_BASE,
+		currentApiBaseUrl: DEFAULT_WECHAT_ILINK_BASE,
 		startedAt: Date.now(),
 		qrRefreshCount: 0,
 	})
@@ -141,7 +141,7 @@ export async function pollQrSession(sessionKey, username) {
 			const qr = await fetchFreshQrCode()
 			session.qrcode = qr.qrcode
 			session.startedAt = Date.now()
-			session.currentApiBaseUrl = DEFAULT_WEIXIN_ILINK_BASE
+			session.currentApiBaseUrl = DEFAULT_WECHAT_ILINK_BASE
 			return { done: false, status: 'expired', qrcodeContent: buildQrCodeUrl(qr.qrcode) }
 		}
 		case 'confirmed': {

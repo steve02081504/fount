@@ -12,12 +12,12 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/p
 import { splitDiscordReply } from '../../../discordbot/src/default_interface/tools.mjs'
 import {
 	DEFAULT_LONG_POLL_TIMEOUT_MS,
-	DEFAULT_WEIXIN_ILINK_BASE,
+	DEFAULT_WECHAT_ILINK_BASE,
 	UploadMediaType,
 	decryptAesEcb,
 	downloadCdnBuffer,
 	parseInboundAesKey,
-} from '../weixin_api.mjs'
+} from '../wechat_api.mjs'
 
 ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path)))
 
@@ -414,7 +414,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	 */
 	async function SimpleWechatBotMain(ctx, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
-		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WEIXIN_ILINK_BASE
+		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
 		let buf = ''
 		let longPollTimeoutMs = DEFAULT_LONG_POLL_TIMEOUT_MS
 		const chatLogs = /** @type {Record<string, chatLogEntry_t_simple[]>} */ {}

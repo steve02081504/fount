@@ -8,7 +8,7 @@ import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
-import { createWeixinApi, DEFAULT_WEIXIN_ILINK_BASE } from './weixin_api.mjs'
+import { createWechatApi, DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
 
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
@@ -40,8 +40,8 @@ async function ensureWechatInterface(char, username, charname) {
  */
 async function startBot(config, char, username, charname) {
 	const abortController = new AbortController()
-	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WEIXIN_ILINK_BASE
-	const api = createWeixinApi({
+	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WECHAT_ILINK_BASE
+	const api = createWechatApi({
 		baseUrl: cdnBaseUrl,
 		token: config.token,
 		signal: abortController.signal,

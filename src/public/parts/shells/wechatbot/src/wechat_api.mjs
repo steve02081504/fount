@@ -9,7 +9,7 @@ const CHANNEL_VERSION = '2.1.1'
 const ILINK_APP_ID = 'bot'
 
 /** 腾讯 iLink 默认入口（扫码与消息 API 均在此域，无需自建网关）。 */
-export const DEFAULT_WEIXIN_ILINK_BASE = 'https://ilinkai.weixin.qq.com'
+export const DEFAULT_WECHAT_ILINK_BASE = 'https://ilinkai.weixin.qq.com'
 
 /**
  * 确保 URL 以斜杠结尾。
@@ -148,7 +148,7 @@ export function parseInboundAesKey(aesKeyBase64) {
  * @returns {string} 完整下载 URL。
  */
 export function buildCdnDownloadUrl(encryptedQueryParam, cdnBaseUrl) {
-	const base = String(cdnBaseUrl || DEFAULT_WEIXIN_ILINK_BASE).replace(/\/+$/, '')
+	const base = String(cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE).replace(/\/+$/, '')
 	return `${base}/download?encrypted_query_param=${encodeURIComponent(encryptedQueryParam)}`
 }
 
@@ -200,7 +200,7 @@ export async function apiGetFetch(params) {
 	})
 	const rawText = await res.text()
 	if (!res.ok)
-		throw new Error(`Weixin GET ${params.endpoint} ${res.status}: ${rawText}`)
+		throw new Error(`WeChat GET ${params.endpoint} ${res.status}: ${rawText}`)
 
 	return rawText
 }
@@ -226,7 +226,7 @@ async function apiPostFetch(params) {
 	})
 	const rawText = await res.text()
 	if (!res.ok)
-		throw new Error(`Weixin API ${params.endpoint} ${res.status}: ${rawText}`)
+		throw new Error(`WeChat API ${params.endpoint} ${res.status}: ${rawText}`)
 
 	return rawText
 }
@@ -257,8 +257,8 @@ async function apiPostJson(params) {
  * @param {AbortSignal} [opts.signal] 中止请求信号。
  * @returns {object} 微信 API 客户端。
  */
-export function createWeixinApi(opts) {
-	const baseUrl = opts.baseUrl?.trim() || DEFAULT_WEIXIN_ILINK_BASE
+export function createWechatApi(opts) {
+	const baseUrl = opts.baseUrl?.trim() || DEFAULT_WECHAT_ILINK_BASE
 	const { token, signal } = opts
 
 	return {

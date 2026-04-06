@@ -255,7 +255,7 @@ export class CharAPI_t {
 		/**
 		 * 微信机器人（iLink Bot HTTP 长轮询等，用于将角色接入微信侧对话）。
 		 */
-		weixin?: {
+		wechat?: {
 			/**
 			 * 启动长轮询会话：ctx 含 getUpdates、sendMessage、signal 等。
 			 * @param {object} ctx - 网关 API 与中止信号。
