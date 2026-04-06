@@ -14,7 +14,7 @@ async function fetchDataWithHandling(url, options = {}) {
 	const response = await fetch(url, options)
 	if (!response.ok) {
 		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `${geti18n('weixin_bots.alerts.httpError')}! status: ${response.status}`)
+		throw new Error(data?.message || `${geti18n('wechat_bots.alerts.httpError')}! status: ${response.status}`)
 	}
 	return response.json()
 }

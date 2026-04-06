@@ -1932,95 +1932,6 @@
 			}
 		}
 	},
-	"weixin_bots": {
-		"title": "WeChat-vélmenni",
-		"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
-		"cardTitle": "WeChat-vélmenni",
-		"botSelectDropdown": {
-			"placeholder": "Veldu vélmenni"
-		},
-		"botSearch": {
-			"placeholder": "Leita að vélmenni…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "Veldu hlutverk"
-		},
-		"charSearch": {
-			"placeholder": "Leita að hlutverkum…"
-		},
-		"configCard": {
-			"title": "Stillingar vélmennis",
-			"labels": {
-				"character": "Tengt hlutverk",
-				"apiBaseUrl": "Grunnslóð WeChat-rása-API",
-				"botToken": "iLink Bot-teikn",
-				"config": "Stillingar"
-			},
-			"charSelectPlaceholder": "Veldu hlutverk",
-			"apiBaseUrlInput": {
-				"placeholder": "Skildu autt fyrir sjálfgefna https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "Bearer-teikn eftir innskráningu"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "Sýna eða fela teikn"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Sýna eða fela teikn"
-			},
-			"buttons": {
-				"saveConfig": "Vista",
-				"startBot": "Ræsa",
-				"stopBot": "Stöðva"
-			}
-		},
-		"prompts": {
-			"newBotName": "Nafn nýs vélmennis:"
-		},
-		"buttons": {
-			"newBot": "Nýtt",
-			"deleteBot": "Eyða"
-		},
-		"alerts": {
-			"configSaved": "Vistað",
-			"botExists": "Vélmenni með nafninu «${botname}» er þegar til. Veldu annað nafn.",
-			"unsavedChanges": "Óvistaðar breytingar. Henda þeim?",
-			"httpError": "HTTP villa",
-			"beforeUnload": "Óvistaðar breytingar. Yfirgefa síðu?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Settu mig í vinnu!",
-				"description": "Spjallaðu við fount-persónuna á WeChat.",
-				"locked_description": "Ræstu WeChat-vélmennið einu sinni."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Vélmenni",
-				"sub_items": {
-					"manage": {
-						"title": "WeChat-vélmenni"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Stilla WeChat-vélmenni"
-			}
-		},
-		"qrLogin": {
-			"hint": "Skannaðu QR-kóðann hér að neðan með WeChat til að ljúka innskráningu.",
-			"button": "Skanna til innskráningar",
-			"scanPrompt": "Opnaðu WeChat og skannaðu QR-kóðann",
-			"waiting": "Hleð QR-kóða…",
-			"scanned": "Skannað — staðfestu í símanum",
-			"success": "WeChat tengt. Stillingar vistaðar — þú getur ræst vélmennið núna.",
-			"needBot": "Veldu vélmenni úr listanum eða búðu til eitt með „Nýtt“."
-		}
-	},
 	"discord_bots": {
 		"title": "Discord Bot",
 		"description": "Gefðu félögum þínum rödd í iðandi sölum Discord. Stilltu viðveru þeirra, stjórnaðu rekstri þeirra og láttu þá brúa heima, einn netþjón í einu.",
@@ -2609,6 +2520,95 @@
 		},
 		"search": {
 			"placeholder": "Leita..."
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat-vélmenni",
+		"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+		"cardTitle": "WeChat-vélmenni",
+		"botSelectDropdown": {
+			"placeholder": "Veldu vélmenni"
+		},
+		"botSearch": {
+			"placeholder": "Leita að vélmenni…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leita að hlutverkum…"
+		},
+		"configCard": {
+			"title": "Stillingar vélmennis",
+			"labels": {
+				"character": "Tengt hlutverk",
+				"apiBaseUrl": "Grunnslóð WeChat-rása-API",
+				"botToken": "iLink Bot-teikn",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu hlutverk",
+			"apiBaseUrlInput": {
+				"placeholder": "Skildu autt fyrir sjálfgefna https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-teikn eftir innskráningu"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Sýna eða fela teikn"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Sýna eða fela teikn"
+			},
+			"buttons": {
+				"saveConfig": "Vista",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Nafn nýs vélmennis:"
+		},
+		"buttons": {
+			"newBot": "Nýtt",
+			"deleteBot": "Eyða"
+		},
+		"alerts": {
+			"configSaved": "Vistað",
+			"botExists": "Vélmenni með nafninu «${botname}» er þegar til. Veldu annað nafn.",
+			"unsavedChanges": "Óvistaðar breytingar. Henda þeim?",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Óvistaðar breytingar. Yfirgefa síðu?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Settu mig í vinnu!",
+				"description": "Spjallaðu við fount-persónuna á WeChat.",
+				"locked_description": "Ræstu WeChat-vélmennið einu sinni."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Vélmenni",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat-vélmenni"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Stilla WeChat-vélmenni"
+			}
+		},
+		"qrLogin": {
+			"hint": "Skannaðu QR-kóðann hér að neðan með WeChat til að ljúka innskráningu.",
+			"button": "Skanna til innskráningar",
+			"scanPrompt": "Opnaðu WeChat og skannaðu QR-kóðann",
+			"waiting": "Hleð QR-kóða…",
+			"scanned": "Skannað — staðfestu í símanum",
+			"success": "WeChat tengt. Stillingar vistaðar — þú getur ræst vélmennið núna.",
+			"needBot": "Veldu vélmenni úr listanum eða búðu til eitt með „Nýtt“."
 		}
 	}
 }

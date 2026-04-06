@@ -1932,7 +1932,7 @@
 			}
 		}
 	},
-	"weixin_bots": {
+	"wechat_bots": {
 		"title": "微信 Bot",
 		"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
 		"cardTitle": "微信 Bot",

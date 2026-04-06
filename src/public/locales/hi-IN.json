@@ -1932,95 +1932,6 @@
 			}
 		}
 	},
-	"weixin_bots": {
-		"title": "WeChat बॉट",
-		"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
-		"cardTitle": "WeChat बॉट",
-		"botSelectDropdown": {
-			"placeholder": "एक बॉट चुनें"
-		},
-		"botSearch": {
-			"placeholder": "बॉट खोजें…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "एक भूमिका चुनें"
-		},
-		"charSearch": {
-			"placeholder": "भूमिकाएँ खोजें…"
-		},
-		"configCard": {
-			"title": "बॉट सेटिंग्स",
-			"labels": {
-				"character": "जुड़ी भूमिका",
-				"apiBaseUrl": "WeChat चैनल API का मूल URL",
-				"botToken": "iLink बॉट टोकन",
-				"config": "कॉन्फ़िगरेशन"
-			},
-			"charSelectPlaceholder": "भूमिका चुनें",
-			"apiBaseUrlInput": {
-				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"
-			},
-			"botTokenInput": {
-				"placeholder": "लॉग इन के बाद मिला Bearer टोकन"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "टोकन दिखाएँ या छिपाएँ"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "टोकन दिखाएँ या छिपाएँ"
-			},
-			"buttons": {
-				"saveConfig": "सहेजें",
-				"startBot": "प्रारंभ",
-				"stopBot": "रोकें"
-			}
-		},
-		"prompts": {
-			"newBotName": "नए बॉट का नाम:"
-		},
-		"buttons": {
-			"newBot": "नया",
-			"deleteBot": "हटाएँ"
-		},
-		"alerts": {
-			"configSaved": "सहेजा गया",
-			"botExists": "«${botname}» नाम का बॉट पहले से है। दूसरा नाम चुनें।",
-			"unsavedChanges": "बिना सहेजे बदलाव हैं। उन्हें छोड़ें?",
-			"httpError": "HTTP त्रुटि",
-			"beforeUnload": "बिना सहेजे बदलाव हैं। पृष्ठ छोड़ें?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "मुझे काम पर लगाओ!",
-				"description": "WeChat पर fount कैरेक्टर से बात करें।",
-				"locked_description": "WeChat बॉट एक बार चलाएँ।"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "बॉट",
-				"sub_items": {
-					"manage": {
-						"title": "WeChat बॉट"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "WeChat बॉट सेटिंग्स"
-			}
-		},
-		"qrLogin": {
-			"hint": "लॉग इन पूरा करने के लिए नीचे का QR कोड WeChat से स्कैन करें।",
-			"button": "लॉग इन के लिए स्कैन करें",
-			"scanPrompt": "WeChat खोलकर QR कोड स्कैन करें",
-			"waiting": "QR कोड लोड हो रहा है…",
-			"scanned": "स्कैन हो गया — फोन पर पुष्टि करें",
-			"success": "WeChat जुड़ गया, सेटिंग्स सहेजी गईं — अब बॉट चला सकते हैं।",
-			"needBot": "पहले सूची से बॉट चुनें या «नया» से बनाएँ।"
-		}
-	},
 	"discord_bots": {
 		"title": "डिस्कॉर्ड बॉट",
 		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
@@ -2609,6 +2520,95 @@
 		},
 		"search": {
 			"placeholder": "खोजें..."
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat बॉट",
+		"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+		"cardTitle": "WeChat बॉट",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका चुनें"
+		},
+		"charSearch": {
+			"placeholder": "भूमिकाएँ खोजें…"
+		},
+		"configCard": {
+			"title": "बॉट सेटिंग्स",
+			"labels": {
+				"character": "जुड़ी भूमिका",
+				"apiBaseUrl": "WeChat चैनल API का मूल URL",
+				"botToken": "iLink बॉट टोकन",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "भूमिका चुनें",
+			"apiBaseUrlInput": {
+				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"
+			},
+			"botTokenInput": {
+				"placeholder": "लॉग इन के बाद मिला Bearer टोकन"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "टोकन दिखाएँ या छिपाएँ"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "टोकन दिखाएँ या छिपाएँ"
+			},
+			"buttons": {
+				"saveConfig": "सहेजें",
+				"startBot": "प्रारंभ",
+				"stopBot": "रोकें"
+			}
+		},
+		"prompts": {
+			"newBotName": "नए बॉट का नाम:"
+		},
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"alerts": {
+			"configSaved": "सहेजा गया",
+			"botExists": "«${botname}» नाम का बॉट पहले से है। दूसरा नाम चुनें।",
+			"unsavedChanges": "बिना सहेजे बदलाव हैं। उन्हें छोड़ें?",
+			"httpError": "HTTP त्रुटि",
+			"beforeUnload": "बिना सहेजे बदलाव हैं। पृष्ठ छोड़ें?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "मुझे काम पर लगाओ!",
+				"description": "WeChat पर fount कैरेक्टर से बात करें।",
+				"locked_description": "WeChat बॉट एक बार चलाएँ।"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat बॉट"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat बॉट सेटिंग्स"
+			}
+		},
+		"qrLogin": {
+			"hint": "लॉग इन पूरा करने के लिए नीचे का QR कोड WeChat से स्कैन करें।",
+			"button": "लॉग इन के लिए स्कैन करें",
+			"scanPrompt": "WeChat खोलकर QR कोड स्कैन करें",
+			"waiting": "QR कोड लोड हो रहा है…",
+			"scanned": "स्कैन हो गया — फोन पर पुष्टि करें",
+			"success": "WeChat जुड़ गया, सेटिंग्स सहेजी गईं — अब बॉट चला सकते हैं।",
+			"needBot": "पहले सूची से बॉट चुनें या «नया» से बनाएँ।"
 		}
 	}
 }

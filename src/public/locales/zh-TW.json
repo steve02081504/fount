@@ -1932,95 +1932,6 @@
 			}
 		}
 	},
-	"weixin_bots": {
-		"title": "微信 Bot",
-		"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
-		"cardTitle": "微信 Bot",
-		"botSelectDropdown": {
-			"placeholder": "選擇一個 Bot"
-		},
-		"botSearch": {
-			"placeholder": "搜尋 Bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "選擇一個角色"
-		},
-		"charSearch": {
-			"placeholder": "搜尋角色..."
-		},
-		"configCard": {
-			"title": "Bot設定",
-			"labels": {
-				"character": "綁定角色",
-				"apiBaseUrl": "微信通路服務根 URL",
-				"botToken": "iLink Bot Token",
-				"config": "設定"
-			},
-			"charSelectPlaceholder": "選擇角色",
-			"apiBaseUrlInput": {
-				"placeholder": "留空則使用預設 https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "登入後取得的 Bearer Token"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "切換顯示 Token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "切換顯示 Token"
-			},
-			"buttons": {
-				"saveConfig": "儲存設定",
-				"startBot": "啟動",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "請輸入新的 Bot 名稱："
-		},
-		"buttons": {
-			"newBot": "新增",
-			"deleteBot": "刪除"
-		},
-		"alerts": {
-			"configSaved": "設定已儲存",
-			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請改用其他名稱。",
-			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "幫我工作！",
-				"description": "在微信上與 fount 角色對話。",
-				"locked_description": "啟動一次微信 Bot。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "bot",
-				"sub_items": {
-					"manage": {
-						"title": "管理微信 Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "配置微信 Bot"
-			}
-		},
-		"qrLogin": {
-			"hint": "使用微信掃描下方二維碼完成登入。",
-			"button": "掃碼登入",
-			"scanPrompt": "請使用微信掃描二維碼",
-			"waiting": "正在取得二維碼…",
-			"scanned": "已掃碼，請在手機上確認…",
-			"success": "微信已連線，設定已更新。可直接啟動 Bot。",
-			"needBot": "請先在下拉選單中選擇一個 Bot，或使用「新增」建立一個。"
-		}
-	},
 	"discord_bots": {
 		"title": "Discord Bot",
 		"description": "讓你的 fount 同伴在喧鬧的無序大廳中發出聲音。配置他們的存在，管理他們的營運，並讓他們連接世界，一次一台伺服器。",
@@ -2608,6 +2519,95 @@
 		},
 		"search": {
 			"placeholder": "搜尋..."
+		}
+	},
+	"wechat_bots": {
+		"title": "微信 Bot",
+		"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+		"cardTitle": "微信 Bot",
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
+		"configCard": {
+			"title": "Bot設定",
+			"labels": {
+				"character": "綁定角色",
+				"apiBaseUrl": "微信通路服務根 URL",
+				"botToken": "iLink Bot Token",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "選擇角色",
+			"apiBaseUrlInput": {
+				"placeholder": "留空則使用預設 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登入後取得的 Bearer Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切換顯示 Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切換顯示 Token"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"buttons": {
+			"newBot": "新增",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "設定已儲存",
+			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請改用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "幫我工作！",
+				"description": "在微信上與 fount 角色對話。",
+				"locked_description": "啟動一次微信 Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理微信 Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置微信 Bot"
+			}
+		},
+		"qrLogin": {
+			"hint": "使用微信掃描下方二維碼完成登入。",
+			"button": "掃碼登入",
+			"scanPrompt": "請使用微信掃描二維碼",
+			"waiting": "正在取得二維碼…",
+			"scanned": "已掃碼，請在手機上確認…",
+			"success": "微信已連線，設定已更新。可直接啟動 Bot。",
+			"needBot": "請先在下拉選單中選擇一個 Bot，或使用「新增」建立一個。"
 		}
 	}
 }

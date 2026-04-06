@@ -1932,95 +1932,6 @@
 			}
 		}
 	},
-	"weixin_bots": {
-		"title": "Bot WeChat",
-		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
-		"cardTitle": "Bot WeChat",
-		"botSelectDropdown": {
-			"placeholder": "Chọn bot"
-		},
-		"botSearch": {
-			"placeholder": "Tìm bot…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "Chọn vai trò"
-		},
-		"charSearch": {
-			"placeholder": "Tìm vai trò…"
-		},
-		"configCard": {
-			"title": "Cài đặt bot",
-			"labels": {
-				"character": "Vai trò đã liên kết",
-				"apiBaseUrl": "URL gốc API kênh WeChat",
-				"botToken": "Token iLink Bot",
-				"config": "Cấu hình"
-			},
-			"charSelectPlaceholder": "Chọn vai trò",
-			"apiBaseUrlInput": {
-				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "Bearer token sau khi đăng nhập"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "Hiện hoặc ẩn token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Hiện hoặc ẩn token"
-			},
-			"buttons": {
-				"saveConfig": "Lưu",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			}
-		},
-		"prompts": {
-			"newBotName": "Tên bot mới:"
-		},
-		"buttons": {
-			"newBot": "Mới",
-			"deleteBot": "Xóa"
-		},
-		"alerts": {
-			"configSaved": "Đã lưu",
-			"botExists": "Đã có bot tên «${botname}». Hãy chọn tên khác.",
-			"unsavedChanges": "Có thay đổi chưa lưu. Bỏ qua?",
-			"httpError": "Lỗi HTTP",
-			"beforeUnload": "Có thay đổi chưa lưu. Rời trang?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Cho tôi làm việc!",
-				"description": "Trò chuyện với nhân vật fount trên WeChat.",
-				"locked_description": "Khởi chạy bot WeChat một lần."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bot",
-				"sub_items": {
-					"manage": {
-						"title": "Bot WeChat"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Cài đặt bot WeChat"
-			}
-		},
-		"qrLogin": {
-			"hint": "Quét mã QR bên dưới bằng WeChat để hoàn tất đăng nhập.",
-			"button": "Quét để đăng nhập",
-			"scanPrompt": "Mở WeChat và quét mã QR",
-			"waiting": "Đang tải mã QR…",
-			"scanned": "Đã quét — xác nhận trên điện thoại",
-			"success": "Đã kết nối WeChat và lưu cài đặt — có thể khởi động bot.",
-			"needBot": "Chọn bot trong danh sách hoặc tạo mới bằng «Mới»."
-		}
-	},
 	"discord_bots": {
 		"title": "Bot Discord",
 		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
@@ -2609,6 +2520,95 @@
 		},
 		"search": {
 			"placeholder": "Tìm kiếm..."
+		}
+	},
+	"wechat_bots": {
+		"title": "Bot WeChat",
+		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+		"cardTitle": "Bot WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Chọn bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm bot…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm vai trò…"
+		},
+		"configCard": {
+			"title": "Cài đặt bot",
+			"labels": {
+				"character": "Vai trò đã liên kết",
+				"apiBaseUrl": "URL gốc API kênh WeChat",
+				"botToken": "Token iLink Bot",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn vai trò",
+			"apiBaseUrlInput": {
+				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer token sau khi đăng nhập"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Hiện hoặc ẩn token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Hiện hoặc ẩn token"
+			},
+			"buttons": {
+				"saveConfig": "Lưu",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Tên bot mới:"
+		},
+		"buttons": {
+			"newBot": "Mới",
+			"deleteBot": "Xóa"
+		},
+		"alerts": {
+			"configSaved": "Đã lưu",
+			"botExists": "Đã có bot tên «${botname}». Hãy chọn tên khác.",
+			"unsavedChanges": "Có thay đổi chưa lưu. Bỏ qua?",
+			"httpError": "Lỗi HTTP",
+			"beforeUnload": "Có thay đổi chưa lưu. Rời trang?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Cho tôi làm việc!",
+				"description": "Trò chuyện với nhân vật fount trên WeChat.",
+				"locked_description": "Khởi chạy bot WeChat một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot",
+				"sub_items": {
+					"manage": {
+						"title": "Bot WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cài đặt bot WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Quét mã QR bên dưới bằng WeChat để hoàn tất đăng nhập.",
+			"button": "Quét để đăng nhập",
+			"scanPrompt": "Mở WeChat và quét mã QR",
+			"waiting": "Đang tải mã QR…",
+			"scanned": "Đã quét — xác nhận trên điện thoại",
+			"success": "Đã kết nối WeChat và lưu cài đặt — có thể khởi động bot.",
+			"needBot": "Chọn bot trong danh sách hoặc tạo mới bằng «Mới»."
 		}
 	}
 }

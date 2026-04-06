@@ -1,10 +1,10 @@
 {
 	"achievements": {
 		"start_bot": {
-			"name": "weixin_bots.achievements.start_bot.name",
-			"description": "weixin_bots.achievements.start_bot.description",
+			"name": "wechat_bots.achievements.start_bot.name",
+			"description": "wechat_bots.achievements.start_bot.description",
 			"icon": "https://api.iconify.design/simple-icons/wechat.svg",
-			"locked_description": "weixin_bots.achievements.start_bot.locked_description",
+			"locked_description": "wechat_bots.achievements.start_bot.locked_description",
 			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
 		}
 	}

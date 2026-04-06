@@ -2,12 +2,12 @@
 	"home_function_buttons": [
 		{
 			"id": "bot_related",
-			"info": "weixin_bots.home_function_buttons.bot_related",
+			"info": "wechat_bots.home_function_buttons.bot_related",
 			"level": 2,
 			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
-					"info": "weixin_bots.home_function_buttons.bot_related.sub_items.manage",
+					"info": "wechat_bots.home_function_buttons.bot_related.sub_items.manage",
 					"level": 11,
 					"url": "/parts/shells:wechatbot/",
 					"button": "<img src=\"https://api.iconify.design/simple-icons/wechat.svg\" class=\"text-icon\"/>"
@@ -18,7 +18,7 @@
 	"home_interfaces": {
 		"chars": [
 			{
-				"info": "weixin_bots.home_char_interfaces.configure",
+				"info": "wechat_bots.home_char_interfaces.configure",
 				"level": 11,
 				"interface": "chat",
 				"url": "/parts/shells:wechatbot/?name=${name}&char=${name}",

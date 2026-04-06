@@ -1921,7 +1921,7 @@ export type LocaleData = {
 			}
 		}
 	}
-	weixin_bots: {
+	wechat_bots: {
 		title: string
 		description: string
 		cardTitle: string
@@ -2746,7 +2746,7 @@ export type LocaleKeyParams = {
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }
-	'weixin_bots.alerts.botExists': { botname: string | number }
+	'wechat_bots.alerts.botExists': { botname: string | number }
 }
 
 /**

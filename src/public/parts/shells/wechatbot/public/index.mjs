@@ -93,7 +93,7 @@ async function renderBotDropdown() {
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
 			if (botName == selectedBot) return
-			if (isDirty && !confirmI18n('weixin_bots.alerts.unsavedChanges')) return true
+			if (isDirty && !confirmI18n('wechat_bots.alerts.unsavedChanges')) return true
 			await loadBotConfig(botName)
 		}
 	})
@@ -157,7 +157,7 @@ async function loadBotConfig(botname) {
 
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
-				label: geti18n('weixin_bots.configCard.labels.config'),
+				label: geti18n('wechat_bots.configCard.labels.config'),
 				/**
 				 *
 				 * @param {any} updatedContent 编辑器更新后的内容。
@@ -186,11 +186,11 @@ async function loadBotConfig(botname) {
  * @returns {Promise<void>} 返回值。
  */
 async function handleNewBot() {
-	const botname = promptI18n('weixin_bots.prompts.newBotName')?.trim()
+	const botname = promptI18n('wechat_bots.prompts.newBotName')?.trim()
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		showToastI18n('error', 'weixin_bots.alerts.botExists', { botname })
+		showToastI18n('error', 'wechat_bots.alerts.botExists', { botname })
 		return
 	}
 
@@ -200,7 +200,7 @@ async function handleNewBot() {
 		await renderBotDropdown()
 		botListDropdown.dataset.value = botname
 		await loadBotConfig(botname)
-		showToastI18n('success', 'weixin_bots.alerts.configSaved')
+		showToastI18n('success', 'wechat_bots.alerts.configSaved')
 	}
 	catch (error) {
 		console.error(error)
@@ -215,7 +215,7 @@ async function handleDeleteBot() {
 	if (!selectedBot) return
 
 	if (isDirty)
-		if (!confirmI18n('weixin_bots.alerts.unsavedChanges'))
+		if (!confirmI18n('wechat_bots.alerts.unsavedChanges'))
 			return
 
 	try {
@@ -238,7 +238,7 @@ async function handleDeleteBot() {
  * @returns {Promise<void>} 操作执行结果。
  */
 async function handleCharSelectChange(selectedChar) {
-	if (isDirty && !confirmI18n('weixin_bots.alerts.unsavedChanges')) return
+	if (isDirty && !confirmI18n('wechat_bots.alerts.unsavedChanges')) return
 
 	if (!selectedChar) {
 		charSelectDropdown.dataset.value = ''
@@ -256,7 +256,7 @@ async function handleCharSelectChange(selectedChar) {
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
-	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="weixin_bots.configCard.toggleBotTokenIcon" />`
+	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="wechat_bots.configCard.toggleBotTokenIcon" />`
 	i18nElement(toggleTokenButton)
 }
 
@@ -305,7 +305,7 @@ async function handleSaveConfig() {
 
 	await withButtonFeedback(saveConfigButton, saveStatusIcon, async () => {
 		await setBotConfig(selectedBot, config)
-		showToastI18n('success', 'weixin_bots.alerts.configSaved')
+		showToastI18n('success', 'wechat_bots.alerts.configSaved')
 		isDirty = false
 	})
 }
@@ -317,8 +317,8 @@ async function handleSaveConfig() {
  */
 function setStartStopButtonUI(isRunning) {
 	startStopStatusText.dataset.i18n = isRunning
-		? 'weixin_bots.configCard.buttons.stopBot'
-		: 'weixin_bots.configCard.buttons.startBot'
+		? 'wechat_bots.configCard.buttons.stopBot'
+		: 'wechat_bots.configCard.buttons.startBot'
 	startStopBotButton.classList.toggle('btn-error', isRunning)
 	startStopBotButton.classList.toggle('btn-success', !isRunning)
 	i18nElement(startStopBotButton)
@@ -412,7 +412,7 @@ function stopQrPoll() {
  */
 async function handleQrPollResult(result) {
 	if (result.status === 'scaned')
-		qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.scanned')
+		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.scanned')
 
 	if (result.qrcodeContent)
 		renderQrCode(result.qrcodeContent)
@@ -426,8 +426,8 @@ async function handleQrPollResult(result) {
 		else
 			isDirty = true
 
-		showToastI18n('success', 'weixin_bots.qrLogin.success')
-		qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.success')
+		showToastI18n('success', 'wechat_bots.qrLogin.success')
+		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.success')
 	}
 
 	if (result.done && result.error) {
@@ -466,18 +466,18 @@ async function startQrPolling(sessionKey) {
  */
 async function handleQrStart() {
 	if (!selectedBot) {
-		showToastI18n('error', 'weixin_bots.qrLogin.needBot')
+		showToastI18n('error', 'wechat_bots.qrLogin.needBot')
 		return
 	}
 	stopQrPoll()
-	qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.waiting')
+	qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.waiting')
 	qrWrap.classList.add('hidden')
 	try {
 		const result = await startWeixinQrLogin(selectedBot)
 		if (!result.sessionKey)
 			throw new Error(result.message || 'no sessionKey')
 		renderQrCode(result.qrcodeContent)
-		qrStatusEl.textContent = geti18n('weixin_bots.qrLogin.scanPrompt')
+		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.scanPrompt')
 		startQrPolling(result.sessionKey)
 	}
 	catch (error) {
@@ -492,7 +492,7 @@ async function handleQrStart() {
  */
 async function init() {
 	applyTheme()
-	await initTranslations('weixin_bots')
+	await initTranslations('wechat_bots')
 	initializeFromURLParams()
 
 	newBotButton.addEventListener('click', handleNewBot)
@@ -506,7 +506,7 @@ async function init() {
 		stopQrPoll()
 		if (isDirty) {
 			event.preventDefault()
-			event.returnValue = geti18n('weixin_bots.alerts.beforeUnload')
+			event.returnValue = geti18n('wechat_bots.alerts.beforeUnload')
 		}
 	})
 }

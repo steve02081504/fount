@@ -1932,95 +1932,6 @@
 			}
 		}
 	},
-	"weixin_bots": {
-		"title": "微信靈偶",
-		"description": "承泉源之化身，寓於微信對談，輔理庶務，無遠弗屆。",
-		"cardTitle": "微信靈偶",
-		"botSelectDropdown": {
-			"placeholder": "擇一靈偶"
-		},
-		"botSearch": {
-			"placeholder": "尋靈偶…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "擇一角色"
-		},
-		"charSearch": {
-			"placeholder": "尋角色…"
-		},
-		"configCard": {
-			"title": "靈偶規度",
-			"labels": {
-				"character": "綁定化身",
-				"apiBaseUrl": "微信渠服根址",
-				"botToken": "iLink 靈偶信物",
-				"config": "規度"
-			},
-			"charSelectPlaceholder": "擇化身",
-			"apiBaseUrlInput": {
-				"placeholder": "留空則用預設 https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "登入後所得 Bearer 信物"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "顯隱信物"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "顯隱信物"
-			},
-			"buttons": {
-				"saveConfig": "存規度",
-				"startBot": "啟",
-				"stopBot": "止"
-			}
-		},
-		"prompts": {
-			"newBotName": "請為新靈偶命名："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
-		"alerts": {
-			"configSaved": "規度已存。",
-			"botExists": "靈偶「${botname}」已存，請更名。",
-			"unsavedChanges": "尚有未存之變，確欲棄之乎？",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "尚有未存之變，確欲離乎？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "為吾執役",
-				"description": "令化身於微信與爾對談。",
-				"locked_description": "宜啟微信靈偶一次。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "靈偶",
-				"sub_items": {
-					"manage": {
-						"title": "微信靈偶"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "遣微信靈偶"
-			}
-		},
-		"qrLogin": {
-			"hint": "以微信掃描下方碼圖以成登入。",
-			"button": "掃碼登入",
-			"scanPrompt": "請以微信掃描碼圖",
-			"waiting": "方取碼圖…",
-			"scanned": "已掃，請於機上確認…",
-			"success": "微信已通，規度已新。可即啟靈偶。",
-			"needBot": "請先於列表擇一靈偶，或以「新建」創之。"
-		}
-	},
 	"discord_bots": {
 		"title": "Discord 靈偶",
 		"description": "令君之泉源夥伴，聲聞於Discord之殿堂。立其形，掌其行，跨界而通，無遠弗屆。",
@@ -2609,6 +2520,95 @@
 		},
 		"search": {
 			"placeholder": "搜..."
+		}
+	},
+	"wechat_bots": {
+		"title": "微信靈偶",
+		"description": "承泉源之化身，寓於微信對談，輔理庶務，無遠弗屆。",
+		"cardTitle": "微信靈偶",
+		"botSelectDropdown": {
+			"placeholder": "擇一靈偶"
+		},
+		"botSearch": {
+			"placeholder": "尋靈偶…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "擇一角色"
+		},
+		"charSearch": {
+			"placeholder": "尋角色…"
+		},
+		"configCard": {
+			"title": "靈偶規度",
+			"labels": {
+				"character": "綁定化身",
+				"apiBaseUrl": "微信渠服根址",
+				"botToken": "iLink 靈偶信物",
+				"config": "規度"
+			},
+			"charSelectPlaceholder": "擇化身",
+			"apiBaseUrlInput": {
+				"placeholder": "留空則用預設 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登入後所得 Bearer 信物"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "顯隱信物"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "顯隱信物"
+			},
+			"buttons": {
+				"saveConfig": "存規度",
+				"startBot": "啟",
+				"stopBot": "止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請為新靈偶命名："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "規度已存。",
+			"botExists": "靈偶「${botname}」已存，請更名。",
+			"unsavedChanges": "尚有未存之變，確欲棄之乎？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "為吾執役",
+				"description": "令化身於微信與爾對談。",
+				"locked_description": "宜啟微信靈偶一次。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "靈偶",
+				"sub_items": {
+					"manage": {
+						"title": "微信靈偶"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "遣微信靈偶"
+			}
+		},
+		"qrLogin": {
+			"hint": "以微信掃描下方碼圖以成登入。",
+			"button": "掃碼登入",
+			"scanPrompt": "請以微信掃描碼圖",
+			"waiting": "方取碼圖…",
+			"scanned": "已掃，請於機上確認…",
+			"success": "微信已通，規度已新。可即啟靈偶。",
+			"needBot": "請先於列表擇一靈偶，或以「新建」創之。"
 		}
 	}
 }
