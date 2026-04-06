@@ -1,7 +1,6 @@
 /**
  * 微信 iLink Bot HTTP API（长轮询 getUpdates / sendMessage 等）。
  * 协议细节可参考 @tencent-weixin/openclaw-weixin 中的实现说明。
- * @returns {any} 返回值。
  */
 import { Buffer } from 'node:buffer'
 import { createCipheriv, createHash, randomBytes } from 'node:crypto'
@@ -13,9 +12,9 @@ const ILINK_APP_ID = 'bot'
 export const DEFAULT_WEIXIN_ILINK_BASE = 'https://ilinkai.weixin.qq.com'
 
 /**
- *
- * @param {any} url 请求地址。
- * @returns {any} 返回值。
+ * 确保 URL 以斜杠结尾。
+ * @param {string} url 请求地址。
+ * @returns {string} 确保 URL 以斜杠结尾。
  */
 export function ensureTrailingSlash(url) {
 	return url.endsWith('/') ? url : `${url}/`
@@ -36,16 +35,16 @@ const [vMajor, vMinor, vPatch] = CHANNEL_VERSION.split('.').map(Number)
 const ILINK_APP_CLIENT_VERSION = ((vMajor & 0xff) << 16) | ((vMinor & 0xff) << 8) | (vPatch & 0xff)
 
 /**
- *
- * @returns {any} 返回值。
+ * 构建基础信息。
+ * @returns {object} 基础信息。
  */
 export function buildBaseInfo() {
 	return { channel_version: CHANNEL_VERSION }
 }
 
 /**
- *
- * @returns {any} 构造后的请求数据。
+ * 构建通用请求头。
+ * @returns {object} 通用请求头。
  */
 function buildCommonHeaders() {
 	return {
@@ -55,10 +54,11 @@ function buildCommonHeaders() {
 }
 
 /**
+ * 构建 POST 请求头。
  * @param {object} opts 接口选项对象。
  * @param {string} opts.token 访问令牌。
  * @param {string} opts.body 请求体对象。
- * @returns {any} 构造后的请求数据。
+ * @returns {object} POST 请求头。
  */
 function buildPostHeaders(opts) {
 	const headers = {
@@ -86,7 +86,7 @@ const UploadMediaType = {
 }
 
 /**
- * Combines a per-request timeout with an optional external abort signal.
+ * 合并请求超时与外部中止信号。
  * @param {number} timeoutMs 超时时间（毫秒）。
  * @param {AbortSignal} [externalSignal] 外部中止信号。
  * @returns {AbortSignal} 合并后的中止信号。
@@ -97,6 +97,7 @@ function buildFetchSignal(timeoutMs, externalSignal) {
 }
 
 /**
+ * 计算 AES-128-ECB PKCS#7 填充后的密文长度。
  * @param {number} plaintextSize 明文长度（字节）。
  * @returns {number} AES-128-ECB PKCS#7 填充后的密文长度。
  */
@@ -105,9 +106,10 @@ function aesEcbPaddedSize(plaintextSize) {
 }
 
 /**
+ * 加密 AES-128-ECB PKCS#7 填充后的明文。
  * @param {Buffer} plaintext 明文数据。
  * @param {Buffer} key AES 密钥。
- * @returns {Buffer} 填充后的密文长度。
+ * @returns {Buffer} 加密后的密文。
  */
 function encryptAesEcb(plaintext, key) {
 	const cipher = createCipheriv('aes-128-ecb', key, null)
@@ -115,10 +117,11 @@ function encryptAesEcb(plaintext, key) {
 }
 
 /**
+ * 构建 CDN 上传 URL。
  * @param {string} cdnBaseUrl CDN 基础地址。
  * @param {string} uploadParam 上传参数。
  * @param {string} filekey 上传文件键。
- * @returns {string} CDN 上传 URL。
+ * @returns {string} 构建后的 CDN 上传 URL。
  */
 function buildCdnUploadUrl(cdnBaseUrl, uploadParam, filekey) {
 	const base = cdnBaseUrl.replace(/\/+$/, '')
@@ -126,13 +129,13 @@ function buildCdnUploadUrl(cdnBaseUrl, uploadParam, filekey) {
 }
 
 /**
- * GET（扫码等未鉴权接口，与官方 apiGetFetch 一致）。
+ * 获取微信 API 返回结果。
  * @param {object} params 请求参数对象。
  * @param {string} params.baseUrl API 基础地址。
  * @param {string} params.endpoint API 端点路径。
  * @param {number} params.timeoutMs 超时时间（毫秒）。
  * @param {AbortSignal} [params.signal] 中止请求信号。
- * @returns {Promise<any>} 处理后的 URL 字符串。
+ * @returns {Promise<string>} 微信 API 返回结果。
  */
 export async function apiGetFetch(params) {
 	const url = new URL(params.endpoint, ensureTrailingSlash(params.baseUrl))
@@ -149,6 +152,7 @@ export async function apiGetFetch(params) {
 }
 
 /**
+ * 发送微信 API 请求。
  * @param {object} params 请求参数对象。
  * @param {string} params.baseUrl API 基础地址。
  * @param {string} params.endpoint API 端点路径。
@@ -156,7 +160,7 @@ export async function apiGetFetch(params) {
  * @param {string} [params.token] Bot 鉴权令牌。
  * @param {number} params.timeoutMs 超时时间（毫秒）。
  * @param {AbortSignal} [params.signal] 中止请求信号。
- * @returns {Promise<any>} 返回值。
+ * @returns {Promise<string>} 微信 API 返回结果。
  */
 async function apiPostFetch(params) {
 	const url = new URL(params.endpoint, ensureTrailingSlash(params.baseUrl))
@@ -174,11 +178,12 @@ async function apiPostFetch(params) {
 }
 
 /**
+ * 创建微信 API 客户端。
  * @param {object} opts 接口选项对象。
  * @param {string} opts.baseUrl API 基础地址。
  * @param {string} [opts.token] Bot 鉴权令牌。
  * @param {AbortSignal} [opts.signal] 中止请求信号。
- * @returns {any} 返回值。
+ * @returns {object} 微信 API 客户端。
  */
 export function createWeixinApi(opts) {
 	const baseUrl = opts.baseUrl?.trim() || DEFAULT_WEIXIN_ILINK_BASE
@@ -186,10 +191,11 @@ export function createWeixinApi(opts) {
 
 	return {
 		/**
+		 * 拉取微信 API 更新。
 		 * @param {object} params 拉取更新参数。
 		 * @param {string} [params.get_updates_buf] 上次轮询返回的游标缓冲。
 		 * @param {number} [params.timeoutMs] 长轮询超时时间（毫秒）。
-		 * @returns {Promise<any>} 微信 API 返回结果。
+		 * @returns {Promise<object>} 微信 API 返回结果。
 		 */
 		async getUpdates(params) {
 			const timeoutMs = params.timeoutMs ?? DEFAULT_LONG_POLL_TIMEOUT_MS
@@ -213,8 +219,9 @@ export function createWeixinApi(opts) {
 		},
 
 		/**
+		 * 发送微信消息。
 		 * @param {object} body 请求体对象。
-		 * @returns {Promise<void>} 微信 API 客户端对象。
+		 * @returns {Promise<void>}
 		 */
 		async sendMessage(body) {
 			const payload = JSON.stringify({ ...body, base_info: buildBaseInfo() })
@@ -225,10 +232,11 @@ export function createWeixinApi(opts) {
 		},
 
 		/**
+		 * 获取微信配置。
 		 * @param {object} params 获取配置参数。
 		 * @param {string} params.ilinkUserId iLink 用户 ID。
 		 * @param {string} [params.contextToken] 会话上下文令牌。
-		 * @returns {Promise<any>} 账号配置（含 typing_ticket 等）。
+		 * @returns {Promise<object>} 账号配置（含 typing_ticket 等）。
 		 */
 		async getConfig(params) {
 			const payload = JSON.stringify({
@@ -244,6 +252,7 @@ export function createWeixinApi(opts) {
 		},
 
 		/**
+		 * 发送打字状态。
 		 * @param {object} body 请求体对象。
 		 */
 		async sendTyping(body) {
@@ -254,12 +263,13 @@ export function createWeixinApi(opts) {
 			})
 		},
 		/**
+		 * 上传媒体。
 		 * @param {object} params 媒体上传参数。
 		 * @param {number} params.mediaType 媒体类型。
 		 * @param {string} params.toUserId 目标用户 ID。
 		 * @param {Buffer} params.fileBuffer 待上传文件内容。
 		 * @param {string} [params.cdnBaseUrl] CDN 基础地址（默认使用 API baseUrl）。
-		 * @returns {Promise<any>} 上传结果（含 CDN 引用与加密参数）。
+		 * @returns {Promise<object>} 上传结果（含 CDN 引用与加密参数）。
 		 */
 		async uploadMedia(params) {
 			const fileBuffer = Buffer.isBuffer(params.fileBuffer) ? params.fileBuffer : Buffer.from(params.fileBuffer)
@@ -310,7 +320,7 @@ export function createWeixinApi(opts) {
 				throw new Error('CDN upload missing x-encrypted-param header')
 
 			return {
-				mediaType: p.mediaType,
+				mediaType: params.mediaType,
 				media: {
 					encrypt_query_param: encryptedQueryParam,
 					aes_key: aesKeyBuffer.toString('base64'),
@@ -324,6 +334,7 @@ export function createWeixinApi(opts) {
 }
 
 /**
- *
+ * 默认长轮询超时时间。
+ * @type {number}
  */
 export { DEFAULT_LONG_POLL_TIMEOUT_MS, UploadMediaType }

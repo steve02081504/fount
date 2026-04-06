@@ -13,11 +13,11 @@ import { createWeixinApi, DEFAULT_WEIXIN_ILINK_BASE } from './weixin_api.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
 /**
- * Ensures the char has a weixin interface, falling back to the built-in simple implementation.
+ * 确保角色具有微信接口，如果未实现则回退到内置的简单实现。
  * @param {CharAPI_t} char 角色实例。
  * @param {string} username 用户名。
  * @param {string} charname 角色名称。
- * @returns {Promise<any>} 返回值。
+ * @returns {Promise<void>}
  */
 async function ensureWeixinInterface(char, username, charname) {
 	if (!char.interfaces.weixin) {
@@ -27,15 +27,16 @@ async function ensureWeixinInterface(char, username, charname) {
 }
 
 /**
+ * 启动机器人。
  * @param {{
  * 	token: string,
  * 	apiBaseUrl: string,
- * 	config: any
+ * 	config: object
  * }} config 机器人配置对象。
  * @param {CharAPI_t} char 角色实例。
  * @param {string} username 用户名。
  * @param {string} charname 角色名称。
- * @returns {Promise<any>} 返回值。
+ * @returns {Promise<void>}
  */
 async function startBot(config, char, username, charname) {
 	const abortController = new AbortController()
@@ -57,8 +58,8 @@ async function startBot(config, char, username, charname) {
 
 	return {
 		/**
-		 *
- * @returns {Promise<any>} 操作执行结果。
+		 * 销毁机器人。
+		 * @returns {Promise<void>}
 		 */
 		destroy: async () => {
 			abortController.abort()
@@ -68,38 +69,38 @@ async function startBot(config, char, username, charname) {
 }
 
 /**
- *
+ * 获取机器人缓存。
  * @param {any} username 用户名。
- * @returns {any} 返回值。
+ * @returns {object} 机器人缓存。
  */
 function getBotCache(username) {
 	return loadTempData(username, 'wechatbot_cache')
 }
 
 /**
- *
+ * 获取机器人配置。
  * @param {any} username 用户名。
- * @returns {any} 返回值。
+ * @returns {object} 机器人配置。
  */
 function getBotsData(username) {
 	return loadShellData(username, 'wechatbot', 'bot_configs')
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @returns {any} 返回值。
+ * 获取指定用户的特定微信 Bot 的配置。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @returns {object} 机器人配置。
  */
 export function getBotConfig(username, botname) {
 	return getBotsData(username)[botname] || {}
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} charname 角色名称。
- * @returns {Promise<any>} 机器人配置对象。
+ * 获取指定用户的特定微信 Bot 的配置模板。
+ * @param {string} username 用户名。
+ * @param {string} charname 角色名称。
+ * @returns {Promise<object>} 机器人配置模板。
  */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
@@ -108,11 +109,11 @@ export async function getBotConfigTemplate(username, charname) {
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @param {any} config 配置对象。
- * @returns {any} 配置模板对象。
+ * 设置指定用户的特定微信 Bot 的配置。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @param {object} config 配置对象。
+ * @returns {void}
  */
 export function setBotConfig(username, botname, config) {
 	getBotsData(username)[botname] = config
@@ -120,10 +121,10 @@ export function setBotConfig(username, botname, config) {
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @returns {any} 操作执行结果。
+ * 删除指定用户的特定微信 Bot 的配置。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @returns {void}
  */
 export function deleteBotConfig(username, botname) {
 	delete getBotsData(username)[botname]
@@ -131,11 +132,11 @@ export function deleteBotConfig(username, botname) {
 }
 
 /**
- * Stops the running bot session and removes it from the cache.
- * Does not call EndJob; use stopBot for that.
+ * 停止运行中的机器人会话并将其从缓存中删除。
+ * 不调用 EndJob；使用 stopBot 代替。
  * @param {string} username 用户名。
  * @param {string} botname 机器人名称。
- * @returns {Promise<any>} 操作执行结果。
+ * @returns {Promise<void>}
  */
 async function destroyBotSession(username, botname) {
 	const botCache = getBotCache(username)
@@ -151,10 +152,10 @@ async function destroyBotSession(username, botname) {
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @returns {Promise<any>} 返回值。
+ * 运行机器人。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @returns {Promise<void>}
  */
 export async function runBot(username, botname) {
 	const botCache = getBotCache(username)
@@ -182,10 +183,10 @@ export async function runBot(username, botname) {
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @returns {Promise<any>} 操作执行结果。
+ * 停止机器人。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @returns {Promise<void>}
  */
 export async function stopBot(username, botname) {
 	await destroyBotSession(username, botname)
@@ -193,10 +194,10 @@ export async function stopBot(username, botname) {
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @param {any} botname 机器人名称。
- * @returns {Promise<any>} 操作执行结果。
+ * 暂停机器人。
+ * @param {string} username 用户名。
+ * @param {string} botname 机器人名称。
+ * @returns {Promise<void>}
  */
 export async function pauseBot(username, botname) {
 	await destroyBotSession(username, botname)
@@ -209,37 +210,35 @@ on_shutdown(async () => {
 })
 
 /**
- *
+ * 获取运行中的机器人列表。
  * @param {any} username 用户名。
- * @returns {any} 操作执行结果。
+ * @returns {string[]} 运行中的机器人列表。
  */
 export function getRunningBotList(username) {
 	return Object.keys(getBotCache(username))
 }
 
 /**
- *
- * @param {any} username 用户名。
- * @returns {any} 机器人名称列表。
+ * 获取机器人列表。
+ * @param {string} username 用户名。
+ * @returns {string[]} 机器人列表。
  */
 export function getBotList(username) {
 	return Object.keys(getBotsData(username))
 }
 
 /**
- * Stops all running bots for a user, logging errors without throwing.
+ * 停止所有运行中的机器人。
  * @param {string} username 用户名。
- * @param {string} logContext 日志上下文描述（用于错误消息）。
  * @returns {Promise<void>}
  */
-async function stopAllRunningBots(username, logContext) {
-	for (const botname of getRunningBotList(username))
-		try {
-			await stopBot(username, botname)
-		}
-		catch (error) {
-			console.error(`WeChat Bot: Error stopping bot ${botname} for ${logContext}:`, error)
-		}
+async function stopAllRunningBots(username) {
+	for (const botname of getRunningBotList(username)) try {
+		await stopBot(username, botname)
+	}
+	catch (error) {
+		console.error(`WeChat Bot: Error stopping bot ${botname} for ${username}:`, error)
+	}
 }
 
 events.on('BeforeUserDeleted', ({ username }) =>

@@ -5,8 +5,8 @@ import { DEFAULT_WEIXIN_ILINK_BASE } from './weixin_api.mjs'
 import { pollQrSession, startQrSession } from './weixin_qr.mjs'
 
 /**
- * Writes QR login result (token + apiBaseUrl + ilinkUserId) back into the bot's saved config.
- * Only overwrites OwnerWeChatId if it still holds the placeholder value from the config template.
+ * 将 QR 登录结果（token + apiBaseUrl + ilinkUserId）写回机器人保存的配置。
+ * 仅在 OwnerWeChatId 仍持有配置模板中的占位值时覆盖它。
  * @param {string} username 用户名。
  * @param {{ botname: string, token: string, apiBaseUrl: string, ilinkUserId?: string }} pollResult QR 登录轮询结果。
  */
@@ -27,7 +27,8 @@ function applyQrLoginResult(username, pollResult) {
 }
 
 /**
- * @param {object} router Express 路由实例。
+ * wechatbot 的 API 端点。
+ * @param {object} router - Express 路由实例。
  */
 export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:wechatbot/start', authenticate, async (req, res) => {
@@ -103,7 +104,7 @@ export function setEndpoints(router) {
 
 	router.get('/api/parts/shells\\:wechatbot/qrcode/poll', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const sessionKey = req.query.sessionKey
+		const { sessionKey } = req.query
 		if (!sessionKey || typeof sessionKey !== 'string')
 			return res.status(400).json({ message: 'sessionKey required' })
 

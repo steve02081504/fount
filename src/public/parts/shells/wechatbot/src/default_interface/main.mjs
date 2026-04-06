@@ -18,21 +18,22 @@ const VIDEO_NAME_REGEXP = /\.(mp4|mov|avi|mkv|webm)$/i
 const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
 
 /**
+ * 提取微信消息的文本内容。
  * @param {object} msg 微信消息对象。
  * @returns {string} 拼接后的文本内容，无文本时返回空字符串。
  */
 function extractInboundText(msg) {
 	const parts = []
-	for (const item of msg.item_list || []) 
+	for (const item of msg.item_list || [])
 		if (item.type === MessageItemType.TEXT && item.text_item?.text)
 			parts.push(item.text_item.text)
-	
+
 	return parts.join('\n').trim()
 }
 
 /**
- * Merges consecutive chat log entries from the same sender within 3 minutes into one.
- * Avoids inflating context with redundant per-message entries.
+ * 合并连续的聊天日志条目。
+ * 避免因冗余的每条消息条目而膨胀上下文。
  * @param {chatLogEntry_t_simple[]} log 聊天日志数组。
  * @returns {chatLogEntry_t_simple[]} 合并后的日志数组。
  */
@@ -72,8 +73,8 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleWeixinInterface.')
 
 	/**
-	 *
- * @returns {any} 返回值。
+	 * 获取默认机器人配置模板。
+	 * @returns {{OwnerWeChatId: string, MaxMessageDepth: number, ReplyToAllMessages: boolean}} 默认机器人配置模板。
 	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
@@ -84,8 +85,9 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	}
 
 	/**
+	 * 检测上传媒体类型。
 	 * @param {{ name?: string, mime_type?: string }} fileLike 文件信息对象。
- * @returns {any} 默认机器人配置模板。
+ 	 * @returns {number} 识别出的媒体类型。
 	 */
 	function detectUploadMediaType(fileLike) {
 		const mimeType = String(fileLike?.mime_type || '').toLowerCase()
@@ -100,6 +102,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	}
 
 	/**
+	 * 构建媒体消息项对象。
 	 * @param {object} args 参数数组。
 	 * @param {number} args.uploadMediaType 上传媒体类型。
 	 * @param {any} {{ encrypt_query_param: string, aes_key: string }} args.media
@@ -107,10 +110,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	 * @param {string} args.md5 文件 MD5。
 	 * @param {number} args.fileSize 原始文件大小（字节）。
 	 * @param {number} args.ciphertextSize 加密后文件大小（字节）。
- * @returns {any} 识别出的媒体类型。
+	 * @returns {object} 构建后的媒体消息项对象。
 	 */
 	function buildMediaMessageItem(args) {
-		if (args.uploadMediaType === UploadMediaType.IMAGE) 
+		if (args.uploadMediaType === UploadMediaType.IMAGE)
 			return {
 				type: MessageItemType.IMAGE,
 				image_item: {
@@ -120,8 +123,8 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					mid_size: args.ciphertextSize,
 				},
 			}
-		
-		if (args.uploadMediaType === UploadMediaType.VIDEO) 
+
+		if (args.uploadMediaType === UploadMediaType.VIDEO)
 			return {
 				type: MessageItemType.VIDEO,
 				video_item: {
@@ -130,15 +133,15 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					video_md5: args.md5,
 				},
 			}
-		
-		if (args.uploadMediaType === UploadMediaType.VOICE) 
+
+		if (args.uploadMediaType === UploadMediaType.VOICE)
 			return {
 				type: MessageItemType.VOICE,
 				voice_item: {
 					media: args.media,
 				},
 			}
-		
+
 		return {
 			type: MessageItemType.FILE,
 			file_item: {
@@ -151,13 +154,14 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	}
 
 	/**
+	 * 主函数，初始化微信客户端。
 	 * @param {object} ctx 运行上下文。
 	 * @param {() => Promise<any>} ctx.getUpdates 拉取消息更新的方法。
 	 * @param {(body: object) => Promise<void>} ctx.sendMessage 发送消息的方法。
 	 * @param {any} {(params: { mediaType: number, toUserId: string, fileBuffer: Buffer | Uint8Array | ArrayBuffer, cdnBaseUrl?: string }) => Promise<any>} ctx.uploadMedia
 	 * @param {AbortSignal} ctx.signal 中止信号。
 	 * @param {object} config 配置对象。
- * @returns {Promise<any>} 可发送的消息项对象。
+	 * @returns {Promise<void>}
 	 */
 	async function SimpleWeixinBotMain(ctx, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
@@ -187,9 +191,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		}
 
 		/**
+		 * 处理微信消息回复。
 		 * @param {object} wxMsg 微信消息对象。
 		 * @param {string} peerKey 会话对端标识。
- * @returns {Promise<any>} 转换后的聊天日志条目。
+		 * @returns {Promise<void>}
 		 */
 		async function doReply(wxMsg, peerKey) {
 			const text = extractInboundText(wxMsg)
@@ -200,9 +205,9 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			if (!toUserId) return
 
 			/**
-			 *
+			 * 发送文本分块。
 			 * @param {any} text 文本内容。
- * @returns {Promise<any>} 返回值。
+			 * @returns {Promise<void>}
 			 */
 			async function sendTextChunks(text) {
 				const chunks = splitDiscordReply(text || '', 2000)
@@ -219,8 +224,9 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			}
 
 			/**
-			 * @param {ChatReply_t} fountReply Fount 回复对象。
- * @returns {Promise<any>} 返回值。
+			 * 发送分割回复。
+			 * @param {ChatReply_t} fountReply fount 聊天回复对象。
+			 * @returns {Promise<void>}
 			 */
 			async function sendSplitReply(fountReply) {
 				await sendTextChunks(fountReply.content_for_show || fountReply.content || '')
@@ -250,7 +256,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 							},
 						})
 					}
-						catch (error) {
+					catch (error) {
 						console.error(`[SimpleWeixin] 发送文件失败 ${file.name || 'unnamed'}:`, error)
 						await sendTextChunks(`[文件发送失败: ${file.name || 'unnamed'}]`)
 					}
@@ -259,22 +265,20 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 
 			try {
 				/**
-				 *
+				 * 添加聊天日志条目。
 				 * @param {any} replyFromChar 角色回复对象。
- * @returns {Promise<any>} 返回值。
+				 * @returns {Promise<void>}
 				 */
 				const AddChatLogEntry = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
 						await sendSplitReply(replyFromChar)
-
-					return null
 				}
 
 				const peerDisplay = `peer:${(wxMsg.from_user_id || '').slice(0, 16)}`
 
 				/**
-				 *
- * @returns {Promise<any>} 返回值。
+				 * 生成聊天回复请求。
+				 * @returns {Promise<object>} 聊天回复请求对象。
 				 */
 				const generateChatReplyRequest = async () => ({
 					supported_functions: { markdown: true, files: true, add_message: true },
@@ -299,8 +303,8 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					chat_log: (chatLogs[peerKey] || []).map(e => ({ ...e })),
 					AddChatLogEntry,
 					/**
-					 *
- * @returns {Promise<any>} 返回值。
+					 * 更新聊天回复请求。
+					 * @returns {Promise<object>} 更新后的聊天回复请求对象。
 					 */
 					Update: async () => await generateChatReplyRequest(),
 					extension: { platform: 'weixin', peer_key: peerKey, weixin_message: wxMsg },
@@ -397,9 +401,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 
 	return {
 		/**
+		 * 初始化微信客户端。
 		 * @param {object} ctx 运行上下文。
 		 * @param {object} config 配置对象。
- * @returns {Promise<any>} 返回值。
+		 * @returns {Promise<void>} 返回值。
 		 */
 		OnceClientReady: async (ctx, config) => {
 			await SimpleWeixinBotMain(ctx, config)

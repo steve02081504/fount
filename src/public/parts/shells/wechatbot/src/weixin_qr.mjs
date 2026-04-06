@@ -86,7 +86,7 @@ export async function startQrSession({ username, botname }) {
 
 	return {
 		sessionKey,
-		qrcodeContent: qr.qrcode,
+		qrcodeContent: 'https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=' + qr.qrcode,
 	}
 }
 
@@ -136,7 +136,7 @@ export async function pollQrSession(sessionKey, username) {
 			session.qrcode = qr.qrcode
 			session.startedAt = Date.now()
 			session.currentApiBaseUrl = DEFAULT_WEIXIN_ILINK_BASE
-			return { done: false, status: 'expired', qrcodeContent: qr.qrcode }
+			return { done: false, status: 'expired', qrcodeContent: 'https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=' + qr.qrcode }
 		}
 		case 'confirmed': {
 			if (!status.ilink_bot_id) {

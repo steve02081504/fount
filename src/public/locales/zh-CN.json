@@ -1861,82 +1861,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "让你的源泉同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "选择一个 Bot"
-		},
-		"botSearch": {
-			"placeholder": "搜索 Bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "选择一个角色"
-		},
-		"charSearch": {
-			"placeholder": "搜索角色..."
-		},
-		"configCard": {
-			"title": "Bot配置",
-			"labels": {
-				"character": "绑定角色",
-				"apiKey": "Discord API 密钥",
-				"config": "配置"
-			},
-			"charSelectPlaceholder": "选择角色",
-			"apiKeyInput": {
-				"placeholder": "请输入 API 密钥"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "切换显示 API 密钥"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "切换显示 API 密钥"
-			},
-			"buttons": {
-				"saveConfig": "保存配置",
-				"startBot": "启动",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "请输入新的 Bot 名称："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
-		},
-		"alerts": {
-			"configSaved": "配置保存成功",
-			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
-			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"httpError": "HTTP 错误",
-			"beforeUnload": "您有未保存的更改。确定要离开吗？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "决战开黑频道",
-				"description": "将你的角色召唤到了Discord的世界。",
-				"locked_description": "启动一次Discord Bot。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "bot",
-				"sub_items": {
-					"manage": {
-						"title": "管理Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "配置Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"description": "让你的角色穿越 Telegram 的即时浪潮。配置他们的数字形象，管理他们的对话，并将他们的影响力扩展到这个充满活力的消息世界。",
@@ -2010,6 +1934,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "配置Telegram Bot"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "微信 Bot",
+		"description": "将 fount 角色接入微信对话，提供无处不在的办公辅助体验。",
+		"cardTitle": "微信 Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"configCard": {
+			"title": "Bot 配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiBaseUrl": "微信渠道服务根 URL",
+				"botToken": "iLink Bot Token",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiBaseUrlInput": {
+				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登录后获得的 Bearer Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切换显示 Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切换显示 Token"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "帮我干活！",
+				"description": "让 fount 角色在微信上与你对话。",
+				"locked_description": "启动一次微信 Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理微信 Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置微信 Bot"
+			}
+		},
+		"qrLogin": {
+			"hint": "使用微信扫描下方二维码完成登录。",
+			"button": "扫码登录",
+			"scanPrompt": "请使用微信扫描二维码",
+			"waiting": "正在获取二维码…",
+			"scanned": "已扫码，请在手机上确认…",
+			"success": "微信已连接，配置已更新。可直接启动 Bot。",
+			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "让你的 fount 同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiKey": "Discord API 密钥",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiKeyInput": {
+				"placeholder": "请输入 API 密钥"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切换显示 API 密钥"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "决战开黑频道",
+				"description": "将你的角色召唤到了Discord的世界。",
+				"locked_description": "启动一次Discord Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Discord Bot"
 			}
 		}
 	},
