@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
-		},
+		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",

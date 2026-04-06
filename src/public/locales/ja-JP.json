@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "キャラクター「${charname}」がTelegramボット「${botusername}」にログインしました。"
-		},
-		"discordbot": {
-			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
-		},
+		"botStarted": "キャラクター「${charname}」が${platform}ボット「${botusername}」にログインしました。",
 		"path": {
 			"protocol": {
 				"description": "URL: fount プロトコル",

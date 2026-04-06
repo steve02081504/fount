@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
-		},
-		"discordbot": {
-			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
-		},
+		"botStarted": "캐릭터 ${charname}님이 ${platform} 봇 ${botusername}에 로그인했습니다.",
 		"path": {
 			"protocol": {
 				"description": "URL: fount 프로토콜",

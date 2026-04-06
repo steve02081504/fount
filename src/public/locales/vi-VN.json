@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."
-		},
+		"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: giao thức fount",

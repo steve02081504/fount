@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "🤖 ${charname} ✅ ✈️ ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
-		},
+		"botStarted": "🤖 ${charname} ✅ ${platform} ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "🔗⛲📜",

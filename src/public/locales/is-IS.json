@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "Persónan ${charname} hefur skráð sig inn á Discord Bot ${botusername}"
-		},
+		"botStarted": "Persónan ${charname} hefur skráð sig inn á ${platform} Bot ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "URL:fount samskiptareglur",

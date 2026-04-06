@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登录"
-		},
-		"discordbot": {
-			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
-		},
+		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登录",
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",

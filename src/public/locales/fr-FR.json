@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
-		},
+		"botStarted": "Le personnage ${charname} s'est connecté au bot ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",

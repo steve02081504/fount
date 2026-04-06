@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Discord ${botusername}."
-		},
+		"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: protocolo de fount",

@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "化身 ${charname} 已託 Telegram 靈偶 ${botusername} 而現"
-		},
-		"discordbot": {
-			"botStarted": "化身 ${charname} 已託 Discord 靈偶 ${botusername} 而現"
-		},
+		"botStarted": "化身 ${charname} 已託 ${platform} 靈偶 ${botusername} 而現",
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協議",

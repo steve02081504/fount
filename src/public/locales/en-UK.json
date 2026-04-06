@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Character ${charname} has logged in to the Telegram bot ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Character ${charname} has logged in to the Discord bot ${botusername}."
-		},
+		"botStarted": "Character ${charname} has logged in to the ${platform} Bot ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",

@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
-		},
+		"botStarted": "تم تسجيل دخول الشخصية ${charname} ${platform} على بوت ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "عنوان URL:البروتوكول الموجود",

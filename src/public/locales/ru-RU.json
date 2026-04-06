@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
-		},
+		"botStarted": "Персонаж ${charname} вошел в ${platform} бот ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",

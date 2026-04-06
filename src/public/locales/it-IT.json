@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Discord ${botusername}."
-		},
+		"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: protocollo del fount",

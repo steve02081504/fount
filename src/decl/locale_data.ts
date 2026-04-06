@@ -113,15 +113,7 @@ export type LocaleData = {
 				}
 			}
 		}
-		telegrambot: {
-			botStarted: string
-		}
-		discordbot: {
-			botStarted: string
-		}
-		weixinbot: {
-			botStarted: string
-		}
+		botStarted: string
 		path: {
 			protocol: {
 				description: string
@@ -2658,8 +2650,7 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.logoutRefreshTokenProcessError': { error: string | number }
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
-	'fountConsole.discordbot.botStarted': { botusername: string | number; charname: string | number }
-	'fountConsole.weixinbot.botStarted': { botusername: string | number; charname: string | number }
+	'fountConsole.botStarted': { platform: string | number; botusername: string | number; charname: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
@@ -2695,7 +2686,6 @@ export type LocaleKeyParams = {
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
-	'fountConsole.telegrambot.botStarted': { botusername: string | number; charname: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }
 	'fountConsole.tray.readIconFailed': { error: string | number }
 	'fountConsole.verification.codeGeneratedLog': { code: string | number }

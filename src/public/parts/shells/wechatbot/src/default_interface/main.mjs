@@ -362,7 +362,8 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				longPollTimeoutMs = resp.longpolling_timeout_ms
 
 			if (!loggedReady) {
-				console.infoI18n('fountConsole.weixinbot.botStarted', {
+				console.infoI18n('fountConsole.botStarted', {
+					platform: 'WeChat',
 					charname: botCharname,
 					botusername: 'WeChat',
 				})
