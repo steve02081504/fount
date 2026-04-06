@@ -136,7 +136,7 @@ export function parseInboundAesKey(aesKeyBase64) {
 	const decoded = Buffer.from(aesKeyBase64, 'base64')
 	if (decoded.length === 16)
 		return decoded
-	if (decoded.length === 32 && /^[0-9a-fA-F]{32}$/.test(decoded.toString('ascii')))
+	if (decoded.length === 32 && /^[\dA-Fa-f]{32}$/.test(decoded.toString('ascii')))
 		return Buffer.from(decoded.toString('ascii'), 'hex')
 	throw new Error(`parseInboundAesKey: invalid encoding (${decoded.length} bytes after base64)`)
 }

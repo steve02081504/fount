@@ -3,8 +3,8 @@ import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import ffmpeg from 'npm:fluent-ffmpeg'
 import { where_command } from 'npm:@steve02081504/exec'
+import ffmpeg from 'npm:fluent-ffmpeg'
 import mimetype from 'npm:mime-types'
 
 import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
@@ -183,26 +183,22 @@ async function convertFileToWechatCompatible(file) {
 		}
 	}
 
-	if (mimeType.startsWith('audio/') && !WECHAT_SUPPORTED_AUDIO_MIMES.has(mimeType)) {
-		try {
-			const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp3',
-				['-acodec', 'libmp3lame', '-q:a', '2'])
-			return { ...file, name: `${baseName}.mp3`, mime_type: 'audio/mpeg', buffer: buf }
-		}
-		catch (err) {
-			console.error(`[SimpleWechat] 音频转换失败 ${fileName}:`, err)
-		}
+	if (mimeType.startsWith('audio/') && !WECHAT_SUPPORTED_AUDIO_MIMES.has(mimeType)) try {
+		const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp3',
+			['-acodec', 'libmp3lame', '-q:a', '2'])
+		return { ...file, name: `${baseName}.mp3`, mime_type: 'audio/mpeg', buffer: buf }
+	}
+	catch (err) {
+		console.error(`[SimpleWechat] 音频转换失败 ${fileName}:`, err)
 	}
 
-	if (mimeType.startsWith('video/') && !WECHAT_SUPPORTED_VIDEO_MIMES.has(mimeType)) {
-		try {
-			const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp4',
-				['-c:v', 'libx264', '-c:a', 'aac', '-movflags', '+faststart'])
-			return { ...file, name: `${baseName}.mp4`, mime_type: 'video/mp4', buffer: buf }
-		}
-		catch (err) {
-			console.error(`[SimpleWechat] 视频转换失败 ${fileName}:`, err)
-		}
+	if (mimeType.startsWith('video/') && !WECHAT_SUPPORTED_VIDEO_MIMES.has(mimeType)) try {
+		const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp4',
+			['-c:v', 'libx264', '-c:a', 'aac', '-movflags', '+faststart'])
+		return { ...file, name: `${baseName}.mp4`, mime_type: 'video/mp4', buffer: buf }
+	}
+	catch (err) {
+		console.error(`[SimpleWechat] 视频转换失败 ${fileName}:`, err)
 	}
 
 	return file
@@ -233,7 +229,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const img = item.image_item
 			const media = img?.media
 			if (!media || (!media.encrypt_query_param && !media.full_url)) return null
-			const hexKey = img.aeskey && /^[0-9a-fA-F]{32}$/i.test(String(img.aeskey).trim())
+			const hexKey = img.aeskey && /^[\da-f]{32}$/i.test(String(img.aeskey).trim())
 				? String(img.aeskey).trim()
 				: ''
 			const aesKeyBase64 = hexKey
@@ -297,8 +293,8 @@ function mergeChatLog(log) {
 			last.content += '\n' + current.content
 			last.time_stamp = current.time_stamp
 			if (current.files?.length) last.files = [...last.files || [], ...current.files]
-		if (current.extension?.wechat_message_id)
-			last.extension = { ...last.extension, wechat_message_id: current.extension.wechat_message_id }
+			if (current.extension?.wechat_message_id)
+				last.extension = { ...last.extension, wechat_message_id: current.extension.wechat_message_id }
 		}
 		else {
 			if (last) merged.push(last)
