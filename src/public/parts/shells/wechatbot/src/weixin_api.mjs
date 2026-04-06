@@ -232,6 +232,24 @@ async function apiPostFetch(params) {
 }
 
 /**
+ * 将对象序列化为带 base_info 的 JSON 请求体。
+ * @param {object} obj 业务字段。
+ * @returns {string} 可供 POST 的 JSON 字符串。
+ */
+function withBaseInfoJson(obj) {
+	return JSON.stringify({ ...obj, base_info: buildBaseInfo() })
+}
+
+/**
+ * POST 请求并解析 JSON 响应。
+ * @param {object} params 同 apiPostFetch。
+ * @returns {Promise<any>} 响应体解析后的对象。
+ */
+async function apiPostJson(params) {
+	return JSON.parse(await apiPostFetch(params))
+}
+
+/**
  * 创建微信 API 客户端。
  * @param {object} opts 接口选项对象。
  * @param {string} opts.baseUrl API 基础地址。
@@ -253,19 +271,15 @@ export function createWeixinApi(opts) {
 		 */
 		async getUpdates(params) {
 			const timeoutMs = params.timeoutMs ?? DEFAULT_LONG_POLL_TIMEOUT_MS
-			const body = JSON.stringify({
-				get_updates_buf: params.get_updates_buf ?? '',
-				base_info: buildBaseInfo(),
-			})
+			const body = withBaseInfoJson({ get_updates_buf: params.get_updates_buf ?? '' })
 			try {
-				const rawText = await apiPostFetch({
+				return await apiPostJson({
 					baseUrl, endpoint: 'ilink/bot/getupdates', body, token, timeoutMs, signal,
 				})
-				return JSON.parse(rawText)
 			}
 			catch (err) {
 				// Long-poll timeout (TimeoutError) or external abort (AbortError) → treat as empty update
-				if (err?.name === 'AbortError' || err?.name === 'TimeoutError')
+				if (['AbortError', 'TimeoutError'].includes(err?.name))
 					return { ret: 0, msgs: [], get_updates_buf: params.get_updates_buf }
 
 				throw err
@@ -278,7 +292,7 @@ export function createWeixinApi(opts) {
 		 * @returns {Promise<void>}
 		 */
 		async sendMessage(body) {
-			const payload = JSON.stringify({ ...body, base_info: buildBaseInfo() })
+			const payload = withBaseInfoJson(body)
 			await apiPostFetch({
 				baseUrl, endpoint: 'ilink/bot/sendmessage', body: payload, token,
 				timeoutMs: DEFAULT_API_TIMEOUT_MS, signal,
@@ -292,17 +306,15 @@ export function createWeixinApi(opts) {
 		 * @param {string} [params.contextToken] 会话上下文令牌。
 		 * @returns {Promise<object>} 账号配置（含 typing_ticket 等）。
 		 */
-		async getConfig(params) {
-			const payload = JSON.stringify({
+		getConfig(params) {
+			const payload = withBaseInfoJson({
 				ilink_user_id: params.ilinkUserId,
 				context_token: params.contextToken,
-				base_info: buildBaseInfo(),
 			})
-			const rawText = await apiPostFetch({
+			return apiPostJson({
 				baseUrl, endpoint: 'ilink/bot/getconfig', body: payload, token,
 				timeoutMs: DEFAULT_CONFIG_TIMEOUT_MS, signal,
 			})
-			return JSON.parse(rawText)
 		},
 
 		/**
@@ -310,7 +322,7 @@ export function createWeixinApi(opts) {
 		 * @param {object} body 请求体对象。
 		 */
 		async sendTyping(body) {
-			const payload = JSON.stringify({ ...body, base_info: buildBaseInfo() })
+			const payload = withBaseInfoJson(body)
 			await apiPostFetch({
 				baseUrl, endpoint: 'ilink/bot/sendtyping', body: payload, token,
 				timeoutMs: DEFAULT_CONFIG_TIMEOUT_MS, signal,
@@ -334,10 +346,10 @@ export function createWeixinApi(opts) {
 			const ciphertextSize = aesEcbPaddedSize(rawSize)
 			const rawMd5 = createHash('md5').update(fileBuffer).digest('hex')
 
-			const rawText = await apiPostFetch({
+			const uploadSpec = await apiPostJson({
 				baseUrl,
 				endpoint: 'ilink/bot/getuploadurl',
-				body: JSON.stringify({
+				body: withBaseInfoJson({
 					filekey: fileKey,
 					media_type: params.mediaType,
 					to_user_id: params.toUserId,
@@ -346,13 +358,11 @@ export function createWeixinApi(opts) {
 					filesize: ciphertextSize,
 					no_need_thumb: true,
 					aeskey: aesKeyHex,
-					base_info: buildBaseInfo(),
 				}),
 				token,
 				timeoutMs: DEFAULT_API_TIMEOUT_MS,
 				signal,
 			})
-			const uploadSpec = JSON.parse(rawText)
 			const uploadUrl = uploadSpec.upload_full_url?.trim() ||
 				(uploadSpec.upload_param ? buildCdnUploadUrl(params.cdnBaseUrl || baseUrl, uploadSpec.upload_param, fileKey) : '')
 			if (!uploadUrl)

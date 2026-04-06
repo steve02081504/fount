@@ -13,6 +13,12 @@ const SESSION_TTL_MS = 5 * 60_000
 const MAX_QR_REFRESH = 3
 
 /**
+ * @param {string} qrcode 二维码标识
+ * @returns {string} 微信 liteapp 扫码页完整 URL
+ */
+const buildQrCodeUrl = qrcode => `https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=${qrcode}`
+
+/**
  * @typedef {{
  *   username: string
  *   botname: string | null
@@ -86,7 +92,7 @@ export async function startQrSession({ username, botname }) {
 
 	return {
 		sessionKey,
-		qrcodeContent: 'https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=' + qr.qrcode,
+		qrcodeContent: buildQrCodeUrl(qr.qrcode),
 	}
 }
 
@@ -136,7 +142,7 @@ export async function pollQrSession(sessionKey, username) {
 			session.qrcode = qr.qrcode
 			session.startedAt = Date.now()
 			session.currentApiBaseUrl = DEFAULT_WEIXIN_ILINK_BASE
-			return { done: false, status: 'expired', qrcodeContent: 'https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=' + qr.qrcode }
+			return { done: false, status: 'expired', qrcodeContent: buildQrCodeUrl(qr.qrcode) }
 		}
 		case 'confirmed': {
 			if (!status.ilink_bot_id) {

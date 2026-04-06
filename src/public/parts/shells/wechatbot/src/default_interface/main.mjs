@@ -33,43 +33,54 @@ const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
  * @returns {string} 拼接后的文本内容，无文本时返回空字符串。
  */
 function extractInboundText(msg) {
-	const parts = []
-	for (const item of msg.item_list || [])
-		if (item.type === MessageItemType.TEXT && item.text_item?.text)
-			parts.push(item.text_item.text)
-
-	return parts.join('\n').trim()
+	return (msg.item_list || [])
+		.filter(item => item.type === MessageItemType.TEXT && item.text_item?.text)
+		.map(item => item.text_item.text)
+		.join('\n').trim()
 }
 
 /**
  * 判断消息是否包含可从 CDN 拉取的媒体项。
  * @param {object} msg 微信消息对象。
- * @returns {boolean}
+ * @returns {boolean} 存在带 encrypt_query_param 或 full_url 的媒体引用时为 true。
  */
 function hasDownloadableMediaItem(msg) {
-	for (const item of msg.item_list || []) {
-		const m = item.image_item?.media || item.file_item?.media || item.video_item?.media || item.voice_item?.media
-		if (m && (m.encrypt_query_param || m.full_url))
-			return true
-	}
-	return false
+	return (msg.item_list || []).some(item =>
+		['image_item', 'file_item', 'video_item', 'voice_item'].some(key => {
+			const m = item[key]?.media
+			return m && (m.encrypt_query_param || m.full_url)
+		})
+	)
 }
 
 /**
  * 根据文件名猜测 MIME。
  * @param {string} name 文件名。
- * @returns {string}
+ * @returns {string} 匹配扩展名时返回对应 MIME，否则为 application/octet-stream。
  */
 function guessMimeFromFileName(name) {
 	const n = String(name).toLowerCase()
-	if (/\.(jpe?g)$/.test(n)) return 'image/jpeg'
-	if (/\.png$/.test(n)) return 'image/png'
-	if (/\.gif$/.test(n)) return 'image/gif'
-	if (/\.webp$/.test(n)) return 'image/webp'
-	if (/\.(mp4|m4v)$/.test(n)) return 'video/mp4'
-	if (/\.(mp3|m4a)$/.test(n)) return 'audio/mpeg'
-	if (/\.wav$/.test(n)) return 'audio/wav'
-	return 'application/octet-stream'
+	return [
+		[/\.(jpe?g)$/, 'image/jpeg'],
+		[/\.png$/, 'image/png'],
+		[/\.gif$/, 'image/gif'],
+		[/\.webp$/, 'image/webp'],
+		[/\.(mp4|m4v)$/, 'video/mp4'],
+		[/\.(mp3|m4a)$/, 'audio/mpeg'],
+		[/\.wav$/, 'audio/wav'],
+	].find(([re]) => re.test(n))?.[1] ?? 'application/octet-stream'
+}
+
+/**
+ * 从 CDN 拉取密文并用 media.aes_key 解密。
+ * @param {object} media CDN 媒体引用。
+ * @param {string} cdnBaseUrl CDN 根地址。
+ * @param {AbortSignal} signal 中止信号。
+ * @returns {Promise<Buffer>} AES 解密后的媒体明文。
+ */
+async function downloadAndDecrypt(media, cdnBaseUrl, signal) {
+	const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
+	return decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
 }
 
 /**
@@ -77,7 +88,7 @@ function guessMimeFromFileName(name) {
  * @param {object} item item_list 元素。
  * @param {string} cdnBaseUrl CDN 根地址。
  * @param {AbortSignal} signal 中止信号。
- * @returns {Promise<{ name: string, buffer: Buffer, mime_type: string } | null>}
+ * @returns {Promise<{ name: string, buffer: Buffer, mime_type: string } | null>} 成功解析媒体时返回文件描述，否则为 null。
  */
 async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 	try {
@@ -102,8 +113,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const fi = item.file_item
 			const media = fi?.media
 			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
-			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
-			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			const buf = await downloadAndDecrypt(media, cdnBaseUrl, signal)
 			const name = fi.file_name || 'file.bin'
 			return { name, buffer: buf, mime_type: guessMimeFromFileName(name) }
 		}
@@ -112,8 +122,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const vi = item.video_item
 			const media = vi?.media
 			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
-			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
-			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			const buf = await downloadAndDecrypt(media, cdnBaseUrl, signal)
 			return { name: 'weixin_video.mp4', buffer: buf, mime_type: 'video/mp4' }
 		}
 
@@ -122,8 +131,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			if (vo?.text) return null
 			const media = vo?.media
 			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
-			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
-			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			const buf = await downloadAndDecrypt(media, cdnBaseUrl, signal)
 			return { name: 'weixin_voice.silk', buffer: buf, mime_type: 'application/octet-stream' }
 		}
 	}
@@ -216,7 +224,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	 * @returns {object} 构建后的媒体消息项对象。
 	 */
 	function buildMediaMessageItem(args) {
-		/** @param {object} m CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。 */
+		/**
+		 * @param {object} m CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。
+		 * @returns {object} 附带 encrypt_type 的发送侧 media 对象。
+		 */
 		const outboundMedia = m => ({ ...m, encrypt_type: 1 })
 
 		if (args.uploadMediaType === UploadMediaType.IMAGE)
@@ -276,6 +287,19 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		let loggedReady = false
 
 		/**
+		 * 追加一条日志并合并、截断深度。
+		 * @param {string} peerKey 会话键。
+		 * @param {chatLogEntry_t_simple} entry 日志条目。
+		 */
+		function appendToLog(peerKey, entry) {
+			if (!chatLogs[peerKey]) chatLogs[peerKey] = []
+			chatLogs[peerKey].push(entry)
+			chatLogs[peerKey] = mergeChatLog(chatLogs[peerKey])
+			while (chatLogs[peerKey].length > MAX_MESSAGE_DEPTH)
+				chatLogs[peerKey].shift()
+		}
+
+		/**
 		 * @param {object} wxMsg 微信消息对象。
 		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的聊天日志条目。
 		 */
@@ -283,11 +307,9 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			const text = extractInboundText(wxMsg)
 			const fromId = wxMsg.from_user_id || ''
 			const name = fromId
-			const files = []
-			for (const item of wxMsg.item_list || []) {
-				const f = await downloadAndDecryptMediaItem(item, cdnBaseUrl, ctx.signal)
-				if (f) files.push(f)
-			}
+			const files = (await Promise.all(
+				(wxMsg.item_list || []).map(item => downloadAndDecryptMediaItem(item, cdnBaseUrl, ctx.signal))
+			)).filter(Boolean)
 			return {
 				time_stamp: wxMsg.create_time_ms ?? Date.now(),
 				role: wxMsg.message_type === MessageType.BOT ? 'char' : 'user',
@@ -386,19 +408,14 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				 */
 				const appendCharReplyToLog = fountReply => {
 					if (!fountReply || (!fountReply.content && !fountReply.files?.length)) return
-					if (!chatLogs[peerKey]) chatLogs[peerKey] = []
-					const show = fountReply.content_for_show || fountReply.content || ''
-					chatLogs[peerKey].push({
+					appendToLog(peerKey, {
 						time_stamp: Date.now(),
 						role: 'char',
 						name: botCharname,
-						content: show,
+						content: fountReply.content_for_show || fountReply.content || '',
 						files: fountReply.files?.length ? [...fountReply.files] : [],
 						extension: {},
 					})
-					chatLogs[peerKey] = mergeChatLog(chatLogs[peerKey])
-					while (chatLogs[peerKey].length > MAX_MESSAGE_DEPTH)
-						chatLogs[peerKey].shift()
 				}
 
 				/**
@@ -447,11 +464,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					extension: { platform: 'weixin', peer_key: peerKey, weixin_message: wxMsg },
 				})
 
-				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
-				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length)) {
-					await sendSplitReply(aiFinalReply)
-					appendCharReplyToLog(aiFinalReply)
-				}
+				await AddChatLogEntry(await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest()))
 			}
 			catch (error) {
 				console.error(`[SimpleWeixin] 回复失败 peer=${peerKey}:`, error)
@@ -528,11 +541,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				const entry = await weixinMessageToEntry(msg)
 				if (!entry) continue
 
-				if (!chatLogs[peerKey]) chatLogs[peerKey] = []
-				chatLogs[peerKey].push(entry)
-				chatLogs[peerKey] = mergeChatLog(chatLogs[peerKey])
-				while (chatLogs[peerKey].length > MAX_MESSAGE_DEPTH)
-					chatLogs[peerKey].shift()
+				appendToLog(peerKey, entry)
 
 				const shouldReply = config.ReplyToAllMessages ||
 					(config.OwnerWeChatId && msg.from_user_id === config.OwnerWeChatId)

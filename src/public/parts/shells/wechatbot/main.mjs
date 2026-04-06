@@ -54,7 +54,7 @@ export default {
 					configData: jsonData ? JSON.parse(jsonData) : undefined
 				}
 				const result = await handleAction(user, action, params)
-				if (result !== undefined)
+				if (result != null)
 					console.log(result)
 			},
 			/**

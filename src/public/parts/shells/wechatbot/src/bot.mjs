@@ -204,11 +204,13 @@ export async function pauseBot(username, botname) {
 	await destroyBotSession(username, botname)
 }
 
-on_shutdown(async () => {
-	for (const username of getAllUserNames())
-		for (const botname of Object.keys(getBotCache(username)))
-			await pauseBot(username, botname).catch(console.error)
-})
+on_shutdown(() => Promise.all(
+	getAllUserNames().flatMap(username =>
+		Object.keys(getBotCache(username)).map(botname =>
+			pauseBot(username, botname).catch(console.error)
+		)
+	)
+))
 
 /**
  * 获取运行中的机器人列表。
@@ -234,12 +236,11 @@ export function getBotList(username) {
  * @returns {Promise<void>}
  */
 async function stopAllRunningBots(username) {
-	for (const botname of getRunningBotList(username)) try {
-		await stopBot(username, botname)
-	}
-	catch (error) {
-		console.error(`WeChat Bot: Error stopping bot ${botname} for ${username}:`, error)
-	}
+	await Promise.all(getRunningBotList(username).map(botname =>
+		stopBot(username, botname).catch(error =>
+			console.error(`WeChat Bot: Error stopping bot ${botname} for ${username}:`, error)
+		)
+	))
 }
 
 events.on('BeforeUserDeleted', ({ username }) =>
