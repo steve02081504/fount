@@ -1861,82 +1861,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discordボット",
-		"description": "Discord の賑やかなホールで、仲間たちに声を届けましょう。一度に 1 台のサーバーずつ、プレゼンスを設定し、運用を管理し、世界間の橋渡しをさせます。",
-		"cardTitle": "Discordボット",
-		"botSelectDropdown": {
-			"placeholder": "ボットを選択"
-		},
-		"botSearch": {
-			"placeholder": "ボットを検索..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "キャラクターを選択"
-		},
-		"charSearch": {
-			"placeholder": "ロールを検索..."
-		},
-		"configCard": {
-			"title": "ボット設定",
-			"labels": {
-				"character": "キャラクター",
-				"apiKey": "Discord APIキー",
-				"config": "設定"
-			},
-			"charSelectPlaceholder": "キャラクターを選択",
-			"apiKeyInput": {
-				"placeholder": "APIキーを入力"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "API キーの表示を切り替えます"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "APIキーの表示切り替え"
-			},
-			"buttons": {
-				"saveConfig": "設定を保存",
-				"startBot": "起動",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "新しいボット名を入力してください："
-		},
-		"buttons": {
-			"newBot": "新規作成",
-			"deleteBot": "削除"
-		},
-		"alerts": {
-			"configSaved": "設定を正常に保存しました。",
-			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
-			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
-			"httpError": "HTTPエラーが発生しました。",
-			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Discordに来る",
-				"description": "あなたのキャラクターを Discord の世界に召喚します。",
-				"locked_description": "Discord Botを一度起動します。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "ボット関連",
-				"sub_items": {
-					"manage": {
-						"title": "Discord Botの設定"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Botの設定"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegramボット",
 		"description": "あなたのfountキャラクターがテレグラムの瞬時の波を横断しましょう。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
@@ -2010,6 +1934,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Telegram Botの設定"
+			}
+		}
+	},
+	"weixin_bots": {
+		"title": "WeChat ボット",
+		"description": "フォンの役割を WeChat の会話に統合して、ユビキタスなオフィス アシスタンス エクスペリエンスを提供します。",
+		"cardTitle": "WeChat ボット",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択してください"
+		},
+		"botSearch": {
+			"placeholder": "検索ボット..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択してください"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"configCard": {
+			"title": "ボットの構成",
+			"labels": {
+				"character": "バインド役割",
+				"apiBaseUrl": "WeChat チャネル サービスのルート URL",
+				"botToken": "iLink ボットトークン",
+				"config": "構成"
+			},
+			"charSelectPlaceholder": "役割の選択",
+			"apiBaseUrlInput": {
+				"placeholder": "デフォルトの https://ilinkai.weixin.qq.com を使用するには、空白のままにします。"
+			},
+			"botTokenInput": {
+				"placeholder": "ログイン後に取得されるベアラートークン"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "トークンの表示を切り替えます"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "トークンの表示を切り替えます"
+			},
+			"buttons": {
+				"saveConfig": "設定の保存",
+				"startBot": "起動する",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください:"
+		},
+		"buttons": {
+			"newBot": "新しい",
+			"deleteBot": "消去"
+		},
+		"alerts": {
+			"configSaved": "構成が正常に保存されました",
+			"botExists": "「${botname}」という名前のボットはすでに存在します。別の名前を使用してください。",
+			"unsavedChanges": "未保存の変更があります。変更を破棄しますか?",
+			"httpError": "HTTPエラー",
+			"beforeUnload": "未保存の変更があります。本当に退会してもよろしいですか?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "私の仕事を手伝ってください！",
+				"description": "WeChat で泉のキャラクターに話しかけてもらいましょう。",
+				"locked_description": "WeChat ボットを一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat ボットの管理"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat ボットを構成する"
+			}
+		},
+		"qrLogin": {
+			"hint": "WeChat を使用して以下の QR コードをスキャンしてログインを完了します。",
+			"button": "コードをスキャンしてログインします",
+			"scanPrompt": "WeChat を使用して QR コードをスキャンしてください",
+			"waiting": "QRコードを取得しています...",
+			"scanned": "コードはスキャンされました。携帯電話で確認してください...",
+			"success": "WeChat が接続され、設定が更新されました。ボットは直接起動できます。",
+			"needBot": "最初にドロップダウン ボックスでボットを選択するか、[新規] を使用してボットを作成してください。"
+		}
+	},
+	"discord_bots": {
+		"title": "Discordボット",
+		"description": "Discord の賑やかなホールで、仲間たちに声を届けましょう。一度に 1 台のサーバーずつ、プレゼンスを設定し、運用を管理し、世界間の橋渡しをさせます。",
+		"cardTitle": "Discordボット",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "キャラクターを選択"
+		},
+		"charSearch": {
+			"placeholder": "ロールを検索..."
+		},
+		"configCard": {
+			"title": "ボット設定",
+			"labels": {
+				"character": "キャラクター",
+				"apiKey": "Discord APIキー",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "キャラクターを選択",
+			"apiKeyInput": {
+				"placeholder": "APIキーを入力"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API キーの表示を切り替えます"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "APIキーの表示切り替え"
+			},
+			"buttons": {
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください："
+		},
+		"buttons": {
+			"newBot": "新規作成",
+			"deleteBot": "削除"
+		},
+		"alerts": {
+			"configSaved": "設定を正常に保存しました。",
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Discordに来る",
+				"description": "あなたのキャラクターを Discord の世界に召喚します。",
+				"locked_description": "Discord Botを一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Botの設定"
 			}
 		}
 	},
