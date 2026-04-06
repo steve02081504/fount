@@ -40,15 +40,16 @@ async function ensureWeixinInterface(char, username, charname) {
  */
 async function startBot(config, char, username, charname) {
 	const abortController = new AbortController()
+	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WEIXIN_ILINK_BASE
 	const api = createWeixinApi({
-		baseUrl: config.apiBaseUrl?.trim() || DEFAULT_WEIXIN_ILINK_BASE,
+		baseUrl: cdnBaseUrl,
 		token: config.token,
 		signal: abortController.signal,
 	})
 
 	await ensureWeixinInterface(char, username, charname)
 
-	const ctx = { ...api, signal: abortController.signal }
+	const ctx = { ...api, signal: abortController.signal, cdnBaseUrl }
 	const loopPromise = char.interfaces.weixin.OnceClientReady(ctx, config.config)
 
 	void loopPromise.catch(err => {

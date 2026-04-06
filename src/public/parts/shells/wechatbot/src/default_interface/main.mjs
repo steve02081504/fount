@@ -1,7 +1,16 @@
+import { Buffer } from 'node:buffer'
+
 import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import { splitDiscordReply } from '../../../discordbot/src/default_interface/tools.mjs'
-import { DEFAULT_LONG_POLL_TIMEOUT_MS, UploadMediaType } from '../weixin_api.mjs'
+import {
+	DEFAULT_LONG_POLL_TIMEOUT_MS,
+	DEFAULT_WEIXIN_ILINK_BASE,
+	UploadMediaType,
+	decryptAesEcb,
+	downloadCdnBuffer,
+	parseInboundAesKey,
+} from '../weixin_api.mjs'
 
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
@@ -27,6 +36,98 @@ function extractInboundText(msg) {
 			parts.push(item.text_item.text)
 
 	return parts.join('\n').trim()
+}
+
+/**
+ * 判断消息是否包含可从 CDN 拉取的媒体项。
+ * @param {object} msg 微信消息对象。
+ * @returns {boolean}
+ */
+function hasDownloadableMediaItem(msg) {
+	for (const item of msg.item_list || []) {
+		const m = item.image_item?.media || item.file_item?.media || item.video_item?.media || item.voice_item?.media
+		if (m && (m.encrypt_query_param || m.full_url))
+			return true
+	}
+	return false
+}
+
+/**
+ * 根据文件名猜测 MIME。
+ * @param {string} name 文件名。
+ * @returns {string}
+ */
+function guessMimeFromFileName(name) {
+	const n = String(name).toLowerCase()
+	if (/\.(jpe?g)$/.test(n)) return 'image/jpeg'
+	if (/\.png$/.test(n)) return 'image/png'
+	if (/\.gif$/.test(n)) return 'image/gif'
+	if (/\.webp$/.test(n)) return 'image/webp'
+	if (/\.(mp4|m4v)$/.test(n)) return 'video/mp4'
+	if (/\.(mp3|m4a)$/.test(n)) return 'audio/mpeg'
+	if (/\.wav$/.test(n)) return 'audio/wav'
+	return 'application/octet-stream'
+}
+
+/**
+ * 下载并解密单条 MessageItem，供入站 chat_log.files 使用（对齐 openclaw media-download）。
+ * @param {object} item item_list 元素。
+ * @param {string} cdnBaseUrl CDN 根地址。
+ * @param {AbortSignal} signal 中止信号。
+ * @returns {Promise<{ name: string, buffer: Buffer, mime_type: string } | null>}
+ */
+async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
+	try {
+		if (item.type === MessageItemType.IMAGE) {
+			const img = item.image_item
+			const media = img?.media
+			if (!media || (!media.encrypt_query_param && !media.full_url)) return null
+			const hexKey = img.aeskey && /^[0-9a-fA-F]{32}$/i.test(String(img.aeskey).trim())
+				? String(img.aeskey).trim()
+				: ''
+			const aesKeyBase64 = hexKey
+				? Buffer.from(hexKey, 'hex').toString('base64')
+				: media.aes_key
+			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
+			const buf = aesKeyBase64
+				? decryptAesEcb(encrypted, parseInboundAesKey(aesKeyBase64))
+				: encrypted
+			return { name: 'weixin_image.bin', buffer: buf, mime_type: 'image/jpeg' }
+		}
+
+		if (item.type === MessageItemType.FILE) {
+			const fi = item.file_item
+			const media = fi?.media
+			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
+			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
+			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			const name = fi.file_name || 'file.bin'
+			return { name, buffer: buf, mime_type: guessMimeFromFileName(name) }
+		}
+
+		if (item.type === MessageItemType.VIDEO) {
+			const vi = item.video_item
+			const media = vi?.media
+			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
+			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
+			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			return { name: 'weixin_video.mp4', buffer: buf, mime_type: 'video/mp4' }
+		}
+
+		if (item.type === MessageItemType.VOICE) {
+			const vo = item.voice_item
+			if (vo?.text) return null
+			const media = vo?.media
+			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
+			const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
+			const buf = decryptAesEcb(encrypted, parseInboundAesKey(media.aes_key))
+			return { name: 'weixin_voice.silk', buffer: buf, mime_type: 'application/octet-stream' }
+		}
+	}
+	catch (err) {
+		console.error('[SimpleWeixin] 入站媒体下载/解密失败:', err)
+	}
+	return null
 }
 
 /**
@@ -162,6 +263,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	 */
 	async function SimpleWeixinBotMain(ctx, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
+		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WEIXIN_ILINK_BASE
 		let buf = ''
 		let longPollTimeoutMs = DEFAULT_LONG_POLL_TIMEOUT_MS
 		const chatLogs = /** @type {Record<string, chatLogEntry_t_simple[]>} */ {}
@@ -171,18 +273,23 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 
 		/**
 		 * @param {object} wxMsg 微信消息对象。
-		 * @returns {chatLogEntry_t_simple} 转换后的聊天日志条目。
+		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的聊天日志条目。
 		 */
-		function weixinMessageToEntry(wxMsg) {
+		async function weixinMessageToEntry(wxMsg) {
 			const text = extractInboundText(wxMsg)
 			const fromId = wxMsg.from_user_id || ''
 			const name = fromId
+			const files = []
+			for (const item of wxMsg.item_list || []) {
+				const f = await downloadAndDecryptMediaItem(item, cdnBaseUrl, ctx.signal)
+				if (f) files.push(f)
+			}
 			return {
 				time_stamp: wxMsg.create_time_ms ?? Date.now(),
 				role: wxMsg.message_type === MessageType.BOT ? 'char' : 'user',
 				name,
 				content: text,
-				files: [],
+				files,
 				extension: { weixin_message_id: String(wxMsg.message_id ?? wxMsg.seq ?? '') },
 			}
 		}
@@ -195,7 +302,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		 */
 		async function doReply(wxMsg, peerKey) {
 			const text = extractInboundText(wxMsg)
-			if (!text) return
+			if (!text && !hasDownloadableMediaItem(wxMsg)) return
 
 			const toUserId = wxMsg.from_user_id
 			const contextToken = wxMsg.context_token || ''
@@ -411,10 +518,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				if (msg.message_state === MessageState.GENERATING) continue
 
 				const inboundText = extractInboundText(msg)
-				if (!inboundText) continue
+				if (!inboundText && !hasDownloadableMediaItem(msg)) continue
 
 				const peerKey = msg.session_id || msg.from_user_id || 'unknown'
-				const entry = weixinMessageToEntry(msg)
+				const entry = await weixinMessageToEntry(msg)
 				if (!entry) continue
 
 				if (!chatLogs[peerKey]) chatLogs[peerKey] = []

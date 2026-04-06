@@ -3,7 +3,7 @@
  * 协议细节可参考 @tencent-weixin/openclaw-weixin 中的实现说明。
  */
 import { Buffer } from 'node:buffer'
-import { createCipheriv, createHash, randomBytes } from 'node:crypto'
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
 
 const CHANNEL_VERSION = '2.1.1'
 const ILINK_APP_ID = 'bot'
@@ -114,6 +114,60 @@ function aesEcbPaddedSize(plaintextSize) {
 function encryptAesEcb(plaintext, key) {
 	const cipher = createCipheriv('aes-128-ecb', key, null)
 	return Buffer.concat([cipher.update(plaintext), cipher.final()])
+}
+
+/**
+ * 解密 AES-128-ECB PKCS#7 密文（入站 CDN 媒体）。
+ * @param {Buffer} ciphertext 密文数据。
+ * @param {Buffer} key 16 字节 AES 密钥。
+ * @returns {Buffer} 明文。
+ */
+export function decryptAesEcb(ciphertext, key) {
+	const decipher = createDecipheriv('aes-128-ecb', key, null)
+	return Buffer.concat([decipher.update(ciphertext), decipher.final()])
+}
+
+/**
+ * 解析入站 CDNMedia.aes_key（与 @tencent-weixin/openclaw-weixin pic-decrypt 一致）。
+ * @param {string} aesKeyBase64 JSON 中的 aes_key 字段。
+ * @returns {Buffer} 16 字节密钥。
+ */
+export function parseInboundAesKey(aesKeyBase64) {
+	const decoded = Buffer.from(aesKeyBase64, 'base64')
+	if (decoded.length === 16)
+		return decoded
+	if (decoded.length === 32 && /^[0-9a-fA-F]{32}$/.test(decoded.toString('ascii')))
+		return Buffer.from(decoded.toString('ascii'), 'hex')
+	throw new Error(`parseInboundAesKey: invalid encoding (${decoded.length} bytes after base64)`)
+}
+
+/**
+ * 构建 CDN 下载 URL。
+ * @param {string} encryptedQueryParam 加密查询参数。
+ * @param {string} cdnBaseUrl CDN 根地址。
+ * @returns {string} 完整下载 URL。
+ */
+export function buildCdnDownloadUrl(encryptedQueryParam, cdnBaseUrl) {
+	const base = String(cdnBaseUrl || DEFAULT_WEIXIN_ILINK_BASE).replace(/\/+$/, '')
+	return `${base}/download?encrypted_query_param=${encodeURIComponent(encryptedQueryParam)}`
+}
+
+/**
+ * 从微信 CDN 下载密文（不解密）。
+ * @param {string} encryptedQueryParam encrypt_query_param。
+ * @param {string} cdnBaseUrl CDN 根地址。
+ * @param {string} [fullUrl] 若存在则优先使用。
+ * @param {AbortSignal} [signal] 中止信号。
+ * @returns {Promise<Buffer>} 下载的字节。
+ */
+export async function downloadCdnBuffer(encryptedQueryParam, cdnBaseUrl, fullUrl, signal) {
+	const url = String(fullUrl || '').trim() || buildCdnDownloadUrl(encryptedQueryParam, cdnBaseUrl)
+	const res = await fetch(url, { signal: buildFetchSignal(DEFAULT_API_TIMEOUT_MS, signal) })
+	if (!res.ok) {
+		const body = await res.text().catch(() => '')
+		throw new Error(`CDN download ${res.status}: ${body}`)
+	}
+	return Buffer.from(await res.arrayBuffer())
 }
 
 /**
