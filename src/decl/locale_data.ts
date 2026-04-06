@@ -1845,7 +1845,7 @@ export type LocaleData = {
 			}
 		}
 	}
-	discord_bots: {
+	telegram_bots: {
 		title: string
 		description: string
 		cardTitle: string
@@ -1865,17 +1865,17 @@ export type LocaleData = {
 			title: string
 			labels: {
 				character: string
-				apiKey: string
+				botToken: string
 				config: string
 			}
 			charSelectPlaceholder: string
-			apiKeyInput: {
+			botTokenInput: {
 				placeholder: string
 			}
-			toggleApiKeyButton: {
+			toggleBotTokenButton: {
 				'aria-label': string
 			}
-			toggleApiKeyIcon: {
+			toggleBotTokenIcon: {
 				alt: string
 			}
 			buttons: {
@@ -2010,7 +2010,7 @@ export type LocaleData = {
 			needBot: string
 		}
 	}
-	telegram_bots: {
+	discord_bots: {
 		title: string
 		description: string
 		cardTitle: string
@@ -2030,17 +2030,17 @@ export type LocaleData = {
 			title: string
 			labels: {
 				character: string
-				botToken: string
+				apiKey: string
 				config: string
 			}
 			charSelectPlaceholder: string
-			botTokenInput: {
+			apiKeyInput: {
 				placeholder: string
 			}
-			toggleBotTokenButton: {
+			toggleApiKeyButton: {
 				'aria-label': string
 			}
-			toggleBotTokenIcon: {
+			toggleApiKeyIcon: {
 				alt: string
 			}
 			buttons: {
@@ -2640,7 +2640,6 @@ export type LocaleKeyParams = {
 	'deskpet.toasts.stopped': { charname: string | number }
 	'directoryListing.indexOf': { path: string | number }
 	'discord_bots.alerts.botExists': { botname: string | number }
-	'weixin_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }
 	'export.alerts.exportFailed': { message: string | number }
@@ -2650,7 +2649,7 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.logoutRefreshTokenProcessError': { error: string | number }
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
-	'fountConsole.botStarted': { platform: string | number; botusername: string | number; charname: string | number }
+	'fountConsole.botStarted': { botusername: string | number; charname: string | number; platform: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
@@ -2747,6 +2746,7 @@ export type LocaleKeyParams = {
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }
+	'weixin_bots.alerts.botExists': { botname: string | number }
 }
 
 /**
