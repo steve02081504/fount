@@ -179,7 +179,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		function weixinMessageToEntry(wxMsg) {
 			const text = extractInboundText(wxMsg)
 			const fromId = wxMsg.from_user_id || ''
-			const name = `peer:${fromId.slice(0, 12)}`
+			const name = fromId
 			return {
 				time_stamp: wxMsg.create_time_ms ?? Date.now(),
 				role: wxMsg.message_type === MessageType.BOT ? 'char' : 'user',
@@ -265,16 +265,38 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 
 			try {
 				/**
+				 * 将角色回复追加到本地聊天日志（与 UserCharname / ReplyToCharname 的裸 ID 一致）。
+				 * @param {ChatReply_t} fountReply fount 聊天回复对象。
+				 * @returns {void}
+				 */
+				const appendCharReplyToLog = fountReply => {
+					if (!fountReply || (!fountReply.content && !fountReply.files?.length)) return
+					if (!chatLogs[peerKey]) chatLogs[peerKey] = []
+					const show = fountReply.content_for_show || fountReply.content || ''
+					chatLogs[peerKey].push({
+						time_stamp: Date.now(),
+						role: 'char',
+						name: botCharname,
+						content: show,
+						files: fountReply.files?.length ? [...fountReply.files] : [],
+						extension: {},
+					})
+					chatLogs[peerKey] = mergeChatLog(chatLogs[peerKey])
+					while (chatLogs[peerKey].length > MAX_MESSAGE_DEPTH)
+						chatLogs[peerKey].shift()
+				}
+
+				/**
 				 * 添加聊天日志条目。
 				 * @param {any} replyFromChar 角色回复对象。
 				 * @returns {Promise<void>}
 				 */
 				const AddChatLogEntry = async replyFromChar => {
-					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
+					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
 						await sendSplitReply(replyFromChar)
+						appendCharReplyToLog(replyFromChar)
+					}
 				}
-
-				const peerDisplay = `peer:${(wxMsg.from_user_id || '').slice(0, 16)}`
 
 				/**
 				 * 生成聊天回复请求。
@@ -287,7 +309,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					char_id: botCharname,
 					Charname: botCharname,
 					UserCharname: config.OwnerWeChatId || '',
-					ReplyToCharname: peerDisplay,
+					ReplyToCharname: toUserId,
 					locales: localhostLocales,
 					time: new Date(),
 					world: null,
@@ -311,8 +333,10 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				})
 
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
-				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length))
+				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length)) {
 					await sendSplitReply(aiFinalReply)
+					appendCharReplyToLog(aiFinalReply)
+				}
 			}
 			catch (error) {
 				console.error(`[SimpleWeixin] 回复失败 peer=${peerKey}:`, error)
