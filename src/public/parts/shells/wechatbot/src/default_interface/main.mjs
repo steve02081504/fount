@@ -1,4 +1,11 @@
 import { Buffer } from 'node:buffer'
+import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import ffmpeg from 'npm:fluent-ffmpeg'
+import { where_command } from 'npm:@steve02081504/exec'
+import mimetype from 'npm:mime-types'
 
 import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
@@ -12,9 +19,11 @@ import {
 	parseInboundAesKey,
 } from '../weixin_api.mjs'
 
+ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path)))
+
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
-/** @typedef {FountChatLogEntryBase & { extension?: { weixin_message_id?: string, [key: string]: any } }} chatLogEntry_t_simple */
+/** @typedef {FountChatLogEntryBase & { extension?: { wechat_message_id?: string, [key: string]: any } }} chatLogEntry_t_simple */
 
 const MessageType = { USER: 1, BOT: 2 }
 const MessageItemType = { TEXT: 1, IMAGE: 2, VOICE: 3, FILE: 4, VIDEO: 5 }
@@ -23,6 +32,18 @@ const MessageState = { NEW: 0, GENERATING: 1, FINISH: 2 }
 const IMAGE_NAME_REGEXP = /\.(jpeg|jpg|png|gif|webp|bmp)$/i
 const VIDEO_NAME_REGEXP = /\.(mp4|mov|avi|mkv|webm)$/i
 const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
+
+/** 微信可直接发送为 IMAGE 类型的 MIME */
+const WECHAT_SUPPORTED_IMAGE_MIMES = new Set([
+	'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp',
+])
+/** 微信可直接发送为 VOICE 类型的 MIME */
+const WECHAT_SUPPORTED_AUDIO_MIMES = new Set([
+	'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/wave',
+	'audio/mp4', 'audio/x-m4a', 'audio/m4a', 'audio/aac', 'audio/x-aac', 'audio/amr',
+])
+/** 微信可直接发送为 VIDEO 类型的 MIME */
+const WECHAT_SUPPORTED_VIDEO_MIMES = new Set(['video/mp4', 'video/x-m4v'])
 
 /**
  * 提取微信消息的文本内容。
@@ -69,6 +90,125 @@ function guessMimeFromFileName(name) {
 }
 
 /**
+ * 根据 MIME 类型或文件名推断适合 ffmpeg 识别的输入扩展名。
+ * @param {string} mimeType MIME 类型。
+ * @param {string} fileName 文件名。
+ * @returns {string} 包含点号的扩展名，如 ".tiff"。
+ */
+function getInputExt(mimeType, fileName) {
+	const ext = mimetype.extension(mimeType)
+	if (ext) return `.${ext}`
+	const fileExt = fileName.includes('.') ? `.${fileName.split('.').pop()}` : ''
+	return fileExt || '.bin'
+}
+
+/**
+ * 通过 ffprobe 检测图片/视频是否包含多帧（动图）。
+ * @param {Buffer} buffer 文件数据。
+ * @param {string} inputExt 含点扩展名。
+ * @returns {Promise<boolean>} 是否为动图。
+ */
+async function isAnimatedMedia(buffer, inputExt) {
+	const tempDir = mkdtempSync(join(tmpdir(), 'fount-wechat-probe-'))
+	try {
+		const inputPath = join(tempDir, `input${inputExt}`)
+		writeFileSync(inputPath, buffer)
+		const metadata = await new Promise((resolve, reject) =>
+			ffmpeg.ffprobe(inputPath, (err, data) => err ? reject(err) : resolve(data))
+		)
+		const nbFrames = parseInt(metadata?.streams?.[0]?.nb_frames ?? '1', 10)
+		return nbFrames > 1
+	}
+	catch {
+		return false
+	}
+	finally {
+		rmSync(tempDir, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 用 ffmpeg 将 Buffer 转换格式，返回转换后的 Buffer。
+ * @param {Buffer} buffer 原始数据。
+ * @param {string} inputExt 输入扩展名（含点）。
+ * @param {string} outputExt 输出扩展名（含点）。
+ * @param {string[]} [extraArgs] 额外 ffmpeg 参数。
+ * @returns {Promise<Buffer>} 转换后的数据。
+ */
+async function convertBufferWithFfmpeg(buffer, inputExt, outputExt, extraArgs = []) {
+	const tempDir = mkdtempSync(join(tmpdir(), 'fount-wechat-'))
+	try {
+		const inputPath = join(tempDir, `input${inputExt}`)
+		const outputPath = join(tempDir, `output${outputExt}`)
+		writeFileSync(inputPath, buffer)
+		await new Promise((resolve, reject) => {
+			let cmd = ffmpeg(inputPath)
+			for (const arg of extraArgs) cmd = cmd.addOption(arg)
+			cmd.output(outputPath)
+				.on('end', resolve)
+				.on('error', reject)
+				.run()
+		})
+		return readFileSync(outputPath)
+	}
+	finally {
+		rmSync(tempDir, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 若文件格式微信不支持，自动转换为兼容格式：
+ * - image/* 不支持 → PNG
+ * - audio/* 不支持 → MP3
+ * - video/* 不支持 → MP4
+ * @param {{ name?: string, buffer?: Buffer, mime_type?: string }} file 文件对象。
+ * @returns {Promise<typeof file>} 转换后的文件对象（格式已支持时原样返回）。
+ */
+async function convertFileToWechatCompatible(file) {
+	if (!file?.buffer) return file
+	const mimeType = String(file.mime_type || '').toLowerCase()
+	const fileName = String(file.name || 'file')
+	const baseName = fileName.replace(/\.[^.]*$/, '')
+	const inputExt = getInputExt(mimeType, fileName)
+
+	if (mimeType.startsWith('image/') && !WECHAT_SUPPORTED_IMAGE_MIMES.has(mimeType)) {
+		const animated = await isAnimatedMedia(file.buffer, inputExt)
+		const [outExt, outMime] = animated ? ['.gif', 'image/gif'] : ['.png', 'image/png']
+		try {
+			const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, outExt)
+			return { ...file, name: `${baseName}${outExt}`, mime_type: outMime, buffer: buf }
+		}
+		catch (err) {
+			console.error(`[SimpleWechat] 图片转换失败 ${fileName}:`, err)
+		}
+	}
+
+	if (mimeType.startsWith('audio/') && !WECHAT_SUPPORTED_AUDIO_MIMES.has(mimeType)) {
+		try {
+			const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp3',
+				['-acodec', 'libmp3lame', '-q:a', '2'])
+			return { ...file, name: `${baseName}.mp3`, mime_type: 'audio/mpeg', buffer: buf }
+		}
+		catch (err) {
+			console.error(`[SimpleWechat] 音频转换失败 ${fileName}:`, err)
+		}
+	}
+
+	if (mimeType.startsWith('video/') && !WECHAT_SUPPORTED_VIDEO_MIMES.has(mimeType)) {
+		try {
+			const buf = await convertBufferWithFfmpeg(file.buffer, inputExt, '.mp4',
+				['-c:v', 'libx264', '-c:a', 'aac', '-movflags', '+faststart'])
+			return { ...file, name: `${baseName}.mp4`, mime_type: 'video/mp4', buffer: buf }
+		}
+		catch (err) {
+			console.error(`[SimpleWechat] 视频转换失败 ${fileName}:`, err)
+		}
+	}
+
+	return file
+}
+
+/**
  * 从 CDN 拉取密文并用 media.aes_key 解密。
  * @param {object} media CDN 媒体引用。
  * @param {string} cdnBaseUrl CDN 根地址。
@@ -103,7 +243,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const buf = aesKeyBase64
 				? decryptAesEcb(encrypted, parseInboundAesKey(aesKeyBase64))
 				: encrypted
-			return { name: 'weixin_image.bin', buffer: buf, mime_type: 'image/jpeg' }
+			return { name: 'wechat_image.bin', buffer: buf, mime_type: 'image/jpeg' }
 		}
 
 		if (item.type === MessageItemType.FILE) {
@@ -120,7 +260,7 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const media = vi?.media
 			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
 			const buf = await downloadAndDecrypt(media, cdnBaseUrl, signal)
-			return { name: 'weixin_video.mp4', buffer: buf, mime_type: 'video/mp4' }
+			return { name: 'wechat_video.mp4', buffer: buf, mime_type: 'video/mp4' }
 		}
 
 		if (item.type === MessageItemType.VOICE) {
@@ -129,11 +269,11 @@ async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 			const media = vo?.media
 			if (!media?.aes_key || (!media.encrypt_query_param && !media.full_url)) return null
 			const buf = await downloadAndDecrypt(media, cdnBaseUrl, signal)
-			return { name: 'weixin_voice.silk', buffer: buf, mime_type: 'application/octet-stream' }
+			return { name: 'wechat_voice.silk', buffer: buf, mime_type: 'application/octet-stream' }
 		}
 	}
 	catch (err) {
-		console.error('[SimpleWeixin] 入站媒体下载/解密失败:', err)
+		console.error('[SimpleWechat] 入站媒体下载/解密失败:', err)
 	}
 	return null
 }
@@ -157,8 +297,8 @@ function mergeChatLog(log) {
 			last.content += '\n' + current.content
 			last.time_stamp = current.time_stamp
 			if (current.files?.length) last.files = [...last.files || [], ...current.files]
-			if (current.extension?.weixin_message_id)
-				last.extension = { ...last.extension, weixin_message_id: current.extension.weixin_message_id }
+		if (current.extension?.wechat_message_id)
+			last.extension = { ...last.extension, wechat_message_id: current.extension.wechat_message_id }
 		}
 		else {
 			if (last) merged.push(last)
@@ -175,9 +315,9 @@ function mergeChatLog(log) {
  * @param {string} botCharname 机器人角色名。
  * @returns {{ OnceClientReady: Function, GetBotConfigTemplate: Function }} 微信接口实现。
  */
-export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname) {
+export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname) {
 	if (!charAPI?.interfaces?.chat?.GetReply)
-		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleWeixinInterface.')
+		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleWechatInterface.')
 
 	/**
 	 * 获取默认机器人配置模板。
@@ -199,8 +339,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	function detectUploadMediaType(fileLike) {
 		const mimeType = String(fileLike?.mime_type || '').toLowerCase()
 		const fileName = String(fileLike?.name || '').toLowerCase()
-		if ((mimeType.startsWith('image/') && !WEIXIN_UNSUPPORTED_IMAGE_MIMES.has(mimeType)) ||
-			(IMAGE_NAME_REGEXP.test(fileName) && !WEIXIN_UNSUPPORTED_IMAGE_EXT_REGEXP.test(fileName)))
+		if (WECHAT_SUPPORTED_IMAGE_MIMES.has(mimeType) || IMAGE_NAME_REGEXP.test(fileName))
 			return UploadMediaType.IMAGE
 		if (mimeType.startsWith('video/') || VIDEO_NAME_REGEXP.test(fileName))
 			return UploadMediaType.VIDEO
@@ -273,7 +412,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	 * @param {object} config 配置对象。
 	 * @returns {Promise<void>}
 	 */
-	async function SimpleWeixinBotMain(ctx, config) {
+	async function SimpleWechatBotMain(ctx, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
 		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WEIXIN_ILINK_BASE
 		let buf = ''
@@ -300,7 +439,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		 * @param {object} wxMsg 微信消息对象。
 		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的聊天日志条目。
 		 */
-		async function weixinMessageToEntry(wxMsg) {
+		async function wechatMessageToEntry(wxMsg) {
 			const text = extractInboundText(wxMsg)
 			const fromId = wxMsg.from_user_id || ''
 			const name = fromId
@@ -313,7 +452,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				name,
 				content: text,
 				files,
-				extension: { weixin_message_id: String(wxMsg.message_id ?? wxMsg.seq ?? '') },
+				extension: { wechat_message_id: String(wxMsg.message_id ?? wxMsg.seq ?? '') },
 			}
 		}
 
@@ -362,9 +501,11 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			async function sendSplitReply(fountReply) {
 				await sendTextChunks(fountReply.content_for_show || fountReply.content || '')
 
-				for (const file of fountReply.files || []) {
-					if (!file?.buffer) continue
+				for (const rawFile of fountReply.files || []) {
+					if (!rawFile?.buffer) continue
+					let file = rawFile
 					try {
+						file = await convertFileToWechatCompatible(rawFile)
 						const uploadMediaType = detectUploadMediaType(file)
 						const uploadResult = await ctx.uploadMedia({
 							mediaType: uploadMediaType,
@@ -392,7 +533,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 						})
 					}
 					catch (error) {
-						console.error(`[SimpleWeixin] 发送文件失败 ${file.name || 'unnamed'}:`, error)
+						console.error(`[SimpleWechat] 发送文件失败 ${file.name || 'unnamed'}:`, error)
 					}
 				}
 			}
@@ -458,13 +599,13 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					 * @returns {Promise<object>} 更新后的聊天回复请求对象。
 					 */
 					Update: async () => await generateChatReplyRequest(),
-					extension: { platform: 'weixin', peer_key: peerKey, weixin_message: wxMsg },
+					extension: { platform: 'wechat', peer_key: peerKey, wechat_message: wxMsg },
 				})
 
 				await AddChatLogEntry(await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest()))
 			}
 			catch (error) {
-				console.error(`[SimpleWeixin] 回复失败 peer=${peerKey}:`, error)
+				console.error(`[SimpleWechat] 回复失败 peer=${peerKey}:`, error)
 				try {
 					await ctx.sendMessage({
 						msg: {
@@ -492,7 +633,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			}
 			catch (error) {
 				if (ctx.signal.aborted) break
-				console.error('[SimpleWeixin] getUpdates 错误:', error)
+				console.error('[SimpleWechat] getUpdates 错误:', error)
 				await new Promise(resolve => setTimeout(resolve, 2000))
 				continue
 			}
@@ -503,7 +644,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				throw new Error('微信会话已失效（errcode -14），请重新完成渠道登录并更新 Token。')
 
 			if (resp?.ret !== 0 && resp?.ret !== undefined) {
-				console.error('[SimpleWeixin] getUpdates 非成功 ret:', resp.ret, resp.errmsg)
+				console.error('[SimpleWechat] getUpdates 非成功 ret:', resp.ret, resp.errmsg)
 				await new Promise(resolve => setTimeout(resolve, 2000))
 				continue
 			}
@@ -535,7 +676,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				if (!inboundText && !hasDownloadableMediaItem(msg)) continue
 
 				const peerKey = msg.session_id || msg.from_user_id || 'unknown'
-				const entry = await weixinMessageToEntry(msg)
+				const entry = await wechatMessageToEntry(msg)
 				if (!entry) continue
 
 				appendToLog(peerKey, entry)
@@ -557,7 +698,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 		 * @returns {Promise<void>} 返回值。
 		 */
 		OnceClientReady: async (ctx, config) => {
-			await SimpleWeixinBotMain(ctx, config)
+			await SimpleWechatBotMain(ctx, config)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

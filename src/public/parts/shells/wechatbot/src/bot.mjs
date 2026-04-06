@@ -19,10 +19,10 @@ import { createWeixinApi, DEFAULT_WEIXIN_ILINK_BASE } from './weixin_api.mjs'
  * @param {string} charname 角色名称。
  * @returns {Promise<void>}
  */
-async function ensureWeixinInterface(char, username, charname) {
-	if (!char.interfaces.weixin) {
-		const { createSimpleWeixinInterface } = await import('./default_interface/main.mjs')
-		char.interfaces.weixin = createSimpleWeixinInterface(char, username, charname)
+async function ensureWechatInterface(char, username, charname) {
+	if (!char.interfaces.wechat) {
+		const { createSimpleWechatInterface } = await import('./default_interface/main.mjs')
+		char.interfaces.wechat = createSimpleWechatInterface(char, username, charname)
 	}
 }
 
@@ -47,10 +47,10 @@ async function startBot(config, char, username, charname) {
 		signal: abortController.signal,
 	})
 
-	await ensureWeixinInterface(char, username, charname)
+	await ensureWechatInterface(char, username, charname)
 
 	const ctx = { ...api, signal: abortController.signal, cdnBaseUrl }
-	const loopPromise = char.interfaces.weixin.OnceClientReady(ctx, config.config)
+	const loopPromise = char.interfaces.wechat.OnceClientReady(ctx, config.config)
 
 	void loopPromise.catch(err => {
 		if (!abortController.signal.aborted)
@@ -105,8 +105,8 @@ export function getBotConfig(username, botname) {
  */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
-	await ensureWeixinInterface(char, username, charname)
-	return await char.interfaces.weixin?.GetBotConfigTemplate?.() || {}
+	await ensureWechatInterface(char, username, charname)
+	return await char.interfaces.wechat?.GetBotConfigTemplate?.() || {}
 }
 
 /**
