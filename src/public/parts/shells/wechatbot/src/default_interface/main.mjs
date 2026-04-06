@@ -1,5 +1,3 @@
-import { Buffer } from 'node:buffer'
-
 import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import { splitDiscordReply } from '../../../discordbot/src/default_interface/tools.mjs'
@@ -13,7 +11,7 @@ const MessageType = { USER: 1, BOT: 2 }
 const MessageItemType = { TEXT: 1, IMAGE: 2, VOICE: 3, FILE: 4, VIDEO: 5 }
 const MessageState = { NEW: 0, GENERATING: 1, FINISH: 2 }
 
-const IMAGE_NAME_REGEXP = /\.(jpeg|jpg|png|gif|webp|bmp)$/i
+const IMAGE_NAME_REGEXP = /\.(jpeg|jpg|png|gif|webp|bmp|avif)$/i
 const VIDEO_NAME_REGEXP = /\.(mp4|mov|avi|mkv|webm)$/i
 const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
 
@@ -113,13 +111,14 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 	 * @returns {object} 构建后的媒体消息项对象。
 	 */
 	function buildMediaMessageItem(args) {
+		/** @param {object} m CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。 */
+		const outboundMedia = m => ({ ...m, encrypt_type: 1 })
+
 		if (args.uploadMediaType === UploadMediaType.IMAGE)
 			return {
 				type: MessageItemType.IMAGE,
 				image_item: {
-					media: args.media,
-					aeskey: Buffer.from(args.media.aes_key, 'base64').toString('hex'),
-					hd_size: args.ciphertextSize,
+					media: outboundMedia(args.media),
 					mid_size: args.ciphertextSize,
 				},
 			}
@@ -128,9 +127,8 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			return {
 				type: MessageItemType.VIDEO,
 				video_item: {
-					media: args.media,
+					media: outboundMedia(args.media),
 					video_size: args.ciphertextSize,
-					video_md5: args.md5,
 				},
 			}
 
@@ -138,16 +136,15 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 			return {
 				type: MessageItemType.VOICE,
 				voice_item: {
-					media: args.media,
+					media: outboundMedia(args.media),
 				},
 			}
 
 		return {
 			type: MessageItemType.FILE,
 			file_item: {
-				media: args.media,
+				media: outboundMedia(args.media),
 				file_name: args.file.name || 'file',
-				md5: args.md5,
 				len: String(args.fileSize),
 			},
 		}
@@ -266,7 +263,6 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					}
 					catch (error) {
 						console.error(`[SimpleWeixin] 发送文件失败 ${file.name || 'unnamed'}:`, error)
-						await sendTextChunks(`[文件发送失败: ${file.name || 'unnamed'}]`)
 					}
 				}
 			}
