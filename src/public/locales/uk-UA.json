@@ -1932,6 +1932,95 @@
 			}
 		}
 	},
+	"wechat_bots": {
+		"title": "Бот WeChat",
+		"description": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
+		"cardTitle": "Бот WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Виберіть бота"
+		},
+		"botSearch": {
+			"placeholder": "Пошук ботів…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Виберіть роль"
+		},
+		"charSearch": {
+			"placeholder": "Пошук ролей…"
+		},
+		"configCard": {
+			"title": "Налаштування бота",
+			"labels": {
+				"character": "Пов’язана роль",
+				"apiBaseUrl": "Базова URL API каналу WeChat",
+				"botToken": "Токен iLink Bot",
+				"config": "Конфігурація"
+			},
+			"charSelectPlaceholder": "Виберіть роль",
+			"apiBaseUrlInput": {
+				"placeholder": "Порожньо — типово https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-токен після входу"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Показати або приховати токен"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Показати або приховати токен"
+			},
+			"buttons": {
+				"saveConfig": "Зберегти",
+				"startBot": "Запуск",
+				"stopBot": "Зупинити"
+			}
+		},
+		"prompts": {
+			"newBotName": "Ім’я нового бота:"
+		},
+		"buttons": {
+			"newBot": "Новий",
+			"deleteBot": "Видалити"
+		},
+		"alerts": {
+			"configSaved": "Збережено",
+			"botExists": "Бот на ім’я «${botname}» уже є. Оберіть інше ім’я.",
+			"unsavedChanges": "Є незбережені зміни. Скасувати їх?",
+			"httpError": "Помилка HTTP",
+			"beforeUnload": "Є незбережені зміни. Вийти зі сторінки?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Попрацюй за мене!",
+				"description": "Поговоріть із персонажем fount у WeChat.",
+				"locked_description": "Один раз запустіть бота WeChat."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боти",
+				"sub_items": {
+					"manage": {
+						"title": "Бот WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Налаштування бота WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Відскануйте QR-код нижче в WeChat, щоб завершити вхід.",
+			"button": "Сканувати для входу",
+			"scanPrompt": "Відкрийте WeChat і відскануйте QR-код",
+			"waiting": "Завантаження QR-коду…",
+			"scanned": "Відскановано — підтвердіть на телефоні",
+			"success": "WeChat під’єднано, налаштування збережено — можна запускати бота.",
+			"needBot": "Спочатку виберіть бота зі списку або створіть нового через «Новий»."
+		}
+	},
 	"discord_bots": {
 		"title": "Discord Bot",
 		"description": "Подаруйте своїм супутникам голос у гамірних залах Discord. Налаштуйте їх присутність, керуйте їхніми операціями та дозвольте їм об’єднувати світи, по одному серверу за раз.",
@@ -2520,95 +2609,6 @@
 		},
 		"search": {
 			"placeholder": "Пошук..."
-		}
-	},
-	"wechat_bots": {
-		"title": "Бот WeChat",
-		"description": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
-		"cardTitle": "Бот WeChat",
-		"botSelectDropdown": {
-			"placeholder": "Виберіть бота"
-		},
-		"botSearch": {
-			"placeholder": "Пошук ботів…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "Виберіть роль"
-		},
-		"charSearch": {
-			"placeholder": "Пошук ролей…"
-		},
-		"configCard": {
-			"title": "Налаштування бота",
-			"labels": {
-				"character": "Пов’язана роль",
-				"apiBaseUrl": "Базова URL API каналу WeChat",
-				"botToken": "Токен iLink Bot",
-				"config": "Конфігурація"
-			},
-			"charSelectPlaceholder": "Виберіть роль",
-			"apiBaseUrlInput": {
-				"placeholder": "Порожньо — типово https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "Bearer-токен після входу"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "Показати або приховати токен"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Показати або приховати токен"
-			},
-			"buttons": {
-				"saveConfig": "Зберегти",
-				"startBot": "Запуск",
-				"stopBot": "Зупинити"
-			}
-		},
-		"prompts": {
-			"newBotName": "Ім’я нового бота:"
-		},
-		"buttons": {
-			"newBot": "Новий",
-			"deleteBot": "Видалити"
-		},
-		"alerts": {
-			"configSaved": "Збережено",
-			"botExists": "Бот на ім’я «${botname}» уже є. Оберіть інше ім’я.",
-			"unsavedChanges": "Є незбережені зміни. Скасувати їх?",
-			"httpError": "Помилка HTTP",
-			"beforeUnload": "Є незбережені зміни. Вийти зі сторінки?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Попрацюй за мене!",
-				"description": "Поговоріть із персонажем fount у WeChat.",
-				"locked_description": "Один раз запустіть бота WeChat."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Боти",
-				"sub_items": {
-					"manage": {
-						"title": "Бот WeChat"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Налаштування бота WeChat"
-			}
-		},
-		"qrLogin": {
-			"hint": "Відскануйте QR-код нижче в WeChat, щоб завершити вхід.",
-			"button": "Сканувати для входу",
-			"scanPrompt": "Відкрийте WeChat і відскануйте QR-код",
-			"waiting": "Завантаження QR-коду…",
-			"scanned": "Відскановано — підтвердіть на телефоні",
-			"success": "WeChat під’єднано, налаштування збережено — можна запускати бота.",
-			"needBot": "Спочатку виберіть бота зі списку або створіть нового через «Новий»."
 		}
 	}
 }

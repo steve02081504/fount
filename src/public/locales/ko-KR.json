@@ -1932,6 +1932,95 @@
 			}
 		}
 	},
+	"wechat_bots": {
+		"title": "위챗 봇",
+		"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
+		"cardTitle": "위챗 봇",
+		"botSelectDropdown": {
+			"placeholder": "봇 선택"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할 선택"
+		},
+		"charSearch": {
+			"placeholder": "역할 검색…"
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "연결된 역할",
+				"apiBaseUrl": "WeChat 채널 API 기본 URL",
+				"botToken": "iLink 봇 토큰",
+				"config": "구성"
+			},
+			"charSelectPlaceholder": "역할 선택",
+			"apiBaseUrlInput": {
+				"placeholder": "비워 두면 기본값 https://ilinkai.weixin.qq.com 사용"
+			},
+			"botTokenInput": {
+				"placeholder": "로그인 후 받은 Bearer 토큰"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "토큰 표시 또는 숨기기"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "토큰 표시 또는 숨기기"
+			},
+			"buttons": {
+				"saveConfig": "저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "저장됨",
+			"botExists": "「${botname}」 이름의 봇이 이미 있습니다. 다른 이름을 쓰세요.",
+			"unsavedChanges": "저장하지 않은 변경이 있습니다. 버릴까요?",
+			"httpError": "HTTP 오류",
+			"beforeUnload": "저장하지 않은 변경이 있습니다. 페이지를 나갈까요?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "일 시켜 줘!",
+				"description": "WeChat에서 fount 캐릭터와 대화하기.",
+				"locked_description": "위챗 봇을 한 번 실행하기."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇",
+				"sub_items": {
+					"manage": {
+						"title": "위챗 봇"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "위챗 봇 설정"
+			}
+		},
+		"qrLogin": {
+			"hint": "아래 QR 코드를 위챗으로 스캔해 로그인을 완료하세요.",
+			"button": "스캔하여 로그인",
+			"scanPrompt": "위챗을 열고 QR 코드를 스캔하세요",
+			"waiting": "QR 코드 불러오는 중…",
+			"scanned": "스캔됨 — 휴대폰에서 확인하세요",
+			"success": "위챗이 연결되었고 설정이 저장되었습니다. 봇을 시작할 수 있습니다.",
+			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」로 만드세요."
+		}
+	},
 	"discord_bots": {
 		"title": "Discord 봇",
 		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
@@ -2520,95 +2609,6 @@
 		},
 		"search": {
 			"placeholder": "검색..."
-		}
-	},
-	"wechat_bots": {
-		"title": "위챗 봇",
-		"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
-		"cardTitle": "위챗 봇",
-		"botSelectDropdown": {
-			"placeholder": "봇 선택"
-		},
-		"botSearch": {
-			"placeholder": "봇 검색…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "역할 선택"
-		},
-		"charSearch": {
-			"placeholder": "역할 검색…"
-		},
-		"configCard": {
-			"title": "봇 설정",
-			"labels": {
-				"character": "연결된 역할",
-				"apiBaseUrl": "WeChat 채널 API 기본 URL",
-				"botToken": "iLink 봇 토큰",
-				"config": "구성"
-			},
-			"charSelectPlaceholder": "역할 선택",
-			"apiBaseUrlInput": {
-				"placeholder": "비워 두면 기본값 https://ilinkai.weixin.qq.com 사용"
-			},
-			"botTokenInput": {
-				"placeholder": "로그인 후 받은 Bearer 토큰"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "토큰 표시 또는 숨기기"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "토큰 표시 또는 숨기기"
-			},
-			"buttons": {
-				"saveConfig": "저장",
-				"startBot": "시작",
-				"stopBot": "중지"
-			}
-		},
-		"prompts": {
-			"newBotName": "새 봇 이름:"
-		},
-		"buttons": {
-			"newBot": "새로 만들기",
-			"deleteBot": "삭제"
-		},
-		"alerts": {
-			"configSaved": "저장됨",
-			"botExists": "「${botname}」 이름의 봇이 이미 있습니다. 다른 이름을 쓰세요.",
-			"unsavedChanges": "저장하지 않은 변경이 있습니다. 버릴까요?",
-			"httpError": "HTTP 오류",
-			"beforeUnload": "저장하지 않은 변경이 있습니다. 페이지를 나갈까요?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "일 시켜 줘!",
-				"description": "WeChat에서 fount 캐릭터와 대화하기.",
-				"locked_description": "위챗 봇을 한 번 실행하기."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "봇",
-				"sub_items": {
-					"manage": {
-						"title": "위챗 봇"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "위챗 봇 설정"
-			}
-		},
-		"qrLogin": {
-			"hint": "아래 QR 코드를 위챗으로 스캔해 로그인을 완료하세요.",
-			"button": "스캔하여 로그인",
-			"scanPrompt": "위챗을 열고 QR 코드를 스캔하세요",
-			"waiting": "QR 코드 불러오는 중…",
-			"scanned": "스캔됨 — 휴대폰에서 확인하세요",
-			"success": "위챗이 연결되었고 설정이 저장되었습니다. 봇을 시작할 수 있습니다.",
-			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」로 만드세요."
 		}
 	}
 }

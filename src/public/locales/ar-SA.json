@@ -1932,6 +1932,95 @@
 			}
 		}
 	},
+	"wechat_bots": {
+		"title": "بوت WeChat",
+		"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
+		"cardTitle": "بوت WeChat",
+		"botSelectDropdown": {
+			"placeholder": "اختر بوتًا"
+		},
+		"botSearch": {
+			"placeholder": "البحث عن بوت…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر دورًا"
+		},
+		"charSearch": {
+			"placeholder": "البحث عن أدوار…"
+		},
+		"configCard": {
+			"title": "إعدادات البوت",
+			"labels": {
+				"character": "الدور المرتبط",
+				"apiBaseUrl": "عنوان URL الأساسي لواجهة قناة WeChat",
+				"botToken": "رمز iLink Bot",
+				"config": "الإعدادات"
+			},
+			"charSelectPlaceholder": "حدد الدور",
+			"apiBaseUrlInput": {
+				"placeholder": "اتركه فارغًا للقيمة الافتراضية https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "رمز Bearer بعد تسجيل الدخول"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "إظهار الرمز المميز أو إخفاؤه"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "إظهار الرمز المميز أو إخفاؤه"
+			},
+			"buttons": {
+				"saveConfig": "حفظ",
+				"startBot": "تشغيل",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "اسم البوت الجديد:"
+		},
+		"buttons": {
+			"newBot": "جديد",
+			"deleteBot": "حذف"
+		},
+		"alerts": {
+			"configSaved": "تم الحفظ",
+			"botExists": "يوجد بالفعل بوت باسم «${botname}». يرجى اختيار اسم آخر.",
+			"unsavedChanges": "تغييرات غير محفوظة. هل تريد تجاهلها؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "تغييرات غير محفوظة. مغادرة الصفحة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "دعني أعمل!",
+				"description": "تحدث مع شخصية fount على WeChat.",
+				"locked_description": "شغّل بوت WeChat مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "البوتات",
+				"sub_items": {
+					"manage": {
+						"title": "بوت WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "إعدادات بوت WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "امسح رمز الاستجابة السريعة أدناه باستخدام WeChat لإكمال تسجيل الدخول.",
+			"button": "مسح للدخول",
+			"scanPrompt": "افتح WeChat وامسح رمز الاستجابة السريعة",
+			"waiting": "جارٍ تحميل رمز الاستجابة السريعة…",
+			"scanned": "تم المسح — أكّد على هاتفك",
+			"success": "تم ربط WeChat وحفظ الإعدادات — يمكنك تشغيل البوت الآن.",
+			"needBot": "اختر بوتًا من القائمة أو أنشئ واحدًا باستخدام «جديد»."
+		}
+	},
 	"discord_bots": {
 		"title": "بوتات Discord",
 		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
@@ -2520,95 +2609,6 @@
 		},
 		"search": {
 			"placeholder": "بحث..."
-		}
-	},
-	"wechat_bots": {
-		"title": "بوت WeChat",
-		"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
-		"cardTitle": "بوت WeChat",
-		"botSelectDropdown": {
-			"placeholder": "اختر بوتًا"
-		},
-		"botSearch": {
-			"placeholder": "البحث عن بوت…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "اختر دورًا"
-		},
-		"charSearch": {
-			"placeholder": "البحث عن أدوار…"
-		},
-		"configCard": {
-			"title": "إعدادات البوت",
-			"labels": {
-				"character": "الدور المرتبط",
-				"apiBaseUrl": "عنوان URL الأساسي لواجهة قناة WeChat",
-				"botToken": "رمز iLink Bot",
-				"config": "الإعدادات"
-			},
-			"charSelectPlaceholder": "حدد الدور",
-			"apiBaseUrlInput": {
-				"placeholder": "اتركه فارغًا للقيمة الافتراضية https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "رمز Bearer بعد تسجيل الدخول"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "إظهار الرمز المميز أو إخفاؤه"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "إظهار الرمز المميز أو إخفاؤه"
-			},
-			"buttons": {
-				"saveConfig": "حفظ",
-				"startBot": "تشغيل",
-				"stopBot": "إيقاف"
-			}
-		},
-		"prompts": {
-			"newBotName": "اسم البوت الجديد:"
-		},
-		"buttons": {
-			"newBot": "جديد",
-			"deleteBot": "حذف"
-		},
-		"alerts": {
-			"configSaved": "تم الحفظ",
-			"botExists": "يوجد بالفعل بوت باسم «${botname}». يرجى اختيار اسم آخر.",
-			"unsavedChanges": "تغييرات غير محفوظة. هل تريد تجاهلها؟",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "تغييرات غير محفوظة. مغادرة الصفحة؟"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "دعني أعمل!",
-				"description": "تحدث مع شخصية fount على WeChat.",
-				"locked_description": "شغّل بوت WeChat مرة واحدة."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "البوتات",
-				"sub_items": {
-					"manage": {
-						"title": "بوت WeChat"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "إعدادات بوت WeChat"
-			}
-		},
-		"qrLogin": {
-			"hint": "امسح رمز الاستجابة السريعة أدناه باستخدام WeChat لإكمال تسجيل الدخول.",
-			"button": "مسح للدخول",
-			"scanPrompt": "افتح WeChat وامسح رمز الاستجابة السريعة",
-			"waiting": "جارٍ تحميل رمز الاستجابة السريعة…",
-			"scanned": "تم المسح — أكّد على هاتفك",
-			"success": "تم ربط WeChat وحفظ الإعدادات — يمكنك تشغيل البوت الآن.",
-			"needBot": "اختر بوتًا من القائمة أو أنشئ واحدًا باستخدام «جديد»."
 		}
 	}
 }

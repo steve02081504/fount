@@ -1932,6 +1932,95 @@
 			}
 		}
 	},
+	"wechat_bots": {
+		"title": "WeChat-Bot",
+		"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
+		"cardTitle": "WeChat-Bot",
+		"botSelectDropdown": {
+			"placeholder": "Bot auswählen"
+		},
+		"botSearch": {
+			"placeholder": "Bots durchsuchen…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Rolle auswählen"
+		},
+		"charSearch": {
+			"placeholder": "Rollen suchen…"
+		},
+		"configCard": {
+			"title": "Bot-Einstellungen",
+			"labels": {
+				"character": "Verknüpfte Rolle",
+				"apiBaseUrl": "Basis-URL der WeChat-Kanal-API",
+				"botToken": "iLink-Bot-Token",
+				"config": "Konfiguration"
+			},
+			"charSelectPlaceholder": "Rolle auswählen",
+			"apiBaseUrlInput": {
+				"placeholder": "Leer lassen für Standard https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-Token nach der Anmeldung"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Token ein- oder ausblenden"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Token ein- oder ausblenden"
+			},
+			"buttons": {
+				"saveConfig": "Speichern",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Namen für den neuen Bot eingeben:"
+		},
+		"buttons": {
+			"newBot": "Neu",
+			"deleteBot": "Löschen"
+		},
+		"alerts": {
+			"configSaved": "Gespeichert",
+			"botExists": "Ein Bot mit dem Namen „${botname}“ existiert bereits. Bitte anderen Namen wählen.",
+			"unsavedChanges": "Nicht gespeicherte Änderungen verwerfen?",
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben nicht gespeicherte Änderungen. Seite wirklich verlassen?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Leg mich an die Arbeit!",
+				"description": "Mit Ihrem fount-Charakter in WeChat chatten.",
+				"locked_description": "WeChat-Bot einmal starten."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat-Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat-Bot einrichten"
+			}
+		},
+		"qrLogin": {
+			"hint": "Scannen Sie den QR-Code unten mit WeChat, um die Anmeldung abzuschließen.",
+			"button": "Zum Anmelden scannen",
+			"scanPrompt": "WeChat öffnen und QR-Code scannen",
+			"waiting": "QR-Code wird geladen…",
+			"scanned": "Gescannt – bitte auf dem Telefon bestätigen",
+			"success": "WeChat verbunden. Einstellungen gespeichert – Sie können den Bot jetzt starten.",
+			"needBot": "Wählen Sie zuerst einen Bot aus der Liste oder legen Sie mit „Neu“ einen an."
+		}
+	},
 	"discord_bots": {
 		"title": "Discord-Bots",
 		"description": "Geben Sie Ihren Freunden eine Stimme in den geschäftigen Hallen von Discord. Konfigurieren Sie ihre Präsenz, verwalten Sie ihre Abläufe und lassen Sie sie Server für Server Welten überbrücken.",
@@ -2520,95 +2609,6 @@
 		},
 		"search": {
 			"placeholder": "Suchen..."
-		}
-	},
-	"wechat_bots": {
-		"title": "WeChat-Bot",
-		"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
-		"cardTitle": "WeChat-Bot",
-		"botSelectDropdown": {
-			"placeholder": "Bot auswählen"
-		},
-		"botSearch": {
-			"placeholder": "Bots durchsuchen…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "Rolle auswählen"
-		},
-		"charSearch": {
-			"placeholder": "Rollen suchen…"
-		},
-		"configCard": {
-			"title": "Bot-Einstellungen",
-			"labels": {
-				"character": "Verknüpfte Rolle",
-				"apiBaseUrl": "Basis-URL der WeChat-Kanal-API",
-				"botToken": "iLink-Bot-Token",
-				"config": "Konfiguration"
-			},
-			"charSelectPlaceholder": "Rolle auswählen",
-			"apiBaseUrlInput": {
-				"placeholder": "Leer lassen für Standard https://ilinkai.weixin.qq.com"
-			},
-			"botTokenInput": {
-				"placeholder": "Bearer-Token nach der Anmeldung"
-			},
-			"toggleBotTokenButton": {
-				"aria-label": "Token ein- oder ausblenden"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Token ein- oder ausblenden"
-			},
-			"buttons": {
-				"saveConfig": "Speichern",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Namen für den neuen Bot eingeben:"
-		},
-		"buttons": {
-			"newBot": "Neu",
-			"deleteBot": "Löschen"
-		},
-		"alerts": {
-			"configSaved": "Gespeichert",
-			"botExists": "Ein Bot mit dem Namen „${botname}“ existiert bereits. Bitte anderen Namen wählen.",
-			"unsavedChanges": "Nicht gespeicherte Änderungen verwerfen?",
-			"httpError": "HTTP-Fehler",
-			"beforeUnload": "Sie haben nicht gespeicherte Änderungen. Seite wirklich verlassen?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Leg mich an die Arbeit!",
-				"description": "Mit Ihrem fount-Charakter in WeChat chatten.",
-				"locked_description": "WeChat-Bot einmal starten."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "WeChat-Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "WeChat-Bot einrichten"
-			}
-		},
-		"qrLogin": {
-			"hint": "Scannen Sie den QR-Code unten mit WeChat, um die Anmeldung abzuschließen.",
-			"button": "Zum Anmelden scannen",
-			"scanPrompt": "WeChat öffnen und QR-Code scannen",
-			"waiting": "QR-Code wird geladen…",
-			"scanned": "Gescannt – bitte auf dem Telefon bestätigen",
-			"success": "WeChat verbunden. Einstellungen gespeichert – Sie können den Bot jetzt starten.",
-			"needBot": "Wählen Sie zuerst einen Bot aus der Liste oder legen Sie mit „Neu“ einen an."
 		}
 	}
 }
