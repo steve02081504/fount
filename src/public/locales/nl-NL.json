@@ -106,12 +106,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
-		},
+		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -1861,82 +1856,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "Kies een bot"
-		},
-		"botSearch": {
-			"placeholder": "Bot zoeken..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Selecteer een rol"
-		},
-		"charSearch": {
-			"placeholder": "Personages zoeken..."
-		},
-		"configCard": {
-			"title": "Botconfiguratie",
-			"labels": {
-				"character": "Gekoppeld personage",
-				"apiKey": "Discord API-sleutel",
-				"config": "Configuratie"
-			},
-			"charSelectPlaceholder": "Kies personage",
-			"apiKeyInput": {
-				"placeholder": "Voer API-sleutel in"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Schakel tussen het tonen van API-sleutels"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API-sleutel tonen/verbergen"
-			},
-			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Voer een naam in voor de nieuwe Bot:"
-		},
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
-		"alerts": {
-			"configSaved": "Configuratie succesvol opgeslagen",
-			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"httpError": "HTTP-fout",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Op weg naar onenigheid",
-				"description": "Roep je personage op in de wereld van Discord.",
-				"locked_description": "Start de Discord Bot één keer."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Beheer Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot configureren"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"description": "Laat je favoriete karakters de directe golven van Telegram doorkruisen. Configureer hun digitale aanwezigheid, beheer hun gesprekken en breid hun bereik uit naar deze levendige berichtenwereld.",
@@ -2010,6 +1929,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Configureer Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat-bot",
+		"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
+		"cardTitle": "WeChat-bot",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bots zoeken…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Kies een rol"
+		},
+		"charSearch": {
+			"placeholder": "Rollen zoeken…"
+		},
+		"configCard": {
+			"title": "Botinstellingen",
+			"labels": {
+				"character": "Gekoppelde rol",
+				"apiBaseUrl": "Basis-URL WeChat-kanaal-API",
+				"botToken": "iLink Bot-token",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Selecteer rol",
+			"apiBaseUrlInput": {
+				"placeholder": "Leeg laten voor standaard https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-token na aanmelding"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Token tonen of verbergen"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Token tonen of verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Naam voor de nieuwe bot:"
+		},
+		"buttons": {
+			"newBot": "Nieuw",
+			"deleteBot": "Verwijderen"
+		},
+		"alerts": {
+			"configSaved": "Opgeslagen",
+			"botExists": "Er bestaat al een bot met de naam «${botname}». Kies een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je die weggooien?",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Pagina toch verlaten?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Zet me aan het werk!",
+				"description": "Praat met je fount-personage op WeChat.",
+				"locked_description": "Start de WeChat-bot een keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat-bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat-bot instellen"
+			}
+		},
+		"qrLogin": {
+			"hint": "Scan de QR-code hieronder met WeChat om in te loggen.",
+			"button": "Scannen om in te loggen",
+			"scanPrompt": "Open WeChat en scan de QR-code",
+			"waiting": "QR-code laden…",
+			"scanned": "Gescand — bevestig op je telefoon",
+			"success": "WeChat gekoppeld. Instellingen opgeslagen — je kunt de bot nu starten.",
+			"needBot": "Kies eerst een bot uit de lijst of maak er een met «Nieuw»."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bot zoeken..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecteer een rol"
+		},
+		"charSearch": {
+			"placeholder": "Personages zoeken..."
+		},
+		"configCard": {
+			"title": "Botconfiguratie",
+			"labels": {
+				"character": "Gekoppeld personage",
+				"apiKey": "Discord API-sleutel",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Kies personage",
+			"apiKeyInput": {
+				"placeholder": "Voer API-sleutel in"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-sleutel tonen/verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Configuratie opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Voer een naam in voor de nieuwe Bot:"
+		},
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
+		"alerts": {
+			"configSaved": "Configuratie succesvol opgeslagen",
+			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Op weg naar onenigheid",
+				"description": "Roep je personage op in de wereld van Discord.",
+				"locked_description": "Start de Discord Bot één keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Beheer Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot configureren"
 			}
 		}
 	},

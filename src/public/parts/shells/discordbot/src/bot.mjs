@@ -44,7 +44,8 @@ async function startBot(config, char) {
 
 	client.once(Events.ClientReady, async client => {
 		await char.interfaces.discord?.OnceClientReady(client, config.config)
-		console.infoI18n('fountConsole.discordbot.botStarted', {
+		console.infoI18n('fountConsole.botStarted', {
+			platform: 'Discord',
 			botusername: client.user.username,
 			charname: config.char
 		})

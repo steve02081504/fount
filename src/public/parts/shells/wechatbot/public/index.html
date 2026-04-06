@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="WeChat Bot — link fount characters to WeChat" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:wechatbot/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Link fount characters to WeChat for ubiquitous office assistance." />
+	<meta name="description" content="Link fount characters to WeChat for ubiquitous office assistance." />
+	<title data-i18n="wechat_bots.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="flex justify-center items-start h-screen p-4">
+	<main class="container mx-auto w-full lg:w-2/3">
+		<div class="card bg-base-100 shadow-xl mb-4">
+			<div class="card-body">
+				<h2 class="card-title mb-4" data-i18n="wechat_bots.cardTitle"></h2>
+				<p class="text-sm opacity-80 mb-2" data-i18n="wechat_bots.description"></p>
+				<div class="flex flex-col lg:flex-row gap-4 mt-4">
+					<div id="bot-list-dropdown" class="w-full" data-i18n="wechat_bots.botSelectDropdown">
+						<input type="text" data-i18n="wechat_bots.botSearch" />
+					</div>
+					<button id="new-bot" class="btn btn-accent w-full lg:w-auto" data-i18n="wechat_bots.buttons.newBot"></button>
+					<button id="delete-bot" class="btn btn-error w-full lg:w-auto" data-i18n="wechat_bots.buttons.deleteBot"></button>
+				</div>
+			</div>
+		</div>
+
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title mb-4" data-i18n="wechat_bots.configCard.title"></h2>
+				<div class="mb-4">
+					<label for="char-select" class="label">
+						<span class="label-text" data-i18n="wechat_bots.configCard.labels.character"></span>
+					</label>
+					<div id="char-select-dropdown" class="w-full" data-i18n="wechat_bots.charSelectDropdown">
+						<input type="text" data-i18n="wechat_bots.charSearch" />
+					</div>
+				</div>
+				<div class="mb-4 p-4 bg-base-200 rounded-box">
+					<p class="text-sm mb-2" data-i18n="wechat_bots.qrLogin.hint"></p>
+					<button id="qr-start" type="button" class="btn btn-outline btn-sm mb-3" data-i18n="wechat_bots.qrLogin.button"></button>
+					<p id="qr-status" class="text-sm min-h-[1.25rem] opacity-80"></p>
+					<div id="qr-wrap" class="hidden mt-2 flex justify-center">
+						<div id="qr-img" class="max-w-[220px] rounded-lg border border-base-300 overflow-hidden"></div>
+					</div>
+				</div>
+				<div class="mb-4">
+					<label for="api-base-url" class="label">
+						<span class="label-text" data-i18n="wechat_bots.configCard.labels.apiBaseUrl"></span>
+					</label>
+					<input id="api-base-url" type="text" class="input input-bordered w-full" data-i18n="wechat_bots.configCard.apiBaseUrlInput" />
+				</div>
+				<div class="mb-4">
+					<label for="token-input" class="label">
+						<span class="label-text" data-i18n="wechat_bots.configCard.labels.botToken"></span>
+					</label>
+					<div class="relative">
+						<input id="token-input" type="password" class="input input-bordered w-full pr-10" data-i18n="wechat_bots.configCard.botTokenInput" />
+						<button id="toggle-token" type="button" class="absolute top-0 right-0 h-full px-4" data-i18n="wechat_bots.configCard.toggleBotTokenButton">
+							<img src="https://api.iconify.design/line-md/watch-off.svg" class="text-icon" data-i18n="wechat_bots.configCard.toggleBotTokenIcon" />
+						</button>
+					</div>
+				</div>
+				<div class="mb-4">
+					<label for="config-editor" class="label">
+						<span class="label-text" data-i18n="wechat_bots.configCard.labels.config"></span>
+					</label>
+					<div id="config-editor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
+				</div>
+				<div class="flex flex-wrap justify-end gap-4 items-center">
+					<button id="save-config" class="btn btn-primary">
+						<img id="saveStatusIcon" src="" class="w-6 h-6 mr-2 hidden" />
+						<span id="saveStatusText" data-i18n="wechat_bots.configCard.buttons.saveConfig"></span>
+					</button>
+					<button id="start-stop-bot" class="btn btn-success">
+						<img id="startStopStatusIcon" src="" class="w-6 h-6 mr-2 hidden" />
+						<span id="startStopStatusText" data-i18n="wechat_bots.configCard.buttons.startBot"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

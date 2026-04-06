@@ -1,0 +1,7 @@
+# WeChat Bot shell (fount)
+
+- Part path: `parts/shells:wechatbot`
+- Backend routes: `/api/parts/shells:wechatbot/*` (start, stop, getbotlist, setbotconfig, …)
+- Binds a **fount character** via `char.interfaces.chat.GetReply` (same pattern as `discordbot`).
+- **QR login** (recommended): `POST .../qrcode/start` then poll `GET .../qrcode/poll?sessionKey=` — talks to `https://ilinkai.weixin.qq.com` (no separate gateway process required).
+- Transport: iLink HTTP (`ilink/bot/getupdates`, `ilink/bot/sendmessage`). Default base URL `https://ilinkai.weixin.qq.com` if apiBaseUrl is empty.
