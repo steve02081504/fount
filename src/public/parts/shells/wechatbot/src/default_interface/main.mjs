@@ -20,10 +20,7 @@ const MessageType = { USER: 1, BOT: 2 }
 const MessageItemType = { TEXT: 1, IMAGE: 2, VOICE: 3, FILE: 4, VIDEO: 5 }
 const MessageState = { NEW: 0, GENERATING: 1, FINISH: 2 }
 
-const IMAGE_NAME_REGEXP = /\.(jpeg|jpg|png|gif|webp|bmp)$/i
-/** 微信 CDN media_type=IMAGE 不接受这些格式，需回退为 FILE 附件。 */
-const WEIXIN_UNSUPPORTED_IMAGE_MIMES = new Set(['image/avif', 'image/heic', 'image/heif', 'image/jxl'])
-const WEIXIN_UNSUPPORTED_IMAGE_EXT_REGEXP = /\.(avif|heic|heif|jxl)$/i
+const IMAGE_NAME_REGEXP = /\.(jpeg|jpg|png|gif|webp|bmp|avif)$/i
 const VIDEO_NAME_REGEXP = /\.(mp4|mov|avi|mkv|webm)$/i
 const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
 
