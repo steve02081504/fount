@@ -1934,91 +1934,91 @@
 	},
 	"weixin_bots": {
 		"title": "WeChat-bot",
-		"description": "Integreer de rol van font in WeChat-gesprekken om een ​​alomtegenwoordige ervaring met kantoorondersteuning te bieden.",
+		"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
 		"cardTitle": "WeChat-bot",
 		"botSelectDropdown": {
 			"placeholder": "Kies een bot"
 		},
 		"botSearch": {
-			"placeholder": "Zoekbot..."
+			"placeholder": "Bots zoeken…"
 		},
 		"charSelectDropdown": {
 			"placeholder": "Kies een rol"
 		},
 		"charSearch": {
-			"placeholder": "Zoeken naar rollen..."
+			"placeholder": "Rollen zoeken…"
 		},
 		"configCard": {
-			"title": "Bot-configuratie",
+			"title": "Botinstellingen",
 			"labels": {
-				"character": "Bindende rol",
-				"apiBaseUrl": "Hoofd-URL van WeChat-kanaalservice",
+				"character": "Gekoppelde rol",
+				"apiBaseUrl": "Basis-URL WeChat-kanaal-API",
 				"botToken": "iLink Bot-token",
 				"config": "Configuratie"
 			},
 			"charSelectPlaceholder": "Selecteer rol",
 			"apiBaseUrlInput": {
-				"placeholder": "Laat dit leeg om de standaard https://ilinkai.weixin.qq.com te gebruiken"
+				"placeholder": "Leeg laten voor standaard https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
-				"placeholder": "Bearer Token verkregen na inloggen"
+				"placeholder": "Bearer-token na aanmelding"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "Schakel de weergave van token in of uit"
+				"aria-label": "Token tonen of verbergen"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Schakel de weergave van token in of uit"
+				"alt": "Token tonen of verbergen"
 			},
 			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "opstarten",
-				"stopBot": "stop"
+				"saveConfig": "Opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
 			}
 		},
 		"prompts": {
-			"newBotName": "Voer een nieuwe Bot-naam in:"
+			"newBotName": "Naam voor de nieuwe bot:"
 		},
 		"buttons": {
 			"newBot": "Nieuw",
-			"deleteBot": "verwijderen"
+			"deleteBot": "Verwijderen"
 		},
 		"alerts": {
-			"configSaved": "Configuratie succesvol opgeslagen",
-			"botExists": "Er bestaat al een bot met de naam \"${botname}\". Gebruik een andere naam.",
-			"unsavedChanges": "U heeft niet-opgeslagen wijzigingen. Wilt u de wijzigingen ongedaan maken?",
+			"configSaved": "Opgeslagen",
+			"botExists": "Er bestaat al een bot met de naam «${botname}». Kies een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je die weggooien?",
 			"httpError": "HTTP-fout",
-			"beforeUnload": "U heeft niet-opgeslagen wijzigingen. Weet je zeker dat je weg wilt?"
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Pagina toch verlaten?"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "Help mij met mijn werk!",
-				"description": "Laat het lettertype-personage met je praten op WeChat.",
-				"locked_description": "Start WeChat Bot één keer."
+				"name": "Zet me aan het werk!",
+				"description": "Praat met je fount-personage op WeChat.",
+				"locked_description": "Start de WeChat-bot een keer."
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "bot",
+				"title": "Bots",
 				"sub_items": {
 					"manage": {
-						"title": "Beheer WeChat-bot"
+						"title": "WeChat-bot"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "Configureer WeChat Bot"
+				"title": "WeChat-bot instellen"
 			}
 		},
 		"qrLogin": {
-			"hint": "Gebruik WeChat om de onderstaande QR-code te scannen om het inloggen te voltooien.",
-			"button": "Scancode om in te loggen",
-			"scanPrompt": "Gebruik WeChat om de QR-code te scannen",
-			"waiting": "QR-code verkrijgen...",
-			"scanned": "De code is gescand, bevestig deze op uw mobiele telefoon...",
-			"success": "WeChat is verbonden en de configuratie is bijgewerkt. Bot kan direct worden gelanceerd.",
-			"needBot": "Selecteer eerst een Bot in de vervolgkeuzelijst, of gebruik 'Nieuw' om er een te maken."
+			"hint": "Scan de QR-code hieronder met WeChat om in te loggen.",
+			"button": "Scannen om in te loggen",
+			"scanPrompt": "Open WeChat en scan de QR-code",
+			"waiting": "QR-code laden…",
+			"scanned": "Gescand — bevestig op je telefoon",
+			"success": "WeChat gekoppeld. Instellingen opgeslagen — je kunt de bot nu starten.",
+			"needBot": "Kies eerst een bot uit de lijst of maak er een met «Nieuw»."
 		}
 	},
 	"discord_bots": {

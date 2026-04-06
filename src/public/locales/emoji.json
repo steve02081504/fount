@@ -1933,92 +1933,92 @@
 		}
 	},
 	"weixin_bots": {
-		"title": "微信 Bot",
-		"description": "将 fount 角色接入微信对话，提供无处不在的办公辅助体验。",
-		"cardTitle": "微信 Bot",
+		"title": "🤖💚",
+		"description": "🎭➡️💚💬 · 🤖",
+		"cardTitle": "🤖💚",
 		"botSelectDropdown": {
-			"placeholder": "选择一个 Bot"
+			"placeholder": "👉🤖"
 		},
 		"botSearch": {
-			"placeholder": "搜索 Bot..."
+			"placeholder": "🔍🤖…"
 		},
 		"charSelectDropdown": {
-			"placeholder": "选择一个角色"
+			"placeholder": "👉👤"
 		},
 		"charSearch": {
-			"placeholder": "搜索角色..."
+			"placeholder": "🔍👤…"
 		},
 		"configCard": {
-			"title": "Bot 配置",
+			"title": "🤖⚙️",
 			"labels": {
-				"character": "绑定角色",
-				"apiBaseUrl": "微信渠道服务根 URL",
-				"botToken": "iLink Bot Token",
-				"config": "配置"
+				"character": "🔗👤",
+				"apiBaseUrl": "🌐🔗💚",
+				"botToken": "🔑",
+				"config": "⚙️"
 			},
-			"charSelectPlaceholder": "选择角色",
+			"charSelectPlaceholder": "👉👤",
 			"apiBaseUrlInput": {
-				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
+				"placeholder": "⬜️↩️ 🌐🔗"
 			},
 			"botTokenInput": {
-				"placeholder": "登录后获得的 Bearer Token"
+				"placeholder": "🔐🎫"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "切换显示 Token"
+				"aria-label": "👁️🔑"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "切换显示 Token"
+				"alt": "👁️🔑"
 			},
 			"buttons": {
-				"saveConfig": "保存配置",
-				"startBot": "启动",
-				"stopBot": "停止"
+				"saveConfig": "💾",
+				"startBot": "▶️",
+				"stopBot": "⏹️"
 			}
 		},
 		"prompts": {
-			"newBotName": "请输入新的 Bot 名称："
+			"newBotName": "✍️🆕🤖:"
 		},
 		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
 		},
 		"alerts": {
-			"configSaved": "配置保存成功",
-			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
-			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"httpError": "HTTP 错误",
-			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+			"configSaved": "💾✅",
+			"botExists": "🤖❌ «${botname}»",
+			"unsavedChanges": "💾❓🗑️",
+			"httpError": "🌐❌",
+			"beforeUnload": "💾❓🚪"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "帮我干活！",
-				"description": "让 fount 角色在微信上与你对话。",
-				"locked_description": "启动一次微信 Bot。"
+				"name": "💼➡️🤖",
+				"description": "💚💬🎭",
+				"locked_description": "🔓▶️🤖💚"
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "bot",
+				"title": "🤖",
 				"sub_items": {
 					"manage": {
-						"title": "管理微信 Bot"
+						"title": "🤖💚"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "配置微信 Bot"
+				"title": "⚙️🤖💚"
 			}
 		},
 		"qrLogin": {
-			"hint": "使用微信扫描下方二维码完成登录。",
-			"button": "扫码登录",
-			"scanPrompt": "请使用微信扫描二维码",
-			"waiting": "正在获取二维码…",
-			"scanned": "已扫码，请在手机上确认…",
-			"success": "微信已连接，配置已更新。可直接启动 Bot。",
-			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
+			"hint": "📱💚📷⬇️",
+			"button": "📷🔐",
+			"scanPrompt": "📱💚📷",
+			"waiting": "⏳📷…",
+			"scanned": "✅📱…",
+			"success": "💚✅💾▶️🤖",
+			"needBot": "👉🤖📋🆕"
 		}
 	},
 	"discord_bots": {

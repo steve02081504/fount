@@ -3,13 +3,13 @@
 		"en-UK": {
 			"name": "WeChat Bot",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Run your fount character as a WeChat bot.",
-			"description_markdown": "Binds a fount character to WeChat using the iLink bot HTTP API (getUpdates / sendMessage). Configure gateway URL and token like the Discord bot shell.",
+			"description": "Run your fount character as a WeChat bot—bind a role, manage bots, and chat in WeChat.",
+			"description_markdown": "Run your fount character as a WeChat bot—bind a role, manage bots, and chat in WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"wechat",
+				"WeChat",
 				"bot",
 				"integration"
 			]
@@ -17,254 +17,254 @@
 		"zh-CN": {
 			"name": "微信 Bot",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "将 fount 角色作为微信机器人运行。",
-			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填写渠道服务根地址与 Token。",
+			"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
+			"description_markdown": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"微信",
-				"机器人",
+				"Bot",
 				"集成"
 			]
 		},
 		"ar-SA": {
-			"name": "بوت وي شات",
+			"name": "بوت WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "قم بتشغيل الدور الناشئ باعتباره روبوت WeChat.",
-			"description_markdown": "ربط الأدوار بنفس طريقة Discord Bot؛ إرسال واستقبال الرسائل (getUpdates/sendMessage) من خلال بروتوكول iLink Bot HTTP على جانب WeChat. املأ عنوان جذر خدمة القناة والرمز المميز أدناه.",
+			"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
+			"description_markdown": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"وي شات",
-				"robot",
-				"مدمج"
+				"WeChat",
+				"بوت",
+				"تكامل"
 			]
 		},
 		"de-DE": {
 			"name": "WeChat-Bot",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Führen Sie die Font-Rolle als WeChat-Bot aus.",
-			"description_markdown": "Binden Sie Rollen auf die gleiche Weise wie Discord Bot; Senden und Empfangen von Nachrichten (getUpdates/sendMessage) über das iLink Bot HTTP-Protokoll auf der WeChat-Seite. Geben Sie unten die Stammadresse des Kanaldiensts und das Token ein.",
+			"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
+			"description_markdown": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"Roboter",
-				"integriert"
+				"Bot",
+				"Integration"
 			]
 		},
 		"emoji": {
-			"name": "微信 Bot",
+			"name": "🤖💚",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "将 fount 角色作为微信机器人运行。",
-			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填写渠道服务根地址与 Token。",
+			"description": "🎭➡️💚💬 · 🤖",
+			"description_markdown": "🎭➡️💚💬 · 🤖",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"微信",
-				"机器人",
-				"集成"
+				"💚",
+				"🤖",
+				"🔗"
 			]
 		},
 		"es-ES": {
-			"name": "Bot WeChat",
+			"name": "Bot de WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Ejecute la función de fuente como un bot de WeChat.",
-			"description_markdown": "Vincula roles de la misma manera que Discord Bot; enviar y recibir mensajes (getUpdates/sendMessage) a través del protocolo HTTP iLink Bot en el lado de WeChat. Complete la dirección raíz del servicio del canal y el token a continuación.",
+			"description": "Usa un personaje fount como bot de WeChat: vincula un rol, gestiona bots y chatea en WeChat.",
+			"description_markdown": "Usa un personaje fount como bot de WeChat: vincula un rol, gestiona bots y chatea en WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"robot",
-				"integrado"
+				"bot",
+				"integración"
 			]
 		},
 		"fr-FR": {
 			"name": "Bot WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Exécutez le rôle de police en tant que bot WeChat.",
-			"description_markdown": "Liez les rôles de la même manière que Discord Bot ; envoyer et recevoir des messages (getUpdates/sendMessage) via le protocole HTTP iLink Bot côté WeChat. Remplissez l'adresse racine du service de canal et le jeton ci-dessous.",
+			"description": "Faites tourner un personnage fount comme bot WeChat : liez un rôle, gérez vos bots et discutez sur WeChat.",
+			"description_markdown": "Faites tourner un personnage fount comme bot WeChat : liez un rôle, gérez vos bots et discutez sur WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"robot",
-				"intégré"
+				"bot",
+				"intégration"
 			]
 		},
 		"hi-IN": {
-			"name": "वीचैट बॉट",
+			"name": "WeChat बॉट",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "फाउंटेन भूमिका को WeChat बॉट के रूप में चलाएँ।",
-			"description_markdown": "डिस्कोर्ड बॉट की तरह ही भूमिकाओं को बाइंड करें; WeChat पक्ष पर iLink Bot HTTP प्रोटोकॉल के माध्यम से संदेश भेजें और प्राप्त करें (getUpdates/sendMessage)। नीचे चैनल सेवा रूट पता और टोकन भरें।",
+			"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+			"description_markdown": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"रोबोट",
-				"एकीकृत"
+				"बॉट",
+				"एकीकरण"
 			]
 		},
 		"is-IS": {
-			"name": "WeChat Bot",
+			"name": "WeChat-vélmenni",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Keyra uppspretta hlutverkið sem WeChat láni.",
-			"description_markdown": "Binddu hlutverk á sama hátt og Discord Bot; senda og taka á móti skilaboðum (getUpdates/sendMessage) í gegnum iLink Bot HTTP samskiptareglurnar á WeChat hliðinni. Fylltu út rótarfang rásarþjónustunnar og auðkenni hér að neðan.",
+			"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+			"description_markdown": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
 				"vélmenni",
-				"samþætt"
+				"samþætting"
 			]
 		},
 		"it-IT": {
-			"name": "WeChat Bot",
+			"name": "Bot WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Esegui il ruolo font come bot WeChat.",
-			"description_markdown": "Associa i ruoli allo stesso modo di Discord Bot; inviare e ricevere messaggi (getUpdates/sendMessage) tramite il protocollo HTTP iLink Bot sul lato WeChat. Inserisci l'indirizzo root del servizio canale e il token di seguito.",
+			"description": "Usa un personaggio fount come bot WeChat: associa un ruolo, gestisci i bot e chatta su WeChat.",
+			"description_markdown": "Usa un personaggio fount come bot WeChat: associa un ruolo, gestisci i bot e chatta su WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"robot",
-				"integrato"
+				"bot",
+				"integrazione"
 			]
 		},
 		"ja-JP": {
 			"name": "WeChat ボット",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "fount ロールを WeChat ボットとして実行します。",
-			"description_markdown": "Discord ボットと同じ方法でロールをバインドします。 WeChat 側で iLink Bot HTTP プロトコルを介してメッセージ (getUpdates/sendMessage) を送受信します。以下にチャネル サービスのルート アドレスとトークンを入力します。",
+			"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
+			"description_markdown": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"微信",
-				"ロボット",
-				"統合された"
+				"WeChat",
+				"ボット",
+				"連携"
 			]
 		},
 		"ko-KR": {
 			"name": "위챗 봇",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "WeChat 봇으로 원천 역할을 실행하세요.",
-			"description_markdown": "Discord Bot과 동일한 방식으로 역할을 바인딩합니다. WeChat 측의 iLink Bot HTTP 프로토콜을 통해 메시지(getUpdates/sendMessage)를 보내고 받습니다. 아래에 채널 서비스 루트 주소와 토큰을 입력하세요.",
+			"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
+			"description_markdown": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"위챗",
-				"기계 인간",
-				"통합"
+				"WeChat",
+				"봇",
+				"연동"
 			]
 		},
 		"lzh": {
-			"name": "微信 Bot",
+			"name": "微信靈偶",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "将 fount 角色作为微信机器人运行。",
-			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填写渠道服务根地址与 Token。",
+			"description": "以泉源化身為微信靈偶，周旋於對談之間，如輔弼之隨側。",
+			"description_markdown": "以泉源化身為微信靈偶，周旋於對談之間，如輔弼之隨側。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"微信",
-				"机器人",
-				"集成"
+				"靈偶",
+				"通渠"
 			]
 		},
 		"nl-NL": {
 			"name": "WeChat-bot",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Voer de font-rol uit als een WeChat-bot.",
-			"description_markdown": "Bind rollen op dezelfde manier als Discord Bot; berichten verzenden en ontvangen (getUpdates/sendMessage) via het iLink Bot HTTP-protocol aan de WeChat-kant. Vul hieronder het rootadres en het token van de kanaalservice in.",
+			"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
+			"description_markdown": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"robot",
-				"geïntegreerd"
+				"bot",
+				"integratie"
 			]
 		},
 		"pt-PT": {
-			"name": "Bot do WeChat",
+			"name": "Bot WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Execute a função de fonte como um bot WeChat.",
-			"description_markdown": "Vincule funções da mesma forma que o Discord Bot; enviar e receber mensagens (getUpdates/sendMessage) através do protocolo HTTP iLink Bot no lado do WeChat. Fill in the channel service root address and Token below.",
+			"description": "Use uma personagem fount como bot WeChat: associe um papel, faça a gestão dos bots e converse no WeChat.",
+			"description_markdown": "Use uma personagem fount como bot WeChat: associe um papel, faça a gestão dos bots e converse no WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"robô",
-				"integrado"
+				"bot",
+				"integração"
 			]
 		},
 		"ru-RU": {
-			"name": "WeChat Бот",
+			"name": "Бот WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Запустите роль источника в качестве бота WeChat.",
-			"description_markdown": "Привязывайте роли так же, как Discord Bot; отправлять и получать сообщения (getUpdates/sendMessage) через HTTP-протокол iLink Bot на стороне WeChat. Введите корневой адрес службы канала и токен ниже.",
-			"version": "0.0.0",
-			"author": "steve02081504",
-			"home_page": "",
-			"tags": [
-				"Вичат",
-				"робот",
-				"интегрированный"
-			]
-		},
-		"uk-UA": {
-			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Запустіть роль джерела як бота WeChat.",
-			"description_markdown": "Прив’язуйте ролі так само, як і Discord Bot; надсилати й отримувати повідомлення (getUpdates/sendMessage) через HTTP-протокол iLink Bot на стороні WeChat. Заповніть кореневу адресу служби каналу та маркер нижче.",
+			"description": "Запускайте персонажа fount как бота WeChat: привяжите роль, управляйте ботами и общайтесь в WeChat.",
+			"description_markdown": "Запускайте персонажа fount как бота WeChat: привяжите роль, управляйте ботами и общайтесь в WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"робот",
-				"інтегрований"
-			],
-			"name": "Бот WeChat"
+				"бот",
+				"интеграция"
+			]
+		},
+		"uk-UA": {
+			"name": "Бот WeChat",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
+			"description_markdown": "Запускайте персонажа fount як бота WeChat: прив’яжіть роль, керуйте ботами й спілкуйтеся в WeChat.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"WeChat",
+				"бот",
+				"інтеграція"
+			]
 		},
 		"vi-VN": {
 			"name": "Bot WeChat",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "Chạy vai trò đài phun nước dưới dạng bot WeChat.",
-			"description_markdown": "Liên kết các vai trò theo cách tương tự như Discord Bot; gửi và nhận tin nhắn (getUpdates/sendMessage) thông qua giao thức HTTP iLink Bot ở phía WeChat. Điền địa chỉ gốc dịch vụ kênh và Mã thông báo bên dưới.",
+			"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+			"description_markdown": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"WeChat",
-				"người máy",
+				"bot",
 				"tích hợp"
 			]
 		},
 		"zh-TW": {
+			"name": "微信 Bot",
 			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
-			"description": "將 fount 角色作為微信機器人運作。",
+			"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+			"description_markdown": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"微信",
-				"機器人",
+				"Bot",
 				"整合"
-			],
-			"name": "微信 Bot",
-			"description_markdown": "与 Discord Bot 一样绑定角色；通过微信侧 iLink Bot HTTP 协议收发消息（getUpdates / sendMessage）。在下方填入頻道服務根位址與 Token。"
+			]
 		}
 	}
 }

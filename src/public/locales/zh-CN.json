@@ -1934,7 +1934,7 @@
 	},
 	"weixin_bots": {
 		"title": "微信 Bot",
-		"description": "将 fount 角色接入微信对话，提供无处不在的办公辅助体验。",
+		"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
 		"cardTitle": "微信 Bot",
 		"botSelectDropdown": {
 			"placeholder": "选择一个 Bot"
@@ -1946,10 +1946,10 @@
 			"placeholder": "选择一个角色"
 		},
 		"charSearch": {
-			"placeholder": "搜索角色..."
+			"placeholder": "搜索角色…"
 		},
 		"configCard": {
-			"title": "Bot 配置",
+			"title": "Bot配置",
 			"labels": {
 				"character": "绑定角色",
 				"apiBaseUrl": "微信渠道服务根 URL",
@@ -1992,7 +1992,7 @@
 		"achievements": {
 			"start_bot": {
 				"name": "帮我干活！",
-				"description": "让 fount 角色在微信上与你对话。",
+				"description": "在微信上与 fount 角色对话。",
 				"locked_description": "启动一次微信 Bot。"
 			}
 		},

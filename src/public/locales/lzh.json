@@ -1933,92 +1933,92 @@
 		}
 	},
 	"weixin_bots": {
-		"title": "微信 Bot",
-		"description": "将 fount 角色接入微信对话，提供无处不在的办公辅助体验。",
-		"cardTitle": "微信 Bot",
+		"title": "微信靈偶",
+		"description": "承泉源之化身，寓於微信對談，輔理庶務，無遠弗屆。",
+		"cardTitle": "微信靈偶",
 		"botSelectDropdown": {
-			"placeholder": "选择一个 Bot"
+			"placeholder": "擇一靈偶"
 		},
 		"botSearch": {
-			"placeholder": "搜索 Bot..."
+			"placeholder": "尋靈偶…"
 		},
 		"charSelectDropdown": {
-			"placeholder": "选择一个角色"
+			"placeholder": "擇一角色"
 		},
 		"charSearch": {
-			"placeholder": "搜索角色..."
+			"placeholder": "尋角色…"
 		},
 		"configCard": {
-			"title": "Bot 配置",
+			"title": "靈偶規度",
 			"labels": {
-				"character": "绑定角色",
-				"apiBaseUrl": "微信渠道服务根 URL",
-				"botToken": "iLink Bot Token",
-				"config": "配置"
+				"character": "綁定化身",
+				"apiBaseUrl": "微信渠服根址",
+				"botToken": "iLink 靈偶信物",
+				"config": "規度"
 			},
-			"charSelectPlaceholder": "选择角色",
+			"charSelectPlaceholder": "擇化身",
 			"apiBaseUrlInput": {
-				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
+				"placeholder": "留空則用預設 https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
-				"placeholder": "登录后获得的 Bearer Token"
+				"placeholder": "登入後所得 Bearer 信物"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "切换显示 Token"
+				"aria-label": "顯隱信物"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "切换显示 Token"
+				"alt": "顯隱信物"
 			},
 			"buttons": {
-				"saveConfig": "保存配置",
-				"startBot": "启动",
-				"stopBot": "停止"
+				"saveConfig": "存規度",
+				"startBot": "啟",
+				"stopBot": "止"
 			}
 		},
 		"prompts": {
-			"newBotName": "请输入新的 Bot 名称："
+			"newBotName": "請為新靈偶命名："
 		},
 		"buttons": {
 			"newBot": "新建",
-			"deleteBot": "删除"
+			"deleteBot": "刪除"
 		},
 		"alerts": {
-			"configSaved": "配置保存成功",
-			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
-			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"httpError": "HTTP 错误",
-			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+			"configSaved": "規度已存。",
+			"botExists": "靈偶「${botname}」已存，請更名。",
+			"unsavedChanges": "尚有未存之變，確欲棄之乎？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "尚有未存之變，確欲離乎？"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "帮我干活！",
-				"description": "让 fount 角色在微信上与你对话。",
-				"locked_description": "启动一次微信 Bot。"
+				"name": "為吾執役",
+				"description": "令化身於微信與爾對談。",
+				"locked_description": "宜啟微信靈偶一次。"
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "bot",
+				"title": "靈偶",
 				"sub_items": {
 					"manage": {
-						"title": "管理微信 Bot"
+						"title": "微信靈偶"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "配置微信 Bot"
+				"title": "遣微信靈偶"
 			}
 		},
 		"qrLogin": {
-			"hint": "使用微信扫描下方二维码完成登录。",
-			"button": "扫码登录",
-			"scanPrompt": "请使用微信扫描二维码",
-			"waiting": "正在获取二维码…",
-			"scanned": "已扫码，请在手机上确认…",
-			"success": "微信已连接，配置已更新。可直接启动 Bot。",
-			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
+			"hint": "以微信掃描下方碼圖以成登入。",
+			"button": "掃碼登入",
+			"scanPrompt": "請以微信掃描碼圖",
+			"waiting": "方取碼圖…",
+			"scanned": "已掃，請於機上確認…",
+			"success": "微信已通，規度已新。可即啟靈偶。",
+			"needBot": "請先於列表擇一靈偶，或以「新建」創之。"
 		}
 	},
 	"discord_bots": {

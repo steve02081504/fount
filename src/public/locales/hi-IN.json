@@ -1933,92 +1933,92 @@
 		}
 	},
 	"weixin_bots": {
-		"title": "वीचैट बॉट",
-		"description": "सर्वव्यापी कार्यालय सहायता अनुभव प्रदान करने के लिए WeChat वार्तालापों में स्रोत भूमिका को एकीकृत करें।",
-		"cardTitle": "वीचैट बॉट",
+		"title": "WeChat बॉट",
+		"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+		"cardTitle": "WeChat बॉट",
 		"botSelectDropdown": {
 			"placeholder": "एक बॉट चुनें"
 		},
 		"botSearch": {
-			"placeholder": "बॉट खोजें..."
+			"placeholder": "बॉट खोजें…"
 		},
 		"charSelectDropdown": {
 			"placeholder": "एक भूमिका चुनें"
 		},
 		"charSearch": {
-			"placeholder": "भूमिकाएँ खोजें..."
+			"placeholder": "भूमिकाएँ खोजें…"
 		},
 		"configCard": {
-			"title": "बॉट विन्यास",
+			"title": "बॉट सेटिंग्स",
 			"labels": {
-				"character": "बाइंड भूमिका",
-				"apiBaseUrl": "WeChat चैनल सेवा रूट URL",
-				"botToken": "आईलिंक बॉट टोकन",
-				"config": "विन्यास"
+				"character": "जुड़ी भूमिका",
+				"apiBaseUrl": "WeChat चैनल API का मूल URL",
+				"botToken": "iLink बॉट टोकन",
+				"config": "कॉन्फ़िगरेशन"
 			},
 			"charSelectPlaceholder": "भूमिका चुनें",
 			"apiBaseUrlInput": {
-				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com का उपयोग करने के लिए खाली छोड़ दें"
+				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"
 			},
 			"botTokenInput": {
-				"placeholder": "लॉग इन करने के बाद बियरर टोकन प्राप्त हुआ"
+				"placeholder": "लॉग इन के बाद मिला Bearer टोकन"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "टोकन का प्रदर्शन टॉगल करें"
+				"aria-label": "टोकन दिखाएँ या छिपाएँ"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "टोकन का प्रदर्शन टॉगल करें"
+				"alt": "टोकन दिखाएँ या छिपाएँ"
 			},
 			"buttons": {
-				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
-				"startBot": "चालू होना",
-				"stopBot": "रुकना"
+				"saveConfig": "सहेजें",
+				"startBot": "प्रारंभ",
+				"stopBot": "रोकें"
 			}
 		},
 		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+			"newBotName": "नए बॉट का नाम:"
 		},
 		"buttons": {
 			"newBot": "नया",
-			"deleteBot": "मिटाना"
+			"deleteBot": "हटाएँ"
 		},
 		"alerts": {
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेजा गया",
-			"botExists": "\"${botname}\" नाम का एक बॉट पहले से मौजूद है, कृपया एक अलग नाम का उपयोग करें।",
-			"unsavedChanges": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आप परिवर्तनों को त्यागना चाहते हैं?",
-			"httpError": "एचटीटीपी एरर",
-			"beforeUnload": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आपकी वाकई छोड़ने की इच्छा है?"
+			"configSaved": "सहेजा गया",
+			"botExists": "«${botname}» नाम का बॉट पहले से है। दूसरा नाम चुनें।",
+			"unsavedChanges": "बिना सहेजे बदलाव हैं। उन्हें छोड़ें?",
+			"httpError": "HTTP त्रुटि",
+			"beforeUnload": "बिना सहेजे बदलाव हैं। पृष्ठ छोड़ें?"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "मेरे काम में मेरी मदद करो!",
-				"description": "फाउंटेन कैरेक्टर को WeChat पर आपसे बात करने दें।",
-				"locked_description": "एक बार WeChat बॉट लॉन्च करें।"
+				"name": "मुझे काम पर लगाओ!",
+				"description": "WeChat पर fount कैरेक्टर से बात करें।",
+				"locked_description": "WeChat बॉट एक बार चलाएँ।"
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "बीओटी",
+				"title": "बॉट",
 				"sub_items": {
 					"manage": {
-						"title": "WeChat बॉट प्रबंधित करें"
+						"title": "WeChat बॉट"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "WeChat बॉट कॉन्फ़िगर करें"
+				"title": "WeChat बॉट सेटिंग्स"
 			}
 		},
 		"qrLogin": {
-			"hint": "लॉगिन पूरा करने के लिए नीचे दिए गए QR कोड को स्कैन करने के लिए WeChat का उपयोग करें।",
-			"button": "लॉग इन करने के लिए कोड स्कैन करें",
-			"scanPrompt": "QR कोड को स्कैन करने के लिए कृपया WeChat का उपयोग करें",
-			"waiting": "QR कोड प्राप्त हो रहा है...",
-			"scanned": "कोड स्कैन कर लिया गया है, कृपया अपने मोबाइल फोन पर पुष्टि करें...",
-			"success": "WeChat कनेक्ट हो गया है और कॉन्फ़िगरेशन अपडेट कर दिया गया है. बॉट को सीधे लॉन्च किया जा सकता है।",
-			"needBot": "कृपया पहले ड्रॉप-डाउन बॉक्स में एक बॉट चुनें, या एक बनाने के लिए \"नया\" का उपयोग करें।"
+			"hint": "लॉग इन पूरा करने के लिए नीचे का QR कोड WeChat से स्कैन करें।",
+			"button": "लॉग इन के लिए स्कैन करें",
+			"scanPrompt": "WeChat खोलकर QR कोड स्कैन करें",
+			"waiting": "QR कोड लोड हो रहा है…",
+			"scanned": "स्कैन हो गया — फोन पर पुष्टि करें",
+			"success": "WeChat जुड़ गया, सेटिंग्स सहेजी गईं — अब बॉट चला सकते हैं।",
+			"needBot": "पहले सूची से बॉट चुनें या «नया» से बनाएँ।"
 		}
 	},
 	"discord_bots": {

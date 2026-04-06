@@ -1933,92 +1933,92 @@
 		}
 	},
 	"weixin_bots": {
-		"title": "Bot do WeChat",
-		"description": "Integre a função de fonte nas conversas do WeChat para fornecer uma experiência de assistência de escritório onipresente.",
-		"cardTitle": "Bot do WeChat",
+		"title": "Bot WeChat",
+		"description": "Use uma personagem fount como bot WeChat: associe um papel, faça a gestão dos bots e converse no WeChat.",
+		"cardTitle": "Bot WeChat",
 		"botSelectDropdown": {
-			"placeholder": "Escolha um bot"
+			"placeholder": "Escolher um bot"
 		},
 		"botSearch": {
-			"placeholder": "Pesquisar bot..."
+			"placeholder": "Procurar bots…"
 		},
 		"charSelectDropdown": {
-			"placeholder": "Escolha uma função"
+			"placeholder": "Escolher uma personagem"
 		},
 		"charSearch": {
-			"placeholder": "Procure papéis..."
+			"placeholder": "Procurar personagens…"
 		},
 		"configCard": {
-			"title": "Configuração do bot",
+			"title": "Definições do bot",
 			"labels": {
-				"character": "Função de vinculação",
-				"apiBaseUrl": "URL raiz do serviço do canal WeChat",
-				"botToken": "Token de bot iLink",
+				"character": "Personagem associada",
+				"apiBaseUrl": "URL base da API do canal WeChat",
+				"botToken": "Token iLink Bot",
 				"config": "Configuração"
 			},
-			"charSelectPlaceholder": "Selecione a função",
+			"charSelectPlaceholder": "Selecionar personagem",
 			"apiBaseUrlInput": {
-				"placeholder": "Deixe em branco para usar o padrão https://ilinkai.weixin.qq.com"
+				"placeholder": "Em branco para o predefinido https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
-				"placeholder": "Bearer Token obtido após o login"
+				"placeholder": "Bearer token após início de sessão"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "Alternar exibição do token"
+				"aria-label": "Mostrar ou ocultar token"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Alternar exibição do token"
+				"alt": "Mostrar ou ocultar token"
 			},
 			"buttons": {
-				"saveConfig": "Salvar configuração",
-				"startBot": "comece",
-				"stopBot": "parar"
+				"saveConfig": "Guardar",
+				"startBot": "Iniciar",
+				"stopBot": "Parar"
 			}
 		},
 		"prompts": {
-			"newBotName": "Insira um novo nome de bot:"
+			"newBotName": "Nome do novo bot:"
 		},
 		"buttons": {
 			"newBot": "Novo",
-			"deleteBot": "excluir"
+			"deleteBot": "Eliminar"
 		},
 		"alerts": {
-			"configSaved": "Configuração salva com sucesso",
-			"botExists": "Já existe um bot chamado \"${botname}\", use um nome diferente.",
-			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
+			"configSaved": "Guardado",
+			"botExists": "Já existe um bot com o nome «${botname}». Escolha outro nome.",
+			"unsavedChanges": "Tem alterações não guardadas. Descartá-las?",
 			"httpError": "Erro HTTP",
-			"beforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
+			"beforeUnload": "Tem alterações não guardadas. Sair da página?"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "Ajude-me com meu trabalho!",
-				"description": "Deixe o personagem fonte falar com você no WeChat.",
-				"locked_description": "Inicie o WeChat Bot uma vez."
+				"name": "Põe-me a trabalhar!",
+				"description": "Fale com a sua personagem fount no WeChat.",
+				"locked_description": "Inicie o bot WeChat uma vez."
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "robô",
+				"title": "Bots",
 				"sub_items": {
 					"manage": {
-						"title": "Gerenciar bot do WeChat"
+						"title": "Bot WeChat"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "Configurar bot WeChat"
+				"title": "Definições do bot WeChat"
 			}
 		},
 		"qrLogin": {
-			"hint": "Use o WeChat para escanear o código QR abaixo para concluir o login.",
-			"button": "Digitalize o código para fazer login",
-			"scanPrompt": "Use o WeChat para escanear o código QR",
-			"waiting": "Obtendo o código QR...",
-			"scanned": "O código foi escaneado, confirme no seu celular...",
-			"success": "O WeChat está conectado e a configuração foi atualizada. O bot pode ser iniciado diretamente.",
-			"needBot": "Selecione primeiro um bot na caixa suspensa ou use \"Novo\" para criar um."
+			"hint": "Leia o código QR abaixo com o WeChat para concluir o início de sessão.",
+			"button": "Ler código para entrar",
+			"scanPrompt": "Abra o WeChat e leia o código QR",
+			"waiting": "A carregar código QR…",
+			"scanned": "Lido — confirme no telemóvel",
+			"success": "WeChat ligado. Definições guardadas — pode iniciar o bot.",
+			"needBot": "Escolha primeiro um bot na lista ou crie um com «Novo»."
 		}
 	},
 	"discord_bots": {

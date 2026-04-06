@@ -1934,66 +1934,66 @@
 	},
 	"weixin_bots": {
 		"title": "WeChat ボット",
-		"description": "フォンの役割を WeChat の会話に統合して、ユビキタスなオフィス アシスタンス エクスペリエンスを提供します。",
+		"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
 		"cardTitle": "WeChat ボット",
 		"botSelectDropdown": {
-			"placeholder": "ボットを選択してください"
+			"placeholder": "ボットを選択"
 		},
 		"botSearch": {
-			"placeholder": "検索ボット..."
+			"placeholder": "ボットを検索…"
 		},
 		"charSelectDropdown": {
-			"placeholder": "役割を選択してください"
+			"placeholder": "ロールを選択"
 		},
 		"charSearch": {
-			"placeholder": "役割を検索..."
+			"placeholder": "ロールを検索…"
 		},
 		"configCard": {
-			"title": "ボットの構成",
+			"title": "ボット設定",
 			"labels": {
-				"character": "バインド役割",
-				"apiBaseUrl": "WeChat チャネル サービスのルート URL",
-				"botToken": "iLink ボットトークン",
-				"config": "構成"
+				"character": "関連付けたロール",
+				"apiBaseUrl": "WeChat チャネル API のベース URL",
+				"botToken": "iLink Bot トークン",
+				"config": "設定"
 			},
-			"charSelectPlaceholder": "役割の選択",
+			"charSelectPlaceholder": "ロールを選択",
 			"apiBaseUrlInput": {
-				"placeholder": "デフォルトの https://ilinkai.weixin.qq.com を使用するには、空白のままにします。"
+				"placeholder": "空欄で既定の https://ilinkai.weixin.qq.com を使用"
 			},
 			"botTokenInput": {
-				"placeholder": "ログイン後に取得されるベアラートークン"
+				"placeholder": "ログイン後に取得した Bearer トークン"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "トークンの表示を切り替えます"
+				"aria-label": "トークンの表示／非表示"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "トークンの表示を切り替えます"
+				"alt": "トークンの表示／非表示"
 			},
 			"buttons": {
-				"saveConfig": "設定の保存",
-				"startBot": "起動する",
+				"saveConfig": "保存",
+				"startBot": "起動",
 				"stopBot": "停止"
 			}
 		},
 		"prompts": {
-			"newBotName": "新しいボット名を入力してください:"
+			"newBotName": "新しいボットの名前："
 		},
 		"buttons": {
-			"newBot": "新しい",
-			"deleteBot": "消去"
+			"newBot": "新規",
+			"deleteBot": "削除"
 		},
 		"alerts": {
-			"configSaved": "構成が正常に保存されました",
-			"botExists": "「${botname}」という名前のボットはすでに存在します。別の名前を使用してください。",
-			"unsavedChanges": "未保存の変更があります。変更を破棄しますか?",
-			"httpError": "HTTPエラー",
-			"beforeUnload": "未保存の変更があります。本当に退会してもよろしいですか?"
+			"configSaved": "保存しました",
+			"botExists": "「${botname}」という名前のボットは既にあります。別の名前にしてください。",
+			"unsavedChanges": "未保存の変更があります。破棄しますか？",
+			"httpError": "HTTP エラー",
+			"beforeUnload": "未保存の変更があります。このページを離れますか？"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "私の仕事を手伝ってください！",
-				"description": "WeChat で泉のキャラクターに話しかけてもらいましょう。",
-				"locked_description": "WeChat ボットを一度起動します。"
+				"name": "働かせて！",
+				"description": "WeChat で fount キャラクターと会話する。",
+				"locked_description": "WeChat ボットを一度起動する。"
 			}
 		},
 		"home_function_buttons": {
@@ -2001,24 +2001,24 @@
 				"title": "ボット",
 				"sub_items": {
 					"manage": {
-						"title": "WeChat ボットの管理"
+						"title": "WeChat ボット"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "WeChat ボットを構成する"
+				"title": "WeChat ボットの設定"
 			}
 		},
 		"qrLogin": {
-			"hint": "WeChat を使用して以下の QR コードをスキャンしてログインを完了します。",
-			"button": "コードをスキャンしてログインします",
-			"scanPrompt": "WeChat を使用して QR コードをスキャンしてください",
-			"waiting": "QRコードを取得しています...",
-			"scanned": "コードはスキャンされました。携帯電話で確認してください...",
-			"success": "WeChat が接続され、設定が更新されました。ボットは直接起動できます。",
-			"needBot": "最初にドロップダウン ボックスでボットを選択するか、[新規] を使用してボットを作成してください。"
+			"hint": "下の QR コードを WeChat でスキャンしてログインを完了してください。",
+			"button": "スキャンしてログイン",
+			"scanPrompt": "WeChat で QR コードをスキャン",
+			"waiting": "QR コードを読み込み中…",
+			"scanned": "スキャン済み — スマホで確認してください",
+			"success": "WeChat に接続しました。設定を保存したので、ボットを起動できます。",
+			"needBot": "一覧からボットを選ぶか、「新規」で作成してください。"
 		}
 	},
 	"discord_bots": {

@@ -1934,91 +1934,91 @@
 	},
 	"weixin_bots": {
 		"title": "Bot WeChat",
-		"description": "Tích hợp vai trò nguồn vào các cuộc trò chuyện trên WeChat để cung cấp trải nghiệm hỗ trợ văn phòng phổ biến.",
+		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
 		"cardTitle": "Bot WeChat",
 		"botSelectDropdown": {
-			"placeholder": "Chọn một Bot"
+			"placeholder": "Chọn bot"
 		},
 		"botSearch": {
-			"placeholder": "Tìm kiếm Bot..."
+			"placeholder": "Tìm bot…"
 		},
 		"charSelectDropdown": {
-			"placeholder": "Chọn một vai trò"
+			"placeholder": "Chọn vai trò"
 		},
 		"charSearch": {
-			"placeholder": "Tìm kiếm vai trò..."
+			"placeholder": "Tìm vai trò…"
 		},
 		"configCard": {
-			"title": "Cấu hình bot",
+			"title": "Cài đặt bot",
 			"labels": {
-				"character": "Vai trò ràng buộc",
-				"apiBaseUrl": "URL gốc của dịch vụ kênh WeChat",
-				"botToken": "Mã thông báo iLink Bot",
+				"character": "Vai trò đã liên kết",
+				"apiBaseUrl": "URL gốc API kênh WeChat",
+				"botToken": "Token iLink Bot",
 				"config": "Cấu hình"
 			},
 			"charSelectPlaceholder": "Chọn vai trò",
 			"apiBaseUrlInput": {
-				"placeholder": "Để trống để sử dụng mặc định https://ilinkai.weixin.qq.com"
+				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
-				"placeholder": "Mã thông báo mang nhận được sau khi đăng nhập"
+				"placeholder": "Bearer token sau khi đăng nhập"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "Chuyển đổi hiển thị Token"
+				"aria-label": "Hiện hoặc ẩn token"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Chuyển đổi hiển thị Token"
+				"alt": "Hiện hoặc ẩn token"
 			},
 			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "khởi động",
-				"stopBot": "dừng lại"
+				"saveConfig": "Lưu",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
 			}
 		},
 		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
+			"newBotName": "Tên bot mới:"
 		},
 		"buttons": {
 			"newBot": "Mới",
-			"deleteBot": "xóa bỏ"
+			"deleteBot": "Xóa"
 		},
 		"alerts": {
-			"configSaved": "Đã lưu cấu hình thành công",
-			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy các thay đổi không?",
+			"configSaved": "Đã lưu",
+			"botExists": "Đã có bot tên «${botname}». Hãy chọn tên khác.",
+			"unsavedChanges": "Có thay đổi chưa lưu. Bỏ qua?",
 			"httpError": "Lỗi HTTP",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+			"beforeUnload": "Có thay đổi chưa lưu. Rời trang?"
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "Giúp tôi với công việc của tôi!",
-				"description": "Hãy để nhân vật đài phun nước nói chuyện với bạn trên WeChat.",
-				"locked_description": "Khởi chạy WeChat Bot một lần."
+				"name": "Cho tôi làm việc!",
+				"description": "Trò chuyện với nhân vật fount trên WeChat.",
+				"locked_description": "Khởi chạy bot WeChat một lần."
 			}
 		},
 		"home_function_buttons": {
 			"bot_related": {
-				"title": "bot",
+				"title": "Bot",
 				"sub_items": {
 					"manage": {
-						"title": "Quản lý Bot WeChat"
+						"title": "Bot WeChat"
 					}
 				}
 			}
 		},
 		"home_char_interfaces": {
 			"configure": {
-				"title": "Định cấu hình Bot WeChat"
+				"title": "Cài đặt bot WeChat"
 			}
 		},
 		"qrLogin": {
-			"hint": "Sử dụng WeChat để quét mã QR bên dưới để hoàn tất đăng nhập.",
-			"button": "Quét mã để đăng nhập",
-			"scanPrompt": "Vui lòng sử dụng WeChat để quét mã QR",
-			"waiting": "Đang lấy mã QR...",
-			"scanned": "Mã đã được quét, vui lòng xác nhận trên điện thoại di động của bạn...",
-			"success": "WeChat đã được kết nối và cấu hình đã được cập nhật. Bot có thể được khởi chạy trực tiếp.",
-			"needBot": "Trước tiên, vui lòng chọn Bot trong hộp thả xuống hoặc sử dụng \"Mới\" để tạo một Bot."
+			"hint": "Quét mã QR bên dưới bằng WeChat để hoàn tất đăng nhập.",
+			"button": "Quét để đăng nhập",
+			"scanPrompt": "Mở WeChat và quét mã QR",
+			"waiting": "Đang tải mã QR…",
+			"scanned": "Đã quét — xác nhận trên điện thoại",
+			"success": "Đã kết nối WeChat và lưu cài đặt — có thể khởi động bot.",
+			"needBot": "Chọn bot trong danh sách hoặc tạo mới bằng «Mới»."
 		}
 	},
 	"discord_bots": {
