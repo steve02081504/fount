@@ -107,7 +107,7 @@ export async function getBotConfigTemplate(charname) {
  * @param {string} [botname] 目标机器人名称，不传则使用空字符串。
  * @returns {Promise<{ sessionKey: string, qrcodeContent: string }>} 扫码会话初始化结果。
  */
-export async function startWeixinQrLogin(botname) {
+export async function startWechatQrLogin(botname) {
 	return postJson(`${API_BASE}/qrcode/start`, { botname: botname || '' })
 }
 
@@ -115,6 +115,6 @@ export async function startWeixinQrLogin(botname) {
  * @param {string} sessionKey 二维码登录会话键。
  * @returns {Promise<any>} 轮询结果。
  */
-export async function pollWeixinQrLogin(sessionKey) {
+export async function pollWechatQrLogin(sessionKey) {
 	return fetchDataWithHandling(`${API_BASE}/qrcode/poll?sessionKey=${encodeURIComponent(sessionKey)}`)
 }

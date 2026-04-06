@@ -20,8 +20,8 @@ import {
 	stopBot,
 	getRunningBotList,
 	getBotConfigTemplate,
-	startWeixinQrLogin,
-	pollWeixinQrLogin
+	startWechatQrLogin,
+	pollWechatQrLogin
 } from './src/endpoints.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
@@ -448,7 +448,7 @@ async function startQrPolling(sessionKey) {
 	while (qrPollActive) {
 		let result
 		try {
-			result = await pollWeixinQrLogin(sessionKey)
+			result = await pollWechatQrLogin(sessionKey)
 		}
 		catch (error) {
 			if (qrPollActive) showToast('error', error.message)
@@ -473,7 +473,7 @@ async function handleQrStart() {
 	qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.waiting')
 	qrWrap.classList.add('hidden')
 	try {
-		const result = await startWeixinQrLogin(selectedBot)
+		const result = await startWechatQrLogin(selectedBot)
 		if (!result.sessionKey)
 			throw new Error(result.message || 'no sessionKey')
 		renderQrCode(result.qrcodeContent)
