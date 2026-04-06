@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "Reasoning",
 			"logprobsNotApplicable": "N/A",
 			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
-			"logprobsMetricsFooter": "TTFT: ${ttft} | Time: ${time} | Tokens: ${tokens} | Speed: ${speed}",
+			"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
 			"noReplyContent": "(No reply content)",
 			"feedback": {
 				"thumbsUp": {

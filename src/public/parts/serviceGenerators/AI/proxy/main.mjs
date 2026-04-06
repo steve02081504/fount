@@ -122,6 +122,11 @@ async function GetSource(config, { SaveConfig }) {
 			 * @returns {void}
 			 */
 			const i18nRender = { locales: prompt_struct.locales, supported_functions }
+			/**
+			 * 构建 show 内容。
+			 * @param {{content: string, extension?: any}} partialResult - 结果对象
+			 * @param {boolean} [streaming] - 流式预览时为 true，details 默认展开；结束后为 false，默认折叠。
+			 */
 			const buildShow = (partialResult, streaming = false) => {
 				let show = enableLogprobsShow ? buildContentForShowFromLogprobs(partialResult, { useThemeStyles, ...i18nRender }) : null
 				if (enableHtmlShow) {

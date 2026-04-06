@@ -865,10 +865,10 @@
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
-			"reasoningDetailsTitle": "推理过程",
-			"logprobsNotApplicable": "不适用",
-			"logprobsTopLogprobsMeta": "top_logprobs（已选：${token}）",
-			"logprobsMetricsFooter": "首字延迟: ${ttft} | 用时: ${time} | 词元: ${tokens} | 速度: ${speed}",
+			"reasoningDetailsTitle": "🧠📜",
+			"logprobsNotApplicable": "N/A",
+			"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
+			"logprobsMetricsFooter": "1️⃣⏱️ ${ttft} | ⏱️ ${time} | 🪙 ${tokens} | 🚀 ${speed}",
 			"noReplyContent": "💬🍃",
 			"feedback": {
 				"thumbsUp": {

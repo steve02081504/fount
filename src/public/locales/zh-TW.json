@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "推理過程",
 			"logprobsNotApplicable": "不適用",
 			"logprobsTopLogprobsMeta": "top_logprobs（已選：${token}）",
-			"logprobsMetricsFooter": "首字延遲: ${ttft} | 用時: ${time} | 詞元: ${tokens} | 速度: ${speed}",
+			"logprobsMetricsFooter": "首詞元延遲: ${ttft} | 用時: ${time} | 詞元: ${tokens} | 速度: ${speed}",
 			"noReplyContent": "（無回應內容）",
 			"feedback": {
 				"thumbsUp": {

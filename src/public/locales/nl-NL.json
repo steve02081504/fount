@@ -865,7 +865,7 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
-			"reasoningDetailsTitle": "redeneringsproces",
+			"reasoningDetailsTitle": "Redeneringsproces",
 			"logprobsNotApplicable": "niet van toepassing",
 			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
 			"logprobsMetricsFooter": "Vertraging eerste woord: ${ttft} | Tijd: ${time} | Token: ${tokens} | Snelheid: ${speed}",

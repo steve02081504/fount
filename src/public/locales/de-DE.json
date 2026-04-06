@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "Argumentationsprozess",
 			"logprobsNotApplicable": "nicht anwendbar",
 			"logprobsTopLogprobsMeta": "top_logprobs (ausgewählt: ${token})",
-			"logprobsMetricsFooter": "Verzögerung des ersten Wortes: ${ttft} | Zeit: ${time} | Token: ${tokens} | Geschwindigkeit: ${speed}",
+			"logprobsMetricsFooter": "Latenz bis zum ersten Token: ${ttft} | Dauer: ${time} | Token: ${tokens} | Geschwindigkeit: ${speed}",
 			"noReplyContent": "(Kein Inhalt)",
 			"feedback": {
 				"thumbsUp": {

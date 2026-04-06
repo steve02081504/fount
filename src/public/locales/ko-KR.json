@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "추론 과정",
 			"logprobsNotApplicable": "해당 없음",
 			"logprobsTopLogprobsMeta": "top_logprobs (선택됨: ${token})",
-			"logprobsMetricsFooter": "첫 번째 단어 지연: ${ttft} | 시간: ${time} | 토큰: ${tokens} | 속도: ${speed}",
+			"logprobsMetricsFooter": "첫 토큰 지연: ${ttft} | 소요 시간: ${time} | 토큰: ${tokens} | 속도: ${speed}",
 			"noReplyContent": "(답장 내용 없음)",
 			"feedback": {
 				"thumbsUp": {

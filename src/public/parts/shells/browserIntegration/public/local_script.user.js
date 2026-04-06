@@ -10,6 +10,7 @@
 // @connect      github.com
 // @connect      cdn.jsdelivr.net
 // @connect      steve02081504.github.io
+// @connect      fount.local
 // @connect      *
 // @homepage     https://github.com/steve02081504/fount
 // @run-at       document-start

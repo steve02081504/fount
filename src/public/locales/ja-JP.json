@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "推論プロセス",
 			"logprobsNotApplicable": "適用できない",
 			"logprobsTopLogprobsMeta": "top_logprobs (選択済み: ${token})",
-			"logprobsMetricsFooter": "最初の単語の遅延: ${ttft} |時間: ${time} |トークン: ${tokens} |速度: ${speed}",
+			"logprobsMetricsFooter": "初トークン遅延: ${ttft} | 時間: ${time} | トークン: ${tokens} | 速度: ${speed}",
 			"noReplyContent": "（返信内容なし）",
 			"feedback": {
 				"thumbsUp": {

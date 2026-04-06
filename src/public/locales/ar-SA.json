@@ -868,7 +868,7 @@
 			"reasoningDetailsTitle": "عملية التفكير",
 			"logprobsNotApplicable": "لا ينطبق",
 			"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",
-			"logprobsMetricsFooter": "تأخير الكلمة الأولى: ${ttft} | الوقت: ${time} | الرمز المميز: ${tokens} | السرعة: ${speed}",
+			"logprobsMetricsFooter": "تأخير أول رمز: ${ttft} | المدة: ${time} | الرموز: ${tokens} | السرعة: ${speed}",
 			"noReplyContent": "(لا يوجد محتوى الرد)",
 			"feedback": {
 				"thumbsUp": {
