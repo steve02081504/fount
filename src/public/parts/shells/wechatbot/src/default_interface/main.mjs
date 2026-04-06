@@ -215,7 +215,11 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 					if (!chunk.trim()) continue
 					await ctx.sendMessage({
 						msg: {
+							from_user_id: '',
 							to_user_id: toUserId,
+							client_id: crypto.randomUUID(),
+							message_type: MessageType.BOT,
+							message_state: MessageState.FINISH,
 							context_token: contextToken,
 							item_list: [{ type: MessageItemType.TEXT, text_item: { text: chunk } }],
 						},
@@ -250,7 +254,11 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 						})
 						await ctx.sendMessage({
 							msg: {
+								from_user_id: '',
 								to_user_id: toUserId,
+								client_id: crypto.randomUUID(),
+								message_type: MessageType.BOT,
+								message_state: MessageState.FINISH,
 								context_token: contextToken,
 								item_list: [messageItem],
 							},
@@ -343,7 +351,11 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				try {
 					await ctx.sendMessage({
 						msg: {
+							from_user_id: '',
 							to_user_id: toUserId,
+							client_id: crypto.randomUUID(),
+							message_type: MessageType.BOT,
+							message_state: MessageState.FINISH,
 							context_token: contextToken,
 							item_list: [{
 								type: MessageItemType.TEXT,
@@ -379,7 +391,7 @@ export function createSimpleWeixinInterface(charAPI, ownerUsername, botCharname)
 				continue
 			}
 
-			if (resp?.get_updates_buf !== undefined)
+			if (resp?.get_updates_buf)
 				buf = resp.get_updates_buf
 
 			if (resp?.longpolling_timeout_ms)
