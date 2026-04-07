@@ -6,7 +6,8 @@ import {
 	TelegramMessageToFountChatLogEntry,
 	splitTelegramReply,
 	aiMarkdownToTelegramHtml,
-	escapeHTML
+	escapeHTML,
+	extractStickerIdsFromMarkdown
 } from './tools.mjs'
 
 /** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
@@ -213,11 +214,12 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
-						const aiMarkdownContent = replyFromChar.content_for_show || replyFromChar.content || ''
-						if (aiMarkdownContent.trim()) {
-							const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
+						const rawIntermediateMarkdown = replyFromChar.content_for_show || replyFromChar.content || ''
+						const { cleanMarkdown: intermediateClean, stickerIds: intermediateStickerIds } = extractStickerIdsFromMarkdown(rawIntermediateMarkdown)
+						let lastSentIntermediateMsg = null
+						if (intermediateClean.trim()) {
+							const htmlContent = aiMarkdownToTelegramHtml(intermediateClean)
 							const textParts = splitTelegramReply(htmlContent)
-							let lastSentIntermediateMsg = null
 							for (const part of textParts)
 								lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendMessage(
 									ctx.chat.id,
@@ -227,16 +229,27 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 										...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 									}
 								))
+						}
+						for (const stickerId of intermediateStickerIds) try {
+							lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendSticker(
+								ctx.chat.id,
+								stickerId,
+								{
+									...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
+								}
+							))
+						} catch (e) {
+							console.error('[TelegramDefaultInterface] 发送中间回复贴纸失败:', e)
+						}
 
-							if (lastSentIntermediateMsg) {
-								const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname)
-								if (fountEntryForBotReply) {
-									ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
-									while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
-										const removed = ChannelChatLogs[logicalChannelId].shift()
-										if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
-											delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
-									}
+						if (lastSentIntermediateMsg) {
+							const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname)
+							if (fountEntryForBotReply) {
+								ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
+								while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
+									const removed = ChannelChatLogs[logicalChannelId].shift()
+									if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
+										delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
 								}
 							}
 						}
@@ -287,7 +300,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
 
 				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.content_for_show || aiFinalReply.files?.length)) {
-					const aiMarkdownContent = aiFinalReply.content_for_show || aiFinalReply.content || ''
+					const rawAiMarkdown = aiFinalReply.content_for_show || aiFinalReply.content || ''
+					const { cleanMarkdown: aiMarkdownContent, stickerIds } = extractStickerIdsFromMarkdown(rawAiMarkdown)
 					const filesToProcess = (aiFinalReply.files || []).map(f => ({
 						source: f.buffer,
 						filename: f.name || 'file',
@@ -367,6 +381,16 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
 							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 						} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
+					}
+
+					const stickerSendOptions = {
+						...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
+					}
+					for (const stickerId of stickerIds) try {
+						const sentMsg = await tryFewTimes(() => ctx.telegram.sendSticker(ctx.chat.id, stickerId, stickerSendOptions))
+						if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
+					} catch (e) {
+						console.error('[TelegramDefaultInterface] 发送贴纸消息失败:', e)
 					}
 
 					if (firstSentTelegramMessage && aiFinalReply) {
