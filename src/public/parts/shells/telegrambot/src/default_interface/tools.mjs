@@ -54,6 +54,20 @@ export function escapeHTML(text) {
 }
 
 /**
+ * 从 AI Markdown 正文中提取 Telegram 贴纸 file_id，并移除对应标记（格式见本文件贴纸入库逻辑）。
+ * @param {string} markdown
+ * @returns {{ cleanMarkdown: string, stickerIds: string[] }}
+ */
+export function extractStickerIdsFromMarkdown(markdown) {
+	const stickerIds = []
+	const cleanMarkdown = (markdown || '').replace(/<:([^:]+):[^:]*:[^>]*>\s*/g, (_, id) => {
+		stickerIds.push(id)
+		return ''
+	}).trim()
+	return { cleanMarkdown, stickerIds }
+}
+
+/**
  * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
  * @param {string | undefined} text - 原始消息文本。
  * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
