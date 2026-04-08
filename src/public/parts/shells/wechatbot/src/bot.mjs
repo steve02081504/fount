@@ -50,12 +50,7 @@ async function startBot(config, char, username, charname) {
 	await ensureWechatInterface(char, username, charname)
 
 	const ctx = { ...api, signal: abortController.signal, cdnBaseUrl }
-	const loopPromise = char.interfaces.wechat.OnceClientReady(ctx, config.config)
-
-	void loopPromise.catch(err => {
-		if (!abortController.signal.aborted)
-			console.error('[WeChatBot] 轮询结束:', err)
-	})
+	await char.interfaces.wechat.OnceClientReady(ctx, config.config)
 
 	return {
 		/**
@@ -64,7 +59,6 @@ async function startBot(config, char, username, charname) {
 		 */
 		destroy: async () => {
 			abortController.abort()
-			await loopPromise.catch(() => {})
 		},
 	}
 }

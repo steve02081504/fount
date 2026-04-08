@@ -1,0 +1,285 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Provides WeChat iLink bot helpers for AI characters (send messages/files, read chat history) from any platform.",
+			"description_markdown": "The **WeChat API** plugin connects the running WeChat iLink bot to AI characters via JavaScript code execution, so they can send messages and files and read buffered chat history from any platform while the bot is online.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "为已接入微信 iLink Bot 的角色提供 JS 可调接口（发消息与文件、查看缓冲的历史）。",
+			"description_markdown": "**WeChat API** 插件通过 JS 代码执行环境将正在运行的微信 iLink Bot 接入 AI 角色，使角色在 Bot 在线时能在任意平台发消息与文件、查看缓冲的聊天历史。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"api",
+				"插件"
+			]
+		},
+		"ar-SA": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "يوفّر أدوات بوت WeChat iLink لشخصيات الذكاء الاصطناعي (إرسال رسائل وملفات، قراءة السجل المؤقت) من أي منصة.",
+			"description_markdown": "يعرض ملحق **WeChat API** بوت WeChat iLink الجاري تشغيله لشخصيات الذكاء الاصطناعي عبر تنفيذ JavaScript، مما يتيح إرسال الرسائل والملفات وقراءة سجل المحادثة المؤقت من أي منصة.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"api",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Stellt KI-Charakteren eine schlanke WeChat-iLink-Bot-Hilfe bereit (Nachrichten/Dateien senden, gepufferten Verlauf lesen) von jeder Plattform.",
+			"description_markdown": "Das **WeChat API**-Plugin bindet den laufenden WeChat-iLink-Bot per JavaScript-Ausführung an KI-Charaktere an, sodass Nachrichten und Dateien gesendet und gepufferte Chatverläufe von jeder Plattform gelesen werden können.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"api",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "✈️🤖",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "🤖➡️✈️⚙️✅",
+			"description_markdown": "**✈️🤖** 🔌 ➡️ 🤖✨.\n✅ 📩📎.\n✅ 📜.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"✈️",
+				"🤖",
+				"🔌",
+				"⚙️"
+			]
+		},
+		"es-ES": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Ofrece ayudas del bot WeChat iLink para personajes de IA (enviar mensajes/archivos, leer historial en búfer) desde cualquier plataforma.",
+			"description_markdown": "El complemento **WeChat API** conecta el bot WeChat iLink en ejecución a personajes de IA mediante JavaScript, permitiendo enviar mensajes y archivos y consultar el historial en búfer desde cualquier plataforma.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Fournit des aides bot WeChat iLink aux personnages IA (envoi messages/fichiers, lecture de l'historique tamponné) depuis n'importe quelle plateforme.",
+			"description_markdown": "Le plugin **WeChat API** relie le bot WeChat iLink en cours d'exécution aux personnages IA via JavaScript, pour envoyer messages et fichiers et consulter l'historique tamponné depuis n'importe quelle plateforme.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "AI पात्रों के लिए WeChat iLink बॉट सहायक (संदेश/फ़ाइलें भेजना, बफ़र इतिहास पढ़ना) किसी भी प्लेटफ़ॉर्म से।",
+			"description_markdown": "**WeChat API** प्लगइन JavaScript के माध्यम से चल रहे WeChat iLink बॉट को AI पात्रों से जोड़ता है, ताकि वे किसी भी प्लेटफ़ॉर्म से संदेश व फ़ाइलें भेज सकें और बफ़र चैट इतिहास पढ़ सकें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Veitir gervigreindarkarakterum einfalda WeChat iLink bot aðstoð (senda skilaboð/skrár, lesa biðminni) frá hvaða vettvangi sem er.",
+			"description_markdown": "**WeChat API** viðbótin tengir iLink WeChat-botinn við gervigreindarkaraktera í gegnum JavaScript, svo hægt er að senda skilaboð og skrár og lesa biðminni samtals frá hvaða vettvangi sem er.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Fornisce helper del bot WeChat iLink per personaggi IA (invio messaggi/file, lettura cronologia in buffer) da qualsiasi piattaforma.",
+			"description_markdown": "Il plugin **WeChat API** collega il bot WeChat iLink in esecuzione ai personaggi IA tramite JavaScript, consentendo invio di messaggi e file e consultazione della cronologia in buffer da qualsiasi piattaforma.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "AI キャラクター向けに WeChat iLink ボットのヘルパー（メッセージ・ファイル送信、バッファ履歴の参照）をどのプラットフォームからも提供します。",
+			"description_markdown": "**WeChat API** プラグインは、JavaScript 実行を通じて稼働中の WeChat iLink ボットを AI キャラクターに接続し、任意のプラットフォームからメッセージ・ファイル送信とバッファ済み履歴の参照を可能にします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "AI 캐릭터용 WeChat iLink 봇 헬퍼(메시지·파일 전송, 버퍼 기록 조회)를 어떤 플랫폼에서든 제공합니다.",
+			"description_markdown": "**WeChat API** 플러그인은 JavaScript 실행으로 실행 중인 WeChat iLink 봇을 AI 캐릭터에 연결해, 어떤 플랫폼에서든 메시지·파일 전송과 버퍼된 대화 기록 조회를 할 수 있게 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "WeChat 接口",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "爲化身啓 iLink WeChat 之助（傳訊與檔、覽緩史），不拘平台。",
+			"description_markdown": "此 **WeChat API** 插件，以 JavaScript 聯通運行中之 iLink WeChat 之 bot，使化身得於諸平台傳訊與檔、覽緩存之談史也。\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"接口",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Biedt WeChat iLink-bothelpers voor AI-personages (berichten/bestanden sturen, buffergeschiedenis lezen) vanaf elk platform.",
+			"description_markdown": "De **WeChat API**-plugin koppelt de actieve WeChat iLink-bot via JavaScript aan AI-personages, zodat ze berichten en bestanden kunnen sturen en gebufferde chatgeschiedenis kunnen inzien vanaf elk platform.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Oferece ajudas do bot WeChat iLink para personagens de IA (enviar mensagens/ficheiros, ler histórico em buffer) a partir de qualquer plataforma.",
+			"description_markdown": "O plugin **WeChat API** liga o bot WeChat iLink em execução aos personagens de IA via JavaScript, permitindo enviar mensagens e ficheiros e consultar o histórico em buffer a partir de qualquer plataforma.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Даёт ИИ-персонажам помощники бота WeChat iLink (отправка сообщений/файлов, чтение буферной истории) с любой платформы.",
+			"description_markdown": "Плагин **WeChat API** подключает запущенного iLink WeChat-бота к ИИ-персонажам через выполнение JavaScript, позволяя отправлять сообщения и файлы и читать буферную историю чата с любой платформы.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Дає ШІ-персонажам допомогу бота WeChat iLink (надсилання повідомлень/файлів, читання буферної історії) з будь-якої платформи.",
+			"description_markdown": "Плагін **WeChat API** з'єднує запущеного iLink WeChat-бота з ШІ-персонажами через JavaScript, дозволяючи надсилати повідомлення та файли й переглядати буферну історію чату з будь-якої платформи.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "Cung cấp trợ giúp bot WeChat iLink cho nhân vật AI (gửi tin/nhập tệp, đọc lịch sử đệm) từ mọi nền tảng.",
+			"description_markdown": "Plugin **WeChat API** kết nối bot WeChat iLink đang chạy với nhân vật AI qua thực thi JavaScript, cho phép gửi tin nhắn và tệp, xem lịch sử trò chuyện đệm từ mọi nền tảng.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "WeChat API",
+			"avatar": "https://api.iconify.design/simple-icons/wechat.svg",
+			"description": "為已接入 WeChat iLink Bot 的 AI 角色提供 JS 可呼叫介面（傳訊與檔案、檢視緩衝歷程），不限平台。",
+			"description_markdown": "**WeChat API** 外掛程式透過 JavaScript 執行環境，將執行中的微信 iLink Bot 與 AI 角色連接，使角色能在任意平台發送訊息與檔案、檢視緩衝的聊天歷程。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"wechat",
+				"bot",
+				"api",
+				"外掛"
+			]
+		}
+	}
+}
