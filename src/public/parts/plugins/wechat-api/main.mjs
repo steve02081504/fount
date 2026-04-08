@@ -22,9 +22,10 @@ export default {
 			/**
 			 * 获取 JS 代码提示
 			 * @param {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} args 聊天回复请求
-			 * @returns {Promise<string | undefined>} 注入给代码执行的说明字符串；无微信 Bot 时返回引导文案。
+			 * @returns {Promise<string | undefined>} 近期对话未提及微信时为 undefined；否则无 Bot 时返回接入引导，有 Bot 时返回 API 说明。
 			 */
 			GetJSCodePrompt: async (args) => {
+				if (!args.chat_log?.slice(-4).some(entry => /wechat|微信|weixin/i.test(entry?.content ?? ''))) return
 				const wechat_api = getWechatRuntimeForChar(args.username, args.char_id)
 				if (!wechat_api) return `\
 WeChat API 插件已启用，但你尚未启动绑定到该角色的微信 Bot，无法使用 wechat_api。
