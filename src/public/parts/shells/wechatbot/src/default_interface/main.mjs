@@ -405,11 +405,12 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 
 	/**
 	 * 获取默认机器人配置模板。
-	 * @returns {{OwnerWeChatId: string, MaxMessageDepth: number}} 默认机器人配置模板。
+	 * @returns {{OwnerWeChatId: string, OwnerPromptName: string, MaxMessageDepth: number}} 默认机器人配置模板。
 	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerWeChatId: 'your_wechat_ilink_user_id',
+			OwnerPromptName: '',
 			MaxMessageDepth: 40,
 		}
 	}
@@ -497,6 +498,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	 */
 	async function SimpleWechatBotMain(ctx, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
+		const wechatPromptDisplayName = String(config.OwnerPromptName ?? '').trim() || ownerUsername
 		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
 		/** 长轮询游标：服务端返回的 get_updates_buf，用于接续拉取。 */
 		let getUpdatesCursor = ''
@@ -639,8 +641,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		 */
 		async function wechatMessageToEntry(wxMsg) {
 			const text = extractInboundText(wxMsg)
-			const fromId = wxMsg.from_user_id || ''
-			const name = fromId
+			const name = wxMsg.message_type === MessageType.BOT ? botCharname : wechatPromptDisplayName
 			const files = (await Promise.all(
 				(wxMsg.item_list || []).map(item => downloadAndDecryptMediaItem(item, cdnBaseUrl, ctx.signal))
 			)).filter(Boolean)
@@ -683,7 +684,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 
 			try {
 				/**
-				 * 将角色回复追加到本地聊天日志（与 UserCharname / ReplyToCharname 的裸 ID 一致）。
+				 * 将角色回复追加到本地聊天日志（与 UserCharname / ReplyToCharname 的可读名一致）。
 				 * @param {ChatReply_t} fountReply fount 聊天回复对象。
 				 * @returns {void}
 				 */
@@ -721,8 +722,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 					chat_name: 'WeChat',
 					char_id: botCharname,
 					Charname: botCharname,
-					UserCharname: config.OwnerWeChatId || '',
-					ReplyToCharname: toUserId,
+					UserCharname: wechatPromptDisplayName,
+					ReplyToCharname: wechatPromptDisplayName,
 					locales: localhostLocales,
 					time: new Date(),
 					world: null,
