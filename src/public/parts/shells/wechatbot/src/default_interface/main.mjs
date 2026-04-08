@@ -18,7 +18,7 @@ import {
 	parseInboundAesKey,
 } from '../wechat_api.mjs'
 
-ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path)))
+ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => '') || (await import('npm:@ffmpeg-installer/ffmpeg')).default.path)
 
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
