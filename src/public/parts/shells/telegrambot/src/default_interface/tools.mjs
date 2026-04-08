@@ -55,8 +55,8 @@ export function escapeHTML(text) {
 
 /**
  * 从 AI Markdown 正文中提取 Telegram 贴纸 file_id，并移除对应标记（格式见本文件贴纸入库逻辑）。
- * @param {string} markdown
- * @returns {{ cleanMarkdown: string, stickerIds: string[] }}
+ * @param {string} markdown - AI 方言 Markdown 正文。
+ * @returns {{ cleanMarkdown: string, stickerIds: string[] }} 清理后的正文与提取的贴纸 file_id 列表。
  */
 export function extractStickerIdsFromMarkdown(markdown) {
 	const stickerIds = []

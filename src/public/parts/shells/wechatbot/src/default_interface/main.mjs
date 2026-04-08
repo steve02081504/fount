@@ -444,7 +444,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	 */
 	function buildMediaMessageItem(args) {
 		/**
-		 * @param {object} m CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。
+		 * @param {object} cdnMedia - CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。
 		 * @returns {object} 附带 encrypt_type 的发送侧 media 对象。
 		 */
 		const outboundMedia = cdnMedia => ({ ...cdnMedia, encrypt_type: 1 })
