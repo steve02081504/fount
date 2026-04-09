@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="" />
+	<title data-i18n="chat.group.ghpages.title"></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css" />
+</head>
+<body class="min-h-screen bg-base-200">
+<div class="container mx-auto p-4 max-w-3xl flex flex-col gap-4">
+
+	<!-- 头部 -->
+	<div class="flex items-center justify-between flex-wrap gap-2">
+		<h1 class="text-xl font-bold" data-i18n="chat.group.ghpages.groupTitle"></h1>
+		<div class="flex gap-2 items-center text-xs opacity-60">
+			<span data-i18n="chat.group.ghpages.ghpagesIdentityLabel"></span>
+			<code id="pubkey-display" class="font-mono truncate max-w-[12rem]">—</code>
+		</div>
+	</div>
+
+	<!-- 连接设置 -->
+	<div class="card bg-base-100 shadow-sm">
+		<div class="card-body p-4 flex flex-col gap-2">
+			<h2 class="card-title text-base" data-i18n="chat.group.ghpages.groupSubtitle"></h2>
+			<div class="flex gap-2 flex-wrap">
+				<div class="flex-1 min-w-[12rem]">
+					<label class="label label-text text-xs" for="origin" data-i18n="chat.group.ghpages.groupOriginLabel"></label>
+					<input id="origin" type="text" class="input input-bordered input-sm w-full" data-i18n="chat.group.ghpages.groupOriginPlaceholder" />
+				</div>
+				<div class="flex-1 min-w-[8rem]">
+					<label class="label label-text text-xs" for="gid" data-i18n="chat.group.ghpages.groupIdLabel"></label>
+					<input id="gid" type="text" class="input input-bordered input-sm w-full" />
+				</div>
+				<div class="w-28">
+					<label class="label label-text text-xs" for="cid" data-i18n="chat.group.ghpages.groupChannelLabel"></label>
+					<input id="cid" type="text" class="input input-bordered input-sm w-full" value="default" />
+				</div>
+			</div>
+			<div class="flex gap-2 flex-wrap items-end">
+				<div class="flex-1 min-w-[10rem]">
+					<label class="label label-text text-xs" for="apikey" data-i18n="chat.group.ghpages.groupApiKeyLabel"></label>
+					<input id="apikey" type="password" class="input input-bordered input-sm w-full" autocomplete="off" />
+				</div>
+				<button type="button" id="connect" class="btn btn-sm btn-primary" data-i18n="chat.group.ghpages.groupConnect"></button>
+				<button type="button" id="disconnect" class="btn btn-sm btn-ghost hidden" data-i18n="chat.group.ghpages.groupDisconnect"></button>
+			</div>
+		</div>
+	</div>
+
+	<!-- 状态栏 -->
+	<div id="status-bar" class="text-xs opacity-70 flex gap-4 flex-wrap">
+		<span id="conn-status" data-i18n="chat.group.ghpages.groupDisconnected"></span>
+		<span id="checkpoint-status"></span>
+		<span id="storage-status"></span>
+	</div>
+
+	<!-- 消息区 -->
+	<div id="messages" class="card bg-base-100 shadow-sm">
+		<div id="messages-inner" class="p-4 flex flex-col gap-2 min-h-[12rem] max-h-[50vh] overflow-y-auto text-sm">
+			<p class="text-xs opacity-40 text-center" data-i18n="chat.group.ghpages.ghpagesNoMessages"></p>
+		</div>
+	</div>
+
+	<!-- 流式输出占位 -->
+	<div id="stream-indicator" class="hidden text-xs opacity-60 italic px-2" data-i18n="chat.group.ghpages.ghpagesStreaming"></div>
+
+	<!-- 消息输入 -->
+	<div class="flex gap-2">
+		<textarea id="msg" class="textarea textarea-bordered flex-1 min-h-16 resize-none text-sm" rows="2" data-i18n="chat.group.ghpages.groupMsgLabel"></textarea>
+		<button type="button" id="send" class="btn btn-primary self-end" data-i18n="chat.group.ghpages.groupSend"></button>
+	</div>
+
+	<!-- 调试日志（可折叠） -->
+	<details>
+		<summary class="text-xs opacity-50 cursor-pointer select-none" data-i18n="chat.group.ghpages.ghpagesDebugLog"></summary>
+		<pre id="log" class="bg-base-200 p-2 rounded text-xs overflow-auto max-h-40 mt-1"></pre>
+	</details>
+
+</div>
+<script type="module" src="./index.mjs"></script>
+</body>
+</html>

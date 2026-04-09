@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="" />
+	<title></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css" />
+</head>
+<body class="p-4 max-w-lg mx-auto">
+	<h1 class="text-xl font-bold mb-2" data-i18n="chat.group.ghpages.qrTitle"></h1>
+	<p class="text-sm opacity-80 mb-4" data-i18n="chat.group.ghpages.qrSubtitle"></p>
+	<p id="qr-status" class="text-sm mb-2 min-h-[1.5rem] text-primary"></p>
+	<p class="text-xs opacity-60 mb-2" data-i18n="chat.group.ghpages.qrHint"></p>
+	<div id="qr" class="flex justify-center mb-4 min-h-[200px] items-center bg-base-200 rounded-lg"></div>
+	<pre id="payload" class="bg-base-200 p-2 rounded text-xs overflow-auto max-h-48 whitespace-pre-wrap"></pre>
+	<p class="text-xs opacity-60 mt-4" data-i18n="chat.group.ghpages.qrFooter"></p>
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>

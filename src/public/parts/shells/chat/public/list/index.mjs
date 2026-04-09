@@ -3,7 +3,7 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n.mjs'
+import { initTranslations, confirmI18n, console, geti18n, i18nElement, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
@@ -12,12 +12,16 @@ import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 import { createVirtualList } from '../../../scripts/virtualList.mjs'
 import { processTimeStampForId } from '../src/utils.mjs'
 
-import { getChatList, getCharDetails, copyChats, exportChats, deleteChats, importChat } from './endpoints.mjs'
+import { getChatList, getCharDetails, copyChats, exportChats, deleteChats, importChat, getGroupList, createDmRoom, getGroupFolders, saveGroupFolders } from './endpoints.mjs'
 
 usingTemplates('/parts/shells:chat/src/templates')
 
 const chatItemDOMCache = new Map()
 const chatListContainer = document.getElementById('chat-list-container')
+const groupLinksEl = document.getElementById('group-links')
+const newDmButton = document.getElementById('new-dm-button')
+const groupFoldersListEl = document.getElementById('group-folders-list')
+const addGroupFolderBtn = document.getElementById('add-group-folder-btn')
 const sortSelect = document.getElementById('sort-select')
 const filterInput = document.getElementById('filter-input')
 const selectAllCheckbox = document.getElementById('select-all-checkbox')
@@ -178,7 +182,7 @@ async function hydrateChatListItem(chatElement, chat) {
 			const fileName = `chat-${chat.chatid}.json`
 			event.dataTransfer.setData('DownloadURL', `application/json:${fileName}:${fullDownloadUrl}`)
 
-			const chatUrl = new URL(`/shells/chat#${chat.chatid}`, window.location.origin)
+			const chatUrl = new URL(`/shells/chat#group:${chat.chatid}:default`, window.location.origin)
 			event.dataTransfer.setData('text/uri-list', chatUrl.href)
 		}
 		catch (error) {
@@ -388,11 +392,219 @@ importFileInput.addEventListener('change', async event => {
  * 初始化应用程序，设置主题、翻译、获取聊天列表、设置搜索功能和虚拟滚动。
  * @returns {Promise<void>}
  */
+const GROUP_DRAG_MIME = 'application/x-fount-group-id'
+const FOLDER_REORDER_MIME = 'application/x-fount-folder-index'
+
+/** @type {Record<string, string>} */
+const FOLDER_COLOR_BORDER = {
+	neutral: 'border-l-neutral',
+	primary: 'border-l-primary',
+	secondary: 'border-l-secondary',
+	accent: 'border-l-accent',
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function renderGroupFolders() {
+	if (!groupFoldersListEl) return
+	const [data, groupListData] = await Promise.all([getGroupFolders(), getGroupList()])
+	const folders = Array.isArray(data.folders) ? data.folders : []
+	/** @type {Map<string, string>} groupId → 显示名称 */
+	const groupNameMap = new Map((groupListData.groups || []).map(g => [g.id, g.name || g.id]))
+	groupFoldersListEl.innerHTML = ''
+	if (!folders.length) {
+		const li = document.createElement('li')
+		li.className = 'text-xs opacity-50'
+		li.textContent = '—'
+		groupFoldersListEl.appendChild(li)
+		return
+	}
+	folders.forEach((folder, idx) => {
+		const li = document.createElement('li')
+		const colorKey = folder.color && FOLDER_COLOR_BORDER[folder.color] ? folder.color : 'neutral'
+		li.className = `border border-base-300 rounded-lg p-2 bg-base-100 border-l-4 pl-2 ${FOLDER_COLOR_BORDER[colorKey]}`
+		li.draggable = true
+		li.dataset.folderIndex = String(idx)
+		li.addEventListener('dragstart', e => {
+			e.dataTransfer.setData(FOLDER_REORDER_MIME, String(idx))
+			e.dataTransfer.effectAllowed = 'move'
+		})
+		li.addEventListener('dragover', e => {
+			e.preventDefault()
+			li.classList.add('outline', 'outline-2', 'outline-primary/40')
+		})
+		li.addEventListener('dragleave', () => {
+			li.classList.remove('outline', 'outline-2', 'outline-primary/40')
+		})
+		li.addEventListener('drop', async e => {
+			e.preventDefault()
+			li.classList.remove('outline', 'outline-2', 'outline-primary/40')
+			const fresh = await getGroupFolders()
+			const list = [...(fresh.folders || [])]
+			const gid = e.dataTransfer.getData(GROUP_DRAG_MIME)
+			if (gid) {
+				const f = list[idx]
+				if (!f) return
+				f.chatIds = [...new Set([...(f.chatIds || []), gid])]
+				await saveGroupFolders({ folders: list })
+				await renderGroupFolders()
+				return
+			}
+			const fromStr = e.dataTransfer.getData(FOLDER_REORDER_MIME)
+			if (fromStr === '') return
+			const from = Number(fromStr)
+			if (from === idx || Number.isNaN(from)) return
+			const next = [...list]
+			const [moved] = next.splice(from, 1)
+			const insertAt = from < idx ? idx - 1 : idx
+			next.splice(insertAt, 0, moved)
+			await saveGroupFolders({ folders: next })
+			await renderGroupFolders()
+		})
+
+		const head = document.createElement('div')
+		head.className = 'flex flex-wrap items-center gap-1 mb-1'
+		const title = document.createElement('div')
+		title.className = 'font-medium text-sm flex-1 min-w-0'
+		title.textContent = folder.name || folder.id
+		head.appendChild(title)
+		const renameBtn = document.createElement('button')
+		renameBtn.type = 'button'
+		renameBtn.className = 'btn btn-xs btn-ghost'
+		renameBtn.dataset.i18n = 'chat_history.renameFolder'
+		renameBtn.textContent = geti18n('chat_history.renameFolder')
+		renameBtn.addEventListener('click', async () => {
+			const next = globalThis.prompt(geti18n('chat_history.renameFolderPrompt'), folder.name || folder.id)
+			if (!next?.trim()) return
+			const fresh = await getGroupFolders()
+			const list = [...(fresh.folders || [])]
+			const f = list[idx]
+			if (!f) return
+			f.name = next.trim()
+			if (await saveGroupFolders({ folders: list }))
+				await renderGroupFolders()
+			else
+				showToastI18n('error', 'chat_history.groupFoldersSaveFailed')
+		})
+		head.appendChild(renameBtn)
+		const colorBtn = document.createElement('button')
+		colorBtn.type = 'button'
+		colorBtn.className = 'btn btn-xs btn-ghost'
+		colorBtn.title = geti18n('chat_history.folderColorCycle')
+		colorBtn.textContent = geti18n('chat_history.folderColorCycle')
+		colorBtn.addEventListener('click', async () => {
+			const order = ['neutral', 'primary', 'secondary', 'accent']
+			const cur = order.includes(folder.color) ? folder.color : 'neutral'
+			const ni = (order.indexOf(cur) + 1) % order.length
+			const fresh = await getGroupFolders()
+			const list = [...(fresh.folders || [])]
+			const f = list[idx]
+			if (!f) return
+			f.color = order[ni]
+			if (await saveGroupFolders({ folders: list }))
+				await renderGroupFolders()
+			else
+				showToastI18n('error', 'chat_history.groupFoldersSaveFailed')
+		})
+		head.appendChild(colorBtn)
+		li.appendChild(head)
+		const ul = document.createElement('ul')
+		ul.className = 'text-xs space-y-0.5 pl-1'
+		for (const cid of folder.chatIds || []) {
+			const item = document.createElement('li')
+			item.className = 'flex items-center gap-1 justify-between'
+			const a = document.createElement('a')
+			a.className = 'link link-hover truncate'
+			a.href = `/parts/shells:chat/#group:${cid}:default`
+			a.textContent = groupNameMap.get(cid) || cid
+			a.title = cid
+			item.appendChild(a)
+			const removeBtn = document.createElement('button')
+			removeBtn.type = 'button'
+			removeBtn.className = 'btn btn-xs btn-ghost shrink-0'
+			removeBtn.title = geti18n('chat_history.removeFromFolder')
+			removeBtn.setAttribute('aria-label', geti18n('chat_history.removeFromFolder'))
+			removeBtn.textContent = '×'
+			removeBtn.addEventListener('click', async () => {
+				const fresh = await getGroupFolders()
+				const list = [...(fresh.folders || [])]
+				const f = list[idx]
+				if (!f) return
+				f.chatIds = (f.chatIds || []).filter(id => id !== cid)
+				if (await saveGroupFolders({ folders: list }))
+					await renderGroupFolders()
+				else
+					showToastI18n('error', 'chat_history.groupFoldersSaveFailed')
+			})
+			item.appendChild(removeBtn)
+			ul.appendChild(item)
+		}
+		li.appendChild(ul)
+		groupFoldersListEl.appendChild(li)
+	})
+}
+
+async function renderGroupLinks() {
+	if (!groupLinksEl) return
+	const { groups = [] } = await getGroupList()
+	groupLinksEl.innerHTML = ''
+	for (const { id: gid, name } of groups) {
+		const li = document.createElement('li')
+		const a = document.createElement('a')
+		a.className = 'link link-primary'
+		a.href = `/parts/shells:chat/#group:${gid}:default`
+		a.textContent = name || gid
+		a.title = geti18n('chat_history.openGroup')
+		a.draggable = true
+		a.addEventListener('dragstart', e => {
+			e.dataTransfer.setData(GROUP_DRAG_MIME, gid)
+			e.dataTransfer.effectAllowed = 'copy'
+		})
+		li.appendChild(a)
+		groupLinksEl.appendChild(li)
+	}
+	if (!groups.length) {
+		const li = document.createElement('li')
+		li.className = 'opacity-60'
+		li.textContent = '—'
+		groupLinksEl.appendChild(li)
+	}
+}
+
+newDmButton?.addEventListener('click', async () => {
+	const r = await createDmRoom()
+	if (r.groupId)
+		globalThis.location.href = `/parts/shells:chat/#group:${r.groupId}:default`
+	else
+		showToastI18n('error', 'chat.group.createFailed')
+})
+
+document.getElementById('qr-transfer-button')?.addEventListener('click', async () => {
+	const { showQrTransferModal } = await import('../src/qrTransferSender.mjs')
+	showQrTransferModal().catch(console.error)
+})
+
+addGroupFolderBtn?.addEventListener('click', async () => {
+	const name = globalThis.prompt(geti18n('chat_history.newFolderPrompt'), '')
+	if (!name?.trim()) return
+	const data = await getGroupFolders()
+	const folders = Array.isArray(data.folders) ? [...data.folders] : []
+	const id = `f_${Date.now().toString(36)}`
+	folders.push({ id, name: name.trim(), chatIds: [] })
+	if (await saveGroupFolders({ folders }))
+		await renderGroupFolders()
+	else
+		showToastI18n('error', 'chat_history.groupFoldersSaveFailed')
+})
+
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history')
 
 	fullChatList = await getChatList()
+	await renderGroupLinks()
+	await renderGroupFolders()
 	currentFilteredList = fullChatList
 
 	makeSearchable({
@@ -413,6 +625,8 @@ async function initializeApp() {
 	await onLanguageChange(() => {
 		chatItemDOMCache.clear()
 		renderUI()
+		renderGroupLinks()
+		renderGroupFolders()
 	})
 
 	// Add drag-and-drop import listeners

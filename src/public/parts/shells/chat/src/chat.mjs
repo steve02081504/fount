@@ -20,6 +20,7 @@ import { sendNotification } from '../../../../../server/web_server/event_dispatc
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
+import { appendGroupEvent, broadcastGroupEvent, deleteGroupData, ensureGroupForChat, listChannelMessages } from './groupChat.mjs'
 import { generateDiff, createBufferedSyncPreviewUpdater } from './stream.mjs'
 
 const activeStreams = new Map()
@@ -503,6 +504,11 @@ class chatLogEntry_t {
 class chatMetadata_t {
 	/** 此聊天所属的用户名。 */
 	username
+	/**
+	 * 为 true 时：会话消息以群 DAG（groupId===chatId）为权威存储，磁盘不重复保存主 chatLog（仅问候语 prelude + 时间切片快照）。
+	 * @type {boolean}
+	 */
+	groupDagPrimary = false
 	/** 主聊天记录，按时间顺序排列。 */
 	/** @type {chatLogEntry_t[]} */
 	chatLog = []
@@ -564,6 +570,7 @@ class chatMetadata_t {
 	toJSON() {
 		return {
 			username: this.username,
+			groupDagPrimary: !!this.groupDagPrimary,
 			chatLog: this.chatLog.map(log => log.toJSON()),
 			timeLines: this.timeLines.map(entry => entry.toJSON()),
 			timeLineIndex: this.timeLineIndex,
@@ -575,6 +582,18 @@ class chatMetadata_t {
 	 * @returns {Promise<object>} 一个包含可序列化数据的 Promise。
 	 */
 	async toData() {
+		if (this.groupDagPrimary) {
+			const prelude = this.chatLog.filter(e => e.timeSlice?.greeting_type)
+			return {
+				username: this.username,
+				groupDagPrimary: true,
+				chatLogPrelude: await Promise.all(prelude.map(async log => log.toData(this.username))),
+				persistedTimeSlice: await this.LastTimeSlice.toData(),
+				chatLog: [],
+				timeLines: [],
+				timeLineIndex: 0,
+			}
+		}
 		return {
 			username: this.username,
 			chatLog: await Promise.all(this.chatLog.map(async log => log.toData(this.username))),
@@ -589,8 +608,20 @@ class chatMetadata_t {
 	 * @returns {Promise<chatMetadata_t>} 一个填充了完整数据的 chatMetadata_t 实例。
 	 */
 	static async fromJSON(json) {
-		const chatLog = await Promise.all(json.chatLog.map(data => chatLogEntry_t.fromJSON(data, json.username)))
-		const timeLines = await Promise.all(json.timeLines.map(entry => chatLogEntry_t.fromJSON(entry, json.username)))
+		const groupDagPrimary = json.groupDagPrimary === true
+		const rawChatLog = Array.isArray(json.chatLog) ? json.chatLog : []
+		let chatLog
+		let needsHydration = false
+		if (groupDagPrimary && rawChatLog.length === 0) {
+			chatLog = await Promise.all((json.chatLogPrelude || []).map(data => chatLogEntry_t.fromJSON(data, json.username)))
+			needsHydration = true
+		}
+		else
+			chatLog = await Promise.all(rawChatLog.map(data => chatLogEntry_t.fromJSON(data, json.username)))
+
+		const timeLines = groupDagPrimary && rawChatLog.length === 0
+			? []
+			: await Promise.all((json.timeLines || []).map(entry => chatLogEntry_t.fromJSON(entry, json.username)))
 
 		// Clean up any "stuck" generating messages from a previous crash
 		for (const entry of chatLog)
@@ -599,12 +630,23 @@ class chatMetadata_t {
 		for (const entry of timeLines)
 			if (entry.is_generating) entry.is_generating = false
 
+		let LastTimeSlice
+		if (groupDagPrimary && rawChatLog.length === 0) {
+			LastTimeSlice = json.persistedTimeSlice
+				? await timeSlice_t.fromJSON(json.persistedTimeSlice, json.username)
+				: (chatLog.length ? chatLog[chatLog.length - 1].timeSlice : new timeSlice_t())
+		}
+		else
+			LastTimeSlice = chatLog.length ? chatLog[chatLog.length - 1].timeSlice : new timeSlice_t()
+
 		return Object.assign(new chatMetadata_t(), {
 			username: json.username,
+			groupDagPrimary,
 			chatLog,
 			timeLines,
 			timeLineIndex: json.timeLineIndex ?? 0,
-			LastTimeSlice: chatLog.length ? chatLog[chatLog.length - 1].timeSlice : new timeSlice_t()
+			LastTimeSlice,
+			_needsDagHydration: needsHydration,
 		})
 	}
 
@@ -638,13 +680,20 @@ export function findEmptyChatid() {
 }
 
 /**
- * 创建一个全新的聊天。
+ * 创建一个全新的聊天（每个会话即一个群，groupId === chatId）。
  * @param {string} username - 新聊天的所有者用户名。
+ * @param {{ name?: string, defaultChannelName?: string }} [options] - 群初始显示名等
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
-export async function newChat(username) {
+export async function newChat(username, options = {}) {
 	const chatid = findEmptyChatid()
 	await newMetadata(chatid, username)
+	const slot = chatMetadatas.get(chatid)
+	if (slot?.chatMetadata) slot.chatMetadata.groupDagPrimary = true
+	await ensureGroupForChat(username, chatid, {
+		name: options.name || '聊天',
+		defaultChannelName: options.defaultChannelName,
+	})
 	return chatid
 }
 
@@ -687,6 +736,81 @@ async function updateChatSummary(chatid, chatMetadata) {
 }
 
 /**
+ * 从 DAG default 频道行构造 chatLog 条目（用于 groupDagPrimary 冷启动重放）。
+ * @param {object} line
+ * @param {timeSlice_t} baseSlice
+ * @param {{ text?: string, fileCount?: number } | undefined} editOverride
+ */
+function buildChatLogEntryFromDagMessage(line, baseSlice, editOverride) {
+	const c = line.content || {}
+	const entry = new chatLogEntry_t()
+	entry.id = c.chatLogEntryId || line.eventId
+	const text = editOverride?.text != null ? editOverride.text : c.text
+	entry.content = text ?? ''
+	entry.role = c.role || 'user'
+	const charId = line.charId || c.charId
+	if (entry.role === 'char') {
+		entry.name = charId || 'char'
+		entry.timeSlice = baseSlice.copy()
+		entry.timeSlice.charname = charId
+	}
+	else if (entry.role === 'user') {
+		entry.name = 'user'
+		entry.timeSlice = baseSlice.copy()
+	}
+	else {
+		entry.name = line.sender || entry.role || 'system'
+		entry.timeSlice = baseSlice.copy()
+	}
+	const ts = line.timestamp ?? Date.now()
+	entry.time_stamp = new Date(ts).toISOString()
+	const fc = editOverride?.fileCount != null ? editOverride.fileCount : c.fileCount
+	if (fc != null) entry.extension = { ...entry.extension, dagFileCount: fc }
+	return entry
+}
+
+/**
+ * 将 default 频道消息重放进内存 chatLog（与 toData 省略主 chatLog 配对）。
+ * @param {string} username
+ * @param {string} chatid
+ * @param {chatMetadata_t} chatMetadata
+ */
+async function hydrateChatLogFromGroupDag(username, chatid, chatMetadata) {
+	const lines = await listChannelMessages(username, chatid, 'default', { limit: 500 })
+	const prelude = chatMetadata.chatLog.filter(e => e.timeSlice?.greeting_type)
+	const deleted = new Set()
+	/** @type {Map<string, { text?: string, fileCount?: number, _ts: number }>} */
+	const edits = new Map()
+	for (const line of lines) {
+		if (line.type === 'message_delete' && line.content?.chatLogEntryId)
+			deleted.add(line.content.chatLogEntryId)
+		if (line.type === 'message_edit' && line.content?.chatLogEntryId) {
+			const id = line.content.chatLogEntryId
+			const ts = Number(line.timestamp) || 0
+			const prev = edits.get(id)
+			if (!prev || ts >= prev._ts)
+				edits.set(id, { text: line.content.text, fileCount: line.content.fileCount, _ts: ts })
+		}
+	}
+	const dagEntries = []
+	for (const line of lines) {
+		if (line.type !== 'message') continue
+		const cid = line.content?.chatLogEntryId
+		if (!cid || deleted.has(cid)) continue
+		const ov = edits.get(cid)
+		dagEntries.push(buildChatLogEntryFromDagMessage(line, chatMetadata.LastTimeSlice, ov))
+	}
+	chatMetadata.chatLog = [...prelude, ...dagEntries].sort((a, b) =>
+		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
+	chatMetadata.timeLines = chatMetadata.chatLog.length
+		? [chatMetadata.chatLog[chatMetadata.chatLog.length - 1]]
+		: []
+	chatMetadata.timeLineIndex = 0
+	if (chatMetadata.chatLog.length)
+		chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1].timeSlice
+}
+
+/**
  * 将指定聊天的元数据保存到磁盘。
  * @param {string} chatid - 要保存的聊天ID。
  */
@@ -716,6 +840,12 @@ export async function loadChat(chatid) {
 		if (!fs.existsSync(filepath)) return undefined
 		chatData.chatMetadata = await chatMetadata_t.fromJSON(loadJsonFile(filepath))
 		chatMetadatas.set(chatid, chatData)
+	}
+	const { username } = chatData
+	await ensureGroupForChat(username, chatid)
+	if (chatData.chatMetadata._needsDagHydration) {
+		await hydrateChatLogFromGroupDag(username, chatid, chatData.chatMetadata)
+		delete chatData.chatMetadata._needsDagHydration
 	}
 	return chatData.chatMetadata
 }
@@ -1054,9 +1184,19 @@ export async function GetWorldName(chatid) {
  * @param {string} chatid - 聊天ID。
  * @param {Array<object>} freq_data - 频率数据。
  * @param {string} initial_char - 初始角色。
+ * @param {string | null} [preferCharName] - 用户消息以 `@该角色` 开头时优先由其回复（群聊 / 定频）。
  * @returns {Promise<chatLogEntry_t>} 已添加的聊天记录条目。
  */
-async function handleAutoReply(chatid, freq_data, initial_char) {
+async function handleAutoReply(chatid, freq_data, initial_char, preferCharName) {
+	if (preferCharName && freq_data.some(f => f.charname === preferCharName))
+		try {
+			await triggerCharReply(chatid, preferCharName)
+			return
+		}
+		catch (error) {
+			console.error(error)
+		}
+
 	let char = initial_char
 	while (true) {
 		freq_data = freq_data.filter(f => f.charname !== char)
@@ -1068,6 +1208,151 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 			console.error(error)
 			char = nextreply
 		} else return
+	}
+}
+
+/**
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t} entry
+ * @returns {string}
+ */
+function entryContentToMirrorText(entry) {
+	const c = entry.content
+	if (typeof c === 'string') return c
+	if (c && typeof c === 'object') return JSON.stringify(c)
+	return ''
+}
+
+/**
+ * 群 DAG（groupId === chatId）为权威时：向 `default`（或条目扩展中的频道）追加一条 message 事件。
+ * 非 groupDagPrimary 时与 chat JSON 并存（迁移期）；groupDagPrimary 时磁盘仅依赖 DAG + prelude。
+ * 流式占位、问候语等跳过；失败不抛出以免影响主聊天。
+ * @param {string} chatid
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t} entry
+ * @param {string | undefined} username 会话所有者（来自 `chatMetadatas`）
+ */
+async function syncChatLogEntryToGroupDag(chatid, entry, username) {
+	try {
+		if (entry.is_generating) return
+		if (entry.timeSlice?.greeting_type) return
+		if (!username) return
+		const text = entryContentToMirrorText(entry)
+		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
+		if (!text.trim() && !hasFiles) return
+		await ensureGroupForChat(username, chatid)
+		let ts = entry.time_stamp ? +new Date(entry.time_stamp) : Date.now()
+		if (!Number.isFinite(ts)) ts = Date.now()
+		let sender = 'user'
+		if (entry.role === 'char')
+			sender = entry.name || entry.timeSlice?.charname || 'char'
+		else if (entry.role === 'user')
+			sender = 'user'
+		else
+			sender = entry.name || entry.role || 'system'
+		const content = {
+			text: text.slice(0, 200_000),
+			chatLogEntryId: entry.id,
+			role: entry.role,
+		}
+		if (hasFiles) content.fileCount = entry.files.length
+		const groupCh = entry.extension?.groupChannelId
+		const channelIdForDag = typeof groupCh === 'string' && /^[\w.-]+$/.test(groupCh) && groupCh.length <= 128 ? groupCh : 'default'
+		await appendGroupEvent(username, chatid, {
+			type: 'message',
+			channelId: channelIdForDag,
+			sender,
+			timestamp: ts,
+			charId: entry.timeSlice?.charname,
+			content,
+		})
+	}
+	catch (e) {
+		console.error(e)
+	}
+}
+
+/**
+ * 主聊天删除消息 → 群 DAG `message_delete`（与曾镜像的 `chatLogEntryId` 对齐）。
+ * @param {string} chatid
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t | undefined} deletedEntry
+ * @param {string | undefined} username
+ */
+async function mirrorMessageDeleteToGroupDag(chatid, deletedEntry, username) {
+	try {
+		if (!deletedEntry?.id || !username) return
+		if (deletedEntry.timeSlice?.greeting_type) return
+		await ensureGroupForChat(username, chatid)
+		await appendGroupEvent(username, chatid, {
+			type: 'message_delete',
+			channelId: 'default',
+			sender: 'local',
+			timestamp: Date.now(),
+			content: { chatLogEntryId: deletedEntry.id },
+		})
+	}
+	catch (e) {
+		console.error(e)
+	}
+}
+
+/**
+ * 主聊天编辑消息 → 群 DAG `message_edit`（用编辑前条目的 id 关联原 message）。
+ * @param {string} chatid
+ * @param {string | undefined} originalEntryId
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t} entry 编辑后的条目
+ * @param {string | undefined} username
+ */
+async function mirrorMessageEditToGroupDag(chatid, originalEntryId, entry, username) {
+	try {
+		if (!originalEntryId || !username) return
+		if (entry.timeSlice?.greeting_type) return
+		const text = entryContentToMirrorText(entry)
+		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
+		await ensureGroupForChat(username, chatid)
+		const content = {
+			chatLogEntryId: originalEntryId,
+			text: text.slice(0, 200_000),
+		}
+		if (hasFiles) content.fileCount = entry.files.length
+		await appendGroupEvent(username, chatid, {
+			type: 'message_edit',
+			channelId: 'default',
+			sender: 'local',
+			timestamp: Date.now(),
+			content,
+		})
+	}
+	catch (e) {
+		console.error(e)
+	}
+}
+
+/**
+ * 主聊天赞/踩 → 群 DAG `message_feedback`（关联 `chatLogEntryId`）。
+ * @param {string} chatid
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t} entry
+ * @param {{ type: 'up'|'down'; content?: string }} feedback
+ * @param {string | undefined} username
+ */
+async function mirrorMessageFeedbackToGroupDag(chatid, entry, feedback, username) {
+	try {
+		if (!entry?.id || !username) return
+		if (entry.timeSlice?.greeting_type) return
+		if (!feedback?.type) return
+		await ensureGroupForChat(username, chatid)
+		await appendGroupEvent(username, chatid, {
+			type: 'message_feedback',
+			channelId: 'default',
+			sender: 'user',
+			timestamp: Date.now(),
+			content: {
+				chatLogEntryId: entry.id,
+				feedbackType: feedback.type,
+				feedbackContent: feedback.content,
+			},
+		})
+	}
+	catch (e) {
+		console.error(e)
 	}
 }
 
@@ -1098,6 +1383,9 @@ async function addChatLogEntry(chatid, entry) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	broadcastChatEvent(chatid, { type: 'message_added', payload: await entry.toData(chatMetadata.username) })
 
+	const owner = chatMetadatas.get(chatid)?.username
+	await syncChatLogEntryToGroupDag(chatid, entry, owner)
+
 	// If the message is from a character, send a push notification via the service worker.
 	if (entry.role === 'char')
 		sendNotification(chatMetadata.username, entry.name ?? 'Character', {
@@ -1109,10 +1397,20 @@ async function addChatLogEntry(chatid, entry) {
 		}, `/parts/shells:chat/#${chatid}`)
 
 	const freq_data = await getCharReplyFrequency(chatid)
+	let mentionTarget = null
+	if (entry.role === 'user') {
+		const c = entry.content
+		const text = typeof c === 'string' ? c : (c && typeof c === 'object' ? c.text : '')
+		if (typeof text === 'string') {
+			const mm = text.match(/^@([\w.-]+)(?:\s|$)/u)
+			if (mm?.[1] && chatMetadata.LastTimeSlice.chars[mm[1]])
+				mentionTarget = mm[1]
+		}
+	}
 	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
 		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
 	else
-		handleAutoReply(chatid, freq_data, entry.timeSlice.charname ?? null)
+		handleAutoReply(chatid, freq_data, entry.timeSlice.charname ?? null, mentionTarget)
 
 	return entry
 }
@@ -1125,8 +1423,38 @@ async function addChatLogEntry(chatid, entry) {
  * @param {chatLogEntry_t} placeholderEntry - 占位符消息条目。
  * @param {chatMetadata_t} chatMetadata - 聊天元数据。
  */
+/**
+ * @param {{ content?: string, content_for_show?: string }} reply
+ * @returns {string}
+ */
+function replyPreviewText(reply) {
+	if (!reply) return ''
+	if (typeof reply.content === 'string') return reply.content
+	if (reply.content_for_show != null) return String(reply.content_for_show)
+	return ''
+}
+
+/**
+ * 与群面板同频道对齐：取占位符前最近一条带 `groupChannelId` 的用户消息。
+ * @param {chatMetadata_t} chatMetadata
+ * @param {import('../decl/chatLog.ts').chatLogEntry_t} placeholderEntry
+ * @returns {string}
+ */
+function getGroupChannelForCharStream(chatMetadata, placeholderEntry) {
+	const idx = chatMetadata.chatLog.findIndex(e => e.id === placeholderEntry.id)
+	for (let i = idx - 1; i >= 0; i--) {
+		const e = chatMetadata.chatLog[i]
+		if (e.role === 'user' && e.extension?.groupChannelId) {
+			const g = String(e.extension.groupChannelId).trim()
+			if (/^[\w.-]+$/.test(g) && g.length <= 128) return g
+		}
+	}
+	return 'default'
+}
+
 async function executeGeneration(chatid, request, stream, placeholderEntry, chatMetadata) {
 	const entryId = placeholderEntry.id
+	const groupChannelForStream = getGroupChannelForCharStream(chatMetadata, placeholderEntry)
 
 	/**
 	 * 完成流式生成任务，将最终消息保存到聊天记录并广播更新。
@@ -1135,6 +1463,14 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 	 * @returns {Promise<object>} - 完成后的消息条目。
 	 */
 	const finalizeEntry = async (finalEntry, isError = false) => {
+		try {
+			broadcastGroupEvent(chatid, {
+				type: 'group_stream_end',
+				channelId: groupChannelForStream,
+				pendingStreamId: entryId,
+			})
+		}
+		catch { /* ignore */ }
 		stream.done()
 		finalEntry.id = entryId
 		finalEntry.is_generating = false
@@ -1160,6 +1496,10 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 			payload: { index: idx, entry: await finalEntry.toData(chatMetadata.username) },
 		})
 
+		const owner = chatMetadatas.get(chatid)?.username
+		if (!isError && !finalEntry.extension?.aborted)
+			await syncChatLogEntryToGroupDag(chatid, finalEntry, owner)
+
 		if (!isError && is_VividChat(chatMetadata)) saveChat(chatid)
 		return finalEntry
 	}
@@ -1169,14 +1509,44 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 			type: 'stream_start',
 			payload: { messageId: entryId },
 		})
+		try {
+			broadcastGroupEvent(chatid, {
+				type: 'group_stream_start',
+				channelId: groupChannelForStream,
+				pendingStreamId: entryId,
+				charId: request.char_id,
+			})
+		}
+		catch { /* ignore */ }
 
+		let prevVolatileText = ''
+		let volatileChunkSeq = 0
 		request.generation_options = {
 			/**
 			 * 预览更新器。
 			 * @param {import('../decl/chatLog.ts').chatReply_t} reply - 聊天回复对象。
 			 * @returns {void} 什么都没有。
 			 */
-			replyPreviewUpdater: reply => stream.update(reply),
+			replyPreviewUpdater: reply => {
+				stream.update(reply)
+				const t = replyPreviewText(reply)
+				const delta = t.slice(prevVolatileText.length)
+				if (delta) {
+					volatileChunkSeq++
+					try {
+						broadcastGroupEvent(chatid, {
+							type: 'group_stream_chunk',
+							channelId: groupChannelForStream,
+							pendingStreamId: entryId,
+							chunkSeq: volatileChunkSeq,
+							text: delta,
+							charId: request.char_id,
+						})
+					}
+					catch { /* ignore */ }
+					prevVolatileText = t
+				}
+			},
 			signal: stream.signal,
 			supported_functions: request.supported_functions,
 		}
@@ -1185,6 +1555,14 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 
 		if (result === null) {
 			stream.abort('Generation result was null.')
+			try {
+				broadcastGroupEvent(chatid, {
+					type: 'group_stream_end',
+					channelId: groupChannelForStream,
+					pendingStreamId: entryId,
+				})
+			}
+			catch { /* ignore */ }
 			const idx = chatMetadata.chatLog.findIndex(e => e.id === entryId)
 			if (idx !== -1) await deleteMessage(chatid, idx)
 			return
@@ -1208,7 +1586,6 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 	}
 	catch (e) {
 		if (e.name === 'AbortError') {
-			console.log(`Generation aborted for message ${entryId}: ${e.message}`)
 			placeholderEntry.is_generating = false
 			placeholderEntry.extension = { ...placeholderEntry.extension, aborted: true }
 			await finalizeEntry(placeholderEntry, false)
@@ -1447,6 +1824,12 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, per
 	new_timeSlice.playername = new_timeSlice.player_id
 	const { info } = (personaname ? await getPartDetails(username, `personas/${personaname}`) : undefined) || {}
 	const entry = new chatLogEntry_t()
+	const ext = { ...(result.extension || {}) }
+	if (typeof result.groupChannelId === 'string') {
+		const g = result.groupChannelId.trim().slice(0, 128)
+		if (g && /^[\w.-]+$/.test(g))
+			ext.groupChannelId = g
+	}
 	Object.assign(entry, {
 		name: result.name || info?.name || new_timeSlice.player_id || username,
 		avatar: result.avatar || info?.avatar,
@@ -1455,7 +1838,7 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, per
 		role: 'user',
 		time_stamp: new Date(),
 		files: result.files || [],
-		extension: result.extension || {}
+		extension: ext
 	})
 	return entry
 }
@@ -1595,7 +1978,12 @@ async function loadChatSummary(username, chatid) {
 
 	try {
 		const rawChatData = loadJsonFile(filepath)
-		const lastEntry = rawChatData.chatLog[rawChatData.chatLog.length - 1]
+		// groupDagPrimary 模式下 chatLog 为空数组，从 chatLogPrelude 取最后一条作为摘要
+		const chatLog = Array.isArray(rawChatData.chatLog) && rawChatData.chatLog.length > 0
+			? rawChatData.chatLog
+			: (Array.isArray(rawChatData.chatLogPrelude) ? rawChatData.chatLogPrelude : [])
+		const lastEntry = chatLog[chatLog.length - 1]
+		if (!lastEntry) return { chatid, chars: [], lastMessageSender: '', lastMessageSenderAvatar: null, lastMessageContent: '', lastMessageTime: new Date(0) }
 		const chars = lastEntry.timeSlice?.chars || []
 		return {
 			chatid,
@@ -1641,6 +2029,7 @@ export async function deleteChat(chatids, username) {
 	const deletePromises = chatids.map(async chatid => {
 		try {
 			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
+			await deleteGroupData(username, chatid)
 			chatMetadatas.delete(chatid)
 			delete summariesCache[chatid]
 			return { chatid, success: true, message: 'Chat deleted successfully' }
@@ -1751,6 +2140,9 @@ export async function deleteMessage(chatid, index) {
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	broadcastChatEvent(chatid, { type: 'message_deleted', payload: { index } })
+
+	const owner = chatMetadatas.get(chatid)?.username
+	await mirrorMessageDeleteToGroupDag(chatid, entry, owner)
 }
 
 /**
@@ -1765,6 +2157,8 @@ export async function editMessage(chatid, index, new_content) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
+
+	const originalEntryId = chatMetadata.chatLog[index].id
 
 	/**
 	 * 生成请求。
@@ -1820,6 +2214,9 @@ export async function editMessage(chatid, index, new_content) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	broadcastChatEvent(chatid, { type: 'message_edited', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 
+	const owner = chatMetadatas.get(chatid)?.username
+	await mirrorMessageEditToGroupDag(chatid, originalEntryId, entry, owner)
+
 	return entry
 }
 
@@ -1841,6 +2238,10 @@ export async function setMessageFeedback(chatid, index, feedback) {
 		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	broadcastChatEvent(chatid, { type: 'message_replaced', payload: { index, entry: await entry.toData(chatMetadata.username) } })
+
+	const owner = chatMetadatas.get(chatid)?.username
+	await mirrorMessageFeedbackToGroupDag(chatid, entry, feedback, owner)
+
 	return entry
 }
 

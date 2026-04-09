@@ -4,6 +4,7 @@ import { showToastI18n } from '../../../../../scripts/toast.mjs'
 import { initializeAchievements } from './achievements.mjs'
 import { addCharacter, setPersona, setWorld, addPlugin, getInitialData } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
+import { initGroupModeFromHash } from './groupMode.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
 import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
 import { initializeVirtualQueue } from './ui/virtualQueue.mjs'
@@ -88,6 +89,7 @@ export async function initializeChat() {
 	setupSidebar()
 	// This was in index.mjs, but it makes more sense here as it's part of the chat UI
 	initializeMessageInput()
+	await initGroupModeFromHash()
 
 	// Add global drag-and-drop support for x-fount-part
 	document.body.addEventListener('dragover', event => {

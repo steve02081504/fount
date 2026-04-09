@@ -16,6 +16,58 @@ export async function getChatList() {
 	}
 }
 
+/**
+ * 列出本账户下的分布式群组（含名称）。
+ * @returns {Promise<{ groupIds: string[], groups: Array<{id: string, name: string}> }>}
+ */
+export async function getGroupList() {
+	const response = await fetch('/api/parts/shells:chat/groups/list')
+	if (!response.ok)
+		return { groupIds: [], groups: [] }
+	const data = await response.json()
+	// 兼容旧接口（只有 groupIds 的响应）
+	if (!data.groups)
+		data.groups = (data.groupIds || []).map(id => ({ id, name: id }))
+	return data
+}
+
+/**
+ * 创建私聊房间（随机 groupId）。
+ * @returns {Promise<{ groupId?: string }>}
+ */
+export async function createDmRoom() {
+	const response = await fetch('/api/parts/shells:chat/groups/dm', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+	})
+	if (!response.ok)
+		return {}
+	return response.json()
+}
+
+/**
+ * 本地群组文件夹（shellData/chat/groupFolders.json）
+ * @returns {Promise<{ folders: Array<{ id: string, name: string, color?: string, chatIds: string[] }> }>}
+ */
+export async function getGroupFolders() {
+	const response = await fetch('/api/parts/shells:chat/groupFolders')
+	if (!response.ok)
+		return { folders: [] }
+	return response.json()
+}
+
+/**
+ * @param {{ folders: object[] }} body
+ */
+export async function saveGroupFolders(body) {
+	const response = await fetch('/api/parts/shells:chat/groupFolders', {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body),
+	})
+	return response.ok
+}
+
 import { getPartDetails } from '../../../../../scripts/parts.mjs'
 
 const char_details_cache = {}

@@ -110,6 +110,42 @@
 
 	<!-- Main Content -->
 	<main class="flex-grow flex flex-col items-center justify-start h-full lg:pt-4">
+		<div id="group-mode-panel" class="hidden container mx-auto w-full lg:w-3/4 px-2 lg:px-4 mb-2 border border-base-300 rounded-lg bg-base-200/50 p-3 flex flex-col lg:flex-row gap-3">
+			<div class="w-full lg:w-44 shrink-0">
+				<div class="text-sm font-bold mb-1" data-i18n="chat.group.channelsTitle"></div>
+				<ul id="group-channel-tree" class="menu menu-xs bg-base-100 rounded-md p-1"></ul>
+				<div class="text-xs font-semibold mt-2 mb-1" data-i18n="chat.group.bookmarksTitle"></div>
+				<ul id="group-bookmarks-list" class="menu menu-xs bg-base-100 rounded-md p-1 max-h-36 overflow-y-auto mb-1"></ul>
+				<button type="button" class="btn btn-xs btn-outline w-full mb-2" id="group-bookmark-add" data-i18n="chat.group.addBookmark"></button>
+				<button type="button" class="btn btn-xs btn-primary w-full" id="group-create-button" data-i18n="chat.group.createGroup"></button>
+				<button type="button" class="btn btn-xs btn-outline mt-1 w-full" id="group-new-channel-button" data-i18n="chat.group.newChannel"></button>
+			</div>
+			<div class="w-full lg:w-36 shrink-0 hidden lg:block">
+				<div class="text-sm font-bold mb-1" data-i18n="chat.group.members"></div>
+				<ul id="group-members-list" class="menu menu-xs"></ul>
+			</div>
+			<div class="flex-grow flex flex-col min-h-[12rem]">
+				<div id="group-av-panel" class="hidden flex-col gap-2 mb-2">
+					<div class="grid grid-cols-2 gap-2">
+						<video id="group-av-local" class="w-full rounded bg-base-300 max-h-40 aspect-video object-cover" playsinline muted></video>
+						<video id="group-av-remote" class="w-full rounded bg-base-300 max-h-40 aspect-video object-cover" playsinline></video>
+					</div>
+					<div class="flex flex-wrap gap-2">
+						<button type="button" id="group-av-start" class="btn btn-sm btn-primary" data-i18n="chat.group.avStart"></button>
+						<button type="button" id="group-av-mute" class="btn btn-sm" data-i18n="chat.group.avMute"></button>
+						<button type="button" id="group-av-swap" class="btn btn-sm" data-i18n="chat.group.avSwap"></button>
+						<button type="button" id="group-av-stop" class="btn btn-sm btn-outline" data-i18n="chat.group.avStop"></button>
+					</div>
+				</div>
+				<div id="group-messages" class="flex-grow overflow-y-auto border border-base-300 rounded-md p-2 text-sm bg-base-100 min-h-[8rem]"></div>
+				<div id="group-typing-indicator" class="text-xs text-base-content/70 hidden px-1 py-0.5 min-h-[1.25rem]" aria-live="polite"></div>
+				<div class="flex flex-wrap gap-2 mt-2 items-end">
+					<textarea id="group-message-input" class="textarea textarea-bordered flex-grow min-h-[3rem] text-sm" data-i18n="chat.group.inputPlaceholder"></textarea>
+					<button type="button" class="btn btn-primary btn-sm" id="group-send-button" data-i18n="chat.group.send"></button>
+					<button type="button" class="btn btn-secondary btn-sm" id="group-streaming-button" data-i18n="chat.group.streamTest"></button>
+				</div>
+			</div>
+		</div>
 		<!-- Chat Area -->
 		<div class="container mx-auto lg:p-4 w-full lg:w-3/4 flex flex-col h-full">
 			<div class="chat-container card card-border bg-base-100/60 shadow-xl h-full flex flex-col overflow-hidden">

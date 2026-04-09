@@ -32,6 +32,7 @@ import {
 	registerChatUiSocket
 } from './chat.mjs'
 import { addfile, getfile } from './files.mjs'
+import { setGroupEndpoints } from './groupEndpoints.mjs'
 
 /**
  * 为聊天功能设置API端点。
@@ -39,6 +40,7 @@ import { addfile, getfile } from './files.mjs'
  * @param {import('npm:websocket-express').Router} router - Express路由实例，用于附加端点。
  */
 export function setEndpoints(router) {
+	setGroupEndpoints(router)
 	router.ws('/ws/parts/shells\\:chat/ui/:chatid', authenticate, async (ws, req) => {
 		const { chatid } = req.params
 		registerChatUiSocket(chatid, ws)

@@ -1,6 +1,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
+import { isTrustedAuthor, trustAuthor } from '../trustedAuthors.mjs'
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'
@@ -62,6 +63,17 @@ function reportAsyncError(error) {
 }
 
 /**
+ * @param {string} s
+ */
+function escapeHtmlPlain(s) {
+	return String(s)
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+}
+
+/**
  * 获取或创建指定消息的渲染缓存对象。
  * @param {object} message - 消息对象
  * @returns {object} 渲染缓存
@@ -111,6 +123,10 @@ function enqueueDeletion(messageElement) {
  * @returns {Promise<string>} 完整 HTML 字符串
  */
 async function generateFullHtmlForMessage(message, cache) {
+	const rawMd = message.content_for_show || message.content
+	if (message.isRemote && message.authorPubKeyHash && !(await isTrustedAuthor(message.authorPubKeyHash)))
+		return `<!DOCTYPE html><html lang=""><head><meta charset="UTF-8"/><title>message</title></head><body><pre>${escapeHtmlPlain(rawMd)}</pre></body></html>`
+
 	return renderTemplateAsHtmlString('standalone_message', {
 		main_locale,
 		message,
@@ -133,12 +149,18 @@ async function generateFullHtmlForMessage(message, cache) {
  */
 export async function renderMessage(message) {
 	const cache = getMessageCache(message)
+	const rawMd = message.content_for_show || message.content
+	const authorHash = message.authorPubKeyHash
+	const remoteLocked = !!(message.isRemote && authorHash && !(await isTrustedAuthor(authorHash)))
+	const renderedContent = remoteLocked
+		? `<div class="remote-unsafe-msg text-sm"><p class="text-warning mb-1">${escapeHtmlPlain(geti18n('chat.group.remoteUnsafe'))}</p><pre class="whitespace-pre-wrap bg-base-200 p-2 rounded">${escapeHtmlPlain(rawMd)}</pre><button type="button" class="btn btn-xs btn-outline mt-2 trust-remote-author-btn">${escapeHtmlPlain(geti18n('chat.group.trustAuthor'))}</button></div>`
+		: await renderMarkdownAsString(rawMd, cache)
 
 	const preprocessedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		time_stamp: new Date(message.time_stamp).toLocaleString(),
-		content: await renderMarkdownAsString(message.content_for_show || message.content, cache),
+		content: renderedContent,
 	}
 
 	if (message.is_generating) {
@@ -167,6 +189,29 @@ export async function renderMessage(message) {
 	const messageElement = await renderTemplate('message_view', preprocessedMessage)
 	const messageContentElement = messageElement.querySelector('.message-content')
 	const messageMarkdownContent = message.content_for_show || message.content
+
+	if (remoteLocked && authorHash) {
+		const trustBtn = messageElement.querySelector('.trust-remote-author-btn')
+		const io = new IntersectionObserver((entries) => {
+			for (const e of entries) {
+				if (!trustBtn) continue
+				if (!e.isIntersecting) {
+					trustBtn.disabled = true
+					trustBtn.classList.add('opacity-50')
+				}
+				else {
+					trustBtn.disabled = false
+					trustBtn.classList.remove('opacity-50')
+				}
+			}
+		}, { threshold: 0.01 })
+		io.observe(messageElement)
+		trustBtn?.addEventListener('click', async () => {
+			await trustAuthor(authorHash)
+			const el = await renderMessage({ ...message })
+			messageElement.replaceWith(el)
+		})
+	}
 
 	// --- 拖放下载功能 ---
 	const standaloneMessageUrl = URL.createObjectURL(new Blob([await generateFullHtmlForMessage(message, cache)], { type: 'text/html' }))
@@ -338,7 +383,7 @@ export async function renderMessage(message) {
 			try {
 				const { time } = button.dataset
 				showToastI18n('info', 'chat.messageView.share.uploading')
-				const blob = new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' })
+				const blob = new Blob([await generateFullHtmlForMessage(message, cache)], { type: 'text/html' })
 				const link = await createShareLink(blob, `message-${message.id}.html`, time)
 
 				await navigator.clipboard.writeText(link)
