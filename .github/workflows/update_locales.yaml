@@ -5,14 +5,20 @@ permissions:
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'src/public/locales/**.json'
       - '**/home_registry.json'
       - '**/locales.json'
     tags-ignore:
       - '*'
-    branches:
-      - '*'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/public/locales/**.json'
+      - '**/home_registry.json'
+      - '**/locales.json'
   workflow_dispatch:
 
 jobs:
@@ -20,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
       - name: run script to update locale files
         run: |
           pip install deep_translator json5 pathspec
