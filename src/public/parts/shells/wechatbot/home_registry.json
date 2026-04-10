@@ -20,7 +20,7 @@
 			{
 				"info": "wechat_bots.home_char_interfaces.configure",
 				"level": 11,
-				"interface": "chat",
+				"interface": "wechat",
 				"url": "/parts/shells:wechatbot/?name=${name}&char=${name}",
 				"button": "<img src=\"https://api.iconify.design/simple-icons/wechat.svg\" class=\"text-icon\"/>"
 			}
