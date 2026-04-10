@@ -2,6 +2,27 @@ import { createHash, randomUUID } from 'node:crypto'
 import { access, mkdir, appendFile, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
+/** IP 限流：{ip} -> { count, resetAt } */
+const ipWsRequests = new Map()
+const IP_WS_WINDOW_MS = 60_000
+const IP_WS_MAX = 60
+
+/**
+ * WS 升级前 IP 限流检查（每分钟最多 60 次）。
+ * @param {string} ip
+ * @returns {boolean} true=允许，false=拒绝
+ */
+export function checkWsIpRateLimit(ip) {
+	const now = Date.now()
+	let entry = ipWsRequests.get(ip)
+	if (!entry || now > entry.resetAt) {
+		entry = { count: 0, resetAt: now + IP_WS_WINDOW_MS }
+		ipWsRequests.set(ip, entry)
+	}
+	entry.count++
+	return entry.count <= IP_WS_MAX
+}
+
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 import { loadShellData } from '../../../../../server/setting_loader.mjs'
 import {
@@ -80,7 +101,9 @@ export function verifyPowSolution(username, groupId, difficulty, powSolution) {
 
 /** 写入频道 messages/*.jsonl 的事件类型（与 appendGroupEvent 一致） */
 const PERSIST_MESSAGE_TYPES = new Set([
-	'message', 'message_edit', 'message_delete', 'message_feedback', 'vote_cast', 'pin_message', 'unpin_message',
+	'message', 'message_edit', 'message_delete', 'message_feedback',
+	'vote_cast', 'pin_message', 'unpin_message',
+	'reaction_add', 'reaction_remove',
 ])
 
 /**
@@ -134,6 +157,9 @@ async function broadcastAndPersistAfterSignedEvent(username, groupId, signPayloa
 	await appendFile(mp, `${JSON.stringify(msgLine)}\n`, 'utf8')
 	broadcastGroupEvent(groupId, { type: 'channel_message', channelId: ch, message: msgLine })
 	await rebuildAndSaveCheckpoint(username, groupId)
+	// 仅对普通消息触发 AI 定频自动回复（reaction/pin 等不触发）
+	if (signPayload.type === 'message')
+		void maybeAutoTriggerCharReply(username, groupId, ch).catch(() => {})
 }
 
 /**
@@ -810,7 +836,8 @@ export async function appendEncryptedMailboxBatch(username, groupId, body) {
 	if (!channelId) throw new Error('channelId required')
 	const { state } = await getGroupState(username, groupId)
 	const chMeta = state.channels.get(channelId)
-	if (chMeta?.isPrivate && state.members.size > 200) throw new Error('private mailbox: members exceed 200')
+	if (chMeta?.isPrivate && state.members.size > 200)
+		throw Object.assign(new Error('私密频道成员超过 200 人上限，请启用 MLS 插件（路线图 P1）或减少成员'), { code: 'MLS_REQUIRED', memberCount: state.members.size })
 	const lastAt = state.privateMailboxLastPostAt?.get(channelId) || 0
 	if (Date.now() - lastAt < 500) throw new Error('mailbox rate limited')
 	return appendGroupEvent(username, groupId, {
@@ -886,12 +913,119 @@ export async function appendFileUploadEvent(username, groupId, meta) {
  * @param {string} [sender]
  */
 export async function appendFileDeleteEvent(username, groupId, fileId, sender = 'local') {
+	// 吊销 aesKey
+	await deleteFileAesKey(username, groupId, fileId)
 	return appendGroupEvent(username, groupId, {
 		type: 'file_delete',
 		sender,
 		timestamp: Date.now(),
 		content: { fileId },
 	})
+}
+
+// ─── 文件 aesKey 安全存储（与 DAG 解耦，仅服务端持有）─────────────────────
+
+function aesKeysPath(username, groupId) {
+	return join(getUserDictionary(username), 'shells', 'chat', 'groups', groupId, 'aes_keys.json')
+}
+
+/**
+ * 存储 fileId → aesKeyHex（仅 home 节点调用，不写入 DAG）
+ * @param {string} username
+ * @param {string} groupId
+ * @param {string} fileId
+ * @param {string} aesKeyHex 256-bit AES key in hex
+ */
+export async function storeFileAesKey(username, groupId, fileId, aesKeyHex) {
+	const p = aesKeysPath(username, groupId)
+	await mkdir(join(p, '..'), { recursive: true })
+	let obj = {}
+	try { obj = JSON.parse(await readFile(p, 'utf8')) } catch { /* new */ }
+	obj[String(fileId)] = String(aesKeyHex)
+	await writeFile(p, JSON.stringify(obj, null, '\t'), 'utf8')
+}
+
+/**
+ * 读取 fileId 对应的 aesKeyHex
+ * @param {string} username
+ * @param {string} groupId
+ * @param {string} fileId
+ * @returns {Promise<string | null>}
+ */
+export async function getFileAesKey(username, groupId, fileId) {
+	try {
+		const obj = JSON.parse(await readFile(aesKeysPath(username, groupId), 'utf8'))
+		return typeof obj[fileId] === 'string' ? obj[fileId] : null
+	}
+	catch { return null }
+}
+
+/**
+ * 吊销 aesKey（file_delete 时调用）
+ * @param {string} username
+ * @param {string} groupId
+ * @param {string} fileId
+ */
+async function deleteFileAesKey(username, groupId, fileId) {
+	try {
+		const p = aesKeysPath(username, groupId)
+		const obj = JSON.parse(await readFile(p, 'utf8'))
+		delete obj[fileId]
+		await writeFile(p, JSON.stringify(obj, null, '\t'), 'utf8')
+	}
+	catch { /* ignore */ }
+}
+
+// ─── reaction 事件 ──────────────────────────────────────────────────────────
+
+/**
+ * reaction_add / reaction_remove DAG 事件。
+ * @param {string} username
+ * @param {string} groupId
+ * @param {{ type: 'reaction_add'|'reaction_remove', channelId: string, targetEventId: string, emoji: string, sender?: string, targetPubKeyHash?: string }} opts
+ */
+export async function appendReactionEvent(username, groupId, opts) {
+	const { type, channelId = 'default', targetEventId, emoji, sender = 'local', targetPubKeyHash } = opts
+	if (!targetEventId || !emoji) throw new Error('targetEventId and emoji required')
+	const content = { targetId: targetEventId, emoji }
+	if (type === 'reaction_remove' && targetPubKeyHash)
+		content.targetPubKeyHash = targetPubKeyHash
+	return appendGroupEvent(username, groupId, {
+		type,
+		channelId,
+		sender,
+		timestamp: Date.now(),
+		content,
+	})
+}
+
+// ─── AI 定频自动触发 ────────────────────────────────────────────────────────
+
+/** groupId → { lastTriggeredAt: number, msgCount: number } */
+const groupAutoFreqState = new Map()
+
+/**
+ * 在每条消息入库后调用：若群配置了 autoReplyFrequency，则按频率触发 AI 回复。
+ * @param {string} username
+ * @param {string} groupId
+ * @param {string} channelId
+ */
+export async function maybeAutoTriggerCharReply(username, groupId, channelId) {
+	try {
+		const { state } = await getGroupState(username, groupId)
+		const freq = Number(state.groupSettings?.autoReplyFrequency) || 0
+		if (freq <= 0) return
+		const key = `${groupId}\0${channelId}`
+		let s = groupAutoFreqState.get(key)
+		if (!s) { s = { lastTriggeredAt: 0, msgCount: 0 }; groupAutoFreqState.set(key, s) }
+		s.msgCount++
+		if (s.msgCount < freq) return
+		s.msgCount = 0
+		s.lastTriggeredAt = Date.now()
+		// 通过 WS 广播 ai_auto_trigger 消息，让前端调用生成（与 @mention 走相同路径）
+		broadcastGroupEvent(groupId, { type: 'ai_auto_trigger', channelId, groupId })
+	}
+	catch { /* ignore */ }
 }
 
 /**

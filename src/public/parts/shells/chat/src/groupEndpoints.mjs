@@ -17,8 +17,13 @@ import {
 	appendOwnerSuccessionBallot,
 	appendFileUploadEvent,
 	appendFileDeleteEvent,
+	appendReactionEvent,
 	getEffectivePermissions,
 	getGroupState,
+	getGroupStorage,
+	getFileAesKey,
+	storeFileAesKey,
+	checkWsIpRateLimit,
 	setPowChallengeForGroup,
 	listChannelMessages,
 	listUserGroups,
@@ -35,6 +40,11 @@ import { groupDefaultString } from './group_i18n_defaults.mjs'
  */
 export function setGroupEndpoints(router) {
 	router.ws('/ws/parts/shells\\:chat/group/:groupId', authenticate, async (ws, req) => {
+		const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown'
+		if (!checkWsIpRateLimit(ip)) {
+			ws.close(1008, 'rate limited')
+			return
+		}
 		const { groupId } = req.params
 		registerGroupSocket(groupId, ws)
 	})
@@ -260,6 +270,111 @@ export function setGroupEndpoints(router) {
 		const { groupId, fileId } = req.params
 		const ev = await appendFileDeleteEvent(username, groupId, decodeURIComponent(fileId))
 		res.status(200).json({ event: ev })
+	})
+
+	// --- reaction_add / reaction_remove ---
+	router.post('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/reactions', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId, channelId } = req.params
+		const body = req.body || {}
+		const type = body.remove ? 'reaction_remove' : 'reaction_add'
+		const ev = await appendReactionEvent(username, groupId, {
+			type,
+			channelId,
+			targetEventId: String(body.targetEventId || ''),
+			emoji: String(body.emoji || ''),
+			sender: body.sender || 'local',
+			targetPubKeyHash: body.targetPubKeyHash,
+		})
+		res.status(200).json({ event: ev })
+	})
+
+	// --- 群设置更新（含 autoReplyFrequency）---
+	router.put('/api/parts/shells\\:chat/groups/:groupId/settings', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId } = req.params
+		const body = req.body || {}
+		const ev = await appendGroupEvent(username, groupId, {
+			type: 'group_settings_update',
+			sender: body.sender || 'local',
+			timestamp: Date.now(),
+			content: body.settings || {},
+		})
+		res.status(200).json({ event: ev })
+	})
+
+	// --- 文件 aesKey 安全存储（home 节点认证信道）---
+	router.put('/api/parts/shells\\:chat/groups/:groupId/files/:fileId/aes-key', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId, fileId } = req.params
+		const { aesKeyHex } = req.body || {}
+		if (!aesKeyHex || typeof aesKeyHex !== 'string' || !/^[0-9a-fA-F]{64}$/u.test(aesKeyHex))
+			return res.status(400).json({ error: 'aesKeyHex must be 64 hex chars (256-bit)' })
+		await storeFileAesKey(username, groupId, decodeURIComponent(fileId), aesKeyHex)
+		res.status(200).json({ ok: true })
+	})
+
+	// --- 文件 chunk 上传（经存储插件）---
+	router.post('/api/parts/shells\\:chat/groups/:groupId/chunks', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId } = req.params
+		const body = req.body || {}
+		const { chunkHash, data } = body
+		if (!chunkHash || !data)
+			return res.status(400).json({ error: 'chunkHash and data (base64) required' })
+		const plugin = getGroupStorage(username)
+		const buf = new Uint8Array(Buffer.from(String(data), 'base64'))
+		const result = await plugin.putChunk(groupId, String(chunkHash), buf)
+		res.status(200).json({ storageLocator: result.storageLocator })
+	})
+
+	// --- 文件 chunk 下载（按 storageLocator）---
+	router.get('/api/parts/shells\\:chat/groups/:groupId/chunks', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId } = req.params
+		const locator = String(req.query.locator || '')
+		if (!locator)
+			return res.status(400).json({ error: 'locator query param required' })
+		const plugin = getGroupStorage(username)
+		const data = await plugin.getChunk(locator)
+		res.status(200).json({ data: Buffer.from(data).toString('base64') })
+	})
+
+	// --- 文件完整下载（取 aesKey + manifest，客户端解密）---
+	router.get('/api/parts/shells\\:chat/groups/:groupId/files/:fileId/meta', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId, fileId } = req.params
+		const { state } = await getGroupState(username, groupId)
+		const meta = state.fileIndex.get(decodeURIComponent(fileId))
+		if (!meta) return res.status(404).json({ error: 'file not found' })
+		const aesKeyHex = await getFileAesKey(username, groupId, decodeURIComponent(fileId))
+		res.status(200).json({ ...meta, aesKeyHex: aesKeyHex || null })
+	})
+
+	// --- DM 黑名单管理 ---
+	router.get('/api/parts/shells\\:chat/dm-blocklist', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const data = loadShellData(username, 'chat', 'dmBlocklist')
+		res.status(200).json({ blocked: Array.isArray(data?.blocked) ? data.blocked : [] })
+	})
+
+	router.put('/api/parts/shells\\:chat/dm-blocklist', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const blocked = Array.isArray(req.body?.blocked) ? req.body.blocked : []
+		saveShellData(username, 'chat', 'dmBlocklist', { blocked })
+		res.status(200).json({ ok: true })
+	})
+
+	router.post('/api/parts/shells\\:chat/dm-blocklist', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { pubKeyHash, groupId } = req.body || {}
+		const data = loadShellData(username, 'chat', 'dmBlocklist') || {}
+		const blocked = Array.isArray(data.blocked) ? [...data.blocked] : []
+		const entry = { pubKeyHash: pubKeyHash || null, groupId: groupId || null }
+		if (!blocked.some(e => e.pubKeyHash === entry.pubKeyHash && e.groupId === entry.groupId))
+			blocked.push(entry)
+		saveShellData(username, 'chat', 'dmBlocklist', { blocked })
+		res.status(200).json({ ok: true })
 	})
 
 	router.post('/api/parts/shells\\:chat/groups/:groupId/broadcast', authenticate, async (req, res) => {

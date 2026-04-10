@@ -170,13 +170,63 @@ function plainPreviewFromLine(ev) {
 /**
  * @param {object} line
  */
-function formatGroupMessageLine(line) {
-	if (line.type === 'vote_cast' || line.type === 'vote' || line.content?.ballotId || line.content?.kind === 'vote') {
+/**
+ * 从消息列表中重放计票
+ * @param {object[]} messages
+ * @param {string} voteMsgEventId
+ */
+function tallyVotes(messages, voteMsgEventId) {
+	/** @type {Map<string, string>} pubKeyHash/sender -> choice */
+	const byVoter = new Map()
+	for (const m of messages) {
+		if (m.type === 'vote_cast' && m.content?.ballotId === voteMsgEventId && m.content?.choice != null)
+			byVoter.set(m.sender || m.content.voter || m.eventId, String(m.content.choice))
+	}
+	/** @type {Map<string, number>} choice -> count */
+	const counts = new Map()
+	for (const choice of byVoter.values())
+		counts.set(choice, (counts.get(choice) || 0) + 1)
+	return counts
+}
+
+function formatGroupMessageLine(line, allMessages) {
+	if (line.type === 'vote_cast') {
+		const pv = geti18n('chat.group.msgPrefixVote')
+		const choice = line.content?.choice != null ? escapeHtml(String(line.content.choice)) : ''
+		return `[${pv}] ${geti18n('chat.group.voteCast')}: ${choice}`
+	}
+	if (line.content?.kind === 'vote') {
+		const pv = geti18n('chat.group.msgPrefixVote')
+		const q = escapeHtml(String(line.content.question || ''))
+		const opts = (line.content.options || [])
+		const counts = allMessages ? tallyVotes(allMessages, line.eventId) : new Map()
+		const total = [...counts.values()].reduce((a, b) => a + b, 0)
+		const optHtml = opts.map(o => {
+			const c = counts.get(String(o)) || 0
+			const pct = total ? Math.round(c * 100 / total) : 0
+			return `<div class="flex gap-2 items-center text-xs mt-0.5">
+				<span class="font-medium">${escapeHtml(String(o))}</span>
+				<span class="opacity-70">${c} (${pct}%)</span>
+			</div>`
+		}).join('')
+		let deadlineHtml = ''
+		if (line.content.deadline) {
+			const d = new Date(line.content.deadline)
+			const past = d < new Date()
+			deadlineHtml = `<div class="text-xs opacity-60 mt-0.5">${geti18n('chat.group.voteDeadline')}: ${d.toLocaleString()}${past ? ` [${geti18n('chat.group.voteEnded')}]` : ''}</div>`
+		}
+		return `<div class="vote-block">
+			<div class="font-semibold">[${pv}] ${q}</div>
+			${optHtml}${deadlineHtml}
+			<div class="text-xs opacity-50 mt-0.5">${geti18n('chat.group.voteTotal', { n: total })}</div>
+		</div>`
+	}
+	if (line.type === 'vote_cast' || line.type === 'vote' || line.content?.ballotId) {
 		const opts = (line.content?.options || []).map(o => escapeHtml(String(o))).join(' / ')
 		const choice = line.content?.choice != null ? escapeHtml(String(line.content.choice)) : ''
 		const pv = geti18n('chat.group.msgPrefixVote')
 		if (line.type === 'vote_cast')
-			return `[${pv}] ${geti18n('chat.group.voteCast')} ${choice}`
+			return `[${pv}] ${geti18n('chat.group.voteCast')}: ${choice}`
 		return `[${pv}] ${opts}`
 	}
 	if (line.type === 'sticker' || line.content?.stickerBase64)
@@ -279,6 +329,8 @@ async function applyGroupHash() {
 	let volatileStreamEl = null
 	/** @type {string | null} */
 	let volatileStreamId = null
+	/** NACK 追踪：pendingStreamId -> { expectedSeq, chunks: Map<number,string> } */
+	const streamNackState = new Map()
 
 	/** @type {Awaited<ReturnType<typeof startGroupAv>> | null} */
 	let avSession = null
@@ -358,7 +410,7 @@ async function applyGroupHash() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				payload: {
-					type: 'group_typing',
+					type: 'typing',
 					channelId,
 					sender: 'local_user',
 					clientId: wsClientId,
@@ -366,6 +418,9 @@ async function applyGroupHash() {
 			}),
 		}).catch(() => {})
 	}
+
+	/** 已被用户打开过的 channelIds（用于 syncScope:channel 懒加载判断） */
+	const openedChannels = new Set([channelId])
 
 	const loadState = async () => {
 		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state`)
@@ -377,6 +432,7 @@ async function applyGroupHash() {
 		tree.innerHTML = ''
 		lastChannels = data.channels || {}
 		lastChannelMeta = lastChannels[channelId] || null
+		// syncScope:channel 频道仅在用户打开时拉取，未打开的跳过预加载
 		const flat = flattenChannelTree(lastChannels)
 		for (const { id, meta, depth } of flat) {
 			const li = document.createElement('li')
@@ -437,7 +493,15 @@ async function applyGroupHash() {
 			if (last?.id) sessionStorage.setItem(key, last.id)
 		}
 		if (truncated)
-			showToastI18n('warning', 'chat.group.syncTruncated')
+			showToastI18n('warning', 'chat.group.syncTruncated', undefined,
+				geti18n('chat.group.syncTruncatedHint'))
+	}
+
+	const shouldLoadChannel = (chId) => {
+		const meta = lastChannels[chId]
+		// group 级别频道始终加载；channel 级别仅当用户打开过才加载
+		if (!meta || meta.syncScope !== 'channel') return true
+		return openedChannels.has(chId)
 	}
 
 	const loadBookmarks = async () => {
@@ -465,7 +529,112 @@ async function applyGroupHash() {
 			el.innerHTML = `<li class="text-xs opacity-50">—</li>`
 	}
 
+	// ─── 文件上传（AES-256-GCM 加密 + chunk 上传 + DAG event）──────────────
+
+	const uploadGroupFile = async (file) => {
+		if (!file) return
+		const MAX_INLINE = 1024 * 1024 // 1MB 以下 base64 内联
+		const toBase64 = buf => {
+			let s = ''
+			const bytes = new Uint8Array(buf)
+			for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i])
+			return btoa(s)
+		}
+		const hashHex = async buf => {
+			const ab = await crypto.subtle.digest('SHA-256', buf)
+			return Array.from(new Uint8Array(ab)).map(b => b.toString(16).padStart(2, '0')).join('')
+		}
+
+		if (file.size < MAX_INLINE) {
+			const ab = await file.arrayBuffer()
+			const b64 = toBase64(ab)
+			await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/message`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					reply: {
+						content: `[文件: ${escapeHtml(file.name)}]`,
+						groupChannelId: channelId,
+						fileInline: { name: file.name, mimeType: file.type, base64: b64 },
+					},
+				}),
+			}).catch(() => {})
+			return
+		}
+
+		// 大文件：AES-256-GCM 加密 → chunk 上传 → DAG file_upload + aesKey 存储
+		const rawKey = crypto.getRandomValues(new Uint8Array(32))
+		const aesKey = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', true, ['encrypt'])
+		const iv = crypto.getRandomValues(new Uint8Array(12))
+		const plainBuf = await file.arrayBuffer()
+		const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBuf)
+		const chunkHash = await hashHex(cipherBuf)
+		// 上传加密块
+		const uploadR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ chunkHash, data: toBase64(cipherBuf) }),
+		})
+		if (!uploadR.ok) { showToastI18n('error', 'chat.group.fileUploadFailed'); return }
+		const { storageLocator } = await uploadR.json()
+		const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('')
+		const fileId = crypto.randomUUID()
+		// DAG file_upload（不含 aesKey）
+		const evR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				fileId, name: file.name, size: file.size, mimeType: file.type,
+				chunkManifest: [{ chunkIndex: 0, chunkHash, storageLocator, ivHex }],
+			}),
+		})
+		if (!evR.ok) { showToastI18n('error', 'chat.group.fileUploadFailed'); return }
+		// 存储 aesKey（认证信道）
+		const aesKeyHex = Array.from(rawKey).map(b => b.toString(16).padStart(2, '0')).join('')
+		await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/aes-key`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ aesKeyHex }),
+		}).catch(() => {})
+		showToastI18n('success', 'chat.group.fileUploaded')
+		await loadMessages()
+	}
+
+	// ─── 文件下载（从 Checkpoint 取 aesKey + storageLocator 解密下载）────────
+
+	const downloadGroupFile = async (fileId, fileName) => {
+		const metaR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
+		if (!metaR.ok) { showToastI18n('error', 'chat.group.fileDownloadFailed'); return }
+		const meta = await metaR.json()
+		if (!meta.aesKeyHex || !Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) {
+			showToastI18n('error', 'chat.group.fileNoKey'); return
+		}
+		const rawKey = new Uint8Array(meta.aesKeyHex.match(/.{2}/gu).map(b => parseInt(b, 16)))
+		const aesKey = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['decrypt'])
+		const chunks = []
+		for (const chunk of meta.chunkManifest) {
+			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks?locator=${encodeURIComponent(chunk.storageLocator)}`)
+			if (!r.ok) { showToastI18n('error', 'chat.group.fileDownloadFailed'); return }
+			const { data: b64 } = await r.json()
+			const cipherBuf = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer
+			const iv = new Uint8Array(chunk.ivHex.match(/.{2}/gu).map(b => parseInt(b, 16)))
+			const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, cipherBuf)
+			chunks.push(new Uint8Array(plain))
+		}
+		const totalLen = chunks.reduce((a, c) => a + c.length, 0)
+		const out = new Uint8Array(totalLen)
+		let off = 0
+		for (const c of chunks) { out.set(c, off); off += c.length }
+		const blob = new Blob([out], { type: meta.mimeType || 'application/octet-stream' })
+		const url = URL.createObjectURL(blob)
+		const a = document.createElement('a')
+		a.href = url; a.download = fileName || meta.name || fileId
+		document.body.appendChild(a); a.click(); document.body.removeChild(a)
+		setTimeout(() => URL.revokeObjectURL(url), 10_000)
+	}
+
 	const loadMessages = async () => {
+		openedChannels.add(channelId)
 		const meta = lastChannelMeta
 		const sendBtn = document.getElementById('group-send-button')
 		if (meta?.type === 'list') {
@@ -566,7 +735,7 @@ async function applyGroupHash() {
 			header.textContent = m.sender || ''
 			const bubble = document.createElement('div')
 			bubble.className = bubbleClass
-			bubble.innerHTML = formatGroupMessageLine(m)
+			bubble.innerHTML = formatGroupMessageLine(m, merged)
 			main.appendChild(header)
 			main.appendChild(bubble)
 			const lateMs = 30_000
@@ -600,6 +769,181 @@ async function applyGroupHash() {
 				pinBtn.addEventListener('click', () => postPin(m.eventId, false))
 				actions.appendChild(pinBtn)
 			}
+
+			// vote 投票按钮
+			if (m.content?.kind === 'vote' && m.eventId) {
+				const voteDeadline = m.content?.deadline
+				const voteClosed = voteDeadline && new Date(voteDeadline) < new Date()
+				if (!voteClosed) {
+					const opts = m.content.options || []
+					const voteContainer = document.createElement('div')
+					voteContainer.className = 'flex flex-wrap gap-1 mt-1'
+					for (const opt of opts) {
+						const vBtn = document.createElement('button')
+						vBtn.type = 'button'
+						vBtn.className = 'btn btn-xs btn-outline'
+						vBtn.textContent = geti18n('chat.group.voteFor', { option: opt })
+						vBtn.addEventListener('click', async () => {
+							await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/events`, {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({
+									type: 'vote_cast',
+									channelId,
+									sender: 'local',
+									timestamp: Date.now(),
+									content: { ballotId: m.eventId, choice: opt },
+								}),
+							})
+							await loadMessages()
+						})
+						voteContainer.appendChild(vBtn)
+					}
+					main.appendChild(voteContainer)
+				}
+			}
+
+			// 书签按钮
+			if (m.eventId) {
+				const bookmarkBtn = document.createElement('button')
+				bookmarkBtn.type = 'button'
+				bookmarkBtn.className = 'btn btn-ghost btn-xs whitespace-nowrap min-h-8'
+				bookmarkBtn.textContent = '🔖'
+				bookmarkBtn.title = geti18n('chat.group.addBookmark')
+				bookmarkBtn.addEventListener('click', async () => {
+					const r0 = await fetch('/api/parts/shells:chat/bookmarks')
+					if (!r0.ok) return
+					const raw = await r0.json()
+					const arr = Array.isArray(raw) ? [...raw] : []
+					const exists = arr.some(e => e.groupId === groupId && e.eventId === m.eventId)
+					if (!exists) {
+						const preview = typeof m.content?.text === 'string' ? m.content.text.slice(0, 40) : m.eventId.slice(0, 12)
+						arr.push({ groupId, channelId, eventId: m.eventId, title: preview, href: `#group:${groupId}:${channelId}` })
+						await fetch('/api/parts/shells:chat/bookmarks', {
+							method: 'PUT',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ entries: arr }),
+						})
+						await loadBookmarks()
+					}
+					showToastI18n('success', 'chat.group.bookmarkAdded')
+				})
+				actions.appendChild(bookmarkBtn)
+			}
+
+			// reaction 按钮行
+			if (m.type === 'message' && m.eventId) {
+				const reactionRow = document.createElement('div')
+				reactionRow.className = 'flex flex-wrap gap-0.5 mt-1'
+				// 聚合已有 reaction
+				const reactionCounts = new Map()
+				for (const rm2 of merged) {
+					if (rm2.type === 'reaction_add' && rm2.content?.targetId === m.eventId) {
+						const em = rm2.content?.emoji || ''
+						reactionCounts.set(em, (reactionCounts.get(em) || 0) + 1)
+					}
+					if (rm2.type === 'reaction_remove' && rm2.content?.targetId === m.eventId) {
+						const em = rm2.content?.emoji || ''
+						const cur = reactionCounts.get(em) || 0
+						if (cur > 1) reactionCounts.set(em, cur - 1)
+						else reactionCounts.delete(em)
+					}
+				}
+				for (const [emoji, cnt] of reactionCounts) {
+					const btn = document.createElement('button')
+					btn.type = 'button'
+					btn.className = 'btn btn-xs btn-ghost min-h-0 h-6 px-1.5 py-0'
+					btn.textContent = `${emoji} ${cnt}`
+					btn.title = geti18n('chat.group.reactionRemove')
+					btn.addEventListener('click', async () => {
+						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ targetEventId: m.eventId, emoji, remove: true }),
+						})
+						await loadMessages()
+					})
+					reactionRow.appendChild(btn)
+				}
+				// 添加 reaction 按钮
+				const addBtn = document.createElement('button')
+				addBtn.type = 'button'
+				addBtn.className = 'btn btn-xs btn-ghost min-h-0 h-6 px-1.5 py-0 opacity-60'
+				addBtn.textContent = '😀+'
+				addBtn.title = geti18n('chat.group.reactionAdd')
+				addBtn.addEventListener('click', async () => {
+					const emoji = globalThis.prompt(geti18n('chat.group.reactionPrompt'), '👍')
+					if (!emoji?.trim()) return
+					await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ targetEventId: m.eventId, emoji: emoji.trim() }),
+					})
+					await loadMessages()
+				})
+				reactionRow.appendChild(addBtn)
+				if (reactionRow.childElementCount > 0)
+					main.appendChild(reactionRow)
+			}
+
+			// 一键保存他人贴纸/表情
+			if (m.content?.stickerBase64 || m.type === 'sticker') {
+				const saveBtn = document.createElement('button')
+				saveBtn.type = 'button'
+				saveBtn.className = 'btn btn-ghost btn-xs whitespace-nowrap min-h-8'
+				saveBtn.textContent = '💾'
+				saveBtn.title = geti18n('chat.group.saveSticker')
+				saveBtn.addEventListener('click', async () => {
+					const b64 = m.content?.stickerBase64
+					if (!b64) return
+					const r0 = await fetch('/api/parts/shells:chat/stickers')
+					const raw = r0.ok ? (await r0.json()) : []
+					const items = Array.isArray(raw) ? [...raw] : []
+					const name = m.content?.name || geti18n('chat.group.stickerDefaultName')
+					if (!items.some(s => s.base64 === b64)) {
+						items.push({ name, base64: b64, overlay: m.content?.overlay || null })
+						await fetch('/api/parts/shells:chat/stickers', {
+							method: 'PUT',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ items }),
+						})
+					}
+					showToastI18n('success', 'chat.group.stickerSaved')
+				})
+				actions.appendChild(saveBtn)
+			}
+
+			// DM 拉黑按钮（仅在远端消息上显示）
+			if (m.isRemote && m.sender) {
+				const blockBtn = document.createElement('button')
+				blockBtn.type = 'button'
+				blockBtn.className = 'btn btn-ghost btn-xs whitespace-nowrap min-h-8 opacity-60'
+				blockBtn.textContent = '🚫'
+				blockBtn.title = geti18n('chat.group.blockSender')
+				blockBtn.addEventListener('click', async () => {
+					if (!globalThis.confirm(geti18n('chat.group.blockConfirm', { sender: m.sender }))) return
+					await fetch('/api/parts/shells:chat/dm-blocklist', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ pubKeyHash: m.sender, groupId }),
+					})
+					dmBlocklist = [...dmBlocklist, { pubKeyHash: m.sender, groupId }]
+					showToastI18n('success', 'chat.group.blockAdded')
+				})
+				actions.appendChild(blockBtn)
+			}
+
+			// 文件下载按钮
+			if (m.content?.fileId && m.content?.name) {
+				const dlBtn = document.createElement('button')
+				dlBtn.type = 'button'
+				dlBtn.className = 'btn btn-xs btn-outline mt-1'
+				dlBtn.textContent = `⬇ ${escapeHtml(m.content.name)}`
+				dlBtn.title = geti18n('chat.group.fileDownload')
+				dlBtn.addEventListener('click', () => downloadGroupFile(m.content.fileId, m.content.name))
+				main.appendChild(dlBtn)
+			}
+
 			if (actions.childElementCount)
 				row.appendChild(actions)
 
@@ -623,7 +967,7 @@ async function applyGroupHash() {
 	groupWs.onmessage = ev => {
 		try {
 			const msg = JSON.parse(ev.data)
-			if (msg.type === 'group_typing' && msg.channelId === channelId) {
+			if ((msg.type === 'typing' || msg.type === 'group_typing') && msg.channelId === channelId) {
 				if (msg.clientId === wsClientId) return
 				if (typingIndicatorEl) {
 					typingIndicatorEl.textContent = geti18n('chat.group.remoteTyping', { name: msg.sender || '?' })
@@ -632,7 +976,7 @@ async function applyGroupHash() {
 					typingHideTimer = setTimeout(() => typingIndicatorEl.classList.add('hidden'), 3200)
 				}
 			}
-			if (msg.type === 'channel_message' && msg.channelId === channelId)
+			if (msg.type === 'channel_message' && msg.channelId === channelId && shouldLoadChannel(channelId))
 				loadMessages()
 			if (msg.type === 'dag_event') {
 				if (msg.event?.id)
@@ -641,8 +985,10 @@ async function applyGroupHash() {
 				loadBookmarks()
 			}
 			if (msg.type === 'group_stream_start' && msg.channelId === channelId) {
-				volatileStreamEl?.remove()
-				volatileStreamId = msg.pendingStreamId || null
+				const sid = msg.pendingStreamId || null
+				if (volatileStreamEl) volatileStreamEl.remove()
+				if (sid) streamNackState.delete(sid)
+				volatileStreamId = sid
 				volatileStreamEl = document.createElement('div')
 				volatileStreamEl.className = 'chat chat-start py-1 scroll-mt-3 border border-dashed border-primary/40 rounded-lg px-2 py-2 bg-base-200/40'
 				const head = document.createElement('div')
@@ -655,19 +1001,60 @@ async function applyGroupHash() {
 				volatileStreamEl.appendChild(body)
 				msgBox.appendChild(volatileStreamEl)
 				msgBox.scrollTop = msgBox.scrollHeight
+				if (sid)
+					streamNackState.set(sid, { expectedSeq: 1, chunks: new Map() })
 			}
 			if (msg.type === 'group_stream_chunk' && msg.channelId === channelId && msg.pendingStreamId === volatileStreamId) {
-				const body = volatileStreamEl?.querySelector('[data-volatile-body]')
-				if (body && typeof msg.text === 'string') {
-					body.textContent += msg.text
+				const sid = msg.pendingStreamId
+				const seq = Number(msg.chunkSeq ?? 0)
+				const st = streamNackState.get(sid)
+				const bodyEl = volatileStreamEl?.querySelector('[data-volatile-body]')
+				if (st && bodyEl && typeof msg.text === 'string') {
+					st.chunks.set(seq, msg.text)
+					// 发送 NACK 补齐缺口
+					for (let i = st.expectedSeq; i < seq; i++) {
+						if (!st.chunks.has(i))
+							groupWs?.send(JSON.stringify({ type: 'stream_chunk_nack', pendingStreamId: sid, missingSeq: i }))
+					}
+					// 按序渲染
+					while (st.chunks.has(st.expectedSeq)) {
+						bodyEl.textContent += st.chunks.get(st.expectedSeq)
+						st.chunks.delete(st.expectedSeq)
+						st.expectedSeq++
+					}
+					// 展示缺口提示
+					const hasGap = st.chunks.size > 0
+					let gapEl = bodyEl.nextSibling
+					if (hasGap) {
+						if (!gapEl || gapEl.dataset?.streamGap !== '1') {
+							gapEl = document.createElement('span')
+							gapEl.dataset.streamGap = '1'
+							gapEl.className = 'text-xs opacity-50 ml-1'
+							gapEl.textContent = ' …'
+							bodyEl.parentNode.insertBefore(gapEl, bodyEl.nextSibling)
+						}
+					}
+					else {
+						if (gapEl?.dataset?.streamGap === '1') gapEl.remove()
+					}
 					msgBox.scrollTop = msgBox.scrollHeight
 				}
 			}
 			if (msg.type === 'group_stream_end' && msg.channelId === channelId) {
+				if (volatileStreamId) streamNackState.delete(volatileStreamId)
 				volatileStreamEl?.remove()
 				volatileStreamEl = null
 				volatileStreamId = null
 				loadMessages()
+			}
+			// AI 定频自动触发
+			if (msg.type === 'ai_auto_trigger' && msg.channelId === channelId && msg.groupId === groupId) {
+				// 调用 chat 生成接口（与 @mention 走相同路径：向 chatId=groupId 发送空触发消息）
+				fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/message`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ reply: { content: '', groupChannelId: channelId, isAutoTrigger: true } }),
+				}).catch(() => {})
 			}
 		if (msg.type === 'webrtc_signal' && msg.channelId === channelId && avSession)
 			avSession.handleSignal(msg)
@@ -758,6 +1145,41 @@ async function applyGroupHash() {
 			postMessage()
 		}
 	}, { signal })
+
+	// 文件上传按钮
+	document.getElementById('group-file-button')?.addEventListener('click', () => {
+		document.getElementById('group-file-input')?.click()
+	}, { signal })
+	document.getElementById('group-file-input')?.addEventListener('change', async e => {
+		const files = Array.from(e.target.files || [])
+		for (const f of files) await uploadGroupFile(f)
+		e.target.value = ''
+	}, { signal })
+
+	// 投票创建按钮
+	document.getElementById('group-vote-button')?.addEventListener('click', async () => {
+		const question = globalThis.prompt(geti18n('chat.group.votePromptQuestion'), '')
+		if (!question?.trim()) return
+		const optInput = globalThis.prompt(geti18n('chat.group.votePromptOptions'), geti18n('chat.group.voteOptionDefault'))
+		if (!optInput?.trim()) return
+		const options = optInput.split(',').map(s => s.trim()).filter(Boolean)
+		if (options.length < 2) { showToastI18n('warning', 'chat.group.voteTooFewOptions'); return }
+		const deadlineInput = globalThis.prompt(geti18n('chat.group.votePromptDeadline'), '')
+		const deadline = deadlineInput ? new Date(deadlineInput).getTime() : null
+		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/events`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				type: 'message',
+				channelId,
+				sender: 'local',
+				timestamp: Date.now(),
+				content: { kind: 'vote', question, options, deadline, votes: {} },
+			}),
+		})
+		if (!r.ok) showToastI18n('error', 'chat.group.voteCreateFailed')
+		else await loadMessages()
+	}, { signal })
 	input?.addEventListener('input', () => {
 		updateMentionPopover()
 		sendTypingBroadcast()
@@ -806,6 +1228,17 @@ async function applyGroupHash() {
 /**
  * @returns {Promise<void>}
  */
+/** DM 拉黑列表（本地缓存，sessionStorage 为辅） */
+let dmBlocklist = []
+async function loadDmBlocklist() {
+	try {
+		const r = await fetch('/api/parts/shells:chat/dm-blocklist')
+		if (r.ok) dmBlocklist = (await r.json()).blocked || []
+	}
+	catch { /* ignore */ }
+}
+loadDmBlocklist()
+
 export async function initGroupModeFromHash() {
 	if (!listenersBound) {
 		listenersBound = true
