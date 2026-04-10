@@ -52,11 +52,9 @@ import {
 	getEffectivePermissions,
 	getState,
 	listChannelMessages,
-	listUserGroups,
 	listUserGroupsWithMeta,
 	syncEvents,
 	updateChannel,
-	rebuildAndSaveCheckpoint,
 } from './chat/dag.mjs'
 import {
 	getBufferedChunk,
@@ -116,30 +114,60 @@ export function setEndpoints(router) {
 		registerChatUiSocket(chatid, ws)
 	})
 
-	// ─── 群组列表 ────────────────────────────────────────────────────────────
+	// ─── 列表 ────────────────────────────────────────────────────────────────
 
+	router.get('/api/parts/shells\\:chat/list', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const groups = await listUserGroupsWithMeta(username)
+		res.status(200).json({ groupIds: groups.map(g => g.id), groups })
+	})
+
+	// 向后兼容别名
 	router.get('/api/parts/shells\\:chat/groups/list', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const groups = await listUserGroupsWithMeta(username)
 		res.status(200).json({ groupIds: groups.map(g => g.id), groups })
 	})
 
+	// ─── 新建聊天/群组（统一入口） ────────────────────────────────────────────
+
+	router.post('/api/parts/shells\\:chat/new', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const body = req.body || {}
+		const chatid = await newChat(username, {
+			name: body.name,
+			defaultChannelName: body.defaultChannelName,
+		})
+		res.status(200).json({ chatid, groupId: chatid })
+	})
+
+	// 向后兼容别名
 	router.post('/api/parts/shells\\:chat/groups', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const body = req.body || {}
-		const chatid = await newChat(username, { name: body.name || '聊天', defaultChannelName: body.defaultChannelName })
+		const chatid = await newChat(username, {
+			name: body.name || '聊天',
+			defaultChannelName: body.defaultChannelName,
+		})
 		res.status(200).json({ groupId: chatid, chatid })
 	})
 
+	router.post('/api/parts/shells\\:chat/dm', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const chatid = await newChat(username, { name: geti18n('chat.group.defaults.dmDmName') })
+		res.status(200).json({ groupId: chatid, chatid })
+	})
+
+	// 向后兼容别名
 	router.post('/api/parts/shells\\:chat/groups/dm', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const chatid = await newChat(username, { name: geti18n('chat.group.defaults.dmDmName') })
 		res.status(200).json({ groupId: chatid, chatid })
 	})
 
-	// ─── 群组状态 ────────────────────────────────────────────────────────────
+	// ─── 群/聊天状态 ──────────────────────────────────────────────────────────
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/state', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/state', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const s = await getState(username, groupId)
@@ -147,6 +175,7 @@ export function setEndpoints(router) {
 			order: s.order,
 			checkpoint: s.checkpoint,
 			groupMeta: s.state.groupMeta,
+			groupSettings: s.state.groupSettings,
 			channels: Object.fromEntries(s.state.channels),
 			privateMailboxEpochs: Object.fromEntries(s.state.privateMailboxEpochs ?? new Map()),
 			ownerHeartbeats: Object.fromEntries(s.state.ownerHeartbeats ?? new Map()),
@@ -160,14 +189,14 @@ export function setEndpoints(router) {
 		})
 	})
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/checkpoint', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/checkpoint', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const { checkpoint } = await getState(username, groupId)
 		res.status(200).json(checkpoint || {})
 	})
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/members/page/:pageIndex', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/members/page/:pageIndex', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, pageIndex } = req.params
 		const idx = Math.max(0, Number(pageIndex) || 0)
@@ -188,14 +217,14 @@ export function setEndpoints(router) {
 
 	// ─── DAG 事件 ────────────────────────────────────────────────────────────
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/events', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/events', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const r = await syncEvents(username, groupId, req.query)
 		res.status(200).json(r)
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/events', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/events', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -210,7 +239,7 @@ export function setEndpoints(router) {
 
 	// ─── 频道消息 ────────────────────────────────────────────────────────────
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/messages', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/channels/:channelId/messages', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const list = await listChannelMessages(username, groupId, channelId, req.query)
@@ -219,7 +248,7 @@ export function setEndpoints(router) {
 
 	// ─── 频道 CRUD ───────────────────────────────────────────────────────────
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/channels', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/channels', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -239,7 +268,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev, channelId: cid })
 	})
 
-	router.put('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId', authenticate, async (req, res) => {
+	router.put('/api/parts/shells\\:chat/:groupId/channels/:channelId', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const b = req.body || {}
@@ -255,14 +284,14 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.delete('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId', authenticate, async (req, res) => {
+	router.delete('/api/parts/shells\\:chat/:groupId/channels/:channelId', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const ev = await deleteChannel(username, groupId, channelId)
 		res.status(200).json({ event: ev })
 	})
 
-	router.put('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/permissions', authenticate, async (req, res) => {
+	router.put('/api/parts/shells\\:chat/:groupId/channels/:channelId/permissions', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const body = req.body || {}
@@ -283,7 +312,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.put('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/list-items', authenticate, async (req, res) => {
+	router.put('/api/parts/shells\\:chat/:groupId/channels/:channelId/list-items', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const items = req.body?.items
@@ -293,7 +322,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/pin', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/channels/:channelId/pin', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const targetEventId = req.body?.targetEventId
@@ -305,7 +334,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/channels/:parentChannelId/threads', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/channels/:parentChannelId/threads', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, parentChannelId } = req.params
 		const body = req.body || {}
@@ -321,7 +350,7 @@ export function setEndpoints(router) {
 
 	// ─── PoW ────────────────────────────────────────────────────────────────
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/pow-challenge', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/pow-challenge', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const { state } = await getState(username, groupId)
@@ -333,7 +362,7 @@ export function setEndpoints(router) {
 
 	// ─── 私密频道 / 群主管理 ─────────────────────────────────────────────────
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/mailbox-batch', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/mailbox-batch', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -341,7 +370,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/owner-heartbeat', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/owner-heartbeat', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -349,7 +378,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/owner-succession-ballot', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/owner-succession-ballot', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -359,21 +388,21 @@ export function setEndpoints(router) {
 
 	// ─── 群文件 ──────────────────────────────────────────────────────────────
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/files', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/files', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const ev = await appendFileUploadEvent(username, groupId, req.body || {})
 		res.status(200).json({ event: ev })
 	})
 
-	router.delete('/api/parts/shells\\:chat/groups/:groupId/files/:fileId', authenticate, async (req, res) => {
+	router.delete('/api/parts/shells\\:chat/:groupId/files/:fileId', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, fileId } = req.params
 		const ev = await appendFileDeleteEvent(username, groupId, decodeURIComponent(fileId))
 		res.status(200).json({ event: ev })
 	})
 
-	router.put('/api/parts/shells\\:chat/groups/:groupId/files/:fileId/aes-key', authenticate, async (req, res) => {
+	router.put('/api/parts/shells\\:chat/:groupId/files/:fileId/aes-key', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, fileId } = req.params
 		const { aesKeyHex } = req.body || {}
@@ -383,7 +412,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ ok: true })
 	})
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/files/:fileId/meta', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/files/:fileId/meta', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, fileId } = req.params
 		const { state } = await getState(username, groupId)
@@ -393,7 +422,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ ...meta, aesKeyHex: aesKeyHex || null })
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/chunks', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/chunks', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -406,9 +435,8 @@ export function setEndpoints(router) {
 		res.status(200).json({ storageLocator: result.storageLocator })
 	})
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/chunks', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/chunks', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { groupId } = req.params
 		const locator = String(req.query.locator || '')
 		if (!locator)
 			return res.status(400).json({ error: 'locator query param required' })
@@ -419,7 +447,7 @@ export function setEndpoints(router) {
 
 	// ─── Reaction ────────────────────────────────────────────────────────────
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/channels/:channelId/reactions', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/channels/:channelId/reactions', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId, channelId } = req.params
 		const body = req.body || {}
@@ -435,9 +463,9 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
-	// ─── 群设置 ──────────────────────────────────────────────────────────────
+	// ─── 群设置（含默认频道） ─────────────────────────────────────────────────
 
-	router.put('/api/parts/shells\\:chat/groups/:groupId/settings', authenticate, async (req, res) => {
+	router.put('/api/parts/shells\\:chat/:groupId/settings', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const body = req.body || {}
@@ -450,9 +478,29 @@ export function setEndpoints(router) {
 		res.status(200).json({ event: ev })
 	})
 
+	// ─── 设置默认频道快捷端点 ─────────────────────────────────────────────────
+
+	router.put('/api/parts/shells\\:chat/:groupId/default-channel', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId } = req.params
+		const { channelId } = req.body || {}
+		if (!channelId || typeof channelId !== 'string')
+			return res.status(400).json({ error: 'channelId required' })
+		const { state } = await getState(username, groupId)
+		if (!state.channels.has(channelId))
+			return res.status(404).json({ error: 'channel not found' })
+		const ev = await appendEvent(username, groupId, {
+			type: 'group_settings_update',
+			sender: 'local',
+			timestamp: Date.now(),
+			content: { defaultChannelId: channelId },
+		})
+		res.status(200).json({ event: ev, defaultChannelId: channelId })
+	})
+
 	// ─── WS 广播 ─────────────────────────────────────────────────────────────
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/broadcast', authenticate, async (req, res) => {
+	router.post('/api/parts/shells\\:chat/:groupId/broadcast', authenticate, (req, res) => {
 		const { groupId } = req.params
 		broadcastEvent(groupId, req.body?.payload || {})
 		res.status(200).json({ ok: true })
@@ -460,7 +508,7 @@ export function setEndpoints(router) {
 
 	// ─── 权限查询 ────────────────────────────────────────────────────────────
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/permissions', authenticate, async (req, res) => {
+	router.get('/api/parts/shells\\:chat/:groupId/permissions', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
 		const { pubKeyHash, channelId } = req.query
@@ -698,10 +746,7 @@ export function setEndpoints(router) {
 		res.status(200).json({ success: true })
 	})
 
-	router.post('/api/parts/shells\\:chat/new', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		res.status(200).json({ chatid: await newChat(username) })
-	})
+	// ─── 聊天列表与管理（向后兼容） ──────────────────────────────────────────
 
 	router.get('/api/parts/shells\\:chat/getchatlist', authenticate, async (req, res) => {
 		res.status(200).json(await getChatList((await getUserByReq(req)).username))

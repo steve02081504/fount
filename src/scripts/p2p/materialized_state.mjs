@@ -20,6 +20,8 @@ export function emptyMaterializedState() {
 			fileQuotaBytes: 2 * 1024 * 1024 * 1024,
 			fileUploadPolicy: 'all_members',
 			lateMessageFreezeMs: 30_000,
+			/** @type {string | null} 群默认频道 ID；null 时回退到 'default' */
+			defaultChannelId: null,
 		},
 		home_node_id: '',
 		banned: new Set(),

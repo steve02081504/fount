@@ -337,16 +337,24 @@ export async function createGroup(username, body) {
 	await mkdir(chatDir(username, chatId), { recursive: true })
 	await writeFile(eventsPath(username, chatId), `${JSON.stringify(signPayload)}\n`, 'utf8')
 
+	const initialChannelId = body.defaultChannelId || 'default'
 	await appendEvent(username, chatId, {
 		type: 'channel_create',
 		sender: 'local',
 		timestamp: Date.now(),
 		content: {
-			channelId: 'default',
-			type: 'text',
+			channelId: initialChannelId,
+			type: body.defaultChannelType || 'text',
 			name: body.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
 			syncScope: 'group',
 		},
+	})
+
+	await appendEvent(username, chatId, {
+		type: 'group_settings_update',
+		sender: 'local',
+		timestamp: Date.now(),
+		content: { defaultChannelId: initialChannelId },
 	})
 
 	const s = await getState(username, chatId)
@@ -961,6 +969,25 @@ export async function listUserGroupsWithMeta(username) {
 
 export function getNodeId() {
 	return NODE_ID
+}
+
+/**
+ * 获取群组的默认频道 ID（优先 groupSettings.defaultChannelId，否则取第一个频道或 'default'）
+ * @param {string} username
+ * @param {string} chatId
+ * @returns {Promise<string>}
+ */
+export async function getDefaultChannelId(username, chatId) {
+	try {
+		const { state } = await getState(username, chatId)
+		if (state.groupSettings?.defaultChannelId)
+			return String(state.groupSettings.defaultChannelId)
+		const firstChannel = state.channels.keys().next().value
+		return firstChannel || 'default'
+	}
+	catch {
+		return 'default'
+	}
 }
 
 /**

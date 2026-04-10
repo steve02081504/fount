@@ -311,7 +311,23 @@ async function applyGroupHash() {
 	mainChat?.classList.add('hidden')
 
 	panel.classList.remove('hidden')
-	const { groupId, channelId } = parsed
+	let { groupId, channelId } = parsed
+
+	// 若 channelId 是 'default' 且群有配置默认频道，则重定向到正确的默认频道
+	if (channelId === 'default') {
+		try {
+			const stateR = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/state`)
+			if (stateR.ok) {
+				const stateData = await stateR.json()
+				const configuredDefault = stateData.groupSettings?.defaultChannelId
+				if (configuredDefault && configuredDefault !== 'default') {
+					location.hash = `group:${groupId}:${configuredDefault}`
+					return
+				}
+			}
+		}
+		catch { /* ignore，使用 'default' 继续 */ }
+	}
 
 	/** @type {Record<string, object>} */
 	let lastChannels = {}
@@ -405,7 +421,7 @@ async function applyGroupHash() {
 		const now = Date.now()
 		if (now - lastTypingPost < 2200) return
 		lastTypingPost = now
-		fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/broadcast`, {
+		fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/broadcast`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -422,13 +438,16 @@ async function applyGroupHash() {
 	/** 已被用户打开过的 channelIds（用于 syncScope:channel 懒加载判断） */
 	const openedChannels = new Set([channelId])
 
+	let lastGroupSettings = {}
+
 	const loadState = async () => {
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state`)
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/state`)
 		if (!r.ok) {
 			showToastI18n('error', 'chat.group.loadError')
 			return
 		}
 		const data = await r.json()
+		lastGroupSettings = data.groupSettings || {}
 		tree.innerHTML = ''
 		lastChannels = data.channels || {}
 		lastChannelMeta = lastChannels[channelId] || null
@@ -485,7 +504,7 @@ async function applyGroupHash() {
 		const since = sessionStorage.getItem(key) || ''
 		const qs = new URLSearchParams({ limit: '120' })
 		if (since) qs.set('since', since)
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/events?${qs}`)
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/events?${qs}`)
 		if (!r.ok) return
 		const { events, truncated } = await r.json()
 		if (Array.isArray(events) && events.length) {
@@ -570,7 +589,7 @@ async function applyGroupHash() {
 		const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBuf)
 		const chunkHash = await hashHex(cipherBuf)
 		// 上传加密块
-		const uploadR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks`, {
+		const uploadR = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/chunks`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ chunkHash, data: toBase64(cipherBuf) }),
@@ -580,7 +599,7 @@ async function applyGroupHash() {
 		const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('')
 		const fileId = crypto.randomUUID()
 		// DAG file_upload（不含 aesKey）
-		const evR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files`, {
+		const evR = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/files`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -591,7 +610,7 @@ async function applyGroupHash() {
 		if (!evR.ok) { showToastI18n('error', 'chat.group.fileUploadFailed'); return }
 		// 存储 aesKey（认证信道）
 		const aesKeyHex = Array.from(rawKey).map(b => b.toString(16).padStart(2, '0')).join('')
-		await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/aes-key`, {
+		await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/aes-key`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ aesKeyHex }),
@@ -603,7 +622,7 @@ async function applyGroupHash() {
 	// ─── 文件下载（从 Checkpoint 取 aesKey + storageLocator 解密下载）────────
 
 	const downloadGroupFile = async (fileId, fileName) => {
-		const metaR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
+		const metaR = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
 		if (!metaR.ok) { showToastI18n('error', 'chat.group.fileDownloadFailed'); return }
 		const meta = await metaR.json()
 		if (!meta.aesKeyHex || !Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) {
@@ -613,7 +632,7 @@ async function applyGroupHash() {
 		const aesKey = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['decrypt'])
 		const chunks = []
 		for (const chunk of meta.chunkManifest) {
-			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks?locator=${encodeURIComponent(chunk.storageLocator)}`)
+			const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/chunks?locator=${encodeURIComponent(chunk.storageLocator)}`)
 			if (!r.ok) { showToastI18n('error', 'chat.group.fileDownloadFailed'); return }
 			const { data: b64 } = await r.json()
 			const cipherBuf = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer
@@ -631,6 +650,48 @@ async function applyGroupHash() {
 		a.href = url; a.download = fileName || meta.name || fileId
 		document.body.appendChild(a); a.click(); document.body.removeChild(a)
 		setTimeout(() => URL.revokeObjectURL(url), 10_000)
+	}
+
+	/**
+	 * 切换当前频道类型（text ↔ list），并可选地设为群默认频道
+	 * @param {'text'|'list'|'streaming'} newType
+	 * @param {boolean} [setAsDefault]
+	 */
+	const switchChannelType = async (newType, setAsDefault = false) => {
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ type: newType }),
+		})
+		if (!r.ok) {
+			showToastI18n('error', 'chat.group.channelUpdateFailed')
+			return
+		}
+		if (setAsDefault) {
+			const r2 = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/default-channel`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ channelId }),
+			})
+			if (r2.ok)
+				showToastI18n('success', 'chat.group.defaultChannelSet')
+		}
+		await loadState()
+		await loadMessages()
+	}
+
+	/** 将当前频道设为群默认频道 */
+	const setAsDefaultChannel = async () => {
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/default-channel`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ channelId }),
+		})
+		if (r.ok)
+			showToastI18n('success', 'chat.group.defaultChannelSet')
+		else
+			showToastI18n('error', 'chat.group.defaultChannelSetFailed')
+		await loadState()
 	}
 
 	const loadMessages = async () => {
@@ -655,20 +716,50 @@ async function applyGroupHash() {
 					el.innerHTML = `<a class="link link-primary font-medium" href="${href}"${target}>${title}</a>${desc}`
 					msgBox.appendChild(el)
 				}
-			if (input) {
-				input.disabled = true
-				input.placeholder = geti18n('chat.group.listChannelReadonly')
-			}
-			if (sendBtn) sendBtn.disabled = true
-			return
+		if (input) {
+			input.disabled = true
+			input.placeholder = geti18n('chat.group.listChannelReadonly')
 		}
+		if (sendBtn) sendBtn.disabled = true
+
+		// list 类型频道：在消息区顶部追加类型切换控件
+		const ctrlBar = document.createElement('div')
+		ctrlBar.className = 'flex gap-2 flex-wrap items-center mb-3 p-2 bg-base-200 rounded-lg'
+		const isDefault = lastGroupSettings.defaultChannelId === channelId
+		ctrlBar.innerHTML = `
+			<span class="text-xs opacity-70">${geti18n('chat.group.channelTypeLabel')}: <strong>${geti18n('chat.group.channelTypeList')}</strong></span>
+			<button class="btn btn-xs btn-outline" data-action="to-text">${geti18n('chat.group.convertToText')}</button>
+			${!isDefault ? `<button class="btn btn-xs btn-primary" data-action="set-default">${geti18n('chat.group.setAsDefault')}</button>` : `<span class="badge badge-primary badge-sm">${geti18n('chat.group.isDefault')}</span>`}
+		`
+		ctrlBar.querySelector('[data-action="to-text"]')?.addEventListener('click', () => switchChannelType('text'))
+		ctrlBar.querySelector('[data-action="set-default"]')?.addEventListener('click', () => setAsDefaultChannel())
+		msgBox.insertBefore(ctrlBar, msgBox.firstChild)
+		return
+	}
 		if (input) {
 			input.disabled = false
 			input.placeholder = ''
 		}
 		if (sendBtn) sendBtn.disabled = false
 
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages`)
+		// text/streaming 类型频道：在顶部追加类型切换控件
+		const ctrlBar = document.createElement('div')
+		ctrlBar.className = 'flex gap-2 flex-wrap items-center mb-2 px-1'
+		const isDefault = lastGroupSettings.defaultChannelId === channelId
+		const isChatChannel = !meta?.type || meta?.type === 'text'
+		if (isChatChannel) {
+			ctrlBar.innerHTML = `
+				<span class="text-xs opacity-50">${geti18n('chat.group.channelTypeLabel')}: ${geti18n('chat.group.channelTypeText')}</span>
+				<button class="btn btn-xs btn-ghost opacity-60" data-action="to-list">${geti18n('chat.group.convertToList')}</button>
+				${!isDefault ? `<button class="btn btn-xs btn-ghost opacity-60" data-action="set-default">${geti18n('chat.group.setAsDefault')}</button>` : `<span class="badge badge-ghost badge-sm opacity-70">${geti18n('chat.group.isDefault')}</span>`}
+			`
+			ctrlBar.querySelector('[data-action="to-list"]')?.addEventListener('click', () => switchChannelType('list'))
+			ctrlBar.querySelector('[data-action="set-default"]')?.addEventListener('click', () => setAsDefaultChannel())
+		}
+		if (ctrlBar.innerHTML.trim())
+			msgBox.appendChild(ctrlBar)
+
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages`)
 		if (!r.ok) return
 		const { messages } = await r.json()
 		const merged = mergeChannelMessagesForDisplay(messages)
@@ -705,7 +796,7 @@ async function applyGroupHash() {
 		}
 
 		const postPin = async (targetEventId, unpin) => {
-			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/pin`, {
+			const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/pin`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(unpin ? { targetEventId, unpin: true } : { targetEventId }),
@@ -784,7 +875,7 @@ async function applyGroupHash() {
 						vBtn.className = 'btn btn-xs btn-outline'
 						vBtn.textContent = geti18n('chat.group.voteFor', { option: opt })
 						vBtn.addEventListener('click', async () => {
-							await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/events`, {
+							await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/events`, {
 								method: 'POST',
 								headers: { 'Content-Type': 'application/json' },
 								body: JSON.stringify({
@@ -856,7 +947,7 @@ async function applyGroupHash() {
 					btn.textContent = `${emoji} ${cnt}`
 					btn.title = geti18n('chat.group.reactionRemove')
 					btn.addEventListener('click', async () => {
-						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
+						await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({ targetEventId: m.eventId, emoji, remove: true }),
@@ -874,7 +965,7 @@ async function applyGroupHash() {
 				addBtn.addEventListener('click', async () => {
 					const emoji = globalThis.prompt(geti18n('chat.group.reactionPrompt'), '👍')
 					if (!emoji?.trim()) return
-					await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
+					await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ targetEventId: m.eventId, emoji: emoji.trim() }),
@@ -1063,7 +1154,7 @@ async function applyGroupHash() {
 	}
 
 	const avBroadcast = async payload => {
-		await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/broadcast`, {
+		await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/broadcast`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ payload }),
@@ -1166,7 +1257,7 @@ async function applyGroupHash() {
 		if (options.length < 2) { showToastI18n('warning', 'chat.group.voteTooFewOptions'); return }
 		const deadlineInput = globalThis.prompt(geti18n('chat.group.votePromptDeadline'), '')
 		const deadline = deadlineInput ? new Date(deadlineInput).getTime() : null
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/events`, {
+		const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(groupId)}/events`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -1246,14 +1337,14 @@ export async function initGroupModeFromHash() {
 			applyGroupHash()
 		})
 		document.getElementById('group-create-button')?.addEventListener('click', async () => {
-			const r = await fetch('/api/parts/shells:chat/groups', {
+			const r = await fetch('/api/parts/shells:chat/new', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name: geti18n('chat.group.newGroupName') }),
 			})
 			if (!r.ok) return showToastI18n('error', 'chat.group.createFailed')
-			const { groupId: gid } = await r.json()
-			location.hash = `group:${gid}:default`
+			const { groupId: gid, chatid } = await r.json()
+			location.hash = `group:${gid || chatid}:default`
 		})
 
 		document.getElementById('group-new-channel-button')?.addEventListener('click', async () => {
@@ -1261,7 +1352,7 @@ export async function initGroupModeFromHash() {
 			if (!p) return
 			const name = globalThis.prompt(geti18n('chat.group.newChannelPrompt'), '')
 			if (!name?.trim()) return
-			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(p.groupId)}/channels`, {
+			const r = await fetch(`/api/parts/shells:chat/${encodeURIComponent(p.groupId)}/channels`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name: name.trim(), type: 'text' }),
@@ -1274,3 +1365,5 @@ export async function initGroupModeFromHash() {
 	}
 	await applyGroupHash()
 }
+
+

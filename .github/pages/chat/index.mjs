@@ -270,7 +270,7 @@ async function sendNack(pendingStreamId, missingSeq) {
 async function loadCheckpoint(db, groupId, origin) {
 	const base = `${origin}/api/parts/shells:chat`
 	try {
-		const r = await fetch(`${base}/groups/${encodeURIComponent(groupId)}/checkpoint`, fetchOpts())
+		const r = await fetch(`${base}/${encodeURIComponent(groupId)}/checkpoint`, fetchOpts())
 		if (!r.ok) {
 			log(t('groupCpFail', { status: r.status }))
 			return null
@@ -291,7 +291,7 @@ async function loadCheckpoint(db, groupId, origin) {
 async function loadMessages(db, groupId, channelId, origin) {
 	const base = `${origin}/api/parts/shells:chat`
 	try {
-		const url = `${base}/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?limit=50${lastEventId ? `&before=${encodeURIComponent(lastEventId)}` : ''}`
+		const url = `${base}/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?limit=50${lastEventId ? `&before=${encodeURIComponent(lastEventId)}` : ''}`
 		const r = await fetch(url, fetchOpts())
 		if (!r.ok) {
 			log(t('groupMsgFail', { status: r.status }))
@@ -445,7 +445,7 @@ async function main() {
 
 		const base = `${origin}/api/parts/shells:chat`
 		try {
-			const r = await fetch(`${base}/groups/${encodeURIComponent(groupId)}/events`, fetchOpts({
+			const r = await fetch(`${base}/${encodeURIComponent(groupId)}/events`, fetchOpts({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -483,3 +483,4 @@ async function main() {
 }
 
 void main()
+

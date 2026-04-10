@@ -17,15 +17,14 @@ export async function getChatList() {
 }
 
 /**
- * 列出本账户下的分布式群组（含名称）。
+ * 列出本账户下的所有聊天/群组（含名称）。
  * @returns {Promise<{ groupIds: string[], groups: Array<{id: string, name: string}> }>}
  */
 export async function getGroupList() {
-	const response = await fetch('/api/parts/shells:chat/groups/list')
+	const response = await fetch('/api/parts/shells:chat/list')
 	if (!response.ok)
 		return { groupIds: [], groups: [] }
 	const data = await response.json()
-	// 兼容旧接口（只有 groupIds 的响应）
 	if (!data.groups)
 		data.groups = (data.groupIds || []).map(id => ({ id, name: id }))
 	return data
@@ -36,7 +35,7 @@ export async function getGroupList() {
  * @returns {Promise<{ groupId?: string }>}
  */
 export async function createDmRoom() {
-	const response = await fetch('/api/parts/shells:chat/groups/dm', {
+	const response = await fetch('/api/parts/shells:chat/dm', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 	})
