@@ -1,4 +1,4 @@
-import { geti18n, initTranslations } from '../scripts/i18n.mjs'
+import { geti18n, initTranslations } from '../../scripts/i18n.mjs'
 import {
 	ERR_QR_KEY_FORMAT,
 	ERR_QR_TRANSFER_ID,

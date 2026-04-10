@@ -1,116 +1,73 @@
-import { createHash, randomUUID } from 'node:crypto'
+import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 import { access, mkdir, appendFile, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-/** IP 限流：{ip} -> { count, resetAt } */
-const ipWsRequests = new Map()
-const IP_WS_WINDOW_MS = 60_000
-const IP_WS_MAX = 60
-
-/**
- * WS 升级前 IP 限流检查（每分钟最多 60 次）。
- * @param {string} ip
- * @returns {boolean} true=允许，false=拒绝
- */
-export function checkWsIpRateLimit(ip) {
-	const now = Date.now()
-	let entry = ipWsRequests.get(ip)
-	if (!entry || now > entry.resetAt) {
-		entry = { count: 0, resetAt: now + IP_WS_WINDOW_MS }
-		ipWsRequests.set(ip, entry)
-	}
-	entry.count++
-	return entry.count <= IP_WS_MAX
-}
-
-import { getUserDictionary } from '../../../../../server/auth.mjs'
-import { loadShellData } from '../../../../../server/setting_loader.mjs'
+import { getUserDictionary } from '../../../../../../server/auth.mjs'
+import { loadShellData } from '../../../../../../server/setting_loader.mjs'
+import { geti18n } from '../../../../../../scripts/i18n.mjs'
 import {
 	computeEventId,
 	signPayloadBytes,
 	topologicalCanonicalOrder,
-} from '../../../../../scripts/p2p/dag.mjs'
-import { pubKeyHash, sign, verify } from '../../../../../scripts/p2p/crypto.mjs'
-import { nextHlc } from '../../../../../scripts/p2p/hlc.mjs'
+} from '../../../../../../scripts/p2p/dag.mjs'
+import { pubKeyHash, sign, verify } from '../../../../../../scripts/p2p/crypto.mjs'
+import { nextHlc } from '../../../../../../scripts/p2p/hlc.mjs'
 import {
 	adminPubKeyHashes,
 	emptyMaterializedState,
 	foldAuthzEvent,
 	memberChannelPermissions,
-} from '../../../../../scripts/p2p/materialized_state.mjs'
-import { verifyHomeTransferThreshold, verifyOwnerSuccessionThreshold } from '../../../../../scripts/p2p/home_transfer_ballot.mjs'
-import { groupDefaultString } from './group_i18n_defaults.mjs'
-import { buildCheckpointPayload, buildFileFoldersSnapshot } from '../../../../../scripts/p2p/checkpoint.mjs'
-import { createLocalStoragePlugin } from '../../../../../scripts/p2p/storage_plugins.mjs'
-import { DEFAULT_MAX_CATCHUP_EVENTS, EPOCH_CHAIN_MAX } from '../../../../../scripts/p2p/constants.mjs'
+} from '../../../../../../scripts/p2p/materialized_state.mjs'
+import { verifyHomeTransferThreshold, verifyOwnerSuccessionThreshold } from '../../../../../../scripts/p2p/home_transfer_ballot.mjs'
+import { buildCheckpointPayload, buildFileFoldersSnapshot } from '../../../../../../scripts/p2p/checkpoint.mjs'
+import { DEFAULT_MAX_CATCHUP_EVENTS, EPOCH_CHAIN_MAX } from '../../../../../../scripts/p2p/constants.mjs'
 
-/** @type {Map<string, Set<import('npm:websocket-express').WebSocket>>} */
-const groupSockets = new Map()
+import { broadcastEvent } from './websocket.mjs'
+import { deleteFileAesKey } from './storage.mjs'
+import { verifyPowSolution } from './websocket.mjs'
 
-const NODE_ID = randomUUID()
+export const NODE_ID = randomUUID()
 
-/** GET /pow-challenge 下发的质询，单次使用 */
-/** @type {Map<string, { challenge: string, expires: number }>} */
-const powChallengesByUserGroup = new Map()
+// ─── 路径辅助 ────────────────────────────────────────────────────────────────
 
-function powChallengeKey(username, groupId) {
-	return `${username}\0${groupId}`
+function chatDir(username, chatId) {
+	return join(getUserDictionary(username), 'shells', 'chat', 'groups', chatId)
 }
 
-/**
- * 注册 PoW 质询（由 GET …/pow-challenge 调用，约 10 分钟内有效）。
- * @param {string} username
- * @param {string} groupId
- * @param {string} challenge
- * @param {number} [ttlMs]
- */
-export function setPowChallengeForGroup(username, groupId, challenge, ttlMs = 600_000) {
-	powChallengesByUserGroup.set(powChallengeKey(username, groupId), {
-		challenge,
-		expires: Date.now() + ttlMs,
-	})
+function eventsPath(username, chatId) {
+	return join(chatDir(username, chatId), 'events.jsonl')
 }
 
-/**
- * 校验 PoW：`sha256(utf8(\`${groupId}:${challenge}:${nonce}\`))` 的 hex 字符串前 `difficulty` 个字符均为 `0`。
- * 须与已注册的 challenge 一致，通过后删除质询（单次使用）。
- * @param {string} username
- * @param {string} groupId
- * @param {number} difficulty 0–64，为 0 时视为不校验
- * @param {{ challenge?: unknown, nonce?: unknown }} [powSolution]
- * @returns {boolean}
- */
-export function verifyPowSolution(username, groupId, difficulty, powSolution) {
-	const d = Math.max(0, Math.min(64, Math.floor(Number(difficulty) || 0)))
-	if (d <= 0) return true
-	if (!powSolution || typeof powSolution !== 'object') return false
-	const ch = powSolution.challenge
-	const nonce = powSolution.nonce
-	if (ch == null || nonce == null) return false
-	const key = powChallengeKey(username, groupId)
-	const entry = powChallengesByUserGroup.get(key)
-	if (!entry || entry.expires < Date.now()) return false
-	if (String(ch) !== entry.challenge) return false
-	const hex = createHash('sha256')
-		.update(`${groupId}:${String(ch)}:${String(nonce)}`, 'utf8')
-		.digest('hex')
-	if (!hex.startsWith('0'.repeat(d))) return false
-	powChallengesByUserGroup.delete(key)
-	return true
+function checkpointPath(username, chatId) {
+	return join(chatDir(username, chatId), 'checkpoint.json')
 }
 
-/** 写入频道 messages/*.jsonl 的事件类型（与 appendGroupEvent 一致） */
-const PERSIST_MESSAGE_TYPES = new Set([
-	'message', 'message_edit', 'message_delete', 'message_feedback',
-	'vote_cast', 'pin_message', 'unpin_message',
-	'reaction_add', 'reaction_remove',
-])
+function messagesPath(username, chatId, channelId) {
+	return join(chatDir(username, chatId), 'messages', `${channelId}.jsonl`)
+}
+
+// ─── JSONL 工具 ──────────────────────────────────────────────────────────────
+
+async function readJsonl(path) {
+	try {
+		const text = await readFile(path, 'utf8')
+		return text.split('\n').filter(Boolean).map(line => JSON.parse(line))
+	}
+	catch {
+		return []
+	}
+}
+
+async function appendJsonl(path, obj) {
+	await mkdir(dirname(path), { recursive: true })
+	await appendFile(path, `${JSON.stringify(obj)}\n`, 'utf8')
+}
+
+// ─── 联邦（Trystero MQTT）────────────────────────────────────────────────────
 
 /**
  * 联邦配置：`loadShellData(username, 'chat', 'federation')`
- * - enabled: 是否加入 Trystero MQTT 房间并同步 DAG
- * - appId: MQTT 应用 id（默认 fount-group-fed）
- * - password: 与对端一致的房间密码（空则不同步）
  * @param {string} username
  */
 function getFederationConfig(username) {
@@ -126,105 +83,34 @@ const federationRoomInflight = new Map()
 /** @type {Map<string, { room: any, sendDag: (payload: unknown, peerId: string | null) => void } | null>} */
 const federationRooms = new Map()
 
-function federationRoomKey(username, groupId) {
-	return `${username}\0${groupId}`
+function federationRoomKey(username, chatId) {
+	return `${username}\0${chatId}`
 }
 
 /**
- * DAG 事件已写入 events.jsonl 后：WS 广播、频道消息行、checkpoint（本地追加与远程入库共用）。
+ * 加入 `fount-fed-${chatId}` MQTT 房间并订阅 `dag_event`；失败返回 null。
  * @param {string} username
- * @param {string} groupId
- * @param {object} signPayload
+ * @param {string} chatId
  */
-async function broadcastAndPersistAfterSignedEvent(username, groupId, signPayload) {
-	broadcastGroupEvent(groupId, { type: 'dag_event', event: signPayload })
-	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
-		await rebuildAndSaveCheckpoint(username, groupId)
-		return
-	}
-	const ch = signPayload.channelId || signPayload.content?.channelId || 'default'
-	const msgLine = {
-		eventId: signPayload.id,
-		type: signPayload.type,
-		content: signPayload.content,
-		sender: signPayload.sender,
-		charId: signPayload.charId,
-		timestamp: signPayload.timestamp,
-		receivedAt: signPayload.received_at,
-	}
-	const mp = messagesPath(username, groupId, ch)
-	await mkdir(join(mp, '..'), { recursive: true })
-	await appendFile(mp, `${JSON.stringify(msgLine)}\n`, 'utf8')
-	broadcastGroupEvent(groupId, { type: 'channel_message', channelId: ch, message: msgLine })
-	await rebuildAndSaveCheckpoint(username, groupId)
-	// 仅对普通消息触发 AI 定频自动回复（reaction/pin 等不触发）
-	if (signPayload.type === 'message')
-		void maybeAutoTriggerCharReply(username, groupId, ch).catch(() => {})
-}
-
-/**
- * 校验并入库远程 DAG 事件（不再次向联邦广播，避免回环）。
- * @param {string} username
- * @param {string} groupId
- * @param {unknown} payload Trystero 收到的对象或 { event }
- */
-async function ingestRemoteGroupEvent(username, groupId, payload) {
-	let signPayload = payload
-	if (payload && typeof payload === 'object' && 'event' in /** @type {object} */ (payload)
-		&& typeof /** @type {{ event?: object }} */ (payload).event === 'object'
-		&& /** @type {{ event?: object }} */ (payload).event)
-		signPayload = /** @type {{ event: object }} */ (payload).event
-	if (!signPayload || typeof signPayload !== 'object') return
-	const sp = /** @type {Record<string, unknown>} */ (signPayload)
-	if (!sp.id || typeof sp.id !== 'string') return
-
-	const path = eventsPath(username, groupId)
-	const prev = await readJsonl(path)
-	if (prev.some(e => e.id === sp.id)) return
-
-	const bodyForId = unsignedEventFields(/** @type {object} */ (signPayload))
-	if (computeEventId(bodyForId) !== sp.id) {
-		console.error('federation: drop remote event (id mismatch)')
-		return
-	}
-
-	try {
-		await validateEd25519Signature(username, groupId, bodyForId, /** @type {any} */ (signPayload), /** @type {any} */ (signPayload), undefined)
-	}
-	catch (e) {
-		console.error('federation: drop remote event (signature)', e)
-		return
-	}
-
-	await appendJsonl(path, signPayload)
-	await broadcastAndPersistAfterSignedEvent(username, groupId, /** @type {object} */ (signPayload))
-}
-
-/**
- * 加入 `fount-fed-${groupId}` MQTT 房间并订阅 `dag_event`；失败返回 null。
- * @param {string} username
- * @param {string} groupId
- * @returns {Promise<{ room: any, sendDag: (payload: unknown, peerId: string | null) => void } | null>}
- */
-async function ensureFederationRoom(username, groupId) {
+async function ensureFederationRoom(username, chatId) {
 	const { enabled, appId, password } = getFederationConfig(username)
 	if (!enabled || !password) return null
-	const key = federationRoomKey(username, groupId)
+	const key = federationRoomKey(username, chatId)
 	if (federationRooms.has(key)) return federationRooms.get(key)
 	if (federationRoomInflight.has(key)) return await federationRoomInflight.get(key)
 
 	const p = (async () => {
 		try {
-			const { joinMqttRoom } = await import('../../../../../scripts/p2p/federation_trystero.mjs')
+			const { joinMqttRoom } = await import('../../../../../../scripts/p2p/federation_trystero.mjs')
 			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
 			const room = await joinMqttRoom({
 				appId,
 				rtcPolyfill: RTCPeerConnection,
 				password,
-			}, `fount-fed-${groupId}`)
+			}, `fount-fed-${chatId}`)
 			const [sendDag, getDag] = room.makeAction('dag_event')
 			getDag((data, _peerId) => {
-				void ingestRemoteGroupEvent(username, groupId, data).catch(e => console.error(e))
+				void ingestRemoteEvent(username, chatId, data).catch(e => console.error(e))
 			})
 			const slot = { room, sendDag }
 			federationRooms.set(key, slot)
@@ -243,13 +129,13 @@ async function ensureFederationRoom(username, groupId) {
 }
 
 /**
- * 本地写入成功后向联邦广播已签名事件（Trystero：send(payload, null) 表示全员）。
+ * 本地写入成功后向联邦广播已签名事件。
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {object} signPayload
  */
-async function publishSignedEventToFederation(username, groupId, signPayload) {
-	const slot = await ensureFederationRoom(username, groupId)
+async function publishEventToFederation(username, chatId, signPayload) {
+	const slot = await ensureFederationRoom(username, chatId)
 	if (!slot?.sendDag) return
 	try {
 		slot.sendDag(signPayload, null)
@@ -259,65 +145,84 @@ async function publishSignedEventToFederation(username, groupId, signPayload) {
 	}
 }
 
-function groupDir(username, groupId) {
-	return join(getUserDictionary(username), 'shells', 'chat', 'groups', groupId)
-}
-
-function eventsPath(username, groupId) {
-	return join(groupDir(username, groupId), 'events.jsonl')
-}
-
-function checkpointPath(username, groupId) {
-	return join(groupDir(username, groupId), 'checkpoint.json')
-}
-
-function messagesPath(username, groupId, channelId) {
-	return join(groupDir(username, groupId), 'messages', `${channelId}.jsonl`)
-}
-
 /**
- * @param {string} groupId
- * @param {import('npm:websocket-express').WebSocket} ws
+ * 校验并入库远程 DAG 事件（不再次向联邦广播，避免回环）。
+ * @param {string} username
+ * @param {string} chatId
+ * @param {unknown} payload Trystero 收到的对象或 { event }
  */
-export function registerGroupSocket(groupId, ws) {
-	if (!groupSockets.has(groupId)) groupSockets.set(groupId, new Set())
-	groupSockets.get(groupId).add(ws)
-	ws.on('close', () => {
-		groupSockets.get(groupId)?.delete(ws)
-	})
-}
+async function ingestRemoteEvent(username, chatId, payload) {
+	let signPayload = payload
+	if (payload && typeof payload === 'object' && 'event' in /** @type {object} */ (payload)
+		&& typeof /** @type {{ event?: object }} */ (payload).event === 'object'
+		&& /** @type {{ event?: object }} */ (payload).event)
+		signPayload = /** @type {{ event: object }} */ (payload).event
+	if (!signPayload || typeof signPayload !== 'object') return
+	const sp = /** @type {Record<string, unknown>} */ (signPayload)
+	if (!sp.id || typeof sp.id !== 'string') return
 
-/**
- * @param {string} groupId
- * @param {object} payload
- */
-export function broadcastGroupEvent(groupId, payload) {
-	const set = groupSockets.get(groupId)
-	if (!set) return
-	const raw = JSON.stringify({ ...payload, t: Date.now() })
-	for (const ws of set)
-		try {
-			ws.send(raw)
-		}
-		catch (e) {
-			console.error('group broadcast failed', e)
-		}
-}
+	const path = eventsPath(username, chatId)
+	const prev = await readJsonl(path)
+	if (prev.some(e => e.id === sp.id)) return
 
-async function readJsonl(path) {
+	const bodyForId = unsignedEventFields(/** @type {object} */ (signPayload))
+	if (computeEventId(bodyForId) !== sp.id) {
+		console.error('federation: drop remote event (id mismatch)')
+		return
+	}
+
 	try {
-		const text = await readFile(path, 'utf8')
-		return text.split('\n').filter(Boolean).map(line => JSON.parse(line))
+		await validateSignature(username, chatId, bodyForId, /** @type {any} */ (signPayload), /** @type {any} */ (signPayload), undefined)
 	}
-	catch {
-		return []
+	catch (e) {
+		console.error('federation: drop remote event (signature)', e)
+		return
 	}
+
+	await appendJsonl(path, signPayload)
+	await broadcastAndPersist(username, chatId, /** @type {object} */ (signPayload))
 }
 
-async function appendJsonl(path, obj) {
-	await mkdir(dirname(path), { recursive: true })
-	await appendFile(path, `${JSON.stringify(obj)}\n`, 'utf8')
+// ─── 写入频道消息流的事件类型 ─────────────────────────────────────────────────
+
+const PERSIST_MESSAGE_TYPES = new Set([
+	'message', 'message_edit', 'message_delete', 'message_feedback',
+	'vote_cast', 'pin_message', 'unpin_message',
+	'reaction_add', 'reaction_remove',
+])
+
+/**
+ * DAG 事件已写入 events.jsonl 后：WS 广播、频道消息行、checkpoint。
+ * @param {string} username
+ * @param {string} chatId
+ * @param {object} signPayload
+ */
+async function broadcastAndPersist(username, chatId, signPayload) {
+	broadcastEvent(chatId, { type: 'dag_event', event: signPayload })
+	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
+		await rebuildAndSaveCheckpoint(username, chatId)
+		return
+	}
+	const ch = signPayload.channelId || signPayload.content?.channelId || 'default'
+	const msgLine = {
+		eventId: signPayload.id,
+		type: signPayload.type,
+		content: signPayload.content,
+		sender: signPayload.sender,
+		charId: signPayload.charId,
+		timestamp: signPayload.timestamp,
+		receivedAt: signPayload.received_at,
+	}
+	const mp = messagesPath(username, chatId, ch)
+	await mkdir(join(mp, '..'), { recursive: true })
+	await appendFile(mp, `${JSON.stringify(msgLine)}\n`, 'utf8')
+	broadcastEvent(chatId, { type: 'channel_message', channelId: ch, message: msgLine })
+	await rebuildAndSaveCheckpoint(username, chatId)
+	if (signPayload.type === 'message')
+		void maybeAutoTriggerCharReply(username, chatId, ch).catch(() => {})
 }
+
+// ─── 签名验证 ────────────────────────────────────────────────────────────────
 
 /**
  * @param {object} e
@@ -342,13 +247,13 @@ const PUB_KEY_HASH_HEX = /^[0-9a-f]{64}$/iu
 /**
  * Ed25519：sender 为 64 位 hex（成员 pubKeyHash）时必须带有效签名；本地别名 sender 可无签名。
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {object} body unsignedEventFields(base)
  * @param {{ id: string, signature?: string, senderPubKey?: string }} signPayload
  * @param {{ senderPubKey?: string }} eventLike
- * @param {Uint8Array} [secretKey] 本地签名时用于推导公钥并验签
+ * @param {Uint8Array} [secretKey]
  */
-async function validateEd25519Signature(username, groupId, body, signPayload, eventLike, secretKey) {
+async function validateSignature(username, chatId, body, signPayload, eventLike, secretKey) {
 	const sender = String(body.sender || '')
 	const sigHex = typeof signPayload.signature === 'string' ? signPayload.signature.trim() : ''
 	const sigBytes = sigHex ? Buffer.from(sigHex, 'hex') : null
@@ -389,7 +294,7 @@ async function validateEd25519Signature(username, groupId, body, signPayload, ev
 			}
 		}
 		if (!pkBytes) {
-			const { state } = await getGroupState(username, groupId)
+			const { state } = await getState(username, chatId)
 			const m = state.members.get(sender)
 			const hex = m?.pubKeyHex
 			if (hex) {
@@ -407,43 +312,45 @@ async function validateEd25519Signature(username, groupId, body, signPayload, ev
 	if (!ok) throw new Error('Invalid event signature')
 }
 
+// ─── 群组 CRUD ────────────────────────────────────────────────────────────────
+
 /**
  * @param {string} username
  * @param {object} body
  */
 export async function createGroup(username, body) {
-	const groupId = body.groupId || randomUUID()
-	const dir = groupDir(username, groupId)
+	const chatId = body.groupId || randomUUID()
+	const dir = chatDir(username, chatId)
 	await mkdir(dir, { recursive: true })
 	const genesisBase = {
 		type: 'group_meta_update',
-		groupId,
+		groupId: chatId,
 		sender: body.ownerPubKeyHash || 'local',
 		timestamp: Date.now(),
 		hlc: { wall: Date.now(), logical: 0 },
 		prev_event_id: null,
-		content: { name: body.name || groupDefaultString('groupMetaName'), desc: body.desc || '' },
+		content: { name: body.name || geti18n('chat.group.defaults.groupMetaName'), desc: body.desc || '' },
 		node_id: NODE_ID,
 	}
 	const id = computeEventId(unsignedEventFields(genesisBase))
 	const signPayload = { ...unsignedEventFields(genesisBase), id, signature: '' }
-	await mkdir(groupDir(username, groupId), { recursive: true })
-	await writeFile(eventsPath(username, groupId), `${JSON.stringify(signPayload)}\n`, 'utf8')
+	await mkdir(chatDir(username, chatId), { recursive: true })
+	await writeFile(eventsPath(username, chatId), `${JSON.stringify(signPayload)}\n`, 'utf8')
 
-	await appendGroupEvent(username, groupId, {
+	await appendEvent(username, chatId, {
 		type: 'channel_create',
 		sender: 'local',
 		timestamp: Date.now(),
 		content: {
 			channelId: 'default',
 			type: 'text',
-			name: body.defaultChannelName || groupDefaultString('defaultChannelName'),
+			name: body.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
 			syncScope: 'group',
 		},
 	})
 
-	const s = await getGroupState(username, groupId)
-	return { groupId, checkpoint: s.checkpoint }
+	const s = await getState(username, chatId)
+	return { groupId: chatId, checkpoint: s.checkpoint }
 }
 
 /**
@@ -455,7 +362,7 @@ export async function createGroup(username, body) {
  * @param {string} [options.defaultChannelName]
  * @returns {Promise<{ groupId: string, created: boolean }>}
  */
-export async function ensureGroupForChat(username, chatId, options = {}) {
+export async function ensureChat(username, chatId, options = {}) {
 	const ep = eventsPath(username, chatId)
 	let out
 	try {
@@ -465,9 +372,9 @@ export async function ensureGroupForChat(username, chatId, options = {}) {
 	catch {
 		await createGroup(username, {
 			groupId: chatId,
-			name: options.name || groupDefaultString('dmChatName'),
+			name: options.name || geti18n('chat.group.defaults.dmChatName'),
 			desc: options.desc,
-			defaultChannelName: options.defaultChannelName || groupDefaultString('defaultChannelName'),
+			defaultChannelName: options.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
 			ownerPubKeyHash: options.ownerPubKeyHash,
 		})
 		out = { groupId: chatId, created: true }
@@ -480,21 +387,23 @@ export async function ensureGroupForChat(username, chatId, options = {}) {
 /**
  * 删除群目录（与 deleteChat 配套）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  */
-export async function deleteGroupData(username, groupId) {
+export async function deleteChatData(username, chatId) {
 	try {
-		await rm(groupDir(username, groupId), { recursive: true, force: true })
+		await rm(chatDir(username, chatId), { recursive: true, force: true })
 	}
 	catch { /* ignore */ }
 }
 
+// ─── 状态查询 ────────────────────────────────────────────────────────────────
+
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  */
-export async function getGroupState(username, groupId) {
-	const events = await readJsonl(eventsPath(username, groupId))
+export async function getState(username, chatId) {
+	const events = await readJsonl(eventsPath(username, chatId))
 	let state = emptyMaterializedState()
 	const order = topologicalCanonicalOrder(events.map(e => ({
 		id: e.id,
@@ -510,18 +419,18 @@ export async function getGroupState(username, groupId) {
 	}
 	let checkpoint = null
 	try {
-		checkpoint = JSON.parse(await readFile(checkpointPath(username, groupId), 'utf8'))
+		checkpoint = JSON.parse(await readFile(checkpointPath(username, chatId), 'utf8'))
 	}
 	catch { /* */ }
 	return { events, state, order, checkpoint }
 }
 
 /**
- * 从 DAG 事件重放当前各频道置顶目标（messageOverlay.pins）
+ * 从 DAG 事件重放各频道置顶目标（messageOverlay.pins）
  * @param {object[]} events
  * @returns {Record<string, string[]>}
  */
-function foldPinOverlayFromEvents(events) {
+function foldPinOverlay(events) {
 	const byCh = new Map()
 	for (const ev of events) {
 		const ch = ev.channelId || ev.content?.channelId || 'default'
@@ -542,18 +451,18 @@ function foldPinOverlayFromEvents(events) {
 }
 
 /**
- * 重放 DAG 授权类事件并写回 checkpoint.json（单节点 home 简化版）
+ * 重放 DAG 授权类事件并写回 checkpoint.json
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  */
-export async function rebuildAndSaveCheckpoint(username, groupId) {
-	const { events, state, order } = await getGroupState(username, groupId)
+export async function rebuildAndSaveCheckpoint(username, chatId) {
+	const { events, state, order } = await getState(username, chatId)
 	if (!events.length) return null
 	const last = events[events.length - 1]
 
 	let prevCp = null
 	try {
-		prevCp = JSON.parse(await readFile(checkpointPath(username, groupId), 'utf8'))
+		prevCp = JSON.parse(await readFile(checkpointPath(username, chatId), 'utf8'))
 	}
 	catch { /* no checkpoint yet */ }
 
@@ -591,7 +500,7 @@ export async function rebuildAndSaveCheckpoint(username, groupId) {
 	}
 
 	const home = state.home_node_id || NODE_ID
-	const pins = foldPinOverlayFromEvents(events)
+	const pins = foldPinOverlay(events)
 	const fileIdx = Object.fromEntries(state.fileIndex ?? new Map())
 	const fileFolders = buildFileFoldersSnapshot(state.fileIndex)
 	const cp = buildCheckpointPayload({
@@ -604,21 +513,23 @@ export async function rebuildAndSaveCheckpoint(username, groupId) {
 		fileFolders,
 		epoch_chain,
 	})
-	await mkdir(groupDir(username, groupId), { recursive: true })
-	await writeFile(checkpointPath(username, groupId), JSON.stringify(cp, null, '\t'), 'utf8')
+	await mkdir(chatDir(username, chatId), { recursive: true })
+	await writeFile(checkpointPath(username, chatId), JSON.stringify(cp, null, '\t'), 'utf8')
 	return cp
 }
+
+// ─── DAG 事件追加 ─────────────────────────────────────────────────────────────
 
 /**
  * 追加 DAG 事件（验签占位：若带 signature 则校验）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {object} event
  * @param {Uint8Array} [secretKey]
  */
-export async function appendGroupEvent(username, groupId, event, secretKey) {
+export async function appendEvent(username, chatId, event, secretKey) {
 	if (event.type === 'home_transfer') {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const admins = adminPubKeyHashes(state)
 		const c = event.content || {}
 		if (admins.size > 0) {
@@ -626,7 +537,7 @@ export async function appendGroupEvent(username, groupId, event, secretKey) {
 			if (!Array.isArray(sigs) || !sigs.length) throw new Error('home_transfer requires adminSignatures')
 			const ok = await verifyHomeTransferThreshold({
 				proposedHomeNodeId: c.proposedHomeNodeId,
-				groupId,
+				groupId: chatId,
 				ballotId: c.ballotId || '',
 				adminSignatures: sigs,
 			}, admins)
@@ -634,7 +545,7 @@ export async function appendGroupEvent(username, groupId, event, secretKey) {
 		}
 	}
 	if (event.type === 'owner_succession_ballot') {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const admins = adminPubKeyHashes(state)
 		const c = event.content || {}
 		if (admins.size > 0) {
@@ -642,7 +553,7 @@ export async function appendGroupEvent(username, groupId, event, secretKey) {
 			if (!Array.isArray(sigs) || !sigs.length) throw new Error('owner_succession_ballot requires adminSignatures')
 			const ok = await verifyOwnerSuccessionThreshold({
 				proposedOwnerPubKeyHash: c.proposedOwnerPubKeyHash,
-				groupId,
+				groupId: chatId,
 				ballotId: c.ballotId || '',
 				adminSignatures: sigs,
 			}, admins)
@@ -650,42 +561,42 @@ export async function appendGroupEvent(username, groupId, event, secretKey) {
 		}
 	}
 	if (event.type === 'member_join') {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const jp = state.groupSettings?.joinPolicy || 'open'
 		const c = event.content || {}
 		if (jp === 'invite-only' && !c.inviteCode) throw new Error('member_join requires inviteCode')
 		if (jp === 'pow') {
 			const d = Number(state.groupSettings?.powDifficulty) || 0
 			if (d <= 0) throw new Error('pow joinPolicy requires powDifficulty >= 1')
-			if (!verifyPowSolution(username, groupId, d, c.powSolution))
+			if (!verifyPowSolution(username, chatId, d, c.powSolution))
 				throw new Error('invalid or expired pow solution')
 		}
 	}
 	if (event.type === 'message' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
 		const ch = event.channelId || event.content?.channelId || 'default'
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const perms = memberChannelPermissions(state, event.sender, ch)
 		if (!perms.SEND_MESSAGES) throw new Error('SEND_MESSAGES denied')
 	}
 	if (event.type === 'file_upload' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const perms = memberChannelPermissions(state, event.sender, 'default')
 		if (!perms.UPLOAD_FILES) throw new Error('UPLOAD_FILES denied')
 	}
 	const roleMgmtTypes = new Set(['role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke'])
 	if (roleMgmtTypes.has(event.type) && PUB_KEY_HASH_HEX.test(String(event.sender))) {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const perms = memberChannelPermissions(state, event.sender, 'default')
 		if (!perms.MANAGE_ROLES) throw new Error('MANAGE_ROLES denied')
 	}
-	const dir = groupDir(username, groupId)
+	const dir = chatDir(username, chatId)
 	await mkdir(dir, { recursive: true })
-	const prev = await readJsonl(eventsPath(username, groupId))
+	const prev = await readJsonl(eventsPath(username, chatId))
 	const last = prev[prev.length - 1]
 	const hlc = nextHlc(last?.hlc, event.timestamp)
 	const base = {
 		...event,
-		groupId,
+		groupId: chatId,
 		hlc,
 		prev_event_id: last?.id ?? null,
 		received_at: Date.now(),
@@ -706,24 +617,25 @@ export async function appendGroupEvent(username, groupId, event, secretKey) {
 		if (event.senderPubKey) signPayload.senderPubKey = event.senderPubKey
 	}
 
-	await validateEd25519Signature(username, groupId, body, signPayload, event, secretKey)
+	await validateSignature(username, chatId, body, signPayload, event, secretKey)
 
-	await appendJsonl(eventsPath(username, groupId), signPayload)
-	await broadcastAndPersistAfterSignedEvent(username, groupId, signPayload)
-	await publishSignedEventToFederation(username, groupId, signPayload)
+	await appendJsonl(eventsPath(username, chatId), signPayload)
+	await broadcastAndPersist(username, chatId, signPayload)
+	await publishEventToFederation(username, chatId, signPayload)
 
 	return signPayload
 }
 
+// ─── 频道管理 ─────────────────────────────────────────────────────────────────
+
 /**
- * 创建频道（DAG channel_create）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {object} opts
  */
-export async function createGroupChannel(username, groupId, opts) {
+export async function createChannel(username, chatId, opts) {
 	const channelId = opts.channelId || randomUUID()
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'channel_create',
 		sender: opts.sender || 'local',
 		timestamp: Date.now(),
@@ -743,13 +655,13 @@ export async function createGroupChannel(username, groupId, opts) {
 
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  * @param {object} [patch]
  */
-export async function updateGroupChannel(username, groupId, channelId, patch = {}) {
+export async function updateChannel(username, chatId, channelId, patch = {}) {
 	const { sender: snd = 'local', ...rest } = patch
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'channel_update',
 		sender: snd,
 		timestamp: Date.now(),
@@ -759,11 +671,11 @@ export async function updateGroupChannel(username, groupId, channelId, patch = {
 
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  */
-export async function deleteGroupChannel(username, groupId, channelId) {
-	return appendGroupEvent(username, groupId, {
+export async function deleteChannel(username, chatId, channelId) {
+	return appendEvent(username, chatId, {
 		type: 'channel_delete',
 		sender: 'local',
 		timestamp: Date.now(),
@@ -774,13 +686,13 @@ export async function deleteGroupChannel(username, groupId, channelId) {
 /**
  * list 频道条目更新（DAG list_item_update）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  * @param {Array<{ title?: string, desc?: string, targetChannelId?: string, url?: string }>} items
  * @param {string} [sender]
  */
-export async function appendListItemUpdate(username, groupId, channelId, items, sender = 'local') {
-	return appendGroupEvent(username, groupId, {
+export async function appendListItemUpdate(username, chatId, channelId, items, sender = 'local') {
+	return appendEvent(username, chatId, {
 		type: 'list_item_update',
 		sender,
 		timestamp: Date.now(),
@@ -792,13 +704,13 @@ export async function appendListItemUpdate(username, groupId, channelId, items, 
 /**
  * 置顶消息（DAG pin_message，写入频道消息流）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
- * @param {string} targetEventId 被置顶的 DAG 事件 id
+ * @param {string} targetEventId
  * @param {string} [sender]
  */
-export async function appendPinMessageEvent(username, groupId, channelId, targetEventId, sender = 'local') {
-	return appendGroupEvent(username, groupId, {
+export async function appendPinEvent(username, chatId, channelId, targetEventId, sender = 'local') {
+	return appendEvent(username, chatId, {
 		type: 'pin_message',
 		channelId,
 		sender,
@@ -810,13 +722,13 @@ export async function appendPinMessageEvent(username, groupId, channelId, target
 /**
  * 取消置顶（DAG unpin_message）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  * @param {string} targetEventId
  * @param {string} [sender]
  */
-export async function appendUnpinMessageEvent(username, groupId, channelId, targetEventId, sender = 'local') {
-	return appendGroupEvent(username, groupId, {
+export async function appendUnpinEvent(username, chatId, channelId, targetEventId, sender = 'local') {
+	return appendEvent(username, chatId, {
 		type: 'unpin_message',
 		channelId,
 		sender,
@@ -828,19 +740,19 @@ export async function appendUnpinMessageEvent(username, groupId, channelId, targ
 /**
  * 私密频道密钥分发（E2E 密文；超级节点不解析）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {{ channelId: string, epoch: number, ciphertexts?: object[], sender?: string }} body
  */
-export async function appendEncryptedMailboxBatch(username, groupId, body) {
+export async function appendEncryptedMailboxBatch(username, chatId, body) {
 	const { channelId, epoch, ciphertexts = [], sender = 'local' } = body
 	if (!channelId) throw new Error('channelId required')
-	const { state } = await getGroupState(username, groupId)
+	const { state } = await getState(username, chatId)
 	const chMeta = state.channels.get(channelId)
 	if (chMeta?.isPrivate && state.members.size > 200)
 		throw Object.assign(new Error('私密频道成员超过 200 人上限，请启用 MLS 插件（路线图 P1）或减少成员'), { code: 'MLS_REQUIRED', memberCount: state.members.size })
 	const lastAt = state.privateMailboxLastPostAt?.get(channelId) || 0
 	if (Date.now() - lastAt < 500) throw new Error('mailbox rate limited')
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'encrypted_mailbox_batch',
 		channelId,
 		sender,
@@ -850,15 +762,15 @@ export async function appendEncryptedMailboxBatch(username, groupId, body) {
 }
 
 /**
- * 群主/代理活跃心跳（供 succession ballot 等消费）
+ * 群主/代理活跃心跳
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {{ ownerPubKeyHash: string, sender?: string }} body
  */
-export async function appendOwnerHeartbeat(username, groupId, body) {
+export async function appendOwnerHeartbeat(username, chatId, body) {
 	const { ownerPubKeyHash, sender = 'local' } = body
 	if (!ownerPubKeyHash) throw new Error('ownerPubKeyHash required')
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'owner_heartbeat',
 		sender,
 		timestamp: Date.now(),
@@ -869,13 +781,13 @@ export async function appendOwnerHeartbeat(username, groupId, body) {
 /**
  * 代理执行官 succession ballot（>50% 管理员 Ed25519 联署 proposedOwnerPubKeyHash）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {{ proposedOwnerPubKeyHash: string, ballotId: string, adminSignatures: object[], sender?: string }} body
  */
-export async function appendOwnerSuccessionBallot(username, groupId, body) {
+export async function appendOwnerSuccessionBallot(username, chatId, body) {
 	const { proposedOwnerPubKeyHash, ballotId, adminSignatures, sender = 'local' } = body
 	if (!proposedOwnerPubKeyHash || !ballotId) throw new Error('proposedOwnerPubKeyHash and ballotId required')
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'owner_succession_ballot',
 		sender,
 		timestamp: Date.now(),
@@ -886,12 +798,12 @@ export async function appendOwnerSuccessionBallot(username, groupId, body) {
 /**
  * 群文件元数据入 DAG（不含 aesKey；密钥由 home 经认证信道写入 Checkpoint）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {object} meta
  */
-export async function appendFileUploadEvent(username, groupId, meta) {
+export async function appendFileUploadEvent(username, chatId, meta) {
 	const fileId = meta.fileId || randomUUID()
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type: 'file_upload',
 		sender: meta.sender || 'local',
 		timestamp: Date.now(),
@@ -908,14 +820,13 @@ export async function appendFileUploadEvent(username, groupId, meta) {
 
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} fileId
  * @param {string} [sender]
  */
-export async function appendFileDeleteEvent(username, groupId, fileId, sender = 'local') {
-	// 吊销 aesKey
-	await deleteFileAesKey(username, groupId, fileId)
-	return appendGroupEvent(username, groupId, {
+export async function appendFileDeleteEvent(username, chatId, fileId, sender = 'local') {
+	await deleteFileAesKey(username, chatId, fileId)
+	return appendEvent(username, chatId, {
 		type: 'file_delete',
 		sender,
 		timestamp: Date.now(),
@@ -923,74 +834,19 @@ export async function appendFileDeleteEvent(username, groupId, fileId, sender = 
 	})
 }
 
-// ─── 文件 aesKey 安全存储（与 DAG 解耦，仅服务端持有）─────────────────────
-
-function aesKeysPath(username, groupId) {
-	return join(getUserDictionary(username), 'shells', 'chat', 'groups', groupId, 'aes_keys.json')
-}
-
-/**
- * 存储 fileId → aesKeyHex（仅 home 节点调用，不写入 DAG）
- * @param {string} username
- * @param {string} groupId
- * @param {string} fileId
- * @param {string} aesKeyHex 256-bit AES key in hex
- */
-export async function storeFileAesKey(username, groupId, fileId, aesKeyHex) {
-	const p = aesKeysPath(username, groupId)
-	await mkdir(join(p, '..'), { recursive: true })
-	let obj = {}
-	try { obj = JSON.parse(await readFile(p, 'utf8')) } catch { /* new */ }
-	obj[String(fileId)] = String(aesKeyHex)
-	await writeFile(p, JSON.stringify(obj, null, '\t'), 'utf8')
-}
-
-/**
- * 读取 fileId 对应的 aesKeyHex
- * @param {string} username
- * @param {string} groupId
- * @param {string} fileId
- * @returns {Promise<string | null>}
- */
-export async function getFileAesKey(username, groupId, fileId) {
-	try {
-		const obj = JSON.parse(await readFile(aesKeysPath(username, groupId), 'utf8'))
-		return typeof obj[fileId] === 'string' ? obj[fileId] : null
-	}
-	catch { return null }
-}
-
-/**
- * 吊销 aesKey（file_delete 时调用）
- * @param {string} username
- * @param {string} groupId
- * @param {string} fileId
- */
-async function deleteFileAesKey(username, groupId, fileId) {
-	try {
-		const p = aesKeysPath(username, groupId)
-		const obj = JSON.parse(await readFile(p, 'utf8'))
-		delete obj[fileId]
-		await writeFile(p, JSON.stringify(obj, null, '\t'), 'utf8')
-	}
-	catch { /* ignore */ }
-}
-
-// ─── reaction 事件 ──────────────────────────────────────────────────────────
-
 /**
  * reaction_add / reaction_remove DAG 事件。
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {{ type: 'reaction_add'|'reaction_remove', channelId: string, targetEventId: string, emoji: string, sender?: string, targetPubKeyHash?: string }} opts
  */
-export async function appendReactionEvent(username, groupId, opts) {
+export async function appendReactionEvent(username, chatId, opts) {
 	const { type, channelId = 'default', targetEventId, emoji, sender = 'local', targetPubKeyHash } = opts
 	if (!targetEventId || !emoji) throw new Error('targetEventId and emoji required')
 	const content = { targetId: targetEventId, emoji }
 	if (type === 'reaction_remove' && targetPubKeyHash)
 		content.targetPubKeyHash = targetPubKeyHash
-	return appendGroupEvent(username, groupId, {
+	return appendEvent(username, chatId, {
 		type,
 		channelId,
 		sender,
@@ -999,42 +855,43 @@ export async function appendReactionEvent(username, groupId, opts) {
 	})
 }
 
-// ─── AI 定频自动触发 ────────────────────────────────────────────────────────
+// ─── AI 定频自动触发 ──────────────────────────────────────────────────────────
 
-/** groupId → { lastTriggeredAt: number, msgCount: number } */
-const groupAutoFreqState = new Map()
+/** chatId → { lastTriggeredAt: number, msgCount: number } */
+const autoFreqState = new Map()
 
 /**
- * 在每条消息入库后调用：若群配置了 autoReplyFrequency，则按频率触发 AI 回复。
+ * 在每条消息入库后调用：若配置了 autoReplyFrequency，则按频率触发 AI 回复。
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  */
-export async function maybeAutoTriggerCharReply(username, groupId, channelId) {
+export async function maybeAutoTriggerCharReply(username, chatId, channelId) {
 	try {
-		const { state } = await getGroupState(username, groupId)
+		const { state } = await getState(username, chatId)
 		const freq = Number(state.groupSettings?.autoReplyFrequency) || 0
 		if (freq <= 0) return
-		const key = `${groupId}\0${channelId}`
-		let s = groupAutoFreqState.get(key)
-		if (!s) { s = { lastTriggeredAt: 0, msgCount: 0 }; groupAutoFreqState.set(key, s) }
+		const key = `${chatId}\0${channelId}`
+		let s = autoFreqState.get(key)
+		if (!s) { s = { lastTriggeredAt: 0, msgCount: 0 }; autoFreqState.set(key, s) }
 		s.msgCount++
 		if (s.msgCount < freq) return
 		s.msgCount = 0
 		s.lastTriggeredAt = Date.now()
-		// 通过 WS 广播 ai_auto_trigger 消息，让前端调用生成（与 @mention 走相同路径）
-		broadcastGroupEvent(groupId, { type: 'ai_auto_trigger', channelId, groupId })
+		broadcastEvent(chatId, { type: 'ai_auto_trigger', channelId, groupId: chatId })
 	}
 	catch { /* ignore */ }
 }
 
+// ─── 同步 / 查询 ──────────────────────────────────────────────────────────────
+
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {{ since?: string, limit?: number }} q
  */
-export async function syncGroupEvents(username, groupId, q) {
-	const events = await readJsonl(eventsPath(username, groupId))
+export async function syncEvents(username, chatId, q) {
+	const events = await readJsonl(eventsPath(username, chatId))
 	const limit = Math.min(Number(q.limit) || DEFAULT_MAX_CATCHUP_EVENTS, DEFAULT_MAX_CATCHUP_EVENTS)
 	if (!q.since) {
 		const slice = events.slice(-limit)
@@ -1047,12 +904,12 @@ export async function syncGroupEvents(username, groupId, q) {
 
 /**
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} channelId
  * @param {{ before?: string, limit?: number }} q
  */
-export async function listChannelMessages(username, groupId, channelId, q) {
-	const lines = await readJsonl(messagesPath(username, groupId, channelId))
+export async function listChannelMessages(username, chatId, channelId, q) {
+	const lines = await readJsonl(messagesPath(username, chatId, channelId))
 	const limit = Math.min(Number(q.limit) || 200, 500)
 	if (!q.before) return lines.slice(-limit)
 	const idx = lines.findIndex(l => l.eventId === q.before)
@@ -1061,7 +918,7 @@ export async function listChannelMessages(username, groupId, channelId, q) {
 }
 
 /**
- * 列出会话 id：传统 `chats/*.json` 与 `groups/*` 并集（迁移期兼容；最终一一对应）
+ * 列出会话 id
  * @param {string} username
  * @returns {Promise<string[]>}
  */
@@ -1085,7 +942,7 @@ export async function listUserGroups(username) {
 }
 
 /**
- * 返回群组列表及名称（从 checkpoint.json 快读，避免全量重放）
+ * 返回群组列表及名称（从 checkpoint.json 快读）
  * @param {string} username
  * @returns {Promise<Array<{id: string, name: string}>>}
  */
@@ -1107,20 +964,13 @@ export function getNodeId() {
 }
 
 /**
- * @param {string} username
- */
-export function getGroupStorage(username) {
-	return createLocalStoragePlugin(join(getUserDictionary(username), 'shells', 'chat'))
-}
-
-/**
  * 权限查询（物化重放）
  * @param {string} username
- * @param {string} groupId
+ * @param {string} chatId
  * @param {string} pubKeyHash
  * @param {string} channelId
  */
-export async function getEffectivePermissions(username, groupId, pubKeyHash, channelId) {
-	const { state } = await getGroupState(username, groupId)
+export async function getEffectivePermissions(username, chatId, pubKeyHash, channelId) {
+	const { state } = await getState(username, chatId)
 	return memberChannelPermissions(state, pubKeyHash, channelId)
 }

@@ -2,7 +2,7 @@ import {
 	loadChat, addchar, newChat, setPersona, setWorld, getChatList, addUserReply, GetChatLog, GetChatLogLength,
 	removechar, setCharSpeakingFrequency, getCharListOfChat, GetUserPersonaName, GetWorldName, modifyTimeLine,
 	triggerCharReply, deleteMessage, editMessage
-} from './chat.mjs'
+} from './chat/session.mjs'
 
 /**
  * 定义了可用于聊天功能的各种操作。

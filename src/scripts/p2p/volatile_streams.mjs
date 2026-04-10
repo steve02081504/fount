@@ -46,6 +46,17 @@ export function createVolatileStreamBuffer() {
 			if (!s.ended) return { text, gapAt: expect }
 			return { text, gapAt: null }
 		},
+		/**
+		 * 取单个 chunkSeq 的文本（用于 NACK 补传）
+		 * @param {string} pendingStreamId
+		 * @param {number} chunkSeq
+		 * @returns {string | null}
+		 */
+		getChunk(pendingStreamId, chunkSeq) {
+			const s = streams.get(pendingStreamId)
+			if (!s) return null
+			return s.chunks.has(chunkSeq) ? (s.chunks.get(chunkSeq) ?? null) : null
+		},
 		clear(pendingStreamId) {
 			streams.delete(pendingStreamId)
 		},
