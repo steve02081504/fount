@@ -877,6 +877,73 @@ function Assert-FountDirWritable {
 	}
 }
 
+function Invoke-FountInitForce([string]$FountDir) {
+	Test-PWSHModule PowerRunAsSystem
+	Test-PWSHModule LockingProcessKiller
+	Import-Module PowerRunAsSystem -ErrorAction Stop
+	$lckBase     = (Get-Module LockingProcessKiller -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).ModuleBase
+	$denoInfo    = try { deno info --json 2>$null | ConvertFrom-Json } catch { $null }
+	$resolve     = { try { (Get-Item $_ -ErrorAction Stop).FullName } catch { $_ } }
+	$denoDirs    = if ($denoInfo) {
+		$all = $denoInfo.PSObject.Properties.Value |
+			Where-Object { $_ -is [string] -and [IO.Path]::IsPathRooted($_) -and (Test-Path $_) } |
+			ForEach-Object $resolve | Select-Object -Unique
+		# 去掉冗余子目录：若已有父目录在列表中则跳过
+		$all | Where-Object {
+			$p = $_.ToLower().TrimEnd('\') + '\'
+			-not ($all | Where-Object { $q = $_.ToLower().TrimEnd('\') + '\'; $q -ne $p -and $p.StartsWith($q) })
+		}
+	} else { @("$env:LOCALAPPDATA\deno") }
+	$dirFull     = & $resolve $FountDir
+	$profileFull = & $resolve $env:USERPROFILE
+	$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+	$pathEnv     = $env:PATH  -replace "'", "''"
+	$lckEsc      = $lckBase   -replace "'", "''"
+	$dirEsc      = $dirFull   -replace "'", "''"
+	$ps1Esc      = (Join-Path $dirFull 'path\fount.ps1') -replace "'", "''"
+	$userEsc     = $currentUser  -replace "'", "''"
+	$profileEsc  = $profileFull  -replace "'", "''"
+	$denoDirsJoined = ($denoDirs | ForEach-Object { $_ -replace "'","''" }) -join '|'
+	$cmd = @"
+`$env:PATH = '$pathEnv'
+`$explorerWas = [bool](Get-Process -Name explorer -ErrorAction SilentlyContinue)
+Import-Module '$lckEsc'
+`$targets = (@('$dirEsc') + ('$denoDirsJoined' -split '\|')) | Where-Object { `$_ } | Select-Object -Unique
+`$userProfile = '$profileEsc'
+
+Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
+foreach (`$t in `$targets) {
+	if (Test-Path `$t) {
+		icacls "`$t" /setowner "NT AUTHORITY\SYSTEM" /T /C /Q
+		icacls "`$t" /reset /T /C /Q
+		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
+	}
+}
+
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File '$ps1Esc' init
+
+Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
+foreach (`$t in `$targets) {
+	if (Test-Path `$t) {
+		icacls "`$t" /reset /T /C /Q
+		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
+		if (`$t.ToLower().StartsWith(`$userProfile.ToLower())) {
+			icacls "`$t" /setowner '$userEsc' /T /C /Q
+		}
+	}
+}
+
+if (`$explorerWas -and -not (Get-Process -Name explorer -ErrorAction SilentlyContinue)) { Start-Process explorer.exe }
+"@
+	$b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
+	Invoke-SystemCommand -Application "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $b64"
+}
+
+if ($args[0] -eq 'init' -and $args[1] -eq 'force') {
+	Invoke-FountInitForce -FountDir $FOUNT_DIR
+	exit $LastExitCode
+}
+
 if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
 	Assert-FountDirWritable $FOUNT_DIR
 	Update-FountAndDeno
