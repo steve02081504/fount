@@ -85,6 +85,12 @@ export default {
 					state: char_state,
 				}, {
 					/**
+					 * 初始化后的回调。
+					 */
+					afterInit: () => {
+						char_state.init_count = (char_state.init_count ?? 0) + 1
+					},
+					/**
 					 * 加载后的回调。
 					 */
 					afterLoad: () => {
