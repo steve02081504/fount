@@ -161,10 +161,20 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 	html = html.replace(/(?<!\\)`([^\n`]+?)(?<!\\)`/g, (match, code) => /* html */ `<code>${code}</code>`)
 	html = html.replace(/\[(.*?)]\((.*?)\)/g, (match, text, url) => /* html */ `<a href="${url}">${text}</a>`)
 	html = html.replace(/\|\|(.*?)\|\|/g, (match, content) => /* html */ `<tg-spoiler>${content}</tg-spoiler>`)
-	html = html.replace(/\*\*(.+?)\*\*/g, /* html */ '<b>$1</b>')
-	html = html.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, /* html */ '<i>$1</i>')
-	html = html.replace(/__(.+?)__/g, /* html */ '<u>$1</u>')
-	html = html.replace(/~~(.+?)~~/g, /* html */ '<s>$1</s>')
+	// 单次扫描处理所有行内格式，代码块（<pre>/<code>）原样保留，避免其内容被误解析
+	// 斜体要求 * 紧贴非空白字符（符合 CommonMark 规范），防止数学乘号被误判
+	html = html.replace(
+		/(<pre[\s\S]*?<\/pre>|<code>[\s\S]*?<\/code>)|\*\*(.+?)\*\*|(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)|__(.+?)__|~~(.+?)~~/g,
+		(match, code, bold, italic, underline, strike) => {
+			if (code !== undefined) return code
+			if (bold !== undefined) return /* html */ `<b>${bold}</b>`
+			if (italic !== undefined) return /* html */ `<i>${italic}</i>`
+			if (underline !== undefined) return /* html */ `<u>${underline}</u>`
+			return /* html */ `<s>${strike}</s>`
+		},
+	)
+	// 还原转义反引号（\` → `）
+	html = html.replace(/\\`/g, '`')
 	const lines = html.split('\n')
 	let inBlockquote = false
 	const processedLines = []
