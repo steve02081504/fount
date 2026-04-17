@@ -43,7 +43,7 @@ function dispatchMessage(message) {
 		}
 }
 
-if ('serviceWorker' in navigator)
+if (navigator.serviceWorker)
 	navigator.serviceWorker.addEventListener('message', event => {
 		if (event.data)
 			dispatchMessage(event.data)

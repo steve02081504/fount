@@ -196,7 +196,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
  */
 export const base_dir = '../'.repeat(window.location.pathname.split('/').length - 3).slice(0, -1)
 
-if ('serviceWorker' in navigator)
+if (navigator.serviceWorker)
 	navigator.serviceWorker.register('/sw.js')
 		.catch(error => {
 			console.error('Service Worker registration failed: ', error)

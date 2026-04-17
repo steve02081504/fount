@@ -68,7 +68,7 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
  * @returns {string} 逻辑频道 ID。
  */
 function constructLogicalChannelIdForDefault(chatId, threadId) {
-	if (String(threadId)) return `${chatId}_${threadId}`
+	if (Object(threadId) instanceof Number) return `${chatId}_${threadId}`
 	return String(chatId)
 }
 

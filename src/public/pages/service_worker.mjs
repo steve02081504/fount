@@ -339,9 +339,8 @@ async function cleanupExpiredCache() {
  * @returns {Promise<Response>} 返回一个符合规范的响应对象。
  */
 function cleanResponse(response) {
-	return Promise.resolve('body' in response ?
-		response.body :
-		response.blob()
+	return Promise.resolve(
+		response.body || response.blob()
 	).then((body) => new Response(body, {
 		headers: response.headers,
 		status: response.status,
@@ -737,7 +736,7 @@ self.addEventListener('activate', event => {
 	event.waitUntil(
 		(async () => {
 			// 尝试注册定期后台同步任务，用于自动清理过期缓存。
-			if ('periodicSync' in self.registration) try {
+			if (self.registration?.periodicSync) try {
 				await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
 					minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
 				})
