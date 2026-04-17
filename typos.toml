@@ -39,6 +39,9 @@ extend-ignore-re = [
 	"USER_AGENT_ND",
 	# RisuAI 的天才使用该拼写
 	"embeded://",
+	# npm:@tencent-weixin/openclaw-weixin/src/auth/login-qr.ts，大厂草台班子拼写错误
+	"'scaned'",
+	"'scaned_but_redirect'",
 	# IdleManager 中“仅运行一次”的动作列表
 	"RunOnces",
 	# state diagram 的 composit 类名
