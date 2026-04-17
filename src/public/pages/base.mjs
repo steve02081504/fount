@@ -42,7 +42,7 @@ console.noBreadcrumb = {
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
 // register service worker
-if ('serviceWorker' in navigator)
+if (navigator.serviceWorker)
 	navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
 		.catch(error => {
 			console.error('Service Worker registration failed: ', error)

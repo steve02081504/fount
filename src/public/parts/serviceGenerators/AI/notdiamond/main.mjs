@@ -57,7 +57,7 @@ async function GetSource(config) {
 			messages,
 			model: config.model
 		})
-		if ('detail' in result) throw result.detail
+		if (result.detail) throw result.detail
 		return result.content
 	}
 	/** @type {AIsource_t} */
