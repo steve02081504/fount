@@ -126,11 +126,11 @@ export async function pollQrSession(sessionKey, username) {
 		case 'wait':
 			return { done: false, status: 'wait' }
 		case 'scaned':
-			return { done: false, status: 'scaned' }
+			return { done: false, status: 'scanned' }
 		case 'scaned_but_redirect': {
 			if (status.redirect_host)
 				session.currentApiBaseUrl = ensureTrailingSlash(`https://${status.redirect_host}`)
-			return { done: false, status: 'scaned_but_redirect' }
+			return { done: false, status: 'scanned_but_redirect' }
 		}
 		case 'expired': {
 			session.qrRefreshCount++
@@ -164,6 +164,7 @@ export async function pollQrSession(sessionKey, username) {
 			}
 		}
 		default:
+			console.error(`[Wechat QR] Unknown status: ${status.status}`)
 			return { done: false, status: status.status || 'unknown' }
 	}
 }

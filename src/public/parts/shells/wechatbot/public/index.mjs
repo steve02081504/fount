@@ -411,7 +411,7 @@ function stopQrPoll() {
  * @returns {Promise<any>} 返回值。
  */
 async function handleQrPollResult(result) {
-	if (result.status === 'scaned')
+	if (result.status === 'scanned')
 		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.scanned')
 
 	if (result.qrcodeContent)
