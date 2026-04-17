@@ -1,0 +1,7 @@
+<div popover="auto" class="msg-ctx-menu fixed z-[200] rounded-lg border border-base-300 bg-base-100 shadow-xl p-1 flex flex-col gap-0.5 min-w-[10rem]" data-msg-ctx-root>
+${showTextActions ? '<button type="button" class="btn btn-sm btn-ghost justify-start font-normal" data-action="copy" data-i18n="chat.group.menuCopyText"></button>' : ''}
+${showTextActions ? '<button type="button" class="btn btn-sm btn-ghost justify-start font-normal" data-action="exportHtml" data-i18n="chat.group.menuExportHtml"></button>' : ''}
+${showTextActions ? '<button type="button" class="btn btn-sm btn-ghost justify-start font-normal" data-action="shareExternal" data-i18n="chat.group.menuShareExternal"></button>' : ''}
+${showThreadRow ? '<button type="button" class="btn btn-sm btn-ghost justify-start font-normal" data-action="openThread" data-i18n="chat.group.replyInThread"></button>' : ''}
+${showCopyIdRow ? '<button type="button" class="btn btn-sm btn-ghost justify-start font-normal opacity-60 text-xs" data-action="copyEventId" data-i18n="chat.group.menuCopyId"></button>' : ''}
+</div>

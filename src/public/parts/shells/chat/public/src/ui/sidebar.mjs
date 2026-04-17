@@ -5,8 +5,10 @@ import {
 	getPartDetails,
 } from '../../../../../scripts/parts.mjs'
 import { renderTemplate } from '../../../../../scripts/template.mjs'
+import { showToastI18n } from '../../../../../scripts/toast.mjs'
 import { charList, worldName, personaName, setCharList, setWorldName, setPersonaName, pluginList, setPluginList } from '../chat.mjs'
 import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency, addPlugin, removePlugin } from '../endpoints.mjs'
+import { handleUIError, normalizeError } from '../utils.mjs'
 
 const worldSelect = document.getElementById('world-select')
 const worldDetailsContainer = document.getElementById('world-details')
@@ -381,6 +383,30 @@ export async function setupSidebar() {
 	// 鼠标移出右侧边栏区域隐藏右侧边栏
 	rightSidebarContainer.addEventListener('mouseleave', () => {
 		hideRightSidebar()
+	})
+
+	// Data management buttons
+	document.getElementById('compact-group-button')?.addEventListener('click', async () => {
+		try {
+			const { compactGroup } = await import('../endpoints.mjs')
+			await compactGroup()
+			showToastI18n('success', 'chat.sidebar.dataMgmt.compactSuccess')
+		}
+		catch (e) {
+			handleUIError(normalizeError(e), 'chat.sidebar.dataMgmt.compactError', 'compactGroup')
+		}
+	})
+	document.getElementById('prune-messages-button')?.addEventListener('click', async () => {
+		const n = parseInt(document.getElementById('prune-keep-n')?.value || '200', 10)
+		if (!Number.isFinite(n) || n < 10) return showToastI18n('warning', 'chat.sidebar.dataMgmt.invalidN')
+		try {
+			const { pruneChannelMessages } = await import('../endpoints.mjs')
+			await pruneChannelMessages(n)
+			showToastI18n('success', 'chat.sidebar.dataMgmt.pruneSuccess')
+		}
+		catch (e) {
+			handleUIError(normalizeError(e), 'chat.sidebar.dataMgmt.pruneError', 'pruneChannelMessages')
+		}
 	})
 }
 

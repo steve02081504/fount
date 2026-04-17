@@ -239,13 +239,16 @@ export default {
 				}
 			},
 			/**
-			 * 获取回复频率
-			 * @returns {Promise<number>} 一个解析为回复频率（数字）的 Promise。
-			 * @param {any} args 参数
+			 * 新消息到达时，决定是否主动发言（onMessage 事件）
+			 * @param {{ onlineCount: number }} root0 事件参数对象
+			 * @param {number} root0.onlineCount 当前在线人数（含用户）
+			 * @returns {Promise<boolean>} 是否在本轮随机中主动发言
 			 */
-			GetReplyFrequency: async args => {
-				if (chardata.extensions.talkativeness) return Number(chardata.extensions.talkativeness) * 2
-				return 1
+			onMessage: async ({ onlineCount }) => {
+				const talkativeness = chardata.extensions.talkativeness
+					? Math.max(0.05, Number(chardata.extensions.talkativeness) * 2)
+					: 1
+				return Math.random() < (1 / onlineCount) * talkativeness * 2
 			},
 			/**
 			 * 消息编辑

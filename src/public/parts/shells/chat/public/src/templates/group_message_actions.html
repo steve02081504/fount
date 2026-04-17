@@ -1,0 +1,14 @@
+<div class="contents" data-group-message-actions>
+<div class="normal-buttons flex flex-col gap-1" style="display: flex;">
+${showPin ? '<button type="button" data-action="pin" class="btn btn-outline btn-xs whitespace-nowrap min-h-8" data-i18n="chat.group.pinAction" data-i18n-title="chat.group.pinThisMessage"></button>' : ''}
+${showEdit ? '<button type="button" data-action="edit" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 opacity-60 hover:opacity-100 inline-flex items-center justify-center" data-i18n-title="chat.group.editMessage"><img src="https://api.iconify.design/line-md/edit.svg" class="w-4 h-4" alt="" /></button>' : ''}
+${showBookmark ? '<button type="button" data-action="bookmark" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 inline-flex items-center justify-center" data-i18n-title="chat.group.addBookmark"><img src="https://api.iconify.design/mdi/bookmark-outline.svg" class="w-4 h-4" alt="" /></button>' : ''}
+${showSaveSticker ? '<button type="button" data-action="saveSticker" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 inline-flex items-center justify-center" data-i18n-title="chat.group.saveSticker"><img src="https://api.iconify.design/mdi/content-save-outline.svg" class="w-4 h-4" alt="" /></button>' : ''}
+${showMore ? '<button type="button" data-action="more" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 opacity-40 hover:opacity-100" data-i18n-title="chat.group.moreActions">⋯</button>' : ''}
+</div>
+<div class="shift-buttons flex flex-col gap-1" style="display: none;">
+${showUnpin ? '<button type="button" data-action="unpin" class="btn btn-outline btn-xs whitespace-nowrap min-h-8" data-i18n="chat.group.unpinAction" data-i18n-title="chat.group.unpinAction"></button>' : ''}
+${showDelete ? '<button type="button" data-action="delete" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 opacity-60 hover:opacity-100 hover:btn-error inline-flex items-center justify-center" data-i18n-title="chat.group.deleteMessage"><img src="https://api.iconify.design/line-md/remove.svg" class="w-4 h-4" alt="" /></button>' : ''}
+${showBlockDm ? '<button type="button" data-action="blockDm" class="btn btn-ghost btn-xs whitespace-nowrap min-h-8 opacity-60 inline-flex items-center justify-center" data-i18n-title="chat.group.blockSender"><img src="https://api.iconify.design/mdi/cancel.svg" class="w-4 h-4" alt="" /></button>' : ''}
+</div>
+</div>

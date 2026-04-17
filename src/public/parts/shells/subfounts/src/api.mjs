@@ -251,7 +251,7 @@ class UserSubfountManager {
 				this.actions.clear()
 			}
 
-			const { joinRoom } = await import('npm:trystero/mqtt')
+			const { joinMqttRoom } = await import('../../../../../scripts/p2p/federation_trystero.mjs')
 			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
 			const config = {
@@ -259,7 +259,7 @@ class UserSubfountManager {
 				rtcPolyfill: RTCPeerConnection,
 				password: codesData.password, // 使用连接密码进行加密
 			}
-			this.room = joinRoom(config, this.hostPeerId)
+			this.room = await joinMqttRoom(config, this.hostPeerId)
 
 			// 设置操作处理程序
 			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']

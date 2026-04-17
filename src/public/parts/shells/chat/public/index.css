@@ -1,75 +1,3 @@
-/* 聊天消息样式 */
-.chat-message {
-	position: relative;
-	transition: transform 0.3s ease;
-}
-
-.chat-message:hover {
-	transform: translateX(5px);
-}
-
-.chat-message .message-content {
-	max-width: calc(var(--chat-header-width) - 83px);
-}
-
-/* 左右箭头 */
-.chat-message .arrow {
-	position: absolute;
-	top: 60%;
-	transform: translateY(-50%);
-	cursor: pointer;
-	opacity: 0;
-	transition: opacity 0.2s ease;
-	z-index: 10;
-}
-
-.chat-message:hover .arrow {
-	opacity: 0.8;
-}
-
-.chat-message .arrow.left {
-	left: 10px;
-}
-
-.chat-message .arrow.right {
-	right: 10px;
-}
-
-/* 消息按钮组 (编辑和删除) */
-.chat-message .button-group {
-	position: sticky;
-	top: 5px;
-	right: 5px;
-	float: right;
-	z-index: 10;
-	height: 0;
-	overflow: visible;
-	opacity: 0;
-	transition: opacity 0.2s ease-in-out;
-	pointer-events: none;
-}
-
-.chat-message:hover .button-group {
-	opacity: 1;
-	pointer-events: auto;
-}
-
-/* 编辑区域 */
-.chat-message .edit-area {
-	min-width: 80%;
-}
-
-/* 编辑区域按钮组 */
-.chat-message .edit-area .edit-button-group {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	position: sticky;
-	top: 5px;
-	align-self: flex-start;
-	z-index: 10;
-}
-
 /* 附件容器 */
 .attachment {
 	min-width: 100px;
@@ -170,9 +98,17 @@
 	margin-top: 10px;
 }
 
-/* 拖拽区域样式 */
-.dragover {
-	border: 2px dashed #007bff;
+/* 群聊行内编辑：气泡与编辑面板切换时的 opacity 过渡（messageItem.mjs） */
+.chat-msg-edit-fade {
+	transition: opacity 0.2s ease;
+	will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.chat-msg-edit-fade {
+		transition: none;
+		will-change: auto;
+	}
 }
 
 /* 模态框样式 */
@@ -195,81 +131,6 @@
 	object-fit: contain;
 }
 
-/* 消息操作栏（复制、赞/踩/重新生成等），hover 或输入框聚焦时平滑展开 */
-.chat-message .message-actions-bar {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	overflow: hidden;
-	max-height: 0;
-	margin-top: 0;
-	padding: 0;
-	opacity: 0;
-	pointer-events: none;
-	transition:
-		max-height 0.25s ease-in-out,
-		margin-top 0.25s ease-in-out,
-		padding 0.25s ease-in-out,
-		opacity 0.2s ease-in-out;
-}
-
-.chat-message:hover .message-actions-bar,
-.chat-message .message-actions-bar:focus-within {
-	max-height: 180px;
-	margin-top: 8px;
-	padding: 2px 2px 6px;
-	opacity: 1;
-	pointer-events: auto;
-}
-
-/* 操作栏内按钮统一样式与点击动画 */
-.chat-message .message-actions-bar button {
-	transition: color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
-}
-
-.chat-message .message-actions-bar button:active {
-	transform: scale(0.85);
-}
-
-.chat-message .message-actions-bar .feedback-input-wrap {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	overflow: hidden;
-	max-height: 0;
-	opacity: 0;
-	pointer-events: none;
-	transition:
-		max-height 0.2s ease-in-out,
-		opacity 0.15s ease-in-out;
-}
-
-.chat-message .message-actions-bar .feedback-input-wrap.visible {
-	max-height: 140px;
-	padding: 3px;
-	opacity: 1;
-	pointer-events: auto;
-}
-
-/* 角色名平滑过渡 */
-.char-name {
-	transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, margin 0.3s ease-in-out, padding 0.3s ease-in-out, transform 0.3s ease-in-out;
-	transform-origin: top;
-	max-height: 5rem;
-	/* 确保这个值大于元素可能的最大高度 */
-	overflow: hidden;
-}
-
-/* 根据聊天中的角色数量隐藏角色名称 */
-body.hide-char-names .char-name {
-	opacity: 0;
-	max-height: 0;
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
-	transform: scaleY(0);
-}
 
 /* 侧边栏详情 */
 .sidebar-item-details {
@@ -307,4 +168,68 @@ body.hide-char-names .char-name {
 	max-height: 60vh;
 	/* 限制一个最大高度，避免图片过高 */
 	object-fit: contain;
+}
+
+/* 流式 Markdown 渲染光标 */
+@keyframes stream-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.stream-cursor {
+  display: inline-block;
+  animation: stream-cursor-blink 1s step-end infinite;
+  font-weight: bold;
+  color: currentColor;
+}
+
+/* 群聊消息悬浮操作条（对齐旧版：默认收起，hover/focus 显示） */
+[data-slot="actions"] {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(4px);
+	transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.group\/msg:hover [data-slot="actions"],
+.group\/msg:focus-within [data-slot="actions"] {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateX(0);
+}
+
+/* 触屏设备无 hover，保持可点击 */
+@media (hover: none), (pointer: coarse) {
+	[data-slot="actions"] {
+		opacity: 1;
+		pointer-events: auto;
+		transform: none;
+	}
+}
+
+/* Thread Drawer（群聊内联侧边栏） */
+.thread-drawer {
+	width: 0;
+	min-width: 0;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	max-height: 100%;
+	transition: width 0.25s ease, min-width 0.25s ease, opacity 0.2s ease;
+	opacity: 0;
+	border-left: 1px solid oklch(var(--b3));
+}
+.thread-drawer.open {
+	width: clamp(280px, 30vw, 360px);
+	min-width: 280px;
+	opacity: 1;
+}
+@media (max-width: 768px) {
+	.thread-drawer.open {
+		position: absolute;
+		inset: 0;
+		z-index: 50;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
 }

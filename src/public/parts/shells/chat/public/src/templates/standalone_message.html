@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <!-- eslint-disable -->
+<!-- 模板引擎 HTML，非独立脚本；须整文件禁用 eslint 避免误解析内嵌语法 -->
 <html lang="${main_locale}">
 ${
 	let messageHtml = setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content))
@@ -146,7 +147,7 @@ ${ message.files?.length ? `
 				else if (file.mime_type.startsWith('audio/'))
 					previewHtml = /*html*/ `<audio src="${dataUrl}" controls></audio>`
 				else
-					previewHtml = /*html*/ '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+					previewHtml = /*html*/ '<div class="file-placeholder" style="font-size: 40px; text-align: center;"><img src="https://api.iconify.design/line-md/document.svg" class="w-10 h-10 mx-auto" alt="" /></div>'
 
 				return /*html*/ `
 			<div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">

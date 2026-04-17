@@ -34,6 +34,17 @@
 				<input type="text" id="filter-input" class="input input-bordered" data-i18n="chat_history.filterInput" />
 			</div>
 		</div>
+		<section class="mb-6 p-3 border border-base-300 rounded-lg bg-base-200/40">
+			<h2 class="text-lg font-semibold mb-2" data-i18n="chat_history.groupSectionTitle"></h2>
+			<div class="flex gap-2 mb-2 flex-wrap">
+				<button type="button" id="new-dm-button" class="btn btn-sm btn-secondary" data-i18n="chat_history.newDm"></button>
+				<button type="button" id="qr-transfer-button" class="btn btn-sm btn-outline" data-i18n="chat.group.qrTransferButton"></button>
+			</div>
+			<ul id="group-links" class="flex flex-col gap-1 text-sm"></ul>
+			<p class="text-xs opacity-70 mt-2 mb-1" data-i18n="chat_history.groupFoldersDragHint"></p>
+			<ul id="group-folders-list" class="flex flex-col gap-2 text-sm min-h-[2rem]"></ul>
+			<button type="button" id="add-group-folder-btn" class="btn btn-xs btn-outline mt-2" data-i18n="chat_history.addGroupFolder"></button>
+		</section>
 		<div class="flex items-center mb-4 gap-2">
 			<input type="checkbox" id="select-all-checkbox" class="checkbox" />
 			<label for="select-all-checkbox" class="cursor-pointer select-none" data-i18n="chat_history.selectAll"></label>

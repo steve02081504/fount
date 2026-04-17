@@ -1,0 +1,20 @@
+<div class="flex flex-col gap-2 mb-2 px-1">
+	<div class="flex gap-2 flex-wrap items-center">
+		<span class="text-xs opacity-50">
+			<span data-i18n="chat.group.channelTypeLabel"></span>: <span data-i18n="chat.group.channelTypeText"></span>
+		</span>
+		<button class="btn btn-xs btn-ghost opacity-60" data-action="to-list" data-i18n="chat.group.convertToList"></button>
+		<button class="btn btn-xs btn-ghost opacity-60" data-action="set-default" data-i18n="chat.group.setAsDefault" data-show-if-not-default="true"></button>
+		<span class="badge badge-ghost badge-sm opacity-70" data-i18n="chat.group.isDefault" data-show-if-default="true"></span>
+	</div>
+	<div class="hidden w-full flex flex-col gap-1 border-t border-base-300/50 pt-2" data-private-encryption-row>
+		<label class="flex items-center justify-between gap-2 cursor-pointer max-w-md">
+			<span class="text-xs font-medium" data-i18n="chat.group.channelEncryptionMailbox"></span>
+			<input type="checkbox" class="toggle toggle-sm toggle-primary" data-high-privacy-toggle />
+		</label>
+		<p class="text-xs opacity-60 m-0" data-encryption-caption></p>
+	</div>
+	<div class="hidden w-full flex flex-col gap-1 border-t border-base-300/50 pt-2" data-channel-admin-crypto-row>
+		<button type="button" class="btn btn-xs btn-warning w-fit max-w-full" data-action="channel-crypto-migrate" data-i18n="chat.group.channelCryptoMigrate"></button>
+	</div>
+</div>

@@ -19,8 +19,8 @@
 
 - **Create New Parts**: Mimic existing examples in `@src/public/parts/` or `@data/users/.../chars/`.
 - **UI (Shells)**: Decoupled from backend. Use API endpoints in `src/server/web_server/endpoints.mjs`.
-- **I18n**: Only modify `src/locales/zh-CN.json`; `update-locales.py` handles the rest.
-- **Standards**: Run `eslint --fix --quiet` after changes. No logging unless error/warning.
+- **I18n**: Only modify `src/public/locales/zh-CN.json`; `update-locales.py` handles the rest.
+- **Standards**: Run `eslint --fix --quiet` after changes(NO `npx`, just `eslint`). No logging unless error/warning.
 
 ## 4. Specialized Guides
 

@@ -1,0 +1,19 @@
+<div class="modal-box">
+	<h3 class="font-bold text-lg mb-4">${geti18n('chat.group.newChannelTitle') || 'New Channel'}</h3>
+	<div class="form-control mb-3">
+		<label class="label"><span class="label-text">${geti18n('chat.group.channelName') || 'Channel Name'}</span></label>
+		<input type="text" id="new-channel-name" class="input input-bordered" placeholder="general" />
+	</div>
+	<div class="form-control mb-4">
+		<label class="label"><span class="label-text">${geti18n('chat.group.channelType') || 'Type'}</span></label>
+		<select id="new-channel-type" class="select select-bordered">
+			<option value="text">${geti18n('chat.group.channelTypeText') || 'Chat'}</option>
+			<option value="list">${geti18n('chat.group.channelTypeList') || 'List'}</option>
+			<option value="streaming">${geti18n('chat.group.channelTypeStreaming') || 'Streaming'}</option>
+		</select>
+	</div>
+	<div class="modal-action">
+		<button id="new-channel-cancel" class="btn btn-ghost">${geti18n('common.cancel') || 'Cancel'}</button>
+		<button id="new-channel-create" class="btn btn-primary">${geti18n('common.create') || 'Create'}</button>
+	</div>
+</div>
