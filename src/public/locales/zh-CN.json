@@ -51,6 +51,7 @@
 				"localAhead": "本地分支领先于远程分支。无需更新。",
 				"noUpstream": "没有为分支 '${currentBranch}' 配置上游分支，跳过更新检查。",
 				"dirtyWorkingDirectory": "工作目录不干净。请暂存或提交你的更改后再更新。",
+				"uncommittedBackedUpTo": "未提交更改已备份到：${path}",
 				"diverged": "本地和远程分支已分叉。强制更新中...",
 				"updateFailed": "从远程仓库更新组件失败：${error}"
 			}

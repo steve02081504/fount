@@ -751,8 +751,33 @@ install_ipc_tools() {
 	install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 }
 
+fount_git_backup_uncommitted() {
+	command -v git &>/dev/null || return 0
+	[ -d "$FOUNT_DIR/.git" ] || return 0
+	if [ -z "$(git -C "$FOUNT_DIR" status --porcelain)" ]; then
+		return 0
+	fi
+
+	local timestamp
+	timestamp=$(date +'%Y%m%d_%H%M%S')
+	local tmp_base="${TMPDIR:-/tmp}"
+	local diff_file_path="$tmp_base/fount-local-changes-diff_$timestamp.diff"
+
+	git -C "$FOUNT_DIR" add -A 2>/dev/null || true
+	git -C "$FOUNT_DIR" diff --cached >"$diff_file_path" 2>/dev/null || true
+	if git -C "$FOUNT_DIR" rev-parse --verify HEAD &>/dev/null; then
+		git -C "$FOUNT_DIR" reset HEAD 2>/dev/null || true
+	else
+		git -C "$FOUNT_DIR" reset 2>/dev/null || true
+	fi
+
+	echo -e "${C_YELLOW}$(get_i18n 'git.localChangesDetected')${C_RESET}"
+	echo -e "${C_GREEN}$(get_i18n 'git.backupSavedTo' 'path' "${C_CYAN}$diff_file_path${C_RESET}")"
+}
+
 git_reset_and_clean() {
 	if command -v git &>/dev/null; then
+		fount_git_backup_uncommitted
 		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
@@ -1137,18 +1162,6 @@ fount_upgrade() {
 			echo -e "${C_RED}$(get_i18n 'git.fetchFailed')${C_RESET}"
 			return 1
 		fi
-		local diff_output
-		diff_output=$(git -C "$FOUNT_DIR" diff "origin/master")
-		if [ -n "$diff_output" ]; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.localChangesDetected')${C_RESET}"
-			local timestamp
-			timestamp=$(date +'%Y%m%d_%H%M%S')
-			local tmp_dir="${TMPDIR:-/tmp}"
-			local diff_file_name="fount-local-changes-diff_$timestamp.diff"
-			local diff_file_path="$tmp_dir/$diff_file_name"
-			echo "$diff_output" >"$diff_file_path"
-			echo -e "${C_GREEN}$(get_i18n 'git.backupSavedTo' 'path' "${C_CYAN}$diff_file_path${C_RESET}")"
-		fi
 		git_reset_and_clean
 	else
 		git -C "$FOUNT_DIR" config core.autocrlf false
@@ -1168,9 +1181,8 @@ fount_upgrade() {
 			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master "$currentBranch"
 			remoteBranch="origin/master"
 		fi
-		if [ -n "$(git -C "$FOUNT_DIR" status --porcelain)" ]; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
-		fi
+		local git_status
+		git_status=$(git -C "$FOUNT_DIR" status --porcelain)
 		local mergeBase
 		mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
 		local localCommit
@@ -1180,15 +1192,27 @@ fount_upgrade() {
 		if [ "$localCommit" != "$remoteCommit" ]; then
 			if [ "$mergeBase" = "$localCommit" ]; then
 				get_i18n 'git.updatingFromRemote'
+				if [ -n "$git_status" ]; then
+					fount_git_backup_uncommitted
+				fi
 				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
 			elif [ "$mergeBase" = "$remoteCommit" ]; then
 				get_i18n 'git.localBranchAhead'
+				if [ -n "$git_status" ]; then
+					echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
+				fi
 			else
 				get_i18n 'git.branchesDiverged'
+				if [ -n "$git_status" ]; then
+					fount_git_backup_uncommitted
+				fi
 				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
 			fi
 		else
 			get_i18n 'git.alreadyUpToDate'
+			if [ -n "$git_status" ]; then
+				echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
+			fi
 		fi
 	fi
 }
