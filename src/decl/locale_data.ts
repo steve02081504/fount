@@ -444,7 +444,6 @@ export type LocaleData = {
 			title: string
 			retrieve_error: string
 			transfer_error: string
-			no_credentials: string
 			missing_params: string
 			buttons: {
 				ignore: string
