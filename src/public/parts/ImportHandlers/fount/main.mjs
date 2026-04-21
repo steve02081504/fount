@@ -6,7 +6,8 @@ import url from 'node:url'
 
 import { move, remove } from 'npm:fs-extra'
 
-import { run_git } from '../../../../scripts/git.mjs'
+import { backupGitUncommittedChanges, run_git } from '../../../../scripts/git.mjs'
+import { console } from '../../../../scripts/i18n.mjs'
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
 import { loadPart, isPartLoaded } from '../../../../server/parts_loader.mjs'
 
@@ -149,6 +150,9 @@ async function ImportByText(username, text) {
 					await git('config core.autocrlf false')
 					const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 					await git('fetch origin')
+					const backup = await backupGitUncommittedChanges(targetPath)
+					if (backup)
+						console.warnI18n('fountConsole.partManager.git.uncommittedBackedUpTo', backup)
 					await git('reset --hard ' + remoteBranch)
 					if (needsReload)
 						loadPart(username, meta.type + '/' + meta.dirname)

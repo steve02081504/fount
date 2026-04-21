@@ -3,7 +3,7 @@ import path from 'node:path'
 import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
-import { run_git } from '../scripts/git.mjs'
+import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
@@ -461,25 +461,37 @@ export async function baseloadPart(username, partpath, {
 			const localCommit = await git('rev-parse ' + currentBranch)
 			const remoteCommit = await git('rev-parse ' + remoteBranch)
 			const status = await git('status --porcelain')
-			if (status)
-				console.warnI18n('fountConsole.partManager.git.dirtyWorkingDirectory')
+
+			/**
+			 * 如果存在未提交的更改则备份并警告。
+			 * @returns {Promise<void>}
+			 */
+			const warnAndBackUpIfUncommitted = async () => {
+				const backup = await backupGitUncommittedChanges(path)
+				if (backup) console.warnI18n('fountConsole.partManager.git.uncommittedBackedUpTo', backup)
+			}
 
 			if (localCommit !== remoteCommit)
 				if (mergeBase === localCommit) {
 					console.logI18n('fountConsole.partManager.git.updating')
+					await warnAndBackUpIfUncommitted()
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
-				else if (mergeBase === remoteCommit)
+				else if (mergeBase === remoteCommit) {
+					if (status) console.warnI18n('fountConsole.partManager.git.dirtyWorkingDirectory')
 					console.logI18n('fountConsole.partManager.git.localAhead')
-
+				}
 				else {
 					console.logI18n('fountConsole.partManager.git.diverged')
+					await warnAndBackUpIfUncommitted()
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
-			else
+			else {
+				if (status) console.warnI18n('fountConsole.partManager.git.dirtyWorkingDirectory')
 				console.logI18n('fountConsole.partManager.git.upToDate')
+			}
 		}
 	} catch (e) {
 		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
