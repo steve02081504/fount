@@ -455,7 +455,6 @@
 			"title": "🔐❌",
 			"retrieve_error": "🔐💾❌:\n${error}\n➡️🤷‍♂️💾",
 			"transfer_error": "🔐➡️❌:\n${error}\n➡️🤷‍♂️🔐",
-			"no_credentials": "💾🔐❌\n🔙⛲️🔑🔄，🤷‍♂️➡️📄",
 			"missing_params": "🔗🧩❌",
 			"buttons": {
 				"ignore": "🤷‍♂️➡️",

@@ -72,6 +72,18 @@
 			errorModal.showModal()
 		}
 
+		/**
+		 * 重定向到失败页面。
+		 * @param {string} message - 错误信息。
+		 * @returns {void}
+		 */
+		function failedRedirect(message) {
+			const targetUrl = new URL(processUrl(redirectUrl))
+			targetUrl.searchParams.set('login_status', 'failed')
+			targetUrl.searchParams.set('reason', message)
+			window.location.href = targetUrl.href
+		}
+
 		try {
 			if (!redirectUrl || !uuid) {
 				errorMessageElement.textContent = geti18n('login_info.modal.missing_params')
@@ -101,11 +113,7 @@
 				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
 				throw error
 			}
-			else {
-				console.error('No credentials found.')
-				errorMessageElement.textContent = geti18n('login_info.modal.no_credentials')
-				throw new Error('No credentials found.')
-			}
+			else failedRedirect('No credentials found.')
 		}
 		catch (error) {
 			showErrorModal(errorMessageElement.textContent || error.message, {
@@ -116,10 +124,7 @@
 				onIgnore: () => {
 					errorModal.close()
 					if (!redirectUrl) return window.location.reload()
-					const targetUrl = new URL(processUrl(redirectUrl))
-					targetUrl.searchParams.set('login_status', 'failed')
-					targetUrl.searchParams.set('reason', error.message)
-					window.location.href = targetUrl.href
+					failedRedirect(error.message)
 				}
 			})
 		}
