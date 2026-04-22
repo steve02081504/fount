@@ -430,12 +430,30 @@ export type LocaleData = {
 			accountAlreadyExists: string
 			powNotSolved: string
 			powError: string
+			invalidCredentials: string
+			accountLockedRetry: string
+			accountLockedAttempts: string
+			powValidationFailed: string
+			apiErrorBodyUnreadable: string
 		}
 		webauthn: {
 			loginButton: string
-			errorNoUsername: string
 			errorLoadLibrary: string
 			errorCancelled: string
+			errorSessionMissing: string
+			errorBadBeginResponse: string
+			errorCredentialRequired: string
+			errorAuthSessionRequired: string
+			apiSessionExpired: string
+			apiUnknownPasskey: string
+			apiPasskeyVerificationFailed: string
+			registrationUserNotFound: string
+			registrationSessionExpired: string
+			registrationVerifyFailed: string
+			registrationFailed: string
+			removeUserNotFound: string
+			removeInvalidPassword: string
+			removePasskeyNotFound: string
 		}
 	}
 	login_info: {
@@ -1347,6 +1365,14 @@ export type LocaleData = {
 		title: string
 		PageTitle: string
 		description: string
+		shell: {
+			unauthorized: string
+			responseNotJson: string
+			unexpectedError: string
+		}
+		errors: {
+			accountNotFound: string
+		}
 		userInfo: {
 			title: string
 			usernameLabel: string
@@ -1360,6 +1386,7 @@ export type LocaleData = {
 				alt: string
 			}
 			copiedAlert: string
+			copyPathFailed: string
 		}
 		changePassword: {
 			title: string
@@ -1369,6 +1396,8 @@ export type LocaleData = {
 			submitButton: string
 			errorMismatch: string
 			success: string
+			missingFields: string
+			invalidCurrent: string
 		}
 		renameUser: {
 			title: string
@@ -1376,6 +1405,11 @@ export type LocaleData = {
 			submitButton: string
 			confirmMessage: string
 			success: string
+			missingParams: string
+			wrongPassword: string
+			mustDiffer: string
+			taken: string
+			moveFailed: string
 		}
 		passkeys: {
 			title: string
@@ -1399,6 +1433,9 @@ export type LocaleData = {
 			addSuccess: string
 			errorLoadLibrary: string
 			errorCancelled: string
+			apiInvalidPassword: string
+			apiMissingCredential: string
+			apiRemoveParamsRequired: string
 		}
 		userDevices: {
 			title: string
@@ -1409,6 +1446,10 @@ export type LocaleData = {
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string
+			revokeMissingParams: string
+			revokeWrongPassword: string
+			listNotFound: string
+			deviceNotFound: string
 			refreshButton: {
 				title: string
 			}
@@ -1426,6 +1467,11 @@ export type LocaleData = {
 			noKeysFound: string
 			keyDetails: string
 			neverUsed: string
+			noKeysForUser: string
+			revokeWrongPassword: string
+			keyNotFound: string
+			revokeMissingJti: string
+			revokeMissingPassword: string
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string
@@ -1446,6 +1492,7 @@ export type LocaleData = {
 				title: string
 			}
 			copiedAlert: string
+			copyKeyFailed: string
 		}
 		logout: {
 			title: string
@@ -1462,6 +1509,8 @@ export type LocaleData = {
 			confirmMessage2: string
 			usernameMismatch: string
 			success: string
+			missingPassword: string
+			wrongPassword: string
 		}
 		passwordConfirm: {
 			title: string
@@ -2611,6 +2660,7 @@ export type LocaleKey = Paths<LocaleData>
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
+	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }
 	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
@@ -2744,6 +2794,7 @@ export type LocaleKeyParams = {
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
 	'userSettings.generalError': { message: string | number }
 	'userSettings.passkeys.itemDetails': { created: string | number }
+	'userSettings.renameUser.moveFailed': { detail: string | number }
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }

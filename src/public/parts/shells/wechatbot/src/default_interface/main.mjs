@@ -98,7 +98,7 @@ function hardSplitByBytes(text, maxBytes) {
 function splitWechatText(text, maxBytes = WECHAT_TEXT_MAX_BYTES) {
 	const textEncoder = new TextEncoder()
 	if (!text || textEncoder.encode(text).length <= maxBytes) return text ? [text] : []
-	const parts = text.split(/(?<=[。！？.!?；;,，、\n])/)
+	const parts = text.split(/(?<=[\n!,.;?、。！，；？])/)
 	const chunks = []
 	let current = ''
 	for (const part of parts) {
@@ -503,7 +503,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		/** 长轮询游标：服务端返回的 get_updates_buf，用于接续拉取。 */
 		let getUpdatesCursor = ''
 		let longPollTimeoutMs = DEFAULT_LONG_POLL_TIMEOUT_MS
-		const chatLog = /** @type {chatLogEntry_t_simple[]} */ []
+		const chatLog = /** @type {chatLogEntry_t_simple[]} */[]
 		let lastToUserId = ''
 		let lastContextToken = ''
 		const chatScopedCharMemory = {}

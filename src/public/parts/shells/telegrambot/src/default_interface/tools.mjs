@@ -166,7 +166,7 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 	// 单次扫描处理所有行内格式，代码块（<pre>/<code>）原样保留，避免其内容被误解析
 	// 斜体要求 * 紧贴非空白字符（符合 CommonMark 规范），防止数学乘号被误判
 	html = html.replace(
-		/(<pre[\s\S]*?<\/pre>|<code>[\s\S]*?<\/code>)|\*\*(.+?)\*\*|(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)|__(.+?)__|~~(.+?)~~/g,
+		/(<pre[\S\s]*?<\/pre>|<code>[\S\s]*?<\/code>)|\*\*(.+?)\*\*|(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)|__(.+?)__|~~(.+?)~~/g,
 		(match, code, bold, italic, underline, strike) => {
 			if (code !== undefined) return code
 			if (bold !== undefined) return /* html */ `<b>${bold}</b>`

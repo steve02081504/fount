@@ -1,3 +1,19 @@
+import { throwUserSettingsApiError } from '../../scripts/userSettingsApiError.mjs'
+
+/**
+ * 解析 JSON：`response.ok` 为 false 则 reject；`data.success === false` 则 `throwUserSettingsApiError`。
+ * @param {Response} response - fetch 响应。
+ * @returns {Promise<object>} 解析后的 JSON 对象。
+ */
+async function finishAuthenticatedJsonMutation(response) {
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok)
+		return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), data, { response }))
+	if (data.success === false)
+		throwUserSettingsApiError(data.i18nKey, data.i18nParams)
+	return data
+}
+
 /**
  * Ping 服务器。
  * @param {boolean} [with_cache=false] - 是否使用缓存。
@@ -113,33 +129,37 @@ export async function login(username, password, deviceid, powToken) {
 }
 
 /**
- * WebAuthn 登录：请求挑战选项。
- * @param {string} username - 用户名。
+ * Passkey 登录：请求挑战选项。
  * @param {string} [powToken] - POW 令牌。
  * @returns {Promise<Response>} - 服务器响应。
  */
-export async function webauthnLoginBegin(username, powToken) {
+export async function webauthnLoginBegin(powToken) {
 	return await fetch('/api/webauthn/login/begin', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ username, powToken }),
+		body: JSON.stringify({ powToken }),
 	})
 }
 
 /**
- * WebAuthn 登录：提交断言并完成会话。
- * @param {string} username - 用户名。
+ * Passkey 登录：提交断言并完成会话。
  * @param {object} credential - 浏览器返回的凭证 JSON。
+ * @param {string} authSessionToken - begin 返回的会话令牌。
  * @param {string} deviceid - 设备 ID。
  * @param {string} [powToken] - POW 令牌。
  * @returns {Promise<Response>} - 服务器响应。
  */
-export async function webauthnLoginComplete(username, credential, deviceid, powToken) {
+export async function webauthnLoginComplete(credential, authSessionToken, deviceid, powToken) {
 	return await fetch('/api/webauthn/login/complete', {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ username, credential, deviceid, powToken }),
+		body: JSON.stringify({
+			credential,
+			deviceid,
+			powToken,
+			authSessionToken: (authSessionToken ?? '').trim(),
+		}),
 	})
 }
 
@@ -210,8 +230,7 @@ export async function logout() {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return finishAuthenticatedJsonMutation(response)
 }
 
 /**
@@ -220,8 +239,7 @@ export async function logout() {
  */
 export async function getApiKeys() {
 	const response = await fetch('/api/apikey/list')
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return finishAuthenticatedJsonMutation(response)
 }
 
 /**
@@ -235,8 +253,7 @@ export async function createApiKey(description) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ description }),
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return finishAuthenticatedJsonMutation(response)
 }
 
 /**
@@ -251,8 +268,7 @@ export async function revokeApiKey(jti, password) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ jti, password }),
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return finishAuthenticatedJsonMutation(response)
 }
 
 /**

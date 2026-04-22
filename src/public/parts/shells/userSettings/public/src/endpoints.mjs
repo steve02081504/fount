@@ -1,9 +1,7 @@
-/**
- * 用户设置 shell 的客户端 API 端点。
- */
+import { throwUserSettingsApiError } from '/scripts/userSettingsApiError.mjs'
 
 /**
- * 调用 API。
+ * UserSettings shell：`callApi` 仅 fetch；JSON 且 `success: false`、或非 JSON 的错误响应会抛 `throwUserSettingsApiError`。
  * @param {string} endpoint - 端点。
  * @param {'GET' | 'POST'} [method='POST'] - 方法。
  * @param {any} [body] - 正文。
@@ -16,15 +14,17 @@ async function callApi(endpoint, method = 'POST', body) {
 		body: body ? JSON.stringify(body) : undefined,
 	})
 	const contentType = response.headers.get('content-type')
-	if (contentType && contentType.indexOf('application/json') !== -1)
-		return response.json()
-	else {
-		const text = await response.text()
-		if (!response.ok)
-			return { success: false, message: text || response.statusText }
-
-		return { success: true, data: text }
+	if (contentType?.includes('application/json')) {
+		const data = await response.json()
+		if (data.success === false)
+			throwUserSettingsApiError(data.i18nKey, data.i18nParams)
+		return data
 	}
+	const text = await response.text()
+	if (!response.ok)
+		throwUserSettingsApiError('userSettings.shell.responseNotJson')
+
+	return { success: true, data: text }
 }
 
 /**

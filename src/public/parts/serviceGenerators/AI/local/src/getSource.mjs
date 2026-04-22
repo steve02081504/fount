@@ -264,37 +264,37 @@ export async function GetSource(config) {
 				}
 
 				const onResponseChunk = enableLogprobsShow && useStream
-				? (chunk) => {
-					if (chunk.type !== undefined) return
-					const newTokens = chunk.tokens
-					if (!newTokens?.length) return
-					if (firstChunkAt == null) firstChunkAt = Date.now()
-					const prevLen = streamTokens.length
-					streamTokens.push(...newTokens)
-					if (!logprobCollector) return
-					logprobQueue = logprobQueue.then(async () => {
-						if (signal?.aborted) return
-						if (!logprobCollector.isReady) {
-							const seq = session.sequence
-							const prefixLen = Math.max(0, seq.contextTokens.length - streamTokens.length)
-							await logprobCollector.init([...seq.contextTokens.slice(0, prefixLen)])
-						}
-						const rows = await logprobCollector.collectBatch(streamTokens.slice(prevLen))
-						let anyNew = false
-						for (const row of rows) {
-							if (!row) continue
-							out.extension.logprobs.content.push(row)
-							anyNew = true
-						}
-						if (anyNew && !signal?.aborted) {
-							updateStreamingMetrics()
-							out.content_for_show = buildContentForShowFromLogprobs(out, logprobsRenderOpts)
-							didApplyLogprobs = true
-							replyPreviewUpdater?.(clearFormat({ ...out }, prompt_struct))
-						}
-					})
-				}
-				: undefined
+					? (chunk) => {
+						if (chunk.type !== undefined) return
+						const newTokens = chunk.tokens
+						if (!newTokens?.length) return
+						if (firstChunkAt == null) firstChunkAt = Date.now()
+						const prevLen = streamTokens.length
+						streamTokens.push(...newTokens)
+						if (!logprobCollector) return
+						logprobQueue = logprobQueue.then(async () => {
+							if (signal?.aborted) return
+							if (!logprobCollector.isReady) {
+								const seq = session.sequence
+								const prefixLen = Math.max(0, seq.contextTokens.length - streamTokens.length)
+								await logprobCollector.init([...seq.contextTokens.slice(0, prefixLen)])
+							}
+							const rows = await logprobCollector.collectBatch(streamTokens.slice(prevLen))
+							let anyNew = false
+							for (const row of rows) {
+								if (!row) continue
+								out.extension.logprobs.content.push(row)
+								anyNew = true
+							}
+							if (anyNew && !signal?.aborted) {
+								updateStreamingMetrics()
+								out.content_for_show = buildContentForShowFromLogprobs(out, logprobsRenderOpts)
+								didApplyLogprobs = true
+								replyPreviewUpdater?.(clearFormat({ ...out }, prompt_struct))
+							}
+						})
+					}
+					: undefined
 				const reply = await session.prompt(lastUser, buildPromptCallOptions(config, {
 					signal,
 					previewUpdater: replyPreviewUpdater,
