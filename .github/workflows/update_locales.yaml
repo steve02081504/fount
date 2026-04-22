@@ -35,7 +35,10 @@ jobs:
           python ./.esh/commands/update-locales.py
       - name: git add all
         run: git add -A
+      # pull_request 下 github.ref 为 refs/pull/N/merge，checkout 后本地无该引用；
+      # actions-go/push 默认 ref 指向它会报 reference not found，故 PR 用 HEAD 推到源分支。
       - name: Push changes
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions-go/push@master
         with:
           author-email: taromati2@outlook.com
@@ -43,3 +46,5 @@ jobs:
           commit-message: 'file update~'
           remote: origin
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event_name == 'pull_request' && 'HEAD' || github.ref }}
+          remote-ref: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.head_ref) || github.ref }}
