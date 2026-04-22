@@ -3,6 +3,7 @@
  * 解析命令行参数，配置服务器，并启动初始化过程。
  * 它还通过 IPC 处理向正在运行的服务器实例发送命令。
  */
+import './bootstrap_console.mjs'
 import fs from 'node:fs'
 import process from 'node:process'
 
@@ -59,13 +60,7 @@ console.noBreadcrumb = {
 	 */
 	log: (...args) => {
 		skipBreadcrumb = true
-		console.options.realConsoleOutput = false
-		console.options.recordOutput = true
-		console.outputs = console.outputsHtml = ''
-		console.log(...args)
-		process.stdout.write(console.outputs)
-		console.options.recordOutput = false
-		console.options.realConsoleOutput = true
+		console.write_as('log', ...args)
 		skipBreadcrumb = false
 	}
 }

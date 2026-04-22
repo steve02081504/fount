@@ -4,7 +4,8 @@
 
 - **Part-Based Modular Architecture**: Everything (UI, AI, Features) is a self-contained "part" loaded dynamically.
 - **Evergreen Dependencies**: No lock files. Imports are directly from URLs via Deno.
-- **Single Process**: Monolithic process; no child processes allowed. Use `async/await`.
+- **Single Process (business)**: Exactly **one Deno process** runs all server logic (`src/server/index.mjs`): parts, HTTP, IPC, jobs, etc. Do **not** split that work across multiple cooperating server/worker processes. **`async/await`** over process boundaries for concurrency.
+- **Viewers & launchers are exempt**: Separate OS processes used only for **looking or interacting** with an already-running fount instance are fine—same category as opening a browser tab to the UI, or running the optional terminal `log_viewer`, or launcher scripts (`fount.sh` / `fount.ps1`) that detach the server and optionally attach a viewer. Those processes must **not** duplicate server responsibilities.
 
 ## 2. System Overview
 

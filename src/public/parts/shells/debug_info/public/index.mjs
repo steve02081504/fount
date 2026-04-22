@@ -1,6 +1,7 @@
+import { mountServerLogsPanel } from './src/server_logs_panel.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
-import { initTranslations } from '/scripts/i18n.mjs'
+import { initTranslations, geti18n } from '/scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { onServerEvent } from '/scripts/server_events.mjs'
 import { getAutoUpdateEnabled, postRestart, getSystemInfo } from './src/endpoints.mjs'
@@ -8,6 +9,8 @@ import { getAutoUpdateEnabled, postRestart, getSystemInfo } from './src/endpoint
 applyTheme()
 usingTemplates('/parts/shells:debug_info/templates')
 await initTranslations('debug_info')
+
+const serverLogsBody = document.getElementById('server-logs-body')
 
 const versionIndicator = document.getElementById('version-indicator'),
 	localVersion = document.getElementById('local-version'),
@@ -254,3 +257,6 @@ pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
+
+if (serverLogsBody)
+	mountServerLogsPanel(serverLogsBody, geti18n).catch(() => { /* ignore */ })

@@ -1410,6 +1410,15 @@
 			"missingFields": "请填写当前密码与新密码。",
 			"invalidCurrent": "当前密码不正确。"
 		},
+		"editorOpen": {
+			"title": "外部编辑器",
+			"labelField": "显示名称",
+			"templateField": "命令行模板",
+			"templatePlaceholder": "例如 code -g \"{file}:{line}:{column}\"",
+			"templateHelp": "占位符：{file} 路径；{line}；{column}；{keyword}。",
+			"saveButton": "保存",
+			"savedToast": "已保存编辑器配置。"
+		},
 		"renameUser": {
 			"title": "重命名用户",
 			"newUsernameLabel": "新用户名:",
@@ -2485,6 +2494,13 @@
 		"updateSuccess": "正在重启服务器",
 		"updateFailed": "更新请求失败",
 		"autoUpdateNotEnabled": "未启用自动更新",
+		"serverLog": {
+			"title": "服务端控制台日志",
+			"payload": "参数快照",
+			"stack": "调用栈",
+			"copyOpenCmd": "复制打开命令",
+			"editorHint": "在用户设置中配置编辑器名称与命令行模板。"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

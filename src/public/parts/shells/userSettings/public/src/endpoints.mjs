@@ -119,3 +119,18 @@ export async function webauthnRegisterComplete(credential, nickname, password) {
 export async function webauthnRemove(credentialId, password) {
 	return callApi('webauthn_remove', 'POST', { credentialId, password })
 }
+
+/**
+ * 获取 / 保存「在编辑器中打开」配置。
+ */
+export async function getEditorOpenConfig() {
+	return callApi('editor_open_config', 'GET')
+}
+
+/**
+ * @param {string} editorLabel
+ * @param {string} editorCommandTemplate
+ */
+export async function saveEditorOpenConfig(editorLabel, editorCommandTemplate) {
+	return callApi('editor_open_config', 'POST', { editorLabel, editorCommandTemplate })
+}

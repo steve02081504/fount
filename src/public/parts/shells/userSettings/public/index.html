@@ -48,6 +48,26 @@
 				</div>
 			</section>
 
+			<section class="card bg-base-200 shadow-xl">
+				<div class="card-body space-y-4">
+					<h2 class="card-title" data-i18n="userSettings.editorOpen.title"></h2>
+					<form id="editorOpenForm" class="space-y-4">
+						<div class="form-control">
+							<label class="label" for="editorOpenLabel"><span class="label-text" data-i18n="userSettings.editorOpen.labelField"></span></label>
+							<input type="text" id="editorOpenLabel" name="editorOpenLabel" class="input input-bordered w-full max-w-xl" autocomplete="off" />
+						</div>
+						<div class="form-control">
+							<label class="label" for="editorOpenTemplate"><span class="label-text" data-i18n="userSettings.editorOpen.templateField"></span></label>
+							<input type="text" id="editorOpenTemplate" name="editorOpenTemplate" class="input input-bordered w-full font-mono text-sm max-w-xl" autocomplete="off" />
+							<label class="label"><span class="label-text-alt opacity-70" data-i18n="userSettings.editorOpen.templateHelp"></span></label>
+						</div>
+						<div class="card-actions justify-end">
+							<button type="submit" class="btn btn-primary" data-i18n="userSettings.editorOpen.saveButton"></button>
+						</div>
+					</form>
+				</div>
+			</section>
+
 			<div class="grid md:grid-cols-2 gap-8">
 				<!-- 修改密码 -->
 				<section class="card bg-base-200 shadow-xl">

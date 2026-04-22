@@ -1044,6 +1044,7 @@ function run {
 	}
 	Write-TaskbarProgress -Percent 5
 	$originalTitle = Get-Title
+	$originalWorkingDirectory = Get-Location
 	Set-Title ""
 	$v8Flags = "--expose-gc"
 	if ($env:FOUNT_V8_FLAGS) {
@@ -1073,7 +1074,19 @@ function run {
 	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	Write-TaskbarProgress -Percent 25
 	Set-Title "𝓯"
+	if ($env:FOUNT_DETACHED -eq '1') {
+		$dArgs = @('run', '--allow-scripts', '--allow-all', '-c', "$FOUNT_DIR/deno.json", '--v8-flags', $v8Flags, "$FOUNT_DIR/src/server/index.mjs") + $args
+		Start-Process deno -ArgumentList $dArgs -WindowStyle Hidden
+		if ($env:FOUNT_LAUNCH_LOG_VIEWER -eq '1') {
+			$lvArgs = @('run', '--allow-scripts', '--allow-all', '-c', "$FOUNT_DIR/deno.json", '--v8-flags', '--expose-gc', "$FOUNT_DIR/src/log_viewer/main.mjs")
+			Start-Process deno -ArgumentList $lvArgs -WindowStyle Normal
+		}
+		Set-Title $originalTitle
+		Set-Location $originalWorkingDirectory
+		return
+	}
 	try {
+		Set-Location $env:TEMP
 		if ($Script:is_debug) {
 			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 		}
@@ -1083,6 +1096,7 @@ function run {
 	}
 	finally {
 		Set-Title $originalTitle
+		Set-Location $originalWorkingDirectory
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
 		if ($LastExitCode -and $LastExitCode -ne 130) { Write-TaskbarProgressError }

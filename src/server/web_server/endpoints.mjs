@@ -24,6 +24,7 @@ import {
 	getAllCachedPartDetails,
 	getPartBranches
 } from '../parts_loader.mjs'
+import { getServerLogSeqMax, getServerLogSnapshot, subscribeServerLogs } from '../console_ring_buffer.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
@@ -31,6 +32,14 @@ import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
+
+/**
+ * @param {import('npm:express').Request} req
+ */
+function isLoopbackSocket(req) {
+	const ip = req.socket?.remoteAddress || ''
+	return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1'
+}
 
 /**
  * 非本机访问时校验请求体中的 PoW；无效则写入 401 JSON 并返回 false。
@@ -84,6 +93,21 @@ export function registerEndpoints(router) {
 	router.ws('/ws/notify', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
 		registerNotifier(username, ws)
+	})
+
+	router.get('/api/server/logs', authenticate, (req, res) => {
+		const since = Number(req.query.since) || 0
+		res.json({
+			entries: getServerLogSnapshot(since),
+			seqMax: getServerLogSeqMax(),
+		})
+	})
+
+	router.ws('/ws/server/logs', (req, res, next) => {
+		if (isLoopbackSocket(req)) return next()
+		return authenticate(req, res, next)
+	}, ws => {
+		subscribeServerLogs(ws)
 	})
 
 	router.get('/api/test/error', (req, res) => {

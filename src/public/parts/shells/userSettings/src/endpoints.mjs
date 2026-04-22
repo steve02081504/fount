@@ -12,6 +12,7 @@ import {
 	REFRESH_TOKEN_EXPIRY_DURATION,
 	verifyPassword,
 } from '../../../../../server/auth.mjs'
+import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 import {
 	listWebAuthnCredentials,
 	removeWebAuthnCredential,
@@ -69,6 +70,30 @@ function formatBytes(bytes, decimals = 2) {
  * @param {object} router - Express 路由实例。
  */
 export function setEndpoints(router) {
+	router.get('/api/parts/shells\\:userSettings/editor_open_config', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const data = loadData(user.username, 'editor_open_config')
+		res.json({
+			success: true,
+			config: {
+				editorLabel: data?.editorLabel ?? '',
+				editorCommandTemplate: data?.editorCommandTemplate ?? '',
+			},
+		})
+	})
+
+	router.post('/api/parts/shells\\:userSettings/editor_open_config', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { editorLabel = '', editorCommandTemplate = '' } = req.body ?? {}
+		const st = loadData(user.username, 'editor_open_config')
+		st.editorLabel = String(editorLabel)
+		st.editorCommandTemplate = String(editorCommandTemplate)
+		saveData(user.username, 'editor_open_config')
+		res.json({ success: true })
+	})
+
 	router.get('/api/parts/shells\\:userSettings/stats', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
 		if (!userReqData) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })

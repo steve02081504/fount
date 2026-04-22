@@ -18,6 +18,8 @@ import {
 	deleteAccount,
 	getDevices,
 	revokeDevice,
+	getEditorOpenConfig,
+	saveEditorOpenConfig,
 } from './src/endpoints.mjs'
 import { installPasskeysSection, loadPasskeysList } from './src/passkeysSection.mjs'
 import {
@@ -37,6 +39,9 @@ const userInfoCreationDate = document.getElementById('userInfoCreationDate')
 const userInfoFolderSize = document.getElementById('userInfoFolderSize')
 const userInfoFolderPath = document.getElementById('userInfoFolderPath')
 const copyFolderPathBtn = document.getElementById('copyFolderPathBtn')
+const editorOpenForm = document.getElementById('editorOpenForm')
+const editorOpenLabel = document.getElementById('editorOpenLabel')
+const editorOpenTemplate = document.getElementById('editorOpenTemplate')
 const changePasswordForm = document.getElementById('changePasswordForm')
 const renameUserForm = document.getElementById('renameUserForm')
 const deviceList = document.getElementById('deviceList')
@@ -329,10 +334,28 @@ async function initializeApp() {
 	installPasskeysSection()
 
 	await loadUserInfo()
+	await loadEditorOpen()
 	await loadAndDisplayDevices()
 	await loadPasskeysList()
 	await loadAndDisplayApiKeys()
 }
+
+async function loadEditorOpen() {
+	try {
+		const r = await getEditorOpenConfig()
+		if (r.success && r.config) {
+			editorOpenLabel.value = r.config.editorLabel ?? ''
+			editorOpenTemplate.value = r.config.editorCommandTemplate ?? ''
+		}
+	}
+	catch { /* ignore */ }
+}
+
+editorOpenForm?.addEventListener('submit', async event => {
+	event.preventDefault()
+	const r = await saveEditorOpenConfig(editorOpenLabel.value.trim(), editorOpenTemplate.value.trim())
+	if (r.success) showToastI18n('success', 'userSettings.editorOpen.savedToast')
+})
 
 initializeApp().catch(error => {
 	console.error('Error initializing User Settings shell:', error)

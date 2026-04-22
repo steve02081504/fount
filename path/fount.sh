@@ -1431,6 +1431,7 @@ run() {
 	fi
 	write_taskbar_progress 5
 	original_title=$(get_title)
+	original_working_directory=$(pwd)
 	set_title ""
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		local LANG_BACKUP
@@ -1467,6 +1468,7 @@ run() {
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
 	set_title "𝓯"
+	cd /tmp
 	if [[ $is_debug -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
@@ -1474,6 +1476,7 @@ run() {
 	fi
 	exit_code=$?
 	set_title "$original_title"
+	cd "$original_working_directory"
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ]; then
@@ -1649,6 +1652,14 @@ remove)
 	if [[ "${runargs[0]}" == "debug" ]]; then
 		debug_on
 		runargs=("${runargs[@]:1}")
+	fi
+	# 与业务进程解耦：后台起主服务，shell 立即退出。可选 FOUNT_LAUNCH_LOG_VIEWER=1 再拉 log_viewer。
+	if [[ "${FOUNT_DETACHED:-}" == "1" ]]; then
+		( run "${runargs[@]}" ) & disown 2> /dev/null || { run "${runargs[@]}" & }
+		if [[ "${FOUNT_LAUNCH_LOG_VIEWER:-}" == "1" ]]; then
+			( cd /tmp && run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="--expose-gc" "$FOUNT_DIR/src/log_viewer/main.mjs" ) & disown 2> /dev/null || true
+		fi
+		exit 0
 	fi
 	run "${runargs[@]}"
 	while [ $exit_code -eq 131 ]; do
