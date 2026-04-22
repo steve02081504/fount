@@ -58,6 +58,7 @@ export type LocaleData = {
 				localAhead: string
 				noUpstream: string
 				dirtyWorkingDirectory: string
+				uncommittedBackedUpTo: string
 				diverged: string
 				updateFailed: string
 			}
@@ -2659,6 +2660,7 @@ export type LocaleKeyParams = {
 	'fountConsole.jobs.preloadingParts': { count: string | number }
 	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }
+	'fountConsole.partManager.git.uncommittedBackedUpTo': { path: string | number }
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
 	'fountConsole.partManager.partInited': { partpath: string | number }
 	'fountConsole.partManager.partLoaded': { partpath: string | number }
