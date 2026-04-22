@@ -24,7 +24,7 @@ jobs:
   set-permissions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set execute permission for sh files
         run: |
           find . -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x

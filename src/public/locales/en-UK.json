@@ -51,6 +51,7 @@
 				"localAhead": "Local branch is ahead of remote branch. No update needed.",
 				"noUpstream": "No upstream branch configured for branch '${currentBranch}', skipping update check.",
 				"dirtyWorkingDirectory": "Working directory is not clean. Please stash or commit your changes before updating.",
+				"uncommittedBackedUpTo": "Uncommitted changes were backed up to: ${path}",
 				"diverged": "Local and remote branches have diverged. Forcing update...",
 				"updateFailed": "Failed to update components from remote repository: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "Password strength is too low.",
 			"accountAlreadyExists": "Account already exists.",
 			"powNotSolved": "Please complete PoW verification first",
-			"powError": "PoW verification error"
+			"powError": "PoW verification error",
+			"invalidCredentials": "Invalid username or password.",
+			"accountLockedRetry": "Account has been locked, please try again after ${timeLeft}.",
+			"accountLockedAttempts": "The account has been temporarily locked due to too many failed login attempts.",
+			"powValidationFailed": "Verification check failed. Please try again.",
+			"apiErrorBodyUnreadable": "The server returned information that could not be parsed. Please try again later."
 		},
 		"webauthn": {
 			"loginButton": "Sign in with security key / Passkey",
-			"errorNoUsername": "Enter your username before using Passkey.",
 			"errorLoadLibrary": "Could not load the WebAuthn helper library. Check your network and try again.",
-			"errorCancelled": "Security key sign-in was cancelled or not allowed."
+			"errorCancelled": "Security key sign-in was cancelled or not allowed.",
+			"errorSessionMissing": "The server did not return a valid login session, please refresh the page and try again.",
+			"errorBadBeginResponse": "The server returned invalid login data, please refresh the page and try again.",
+			"errorCredentialRequired": "Valid Passkey credential data is missing.",
+			"errorAuthSessionRequired": "The login session token is missing, please refresh the page and try again.",
+			"apiSessionExpired": "Passkey login session has expired, please try again.",
+			"apiUnknownPasskey": "The Passkey is not recognized, please use a bound key.",
+			"apiPasskeyVerificationFailed": "Passkey verification failed, please try again.",
+			"registrationUserNotFound": "User account not found.",
+			"registrationSessionExpired": "The binding session has expired, please try again from the beginning.",
+			"registrationVerifyFailed": "Unable to complete Passkey registration verification.",
+			"registrationFailed": "Passkey registration failed, please try again.",
+			"removeUserNotFound": "User or credential data not found.",
+			"removeInvalidPassword": "Wrong password.",
+			"removePasskeyNotFound": "The Passkey was not found."
 		}
 	},
 	"login_info": {
@@ -1356,7 +1375,15 @@
 	"userSettings": {
 		"title": "User Settings",
 		"PageTitle": "User Settings",
-		"description": "Tend to the details of your fount identity. Manage your profile, safeguard your access, and view connected devices. A quiet sanctum for your account.",
+		"description": "Manage your fount identity details: profile, access security, and connected devices. A calm, private space for your account.",
+		"shell": {
+			"unauthorized": "Login required.",
+			"responseNotJson": "The server returned unparseable content.",
+			"unexpectedError": "The request failed."
+		},
+		"errors": {
+			"accountNotFound": "Account not found."
+		},
 		"userInfo": {
 			"title": "User Information",
 			"usernameLabel": "Username:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Copy Icon"
 			},
-			"copiedAlert": "Path copied to clipboard!"
+			"copiedAlert": "Path copied to clipboard!",
+			"copyPathFailed": "Unable to copy path to clipboard."
 		},
 		"changePassword": {
 			"title": "Change Password",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Confirm New Password:",
 			"submitButton": "Change Password",
 			"errorMismatch": "The new passwords do not match.",
-			"success": "Password changed successfully."
+			"success": "Password changed successfully.",
+			"missingFields": "Please fill in your current password and new password.",
+			"invalidCurrent": "The current password is incorrect."
 		},
 		"renameUser": {
 			"title": "Rename User",
 			"newUsernameLabel": "New Username:",
 			"submitButton": "Rename User",
 			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
-			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
+			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out.",
+			"missingParams": "Please fill in the new username and your current password.",
+			"wrongPassword": "The password is incorrect.",
+			"mustDiffer": "The new username must be different from the current username.",
+			"taken": "This username is already taken.",
+			"moveFailed": "Failed to rename user data directory: ${detail}. The original username has been restored."
 		},
 		"passkeys": {
 			"title": "Security keys and Passkeys",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Security key removed.",
 			"addSuccess": "Security key added.",
 			"errorLoadLibrary": "Could not load the WebAuthn library.",
-			"errorCancelled": "Adding cancelled."
+			"errorCancelled": "Adding cancelled.",
+			"apiInvalidPassword": "Wrong password.",
+			"apiMissingCredential": "Valid Passkey credentials are missing.",
+			"apiRemoveParamsRequired": "Please provide the credentials and password you want to remove."
 		},
 		"userDevices": {
 			"title": "User Devices/Sessions",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Revoke",
 			"revokeConfirm": "Are you sure you want to revoke this device/session?",
 			"revokeSuccess": "Device/session successfully revoked.",
+			"revokeMissingParams": "Please provide the device and session password you want to revoke.",
+			"revokeWrongPassword": "The password is incorrect.",
+			"listNotFound": "Device list not found.",
+			"deviceNotFound": "The device or session was not found.",
 			"refreshButton": {
 				"title": "Refresh List"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "No API keys were found.",
 			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
 			"neverUsed": "Never used",
+			"noKeysForUser": "API key data not found.",
+			"revokeWrongPassword": "The password is incorrect.",
+			"keyNotFound": "The API key was not found.",
+			"revokeMissingJti": "Please specify the key to revoke.",
+			"revokeMissingPassword": "Revoking a key requires a password.",
 			"revokeButton": "Revoke",
 			"revokeConfirm": "Are you sure you want to revoke this API key?",
 			"revokeSuccess": "The API key has been successfully revoked.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Copy new API key"
 			},
-			"copiedAlert": "API key copied to clipboard!"
+			"copiedAlert": "API key copied to clipboard!",
+			"copyKeyFailed": "Unable to copy key to clipboard."
 		},
 		"logout": {
 			"title": "Log Out",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
 			"confirmMessage2": "To confirm deletion, please enter your username \"${username}\":",
 			"usernameMismatch": "The entered username does not match the current user. Deletion has been cancelled.",
-			"success": "Account successfully deleted. You will now be logged out."
+			"success": "Account successfully deleted. You will now be logged out.",
+			"missingPassword": "Please enter your password.",
+			"wrongPassword": "The password is incorrect."
 		},
 		"passwordConfirm": {
 			"title": "Confirm Operation",

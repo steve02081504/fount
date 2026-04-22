@@ -51,6 +51,7 @@
 				"localAhead": "La rama local está por delante de la remota. No es necesaria la actualización.",
 				"noUpstream": "No se ha configurado rama de seguimiento para la rama '${currentBranch}'. Omitiendo comprobación de actualizaciones.",
 				"dirtyWorkingDirectory": "El directorio de trabajo no está limpio. Por favor, haz 'stash' o 'commit' de tus cambios antes de actualizar.",
+				"uncommittedBackedUpTo": "Se realizó una copia de seguridad de los cambios no confirmados en: ${path}",
 				"diverged": "Las ramas local y remota han divergido. Forzando actualización...",
 				"updateFailed": "Error al actualizar componentes desde el repositorio remoto: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "La contraseña es demasiado débil.",
 			"accountAlreadyExists": "La cuenta ya existe.",
 			"powNotSolved": "Complete la verificación de PoW primero",
-			"powError": "Error de verificación de PoW"
+			"powError": "Error de verificación de PoW",
+			"invalidCredentials": "Nombre de usuario o contraseña no válidos.",
+			"accountLockedRetry": "La cuenta ha sido bloqueada. Vuelve a intentarlo después de ${timeLeft}.",
+			"accountLockedAttempts": "La cuenta se ha bloqueado temporalmente debido a demasiados intentos fallidos de inicio de sesión.",
+			"powValidationFailed": "La verificación de seguridad falló. Inténtalo de nuevo.",
+			"apiErrorBodyUnreadable": "El servidor devolvió información que no se pudo analizar. Inténtelo de nuevo más tarde."
 		},
 		"webauthn": {
 			"loginButton": "Iniciar sesión con clave de seguridad o Passkey",
-			"errorNoUsername": "Introduzca su nombre de usuario antes de usar Passkey.",
 			"errorLoadLibrary": "No se puede cargar la biblioteca auxiliar de WebAuthn. Verifique la red e inténtelo nuevamente.",
-			"errorCancelled": "La clave de seguridad ha sido cancelada o no se ha autorizado su uso."
+			"errorCancelled": "La clave de seguridad ha sido cancelada o no se ha autorizado su uso.",
+			"errorSessionMissing": "El servidor no devolvió una sesión de inicio de sesión válida; actualice la página e inténtelo nuevamente.",
+			"errorBadBeginResponse": "El servidor devolvió datos de inicio de sesión no válidos. Actualice la página e inténtelo nuevamente.",
+			"errorCredentialRequired": "Faltan datos de credenciales de clave de acceso válidas.",
+			"errorAuthSessionRequired": "Falta el token de sesión de inicio de sesión. Actualice la página e inténtelo de nuevo.",
+			"apiSessionExpired": "La sesión de inicio de sesión con contraseña ha caducado, inténtelo de nuevo.",
+			"apiUnknownPasskey": "La clave de acceso no se reconoce; utilice una clave vinculada.",
+			"apiPasskeyVerificationFailed": "Error en la verificación de la clave de acceso, inténtelo de nuevo.",
+			"registrationUserNotFound": "Cuenta de usuario no encontrada.",
+			"registrationSessionExpired": "La sesión vinculante ha caducado, inténtelo de nuevo desde el principio.",
+			"registrationVerifyFailed": "No se puede completar la verificación del registro de clave de acceso.",
+			"registrationFailed": "Error al registrar la clave de acceso. Inténtelo de nuevo.",
+			"removeUserNotFound": "No se encontraron datos de usuario o credenciales.",
+			"removeInvalidPassword": "Contraseña incorrecta.",
+			"removePasskeyNotFound": "No se encontró la clave de acceso."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Ajustes de usuario",
 		"PageTitle": "Ajustes de usuario",
 		"description": "Cuide los detalles de su identidad de fount. Administre su perfil, proteja su acceso y vea los dispositivos conectados. Un santuario tranquilo para su cuenta.",
+		"shell": {
+			"unauthorized": "Es necesario iniciar sesión.",
+			"responseNotJson": "El servidor devolvió contenido que no se pudo analizar.",
+			"unexpectedError": "La solicitud falló."
+		},
+		"errors": {
+			"accountNotFound": "Cuenta no encontrada."
+		},
 		"userInfo": {
 			"title": "Información del usuario",
 			"usernameLabel": "Nombre de usuario:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Icono de Copiar"
 			},
-			"copiedAlert": "¡Ruta copiada al portapapeles!"
+			"copiedAlert": "¡Ruta copiada al portapapeles!",
+			"copyPathFailed": "No se puede copiar la ruta al portapapeles."
 		},
 		"changePassword": {
 			"title": "Cambiar contraseña",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Confirmar nueva contraseña:",
 			"submitButton": "Cambiar contraseña",
 			"errorMismatch": "Las nuevas contraseñas no coinciden.",
-			"success": "Contraseña cambiada correctamente."
+			"success": "Contraseña cambiada correctamente.",
+			"missingFields": "Por favor complete su contraseña actual y su nueva contraseña.",
+			"invalidCurrent": "La contraseña actual es incorrecta."
 		},
 		"renameUser": {
 			"title": "Cambiar nombre de usuario",
 			"newUsernameLabel": "Nuevo nombre de usuario:",
 			"submitButton": "Cambiar nombre de usuario",
 			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
-			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión."
+			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión.",
+			"missingParams": "Por favor complete el nuevo nombre de usuario y contraseña.",
+			"wrongPassword": "La contraseña es incorrecta.",
+			"mustDiffer": "El nuevo nombre de usuario debe ser diferente del nombre de usuario actual.",
+			"taken": "Este nombre de usuario ya está en uso.",
+			"moveFailed": "No se pudo cambiar el nombre del directorio de datos del usuario: ${detail}. El nombre de usuario original ha sido restaurado."
 		},
 		"passkeys": {
 			"title": "Claves de seguridad y clave de acceso",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Se eliminó la clave de seguridad.",
 			"addSuccess": "Se agregó clave de seguridad.",
 			"errorLoadLibrary": "No se puede cargar la biblioteca WebAuthn.",
-			"errorCancelled": "Añadiendo cancelado."
+			"errorCancelled": "Añadiendo cancelado.",
+			"apiInvalidPassword": "Contraseña incorrecta.",
+			"apiMissingCredential": "Faltan credenciales de clave de acceso válidas.",
+			"apiRemoveParamsRequired": "Proporcione las credenciales y la contraseña que desea eliminar."
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sesiones de usuario",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Revocar",
 			"revokeConfirm": "¿Seguro que quieres revocar el acceso para este dispositivo/sesión?",
 			"revokeSuccess": "Dispositivo/Sesión revocado correctamente.",
+			"revokeMissingParams": "Proporcione el dispositivo y la contraseña de sesión que desea revocar.",
+			"revokeWrongPassword": "La contraseña es incorrecta.",
+			"listNotFound": "Lista de dispositivos no encontrada.",
+			"deviceNotFound": "No se encontró el dispositivo o la sesión.",
 			"refreshButton": {
 				"title": "Actualizar Lista"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "No se encontraron claves API.",
 			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
 			"neverUsed": "Nunca usado",
+			"noKeysForUser": "No se encontraron datos de clave API.",
+			"revokeWrongPassword": "La contraseña es incorrecta.",
+			"keyNotFound": "No se encontró la clave API.",
+			"revokeMissingJti": "Por favor especifique la clave para revocar.",
+			"revokeMissingPassword": "Revocar una clave requiere una contraseña.",
 			"revokeButton": "Revocar",
 			"revokeConfirm": "¿Estás seguro de que quieres revocar esta clave API?",
 			"revokeSuccess": "La clave API ha sido revocada con éxito.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Copiar nueva clave API"
 			},
-			"copiedAlert": "¡Clave copiada al portapapeles!"
+			"copiedAlert": "¡Clave copiada al portapapeles!",
+			"copyKeyFailed": "No se puede copiar la clave al portapapeles."
 		},
 		"logout": {
 			"title": "Cerrar sesión",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "¡Atención! ¿Seguro que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.",
 			"confirmMessage2": "Para confirmar la eliminación, introduce tu nombre de usuario \"${username}\":",
 			"usernameMismatch": "El nombre de usuario introducido no coincide con el actual. Se ha cancelado la eliminación.",
-			"success": "Cuenta eliminada correctamente. Ahora se cerrará la sesión."
+			"success": "Cuenta eliminada correctamente. Ahora se cerrará la sesión.",
+			"missingPassword": "Por favor ingrese su contraseña.",
+			"wrongPassword": "La contraseña es incorrecta."
 		},
 		"passwordConfirm": {
 			"title": "Confirmar operación",

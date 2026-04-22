@@ -51,6 +51,7 @@
 				"localAhead": "Il branch locale è più avanti del branch remoto. Nessun aggiornamento necessario.",
 				"noUpstream": "Nessun branch upstream configurato per il branch '${currentBranch}', verifica degli aggiornamenti saltata.",
 				"dirtyWorkingDirectory": "La directory di lavoro non è pulita. Esegui 'stash' o 'commit' delle modifiche prima di aggiornare.",
+				"uncommittedBackedUpTo": "È stato eseguito il backup delle modifiche non salvate in: ${path}",
 				"diverged": "I branch locale e remoto sono divergenti. Forzatura dell'aggiornamento...",
 				"updateFailed": "Impossibile aggiornare i componenti dal repository remoto: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "La password è troppo debole.",
 			"accountAlreadyExists": "L'account esiste già.",
 			"powNotSolved": "Completa prima la verifica PoW",
-			"powError": "Errore di verifica PoW"
+			"powError": "Errore di verifica PoW",
+			"invalidCredentials": "Nome utente o password non validi.",
+			"accountLockedRetry": "L'account è stato bloccato, riprova dopo ${timeLeft}.",
+			"accountLockedAttempts": "L'account è stato temporaneamente bloccato a causa di troppi tentativi di accesso non riusciti.",
+			"powValidationFailed": "Verifica di sicurezza non riuscita. Riprova.",
+			"apiErrorBodyUnreadable": "Il server ha restituito informazioni che non è stato possibile analizzare. Per favore riprova più tardi."
 		},
 		"webauthn": {
 			"loginButton": "Accedi utilizzando la chiave di sicurezza/Passkey",
-			"errorNoUsername": "Inserisci il tuo nome utente prima di utilizzare Passkey.",
 			"errorLoadLibrary": "Impossibile caricare la libreria ausiliaria WebAuthn, controlla la rete e riprova.",
-			"errorCancelled": "La chiave di sicurezza è stata annullata o non è stata autorizzata l'uso."
+			"errorCancelled": "La chiave di sicurezza è stata annullata o non è stata autorizzata l'uso.",
+			"errorSessionMissing": "Il server non ha restituito una sessione di accesso valida, aggiorna la pagina e riprova.",
+			"errorBadBeginResponse": "Il server ha restituito dati di accesso non validi, aggiorna la pagina e riprova.",
+			"errorCredentialRequired": "Mancano i dati delle credenziali della passkey valida.",
+			"errorAuthSessionRequired": "Manca il token della sessione di accesso, aggiorna la pagina e riprova.",
+			"apiSessionExpired": "La sessione di accesso con la passkey è scaduta, riprova.",
+			"apiUnknownPasskey": "La passkey non è riconosciuta, utilizzare una chiave associata.",
+			"apiPasskeyVerificationFailed": "La verifica della passkey non è riuscita, riprova.",
+			"registrationUserNotFound": "Account utente non trovato.",
+			"registrationSessionExpired": "La sessione di associazione è scaduta, riprova dall'inizio.",
+			"registrationVerifyFailed": "Impossibile completare la verifica della registrazione della passkey.",
+			"registrationFailed": "La registrazione della passkey non è riuscita, riprova.",
+			"removeUserNotFound": "Dati utente o credenziali non trovati.",
+			"removeInvalidPassword": "Password errata.",
+			"removePasskeyNotFound": "La passkey non è stata trovata."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Impostazioni utente",
 		"PageTitle": "Impostazioni utente",
 		"description": "Cura i dettagli della tua identità su fount. Gestisci il tuo profilo, proteggi il tuo accesso e visualizza i dispositivi connessi. Un santuario tranquillo per il tuo account.",
+		"shell": {
+			"unauthorized": "È richiesto l'accesso.",
+			"responseNotJson": "Il server ha restituito contenuto non analizzabile.",
+			"unexpectedError": "La richiesta non è riuscita."
+		},
+		"errors": {
+			"accountNotFound": "Conto non trovato."
+		},
 		"userInfo": {
 			"title": "Informazioni utente",
 			"usernameLabel": "Nome utente:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Icona di Copia"
 			},
-			"copiedAlert": "Percorso copiato negli appunti!"
+			"copiedAlert": "Percorso copiato negli appunti!",
+			"copyPathFailed": "Impossibile copiare il percorso negli appunti."
 		},
 		"changePassword": {
 			"title": "Modifica password",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Conferma nuova password:",
 			"submitButton": "Modifica password",
 			"errorMismatch": "Le nuove password non coincidono.",
-			"success": "Password modificata con successo."
+			"success": "Password modificata con successo.",
+			"missingFields": "Inserisci la tua password attuale e la nuova password.",
+			"invalidCurrent": "La password attuale non è corretta."
 		},
 		"renameUser": {
 			"title": "Rinomina utente",
 			"newUsernameLabel": "Nuovo nome utente:",
 			"submitButton": "Rinomina utente",
 			"confirmMessage": "Sei sicuro di voler cambiare il tuo nome utente? Dovrai effettuare nuovamente l'accesso.",
-			"success": "Nome utente rinominato correttamente in \"${newUsername}\". Verrai ora disconnesso."
+			"success": "Nome utente rinominato correttamente in \"${newUsername}\". Verrai ora disconnesso.",
+			"missingParams": "Inserisci il nuovo nome utente e password.",
+			"wrongPassword": "La password non è corretta.",
+			"mustDiffer": "Il nuovo nome utente deve essere diverso dal nome utente corrente.",
+			"taken": "Questo nome utente è già utilizzato.",
+			"moveFailed": "Impossibile rinominare la directory dei dati utente: ${detail}. Il nome utente originale è stato ripristinato."
 		},
 		"passkeys": {
 			"title": "Chiavi di sicurezza e passkey",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Chiave di sicurezza rimossa.",
 			"addSuccess": "Chiave di sicurezza aggiunta.",
 			"errorLoadLibrary": "Impossibile caricare la libreria WebAuthn.",
-			"errorCancelled": "Aggiunta annullata."
+			"errorCancelled": "Aggiunta annullata.",
+			"apiInvalidPassword": "Password errata.",
+			"apiMissingCredential": "Mancano le credenziali della passkey valida.",
+			"apiRemoveParamsRequired": "Fornisci le credenziali e la password che desideri rimuovere."
 		},
 		"userDevices": {
 			"title": "Dispositivi/Sessioni utente",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Revoca",
 			"revokeConfirm": "Sei sicuro di voler revocare l'accesso per questo dispositivo/sessione?",
 			"revokeSuccess": "Dispositivo/Sessione revocato con successo.",
+			"revokeMissingParams": "Fornisci il dispositivo e la password della sessione che desideri revocare.",
+			"revokeWrongPassword": "La password non è corretta.",
+			"listNotFound": "Elenco dispositivi non trovato.",
+			"deviceNotFound": "Il dispositivo o la sessione non sono stati trovati.",
 			"refreshButton": {
 				"title": "Aggiorna elenco"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "Non sono state trovate chiavi API.",
 			"keyDetails": "Descrizione: ${description} | Creato in: ${createdAt} | Ultimo usato: ${lastUsed}",
 			"neverUsed": "Mai usato",
+			"noKeysForUser": "Dati chiave API non trovati.",
+			"revokeWrongPassword": "La password non è corretta.",
+			"keyNotFound": "La chiave API non è stata trovata.",
+			"revokeMissingJti": "Si prega di specificare la chiave da revocare.",
+			"revokeMissingPassword": "La revoca di una chiave richiede una password.",
 			"revokeButton": "Revoca",
 			"revokeConfirm": "Sei sicuro di voler revocare questa chiave API?",
 			"revokeSuccess": "La chiave API è stata revocata con successo.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Copia la nuova chiave API"
 			},
-			"copiedAlert": "Chiave API copiata negli appunti!"
+			"copiedAlert": "Chiave API copiata negli appunti!",
+			"copyKeyFailed": "Impossibile copiare la chiave negli appunti."
 		},
 		"logout": {
 			"title": "Esci",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "Attenzione! Sei sicuro di voler eliminare permanentemente il tuo account? Questa operazione non può essere annullata.",
 			"confirmMessage2": "Per confermare l'eliminazione, inserisci il tuo nome utente \"${username}\":",
 			"usernameMismatch": "Il nome utente inserito non corrisponde all'utente corrente. Eliminazione annullata.",
-			"success": "Account eliminato con successo. Verrai ora disconnesso."
+			"success": "Account eliminato con successo. Verrai ora disconnesso.",
+			"missingPassword": "Inserisci la tua password.",
+			"wrongPassword": "La password non è corretta."
 		},
 		"passwordConfirm": {
 			"title": "Conferma operazione",
