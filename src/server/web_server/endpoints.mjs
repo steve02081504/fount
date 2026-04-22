@@ -40,9 +40,13 @@ import { watchFrontendChanges } from './watcher.mjs'
  */
 async function ensurePowTokenOr401(req, res) {
 	if (is_local_ip_from_req(req)) return true
-	const { pow } = await import('../../scripts/pow.mjs')
 	const { powToken } = req.body
-	const { success } = powToken && await pow.validateToken(powToken)
+	if (!powToken) {
+		res.status(401).json({ success: false, i18nKey: 'auth.error.powValidationFailed' })
+		return false
+	}
+	const { pow } = await import('../../scripts/pow.mjs')
+	const { success } = await pow.validateToken(powToken)
 	if (!success) {
 		res.status(401).json({ success: false, i18nKey: 'auth.error.powValidationFailed' })
 		return false

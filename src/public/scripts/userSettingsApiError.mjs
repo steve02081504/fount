@@ -7,7 +7,7 @@ export function throwUserSettingsApiError(i18nKey, i18nParams) {
 	const key = String(i18nKey).trim()
 	throw Object.assign(new Error('UserSettingsApiError'), {
 		name: 'UserSettingsApiError',
-		i18nKey: key || undefined,
+		i18nKey: key,
 		i18nParams,
 	})
 }

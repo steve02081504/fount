@@ -20,7 +20,11 @@ import {
 	revokeDevice,
 } from './src/endpoints.mjs'
 import { installPasskeysSection, loadPasskeysList } from './src/passkeysSection.mjs'
-import { requestPasswordConfirmation } from './src/passwordConfirmationRequest.mjs'
+import {
+	cacheVerifiedPassword,
+	invalidateCachedPassword,
+	requestPasswordConfirmation,
+} from './src/passwordConfirmationRequest.mjs'
 import { escapeAttr } from './src/uiEscape.mjs'
 
 usingTemplates('/parts/shells:userSettings/templates')
@@ -109,12 +113,14 @@ renameUserForm.addEventListener('submit', async event => {
 	try {
 		const password = await requestPasswordConfirmation()
 		await renameUser(newUsername, password)
+		cacheVerifiedPassword(password)
 
 		showToastI18n('success', 'userSettings.renameUser.success', { newUsername })
 		form.reset()
 		setTimeout(() => window.location.href = '/login', 2000)
 	}
 	catch (error) {
+		invalidateCachedPassword()
 		if (isPasswordConfirmationDialogDismissed(error)) return
 		showToastForApiPayload('error', error)
 	}
@@ -159,9 +165,11 @@ async function loadAndDisplayDevices() {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
 						await revokeDevice(device.jti, password)
+						cacheVerifiedPassword(password)
 						showToastI18n('success', 'userSettings.userDevices.revokeSuccess')
 						loadAndDisplayDevices()
 					} catch (error) {
+						invalidateCachedPassword()
 						if (isPasswordConfirmationDialogDismissed(error)) return
 						showToastForApiPayload('error', error)
 					}
@@ -210,11 +218,13 @@ deleteAccountBtn.addEventListener('click', async () => {
 	try {
 		const password = await requestPasswordConfirmation()
 		await deleteAccount(password)
+		cacheVerifiedPassword(password)
 
 		showToastI18n('success', 'userSettings.deleteAccount.success')
 		setTimeout(() => window.location.href = '/login', 3000)
 	}
 	catch (error) {
+		invalidateCachedPassword()
 		if (isPasswordConfirmationDialogDismissed(error)) return
 		showToastForApiPayload('error', error)
 	}
@@ -253,10 +263,12 @@ async function loadAndDisplayApiKeys() {
 					if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
 						await revokeApiKey(key.jti, password)
+						cacheVerifiedPassword(password)
 
 						showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
 						loadAndDisplayApiKeys()
 					} catch (error) {
+						invalidateCachedPassword()
 						if (isPasswordConfirmationDialogDismissed(error)) return
 						showToastForApiPayload('error', error)
 					}

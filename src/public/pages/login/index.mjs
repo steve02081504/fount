@@ -46,7 +46,7 @@ let isWebAuthnInProgress = false
  * @returns {void}
  */
 function clearLoginErrorDataset() {
-	for (const key of [...Object.keys(errorMessage.dataset)])
+	for (const key of Object.keys(errorMessage.dataset))
 		delete errorMessage.dataset[key]
 }
 

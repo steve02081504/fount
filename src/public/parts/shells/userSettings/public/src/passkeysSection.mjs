@@ -15,7 +15,11 @@ import {
 	webauthnRegisterComplete,
 	webauthnRemove,
 } from './endpoints.mjs'
-import { requestPasswordConfirmation } from './passwordConfirmationRequest.mjs'
+import {
+	cacheVerifiedPassword,
+	invalidateCachedPassword,
+	requestPasswordConfirmation,
+} from './passwordConfirmationRequest.mjs'
 import { escapeAttr, escapeHtmlText } from './uiEscape.mjs'
 
 const passkeyList = document.getElementById('passkeyList')
@@ -93,9 +97,11 @@ async function onRemovePasskeyClick(cred) {
 	try {
 		const password = await requestPasswordConfirmation()
 		await webauthnRemove(cred.id, password)
+		cacheVerifiedPassword(password)
 		showToastI18n('success', 'userSettings.passkeys.removeSuccess')
 		await loadPasskeysList()
 	} catch (error) {
+		invalidateCachedPassword()
 		if (isPasswordConfirmationDialogDismissed(error)) return
 		console.error('Failed to remove passkey:', error)
 		Sentry.captureException(error)
@@ -121,10 +127,12 @@ async function onAddPasskeySubmit(event) {
 			throwUnexpectedUserSettingsApiError()
 		const credential = await startRegistrationFn({ optionsJSON: begin.options })
 		await webauthnRegisterComplete(credential, nickname, password)
+		cacheVerifiedPassword(password)
 		showToastI18n('success', 'userSettings.passkeys.addSuccess')
 		newPasskeyNameInput.value = ''
 		await loadPasskeysList()
 	} catch (error) {
+		invalidateCachedPassword()
 		if (isPasswordConfirmationDialogDismissed(error)) return
 		if (error?.name === 'NotAllowedError')
 			showToastI18n('error', 'userSettings.passkeys.errorCancelled')

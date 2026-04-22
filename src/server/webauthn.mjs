@@ -119,8 +119,8 @@ export async function webauthnRegistrationBegin(username, req) {
 			transports: c.transports,
 		})),
 		authenticatorSelection: {
-			residentKey: 'preferred',
-			userVerification: 'preferred',
+			residentKey: 'required',
+			userVerification: 'required',
 		},
 		attestationType: 'none',
 	})
@@ -153,7 +153,7 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 			expectedChallenge: pending.challenge,
 			expectedOrigin: origin,
 			expectedRPID: rpID,
-			requireUserVerification: false,
+			requireUserVerification: true,
 		})
 
 		if (!result.verified || !result.registrationInfo)
@@ -190,7 +190,7 @@ export async function webauthnLoginBegin(req) {
 	const options = await generateAuthenticationOptions({
 		rpID,
 		allowCredentials: [],
-		userVerification: 'preferred',
+		userVerification: 'required',
 	})
 
 	const authSessionToken = randomBytes(32).toString('hex')
@@ -238,7 +238,7 @@ export async function webauthnLoginComplete(credentialResponse, authSessionToken
 			expectedOrigin: origin,
 			expectedRPID: rpID,
 			credential,
-			requireUserVerification: false,
+			requireUserVerification: true,
 		})
 
 		if (!result.verified) {

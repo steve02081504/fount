@@ -11,7 +11,7 @@ import { throwUserSettingsApiError } from '/scripts/userSettingsApiError.mjs'
  */
 export function isPasswordConfirmationDialogDismissed(error) {
 	if (!error) return false
-	return ['PasswordConfirmationCancelledError', 'PasswordConfirmationClosedError'].includes(error.name)
+	return ['PasswordConfirmationCancelledError', 'PasswordConfirmationClosedError', 'PasswordConfirmationInProgressError'].includes(error.name)
 }
 
 /**
