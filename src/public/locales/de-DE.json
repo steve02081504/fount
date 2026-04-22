@@ -444,7 +444,7 @@
 			"invalidCredentials": "Ungültiger Benutzername oder Passwort.",
 			"accountLockedRetry": "Das Konto wurde gesperrt. Bitte versuchen Sie es nach ${timeLeft} erneut.",
 			"accountLockedAttempts": "Das Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt.",
-			"powValidationFailed": "Die Mensch-Maschine-Verifizierung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+			"powValidationFailed": "Die Sicherheitsüberprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
 			"apiErrorBodyUnreadable": "Der Server hat Informationen zurückgegeben, die nicht analysiert werden konnten. Bitte versuchen Sie es später noch einmal."
 		},
 		"webauthn": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "Benutzereinstellungen",
 		"PageTitle": "Benutzereinstellungen",
-		"description": "Achten Sie auf die Details Ihrer Quellidentität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugriff und sehen Sie sich verbundene Geräte an. Ein ruhiger Zufluchtsort für Ihr Konto.",
+		"description": "Kümmern Sie sich um die Details Ihrer fount-Identität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugriff und sehen Sie verbundene Geräte ein. Ein ruhiger Rückzugsort für Ihr Konto.",
 		"shell": {
 			"unauthorized": "Anmeldung erforderlich.",
-			"responseNotJson": "Der Server hat nicht auflösbaren Inhalt zurückgegeben.",
+			"responseNotJson": "Der Server hat Inhalt zurückgegeben, der nicht verarbeitet werden konnte.",
 			"unexpectedError": "Die Anfrage ist fehlgeschlagen."
 		},
 		"errors": {

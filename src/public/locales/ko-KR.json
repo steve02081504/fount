@@ -444,7 +444,7 @@
 			"invalidCredentials": "사용자 이름 또는 비밀번호가 잘못되었습니다.",
 			"accountLockedRetry": "계정이 잠겼습니다. ${timeLeft} 후에 다시 시도해 주세요.",
 			"accountLockedAttempts": "로그인 시도 실패 횟수가 너무 많아 계정이 일시적으로 잠겼습니다.",
-			"powValidationFailed": "인간-기계 확인에 실패했습니다. 다시 시도해 주세요.",
+			"powValidationFailed": "봇 방지 확인에 실패했습니다. 다시 시도해 주세요.",
 			"apiErrorBodyUnreadable": "서버가 구문 분석할 수 없는 정보를 반환했습니다. 나중에 다시 시도해 주세요."
 		},
 		"webauthn": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "사용자 설정",
 		"PageTitle": "사용자 설정",
-		"description": "당신의 fount 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
+		"description": "fount 신원 관련 세부 정보를 관리합니다. 프로필·접근 보안·연결된 기기를 확인할 수 있습니다. 계정만을 위한 조용하고 안전한 공간입니다.",
 		"shell": {
 			"unauthorized": "로그인이 필요합니다.",
-			"responseNotJson": "서버가 확인할 수 없는 콘텐츠를 반환했습니다.",
+			"responseNotJson": "서버가 분석할 수 없는 콘텐츠를 반환했습니다.",
 			"unexpectedError": "요청이 실패했습니다."
 		},
 		"errors": {
@@ -1396,7 +1396,7 @@
 			"copyPathBtnIcon": {
 				"alt": "복사 아이콘"
 			},
-			"copiedAlert": "경로가 클립보드에 복사되었습니다!",
+			"copiedAlert": "경로를 클립보드에 복사했습니다.",
 			"copyPathFailed": "경로를 클립보드에 복사할 수 없습니다."
 		},
 		"changePassword": {
@@ -1502,7 +1502,7 @@
 			"copyButton": {
 				"title": "새 API 키 복사"
 			},
-			"copiedAlert": "키가 클립보드에 복사되었습니다!",
+			"copiedAlert": "키를 클립보드에 복사했습니다.",
 			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
 		},
 		"logout": {

@@ -444,7 +444,7 @@
 			"invalidCredentials": "Nome utente o password non validi.",
 			"accountLockedRetry": "L'account è stato bloccato, riprova dopo ${timeLeft}.",
 			"accountLockedAttempts": "L'account è stato temporaneamente bloccato a causa di troppi tentativi di accesso non riusciti.",
-			"powValidationFailed": "Verifica uomo-macchina non riuscita, riprova.",
+			"powValidationFailed": "Verifica di sicurezza non riuscita. Riprova.",
 			"apiErrorBodyUnreadable": "Il server ha restituito informazioni che non è stato possibile analizzare. Per favore riprova più tardi."
 		},
 		"webauthn": {
@@ -1378,7 +1378,7 @@
 		"description": "Cura i dettagli della tua identità su fount. Gestisci il tuo profilo, proteggi il tuo accesso e visualizza i dispositivi connessi. Un santuario tranquillo per il tuo account.",
 		"shell": {
 			"unauthorized": "È richiesto l'accesso.",
-			"responseNotJson": "Il server ha restituito contenuto irrisolvibile.",
+			"responseNotJson": "Il server ha restituito contenuto non analizzabile.",
 			"unexpectedError": "La richiesta non è riuscita."
 		},
 		"errors": {

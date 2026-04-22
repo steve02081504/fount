@@ -444,7 +444,7 @@
 			"invalidCredentials": "Invalid username or password.",
 			"accountLockedRetry": "Account has been locked, please try again after ${timeLeft}.",
 			"accountLockedAttempts": "The account has been temporarily locked due to too many failed login attempts.",
-			"powValidationFailed": "Human-machine verification failed, please try again.",
+			"powValidationFailed": "Verification check failed. Please try again.",
 			"apiErrorBodyUnreadable": "The server returned information that could not be parsed. Please try again later."
 		},
 		"webauthn": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "User Settings",
 		"PageTitle": "User Settings",
-		"description": "Tend to the details of your fount identity. Manage your profile, safeguard your access, and view connected devices. A quiet sanctum for your account.",
+		"description": "Manage your fount identity details: profile, access security, and connected devices. A calm, private space for your account.",
 		"shell": {
 			"unauthorized": "Login required.",
-			"responseNotJson": "The server returned unresolvable content.",
+			"responseNotJson": "The server returned unparseable content.",
 			"unexpectedError": "The request failed."
 		},
 		"errors": {
@@ -1416,7 +1416,7 @@
 			"submitButton": "Rename User",
 			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
 			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out.",
-			"missingParams": "Please fill in the new username and password.",
+			"missingParams": "Please fill in the new username and your current password.",
 			"wrongPassword": "The password is incorrect.",
 			"mustDiffer": "The new username must be different from the current username.",
 			"taken": "This username is already taken.",

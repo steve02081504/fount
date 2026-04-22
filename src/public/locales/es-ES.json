@@ -444,7 +444,7 @@
 			"invalidCredentials": "Nombre de usuario o contraseña no válidos.",
 			"accountLockedRetry": "La cuenta ha sido bloqueada. Vuelve a intentarlo después de ${timeLeft}.",
 			"accountLockedAttempts": "La cuenta se ha bloqueado temporalmente debido a demasiados intentos fallidos de inicio de sesión.",
-			"powValidationFailed": "La verificación hombre-máquina falló, inténtalo de nuevo.",
+			"powValidationFailed": "La verificación de seguridad falló. Inténtalo de nuevo.",
 			"apiErrorBodyUnreadable": "El servidor devolvió información que no se pudo analizar. Inténtelo de nuevo más tarde."
 		},
 		"webauthn": {
@@ -1378,7 +1378,7 @@
 		"description": "Cuide los detalles de su identidad de fount. Administre su perfil, proteja su acceso y vea los dispositivos conectados. Un santuario tranquilo para su cuenta.",
 		"shell": {
 			"unauthorized": "Es necesario iniciar sesión.",
-			"responseNotJson": "El servidor devolvió contenido irresoluble.",
+			"responseNotJson": "El servidor devolvió contenido que no se pudo analizar.",
 			"unexpectedError": "La solicitud falló."
 		},
 		"errors": {

@@ -445,26 +445,26 @@
 			"accountLockedRetry": "帳戶已鎖定，請於 ${timeLeft} 後再試。",
 			"accountLockedAttempts": "因登入失敗次數過多，帳戶已被暫時鎖定。",
 			"powValidationFailed": "人機驗證失敗，請重試。",
-			"apiErrorBodyUnreadable": "伺服器傳回了無法解析的訊息，請稍後重試。"
+			"apiErrorBodyUnreadable": "伺服器傳回了無法剖析的訊息，請稍後再試。"
 		},
 		"webauthn": {
 			"loginButton": "使用安全金鑰 / Passkey 登入",
 			"errorLoadLibrary": "無法載入 WebAuthn 輔助庫，請檢查網路後重試。",
 			"errorCancelled": "已取消或未獲準使用安全金鑰。",
-			"errorSessionMissing": "伺服器未傳回有效的登入會話，請重新整理頁面後重試。",
-			"errorBadBeginResponse": "伺服器傳回了無效的登入數據，請在刷新頁面後重試。",
+			"errorSessionMissing": "伺服器未傳回有效的登入工作階段，請重新整理頁面後重試。",
+			"errorBadBeginResponse": "伺服器傳回了無效的登入資料，請重新整理頁面後再試。",
 			"errorCredentialRequired": "缺少有效的 Passkey 憑證資料。",
-			"errorAuthSessionRequired": "缺少登入會話令牌，請重新整理頁面後再試一次。",
+			"errorAuthSessionRequired": "缺少登入工作階段權杖，請重新整理頁面後再試。",
 			"apiSessionExpired": "Passkey 登入工作階段已過期，請重新開始。",
 			"apiUnknownPasskey": "無法辨識該 Passkey，請使用已綁定的金鑰。",
 			"apiPasskeyVerificationFailed": "Passkey 驗證失敗，請重試。",
-			"registrationUserNotFound": "未找到用戶帳號。",
-			"registrationSessionExpired": "綁定會話已過期，請從頭重試。",
+			"registrationUserNotFound": "找不到使用者帳號。",
+			"registrationSessionExpired": "綁定工作階段已過期，請從頭再試。",
 			"registrationVerifyFailed": "無法完成 Passkey 註冊驗證。",
-			"registrationFailed": "Passkey 報名失敗，請重試。",
-			"removeUserNotFound": "未找到使用者或憑證資料。",
+			"registrationFailed": "Passkey 註冊失敗，請重試。",
+			"removeUserNotFound": "找不到使用者或憑證資料。",
 			"removeInvalidPassword": "密碼錯誤。",
-			"removePasskeyNotFound": "未找到該 Passkey。"
+			"removePasskeyNotFound": "找不到該 Passkey。"
 		}
 	},
 	"login_info": {
@@ -997,7 +997,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "無效的組件數據。",
+			"invalidPartData": "無效的組件資料。",
 			"charAdded": "角色 ${partName} 已新增到聊天。",
 			"personaSet": "已將 ${partName} 設為當前人設。",
 			"worldSet": "世界 ${partName} 已設定為當前世界。",
@@ -1375,14 +1375,14 @@
 	"userSettings": {
 		"title": "使用者設定",
 		"PageTitle": "使用者設定",
-		"description": "關注您的 fount 身分的詳細資訊。管理您的個人資料、保護您的存取權限並檢視已連線的裝置。為您提供一個安靜的避風港。",
+		"description": "打理您的 fount 身分細節。管理您的個人資料、保護您的存取權限並檢視已連線的裝置。這裡是您專屬的靜謐空間。",
 		"shell": {
 			"unauthorized": "需要登入。",
-			"responseNotJson": "伺服器傳回了無法解析的內容。",
-			"unexpectedError": "請求失敗。"
+			"responseNotJson": "伺服器傳回了無法剖析的內容。",
+			"unexpectedError": "操作失敗。"
 		},
 		"errors": {
-			"accountNotFound": "未找到帳戶。"
+			"accountNotFound": "找不到帳戶。"
 		},
 		"userInfo": {
 			"title": "使用者資訊",
@@ -1416,11 +1416,11 @@
 			"submitButton": "重新命名使用者",
 			"confirmMessage": "您確定要變更使用者名稱嗎？這將需要您重新登入。",
 			"success": "使用者已成功重新命名為 「${newUsername}」。您現在將被登出。",
-			"missingParams": "請填寫新用戶名與密碼。",
+			"missingParams": "請填寫新使用者名稱與目前密碼。",
 			"wrongPassword": "密碼不正確。",
-			"mustDiffer": "新用戶名須與目前用戶名不同。",
-			"taken": "該用戶名已被佔用。",
-			"moveFailed": "重新命名使用者資料目錄失敗：${detail}。已恢復原用戶名。"
+			"mustDiffer": "新使用者名稱須與目前使用者名稱不同。",
+			"taken": "該使用者名稱已被使用。",
+			"moveFailed": "重新命名使用者資料目錄失敗：${detail}。已恢復原本使用者名稱。"
 		},
 		"passkeys": {
 			"title": "安全金鑰與 Passkey",
@@ -1449,18 +1449,18 @@
 			"apiRemoveParamsRequired": "請提供要移除的憑證與密碼。"
 		},
 		"userDevices": {
-			"title": "使用者裝置/會話",
-			"noDevicesFound": "未找到任何裝置或會話。",
+			"title": "使用者裝置／工作階段",
+			"noDevicesFound": "找不到任何裝置或工作階段。",
 			"deviceInfo": "裝置 ID: ${deviceId}",
 			"thisDevice": "目前裝置",
 			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "登出此裝置",
-			"revokeConfirm": "您確定要從此裝置/會話登出嗎？",
-			"revokeSuccess": "裝置/會話已成功撤銷。",
-			"revokeMissingParams": "請提供要撤銷的設備與會話密碼。",
+			"revokeConfirm": "您確定要從此裝置／工作階段登出嗎？",
+			"revokeSuccess": "裝置／工作階段已成功撤銷。",
+			"revokeMissingParams": "請提供要撤銷的裝置與工作階段密碼。",
 			"revokeWrongPassword": "密碼不正確。",
-			"listNotFound": "未找到設備清單。",
-			"deviceNotFound": "未找到該裝置或會話。",
+			"listNotFound": "找不到裝置清單。",
+			"deviceNotFound": "找不到該裝置或工作階段。",
 			"refreshButton": {
 				"title": "重新整理列表"
 			},
@@ -1475,14 +1475,14 @@
 				"placeholder": "新金鑰描述"
 			},
 			"createButton": "建立",
-			"noKeysFound": "未找到任何 API 金鑰。",
+			"noKeysFound": "找不到任何 API 金鑰。",
 			"keyDetails": "描述: ${description} | 建立於: ${createdAt} | 最後使用: ${lastUsed}",
 			"neverUsed": "從未使用",
-			"noKeysForUser": "未找到 API 金鑰資料。",
+			"noKeysForUser": "找不到 API 金鑰資料。",
 			"revokeWrongPassword": "密碼不正確。",
-			"keyNotFound": "未找到該 API 金鑰。",
-			"revokeMissingJti": "請指定要撤銷的密鑰。",
-			"revokeMissingPassword": "撤銷密鑰需要提供密碼。",
+			"keyNotFound": "找不到該 API 金鑰。",
+			"revokeMissingJti": "請指定要撤銷的金鑰。",
+			"revokeMissingPassword": "撤銷金鑰需要提供密碼。",
 			"revokeButton": "撤銷",
 			"revokeConfirm": "您確定要撤銷此 API 金鑰嗎？",
 			"revokeSuccess": "API 金鑰已成功撤銷。",
@@ -1503,7 +1503,7 @@
 				"title": "複製新 API 金鑰"
 			},
 			"copiedAlert": "API 金鑰已複製到剪貼簿！",
-			"copyKeyFailed": "無法複製密鑰到剪貼簿。"
+			"copyKeyFailed": "無法複製金鑰到剪貼簿。"
 		},
 		"logout": {
 			"title": "登出",

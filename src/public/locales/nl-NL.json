@@ -444,7 +444,7 @@
 			"invalidCredentials": "Ongeldige gebruikersnaam of wachtwoord.",
 			"accountLockedRetry": "Account is vergrendeld. Probeer het opnieuw na ${timeLeft}.",
 			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
-			"powValidationFailed": "Mens-machineverificatie mislukt. Probeer het opnieuw.",
+			"powValidationFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
 			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
 		},
 		"webauthn": {
@@ -453,15 +453,15 @@
 			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik.",
 			"errorSessionMissing": "De server heeft geen geldige inlogsessie geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
 			"errorBadBeginResponse": "De server heeft ongeldige inloggegevens geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
-			"errorCredentialRequired": "Geldige wachtwoordgegevens ontbreken.",
+			"errorCredentialRequired": "Geldige gegevens voor de toegangssleutel (Passkey) ontbreken.",
 			"errorAuthSessionRequired": "Het inlogsessietoken ontbreekt. Vernieuw de pagina en probeer het opnieuw.",
 			"apiSessionExpired": "De inlogsessie met de toegangssleutel is verlopen. Probeer het opnieuw.",
 			"apiUnknownPasskey": "De toegangssleutel wordt niet herkend. Gebruik een gebonden sleutel.",
-			"apiPasskeyVerificationFailed": "Wachtwoordverificatie mislukt. Probeer het opnieuw.",
+			"apiPasskeyVerificationFailed": "Verificatie van de toegangssleutel mislukt. Probeer het opnieuw.",
 			"registrationUserNotFound": "Gebruikersaccount niet gevonden.",
 			"registrationSessionExpired": "De bindingssessie is verlopen. Probeer het opnieuw vanaf het begin.",
 			"registrationVerifyFailed": "Kan de verificatie van de toegangssleutelregistratie niet voltooien.",
-			"registrationFailed": "Wachtwoordregistratie mislukt. Probeer het opnieuw.",
+			"registrationFailed": "Registratie van de toegangssleutel mislukt. Probeer het opnieuw.",
 			"removeUserNotFound": "Gebruikers- of inloggegevens niet gevonden.",
 			"removeInvalidPassword": "Verkeerd wachtwoord.",
 			"removePasskeyNotFound": "De toegangssleutel is niet gevonden."
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "Gebruikersinstellingen",
 		"PageTitle": "Gebruikersinstellingen",
-		"description": "Let op de details van uw bronidentiteit. Beheer uw profiel, beveilig uw toegang en bekijk aangesloten apparaten. Een rustig toevluchtsoord voor uw rekening.",
+		"description": "Verzorg de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk gekoppelde apparaten. Een rustig toevluchtsoord voor uw account.",
 		"shell": {
 			"unauthorized": "Inloggen vereist.",
-			"responseNotJson": "De server heeft onoplosbare inhoud geretourneerd.",
+			"responseNotJson": "De server heeft inhoud geretourneerd die niet kon worden verwerkt.",
 			"unexpectedError": "Het verzoek is mislukt."
 		},
 		"errors": {

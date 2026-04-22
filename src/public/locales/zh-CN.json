@@ -1375,7 +1375,7 @@
 	"userSettings": {
 		"title": "用户设置",
 		"PageTitle": "用户设置",
-		"description": "关注您的fount标识的详细信息。管理您的个人资料、保护您的访问权限并查看连接的设备。为您提供一个安静的圣所。",
+		"description": "管理您的 fount 身份相关细节：个人资料、访问安全与已连接设备。为您的账号保留一处安静、私密的空间。",
 		"shell": {
 			"unauthorized": "需要登录。",
 			"responseNotJson": "服务器返回了无法解析的内容。",
@@ -1416,7 +1416,7 @@
 			"submitButton": "重命名用户",
 			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
 			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。",
-			"missingParams": "请填写新用户名与密码。",
+			"missingParams": "请填写新用户名与当前密码。",
 			"wrongPassword": "密码不正确。",
 			"mustDiffer": "新用户名须与当前用户名不同。",
 			"taken": "该用户名已被占用。",

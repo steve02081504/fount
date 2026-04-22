@@ -444,7 +444,7 @@
 			"invalidCredentials": "Ógilt notendanafn eða lykilorð.",
 			"accountLockedRetry": "Reikningurinn hefur verið læstur, vinsamlegast reyndu aftur eftir ${timeLeft}.",
 			"accountLockedAttempts": "Reikningnum hefur verið læst tímabundið vegna of margra misheppnaðra innskráningartilrauna.",
-			"powValidationFailed": "Staðfesting manna og vél mistókst, vinsamlegast reyndu aftur.",
+			"powValidationFailed": "Öryggisstaðfesting mistókst, vinsamlegast reyndu aftur.",
 			"apiErrorBodyUnreadable": "Þjónninn skilaði upplýsingum sem ekki var hægt að þátta. Vinsamlegast reyndu aftur síðar."
 		},
 		"webauthn": {
@@ -1378,7 +1378,7 @@
 		"description": "Gættu að smáatriðum um auðkenni þitt. Hafðu umsjón með prófílnum þínum, tryggðu aðgang þinn og skoðaðu tengd tæki. Rólegur helgidómur fyrir reikninginn þinn.",
 		"shell": {
 			"unauthorized": "Innskráning krafist.",
-			"responseNotJson": "Þjónninn skilaði óleysanlegu efni.",
+			"responseNotJson": "Þjónninn skilaði efni sem ekki var hægt að vinna úr.",
 			"unexpectedError": "Beiðnin mistókst."
 		},
 		"errors": {

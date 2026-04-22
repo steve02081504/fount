@@ -441,40 +441,40 @@
 			"accountAlreadyExists": "A conta já existe.",
 			"powNotSolved": "Por favor, conclua a verificação PoW primeiro",
 			"powError": "Erro de verificação PoW",
-			"invalidCredentials": "Nome de usuário ou senha inválidos.",
+			"invalidCredentials": "Nome de utilizador ou palavra-passe inválidos.",
 			"accountLockedRetry": "A conta foi bloqueada. Tente novamente após ${timeLeft}.",
-			"accountLockedAttempts": "A conta foi temporariamente bloqueada devido a muitas tentativas de login malsucedidas.",
-			"powValidationFailed": "A verificação homem-máquina falhou. Tente novamente.",
-			"apiErrorBodyUnreadable": "O servidor retornou informações que não puderam ser analisadas. Por favor, tente novamente mais tarde."
+			"accountLockedAttempts": "A conta foi temporariamente bloqueada devido a demasiadas tentativas falhadas de início de sessão.",
+			"powValidationFailed": "A verificação falhou. Tente novamente.",
+			"apiErrorBodyUnreadable": "O servidor devolveu informação que não pôde ser analisada. Tente novamente mais tarde."
 		},
 		"webauthn": {
 			"loginButton": "Iniciar sessão com chave de segurança ou Passkey",
 			"errorLoadLibrary": "Não foi possível carregar a biblioteca auxiliar WebAuthn. Verifique a rede e tente novamente.",
 			"errorCancelled": "A chave de segurança foi cancelada ou não foi autorizada para uso.",
-			"errorSessionMissing": "O servidor não retornou uma sessão de login válida. Atualize a página e tente novamente.",
-			"errorBadBeginResponse": "O servidor retornou dados de login inválidos. Atualize a página e tente novamente.",
-			"errorCredentialRequired": "Faltam dados de credenciais de senha válidas.",
-			"errorAuthSessionRequired": "O token da sessão de login está faltando. Atualize a página e tente novamente.",
-			"apiSessionExpired": "A sessão de login da senha expirou. Tente novamente.",
-			"apiUnknownPasskey": "A chave de acesso não é reconhecida, use uma chave vinculada.",
-			"apiPasskeyVerificationFailed": "Falha na verificação da senha. Tente novamente.",
-			"registrationUserNotFound": "Conta de usuário não encontrada.",
-			"registrationSessionExpired": "A sessão de vinculação expirou. Tente novamente desde o início.",
-			"registrationVerifyFailed": "Não foi possível concluir a verificação do registro da chave de acesso.",
-			"registrationFailed": "Falha no registro da chave de acesso. Tente novamente.",
-			"removeUserNotFound": "Dados de usuário ou credenciais não encontrados.",
-			"removeInvalidPassword": "Senha errada.",
+			"errorSessionMissing": "O servidor não devolveu uma sessão de início de sessão válida. Atualize a página e tente novamente.",
+			"errorBadBeginResponse": "O servidor devolveu dados de início de sessão inválidos. Atualize a página e tente novamente.",
+			"errorCredentialRequired": "Faltam dados válidos de credencial Passkey.",
+			"errorAuthSessionRequired": "O token da sessão de início de sessão está em falta. Atualize a página e tente novamente.",
+			"apiSessionExpired": "A sessão de início de sessão com Passkey expirou. Comece novamente.",
+			"apiUnknownPasskey": "A chave de acesso não é reconhecida; utilize uma chave associada.",
+			"apiPasskeyVerificationFailed": "Falha na verificação da Passkey. Tente novamente.",
+			"registrationUserNotFound": "Conta de utilizador não encontrada.",
+			"registrationSessionExpired": "A sessão de associação expirou. Tente novamente desde o início.",
+			"registrationVerifyFailed": "Não foi possível concluir a verificação do registo da chave de acesso.",
+			"registrationFailed": "Falha no registo da chave de acesso. Tente novamente.",
+			"removeUserNotFound": "Dados de utilizador ou credenciais não encontrados.",
+			"removeInvalidPassword": "Palavra-passe incorreta.",
 			"removePasskeyNotFound": "A chave de acesso não foi encontrada."
 		}
 	},
 	"login_info": {
 		"title": "Informação de início de sessão",
-		"description": "Um espaço seguro para gerenciar suas credenciais de login de founts – as chaves para o seu mundo de histórias não contadas.",
+		"description": "Um espaço seguro para fazer a gestão das credenciais de início de sessão do fount – as chaves para o seu mundo de histórias por contar.",
 		"modal": {
 			"title": "Erro de transferência de certificado",
 			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
 			"transfer_error": "Ocorreu um erro ao tentar transferir as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode obter as informações de início de sessão.",
-			"missing_params": "O link está faltando um parâmetro obrigatório.",
+			"missing_params": "Ao link falta um parâmetro obrigatório.",
 			"buttons": {
 				"ignore": "Ignore e continue",
 				"retry": "Tente novamente"
@@ -483,7 +483,7 @@
 	},
 	"home": {
 		"title": "Início",
-		"description": "O coração da sua experiência com founts. Aqui, gerencie os habitantes de sua imaginação – personagens, mundos e personas. Suas histórias começam e se ramificam a partir desse nexo central.",
+		"description": "O coração da sua experiência com o fount. Aqui, faça a gestão dos habitantes da sua imaginação – personagens, mundos e personas. As suas histórias começam e ramificam-se a partir deste nexo central.",
 		"sidebarTitle": "Detalhes",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
@@ -1375,11 +1375,11 @@
 	"userSettings": {
 		"title": "Definições do Utilizador",
 		"PageTitle": "Definições do Utilizador",
-		"description": "Cuide dos detalhes da identidade da seu fount. Gerencie seu perfil, proteja seu acesso e visualize os dispositivos conectados. Um santuário tranquilo para sua conta.",
+		"description": "Veja os detalhes da identidade do seu fount. Faça a gestão do seu perfil, proteja o acesso e visualize os dispositivos ligados. Um espaço tranquilo para a sua conta.",
 		"shell": {
-			"unauthorized": "Login necessário.",
-			"responseNotJson": "O servidor retornou conteúdo não resolvível.",
-			"unexpectedError": "A solicitação falhou."
+			"unauthorized": "É necessário iniciar sessão.",
+			"responseNotJson": "O servidor devolveu conteúdo que não pôde ser analisado.",
+			"unexpectedError": "O pedido falhou."
 		},
 		"errors": {
 			"accountNotFound": "Conta não encontrada."
@@ -1407,8 +1407,8 @@
 			"submitButton": "Alterar palavra-passe",
 			"errorMismatch": "As novas palavras-passe não coincidem.",
 			"success": "Palavra-passe alterada com sucesso.",
-			"missingFields": "Por favor preencha sua senha atual e a nova senha.",
-			"invalidCurrent": "A senha atual está incorreta."
+			"missingFields": "Preencha a palavra-passe atual e a nova palavra-passe.",
+			"invalidCurrent": "A palavra-passe atual está incorreta."
 		},
 		"renameUser": {
 			"title": "Mudar nome de utilizador",
@@ -1416,11 +1416,11 @@
 			"submitButton": "Mudar nome de utilizador",
 			"confirmMessage": "Tem a certeza que quer mudar o seu nome de utilizador? Será necessário iniciar sessão novamente.",
 			"success": "Nome de utilizador alterado para \"${newUsername}\" com sucesso. Será agora desconectado.",
-			"missingParams": "Por favor preencha o novo nome de usuário e senha.",
-			"wrongPassword": "A senha está incorreta.",
-			"mustDiffer": "O novo nome de usuário deve ser diferente do nome de usuário atual.",
-			"taken": "Este nome de usuário já está em uso.",
-			"moveFailed": "Falha ao renomear o diretório de dados do usuário: ${detail}. O nome de usuário original foi restaurado."
+			"missingParams": "Preencha o novo nome de utilizador e a palavra-passe atual.",
+			"wrongPassword": "A palavra-passe está incorreta.",
+			"mustDiffer": "O novo nome de utilizador deve ser diferente do atual.",
+			"taken": "Este nome de utilizador já está em utilização.",
+			"moveFailed": "Falha ao mudar o nome ao diretório de dados do utilizador: ${detail}. O nome original foi restaurado."
 		},
 		"passkeys": {
 			"title": "Chaves de segurança e Passkeys",
@@ -1436,7 +1436,7 @@
 				"placeholder": "Exemplo: YubiKey para trabalho"
 			},
 			"addButton": "Adicionar chave de segurança",
-			"noneFound": "Nenhuma chave de segurança foi vinculada ainda.",
+			"noneFound": "Nenhuma chave de segurança foi associada ainda.",
 			"itemDetails": "Tempo adicionado: ${created}",
 			"removeButton": "Remover",
 			"removeConfirm": "Tem a certeza de que pretende remover esta chave? Depois de removida, já não poderá iniciar sessão com ela.",
@@ -1444,9 +1444,9 @@
 			"addSuccess": "Chave de segurança adicionada.",
 			"errorLoadLibrary": "Não foi possível carregar a biblioteca WebAuthn.",
 			"errorCancelled": "Adição cancelada.",
-			"apiInvalidPassword": "Senha errada.",
-			"apiMissingCredential": "Credenciais de senha válidas estão faltando.",
-			"apiRemoveParamsRequired": "Forneça as credenciais e a senha que deseja remover."
+			"apiInvalidPassword": "Palavra-passe incorreta.",
+			"apiMissingCredential": "Faltam credenciais Passkey válidas.",
+			"apiRemoveParamsRequired": "Indique as credenciais a remover e a palavra-passe."
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sessões do utilizador",
@@ -1457,8 +1457,8 @@
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem a certeza que quer revogar o acesso para este dispositivo/sessão?",
 			"revokeSuccess": "Dispositivo/Sessão revogado com sucesso.",
-			"revokeMissingParams": "Forneça a senha do dispositivo e da sessão que você deseja revogar.",
-			"revokeWrongPassword": "A senha está incorreta.",
+			"revokeMissingParams": "Indique o dispositivo ou sessão a revogar e a palavra-passe.",
+			"revokeWrongPassword": "A palavra-passe está incorreta.",
 			"listNotFound": "Lista de dispositivos não encontrada.",
 			"deviceNotFound": "O dispositivo ou sessão não foi encontrado.",
 			"refreshButton": {
@@ -1470,7 +1470,7 @@
 		},
 		"apiKeys": {
 			"title": "Chave da API",
-			"description": "Gerencie a chave da API para aplicativos externos.",
+			"description": "Faça a gestão das chaves API para aplicações externas.",
 			"input": {
 				"placeholder": "Nova descrição da chave"
 			},
@@ -1479,10 +1479,10 @@
 			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
 			"neverUsed": "Nunca usado",
 			"noKeysForUser": "Dados da chave de API não encontrados.",
-			"revokeWrongPassword": "A senha está incorreta.",
+			"revokeWrongPassword": "A palavra-passe está incorreta.",
 			"keyNotFound": "A chave API não foi encontrada.",
 			"revokeMissingJti": "Especifique a chave a ser revogada.",
-			"revokeMissingPassword": "A revogação de uma chave requer uma senha.",
+			"revokeMissingPassword": "Para revogar uma chave é necessária a palavra-passe.",
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
 			"revokeSuccess": "A chave da API foi revogada com sucesso.",
@@ -1497,8 +1497,8 @@
 		},
 		"newApiKey": {
 			"title": "Nova chave de API foi criada",
-			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
-			"closeButton": "Eu copiei minha chave",
+			"warning": "Copie a sua nova chave API. Não poderá voltar a vê-la!",
+			"closeButton": "Já copiei a chave",
 			"copyButton": {
 				"title": "Copie a nova chave de API"
 			},
@@ -1520,8 +1520,8 @@
 			"confirmMessage2": "Para confirmar a eliminação, introduza o seu nome de utilizador \"${username}\":",
 			"usernameMismatch": "O nome de utilizador introduzido não corresponde ao utilizador atual. A eliminação foi cancelada.",
 			"success": "Conta eliminada com sucesso. Agora a sua sessão será terminada.",
-			"missingPassword": "Por favor, digite sua senha.",
-			"wrongPassword": "A senha está incorreta."
+			"missingPassword": "Introduza a palavra-passe.",
+			"wrongPassword": "A palavra-passe está incorreta."
 		},
 		"passwordConfirm": {
 			"title": "Confirmar operação",

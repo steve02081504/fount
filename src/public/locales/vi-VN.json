@@ -444,7 +444,7 @@
 			"invalidCredentials": "Tên người dùng hoặc mật khẩu không hợp lệ.",
 			"accountLockedRetry": "Tài khoản đã bị khóa, vui lòng thử lại sau ${timeLeft}.",
 			"accountLockedAttempts": "Tài khoản đã bị khóa tạm thời do đăng nhập thất bại quá nhiều lần.",
-			"powValidationFailed": "Xác minh người-máy không thành công, vui lòng thử lại.",
+			"powValidationFailed": "Xác minh bảo mật không thành công. Vui lòng thử lại.",
 			"apiErrorBodyUnreadable": "Máy chủ trả về thông tin không thể phân tích được. Vui lòng thử lại sau."
 		},
 		"webauthn": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "Cài đặt người dùng",
 		"PageTitle": "Cài đặt người dùng",
-		"description": "Có xu hướng chi tiết về danh tính nguồn của bạn. Quản lý hồ sơ của bạn, bảo vệ quyền truy cập của bạn và xem các thiết bị được kết nối. Một nơi tôn nghiêm yên tĩnh cho tài khoản của bạn.",
+		"description": "Chăm chút cho các chi tiết về danh tính fount của bạn. Quản lý hồ sơ, bảo mật quyền truy cập và xem các thiết bị đã kết nối. Một không gian yên tĩnh và an toàn cho tài khoản của bạn.",
 		"shell": {
 			"unauthorized": "Yêu cầu đăng nhập.",
-			"responseNotJson": "Máy chủ trả về nội dung không thể giải quyết được.",
+			"responseNotJson": "Máy chủ trả về nội dung không thể phân tích.",
 			"unexpectedError": "Yêu cầu không thành công."
 		},
 		"errors": {

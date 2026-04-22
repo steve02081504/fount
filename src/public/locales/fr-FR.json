@@ -444,7 +444,7 @@
 			"invalidCredentials": "Nom d'utilisateur ou mot de passe invalide.",
 			"accountLockedRetry": "Le compte a été verrouillé, veuillez réessayer après ${timeLeft}.",
 			"accountLockedAttempts": "Le compte a été temporairement verrouillé en raison d'un trop grand nombre de tentatives de connexion infructueuses.",
-			"powValidationFailed": "La vérification homme-machine a échoué. Veuillez réessayer.",
+			"powValidationFailed": "La vérification de sécurité a échoué. Veuillez réessayer.",
 			"apiErrorBodyUnreadable": "Le serveur a renvoyé des informations qui n'ont pas pu être analysées. Veuillez réessayer plus tard."
 		},
 		"webauthn": {
@@ -455,16 +455,16 @@
 			"errorBadBeginResponse": "Le serveur a renvoyé des données de connexion invalides, veuillez actualiser la page et réessayer.",
 			"errorCredentialRequired": "Des données d'identification de clé d'accès valides sont manquantes.",
 			"errorAuthSessionRequired": "Le jeton de session de connexion est manquant, veuillez actualiser la page et réessayer.",
-			"apiSessionExpired": "La session de connexion par mot de passe a expiré, veuillez réessayer.",
+			"apiSessionExpired": "La session de connexion Passkey a expiré, veuillez réessayer.",
 			"apiUnknownPasskey": "La clé d'accès n'est pas reconnue, veuillez utiliser une clé liée.",
-			"apiPasskeyVerificationFailed": "La vérification du mot de passe a échoué. Veuillez réessayer.",
+			"apiPasskeyVerificationFailed": "La vérification de la clé d'accès a échoué. Veuillez réessayer.",
 			"registrationUserNotFound": "Compte utilisateur introuvable.",
 			"registrationSessionExpired": "La session de liaison a expiré, veuillez réessayer depuis le début.",
-			"registrationVerifyFailed": "Impossible de terminer la vérification de l'enregistrement du mot de passe.",
-			"registrationFailed": "L'enregistrement du mot de passe a échoué. Veuillez réessayer.",
+			"registrationVerifyFailed": "Impossible de terminer la vérification de l'enregistrement de la clé d'accès.",
+			"registrationFailed": "L'enregistrement de la clé d'accès a échoué. Veuillez réessayer.",
 			"removeUserNotFound": "Données d'utilisateur ou d'identification introuvables.",
 			"removeInvalidPassword": "Mauvais mot de passe.",
-			"removePasskeyNotFound": "Le mot de passe n'a pas été trouvé."
+			"removePasskeyNotFound": "La clé d'accès n'a pas été trouvée."
 		}
 	},
 	"login_info": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "Paramètres utilisateur",
 		"PageTitle": "Paramètres utilisateur",
-		"description": "Occupez-vous des détails de votre identité de source. Gérez votre profil, protégez votre accès et affichez les appareils connectés. Un sanctuaire tranquille pour votre compte.",
+		"description": "Prenez soin des détails de votre identité fount. Gérez votre profil, protégez votre accès et consultez les appareils connectés. Un sanctuaire tranquille pour votre compte.",
 		"shell": {
 			"unauthorized": "Connexion requise.",
-			"responseNotJson": "Le serveur a renvoyé un contenu insoluble.",
+			"responseNotJson": "Le serveur a renvoyé un contenu impossible à analyser.",
 			"unexpectedError": "La demande a échoué."
 		},
 		"errors": {
@@ -1416,7 +1416,7 @@
 			"submitButton": "Renommer l'utilisateur",
 			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
 			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté.",
-			"missingParams": "Veuillez remplir le nouveau nom d'utilisateur et le nouveau mot de passe.",
+			"missingParams": "Veuillez renseigner le nouveau nom d'utilisateur et le mot de passe actuel.",
 			"wrongPassword": "Le mot de passe est incorrect.",
 			"mustDiffer": "Le nouveau nom d'utilisateur doit être différent du nom d'utilisateur actuel.",
 			"taken": "Ce nom d'utilisateur est déjà pris.",

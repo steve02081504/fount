@@ -444,7 +444,7 @@
 			"invalidCredentials": "ユーザー名またはパスワードが無効です。",
 			"accountLockedRetry": "アカウントはロックされています。${timeLeft} 後にもう一度お試しください。",
 			"accountLockedAttempts": "ログイン試行の失敗回数が多すぎるため、アカウントは一時的にロックされました。",
-			"powValidationFailed": "人間とマシンの検証に失敗しました。もう一度お試しください。",
+			"powValidationFailed": "セキュリティ検証に失敗しました。もう一度お試しください。",
 			"apiErrorBodyUnreadable": "サーバーは解析できない情報を返しました。後でもう一度試してください。"
 		},
 		"webauthn": {
@@ -1375,10 +1375,10 @@
 	"userSettings": {
 		"title": "ユーザー設定",
 		"PageTitle": "ユーザー設定",
-		"description": "fountのアイデンティティの詳細に注意してください。プロファイルを管理し、アクセスを保護し、接続されているデバイスを表示します。あなたのアカウントのための静かな聖域。",
+		"description": "fountのアイデンティティ情報を管理します。プロフィールの設定、アクセスの保護、接続デバイスの確認ができます。あなたのアカウントのための、安全で静寂な空間です。",
 		"shell": {
 			"unauthorized": "ログインが必要です。",
-			"responseNotJson": "サーバーは解決できないコンテンツを返しました。",
+			"responseNotJson": "サーバーが解析できないコンテンツを返しました。",
 			"unexpectedError": "リクエストは失敗しました。"
 		},
 		"errors": {
@@ -1502,7 +1502,7 @@
 			"copyButton": {
 				"title": "新しい API キーをコピーする"
 			},
-			"copiedAlert": "APIキーがクリップボードにコピーしました",
+			"copiedAlert": "APIキーをクリップボードにコピーしました",
 			"copyKeyFailed": "キーをクリップボードにコピーできません。"
 		},
 		"logout": {
