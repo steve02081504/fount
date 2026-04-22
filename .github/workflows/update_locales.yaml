@@ -25,9 +25,10 @@ jobs:
   update-locales:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # PR 用 head 分支名检出，以便本地存在 refs/heads/<head_ref>，供后续 push 引用（避免 detached SHA + 额外 git 命令）
+      - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
           repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
       - name: run script to update locale files
         run: |
@@ -35,8 +36,7 @@ jobs:
           python ./.esh/commands/update-locales.py
       - name: git add all
         run: git add -A
-      # pull_request 下 github.ref 为 refs/pull/N/merge，checkout 后本地无该引用；
-      # actions-go/push 默认 ref 指向它会报 reference not found，故 PR 用 HEAD 推到源分支。
+      # pull_request 时 github.ref 仍为 refs/pull/N/merge，需在 push 显式指定源分支。
       - name: Push changes
         if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions-go/push@master
@@ -46,5 +46,5 @@ jobs:
           commit-message: 'file update~'
           remote: origin
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.event_name == 'pull_request' && 'HEAD' || github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.head_ref) || github.ref }}
           remote-ref: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.head_ref) || github.ref }}
