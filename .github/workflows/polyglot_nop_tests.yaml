@@ -80,7 +80,7 @@ jobs:
       run_sbt: ${{ steps.set.outputs.run_sbt }}
       run_docker: ${{ steps.set.outputs.run_docker }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -243,7 +243,7 @@ jobs:
     if: needs.detect-changes.outputs.run_bash == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run bash launcher (nop)
         shell: bash
         run: bash ./path/fount.sh nop
@@ -264,7 +264,7 @@ jobs:
     if: needs.detect-changes.outputs.run_powershell == '1'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run powershell launcher (nop)
         shell: pwsh
         run: |
@@ -289,7 +289,7 @@ jobs:
     if: needs.detect-changes.outputs.run_deno == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno (latest)
         shell: bash
@@ -319,7 +319,7 @@ jobs:
     if: needs.detect-changes.outputs.run_node == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run node launcher (nop)
         shell: bash
         run: node ./path/fount.mjs nop
@@ -341,7 +341,7 @@ jobs:
     if: needs.detect-changes.outputs.run_make == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run make launcher (nop)
         shell: bash
         run: make run ARGS=nop
@@ -363,7 +363,7 @@ jobs:
     if: needs.detect-changes.outputs.run_npm == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run npm launcher (nop)
         shell: bash
         run: npm start -- nop
@@ -385,7 +385,7 @@ jobs:
     if: needs.detect-changes.outputs.run_deno_task == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno (latest)
         shell: bash
@@ -415,7 +415,7 @@ jobs:
     if: needs.detect-changes.outputs.run_cargo == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -442,7 +442,7 @@ jobs:
     if: needs.detect-changes.outputs.run_dotnet == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -471,7 +471,7 @@ jobs:
     if: needs.detect-changes.outputs.run_gradle == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -505,7 +505,7 @@ jobs:
     if: needs.detect-changes.outputs.run_swift == '1'
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run swift launcher (nop)
         shell: bash
@@ -529,7 +529,7 @@ jobs:
     if: needs.detect-changes.outputs.run_task == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -566,7 +566,7 @@ jobs:
     if: needs.detect-changes.outputs.run_just == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install just
         shell: bash
@@ -598,7 +598,7 @@ jobs:
     if: needs.detect-changes.outputs.run_gulp == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install gulp (no package-lock)
         shell: bash
@@ -627,7 +627,7 @@ jobs:
     if: needs.detect-changes.outputs.run_mix == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Elixir/OTP
         uses: erlef/setup-beam@v1
@@ -657,7 +657,7 @@ jobs:
     if: needs.detect-changes.outputs.run_stack == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Stack
         shell: bash
@@ -729,7 +729,7 @@ jobs:
     if: needs.detect-changes.outputs.run_sbt == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -771,7 +771,7 @@ jobs:
     if: needs.detect-changes.outputs.run_docker == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Prepare docker compose override (nop)
         shell: bash

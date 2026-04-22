@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Resolve comments.json and skip unchanged (schedule only)
         id: pages_skip
@@ -322,11 +322,11 @@ jobs:
 
       - name: Upload artifact
         if: steps.pages_skip.outputs.skip != 'true'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: '.github/pages'
 
       - name: Deploy to GitHub Pages
         if: steps.pages_skip.outputs.skip != 'true'
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

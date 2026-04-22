@@ -11,7 +11,7 @@ jobs:
   spam-issues-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Check for keywords
         uses: actions/github-script@v7
         with:
