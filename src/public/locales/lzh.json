@@ -51,6 +51,7 @@
 				"localAhead": "本地已先，無需更新。",
 				"noUpstream": "支 '${currentBranch}' 未溯其源，遂袖手旁觀。",
 				"dirtyWorkingDirectory": "案牘未清，請先藏納或呈獻。",
+				"uncommittedBackedUpTo": "未提交更改已备份到：${path}",
 				"diverged": "兵分兩路，強渡陳倉...",
 				"updateFailed": "自遠方更新機件失利：${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "信物不堅，易為人所窺。",
 			"accountAlreadyExists": "此名號已為捷足者所得。",
 			"powNotSolved": "請先竟功證之驗",
-			"powError": "功證之驗有誤"
+			"powError": "功證之驗有誤",
+			"invalidCredentials": "用户名或密码无效。",
+			"accountLockedRetry": "账户已锁定，请于 ${timeLeft} 后再试。",
+			"accountLockedAttempts": "因登录失败次数过多，账户已被暂时锁定。",
+			"powValidationFailed": "人机验证失败，请重试。",
+			"apiErrorBodyUnreadable": "服务器返回了无法解析的信息，请稍后重试。"
 		},
 		"webauthn": {
 			"loginButton": "以安鑰 / Passkey 登臺",
-			"errorNoUsername": "用 Passkey 前，請先具名號。",
 			"errorLoadLibrary": "WebAuthn 輔庫難載，請察網絡而復試。",
-			"errorCancelled": "已止用安鑰，或未蒙允。"
+			"errorCancelled": "已止用安鑰，或未蒙允。",
+			"errorSessionMissing": "服务器未返回有效的登录会话，请刷新页面后重试。",
+			"errorBadBeginResponse": "服务器返回了无效的登录数据，请刷新页面后重试。",
+			"errorCredentialRequired": "缺少有效的 Passkey 凭证数据。",
+			"errorAuthSessionRequired": "缺少登录会话令牌，请刷新页面后重试。",
+			"apiSessionExpired": "Passkey 登录会话已过期，请重新开始。",
+			"apiUnknownPasskey": "无法识别该 Passkey，请使用已绑定的密钥。",
+			"apiPasskeyVerificationFailed": "Passkey 验证失败，请重试。",
+			"registrationUserNotFound": "未找到用户账户。",
+			"registrationSessionExpired": "绑定会话已过期，请从头重试。",
+			"registrationVerifyFailed": "无法完成 Passkey 注册验证。",
+			"registrationFailed": "Passkey 注册失败，请重试。",
+			"removeUserNotFound": "未找到用户或凭据数据。",
+			"removeInvalidPassword": "密码错误。",
+			"removePasskeyNotFound": "未找到该 Passkey。"
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "用者規度",
 		"PageTitle": "用者規度",
 		"description": "此乃君之靜室，可理身份之細，護行蹤之秘，觀所连之器。",
+		"shell": {
+			"unauthorized": "需要登录。",
+			"responseNotJson": "服务器返回了无法解析的内容。",
+			"unexpectedError": "请求失败。"
+		},
+		"errors": {
+			"accountNotFound": "未找到账户。"
+		},
 		"userInfo": {
 			"title": "用者信符",
 			"usernameLabel": "名號:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "謄錄路徑"
 			},
-			"copiedAlert": "路徑已錄！"
+			"copiedAlert": "路徑已錄！",
+			"copyPathFailed": "无法复制路径到剪贴板。"
 		},
 		"changePassword": {
 			"title": "更易信物",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "復核新信物:",
 			"submitButton": "更易信物",
 			"errorMismatch": "新信物兩次不合。",
-			"success": "信物更易功成。"
+			"success": "信物更易功成。",
+			"missingFields": "请填写当前密码与新密码。",
+			"invalidCurrent": "当前密码不正确。"
 		},
 		"renameUser": {
 			"title": "更易名號",
 			"newUsernameLabel": "新名號:",
 			"submitButton": "更易名號",
 			"confirmMessage": "確欲更易名號乎？此舉將需重新登臺。",
-			"success": "名號已更為 “${newUsername}”。君將告退。"
+			"success": "名號已更為 “${newUsername}”。君將告退。",
+			"missingParams": "请填写新用户名与密码。",
+			"wrongPassword": "密码不正确。",
+			"mustDiffer": "新用户名须与当前用户名不同。",
+			"taken": "该用户名已被占用。",
+			"moveFailed": "重命名用户数据目录失败：${detail}。已恢复原用户名。"
 		},
 		"passkeys": {
 			"title": "安鑰與 Passkey",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "安鑰已除。",
 			"addSuccess": "安鑰已添。",
 			"errorLoadLibrary": "WebAuthn 庫難載。",
-			"errorCancelled": "已止添鑰。"
+			"errorCancelled": "已止添鑰。",
+			"apiInvalidPassword": "密码错误。",
+			"apiMissingCredential": "缺少有效的 Passkey 凭证。",
+			"apiRemoveParamsRequired": "请提供要移除的凭据与密码。"
 		},
 		"userDevices": {
 			"title": "用者之器/當席",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "撤銷",
 			"revokeConfirm": "確欲從此器/會話告退乎？",
 			"revokeSuccess": "器/會話已撤銷。",
+			"revokeMissingParams": "请提供要撤销的设备与会话密码。",
+			"revokeWrongPassword": "密码不正确。",
+			"listNotFound": "未找到设备列表。",
+			"deviceNotFound": "未找到该设备或会话。",
 			"refreshButton": {
 				"title": "復新"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "未見符鑰。",
 			"keyDetails": "述: ${description} | 製於: ${createdAt} | 末用: ${lastUsed}",
 			"neverUsed": "未嘗用",
+			"noKeysForUser": "未找到 API 密钥数据。",
+			"revokeWrongPassword": "密码不正确。",
+			"keyNotFound": "未找到该 API 密钥。",
+			"revokeMissingJti": "请指定要撤销的密钥。",
+			"revokeMissingPassword": "撤销密钥需要提供密码。",
 			"revokeButton": "廢止",
 			"revokeConfirm": "確欲廢此符鑰乎？",
 			"revokeSuccess": "符鑰已廢。",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "錄此新鑰"
 			},
-			"copiedAlert": "符鑰已錄！"
+			"copiedAlert": "符鑰已錄！",
+			"copyKeyFailed": "无法复制密钥到剪贴板。"
 		},
 		"logout": {
 			"title": "告退",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "警！確欲永銷君之戶籍乎？此舉不可撤銷。",
 			"confirmMessage2": "為彰其信，請書君之名號“${username}”：",
 			"usernameMismatch": "所入名號不合。銷戶已止。",
-			"success": "戶籍已銷。君將告退。"
+			"success": "戶籍已銷。君將告退。",
+			"missingPassword": "请输入密码。",
+			"wrongPassword": "密码不正确。"
 		},
 		"passwordConfirm": {
 			"title": "確認",

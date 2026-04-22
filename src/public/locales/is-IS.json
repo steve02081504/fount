@@ -51,6 +51,7 @@
 				"localAhead": "Staðbundin grein er á undan fjarlægri grein. Engin þörf á uppfærslu.",
 				"noUpstream": "Engin uppstreymisgrein er skilgreind fyrir greinina '${currentBranch}', sleppi uppfærsluskoðun.",
 				"dirtyWorkingDirectory": "Vinnusvæðið er ekki hreint. Vinsamlegast geymdu eða festu breytingarnar þínar áður en þú uppfærir.",
+				"uncommittedBackedUpTo": "Óskuldsettar breytingar voru afritaðar í: ${path}",
 				"diverged": "Staðbundnar og fjarlægar greinar hafa skilist að. Þvinga uppfærslu...",
 				"updateFailed": "Mistókst að uppfæra íhlut frá fjarlægu kóðasafni: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "Lykilorðið er of veikt.",
 			"accountAlreadyExists": "Aðgangur er þegar til",
 			"powNotSolved": "Vinsamlegast kláraðu PoW staðfestingu fyrst",
-			"powError": "PoW sannprófunarvilla"
+			"powError": "PoW sannprófunarvilla",
+			"invalidCredentials": "Ógilt notendanafn eða lykilorð.",
+			"accountLockedRetry": "Reikningurinn hefur verið læstur, vinsamlegast reyndu aftur eftir ${timeLeft}.",
+			"accountLockedAttempts": "Reikningnum hefur verið læst tímabundið vegna of margra misheppnaðra innskráningartilrauna.",
+			"powValidationFailed": "Staðfesting manna og vél mistókst, vinsamlegast reyndu aftur.",
+			"apiErrorBodyUnreadable": "Þjónninn skilaði upplýsingum sem ekki var hægt að þátta. Vinsamlegast reyndu aftur síðar."
 		},
 		"webauthn": {
 			"loginButton": "Skráðu þig inn með öryggislykil / lykillyki",
-			"errorNoUsername": "Vinsamlega fylltu inn notandanafn þitt áður en þú notar Passkey.",
 			"errorLoadLibrary": "Ekki er hægt að hlaða WebAuthn hjálparsafninu, vinsamlegast athugaðu netið og reyndu aftur.",
-			"errorCancelled": "Öryggislyklinum hefur verið hætt eða ekki heimilað til notkunar."
+			"errorCancelled": "Öryggislyklinum hefur verið hætt eða ekki heimilað til notkunar.",
+			"errorSessionMissing": "Þjónninn skilaði ekki gildri innskráningarlotu, vinsamlegast endurnýjaðu síðuna og reyndu aftur.",
+			"errorBadBeginResponse": "Þjónninn skilaði ógildum innskráningargögnum, vinsamlegast endurnýjaðu síðuna og reyndu aftur.",
+			"errorCredentialRequired": "Gild lykilskilríkisgögn vantar.",
+			"errorAuthSessionRequired": "Innskráningarlotumerkið vantar, vinsamlegast endurnýjaðu síðuna og reyndu aftur.",
+			"apiSessionExpired": "Aðgangslykillinnskráningarfundur er útrunninn, vinsamlegast reyndu aftur.",
+			"apiUnknownPasskey": "Lykilinn er ekki þekktur, vinsamlegast notaðu bundinn lykil.",
+			"apiPasskeyVerificationFailed": "Staðfesting aðgangslykils mistókst, vinsamlegast reyndu aftur.",
+			"registrationUserNotFound": "Notandareikningur fannst ekki.",
+			"registrationSessionExpired": "Bindunarlotan er útrunnin, vinsamlegast reyndu aftur frá upphafi.",
+			"registrationVerifyFailed": "Ekki tókst að ljúka staðfestingu á aðgangslykli skráningu.",
+			"registrationFailed": "Skráning lykillykla mistókst, vinsamlegast reyndu aftur.",
+			"removeUserNotFound": "Notanda- eða skilríkisgögn fundust ekki.",
+			"removeInvalidPassword": "Rangt lykilorð.",
+			"removePasskeyNotFound": "Lykillinn fannst ekki."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Notandastillingar",
 		"PageTitle": "Notandastillingar",
 		"description": "Gættu að smáatriðum um auðkenni þitt. Hafðu umsjón með prófílnum þínum, tryggðu aðgang þinn og skoðaðu tengd tæki. Rólegur helgidómur fyrir reikninginn þinn.",
+		"shell": {
+			"unauthorized": "Innskráning krafist.",
+			"responseNotJson": "Þjónninn skilaði óleysanlegu efni.",
+			"unexpectedError": "Beiðnin mistókst."
+		},
+		"errors": {
+			"accountNotFound": "Reikningur fannst ekki."
+		},
 		"userInfo": {
 			"title": "Notandaupplýsingar",
 			"usernameLabel": "Notandanafn:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "afrita slóð"
 			},
-			"copiedAlert": "Slóð afrituð á klippiborð!"
+			"copiedAlert": "Slóð afrituð á klippiborð!",
+			"copyPathFailed": "Ekki er hægt að afrita slóð á klemmuspjald."
 		},
 		"changePassword": {
 			"title": "Breyta lykilorði",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Staðfesta nýtt lykilorð:",
 			"submitButton": "Breyta lykilorði",
 			"errorMismatch": "Nýju lykilorðin stemma ekki.",
-			"success": "Lykilorði breytt."
+			"success": "Lykilorði breytt.",
+			"missingFields": "Vinsamlegast fylltu inn núverandi lykilorð og nýtt lykilorð.",
+			"invalidCurrent": "Núverandi lykilorð er rangt."
 		},
 		"renameUser": {
 			"title": "Endurnefna notanda",
 			"newUsernameLabel": "Nýtt notandanafn:",
 			"submitButton": "Endurnefna notanda",
 			"confirmMessage": "Ertu viss um að þú viljir breyta notandanafninu þínu? Þú þarft að skrá þig inn aftur.",
-			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út."
+			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út.",
+			"missingParams": "Vinsamlega fylltu inn nýtt notendanafn og lykilorð.",
+			"wrongPassword": "Lykilorðið er rangt.",
+			"mustDiffer": "Nýja notendanafnið verður að vera annað en núverandi notendanafn.",
+			"taken": "Þetta notendanafn er þegar tekið.",
+			"moveFailed": "Mistókst að endurnefna notendagagnaskrá: ${detail}. Upprunalega notendanafnið hefur verið endurheimt."
 		},
 		"passkeys": {
 			"title": "Öryggislyklar og aðgangslykill",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Öryggislykill fjarlægður.",
 			"addSuccess": "Öryggislykli bætt við.",
 			"errorLoadLibrary": "Ekki tókst að hlaða WebAuthn bókasafni.",
-			"errorCancelled": "Hætt við að bæta við."
+			"errorCancelled": "Hætt við að bæta við.",
+			"apiInvalidPassword": "Rangt lykilorð.",
+			"apiMissingCredential": "Gild lykilskilríki vantar.",
+			"apiRemoveParamsRequired": "Vinsamlegast gefðu upp skilríki og lykilorð sem þú vilt fjarlægja."
 		},
 		"userDevices": {
 			"title": "Tæki/Setur notanda",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Afturkalla",
 			"revokeConfirm": "Ertu viss um að þú viljir skrá þig út úr þessu tæki/setu?",
 			"revokeSuccess": "Tæki/seta hefur verið afturkölluð.",
+			"revokeMissingParams": "Vinsamlegast gefðu upp tækið og aðgangslykilorðið sem þú vilt afturkalla.",
+			"revokeWrongPassword": "Lykilorðið er rangt.",
+			"listNotFound": "Tækjalisti fannst ekki.",
+			"deviceNotFound": "Tækið eða lotan fannst ekki.",
 			"refreshButton": {
 				"title": "Endurnýjaðu lista"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "Engir API lyklar fundust.",
 			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
 			"neverUsed": "Aldrei notað",
+			"noKeysForUser": "API lykilgögn fundust ekki.",
+			"revokeWrongPassword": "Lykilorðið er rangt.",
+			"keyNotFound": "API lykillinn fannst ekki.",
+			"revokeMissingJti": "Vinsamlegast tilgreindu lykilinn sem á að afturkalla.",
+			"revokeMissingPassword": "Til að afturkalla lykil þarf lykilorð.",
 			"revokeButton": "Afturkalla",
 			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
 			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Afritaðu nýjan API lykil"
 			},
-			"copiedAlert": "API lykill afritaður á klippiborð!"
+			"copiedAlert": "API lykill afritaður á klippiborð!",
+			"copyKeyFailed": "Ekki er hægt að afrita lykil á klemmuspjald."
 		},
 		"logout": {
 			"title": "Útskráning",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "AÐVÖRUN! Ertu viss um að þú viljir eyða aðganginum þínum varanlega? Þessi aðgerð er óafturkræf.",
 			"confirmMessage2": "Til að staðfesta eyðingu, vinsamlegast sláðu inn notandanafnið þitt \"${username}\":",
 			"usernameMismatch": "Innslegið notandanafn passar ekki við núverandi notanda. Eyðingu hætt.",
-			"success": "Aðgangi hefur verið eytt. Þú verður nú skráð(ur) út."
+			"success": "Aðgangi hefur verið eytt. Þú verður nú skráð(ur) út.",
+			"missingPassword": "Vinsamlegast sláðu inn lykilorðið þitt.",
+			"wrongPassword": "Lykilorðið er rangt."
 		},
 		"passwordConfirm": {
 			"title": "Staðfesta aðgerð",

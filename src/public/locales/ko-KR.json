@@ -51,6 +51,7 @@
 				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
 				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
 				"dirtyWorkingDirectory": "작업 디렉터리가 정리되지 않았습니다. 업데이트하기 전에 변경 사항을 스태시하거나 커밋하세요.",
+				"uncommittedBackedUpTo": "커밋되지 않은 변경 사항이 ${path}에 백업되었습니다.",
 				"diverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
 				"updateFailed": "원격 리포지토리에서 컴포넌트 업데이트에 실패했습니다: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "비밀번호의 보안 수준이 너무 낮습니다.",
 			"accountAlreadyExists": "이미 존재하는 계정입니다.",
 			"powNotSolved": "먼저 PoW 인증을 완료해주세요",
-			"powError": "POW 검증 오류"
+			"powError": "POW 검증 오류",
+			"invalidCredentials": "사용자 이름 또는 비밀번호가 잘못되었습니다.",
+			"accountLockedRetry": "계정이 잠겼습니다. ${timeLeft} 후에 다시 시도해 주세요.",
+			"accountLockedAttempts": "로그인 시도 실패 횟수가 너무 많아 계정이 일시적으로 잠겼습니다.",
+			"powValidationFailed": "인간-기계 확인에 실패했습니다. 다시 시도해 주세요.",
+			"apiErrorBodyUnreadable": "서버가 구문 분석할 수 없는 정보를 반환했습니다. 나중에 다시 시도해 주세요."
 		},
 		"webauthn": {
 			"loginButton": "보안키/패스키를 이용하여 로그인",
-			"errorNoUsername": "Passkey를 사용하기 전에 사용자 이름을 입력하십시오.",
 			"errorLoadLibrary": "WebAuthn 보조 라이브러리를 로드할 수 없습니다. 네트워크를 확인한 후 다시 시도해 주세요.",
-			"errorCancelled": "보안 키가 취소되었거나 사용이 승인되지 않았습니다."
+			"errorCancelled": "보안 키가 취소되었거나 사용이 승인되지 않았습니다.",
+			"errorSessionMissing": "서버가 유효한 로그인 세션을 반환하지 않았습니다. 페이지를 새로 고치고 다시 시도하십시오.",
+			"errorBadBeginResponse": "서버에서 잘못된 로그인 데이터를 반환했습니다. 페이지를 새로 고친 후 다시 시도하세요.",
+			"errorCredentialRequired": "유효한 암호 키 자격 증명 데이터가 누락되었습니다.",
+			"errorAuthSessionRequired": "로그인 세션 토큰이 누락되었습니다. 페이지를 새로고침하고 다시 시도하세요.",
+			"apiSessionExpired": "패스키 로그인 세션이 만료되었습니다. 다시 시도해 주세요.",
+			"apiUnknownPasskey": "패스키가 인식되지 않습니다. 바인딩된 키를 사용하세요.",
+			"apiPasskeyVerificationFailed": "비밀번호 확인에 실패했습니다. 다시 시도해 주세요.",
+			"registrationUserNotFound": "사용자 계정을 찾을 수 없습니다.",
+			"registrationSessionExpired": "바인딩 세션이 만료되었습니다. 처음부터 다시 시도해 주세요.",
+			"registrationVerifyFailed": "패스키 등록 확인을 완료할 수 없습니다.",
+			"registrationFailed": "비밀번호 등록에 실패했습니다. 다시 시도해 주세요.",
+			"removeUserNotFound": "사용자 또는 자격 증명 데이터를 찾을 수 없습니다.",
+			"removeInvalidPassword": "비밀번호가 잘못되었습니다.",
+			"removePasskeyNotFound": "패스키를 찾을 수 없습니다."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "사용자 설정",
 		"PageTitle": "사용자 설정",
 		"description": "당신의 fount 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
+		"shell": {
+			"unauthorized": "로그인이 필요합니다.",
+			"responseNotJson": "서버가 확인할 수 없는 콘텐츠를 반환했습니다.",
+			"unexpectedError": "요청이 실패했습니다."
+		},
+		"errors": {
+			"accountNotFound": "계정을 찾을 수 없습니다."
+		},
 		"userInfo": {
 			"title": "사용자 정보",
 			"usernameLabel": "사용자 이름:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "복사 아이콘"
 			},
-			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
+			"copiedAlert": "경로가 클립보드에 복사되었습니다!",
+			"copyPathFailed": "경로를 클립보드에 복사할 수 없습니다."
 		},
 		"changePassword": {
 			"title": "비밀번호 변경",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "새 비밀번호 확인:",
 			"submitButton": "비밀번호 변경",
 			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
-			"success": "비밀번호가 성공적으로 변경되었습니다."
+			"success": "비밀번호가 성공적으로 변경되었습니다.",
+			"missingFields": "현재 비밀번호와 새 비밀번호를 입력해주세요.",
+			"invalidCurrent": "현재 비밀번호가 올바르지 않습니다."
 		},
 		"renameUser": {
 			"title": "사용자 이름 변경",
 			"newUsernameLabel": "새 사용자 이름:",
 			"submitButton": "사용자 이름 변경",
 			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
-			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다.",
+			"missingParams": "새로운 사용자 이름과 비밀번호를 입력하세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다.",
+			"mustDiffer": "새 사용자 이름은 현재 사용자 이름과 달라야 합니다.",
+			"taken": "이 사용자 이름은 이미 사용 중입니다.",
+			"moveFailed": "사용자 데이터 디렉터리 이름을 바꾸지 못했습니다: ${detail}. 원래 사용자 이름이 복원되었습니다."
 		},
 		"passkeys": {
 			"title": "보안 키 및 패스키",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "보안 키가 삭제되었습니다.",
 			"addSuccess": "보안 키가 추가되었습니다.",
 			"errorLoadLibrary": "WebAuthn 라이브러리를 로드할 수 없습니다.",
-			"errorCancelled": "추가가 취소되었습니다."
+			"errorCancelled": "추가가 취소되었습니다.",
+			"apiInvalidPassword": "비밀번호가 잘못되었습니다.",
+			"apiMissingCredential": "유효한 암호 키 자격 증명이 누락되었습니다.",
+			"apiRemoveParamsRequired": "제거하려는 자격 증명과 비밀번호를 입력하세요."
 		},
 		"userDevices": {
 			"title": "사용자 기기/세션",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "해지",
 			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
 			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다.",
+			"revokeMissingParams": "취소하려는 장치 및 세션 비밀번호를 입력하세요.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"listNotFound": "장치 목록을 찾을 수 없습니다.",
+			"deviceNotFound": "장치 또는 세션을 찾을 수 없습니다.",
 			"refreshButton": {
 				"title": "목록 새로 고침"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "API 키가 발견되지 않았습니다.",
 			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
 			"neverUsed": "사용하지 않았습니다",
+			"noKeysForUser": "API 키 데이터를 찾을 수 없습니다.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"keyNotFound": "API 키를 찾을 수 없습니다.",
+			"revokeMissingJti": "취소할 키를 지정하세요.",
+			"revokeMissingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
 			"revokeButton": "해지",
 			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
 			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "새 API 키 복사"
 			},
-			"copiedAlert": "키가 클립보드에 복사되었습니다!"
+			"copiedAlert": "키가 클립보드에 복사되었습니다!",
+			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
 		},
 		"logout": {
 			"title": "로그아웃",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
 			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
 			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
-			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다.",
+			"missingPassword": "비밀번호를 입력해주세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다."
 		},
 		"passwordConfirm": {
 			"title": "작업 확인",

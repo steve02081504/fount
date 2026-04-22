@@ -51,6 +51,7 @@
 				"localAhead": "🏠➡️☁️, ✅",
 				"noUpstream": "🚫☁️ '${currentBranch}', 🤷‍♂️",
 				"dirtyWorkingDirectory": "⚠️📝, 🙏💾",
+				"uncommittedBackedUpTo": "未提交更改已备份到：${path}",
 				"diverged": "🔀, 💪🔄",
 				"updateFailed": "☁️🔄🧩❌: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "🔑👎",
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
-			"powError": "⚙️💥"
+			"powError": "⚙️💥",
+			"invalidCredentials": "用户名或密码无效。",
+			"accountLockedRetry": "账户已锁定，请于 ${timeLeft} 后再试。",
+			"accountLockedAttempts": "因登录失败次数过多，账户已被暂时锁定。",
+			"powValidationFailed": "人机验证失败，请重试。",
+			"apiErrorBodyUnreadable": "服务器返回了无法解析的信息，请稍后重试。"
 		},
 		"webauthn": {
 			"loginButton": "🔐🔑➡️🚪📱🔑",
-			"errorNoUsername": "✍️👤❓➡️📱🔑",
 			"errorLoadLibrary": "📚🔐❌🌐🔁",
-			"errorCancelled": "🙅🔑➕🚪❓"
+			"errorCancelled": "🙅🔑➕🚪❓",
+			"errorSessionMissing": "服务器未返回有效的登录会话，请刷新页面后重试。",
+			"errorBadBeginResponse": "服务器返回了无效的登录数据，请刷新页面后重试。",
+			"errorCredentialRequired": "缺少有效的 Passkey 凭证数据。",
+			"errorAuthSessionRequired": "缺少登录会话令牌，请刷新页面后重试。",
+			"apiSessionExpired": "Passkey 登录会话已过期，请重新开始。",
+			"apiUnknownPasskey": "无法识别该 Passkey，请使用已绑定的密钥。",
+			"apiPasskeyVerificationFailed": "Passkey 验证失败，请重试。",
+			"registrationUserNotFound": "未找到用户账户。",
+			"registrationSessionExpired": "绑定会话已过期，请从头重试。",
+			"registrationVerifyFailed": "无法完成 Passkey 注册验证。",
+			"registrationFailed": "Passkey 注册失败，请重试。",
+			"removeUserNotFound": "未找到用户或凭据数据。",
+			"removeInvalidPassword": "密码错误。",
+			"removePasskeyNotFound": "未找到该 Passkey。"
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "👤⚙️",
 		"PageTitle": "👤⚙️",
 		"description": "👤🔧🛡️💻",
+		"shell": {
+			"unauthorized": "需要登录。",
+			"responseNotJson": "服务器返回了无法解析的内容。",
+			"unexpectedError": "请求失败。"
+		},
+		"errors": {
+			"accountNotFound": "未找到账户。"
+		},
 		"userInfo": {
 			"title": "👤ℹ️",
 			"usernameLabel": "👤:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "📋📍"
 			},
-			"copiedAlert": "📋✅❗️"
+			"copiedAlert": "📋✅❗️",
+			"copyPathFailed": "无法复制路径到剪贴板。"
 		},
 		"changePassword": {
 			"title": "✍️🔑",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "🆕🔑🔑:",
 			"submitButton": "✍️🔑",
 			"errorMismatch": "🆕🔑 ≠ 🆕🔑🔑",
-			"success": "🔑✍️✅"
+			"success": "🔑✍️✅",
+			"missingFields": "请填写当前密码与新密码。",
+			"invalidCurrent": "当前密码不正确。"
 		},
 		"renameUser": {
 			"title": "✍️👤",
 			"newUsernameLabel": "🆕👤:",
 			"submitButton": "✍️👤",
 			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
-			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪..."
+			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪...",
+			"missingParams": "请填写新用户名与密码。",
+			"wrongPassword": "密码不正确。",
+			"mustDiffer": "新用户名须与当前用户名不同。",
+			"taken": "该用户名已被占用。",
+			"moveFailed": "重命名用户数据目录失败：${detail}。已恢复原用户名。"
 		},
 		"passkeys": {
 			"title": "🔐🔑📱",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "🗑️✅🔑",
 			"addSuccess": "➕✅🔑",
 			"errorLoadLibrary": "📚🔐❌",
-			"errorCancelled": "➕🚫"
+			"errorCancelled": "➕🚫",
+			"apiInvalidPassword": "密码错误。",
+			"apiMissingCredential": "缺少有效的 Passkey 凭证。",
+			"apiRemoveParamsRequired": "请提供要移除的凭据与密码。"
 		},
 		"userDevices": {
 			"title": "👤💻",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "➖",
 			"revokeConfirm": "🤔➖💻❓",
 			"revokeSuccess": "💻➖✅",
+			"revokeMissingParams": "请提供要撤销的设备与会话密码。",
+			"revokeWrongPassword": "密码不正确。",
+			"listNotFound": "未找到设备列表。",
+			"deviceNotFound": "未找到该设备或会话。",
 			"refreshButton": {
 				"title": "🔄"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "🤷‍♀️",
 			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
 			"neverUsed": "⏳",
+			"noKeysForUser": "未找到 API 密钥数据。",
+			"revokeWrongPassword": "密码不正确。",
+			"keyNotFound": "未找到该 API 密钥。",
+			"revokeMissingJti": "请指定要撤销的密钥。",
+			"revokeMissingPassword": "撤销密钥需要提供密码。",
 			"revokeButton": "🗑️",
 			"revokeConfirm": "🤔🗑️❓",
 			"revokeSuccess": "✅🗑️",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "📋🔑"
 			},
-			"copiedAlert": "📋✅❗️"
+			"copiedAlert": "📋✅❗️",
+			"copyKeyFailed": "无法复制密钥到剪贴板。"
 		},
 		"logout": {
 			"title": "🚪",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "⚠️🤔🗑️👤❓",
 			"confirmMessage2": "✍️👤 \"${username}\":",
 			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
-			"success": "👤🗑️✅, ➡️🚪..."
+			"success": "👤🗑️✅, ➡️🚪...",
+			"missingPassword": "请输入密码。",
+			"wrongPassword": "密码不正确。"
 		},
 		"passwordConfirm": {
 			"title": "✅",

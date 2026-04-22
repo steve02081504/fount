@@ -51,6 +51,7 @@
 				"localAhead": "Lokale branch loopt voor op externe branch. Bijwerken niet nodig.",
 				"noUpstream": "Geen upstream branch geconfigureerd voor branch '${currentBranch}', updatecontrole overgeslagen.",
 				"dirtyWorkingDirectory": "De werkdirectory is niet schoon. Commit of stash je wijzigingen voordat je bijwerkt.",
+				"uncommittedBackedUpTo": "Van niet-vastgelegde wijzigingen is een back-up gemaakt naar: ${path}",
 				"diverged": "Lokale en externe branches zijn afgeweken. Geforceerd bijwerken...",
 				"updateFailed": "Bijwerken van component vanuit externe repository mislukt: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "Wachtwoord is te zwak.",
 			"accountAlreadyExists": "Account bestaat al",
 			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
-			"powError": "PoW-verificatiefout"
+			"powError": "PoW-verificatiefout",
+			"invalidCredentials": "Ongeldige gebruikersnaam of wachtwoord.",
+			"accountLockedRetry": "Account is vergrendeld. Probeer het opnieuw na ${timeLeft}.",
+			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
+			"powValidationFailed": "Mens-machineverificatie mislukt. Probeer het opnieuw.",
+			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
 		},
 		"webauthn": {
 			"loginButton": "Aanmelden met beveiligingssleutel of passkey",
-			"errorNoUsername": "Vul uw gebruikersnaam in voordat u passkey gebruikt.",
 			"errorLoadLibrary": "Kan de WebAuthn-hulpbibliotheek niet laden. Controleer het netwerk en probeer het opnieuw.",
-			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik."
+			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik.",
+			"errorSessionMissing": "De server heeft geen geldige inlogsessie geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
+			"errorBadBeginResponse": "De server heeft ongeldige inloggegevens geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
+			"errorCredentialRequired": "Geldige wachtwoordgegevens ontbreken.",
+			"errorAuthSessionRequired": "Het inlogsessietoken ontbreekt. Vernieuw de pagina en probeer het opnieuw.",
+			"apiSessionExpired": "De inlogsessie met de toegangssleutel is verlopen. Probeer het opnieuw.",
+			"apiUnknownPasskey": "De toegangssleutel wordt niet herkend. Gebruik een gebonden sleutel.",
+			"apiPasskeyVerificationFailed": "Wachtwoordverificatie mislukt. Probeer het opnieuw.",
+			"registrationUserNotFound": "Gebruikersaccount niet gevonden.",
+			"registrationSessionExpired": "De bindingssessie is verlopen. Probeer het opnieuw vanaf het begin.",
+			"registrationVerifyFailed": "Kan de verificatie van de toegangssleutelregistratie niet voltooien.",
+			"registrationFailed": "Wachtwoordregistratie mislukt. Probeer het opnieuw.",
+			"removeUserNotFound": "Gebruikers- of inloggegevens niet gevonden.",
+			"removeInvalidPassword": "Verkeerd wachtwoord.",
+			"removePasskeyNotFound": "De toegangssleutel is niet gevonden."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Gebruikersinstellingen",
 		"PageTitle": "Gebruikersinstellingen",
 		"description": "Let op de details van uw bronidentiteit. Beheer uw profiel, beveilig uw toegang en bekijk aangesloten apparaten. Een rustig toevluchtsoord voor uw rekening.",
+		"shell": {
+			"unauthorized": "Inloggen vereist.",
+			"responseNotJson": "De server heeft onoplosbare inhoud geretourneerd.",
+			"unexpectedError": "Het verzoek is mislukt."
+		},
+		"errors": {
+			"accountNotFound": "Account niet gevonden."
+		},
 		"userInfo": {
 			"title": "Gebruikersinformatie",
 			"usernameLabel": "Gebruikersnaam:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "kopieer pad"
 			},
-			"copiedAlert": "Pad gekopieerd naar klembord!"
+			"copiedAlert": "Pad gekopieerd naar klembord!",
+			"copyPathFailed": "Kan pad naar klembord niet kopiëren."
 		},
 		"changePassword": {
 			"title": "Wachtwoord wijzigen",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
 			"submitButton": "Wachtwoord wijzigen",
 			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
-			"success": "Wachtwoord succesvol gewijzigd."
+			"success": "Wachtwoord succesvol gewijzigd.",
+			"missingFields": "Vul uw huidige wachtwoord en uw nieuwe wachtwoord in.",
+			"invalidCurrent": "Het huidige wachtwoord is onjuist."
 		},
 		"renameUser": {
 			"title": "Gebruiker hernoemen",
 			"newUsernameLabel": "Nieuwe gebruikersnaam:",
 			"submitButton": "Gebruiker hernoemen",
 			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
-			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd."
+			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd.",
+			"missingParams": "Vul de nieuwe gebruikersnaam en het wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist.",
+			"mustDiffer": "De nieuwe gebruikersnaam moet anders zijn dan de huidige gebruikersnaam.",
+			"taken": "Deze gebruikersnaam is al in gebruik.",
+			"moveFailed": "Kan de naam van de gebruikersgegevensmap niet wijzigen: ${detail}. De oorspronkelijke gebruikersnaam is hersteld."
 		},
 		"passkeys": {
 			"title": "Beveiligingssleutels en passkeys",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Beveiligingssleutel verwijderd.",
 			"addSuccess": "Beveiligingssleutel toegevoegd.",
 			"errorLoadLibrary": "Kan de WebAuthn-bibliotheek niet laden.",
-			"errorCancelled": "Toevoegen geannuleerd."
+			"errorCancelled": "Toevoegen geannuleerd.",
+			"apiInvalidPassword": "Verkeerd wachtwoord.",
+			"apiMissingCredential": "Geldige toegangscodegegevens ontbreken.",
+			"apiRemoveParamsRequired": "Geef de inloggegevens en het wachtwoord op die u wilt verwijderen."
 		},
 		"userDevices": {
 			"title": "Gebruikersapparaten/sessies",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Intrekken",
 			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
 			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
+			"revokeMissingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"listNotFound": "Apparaatlijst niet gevonden.",
+			"deviceNotFound": "Het apparaat of de sessie is niet gevonden.",
 			"refreshButton": {
 				"title": "Lijst vernieuwen"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "Er werden geen API-sleutels gevonden.",
 			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
 			"neverUsed": "Nooit gebruikt",
+			"noKeysForUser": "API-sleutelgegevens niet gevonden.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"keyNotFound": "De API-sleutel is niet gevonden.",
+			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
+			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
 			"revokeButton": "Herroepen",
 			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
 			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Kopieer nieuwe API-sleutel"
 			},
-			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
+			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
+			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
 		},
 		"logout": {
 			"title": "Uitloggen",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
 			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
 			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
-			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd."
+			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd.",
+			"missingPassword": "Voer uw wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist."
 		},
 		"passwordConfirm": {
 			"title": "Actie bevestigen",

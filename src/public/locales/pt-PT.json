@@ -51,6 +51,7 @@
 				"localAhead": "O ramo local está à frente do ramo remoto. Não é necessária qualquer atualização.",
 				"noUpstream": "Nenhum ramo upstream configurado para o ramo '${currentBranch}', ignorando a verificação de atualizações.",
 				"dirtyWorkingDirectory": "O diretório de trabalho não está limpo. Por favor, faça 'stash' ou 'commit' das suas alterações antes de atualizar.",
+				"uncommittedBackedUpTo": "O backup das alterações não confirmadas foi feito em: ${path}",
 				"diverged": "Os ramos local e remoto divergiram. A forçar a atualização...",
 				"updateFailed": "Falha ao atualizar os componentes do repositório remoto: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "A segurança da palavra-passe é demasiado fraca.",
 			"accountAlreadyExists": "A conta já existe.",
 			"powNotSolved": "Por favor, conclua a verificação PoW primeiro",
-			"powError": "Erro de verificação PoW"
+			"powError": "Erro de verificação PoW",
+			"invalidCredentials": "Nome de usuário ou senha inválidos.",
+			"accountLockedRetry": "A conta foi bloqueada. Tente novamente após ${timeLeft}.",
+			"accountLockedAttempts": "A conta foi temporariamente bloqueada devido a muitas tentativas de login malsucedidas.",
+			"powValidationFailed": "A verificação homem-máquina falhou. Tente novamente.",
+			"apiErrorBodyUnreadable": "O servidor retornou informações que não puderam ser analisadas. Por favor, tente novamente mais tarde."
 		},
 		"webauthn": {
 			"loginButton": "Iniciar sessão com chave de segurança ou Passkey",
-			"errorNoUsername": "Introduza o seu nome de utilizador antes de usar Passkey.",
 			"errorLoadLibrary": "Não foi possível carregar a biblioteca auxiliar WebAuthn. Verifique a rede e tente novamente.",
-			"errorCancelled": "A chave de segurança foi cancelada ou não foi autorizada para uso."
+			"errorCancelled": "A chave de segurança foi cancelada ou não foi autorizada para uso.",
+			"errorSessionMissing": "O servidor não retornou uma sessão de login válida. Atualize a página e tente novamente.",
+			"errorBadBeginResponse": "O servidor retornou dados de login inválidos. Atualize a página e tente novamente.",
+			"errorCredentialRequired": "Faltam dados de credenciais de senha válidas.",
+			"errorAuthSessionRequired": "O token da sessão de login está faltando. Atualize a página e tente novamente.",
+			"apiSessionExpired": "A sessão de login da senha expirou. Tente novamente.",
+			"apiUnknownPasskey": "A chave de acesso não é reconhecida, use uma chave vinculada.",
+			"apiPasskeyVerificationFailed": "Falha na verificação da senha. Tente novamente.",
+			"registrationUserNotFound": "Conta de usuário não encontrada.",
+			"registrationSessionExpired": "A sessão de vinculação expirou. Tente novamente desde o início.",
+			"registrationVerifyFailed": "Não foi possível concluir a verificação do registro da chave de acesso.",
+			"registrationFailed": "Falha no registro da chave de acesso. Tente novamente.",
+			"removeUserNotFound": "Dados de usuário ou credenciais não encontrados.",
+			"removeInvalidPassword": "Senha errada.",
+			"removePasskeyNotFound": "A chave de acesso não foi encontrada."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Definições do Utilizador",
 		"PageTitle": "Definições do Utilizador",
 		"description": "Cuide dos detalhes da identidade da seu fount. Gerencie seu perfil, proteja seu acesso e visualize os dispositivos conectados. Um santuário tranquilo para sua conta.",
+		"shell": {
+			"unauthorized": "Login necessário.",
+			"responseNotJson": "O servidor retornou conteúdo não resolvível.",
+			"unexpectedError": "A solicitação falhou."
+		},
+		"errors": {
+			"accountNotFound": "Conta não encontrada."
+		},
 		"userInfo": {
 			"title": "Informações do Utilizador",
 			"usernameLabel": "Nome de utilizador:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Ícone de Cópia"
 			},
-			"copiedAlert": "Caminho copiado para a área de transferência!"
+			"copiedAlert": "Caminho copiado para a área de transferência!",
+			"copyPathFailed": "Não foi possível copiar o caminho para a área de transferência."
 		},
 		"changePassword": {
 			"title": "Alterar palavra-passe",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Confirmar nova palavra-passe:",
 			"submitButton": "Alterar palavra-passe",
 			"errorMismatch": "As novas palavras-passe não coincidem.",
-			"success": "Palavra-passe alterada com sucesso."
+			"success": "Palavra-passe alterada com sucesso.",
+			"missingFields": "Por favor preencha sua senha atual e a nova senha.",
+			"invalidCurrent": "A senha atual está incorreta."
 		},
 		"renameUser": {
 			"title": "Mudar nome de utilizador",
 			"newUsernameLabel": "Novo nome de utilizador:",
 			"submitButton": "Mudar nome de utilizador",
 			"confirmMessage": "Tem a certeza que quer mudar o seu nome de utilizador? Será necessário iniciar sessão novamente.",
-			"success": "Nome de utilizador alterado para \"${newUsername}\" com sucesso. Será agora desconectado."
+			"success": "Nome de utilizador alterado para \"${newUsername}\" com sucesso. Será agora desconectado.",
+			"missingParams": "Por favor preencha o novo nome de usuário e senha.",
+			"wrongPassword": "A senha está incorreta.",
+			"mustDiffer": "O novo nome de usuário deve ser diferente do nome de usuário atual.",
+			"taken": "Este nome de usuário já está em uso.",
+			"moveFailed": "Falha ao renomear o diretório de dados do usuário: ${detail}. O nome de usuário original foi restaurado."
 		},
 		"passkeys": {
 			"title": "Chaves de segurança e Passkeys",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Chave de segurança removida.",
 			"addSuccess": "Chave de segurança adicionada.",
 			"errorLoadLibrary": "Não foi possível carregar a biblioteca WebAuthn.",
-			"errorCancelled": "Adição cancelada."
+			"errorCancelled": "Adição cancelada.",
+			"apiInvalidPassword": "Senha errada.",
+			"apiMissingCredential": "Credenciais de senha válidas estão faltando.",
+			"apiRemoveParamsRequired": "Forneça as credenciais e a senha que deseja remover."
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sessões do utilizador",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem a certeza que quer revogar o acesso para este dispositivo/sessão?",
 			"revokeSuccess": "Dispositivo/Sessão revogado com sucesso.",
+			"revokeMissingParams": "Forneça a senha do dispositivo e da sessão que você deseja revogar.",
+			"revokeWrongPassword": "A senha está incorreta.",
+			"listNotFound": "Lista de dispositivos não encontrada.",
+			"deviceNotFound": "O dispositivo ou sessão não foi encontrado.",
 			"refreshButton": {
 				"title": "Atualizar lista"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "Nenhuma chave de API foi encontrada.",
 			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
 			"neverUsed": "Nunca usado",
+			"noKeysForUser": "Dados da chave de API não encontrados.",
+			"revokeWrongPassword": "A senha está incorreta.",
+			"keyNotFound": "A chave API não foi encontrada.",
+			"revokeMissingJti": "Especifique a chave a ser revogada.",
+			"revokeMissingPassword": "A revogação de uma chave requer uma senha.",
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
 			"revokeSuccess": "A chave da API foi revogada com sucesso.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Copie a nova chave de API"
 			},
-			"copiedAlert": "Chave da API copiada para a área de transferência!"
+			"copiedAlert": "Chave da API copiada para a área de transferência!",
+			"copyKeyFailed": "Não foi possível copiar a chave para a área de transferência."
 		},
 		"logout": {
 			"title": "Terminar sessão",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "Atenção! Tem a certeza que quer eliminar permanentemente a sua conta? Esta ação não pode ser revertida.",
 			"confirmMessage2": "Para confirmar a eliminação, introduza o seu nome de utilizador \"${username}\":",
 			"usernameMismatch": "O nome de utilizador introduzido não corresponde ao utilizador atual. A eliminação foi cancelada.",
-			"success": "Conta eliminada com sucesso. Agora a sua sessão será terminada."
+			"success": "Conta eliminada com sucesso. Agora a sua sessão será terminada.",
+			"missingPassword": "Por favor, digite sua senha.",
+			"wrongPassword": "A senha está incorreta."
 		},
 		"passwordConfirm": {
 			"title": "Confirmar operação",

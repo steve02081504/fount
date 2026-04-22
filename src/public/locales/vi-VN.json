@@ -51,6 +51,7 @@
 				"localAhead": "Nhánh cục bộ đang ở phiên bản mới hơn nhánh từ xa. Không cần cập nhật.",
 				"noUpstream": "Không có nhánh upstream nào được cấu hình cho nhánh '${currentBranch}', bỏ qua kiểm tra cập nhật.",
 				"dirtyWorkingDirectory": "Thư mục làm việc chưa sạch. Vui lòng 'stash' hoặc 'commit' các thay đổi của bạn trước khi cập nhật.",
+				"uncommittedBackedUpTo": "Những thay đổi không được cam kết đã được sao lưu vào: ${path}",
 				"diverged": "Nhánh cục bộ và nhánh từ xa đã khác nhau. Đang buộc cập nhật...",
 				"updateFailed": "Cập nhật thành phần từ kho lưu trữ từ xa thất bại: ${error}"
 			}
@@ -439,13 +440,31 @@
 			"lowPasswordStrength": "Mật khẩu quá yếu.",
 			"accountAlreadyExists": "Tài khoản đã tồn tại.",
 			"powNotSolved": "Vui lòng hoàn thành xác minh POW trước",
-			"powError": "Lỗi xác minh POW"
+			"powError": "Lỗi xác minh POW",
+			"invalidCredentials": "Tên người dùng hoặc mật khẩu không hợp lệ.",
+			"accountLockedRetry": "Tài khoản đã bị khóa, vui lòng thử lại sau ${timeLeft}.",
+			"accountLockedAttempts": "Tài khoản đã bị khóa tạm thời do đăng nhập thất bại quá nhiều lần.",
+			"powValidationFailed": "Xác minh người-máy không thành công, vui lòng thử lại.",
+			"apiErrorBodyUnreadable": "Máy chủ trả về thông tin không thể phân tích được. Vui lòng thử lại sau."
 		},
 		"webauthn": {
 			"loginButton": "Đăng nhập bằng khóa bảo mật/Passkey",
-			"errorNoUsername": "Vui lòng điền tên người dùng của bạn trước khi sử dụng Passkey.",
 			"errorLoadLibrary": "Không thể tải thư viện phụ trợ WebAuthn, vui lòng kiểm tra mạng và thử lại.",
-			"errorCancelled": "Khóa bảo mật đã bị hủy hoặc không được phép sử dụng."
+			"errorCancelled": "Khóa bảo mật đã bị hủy hoặc không được phép sử dụng.",
+			"errorSessionMissing": "Máy chủ không trả về phiên đăng nhập hợp lệ, vui lòng làm mới trang và thử lại.",
+			"errorBadBeginResponse": "Máy chủ trả về dữ liệu đăng nhập không hợp lệ, vui lòng làm mới trang và thử lại.",
+			"errorCredentialRequired": "Thiếu dữ liệu thông tin xác thực Passkey hợp lệ.",
+			"errorAuthSessionRequired": "Thiếu mã thông báo phiên đăng nhập, vui lòng làm mới trang và thử lại.",
+			"apiSessionExpired": "Phiên đăng nhập bằng mật khẩu đã hết hạn, vui lòng thử lại.",
+			"apiUnknownPasskey": "Mật khẩu không được nhận dạng, vui lòng sử dụng khóa liên kết.",
+			"apiPasskeyVerificationFailed": "Xác minh mật mã không thành công, vui lòng thử lại.",
+			"registrationUserNotFound": "Không tìm thấy tài khoản người dùng.",
+			"registrationSessionExpired": "Phiên ràng buộc đã hết hạn, vui lòng thử lại từ đầu.",
+			"registrationVerifyFailed": "Không thể hoàn tất xác minh đăng ký Passkey.",
+			"registrationFailed": "Đăng ký mật mã không thành công, vui lòng thử lại.",
+			"removeUserNotFound": "Không tìm thấy dữ liệu người dùng hoặc thông tin xác thực.",
+			"removeInvalidPassword": "Mật khẩu sai.",
+			"removePasskeyNotFound": "Mật khẩu không được tìm thấy."
 		}
 	},
 	"login_info": {
@@ -1357,6 +1376,14 @@
 		"title": "Cài đặt người dùng",
 		"PageTitle": "Cài đặt người dùng",
 		"description": "Có xu hướng chi tiết về danh tính nguồn của bạn. Quản lý hồ sơ của bạn, bảo vệ quyền truy cập của bạn và xem các thiết bị được kết nối. Một nơi tôn nghiêm yên tĩnh cho tài khoản của bạn.",
+		"shell": {
+			"unauthorized": "Yêu cầu đăng nhập.",
+			"responseNotJson": "Máy chủ trả về nội dung không thể giải quyết được.",
+			"unexpectedError": "Yêu cầu không thành công."
+		},
+		"errors": {
+			"accountNotFound": "Không tìm thấy tài khoản."
+		},
 		"userInfo": {
 			"title": "Thông tin người dùng",
 			"usernameLabel": "Tên người dùng:",
@@ -1369,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "sao chép đường dẫn"
 			},
-			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!"
+			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!",
+			"copyPathFailed": "Không thể sao chép đường dẫn vào clipboard."
 		},
 		"changePassword": {
 			"title": "Đổi mật khẩu",
@@ -1378,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
 			"submitButton": "Đổi mật khẩu",
 			"errorMismatch": "Mật khẩu mới không khớp.",
-			"success": "Đổi mật khẩu thành công."
+			"success": "Đổi mật khẩu thành công.",
+			"missingFields": "Vui lòng điền mật khẩu hiện tại và mật khẩu mới của bạn.",
+			"invalidCurrent": "Mật khẩu hiện tại không chính xác."
 		},
 		"renameUser": {
 			"title": "Đổi tên người dùng",
 			"newUsernameLabel": "Tên người dùng mới:",
 			"submitButton": "Đổi tên người dùng",
 			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
-			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất."
+			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingParams": "Vui lòng điền tên người dùng và mật khẩu mới.",
+			"wrongPassword": "Mật khẩu không đúng.",
+			"mustDiffer": "Tên người dùng mới phải khác với tên người dùng hiện tại.",
+			"taken": "Tên người dùng này đã được sử dụng.",
+			"moveFailed": "Không đổi tên được thư mục dữ liệu người dùng: ${detail}. Tên người dùng ban đầu đã được khôi phục."
 		},
 		"passkeys": {
 			"title": "Khóa bảo mật và Passkey",
@@ -1408,7 +1443,10 @@
 			"removeSuccess": "Đã xóa khóa bảo mật.",
 			"addSuccess": "Đã thêm khóa bảo mật.",
 			"errorLoadLibrary": "Không thể tải thư viện WebAuthn.",
-			"errorCancelled": "Việc thêm đã bị hủy."
+			"errorCancelled": "Việc thêm đã bị hủy.",
+			"apiInvalidPassword": "Mật khẩu sai.",
+			"apiMissingCredential": "Thiếu thông tin đăng nhập Passkey hợp lệ.",
+			"apiRemoveParamsRequired": "Vui lòng cung cấp thông tin đăng nhập và mật khẩu bạn muốn xóa."
 		},
 		"userDevices": {
 			"title": "Thiết bị/Phiên hoạt động",
@@ -1419,6 +1457,10 @@
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
 			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công.",
+			"revokeMissingParams": "Vui lòng cung cấp thiết bị và mật khẩu phiên bạn muốn thu hồi.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"listNotFound": "Không tìm thấy danh sách thiết bị.",
+			"deviceNotFound": "Không tìm thấy thiết bị hoặc phiên.",
 			"refreshButton": {
 				"title": "Làm mới danh sách"
 			},
@@ -1436,6 +1478,11 @@
 			"noKeysFound": "Không có khóa API được tìm thấy.",
 			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
 			"neverUsed": "Không bao giờ được sử dụng",
+			"noKeysForUser": "Không tìm thấy dữ liệu khóa API.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"keyNotFound": "Không tìm thấy khóa API.",
+			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
+			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
 			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
@@ -1455,7 +1502,8 @@
 			"copyButton": {
 				"title": "Sao chép khóa API mới"
 			},
-			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!"
+			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
+			"copyKeyFailed": "Không thể sao chép khóa vào clipboard."
 		},
 		"logout": {
 			"title": "Đăng xuất",
@@ -1471,7 +1519,9 @@
 			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
 			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
 			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
-			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất."
+			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingPassword": "Vui lòng nhập mật khẩu của bạn.",
+			"wrongPassword": "Mật khẩu không đúng."
 		},
 		"passwordConfirm": {
 			"title": "Xác nhận thao tác",
