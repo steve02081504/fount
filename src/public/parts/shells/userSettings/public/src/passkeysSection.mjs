@@ -1,34 +1,31 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
+import { confirmI18n } from '/scripts/i18n.mjs'
+import { showToastI18n } from '/scripts/toast.mjs'
 import { renderTemplate } from '/scripts/template.mjs'
 
-import { getWebAuthnCredentials, webauthnRegisterBegin, webauthnRegisterComplete, webauthnRemove } from './endpoints.mjs'
+import {
+	isPasswordConfirmationDialogDismissed,
+	showToastForApiPayload,
+	throwUnexpectedUserSettingsApiError,
+} from './apiFeedback.mjs'
+import {
+	getWebAuthnCredentials,
+	webauthnRegisterBegin,
+	webauthnRegisterComplete,
+	webauthnRemove,
+} from './endpoints.mjs'
+import { requestPasswordConfirmation } from './passwordConfirmationRequest.mjs'
 import { escapeAttr, escapeHtmlText } from './uiEscape.mjs'
+
+const passkeyList = document.getElementById('passkeyList')
+const noPasskeysText = document.getElementById('noPasskeysText')
+const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
+const addPasskeyForm = document.getElementById('addPasskeyForm')
+const newPasskeyNameInput = document.getElementById('newPasskeyName')
 
 /** @type {((opts: object) => Promise<object>) | null} */
 let startRegistrationFn = null
-
-/**
- * @typedef {object} PasskeysSectionDeps
- * @property {HTMLUListElement} passkeyList
- * @property {HTMLElement} noPasskeysText
- * @property {HTMLButtonElement} refreshPasskeysBtn
- * @property {HTMLFormElement} addPasskeyForm
- * @property {HTMLInputElement} newPasskeyNameInput
- * @property {() => Promise<string>} requestPasswordConfirmation
- * @property {(key: string) => boolean} confirmI18n
- * @property {(key: string, params?: object) => string} geti18n
- * @property {(type: string, key: string, params?: object, duration?: number) => void} showToastI18n
- */
-
-/**
- * 判断 requestPasswordConfirmation() 的 reject 是否来自“密码弹窗取消/关闭”这类期望场景。
- * @param {any} error - 捕获到的错误对象。
- * @returns {boolean} - 是否为期望的取消/关闭错误。
- */
-function isPasswordDialogCancellationError(error) {
-	return ['PasswordConfirmationCancelledError', 'PasswordConfirmationClosedError'].includes(error?.name)
-}
 
 /**
  * 加载 @simplewebauthn/browser 的注册方法。
@@ -48,17 +45,14 @@ async function loadWebAuthnBrowserRegistration() {
 
 /**
  * 加载并渲染安全密钥列表。
- * @param {PasskeysSectionDeps} deps - 依赖注入。
  * @returns {Promise<void>}
  */
-export async function loadPasskeysList(deps) {
-	const { passkeyList, noPasskeysText, geti18n, showToastI18n } = deps
+export async function loadPasskeysList() {
 	passkeyList.replaceChildren(await renderTemplate('listLoading'))
 	noPasskeysText.classList.add('hidden')
 
 	try {
 		const result = await getWebAuthnCredentials()
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load passkeys' }))
 
 		passkeyList.replaceChildren()
 		if (!result.credentials?.length) {
@@ -78,7 +72,7 @@ export async function loadPasskeysList(deps) {
 				typeSuffixHtml,
 			})
 			li.querySelector('.passkey-display-name').textContent = name
-			li.querySelector('.passkey-remove-btn').addEventListener('click', () => onRemovePasskeyClick(cred, deps))
+			li.querySelector('.passkey-remove-btn').addEventListener('click', () => onRemovePasskeyClick(cred))
 			passkeyList.appendChild(li)
 		}
 	} catch (error) {
@@ -86,40 +80,35 @@ export async function loadPasskeysList(deps) {
 		Sentry.captureException(error)
 		passkeyList.replaceChildren()
 		noPasskeysText.classList.remove('hidden')
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 }
 
 /**
  * @param {object} cred - 凭证。
- * @param {PasskeysSectionDeps} deps - 依赖。
  * @returns {Promise<void>}
  */
-async function onRemovePasskeyClick(cred, deps) {
-	const { requestPasswordConfirmation, confirmI18n, geti18n, showToastI18n } = deps
+async function onRemovePasskeyClick(cred) {
 	if (!confirmI18n('userSettings.passkeys.removeConfirm')) return
 	try {
 		const password = await requestPasswordConfirmation()
-		const rm = await webauthnRemove(cred.id, password)
-		if (!rm.success) throw new Error(rm.message || geti18n('userSettings.apiError', { message: 'Remove failed' }))
+		await webauthnRemove(cred.id, password)
 		showToastI18n('success', 'userSettings.passkeys.removeSuccess')
-		await loadPasskeysList(deps)
+		await loadPasskeysList()
 	} catch (error) {
-		if (isPasswordDialogCancellationError(error)) return
+		if (isPasswordConfirmationDialogDismissed(error)) return
 		console.error('Failed to remove passkey:', error)
 		Sentry.captureException(error)
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 }
 
 /**
  * @param {SubmitEvent} event - 提交事件。
- * @param {PasskeysSectionDeps} deps - 依赖。
  * @returns {Promise<void>}
  */
-async function onAddPasskeySubmit(event, deps) {
+async function onAddPasskeySubmit(event) {
 	event.preventDefault()
-	const { newPasskeyNameInput, geti18n, showToastI18n, requestPasswordConfirmation } = deps
 	if (!await loadWebAuthnBrowserRegistration()) {
 		showToastI18n('error', 'userSettings.passkeys.errorLoadLibrary')
 		return
@@ -128,32 +117,30 @@ async function onAddPasskeySubmit(event, deps) {
 	try {
 		const password = await requestPasswordConfirmation()
 		const begin = await webauthnRegisterBegin(password)
-		if (!begin.success || !begin.options) throw new Error(begin.message || geti18n('userSettings.apiError', { message: 'Begin failed' }))
+		if (!begin.options)
+			throwUnexpectedUserSettingsApiError()
 		const credential = await startRegistrationFn({ optionsJSON: begin.options })
-		const complete = await webauthnRegisterComplete(credential, nickname, password)
-		if (!complete.success) throw new Error(complete.message || geti18n('userSettings.apiError', { message: 'Complete failed' }))
+		await webauthnRegisterComplete(credential, nickname, password)
 		showToastI18n('success', 'userSettings.passkeys.addSuccess')
 		newPasskeyNameInput.value = ''
-		await loadPasskeysList(deps)
+		await loadPasskeysList()
 	} catch (error) {
-		if (isPasswordDialogCancellationError(error)) return
+		if (isPasswordConfirmationDialogDismissed(error)) return
 		if (error?.name === 'NotAllowedError')
 			showToastI18n('error', 'userSettings.passkeys.errorCancelled')
 		else {
 			console.error('Failed to add passkey:', error)
 			Sentry.captureException(error)
-			showToastI18n('error', 'userSettings.generalError', { message: error.message })
+			showToastForApiPayload('error', error)
 		}
 	}
 }
 
 /**
  * 绑定 Passkey 区块事件。
- * @param {PasskeysSectionDeps} deps - 依赖。
  * @returns {void}
  */
-export function installPasskeysSection(deps) {
-	const { refreshPasskeysBtn, addPasskeyForm } = deps
-	refreshPasskeysBtn.addEventListener('click', () => loadPasskeysList(deps))
-	addPasskeyForm.addEventListener('submit', e => onAddPasskeySubmit(e, deps))
+export function installPasskeysSection() {
+	refreshPasskeysBtn.addEventListener('click', () => loadPasskeysList())
+	addPasskeyForm.addEventListener('submit', onAddPasskeySubmit)
 }

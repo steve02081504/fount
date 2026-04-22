@@ -8,6 +8,7 @@ import {
 	changeUserPassword, revokeUserDeviceByJti,
 	renameUser, deleteUserAccount,
 	getUserDictionary, getUserByUsername as getUserConfig,
+	mutationResponseHttpStatus,
 	REFRESH_TOKEN_EXPIRY_DURATION,
 	verifyPassword,
 } from '../../../../../server/auth.mjs'
@@ -63,7 +64,6 @@ function formatBytes(bytes, decimals = 2) {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
-
 /**
  * 设置 userSettings shell 的 API 端点。
  * @param {object} router - Express 路由实例。
@@ -71,7 +71,7 @@ function formatBytes(bytes, decimals = 2) {
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:userSettings/stats', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
-		if (!userReqData) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!userReqData) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
 		const userDirectory = getUserDictionary(userReqData.username)
@@ -96,17 +96,18 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:userSettings/change_password', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { currentPassword, newPassword } = req.body
-		if (!currentPassword || !newPassword) return res.status(400).json({ success: false, message: 'Missing fields.' })
+		if (!currentPassword || !newPassword)
+			return res.status(400).json({ success: false, i18nKey: 'userSettings.changePassword.missingFields' })
 
 		const result = await changeUserPassword(user.username, currentPassword, newPassword)
-		res.status(result.success ? 200 : result.message.includes('Invalid current password') ? 401 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 
 	router.get('/api/parts/shells\\:userSettings/devices', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
-		if (!userReqData) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!userReqData) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
 		if (!userFullConfig?.auth?.refreshTokens) return res.json({ success: true, devices: [] })
@@ -131,77 +132,80 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:userSettings/revoke_device', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { tokenJti, password } = req.body
-		if (!tokenJti || !password) return res.status(400).json({ success: false, message: 'Token JTI and password required.' })
+		if (!tokenJti || !password)
+			return res.status(400).json({ success: false, i18nKey: 'userSettings.userDevices.revokeMissingParams' })
 
 		const result = await revokeUserDeviceByJti(user.username, tokenJti, password)
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 
 	router.post('/api/parts/shells\\:userSettings/rename_user', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { newUsername, password } = req.body
-		if (!newUsername || !password) return res.status(400).json({ success: false, message: 'New username and password required.' })
+		if (!newUsername || !password)
+			return res.status(400).json({ success: false, i18nKey: 'userSettings.renameUser.missingParams' })
 
 		const result = await renameUser(user.username, newUsername, password)
 		if (result.success) {
 			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 
 	router.post('/api/parts/shells\\:userSettings/delete_account', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
-		if (!password) return res.status(400).json({ success: false, message: 'Password required.' })
+		if (!password) return res.status(400).json({ success: false, i18nKey: 'userSettings.deleteAccount.missingPassword' })
 
 		const result = await deleteUserAccount(user.username, password)
 		if (result.success) {
 			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 
 	router.get('/api/parts/shells\\:userSettings/webauthn_credentials', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		res.json({ success: true, credentials: listWebAuthnCredentials(user.username) })
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
-			return res.status(401).json({ success: false, message: 'Invalid password' })
+			return res.status(401).json({ success: false, i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
 		const result = await webauthnRegistrationBegin(user.username, req)
 		res.status(result.status).json(result)
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_complete', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { credential, nickname, password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
-			return res.status(401).json({ success: false, message: 'Invalid password' })
+			return res.status(401).json({ success: false, i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
 		if (!credential)
-			return res.status(400).json({ success: false, message: 'Missing credential.' })
+			return res.status(400).json({ success: false, i18nKey: 'userSettings.passkeys.apiMissingCredential' })
 		const result = await webauthnRegistrationComplete(user.username, credential, nickname, req)
 		res.status(result.status).json(result)
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_remove', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
 		const { credentialId, password } = req.body
-		if (!credentialId || !password) return res.status(400).json({ success: false, message: 'credentialId and password required.' })
+		if (!credentialId || !password)
+			return res.status(400).json({ success: false, i18nKey: 'userSettings.passkeys.apiRemoveParamsRequired' })
 
 		const result = await removeWebAuthnCredential(user.username, credentialId, password)
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 }

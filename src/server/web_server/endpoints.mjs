@@ -6,7 +6,7 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, mutationResponseHttpStatus } from '../auth.mjs'
 import { currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -31,6 +31,24 @@ import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
+
+/**
+ * 非本机访问时校验请求体中的 PoW；无效则写入 401 JSON 并返回 false。
+ * @param {import('npm:express').Request} req - Express 请求。
+ * @param {import('npm:express').Response} res - Express 响应。
+ * @returns {Promise<boolean>} 通过校验或本机访问时为 true。
+ */
+async function ensurePowTokenOr401(req, res) {
+	if (is_local_ip_from_req(req)) return true
+	const { pow } = await import('../../scripts/pow.mjs')
+	const { powToken } = req.body
+	const { success } = powToken && await pow.validateToken(powToken)
+	if (!success) {
+		res.status(401).json({ success: false, i18nKey: 'auth.error.powValidationFailed' })
+		return false
+	}
+	return true
+}
 
 /**
  * 为应用程序注册所有 API 端点。
@@ -129,12 +147,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!is_local_ip_from_req(req)) {
-			const { pow } = await import('../../scripts/pow.mjs')
-			const { powToken } = req.body
-			const { success } = powToken && await pow.validateToken(powToken)
-			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
-		}
+		if (!await ensurePowTokenOr401(req, res)) return
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid, req)
 		const { accessToken, refreshToken, ...safeResult } = result
@@ -148,32 +161,21 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/webauthn/login/begin', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!is_local_ip_from_req(req)) {
-			const { pow } = await import('../../scripts/pow.mjs')
-			const { powToken } = req.body
-			const { success } = powToken && await pow.validateToken(powToken)
-			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
-		}
-		const { username } = req.body
-		if (!username) return res.status(400).json({ success: false, message: 'Username required' })
-		const result = await webauthnLoginBegin(username.trim(), req)
+		if (!await ensurePowTokenOr401(req, res)) return
+		const result = await webauthnLoginBegin(req)
 		res.status(result.status).json(result)
 	})
 
 	router.post('/api/webauthn/login/complete', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!is_local_ip_from_req(req)) {
-			const { pow } = await import('../../scripts/pow.mjs')
-			const { powToken } = req.body
-			const { success } = powToken && await pow.validateToken(powToken)
-			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
-		}
-		const { username, credential, deviceid } = req.body
-		if (!username?.trim?.())
-			return res.status(400).json({ success: false, message: 'Username required' })
+		if (!await ensurePowTokenOr401(req, res)) return
+		const { credential, deviceid, authSessionToken } = req.body
+		const token = String(authSessionToken ?? '').trim()
 		if (!credential)
-			return res.status(400).json({ success: false, message: 'Valid credential object required' })
+			return res.status(400).json({ success: false, i18nKey: 'auth.webauthn.errorCredentialRequired' })
+		if (!token)
+			return res.status(400).json({ success: false, i18nKey: 'auth.webauthn.errorAuthSessionRequired' })
 		const deviceId = deviceid?.trim?.() || 'unknown'
-		const result = await webauthnLoginComplete(credential, username.trim(), deviceId, req)
+		const result = await webauthnLoginComplete(credential, token, deviceId, req)
 		const { accessToken, refreshToken, ...safeResult } = result
 		if (result.status === 200 && result.accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
@@ -193,13 +195,10 @@ export function registerEndpoints(router) {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
 		if (!is_local_ip(ip)) {
-			const { pow } = await import('../../scripts/pow.mjs')
-			const { powToken } = req.body
-			const { success } = powToken && await pow.validateToken(powToken)
-			if (!success) return res.status(401).json({ message: 'PoW validation failed' })
+			if (!await ensurePowTokenOr401(req, res)) return
 
 			if (verifyVerificationCode(verificationcode, ip) === false) {
-				res.status(401).json({ message: 'verification code incorrect' })
+				res.status(401).json({ success: false, i18nKey: 'auth.error.verificationCodeError' })
 				return
 			}
 		}
@@ -213,7 +212,7 @@ export function registerEndpoints(router) {
 		const user = await getUserByReq(req)
 		const { description } = req.body
 		const { apiKey, jti } = await generateApiKey(user.username, description)
-		res.status(201).json({ success: true, apiKey, jti, message: 'API Key created successfully. Store it securely, it will not be shown again.' })
+		res.status(201).json({ success: true, apiKey, jti })
 	})
 
 	router.get('/api/apikey/list', authenticate, async (req, res) => {
@@ -232,11 +231,11 @@ export function registerEndpoints(router) {
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { jti, password } = req.body
-		if (!jti) return res.status(400).json({ success: false, error: 'JTI of the key to revoke is required.' })
-		if (!password) return res.status(400).json({ success: false, error: 'Password is required to revoke API key.' })
+		if (!jti) return res.status(400).json({ success: false, i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
+		if (!password) return res.status(400).json({ success: false, i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
 
 		const result = await revokeApiKey(user.username, jti, password)
-		res.status(result.success ? 200 : 400).json(result)
+		res.status(mutationResponseHttpStatus(result)).json(result)
 	})
 
 	router.post('/api/apikey/verify', async (req, res) => {
