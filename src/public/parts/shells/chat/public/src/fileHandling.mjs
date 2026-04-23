@@ -3,7 +3,41 @@ import { renderTemplate } from '../../../../../scripts/template.mjs'
 
 import { getfile } from './files.mjs'
 import { openModal } from './ui/modal.mjs'
-import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
+import { processTimeStampForId, arrayBufferToBase64, sniffMimeFromMagicBytes } from './utils.mjs'
+
+const OCTET_STREAM = 'application/octet-stream'
+
+/**
+ * 在浏览器未给出或给出泛型类型时，用文件头补齐 MIME。
+ * @param {string} declaredType - 浏览器声明的 MIME，可能为空或泛型。
+ * @param {ArrayBuffer} arrayBuffer - 文件原始字节。
+ * @returns {string} - 解析后的 MIME。
+ */
+function resolveMimeFromDeclaredOrMagic(declaredType, arrayBuffer) {
+	let mime_type = declaredType
+	if (!mime_type || mime_type === OCTET_STREAM) {
+		const sniffed = sniffMimeFromMagicBytes(new Uint8Array(arrayBuffer))
+		if (sniffed) mime_type = sniffed.mime
+	}
+	return mime_type
+}
+
+/**
+ * 将剪贴板图片字节封装为带合理扩展名与 MIME 的 File。
+ * @param {Blob} blob - 剪贴板中的图片 Blob。
+ * @returns {Promise<File>} - 可用于附件列表的 File。
+ */
+async function fileFromClipboardImageBlob(blob) {
+	const arrayBuffer = await blob.arrayBuffer()
+	const declared = blob.type && blob.type !== OCTET_STREAM ? blob.type : ''
+	const sniffed = sniffMimeFromMagicBytes(new Uint8Array(arrayBuffer))
+	const mime_type = !declared || declared === OCTET_STREAM
+		? sniffed?.mime ?? 'image/png'
+		: declared
+	const ext = sniffed?.ext ?? 'png'
+	const name = `pasted-image-${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`
+	return new File([arrayBuffer], name, { type: mime_type })
+}
 
 /**
  * 处理文件选择。
@@ -23,10 +57,12 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 		 * @param {ProgressEvent<FileReader>} e - 事件。
 		 */
 		reader.onload = async e => {
+			const arrayBuffer = e.target.result
+			const mime_type = resolveMimeFromDeclaredOrMagic(file.type, arrayBuffer)
 			const newFile = {
 				name: file.name,
-				mime_type: file.type,
-				buffer: arrayBufferToBase64(e.target.result),
+				mime_type,
+				buffer: arrayBufferToBase64(arrayBuffer),
 				description: '',
 			}
 			selectedFiles.push(newFile)
@@ -55,27 +91,22 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览区域的 DOM 元素，用于显示新添加的附件。
  */
 export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
-	const { items } = event.clipboardData || window.clipboardData
-	for (const item of items)
-		if (!item.type.indexOf('image')) {
-			const blob = item.getAsFile()
-			if (blob) {
-				// 为 blob 创建一个唯一的文件名，例如使用时间戳和随机数
-				const fileName = `pasted-image-${Date.now()}-${Math.floor(Math.random() * 1000)}.png`
+	const items = event.clipboardData?.items || window.clipboardData?.items
+	if (!items) return
 
-				// 将 Blob 转换为 File 对象
-				const file = new File([blob], fileName, { type: blob.type })
+	for (const item of items) {
+		if (!item.type.startsWith('image')) continue
 
-				// 创建一个假的 event 对象，模拟 file input 的 change 事件
-				const fakeEvent = {
-					target: {
-						files: [file],
-					},
-				}
-				// 使用 handleFilesSelect 函数处理图片文件
-				await handleFilesSelect(fakeEvent, selectedFiles, attachmentPreviewContainer)
-			}
-		}
+		const blob = item.getAsFile()
+		if (!blob) continue
+
+		const file = await fileFromClipboardImageBlob(blob)
+		await handleFilesSelect(
+			{ target: { files: [file] } },
+			selectedFiles,
+			attachmentPreviewContainer
+		)
+	}
 }
 
 const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
@@ -101,6 +132,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	if (file.buffer.startsWith('file:') && isPreviewable) {
 		file = { ...file }
 		file.buffer = arrayBufferToBase64(await getfile(file.buffer))
+		if (selectedFiles?.[index]) selectedFiles[index] = file
 	}
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
@@ -150,7 +182,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	attachmentElement
 		.querySelector('.delete-button')
 		?.addEventListener('click', () => {
-			const itemIndex = selectedFiles.indexOf(file)
+			const itemIndex = selectedFiles?.indexOf?.(file) ?? -1
 			if (itemIndex > -1)
 				selectedFiles.splice(itemIndex, 1)
 

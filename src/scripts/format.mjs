@@ -9,6 +9,7 @@ import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval
 export async function formatStr(str, data) {
 	// 使用循环匹配所有 ${...} 表达式
 	let result = ''
+	const errors = []
 	while (str.indexOf('${') != -1) {
 		const length = str.indexOf('${')
 		result += str.slice(0, length)
@@ -22,13 +23,14 @@ export async function formatStr(str, data) {
 				if (eval_result.error) throw eval_result.error
 				result += eval_result.result
 				str = str.slice(end_index)
+				errors.length = 0
 				break find
 			} catch (error) {
-				if (!(error instanceof SyntaxError))
-					console.error(error)
+				errors.push(error)
 			}
 		}
 	}
+	if (errors.length) errors.map(console.error)
 	result += str
 	return result
 }
