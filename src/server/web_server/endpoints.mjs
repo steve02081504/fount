@@ -153,7 +153,8 @@ export function registerEndpoints(router) {
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		if (!await ensurePowTokenOr401(req, res)) return
 		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid, req)
+		const result = await login(username, password, deviceid, req, res)
+		if (result.status === 114514) return
 		const { accessToken, refreshToken, ...safeResult } = result
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {

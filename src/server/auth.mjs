@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -126,7 +127,56 @@ async function importKeyPair(keyPair) {
 }
 
 /**
- * 为暴力破解防御生成一个临时的、假的私钥。
+ * 向 socket 写入无效 HTTP 状态行并关闭连接。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {{ status: 114514 }} 表示响应已由本函数直接发送，调用方不应再写响应。
+ */
+function fakeReplyInvalidHttp(res) {
+	if (!res?.socket) return undefined
+	const rawResponse =
+		'HTTP/1.1 -114514 I am very Stinky\r\n' +
+		'Content-Type: text/plain\r\n' +
+		'Connection: close\r\n' +
+		'\r\n' +
+		'いいよ、こいよ。'
+	res.socket.write(rawResponse, 'utf8', () => res.socket?.destroy())
+	return { status: 114514 }
+}
+
+/** 单次响应内 gzip chunk 写入次数区间（防止无限循环与拖死 worker）。 */
+const GZIP_BOMB_CHUNK_COUNT_MIN = 2048
+const GZIP_BOMB_CHUNK_COUNT_MAX = 8192
+
+/**
+ * 写入大量 gzip chunk，消耗恶意客户端资源；体量有上限，避免拖死服务端事件循环。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @returns {Promise<{ status: 114514 } | undefined>}
+ */
+async function fakeReplyGzipBomb(res) {
+	if (!res?.write) return undefined
+	const BASE_CHUNK = Buffer.from('1f8b08000000000002ffedc101010000008090feafee080a0000000000000000000000000000000000000000000000000000000000000018a6fc1f00800000', 'hex')
+	const chunkCount = GZIP_BOMB_CHUNK_COUNT_MIN + Math.floor(Math.random() * (GZIP_BOMB_CHUNK_COUNT_MAX - GZIP_BOMB_CHUNK_COUNT_MIN))
+	res.setHeader('Content-Encoding', 'gzip')
+	res.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+	try {
+		for (let i = 0; i < chunkCount; i++)
+			if (!res.write(BASE_CHUNK))
+				await new Promise(resolve => res.once('drain', resolve))
+		res.end()
+	} catch (error) {
+		res.destroy(error)
+	}
+	return { status: 114514 }
+}
+
+const FAKE_REPLY_BEHAVIORS = [
+	fakeReplyInvalidHttp,
+	fakeReplyGzipBomb,
+	undefined,
+]
+
+/**
+ * 生成一个临时的、假的私钥。
  * @returns {Promise<jose.KeyLike>} 一个假的私钥。
  */
 async function getFakePrivateKey() {
@@ -971,27 +1021,36 @@ export function bumpUserFailedLoginAttempts(user) {
  * @param {string} password - 密码。
  * @param {string} [deviceId='unknown'] - 设备标识符。
  * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - 用于需要直接写响应的回复。
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
-export async function login(username, password, deviceId = 'unknown', req) {
+export async function login(username, password, deviceId = 'unknown', req, res = undefined) {
 	await timingCalibrated
 	const { ip } = req
 	const user = getUserByUsername(username)
 
 	/**
 	 * 处理失败的登录尝试。
+	 * @param {import('npm:express').Response} res - 用于需要直接写响应的回复。
 	 * @param {object} [response={}] - 要包含在响应中的附加数据。
 	 * @returns {Promise<object>} 包含状态码和消息的响应对象。
 	 */
-	async function handleFailedLogin(response = {}) {
+	async function handleFailedLogin(res, response = {}) {
 		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 
 		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
-			const fakePrivateKey = await getFakePrivateKey()
-			const fakeUserId = crypto.randomUUID()
-			const accessToken = await generateAccessToken({ username, userId: fakeUserId }, fakePrivateKey)
-			const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
-			return { status: 200, success: true, accessToken, refreshToken }
+			const behavior = FAKE_REPLY_BEHAVIORS[Math.floor(Math.random() * FAKE_REPLY_BEHAVIORS.length)]
+			const handled = await behavior?.(res)
+			if (handled) return handled
+
+			if (Math.random() < 0.25) {
+				const fakePrivateKey = await getFakePrivateKey()
+				const fakeUserId = crypto.randomUUID()
+				const accessToken = await generateAccessToken({ username, userId: fakeUserId }, fakePrivateKey)
+				const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
+				return { status: 200, success: true, accessToken, refreshToken }
+			}
+			return { status: 401, success: false, i18nKey: 'auth.error.invalidCredentials', ...response }
 		}
 		// 时间攻击保护
 		const delay = Math.max(0, avgVerifyTime * 0.9 + Math.random() * avgVerifyTime * 0.2)
@@ -999,7 +1058,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		return { status: 401, success: false, i18nKey: 'auth.error.invalidCredentials', ...response }
 	}
 
-	if (!user) return await handleFailedLogin()
+	if (!user) return await handleFailedLogin(res)
 
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
@@ -1014,7 +1073,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	if (!isValidPassword) {
 		const bump = bumpUserFailedLoginAttempts(user)
 		if (bump.locked) return bump.response
-		return await handleFailedLogin()
+		return await handleFailedLogin(res)
 	}
 
 	// 登录成功
