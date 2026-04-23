@@ -201,6 +201,7 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
 
 	// 使用循环匹配所有 ${...} 表达式
 	let result = ''
+	const errors = []
 	while (html.indexOf('${') != -1) {
 		const length = html.indexOf('${')
 		result += html.slice(0, length)
@@ -214,13 +215,14 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
 				if (eval_result.error) throw eval_result.error
 				result += escapeUnclosedTags(String(eval_result.result))
 				html = html.slice(end_index)
+				errors.length = 0
 				break find
 			} catch (error) {
-				if (!(error instanceof SyntaxError))
-					console.error(error)
+				errors.push(error)
 			}
 		}
 	}
+	if (errors.length) errors.map(console.error)
 	result += html
 	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
 }
