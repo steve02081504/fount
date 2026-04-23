@@ -1,7 +1,5 @@
-import { throwUserSettingsApiError } from '../../scripts/userSettingsApiError.mjs'
-
 /**
- * 解析 JSON：`response.ok` 为 false 则 reject；`data.success === false` 则 `throwUserSettingsApiError`。
+ * 解析 JSON：`response.ok` 为 false 则 reject；`!data.success` 则抛带负载内容的 Error。
  * @param {Response} response - fetch 响应。
  * @returns {Promise<object>} 解析后的 JSON 对象。
  */
@@ -9,8 +7,7 @@ async function finishAuthenticatedJsonMutation(response) {
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok)
 		return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), data, { response }))
-	if (data.success === false)
-		throwUserSettingsApiError(data.i18nKey, data.i18nParams)
+	if (!data.success) throw Object.assign(new Error('API request failed'), data)
 	return data
 }
 
