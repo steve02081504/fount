@@ -3,7 +3,6 @@
  */
 
 import { showToastI18n } from '/scripts/toast.mjs'
-import { throwUserSettingsApiError } from '/scripts/userSettingsApiError.mjs'
 
 /**
  * @param {any} error - 捕获到的错误。
@@ -18,13 +17,13 @@ export function isPasswordConfirmationDialogDismissed(error) {
  * 抛出用于「服务端未给出 i18nKey」场景的兜底错误。
  */
 export function throwUnexpectedUserSettingsApiError() {
-	throwUserSettingsApiError('userSettings.shell.unexpectedError')
+	throw Object.assign(new Error('API request failed'), { i18nKey: 'userSettings.shell.unexpectedError' })
 }
 
 /**
- * 仅把服务端约定字段交给 `showToastI18n`：负载或 `UserSettingsApiError` 须有 `i18nKey`（可选 `i18nParams`）；任意 `Error.message` 不会直接作为 toast 文案。
+ * 仅把服务端约定字段交给 `showToastI18n`：负载须有 `i18nKey`（可选 `i18nParams`）；任意 `Error.message` 不会直接作为 toast 文案。
  * @param {'info'|'success'|'warning'|'error'} type - toast 级别。
- * @param {{ i18nKey?: string, i18nParams?: Record<string, string | number> } | Error} payload - JSON 体或 fetch reject 合并后的 Error。
+ * @param {{ i18nKey?: string, i18nParams?: Record<string, string | number> } | Error} payload - JSON 体、抛出的 `{ i18nKey }` 或 fetch reject 合并后的 Error。
  * @param {number} [duration] - 显示时长（毫秒），可选。
  * @returns {void}
  */
