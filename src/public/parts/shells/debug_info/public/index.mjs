@@ -5,6 +5,7 @@ import { createVirtualList } from '/scripts/virtualList.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { onServerEvent } from '/scripts/server_events.mjs'
 import { createLogsWs, getAutoUpdateEnabled, getSystemInfo, openSource, postRestart } from './src/endpoints.mjs'
+import { renderLogItem, createLogToolbar, entryMatchesFilter } from './log.mjs'
 
 applyTheme()
 usingTemplates('/parts/shells:debug_info/templates')
@@ -35,6 +36,8 @@ let canOpenEditor = false
 const logsStore = []
 let logsVirtualList = null
 let logsWs = null
+let logFilterText = ''
+let logLevelFilter = 'all'
 
 /**
  * 将字节数转换为 GiB。
@@ -165,92 +168,28 @@ async function fetchAutoUpdateStatus() {
 }
 
 /**
- * 转义 HTML 文本。
- * @param {string} str - 原始文本。
- * @returns {string} - 转义后的 HTML 文本。
+ * 构建打开源码的回调。
+ * @param {object} callsite - 调用位置信息。
+ * @returns {Promise<void>}
  */
-function escapeHtml(str) {
-	return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+async function handleOpenSource(callsite) {
+	const result = await openSource(callsite.filePath, callsite.line, callsite.column)
+	if (!result.success)
+		showToastI18n('error', 'debug_info.logs.openSourceFailed', { message: result.message || 'failed' })
 }
 
 /**
- * 渲染序列化参数树。
- * @param {{kind: string, value?: any, entries?: Array<{key: string, value: object}>, items?: Array<object>}} node - 参数树节点。
- * @returns {string} - 渲染后的 HTML 字符串。
+ * 获取经过过滤的日志切片。
+ * @param {number} offset
+ * @param {number} limit
+ * @returns {{items: object[], total: number}}
  */
-function renderSerializedArg(node) {
-	switch (node?.kind) {
-		case 'string':
-		case 'number':
-		case 'boolean':
-		case 'bigint':
-		case 'symbol':
-		case 'function':
-			return `<span class="text-info">${escapeHtml(node.value)}</span>`
-		case 'null':
-			return '<span class="opacity-60">null</span>'
-		case 'undefined':
-			return '<span class="opacity-60">undefined</span>'
-		case 'circular':
-			return '<span class="text-warning">[Circular]</span>'
-		case 'array':
-			return `<details class="collapse collapse-arrow bg-base-100">
-				<summary class="collapse-title py-1 min-h-0 text-sm">Array(${node.items?.length || 0})</summary>
-				<div class="collapse-content text-xs space-y-1">${(node.items || []).map((item, i) => `
-					<div><span class="opacity-60 mr-1">[${i}]</span>${renderSerializedArg(item)}</div>
-				`).join('')}</div>
-			</details>`
-		default:
-			return `<details class="collapse collapse-arrow bg-base-100">
-				<summary class="collapse-title py-1 min-h-0 text-sm">${escapeHtml(node?.kind || 'object')}</summary>
-				<div class="collapse-content text-xs space-y-1">${(node.entries || []).map(entry => `
-					<div><span class="opacity-60 mr-1">${escapeHtml(entry.key)}:</span>${renderSerializedArg(entry.value)}</div>
-				`).join('')}</div>
-			</details>`
+function getFilteredSlice(offset, limit) {
+	const filtered = logsStore.filter(e => entryMatchesFilter(e, logFilterText, logLevelFilter))
+	return {
+		items: filtered.slice(offset, limit ? offset + limit : undefined),
+		total: filtered.length,
 	}
-}
-
-/**
- * 渲染单条日志项。
- * @param {object} entry - 日志条目。
- * @returns {HTMLElement} - 日志项元素。
- */
-function renderLogItem(entry) {
-	const wrap = document.createElement('article')
-	wrap.className = 'card bg-base-100 border border-base-300 shadow-sm mb-2'
-	const timestamp = new Date(entry.timestamp).toLocaleString()
-	const locationText = entry.callsite
-		? `${entry.callsite.filePath}:${entry.callsite.line}:${entry.callsite.column}`
-		: ''
-	const canClickLocation = Boolean(canOpenEditor && entry.callsite?.filePath)
-	const argsHtml = entry.args?.length
-		? entry.args.map((arg, i) => `
-			<div class="mt-1">
-				<div class="text-[10px] opacity-60">arg[${i}]</div>
-				${renderSerializedArg(arg)}
-			</div>`).join('')
-		: ''
-	wrap.innerHTML = `
-		<div class="card-body p-3">
-			<div class="flex justify-between items-start gap-2">
-				<div class="badge badge-sm">${escapeHtml(entry.level || 'log')}</div>
-				<button type="button" class="btn btn-xs btn-ghost font-mono max-w-[55%] truncate ${canClickLocation ? '' : 'btn-disabled'}" title="${escapeHtml(locationText)}">
-					${escapeHtml(locationText || '-')}
-				</button>
-			</div>
-			<div class="text-xs opacity-60">${escapeHtml(timestamp)}</div>
-			<div class="prose prose-sm max-w-none break-all">${entry.html || escapeHtml(entry.text || '')}</div>
-			${argsHtml ? `<div class="divider my-1"></div><div>${argsHtml}</div>` : ''}
-		</div>
-	`
-	const locationBtn = wrap.querySelector('button')
-	if (canClickLocation && locationBtn)
-		locationBtn.addEventListener('click', async () => {
-			const result = await openSource(entry.callsite.filePath, entry.callsite.line, entry.callsite.column)
-			if (!result.success)
-				showToastI18n('error', 'debug_info.logs.openSourceFailed', { message: result.message || 'failed' })
-		})
-	return wrap
 }
 
 /**
@@ -259,27 +198,20 @@ function renderLogItem(entry) {
  */
 function initLogsVirtualList() {
 	if (logsVirtualList) logsVirtualList.destroy()
-	/**
-	 * 获取日志分片数据。
-	 * @param {number} offset - 起始偏移。
-	 * @param {number} limit - 最大条数。
-	 * @returns {Promise<{items: Array<object>, total: number}>} - 分片数据与总数。
-	 */
-	const fetchLogSlice = async (offset, limit) => ({
-		items: logsStore.slice(offset, limit ? offset + limit : undefined),
-		total: logsStore.length,
+
+	const fetchLogSlice = async (offset, limit) => getFilteredSlice(offset, limit)
+
+	const renderLogEntry = (item) => renderLogItem(item, {
+		canOpenEditor,
+		onOpenSource: handleOpenSource,
 	})
-	/**
-	 * 渲染日志条目。
-	 * @param {object} item - 日志条目对象。
-	 * @returns {HTMLElement} - 渲染结果元素。
-	 */
-	const renderLogEntry = (item) => renderLogItem(item)
+
+	const filtered = logsStore.filter(e => entryMatchesFilter(e, logFilterText, logLevelFilter))
 	logsVirtualList = createVirtualList({
 		container: backendLogList,
 		fetchData: fetchLogSlice,
 		renderItem: renderLogEntry,
-		initialIndex: logsStore.length ? logsStore.length - 1 : 0,
+		initialIndex: filtered.length ? filtered.length - 1 : 0,
 	})
 }
 
@@ -306,9 +238,11 @@ function connectLogsWs() {
 		}
 		if (payload.type === 'append' && payload.entry) {
 			logsStore.push(payload.entry)
-			const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
-			if (logsVirtualList)
-				await logsVirtualList.appendItem(payload.entry, nearBottom)
+			if (entryMatchesFilter(payload.entry, logFilterText, logLevelFilter)) {
+				const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
+				if (logsVirtualList)
+					await logsVirtualList.appendItem(payload.entry, nearBottom)
+			}
 		}
 	}
 	/**
@@ -407,6 +341,24 @@ document.addEventListener('visibilitychange', () => {
 		startPollTimer()
 	}
 })
+
+// 初始化日志工具栏
+const logToolbarContainer = document.getElementById('log-toolbar-container')
+if (logToolbarContainer) {
+	const toolbar = createLogToolbar({
+		container: backendLogList,
+		onClear: () => {
+			logsStore.length = 0
+			initLogsVirtualList()
+		},
+		onFilter: (text, level) => {
+			logFilterText = text
+			logLevelFilter = level
+			initLogsVirtualList()
+		},
+	})
+	logToolbarContainer.appendChild(toolbar)
+}
 
 if (!document.hidden) startPollTimer()
 

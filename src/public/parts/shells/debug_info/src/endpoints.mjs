@@ -13,9 +13,10 @@ let logHookInstalled = false
  * 将日志参数转换为可 JSON 序列化结构。
  * @param {any} value - 原始值。
  * @param {WeakSet<object>} seen - 循环引用检测集合。
+ * @param {number} [depth=0] - 当前序列化深度。
  * @returns {{kind: string, value?: any, entries?: Array<any>, items?: Array<any>}} - 序列化结果。
  */
-function serializeValue(value, seen = new WeakSet()) {
+function serializeValue(value, seen = new WeakSet(), depth = 0) {
 	if (value === null) return { kind: 'null', value: null }
 	const valueType = typeof value
 	if (valueType === 'string' || valueType === 'number' || valueType === 'boolean')
@@ -27,11 +28,56 @@ function serializeValue(value, seen = new WeakSet()) {
 	if (!(value instanceof Object)) return { kind: 'unknown', value: String(value) }
 	if (seen.has(value)) return { kind: 'circular', value: '[Circular]' }
 	seen.add(value)
-	if (Array.isArray(value))
-		return { kind: 'array', items: value.map(item => serializeValue(item, seen)) }
+
+	// 深度限制（避免超大对象序列化卡死）
+	const MAX_DEPTH = 8
+	const serializeChild = (v) => serializeValue(v, seen, depth + 1)
+
+	// 特殊类型优先处理
+	if (value instanceof Error) {
+		const entries = []
+		for (const key of Object.keys(value))
+			if (key !== 'stack' && key !== 'message' && key !== 'name')
+				entries.push({ key, value: depth < MAX_DEPTH ? serializeChild(value[key]) : { kind: 'string', value: String(value[key]) } })
+		return {
+			kind: 'Error',
+			name: value.name || 'Error',
+			message: value.message || '',
+			stack: value.stack || '',
+			entries,
+		}
+	}
+	if (value instanceof Date) return { kind: 'Date', value: value.toISOString() }
+	if (value instanceof RegExp) return { kind: 'RegExp', value: value.toString() }
+	if (value instanceof Map) {
+		if (depth >= MAX_DEPTH) return { kind: 'Map', items: [] }
+		return {
+			kind: 'Map',
+			items: [...value.entries()].map(([k, v]) => ({
+				key: serializeChild(k),
+				value: serializeChild(v),
+			})),
+		}
+	}
+	if (value instanceof Set) {
+		if (depth >= MAX_DEPTH) return { kind: 'Set', items: [] }
+		return {
+			kind: 'Set',
+			items: [...value.values()].map(v => serializeChild(v)),
+		}
+	}
+
+	if (Array.isArray(value)) {
+		if (depth >= MAX_DEPTH) return { kind: 'array', items: [] }
+		return { kind: 'array', items: value.map(item => serializeChild(item)) }
+	}
+
+	if (depth >= MAX_DEPTH)
+		return { kind: value.constructor?.name || 'object', entries: [] }
+
 	const entries = []
 	for (const key of Object.keys(value))
-		entries.push({ key, value: serializeValue(value[key], seen) })
+		entries.push({ key, value: serializeChild(value[key]) })
 	return {
 		kind: value.constructor?.name || 'object',
 		entries,
