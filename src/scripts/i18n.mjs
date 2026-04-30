@@ -396,7 +396,14 @@ function toString(value) {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
+console.infoI18n = (key, params = {}) => {
+	try {
+		console.ignoreStackFrameNum++
+		console.info(toString(geti18n(key, params)))
+	} finally {
+		console.ignoreStackFrameNum--
+	}
+}
 /**
  * 有参数的本地化键重载
  * @overload
@@ -419,7 +426,14 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
+console.logI18n = (key, params = {}) => {
+	try {
+		console.ignoreStackFrameNum++
+		console.log(toString(geti18n(key, params)))
+	} finally {
+		console.ignoreStackFrameNum--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -442,7 +456,14 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
+console.warnI18n = (key, params = {}) => {
+	try {
+		console.ignoreStackFrameNum++
+		console.warn(toString(geti18n(key, params)))
+	} finally {
+		console.ignoreStackFrameNum--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -465,7 +486,14 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
+console.errorI18n = (key, params = {}) => {
+	try {
+		console.ignoreStackFrameNum++
+		console.error(toString(geti18n(key, params)))
+	} finally {
+		console.ignoreStackFrameNum--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -491,7 +519,14 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
+console.freshLineI18n = (id, key, params = {}) => {
+	try {
+		console.ignoreStackFrameNum++
+		console.freshLine(id, toString(geti18n(key, params)))
+	} finally {
+		console.ignoreStackFrameNum--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
