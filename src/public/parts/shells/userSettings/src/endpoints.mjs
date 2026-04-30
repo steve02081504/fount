@@ -18,6 +18,13 @@ import {
 	webauthnRegistrationComplete,
 } from '../../../../../server/webauthn.mjs'
 
+import {
+	getAvailableEditorById,
+	getEditorCommandConfig,
+	openEditor,
+	setEditorCommandConfig,
+} from './editorCommand.mjs'
+
 /**
  * 用户设置 shell 的 API 端点。
  */
@@ -171,6 +178,43 @@ export function setEndpoints(router) {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
 		res.json({ success: true, credentials: listWebAuthnCredentials(user.username) })
+	})
+
+	router.get('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const config = await getEditorCommandConfig(user.username)
+		res.json({ success: true, config })
+	})
+
+	router.post('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { editorId, command, argsTemplate } = req.body || {}
+		const editorPreset = getAvailableEditorById(editorId)
+		const merged = {
+			editorId,
+			command: command || editorPreset?.command,
+			argsTemplate: argsTemplate || editorPreset?.argsTemplate,
+		}
+		try {
+			const config = await setEditorCommandConfig(user.username, merged)
+			res.json({ success: true, config })
+		} catch (error) {
+			res.status(400).json({ success: false, message: error.message || 'Invalid editor config.' })
+		}
+	})
+
+	router.post('/api/parts/shells\\:userSettings/open_editor', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		const { filePath, line, column } = req.body || {}
+		try {
+			const result = await openEditor(user.username, filePath, line, column)
+			res.json(result)
+		} catch (error) {
+			res.status(400).json({ success: false, message: error.message || 'Failed to open editor.' })
+		}
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {

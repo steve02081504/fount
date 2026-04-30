@@ -7,7 +7,10 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 
-import { getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice } from './src/endpoints.mjs'
+import {
+	getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice,
+	getEditorCommandConfig, saveEditorCommandConfig, openEditor,
+} from './src/endpoints.mjs'
 import { installPasskeysSection, loadPasskeysList } from './src/passkeysSection.mjs'
 import { escapeAttr } from './src/uiEscape.mjs'
 
@@ -45,6 +48,14 @@ const noPasskeysText = document.getElementById('noPasskeysText')
 const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
 const addPasskeyForm = document.getElementById('addPasskeyForm')
 const newPasskeyNameInput = document.getElementById('newPasskeyName')
+const editorCommandForm = document.getElementById('editorCommandForm')
+const editorPresetSelect = document.getElementById('editorPresetSelect')
+const editorCommandInput = document.getElementById('editorCommandInput')
+const editorArgsTemplateInput = document.getElementById('editorArgsTemplateInput')
+const editorTestPath = document.getElementById('editorTestPath')
+const editorTestLine = document.getElementById('editorTestLine')
+const editorTestColumn = document.getElementById('editorTestColumn')
+const testEditorCommandBtn = document.getElementById('testEditorCommandBtn')
 
 let passwordConfirmationContext = { resolve: null, reject: null }
 let cachedPassword = null // 用于短期缓存密码
@@ -374,6 +385,76 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
 	}
 })
 
+/**
+ * 加载编辑器命令配置并渲染表单。
+ * @returns {Promise<void>}
+ */
+async function loadEditorCommandConfigUI() {
+	try {
+		const result = await getEditorCommandConfig()
+		if (!result.success) throw new Error(result.message || 'Load editor command config failed')
+		const { config } = result
+		editorPresetSelect.replaceChildren()
+		for (const editor of config.availableEditors || []) {
+			const option = document.createElement('option')
+			option.value = editor.id
+			option.textContent = `${editor.label} (${editor.available ? 'PATH 可用' : 'PATH 不可用'})`
+			editorPresetSelect.appendChild(option)
+		}
+		editorPresetSelect.value = config.editorId || ''
+		editorCommandInput.value = config.command || ''
+		editorArgsTemplateInput.value = config.argsTemplate || ''
+	}
+	catch (error) {
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+	}
+}
+
+editorPresetSelect.addEventListener('change', async () => {
+	try {
+		const result = await getEditorCommandConfig()
+		if (!result.success) return
+		const editor = (result.config?.availableEditors || []).find(item => item.id === editorPresetSelect.value)
+		if (!editor) return
+		editorCommandInput.value = editor.command || editorCommandInput.value
+		editorArgsTemplateInput.value = editor.argsTemplate || editorArgsTemplateInput.value
+	}
+	catch { }
+})
+
+editorCommandForm.addEventListener('submit', async event => {
+	event.preventDefault()
+	try {
+		const result = await saveEditorCommandConfig(
+			editorPresetSelect.value,
+			editorCommandInput.value.trim(),
+			editorArgsTemplateInput.value.trim()
+		)
+		if (!result.success) throw new Error(result.message || 'Save editor command config failed')
+		showToastI18n('success', 'userSettings.editorCommand.saveSuccess')
+		await loadEditorCommandConfigUI()
+	}
+	catch (error) {
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+	}
+})
+
+testEditorCommandBtn.addEventListener('click', async () => {
+	const filePath = editorTestPath.value.trim()
+	if (!filePath)
+		return showToastI18n('error', 'userSettings.editorCommand.testPathRequired')
+	try {
+		const line = Number(editorTestLine.value) || 1
+		const column = Number(editorTestColumn.value) || 1
+		const result = await openEditor(filePath, line, column)
+		if (!result.success) throw new Error(result.message || 'Open editor failed')
+		showToastI18n('success', 'userSettings.editorCommand.testSuccess')
+	}
+	catch (error) {
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+	}
+})
+
 
 /**
  * 初始化应用程序。
@@ -400,6 +481,7 @@ async function initializeApp() {
 	await loadAndDisplayDevices()
 	await loadPasskeysList(passkeysDeps)
 	await loadAndDisplayApiKeys()
+	await loadEditorCommandConfigUI()
 }
 
 initializeApp().catch(error => {

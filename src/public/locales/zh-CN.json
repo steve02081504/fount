@@ -1459,6 +1459,22 @@
 			},
 			"copiedAlert": "密钥已复制到剪贴板！"
 		},
+		"editorCommand": {
+			"title": "编辑器命令行",
+			"description": "配置用于在外部编辑器中打开文件的命令与参数模板，支持把文件路径、行号、列号格式化传入。",
+			"editorPresetLabel": "编辑器预设",
+			"commandLabel": "命令",
+			"argsTemplateLabel": "参数模板",
+			"argsTemplateHint": "可用占位符：${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "测试文件路径，例如 C:/work/project/src/main.mjs"
+			},
+			"testButton": "测试打开",
+			"saveButton": "保存配置",
+			"saveSuccess": "编辑器命令配置已保存。",
+			"testPathRequired": "请先填写测试文件路径。",
+			"testSuccess": "已触发编辑器打开命令。"
+		},
 		"logout": {
 			"title": "登出",
 			"description": "这将从当前设备注销您的账户。",
