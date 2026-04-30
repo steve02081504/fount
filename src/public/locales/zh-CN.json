@@ -2364,6 +2364,10 @@
 		"updateSuccess": "正在重启服务器",
 		"updateFailed": "更新请求失败",
 		"autoUpdateNotEnabled": "未启用自动更新",
+		"logs": {
+			"title": "日志",
+			"openSourceFailed": "打开源码失败: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -19,6 +19,9 @@ import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
+console.options.maxLogEntries = 4096
+console.options.recordOutput = true
+
 console.profile('server start')
 setWindowTitle('𝓯𝓸')
 SetTaskbarProgress(50)
