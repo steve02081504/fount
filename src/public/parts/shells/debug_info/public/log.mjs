@@ -94,6 +94,17 @@ const STYLES = /* css */ `
 .log-val-regexp { color: var(--color-error, #dc2626); }
 .log-val-error-text { color: var(--color-error, #dc2626); }
 
+/* 所有字符串参数统一走终端文本语义：换行、tab、ANSI/OSC 一致处理 */
+.log-str {
+	display: inline-block;
+	max-width: 100%;
+	vertical-align: top;
+	box-sizing: border-box;
+	white-space: pre-wrap;
+	tab-size: 4;
+	word-break: break-word;
+}
+
 /* 可展开节点 */
 .log-node {
 	display: inline-flex;
@@ -258,7 +269,7 @@ function extractOsc8Links(text) {
 	const placeholders = []
 	const replaceLink = (_full, href, label) => {
 		const token = `__OSC8_LINK_${index++}__`
-		const labelHtml = ansiUp.ansi_to_html(String(label || '')).replaceAll('\n', '<br/>\n')
+		const labelHtml = ansiUp.ansi_to_html(String(label || ''))
 		const hrefAttr = escapeHtmlAttr(href)
 		placeholders.push({
 			token,
@@ -298,7 +309,26 @@ function ansiTextToHtml(text) {
 	let html = ansiUp.ansi_to_html(textWithPlaceholders)
 	for (const { token, html: linkHtml } of placeholders)
 		html = html.replaceAll(token, linkHtml)
-	return html.replaceAll('\n', '<br/>\n')
+	return html
+}
+
+/**
+ * 将任意字符串渲染为日志节点（纯文本与含 ANSI/OSC 走同一管道）。
+ * @param {string} text
+ * @param {object} [opts]
+ * @param {boolean} [opts.quoted=false] - 是否在展示时包裹双引号。
+ * @param {string} [opts.className='log-str'] - 额外类名（如 log-val-string）。
+ * @returns {HTMLElement}
+ */
+function renderLogStringNode(text, { quoted = false, className = 'log-str' } = {}) {
+	const wrapper = document.createElement('span')
+	wrapper.className = className
+	const html = ansiTextToHtml(String(text || ''))
+	if (quoted)
+		wrapper.innerHTML = `"${html}"`
+	else
+		wrapper.innerHTML = html
+	return wrapper
 }
 
 function injectStyles() {
@@ -500,12 +530,11 @@ function buildArgNode(node, depth = 0, topLevel = false) {
 
 	switch (node.kind) {
 		case 'string': {
-			if (topLevel) {
-				const el = document.createElement('span')
-				el.textContent = String(node.value)
-				return el
-			}
-			return span(`"${String(node.value)}"`, 'log-val-string')
+			const value = String(node.value)
+			return renderLogStringNode(value, {
+				quoted: !topLevel,
+				className: topLevel ? 'log-str' : 'log-str log-val-string',
+			})
 		}
 		case 'number': return span(String(node.value), 'log-val-number')
 		case 'boolean': return span(String(node.value), 'log-val-boolean')
@@ -549,7 +578,7 @@ function buildFormatString(format, rest) {
 
 	while ((m = re.exec(format)) !== null) {
 		const before = format.slice(lastIdx, m.index)
-		if (before) frag.appendChild(document.createTextNode(before))
+		if (before) frag.appendChild(renderLogStringNode(before, { quoted: false, className: 'log-str' }))
 		lastIdx = re.lastIndex
 
 		if (m[0] === '%%') { frag.appendChild(document.createTextNode('%')); continue }
@@ -558,9 +587,12 @@ function buildFormatString(format, rest) {
 		const arg = rest[argIdx++]
 		switch (m[1]) {
 			case 'c': break  // CSS style directive — ignored
-			case 's': frag.appendChild(document.createTextNode(
-				arg?.kind === 'string' ? String(arg.value) : getNodePreview(arg)
-			)); break
+			case 's':
+				if (arg?.kind === 'string')
+					frag.appendChild(renderLogStringNode(String(arg.value), { quoted: false, className: 'log-str' }))
+				else
+					frag.appendChild(document.createTextNode(getNodePreview(arg)))
+				break
 			case 'd':
 			case 'i': {
 				const n = arg?.kind === 'number' ? parseInt(arg.value) : NaN
@@ -578,7 +610,7 @@ function buildFormatString(format, rest) {
 	}
 
 	const after = format.slice(lastIdx)
-	if (after) frag.appendChild(document.createTextNode(after))
+	if (after) frag.appendChild(renderLogStringNode(after, { quoted: false, className: 'log-str' }))
 
 	return { fragment: frag, remaining: rest.slice(argIdx) }
 }
@@ -604,14 +636,23 @@ function buildArgsContent(args, html, text, level) {
 			return container
 		}
 		if (sourceText)
-			container.innerHTML = ansiTextToHtml(sourceText)
-		else
-			container.innerHTML = html || ''
+			container.appendChild(renderLogStringNode(sourceText, { quoted: false, className: 'log-str' }))
+		else {
+			const wrap = document.createElement('span')
+			wrap.className = 'log-str'
+			wrap.innerHTML = html || ''
+			container.appendChild(wrap)
+		}
 		return container
 	}
 
 	if (!args?.length) {
-		if (html) container.innerHTML = html
+		if (html) {
+			const wrap = document.createElement('span')
+			wrap.className = 'log-str'
+			wrap.innerHTML = html
+			container.appendChild(wrap)
+		}
 		return container
 	}
 
