@@ -95,10 +95,11 @@ function serializeLogEntry(entry, index) {
 	return {
 		id: index,
 		level: entry.level,
+		method: entry.method,
 		timestamp: entry.timestamp,
 		html: entry.toHtml(),
 		text: entry.toString(),
-		args: (entry.args || []).map(arg => serializeValue(arg)),
+		args: entry.args.map(arg => serializeValue(arg)),
 		callsite: callsite ? {
 			functionName: callsite.functionName,
 			filePath: callsite.filePath,

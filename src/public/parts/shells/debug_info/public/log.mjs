@@ -213,8 +213,11 @@ const STYLES = /* css */ `
 	background: color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
 	font-weight: 600;
 }
+.log-level-btn[data-lvl="log"] { color: color-mix(in oklch, var(--color-base-content, currentColor) 88%, transparent); }
+.log-level-btn[data-lvl="info"] { color: var(--color-info, #3b82f6); }
 .log-level-btn[data-lvl="warn"] { color: var(--color-warning, #d97706); }
 .log-level-btn[data-lvl="error"] { color: var(--color-error, #dc2626); }
+.log-level-btn[data-lvl="debug"] { color: color-mix(in oklch, var(--color-base-content, currentColor) 55%, transparent); }
 .log-clear-btn {
 	font-size: 11px;
 	padding: 1px 7px;
@@ -620,15 +623,25 @@ function buildFormatString(format, rest) {
  * @param {object[]} args - 序列化参数数组。
  * @param {string} html - 预格式化 HTML（备用/流输出）。
  * @param {string} text - 纯文本日志。
- * @param {string} level - 日志级别。
+ * @param {string} method - virtual-console 日志条目的 `method`（如 stdout、stderr、dir）。
  * @returns {HTMLElement}
  */
-function buildArgsContent(args, html, text, level) {
+function buildArgsContent(args, html, text, method) {
 	const container = document.createElement('span')
 	container.className = 'log-args'
 
+	// console.dir：只交互渲染第一个参数（与 DevTools 对象检视一致），忽略库内 toString/toHtml
+	if (method === 'dir') {
+		if (!args?.length) {
+			container.dataset.emptyStream = '1'
+			return container
+		}
+		container.appendChild(buildArgNode(args[0], 0, true))
+		return container
+	}
+
 	// 流输出：优先使用 text 重新做 ANSI 解析，避免后端未覆盖的控制码污染 UI
-	if (level === 'stdout' || level === 'stderr') {
+	if (method === 'stdout' || method === 'stderr') {
 		const sourceText = text || ''
 		const visibleText = extractVisibleText(sourceText)
 		if (!visibleText) {
@@ -676,16 +689,13 @@ function buildArgsContent(args, html, text, level) {
 	return container
 }
 
-/** 级别 → CSS 类名映射 */
+/** virtual-console `LogEntry.level`（methodNameToLevel）→ 行样式 */
 const LEVEL_CLASS = {
 	log: 'log-level-log',
 	info: 'log-level-info',
 	warn: 'log-level-warn',
 	error: 'log-level-error',
 	debug: 'log-level-debug',
-	trace: 'log-level-debug',
-	stdout: 'log-level-stdout',
-	stderr: 'log-level-error',
 }
 
 /**
@@ -699,8 +709,7 @@ const LEVEL_CLASS = {
 export function renderLogItem(entry, { canOpenEditor = false, onOpenSource } = {}) {
 	injectStyles()
 
-	const level = entry.level || 'log'
-	const levelClass = LEVEL_CLASS[level] || 'log-level-log'
+	const levelClass = LEVEL_CLASS[entry.level] || 'log-level-log'
 
 	const row = document.createElement('div')
 	row.className = `log-row ${levelClass}`
@@ -708,8 +717,9 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource } = {
 	// 内容区
 	const content = document.createElement('div')
 	content.className = 'log-content'
-	const argsContent = buildArgsContent(entry.args, entry.html, entry.text, level)
-	if ((level === 'stdout' || level === 'stderr') && argsContent.dataset.emptyStream === '1') {
+	const argsContent = buildArgsContent(entry.args, entry.html, entry.text, entry.method)
+	const m = entry.method
+	if ((m === 'stdout' || m === 'stderr' || m === 'dir') && argsContent.dataset.emptyStream === '1') {
 		const emptyRow = document.createElement('div')
 		emptyRow.style.display = 'none'
 		return emptyRow
@@ -771,9 +781,11 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 	let activeLevel = 'all'
 	const levels = [
 		{ id: 'all', label: 'All' },
+		{ id: 'log', label: 'Log' },
 		{ id: 'info', label: 'Info' },
 		{ id: 'warn', label: 'Warn' },
 		{ id: 'error', label: 'Err' },
+		{ id: 'debug', label: 'Dbg' },
 	]
 
 	const btnEls = {}
@@ -806,20 +818,11 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
  * @returns {boolean}
  */
 export function entryMatchesFilter(entry, filterText, levelFilter) {
-	const level = entry.level || 'log'
-	if ((level === 'stdout' || level === 'stderr') && !extractVisibleText(entry.text || ''))
+	if ((entry.method === 'stdout' || entry.method === 'stderr') && !extractVisibleText(entry.text || ''))
 		return false
 
-	if (levelFilter !== 'all') {
-		const levelGroup = {
-			log: ['log', 'stdout', 'debug', 'trace'],
-			info: ['info'],
-			warn: ['warn'],
-			error: ['error', 'stderr'],
-		}
-		const group = levelGroup[levelFilter] || [levelFilter]
-		if (!group.includes(level)) return false
-	}
+	if (levelFilter !== 'all' && entry.level !== levelFilter)
+		return false
 
 	if (filterText) {
 		const needle = filterText.toLowerCase()
