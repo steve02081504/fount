@@ -51,6 +51,7 @@
 				"localAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अपडेट की आवश्यकता नहीं है।",
 				"noUpstream": "शाखा '${currentBranch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं है, अपडेट की जाँच छोड़ी जा रही है।",
 				"dirtyWorkingDirectory": "कार्यरत डायरेक्टरी स्वच्छ नहीं है। कृपया अपडेट करने से पहले अपने बदलावों को स्टैश (stash) या कमिट (commit) करें।",
+				"uncommittedBackedUpTo": "अप्रतिबद्ध परिवर्तनों का बैकअप लिया गया: ${path}",
 				"diverged": "स्थानीय और रिमोट शाखाएँ अलग हो गई हैं। ज़बरदस्ती अपडेट किया जा रहा है...",
 				"updateFailed": "रिमोट रिपॉजिटरी से घटक अपडेट करने में विफल: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
-		},
-		"discordbot": {
-			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
-		},
+		"botStarted": "कैरेक्टर ${charname} ने ${platform} बॉट ${botusername} पर लॉगिन किया है।",
 		"path": {
 			"protocol": {
 				"description": "यूआरएल:फाउंड प्रोटोकॉल",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "पासवर्ड की ताकत बहुत कम है।",
 			"accountAlreadyExists": "खाता पहले से मौजूद है।",
 			"powNotSolved": "कृपया पहले POW सत्यापन पूरा करें",
-			"powError": "PoW सत्यापन त्रुटि"
+			"powError": "PoW सत्यापन त्रुटि",
+			"invalidCredentials": "अमान्य उपयोगकर्ता नाम या पासवर्ड।",
+			"accountLockedRetry": "खाता लॉक कर दिया गया है, कृपया ${timeLeft} के बाद पुनः प्रयास करें।",
+			"accountLockedAttempts": "बहुत से असफल लॉगिन प्रयासों के कारण खाता अस्थायी रूप से लॉक कर दिया गया है।",
+			"powValidationFailed": "सुरक्षा सत्यापन विफल रहा, कृपया पुनः प्रयास करें।",
+			"apiErrorBodyUnreadable": "सर्वर ने वह जानकारी लौटा दी जिसे पार्स नहीं किया जा सका। कृपया बाद में पुन: प्रयास करें।"
 		},
 		"webauthn": {
 			"loginButton": "सुरक्षा कुंजी/पासकी का उपयोग करके लॉग इन करें",
-			"errorNoUsername": "कृपया पासकी का उपयोग करने से पहले अपना उपयोगकर्ता नाम भरें।",
 			"errorLoadLibrary": "WebAuthn सहायक लाइब्रेरी लोड करने में असमर्थ, कृपया नेटवर्क की जाँच करें और पुनः प्रयास करें।",
-			"errorCancelled": "सुरक्षा कुंजी रद्द कर दी गई है या उपयोग के लिए अधिकृत नहीं है।"
+			"errorCancelled": "सुरक्षा कुंजी रद्द कर दी गई है या उपयोग के लिए अधिकृत नहीं है।",
+			"errorSessionMissing": "सर्वर ने वैध लॉगिन सत्र नहीं लौटाया, कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें।",
+			"errorBadBeginResponse": "सर्वर ने अमान्य लॉगिन डेटा लौटाया, कृपया पृष्ठ ताज़ा करें और पुनः प्रयास करें।",
+			"errorCredentialRequired": "वैध पासकी क्रेडेंशियल डेटा गायब है।",
+			"errorAuthSessionRequired": "लॉगिन सत्र टोकन गायब है, कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें।",
+			"apiSessionExpired": "पासकी लॉगिन सत्र समाप्त हो गया है, कृपया पुनः प्रयास करें।",
+			"apiUnknownPasskey": "पासकी पहचानी नहीं गई है, कृपया बाउंड कुंजी का उपयोग करें।",
+			"apiPasskeyVerificationFailed": "पासकी सत्यापन विफल, कृपया पुनः प्रयास करें।",
+			"registrationUserNotFound": "उपयोगकर्ता खाता नहीं मिला.",
+			"registrationSessionExpired": "बाइंडिंग सत्र समाप्त हो गया है, कृपया शुरुआत से पुनः प्रयास करें।",
+			"registrationVerifyFailed": "पासकी पंजीकरण सत्यापन पूरा करने में असमर्थ.",
+			"registrationFailed": "पासकी पंजीकरण विफल, कृपया पुनः प्रयास करें।",
+			"removeUserNotFound": "उपयोगकर्ता या क्रेडेंशियल डेटा नहीं मिला.",
+			"removeInvalidPassword": "ग़लत पासवर्ड.",
+			"removePasskeyNotFound": "पासकी नहीं मिली."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "प्रमाणपत्र अंतरण त्रुटि",
 			"retrieve_error": "आपकी लॉगिन जानकारी सहेजते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी नहीं सहेज सकते।",
 			"transfer_error": "आपकी लॉगिन जानकारी को स्थानांतरित करने की कोशिश करते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी प्राप्त नहीं कर सकते।",
-			"no_credentials": "कोई सहेजा गया लॉगिन क्रेडेंशियल नहीं मिला.\nकृपया अपने लॉगिन क्रेडेंशियल अपडेट करने के लिए fount के भीतर से फिर से लॉग इन करें, या लॉगिन क्रेडेंशियल के बिना लक्ष्य पृष्ठ पर जारी रखने के लिए नीचे दिए गए बटन पर क्लिक करें।",
 			"missing_params": "लिंक में एक आवश्यक पैरामीटर गुम है.",
 			"buttons": {
 				"ignore": "अनदेखा करें और जारी रखें",
@@ -865,6 +878,10 @@
 				"success": "लिंक साझा किया गया! लिंक को क्लिपबोर्ड पर कॉपी किया गया. <br>यह सुविधा ${provider} द्वारा समर्थित है। <br>[उन्हें प्रायोजित करें। ](${sponsorLink})"
 			},
 			"commonToolCalling": "टूल कॉल किया जा रहा है",
+			"reasoningDetailsTitle": "तर्क प्रक्रिया",
+			"logprobsNotApplicable": "लागू नहीं",
+			"logprobsTopLogprobsMeta": "top_logprobs (चयनित: ${token})",
+			"logprobsMetricsFooter": "पहला शब्द विलंब: ${ttft} | समय: ${time} | टोकन: ${tokens} | गति: ${speed}",
 			"noReplyContent": "(कोई उत्तर सामग्री नहीं)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "उपयोगकर्ता सेटिंग्स",
 		"PageTitle": "उपयोगकर्ता सेटिंग्स",
-		"description": "अपनी मूल पहचान के विवरण पर ध्यान दें। अपनी प्रोफ़ाइल प्रबंधित करें, अपनी पहुंच सुरक्षित रखें और कनेक्टेड डिवाइस देखें। आपके खाते के लिए एक शांत पवित्र स्थान।",
+		"description": "अपनी fount पहचान का विवरण संभालें। प्रोफ़ाइल प्रबंधित करें, अपनी पहुँच सुरक्षित करें और कनेक्टेड डिवाइस देखें। आपके खाते के लिए एक शांत और सुरक्षित स्थान।",
+		"shell": {
+			"unauthorized": "लॉगिन आवश्यक है.",
+			"responseNotJson": "सर्वर ने ऐसी सामग्री लौटाई जिसे पार्स नहीं किया जा सका।",
+			"unexpectedError": "अनुरोध विफल रहा."
+		},
+		"errors": {
+			"accountNotFound": "खाता नहीं मिला।"
+		},
 		"userInfo": {
 			"title": "उपयोगकर्ता जानकारी",
 			"usernameLabel": "उपयोगकर्ता नाम:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "प्रतिलिपि पथ"
 			},
-			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!",
+			"copyPathFailed": "पथ को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
 		},
 		"changePassword": {
 			"title": "पासवर्ड बदलें",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "नए पासवर्ड की पुष्टि करें:",
 			"submitButton": "पासवर्ड बदलें",
 			"errorMismatch": "नए पासवर्ड मेल नहीं खाते।",
-			"success": "पासवर्ड सफलतापूर्वक बदल दिया गया है।"
+			"success": "पासवर्ड सफलतापूर्वक बदल दिया गया है।",
+			"missingFields": "कृपया अपना वर्तमान पासवर्ड और नया पासवर्ड भरें।",
+			"invalidCurrent": "वर्तमान पासवर्ड ग़लत है."
 		},
 		"renameUser": {
 			"title": "उपयोगकर्ता का नाम बदलें",
 			"newUsernameLabel": "नया उपयोगकर्ता नाम:",
 			"submitButton": "उपयोगकर्ता का नाम बदलें",
 			"confirmMessage": "क्या आप वाकई अपना उपयोगकर्ता नाम बदलना चाहते हैं? इसके लिए आपको फिर से लॉग इन करना होगा।",
-			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।"
+			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।",
+			"missingParams": "कृपया नया उपयोगकर्ता नाम और पासवर्ड भरें।",
+			"wrongPassword": "पासवर्ड ग़लत है.",
+			"mustDiffer": "नया उपयोक्तानाम वर्तमान उपयोक्तानाम से भिन्न होना चाहिए।",
+			"taken": "यह उपयोगकर्ता नाम पहले ही ले लिया है।",
+			"moveFailed": "उपयोगकर्ता डेटा निर्देशिका का नाम बदलने में विफल: ${detail}। मूल उपयोक्तानाम पुनर्स्थापित कर दिया गया है."
 		},
 		"passkeys": {
 			"title": "सुरक्षा कुंजी और पासकी",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "सुरक्षा कुंजी हटा दी गई.",
 			"addSuccess": "सुरक्षा कुंजी जोड़ी गई.",
 			"errorLoadLibrary": "WebAuthn लाइब्रेरी लोड करने में असमर्थ.",
-			"errorCancelled": "जोड़ना रद्द किया गया."
+			"errorCancelled": "जोड़ना रद्द किया गया.",
+			"apiInvalidPassword": "ग़लत पासवर्ड.",
+			"apiMissingCredential": "वैध पासकी क्रेडेंशियल गायब हैं।",
+			"apiRemoveParamsRequired": "कृपया वे क्रेडेंशियल और पासवर्ड प्रदान करें जिन्हें आप हटाना चाहते हैं।"
 		},
 		"userDevices": {
 			"title": "उपयोगकर्ता डिवाइस/सत्र",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "रद्द करें",
 			"revokeConfirm": "क्या आप वाकई इस डिवाइस/सत्र का एक्सेस रद्द करना चाहते हैं?",
 			"revokeSuccess": "डिवाइस/सत्र सफलतापूर्वक रद्द कर दिया गया है।",
+			"revokeMissingParams": "कृपया वह डिवाइस और सत्र पासवर्ड प्रदान करें जिसे आप रद्द करना चाहते हैं।",
+			"revokeWrongPassword": "पासवर्ड ग़लत है.",
+			"listNotFound": "डिवाइस सूची नहीं मिली.",
+			"deviceNotFound": "डिवाइस या सत्र नहीं मिला.",
 			"refreshButton": {
 				"title": "सूची रीफ़्रेश करें"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
 			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
 			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
+			"noKeysForUser": "एपीआई कुंजी डेटा नहीं मिला.",
+			"revokeWrongPassword": "पासवर्ड ग़लत है.",
+			"keyNotFound": "एपीआई कुंजी नहीं मिली.",
+			"revokeMissingJti": "कृपया निरस्त करने की कुंजी निर्दिष्ट करें.",
+			"revokeMissingPassword": "किसी कुंजी को निरस्त करने के लिए पासवर्ड की आवश्यकता होती है।",
 			"revokeButton": "रद्द करना",
 			"revokeConfirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
 			"revokeSuccess": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "नई एपीआई कुंजी कॉपी करें"
 			},
-			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!"
+			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!",
+			"copyKeyFailed": "कुंजी को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
 		},
 		"logout": {
 			"title": "लॉग आउट करें",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "चेतावनी! क्या आप वाकई अपना खाता स्थायी रूप से हटाना चाहते हैं? यह कार्रवाई रद्द नहीं की जा सकती।",
 			"confirmMessage2": "हटाने की पुष्टि करने के लिए, कृपया अपना उपयोगकर्ता नाम \"${username}\" दर्ज करें:",
 			"usernameMismatch": "दर्ज किया गया उपयोगकर्ता नाम वर्तमान उपयोगकर्ता से मेल नहीं खाता है। हटाने की कार्रवाई रद्द कर दी गई है।",
-			"success": "खाता सफलतापूर्वक हटा दिया गया है। अब आप लॉग आउट हो जाएँगे।"
+			"success": "खाता सफलतापूर्वक हटा दिया गया है। अब आप लॉग आउट हो जाएँगे।",
+			"missingPassword": "अपना पासवर्ड दर्ज करें।",
+			"wrongPassword": "पासवर्ड ग़लत है."
 		},
 		"passwordConfirm": {
 			"title": "कार्रवाई की पुष्टि करें",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "डिस्कॉर्ड बॉट",
-		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
-		"cardTitle": "डिस्कॉर्ड बॉट",
-		"botSelectDropdown": {
-			"placeholder": "एक बॉट चुनें"
-		},
-		"botSearch": {
-			"placeholder": "बॉट खोजें..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "एक भूमिका का चयन करें"
-		},
-		"charSearch": {
-			"placeholder": "पात्र खोजें..."
-		},
-		"configCard": {
-			"title": "बॉट कॉन्फ़िगरेशन",
-			"labels": {
-				"character": "कैरेक्टर",
-				"apiKey": "डिस्कॉर्ड API कुंजी",
-				"config": "कॉन्फ़िगरेशन"
-			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
-			"apiKeyInput": {
-				"placeholder": "API कुंजी दर्ज करें"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API कुंजी दृश्यता टॉगल करें"
-			},
-			"buttons": {
-				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
-				"startBot": "शुरू करें",
-				"stopBot": "बंद करें"
-			}
-		},
-		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
-		},
-		"buttons": {
-			"newBot": "नया",
-			"deleteBot": "हटाएँ"
-		},
-		"alerts": {
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
-			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
-			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"httpError": "HTTP त्रुटि।",
-			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "कलह की स्थिति आ रही है",
-				"description": "अपने चरित्र को कलह की दुनिया में बुलाएँ।",
-				"locked_description": "डिस्कॉर्ड बॉट को एक बार लॉन्च करें।"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "बॉट",
-				"sub_items": {
-					"manage": {
-						"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "टेलीग्राम बॉट",
 		"description": "अपने fount पात्रों को टेलीग्राम की त्वरित तरंगों को पार करने दें। उनकी डिजिटल उपस्थिति को कॉन्फ़िगर करें, उनकी बातचीत को प्रबंधित करें और इस जीवंत मैसेजिंग दुनिया तक उनकी पहुंच बढ़ाएं।",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat बॉट",
+		"description": "fount कैरेक्टर को WeChat बॉट की तरह चलाएँ—भूमिका जोड़ें, बॉट प्रबंधित करें, WeChat पर बात करें।",
+		"cardTitle": "WeChat बॉट",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका चुनें"
+		},
+		"charSearch": {
+			"placeholder": "भूमिकाएँ खोजें…"
+		},
+		"configCard": {
+			"title": "बॉट सेटिंग्स",
+			"labels": {
+				"character": "जुड़ी भूमिका",
+				"apiBaseUrl": "WeChat चैनल API का मूल URL",
+				"botToken": "iLink बॉट टोकन",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "भूमिका चुनें",
+			"apiBaseUrlInput": {
+				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"
+			},
+			"botTokenInput": {
+				"placeholder": "लॉग इन के बाद मिला Bearer टोकन"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "टोकन दिखाएँ या छिपाएँ"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "टोकन दिखाएँ या छिपाएँ"
+			},
+			"buttons": {
+				"saveConfig": "सहेजें",
+				"startBot": "प्रारंभ",
+				"stopBot": "रोकें"
+			}
+		},
+		"prompts": {
+			"newBotName": "नए बॉट का नाम:"
+		},
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"alerts": {
+			"configSaved": "सहेजा गया",
+			"botExists": "«${botname}» नाम का बॉट पहले से है। दूसरा नाम चुनें।",
+			"unsavedChanges": "बिना सहेजे बदलाव हैं। उन्हें छोड़ें?",
+			"httpError": "HTTP त्रुटि",
+			"beforeUnload": "बिना सहेजे बदलाव हैं। पृष्ठ छोड़ें?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "मुझे काम पर लगाओ!",
+				"description": "WeChat पर fount कैरेक्टर से बात करें।",
+				"locked_description": "WeChat बॉट एक बार चलाएँ।"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat बॉट"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat बॉट सेटिंग्स"
+			}
+		},
+		"qrLogin": {
+			"hint": "लॉग इन पूरा करने के लिए नीचे का QR कोड WeChat से स्कैन करें।",
+			"button": "लॉग इन के लिए स्कैन करें",
+			"scanPrompt": "WeChat खोलकर QR कोड स्कैन करें",
+			"waiting": "QR कोड लोड हो रहा है…",
+			"scanned": "स्कैन हो गया — फोन पर पुष्टि करें",
+			"success": "WeChat जुड़ गया, सेटिंग्स सहेजी गईं — अब बॉट चला सकते हैं।",
+			"needBot": "पहले सूची से बॉट चुनें या «नया» से बनाएँ।"
+		}
+	},
+	"discord_bots": {
+		"title": "डिस्कॉर्ड बॉट",
+		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
+		"cardTitle": "डिस्कॉर्ड बॉट",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका का चयन करें"
+		},
+		"charSearch": {
+			"placeholder": "पात्र खोजें..."
+		},
+		"configCard": {
+			"title": "बॉट कॉन्फ़िगरेशन",
+			"labels": {
+				"character": "कैरेक्टर",
+				"apiKey": "डिस्कॉर्ड API कुंजी",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "कैरेक्टर चुनें",
+			"apiKeyInput": {
+				"placeholder": "API कुंजी दर्ज करें"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API कुंजी दृश्यता टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "शुरू करें",
+				"stopBot": "बंद करें"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"alerts": {
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
+			"httpError": "HTTP त्रुटि।",
+			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "कलह की स्थिति आ रही है",
+				"description": "अपने चरित्र को कलह की दुनिया में बुलाएँ।",
+				"locked_description": "डिस्कॉर्ड बॉट को एक बार लॉन्च करें।"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
 			}
 		}
 	},

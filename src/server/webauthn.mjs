@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { randomBytes } from 'node:crypto'
 
 import {
 	generateAuthenticationOptions,
@@ -13,6 +14,7 @@ import { ms, msstr } from '../scripts/ms.mjs'
 import {
 	bumpUserFailedLoginAttempts,
 	completeSuccessfulLogin,
+	getAllUserNames,
 	getUserByUsername,
 	verifyPassword,
 } from './auth.mjs'
@@ -43,38 +45,43 @@ on_shutdown(() => {
 })
 
 /**
- * @param {'registration' | 'authentication'} type - 挑战用途：注册或认证。
- * @param {string} username - 用户名。
- * @returns {string} 用于内存 Map 的键。
- */
-function challengeKey(type, username) {
-	return `${type}:${username}`
-}
-
-/**
- * @param {'registration' | 'authentication'} type - 挑战用途：注册或认证。
- * @param {string} username - 用户名。
+ * @param {string} key - Map 键。
  * @param {string} challenge - WebAuthn 挑战（base64url）。
- * @returns {void} 无返回值。
+ * @returns {void}
  */
-function setWebAuthnChallenge(type, username, challenge) {
-	webauthnChallenges.set(challengeKey(type, username), {
+function storeWebAuthnChallenge(key, challenge) {
+	webauthnChallenges.set(key, {
 		challenge,
 		expires: Date.now() + CHALLENGE_TTL_MS,
 	})
 }
 
 /**
- * @param {'registration' | 'authentication'} type - 挑战用途：注册或认证。
- * @param {string} username - 用户名。
- * @returns {{ challenge: string } | null} 未过期则返回挑战，否则为 null。
+ * @param {string} key - Map 键。
+ * @returns {{ challenge: string } | null} 未过期则返回挑战条目，否则为 null。
  */
-function takeWebAuthnChallenge(type, username) {
-	const key = challengeKey(type, username)
+function takeWebAuthnChallengeEntry(key) {
 	const entry = webauthnChallenges.get(key)
 	webauthnChallenges.delete(key)
 	if (!entry || entry.expires < Date.now()) return null
 	return entry
+}
+
+/**
+ * 根据凭据 id 在用户库中查找用户及已存凭据记录（用于无用户名 Passkey 登录）。
+ * 复杂度 O(用户数 × 每用户凭证数)；用户量大时可改为 credentialId → 用户的索引。
+ * @param {string} credentialId - base64url 凭据 id。
+ * @returns {{ user: object, stored: object } | null} 匹配则返回用户与凭据记录，否则为 null。
+ */
+function findUserByWebAuthnCredentialId(credentialId) {
+	if (!credentialId) return null
+	for (const username of getAllUserNames()) {
+		const user = getUserByUsername(username)
+		const creds = user?.auth?.webauthnCredentials || []
+		const stored = creds.find(c => c.id === credentialId)
+		if (stored) return { user, stored }
+	}
+	return null
 }
 
 /**
@@ -92,11 +99,11 @@ export function getWebAuthnRelyingParty(req) {
 /**
  * @param {string} username - 当前登录用户名。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<{ status: number, success: boolean, message?: string, options?: object, rp?: object }>} 注册选项或错误信息。
+ * @returns {Promise<{ status: number, success: boolean, options?: object, rp?: object, i18nKey?: string }>} 注册选项或错误信息。
  */
 export async function webauthnRegistrationBegin(username, req) {
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, success: false, message: 'User not found' }
+	if (!user?.auth) return { status: 404, success: false, i18nKey: 'auth.webauthn.registrationUserNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin, rpName } = getWebAuthnRelyingParty(req)
@@ -112,13 +119,13 @@ export async function webauthnRegistrationBegin(username, req) {
 			transports: c.transports,
 		})),
 		authenticatorSelection: {
-			residentKey: 'preferred',
-			userVerification: 'preferred',
+			residentKey: 'required',
+			userVerification: 'required',
 		},
 		attestationType: 'none',
 	})
 
-	setWebAuthnChallenge('registration', username, options.challenge)
+	storeWebAuthnChallenge(`registration:${username}`, options.challenge)
 	return { status: 200, success: true, options, rp: { rpID, origin } }
 }
 
@@ -127,14 +134,15 @@ export async function webauthnRegistrationBegin(username, req) {
  * @param {object} credentialResponse - 浏览器 `navigator.credentials.create` 的 JSON 结果。
  * @param {string} [nickname] - 用户备注名（可选）。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<{ status: number, success: boolean, message: string }>} HTTP 状态与结果消息。
+ * @returns {Promise<{ status: number, success: boolean, i18nKey?: string }>} HTTP 状态与结果。
  */
 export async function webauthnRegistrationComplete(username, credentialResponse, nickname, req) {
-	const pending = takeWebAuthnChallenge('registration', username)
-	if (!pending) return { status: 401, success: false, message: 'Registration session expired' }
+	const pending = takeWebAuthnChallengeEntry(`registration:${username}`)
+	if (!pending)
+		return { status: 401, success: false, i18nKey: 'auth.webauthn.registrationSessionExpired' }
 
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, success: false, message: 'User not found' }
+	if (!user?.auth) return { status: 404, success: false, i18nKey: 'auth.webauthn.registrationUserNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin } = getWebAuthnRelyingParty(req)
@@ -145,11 +153,11 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 			expectedChallenge: pending.challenge,
 			expectedOrigin: origin,
 			expectedRPID: rpID,
-			requireUserVerification: false,
+			requireUserVerification: true,
 		})
 
 		if (!result.verified || !result.registrationInfo)
-			return { status: 400, success: false, message: 'Passkey registration could not be verified' }
+			return { status: 400, success: false, i18nKey: 'auth.webauthn.registrationVerifyFailed' }
 
 		const { credential, credentialDeviceType, credentialBackedUp } = result.registrationInfo
 		const publicKeyB64 = Buffer.from(credential.publicKey).toString('base64url')
@@ -165,78 +173,55 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 			createdAt: Date.now(),
 		})
 		save_config()
-		return { status: 200, success: true, message: 'Passkey registered successfully' }
+		return { status: 200, success: true }
 	} catch (error) {
 		console.error('Passkey registration verification failed:', error)
-		return { status: 400, success: false, message: error?.message || 'Passkey registration failed' }
+		return { status: 400, success: false, i18nKey: 'auth.webauthn.registrationFailed' }
 	}
 }
 
 /**
- * @param {string} username - 待登录用户名。
+ * Passkey 登录 begin：下发空 allowCredentials，凭据 id 在 complete 阶段反查用户。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<{ status: number, success: boolean, message?: string, options?: object }>} 认证选项或错误信息。
+ * @returns {Promise<{ status: number, success: boolean, options?: object, authSessionToken?: string }>} HTTP 状态与认证选项及会话令牌。
  */
-export async function webauthnLoginBegin(username, req) {
-	const user = getUserByUsername(username)
-	const authData = user?.auth
-	const genericUnavailable = {
-		status: 401,
-		success: false,
-		message: 'Passkey sign-in is not available for this account',
-	}
-
-	if (!authData) return genericUnavailable
-	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
-		const timeLeft = msstr(authData.lockedUntil - Date.now())
-		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
-	}
-
-	const creds = authData.webauthnCredentials || []
-	if (!creds.length) return genericUnavailable
-
+export async function webauthnLoginBegin(req) {
 	const { rpID } = getWebAuthnRelyingParty(req)
 	const options = await generateAuthenticationOptions({
 		rpID,
-		allowCredentials: creds.map(c => ({
-			id: c.id,
-			type: 'public-key',
-			transports: c.transports,
-		})),
-		userVerification: 'preferred',
+		allowCredentials: [],
+		userVerification: 'required',
 	})
 
-	setWebAuthnChallenge('authentication', username, options.challenge)
-	return { status: 200, success: true, options }
+	const authSessionToken = randomBytes(32).toString('hex')
+	storeWebAuthnChallenge(`authentication_discoverable:${authSessionToken}`, options.challenge)
+	return { status: 200, success: true, options, authSessionToken }
 }
 
 /**
+ * Passkey 登录 complete：凭 authSessionToken 取挑战，凭凭据 id 定位用户。
  * @param {object} credentialResponse - 浏览器 `navigator.credentials.get` 的 JSON 结果。
- * @param {string} username - 待登录用户名。
+ * @param {string} authSessionToken - begin 返回的会话令牌。
  * @param {string} deviceId - 客户端设备 ID。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<object>} 与密码登录相同形状的响应（含 accessToken 等）或错误对象。
+ * @returns {Promise<object>} 成功时与 {@link ./auth.mjs} `completeSuccessfulLogin` 同类字段；失败时含 `success: false`、`status`、`i18nKey`（及可选 `i18nParams`）。
  */
-export async function webauthnLoginComplete(credentialResponse, username, deviceId, req) {
-	const pending = takeWebAuthnChallenge('authentication', username)
+export async function webauthnLoginComplete(credentialResponse, authSessionToken, deviceId, req) {
+	const pending = takeWebAuthnChallengeEntry(`authentication_discoverable:${authSessionToken || ''}`)
 	if (!pending)
-		return { status: 401, success: false, message: 'Authentication session expired' }
+		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiSessionExpired' }
 
-	const user = getUserByUsername(username)
-	if (!user?.auth)
-		return { status: 401, success: false, message: 'Passkey sign-in is not available for this account' }
+	const credId = credentialResponse?.id
+	const found = findUserByWebAuthnCredentialId(credId)
+	if (!found)
+		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiUnknownPasskey' }
 
+	const { user, stored } = found
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
 		const timeLeft = msstr(authData.lockedUntil - Date.now())
-		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
+		return { status: 403, success: false, i18nKey: 'auth.error.accountLockedRetry', i18nParams: { timeLeft } }
 	}
-
-	const creds = authData.webauthnCredentials || []
-	const credId = credentialResponse?.id
-	const stored = creds.find(c => c.id === credId)
-	if (!stored)
-		return { status: 401, success: false, message: 'Unknown passkey' }
 
 	const { rpID, origin } = getWebAuthnRelyingParty(req)
 	const credential = {
@@ -253,13 +238,13 @@ export async function webauthnLoginComplete(credentialResponse, username, device
 			expectedOrigin: origin,
 			expectedRPID: rpID,
 			credential,
-			requireUserVerification: false,
+			requireUserVerification: true,
 		})
 
 		if (!result.verified) {
 			const bump = bumpUserFailedLoginAttempts(user)
 			if (bump.locked) return bump.response
-			return { status: 401, success: false, message: 'Passkey verification failed' }
+			return { status: 401, success: false, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
 		}
 
 		stored.counter = result.authenticationInfo.newCounter
@@ -270,7 +255,7 @@ export async function webauthnLoginComplete(credentialResponse, username, device
 		console.error('Passkey authentication verification failed:', error)
 		const bump = bumpUserFailedLoginAttempts(user)
 		if (bump.locked) return bump.response
-		return { status: 401, success: false, message: error?.message || 'Passkey verification failed' }
+		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
 	}
 }
 
@@ -293,19 +278,21 @@ export function listWebAuthnCredentials(username) {
  * @param {string} username - 用户名。
  * @param {string} credentialId - 凭据 ID（base64url）。
  * @param {string} password - 账户密码（校验用）。
- * @returns {Promise<{ success: boolean, message: string }>} 是否成功及说明。
+ * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 是否成功或错误键。
  */
 export async function removeWebAuthnCredential(username, credentialId, password) {
 	const user = getUserByUsername(username)
-	if (!user?.auth?.webauthnCredentials) return { success: false, message: 'User not found' }
+	if (!user?.auth?.webauthnCredentials)
+		return { success: false, i18nKey: 'auth.webauthn.removeUserNotFound', httpStatus: 400 }
 
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, message: 'Invalid password' }
+		return { success: false, i18nKey: 'auth.webauthn.removeInvalidPassword', httpStatus: 401 }
 
 	const idx = user.auth.webauthnCredentials.findIndex(c => c.id === credentialId)
-	if (idx === -1) return { success: false, message: 'Passkey not found' }
+	if (idx === -1)
+		return { success: false, i18nKey: 'auth.webauthn.removePasskeyNotFound', httpStatus: 400 }
 
 	user.auth.webauthnCredentials.splice(idx, 1)
 	save_config()
-	return { success: true, message: 'Passkey removed' }
+	return { success: true }
 }

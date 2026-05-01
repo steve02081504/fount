@@ -33,7 +33,8 @@ async function startTelegrafBot(botConfig, char) {
 
 	// 启动bot
 	bot.launch() // Telegraf v4 的启动方式
-	console.infoI18n('fountConsole.telegrambot.botStarted', {
+	console.infoI18n('fountConsole.botStarted', {
+		platform: 'Telegram',
 		botusername: me.username,
 		charname: botConfig.char
 	})

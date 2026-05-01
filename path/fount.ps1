@@ -697,6 +697,32 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
+function Save-FountGitUncommittedBackup {
+	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
+	if (-not (Test-Path -LiteralPath "$FOUNT_DIR/.git")) { return }
+	$status = git -C "$FOUNT_DIR" status --porcelain
+	if (-not $status) { return }
+
+	$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
+	$diffFilePath = Join-Path -Path $env:TEMP -ChildPath "fount-local-changes-diff_$timestamp.diff"
+
+	$headExists = $false
+	git -C "$FOUNT_DIR" rev-parse --verify HEAD 2>$null | Out-Null
+	if ($LASTEXITCODE -eq 0) { $headExists = $true }
+
+	git -C "$FOUNT_DIR" add -A 2>$null | Out-Null
+	git -C "$FOUNT_DIR" diff --cached 2>$null | Out-File -FilePath $diffFilePath -Encoding utf8
+	if ($headExists) {
+		git -C "$FOUNT_DIR" reset HEAD 2>$null | Out-Null
+	}
+	else {
+		git -C "$FOUNT_DIR" reset 2>$null | Out-Null
+	}
+
+	Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
+	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green
+}
+
 function fount_upgrade {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
@@ -713,16 +739,7 @@ function fount_upgrade {
 		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
 		git -C "$FOUNT_DIR" fetch origin master --depth 1
 		if ($LastExitCode) { Write-Error (Get-I18n -key 'git.fetchFailed'); return }
-		$diffOutput = git -C "$FOUNT_DIR" diff "origin/master"
-		if ($diffOutput) {
-			Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
-			$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
-			$diffFileName = "fount-local-changes-diff_$timestamp.diff"
-			$diffFilePath = Join-Path -Path $env:TEMP -ChildPath $diffFileName
-			$diffOutput | Out-File -FilePath $diffFilePath -Encoding utf8
-			Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{path = '' }) -ForegroundColor Green -NoNewline
-			Write-Host $diffFilePath -ForegroundColor Cyan
-		}
+		Save-FountGitUncommittedBackup
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
 	}
@@ -736,6 +753,7 @@ function fount_upgrade {
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
 		if ($currentBranch -eq 'HEAD') {
 			Write-Host (Get-I18n -key 'git.notOnBranch')
+			Save-FountGitUncommittedBackup
 			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" checkout master
@@ -751,27 +769,28 @@ function fount_upgrade {
 		$localCommit = git -C "$FOUNT_DIR" rev-parse $currentBranch
 		$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
 		$status = git -C "$FOUNT_DIR" status --porcelain
-		if ($status) {
-			Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory')
-		}
 
 		if ($localCommit -ne $remoteCommit) {
 			if ($mergeBase -eq $localCommit) {
 				Write-Host (Get-I18n -key 'git.updatingFromRemote')
+				if ($status) { Save-FountGitUncommittedBackup }
 				git -C "$FOUNT_DIR" fetch origin
 				git -C "$FOUNT_DIR" reset --hard $remoteBranch
 			}
 			elseif ($mergeBase -eq $remoteCommit) {
 				Write-Host (Get-I18n -key 'git.localBranchAhead')
+				if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 			}
 			else {
 				Write-Host (Get-I18n -key 'git.branchesDiverged')
+				if ($status) { Save-FountGitUncommittedBackup }
 				git -C "$FOUNT_DIR" fetch origin
 				git -C "$FOUNT_DIR" reset --hard $remoteBranch
 			}
 		}
 		else {
 			Write-Host (Get-I18n -key 'git.alreadyUpToDate')
+			if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 		}
 	}
 }
@@ -875,6 +894,73 @@ function Assert-FountDirWritable {
 		}
 		exit 1
 	}
+}
+
+function Invoke-FountInitForce([string]$FountDir) {
+	Test-PWSHModule PowerRunAsSystem
+	Test-PWSHModule LockingProcessKiller
+	Import-Module PowerRunAsSystem -ErrorAction Stop
+	$lckBase     = (Get-Module LockingProcessKiller -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).ModuleBase
+	$denoInfo    = try { deno info --json 2>$null | ConvertFrom-Json } catch { $null }
+	$resolve     = { try { (Get-Item $_ -ErrorAction Stop).FullName } catch { $_ } }
+	$denoDirs    = if ($denoInfo) {
+		$all = $denoInfo.PSObject.Properties.Value |
+			Where-Object { $_ -is [string] -and [IO.Path]::IsPathRooted($_) -and (Test-Path $_) } |
+			ForEach-Object $resolve | Select-Object -Unique
+		# 去掉冗余子目录：若已有父目录在列表中则跳过
+		$all | Where-Object {
+			$p = $_.ToLower().TrimEnd('\') + '\'
+			-not ($all | Where-Object { $q = $_.ToLower().TrimEnd('\') + '\'; $q -ne $p -and $p.StartsWith($q) })
+		}
+	} else { @("$env:LOCALAPPDATA\deno") }
+	$dirFull     = & $resolve $FountDir
+	$profileFull = & $resolve $env:USERPROFILE
+	$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+	$pathEnv     = $env:PATH  -replace "'", "''"
+	$lckEsc      = $lckBase   -replace "'", "''"
+	$dirEsc      = $dirFull   -replace "'", "''"
+	$ps1Esc      = (Join-Path $dirFull 'path\fount.ps1') -replace "'", "''"
+	$userEsc     = $currentUser  -replace "'", "''"
+	$profileEsc  = $profileFull  -replace "'", "''"
+	$denoDirsJoined = ($denoDirs | ForEach-Object { $_ -replace "'","''" }) -join '|'
+	$cmd = @"
+`$env:PATH = '$pathEnv'
+`$explorerWas = [bool](Get-Process -Name explorer -ErrorAction SilentlyContinue)
+Import-Module '$lckEsc'
+`$targets = (@('$dirEsc') + ('$denoDirsJoined' -split '\|')) | Where-Object { `$_ } | Select-Object -Unique
+`$userProfile = '$profileEsc'
+
+Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
+foreach (`$t in `$targets) {
+	if (Test-Path `$t) {
+		icacls "`$t" /setowner "NT AUTHORITY\SYSTEM" /T /C /Q
+		icacls "`$t" /reset /T /C /Q
+		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
+	}
+}
+
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File '$ps1Esc' init
+
+Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
+foreach (`$t in `$targets) {
+	if (Test-Path `$t) {
+		icacls "`$t" /reset /T /C /Q
+		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
+		if (`$t.ToLower().StartsWith(`$userProfile.ToLower())) {
+			icacls "`$t" /setowner '$userEsc' /T /C /Q
+		}
+	}
+}
+
+if (`$explorerWas -and -not (Get-Process -Name explorer -ErrorAction SilentlyContinue)) { Start-Process explorer.exe }
+"@
+	$b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
+	Invoke-SystemCommand -Application "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $b64"
+}
+
+if ($args[0] -eq 'init' -and $args[1] -eq 'force') {
+	Invoke-FountInitForce -FountDir $FOUNT_DIR
+	exit $LastExitCode
 }
 
 if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
@@ -1008,6 +1094,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
 			git -C "$FOUNT_DIR" config core.autocrlf false
+			Save-FountGitUncommittedBackup
 			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" gc --aggressive --prune=now --force

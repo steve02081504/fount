@@ -51,6 +51,7 @@
 				"localAhead": "Lokale branch loopt voor op externe branch. Bijwerken niet nodig.",
 				"noUpstream": "Geen upstream branch geconfigureerd voor branch '${currentBranch}', updatecontrole overgeslagen.",
 				"dirtyWorkingDirectory": "De werkdirectory is niet schoon. Commit of stash je wijzigingen voordat je bijwerkt.",
+				"uncommittedBackedUpTo": "Van niet-vastgelegde wijzigingen is een back-up gemaakt naar: ${path}",
 				"diverged": "Lokale en externe branches zijn afgeweken. Geforceerd bijwerken...",
 				"updateFailed": "Bijwerken van component vanuit externe repository mislukt: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "Personage ${charname} is ingelogd op Discord Bot ${botusername}"
-		},
+		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "Wachtwoord is te zwak.",
 			"accountAlreadyExists": "Account bestaat al",
 			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
-			"powError": "PoW-verificatiefout"
+			"powError": "PoW-verificatiefout",
+			"invalidCredentials": "Ongeldige gebruikersnaam of wachtwoord.",
+			"accountLockedRetry": "Account is vergrendeld. Probeer het opnieuw na ${timeLeft}.",
+			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
+			"powValidationFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
+			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
 		},
 		"webauthn": {
 			"loginButton": "Aanmelden met beveiligingssleutel of passkey",
-			"errorNoUsername": "Vul uw gebruikersnaam in voordat u passkey gebruikt.",
 			"errorLoadLibrary": "Kan de WebAuthn-hulpbibliotheek niet laden. Controleer het netwerk en probeer het opnieuw.",
-			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik."
+			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik.",
+			"errorSessionMissing": "De server heeft geen geldige inlogsessie geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
+			"errorBadBeginResponse": "De server heeft ongeldige inloggegevens geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
+			"errorCredentialRequired": "Geldige gegevens voor de toegangssleutel (Passkey) ontbreken.",
+			"errorAuthSessionRequired": "Het inlogsessietoken ontbreekt. Vernieuw de pagina en probeer het opnieuw.",
+			"apiSessionExpired": "De inlogsessie met de toegangssleutel is verlopen. Probeer het opnieuw.",
+			"apiUnknownPasskey": "De toegangssleutel wordt niet herkend. Gebruik een gebonden sleutel.",
+			"apiPasskeyVerificationFailed": "Verificatie van de toegangssleutel mislukt. Probeer het opnieuw.",
+			"registrationUserNotFound": "Gebruikersaccount niet gevonden.",
+			"registrationSessionExpired": "De bindingssessie is verlopen. Probeer het opnieuw vanaf het begin.",
+			"registrationVerifyFailed": "Kan de verificatie van de toegangssleutelregistratie niet voltooien.",
+			"registrationFailed": "Registratie van de toegangssleutel mislukt. Probeer het opnieuw.",
+			"removeUserNotFound": "Gebruikers- of inloggegevens niet gevonden.",
+			"removeInvalidPassword": "Verkeerd wachtwoord.",
+			"removePasskeyNotFound": "De toegangssleutel is niet gevonden."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
 			"transfer_error": "Er is een fout opgetreden bij het proberen uw inloggegevens over te dragen:\n${error}\nU kunt doorgaan, maar kunt geen inloggegevens ophalen.",
-			"no_credentials": "Geen opgeslagen inloggegevens gevonden.\nMeld u opnieuw aan vanuit fount om uw inloggegevens bij te werken, of klik op de onderstaande knop om zonder inloggegevens door te gaan naar de doelpagina.",
 			"missing_params": "Er ontbreekt een vereiste parameter in de link.",
 			"buttons": {
 				"ignore": "Negeer en ga door",
@@ -865,6 +878,10 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
+			"reasoningDetailsTitle": "Redeneringsproces",
+			"logprobsNotApplicable": "niet van toepassing",
+			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
+			"logprobsMetricsFooter": "Vertraging eerste woord: ${ttft} | Tijd: ${time} | Token: ${tokens} | Snelheid: ${speed}",
 			"noReplyContent": "(Geen antwoordinhoud)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "Gebruikersinstellingen",
 		"PageTitle": "Gebruikersinstellingen",
-		"description": "Let op de details van uw bronidentiteit. Beheer uw profiel, beveilig uw toegang en bekijk aangesloten apparaten. Een rustig toevluchtsoord voor uw rekening.",
+		"description": "Verzorg de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk gekoppelde apparaten. Een rustig toevluchtsoord voor uw account.",
+		"shell": {
+			"unauthorized": "Inloggen vereist.",
+			"responseNotJson": "De server heeft inhoud geretourneerd die niet kon worden verwerkt.",
+			"unexpectedError": "Het verzoek is mislukt."
+		},
+		"errors": {
+			"accountNotFound": "Account niet gevonden."
+		},
 		"userInfo": {
 			"title": "Gebruikersinformatie",
 			"usernameLabel": "Gebruikersnaam:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "kopieer pad"
 			},
-			"copiedAlert": "Pad gekopieerd naar klembord!"
+			"copiedAlert": "Pad gekopieerd naar klembord!",
+			"copyPathFailed": "Kan pad naar klembord niet kopiëren."
 		},
 		"changePassword": {
 			"title": "Wachtwoord wijzigen",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
 			"submitButton": "Wachtwoord wijzigen",
 			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
-			"success": "Wachtwoord succesvol gewijzigd."
+			"success": "Wachtwoord succesvol gewijzigd.",
+			"missingFields": "Vul uw huidige wachtwoord en uw nieuwe wachtwoord in.",
+			"invalidCurrent": "Het huidige wachtwoord is onjuist."
 		},
 		"renameUser": {
 			"title": "Gebruiker hernoemen",
 			"newUsernameLabel": "Nieuwe gebruikersnaam:",
 			"submitButton": "Gebruiker hernoemen",
 			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
-			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd."
+			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd.",
+			"missingParams": "Vul de nieuwe gebruikersnaam en het wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist.",
+			"mustDiffer": "De nieuwe gebruikersnaam moet anders zijn dan de huidige gebruikersnaam.",
+			"taken": "Deze gebruikersnaam is al in gebruik.",
+			"moveFailed": "Kan de naam van de gebruikersgegevensmap niet wijzigen: ${detail}. De oorspronkelijke gebruikersnaam is hersteld."
 		},
 		"passkeys": {
 			"title": "Beveiligingssleutels en passkeys",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "Beveiligingssleutel verwijderd.",
 			"addSuccess": "Beveiligingssleutel toegevoegd.",
 			"errorLoadLibrary": "Kan de WebAuthn-bibliotheek niet laden.",
-			"errorCancelled": "Toevoegen geannuleerd."
+			"errorCancelled": "Toevoegen geannuleerd.",
+			"apiInvalidPassword": "Verkeerd wachtwoord.",
+			"apiMissingCredential": "Geldige toegangscodegegevens ontbreken.",
+			"apiRemoveParamsRequired": "Geef de inloggegevens en het wachtwoord op die u wilt verwijderen."
 		},
 		"userDevices": {
 			"title": "Gebruikersapparaten/sessies",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "Intrekken",
 			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
 			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
+			"revokeMissingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"listNotFound": "Apparaatlijst niet gevonden.",
+			"deviceNotFound": "Het apparaat of de sessie is niet gevonden.",
 			"refreshButton": {
 				"title": "Lijst vernieuwen"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "Er werden geen API-sleutels gevonden.",
 			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
 			"neverUsed": "Nooit gebruikt",
+			"noKeysForUser": "API-sleutelgegevens niet gevonden.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"keyNotFound": "De API-sleutel is niet gevonden.",
+			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
+			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
 			"revokeButton": "Herroepen",
 			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
 			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "Kopieer nieuwe API-sleutel"
 			},
-			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
+			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
+			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
 		},
 		"logout": {
 			"title": "Uitloggen",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
 			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
 			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
-			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd."
+			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd.",
+			"missingPassword": "Voer uw wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist."
 		},
 		"passwordConfirm": {
 			"title": "Actie bevestigen",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "Kies een bot"
-		},
-		"botSearch": {
-			"placeholder": "Bot zoeken..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Selecteer een rol"
-		},
-		"charSearch": {
-			"placeholder": "Personages zoeken..."
-		},
-		"configCard": {
-			"title": "Botconfiguratie",
-			"labels": {
-				"character": "Gekoppeld personage",
-				"apiKey": "Discord API-sleutel",
-				"config": "Configuratie"
-			},
-			"charSelectPlaceholder": "Kies personage",
-			"apiKeyInput": {
-				"placeholder": "Voer API-sleutel in"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Schakel tussen het tonen van API-sleutels"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API-sleutel tonen/verbergen"
-			},
-			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Voer een naam in voor de nieuwe Bot:"
-		},
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
-		"alerts": {
-			"configSaved": "Configuratie succesvol opgeslagen",
-			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"httpError": "HTTP-fout",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Op weg naar onenigheid",
-				"description": "Roep je personage op in de wereld van Discord.",
-				"locked_description": "Start de Discord Bot één keer."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Beheer Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot configureren"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"description": "Laat je favoriete karakters de directe golven van Telegram doorkruisen. Configureer hun digitale aanwezigheid, beheer hun gesprekken en breid hun bereik uit naar deze levendige berichtenwereld.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Configureer Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "WeChat-bot",
+		"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
+		"cardTitle": "WeChat-bot",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bots zoeken…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Kies een rol"
+		},
+		"charSearch": {
+			"placeholder": "Rollen zoeken…"
+		},
+		"configCard": {
+			"title": "Botinstellingen",
+			"labels": {
+				"character": "Gekoppelde rol",
+				"apiBaseUrl": "Basis-URL WeChat-kanaal-API",
+				"botToken": "iLink Bot-token",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Selecteer rol",
+			"apiBaseUrlInput": {
+				"placeholder": "Leeg laten voor standaard https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-token na aanmelding"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Token tonen of verbergen"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Token tonen of verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Naam voor de nieuwe bot:"
+		},
+		"buttons": {
+			"newBot": "Nieuw",
+			"deleteBot": "Verwijderen"
+		},
+		"alerts": {
+			"configSaved": "Opgeslagen",
+			"botExists": "Er bestaat al een bot met de naam «${botname}». Kies een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je die weggooien?",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Pagina toch verlaten?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Zet me aan het werk!",
+				"description": "Praat met je fount-personage op WeChat.",
+				"locked_description": "Start de WeChat-bot een keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "WeChat-bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "WeChat-bot instellen"
+			}
+		},
+		"qrLogin": {
+			"hint": "Scan de QR-code hieronder met WeChat om in te loggen.",
+			"button": "Scannen om in te loggen",
+			"scanPrompt": "Open WeChat en scan de QR-code",
+			"waiting": "QR-code laden…",
+			"scanned": "Gescand — bevestig op je telefoon",
+			"success": "WeChat gekoppeld. Instellingen opgeslagen — je kunt de bot nu starten.",
+			"needBot": "Kies eerst een bot uit de lijst of maak er een met «Nieuw»."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bot zoeken..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecteer een rol"
+		},
+		"charSearch": {
+			"placeholder": "Personages zoeken..."
+		},
+		"configCard": {
+			"title": "Botconfiguratie",
+			"labels": {
+				"character": "Gekoppeld personage",
+				"apiKey": "Discord API-sleutel",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Kies personage",
+			"apiKeyInput": {
+				"placeholder": "Voer API-sleutel in"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-sleutel tonen/verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Configuratie opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Voer een naam in voor de nieuwe Bot:"
+		},
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
+		"alerts": {
+			"configSaved": "Configuratie succesvol opgeslagen",
+			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Op weg naar onenigheid",
+				"description": "Roep je personage op in de wereld van Discord.",
+				"locked_description": "Start de Discord Bot één keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Beheer Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot configureren"
 			}
 		}
 	},

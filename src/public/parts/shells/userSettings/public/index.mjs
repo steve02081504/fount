@@ -8,10 +8,26 @@ import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 
 import {
-	getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice,
-	getEditorCommandConfig, saveEditorCommandConfig, openEditor,
+	isPasswordConfirmationDialogDismissed,
+	showToastForApiPayload,
+} from './src/apiFeedback.mjs'
+import {
+	getUserStats,
+	changePassword,
+	renameUser,
+	deleteAccount,
+	getDevices,
+	revokeDevice,
+	getEditorCommandConfig,
+	saveEditorCommandConfig,
+	openEditor,
 } from './src/endpoints.mjs'
 import { installPasskeysSection, loadPasskeysList } from './src/passkeysSection.mjs'
+import {
+	cacheVerifiedPassword,
+	invalidateCachedPassword,
+	requestPasswordConfirmation,
+} from './src/passwordConfirmationRequest.mjs'
 import { escapeAttr } from './src/uiEscape.mjs'
 
 usingTemplates('/parts/shells:userSettings/templates')
@@ -31,10 +47,6 @@ const noDevicesText = document.getElementById('noDevicesText')
 const refreshDevicesBtn = document.getElementById('refreshDevicesBtn')
 const logoutBtn = document.getElementById('logoutBtn')
 const deleteAccountBtn = document.getElementById('deleteAccountBtn')
-const passwordConfirmationModal = document.getElementById('passwordConfirmationModal')
-const confirmationPasswordInput = document.getElementById('confirmationPassword')
-const confirmPasswordBtn = document.getElementById('confirmPasswordBtn')
-const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
 // API Key elements
 const createApiKeyForm = document.getElementById('createApiKeyForm')
 const apiKeyList = document.getElementById('apiKeyList')
@@ -57,67 +69,6 @@ const editorTestLine = document.getElementById('editorTestLine')
 const editorTestColumn = document.getElementById('editorTestColumn')
 const testEditorCommandBtn = document.getElementById('testEditorCommandBtn')
 
-let passwordConfirmationContext = { resolve: null, reject: null }
-let cachedPassword = null // 用于短期缓存密码
-let passwordCacheTimeoutId = null // 用于存储 setTimeout 的 ID
-
-const PASSWORD_CACHE_DURATION = 3 * 60 * 1000 // 3分钟
-
-/**
- * 请求密码确认。
- * @returns {Promise<string>} - 确认的密码。
- */
-function requestPasswordConfirmation() {
-	return new Promise((resolve, reject) => {
-		// 检查是否有缓存的密码
-		if (cachedPassword) {
-			console.log('Using cached password.')
-			resolve(cachedPassword)
-			return
-		}
-
-		passwordConfirmationContext = { resolve, reject }
-		confirmationPasswordInput.value = ''
-		passwordConfirmationModal.showModal()
-		confirmationPasswordInput.focus()
-	})
-}
-
-confirmPasswordBtn.addEventListener('click', () => {
-	const password = confirmationPasswordInput.value
-	passwordConfirmationContext.resolve?.(password)
-	// 缓存密码
-	cachedPassword = password
-
-	// 清除之前的定时器（如果存在）
-	if (passwordCacheTimeoutId)
-		clearTimeout(passwordCacheTimeoutId)
-
-	// 设置新的定时器，在3分钟后清除缓存密码
-	passwordCacheTimeoutId = setTimeout(() => {
-		cachedPassword = null
-		passwordCacheTimeoutId = null
-	}, PASSWORD_CACHE_DURATION)
-
-	passwordConfirmationModal.close()
-})
-
-cancelPasswordBtn.addEventListener('click', () => {
-	passwordConfirmationContext.reject?.(Object.assign(new Error('Password confirmation cancelled by user.'), {
-		name: 'PasswordConfirmationCancelledError'
-	}))
-	passwordConfirmationModal.close()
-})
-
-passwordConfirmationModal.addEventListener('close', () => {
-	if (passwordConfirmationModal.returnValue !== 'confirmed_via_button_logic_which_is_not_set')
-		passwordConfirmationContext.reject?.(Object.assign(new Error('Password confirmation dialog closed.'), {
-			name: 'PasswordConfirmationClosedError'
-		}))
-
-	passwordConfirmationContext = { resolve: null, reject: null }
-})
-
 /**
  * 加载用户信息。
  * @returns {Promise<void>}
@@ -125,7 +76,6 @@ passwordConfirmationModal.addEventListener('close', () => {
 async function loadUserInfo() {
 	try {
 		const stats = await getUserStats()
-		if (!stats.success) throw new Error(stats.message || geti18n('userSettings.apiError', { message: 'Failed to load user info' }))
 
 		userInfoUsername.textContent = stats.username
 		userInfoCreationDate.textContent = new Date(stats.creationDate).toLocaleDateString()
@@ -133,7 +83,7 @@ async function loadUserInfo() {
 		userInfoFolderPath.textContent = stats.folderPath
 	}
 	catch (error) {
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 }
 
@@ -143,7 +93,7 @@ copyFolderPathBtn.addEventListener('click', async () => {
 		showToastI18n('success', 'userSettings.userInfo.copiedAlert')
 	}
 	catch (err) {
-		showToastI18n('error', 'userSettings.generalError', { message: err?.message || 'Failed to copy path.' })
+		showToastI18n('error', 'userSettings.userInfo.copyPathFailed')
 	}
 })
 
@@ -158,14 +108,13 @@ changePasswordForm.addEventListener('submit', async event => {
 		return showToastI18n('error', 'userSettings.changePassword.errorMismatch')
 
 	try {
-		const result = await changePassword(currentPassword, newPassword)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Password change failed' }))
+		await changePassword(currentPassword, newPassword)
 
 		showToastI18n('success', 'userSettings.changePassword.success')
 		form.reset()
 	}
 	catch (error) {
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 })
 
@@ -179,16 +128,17 @@ renameUserForm.addEventListener('submit', async event => {
 
 	try {
 		const password = await requestPasswordConfirmation()
-		const result = await renameUser(newUsername, password)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Rename user failed' }))
+		await renameUser(newUsername, password)
+		cacheVerifiedPassword(password)
 
 		showToastI18n('success', 'userSettings.renameUser.success', { newUsername })
 		form.reset()
 		setTimeout(() => window.location.href = '/login', 2000)
 	}
 	catch (error) {
-		if (error.message.includes('cancelled') || error.message.includes('closed')) return
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		invalidateCachedPassword()
+		if (isPasswordConfirmationDialogDismissed(error)) return
+		showToastForApiPayload('error', error)
 	}
 })
 
@@ -202,7 +152,6 @@ async function loadAndDisplayDevices() {
 	try {
 		deviceList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 		const result = await getDevices()
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
 		deviceList.replaceChildren()
 		if (!result.devices.length) {
@@ -231,13 +180,14 @@ async function loadAndDisplayDevices() {
 				revokeButton.addEventListener('click', async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
-						const revokeResult = await revokeDevice(device.jti, password)
-						if (!revokeResult.success) throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'Revoke failed' }))
+						await revokeDevice(device.jti, password)
+						cacheVerifiedPassword(password)
 						showToastI18n('success', 'userSettings.userDevices.revokeSuccess')
 						loadAndDisplayDevices()
 					} catch (error) {
-						if (error.message.includes('cancelled') || error.message.includes('closed')) return
-						showToastI18n('error', 'userSettings.generalError', { message: error.message })
+						invalidateCachedPassword()
+						if (isPasswordConfirmationDialogDismissed(error)) return
+						showToastForApiPayload('error', error)
 					}
 				})
 
@@ -247,7 +197,7 @@ async function loadAndDisplayDevices() {
 	catch (error) {
 		deviceList.replaceChildren()
 		noDevicesText.classList.remove('hidden')
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 }
 
@@ -257,8 +207,7 @@ refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
 logoutBtn.addEventListener('click', async () => {
 	if (!confirmI18n('userSettings.logout.confirmMessage')) return
 	try {
-		const result = await logout() // 调用新的API端点
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Logout failed' }))
+		await logout()
 
 		// 登出成功，显示短暂消息并重定向
 		showToastI18n('success', 'userSettings.logout.successMessage', {}, 2000)
@@ -267,7 +216,7 @@ logoutBtn.addEventListener('click', async () => {
 		}, 1500) // 延迟一点以便用户看到消息
 	}
 	catch (error) {
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 })
 
@@ -284,15 +233,16 @@ deleteAccountBtn.addEventListener('click', async () => {
 
 	try {
 		const password = await requestPasswordConfirmation()
-		const result = await deleteAccount(password)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Delete account failed' }))
+		await deleteAccount(password)
+		cacheVerifiedPassword(password)
 
 		showToastI18n('success', 'userSettings.deleteAccount.success')
 		setTimeout(() => window.location.href = '/login', 3000)
 	}
 	catch (error) {
-		if (error.message.includes('cancelled') || error.message.includes('closed')) return
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		invalidateCachedPassword()
+		if (isPasswordConfirmationDialogDismissed(error)) return
+		showToastForApiPayload('error', error)
 	}
 })
 
@@ -306,7 +256,6 @@ async function loadAndDisplayApiKeys() {
 	try {
 		apiKeyList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
 		const result = await getApiKeys()
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 
 		apiKeyList.replaceChildren()
 		if (!result.apiKeys.length) {
@@ -329,15 +278,15 @@ async function loadAndDisplayApiKeys() {
 				revokeButton.addEventListener('click', async () => {
 					if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
-						const revokeResult = await revokeApiKey(key.jti, password)
-						if (!revokeResult.success)
-							throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
+						await revokeApiKey(key.jti, password)
+						cacheVerifiedPassword(password)
 
 						showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
 						loadAndDisplayApiKeys()
 					} catch (error) {
-						if (error.message.includes('cancelled') || error.message.includes('closed')) return
-						showToastI18n('error', 'userSettings.generalError', { message: error.message })
+						invalidateCachedPassword()
+						if (isPasswordConfirmationDialogDismissed(error)) return
+						showToastForApiPayload('error', error)
 					}
 				})
 
@@ -347,7 +296,7 @@ async function loadAndDisplayApiKeys() {
 	catch (error) {
 		apiKeyList.replaceChildren()
 		noApiKeysText.classList.remove('hidden')
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 }
 
@@ -361,7 +310,6 @@ createApiKeyForm.addEventListener('submit', async (event) => {
 
 	try {
 		const result = await createApiKey(description)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Create API key failed' }))
 
 		newApiKeyInput.value = result.apiKey
 		newApiKeyModal.showModal()
@@ -370,7 +318,7 @@ createApiKeyForm.addEventListener('submit', async (event) => {
 		loadAndDisplayApiKeys()
 	}
 	catch (error) {
-		showToastI18n('error', 'userSettings.generalError', { message: error.message })
+		showToastForApiPayload('error', error)
 	}
 })
 
@@ -381,7 +329,7 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
 	}
 	catch (err) {
 		console.error('Failed to copy API key: ', err)
-		showToastI18n('error', 'userSettings.generalError', { message: err?.message || 'Failed to copy API key.' })
+		showToastI18n('error', 'userSettings.newApiKey.copyKeyFailed')
 	}
 })
 
@@ -464,27 +412,16 @@ async function initializeApp() {
 	await initTranslations('userSettings')
 	applyTheme()
 
-	const passkeysDeps = {
-		passkeyList,
-		noPasskeysText,
-		refreshPasskeysBtn,
-		addPasskeyForm,
-		newPasskeyNameInput,
-		requestPasswordConfirmation,
-		confirmI18n,
-		geti18n,
-		showToastI18n,
-	}
-	installPasskeysSection(passkeysDeps)
+	installPasskeysSection()
 
 	await loadUserInfo()
 	await loadAndDisplayDevices()
-	await loadPasskeysList(passkeysDeps)
+	await loadPasskeysList()
 	await loadAndDisplayApiKeys()
 	await loadEditorCommandConfigUI()
 }
 
 initializeApp().catch(error => {
 	console.error('Error initializing User Settings shell:', error)
-	showToastI18n('error', 'userSettings.generalError', { message: 'Initialization failed: ' + error.message })
+	showToastForApiPayload('error', error)
 })

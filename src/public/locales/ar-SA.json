@@ -51,6 +51,7 @@
 				"localAhead": "الفرع المحلي متقدم على الفرع البعيد. لا حاجة للتحديث.",
 				"noUpstream": "لا يوجد فرع تتبع مهيأ للفرع '${currentBranch}'، تم تخطي التحقق من التحديثات.",
 				"dirtyWorkingDirectory": "دليل العمل غير نظيف. يرجى تخزين تغييراتك أو تثبيتها قبل التحديث.",
+				"uncommittedBackedUpTo": "تم عمل نسخة احتياطية من التغييرات غير الملتزم بها إلى: ${path}",
 				"diverged": "لقد تباعد الفرعان المحلي والبعيد. جاري التحديث بالقوة...",
 				"updateFailed": "فشل تحديث المكون من المستودع البعيد: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت الديسكورد ${botusername}"
-		},
+		"botStarted": "تم تسجيل دخول الشخصية ${charname} ${platform} على بوت ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "عنوان URL:البروتوكول الموجود",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "قوة كلمة المرور ضعيفة جدًا.",
 			"accountAlreadyExists": "الحساب موجود بالفعل",
 			"powNotSolved": "يرجى إكمال التحقق من إثبات العمل (PoW) أولاً",
-			"powError": "خطأ في التحقق من إثبات العمل (PoW)"
+			"powError": "خطأ في التحقق من إثبات العمل (PoW)",
+			"invalidCredentials": "اسم المستخدم أو كلمة المرور غير صالحة.",
+			"accountLockedRetry": "تم قفل الحساب، يرجى المحاولة مرة أخرى بعد ${timeLeft}.",
+			"accountLockedAttempts": "تم قفل الحساب مؤقتًا بسبب محاولات تسجيل دخول فاشلة كثيرة.",
+			"powValidationFailed": "فشل التحقق الأمني، يرجى المحاولة مرة أخرى.",
+			"apiErrorBodyUnreadable": "قام الخادم بإرجاع معلومات لا يمكن تحليلها. يرجى المحاولة مرة أخرى لاحقا."
 		},
 		"webauthn": {
 			"loginButton": "قم بتسجيل الدخول باستخدام مفتاح الأمان / مفتاح المرور",
-			"errorNoUsername": "يرجى ملء اسم المستخدم الخاص بك قبل استخدام مفتاح المرور.",
 			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn المساعدة، يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
-			"errorCancelled": "تم إلغاء مفتاح الأمان أو لم يتم التصريح باستخدامه."
+			"errorCancelled": "تم إلغاء مفتاح الأمان أو لم يتم التصريح باستخدامه.",
+			"errorSessionMissing": "لم يُرجع الخادم جلسة تسجيل دخول صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+			"errorBadBeginResponse": "قام الخادم بإرجاع بيانات تسجيل دخول غير صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+			"errorCredentialRequired": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
+			"errorAuthSessionRequired": "رمز جلسة تسجيل الدخول مفقود، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+			"apiSessionExpired": "انتهت صلاحية جلسة تسجيل الدخول بمفتاح المرور، يرجى المحاولة مرة أخرى.",
+			"apiUnknownPasskey": "لم يتم التعرف على مفتاح المرور، يرجى استخدام مفتاح مرتبط.",
+			"apiPasskeyVerificationFailed": "فشل التحقق من مفتاح المرور، يرجى المحاولة مرة أخرى.",
+			"registrationUserNotFound": "لم يتم العثور على حساب المستخدم.",
+			"registrationSessionExpired": "لقد انتهت صلاحية الجلسة الملزمة، يرجى المحاولة مرة أخرى من البداية.",
+			"registrationVerifyFailed": "غير قادر على إكمال التحقق من تسجيل مفتاح المرور.",
+			"registrationFailed": "فشل تسجيل مفتاح المرور، يرجى المحاولة مرة أخرى.",
+			"removeUserNotFound": "لم يتم العثور على بيانات المستخدم أو بيانات الاعتماد.",
+			"removeInvalidPassword": "كلمة مرور خاطئة.",
+			"removePasskeyNotFound": "لم يتم العثور على مفتاح المرور."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "خطأ في نقل الشهادة",
 			"retrieve_error": "حدث خطأ أثناء محاولة حفظ بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك حفظ معلومات تسجيل الدخول.",
 			"transfer_error": "حدث خطأ أثناء محاولة نقل بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك الحصول على معلومات تسجيل الدخول.",
-			"no_credentials": "لم يتم العثور على بيانات اعتماد تسجيل الدخول المحفوظة.\nيرجى تسجيل الدخول مرة أخرى من داخل fount لتحديث بيانات اعتماد تسجيل الدخول الخاصة بك، أو انقر فوق الزر أدناه للمتابعة إلى الصفحة المستهدفة دون بيانات اعتماد تسجيل الدخول.",
 			"missing_params": "الرابط يفتقد معلمة مطلوبة.",
 			"buttons": {
 				"ignore": "تجاهل ومتابعة",
@@ -865,6 +878,10 @@
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 			},
 			"commonToolCalling": "جارٍ استدعاء الأداة",
+			"reasoningDetailsTitle": "عملية التفكير",
+			"logprobsNotApplicable": "لا ينطبق",
+			"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",
+			"logprobsMetricsFooter": "تأخير أول رمز: ${ttft} | المدة: ${time} | الرموز: ${tokens} | السرعة: ${speed}",
 			"noReplyContent": "(لا يوجد محتوى الرد)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "إعدادات المستخدم",
 		"PageTitle": "إعدادات المستخدم",
-		"description": "اهتم بتفاصيل هويتك. إدارة ملف التعريف الخاص بك، وحماية وصولك، وعرض الأجهزة المتصلة. حرم هادئ لحسابك.",
+		"description": "اهتم بتفاصيل هويتك على fount. أدر ملف التعريف الخاص بك، واحمِ وصولك، واعرض الأجهزة المتصلة. ملاذ هادئ لحسابك.",
+		"shell": {
+			"unauthorized": "تسجيل الدخول مطلوب.",
+			"responseNotJson": "أعاد الخادم محتوى لا يمكن تحليله.",
+			"unexpectedError": "فشل الطلب."
+		},
+		"errors": {
+			"accountNotFound": "لم يتم العثور على الحساب."
+		},
 		"userInfo": {
 			"title": "معلومات المستخدم",
 			"usernameLabel": "اسم المستخدم:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "أيقونة النسخ"
 			},
-			"copiedAlert": "تم نسخ المسار إلى الحافظة!"
+			"copiedAlert": "تم نسخ المسار إلى الحافظة!",
+			"copyPathFailed": "غير قادر على نسخ المسار إلى الحافظة."
 		},
 		"changePassword": {
 			"title": "تغيير كلمة المرور",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة:",
 			"submitButton": "تغيير كلمة المرور",
 			"errorMismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
-			"success": "تم تغيير كلمة المرور بنجاح."
+			"success": "تم تغيير كلمة المرور بنجاح.",
+			"missingFields": "يرجى ملء كلمة المرور الحالية وكلمة المرور الجديدة.",
+			"invalidCurrent": "كلمة المرور الحالية غير صحيحة."
 		},
 		"renameUser": {
 			"title": "إعادة تسمية المستخدم",
 			"newUsernameLabel": "اسم المستخدم الجديد:",
 			"submitButton": "إعادة تسمية المستخدم",
 			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
-			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك."
+			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك.",
+			"missingParams": "يرجى ملء اسم المستخدم الجديد وكلمة المرور الحالية.",
+			"wrongPassword": "كلمة المرور غير صحيحة.",
+			"mustDiffer": "يجب أن يكون اسم المستخدم الجديد مختلفًا عن اسم المستخدم الحالي.",
+			"taken": "اسم المستخدم هذا مستخدم بالفعل.",
+			"moveFailed": "فشلت إعادة تسمية دليل بيانات المستخدم: ${detail}. تمت استعادة اسم المستخدم الأصلي."
 		},
 		"passkeys": {
 			"title": "مفاتيح الأمان ومفتاح المرور",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "تمت إزالة مفتاح الأمان.",
 			"addSuccess": "تمت إضافة مفتاح الأمان.",
 			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn.",
-			"errorCancelled": "تم إلغاء الإضافة."
+			"errorCancelled": "تم إلغاء الإضافة.",
+			"apiInvalidPassword": "كلمة مرور خاطئة.",
+			"apiMissingCredential": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
+			"apiRemoveParamsRequired": "يرجى تقديم بيانات الاعتماد وكلمة المرور التي تريد إزالتها."
 		},
 		"userDevices": {
 			"title": "أجهزة/جلسات المستخدم",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "إبطال",
 			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
 			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح.",
+			"revokeMissingParams": "يرجى تقديم كلمة مرور الجهاز والجلسة التي تريد إبطالها.",
+			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
+			"listNotFound": "لم يتم العثور على قائمة الأجهزة.",
+			"deviceNotFound": "لم يتم العثور على الجهاز أو الجلسة.",
 			"refreshButton": {
 				"title": "تحديث القائمة"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "لم يتم العثور على مفاتيح API.",
 			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
 			"neverUsed": "لم تستخدم",
+			"noKeysForUser": "لم يتم العثور على بيانات مفتاح API.",
+			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
+			"keyNotFound": "لم يتم العثور على مفتاح API.",
+			"revokeMissingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
+			"revokeMissingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
 			"revokeButton": "إلغاء",
 			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
 			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "انسخ مفتاح API الجديد"
 			},
-			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
+			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!",
+			"copyKeyFailed": "غير قادر على نسخ المفتاح إلى الحافظة."
 		},
 		"logout": {
 			"title": "تسجيل الخروج",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
 			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
 			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
-			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك."
+			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك.",
+			"missingPassword": "الرجاء إدخال كلمة المرور الخاصة بك.",
+			"wrongPassword": "كلمة المرور غير صحيحة."
 		},
 		"passwordConfirm": {
 			"title": "تأكيد الإجراء",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "بوتات Discord",
-		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
-		"cardTitle": "بوت Discord",
-		"botSelectDropdown": {
-			"placeholder": "اختر روبوت"
-		},
-		"botSearch": {
-			"placeholder": "ابحث عن بوت..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "اختر شخصية"
-		},
-		"charSearch": {
-			"placeholder": "ابحث عن شخصية..."
-		},
-		"configCard": {
-			"title": "تهيئة البوت",
-			"labels": {
-				"character": "ربط الشخصية",
-				"apiKey": "مفتاح API لـ Discord",
-				"config": "تهيئة"
-			},
-			"charSelectPlaceholder": "اختر شخصية",
-			"apiKeyInput": {
-				"placeholder": "الرجاء إدخال مفتاح API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "تبديل إظهار مفاتيح API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "تبديل عرض مفتاح API"
-			},
-			"buttons": {
-				"saveConfig": "حفظ التهيئة",
-				"startBot": "بدء",
-				"stopBot": "إيقاف"
-			}
-		},
-		"prompts": {
-			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
-		},
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
-		"alerts": {
-			"configSaved": "تم حفظ التهيئة بنجاح",
-			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "القادمة إلى الخلاف",
-				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
-				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "الروبوتات",
-				"sub_items": {
-					"manage": {
-						"title": "إدارة بوت ديسكورد"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "تكوين روبوت الخلاف"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "بوتات Telegram",
 		"description": "اسمح لشخصيات fount الخاصة بك باجتياز موجات Telegram الفورية. قم بتكوين تواجدهم الرقمي وإدارة محادثاتهم وتوسيع نطاق وصولهم إلى عالم المراسلة النابض بالحياة.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "تكوين Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "بوت WeChat",
+		"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
+		"cardTitle": "بوت WeChat",
+		"botSelectDropdown": {
+			"placeholder": "اختر بوتًا"
+		},
+		"botSearch": {
+			"placeholder": "البحث عن بوت…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر دورًا"
+		},
+		"charSearch": {
+			"placeholder": "البحث عن أدوار…"
+		},
+		"configCard": {
+			"title": "إعدادات البوت",
+			"labels": {
+				"character": "الدور المرتبط",
+				"apiBaseUrl": "عنوان URL الأساسي لواجهة قناة WeChat",
+				"botToken": "رمز iLink Bot",
+				"config": "الإعدادات"
+			},
+			"charSelectPlaceholder": "حدد الدور",
+			"apiBaseUrlInput": {
+				"placeholder": "اتركه فارغًا للقيمة الافتراضية https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "رمز Bearer بعد تسجيل الدخول"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "إظهار الرمز المميز أو إخفاؤه"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "إظهار الرمز المميز أو إخفاؤه"
+			},
+			"buttons": {
+				"saveConfig": "حفظ",
+				"startBot": "تشغيل",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "اسم البوت الجديد:"
+		},
+		"buttons": {
+			"newBot": "جديد",
+			"deleteBot": "حذف"
+		},
+		"alerts": {
+			"configSaved": "تم الحفظ",
+			"botExists": "يوجد بالفعل بوت باسم «${botname}». يرجى اختيار اسم آخر.",
+			"unsavedChanges": "تغييرات غير محفوظة. هل تريد تجاهلها؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "تغييرات غير محفوظة. مغادرة الصفحة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "دعني أعمل!",
+				"description": "تحدث مع شخصية fount على WeChat.",
+				"locked_description": "شغّل بوت WeChat مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "البوتات",
+				"sub_items": {
+					"manage": {
+						"title": "بوت WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "إعدادات بوت WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "امسح رمز الاستجابة السريعة أدناه باستخدام WeChat لإكمال تسجيل الدخول.",
+			"button": "مسح للدخول",
+			"scanPrompt": "افتح WeChat وامسح رمز الاستجابة السريعة",
+			"waiting": "جارٍ تحميل رمز الاستجابة السريعة…",
+			"scanned": "تم المسح — أكّد على هاتفك",
+			"success": "تم ربط WeChat وحفظ الإعدادات — يمكنك تشغيل البوت الآن.",
+			"needBot": "اختر بوتًا من القائمة أو أنشئ واحدًا باستخدام «جديد»."
+		}
+	},
+	"discord_bots": {
+		"title": "بوتات Discord",
+		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
+		"cardTitle": "بوت Discord",
+		"botSelectDropdown": {
+			"placeholder": "اختر روبوت"
+		},
+		"botSearch": {
+			"placeholder": "ابحث عن بوت..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر شخصية"
+		},
+		"charSearch": {
+			"placeholder": "ابحث عن شخصية..."
+		},
+		"configCard": {
+			"title": "تهيئة البوت",
+			"labels": {
+				"character": "ربط الشخصية",
+				"apiKey": "مفتاح API لـ Discord",
+				"config": "تهيئة"
+			},
+			"charSelectPlaceholder": "اختر شخصية",
+			"apiKeyInput": {
+				"placeholder": "الرجاء إدخال مفتاح API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "تبديل عرض مفتاح API"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التهيئة",
+				"startBot": "بدء",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
+		},
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
+		"alerts": {
+			"configSaved": "تم حفظ التهيئة بنجاح",
+			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "القادمة إلى الخلاف",
+				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
+				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "الروبوتات",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة بوت ديسكورد"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "تكوين روبوت الخلاف"
 			}
 		}
 	},

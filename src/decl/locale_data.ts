@@ -58,6 +58,7 @@ export type LocaleData = {
 				localAhead: string
 				noUpstream: string
 				dirtyWorkingDirectory: string
+				uncommittedBackedUpTo: string
 				diverged: string
 				updateFailed: string
 			}
@@ -113,12 +114,7 @@ export type LocaleData = {
 				}
 			}
 		}
-		telegrambot: {
-			botStarted: string
-		}
-		discordbot: {
-			botStarted: string
-		}
+		botStarted: string
 		path: {
 			protocol: {
 				description: string
@@ -434,12 +430,30 @@ export type LocaleData = {
 			accountAlreadyExists: string
 			powNotSolved: string
 			powError: string
+			invalidCredentials: string
+			accountLockedRetry: string
+			accountLockedAttempts: string
+			powValidationFailed: string
+			apiErrorBodyUnreadable: string
 		}
 		webauthn: {
 			loginButton: string
-			errorNoUsername: string
 			errorLoadLibrary: string
 			errorCancelled: string
+			errorSessionMissing: string
+			errorBadBeginResponse: string
+			errorCredentialRequired: string
+			errorAuthSessionRequired: string
+			apiSessionExpired: string
+			apiUnknownPasskey: string
+			apiPasskeyVerificationFailed: string
+			registrationUserNotFound: string
+			registrationSessionExpired: string
+			registrationVerifyFailed: string
+			registrationFailed: string
+			removeUserNotFound: string
+			removeInvalidPassword: string
+			removePasskeyNotFound: string
 		}
 	}
 	login_info: {
@@ -449,7 +463,6 @@ export type LocaleData = {
 			title: string
 			retrieve_error: string
 			transfer_error: string
-			no_credentials: string
 			missing_params: string
 			buttons: {
 				ignore: string
@@ -854,6 +867,10 @@ export type LocaleData = {
 				success: string
 			}
 			commonToolCalling: string
+			reasoningDetailsTitle: string
+			logprobsNotApplicable: string
+			logprobsTopLogprobsMeta: string
+			logprobsMetricsFooter: string
 			noReplyContent: string
 			feedback: {
 				thumbsUp: {
@@ -1348,6 +1365,14 @@ export type LocaleData = {
 		title: string
 		PageTitle: string
 		description: string
+		shell: {
+			unauthorized: string
+			responseNotJson: string
+			unexpectedError: string
+		}
+		errors: {
+			accountNotFound: string
+		}
 		userInfo: {
 			title: string
 			usernameLabel: string
@@ -1361,6 +1386,7 @@ export type LocaleData = {
 				alt: string
 			}
 			copiedAlert: string
+			copyPathFailed: string
 		}
 		changePassword: {
 			title: string
@@ -1370,6 +1396,8 @@ export type LocaleData = {
 			submitButton: string
 			errorMismatch: string
 			success: string
+			missingFields: string
+			invalidCurrent: string
 		}
 		renameUser: {
 			title: string
@@ -1377,6 +1405,11 @@ export type LocaleData = {
 			submitButton: string
 			confirmMessage: string
 			success: string
+			missingParams: string
+			wrongPassword: string
+			mustDiffer: string
+			taken: string
+			moveFailed: string
 		}
 		passkeys: {
 			title: string
@@ -1400,6 +1433,9 @@ export type LocaleData = {
 			addSuccess: string
 			errorLoadLibrary: string
 			errorCancelled: string
+			apiInvalidPassword: string
+			apiMissingCredential: string
+			apiRemoveParamsRequired: string
 		}
 		userDevices: {
 			title: string
@@ -1410,6 +1446,10 @@ export type LocaleData = {
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string
+			revokeMissingParams: string
+			revokeWrongPassword: string
+			listNotFound: string
+			deviceNotFound: string
 			refreshButton: {
 				title: string
 			}
@@ -1427,6 +1467,11 @@ export type LocaleData = {
 			noKeysFound: string
 			keyDetails: string
 			neverUsed: string
+			noKeysForUser: string
+			revokeWrongPassword: string
+			keyNotFound: string
+			revokeMissingJti: string
+			revokeMissingPassword: string
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string
@@ -1447,6 +1492,7 @@ export type LocaleData = {
 				title: string
 			}
 			copiedAlert: string
+			copyKeyFailed: string
 		}
 		logout: {
 			title: string
@@ -1463,6 +1509,8 @@ export type LocaleData = {
 			confirmMessage2: string
 			usernameMismatch: string
 			success: string
+			missingPassword: string
+			wrongPassword: string
 		}
 		passwordConfirm: {
 			title: string
@@ -1846,7 +1894,7 @@ export type LocaleData = {
 			}
 		}
 	}
-	discord_bots: {
+	telegram_bots: {
 		title: string
 		description: string
 		cardTitle: string
@@ -1866,17 +1914,17 @@ export type LocaleData = {
 			title: string
 			labels: {
 				character: string
-				apiKey: string
+				botToken: string
 				config: string
 			}
 			charSelectPlaceholder: string
-			apiKeyInput: {
+			botTokenInput: {
 				placeholder: string
 			}
-			toggleApiKeyButton: {
+			toggleBotTokenButton: {
 				'aria-label': string
 			}
-			toggleApiKeyIcon: {
+			toggleBotTokenIcon: {
 				alt: string
 			}
 			buttons: {
@@ -1922,7 +1970,7 @@ export type LocaleData = {
 			}
 		}
 	}
-	telegram_bots: {
+	wechat_bots: {
 		title: string
 		description: string
 		cardTitle: string
@@ -1942,10 +1990,14 @@ export type LocaleData = {
 			title: string
 			labels: {
 				character: string
+				apiBaseUrl: string
 				botToken: string
 				config: string
 			}
 			charSelectPlaceholder: string
+			apiBaseUrlInput: {
+				placeholder: string
+			}
 			botTokenInput: {
 				placeholder: string
 			}
@@ -1953,6 +2005,91 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			toggleBotTokenIcon: {
+				alt: string
+			}
+			buttons: {
+				saveConfig: string
+				startBot: string
+				stopBot: string
+			}
+		}
+		prompts: {
+			newBotName: string
+		}
+		buttons: {
+			newBot: string
+			deleteBot: string
+		}
+		alerts: {
+			configSaved: string
+			botExists: string
+			unsavedChanges: string
+			httpError: string
+			beforeUnload: string
+		}
+		achievements: {
+			start_bot: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
+			}
+		}
+		qrLogin: {
+			hint: string
+			button: string
+			scanPrompt: string
+			waiting: string
+			scanned: string
+			success: string
+			needBot: string
+		}
+	}
+	discord_bots: {
+		title: string
+		description: string
+		cardTitle: string
+		botSelectDropdown: {
+			placeholder: string
+		}
+		botSearch: {
+			placeholder: string
+		}
+		charSelectDropdown: {
+			placeholder: string
+		}
+		charSearch: {
+			placeholder: string
+		}
+		configCard: {
+			title: string
+			labels: {
+				character: string
+				apiKey: string
+				config: string
+			}
+			charSelectPlaceholder: string
+			apiKeyInput: {
+				placeholder: string
+			}
+			toggleApiKeyButton: {
+				'aria-label': string
+			}
+			toggleApiKeyIcon: {
 				alt: string
 			}
 			buttons: {
@@ -2523,6 +2660,7 @@ export type LocaleKey = Paths<LocaleData>
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
+	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }
 	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
@@ -2538,6 +2676,8 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.messageView.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
+	'chat.messageView.logprobsTopLogprobsMeta': { token: string | number }
 	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
@@ -2559,7 +2699,7 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.logoutRefreshTokenProcessError': { error: string | number }
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
-	'fountConsole.discordbot.botStarted': { botusername: string | number; charname: string | number }
+	'fountConsole.botStarted': { botusername: string | number; charname: string | number; platform: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
@@ -2570,6 +2710,7 @@ export type LocaleKeyParams = {
 	'fountConsole.jobs.preloadingParts': { count: string | number }
 	'fountConsole.jobs.restartingJob': { partpath: string | number; uid: string | number; username: string | number }
 	'fountConsole.partManager.git.noUpstream': { currentBranch: string | number }
+	'fountConsole.partManager.git.uncommittedBackedUpTo': { path: string | number }
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
 	'fountConsole.partManager.partInited': { partpath: string | number }
 	'fountConsole.partManager.partLoaded': { partpath: string | number }
@@ -2595,7 +2736,6 @@ export type LocaleKeyParams = {
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
-	'fountConsole.telegrambot.botStarted': { botusername: string | number; charname: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }
 	'fountConsole.tray.readIconFailed': { error: string | number }
 	'fountConsole.verification.codeGeneratedLog': { code: string | number }
@@ -2654,9 +2794,11 @@ export type LocaleKeyParams = {
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
 	'userSettings.generalError': { message: string | number }
 	'userSettings.passkeys.itemDetails': { created: string | number }
+	'userSettings.renameUser.moveFailed': { detail: string | number }
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }
+	'wechat_bots.alerts.botExists': { botname: string | number }
 }
 
 /**

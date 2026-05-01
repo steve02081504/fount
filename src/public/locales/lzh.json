@@ -51,6 +51,7 @@
 				"localAhead": "本地已先，無需更新。",
 				"noUpstream": "支 '${currentBranch}' 未溯其源，遂袖手旁觀。",
 				"dirtyWorkingDirectory": "案牘未清，請先藏納或呈獻。",
+				"uncommittedBackedUpTo": "未呈之變，已備存於：${path}",
 				"diverged": "兵分兩路，強渡陳倉...",
 				"updateFailed": "自遠方更新機件失利：${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "化身 ${charname} 已託 Telegram 靈偶 ${botusername} 而現"
-		},
-		"discordbot": {
-			"botStarted": "化身 ${charname} 已託 Discord 靈偶 ${botusername} 而現"
-		},
+		"botStarted": "化身 ${charname} 已託 ${platform} 靈偶 ${botusername} 而現",
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協議",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "信物不堅，易為人所窺。",
 			"accountAlreadyExists": "此名號已為捷足者所得。",
 			"powNotSolved": "請先竟功證之驗",
-			"powError": "功證之驗有誤"
+			"powError": "功證之驗有誤",
+			"invalidCredentials": "名號或信物不合。",
+			"accountLockedRetry": "戶籍暫鎖，請候 ${timeLeft} 後復試。",
+			"accountLockedAttempts": "登臺屢敗，戶籍暫閉。",
+			"powValidationFailed": "人機之驗未竟，請復試。",
+			"apiErrorBodyUnreadable": "伺服所答難辨，請少待復試。"
 		},
 		"webauthn": {
 			"loginButton": "以安鑰 / Passkey 登臺",
-			"errorNoUsername": "用 Passkey 前，請先具名號。",
 			"errorLoadLibrary": "WebAuthn 輔庫難載，請察網絡而復試。",
-			"errorCancelled": "已止用安鑰，或未蒙允。"
+			"errorCancelled": "已止用安鑰，或未蒙允。",
+			"errorSessionMissing": "伺服無效會話之符，請重整而復試。",
+			"errorBadBeginResponse": "伺服所返登臺之據無效，請重整而復試。",
+			"errorCredentialRequired": "Passkey 憑據闕如。",
+			"errorAuthSessionRequired": "登臺會話之符闕如，請重整而復試。",
+			"apiSessionExpired": "Passkey 會話已逾，請更端復始。",
+			"apiUnknownPasskey": "此鑰無識，請用已綁之鑰。",
+			"apiPasskeyVerificationFailed": "Passkey 勘驗未過，請復試。",
+			"registrationUserNotFound": "未見用者之籍。",
+			"registrationSessionExpired": "綁會已逾，請本末復試。",
+			"registrationVerifyFailed": "Passkey 註冊之勘不能竟。",
+			"registrationFailed": "Passkey 註冊失利，請復試。",
+			"removeUserNotFound": "未見用者或憑據。",
+			"removeInvalidPassword": "信物非是。",
+			"removePasskeyNotFound": "未見此 Passkey。"
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
 			"transfer_error": "傳送登錄憑證時有誤：\n${error}\n可續行，然憑證不得取，如緣木求魚。",
-			"no_credentials": "舊符未見。\n請復登於 fount 以新其符，或點選下鈕，免符逕往彼端。",
 			"missing_params": "鏈接闕遺，無以成行。",
 			"buttons": {
 				"ignore": "略而續行",
@@ -865,6 +878,10 @@
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 			},
 			"commonToolCalling": "方召工具",
+			"reasoningDetailsTitle": "推思本末",
+			"logprobsNotApplicable": "無涉",
+			"logprobsTopLogprobsMeta": "top_logprobs（所揀：${token}）",
+			"logprobsMetricsFooter": "首詞元遲延: ${ttft} | 歷時: ${time} | 詞元: ${tokens} | 速率: ${speed}",
 			"noReplyContent": "（未有覆言）",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "用者規度",
 		"PageTitle": "用者規度",
-		"description": "此乃君之靜室，可理身份之細，護行蹤之秘，觀所连之器。",
+		"description": "此乃君之靜室，可理身份之細，護行蹤之秘，觀所聯之器。",
+		"shell": {
+			"unauthorized": "須先登臺。",
+			"responseNotJson": "伺服所返莫之能辨。",
+			"unexpectedError": "所求未遂。"
+		},
+		"errors": {
+			"accountNotFound": "未見戶籍。"
+		},
 		"userInfo": {
 			"title": "用者信符",
 			"usernameLabel": "名號:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "謄錄路徑"
 			},
-			"copiedAlert": "路徑已錄！"
+			"copiedAlert": "路徑已錄！",
+			"copyPathFailed": "路徑難錄於剪貼。"
 		},
 		"changePassword": {
 			"title": "更易信物",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "復核新信物:",
 			"submitButton": "更易信物",
 			"errorMismatch": "新信物兩次不合。",
-			"success": "信物更易功成。"
+			"success": "信物更易功成。",
+			"missingFields": "請具當前信物與新信物。",
+			"invalidCurrent": "當前信物非是。"
 		},
 		"renameUser": {
 			"title": "更易名號",
 			"newUsernameLabel": "新名號:",
 			"submitButton": "更易名號",
 			"confirmMessage": "確欲更易名號乎？此舉將需重新登臺。",
-			"success": "名號已更為 “${newUsername}”。君將告退。"
+			"success": "名號已更為 “${newUsername}”。君將告退。",
+			"missingParams": "請具新名號與今之信物。",
+			"wrongPassword": "信物非是。",
+			"mustDiffer": "新名號須異於今名。",
+			"taken": "此名已為人所據。",
+			"moveFailed": "更易卷宗目錄失利：${detail}。已復舊名。"
 		},
 		"passkeys": {
 			"title": "安鑰與 Passkey",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "安鑰已除。",
 			"addSuccess": "安鑰已添。",
 			"errorLoadLibrary": "WebAuthn 庫難載。",
-			"errorCancelled": "已止添鑰。"
+			"errorCancelled": "已止添鑰。",
+			"apiInvalidPassword": "信物非是。",
+			"apiMissingCredential": "Passkey 憑據闕如或無效。",
+			"apiRemoveParamsRequired": "請具欲除之憑據與信物。"
 		},
 		"userDevices": {
 			"title": "用者之器/當席",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "撤銷",
 			"revokeConfirm": "確欲從此器/會話告退乎？",
 			"revokeSuccess": "器/會話已撤銷。",
+			"revokeMissingParams": "請具欲撤之器與會話信物。",
+			"revokeWrongPassword": "信物非是。",
+			"listNotFound": "未見器之目錄。",
+			"deviceNotFound": "未見此器或會話。",
 			"refreshButton": {
 				"title": "復新"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "未見符鑰。",
 			"keyDetails": "述: ${description} | 製於: ${createdAt} | 末用: ${lastUsed}",
 			"neverUsed": "未嘗用",
+			"noKeysForUser": "未見符鑰之籍。",
+			"revokeWrongPassword": "信物非是。",
+			"keyNotFound": "未見此符鑰。",
+			"revokeMissingJti": "請指欲廢之鑰。",
+			"revokeMissingPassword": "廢鑰須具信物。",
 			"revokeButton": "廢止",
 			"revokeConfirm": "確欲廢此符鑰乎？",
 			"revokeSuccess": "符鑰已廢。",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "錄此新鑰"
 			},
-			"copiedAlert": "符鑰已錄！"
+			"copiedAlert": "符鑰已錄！",
+			"copyKeyFailed": "符鑰難錄於剪貼。"
 		},
 		"logout": {
 			"title": "告退",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "警！確欲永銷君之戶籍乎？此舉不可撤銷。",
 			"confirmMessage2": "為彰其信，請書君之名號“${username}”：",
 			"usernameMismatch": "所入名號不合。銷戶已止。",
-			"success": "戶籍已銷。君將告退。"
+			"success": "戶籍已銷。君將告退。",
+			"missingPassword": "請入信物。",
+			"wrongPassword": "信物非是。"
 		},
 		"passwordConfirm": {
 			"title": "確認",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord 靈偶",
-		"description": "令君之泉源夥伴，聲聞於Discord之殿堂。立其形，掌其行，跨界而通，無遠弗屆。",
-		"cardTitle": "Discord 靈偶",
-		"botSelectDropdown": {
-			"placeholder": "擇一靈偶"
-		},
-		"botSearch": {
-			"placeholder": "尋靈偶…"
-		},
-		"charSelectDropdown": {
-			"placeholder": "擇一角色"
-		},
-		"charSearch": {
-			"placeholder": "尋角色…"
-		},
-		"configCard": {
-			"title": "靈偶規度",
-			"labels": {
-				"character": "綁定化身",
-				"apiKey": "Discord 符鑰",
-				"config": "規度"
-			},
-			"charSelectPlaceholder": "擇化身",
-			"apiKeyInput": {
-				"placeholder": "請入符鑰"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "顯隱符鑰"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "顯隱密鑰"
-			},
-			"buttons": {
-				"saveConfig": "存規度",
-				"startBot": "啟",
-				"stopBot": "止"
-			}
-		},
-		"prompts": {
-			"newBotName": "請為新靈偶命名："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
-		"alerts": {
-			"configSaved": "規度已存。",
-			"botExists": "靈偶 \"${botname}\" 已存，請更名。",
-			"unsavedChanges": "尚有未存之變，欲棄之乎？",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "尚有未存之變，確欲離乎？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "現身於群議之地",
-				"description": "召汝之化身於群議之界。",
-				"locked_description": "宜启群议之仆一次。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "靈偶",
-				"sub_items": {
-					"manage": {
-						"title": "Discord 靈偶"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "遣Discord靈偶"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram 靈偶",
 		"description": "允君之泉源人物，神行於Telegram之波瀾。塑其數字之身，理其清談之事，名揚於此信使之界。",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "遣Telegram靈偶"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "微信靈偶",
+		"description": "承泉源之化身，寓於微信對談，輔理庶務，無遠弗屆。",
+		"cardTitle": "微信靈偶",
+		"botSelectDropdown": {
+			"placeholder": "擇一靈偶"
+		},
+		"botSearch": {
+			"placeholder": "尋靈偶…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "擇一角色"
+		},
+		"charSearch": {
+			"placeholder": "尋角色…"
+		},
+		"configCard": {
+			"title": "靈偶規度",
+			"labels": {
+				"character": "綁定化身",
+				"apiBaseUrl": "微信渠服根址",
+				"botToken": "iLink 靈偶信物",
+				"config": "規度"
+			},
+			"charSelectPlaceholder": "擇化身",
+			"apiBaseUrlInput": {
+				"placeholder": "留空則用預設 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登入後所得 Bearer 信物"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "顯隱信物"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "顯隱信物"
+			},
+			"buttons": {
+				"saveConfig": "存規度",
+				"startBot": "啟",
+				"stopBot": "止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請為新靈偶命名："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "規度已存。",
+			"botExists": "靈偶「${botname}」已存，請更名。",
+			"unsavedChanges": "尚有未存之變，確欲棄之乎？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "為吾執役",
+				"description": "令化身於微信與爾對談。",
+				"locked_description": "宜啟微信靈偶一次。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "靈偶",
+				"sub_items": {
+					"manage": {
+						"title": "微信靈偶"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "遣微信靈偶"
+			}
+		},
+		"qrLogin": {
+			"hint": "以微信掃描下方碼圖以成登入。",
+			"button": "掃碼登入",
+			"scanPrompt": "請以微信掃描碼圖",
+			"waiting": "方取碼圖…",
+			"scanned": "已掃，請於機上確認…",
+			"success": "微信已通，規度已新。可即啟靈偶。",
+			"needBot": "請先於列表擇一靈偶，或以「新建」創之。"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord 靈偶",
+		"description": "令君之泉源夥伴，聲聞於Discord之殿堂。立其形，掌其行，跨界而通，無遠弗屆。",
+		"cardTitle": "Discord 靈偶",
+		"botSelectDropdown": {
+			"placeholder": "擇一靈偶"
+		},
+		"botSearch": {
+			"placeholder": "尋靈偶…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "擇一角色"
+		},
+		"charSearch": {
+			"placeholder": "尋角色…"
+		},
+		"configCard": {
+			"title": "靈偶規度",
+			"labels": {
+				"character": "綁定化身",
+				"apiKey": "Discord 符鑰",
+				"config": "規度"
+			},
+			"charSelectPlaceholder": "擇化身",
+			"apiKeyInput": {
+				"placeholder": "請入符鑰"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "顯隱符鑰"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "顯隱密鑰"
+			},
+			"buttons": {
+				"saveConfig": "存規度",
+				"startBot": "啟",
+				"stopBot": "止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請為新靈偶命名："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "規度已存。",
+			"botExists": "靈偶 \"${botname}\" 已存，請更名。",
+			"unsavedChanges": "尚有未存之變，欲棄之乎？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "現身於群議之地",
+				"description": "召汝之化身於群議之界。",
+				"locked_description": "宜启群议之仆一次。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "靈偶",
+				"sub_items": {
+					"manage": {
+						"title": "Discord 靈偶"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "遣Discord靈偶"
 			}
 		}
 	},

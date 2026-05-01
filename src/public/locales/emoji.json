@@ -51,6 +51,7 @@
 				"localAhead": "🏠➡️☁️, ✅",
 				"noUpstream": "🚫☁️ '${currentBranch}', 🤷‍♂️",
 				"dirtyWorkingDirectory": "⚠️📝, 🙏💾",
+				"uncommittedBackedUpTo": "⚠️📝💾➡️ ${path}",
 				"diverged": "🔀, 💪🔄",
 				"updateFailed": "☁️🔄🧩❌: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "🤖 ${charname} ✅ ✈️ ${botusername}"
-		},
-		"discordbot": {
-			"botStarted": "🤖 ${charname} ✅ 💬 ${botusername}"
-		},
+		"botStarted": "🤖 ${charname} ✅ ${platform} ${botusername}",
 		"path": {
 			"protocol": {
 				"description": "🔗⛲📜",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "🔑👎",
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
-			"powError": "⚙️💥"
+			"powError": "⚙️💥",
+			"invalidCredentials": "👤❌🔑",
+			"accountLockedRetry": "🔒⌛️ ${timeLeft}",
+			"accountLockedAttempts": "🔒❌🔄",
+			"powValidationFailed": "🤖✅❌🔁",
+			"apiErrorBodyUnreadable": "🖥️📄❓🔁"
 		},
 		"webauthn": {
 			"loginButton": "🔐🔑➡️🚪📱🔑",
-			"errorNoUsername": "✍️👤❓➡️📱🔑",
 			"errorLoadLibrary": "📚🔐❌🌐🔁",
-			"errorCancelled": "🙅🔑➕🚪❓"
+			"errorCancelled": "🙅🔑➕🚪❓",
+			"errorSessionMissing": "🖥️❌🎫🔁📄",
+			"errorBadBeginResponse": "🖥️📄❌🔁📄",
+			"errorCredentialRequired": "📱🔑📋❌",
+			"errorAuthSessionRequired": "🎫❌🔁📄",
+			"apiSessionExpired": "🕐⌛️📱🔑🔁",
+			"apiUnknownPasskey": "❓📱🔑🔗",
+			"apiPasskeyVerificationFailed": "📱🔑✅❌🔁",
+			"registrationUserNotFound": "👤❌",
+			"registrationSessionExpired": "🔗⌛️🔁",
+			"registrationVerifyFailed": "📱🔑📝❌",
+			"registrationFailed": "📱🔑❌🔁",
+			"removeUserNotFound": "👤📋❌",
+			"removeInvalidPassword": "🔑❌",
+			"removePasskeyNotFound": "📱🔑❌"
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "🔐❌",
 			"retrieve_error": "🔐💾❌:\n${error}\n➡️🤷‍♂️💾",
 			"transfer_error": "🔐➡️❌:\n${error}\n➡️🤷‍♂️🔐",
-			"no_credentials": "💾🔐❌\n🔙⛲️🔑🔄，🤷‍♂️➡️📄",
 			"missing_params": "🔗🧩❌",
 			"buttons": {
 				"ignore": "🤷‍♂️➡️",
@@ -865,6 +878,10 @@
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
+			"reasoningDetailsTitle": "🧠📜",
+			"logprobsNotApplicable": "N/A",
+			"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
+			"logprobsMetricsFooter": "1️⃣⏱️ ${ttft} | ⏱️ ${time} | 🪙 ${tokens} | 🚀 ${speed}",
 			"noReplyContent": "💬🍃",
 			"feedback": {
 				"thumbsUp": {
@@ -1359,6 +1376,14 @@
 		"title": "👤⚙️",
 		"PageTitle": "👤⚙️",
 		"description": "👤🔧🛡️💻",
+		"shell": {
+			"unauthorized": "🔒🚪",
+			"responseNotJson": "🖥️📄❓",
+			"unexpectedError": "❌📡"
+		},
+		"errors": {
+			"accountNotFound": "👤❌"
+		},
 		"userInfo": {
 			"title": "👤ℹ️",
 			"usernameLabel": "👤:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "📋📍"
 			},
-			"copiedAlert": "📋✅❗️"
+			"copiedAlert": "📋✅❗️",
+			"copyPathFailed": "📋📍❌"
 		},
 		"changePassword": {
 			"title": "✍️🔑",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "🆕🔑🔑:",
 			"submitButton": "✍️🔑",
 			"errorMismatch": "🆕🔑 ≠ 🆕🔑🔑",
-			"success": "🔑✍️✅"
+			"success": "🔑✍️✅",
+			"missingFields": "🔑📋❌",
+			"invalidCurrent": "🔑❌"
 		},
 		"renameUser": {
 			"title": "✍️👤",
 			"newUsernameLabel": "🆕👤:",
 			"submitButton": "✍️👤",
 			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
-			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪..."
+			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪...",
+			"missingParams": "👤🔑📋❌",
+			"wrongPassword": "🔑❌",
+			"mustDiffer": "👤🆕≠👤",
+			"taken": "👤📌",
+			"moveFailed": "📁👤❌ ${detail}"
 		},
 		"passkeys": {
 			"title": "🔐🔑📱",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "🗑️✅🔑",
 			"addSuccess": "➕✅🔑",
 			"errorLoadLibrary": "📚🔐❌",
-			"errorCancelled": "➕🚫"
+			"errorCancelled": "➕🚫",
+			"apiInvalidPassword": "🔑❌",
+			"apiMissingCredential": "📱🔑❌",
+			"apiRemoveParamsRequired": "📋📱🔑🔑"
 		},
 		"userDevices": {
 			"title": "👤💻",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "➖",
 			"revokeConfirm": "🤔➖💻❓",
 			"revokeSuccess": "💻➖✅",
+			"revokeMissingParams": "💻🔑📋❌",
+			"revokeWrongPassword": "🔑❌",
+			"listNotFound": "📋❌💻",
+			"deviceNotFound": "💻❌",
 			"refreshButton": {
 				"title": "🔄"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "🤷‍♀️",
 			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
 			"neverUsed": "⏳",
+			"noKeysForUser": "🔑📋❌",
+			"revokeWrongPassword": "🔑❌",
+			"keyNotFound": "🔑❌",
+			"revokeMissingJti": "🔑🆔❌",
+			"revokeMissingPassword": "🔑📋❌",
 			"revokeButton": "🗑️",
 			"revokeConfirm": "🤔🗑️❓",
 			"revokeSuccess": "✅🗑️",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "📋🔑"
 			},
-			"copiedAlert": "📋✅❗️"
+			"copiedAlert": "📋✅❗️",
+			"copyKeyFailed": "📋🔑❌"
 		},
 		"logout": {
 			"title": "🚪",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "⚠️🤔🗑️👤❓",
 			"confirmMessage2": "✍️👤 \"${username}\":",
 			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
-			"success": "👤🗑️✅, ➡️🚪..."
+			"success": "👤🗑️✅, ➡️🚪...",
+			"missingPassword": "🔑📋❌",
+			"wrongPassword": "🔑❌"
 		},
 		"passwordConfirm": {
 			"title": "✅",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "🤖💬",
-		"description": "🎭🗣️ ➡️ 🤖💬",
-		"cardTitle": "🤖💬",
-		"botSelectDropdown": {
-			"placeholder": "👉🤖"
-		},
-		"botSearch": {
-			"placeholder": "🔍🤖"
-		},
-		"charSelectDropdown": {
-			"placeholder": "👉👤"
-		},
-		"charSearch": {
-			"placeholder": "🔍👤"
-		},
-		"configCard": {
-			"title": "🤖⚙️",
-			"labels": {
-				"character": "🔗🤖",
-				"apiKey": "🔑",
-				"config": "⚙️"
-			},
-			"charSelectPlaceholder": "🤔🤖",
-			"apiKeyInput": {
-				"placeholder": "✍️🔑"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "👁️"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "👁️"
-			},
-			"buttons": {
-				"saveConfig": "💾⚙️",
-				"startBot": "▶️",
-				"stopBot": "⏹️"
-			}
-		},
-		"prompts": {
-			"newBotName": "✍️🆕🤖🏷️:"
-		},
-		"buttons": {
-			"newBot": "🆕",
-			"deleteBot": "🗑️"
-		},
-		"alerts": {
-			"configSaved": "⚙️💾✅",
-			"botExists": "🤖 \"${botname}\" ✅",
-			"unsavedChanges": "🤔💾❓",
-			"httpError": "🌐❌",
-			"beforeUnload": "🤔💾➡️🚪❓"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "🤖🎮",
-				"description": "👤✨➡️🎮",
-				"locked_description": "🔒: 🤖🎮"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "🤖",
-				"sub_items": {
-					"manage": {
-						"title": "🤖💬🎮"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "🤖💬🎮"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "🤖✈️",
 		"description": "🎭➡️✈️💬",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "🤖✈️"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "🤖💚",
+		"description": "🎭➡️💚💬 · 🤖",
+		"cardTitle": "🤖💚",
+		"botSelectDropdown": {
+			"placeholder": "👉🤖"
+		},
+		"botSearch": {
+			"placeholder": "🔍🤖…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "👉👤"
+		},
+		"charSearch": {
+			"placeholder": "🔍👤…"
+		},
+		"configCard": {
+			"title": "🤖⚙️",
+			"labels": {
+				"character": "🔗👤",
+				"apiBaseUrl": "🌐🔗💚",
+				"botToken": "🔑",
+				"config": "⚙️"
+			},
+			"charSelectPlaceholder": "👉👤",
+			"apiBaseUrlInput": {
+				"placeholder": "⬜️↩️ 🌐🔗"
+			},
+			"botTokenInput": {
+				"placeholder": "🔐🎫"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "👁️🔑"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "👁️🔑"
+			},
+			"buttons": {
+				"saveConfig": "💾",
+				"startBot": "▶️",
+				"stopBot": "⏹️"
+			}
+		},
+		"prompts": {
+			"newBotName": "✍️🆕🤖:"
+		},
+		"buttons": {
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
+		},
+		"alerts": {
+			"configSaved": "💾✅",
+			"botExists": "🤖❌ «${botname}»",
+			"unsavedChanges": "💾❓🗑️",
+			"httpError": "🌐❌",
+			"beforeUnload": "💾❓🚪"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "💼➡️🤖",
+				"description": "💚💬🎭",
+				"locked_description": "🔓▶️🤖💚"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "🤖",
+				"sub_items": {
+					"manage": {
+						"title": "🤖💚"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "⚙️🤖💚"
+			}
+		},
+		"qrLogin": {
+			"hint": "📱💚📷⬇️",
+			"button": "📷🔐",
+			"scanPrompt": "📱💚📷",
+			"waiting": "⏳📷…",
+			"scanned": "✅📱…",
+			"success": "💚✅💾▶️🤖",
+			"needBot": "👉🤖📋🆕"
+		}
+	},
+	"discord_bots": {
+		"title": "🤖💬",
+		"description": "🎭🗣️ ➡️ 🤖💬",
+		"cardTitle": "🤖💬",
+		"botSelectDropdown": {
+			"placeholder": "👉🤖"
+		},
+		"botSearch": {
+			"placeholder": "🔍🤖"
+		},
+		"charSelectDropdown": {
+			"placeholder": "👉👤"
+		},
+		"charSearch": {
+			"placeholder": "🔍👤"
+		},
+		"configCard": {
+			"title": "🤖⚙️",
+			"labels": {
+				"character": "🔗🤖",
+				"apiKey": "🔑",
+				"config": "⚙️"
+			},
+			"charSelectPlaceholder": "🤔🤖",
+			"apiKeyInput": {
+				"placeholder": "✍️🔑"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "👁️"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "👁️"
+			},
+			"buttons": {
+				"saveConfig": "💾⚙️",
+				"startBot": "▶️",
+				"stopBot": "⏹️"
+			}
+		},
+		"prompts": {
+			"newBotName": "✍️🆕🤖🏷️:"
+		},
+		"buttons": {
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
+		},
+		"alerts": {
+			"configSaved": "⚙️💾✅",
+			"botExists": "🤖 \"${botname}\" ✅",
+			"unsavedChanges": "🤔💾❓",
+			"httpError": "🌐❌",
+			"beforeUnload": "🤔💾➡️🚪❓"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "🤖🎮",
+				"description": "👤✨➡️🎮",
+				"locked_description": "🔒: 🤖🎮"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "🤖",
+				"sub_items": {
+					"manage": {
+						"title": "🤖💬🎮"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "🤖💬🎮"
 			}
 		}
 	},

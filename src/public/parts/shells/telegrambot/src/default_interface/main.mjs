@@ -4,9 +4,13 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/p
 
 import {
 	TelegramMessageToFountChatLogEntry,
+	telegramMediaGroupMessagesToFountChatLogEntry,
+	applyTelegramMessageUpdateToChannelLog,
+	resolveTelegramChatLogEntryFilesInPlace,
 	splitTelegramReply,
 	aiMarkdownToTelegramHtml,
-	escapeHTML
+	escapeHTML,
+	extractStickerIdsFromMarkdown
 } from './tools.mjs'
 
 /** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
@@ -64,7 +68,7 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
  * @returns {string} 逻辑频道 ID。
  */
 function constructLogicalChannelIdForDefault(chatId, threadId) {
-	if (String(threadId)) return `${chatId}_${threadId}`
+	if (Object(threadId) instanceof Number) return `${chatId}_${threadId}`
 	return String(chatId)
 }
 
@@ -88,6 +92,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			OwnerUserID: 'YOUR_TELEGRAM_USER_ID', // 用户需填写的 Telegram 数字 ID
 			MaxMessageDepth: 20,                  // 默认聊天记录深度
 			ReplyToAllMessages: false, // 若开启则对所有消息做出回复
+			MediaGroupFlushMs: 550, // 相册（media_group）合并：收齐分片后的防抖等待毫秒数
 		}
 	}
 
@@ -114,59 +119,21 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * @type {Record<number, ChatReply_t>}
 		 */
 		const aiReplyObjectCache = {}
-		/** @type {Record<number, string>} 用户 ID → 显示名称，附于 interfaceConfig 供 tools 使用。 */
-		interfaceConfig._userDisplayNameCache = {}
+		/** @type {Record<number, string>} 用户 ID → 显示名称 */
+		const userDisplayNameCache = {}
 
-		bot.on('edited_message', async ctx_generic => {
-			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>} */
-			const ctx = ctx_generic
-			if (!('edited_message' in ctx.update)) return
+		/** @type {Map<string, { messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }>} */
+		const telegramMediaGroupBuffers = new Map()
 
-			const editedMessage = ctx.update.edited_message
-			const logicalChannelId = constructLogicalChannelIdForDefault(editedMessage.chat.id, editedMessage.message_thread_id)
-
-			if (editedMessage.chat.type === 'private' && String(editedMessage.from?.id) !== String(interfaceConfig.OwnerUserID)) {
-				console.log(`[TelegramDefaultInterface] Ignoring edited private message from non-owner ${editedMessage.from?.id} in chat ${logicalChannelId}`)
-				return
-			}
-			if (editedMessage.from?.is_bot) return
-
-			const channelLogs = ChannelChatLogs[logicalChannelId]
-			if (!channelLogs) return
-
-			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, { message: editedMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
-			if (!fountEntry) return
-
-			const messageId = editedMessage.message_id
-			const existingIndex = channelLogs.findIndex(entry =>
-				entry.extension?.platform_message_ids?.includes(messageId)
-			)
-
-			if (existingIndex >= 0)
-				channelLogs[existingIndex] = fountEntry
-			else {
-				channelLogs.push(fountEntry)
-				const maxDepth = interfaceConfig.MaxMessageDepth || 20
-				while (channelLogs.length > maxDepth) {
-					const removed = channelLogs.shift()
-					if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
-						delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
-				}
-			}
-		})
-
-		bot.on('message', async ctx_generic => {
-			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
-			const ctx = ctx_generic
-			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
-
-			if (ctx.chat.type === 'private' && String(ctx.from.id) !== String(interfaceConfig.OwnerUserID)) {
-				console.log(`[TelegramDefaultInterface] Ignoring private message from non-owner ${ctx.from.id} in chat ${logicalChannelId}`)
-				return
-			}
-			if (ctx.from.is_bot) return
-
-			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, ctx, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
+		/**
+		 * 将入站日志写入频道缓冲并按规则触发 `GetReply` 与 Telegram 发送。
+		 * @param {TelegrafContext} ctx - 当前 Telegraf 上下文（相册 flush 时为该组最后一条分片的上下文）。
+		 * @param {string} logicalChannelId - 逻辑频道 ID（chat 与 topic 拼接）。
+		 * @param {import('./tools.mjs').chatLogEntry_t_simple | null} fountEntry - 已转换的聊天日志条目；为 null 时直接返回。
+		 * @param {import('npm:telegraf/typings/core/types/typegram').Message[]} triggerMessages - 用于判断是否 @bot 等的原始 Telegram 消息列表（单条时为 `[ctx.message]`，相册为整组 batch）。
+		 * @returns {Promise<void>}
+		 */
+		async function processAfterIncomingEntry(ctx, logicalChannelId, fountEntry, triggerMessages) {
 			if (!fountEntry) return
 
 			ChannelChatLogs[logicalChannelId] ??= []
@@ -176,67 +143,85 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			while (ChannelChatLogs[logicalChannelId].length > maxDepth)
 				ChannelChatLogs[logicalChannelId].shift()
 
+			const triggerMsg = triggerMessages[triggerMessages.length - 1]
+
 			let shouldReply = interfaceConfig.ReplyToAllMessages
 			if (!shouldReply)
 				if (ctx.chat.type === 'private')
 					shouldReply = true
-				else if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
-					const originalMessageText = ctx.message.text || ctx.message.caption || ''
-					if (botInfo.username && originalMessageText.toLowerCase().includes(`@${botInfo.username.toLowerCase()}`))
-						shouldReply = true
-
-					if (!shouldReply && ctx.message.reply_to_message && ctx.message.reply_to_message.from.id === botInfo.id)
-						shouldReply = true
-
-					if (!shouldReply && ctx.message.entities)
-						for (const entity of ctx.message.entities)
+				else if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup')
+					outer: for (const msg of triggerMessages) {
+						const originalMessageText = msg.text || msg.caption || ''
+						if (botInfo.username && originalMessageText.toLowerCase().includes(`@${botInfo.username.toLowerCase()}`)) {
+							shouldReply = true
+							break
+						}
+						if (msg.reply_to_message?.from?.id === botInfo.id) {
+							shouldReply = true
+							break
+						}
+						const entityList = [...msg.entities || [], ...msg.caption_entities || []]
+						for (const entity of entityList)
 							if (entity.type === 'mention') {
 								const mention = originalMessageText.substring(entity.offset, entity.offset + entity.length)
 								if (mention.toLowerCase() === `@${botInfo.username?.toLowerCase()}`) {
 									shouldReply = true
-									break
+									break outer
 								}
 							}
-				}
+					}
+
 
 			if (!shouldReply) return
 
 			try {
 				await tryFewTimes(() => ctx.telegram.sendChatAction(ctx.chat.id, 'typing', {
-					...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
+					...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
 				}))
 
 				/**
-				 * 通过 CharAPI 添加聊天记录条目。
-				 * @param {ChatReply_t} replyFromChar - 来自角色的回复。
-				 * @returns {Promise<null>} - 返回一个解析为 null 的 Promise。
+				 * 将角色侧中间回复发到 Telegram 并同步进 `ChannelChatLogs`。
+				 * @param {ChatReply_t} replyFromChar - 角色返回的片段回复（含正文或文件）。
+				 * @returns {Promise<null>} 恒为 null，与 CharAPI 中间件约定一致。
 				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
-						const aiMarkdownContent = replyFromChar.content_for_show || replyFromChar.content || ''
-						if (aiMarkdownContent.trim()) {
-							const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
+						const rawIntermediateMarkdown = replyFromChar.content_for_show || replyFromChar.content || ''
+						const { cleanMarkdown: intermediateClean, stickerIds: intermediateStickerIds } = extractStickerIdsFromMarkdown(rawIntermediateMarkdown)
+						let lastSentIntermediateMsg = null
+						if (intermediateClean.trim()) {
+							const htmlContent = aiMarkdownToTelegramHtml(intermediateClean)
 							const textParts = splitTelegramReply(htmlContent)
-							let lastSentIntermediateMsg = null
 							for (const part of textParts)
 								lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendMessage(
 									ctx.chat.id,
 									part,
 									{
 										...DefaultParseModeOptions,
-										...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
+										...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
 									}
 								))
+						}
+						for (const stickerId of intermediateStickerIds) try {
+							lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendSticker(
+								ctx.chat.id,
+								stickerId,
+								{
+									...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
+								}
+							))
+						} catch (e) {
+							console.error('[TelegramDefaultInterface] 发送中间回复贴纸失败:', e)
+						}
 
-							if (lastSentIntermediateMsg) {
-								const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname)
-								if (fountEntryForBotReply) {
-									ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
-									while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
-										const removed = ChannelChatLogs[logicalChannelId].shift()
-										if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
-											delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
-									}
+						if (lastSentIntermediateMsg) {
+							const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, undefined, userDisplayNameCache)
+							if (fountEntryForBotReply) {
+								ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
+								while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
+									const removed = ChannelChatLogs[logicalChannelId].shift()
+									if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
+										delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
 								}
 							}
 						}
@@ -246,48 +231,62 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 				ChannelCharScopedMemory[logicalChannelId] ??= {}
 				/**
-				 * 生成聊天回复请求。
-				 * @returns {Promise<object>} - 聊天回复请求。
+				 * 解析惰性附件后组装传给 `GetReply` 的请求对象。
+				 * @returns {Promise<object>} `chatReplyRequest_t` 形状的对象。
 				 */
-				const generateChatReplyRequest = async () => ({
-					supported_functions: { markdown: true, files: true, add_message: true },
-					username: ownerUsername,
-					chat_name: ctx.chat.type === 'private' ?
-						`TG_DM_${logicalChannelId}` :
-						`TG_Group_${ctx.chat.title || ctx.chat.id}${ctx.message.message_thread_id ? `_Topic_${ctx.message.message_thread_id}` : ''}`,
-					char_id: botCharname,
-					Charname: botDisplayName,
-					UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
-					ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
-					locales: localhostLocales,
-					time: new Date(), world: null, user: await (async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
-					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
-					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
-					AddChatLogEntry: AddChatLogEntryViaCharAPI,
-					/**
-					 * 更新。
-					 * @returns {Promise<object>} - 聊天回复请求。
-					 */
-					Update: async () => await generateChatReplyRequest(),
-					extension: {
-						platform: 'telegram',
-						trigger_message_id: ctx.message.message_id,
-						chat_id: ctx.chat.id,
-						message_thread_id: ctx.message.message_thread_id,
-						user_id: ctx.from.id,
-						username_tg: ctx.from.username,
-						first_name_tg: ctx.from.first_name,
-						last_name_tg: ctx.from.last_name,
-						chat_type_tg: ctx.chat.type,
-						chat_title_tg: ctx.chat.title,
-						telegram_trigger_message_obj: ctx.message
+				const generateChatReplyRequest = async () => {
+					for (const e of ChannelChatLogs[logicalChannelId])
+						await resolveTelegramChatLogEntryFilesInPlace(e)
+					return {
+						supported_functions: { markdown: true, files: true, add_message: true },
+						username: ownerUsername,
+						chat_name: ctx.chat.type === 'private' ?
+							`TG_DM_${logicalChannelId}` :
+							`TG_Group_${ctx.chat.title || ctx.chat.id}${triggerMsg.message_thread_id ? `_Topic_${triggerMsg.message_thread_id}` : ''}`,
+						char_id: botCharname,
+						Charname: botDisplayName,
+						UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
+						ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
+						locales: localhostLocales,
+						time: new Date(),
+						world: null,
+						user: await (async () => {
+							const n = getAnyPreferredDefaultPart(ownerUsername, 'personas')
+							if (n) return loadPart(ownerUsername, 'personas/' + n)
+							return null
+						})(),
+						char: charAPI,
+						other_chars: [],
+						plugins: {},
+						chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
+						chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
+						AddChatLogEntry: AddChatLogEntryViaCharAPI,
+						/**
+						 * 刷新请求快照（含最新 `chat_log` 与已解析附件）。
+						 * @returns {Promise<object>} 与 {@link generateChatReplyRequest} 相同形状。
+						 */
+						Update: async () => await generateChatReplyRequest(),
+						extension: {
+							platform: 'telegram',
+							trigger_message_id: triggerMsg.message_id,
+							chat_id: ctx.chat.id,
+							message_thread_id: triggerMsg.message_thread_id,
+							user_id: ctx.from.id,
+							username_tg: ctx.from.username,
+							first_name_tg: ctx.from.first_name,
+							last_name_tg: ctx.from.last_name,
+							chat_type_tg: ctx.chat.type,
+							chat_title_tg: ctx.chat.title,
+							telegram_trigger_message_obj: triggerMsg
+						}
 					}
-				})
+				}
 
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
 
 				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.content_for_show || aiFinalReply.files?.length)) {
-					const aiMarkdownContent = aiFinalReply.content_for_show || aiFinalReply.content || ''
+					const rawAiMarkdown = aiFinalReply.content_for_show || aiFinalReply.content || ''
+					const { cleanMarkdown: aiMarkdownContent, stickerIds } = extractStickerIdsFromMarkdown(rawAiMarkdown)
 					const filesToProcess = (aiFinalReply.files || []).map(f => ({
 						source: f.buffer,
 						filename: f.name || 'file',
@@ -324,7 +323,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							const sendOptionsWithCaption = { ...baseSendOptionsForReply, caption: finalHtmlCaption }
 							let sentMsg
 							try {
-								// 使用 ctx.replyWithPhoto, ctx.replyWithAudio 等，它们会自动处理回复和分区
 								if (fileItem.filename?.match(/\.(jpeg|jpg|png|gif|webp)$/i))
 									sentMsg = await tryFewTimes(() => ctx.replyWithPhoto({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								else if (fileItem.filename?.match(/\.(mp3|ogg|wav|m4a)$/i))
@@ -369,6 +367,16 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
 					}
 
+					const stickerSendOptions = {
+						...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
+					}
+					for (const stickerId of stickerIds) try {
+						const sentMsg = await tryFewTimes(() => ctx.telegram.sendSticker(ctx.chat.id, stickerId, stickerSendOptions))
+						if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
+					} catch (e) {
+						console.error('[TelegramDefaultInterface] 发送贴纸消息失败:', e)
+					}
+
 					if (firstSentTelegramMessage && aiFinalReply) {
 						aiReplyObjectCache[firstSentTelegramMessage.message_id] = aiFinalReply
 
@@ -386,7 +394,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				}
 			}
 			catch (error) {
-				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}, message ${ctx.message.message_id}):`, error)
+				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}, message ${triggerMsg.message_id}):`, error)
 				console.error('[TelegramDefaultInterface] 错误堆栈:', error.stack)
 				try {
 					await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
@@ -394,6 +402,109 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					console.error('[TelegramDefaultInterface] 发送错误消息也失败:', replyError)
 				}
 			}
+		}
+
+		/**
+		 * 重置相册合并防抖定时器，到期后调用 `flushTelegramMediaGroup`。
+		 * @param {{ messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }} state - 当前缓冲状态。
+		 * @param {string} bufferKey - 与 `telegramMediaGroupBuffers` 中键一致。
+		 * @returns {void}
+		 */
+		function scheduleMediaGroupFlush(state, bufferKey) {
+			if (state.timer)
+				clearTimeout(state.timer)
+			state.timer = setTimeout(() => {
+				state.timer = null
+				flushTelegramMediaGroup(bufferKey)
+			}, interfaceConfig.MediaGroupFlushMs ?? 550)
+		}
+
+		/**
+		 * 将当前缓冲的相册分片合并为一条日志并交给 `processAfterIncomingEntry`。
+		 * @param {string} bufferKey - `botId:logicalChannelId:media_group_id`。
+		 * @returns {Promise<void>}
+		 */
+		async function flushTelegramMediaGroup(bufferKey) {
+			const state = telegramMediaGroupBuffers.get(bufferKey)
+			if (!state) return
+			const batch = [...state.messages]
+			state.messages.length = 0
+			try {
+				const mergedCtx = state.ctx
+				const fountEntry = await telegramMediaGroupMessagesToFountChatLogEntry(
+					mergedCtx, batch, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache)
+				await processAfterIncomingEntry(mergedCtx, state.logicalChannelId, fountEntry, batch)
+				if (state.messages.length)
+					scheduleMediaGroupFlush(state, bufferKey)
+				else
+					telegramMediaGroupBuffers.delete(bufferKey)
+			}
+			catch (e) {
+				console.error('[TelegramDefaultInterface] flushTelegramMediaGroup failed:', e)
+				state.messages = [...batch, ...state.messages]
+				scheduleMediaGroupFlush(state, bufferKey)
+			}
+		}
+
+		bot.on('edited_message', async ctx_generic => {
+			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>} */
+			const ctx = ctx_generic
+			if (!ctx.update?.edited_message) return
+
+			const editedMessage = ctx.update.edited_message
+			const logicalChannelId = constructLogicalChannelIdForDefault(editedMessage.chat.id, editedMessage.message_thread_id)
+
+			if (editedMessage.chat.type === 'private' && String(editedMessage.from?.id) !== String(interfaceConfig.OwnerUserID))
+				return
+			if (editedMessage.from?.is_bot) return
+
+			if (editedMessage.media_group_id) {
+				const bufferKey = `${botInfo.id}:${logicalChannelId}:${editedMessage.media_group_id}`
+				const state = telegramMediaGroupBuffers.get(bufferKey)
+				if (state) {
+					const idx = state.messages.findIndex(m => m.message_id === editedMessage.message_id)
+					if (idx >= 0) state.messages[idx] = editedMessage
+					else state.messages.push(editedMessage)
+					state.ctx = ctx
+					scheduleMediaGroupFlush(state, bufferKey)
+					return
+				}
+			}
+
+			const channelLogs = ChannelChatLogs[logicalChannelId]
+			if (!channelLogs) return
+
+			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, { message: editedMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
+			if (!fountEntry) return
+
+			applyTelegramMessageUpdateToChannelLog(channelLogs, fountEntry)
+		})
+
+		bot.on('message', async ctx_generic => {
+			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
+			const ctx = ctx_generic
+			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
+
+			if (ctx.chat.type === 'private' && String(ctx.from.id) !== String(interfaceConfig.OwnerUserID))
+				return
+			if (ctx.from.is_bot) return
+
+			if (ctx.message.media_group_id) {
+				const bufferKey = `${botInfo.id}:${logicalChannelId}:${ctx.message.media_group_id}`
+				let state = telegramMediaGroupBuffers.get(bufferKey)
+				if (!state) {
+					state = { messages: [], logicalChannelId, ctx, timer: null }
+					telegramMediaGroupBuffers.set(bufferKey, state)
+				}
+				state.ctx = ctx
+				if (!state.messages.some(m => m.message_id === ctx.message.message_id))
+					state.messages.push(ctx.message)
+				scheduleMediaGroupFlush(state, bufferKey)
+				return
+			}
+
+			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, ctx, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
+			await processAfterIncomingEntry(ctx, logicalChannelId, fountEntry, [ctx.message])
 		})
 
 		bot.catch((err, ctx_err) => {

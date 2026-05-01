@@ -51,6 +51,7 @@
 				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
 				"noUpstream": "Aucune branche de suivi configurée pour la branche '${currentBranch}', vérification des mises à jour ignorée.",
 				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez mettre de côté ('stash') ou valider ('commit') vos modifications avant de mettre à jour.",
+				"uncommittedBackedUpTo": "Les modifications non validées ont été sauvegardées dans : ${path}",
 				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
 				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
-		},
+		"botStarted": "Le personnage ${charname} s'est connecté au bot ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "Le mot de passe est trop faible.",
 			"accountAlreadyExists": "Ce compte existe déjà.",
 			"powNotSolved": "Veuillez d'abord terminer la vérification PoW",
-			"powError": "Erreur de vérification PoW"
+			"powError": "Erreur de vérification PoW",
+			"invalidCredentials": "Nom d'utilisateur ou mot de passe invalide.",
+			"accountLockedRetry": "Le compte a été verrouillé, veuillez réessayer après ${timeLeft}.",
+			"accountLockedAttempts": "Le compte a été temporairement verrouillé en raison d'un trop grand nombre de tentatives de connexion infructueuses.",
+			"powValidationFailed": "La vérification de sécurité a échoué. Veuillez réessayer.",
+			"apiErrorBodyUnreadable": "Le serveur a renvoyé des informations qui n'ont pas pu être analysées. Veuillez réessayer plus tard."
 		},
 		"webauthn": {
 			"loginButton": "Connexion avec clé de sécurité ou Passkey",
-			"errorNoUsername": "Saisissez votre nom d'utilisateur avant d'utiliser Passkey.",
 			"errorLoadLibrary": "Impossible de charger la bibliothèque auxiliaire WebAuthn, veuillez vérifier le réseau et réessayer.",
-			"errorCancelled": "La clé de sécurité a été annulée ou son utilisation n'est pas autorisée."
+			"errorCancelled": "La clé de sécurité a été annulée ou son utilisation n'est pas autorisée.",
+			"errorSessionMissing": "Le serveur n'a pas renvoyé de session de connexion valide, veuillez actualiser la page et réessayer.",
+			"errorBadBeginResponse": "Le serveur a renvoyé des données de connexion invalides, veuillez actualiser la page et réessayer.",
+			"errorCredentialRequired": "Des données d'identification de clé d'accès valides sont manquantes.",
+			"errorAuthSessionRequired": "Le jeton de session de connexion est manquant, veuillez actualiser la page et réessayer.",
+			"apiSessionExpired": "La session de connexion Passkey a expiré, veuillez réessayer.",
+			"apiUnknownPasskey": "La clé d'accès n'est pas reconnue, veuillez utiliser une clé liée.",
+			"apiPasskeyVerificationFailed": "La vérification de la clé d'accès a échoué. Veuillez réessayer.",
+			"registrationUserNotFound": "Compte utilisateur introuvable.",
+			"registrationSessionExpired": "La session de liaison a expiré, veuillez réessayer depuis le début.",
+			"registrationVerifyFailed": "Impossible de terminer la vérification de l'enregistrement de la clé d'accès.",
+			"registrationFailed": "L'enregistrement de la clé d'accès a échoué. Veuillez réessayer.",
+			"removeUserNotFound": "Données d'utilisateur ou d'identification introuvables.",
+			"removeInvalidPassword": "Mauvais mot de passe.",
+			"removePasskeyNotFound": "La clé d'accès n'a pas été trouvée."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "Erreur de transfert de certificat",
 			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
 			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
-			"no_credentials": "Aucune information de connexion enregistrée trouvée.\nVeuillez vous reconnecter depuis fount pour mettre à jour vos identifiants de connexion, ou cliquez sur le bouton ci-dessous pour continuer vers la page cible sans identifiants de connexion.",
 			"missing_params": "Il manque un paramètre obligatoire dans le lien.",
 			"buttons": {
 				"ignore": "Ignorer et continuer",
@@ -865,6 +878,10 @@
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
 			"commonToolCalling": "Appel de l'outil",
+			"reasoningDetailsTitle": "Processus de raisonnement",
+			"logprobsNotApplicable": "non applicable",
+			"logprobsTopLogprobsMeta": "top_logprobs (sélectionné : ${token})",
+			"logprobsMetricsFooter": "Délai du premier token : ${ttft} | Durée : ${time} | Tokens : ${tokens} | Vitesse : ${speed}",
 			"noReplyContent": "(Pas de contenu de réponse)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "Paramètres utilisateur",
 		"PageTitle": "Paramètres utilisateur",
-		"description": "Occupez-vous des détails de votre identité de source. Gérez votre profil, protégez votre accès et affichez les appareils connectés. Un sanctuaire tranquille pour votre compte.",
+		"description": "Prenez soin des détails de votre identité fount. Gérez votre profil, protégez votre accès et consultez les appareils connectés. Un sanctuaire tranquille pour votre compte.",
+		"shell": {
+			"unauthorized": "Connexion requise.",
+			"responseNotJson": "Le serveur a renvoyé un contenu impossible à analyser.",
+			"unexpectedError": "La demande a échoué."
+		},
+		"errors": {
+			"accountNotFound": "Compte introuvable."
+		},
 		"userInfo": {
 			"title": "Informations utilisateur",
 			"usernameLabel": "Nom d'utilisateur :",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Icône de Copie"
 			},
-			"copiedAlert": "Chemin copié dans le presse-papiers !"
+			"copiedAlert": "Chemin copié dans le presse-papiers !",
+			"copyPathFailed": "Impossible de copier le chemin vers le presse-papiers."
 		},
 		"changePassword": {
 			"title": "Modifier le mot de passe",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
 			"submitButton": "Modifier le mot de passe",
 			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
-			"success": "Mot de passe modifié avec succès."
+			"success": "Mot de passe modifié avec succès.",
+			"missingFields": "Veuillez remplir votre mot de passe actuel et votre nouveau mot de passe.",
+			"invalidCurrent": "Le mot de passe actuel est incorrect."
 		},
 		"renameUser": {
 			"title": "Renommer l'utilisateur",
 			"newUsernameLabel": "Nouveau nom d'utilisateur :",
 			"submitButton": "Renommer l'utilisateur",
 			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
-			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
+			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté.",
+			"missingParams": "Veuillez renseigner le nouveau nom d'utilisateur et le mot de passe actuel.",
+			"wrongPassword": "Le mot de passe est incorrect.",
+			"mustDiffer": "Le nouveau nom d'utilisateur doit être différent du nom d'utilisateur actuel.",
+			"taken": "Ce nom d'utilisateur est déjà pris.",
+			"moveFailed": "Échec du renommage du répertoire de données utilisateur : ${detail}. Le nom d'utilisateur d'origine a été restauré."
 		},
 		"passkeys": {
 			"title": "Clés de sécurité et Passkeys",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "Clé de sécurité supprimée.",
 			"addSuccess": "Clé de sécurité ajoutée.",
 			"errorLoadLibrary": "Impossible de charger la bibliothèque WebAuthn.",
-			"errorCancelled": "Ajout annulé."
+			"errorCancelled": "Ajout annulé.",
+			"apiInvalidPassword": "Mauvais mot de passe.",
+			"apiMissingCredential": "Des informations d'identification de clé d'accès valides sont manquantes.",
+			"apiRemoveParamsRequired": "Veuillez fournir les informations d'identification et le mot de passe que vous souhaitez supprimer."
 		},
 		"userDevices": {
 			"title": "Appareils et sessions utilisateur",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "Révoquer",
 			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
 			"revokeSuccess": "Appareil/Session révoqué avec succès.",
+			"revokeMissingParams": "Veuillez fournir l'appareil et le mot de passe de session que vous souhaitez révoquer.",
+			"revokeWrongPassword": "Le mot de passe est incorrect.",
+			"listNotFound": "Liste des appareils introuvable.",
+			"deviceNotFound": "L'appareil ou la session n'a pas été trouvé.",
 			"refreshButton": {
 				"title": "Actualiser la liste"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "Aucune clé API n'a été trouvée.",
 			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
 			"neverUsed": "Jamais utilisé",
+			"noKeysForUser": "Données de clé API introuvables.",
+			"revokeWrongPassword": "Le mot de passe est incorrect.",
+			"keyNotFound": "La clé API n'a pas été trouvée.",
+			"revokeMissingJti": "Veuillez spécifier la clé à révoquer.",
+			"revokeMissingPassword": "La révocation d'une clé nécessite un mot de passe.",
 			"revokeButton": "Révoquer",
 			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
 			"revokeSuccess": "La clé API a été révoquée avec succès.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "Copier la nouvelle clé API"
 			},
-			"copiedAlert": "Clé API copiée dans le presse-papiers !"
+			"copiedAlert": "Clé API copiée dans le presse-papiers !",
+			"copyKeyFailed": "Impossible de copier la clé dans le presse-papiers."
 		},
 		"logout": {
 			"title": "Se déconnecter",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
 			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
 			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
-			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
+			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté.",
+			"missingPassword": "Veuillez entrer votre mot de passe.",
+			"wrongPassword": "Le mot de passe est incorrect."
 		},
 		"passwordConfirm": {
 			"title": "Confirmer l'opération",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Bots Discord",
-		"description": "Donnez une voix à vos compagnons de fount dans les salles animées de Discord. Configurez leur présence, gérez leurs opérations et laissez-les relier les mondes, un serveur à la fois.",
-		"cardTitle": "Bots Discord",
-		"botSelectDropdown": {
-			"placeholder": "Choisissez un bot"
-		},
-		"botSearch": {
-			"placeholder": "Rechercher un bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Sélectionnez un rôle"
-		},
-		"charSearch": {
-			"placeholder": "Rechercher des personnages..."
-		},
-		"configCard": {
-			"title": "Configuration du bot",
-			"labels": {
-				"character": "Personnage",
-				"apiKey": "Clé API Discord",
-				"config": "Configuration"
-			},
-			"charSelectPlaceholder": "Sélectionner un personnage",
-			"apiKeyInput": {
-				"placeholder": "Saisir la clé API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Activer/désactiver l'affichage des clés API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Afficher/Masquer la clé API"
-			},
-			"buttons": {
-				"saveConfig": "Enregistrer la configuration",
-				"startBot": "Démarrer",
-				"stopBot": "Arrêter"
-			}
-		},
-		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
-		},
-		"buttons": {
-			"newBot": "Nouveau",
-			"deleteBot": "Supprimer"
-		},
-		"alerts": {
-			"configSaved": "Configuration enregistrée avec succès",
-			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
-			"httpError": "Erreur HTTP",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Venir sur Discord",
-				"description": "Invoquez votre personnage dans le monde de Discord.",
-				"locked_description": "Lancez le Discord Bot une fois."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Configuration du Bot Discord"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Configuration du Bot Discord"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Bots Telegram",
 		"description": "Laissez vos personnages de fount traverser les vagues instantanées de Telegram. Configurez leur présence numérique, gérez leurs conversations et étendez leur portée à ce monde de messagerie dynamique.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Configuration du Bot Telegram"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "Bot WeChat",
+		"description": "Faites tourner un personnage fount comme bot WeChat : liez un rôle, gérez vos bots et discutez sur WeChat.",
+		"cardTitle": "Bot WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Choisir un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Choisir un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des rôles…"
+		},
+		"configCard": {
+			"title": "Paramètres du bot",
+			"labels": {
+				"character": "Rôle associé",
+				"apiBaseUrl": "URL de base de l’API canal WeChat",
+				"botToken": "Jeton iLink Bot",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un rôle",
+			"apiBaseUrlInput": {
+				"placeholder": "Laisser vide pour https://ilinkai.weixin.qq.com par défaut"
+			},
+			"botTokenInput": {
+				"placeholder": "Jeton Bearer obtenu après connexion"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Afficher ou masquer le jeton"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Afficher ou masquer le jeton"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Nom du nouveau bot :"
+		},
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"alerts": {
+			"configSaved": "Enregistré",
+			"botExists": "Un bot nommé « ${botname} » existe déjà. Choisissez un autre nom.",
+			"unsavedChanges": "Modifications non enregistrées. Les ignorer ?",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Modifications non enregistrées. Quitter la page ?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Au boulot !",
+				"description": "Dialoguer avec votre personnage fount sur WeChat.",
+				"locked_description": "Lancer le bot WeChat une fois."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Bot WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Paramètres du bot WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Scannez le code QR ci-dessous avec WeChat pour terminer la connexion.",
+			"button": "Scanner pour se connecter",
+			"scanPrompt": "Ouvrez WeChat et scannez le code QR",
+			"waiting": "Chargement du code QR…",
+			"scanned": "Scanné — confirmez sur votre téléphone",
+			"success": "WeChat connecté. Réglages enregistrés — vous pouvez démarrer le bot.",
+			"needBot": "Sélectionnez d’abord un bot dans la liste ou créez-en un avec « Nouveau »."
+		}
+	},
+	"discord_bots": {
+		"title": "Bots Discord",
+		"description": "Donnez une voix à vos compagnons de fount dans les salles animées de Discord. Configurez leur présence, gérez leurs opérations et laissez-les relier les mondes, un serveur à la fois.",
+		"cardTitle": "Bots Discord",
+		"botSelectDropdown": {
+			"placeholder": "Choisissez un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Sélectionnez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des personnages..."
+		},
+		"configCard": {
+			"title": "Configuration du bot",
+			"labels": {
+				"character": "Personnage",
+				"apiKey": "Clé API Discord",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un personnage",
+			"apiKeyInput": {
+				"placeholder": "Saisir la clé API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Activer/désactiver l'affichage des clés API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Afficher/Masquer la clé API"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la configuration",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+		},
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"alerts": {
+			"configSaved": "Configuration enregistrée avec succès",
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous abandonner les modifications ?",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Venir sur Discord",
+				"description": "Invoquez votre personnage dans le monde de Discord.",
+				"locked_description": "Lancez le Discord Bot une fois."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuration du Bot Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuration du Bot Discord"
 			}
 		}
 	},

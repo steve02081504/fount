@@ -51,6 +51,7 @@
 				"localAhead": "Локальная ветка опережает удаленную. Обновление не требуется.",
 				"noUpstream": "Для ветки '${currentBranch}' не настроена вышестоящая ветка. Проверка обновлений пропущена.",
 				"dirtyWorkingDirectory": "Рабочий каталог нечист. Пожалуйста, сделайте 'stash' или 'commit' ваших изменений перед обновлением.",
+				"uncommittedBackedUpTo": "Резервная копия незафиксированных изменений была сохранена в: ${path}.",
 				"diverged": "Локальная и удаленная ветки разошлись. Выполняется принудительное обновление...",
 				"updateFailed": "Не удалось обновить компоненты из удаленного репозитория: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
-		},
+		"botStarted": "Персонаж ${charname} вошел в ${platform} бот ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "Пароль слишком простой.",
 			"accountAlreadyExists": "Аккаунт уже существует.",
 			"powNotSolved": "Пожалуйста, сначала пройдите проверку PoW",
-			"powError": "Ошибка проверки PoW"
+			"powError": "Ошибка проверки PoW",
+			"invalidCredentials": "Неверное имя пользователя или пароль.",
+			"accountLockedRetry": "Аккаунт заблокирован. Повторите попытку через ${timeLeft}.",
+			"accountLockedAttempts": "Учетная запись временно заблокирована из-за слишком большого количества неудачных попыток входа в систему.",
+			"powValidationFailed": "Не удалось пройти проверку безопасности. Повторите попытку.",
+			"apiErrorBodyUnreadable": "Сервер вернул информацию, которую не удалось проанализировать. Пожалуйста, повторите попытку позже."
 		},
 		"webauthn": {
 			"loginButton": "Войти с ключом безопасности или Passkey",
-			"errorNoUsername": "Введите имя пользователя перед использованием Passkey.",
 			"errorLoadLibrary": "Невозможно загрузить вспомогательную библиотеку WebAuthn. Проверьте сеть и повторите попытку.",
-			"errorCancelled": "Ключ безопасности аннулирован или не разрешен для использования."
+			"errorCancelled": "Ключ безопасности аннулирован или не разрешен для использования.",
+			"errorSessionMissing": "Сервер не вернул действительный сеанс входа в систему. Обновите страницу и повторите попытку.",
+			"errorBadBeginResponse": "Сервер вернул неверные данные для входа. Обновите страницу и повторите попытку.",
+			"errorCredentialRequired": "Данные действительных учетных данных ключа доступа отсутствуют.",
+			"errorAuthSessionRequired": "Токен сеанса входа отсутствует. Обновите страницу и повторите попытку.",
+			"apiSessionExpired": "Срок действия сеанса входа в систему с паролем истек. Повторите попытку.",
+			"apiUnknownPasskey": "Ключ доступа не распознан, используйте привязанный ключ.",
+			"apiPasskeyVerificationFailed": "Проверка пароля не удалась. Повторите попытку.",
+			"registrationUserNotFound": "Учетная запись пользователя не найдена.",
+			"registrationSessionExpired": "Срок сеанса привязки истек. Повторите попытку с самого начала.",
+			"registrationVerifyFailed": "Не удалось завершить проверку регистрации пароля.",
+			"registrationFailed": "Регистрация пароля не удалась, попробуйте еще раз.",
+			"removeUserNotFound": "Данные пользователя или учетные данные не найдены.",
+			"removeInvalidPassword": "Неправильный пароль.",
+			"removePasskeyNotFound": "Ключ доступа не найден."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "Ошибка передачи сертификата",
 			"retrieve_error": "Произошла ошибка при попытке сохранить учетные данные для входа:\n${error}\nВы можете продолжить, но не можете сохранить информацию о входе.",
 			"transfer_error": "Произошла ошибка при попытке перенести учетные данные для входа:\n${error}\nВы можете продолжить, но не можете получить информацию о входе.",
-			"no_credentials": "Сохраненные учетные данные для входа не найдены.\nПожалуйста, войдите в систему еще раз из fount, чтобы обновить свои учетные данные, или нажмите кнопку ниже, чтобы перейти на целевую страницу без учетных данных.",
 			"missing_params": "В ссылке отсутствует обязательный параметр.",
 			"buttons": {
 				"ignore": "Игнорировать и продолжить",
@@ -865,6 +878,10 @@
 				"success": "Ссылка успешно создана! Скопирована в буфер обмена. <br>Эта функция поддерживается ${provider}. <br>[Поддержать их.](${sponsorLink})"
 			},
 			"commonToolCalling": "Вызов инструмента...",
+			"reasoningDetailsTitle": "Процесс рассуждения",
+			"logprobsNotApplicable": "н/д",
+			"logprobsTopLogprobsMeta": "top_logprobs (выбрано: ${token})",
+			"logprobsMetricsFooter": "Задержка первого токена: ${ttft} | Длительность: ${time} | Токены: ${tokens} | Скорость: ${speed}",
 			"noReplyContent": "(Нет содержимого)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "Настройки пользователя",
 		"PageTitle": "Настройки пользователя",
-		"description": "Обратите внимание на детали вашей личности. Управляйте своим профилем, защищайте свой доступ и просматривайте подключенные устройства. К вашей чести, тихое убежище.",
+		"description": "Управляйте деталями вашего профиля fount. Настраивайте профиль, защищайте доступ и просматривайте подключенные устройства. Тихая гавань для вашего аккаунта.",
+		"shell": {
+			"unauthorized": "Требуется вход.",
+			"responseNotJson": "Сервер вернул содержимое, которое не удалось обработать.",
+			"unexpectedError": "Запрос не удался."
+		},
+		"errors": {
+			"accountNotFound": "Аккаунт не найден."
+		},
 		"userInfo": {
 			"title": "Информация о пользователе",
 			"usernameLabel": "Имя пользователя:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "Иконка копирования"
 			},
-			"copiedAlert": "Путь скопирован в буфер обмена!"
+			"copiedAlert": "Путь скопирован в буфер обмена!",
+			"copyPathFailed": "Невозможно скопировать путь в буфер обмена."
 		},
 		"changePassword": {
 			"title": "Изменить пароль",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Подтвердите новый пароль:",
 			"submitButton": "Изменить пароль",
 			"errorMismatch": "Новые пароли не совпадают.",
-			"success": "Пароль успешно изменен."
+			"success": "Пароль успешно изменен.",
+			"missingFields": "Пожалуйста, введите свой текущий пароль и новый пароль.",
+			"invalidCurrent": "Текущий пароль неверен."
 		},
 		"renameUser": {
 			"title": "Переименовать пользователя",
 			"newUsernameLabel": "Новое имя пользователя:",
 			"submitButton": "Переименовать пользователя",
 			"confirmMessage": "Вы уверены, что хотите изменить имя пользователя? Потребуется повторный вход в систему.",
-			"success": "Имя пользователя успешно изменено на «${newUsername}». Теперь будет выполнен выход из системы."
+			"success": "Имя пользователя успешно изменено на «${newUsername}». Теперь будет выполнен выход из системы.",
+			"missingParams": "Пожалуйста, введите новое имя пользователя и пароль.",
+			"wrongPassword": "Пароль неверен.",
+			"mustDiffer": "Новое имя пользователя должно отличаться от текущего имени пользователя.",
+			"taken": "Это имя пользователя уже занято.",
+			"moveFailed": "Не удалось переименовать каталог пользовательских данных: ${detail}. Исходное имя пользователя восстановлено."
 		},
 		"passkeys": {
 			"title": "Ключи безопасности и Passkey",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "Ключ безопасности удален.",
 			"addSuccess": "Ключ безопасности добавлен.",
 			"errorLoadLibrary": "Невозможно загрузить библиотеку WebAuthn.",
-			"errorCancelled": "Добавление отменено."
+			"errorCancelled": "Добавление отменено.",
+			"apiInvalidPassword": "Неправильный пароль.",
+			"apiMissingCredential": "Действительные учетные данные пароля отсутствуют.",
+			"apiRemoveParamsRequired": "Укажите учетные данные и пароль, которые вы хотите удалить."
 		},
 		"userDevices": {
 			"title": "Устройства и сеансы пользователя",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "Отозвать",
 			"revokeConfirm": "Вы уверены, что хотите отозвать доступ для этого устройства/сеанса?",
 			"revokeSuccess": "Устройство/сеанс успешно отозван.",
+			"revokeMissingParams": "Укажите устройство и пароль сеанса, который вы хотите отозвать.",
+			"revokeWrongPassword": "Пароль неверен.",
+			"listNotFound": "Список устройств не найден.",
+			"deviceNotFound": "Устройство или сеанс не найдены.",
 			"refreshButton": {
 				"title": "Обновить список"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "Ключей API не найдено.",
 			"keyDetails": "Описание: ${description} | Создано в: ${createdAt} | Последнее использование: ${lastUsed}",
 			"neverUsed": "Никогда не использовался",
+			"noKeysForUser": "Данные ключа API не найдены.",
+			"revokeWrongPassword": "Пароль неверен.",
+			"keyNotFound": "Ключ API не найден.",
+			"revokeMissingJti": "Пожалуйста, укажите ключ для отзыва.",
+			"revokeMissingPassword": "Для отзыва ключа требуется пароль.",
 			"revokeButton": "Отозвать",
 			"revokeConfirm": "Вы уверены, что хотите отозвать этот ключ API?",
 			"revokeSuccess": "Ключ API был успешно отозван.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "Скопируйте новый ключ API"
 			},
-			"copiedAlert": "Ключ API скопирован в буфер обмена!"
+			"copiedAlert": "Ключ API скопирован в буфер обмена!",
+			"copyKeyFailed": "Невозможно скопировать ключ в буфер обмена."
 		},
 		"logout": {
 			"title": "Выйти",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "Внимание! Вы уверены, что хотите навсегда удалить свою учетную запись? Это действие необратимо.",
 			"confirmMessage2": "Для подтверждения удаления введите ваше имя пользователя «${username}»:",
 			"usernameMismatch": "Введенное имя пользователя не совпадает с текущим. Операция удаления отменена.",
-			"success": "Учетная запись успешно удалена. Теперь будет выполнен выход из системы."
+			"success": "Учетная запись успешно удалена. Теперь будет выполнен выход из системы.",
+			"missingPassword": "Пожалуйста, введите свой пароль.",
+			"wrongPassword": "Пароль неверен."
 		},
 		"passwordConfirm": {
 			"title": "Подтверждение операции",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord боты",
-		"description": "Дайте своим друзьям голос в шумных залах Discord. Настраивайте их присутствие, управляйте их операциями и позволяйте им соединять миры, по одному серверу за раз.",
-		"cardTitle": "Discord боты",
-		"botSelectDropdown": {
-			"placeholder": "Выберите бота"
-		},
-		"botSearch": {
-			"placeholder": "Найти бота..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Выберите роль"
-		},
-		"charSearch": {
-			"placeholder": "Поиск персонажей..."
-		},
-		"configCard": {
-			"title": "Настройка бота",
-			"labels": {
-				"character": "Персонаж",
-				"apiKey": "API-ключ Discord",
-				"config": "Конфигурация"
-			},
-			"charSelectPlaceholder": "Выберите персонажа",
-			"apiKeyInput": {
-				"placeholder": "Введите API-ключ"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Переключить отображение ключей API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Показать/скрыть API-ключ"
-			},
-			"buttons": {
-				"saveConfig": "Сохранить конфигурацию",
-				"startBot": "Запустить",
-				"stopBot": "Остановить"
-			}
-		},
-		"prompts": {
-			"newBotName": "Пожалуйста, введите имя нового бота:"
-		},
-		"buttons": {
-			"newBot": "Создать",
-			"deleteBot": "Удалить"
-		},
-		"alerts": {
-			"configSaved": "Конфигурация успешно сохранена.",
-			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
-			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
-			"httpError": "Ошибка HTTP.",
-			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Приходя в Дискорд",
-				"description": "Призовите своего персонажа в мир Discord.",
-				"locked_description": "Запустите Discord Bot один раз."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Боты",
-				"sub_items": {
-					"manage": {
-						"title": "Настройка Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Настройка Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Боты Telegram",
 		"description": "Пусть ваши персонажи fount мгновенно перемещаются по волнам Telegram. Развивайте свое цифровое присутствие, управляйте своими разговорами и расширяйте свое присутствие в динамичном мире обмена сообщениями.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Настройка Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "Бот WeChat",
+		"description": "Запускайте персонажа fount как бота WeChat: привяжите роль, управляйте ботами и общайтесь в WeChat.",
+		"cardTitle": "Бот WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Выберите бота"
+		},
+		"botSearch": {
+			"placeholder": "Поиск ботов…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Выберите роль"
+		},
+		"charSearch": {
+			"placeholder": "Поиск ролей…"
+		},
+		"configCard": {
+			"title": "Настройки бота",
+			"labels": {
+				"character": "Привязанная роль",
+				"apiBaseUrl": "Базовый URL API канала WeChat",
+				"botToken": "Токен iLink Bot",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите роль",
+			"apiBaseUrlInput": {
+				"placeholder": "Пусто — по умолчанию https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer-токен после входа"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Показать или скрыть токен"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Показать или скрыть токен"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить",
+				"startBot": "Запуск",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Имя нового бота:"
+		},
+		"buttons": {
+			"newBot": "Новый",
+			"deleteBot": "Удалить"
+		},
+		"alerts": {
+			"configSaved": "Сохранено",
+			"botExists": "Бот с именем «${botname}» уже есть. Выберите другое имя.",
+			"unsavedChanges": "Есть несохранённые изменения. Отменить их?",
+			"httpError": "Ошибка HTTP",
+			"beforeUnload": "Есть несохранённые изменения. Выйти со страницы?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Поработай за меня!",
+				"description": "Пообщайтесь с персонажем fount в WeChat.",
+				"locked_description": "Один раз запустите бота WeChat."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боты",
+				"sub_items": {
+					"manage": {
+						"title": "Бот WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройки бота WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Отсканируйте QR-код ниже в WeChat, чтобы завершить вход.",
+			"button": "Сканировать для входа",
+			"scanPrompt": "Откройте WeChat и отсканируйте QR-код",
+			"waiting": "Загрузка QR-кода…",
+			"scanned": "Отсканировано — подтвердите на телефоне",
+			"success": "WeChat подключён, настройки сохранены — можно запускать бота.",
+			"needBot": "Сначала выберите бота в списке или создайте нового через «Новый»."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord боты",
+		"description": "Дайте своим друзьям голос в шумных залах Discord. Настраивайте их присутствие, управляйте их операциями и позволяйте им соединять миры, по одному серверу за раз.",
+		"cardTitle": "Discord боты",
+		"botSelectDropdown": {
+			"placeholder": "Выберите бота"
+		},
+		"botSearch": {
+			"placeholder": "Найти бота..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Выберите роль"
+		},
+		"charSearch": {
+			"placeholder": "Поиск персонажей..."
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Персонаж",
+				"apiKey": "API-ключ Discord",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"apiKeyInput": {
+				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Переключить отображение ключей API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Показать/скрыть API-ключ"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"alerts": {
+			"configSaved": "Конфигурация успешно сохранена.",
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Приходя в Дискорд",
+				"description": "Призовите своего персонажа в мир Discord.",
+				"locked_description": "Запустите Discord Bot один раз."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боты",
+				"sub_items": {
+					"manage": {
+						"title": "Настройка Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройка Discord Bot"
 			}
 		}
 	},

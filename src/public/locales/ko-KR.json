@@ -51,6 +51,7 @@
 				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
 				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
 				"dirtyWorkingDirectory": "작업 디렉터리가 정리되지 않았습니다. 업데이트하기 전에 변경 사항을 스태시하거나 커밋하세요.",
+				"uncommittedBackedUpTo": "커밋되지 않은 변경 사항이 ${path}에 백업되었습니다.",
 				"diverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
 				"updateFailed": "원격 리포지토리에서 컴포넌트 업데이트에 실패했습니다: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
-		},
-		"discordbot": {
-			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
-		},
+		"botStarted": "캐릭터 ${charname}님이 ${platform} 봇 ${botusername}에 로그인했습니다.",
 		"path": {
 			"protocol": {
 				"description": "URL: fount 프로토콜",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "비밀번호의 보안 수준이 너무 낮습니다.",
 			"accountAlreadyExists": "이미 존재하는 계정입니다.",
 			"powNotSolved": "먼저 PoW 인증을 완료해주세요",
-			"powError": "POW 검증 오류"
+			"powError": "POW 검증 오류",
+			"invalidCredentials": "사용자 이름 또는 비밀번호가 잘못되었습니다.",
+			"accountLockedRetry": "계정이 잠겼습니다. ${timeLeft} 후에 다시 시도해 주세요.",
+			"accountLockedAttempts": "로그인 시도 실패 횟수가 너무 많아 계정이 일시적으로 잠겼습니다.",
+			"powValidationFailed": "봇 방지 확인에 실패했습니다. 다시 시도해 주세요.",
+			"apiErrorBodyUnreadable": "서버가 구문 분석할 수 없는 정보를 반환했습니다. 나중에 다시 시도해 주세요."
 		},
 		"webauthn": {
 			"loginButton": "보안키/패스키를 이용하여 로그인",
-			"errorNoUsername": "Passkey를 사용하기 전에 사용자 이름을 입력하십시오.",
 			"errorLoadLibrary": "WebAuthn 보조 라이브러리를 로드할 수 없습니다. 네트워크를 확인한 후 다시 시도해 주세요.",
-			"errorCancelled": "보안 키가 취소되었거나 사용이 승인되지 않았습니다."
+			"errorCancelled": "보안 키가 취소되었거나 사용이 승인되지 않았습니다.",
+			"errorSessionMissing": "서버가 유효한 로그인 세션을 반환하지 않았습니다. 페이지를 새로 고치고 다시 시도하십시오.",
+			"errorBadBeginResponse": "서버에서 잘못된 로그인 데이터를 반환했습니다. 페이지를 새로 고친 후 다시 시도하세요.",
+			"errorCredentialRequired": "유효한 암호 키 자격 증명 데이터가 누락되었습니다.",
+			"errorAuthSessionRequired": "로그인 세션 토큰이 누락되었습니다. 페이지를 새로고침하고 다시 시도하세요.",
+			"apiSessionExpired": "패스키 로그인 세션이 만료되었습니다. 다시 시도해 주세요.",
+			"apiUnknownPasskey": "패스키가 인식되지 않습니다. 바인딩된 키를 사용하세요.",
+			"apiPasskeyVerificationFailed": "비밀번호 확인에 실패했습니다. 다시 시도해 주세요.",
+			"registrationUserNotFound": "사용자 계정을 찾을 수 없습니다.",
+			"registrationSessionExpired": "바인딩 세션이 만료되었습니다. 처음부터 다시 시도해 주세요.",
+			"registrationVerifyFailed": "패스키 등록 확인을 완료할 수 없습니다.",
+			"registrationFailed": "비밀번호 등록에 실패했습니다. 다시 시도해 주세요.",
+			"removeUserNotFound": "사용자 또는 자격 증명 데이터를 찾을 수 없습니다.",
+			"removeInvalidPassword": "비밀번호가 잘못되었습니다.",
+			"removePasskeyNotFound": "패스키를 찾을 수 없습니다."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "인증서 전송 오류",
 			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
 			"transfer_error": "로그인 정보를 전송하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 얻을 수는 없습니다.",
-			"no_credentials": "저장된 로그인 자격 증명을 찾을 수 없습니다.\n로그인 자격 증명을 업데이트하려면 fount 내에서 다시 로그인하십시오. 또는 로그인 자격 증명 없이 대상 페이지로 계속 진행하려면 아래 버튼을 클릭하십시오.",
 			"missing_params": "링크에 필수 매개변수가 누락되었습니다.",
 			"buttons": {
 				"ignore": "무시하고 계속",
@@ -865,6 +878,10 @@
 				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
 			},
 			"commonToolCalling": "도구 호출 중",
+			"reasoningDetailsTitle": "추론 과정",
+			"logprobsNotApplicable": "해당 없음",
+			"logprobsTopLogprobsMeta": "top_logprobs (선택됨: ${token})",
+			"logprobsMetricsFooter": "첫 토큰 지연: ${ttft} | 소요 시간: ${time} | 토큰: ${tokens} | 속도: ${speed}",
 			"noReplyContent": "(답장 내용 없음)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "사용자 설정",
 		"PageTitle": "사용자 설정",
-		"description": "당신의 fount 정체성에 대한 세부 사항을 관리하십시오. 프로필을 관리하고, 액세스를 보호하고, 연결된 장치를 확인하세요. 귀하의 계정을 위한 조용한 성소입니다.",
+		"description": "fount 신원 관련 세부 정보를 관리합니다. 프로필·접근 보안·연결된 기기를 확인할 수 있습니다. 계정만을 위한 조용하고 안전한 공간입니다.",
+		"shell": {
+			"unauthorized": "로그인이 필요합니다.",
+			"responseNotJson": "서버가 분석할 수 없는 콘텐츠를 반환했습니다.",
+			"unexpectedError": "요청이 실패했습니다."
+		},
+		"errors": {
+			"accountNotFound": "계정을 찾을 수 없습니다."
+		},
 		"userInfo": {
 			"title": "사용자 정보",
 			"usernameLabel": "사용자 이름:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "복사 아이콘"
 			},
-			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
+			"copiedAlert": "경로를 클립보드에 복사했습니다.",
+			"copyPathFailed": "경로를 클립보드에 복사할 수 없습니다."
 		},
 		"changePassword": {
 			"title": "비밀번호 변경",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "새 비밀번호 확인:",
 			"submitButton": "비밀번호 변경",
 			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
-			"success": "비밀번호가 성공적으로 변경되었습니다."
+			"success": "비밀번호가 성공적으로 변경되었습니다.",
+			"missingFields": "현재 비밀번호와 새 비밀번호를 입력해주세요.",
+			"invalidCurrent": "현재 비밀번호가 올바르지 않습니다."
 		},
 		"renameUser": {
 			"title": "사용자 이름 변경",
 			"newUsernameLabel": "새 사용자 이름:",
 			"submitButton": "사용자 이름 변경",
 			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
-			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다.",
+			"missingParams": "새로운 사용자 이름과 비밀번호를 입력하세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다.",
+			"mustDiffer": "새 사용자 이름은 현재 사용자 이름과 달라야 합니다.",
+			"taken": "이 사용자 이름은 이미 사용 중입니다.",
+			"moveFailed": "사용자 데이터 디렉터리 이름을 바꾸지 못했습니다: ${detail}. 원래 사용자 이름이 복원되었습니다."
 		},
 		"passkeys": {
 			"title": "보안 키 및 패스키",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "보안 키가 삭제되었습니다.",
 			"addSuccess": "보안 키가 추가되었습니다.",
 			"errorLoadLibrary": "WebAuthn 라이브러리를 로드할 수 없습니다.",
-			"errorCancelled": "추가가 취소되었습니다."
+			"errorCancelled": "추가가 취소되었습니다.",
+			"apiInvalidPassword": "비밀번호가 잘못되었습니다.",
+			"apiMissingCredential": "유효한 암호 키 자격 증명이 누락되었습니다.",
+			"apiRemoveParamsRequired": "제거하려는 자격 증명과 비밀번호를 입력하세요."
 		},
 		"userDevices": {
 			"title": "사용자 기기/세션",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "해지",
 			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
 			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다.",
+			"revokeMissingParams": "취소하려는 장치 및 세션 비밀번호를 입력하세요.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"listNotFound": "장치 목록을 찾을 수 없습니다.",
+			"deviceNotFound": "장치 또는 세션을 찾을 수 없습니다.",
 			"refreshButton": {
 				"title": "목록 새로 고침"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "API 키가 발견되지 않았습니다.",
 			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
 			"neverUsed": "사용하지 않았습니다",
+			"noKeysForUser": "API 키 데이터를 찾을 수 없습니다.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"keyNotFound": "API 키를 찾을 수 없습니다.",
+			"revokeMissingJti": "취소할 키를 지정하세요.",
+			"revokeMissingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
 			"revokeButton": "해지",
 			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
 			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "새 API 키 복사"
 			},
-			"copiedAlert": "키가 클립보드에 복사되었습니다!"
+			"copiedAlert": "키를 클립보드에 복사했습니다.",
+			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
 		},
 		"logout": {
 			"title": "로그아웃",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
 			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
 			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
-			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다.",
+			"missingPassword": "비밀번호를 입력해주세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다."
 		},
 		"passwordConfirm": {
 			"title": "작업 확인",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord 봇",
-		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
-		"cardTitle": "Discord 봇",
-		"botSelectDropdown": {
-			"placeholder": "봇을 선택하세요"
-		},
-		"botSearch": {
-			"placeholder": "봇 검색..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "역할을 선택하세요"
-		},
-		"charSearch": {
-			"placeholder": "캐릭터 검색..."
-		},
-		"configCard": {
-			"title": "봇 설정",
-			"labels": {
-				"character": "캐릭터",
-				"apiKey": "Discord API 키",
-				"config": "설정"
-			},
-			"charSelectPlaceholder": "캐릭터 선택",
-			"apiKeyInput": {
-				"placeholder": "API 키를 입력하세요"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "API 키 표시 전환"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API 키 표시/숨기기"
-			},
-			"buttons": {
-				"saveConfig": "설정 저장",
-				"startBot": "시작",
-				"stopBot": "중지"
-			}
-		},
-		"prompts": {
-			"newBotName": "새 봇 이름을 입력하세요:"
-		},
-		"buttons": {
-			"newBot": "새로 만들기",
-			"deleteBot": "삭제"
-		},
-		"alerts": {
-			"configSaved": "설정이 성공적으로 저장되었습니다.",
-			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"httpError": "HTTP 오류가 발생했습니다.",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "디스코드에 오다",
-				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
-				"locked_description": "Discord Bot을 한 번 실행하세요."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "봇 관련",
-				"sub_items": {
-					"manage": {
-						"title": "Discord Bot 구성"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot 구성"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "텔레그램 봇",
 		"description": "당신의 주인공이 텔레그램의 즉각적인 물결을 넘나들게 하세요. 디지털 인지도를 구성하고, 대화를 관리하고, 활발한 메시징 세계로 도달 범위를 확장하세요.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Telegram Bot 구성"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "위챗 봇",
+		"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
+		"cardTitle": "위챗 봇",
+		"botSelectDropdown": {
+			"placeholder": "봇 선택"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할 선택"
+		},
+		"charSearch": {
+			"placeholder": "역할 검색…"
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "연결된 역할",
+				"apiBaseUrl": "WeChat 채널 API 기본 URL",
+				"botToken": "iLink 봇 토큰",
+				"config": "구성"
+			},
+			"charSelectPlaceholder": "역할 선택",
+			"apiBaseUrlInput": {
+				"placeholder": "비워 두면 기본값 https://ilinkai.weixin.qq.com 사용"
+			},
+			"botTokenInput": {
+				"placeholder": "로그인 후 받은 Bearer 토큰"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "토큰 표시 또는 숨기기"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "토큰 표시 또는 숨기기"
+			},
+			"buttons": {
+				"saveConfig": "저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "저장됨",
+			"botExists": "「${botname}」 이름의 봇이 이미 있습니다. 다른 이름을 쓰세요.",
+			"unsavedChanges": "저장하지 않은 변경이 있습니다. 버릴까요?",
+			"httpError": "HTTP 오류",
+			"beforeUnload": "저장하지 않은 변경이 있습니다. 페이지를 나갈까요?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "일 시켜 줘!",
+				"description": "WeChat에서 fount 캐릭터와 대화하기.",
+				"locked_description": "위챗 봇을 한 번 실행하기."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇",
+				"sub_items": {
+					"manage": {
+						"title": "위챗 봇"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "위챗 봇 설정"
+			}
+		},
+		"qrLogin": {
+			"hint": "아래 QR 코드를 위챗으로 스캔해 로그인을 완료하세요.",
+			"button": "스캔하여 로그인",
+			"scanPrompt": "위챗을 열고 QR 코드를 스캔하세요",
+			"waiting": "QR 코드 불러오는 중…",
+			"scanned": "스캔됨 — 휴대폰에서 확인하세요",
+			"success": "위챗이 연결되었고 설정이 저장되었습니다. 봇을 시작할 수 있습니다.",
+			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」로 만드세요."
+		}
+	},
+	"discord_bots": {
+		"title": "Discord 봇",
+		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
+		"cardTitle": "Discord 봇",
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "캐릭터",
+				"apiKey": "Discord API 키",
+				"config": "설정"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"apiKeyInput": {
+				"placeholder": "API 키를 입력하세요"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API 키 표시 전환"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API 키 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "설정이 성공적으로 저장되었습니다.",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "디스코드에 오다",
+				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
+				"locked_description": "Discord Bot을 한 번 실행하세요."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot 구성"
 			}
 		}
 	},

@@ -51,6 +51,7 @@
 				"localAhead": "本地分支领先于远程分支。无需更新。",
 				"noUpstream": "没有为分支 '${currentBranch}' 配置上游分支，跳过更新检查。",
 				"dirtyWorkingDirectory": "工作目录不干净。请暂存或提交你的更改后再更新。",
+				"uncommittedBackedUpTo": "未提交更改已备份到：${path}",
 				"diverged": "本地和远程分支已分叉。强制更新中...",
 				"updateFailed": "从远程仓库更新组件失败：${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登录"
-		},
-		"discordbot": {
-			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
-		},
+		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登录",
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "密码强度太低。",
 			"accountAlreadyExists": "账户已存在",
 			"powNotSolved": "请先完成 PoW 验证",
-			"powError": "PoW 验证出错"
+			"powError": "PoW 验证出错",
+			"invalidCredentials": "用户名或密码无效。",
+			"accountLockedRetry": "账户已锁定，请于 ${timeLeft} 后再试。",
+			"accountLockedAttempts": "因登录失败次数过多，账户已被暂时锁定。",
+			"powValidationFailed": "人机验证失败，请重试。",
+			"apiErrorBodyUnreadable": "服务器返回了无法解析的信息，请稍后重试。"
 		},
 		"webauthn": {
 			"loginButton": "使用安全密钥 / Passkey 登录",
-			"errorNoUsername": "使用 Passkey 前请先填写用户名。",
 			"errorLoadLibrary": "无法加载 WebAuthn 辅助库，请检查网络后重试。",
-			"errorCancelled": "已取消或未获准使用安全密钥。"
+			"errorCancelled": "已取消或未获准使用安全密钥。",
+			"errorSessionMissing": "服务器未返回有效的登录会话，请刷新页面后重试。",
+			"errorBadBeginResponse": "服务器返回了无效的登录数据，请刷新页面后重试。",
+			"errorCredentialRequired": "缺少有效的 Passkey 凭证数据。",
+			"errorAuthSessionRequired": "缺少登录会话令牌，请刷新页面后重试。",
+			"apiSessionExpired": "Passkey 登录会话已过期，请重新开始。",
+			"apiUnknownPasskey": "无法识别该 Passkey，请使用已绑定的密钥。",
+			"apiPasskeyVerificationFailed": "Passkey 验证失败，请重试。",
+			"registrationUserNotFound": "未找到用户账户。",
+			"registrationSessionExpired": "绑定会话已过期，请从头重试。",
+			"registrationVerifyFailed": "无法完成 Passkey 注册验证。",
+			"registrationFailed": "Passkey 注册失败，请重试。",
+			"removeUserNotFound": "未找到用户或凭据数据。",
+			"removeInvalidPassword": "密码错误。",
+			"removePasskeyNotFound": "未找到该 Passkey。"
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "凭证转移错误",
 			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",
 			"transfer_error": "尝试转移您的登录凭证时发生错误：\n${error}\n您可以继续但无法获取登录信息。",
-			"no_credentials": "未找到任何已保存的登录凭据。\n请从 fount 内重新登录来更新登录凭证，或点击下方按钮在无登录凭证的前提下继续前往目标页面。",
 			"missing_params": "链接缺少必要参数。",
 			"buttons": {
 				"ignore": "忽略并继续",
@@ -865,6 +878,10 @@
 				"success": "分享成功！链接已复制到剪贴板。<br>此功能由 ${provider} 提供支持。<br>[赞助他们。](${sponsorLink})"
 			},
 			"commonToolCalling": "正在调用工具",
+			"reasoningDetailsTitle": "推理过程",
+			"logprobsNotApplicable": "不适用",
+			"logprobsTopLogprobsMeta": "top_logprobs（已选：${token}）",
+			"logprobsMetricsFooter": "首词元延迟: ${ttft} | 用时: ${time} | 词元: ${tokens} | 速度: ${speed}",
 			"noReplyContent": "（无回复内容）",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "用户设置",
 		"PageTitle": "用户设置",
-		"description": "关注您的fount标识的详细信息。管理您的个人资料、保护您的访问权限并查看连接的设备。为您提供一个安静的圣所。",
+		"description": "管理您的 fount 身份相关细节：个人资料、访问安全与已连接设备。为您的账号保留一处安静、私密的空间。",
+		"shell": {
+			"unauthorized": "需要登录。",
+			"responseNotJson": "服务器返回了无法解析的内容。",
+			"unexpectedError": "请求失败。"
+		},
+		"errors": {
+			"accountNotFound": "未找到账户。"
+		},
 		"userInfo": {
 			"title": "用户信息",
 			"usernameLabel": "用户名:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "复制图标"
 			},
-			"copiedAlert": "路径已复制到剪贴板！"
+			"copiedAlert": "路径已复制到剪贴板！",
+			"copyPathFailed": "无法复制路径到剪贴板。"
 		},
 		"changePassword": {
 			"title": "修改密码",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "确认新密码:",
 			"submitButton": "修改密码",
 			"errorMismatch": "新密码两次输入不一致。",
-			"success": "密码修改成功。"
+			"success": "密码修改成功。",
+			"missingFields": "请填写当前密码与新密码。",
+			"invalidCurrent": "当前密码不正确。"
 		},
 		"renameUser": {
 			"title": "重命名用户",
 			"newUsernameLabel": "新用户名:",
 			"submitButton": "重命名用户",
 			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
-			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。"
+			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。",
+			"missingParams": "请填写新用户名与当前密码。",
+			"wrongPassword": "密码不正确。",
+			"mustDiffer": "新用户名须与当前用户名不同。",
+			"taken": "该用户名已被占用。",
+			"moveFailed": "重命名用户数据目录失败：${detail}。已恢复原用户名。"
 		},
 		"passkeys": {
 			"title": "安全密钥与 Passkey",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "已移除安全密钥。",
 			"addSuccess": "安全密钥已添加。",
 			"errorLoadLibrary": "无法加载 WebAuthn 库。",
-			"errorCancelled": "已取消添加。"
+			"errorCancelled": "已取消添加。",
+			"apiInvalidPassword": "密码错误。",
+			"apiMissingCredential": "缺少有效的 Passkey 凭证。",
+			"apiRemoveParamsRequired": "请提供要移除的凭据与密码。"
 		},
 		"userDevices": {
 			"title": "用户设备/会话",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "撤销",
 			"revokeConfirm": "您确定要从此设备/会话注销吗？",
 			"revokeSuccess": "设备/会话已成功撤销。",
+			"revokeMissingParams": "请提供要撤销的设备与会话密码。",
+			"revokeWrongPassword": "密码不正确。",
+			"listNotFound": "未找到设备列表。",
+			"deviceNotFound": "未找到该设备或会话。",
 			"refreshButton": {
 				"title": "刷新列表"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "未找到任何 API 密钥。",
 			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
 			"neverUsed": "从未使用",
+			"noKeysForUser": "未找到 API 密钥数据。",
+			"revokeWrongPassword": "密码不正确。",
+			"keyNotFound": "未找到该 API 密钥。",
+			"revokeMissingJti": "请指定要撤销的密钥。",
+			"revokeMissingPassword": "撤销密钥需要提供密码。",
 			"revokeButton": "撤销",
 			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
 			"revokeSuccess": "API 密钥已成功撤销。",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "复制新 API 密钥"
 			},
-			"copiedAlert": "密钥已复制到剪贴板！"
+			"copiedAlert": "密钥已复制到剪贴板！",
+			"copyKeyFailed": "无法复制密钥到剪贴板。"
 		},
 		"editorCommand": {
 			"title": "编辑器命令行",
@@ -1489,7 +1535,9 @@
 			"confirmMessage1": "警告！您确定要永久删除您的账户吗？此操作无法撤销。",
 			"confirmMessage2": "为确认删除，请输入您的用户名“${username}”：",
 			"usernameMismatch": "输入的用户名与当前用户不匹配。删除操作已取消。",
-			"success": "账户已成功删除。您现在将被注销。"
+			"success": "账户已成功删除。您现在将被注销。",
+			"missingPassword": "请输入密码。",
+			"wrongPassword": "密码不正确。"
 		},
 		"passwordConfirm": {
 			"title": "确认操作",
@@ -1873,82 +1921,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "让你的源泉同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "选择一个 Bot"
-		},
-		"botSearch": {
-			"placeholder": "搜索 Bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "选择一个角色"
-		},
-		"charSearch": {
-			"placeholder": "搜索角色..."
-		},
-		"configCard": {
-			"title": "Bot配置",
-			"labels": {
-				"character": "绑定角色",
-				"apiKey": "Discord API 密钥",
-				"config": "配置"
-			},
-			"charSelectPlaceholder": "选择角色",
-			"apiKeyInput": {
-				"placeholder": "请输入 API 密钥"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "切换显示 API 密钥"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "切换显示 API 密钥"
-			},
-			"buttons": {
-				"saveConfig": "保存配置",
-				"startBot": "启动",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "请输入新的 Bot 名称："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
-		},
-		"alerts": {
-			"configSaved": "配置保存成功",
-			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
-			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"httpError": "HTTP 错误",
-			"beforeUnload": "您有未保存的更改。确定要离开吗？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "决战开黑频道",
-				"description": "将你的角色召唤到了Discord的世界。",
-				"locked_description": "启动一次Discord Bot。"
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "bot",
-				"sub_items": {
-					"manage": {
-						"title": "管理Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "配置Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"description": "让你的角色穿越 Telegram 的即时浪潮。配置他们的数字形象，管理他们的对话，并将他们的影响力扩展到这个充满活力的消息世界。",
@@ -2022,6 +1994,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "配置Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "微信 Bot",
+		"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
+		"cardTitle": "微信 Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色…"
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiBaseUrl": "微信渠道服务根 URL",
+				"botToken": "iLink Bot Token",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiBaseUrlInput": {
+				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "登录后获得的 Bearer Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切换显示 Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切换显示 Token"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "帮我干活！",
+				"description": "在微信上与 fount 角色对话。",
+				"locked_description": "启动一次微信 Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理微信 Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置微信 Bot"
+			}
+		},
+		"qrLogin": {
+			"hint": "使用微信扫描下方二维码完成登录。",
+			"button": "扫码登录",
+			"scanPrompt": "请使用微信扫描二维码",
+			"waiting": "正在获取二维码…",
+			"scanned": "已扫码，请在手机上确认…",
+			"success": "微信已连接，配置已更新。可直接启动 Bot。",
+			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "让你的 fount 同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiKey": "Discord API 密钥",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiKeyInput": {
+				"placeholder": "请输入 API 密钥"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切换显示 API 密钥"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "决战开黑频道",
+				"description": "将你的角色召唤到了Discord的世界。",
+				"locked_description": "启动一次Discord Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Discord Bot"
 			}
 		}
 	},

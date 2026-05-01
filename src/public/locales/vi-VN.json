@@ -51,6 +51,7 @@
 				"localAhead": "Nhánh cục bộ đang ở phiên bản mới hơn nhánh từ xa. Không cần cập nhật.",
 				"noUpstream": "Không có nhánh upstream nào được cấu hình cho nhánh '${currentBranch}', bỏ qua kiểm tra cập nhật.",
 				"dirtyWorkingDirectory": "Thư mục làm việc chưa sạch. Vui lòng 'stash' hoặc 'commit' các thay đổi của bạn trước khi cập nhật.",
+				"uncommittedBackedUpTo": "Những thay đổi không được cam kết đã được sao lưu vào: ${path}",
 				"diverged": "Nhánh cục bộ và nhánh từ xa đã khác nhau. Đang buộc cập nhật...",
 				"updateFailed": "Cập nhật thành phần từ kho lưu trữ từ xa thất bại: ${error}"
 			}
@@ -106,12 +107,7 @@
 				}
 			}
 		},
-		"telegrambot": {
-			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Telegram ${botusername}."
-		},
-		"discordbot": {
-			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."
-		},
+		"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot ${platform} ${botusername}.",
 		"path": {
 			"protocol": {
 				"description": "URL: giao thức fount",
@@ -444,13 +440,31 @@
 			"lowPasswordStrength": "Mật khẩu quá yếu.",
 			"accountAlreadyExists": "Tài khoản đã tồn tại.",
 			"powNotSolved": "Vui lòng hoàn thành xác minh POW trước",
-			"powError": "Lỗi xác minh POW"
+			"powError": "Lỗi xác minh POW",
+			"invalidCredentials": "Tên người dùng hoặc mật khẩu không hợp lệ.",
+			"accountLockedRetry": "Tài khoản đã bị khóa, vui lòng thử lại sau ${timeLeft}.",
+			"accountLockedAttempts": "Tài khoản đã bị khóa tạm thời do đăng nhập thất bại quá nhiều lần.",
+			"powValidationFailed": "Xác minh bảo mật không thành công. Vui lòng thử lại.",
+			"apiErrorBodyUnreadable": "Máy chủ trả về thông tin không thể phân tích được. Vui lòng thử lại sau."
 		},
 		"webauthn": {
 			"loginButton": "Đăng nhập bằng khóa bảo mật/Passkey",
-			"errorNoUsername": "Vui lòng điền tên người dùng của bạn trước khi sử dụng Passkey.",
 			"errorLoadLibrary": "Không thể tải thư viện phụ trợ WebAuthn, vui lòng kiểm tra mạng và thử lại.",
-			"errorCancelled": "Khóa bảo mật đã bị hủy hoặc không được phép sử dụng."
+			"errorCancelled": "Khóa bảo mật đã bị hủy hoặc không được phép sử dụng.",
+			"errorSessionMissing": "Máy chủ không trả về phiên đăng nhập hợp lệ, vui lòng làm mới trang và thử lại.",
+			"errorBadBeginResponse": "Máy chủ trả về dữ liệu đăng nhập không hợp lệ, vui lòng làm mới trang và thử lại.",
+			"errorCredentialRequired": "Thiếu dữ liệu thông tin xác thực Passkey hợp lệ.",
+			"errorAuthSessionRequired": "Thiếu mã thông báo phiên đăng nhập, vui lòng làm mới trang và thử lại.",
+			"apiSessionExpired": "Phiên đăng nhập bằng mật khẩu đã hết hạn, vui lòng thử lại.",
+			"apiUnknownPasskey": "Mật khẩu không được nhận dạng, vui lòng sử dụng khóa liên kết.",
+			"apiPasskeyVerificationFailed": "Xác minh mật mã không thành công, vui lòng thử lại.",
+			"registrationUserNotFound": "Không tìm thấy tài khoản người dùng.",
+			"registrationSessionExpired": "Phiên ràng buộc đã hết hạn, vui lòng thử lại từ đầu.",
+			"registrationVerifyFailed": "Không thể hoàn tất xác minh đăng ký Passkey.",
+			"registrationFailed": "Đăng ký mật mã không thành công, vui lòng thử lại.",
+			"removeUserNotFound": "Không tìm thấy dữ liệu người dùng hoặc thông tin xác thực.",
+			"removeInvalidPassword": "Mật khẩu sai.",
+			"removePasskeyNotFound": "Mật khẩu không được tìm thấy."
 		}
 	},
 	"login_info": {
@@ -460,7 +474,6 @@
 			"title": "Lỗi chuyển chứng chỉ",
 			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
 			"transfer_error": "Đã xảy ra lỗi trong khi cố gắng chuyển thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lấy thông tin đăng nhập.",
-			"no_credentials": "Không tìm thấy thông tin đăng nhập đã lưu.\nVui lòng đăng nhập lại từ bên trong fount để cập nhật thông tin đăng nhập của bạn hoặc nhấp vào nút bên dưới để tiếp tục đến trang đích mà không có thông tin đăng nhập.",
 			"missing_params": "Liên kết thiếu tham số bắt buộc.",
 			"buttons": {
 				"ignore": "Bỏ qua và tiếp tục",
@@ -865,6 +878,10 @@
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 			},
 			"commonToolCalling": "Đang gọi công cụ",
+			"reasoningDetailsTitle": "Quá trình suy luận",
+			"logprobsNotApplicable": "không áp dụng",
+			"logprobsTopLogprobsMeta": "top_logprobs (đã chọn: ${token})",
+			"logprobsMetricsFooter": "Độ trễ token đầu: ${ttft} | Thời gian: ${time} | Token: ${tokens} | Tốc độ: ${speed}",
 			"noReplyContent": "(Không có nội dung trả lời)",
 			"feedback": {
 				"thumbsUp": {
@@ -1358,7 +1375,15 @@
 	"userSettings": {
 		"title": "Cài đặt người dùng",
 		"PageTitle": "Cài đặt người dùng",
-		"description": "Có xu hướng chi tiết về danh tính nguồn của bạn. Quản lý hồ sơ của bạn, bảo vệ quyền truy cập của bạn và xem các thiết bị được kết nối. Một nơi tôn nghiêm yên tĩnh cho tài khoản của bạn.",
+		"description": "Chăm chút cho các chi tiết về danh tính fount của bạn. Quản lý hồ sơ, bảo mật quyền truy cập và xem các thiết bị đã kết nối. Một không gian yên tĩnh và an toàn cho tài khoản của bạn.",
+		"shell": {
+			"unauthorized": "Yêu cầu đăng nhập.",
+			"responseNotJson": "Máy chủ trả về nội dung không thể phân tích.",
+			"unexpectedError": "Yêu cầu không thành công."
+		},
+		"errors": {
+			"accountNotFound": "Không tìm thấy tài khoản."
+		},
 		"userInfo": {
 			"title": "Thông tin người dùng",
 			"usernameLabel": "Tên người dùng:",
@@ -1371,7 +1396,8 @@
 			"copyPathBtnIcon": {
 				"alt": "sao chép đường dẫn"
 			},
-			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!"
+			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!",
+			"copyPathFailed": "Không thể sao chép đường dẫn vào clipboard."
 		},
 		"changePassword": {
 			"title": "Đổi mật khẩu",
@@ -1380,14 +1406,21 @@
 			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
 			"submitButton": "Đổi mật khẩu",
 			"errorMismatch": "Mật khẩu mới không khớp.",
-			"success": "Đổi mật khẩu thành công."
+			"success": "Đổi mật khẩu thành công.",
+			"missingFields": "Vui lòng điền mật khẩu hiện tại và mật khẩu mới của bạn.",
+			"invalidCurrent": "Mật khẩu hiện tại không chính xác."
 		},
 		"renameUser": {
 			"title": "Đổi tên người dùng",
 			"newUsernameLabel": "Tên người dùng mới:",
 			"submitButton": "Đổi tên người dùng",
 			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
-			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất."
+			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingParams": "Vui lòng điền tên người dùng và mật khẩu mới.",
+			"wrongPassword": "Mật khẩu không đúng.",
+			"mustDiffer": "Tên người dùng mới phải khác với tên người dùng hiện tại.",
+			"taken": "Tên người dùng này đã được sử dụng.",
+			"moveFailed": "Không đổi tên được thư mục dữ liệu người dùng: ${detail}. Tên người dùng ban đầu đã được khôi phục."
 		},
 		"passkeys": {
 			"title": "Khóa bảo mật và Passkey",
@@ -1410,7 +1443,10 @@
 			"removeSuccess": "Đã xóa khóa bảo mật.",
 			"addSuccess": "Đã thêm khóa bảo mật.",
 			"errorLoadLibrary": "Không thể tải thư viện WebAuthn.",
-			"errorCancelled": "Việc thêm đã bị hủy."
+			"errorCancelled": "Việc thêm đã bị hủy.",
+			"apiInvalidPassword": "Mật khẩu sai.",
+			"apiMissingCredential": "Thiếu thông tin đăng nhập Passkey hợp lệ.",
+			"apiRemoveParamsRequired": "Vui lòng cung cấp thông tin đăng nhập và mật khẩu bạn muốn xóa."
 		},
 		"userDevices": {
 			"title": "Thiết bị/Phiên hoạt động",
@@ -1421,6 +1457,10 @@
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
 			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công.",
+			"revokeMissingParams": "Vui lòng cung cấp thiết bị và mật khẩu phiên bạn muốn thu hồi.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"listNotFound": "Không tìm thấy danh sách thiết bị.",
+			"deviceNotFound": "Không tìm thấy thiết bị hoặc phiên.",
 			"refreshButton": {
 				"title": "Làm mới danh sách"
 			},
@@ -1438,6 +1478,11 @@
 			"noKeysFound": "Không có khóa API được tìm thấy.",
 			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
 			"neverUsed": "Không bao giờ được sử dụng",
+			"noKeysForUser": "Không tìm thấy dữ liệu khóa API.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"keyNotFound": "Không tìm thấy khóa API.",
+			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
+			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
 			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
@@ -1457,7 +1502,8 @@
 			"copyButton": {
 				"title": "Sao chép khóa API mới"
 			},
-			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!"
+			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
+			"copyKeyFailed": "Không thể sao chép khóa vào clipboard."
 		},
 		"logout": {
 			"title": "Đăng xuất",
@@ -1473,7 +1519,9 @@
 			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
 			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
 			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
-			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất."
+			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingPassword": "Vui lòng nhập mật khẩu của bạn.",
+			"wrongPassword": "Mật khẩu không đúng."
 		},
 		"passwordConfirm": {
 			"title": "Xác nhận thao tác",
@@ -1857,82 +1905,6 @@
 			}
 		}
 	},
-	"discord_bots": {
-		"title": "Bot Discord",
-		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
-		"cardTitle": "Bot Discord",
-		"botSelectDropdown": {
-			"placeholder": "Chọn một bot"
-		},
-		"botSearch": {
-			"placeholder": "Tìm kiếm bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Chọn một vai trò"
-		},
-		"charSearch": {
-			"placeholder": "Tìm kiếm nhân vật..."
-		},
-		"configCard": {
-			"title": "Cấu hình Bot",
-			"labels": {
-				"character": "Nhân vật",
-				"apiKey": "Khóa API Discord",
-				"config": "Cấu hình"
-			},
-			"charSelectPlaceholder": "Chọn nhân vật",
-			"apiKeyInput": {
-				"placeholder": "Nhập Khóa API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Chuyển đổi hiển thị khóa API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Hiện/ẩn Khóa API"
-			},
-			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			}
-		},
-		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
-		},
-		"buttons": {
-			"newBot": "Tạo mới",
-			"deleteBot": "Xóa"
-		},
-		"alerts": {
-			"configSaved": "Cấu hình đã được lưu thành công.",
-			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"httpError": "Lỗi HTTP.",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Đi đến sự bất hòa",
-				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
-				"locked_description": "Khởi chạy Discord Bot một lần."
-			}
-		},
-		"home_function_buttons": {
-			"bot_related": {
-				"title": "Liên quan đến bot",
-				"sub_items": {
-					"manage": {
-						"title": "Cấu hình Discord Bot"
-					}
-				}
-			}
-		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Cấu hình Discord Bot"
-			}
-		}
-	},
 	"telegram_bots": {
 		"title": "Bot Telegram",
 		"description": "Hãy để các ký tự nguồn của bạn vượt qua các làn sóng tức thời của Telegram. Định cấu hình sự hiện diện kỹ thuật số của họ, quản lý cuộc trò chuyện và mở rộng phạm vi tiếp cận của họ đến thế giới nhắn tin sôi động này.",
@@ -2006,6 +1978,171 @@
 		"home_char_interfaces": {
 			"configure": {
 				"title": "Cấu hình Telegram Bot"
+			}
+		}
+	},
+	"wechat_bots": {
+		"title": "Bot WeChat",
+		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+		"cardTitle": "Bot WeChat",
+		"botSelectDropdown": {
+			"placeholder": "Chọn bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm bot…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm vai trò…"
+		},
+		"configCard": {
+			"title": "Cài đặt bot",
+			"labels": {
+				"character": "Vai trò đã liên kết",
+				"apiBaseUrl": "URL gốc API kênh WeChat",
+				"botToken": "Token iLink Bot",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn vai trò",
+			"apiBaseUrlInput": {
+				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"
+			},
+			"botTokenInput": {
+				"placeholder": "Bearer token sau khi đăng nhập"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Hiện hoặc ẩn token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Hiện hoặc ẩn token"
+			},
+			"buttons": {
+				"saveConfig": "Lưu",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Tên bot mới:"
+		},
+		"buttons": {
+			"newBot": "Mới",
+			"deleteBot": "Xóa"
+		},
+		"alerts": {
+			"configSaved": "Đã lưu",
+			"botExists": "Đã có bot tên «${botname}». Hãy chọn tên khác.",
+			"unsavedChanges": "Có thay đổi chưa lưu. Bỏ qua?",
+			"httpError": "Lỗi HTTP",
+			"beforeUnload": "Có thay đổi chưa lưu. Rời trang?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Cho tôi làm việc!",
+				"description": "Trò chuyện với nhân vật fount trên WeChat.",
+				"locked_description": "Khởi chạy bot WeChat một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot",
+				"sub_items": {
+					"manage": {
+						"title": "Bot WeChat"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cài đặt bot WeChat"
+			}
+		},
+		"qrLogin": {
+			"hint": "Quét mã QR bên dưới bằng WeChat để hoàn tất đăng nhập.",
+			"button": "Quét để đăng nhập",
+			"scanPrompt": "Mở WeChat và quét mã QR",
+			"waiting": "Đang tải mã QR…",
+			"scanned": "Đã quét — xác nhận trên điện thoại",
+			"success": "Đã kết nối WeChat và lưu cài đặt — có thể khởi động bot.",
+			"needBot": "Chọn bot trong danh sách hoặc tạo mới bằng «Mới»."
+		}
+	},
+	"discord_bots": {
+		"title": "Bot Discord",
+		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
+		"cardTitle": "Bot Discord",
+		"botSelectDropdown": {
+			"placeholder": "Chọn một bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm nhân vật..."
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật",
+				"apiKey": "Khóa API Discord",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"apiKeyInput": {
+				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Chuyển đổi hiển thị khóa API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Hiện/ẩn Khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"alerts": {
+			"configSaved": "Cấu hình đã được lưu thành công.",
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"httpError": "Lỗi HTTP.",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Đi đến sự bất hòa",
+				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
+				"locked_description": "Khởi chạy Discord Bot một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Liên quan đến bot",
+				"sub_items": {
+					"manage": {
+						"title": "Cấu hình Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cấu hình Discord Bot"
 			}
 		}
 	},
