@@ -1507,7 +1507,7 @@
 		},
 		"editorCommand": {
 			"title": "외부 편집기 명령",
-			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다. 파일 경로·줄 번호·열은 ${file}, ${line}, ${column} 플레이스홀더로 넣을 수 있습니다.",
+			"description": "외부 편집기에서 파일을 열 때 사용되는 명령 및 매개변수 템플릿을 구성합니다. 파일 경로, 줄 번호 및 열 번호는 자리 표시자를 통해 전달될 수 있습니다.",
 			"editorPresetLabel": "편집기 사전 설정",
 			"commandLabel": "명령",
 			"argsTemplateLabel": "인수 템플릿",

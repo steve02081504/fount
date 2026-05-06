@@ -1507,7 +1507,7 @@
 		},
 		"editorCommand": {
 			"title": "✏️📟",
-			"description": "⚙️🖥️📂 — 🏷️ ${file} · 📏${line} · 📐${column}",
+			"description": "配置在外部编辑器中打开文件时使用的命令与参数模板；可通过占位符传入文件路径、行号与列号。",
 			"editorPresetLabel": "📋✨",
 			"commandLabel": "⌨️",
 			"argsTemplateLabel": "🧩📝",
