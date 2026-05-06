@@ -4,6 +4,8 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
+import { escapeRegExp, parseRegexFromString } from '../../../../scripts/regex.mjs'
+
 /**
  * 解析相对路径，支持 `~` (home) 和 MSYS 风格的路径。
  * @param {string} relativePath - 要解析的相对路径。
@@ -19,29 +21,6 @@ function resolvePath(relativePath) {
 		return path.resolve(path.join(msys_path, relativePath))
 	}
 	return path.resolve(relativePath)
-}
-
-/**
- * 转义正则表达式特殊字符。
- * @param {string} str - 要转义的字符串。
- * @returns {string} - 转义后的字符串。
- */
-function escapeRegExp(str) {
-	return str.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&')
-}
-
-/**
- * 从字符串解析正则表达式。
- * @param {string} regexString - 正则表达式字符串。
- * @returns {RegExp} - 解析后的正则表达式。
- */
-function parseRegexFromString(regexString) {
-	const match = regexString.match(/^\/(.+)\/([gimsuy]*)$/)
-	if (match) {
-		const [, pattern, flags] = match
-		return new RegExp(pattern, flags)
-	}
-	return new RegExp(regexString, 'gu')
 }
 
 /**

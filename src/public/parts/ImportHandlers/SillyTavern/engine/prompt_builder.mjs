@@ -1,6 +1,7 @@
+import { parseRegexFromString } from '../../../../../scripts/regex.mjs'
+
 import { regex_placement, world_info_position } from './charData.mjs'
 import { evaluateMacros } from './marco.mjs'
-import { parseRegexFromString } from './tools.mjs'
 import { GetActivatedWorldInfoEntries } from './world_info.mjs'
 
 const DEFAULT_DEPTH = 0
@@ -50,10 +51,12 @@ export function promptBuilder(
 		[]
 	if (charData?.extensions?.regex_scripts) {
 		const WI_regex_scripts = charData.extensions.regex_scripts.filter(e => e.placement.includes(regex_placement.WORLD_INFO))
-		for (const script of WI_regex_scripts) script.findRegex = parseRegexFromString(String(script.findRegex))
+		for (const script of WI_regex_scripts) try {
+			script.findRegex = parseRegexFromString(String(script.findRegex))
+		} catch { /* ignore invalid regex */ }
 		for (const e of WIs)
 			for (const script of WI_regex_scripts)
-				e.content = e.content.replace(script.findRegex, script.replaceString)
+				if (script.findRegex) e.content = e.content.replace(script.findRegex, script.replaceString)
 		WIs = WIs.filter(e => e.content)
 	}
 	let mes_examples = charData.mes_example.split(/\n<start>/gi).map(e => e.trim()).filter(e => e)

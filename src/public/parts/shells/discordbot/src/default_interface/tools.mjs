@@ -210,7 +210,7 @@ function formatMessageContent(message) {
 		}
 	}
 
-	// 如果有附件，添加附件的信息 (这里假设附件类型有 url 属性)
+	// 如果有附件，添加附件的信息
 	for (const attachment of message.attachments || [])
 		if (attachment.url) {
 			if (content) content += '\n'

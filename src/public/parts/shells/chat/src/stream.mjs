@@ -1,5 +1,5 @@
-import { escapeRegExp } from '../../../../../scripts/escape.mjs'
 import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n.mjs'
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { handleError } from '../../../../../server/server.mjs'
 
 /**

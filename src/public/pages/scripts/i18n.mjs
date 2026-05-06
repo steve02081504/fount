@@ -2,6 +2,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onElementRemoved } from './onElementRemoved.mjs'
+import { escapeRegExp } from './regex.mjs'
 import { onServerEvent } from './server_events.mjs'
 
 /**
@@ -151,11 +152,15 @@ function getNestedValue(obj, key) {
  */
 function applyInterpolationToPlainSegment(segment, params) {
 	let result = segment
-	for (const param in params)
+	for (const key in params) {
+		const escapedKey = escapeRegExp(key)
 		result = result?.replace?.(
-			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
-		)?.replaceAll?.(`\${${param}}`, params[param])
+			new RegExp(`\\[([^\\]]+)\\]\\(\\$\\{${escapedKey}\\}\\)`, 'g'),
+			(match, text) => /* html */ `<a href="${params[key]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)
+		const paramPlaceholderRegex = new RegExp(`\\$\\{${escapedKey}\\}`, 'g')
+		result = result?.replace?.(paramPlaceholderRegex, () => params[key])
+	}
 	result = result?.replace?.(/`([^`]*)`/g, '<code>$1</code>')
 	return result
 }
@@ -164,7 +169,7 @@ function applyInterpolationToPlainSegment(segment, params) {
  * 对单条翻译字符串做插值（链接、占位符、反引号）。
  * 链接 [text](${param}) → <a>；`xxx` → <code>xxx</code>。
  * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
- * 若 translation 非字符串（如嵌套对象）。
+ * 若 translation 非字符串（如嵌套对象），则原样返回。
  * @template TTranslation - 翻译字符串或嵌套对象的类型。
  * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
  * @param {Record<string, any>} params - 插值参数。
@@ -173,21 +178,24 @@ function applyInterpolationToPlainSegment(segment, params) {
 function applyParamsToTranslation(translation, params) {
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
 	if (!translation || !(Object(translation) instanceof String)) return translation
-	const s = translation + ''
+	const translationText = translation + ''
 	let result = ''
-	let i = 0
-	while (i < s.length) {
-		const esc = s.indexOf('\\${', i)
-		const plainEnd = esc === -1 ? s.length : esc
-		result += applyInterpolationToPlainSegment(s.slice(i, plainEnd), params)
-		if (esc === -1) break
-		const close = s.indexOf('}', esc + 3)
-		if (close === -1) {
-			result += s.slice(esc)
+	let scanIndex = 0
+	while (scanIndex < translationText.length) {
+		const literalEscapeStart = translationText.indexOf('\\${', scanIndex)
+		const plainSegmentEnd = literalEscapeStart === -1 ? translationText.length : literalEscapeStart
+		result += applyInterpolationToPlainSegment(
+			translationText.slice(scanIndex, plainSegmentEnd),
+			params
+		)
+		if (literalEscapeStart === -1) break
+		const closingBraceIndex = translationText.indexOf('}', literalEscapeStart + 3)
+		if (closingBraceIndex === -1) {
+			result += translationText.slice(literalEscapeStart)
 			break
 		}
-		result += s.slice(esc + 1, close + 1)
-		i = close + 1
+		result += translationText.slice(literalEscapeStart + 1, closingBraceIndex + 1)
+		scanIndex = closingBraceIndex + 1
 	}
 	return result
 }

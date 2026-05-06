@@ -9,7 +9,7 @@ import { where_command } from 'npm:@steve02081504/exec'
 import ffmpeg from 'npm:fluent-ffmpeg'
 import * as mime from 'npm:mime-types'
 
-import { escapeRegExp } from '../../../../../scripts/escape.mjs'
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { source_dead } from '../../../serviceSources/AI/main.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 

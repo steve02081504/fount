@@ -2503,7 +2503,7 @@
 		"updateFailed": "Помилка запиту на оновлення",
 		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
 		"logs": {
-			"title": "Журнал",
+			"title": "Журнали",
 			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
 			"toolbar": {
 				"clear": "Очистити",

@@ -4,6 +4,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { base_dir } from '../base.mjs'
 
 import { onElementRemoved } from './onElementRemoved.mjs'
+import { escapeRegExp } from './regex.mjs'
 
 /**
  * 本地化键
@@ -208,11 +209,15 @@ function getNestedValue(obj, key) {
  */
 function applyInterpolationToPlainSegment(segment, params) {
 	let result = segment
-	for (const param in params)
+	for (const key in params) {
+		const escapedKey = escapeRegExp(key)
 		result = result?.replace?.(
-			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
-		)?.replaceAll?.(`\${${param}}`, params[param])
+			new RegExp(`\\[([^\\]]+)\\]\\(\\$\\{${escapedKey}\\}\\)`, 'g'),
+			(match, text) => /* html */ `<a href="${params[key]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)
+		const paramPlaceholderRegex = new RegExp(`\\$\\{${escapedKey}\\}`, 'g')
+		result = result?.replace?.(paramPlaceholderRegex, () => params[key])
+	}
 	result = result?.replace?.(/`([^`]*)`/g, '<code>$1</code>')
 	return result
 }
@@ -230,21 +235,24 @@ function applyInterpolationToPlainSegment(segment, params) {
 function applyParamsToTranslation(translation, params) {
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
 	if (!translation || !(Object(translation) instanceof String)) return translation
-	const s = translation + ''
+	const translationText = translation + ''
 	let result = ''
-	let i = 0
-	while (i < s.length) {
-		const esc = s.indexOf('\\${', i)
-		const plainEnd = esc === -1 ? s.length : esc
-		result += applyInterpolationToPlainSegment(s.slice(i, plainEnd), params)
-		if (esc === -1) break
-		const close = s.indexOf('}', esc + 3)
-		if (close === -1) {
-			result += s.slice(esc)
+	let scanIndex = 0
+	while (scanIndex < translationText.length) {
+		const literalEscapeStart = translationText.indexOf('\\${', scanIndex)
+		const plainSegmentEnd = literalEscapeStart === -1 ? translationText.length : literalEscapeStart
+		result += applyInterpolationToPlainSegment(
+			translationText.slice(scanIndex, plainSegmentEnd),
+			params
+		)
+		if (literalEscapeStart === -1) break
+		const closingBraceIndex = translationText.indexOf('}', literalEscapeStart + 3)
+		if (closingBraceIndex === -1) {
+			result += translationText.slice(literalEscapeStart)
 			break
 		}
-		result += s.slice(esc + 1, close + 1)
-		i = close + 1
+		result += translationText.slice(literalEscapeStart + 1, closingBraceIndex + 1)
+		scanIndex = closingBraceIndex + 1
 	}
 	return result
 }
