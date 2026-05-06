@@ -346,7 +346,10 @@ async function loadEditorCommandConfigUI() {
 		for (const editor of config.availableEditors || []) {
 			const option = document.createElement('option')
 			option.value = editor.id
-			option.textContent = `${editor.label} (${editor.available ? 'PATH 可用' : 'PATH 不可用'})`
+			option.dataset.label = editor.label
+			option.dataset.i18n = editor.available
+				? 'userSettings.editorCommand.presetOptionPathAvailable'
+				: 'userSettings.editorCommand.presetOptionPathUnavailable'
 			editorPresetSelect.appendChild(option)
 		}
 		editorPresetSelect.value = config.editorId || ''
