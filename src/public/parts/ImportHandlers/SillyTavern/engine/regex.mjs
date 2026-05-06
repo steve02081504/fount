@@ -1,4 +1,4 @@
-import { parseRegexFromString } from './tools.mjs'
+import { parseRegexFromString } from '../../../../../scripts/regex.mjs'
 
 /**
  * 运行正则表达式
@@ -10,7 +10,11 @@ import { parseRegexFromString } from './tools.mjs'
 export function runRegex(charData, text, filter = e => true) {
 	if (charData?.extensions?.regex_scripts) {
 		const WI_regex_scripts = charData.extensions.regex_scripts.filter(filter)
-		for (const script of WI_regex_scripts) script.findRegexObject = parseRegexFromString(String(script.findRegex)) || new RegExp(script.findRegex)
+		for (const script of WI_regex_scripts) try {
+			script.findRegexObject = parseRegexFromString(String(script.findRegex))
+		} catch {
+			script.findRegexObject = new RegExp(script.findRegex)
+		}
 		for (const script of WI_regex_scripts)
 			text = text.replace(script.findRegexObject, script.replaceString)
 		for (const script of WI_regex_scripts)

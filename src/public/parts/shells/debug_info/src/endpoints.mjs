@@ -1,8 +1,10 @@
 import os from 'node:os'
 
-import { authenticate } from '../../../../../server/auth.mjs'
+import { is_local_ip_from_req } from '../../../../../scripts/ratelimit.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
 import { restartor } from '../../../../../server/server.mjs'
+import { openEditor } from '../../userSettings/src/editorCommand.mjs'
 
 /**
  * 设置端点。
@@ -63,5 +65,19 @@ export function setEndpoints(router) {
 		}
 
 		res.status(200).json(info)
+	})
+
+	router.post('/api/parts/shells\\:debug_info/open_source', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!is_local_ip_from_req(req))
+			return res.status(403).json({ success: false, message: 'Forbidden on non-local request.' })
+		const { filePath, line, column } = req.body || {}
+		try {
+			const result = await openEditor(user.username, filePath, line, column)
+			res.json(result)
+		} catch (error) {
+			res.status(400).json({ success: false, message: error.message || 'Failed to open source location.' })
+		}
 	})
 }

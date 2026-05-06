@@ -29,6 +29,7 @@ import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
+import { logServiceWebSocketHandler } from './log_service.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -85,6 +86,11 @@ export function registerEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		registerNotifier(username, ws)
 	})
+
+	router.ws('/ws/logs', (req, res, next) => {
+		if (is_local_ip_from_req(req)) return next()
+		return authenticate(req, res, next)
+	}, logServiceWebSocketHandler)
 
 	router.get('/api/test/error', (req, res) => {
 		throw skip_report(new Error('test error'))

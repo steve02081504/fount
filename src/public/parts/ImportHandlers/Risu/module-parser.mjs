@@ -2,13 +2,11 @@ import { Buffer } from 'node:buffer'
 // 尝试导入 rpack 解码器。如果失败，则提供一个回退或抛出错误。
 let decodeRPack
 try {
-	// 假设 @risuai/rpack-rust 在 Node.js 中可以这样导入和使用
-	// 你可能需要检查其具体的导出方式和用法
 	const rpack = await import('./rpack.mjs')
-	decodeRPack = rpack.decodeRPack // 或者它直接导出 decodeRPack
+	decodeRPack = rpack.decodeRPack
 	if (!(decodeRPack instanceof Function)) {
 		console.warn('@risuai/rpack-rust loaded, but decodeRPack is not a function. Module parsing might fail.')
-		decodeRPack = null // 确保后续逻辑知道它不可用
+		decodeRPack = null
 	}
 }
 catch (err) {

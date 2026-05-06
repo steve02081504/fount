@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { getUserDictionary } from '../../../../server/auth.mjs' // 假设的 auth 模块路径
+import { getUserDictionary } from '../../../../server/auth.mjs'
 import { uninstallPartBase } from '../../../../server/parts_loader.mjs'
 
 /**

@@ -14,6 +14,7 @@ import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { loadJsonFile } from './json_loader.mjs'
 import { ms } from './ms.mjs'
+import { escapeRegExp } from './regex.mjs'
 
 /**
  * 区域设置数据
@@ -203,8 +204,34 @@ function ansiLink(url, text) {
 }
 
 /**
- * 对单条翻译字符串做插值（占位符、链接、反引号）。
+ * 对不含字面义占位符片段的字符串做插值（链接、参数占位符、反引号）。
+ * @param {string} segment - 翻译片段。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {string} 插值后的片段字符串。
+ */
+function applyInterpolationToPlainSegment(segment, params) {
+	let result = segment
+	if (supportsAnsi) {
+		for (const key in params) {
+			const escapedKey = escapeRegExp(key)
+			result = result?.replace?.(
+				new RegExp(`\\[([^\\]]+)\\]\\(\\$\\{${escapedKey}\\}\\)`, 'g'),
+				(match, text) => ansiLink(params[key], text)
+			)
+			const paramPlaceholderRegex = new RegExp(`\\$\\{${escapedKey}\\}`, 'g')
+			result = result?.replace?.(paramPlaceholderRegex, () => params[key])
+		}
+		result = result?.replace?.(/`([^`]*)`/g, `${ANSI_MAGENTA}$1${ANSI_RESET}`)
+	}
+	else for (const key in params)
+		result = result?.replaceAll?.(`\${${key}}`, () => params[key])
+	return result
+}
+
+/**
+ * 对单条翻译字符串做插值（链接、占位符、反引号）。
  * 若 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色；否则链接仅保留文字，反引号保持原样。
+ * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
  * 若 translation 非字符串（如嵌套对象），则原样返回。
  * @template TTranslation - 翻译字符串或嵌套对象的类型。
  * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
@@ -214,17 +241,25 @@ function ansiLink(url, text) {
 function applyParamsToTranslation(translation, params) {
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
 	if (!translation || !(Object(translation) instanceof String)) return translation
-	let result = translation
-	if (supportsAnsi) {
-		for (const param in params)
-			result = result?.replace?.(
-				new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-				(_, text) => ansiLink(params[param], text)
-			)?.replaceAll?.(`\${${param}}`, params[param])
-		result = result?.replace?.(/`([^`]*)`/g, `${ANSI_MAGENTA}$1${ANSI_RESET}`)
+	const translationText = translation + ''
+	let result = ''
+	let scanIndex = 0
+	while (scanIndex < translationText.length) {
+		const literalEscapeStart = translationText.indexOf('\\${', scanIndex)
+		const plainSegmentEnd = literalEscapeStart === -1 ? translationText.length : literalEscapeStart
+		result += applyInterpolationToPlainSegment(
+			translationText.slice(scanIndex, plainSegmentEnd),
+			params
+		)
+		if (literalEscapeStart === -1) break
+		const closingBraceIndex = translationText.indexOf('}', literalEscapeStart + 3)
+		if (closingBraceIndex === -1) {
+			result += translationText.slice(literalEscapeStart)
+			break
+		}
+		result += translationText.slice(literalEscapeStart + 1, closingBraceIndex + 1)
+		scanIndex = closingBraceIndex + 1
 	}
-	else for (const param in params)
-		result = result?.replaceAll?.(`\${${param}}`, params[param])
 	return result
 }
 
@@ -396,7 +431,14 @@ function toString(value) {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
+console.infoI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.info(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 有参数的本地化键重载
  * @overload
@@ -419,7 +461,14 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
+console.logI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.log(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -442,7 +491,14 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
+console.warnI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.warn(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -465,7 +521,14 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
+console.errorI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.error(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -491,7 +554,14 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
+console.freshLineI18n = (id, key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.freshLine(id, toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload

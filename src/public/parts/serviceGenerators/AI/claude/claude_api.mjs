@@ -105,7 +105,7 @@ class ClewdSimulation {
 		// 简单实现：检查是否包含 "Human:" 或 "Assistant:"
 		if (reply.includes('Human:') || reply.includes('Assistant:')) {
 			this.impersonated = true // 设置标志
-			if (this.config.prevent_imperson)  // 假设有一个 PreventImperson 配置
+			if (this.config.prevent_imperson)
 				return true  // 阻止进一步处理
 		}
 		return false

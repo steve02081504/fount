@@ -177,17 +177,6 @@ Start-Job -ScriptBlock {
 			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 		}
 	}
-
-	if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
-		$qualifier = Split-Path -Qualifier $FOUNT_DIR
-		if ($qualifier) {
-			$driveInfo = [System.IO.DriveInfo]::new($qualifier)
-			if ($driveInfo.IsReady -and $driveInfo.DriveFormat -eq 'NTFS') {
-				Set-Location $FOUNT_DIR
-				compact.exe /c /s /q
-			}
-		}
-	}
 } -ArgumentList $FOUNT_DIR | Out-Null
 
 # Docker 检测
@@ -336,7 +325,7 @@ function Start-WTfountCmd($ArgumentList = @()) {
 function New-FountShortcut {
 	$shell = New-Object -ComObject WScript.Shell
 
-	$shortcutCmd = Get-WTfountCmd -ArgumentList @('open', 'keepalive')
+	$shortcutCmd = Get-WTfountCmd -ArgumentList @('open')
 	$shortcutIconLocation = "$FOUNT_DIR\src\public\pages\favicon.ico"
 
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
@@ -389,7 +378,7 @@ function Register-FountTerminalProfile {
 				guid              = "{780ca695-2d01-5e08-834e-1e9bfd14d3ee}"
 				tabTitle          = "𝓯𝓸𝓾𝓷𝓽"
 				tabColor          = "#0e3c5c"
-				commandline       = "fount.bat keepalive"
+				commandline       = "fount.bat"
 				startingDirectory = $FOUNT_DIR
 				icon              = "$FOUNT_DIR\src\public\pages\favicon.ico"
 				font              = @{
@@ -404,6 +393,33 @@ function Register-FountTerminalProfile {
 	} | ConvertTo-Json -Depth 100 -Compress
 	if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
 		Set-Content -Path $WTjsonPath -Value $jsonContent -Encoding UTF8
+	}
+}
+
+function Register-FountBootBackground {
+	if (!$IsWindows -or $IN_DOCKER) { return }
+	if (Test-Path "$FOUNT_DIR/.noautoboot") { return }
+	try {
+		$shellExe = $null
+		if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+			$shellExe = (Get-Command pwsh).Source
+		}
+		elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+			$shellExe = (Get-Command powershell.exe).Source
+		}
+		else {
+			$shellExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+		}
+		$fountPs1 = Join-Path $FOUNT_DIR 'path\fount.ps1'
+		$runValue = "`"$shellExe`" -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File `"$fountPs1`" background keepalive"
+		$runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+		if (-not (Test-Path $runKey)) {
+			New-Item -Path $runKey -Force | Out-Null
+		}
+		Set-ItemProperty -Path $runKey -Name 'fount' -Value $runValue -Type String -ErrorAction Stop
+	}
+	catch {
+		Write-Warning $_.Exception.Message
 	}
 }
 
@@ -534,13 +550,15 @@ elseif ($args[0] -eq 'background') {
 		Start-Process -FilePath $TargetPath -ArgumentList $Arguments
 	}
 	else {
-		Test-PWSHModule ps12exe
-		$TempDir = [System.IO.Path]::GetTempPath()
-		$exepath = Join-Path $TempDir "fount-background.exe"
-		if (!(Test-Path $exepath)) {
-			ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
-		}
-		Start-Process -FilePath $exepath -ArgumentList $runargs
+		$pwshExe = (Get-Process -Id $PID).Path
+		$fountScript = "$FOUNT_DIR\path\fount.ps1"
+		$argList = @(
+			'-NoProfile',
+			'-NoLogo',
+			'-ExecutionPolicy', 'Bypass',
+			'-File', $fountScript
+		) + @($runargs)
+		Start-Process -FilePath $pwshExe -ArgumentList $argList -WindowStyle Hidden
 	}
 	exit 0
 }
@@ -963,17 +981,10 @@ if ($args[0] -eq 'init' -and $args[1] -eq 'force') {
 	exit $LastExitCode
 }
 
-if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+$is_running = $args.Count -ne 0 -and ($args[0] -eq 'server' -or $args[0] -eq 'keepalive')
+if ($is_running) {
 	Assert-FountDirWritable $FOUNT_DIR
 	Update-FountAndDeno
-}
-if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
-	if ($IN_DOCKER) {
-		Write-Host (Get-I18n -key 'update.skippingDenoUpgradeDocker')
-	}
-	else {
-		deno_upgrade
-	}
 	deno -V
 }
 
@@ -1006,6 +1017,8 @@ function debug_on {
 # 智能自启动：向 Windows 注册“系统重启/更新后恢复”
 function Register-FountApplicationRestart {
 	if (!$IsWindows) { return }
+	if ($env:FOUNT_RESTART_REGISTERED) { return }
+	$env:FOUNT_RESTART_REGISTERED = $true
 	$restartArgs = ''
 	if ($env:FOUNT_BACKGROUND) {
 		$restartArgs += " background"
@@ -1031,6 +1044,7 @@ public class FountRestart {
 # 程序正常或 Ctrl+C 退出时取消“系统重启后恢复”注册，避免被系统再次拉起
 function Unregister-FountApplicationRestart {
 	if (!$IsWindows) { return }
+	Remove-Item Env:\FOUNT_RESTART_REGISTERED -Force -ErrorAction Ignore
 	[FountRestart]::UnregisterApplicationRestart() | Out-Null
 }
 
@@ -1134,6 +1148,8 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 
 	# fount Terminal注册
 	Register-FountTerminalProfile
+	Register-FountBootBackground
+
 	Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
@@ -1201,6 +1217,20 @@ elseif ($args[0] -eq 'init') {
 	exit 0
 }
 elseif ($args[0] -eq 'keepalive') {
+	Start-Job -ScriptBlock {
+		param($FOUNT_DIR)
+		if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
+			$qualifier = Split-Path -Qualifier $FOUNT_DIR
+			if ($qualifier) {
+				$driveInfo = [System.IO.DriveInfo]::new($qualifier)
+				if ($driveInfo.IsReady -and $driveInfo.DriveFormat -eq 'NTFS') {
+					Set-Location $FOUNT_DIR
+					compact.exe /c /s /q
+				}
+			}
+		}
+	} -ArgumentList $FOUNT_DIR | Out-Null
+
 	$runargs = $args[1..$args.Count]
 
 	$env:FOUNT_KEEPALIVE = 1
@@ -1214,7 +1244,7 @@ elseif ($args[0] -eq 'keepalive') {
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		run @runargs
+		& $PSScriptRoot/fount.ps1 server @runargs
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {
@@ -1251,8 +1281,7 @@ elseif ($args[0] -eq 'keepalive') {
 					Write-Host (Get-I18n -key 'keepalive.initComplete')
 				}
 			}
-			Update-FountAndDeno
-			run
+			& $PSScriptRoot/fount.ps1 server
 		}
 	}
 	finally {
@@ -1329,6 +1358,8 @@ elseif ($args[0] -eq 'remove') {
 			Write-Warning (Get-I18n -key 'remove.removeProtocolHandlerFailed' -params @{message = $_.Exception.Message })
 		}
 	}
+
+	Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'fount' -ErrorAction SilentlyContinue
 
 	# Remove Windows Terminal Profile
 	Write-Host (Get-I18n -key 'remove.removingTerminalProfile')
@@ -1414,16 +1445,6 @@ elseif ($args[0] -eq 'remove') {
 		[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 	}
 
-	# Remove background runner
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$exepath = Join-Path $TempDir "fount-background.exe"
-	if (Test-Path $exepath) {
-		Write-Host (Get-I18n -key 'remove.removingBackgroundRunner')
-		try { Remove-Item $exepath -Force -ErrorAction Stop } catch {
-			Write-Warning (Get-I18n -key 'remove.removeBackgroundRunnerFailed' -params @{message = $_.Exception.Message })
-		}
-	}
-
 	Set-Title ""
 	Write-TaskbarProgress -Percent 90
 	# Remove fount installation directory
@@ -1441,8 +1462,18 @@ elseif ($args[0] -eq 'remove') {
 	Set-Title $originalTitle
 	exit 0
 }
-else {
-	$runargs = $args
+elseif ($args[0] -eq 'log') {
+	try {
+		Register-FountApplicationRestart
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
+	}
+	finally {
+		Unregister-FountApplicationRestart
+	}
+	exit $LastExitCode
+}
+elseif ($args[0] -eq 'server') {
+	$runargs = $args[1..$args.Count]
 	try {
 		Register-FountApplicationRestart
 		if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
@@ -1457,6 +1488,21 @@ else {
 	}
 	finally {
 		Unregister-FountApplicationRestart
+		Write-TaskbarProgressClear
+	}
+}
+else {
+	$originalTitle = Get-Title
+	try {
+		Write-TaskbarProgress -Percent 25
+		Set-Title "𝓯"
+		& $PSScriptRoot/fount.ps1 background keepalive @args
+		Set-Title "𝓯𝓸"
+		Write-TaskbarProgress
+		& $PSScriptRoot/fount.ps1 log
+	}
+	finally {
+		Set-Title $originalTitle
 		Write-TaskbarProgressClear
 	}
 }
