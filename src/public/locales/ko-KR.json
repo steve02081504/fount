@@ -115,8 +115,7 @@
 				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
 			},
 			"update": {
-				"skippingFountUpdate": ".noupdate 파일이 존재하므로 fount 업데이트를 건너뜁니다.",
-				"skippingDenoUpgradeDocker": "Docker 환경에서 Deno 업그레이드 건너뛰기"
+				"skippingFountUpdate": ".noupdate 파일이 존재하므로 fount 업데이트를 건너뜁니다."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "${path}에 바탕화면 바로가기가 생성되었습니다.",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "키를 클립보드에 복사했습니다.",
 			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
 		},
+		"editorCommand": {
+			"title": "외부 편집기 명령",
+			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다.",
+			"editorPresetLabel": "편집기 사전 설정",
+			"commandLabel": "명령",
+			"argsTemplateLabel": "인수 템플릿",
+			"argsTemplateHint": "플레이스홀더: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (PATH에 있음)",
+			"presetOptionPathUnavailable": "${label} (PATH에 없음)",
+			"testPathInput": {
+				"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
+			},
+			"testButton": "열어 보기",
+			"saveButton": "설정 저장",
+			"saveSuccess": "외부 편집기 명령 설정을 저장했습니다.",
+			"testPathRequired": "먼저 테스트할 파일 경로를 입력하세요.",
+			"testSuccess": "외부 편집기에서 파일을 여는 명령을 실행했습니다."
+		},
 		"logout": {
 			"title": "로그아웃",
 			"description": "현재 기기에서 계정을 로그아웃합니다.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "서버를 다시 시작하는 중입니다.",
 		"updateFailed": "업데이트 요청 실패",
 		"autoUpdateNotEnabled": "자동 업데이트가 활성화되지 않았습니다.",
+		"logs": {
+			"title": "로그",
+			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
+			"toolbar": {
+				"clear": "비우기",
+				"filter": {
+					"placeholder": "필터…"
+				}
+			},
+			"levels": {
+				"all": "전체",
+				"log": "로그",
+				"info": "정보",
+				"warn": "경고",
+				"error": "오류",
+				"debug": "디버그"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

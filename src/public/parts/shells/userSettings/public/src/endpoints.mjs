@@ -116,3 +116,33 @@ export async function webauthnRegisterComplete(credential, nickname, password) {
 export async function webauthnRemove(credentialId, password) {
 	return callApi('webauthn_remove', 'POST', { credentialId, password })
 }
+
+/**
+ * 获取编辑器命令配置。
+ * @returns {Promise<any>} - 编辑器命令配置。
+ */
+export async function getEditorCommandConfig() {
+	return callApi('editor_command', 'GET')
+}
+
+/**
+ * 保存编辑器命令配置。
+ * @param {string} editorId - 编辑器 ID。
+ * @param {string} command - 命令。
+ * @param {string} argsTemplate - 参数模板。
+ * @returns {Promise<any>} - 保存结果。
+ */
+export async function saveEditorCommandConfig(editorId, command, argsTemplate) {
+	return callApi('editor_command', 'POST', { editorId, command, argsTemplate })
+}
+
+/**
+ * 打开编辑器并定位到指定文件位置。
+ * @param {string} filePath - 文件路径。
+ * @param {number} line - 行号。
+ * @param {number} column - 列号。
+ * @returns {Promise<any>} - 打开结果。
+ */
+export async function openEditor(filePath, line, column) {
+	return callApi('open_editor', 'POST', { filePath, line, column })
+}

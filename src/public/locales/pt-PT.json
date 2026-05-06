@@ -115,8 +115,7 @@
 				"noUrl": "Erro: URL para o manipulador de protocolo não fornecido."
 			},
 			"update": {
-				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada",
-				"skippingDenoUpgradeDocker": "Ignorar atualização do Deno no ambiente Docker"
+				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "Chave da API copiada para a área de transferência!",
 			"copyKeyFailed": "Não foi possível copiar a chave para a área de transferência."
 		},
+		"editorCommand": {
+			"title": "Comando do editor externo",
+			"description": "Defina o executável e o modelo de argumentos para abrir ficheiros num editor externo. Os marcadores substituem o caminho do ficheiro, a linha e a coluna.",
+			"editorPresetLabel": "Predefinições do editor",
+			"commandLabel": "Comando",
+			"argsTemplateLabel": "Modelo de argumentos",
+			"argsTemplateHint": "Marcadores: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (no PATH)",
+			"presetOptionPathUnavailable": "${label} (fora do PATH)",
+			"testPathInput": {
+				"placeholder": "Caminho para um ficheiro de teste, por exemplo C:/work/project/src/main.mjs"
+			},
+			"testButton": "Testar abertura",
+			"saveButton": "Guardar configuração",
+			"saveSuccess": "Comando do editor externo guardado.",
+			"testPathRequired": "Indique primeiro o caminho do ficheiro de teste.",
+			"testSuccess": "Foi executado o comando para abrir o ficheiro no editor."
+		},
 		"logout": {
 			"title": "Terminar sessão",
 			"description": "Isto irá terminar a sessão da sua conta no dispositivo atual.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "O servidor está reiniciando",
 		"updateFailed": "Falha na solicitação de atualização",
 		"autoUpdateNotEnabled": "As atualizações automáticas não estão habilitadas",
+		"logs": {
+			"title": "Registos",
+			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
+			"toolbar": {
+				"clear": "Limpar",
+				"filter": {
+					"placeholder": "Filtrar…"
+				}
+			},
+			"levels": {
+				"all": "Todos",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Aviso",
+				"error": "Erro",
+				"debug": "Depuração"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

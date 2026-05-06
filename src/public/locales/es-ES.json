@@ -115,8 +115,7 @@
 				"noUrl": "Error: No se proporcionó la URL para el controlador de protocolo."
 			},
 			"update": {
-				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount",
-				"skippingDenoUpgradeDocker": "Omitir la actualización de Deno en el entorno Docker"
+				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Acceso directo de escritorio creado en ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "¡Clave copiada al portapapeles!",
 			"copyKeyFailed": "No se puede copiar la clave al portapapeles."
 		},
+		"editorCommand": {
+			"title": "Comando del editor externo",
+			"description": "Configura el comando y la plantilla de argumentos para abrir archivos en un editor externo. Los marcadores rellenan la ruta del archivo, el número de línea y la columna.",
+			"editorPresetLabel": "Ajustes preestablecidos del editor",
+			"commandLabel": "Comando",
+			"argsTemplateLabel": "Plantilla de argumentos",
+			"argsTemplateHint": "Marcadores: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (en PATH)",
+			"presetOptionPathUnavailable": "${label} (no está en PATH)",
+			"testPathInput": {
+				"placeholder": "Ruta de un archivo de prueba, p. ej. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Probar apertura",
+			"saveButton": "Guardar configuración",
+			"saveSuccess": "Se guardó el comando del editor externo.",
+			"testPathRequired": "Introduce primero la ruta del archivo de prueba.",
+			"testSuccess": "Se ejecutó el comando para abrir el archivo en el editor."
+		},
 		"logout": {
 			"title": "Cerrar sesión",
 			"description": "Esto cerrará la sesión de tu cuenta en el dispositivo actual.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "El servidor se está reiniciando",
 		"updateFailed": "Error en la solicitud de actualización",
 		"autoUpdateNotEnabled": "Las actualizaciones automáticas no están habilitadas",
+		"logs": {
+			"title": "Registros",
+			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}",
+			"toolbar": {
+				"clear": "Vaciar",
+				"filter": {
+					"placeholder": "Filtrar…"
+				}
+			},
+			"levels": {
+				"all": "Todos",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Aviso",
+				"error": "Error",
+				"debug": "Depuración"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

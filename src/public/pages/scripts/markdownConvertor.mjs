@@ -741,9 +741,8 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 
 ;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
 	result = result || {}
-	const { AnsiUp } = await import('https://esm.sh/ansi-up')
-	const ansi_up = new AnsiUp()
-	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
+	const { ansiToHtml } = await import('https://esm.sh/@steve02081504/ansi2html')
+	const escapeHtml = (str) => ansiToHtml(str)
 
 	let alerts = []
 

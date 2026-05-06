@@ -115,8 +115,7 @@
 				"noUrl": "Erreur : L'URL du gestionnaire de protocole n'est pas fournie."
 			},
 			"update": {
-				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée",
-				"skippingDenoUpgradeDocker": "Ignorer la mise à niveau de Deno dans l'environnement Docker"
+				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Raccourci sur le bureau créé à ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "Clé API copiée dans le presse-papiers !",
 			"copyKeyFailed": "Impossible de copier la clé dans le presse-papiers."
 		},
+		"editorCommand": {
+			"title": "Commande de l’éditeur externe",
+			"description": "Indiquez la commande et le modèle d’arguments pour ouvrir les fichiers dans un éditeur externe. Les espaces réservés renseignent le chemin du fichier, le numéro de ligne et la colonne.",
+			"editorPresetLabel": "Préréglages de l’éditeur",
+			"commandLabel": "Commande",
+			"argsTemplateLabel": "Modèle d’arguments",
+			"argsTemplateHint": "Espaces réservés : \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (présent dans le PATH)",
+			"presetOptionPathUnavailable": "${label} (absent du PATH)",
+			"testPathInput": {
+				"placeholder": "Chemin d’un fichier à essayer, ex. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Tester l’ouverture",
+			"saveButton": "Enregistrer la configuration",
+			"saveSuccess": "Commande d’éditeur externe enregistrée.",
+			"testPathRequired": "Indiquez d’abord le chemin du fichier de test.",
+			"testSuccess": "La commande d’ouverture dans l’éditeur a été exécutée."
+		},
 		"logout": {
 			"title": "Se déconnecter",
 			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "Le serveur redémarre",
 		"updateFailed": "La demande de mise à jour a échoué",
 		"autoUpdateNotEnabled": "Les mises à jour automatiques ne sont pas activées",
+		"logs": {
+			"title": "Journaux",
+			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
+			"toolbar": {
+				"clear": "Vider",
+				"filter": {
+					"placeholder": "Filtrer…"
+				}
+			},
+			"levels": {
+				"all": "Tous",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avertissement",
+				"error": "Erreur",
+				"debug": "Débogage"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

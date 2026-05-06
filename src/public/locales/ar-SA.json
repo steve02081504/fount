@@ -115,8 +115,7 @@
 				"noUrl": "خطأ: لم يتم توفير عنوان URL لمعالج البروتوكول."
 			},
 			"update": {
-				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ",
-				"skippingDenoUpgradeDocker": "تخطي ترقية Deno في بيئة Docker"
+				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!",
 			"copyKeyFailed": "غير قادر على نسخ المفتاح إلى الحافظة."
 		},
+		"editorCommand": {
+			"title": "أمر المحرر الخارجي",
+			"description": "اضبط الأمر وقالب وسيطات فتح الملفات في محرر خارجي، مع عناصر نائبة لمسار الملف ورقم السطر ورقم العمود.",
+			"editorPresetLabel": "إعدادات محرر جاهزة",
+			"commandLabel": "الأمر",
+			"argsTemplateLabel": "قالب وسيطات الأمر",
+			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (موجود في PATH)",
+			"presetOptionPathUnavailable": "${label} (غير موجود في PATH)",
+			"testPathInput": {
+				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
+			},
+			"testButton": "تجربة الفتح",
+			"saveButton": "حفظ الإعدادات",
+			"saveSuccess": "تم حفظ أمر المحرر الخارجي.",
+			"testPathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
+			"testSuccess": "تم تنفيذ أمر الفتح في المحرر الخارجي."
+		},
 		"logout": {
 			"title": "تسجيل الخروج",
 			"description": "سيؤدي هذا إلى تسجيل خروج حسابك من الجهاز الحالي.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "يتم إعادة تشغيل الخادم",
 		"updateFailed": "فشل طلب التحديث",
 		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
+		"logs": {
+			"title": "السجلات",
+			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
+			"toolbar": {
+				"clear": "مسح",
+				"filter": {
+					"placeholder": "تصفية…"
+				}
+			},
+			"levels": {
+				"all": "الكل",
+				"log": "سجل",
+				"info": "معلومات",
+				"warn": "تحذير",
+				"error": "خطأ",
+				"debug": "تصحيح"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

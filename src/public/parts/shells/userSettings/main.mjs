@@ -83,6 +83,11 @@ export default {
 					case 'revoke-apikey':
 						params.jti = args[1]
 						break
+					case 'open-editor':
+						params.filePath = args[1]
+						params.line = args[2]
+						params.column = args[3]
+						break
 				}
 				const result = await handleAction(user, action, params)
 				if (result !== undefined)

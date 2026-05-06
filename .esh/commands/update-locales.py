@@ -152,6 +152,31 @@ def find_best_translation_source(key_path, all_data, languages_map, reference_co
 	return None, None
 
 
+def normalize_dollar_brace_spacing(text: str) -> str:
+	"""把 `$ {` 规范化为 `${`，且跳过字面义 `\\${...}`（展示用占位符写法，不参与占位符对齐）。"""
+	if not isinstance(text, str):
+		return text
+	out = []
+	i = 0
+	while i < len(text):
+		if text.startswith("\\${", i):
+			close = text.find("}", i + 3)
+			if close == -1:
+				out.append(text[i:])
+				break
+			out.append(text[i : close + 1])
+			i = close + 1
+			continue
+		m = re.match(r"\$\s*\{", text[i:])
+		if m:
+			out.append("${")
+			i += m.end()
+			continue
+		out.append(text[i])
+		i += 1
+	return "".join(out)
+
+
 def align_placeholders_google_raw(original_text_with_placeholders: str, translated_text: str) -> str:
 	"""
 	(此函数用于 Google 翻译后的初步对齐，与修复逻辑中的 align_placeholders_with_list 不同)
@@ -162,23 +187,37 @@ def align_placeholders_google_raw(original_text_with_placeholders: str, translat
 	if not isinstance(translated_text, str):
 		return translated_text
 
-	normalized_translated = re.sub(r"\$\s*\{", "${", translated_text)
-	text_placeholders_content = re.findall(r"\$\{(.*?)\}", original_text_with_placeholders)
+	normalized_translated = normalize_dollar_brace_spacing(translated_text)
+	text_placeholders_content = extract_placeholders(original_text_with_placeholders)
 
 	if not text_placeholders_content:
 		return normalized_translated
 
 	canonical_content_iter = iter(text_placeholders_content)
-
-	def replace_with_canonical_placeholder(match_obj):
-		try:
-			new_content = next(canonical_content_iter)
-			return f"${{{new_content}}}"
-		except StopIteration:
-			return match_obj.group(0)
-
-	final_translated = re.sub(r"\$\{(.*?)\}", replace_with_canonical_placeholder, normalized_translated)
-	return final_translated
+	out = []
+	i = 0
+	s = normalized_translated
+	while i < len(s):
+		if s.startswith("\\${", i):
+			close = s.find("}", i + 3)
+			if close == -1:
+				out.append(s[i:])
+				break
+			out.append(s[i : close + 1])
+			i = close + 1
+			continue
+		m = re.match(r"\$\{([^}]*)\}", s[i:])
+		if m:
+			try:
+				new_content = next(canonical_content_iter)
+				out.append(f"${{{new_content}}}")
+			except StopIteration:
+				out.append(m.group(0))
+			i += m.end()
+			continue
+		out.append(s[i])
+		i += 1
+	return "".join(out)
 
 
 def get_compatible_code(code):
@@ -756,10 +795,26 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 
 
 def extract_placeholders(text_string: str) -> list[str]:
-	"""从字符串中提取占位符内容 (例如, 从 '${name}' 中提取 'name')。"""
+	"""从字符串中提取插值占位符名称（`${name}` 中的 name）；跳过字面义 `\\${...}`（不参与插值对齐）。"""
 	if not isinstance(text_string, str):
 		return []
-	return re.findall(r"\$\{(.*?)\}", text_string)
+	out = []
+	i = 0
+	n = len(text_string)
+	while i < n:
+		if text_string.startswith("\\${", i):
+			close = text_string.find("}", i + 3)
+			if close == -1:
+				break
+			i = close + 1
+			continue
+		m = re.match(r"\$\{([^}]*)\}", text_string[i:])
+		if m:
+			out.append(m.group(1))
+			i += m.end()
+			continue
+		i += 1
+	return out
 
 
 def collect_all_translatable_key_paths_recursive(current_data, current_path_prefix, collected_paths):
@@ -850,25 +905,38 @@ def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_
 
 
 def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
-	"""使用 new_placeholder_names 中的名称按顺序替换 original_text_with_placeholders 中的占位符。"""
+	"""使用 new_placeholder_names 中的名称按顺序替换 original_text_with_placeholders 中的插值占位符；保留 `\\${...}` 字面义片段。"""
 	if not isinstance(original_text_with_placeholders, str):
 		return original_text_with_placeholders
-	normalized_text = re.sub(r"\$\s*\{", "${", original_text_with_placeholders)
+	normalized_text = normalize_dollar_brace_spacing(original_text_with_placeholders)
 
-	def replace_match_factory(names_iter):
-		def replace_match(match_obj):
-			try:
-				return f"${{{next(names_iter)}}}"
-			except StopIteration:
-				return match_obj.group(0)
-
-		return replace_match
-
-	if len(re.findall(r"\$\{(.*?)\}", normalized_text)) != len(new_placeholder_names):
+	if len(extract_placeholders(normalized_text)) != len(new_placeholder_names):
 		print("  - 警告 (占位符重建): 文本中的占位符数量与提供的名称列表长度不匹配。返回原文本。")
 		return original_text_with_placeholders
 
-	return re.sub(r"\$\{(.*?)\}", replace_match_factory(iter(new_placeholder_names)), normalized_text)
+	names_iter = iter(new_placeholder_names)
+	out = []
+	i = 0
+	while i < len(normalized_text):
+		if normalized_text.startswith("\\${", i):
+			close = normalized_text.find("}", i + 3)
+			if close == -1:
+				out.append(normalized_text[i:])
+				break
+			out.append(normalized_text[i : close + 1])
+			i = close + 1
+			continue
+		m = re.match(r"\$\{([^}]*)\}", normalized_text[i:])
+		if m:
+			try:
+				out.append(f"${{{next(names_iter)}}}")
+			except StopIteration:
+				out.append(m.group(0))
+			i += m.end()
+			continue
+		out.append(normalized_text[i])
+		i += 1
+	return "".join(out)
 
 
 def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], most_frequent_count: int, reference_lang_codes: list[str]) -> list[str] | None:

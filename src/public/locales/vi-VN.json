@@ -115,8 +115,7 @@
 				"noUrl": "Lỗi: URL cho trình xử lý giao thức không được cung cấp."
 			},
 			"update": {
-				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua",
-				"skippingDenoUpgradeDocker": "Bỏ qua nâng cấp Deno trong môi trường Docker"
+				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại ${path}",
@@ -1503,7 +1502,25 @@
 				"title": "Sao chép khóa API mới"
 			},
 			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
-			"copyKeyFailed": "Không thể sao chép khóa vào clipboard."
+			"copyKeyFailed": "Không thể sao chép khóa vào bộ nhớ tạm."
+		},
+		"editorCommand": {
+			"title": "Lệnh mở trình soạn thảo bên ngoài",
+			"description": "Thiết lập lệnh và chuỗi tham số để mở tệp bằng trình soạn thảo bên ngoài. Có placeholder cho đường dẫn tệp, số dòng và số cột.",
+			"editorPresetLabel": "Bộ thiết lập sẵn cho trình soạn thảo",
+			"commandLabel": "Lệnh",
+			"argsTemplateLabel": "Mẫu tham số",
+			"argsTemplateHint": "Placeholder: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (có trong PATH)",
+			"presetOptionPathUnavailable": "${label} (không có trong PATH)",
+			"testPathInput": {
+				"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
+			},
+			"testButton": "Thử mở",
+			"saveButton": "Lưu cấu hình",
+			"saveSuccess": "Đã lưu lệnh mở trình soạn thảo bên ngoài.",
+			"testPathRequired": "Hãy nhập đường dẫn tệp thử trước.",
+			"testSuccess": "Đã chạy lệnh mở tệp trong trình soạn thảo."
 		},
 		"logout": {
 			"title": "Đăng xuất",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "Máy chủ đang khởi động lại",
 		"updateFailed": "Yêu cầu cập nhật không thành công",
 		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
+		"logs": {
+			"title": "Nhật ký",
+			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
+			"toolbar": {
+				"clear": "Xóa",
+				"filter": {
+					"placeholder": "Lọc…"
+				}
+			},
+			"levels": {
+				"all": "Tất cả",
+				"log": "Log",
+				"info": "Thông tin",
+				"warn": "Cảnh báo",
+				"error": "Lỗi",
+				"debug": "Gỡ lỗi"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

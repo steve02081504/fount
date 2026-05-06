@@ -153,6 +153,41 @@
 				</div>
 			</section>
 
+			<!-- 编辑器命令行 -->
+			<section class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title" data-i18n="userSettings.editorCommand.title"></h2>
+					<p class="text-sm opacity-80" data-i18n="userSettings.editorCommand.description"></p>
+					<form id="editorCommandForm" class="space-y-4 pt-4">
+						<div class="form-control">
+							<label class="label" for="editorPresetSelect"><span class="label-text" data-i18n="userSettings.editorCommand.editorPresetLabel"></span></label>
+							<select id="editorPresetSelect" name="editorPresetSelect" class="select select-bordered"></select>
+						</div>
+						<div class="form-control">
+							<label class="label" for="editorCommandInput"><span class="label-text" data-i18n="userSettings.editorCommand.commandLabel"></span></label>
+							<input type="text" id="editorCommandInput" name="editorCommandInput" class="input input-bordered" required />
+						</div>
+						<div class="form-control">
+							<label class="label" for="editorArgsTemplateInput"><span class="label-text" data-i18n="userSettings.editorCommand.argsTemplateLabel"></span></label>
+							<input type="text" id="editorArgsTemplateInput" name="editorArgsTemplateInput" class="input input-bordered" required />
+							<label class="label py-1"><span class="label-text-alt" data-i18n="userSettings.editorCommand.argsTemplateHint"></span></label>
+						</div>
+						<div class="divider my-1"></div>
+						<div class="grid md:grid-cols-3 gap-2">
+							<input type="text" id="editorTestPath" class="input input-bordered md:col-span-2" data-i18n="userSettings.editorCommand.testPathInput" />
+							<div class="grid grid-cols-2 gap-2">
+								<input type="number" id="editorTestLine" class="input input-bordered" min="1" value="1" />
+								<input type="number" id="editorTestColumn" class="input input-bordered" min="1" value="1" />
+							</div>
+						</div>
+						<div class="card-actions justify-end">
+							<button id="testEditorCommandBtn" type="button" class="btn btn-ghost" data-i18n="userSettings.editorCommand.testButton"></button>
+							<button type="submit" class="btn btn-primary" data-i18n="userSettings.editorCommand.saveButton"></button>
+						</div>
+					</form>
+				</div>
+			</section>
+
 			<!-- 登出 -->
 			<section class="card bg-base-200 shadow-xl">
 				<div class="card-body">

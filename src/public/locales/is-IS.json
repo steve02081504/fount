@@ -115,8 +115,7 @@
 				"noUrl": "Villa: Vefslóð fyrir samskiptareglu (protocol handler) ekki gefin upp."
 			},
 			"update": {
-				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt",
-				"skippingDenoUpgradeDocker": "Slepptu Deno uppfærslu í Docker umhverfi"
+				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "API lykill afritaður á klippiborð!",
 			"copyKeyFailed": "Ekki er hægt að afrita lykil á klemmuspjald."
 		},
+		"editorCommand": {
+			"title": "Skipun ytri ritstjóra",
+			"description": "Stilltu forrit og viðfangasniðmát til að opna skrár í ytri ritstjóra; hægt er að nota staðgengla fyrir skráarslóð, línu og dálk.",
+			"editorPresetLabel": "Forstillingar ritstjóra",
+			"commandLabel": "Skipun",
+			"argsTemplateLabel": "Viðfangasniðmát",
+			"argsTemplateHint": "Staðgenglar: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (finnst í PATH)",
+			"presetOptionPathUnavailable": "${label} (finnst ekki í PATH)",
+			"testPathInput": {
+				"placeholder": "Slóð að skrá til að prófa, t.d. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Prófa opnun",
+			"saveButton": "Vista stillingar",
+			"saveSuccess": "Skipun fyrir ytri ritstjóra vistuð.",
+			"testPathRequired": "Sláðu fyrst inn prófunarslóð.",
+			"testSuccess": "Keyrði skipun til að opna skrána í ytri ritstjóra."
+		},
 		"logout": {
 			"title": "Útskráning",
 			"description": "Þetta mun skrá þig út af aðganginum þínum á þessu tæki.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "Þjónninn er að endurræsa",
 		"updateFailed": "Uppfærslubeiðni mistókst",
 		"autoUpdateNotEnabled": "Sjálfvirkar uppfærslur eru ekki virkar",
+		"logs": {
+			"title": "Annáll",
+			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
+			"toolbar": {
+				"clear": "Hreinsa",
+				"filter": {
+					"placeholder": "Sía…"
+				}
+			},
+			"levels": {
+				"all": "Allt",
+				"log": "Log",
+				"info": "Upplýsingar",
+				"warn": "Viðvörun",
+				"error": "Villa",
+				"debug": "Villuleit"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

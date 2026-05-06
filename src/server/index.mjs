@@ -19,12 +19,15 @@ import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
+// 设置 `@steve02081504/virtual-console` 虚拟控制台选项用于日志查看器 WebSocket 服务
+console.options.maxLogEntries = 4096
+console.options.recordOutput = true
+
 console.profile('server start')
 setWindowTitle('𝓯𝓸')
 SetTaskbarProgress(50)
 
 // 初始化 Sentry 进行错误报告。
-let skipBreadcrumb = false
 /**
  * 是否启用 Sentry 进行错误报告
  * @type {boolean}
@@ -39,16 +42,6 @@ function set_sentry_enabled(new_sentry_enabled) {
 	// deno-lint-ignore no-cond-assign
 	if (sentry_enabled = new_sentry_enabled) Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-		/**
-		 * 在 Sentry 捕获面包屑事件之前进行处理
-		 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
-		 * @param {object} hint - 包含原始事件等信息的辅助对象。
-		 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
-		 */
-		beforeBreadcrumb: (breadcrumb, hint) => {
-			if (skipBreadcrumb) return null
-			return breadcrumb
-		}
 	})
 }
 set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
@@ -58,15 +51,7 @@ console.noBreadcrumb = {
 	 * @param {...any} args - 要记录的日志
 	 */
 	log: (...args) => {
-		skipBreadcrumb = true
-		console.options.realConsoleOutput = false
-		console.options.recordOutput = true
-		console.outputs = console.outputsHtml = ''
-		console.log(...args)
-		process.stdout.write(console.outputs)
-		console.options.recordOutput = false
-		console.options.realConsoleOutput = true
-		skipBreadcrumb = false
+		console.writeAs('log', ...args)
 	}
 }
 

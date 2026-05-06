@@ -115,8 +115,7 @@
 				"noUrl": "Fout: URL voor protocolhandler niet opgegeven."
 			},
 			"update": {
-				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen",
-				"skippingDenoUpgradeDocker": "Sla de Deno-upgrade over in de Docker-omgeving"
+				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
 			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
 		},
+		"editorCommand": {
+			"title": "Externe editor – opdracht",
+			"description": "Stel het programma en het argumentsjabloon in om bestanden in een externe editor te openen. Gebruik tijdelijke aanduidingen voor pad, regel en kolom.",
+			"editorPresetLabel": "Editor-voorinstellingen",
+			"commandLabel": "Opdracht",
+			"argsTemplateLabel": "Argumentsjabloon",
+			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (staat in PATH)",
+			"presetOptionPathUnavailable": "${label} (staat niet in PATH)",
+			"testPathInput": {
+				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Test: openen",
+			"saveButton": "Configuratie opslaan",
+			"saveSuccess": "Opdracht voor externe editor opgeslagen.",
+			"testPathRequired": "Vul eerst het pad naar het testbestand in.",
+			"testSuccess": "De opdracht om in de editor te openen is uitgevoerd."
+		},
 		"logout": {
 			"title": "Uitloggen",
 			"description": "Dit logt je account uit op het huidige apparaat.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "De server wordt opnieuw opgestart",
 		"updateFailed": "Updateverzoek is mislukt",
 		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
+		"logs": {
+			"title": "Logboek",
+			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
+			"toolbar": {
+				"clear": "Wissen",
+				"filter": {
+					"placeholder": "Filteren…"
+				}
+			},
+			"levels": {
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Waarschuwing",
+				"error": "Fout",
+				"debug": "Debug"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

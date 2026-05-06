@@ -203,18 +203,13 @@ function ansiLink(url, text) {
 }
 
 /**
- * 对单条翻译字符串做插值（占位符、链接、反引号）。
- * 若 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色；否则链接仅保留文字，反引号保持原样。
- * 若 translation 非字符串（如嵌套对象），则原样返回。
- * @template TTranslation - 翻译字符串或嵌套对象的类型。
- * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
+ * 对不含字面义占位符片段的字符串做插值（与 `public/pages/scripts/i18n.mjs` 行为一致，终端下为链接/反引号使用 ANSI）。
+ * @param {string} segment - 翻译片段。
  * @param {Record<string, any>} params - 插值参数。
- * @returns {TTranslation} 替换后的翻译字符串或原对象。
+ * @returns {string} 插值后的片段字符串。
  */
-function applyParamsToTranslation(translation, params) {
-	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
-	if (!translation || !(Object(translation) instanceof String)) return translation
-	let result = translation
+function applyInterpolationToPlainSegment(segment, params) {
+	let result = segment
 	if (supportsAnsi) {
 		for (const param in params)
 			result = result?.replace?.(
@@ -225,6 +220,38 @@ function applyParamsToTranslation(translation, params) {
 	}
 	else for (const param in params)
 		result = result?.replaceAll?.(`\${${param}}`, params[param])
+	return result
+}
+
+/**
+ * 对单条翻译字符串做插值（占位符、链接、反引号）。
+ * 若 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色；否则链接仅保留文字，反引号保持原样。
+ * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
+ * 若 translation 非字符串（如嵌套对象），则原样返回。
+ * @template TTranslation - 翻译字符串或嵌套对象的类型。
+ * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {TTranslation} 替换后的翻译字符串或原对象。
+ */
+function applyParamsToTranslation(translation, params) {
+	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
+	if (!translation || !(Object(translation) instanceof String)) return translation
+	const s = translation + ''
+	let result = ''
+	let i = 0
+	while (i < s.length) {
+		const esc = s.indexOf('\\${', i)
+		const plainEnd = esc === -1 ? s.length : esc
+		result += applyInterpolationToPlainSegment(s.slice(i, plainEnd), params)
+		if (esc === -1) break
+		const close = s.indexOf('}', esc + 3)
+		if (close === -1) {
+			result += s.slice(esc)
+			break
+		}
+		result += s.slice(esc + 1, close + 1)
+		i = close + 1
+	}
 	return result
 }
 
@@ -396,7 +423,14 @@ function toString(value) {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
+console.infoI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.info(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 有参数的本地化键重载
  * @overload
@@ -419,7 +453,14 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
+console.logI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.log(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -442,7 +483,14 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
+console.warnI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.warn(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -465,7 +513,14 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
+console.errorI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.error(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload
@@ -491,7 +546,14 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
+console.freshLineI18n = (id, key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.freshLine(id, toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 /**
  * 无参数的本地化键重载
  * @overload

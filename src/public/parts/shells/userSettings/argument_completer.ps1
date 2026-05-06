@@ -10,6 +10,9 @@
 #   - revoke-device <tokenJti> <password>: 撤销一个设备的访问权限。
 #   - rename-user <newUsername> <password>: 重命名用户。
 #   - delete-account <password>: 删除当前用户账户。
+#   - get-editor-command: 获取编辑器命令配置。
+#   - set-editor-command <editorId> <command> <argsTemplate>: 设置编辑器命令配置。
+#   - open-editor <filePath> [line] [column]: 打开编辑器并定位。
 #
 # fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
@@ -36,7 +39,7 @@ try {
 	switch ($commandElements.Count - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全第一个参数 (操作命令)。
-			@("get-stats", "change-password", "list-devices", "revoke-device", "rename-user", "delete-account") | Where-Object { $_.StartsWith($WordToComplete) }
+			@("get-stats", "change-password", "list-devices", "revoke-device", "rename-user", "delete-account", "get-editor-command", "set-editor-command", "open-editor") | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}
 		# 后续参数涉及敏感信息 (如密码、JTI) 或无法简单枚举，因此不提供补全。
