@@ -115,8 +115,7 @@
 				"noUrl": "Fout: URL voor protocolhandler niet opgegeven."
 			},
 			"update": {
-				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen",
-				"skippingDenoUpgradeDocker": "Sla de Deno-upgrade over in de Docker-omgeving"
+				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",

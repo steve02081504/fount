@@ -115,8 +115,7 @@
 				"noUrl": "错误：未提供协议处理程序的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新",
-				"skippingDenoUpgradeDocker": "在 Docker 环境中跳过 Deno 升级"
+				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 ${path} 创建桌面快捷方式",

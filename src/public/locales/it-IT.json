@@ -115,8 +115,7 @@
 				"noUrl": "Errore: URL per il protocollo handle non fornito."
 			},
 			"update": {
-				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato",
-				"skippingDenoUpgradeDocker": "Salta l'aggiornamento di Deno nell'ambiente Docker"
+				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in ${path}",

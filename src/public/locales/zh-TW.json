@@ -115,8 +115,7 @@
 				"noUrl": "錯誤：未提供協定處理程式的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 .noupdate 檔案存在，跳過 fount 更新",
-				"skippingDenoUpgradeDocker": "在 Docker 環境中跳過 Deno 升級"
+				"skippingFountUpdate": "因 .noupdate 檔案存在，跳過 fount 更新"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 ${path} 建立桌面捷徑",

@@ -123,7 +123,6 @@ export type LocaleData = {
 			}
 			update: {
 				skippingFountUpdate: string
-				skippingDenoUpgradeDocker: string
 			}
 			shortcut: {
 				desktopShortcutCreated: string

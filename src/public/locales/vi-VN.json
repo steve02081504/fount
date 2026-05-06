@@ -115,8 +115,7 @@
 				"noUrl": "Lỗi: URL cho trình xử lý giao thức không được cung cấp."
 			},
 			"update": {
-				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua",
-				"skippingDenoUpgradeDocker": "Bỏ qua nâng cấp Deno trong môi trường Docker"
+				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại ${path}",

@@ -985,12 +985,6 @@ $is_running = $args.Count -ne 0 -and ($args[0] -eq 'server' -or $args[0] -eq 'ke
 if ($is_running) {
 	Assert-FountDirWritable $FOUNT_DIR
 	Update-FountAndDeno
-	if ($IN_DOCKER) {
-		Write-Host (Get-I18n -key 'update.skippingDenoUpgradeDocker')
-	}
-	else {
-		deno_upgrade
-	}
 	deno -V
 }
 
@@ -1507,9 +1501,9 @@ else {
 		Write-TaskbarProgress
 		& $PSScriptRoot/fount.ps1 log
 	}
-	catch {
-		Write-TaskbarProgressClear
+	finally {
 		Set-Title $originalTitle
+		Write-TaskbarProgressClear
 	}
 }
 

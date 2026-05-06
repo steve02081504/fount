@@ -115,8 +115,7 @@
 				"noUrl": "Villa: Vefslóð fyrir samskiptareglu (protocol handler) ekki gefin upp."
 			},
 			"update": {
-				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt",
-				"skippingDenoUpgradeDocker": "Slepptu Deno uppfærslu í Docker umhverfi"
+				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á ${path}",

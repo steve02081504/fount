@@ -115,8 +115,7 @@
 				"noUrl": "Erro: URL para o manipulador de protocolo não fornecido."
 			},
 			"update": {
-				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada",
-				"skippingDenoUpgradeDocker": "Ignorar atualização do Deno no ambiente Docker"
+				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",

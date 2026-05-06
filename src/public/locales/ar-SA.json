@@ -115,8 +115,7 @@
 				"noUrl": "خطأ: لم يتم توفير عنوان URL لمعالج البروتوكول."
 			},
 			"update": {
-				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ",
-				"skippingDenoUpgradeDocker": "تخطي ترقية Deno في بيئة Docker"
+				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",

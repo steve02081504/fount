@@ -115,8 +115,7 @@
 				"noUrl": "Помилка: не вказано URL для обробника протоколу."
 			},
 			"update": {
-				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення fount пропускається",
-				"skippingDenoUpgradeDocker": "Пропустити оновлення Deno в середовищі Docker"
+				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення fount пропускається"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлик на робочому столі створено в ${path}",

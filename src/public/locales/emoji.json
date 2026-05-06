@@ -115,8 +115,7 @@
 				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
-				"skippingFountUpdate": "⏭️ ⛲ ⏫",
-				"skippingDenoUpgradeDocker": "🐳 ⏭️ 🦕 ⏫"
+				"skippingFountUpdate": "⏭️ ⛲ ⏫"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ ${path}",

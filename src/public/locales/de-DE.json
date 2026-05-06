@@ -115,8 +115,7 @@
 				"noUrl": "Fehler: URL für Protokoll-Handler nicht angegeben."
 			},
 			"update": {
-				"skippingFountUpdate": "Da die Datei .noupdate vorhanden ist, wird die Aktualisierung der fount übersprungen",
-				"skippingDenoUpgradeDocker": "Überspringen Sie das Deno-Upgrade in der Docker-Umgebung"
+				"skippingFountUpdate": "Da die Datei .noupdate vorhanden ist, wird die Aktualisierung der fount übersprungen"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter ${path}",

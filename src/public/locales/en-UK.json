@@ -115,8 +115,7 @@
 				"noUrl": "Error: URL for protocol handler not provided."
 			},
 			"update": {
-				"skippingFountUpdate": "Because the .noupdate file exists, the fount update is skipped",
-				"skippingDenoUpgradeDocker": "Skip Deno upgrade in Docker environment"
+				"skippingFountUpdate": "Because the .noupdate file exists, the fount update is skipped"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop shortcut created at ${path}",

@@ -1443,11 +1443,6 @@ update_fount_and_deno() {
 if [[ $# -gt 0 && ($1 == "server" || $1 == "keepalive") ]]; then
 	assert_fount_dir_writable "$FOUNT_DIR"
 	update_fount_and_deno
-	if [ $IN_DOCKER -eq 1 ]; then
-		get_i18n 'update.skippingDenoUpgradeDocker'
-	else
-		deno_upgrade
-	fi
 	run_deno -V
 fi
 

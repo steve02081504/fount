@@ -115,8 +115,7 @@
 				"noUrl": "त्रुटि: प्रोटोकॉलहैंडल के लिए यूआरएल प्रदान नहीं किया गया।"
 			},
 			"update": {
-				"skippingFountUpdate": "चूँकि .noupdate फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है",
-				"skippingDenoUpgradeDocker": "डॉकर परिवेश में डेनो अपग्रेड को छोड़ें"
+				"skippingFountUpdate": "चूँकि .noupdate फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "${path} पर डेस्कटॉप शॉर्टकट बनाया गया",

@@ -115,8 +115,7 @@
 				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
 			},
 			"update": {
-				"skippingFountUpdate": ".noupdate 파일이 존재하므로 fount 업데이트를 건너뜁니다.",
-				"skippingDenoUpgradeDocker": "Docker 환경에서 Deno 업그레이드 건너뛰기"
+				"skippingFountUpdate": ".noupdate 파일이 존재하므로 fount 업데이트를 건너뜁니다."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "${path}에 바탕화면 바로가기가 생성되었습니다.",

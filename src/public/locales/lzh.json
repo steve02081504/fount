@@ -115,8 +115,7 @@
 				"noUrl": "誤：未供協定處置器之 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略",
-				"skippingDenoUpgradeDocker": "Docker 中 Deno 之晉級暫略"
+				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "桌面快捷已建於 ${path}",

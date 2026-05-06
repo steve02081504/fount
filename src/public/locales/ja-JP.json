@@ -115,8 +115,7 @@
 				"noUrl": "エラー: プロトコルハンドラーの URL が指定されていません。"
 			},
 			"update": {
-				"skippingFountUpdate": ".noupdate ファイルが存在するため、fountの更新はスキップされます",
-				"skippingDenoUpgradeDocker": "Docker環境でのDenoアップグレードのスキップ"
+				"skippingFountUpdate": ".noupdate ファイルが存在するため、fountの更新はスキップされます"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "${path} にデスクトップ ショートカットが作成されました",

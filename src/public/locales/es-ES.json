@@ -115,8 +115,7 @@
 				"noUrl": "Error: No se proporcionó la URL para el controlador de protocolo."
 			},
 			"update": {
-				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount",
-				"skippingDenoUpgradeDocker": "Omitir la actualización de Deno en el entorno Docker"
+				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Acceso directo de escritorio creado en ${path}",
