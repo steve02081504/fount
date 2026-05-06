@@ -1505,6 +1505,22 @@
 			"copiedAlert": "符鑰已錄！",
 			"copyKeyFailed": "符鑰難錄於剪貼。"
 		},
+		"editorCommand": {
+			"title": "外在編輯器啟卷之敕",
+			"description": "設敕令與參數模板，俾外在編輯器啟卷；預留之符可載卷徑、行號、列號（${file}、${line}、${column}）。",
+			"editorPresetLabel": "編輯器預製項",
+			"commandLabel": "敕令",
+			"argsTemplateLabel": "參數模板",
+			"argsTemplateHint": "預留符：${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
+			},
+			"testButton": "試啟",
+			"saveButton": "存其配置",
+			"saveSuccess": "外在編輯器之敕已存。",
+			"testPathRequired": "請先填試用之卷徑。",
+			"testSuccess": "已行外在編輯器啟卷之試。"
+		},
 		"logout": {
 			"title": "告退",
 			"description": "此舉將從當前之器告退。",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "伺服正重啟",
 		"updateFailed": "更新之請未果",
 		"autoUpdateNotEnabled": "自動更新未啟",
+		"logs": {
+			"title": "日誌",
+			"openSourceFailed": "啟閱原始碼卷未果：${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

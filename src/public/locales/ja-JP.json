@@ -1505,6 +1505,22 @@
 			"copiedAlert": "APIキーをクリップボードにコピーしました",
 			"copyKeyFailed": "キーをクリップボードにコピーできません。"
 		},
+		"editorCommand": {
+			"title": "外部エディタの起動コマンド",
+			"description": "外部エディタでファイルを開くためのコマンドと引数テンプレートを設定します。ファイルパス・行番号・列はプレースホルダー（${file}、${line}、${column}）で渡せます。",
+			"editorPresetLabel": "エディタのプリセット",
+			"commandLabel": "コマンド",
+			"argsTemplateLabel": "引数テンプレート",
+			"argsTemplateHint": "プレースホルダー: ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
+			},
+			"testButton": "試し開く",
+			"saveButton": "設定を保存",
+			"saveSuccess": "外部エディタのコマンド設定を保存しました。",
+			"testPathRequired": "先にテスト用のファイルパスを入力してください。",
+			"testSuccess": "外部エディタで開くコマンドを実行しました。"
+		},
 		"logout": {
 			"title": "ログアウト",
 			"description": "現在のデバイスからアカウントをログアウトします。",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "サーバーが再起動中です",
 		"updateFailed": "更新リクエストが失敗しました",
 		"autoUpdateNotEnabled": "自動更新が有効になっていません",
+		"logs": {
+			"title": "ログ",
+			"openSourceFailed": "ソースファイルを開けませんでした: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

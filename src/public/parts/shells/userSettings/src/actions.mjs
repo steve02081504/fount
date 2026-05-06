@@ -3,6 +3,8 @@ import path from 'node:path'
 
 import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKey } from '../../../../server/auth.mjs'
 
+import { getEditorCommandConfig, openEditor, setEditorCommandConfig } from './editorCommand.mjs'
+
 /**
  * 用户设置相关的动作。
  */
@@ -58,7 +60,7 @@ function formatBytes(bytes, decimals = 2) {
  */
 export const actions = {
 	/**
-			 * 获取用户统计信息。
+	 * 获取用户统计信息。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @returns {Promise<object>} - 统计信息。
@@ -75,7 +77,7 @@ export const actions = {
 		}
 	},
 	/**
-			 * 更改用户密码。
+	 * 更改用户密码。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.currentPassword - 当前密码。
@@ -87,7 +89,7 @@ export const actions = {
 		return await changeUserPassword(user, currentPassword, newPassword)
 	},
 	/**
-			 * 列出用户设备。
+	 * 列出用户设备。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @returns {object[]} - 设备列表。
@@ -97,7 +99,7 @@ export const actions = {
 		return userConfig.auth.refreshTokens
 	},
 	/**
-			 * 撤销用户设备。
+	 * 撤销用户设备。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.tokenJti - 令牌 JTI。
@@ -109,7 +111,7 @@ export const actions = {
 		return await revokeUserDeviceByJti(user, tokenJti, password)
 	},
 	/**
-			 * 重命名用户。
+	 * 重命名用户。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.newUsername - 新用户名。
@@ -121,7 +123,7 @@ export const actions = {
 		return await renameUser(user, newUsername, password)
 	},
 	/**
-			 * 删除用户帐户。
+	 * 删除用户帐户。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.password - 密码。
@@ -132,7 +134,7 @@ export const actions = {
 		return await deleteUserAccount(user, password)
 	},
 	/**
-			 * 列出 API 密钥。
+	 * 列出 API 密钥。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @returns {object[]} - API 密钥列表。
@@ -142,7 +144,7 @@ export const actions = {
 		return userConfig.auth.apiKeys || []
 	},
 	/**
-			 * 创建 API 密钥。
+	 * 创建 API 密钥。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.description - 描述。
@@ -163,5 +165,38 @@ export const actions = {
 	'revoke-apikey': async ({ user, jti }) => {
 		if (!jti) throw new Error('JTI of the key to revoke is required.')
 		return await revokeApiKey(user, jti)
+	},
+	/**
+	 * 获取编辑器命令配置。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @returns {Promise<object>} 编辑器配置。
+	 */
+	'get-editor-command': async ({ user }) => {
+		return await getEditorCommandConfig(user)
+	},
+	/**
+	 * 设置编辑器命令配置。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.editorId - 编辑器 ID。
+	 * @param {string} params.command - 编辑器命令。
+	 * @param {string} params.argsTemplate - 参数模板。
+	 * @returns {Promise<object>} 保存后的配置。
+	 */
+	'set-editor-command': async ({ user, editorId, command, argsTemplate }) => {
+		return await setEditorCommandConfig(user, { editorId, command, argsTemplate })
+	},
+	/**
+	 * 通过命令打开编辑器。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.filePath - 文件路径。
+	 * @param {number} [params.line=1] - 行号。
+	 * @param {number} [params.column=1] - 列号。
+	 * @returns {Promise<object>} 打开结果。
+	 */
+	'open-editor': async ({ user, filePath, line, column }) => {
+		return await openEditor(user, filePath, line, column)
 	}
 }

@@ -284,7 +284,14 @@ function toString(value) {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, params)))
+console.infoI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.info(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 
 /**
  * 无参数的本地化键重载
@@ -308,7 +315,14 @@ console.infoI18n = (key, params = {}) => console.info(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params)))
+console.logI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.log(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 
 /**
  * 无参数的本地化键重载
@@ -332,7 +346,14 @@ console.logI18n = (key, params = {}) => console.log(toString(geti18n(key, params
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, params)))
+console.warnI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.warn(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 
 /**
  * 无参数的本地化键重载
@@ -356,7 +377,14 @@ console.warnI18n = (key, params = {}) => console.warn(toString(geti18n(key, para
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, params)))
+console.errorI18n = (key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.error(toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 
 /**
  * 无参数的本地化键重载
@@ -383,7 +411,14 @@ console.errorI18n = (key, params = {}) => console.error(toString(geti18n(key, pa
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, toString(geti18n(key, params)))
+console.freshLineI18n = (id, key, params = {}) => {
+	try {
+		console.stackFrameSkipCount++
+		console.freshLine(id, toString(geti18n(key, params)))
+	} finally {
+		console.stackFrameSkipCount--
+	}
+}
 
 /**
  * 无参数的本地化键重载

@@ -1505,6 +1505,22 @@
 			"copiedAlert": "API key copied to clipboard!",
 			"copyKeyFailed": "Unable to copy key to clipboard."
 		},
+		"editorCommand": {
+			"title": "External editor command",
+			"description": "Choose the command and arguments template used to open files in an external editor. Supported placeholders fill in the file path, line number and column.",
+			"editorPresetLabel": "Editor presets",
+			"commandLabel": "Command",
+			"argsTemplateLabel": "Arguments template",
+			"argsTemplateHint": "Placeholders: ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Try opening",
+			"saveButton": "Save configuration",
+			"saveSuccess": "External editor command saved.",
+			"testPathRequired": "Enter a test file path first.",
+			"testSuccess": "Ran the command to open your editor."
+		},
 		"logout": {
 			"title": "Log Out",
 			"description": "This will log you out of your account on the current device.",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "Server is restarting",
 		"updateFailed": "Update request failed",
 		"autoUpdateNotEnabled": "Automatic updates are not enabled",
+		"logs": {
+			"title": "Logs",
+			"openSourceFailed": "Could not open source file: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

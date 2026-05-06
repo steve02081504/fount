@@ -1505,6 +1505,22 @@
 			"copiedAlert": "API 金鑰已複製到剪貼簿！",
 			"copyKeyFailed": "無法複製金鑰到剪貼簿。"
 		},
+		"editorCommand": {
+			"title": "外部編輯器命令",
+			"description": "設定在外部編輯器中開啟檔案所用的程式與參數範本；可使用預留符號帶入檔案路徑、行號與欄號。",
+			"editorPresetLabel": "編輯器預設組合",
+			"commandLabel": "命令",
+			"argsTemplateLabel": "參數範本",
+			"argsTemplateHint": "預留符號：${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
+			},
+			"testButton": "測試開啟",
+			"saveButton": "儲存設定",
+			"saveSuccess": "外部編輯器命令設定已儲存。",
+			"testPathRequired": "請先填寫測試檔案路徑。",
+			"testSuccess": "已嘗試在外部編輯器中開啟。"
+		},
 		"logout": {
 			"title": "登出",
 			"description": "這將從目前裝置登出您的帳號。",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "正在重啟伺服器",
 		"updateFailed": "更新請求失敗",
 		"autoUpdateNotEnabled": "未啟用自動更新",
+		"logs": {
+			"title": "紀錄",
+			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

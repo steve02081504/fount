@@ -6,7 +6,7 @@
 			"start": "🚀✨",
 			"starting": "⏳",
 			"ready": "✅🎉",
-			"standingBy": "Standing by...",
+			"standingBy": "⏳🛡️…",
 			"showUrl": {
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
@@ -1505,6 +1505,22 @@
 			"copiedAlert": "📋✅❗️",
 			"copyKeyFailed": "📋🔑❌"
 		},
+		"editorCommand": {
+			"title": "✏️📟",
+			"description": "⚙️🖥️📂 — 🏷️ ${file} · 📏${line} · 📐${column}",
+			"editorPresetLabel": "📋✨",
+			"commandLabel": "⌨️",
+			"argsTemplateLabel": "🧩📝",
+			"argsTemplateHint": "🏷️ ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "📂 C:/work/project/src/main.mjs"
+			},
+			"testButton": "▶️✏️",
+			"saveButton": "💾⚙️",
+			"saveSuccess": "💾✅ ✏️📟",
+			"testPathRequired": "⚠️📂❓",
+			"testSuccess": "✅▶️🖥️📂"
+		},
 		"logout": {
 			"title": "🚪",
 			"description": "➡️🚪",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "🔄✅",
 		"updateFailed": "❌🔄",
 		"autoUpdateNotEnabled": "🚫🔄",
+		"logs": {
+			"title": "📜",
+			"openSourceFailed": "📂📜❌: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

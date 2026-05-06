@@ -1503,7 +1503,23 @@
 				"title": "Sao chép khóa API mới"
 			},
 			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
-			"copyKeyFailed": "Không thể sao chép khóa vào clipboard."
+			"copyKeyFailed": "Không thể sao chép khóa vào bộ nhớ tạm."
+		},
+		"editorCommand": {
+			"title": "Lệnh mở trình soạn thảo bên ngoài",
+			"description": "Thiết lập lệnh và chuỗi tham số để mở tệp bằng trình soạn thảo bên ngoài. Có placeholder cho đường dẫn tệp, số dòng và số cột.",
+			"editorPresetLabel": "Bộ thiết lập sẵn cho trình soạn thảo",
+			"commandLabel": "Lệnh",
+			"argsTemplateLabel": "Mẫu tham số",
+			"argsTemplateHint": "Placeholder: ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
+			},
+			"testButton": "Thử mở",
+			"saveButton": "Lưu cấu hình",
+			"saveSuccess": "Đã lưu lệnh mở trình soạn thảo bên ngoài.",
+			"testPathRequired": "Hãy nhập đường dẫn tệp thử trước.",
+			"testSuccess": "Đã chạy lệnh mở tệp trong trình soạn thảo."
 		},
 		"logout": {
 			"title": "Đăng xuất",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "Máy chủ đang khởi động lại",
 		"updateFailed": "Yêu cầu cập nhật không thành công",
 		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
+		"logs": {
+			"title": "Nhật ký",
+			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

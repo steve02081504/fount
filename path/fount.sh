@@ -820,7 +820,7 @@ Version=1.0
 Type=Application
 Name=fount
 Comment=fount Application
-Exec=$FOUNT_DIR/path/fount open keepalive
+Exec=$FOUNT_DIR/path/fount open
 Icon=$icon_path
 Terminal=true
 Categories=Utility;
@@ -919,7 +919,7 @@ on run argv
 	set fount_command_path to "$FOUNT_DIR/path/fount"
 	set command_to_execute to quoted form of fount_command_path
 	if (count of argv) is 0 then
-		set command_to_execute to command_to_execute & " open keepalive"
+		set command_to_execute to command_to_execute & " open"
 	else
 		repeat with i from 1 to count of argv
 			set command_to_execute to command_to_execute & " " & quoted form of (item i of argv)
@@ -973,6 +973,75 @@ EOF
 		echo -e "${C_YELLOW}$(get_i18n 'shortcut.shortcutNotSupported' 'os' "$OS_TYPE")${C_RESET}"
 	fi
 	return 0
+}
+
+# 登录后后台启动（无终端）：Linux autostart / macOS LaunchAgent
+register_boot_background() {
+	if [ "$IN_DOCKER" -eq 1 ] || [ "$IN_TERMUX" -eq 1 ]; then
+		return 0
+	fi
+	local launcher="$FOUNT_DIR/path/fount"
+	case "$OS_TYPE" in
+	Linux)
+		mkdir -p "$HOME/.config/autostart"
+		local desk="$HOME/.config/autostart/fount-background.desktop"
+		{
+			echo '[Desktop Entry]'
+			echo 'Version=1.0'
+			echo 'Type=Application'
+			echo 'Name=fount background'
+			echo 'Comment=fount background keepalive at login'
+			printf 'Exec=/bin/bash -l -c "exec '\''%s'\'' background keepalive"\n' "$launcher"
+			echo 'Terminal=false'
+			echo 'Categories=Utility;'
+			echo 'X-GNOME-Autostart-enabled=true'
+		} >"$desk"
+		chmod +x "$desk"
+		;;
+	Darwin)
+		local plist="$HOME/Library/LaunchAgents/com.steve02081504.fount.background.plist"
+		mkdir -p "$HOME/Library/LaunchAgents"
+		local shell_cmd shell_cmd_esc
+		shell_cmd=$(printf "exec '%s' background keepalive" "$launcher")
+		shell_cmd_esc=$(printf '%s' "$shell_cmd" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+		launchctl bootout "gui/$(id -u)" "$plist" 2>/dev/null || true
+		cat >"$plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.steve02081504.fount.background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-l</string>
+		<string>-c</string>
+		<string>$shell_cmd_esc</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+</dict>
+</plist>
+EOF
+		launchctl bootstrap "gui/$(id -u)" "$plist" 2>/dev/null || true
+		;;
+	esac
+}
+
+remove_boot_background() {
+	case "$OS_TYPE" in
+	Linux)
+		rm -f "$HOME/.config/autostart/fount-background.desktop"
+		;;
+	Darwin)
+		local plist="$HOME/Library/LaunchAgents/com.steve02081504.fount.background.plist"
+		if [ -f "$plist" ]; then
+			launchctl bootout "gui/$(id -u)" "$plist" 2>/dev/null || true
+			rm -f "$plist"
+		fi
+		;;
+	esac
 }
 
 # 函数: 移除桌面快捷方式
@@ -1102,6 +1171,7 @@ if [[ $# -gt 0 ]]; then
 		fi
 		;;
 	background)
+		export FOUNT_BACKGROUND=1
 		handle_docker_termux_passthrough "$@"
 		if [ -f "$FOUNT_DIR/.nobackground" ]; then
 			if command -v xterm &>/dev/null; then
@@ -1123,6 +1193,7 @@ if [[ $# -gt 0 ]]; then
 		else
 			nohup "$0" "${@:2}" >/dev/null 2>&1 &
 		fi
+		unset FOUNT_BACKGROUND
 		exit 0
 		;;
 	protocolhandle)
@@ -1356,14 +1427,6 @@ deno_upgrade() {
 	fi
 }
 
-if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
-	if [ $IN_DOCKER -eq 1 ]; then
-		get_i18n 'update.skippingDenoUpgradeDocker'
-	else
-		deno_upgrade
-	fi
-	run_deno -V
-fi
 update_fount_and_deno() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'update.skippingFountUpdate'
@@ -1374,9 +1437,15 @@ update_fount_and_deno() {
 }
 
 # 更新 fount 和 Deno
-if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+if [[ $# -gt 0 && ($1 == "server" || $1 == "keepalive") ]]; then
 	assert_fount_dir_writable "$FOUNT_DIR"
 	update_fount_and_deno
+	if [ $IN_DOCKER -eq 1 ]; then
+		get_i18n 'update.skippingDenoUpgradeDocker'
+	else
+		deno_upgrade
+	fi
+	run_deno -V
 fi
 
 is_debug=0
@@ -1496,6 +1565,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	write_taskbar_progress 85
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
+		register_boot_background
 	fi
 	echo -e "${C_GREEN}======================================================${C_RESET}"
 	echo -e "${C_YELLOW}$(get_i18n 'install.untrustedPartsWarning')${C_RESET}"
@@ -1525,7 +1595,8 @@ clean)
 	write_taskbar_progress_clear
 	;;
 keepalive)
-	trap 'write_taskbar_progress_clear' EXIT INT TERM
+	export FOUNT_KEEPALIVE=1
+	trap 'write_taskbar_progress_clear; unset FOUNT_KEEPALIVE' EXIT INT TERM
 	runargs=("${@:2}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
 		debug_on
@@ -1536,7 +1607,7 @@ keepalive)
 	init_attempted=0
 	restart_timestamps=()
 
-	run "${runargs[@]}"
+	"$0" server "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $exit_code -ne 0 ]; do
 		if [ $exit_code -eq 130 ]; then exit 130; fi # ctrl+c
@@ -1566,6 +1637,18 @@ keepalive)
 			fi
 		fi
 
+		"$0" server
+	done
+	;;
+server)
+	trap 'write_taskbar_progress_clear' EXIT INT TERM
+	runargs=("${@:2}")
+	if [[ "${runargs[0]}" == "debug" ]]; then
+		debug_on
+		runargs=("${runargs[@]:1}")
+	fi
+	run "${runargs[@]}"
+	while [ $exit_code -eq 131 ]; do
 		update_fount_and_deno
 		run
 	done
@@ -1597,6 +1680,7 @@ remove)
 	write_taskbar_progress 25
 	get_i18n 'remove.removingProtocolHandler'
 	remove_desktop_shortcut
+	remove_boot_background
 
 	get_i18n 'remove.removingFountFromGitSafeDir'
 	if command -v git &>/dev/null && git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then
@@ -1643,18 +1727,21 @@ remove)
 	set_title "$original_title"
 	exit 0
 	;;
+log)
+	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
+	exit $?
+	;;
 *)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
-	runargs=("${@}")
-	if [[ "${runargs[0]}" == "debug" ]]; then
-		debug_on
-		runargs=("${runargs[@]:1}")
-	fi
-	run "${runargs[@]}"
-	while [ $exit_code -eq 131 ]; do
-		update_fount_and_deno
-		run
-	done
+	original_title=$(get_title)
+	write_taskbar_progress 25
+	set_title "𝓯"
+	"$0" background keepalive "$@"
+	set_title "𝓯𝓸"
+	write_taskbar_progress
+	"$0" log
+	set_title "$original_title"
+	exit $?
 	;;
 esac
 

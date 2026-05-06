@@ -1505,6 +1505,22 @@
 			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!",
 			"copyKeyFailed": "कुंजी को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
 		},
+		"editorCommand": {
+			"title": "बाहरी संपादक आदेश",
+			"description": "बाहरी संपादक में फ़ाइलें खोलने के लिए आदेश और आर्ग्युमेंट टैम्प्लेट सेट करें। फ़ाइल पथ, पंक्ति संख्या और स्तंभ के लिए प्लेसहोल्डर उपलब्ध हैं।",
+			"editorPresetLabel": "संपादक पूर्वनिर्धारित प्रोफ़ाइल",
+			"commandLabel": "आदेश",
+			"argsTemplateLabel": "आर्ग्युमेंट टैम्प्लेट",
+			"argsTemplateHint": "प्लेसहोल्डर: ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "जाँच के लिए फ़ाइल का पथ, उदा. C:/work/project/src/main.mjs"
+			},
+			"testButton": "खोलकर देखें",
+			"saveButton": "कॉन्फ़िगरेशन सहेजें",
+			"saveSuccess": "बाहरी संपादक का आदेश सहेज लिया गया।",
+			"testPathRequired": "पहले परीक्षण फ़ाइल का पथ भरें।",
+			"testSuccess": "संपादक में फ़ाइल खोलने का आदेश चला दिया गया।"
+		},
 		"logout": {
 			"title": "लॉग आउट करें",
 			"description": "यह आपको वर्तमान डिवाइस से आपके खाते से लॉग आउट कर देगा।",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "सर्वर पुनः प्रारंभ हो रहा है",
 		"updateFailed": "अद्यतन अनुरोध विफल रहा",
 		"autoUpdateNotEnabled": "स्वचालित अपडेट सक्षम नहीं हैं",
+		"logs": {
+			"title": "लॉग",
+			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

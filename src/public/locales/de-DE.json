@@ -1505,6 +1505,22 @@
 			"copiedAlert": "Der API-Schlüssel wurde in die Zwischenablage kopiert!",
 			"copyKeyFailed": "Der Schlüssel konnte nicht in die Zwischenablage kopiert werden."
 		},
+		"editorCommand": {
+			"title": "Externer Editor – Befehl",
+			"description": "Legen Sie den Befehl und die Argumentvorlage fest, mit der Dateien in einem externen Editor geöffnet werden. Unterstützte Platzhalter: Dateipfad, Zeilen- und Spaltennummer.",
+			"editorPresetLabel": "Editor-Voreinstellungen",
+			"commandLabel": "Befehl",
+			"argsTemplateLabel": "Argumentvorlage",
+			"argsTemplateHint": "Platzhalter: ${file} ${line} ${column}",
+			"testPathInput": {
+				"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Testweise öffnen",
+			"saveButton": "Konfiguration speichern",
+			"saveSuccess": "Befehl für externen Editor gespeichert.",
+			"testPathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
+			"testSuccess": "Befehl zum Öffnen im Editor wurde ausgeführt."
+		},
 		"logout": {
 			"title": "Abmelden",
 			"description": "Dadurch wird Ihr Konto vom aktuellen Gerät abgemeldet.",
@@ -2485,6 +2501,10 @@
 		"updateSuccess": "Der Server wird neu gestartet",
 		"updateFailed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
+		"logs": {
+			"title": "Protokoll",
+			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}"
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

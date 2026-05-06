@@ -1494,6 +1494,22 @@ export type LocaleData = {
 			copiedAlert: string
 			copyKeyFailed: string
 		}
+		editorCommand: {
+			title: string
+			description: string
+			editorPresetLabel: string
+			commandLabel: string
+			argsTemplateLabel: string
+			argsTemplateHint: string
+			testPathInput: {
+				placeholder: string
+			}
+			testButton: string
+			saveButton: string
+			saveSuccess: string
+			testPathRequired: string
+			testSuccess: string
+		}
 		logout: {
 			title: string
 			description: string
@@ -2474,6 +2490,10 @@ export type LocaleData = {
 		updateSuccess: string
 		updateFailed: string
 		autoUpdateNotEnabled: string
+		logs: {
+			title: string
+			openSourceFailed: string
+		}
 		home_function_buttons: {
 			debug: {
 				main: {
@@ -2684,6 +2704,7 @@ export type LocaleKeyParams = {
 	'chat_history.confirmDeleteMultiChats': { count: string | number }
 	'chat_history.select_checkbox.aria-label': { chars: string | number }
 	'code_block.copy_failed': { error: string | number }
+	'debug_info.logs.openSourceFailed': { message: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
@@ -2792,6 +2813,7 @@ export type LocaleKeyParams = {
 	'userSettings.apiError': { message: string | number }
 	'userSettings.apiKeys.keyDetails': { createdAt: string | number; description: string | number; lastUsed: string | number }
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
+	'userSettings.editorCommand.argsTemplateHint': { column: string | number; file: string | number; line: string | number }
 	'userSettings.generalError': { message: string | number }
 	'userSettings.passkeys.itemDetails': { created: string | number }
 	'userSettings.renameUser.moveFailed': { detail: string | number }
