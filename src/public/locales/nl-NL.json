@@ -1512,6 +1512,8 @@
 			"commandLabel": "Opdracht",
 			"argsTemplateLabel": "Argumentsjabloon",
 			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (staat in PATH)",
+			"presetOptionPathUnavailable": "${label} (staat niet in PATH)",
 			"testPathInput": {
 				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
 			},

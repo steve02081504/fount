@@ -1512,6 +1512,8 @@
 			"commandLabel": "敕令",
 			"argsTemplateLabel": "參數模板",
 			"argsTemplateHint": "預留符：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（於 PATH 可得）",
+			"presetOptionPathUnavailable": "${label}（於 PATH 不可得）",
 			"testPathInput": {
 				"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
 			},

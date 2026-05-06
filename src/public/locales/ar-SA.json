@@ -1512,6 +1512,8 @@
 			"commandLabel": "الأمر",
 			"argsTemplateLabel": "قالب وسيطات الأمر",
 			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (موجود في PATH)",
+			"presetOptionPathUnavailable": "${label} (غير موجود في PATH)",
 			"testPathInput": {
 				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
 			},

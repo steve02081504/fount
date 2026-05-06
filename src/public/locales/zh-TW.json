@@ -1512,6 +1512,8 @@
 			"commandLabel": "命令",
 			"argsTemplateLabel": "參數範本",
 			"argsTemplateHint": "預留符號：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（已在 PATH）",
+			"presetOptionPathUnavailable": "${label}（不在 PATH）",
 			"testPathInput": {
 				"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
 			},

@@ -1512,6 +1512,8 @@
 			"commandLabel": "Команда",
 			"argsTemplateLabel": "Шаблон аргументов",
 			"argsTemplateHint": "Подстановки: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (есть в PATH)",
+			"presetOptionPathUnavailable": "${label} (нет в PATH)",
 			"testPathInput": {
 				"placeholder": "Путь к файлу для проверки, напр. C:/work/project/src/main.mjs"
 			},

@@ -1512,6 +1512,8 @@
 			"commandLabel": "आदेश",
 			"argsTemplateLabel": "आर्ग्युमेंट टैम्प्लेट",
 			"argsTemplateHint": "प्लेसहोल्डर: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (PATH में मौजूद)",
+			"presetOptionPathUnavailable": "${label} (PATH में नहीं)",
 			"testPathInput": {
 				"placeholder": "जाँच के लिए फ़ाइल का पथ, उदा. C:/work/project/src/main.mjs"
 			},

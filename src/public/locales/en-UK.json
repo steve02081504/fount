@@ -1512,8 +1512,8 @@
 			"commandLabel": "Command",
 			"argsTemplateLabel": "Arguments template",
 			"argsTemplateHint": "Placeholders: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (PATH available)",
-			"presetOptionPathUnavailable": "${label} (PATH unavailable)",
+			"presetOptionPathAvailable": "${label} (on PATH)",
+			"presetOptionPathUnavailable": "${label} (not on PATH)",
 			"testPathInput": {
 				"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
 			},

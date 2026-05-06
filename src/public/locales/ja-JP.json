@@ -1512,6 +1512,8 @@
 			"commandLabel": "コマンド",
 			"argsTemplateLabel": "引数テンプレート",
 			"argsTemplateHint": "プレースホルダー: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（PATH にあり）",
+			"presetOptionPathUnavailable": "${label}（PATH にない）",
 			"testPathInput": {
 				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
 			},

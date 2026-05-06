@@ -1512,6 +1512,8 @@
 			"commandLabel": "Befehl",
 			"argsTemplateLabel": "Argumentvorlage",
 			"argsTemplateHint": "Platzhalter: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (im PATH vorhanden)",
+			"presetOptionPathUnavailable": "${label} (nicht im PATH)",
 			"testPathInput": {
 				"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
 			},
