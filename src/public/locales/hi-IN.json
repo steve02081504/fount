@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "स्वचालित अपडेट सक्षम नहीं हैं",
 		"logs": {
 			"title": "लॉग",
-			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}"
+			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
+			"toolbar": {
+				"clear": "🚫 साफ़ करें",
+				"filter": {
+					"placeholder": "फ़िल्टर…"
+				}
+			},
+			"levels": {
+				"all": "सभी",
+				"log": "लकड़ी का लट्ठा",
+				"info": "जानकारी",
+				"warn": "चेतावनी देना",
+				"error": "गलती",
+				"debug": "डिबग"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

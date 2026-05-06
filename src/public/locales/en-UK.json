@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Automatic updates are not enabled",
 		"logs": {
 			"title": "Logs",
-			"openSourceFailed": "Could not open source file: ${message}"
+			"openSourceFailed": "Could not open source file: ${message}",
+			"toolbar": {
+				"clear": "🚫 Clear",
+				"filter": {
+					"placeholder": "filter…"
+				}
+			},
+			"levels": {
+				"all": "all",
+				"log": "log",
+				"info": "information",
+				"warn": "warn",
+				"error": "mistake",
+				"debug": "debug"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

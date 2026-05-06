@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
 		"logs": {
 			"title": "Registro",
-			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}"
+			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
+			"toolbar": {
+				"clear": "🚫 Chiaro",
+				"filter": {
+					"placeholder": "filtro…"
+				}
+			},
+			"levels": {
+				"all": "Tutto",
+				"log": "tronco d'albero",
+				"info": "informazioni",
+				"warn": "avvisare",
+				"error": "errore",
+				"debug": "eseguire il debug"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

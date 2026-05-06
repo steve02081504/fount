@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
 		"logs": {
 			"title": "Protokoll",
-			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}"
+			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
+			"toolbar": {
+				"clear": "🚫 Klar",
+				"filter": {
+					"placeholder": "Filter…"
+				}
+			},
+			"levels": {
+				"all": "alle",
+				"log": "Protokoll",
+				"info": "Information",
+				"warn": "warnen",
+				"error": "Fehler",
+				"debug": "debuggen"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
 		"logs": {
 			"title": "Logboek",
-			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}"
+			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
+			"toolbar": {
+				"clear": "🚫 Duidelijk",
+				"filter": {
+					"placeholder": "filter…"
+				}
+			},
+			"levels": {
+				"all": "alle",
+				"log": "loggen",
+				"info": "informatie",
+				"warn": "waarschuwen",
+				"error": "fout",
+				"debug": "debuggen"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

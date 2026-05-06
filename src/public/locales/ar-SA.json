@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
 		"logs": {
 			"title": "السجلات",
-			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}"
+			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
+			"toolbar": {
+				"clear": "🚫 واضح",
+				"filter": {
+					"placeholder": "فلتر…"
+				}
+			},
+			"levels": {
+				"all": "الجميع",
+				"log": "سجل",
+				"info": "معلومة",
+				"warn": "تحذير",
+				"error": "خطأ",
+				"debug": "تصحيح"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

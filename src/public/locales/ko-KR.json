@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "자동 업데이트가 활성화되지 않았습니다.",
 		"logs": {
 			"title": "로그",
-			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}"
+			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
+			"toolbar": {
+				"clear": "🚫 지우기",
+				"filter": {
+					"placeholder": "필터…"
+				}
+			},
+			"levels": {
+				"all": "모두",
+				"log": "통나무",
+				"info": "정보",
+				"warn": "경고하다",
+				"error": "실수",
+				"debug": "디버그"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

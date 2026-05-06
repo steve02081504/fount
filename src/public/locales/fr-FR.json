@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Les mises à jour automatiques ne sont pas activées",
 		"logs": {
 			"title": "Journaux",
-			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}"
+			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
+			"toolbar": {
+				"clear": "🚫 Effacer",
+				"filter": {
+					"placeholder": "filtre…"
+				}
+			},
+			"levels": {
+				"all": "tous",
+				"log": "enregistrer",
+				"info": "information",
+				"warn": "avertir",
+				"error": "erreur",
+				"debug": "déboguer"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

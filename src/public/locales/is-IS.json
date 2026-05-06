@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Sjálfvirkar uppfærslur eru ekki virkar",
 		"logs": {
 			"title": "Annáll",
-			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}"
+			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
+			"toolbar": {
+				"clear": "🚫 Hreint",
+				"filter": {
+					"placeholder": "sía…"
+				}
+			},
+			"levels": {
+				"all": "allt",
+				"log": "log",
+				"info": "upplýsingar",
+				"warn": "vara við",
+				"error": "mistök",
+				"debug": "kemba"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
 		"logs": {
 			"title": "Журнал",
-			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}"
+			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
+			"toolbar": {
+				"clear": "🚫 Ясно",
+				"filter": {
+					"placeholder": "фільтрувати…"
+				}
+			},
+			"levels": {
+				"all": "все",
+				"log": "журнал",
+				"info": "інформації",
+				"warn": "попередити",
+				"error": "помилка",
+				"debug": "налагоджувати"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

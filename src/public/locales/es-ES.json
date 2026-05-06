@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Las actualizaciones automáticas no están habilitadas",
 		"logs": {
 			"title": "Registros",
-			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}"
+			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}",
+			"toolbar": {
+				"clear": "🚫 Claro",
+				"filter": {
+					"placeholder": "filtrar…"
+				}
+			},
+			"levels": {
+				"all": "todo",
+				"log": "registro",
+				"info": "información",
+				"warn": "advertir",
+				"error": "error",
+				"debug": "depurar"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Автоматические обновления не включены",
 		"logs": {
 			"title": "Журнал",
-			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}"
+			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
+			"toolbar": {
+				"clear": "🚫 Ясно",
+				"filter": {
+					"placeholder": "фильтр…"
+				}
+			},
+			"levels": {
+				"all": "все",
+				"log": "бревно",
+				"info": "информация",
+				"warn": "предупреждать",
+				"error": "ошибка",
+				"debug": "отлаживать"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

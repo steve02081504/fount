@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
 		"logs": {
 			"title": "Nhật ký",
-			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}"
+			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
+			"toolbar": {
+				"clear": "🚫 Rõ ràng",
+				"filter": {
+					"placeholder": "lọc…"
+				}
+			},
+			"levels": {
+				"all": "tất cả",
+				"log": "nhật ký",
+				"info": "thông tin",
+				"warn": "cảnh báo",
+				"error": "sai lầm",
+				"debug": "gỡ lỗi"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "自動更新が有効になっていません",
 		"logs": {
 			"title": "ログ",
-			"openSourceFailed": "ソースファイルを開けませんでした: ${message}"
+			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
+			"toolbar": {
+				"clear": "🚫クリア",
+				"filter": {
+					"placeholder": "フィルター…"
+				}
+			},
+			"levels": {
+				"all": "全て",
+				"log": "ログ",
+				"info": "情報",
+				"warn": "警告する",
+				"error": "間違い",
+				"debug": "デバッグ"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {
