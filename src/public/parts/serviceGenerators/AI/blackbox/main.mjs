@@ -1,5 +1,5 @@
 import { with_timeout } from '../../../../../scripts/await_timeout.mjs'
-import { escapeRegExp } from '../../../../../scripts/escape.mjs'
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 import { BlackboxAI } from './blackbox.mjs'

@@ -1,4 +1,4 @@
-import { escapeRegExp } from '../../../../../scripts/escape.mjs'
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 import { GrokAPI } from './grokAPI.mjs'

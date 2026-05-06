@@ -1,4 +1,4 @@
-import { escapeRegExp } from '../../../../../../scripts/escape.mjs'
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
 
 /**
  * 清理 AI 文本响应中的 message/content 包裹标记。

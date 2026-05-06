@@ -216,14 +216,26 @@ export async function openEditor(username, filePath, line = 1, column = 1) {
 		column: Number.isFinite(Number(column)) ? Math.max(1, Number(column)) : 1,
 	}
 	const args = parseArgsTemplate(formatArgs(config.argsTemplate, payload))
-	const processRef = spawn(config.command, args, {
-		detached: true,
-		stdio: 'ignore',
+	return await new Promise(resolve => {
+		const processRef = spawn(config.command, args, {
+			detached: true,
+			stdio: 'ignore',
+		})
+		processRef.once('spawn', () => {
+			processRef.unref()
+			resolve({
+				success: true,
+				command: config.command,
+				args,
+			})
+		})
+		processRef.once('error', err => {
+			resolve({
+				success: false,
+				command: config.command,
+				args,
+				message: err?.message || String(err),
+			})
+		})
 	})
-	processRef.unref()
-	return {
-		success: true,
-		command: config.command,
-		args,
-	}
 }

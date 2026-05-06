@@ -1,7 +1,7 @@
 // 导入 Anthropic SDK 和 fount 需要的工具函数
 import * as mime from 'npm:mime-types'
 
-import { escapeRegExp } from '../../../../../scripts/escape.mjs'
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default

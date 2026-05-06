@@ -14,6 +14,7 @@ import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { loadJsonFile } from './json_loader.mjs'
 import { ms } from './ms.mjs'
+import { escapeRegExp } from './regex.mjs'
 
 /**
  * 区域设置数据
@@ -203,7 +204,7 @@ function ansiLink(url, text) {
 }
 
 /**
- * 对不含字面义占位符片段的字符串做插值（与 `public/pages/scripts/i18n.mjs` 行为一致，终端下为链接/反引号使用 ANSI）。
+ * 对不含字面义占位符片段的字符串做插值（链接、参数占位符、反引号）。
  * @param {string} segment - 翻译片段。
  * @param {Record<string, any>} params - 插值参数。
  * @returns {string} 插值后的片段字符串。
@@ -211,20 +212,24 @@ function ansiLink(url, text) {
 function applyInterpolationToPlainSegment(segment, params) {
 	let result = segment
 	if (supportsAnsi) {
-		for (const param in params)
+		for (const key in params) {
+			const escapedKey = escapeRegExp(key)
 			result = result?.replace?.(
-				new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
-				(_, text) => ansiLink(params[param], text)
-			)?.replaceAll?.(`\${${param}}`, params[param])
+				new RegExp(`\\[([^\\]]+)\\]\\(\\$\\{${escapedKey}\\}\\)`, 'g'),
+				(match, text) => ansiLink(params[key], text)
+			)
+			const paramPlaceholderRegex = new RegExp(`\\$\\{${escapedKey}\\}`, 'g')
+			result = result?.replace?.(paramPlaceholderRegex, () => params[key])
+		}
 		result = result?.replace?.(/`([^`]*)`/g, `${ANSI_MAGENTA}$1${ANSI_RESET}`)
 	}
-	else for (const param in params)
-		result = result?.replaceAll?.(`\${${param}}`, params[param])
+	else for (const key in params)
+		result = result?.replaceAll?.(`\${${key}}`, () => params[key])
 	return result
 }
 
 /**
- * 对单条翻译字符串做插值（占位符、链接、反引号）。
+ * 对单条翻译字符串做插值（链接、占位符、反引号）。
  * 若 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色；否则链接仅保留文字，反引号保持原样。
  * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
  * 若 translation 非字符串（如嵌套对象），则原样返回。
@@ -236,21 +241,24 @@ function applyInterpolationToPlainSegment(segment, params) {
 function applyParamsToTranslation(translation, params) {
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
 	if (!translation || !(Object(translation) instanceof String)) return translation
-	const s = translation + ''
+	const translationText = translation + ''
 	let result = ''
-	let i = 0
-	while (i < s.length) {
-		const esc = s.indexOf('\\${', i)
-		const plainEnd = esc === -1 ? s.length : esc
-		result += applyInterpolationToPlainSegment(s.slice(i, plainEnd), params)
-		if (esc === -1) break
-		const close = s.indexOf('}', esc + 3)
-		if (close === -1) {
-			result += s.slice(esc)
+	let scanIndex = 0
+	while (scanIndex < translationText.length) {
+		const literalEscapeStart = translationText.indexOf('\\${', scanIndex)
+		const plainSegmentEnd = literalEscapeStart === -1 ? translationText.length : literalEscapeStart
+		result += applyInterpolationToPlainSegment(
+			translationText.slice(scanIndex, plainSegmentEnd),
+			params
+		)
+		if (literalEscapeStart === -1) break
+		const closingBraceIndex = translationText.indexOf('}', literalEscapeStart + 3)
+		if (closingBraceIndex === -1) {
+			result += translationText.slice(literalEscapeStart)
 			break
 		}
-		result += s.slice(esc + 1, close + 1)
-		i = close + 1
+		result += translationText.slice(literalEscapeStart + 1, closingBraceIndex + 1)
+		scanIndex = closingBraceIndex + 1
 	}
 	return result
 }
