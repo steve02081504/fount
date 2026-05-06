@@ -2495,6 +2495,20 @@ export type LocaleData = {
 		logs: {
 			title: string
 			openSourceFailed: string
+			toolbar: {
+				clear: string
+				filter: {
+					placeholder: string
+				}
+			}
+			levels: {
+				all: string
+				log: string
+				info: string
+				warn: string
+				error: string
+				debug: string
+			}
 		}
 		home_function_buttons: {
 			debug: {

@@ -2505,7 +2505,21 @@
 		"autoUpdateNotEnabled": "未启用自动更新",
 		"logs": {
 			"title": "日志",
-			"openSourceFailed": "无法在编辑器中打开源码：${message}"
+			"openSourceFailed": "无法在编辑器中打开源码：${message}",
+			"toolbar": {
+				"clear": "🚫 清空",
+				"filter": {
+					"placeholder": "筛选…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "日志",
+				"info": "信息",
+				"warn": "警告",
+				"error": "错误",
+				"debug": "调试"
+			}
 		},
 		"home_function_buttons": {
 			"debug": {

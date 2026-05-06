@@ -280,12 +280,12 @@ async function resolveAllTruncated(node, requestExpandRef) {
 		if (Array.isArray(o.entries))
 			for (const e of o.entries)
 				collect(e?.value)
-		if (Array.isArray(o.items)) 
+		if (Array.isArray(o.items))
 			for (const i of o.items) {
 				collect(i?.key)
 				collect(i?.value ?? i)
 			}
-		
+
 	}
 	collect(node)
 	if (refToNodes.size === 0) return
@@ -402,17 +402,17 @@ function buildChildren(node, depth, renderOpts = {}) {
 	const container = document.createElement('div')
 	container.className = 'log-node-children'
 
-	if (node.kind === 'array') 
+	if (node.kind === 'array')
 		for (let i = 0; i < (node.items || []).length; i++) {
 			const prop = makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-	
-	else if (node.kind === 'Set') 
+
+	else if (node.kind === 'Set')
 		for (let i = 0; i < (node.items || []).length; i++)
 			container.appendChild(makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts)))
-	
-	else if (node.kind === 'Map') 
+
+	else if (node.kind === 'Map')
 		for (const item of node.items || []) {
 			const prop = document.createElement('div')
 			prop.className = 'log-node-prop'
@@ -424,7 +424,7 @@ function buildChildren(node, depth, renderOpts = {}) {
 			prop.appendChild(buildArgNode(item.value, depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-	
+
 	else {
 		// object / Error / custom class
 		for (const entry of node.entries || [])
@@ -628,7 +628,7 @@ function span(text, className) {
  */
 function buildFragmentFromSegments(segments, renderOpts = {}) {
 	const frag = document.createDocumentFragment()
-	for (const seg of segments) 
+	for (const seg of segments)
 		switch (seg.kind) {
 			case 'text': {
 				const inner = renderLogStringNode(seg.text, { quoted: false, className: 'log-str' })
@@ -688,7 +688,7 @@ function buildFragmentFromSegments(segments, renderOpts = {}) {
 			default:
 				break
 		}
-	
+
 	return frag
 }
 
@@ -806,37 +806,29 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 	// 清空按钮
 	const clearBtn = document.createElement('button')
 	clearBtn.className = 'log-clear-btn'
-	clearBtn.textContent = '🚫 Clear'
+	clearBtn.dataset.i18n = 'debug_info.logs.toolbar.clear'
 	clearBtn.addEventListener('click', () => onClear?.())
-	toolbar.appendChild(clearBtn)
 
 	// 过滤输入框
 	const filterInput = document.createElement('input')
 	filterInput.type = 'text'
 	filterInput.className = 'log-filter-input'
-	filterInput.placeholder = 'Filter…'
-	toolbar.appendChild(filterInput)
+	filterInput.dataset.i18n = 'debug_info.logs.toolbar.filter'
 
 	// 级别过滤按钮
 	const levelBtns = document.createElement('div')
 	levelBtns.className = 'log-level-btns'
 
 	let activeLevel = 'all'
-	const levels = [
-		{ id: 'all', label: 'All' },
-		{ id: 'log', label: 'Log' },
-		{ id: 'info', label: 'Info' },
-		{ id: 'warn', label: 'Warn' },
-		{ id: 'error', label: 'Err' },
-		{ id: 'debug', label: 'Dbg' },
-	]
+	const levelIds = ['all', 'log', 'info', 'warn', 'error', 'debug']
 
 	const btnEls = {}
-	for (const { id, label } of levels) {
+	for (const id of levelIds) {
 		const btn = document.createElement('button')
+		btn.type = 'button'
 		btn.className = `log-level-btn${id === 'all' ? ' active' : ''}`
 		btn.dataset.lvl = id
-		btn.textContent = label
+		btn.dataset.i18n = `debug_info.logs.levels.${id}`
 		btn.addEventListener('click', () => {
 			activeLevel = id
 			for (const [k, el] of Object.entries(btnEls))
@@ -846,6 +838,9 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 		btnEls[id] = btn
 		levelBtns.appendChild(btn)
 	}
+
+	toolbar.appendChild(clearBtn)
+	toolbar.appendChild(filterInput)
 	toolbar.appendChild(levelBtns)
 
 	filterInput.addEventListener('input', () => onFilter?.(filterInput.value, activeLevel))
