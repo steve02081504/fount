@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "إعدادات محرر جاهزة",
 			"commandLabel": "الأمر",
 			"argsTemplateLabel": "قالب وسيطات الأمر",
-			"argsTemplateHint": "عناصر نائبة: ${file} ${line} ${column}",
+			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
 			},

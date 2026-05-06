@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Готові профілі редактора",
 			"commandLabel": "Команда",
 			"argsTemplateLabel": "Шаблон аргументів",
-			"argsTemplateHint": "Підстановки: ${file} ${line} ${column}",
+			"argsTemplateHint": "Підстановки: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Шлях до файлу для перевірки, наприклад C:/work/project/src/main.mjs"
 			},

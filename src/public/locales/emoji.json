@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "📋✨",
 			"commandLabel": "⌨️",
 			"argsTemplateLabel": "🧩📝",
-			"argsTemplateHint": "🏷️ ${file} ${line} ${column}",
+			"argsTemplateHint": "🏷️ \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "📂 C:/work/project/src/main.mjs"
 			},

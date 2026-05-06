@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "編輯器預製項",
 			"commandLabel": "敕令",
 			"argsTemplateLabel": "參數模板",
-			"argsTemplateHint": "預留符：${file} ${line} ${column}",
+			"argsTemplateHint": "預留符：\\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
 			},

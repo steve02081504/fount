@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Editor presets",
 			"commandLabel": "Command",
 			"argsTemplateLabel": "Arguments template",
-			"argsTemplateHint": "Placeholders: ${file} ${line} ${column}",
+			"argsTemplateHint": "Placeholders: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (PATH available)",
 			"presetOptionPathUnavailable": "${label} (PATH unavailable)",
 			"testPathInput": {

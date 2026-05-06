@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "エディタのプリセット",
 			"commandLabel": "コマンド",
 			"argsTemplateLabel": "引数テンプレート",
-			"argsTemplateHint": "プレースホルダー: ${file} ${line} ${column}",
+			"argsTemplateHint": "プレースホルダー: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
 			},

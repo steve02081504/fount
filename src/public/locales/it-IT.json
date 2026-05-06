@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Preimpostazioni dell’editor",
 			"commandLabel": "Comando",
 			"argsTemplateLabel": "Modello degli argomenti",
-			"argsTemplateHint": "Segnaposto: ${file} ${line} ${column}",
+			"argsTemplateHint": "Segnaposto: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Percorso di un file di prova, es. C:/work/project/src/main.mjs"
 			},

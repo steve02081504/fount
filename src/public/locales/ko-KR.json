@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "편집기 사전 설정",
 			"commandLabel": "명령",
 			"argsTemplateLabel": "인수 템플릿",
-			"argsTemplateHint": "플레이스홀더: ${file} ${line} ${column}",
+			"argsTemplateHint": "플레이스홀더: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
 			},

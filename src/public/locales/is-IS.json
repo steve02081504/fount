@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Forstillingar ritstjóra",
 			"commandLabel": "Skipun",
 			"argsTemplateLabel": "Viðfangasniðmát",
-			"argsTemplateHint": "Staðgenglar: ${file} ${line} ${column}",
+			"argsTemplateHint": "Staðgenglar: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Slóð að skrá til að prófa, t.d. C:/work/project/src/main.mjs"
 			},

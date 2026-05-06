@@ -2815,7 +2815,6 @@ export type LocaleKeyParams = {
 	'userSettings.apiError': { message: string | number }
 	'userSettings.apiKeys.keyDetails': { createdAt: string | number; description: string | number; lastUsed: string | number }
 	'userSettings.deleteAccount.confirmMessage2': { username: string | number }
-	'userSettings.editorCommand.argsTemplateHint': { column: string | number; file: string | number; line: string | number }
 	'userSettings.editorCommand.presetOptionPathAvailable': { label: string | number }
 	'userSettings.editorCommand.presetOptionPathUnavailable': { label: string | number }
 	'userSettings.generalError': { message: string | number }

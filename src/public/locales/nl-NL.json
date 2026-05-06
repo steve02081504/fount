@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Editor-voorinstellingen",
 			"commandLabel": "Opdracht",
 			"argsTemplateLabel": "Argumentsjabloon",
-			"argsTemplateHint": "Tijdelijke aanduidingen: ${file} ${line} ${column}",
+			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
 			},

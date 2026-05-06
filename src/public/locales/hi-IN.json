@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "संपादक पूर्वनिर्धारित प्रोफ़ाइल",
 			"commandLabel": "आदेश",
 			"argsTemplateLabel": "आर्ग्युमेंट टैम्प्लेट",
-			"argsTemplateHint": "प्लेसहोल्डर: ${file} ${line} ${column}",
+			"argsTemplateHint": "प्लेसहोल्डर: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "जाँच के लिए फ़ाइल का पथ, उदा. C:/work/project/src/main.mjs"
 			},

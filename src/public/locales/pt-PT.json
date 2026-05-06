@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Predefinições do editor",
 			"commandLabel": "Comando",
 			"argsTemplateLabel": "Modelo de argumentos",
-			"argsTemplateHint": "Marcadores: ${file} ${line} ${column}",
+			"argsTemplateHint": "Marcadores: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Caminho para um ficheiro de teste, por exemplo C:/work/project/src/main.mjs"
 			},

@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Préréglages de l’éditeur",
 			"commandLabel": "Commande",
 			"argsTemplateLabel": "Modèle d’arguments",
-			"argsTemplateHint": "Espaces réservés : ${file} ${line} ${column}",
+			"argsTemplateHint": "Espaces réservés : \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Chemin d’un fichier à essayer, ex. C:/work/project/src/main.mjs"
 			},

@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "Bộ thiết lập sẵn cho trình soạn thảo",
 			"commandLabel": "Lệnh",
 			"argsTemplateLabel": "Mẫu tham số",
-			"argsTemplateHint": "Placeholder: ${file} ${line} ${column}",
+			"argsTemplateHint": "Placeholder: \\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
 			},

@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "編輯器預設組合",
 			"commandLabel": "命令",
 			"argsTemplateLabel": "參數範本",
-			"argsTemplateHint": "預留符號：${file} ${line} ${column}",
+			"argsTemplateHint": "預留符號：\\${file} \\${line} \\${column}",
 			"testPathInput": {
 				"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
 			},

@@ -1511,7 +1511,7 @@
 			"editorPresetLabel": "编辑器预设",
 			"commandLabel": "命令",
 			"argsTemplateLabel": "参数模板",
-			"argsTemplateHint": "占位符：${file} ${line} ${column}",
+			"argsTemplateHint": "占位符：\\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label}（PATH 可用）",
 			"presetOptionPathUnavailable": "${label}（PATH 不可用）",
 			"testPathInput": {
