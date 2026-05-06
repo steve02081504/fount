@@ -1,6 +1,8 @@
-import { spawn, spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
+import { where_command } from 'npm:@steve02081504/exec'
 
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 
@@ -27,26 +29,52 @@ const KNOWN_EDITORS = [
 	},
 ]
 
+let cachedAvailableEditors
+let detectEditorsPromise
+
 /**
  * 检查命令是否存在于 PATH 中。
  * @param {string} command - 命令名。
- * @returns {boolean} - 是否可用。
+ * @returns {Promise<boolean>} - 是否可用。
  */
-function shellWhich(command) {
-	const isWindows = process.platform === 'win32'
-	const check = spawnSync(isWindows ? 'where' : 'which', [command], { stdio: 'ignore' })
-	return check.status === 0
+async function commandOnPath(command) {
+	try {
+		return Boolean(await where_command(command))
+	} catch {
+		return false
+	}
 }
 
 /**
- * 检测内置编辑器可用性。
- * @returns {Array<{id: string, label: string, command: string, argsTemplate: string, available: boolean}>} - 编辑器列表。
+ * 检测内置编辑器可用性（异步、并行探测；结果进程内缓存以避免重复查询）。
+ * @param {{ refresh?: boolean }} [options] - refresh 为 true 时忽略缓存重新探测。
+ * @returns {Promise<Array<{id: string, label: string, command: string, argsTemplate: string, available: boolean}>>} - 编辑器列表。
  */
-export function detectAvailableEditors() {
-	return KNOWN_EDITORS.map(editor => ({
-		...editor,
-		available: shellWhich(editor.command),
-	}))
+export async function detectAvailableEditors(options = {}) {
+	const { refresh = false } = options
+	if (!refresh && cachedAvailableEditors)
+		return cachedAvailableEditors
+	if (!refresh && detectEditorsPromise)
+		return detectEditorsPromise
+	const run = async () => {
+		const list = await Promise.all(
+			KNOWN_EDITORS.map(async editor => ({
+				...editor,
+				available: await commandOnPath(editor.command),
+			}))
+		)
+		cachedAvailableEditors = list
+		return list
+	}
+	if (refresh) {
+		cachedAvailableEditors = undefined
+		detectEditorsPromise = undefined
+		return run()
+	}
+	detectEditorsPromise = run().finally(() => {
+		detectEditorsPromise = undefined
+	})
+	return detectEditorsPromise
 }
 
 /**
@@ -117,7 +145,7 @@ function buildDefaultConfig(availableEditors) {
  * @returns {Promise<{editorId: string, command: string, argsTemplate: string, availableEditors: Array<object>}>} - 当前配置和可用编辑器列表。
  */
 export async function getEditorCommandConfig(username) {
-	const availableEditors = detectAvailableEditors()
+	const availableEditors = await detectAvailableEditors()
 	const defaults = buildDefaultConfig(availableEditors)
 	const configPath = getEditorConfigPath(username)
 	try {
