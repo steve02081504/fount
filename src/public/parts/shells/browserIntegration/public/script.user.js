@@ -129,7 +129,7 @@ function getNestedValue(obj, key) {
  * 对不含字面义占位符片段的字符串做插值（链接、参数占位符、反引号）。
  * @param {string} segment - 翻译片段。
  * @param {Record<string, any>} params - 插值参数。
- * @returns {string}
+ * @returns {string} 插值后的片段字符串。
  */
 function applyInterpolationToPlainSegment(segment, params) {
 	let result = segment

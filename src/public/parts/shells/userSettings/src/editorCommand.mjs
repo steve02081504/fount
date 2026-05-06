@@ -56,6 +56,10 @@ export async function detectAvailableEditors(options = {}) {
 		return cachedAvailableEditors
 	if (!refresh && detectEditorsPromise)
 		return detectEditorsPromise
+	/**
+	 * 并行探测各编辑器命令是否在 PATH 上并写入缓存。
+	 * @returns {Promise<Array<{ id: string, label: string, command: string, argsTemplate: string, available: boolean }>>} 带 availability 的编辑器列表。
+	 */
 	const run = async () => {
 		const list = await Promise.all(
 			KNOWN_EDITORS.map(async editor => ({

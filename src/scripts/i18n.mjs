@@ -206,7 +206,7 @@ function ansiLink(url, text) {
  * 对不含字面义占位符片段的字符串做插值（与 `public/pages/scripts/i18n.mjs` 行为一致，终端下为链接/反引号使用 ANSI）。
  * @param {string} segment - 翻译片段。
  * @param {Record<string, any>} params - 插值参数。
- * @returns {string}
+ * @returns {string} 插值后的片段字符串。
  */
 function applyInterpolationToPlainSegment(segment, params) {
 	let result = segment
