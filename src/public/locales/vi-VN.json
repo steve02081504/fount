@@ -2507,18 +2507,18 @@
 			"title": "Nhật ký",
 			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
 			"toolbar": {
-				"clear": "🚫 Rõ ràng",
+				"clear": "Xóa",
 				"filter": {
-					"placeholder": "lọc…"
+					"placeholder": "Lọc…"
 				}
 			},
 			"levels": {
-				"all": "tất cả",
-				"log": "nhật ký",
-				"info": "thông tin",
-				"warn": "cảnh báo",
-				"error": "sai lầm",
-				"debug": "gỡ lỗi"
+				"all": "Tất cả",
+				"log": "Log",
+				"info": "Thông tin",
+				"warn": "Cảnh báo",
+				"error": "Lỗi",
+				"debug": "Gỡ lỗi"
 			}
 		},
 		"home_function_buttons": {

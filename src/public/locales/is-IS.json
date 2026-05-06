@@ -2507,18 +2507,18 @@
 			"title": "Annáll",
 			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
 			"toolbar": {
-				"clear": "🚫 Hreint",
+				"clear": "Hreinsa",
 				"filter": {
-					"placeholder": "sía…"
+					"placeholder": "Sía…"
 				}
 			},
 			"levels": {
-				"all": "allt",
-				"log": "log",
-				"info": "upplýsingar",
-				"warn": "vara við",
-				"error": "mistök",
-				"debug": "kemba"
+				"all": "Allt",
+				"log": "Log",
+				"info": "Upplýsingar",
+				"warn": "Viðvörun",
+				"error": "Villa",
+				"debug": "Villuleit"
 			}
 		},
 		"home_function_buttons": {

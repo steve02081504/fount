@@ -2507,18 +2507,18 @@
 			"title": "Журнал",
 			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
 			"toolbar": {
-				"clear": "🚫 Ясно",
+				"clear": "Очистить",
 				"filter": {
-					"placeholder": "фильтр…"
+					"placeholder": "Фильтр…"
 				}
 			},
 			"levels": {
-				"all": "все",
-				"log": "бревно",
-				"info": "информация",
-				"warn": "предупреждать",
-				"error": "ошибка",
-				"debug": "отлаживать"
+				"all": "Все",
+				"log": "Лог",
+				"info": "Инфо",
+				"warn": "Предупреждение",
+				"error": "Ошибка",
+				"debug": "Отладка"
 			}
 		},
 		"home_function_buttons": {

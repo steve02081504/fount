@@ -2507,14 +2507,14 @@
 			"title": "日志",
 			"openSourceFailed": "无法在编辑器中打开源码：${message}",
 			"toolbar": {
-				"clear": "🚫 清空",
+				"clear": "清空",
 				"filter": {
-					"placeholder": "筛选…"
+					"placeholder": "按内容筛选…"
 				}
 			},
 			"levels": {
 				"all": "全部",
-				"log": "日志",
+				"log": "普通",
 				"info": "信息",
 				"warn": "警告",
 				"error": "错误",

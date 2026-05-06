@@ -2507,18 +2507,18 @@
 			"title": "Registro",
 			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
 			"toolbar": {
-				"clear": "🚫 Chiaro",
+				"clear": "Svuota",
 				"filter": {
-					"placeholder": "filtro…"
+					"placeholder": "Filtra…"
 				}
 			},
 			"levels": {
-				"all": "Tutto",
-				"log": "tronco d'albero",
-				"info": "informazioni",
-				"warn": "avvisare",
-				"error": "errore",
-				"debug": "eseguire il debug"
+				"all": "Tutti",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avviso",
+				"error": "Errore",
+				"debug": "Debug"
 			}
 		},
 		"home_function_buttons": {

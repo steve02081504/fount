@@ -2507,18 +2507,18 @@
 			"title": "Logboek",
 			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
 			"toolbar": {
-				"clear": "🚫 Duidelijk",
+				"clear": "Wissen",
 				"filter": {
-					"placeholder": "filter…"
+					"placeholder": "Filteren…"
 				}
 			},
 			"levels": {
-				"all": "alle",
-				"log": "loggen",
-				"info": "informatie",
-				"warn": "waarschuwen",
-				"error": "fout",
-				"debug": "debuggen"
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Waarschuwing",
+				"error": "Fout",
+				"debug": "Debug"
 			}
 		},
 		"home_function_buttons": {

@@ -2507,18 +2507,18 @@
 			"title": "लॉग",
 			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
 			"toolbar": {
-				"clear": "🚫 साफ़ करें",
+				"clear": "खाली करें",
 				"filter": {
 					"placeholder": "फ़िल्टर…"
 				}
 			},
 			"levels": {
 				"all": "सभी",
-				"log": "लकड़ी का लट्ठा",
+				"log": "लॉग",
 				"info": "जानकारी",
-				"warn": "चेतावनी देना",
-				"error": "गलती",
-				"debug": "डिबग"
+				"warn": "चेतावनी",
+				"error": "त्रुटि",
+				"debug": "डीबग"
 			}
 		},
 		"home_function_buttons": {

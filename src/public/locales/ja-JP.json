@@ -2507,17 +2507,17 @@
 			"title": "ログ",
 			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
 			"toolbar": {
-				"clear": "🚫クリア",
+				"clear": "クリア",
 				"filter": {
-					"placeholder": "フィルター…"
+					"placeholder": "絞り込み…"
 				}
 			},
 			"levels": {
-				"all": "全て",
+				"all": "すべて",
 				"log": "ログ",
 				"info": "情報",
-				"warn": "警告する",
-				"error": "間違い",
+				"warn": "警告",
+				"error": "エラー",
 				"debug": "デバッグ"
 			}
 		},

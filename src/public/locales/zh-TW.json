@@ -2507,14 +2507,14 @@
 			"title": "紀錄",
 			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
 			"toolbar": {
-				"clear": "🚫 清空",
+				"clear": "清空",
 				"filter": {
-					"placeholder": "篩選…"
+					"placeholder": "依內容篩選…"
 				}
 			},
 			"levels": {
 				"all": "全部",
-				"log": "紀錄",
+				"log": "一般",
 				"info": "資訊",
 				"warn": "警告",
 				"error": "錯誤",

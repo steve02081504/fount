@@ -2507,18 +2507,18 @@
 			"title": "日誌",
 			"openSourceFailed": "啟閱原始碼卷未果：${message}",
 			"toolbar": {
-				"clear": "🚫 清空",
+				"clear": "清空",
 				"filter": {
-					"placeholder": "筛选…"
+					"placeholder": "依文篩之…"
 				}
 			},
 			"levels": {
 				"all": "全部",
-				"log": "日志",
-				"info": "信息",
-				"warn": "警告",
-				"error": "错误",
-				"debug": "调试"
+				"log": "常錄",
+				"info": "訊息",
+				"warn": "警示",
+				"error": "錯誤",
+				"debug": "調試"
 			}
 		},
 		"home_function_buttons": {

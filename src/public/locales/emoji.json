@@ -2507,18 +2507,18 @@
 			"title": "📜",
 			"openSourceFailed": "📂📜❌: ${message}",
 			"toolbar": {
-				"clear": "🚫 清空",
+				"clear": "🧹",
 				"filter": {
-					"placeholder": "筛选…"
+					"placeholder": "🔎…"
 				}
 			},
 			"levels": {
-				"all": "全部",
-				"log": "日志",
-				"info": "信息",
-				"warn": "警告",
-				"error": "错误",
-				"debug": "调试"
+				"all": "∗",
+				"log": "📝",
+				"info": "ℹ️",
+				"warn": "⚠️",
+				"error": "⛔",
+				"debug": "🐛"
 			}
 		},
 		"home_function_buttons": {

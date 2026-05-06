@@ -2507,17 +2507,17 @@
 			"title": "로그",
 			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
 			"toolbar": {
-				"clear": "🚫 지우기",
+				"clear": "비우기",
 				"filter": {
 					"placeholder": "필터…"
 				}
 			},
 			"levels": {
-				"all": "모두",
-				"log": "통나무",
+				"all": "전체",
+				"log": "로그",
 				"info": "정보",
-				"warn": "경고하다",
-				"error": "실수",
+				"warn": "경고",
+				"error": "오류",
 				"debug": "디버그"
 			}
 		},

@@ -2507,18 +2507,18 @@
 			"title": "Журнал",
 			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
 			"toolbar": {
-				"clear": "🚫 Ясно",
+				"clear": "Очистити",
 				"filter": {
-					"placeholder": "фільтрувати…"
+					"placeholder": "Фільтр…"
 				}
 			},
 			"levels": {
-				"all": "все",
-				"log": "журнал",
-				"info": "інформації",
-				"warn": "попередити",
-				"error": "помилка",
-				"debug": "налагоджувати"
+				"all": "Усі",
+				"log": "Лог",
+				"info": "Інфо",
+				"warn": "Попередження",
+				"error": "Помилка",
+				"debug": "Налагодження"
 			}
 		},
 		"home_function_buttons": {

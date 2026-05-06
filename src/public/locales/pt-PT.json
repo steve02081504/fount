@@ -2507,18 +2507,18 @@
 			"title": "Registos",
 			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
 			"toolbar": {
-				"clear": "🚫 Claro",
+				"clear": "Limpar",
 				"filter": {
-					"placeholder": "filtro…"
+					"placeholder": "Filtrar…"
 				}
 			},
 			"levels": {
-				"all": "todos",
-				"log": "registro",
-				"info": "Informação",
-				"warn": "avisar",
-				"error": "erro",
-				"debug": "depurar"
+				"all": "Todos",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Aviso",
+				"error": "Erro",
+				"debug": "Depuração"
 			}
 		},
 		"home_function_buttons": {

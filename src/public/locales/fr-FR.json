@@ -2507,18 +2507,18 @@
 			"title": "Journaux",
 			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
 			"toolbar": {
-				"clear": "🚫 Effacer",
+				"clear": "Vider",
 				"filter": {
-					"placeholder": "filtre…"
+					"placeholder": "Filtrer…"
 				}
 			},
 			"levels": {
-				"all": "tous",
-				"log": "enregistrer",
-				"info": "information",
-				"warn": "avertir",
-				"error": "erreur",
-				"debug": "déboguer"
+				"all": "Tous",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avertissement",
+				"error": "Erreur",
+				"debug": "Débogage"
 			}
 		},
 		"home_function_buttons": {

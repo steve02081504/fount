@@ -2507,15 +2507,15 @@
 			"title": "السجلات",
 			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
 			"toolbar": {
-				"clear": "🚫 واضح",
+				"clear": "مسح",
 				"filter": {
-					"placeholder": "فلتر…"
+					"placeholder": "تصفية…"
 				}
 			},
 			"levels": {
-				"all": "الجميع",
+				"all": "الكل",
 				"log": "سجل",
-				"info": "معلومة",
+				"info": "معلومات",
 				"warn": "تحذير",
 				"error": "خطأ",
 				"debug": "تصحيح"

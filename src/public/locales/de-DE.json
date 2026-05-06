@@ -2507,18 +2507,18 @@
 			"title": "Protokoll",
 			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
 			"toolbar": {
-				"clear": "🚫 Klar",
+				"clear": "Leeren",
 				"filter": {
-					"placeholder": "Filter…"
+					"placeholder": "Filtern…"
 				}
 			},
 			"levels": {
-				"all": "alle",
-				"log": "Protokoll",
-				"info": "Information",
-				"warn": "warnen",
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warnung",
 				"error": "Fehler",
-				"debug": "debuggen"
+				"debug": "Debug"
 			}
 		},
 		"home_function_buttons": {

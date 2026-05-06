@@ -2507,18 +2507,18 @@
 			"title": "Logs",
 			"openSourceFailed": "Could not open source file: ${message}",
 			"toolbar": {
-				"clear": "🚫 Clear",
+				"clear": "Clear",
 				"filter": {
-					"placeholder": "filter…"
+					"placeholder": "Filter…"
 				}
 			},
 			"levels": {
-				"all": "all",
-				"log": "log",
-				"info": "information",
-				"warn": "warn",
-				"error": "mistake",
-				"debug": "debug"
+				"all": "All",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
 			}
 		},
 		"home_function_buttons": {
