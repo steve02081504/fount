@@ -103,10 +103,12 @@ function parseArgsTemplate(template) {
  * @returns {string} - 格式化后的参数字符串。
  */
 function formatArgs(template, payload) {
-	return template
-		.replaceAll('${file}', payload.file)
-		.replaceAll('${line}', String(payload.line))
-		.replaceAll('${column}', String(payload.column))
+	const values = {
+		file: payload.file,
+		line: String(payload.line),
+		column: String(payload.column),
+	}
+	return template.replace(/\$\{(file|line|column)\}/g, (_, key) => values[key])
 }
 
 /**
