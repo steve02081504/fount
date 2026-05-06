@@ -761,15 +761,28 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 	if (callsite) {
 		const meta = document.createElement('div')
 		meta.className = 'log-meta'
-		const btn = document.createElement('button')
 		const canClick = Boolean(canOpenEditor && onOpenSource)
-		btn.className = `log-source-btn${canClick ? ' clickable' : ''}`
 		const fileName = callsite.filePath.split(/[/\\]/).pop()
-		btn.textContent = `${fileName}:${callsite.line}`
-		btn.title = `${callsite.filePath}:${callsite.line}:${callsite.column}`
-		if (canClick)
+		const labelText = `${fileName}:${callsite.line}`
+		const titleText = `${callsite.filePath}:${callsite.line}:${callsite.column}`
+		/** @type {HTMLElement} */
+		let sourceEl
+		if (canClick) {
+			const btn = document.createElement('button')
+			btn.type = 'button'
+			btn.className = 'log-source-btn clickable'
+			btn.textContent = labelText
+			btn.title = titleText
 			btn.addEventListener('click', () => onOpenSource(callsite))
-		meta.appendChild(btn)
+			sourceEl = btn
+		} else {
+			const span = document.createElement('span')
+			span.className = 'log-source-btn'
+			span.textContent = labelText
+			span.title = titleText
+			sourceEl = span
+		}
+		meta.appendChild(sourceEl)
 		row.appendChild(meta)
 	}
 
