@@ -5,7 +5,6 @@ import { on_shutdown } from 'npm:on-shutdown'
 import { console, geti18n } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip } from '../../scripts/ratelimit.mjs'
-import { runSimpleWorker } from '../../workers/index.mjs'
 import { baseScriptLoadedTime } from '../base.mjs'
 import { config, hosturl } from '../server.mjs'
 
@@ -22,7 +21,6 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 	 */
 	onClientConnected: async ({ ws }) => {
 		if (console.outputEntries.length < 72 || baseScriptLoadedTime.getTime() > Date.now() - ms('5m')) return
-		const logoPromise = runSimpleWorker('logogener')
 		const ansi_hosturl = `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\`
 		let text = ''
 		if (config.https?.enabled)
@@ -38,8 +36,7 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 		} catch (e) { /* ignore */ }
 		text += geti18n('tips.title') + '\n'
 		text += geti18n('tips.data') + '\n'
-		const logo = await logoPromise
-		ws.send(JSON.stringify({ type: 'output', text: logo + '\n' + text }))
+		ws.send(JSON.stringify({ type: 'show_initial_info', text }))
 	},
 	clientMessageHandlers: {
 		/**

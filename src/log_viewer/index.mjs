@@ -19,6 +19,7 @@ import supportsAnsi from 'npm:supports-ansi'
 import { printTerminalImage } from '../scripts/logo.mjs'
 import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
+import { runSimpleWorker } from '../workers/index.mjs'
 
 setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(50)
@@ -200,12 +201,25 @@ function runOneConnection(ctx) {
 			process.stdout.write(raw.text)
 		}
 
+		/**
+		 * 处理初始信息事件：打印初始信息。
+		 * logo text需要根据窗口宽度变化所以必须通过本线程生成
+		 * @param {object} raw - 原始 JSON 对象。
+		 * @param {string} raw.text - 初始信息文本。
+		 * @returns {Promise<void>}
+		 */
+		const handleShowInitialInfo = async (raw) => {
+			console.log(await runSimpleWorker('logogener'))
+			process.stdout.write(raw.text)
+		}
+
 		try {
 			connection = connectLogWire(WS_URL, {
 				onSnapshot: handleSnapshot,
 				onAppend: handleAppend,
 				onClear: handleClear,
 				extensionHandlers: {
+					show_initial_info: handleShowInitialInfo,
 					output: handleOutput,
 					fount_exit: handleFountExit
 				},

@@ -980,6 +980,9 @@ register_boot_background() {
 	if [ "$IN_DOCKER" -eq 1 ] || [ "$IN_TERMUX" -eq 1 ]; then
 		return 0
 	fi
+	if [ -f "$FOUNT_DIR/.noautoboot" ]; then
+		return 0
+	fi
 	local launcher="$FOUNT_DIR/path/fount"
 	case "$OS_TYPE" in
 	Linux)

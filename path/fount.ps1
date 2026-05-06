@@ -398,6 +398,7 @@ function Register-FountTerminalProfile {
 
 function Register-FountBootBackground {
 	if (!$IsWindows -or $IN_DOCKER) { return }
+	if (Test-Path "$FOUNT_DIR/.noautoboot") { return }
 	try {
 		$shellExe = $null
 		if (Get-Command pwsh -ErrorAction SilentlyContinue) {
