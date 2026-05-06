@@ -1507,7 +1507,7 @@
 		},
 		"editorCommand": {
 			"title": "外在編輯器啟卷之敕",
-			"description": "配置在外部编辑器中打开文件时使用的命令与参数模板；可通过占位符传入文件路径、行号与列号。",
+			"description": "設外在編輯器啟卷所用之敕令與參數模板。",
 			"editorPresetLabel": "編輯器預製項",
 			"commandLabel": "敕令",
 			"argsTemplateLabel": "參數模板",
