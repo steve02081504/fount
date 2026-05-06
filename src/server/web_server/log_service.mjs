@@ -36,7 +36,7 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 		} catch (e) { /* ignore */ }
 		text += geti18n('tips.title') + '\n'
 		text += geti18n('tips.data') + '\n'
-		ws.send(JSON.stringify({ type: 'show_initial_info', text }))
+		try { ws.send(JSON.stringify({ type: 'show_initial_info', text })) } catch (e) { /* ignore */ }
 	},
 	clientMessageHandlers: {
 		/**
