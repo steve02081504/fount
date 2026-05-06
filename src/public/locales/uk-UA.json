@@ -115,8 +115,7 @@
 				"noUrl": "Помилка: не вказано URL для обробника протоколу."
 			},
 			"update": {
-				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення fount пропускається",
-				"skippingDenoUpgradeDocker": "Пропустити оновлення Deno в середовищі Docker"
+				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення fount пропускається"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлик на робочому столі створено в ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "Ключ API скопійовано в буфер обміну!",
 			"copyKeyFailed": "Неможливо скопіювати ключ у буфер обміну."
 		},
+		"editorCommand": {
+			"title": "Команда зовнішнього редактора",
+			"description": "Задайте команду й шаблон аргументів для відкриття файлів у зовнішньому редакторі. Підтримуються підстановки для шляху до файлу, номера рядка й стовпця.",
+			"editorPresetLabel": "Готові профілі редактора",
+			"commandLabel": "Команда",
+			"argsTemplateLabel": "Шаблон аргументів",
+			"argsTemplateHint": "Підстановки: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (є в PATH)",
+			"presetOptionPathUnavailable": "${label} (немає в PATH)",
+			"testPathInput": {
+				"placeholder": "Шлях до файлу для перевірки, наприклад C:/work/project/src/main.mjs"
+			},
+			"testButton": "Перевірити відкриття",
+			"saveButton": "Зберегти конфігурацію",
+			"saveSuccess": "Команду зовнішнього редактора збережено.",
+			"testPathRequired": "Спочатку введіть шлях до тестового файлу.",
+			"testSuccess": "Команду відкриття у зовнішньому редакторі виконано."
+		},
 		"logout": {
 			"title": "Вихід",
 			"description": "Це виведе вас з вашого акаунта на поточному пристрої.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "Сервер перезавантажується",
 		"updateFailed": "Помилка запиту на оновлення",
 		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
+		"logs": {
+			"title": "Журнал",
+			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
+			"toolbar": {
+				"clear": "Очистити",
+				"filter": {
+					"placeholder": "Фільтр…"
+				}
+			},
+			"levels": {
+				"all": "Усі",
+				"log": "Лог",
+				"info": "Інфо",
+				"warn": "Попередження",
+				"error": "Помилка",
+				"debug": "Налагодження"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {
