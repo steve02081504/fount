@@ -6,7 +6,7 @@
 			"start": "🚀✨",
 			"starting": "⏳",
 			"ready": "✅🎉",
-			"standingBy": "Standing by...",
+			"standingBy": "⏳🛡️…",
 			"showUrl": {
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
@@ -115,8 +115,7 @@
 				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
-				"skippingFountUpdate": "⏭️ ⛲ ⏫",
-				"skippingDenoUpgradeDocker": "🐳 ⏭️ 🦕 ⏫"
+				"skippingFountUpdate": "⏭️ ⛲ ⏫"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "📋✅❗️",
 			"copyKeyFailed": "📋🔑❌"
 		},
+		"editorCommand": {
+			"title": "✏️📟",
+			"description": "⚙️🖥️📂 — 🧩📝",
+			"editorPresetLabel": "📋✨",
+			"commandLabel": "⌨️",
+			"argsTemplateLabel": "🧩📝",
+			"argsTemplateHint": "🏷️ \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（✅ PATH）",
+			"presetOptionPathUnavailable": "${label}（❌ PATH）",
+			"testPathInput": {
+				"placeholder": "📂 C:/work/project/src/main.mjs"
+			},
+			"testButton": "▶️✏️",
+			"saveButton": "💾⚙️",
+			"saveSuccess": "💾✅ ✏️📟",
+			"testPathRequired": "⚠️📂❓",
+			"testSuccess": "✅▶️🖥️📂"
+		},
 		"logout": {
 			"title": "🚪",
 			"description": "➡️🚪",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "🔄✅",
 		"updateFailed": "❌🔄",
 		"autoUpdateNotEnabled": "🚫🔄",
+		"logs": {
+			"title": "📜",
+			"openSourceFailed": "📂📜❌: ${message}",
+			"toolbar": {
+				"clear": "🧹",
+				"filter": {
+					"placeholder": "🔎…"
+				}
+			},
+			"levels": {
+				"all": "∗",
+				"log": "📝",
+				"info": "ℹ️",
+				"warn": "⚠️",
+				"error": "⛔",
+				"debug": "🐛"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -229,8 +229,7 @@ const charAPI_definition = {
 
 				const selectedGreeting = groupGreetings[index]
 				const env = getMacroEnv(args.UserCharname)
-				// 注意：ST 的 group 宏可能需要特殊处理，env.group
-				env.group = args.GroupName || 'Group' // 假设 args 包含 GroupName
+				env.group = args.GroupName || 'Group'
 				const result = evaluateMacros(selectedGreeting, env, args.chat_scoped_char_memory, args.chat_log)
 
 				return {

@@ -25,6 +25,44 @@ export function arrayBufferToBase64(buffer) {
 }
 
 /**
+ * 判断字节序列是否以给定前缀开头。
+ * @param {Uint8Array} bytes - 待检测的字节。
+ * @param {readonly number[]} prefix - 期望的前缀字节序列。
+ * @returns {boolean} - 是否匹配前缀。
+ */
+function bytesStartWith(bytes, prefix) {
+	if (bytes.length < prefix.length) return false
+	for (let i = 0; i < prefix.length; i++)
+		if (bytes[i] !== prefix[i]) return false
+	return true
+}
+
+/**
+ * 是否为 RIFF 容器且内嵌 WEBP（常见 WebP）。
+ * @param {Uint8Array} bytes - 至少前 12 字节。
+ * @returns {boolean} - 是否为 WebP 文件头。
+ */
+function isWebpRiff(bytes) {
+	return bytes.length >= 12
+		&& bytesStartWith(bytes, [0x52, 0x49, 0x46, 0x46])
+		&& bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
+}
+
+/**
+ * 根据文件头推测常见图片 MIME（用于修正剪贴板/浏览器给出的 application/octet-stream）。
+ * @param {Uint8Array} bytes - 至少前 12 字节。
+ * @returns {{ mime: string, ext: string } | null} - 推测的 MIME 与扩展名；无法识别时返回 null。
+ */
+export function sniffMimeFromMagicBytes(bytes) {
+	if (!bytes?.length) return null
+	if (bytesStartWith(bytes, [0x89, 0x50, 0x4e, 0x47])) return { mime: 'image/png', ext: 'png' }
+	if (bytesStartWith(bytes, [0xff, 0xd8, 0xff])) return { mime: 'image/jpeg', ext: 'jpg' }
+	if (bytesStartWith(bytes, [0x47, 0x49, 0x46])) return { mime: 'image/gif', ext: 'gif' }
+	if (isWebpRiff(bytes)) return { mime: 'image/webp', ext: 'webp' }
+	return null
+}
+
+/**
  * 滑动阈值。
  * @type {number}
  */

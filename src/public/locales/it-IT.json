@@ -115,8 +115,7 @@
 				"noUrl": "Errore: URL per il protocollo handle non fornito."
 			},
 			"update": {
-				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato",
-				"skippingDenoUpgradeDocker": "Salta l'aggiornamento di Deno nell'ambiente Docker"
+				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "Chiave API copiata negli appunti!",
 			"copyKeyFailed": "Impossibile copiare la chiave negli appunti."
 		},
+		"editorCommand": {
+			"title": "Comando editor esterno",
+			"description": "Imposta comando e modello degli argomenti per aprire i file in un editor esterno. I segnaposto consentono di passare percorso file, numero di riga e colonna.",
+			"editorPresetLabel": "Preimpostazioni dell’editor",
+			"commandLabel": "Comando",
+			"argsTemplateLabel": "Modello degli argomenti",
+			"argsTemplateHint": "Segnaposto: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (presente nel PATH)",
+			"presetOptionPathUnavailable": "${label} (non presente nel PATH)",
+			"testPathInput": {
+				"placeholder": "Percorso di un file di prova, es. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Prova apertura",
+			"saveButton": "Salva configurazione",
+			"saveSuccess": "Comando dell’editor esterno salvato.",
+			"testPathRequired": "Inserisci prima il percorso del file di prova.",
+			"testSuccess": "Eseguito il comando per aprire il file nell’editor."
+		},
 		"logout": {
 			"title": "Esci",
 			"description": "Verrai disconnesso dal tuo account su questo dispositivo.",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "Il server si sta riavviando",
 		"updateFailed": "Richiesta di aggiornamento non riuscita",
 		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
+		"logs": {
+			"title": "Registro",
+			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
+			"toolbar": {
+				"clear": "Svuota",
+				"filter": {
+					"placeholder": "Filtra…"
+				}
+			},
+			"levels": {
+				"all": "Tutti",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avviso",
+				"error": "Errore",
+				"debug": "Debug"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

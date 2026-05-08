@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import os from 'node:os'
 import process from 'node:process'
@@ -11,6 +10,8 @@ import { in_docker, in_termux } from '../scripts/env.mjs'
 import { console, geti18n } from '../scripts/i18n.mjs'
 import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
+
+import { printTerminalImage } from './logo.mjs'
 
 /**
  * 获取图标的 base64 编码。
@@ -34,18 +35,6 @@ on_shutdown(() => {
 	systray?.kill?.()
 	systray = null
 })
-
-/**
- * 打印自云端拉取的fount logo图像。
- * @returns {Promise<void>} 打印fount logo图像的承诺。
- */
-async function printTerminalImage() {
-	const terminalImage = await import('npm:terminal-image')
-	await fetch('https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b').
-		then(res => res.arrayBuffer()).
-		then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
-		then(console.noBreadcrumb.log)
-}
 
 /**
  * 创建系统托盘菜单。
@@ -117,17 +106,19 @@ export async function createTray() {
 			else if (!action_id--) open('https://github.com/steve02081504/fount')
 			else if (!action_id--) open('https://t.me/GentianAphrodite')
 			else if (!action_id--) {
-				await printTerminalImage().catch(_ => 0)
+				if (!process.env.FOUNT_BACKGROUND) await printTerminalImage().catch(_ => 0)
 				restartor()
 			}
 			else if (!action_id--) process.exit(0)
 			else if (terminalWorks && !action_id--) {
 				if (supportsAnsi) process.stdout.write('\x1Bc')
-				else console.clear()
+				console.clear()
 				setDefaultStuff()
-				await printTerminalImage().catch(_ => 0)
-				console.logI18n('tips.title')
-				console.logI18n('tips.data')
+				if (!process.env.FOUNT_BACKGROUND) {
+					await printTerminalImage().catch(_ => 0)
+					console.logI18n('tips.title')
+					console.logI18n('tips.data')
+				}
 			}
 		})
 

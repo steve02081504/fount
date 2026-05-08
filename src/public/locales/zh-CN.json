@@ -115,8 +115,7 @@
 				"noUrl": "错误：未提供协议处理程序的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新",
-				"skippingDenoUpgradeDocker": "在 Docker 环境中跳过 Deno 升级"
+				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 ${path} 创建桌面快捷方式",
@@ -1810,6 +1809,24 @@
 			"copiedAlert": "密钥已复制到剪贴板！",
 			"copyKeyFailed": "无法复制密钥到剪贴板。"
 		},
+		"editorCommand": {
+			"title": "外部编辑器命令",
+			"description": "配置在外部编辑器中打开文件时使用的命令与参数模板；可通过占位符传入文件路径、行号与列号。",
+			"editorPresetLabel": "编辑器预设",
+			"commandLabel": "命令",
+			"argsTemplateLabel": "参数模板",
+			"argsTemplateHint": "占位符：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（已在 PATH）",
+			"presetOptionPathUnavailable": "${label}（不在 PATH）",
+			"testPathInput": {
+				"placeholder": "用于测试的文件路径，例如 C:/work/project/src/main.mjs"
+			},
+			"testButton": "测试打开",
+			"saveButton": "保存配置",
+			"saveSuccess": "外部编辑器命令已保存。",
+			"testPathRequired": "请先填写测试文件路径。",
+			"testSuccess": "已尝试在外部编辑器中打开。"
+		},
 		"logout": {
 			"title": "登出",
 			"description": "这将从当前设备注销您的账户。",
@@ -2790,6 +2807,24 @@
 		"updateSuccess": "正在重启服务器",
 		"updateFailed": "更新请求失败",
 		"autoUpdateNotEnabled": "未启用自动更新",
+		"logs": {
+			"title": "日志",
+			"openSourceFailed": "无法在编辑器中打开源码：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "按内容筛选…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "普通",
+				"info": "信息",
+				"warn": "警告",
+				"error": "错误",
+				"debug": "调试"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

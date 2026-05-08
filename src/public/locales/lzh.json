@@ -115,8 +115,7 @@
 				"noUrl": "誤：未供協定處置器之 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略",
-				"skippingDenoUpgradeDocker": "Docker 中 Deno 之晉級暫略"
+				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "桌面快捷已建於 ${path}",
@@ -1505,6 +1504,24 @@
 			"copiedAlert": "符鑰已錄！",
 			"copyKeyFailed": "符鑰難錄於剪貼。"
 		},
+		"editorCommand": {
+			"title": "外在編輯器啟卷之敕",
+			"description": "設外在編輯器啟卷所用之敕令與參數模板。",
+			"editorPresetLabel": "編輯器預製項",
+			"commandLabel": "敕令",
+			"argsTemplateLabel": "參數模板",
+			"argsTemplateHint": "預留符：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（於 PATH 可得）",
+			"presetOptionPathUnavailable": "${label}（於 PATH 不可得）",
+			"testPathInput": {
+				"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
+			},
+			"testButton": "試啟",
+			"saveButton": "存其配置",
+			"saveSuccess": "外在編輯器之敕已存。",
+			"testPathRequired": "請先填試用之卷徑。",
+			"testSuccess": "已行外在編輯器啟卷之試。"
+		},
 		"logout": {
 			"title": "告退",
 			"description": "此舉將從當前之器告退。",
@@ -2485,6 +2502,24 @@
 		"updateSuccess": "伺服正重啟",
 		"updateFailed": "更新之請未果",
 		"autoUpdateNotEnabled": "自動更新未啟",
+		"logs": {
+			"title": "日誌",
+			"openSourceFailed": "啟閱原始碼卷未果：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "依文篩之…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "常錄",
+				"info": "訊息",
+				"warn": "警示",
+				"error": "錯誤",
+				"debug": "調試"
+			}
+		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {
