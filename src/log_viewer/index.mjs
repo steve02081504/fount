@@ -226,7 +226,7 @@ function runOneConnection(ctx) {
 				onOpen: handleOpen,
 				onClose: handleClose,
 				onError: handleError,
-				onParseError: onFatal,
+				onFatal,
 			})
 		} catch {
 			finish('close')
