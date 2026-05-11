@@ -172,12 +172,12 @@ function updateSelectedUI(id) {
 
 /**
  * 使用 View Transition API：从点击处圆圈扩散，圈内直接显示新主题内容。
- * @param {MouseEvent} e - 点击事件（取坐标）
+ * @param {MouseEvent} clickEvent - 点击事件（取坐标）
  * @param {string} id - 主题ID
  * @param {boolean} isCustom - 是否自定义主题
  */
-async function applyThemeWithAnimation(e, id, isCustom) {
-	await applyThemeWithViewTransition(e, async () => {
+async function applyThemeWithAnimation(clickEvent, id, isCustom) {
+	await applyThemeWithViewTransition(clickEvent, async () => {
 		await handleThemeApply(id, isCustom)
 		updateSelectedUI(id)
 	})
