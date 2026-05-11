@@ -11,6 +11,7 @@ import {
 	createAutoPreview,
 } from '../../scripts/themeViewTransition.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
+import { viewTransition } from '../../scripts/viewTransition.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
@@ -107,11 +108,7 @@ async function playHeroAnimation() {
 	 */
 	const showFinalState = async () => {
 		await bgImageReady
-
-		if (document.startViewTransition)
-			await document.startViewTransition({ update: applyFinalState, types: ['hero-intro'] }).finished
-		else
-			applyFinalState()
+		await viewTransition(applyFinalState, { types: ['hero-intro'] })
 	}
 
 	try {
@@ -216,13 +213,13 @@ async function renderThemePreviews() {
 
 /**
  * 处理主题点击事件（与 theme.mjs 共用一套圆圈扩散动画逻辑）。
- * @param {MouseEvent} e - 点击事件。
+ * @param {MouseEvent} clickEvent - 点击事件。
  * @param {HTMLElement} previewElement - 被点击的预览元素。
  * @param {string} theme - 选中的主题名称。
  * @returns {Promise<void>}
  */
-async function handleThemeClick(e, previewElement, theme) {
-	await applyThemeWithViewTransition(e, () => {
+async function handleThemeClick(clickEvent, previewElement, theme) {
+	await applyThemeWithViewTransition(clickEvent, () => {
 		setTheme(theme)
 		document.querySelectorAll('.theme-preview-card.selected-theme').forEach(el => el.classList.remove('selected-theme'))
 		previewElement.classList.add('selected-theme')

@@ -108,7 +108,7 @@ function formatArgs(template, payload) {
 		line: String(payload.line),
 		column: String(payload.column),
 	}
-	return template.replace(/\$\{(file|line|column)\}/g, (_, key) => values[key])
+	return template.replace(/\${(file|line|column)}/g, (_, key) => values[key])
 }
 
 /**
