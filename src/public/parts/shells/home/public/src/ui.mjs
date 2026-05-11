@@ -7,6 +7,7 @@ import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../../scripts/search.mjs'
 import { svgInliner } from '../../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
+import { viewTransition } from '../../../scripts/viewTransition.mjs'
 
 import { defaultIcons, genericDefaultIcon } from './constants.mjs'
 import { partDetailsCache, getpartDetails, clearCache, getAllpartNames } from './data.mjs'
@@ -443,10 +444,10 @@ export async function updateTabContent(partTypeObject) {
 		itemDescription.innerHTML = geti18n('home.itemDescription')
 	}
 
-	if (document.startViewTransition && oldIndex !== -1) {
+	if (oldIndex !== -1) {
 		await transitionPromise
 		document.documentElement.dataset.transitionDirection = direction
-		transitionPromise = document.startViewTransition(updateAndRender).finished
+		transitionPromise = viewTransition(updateAndRender)
 		await transitionPromise
 		delete document.documentElement.dataset.transitionDirection
 	} else await updateAndRender()

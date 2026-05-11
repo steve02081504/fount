@@ -3,6 +3,7 @@
  */
 
 import { renderTemplate } from './template.mjs'
+import { viewTransition } from './viewTransition.mjs'
 
 {
 	const vt_style = document.createElement('style')
@@ -39,31 +40,19 @@ html:active-view-transition-type(theme-switch)::view-transition-new(root) {
 
 /**
  * 使用 View Transition API 从点击处圆圈扩散执行主题切换。
- * @param {MouseEvent|null} e - 点击事件（用于圆心坐标）；无则用视口中心。
+ * @param {MouseEvent|null} clickEvent - 点击事件（用于圆心坐标）；无则用视口中心。
  * @param {() => Promise<void>|void} update - 实际切换主题的异步回调。
  * @returns {Promise<void>}
  */
-export async function applyThemeWithViewTransition(e, update) {
+export async function applyThemeWithViewTransition(clickEvent, update) {
 	const view = document.defaultView
 	const w = view?.innerWidth ?? 800
 	const h = view?.innerHeight ?? 600
-	const x = e != null ? (e.clientX / w) * 100 : 50
-	const y = e != null ? (e.clientY / h) * 100 : 50
+	const x = clickEvent != null ? (clickEvent.clientX / w) * 100 : 50
+	const y = clickEvent != null ? (clickEvent.clientY / h) * 100 : 50
 	document.documentElement.style.setProperty('--theme-vt-x', `${x}%`)
 	document.documentElement.style.setProperty('--theme-vt-y', `${y}%`)
-
-	/**
-	 * 执行更新。
-	 */
-	const run = async () => {
-		await update?.() || update
-	}
-
-	const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-	if (document.startViewTransition && !prefersReducedMotion) {
-		const t = document.startViewTransition({ update: run, types: ['theme-switch'] })
-		await t.finished
-	} else await run()
+	await viewTransition(update, { types: ['theme-switch'] })
 }
 
 /**
