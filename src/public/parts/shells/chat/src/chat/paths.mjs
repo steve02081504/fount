@@ -32,13 +32,23 @@ export function eventsPath(username, chatId) {
 }
 
 /**
- * 物化检查点 JSON 路径。
+ * 本地物化快照路径（§19 `snapshot.json`；非全网权威，仅加速恢复）。
  * @param {string} username 本地账户名
  * @param {string} chatId 群组或会话 ID
- * @returns {string} `checkpoint.json` 绝对路径
+ * @returns {string} `snapshot.json` 绝对路径
  */
-export function checkpointPath(username, chatId) {
-	return join(chatDir(username, chatId), 'checkpoint.json')
+export function snapshotPath(username, chatId) {
+	return join(chatDir(username, chatId), 'snapshot.json')
+}
+
+/**
+ * 本地主观信誉表路径（§0.3；不进 DAG）。
+ * @param {string} username 本地账户名
+ * @param {string} chatId 群组 ID
+ * @returns {string} `reputation.json` 绝对路径
+ */
+export function reputationPath(username, chatId) {
+	return join(chatDir(username, chatId), 'reputation.json')
 }
 
 /**

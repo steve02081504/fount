@@ -143,6 +143,15 @@ export function registerSocket(chatId, ws) {
 }
 
 /**
+ * 当前群在 shell WS 上已连接的客户端数（含 Hub / 群 UI / RPC）。
+ * @param {string} chatId 群组 id
+ * @returns {number} 连接数，无房间时为 0
+ */
+export function countGroupSockets(chatId) {
+	return sockets.get(chatId)?.size ?? 0
+}
+
+/**
  * 向某群组下所有已连接 WS 广播 JSON 消息（带时间戳字段 t）
  *
  * @param {string} chatId 群组 id
@@ -162,7 +171,7 @@ export function broadcastEvent(chatId, payload) {
 		}
 }
 
-// ─── 流式 AI chunk 缓冲（用于 NACK 补传）────────────────────────────────────
+// ─── 流式 AI chunk 短窗口缓冲（VOLATILE best-effort；不提供联邦 stream_chunk_nack，§6.4）────────
 
 /**
  * `${chatId}:${pendingStreamId}` -> VolatileStreamBuffer
@@ -182,7 +191,7 @@ function streamBufferKey(chatId, pendingStreamId) {
 }
 
 /**
- * 将 AI 流式 chunk 存入服务端缓冲（供 NACK 补传）。
+ * 将 AI 流式 chunk 存入服务端缓冲（短保留；无 NACK 补传语义）。
  *
  * @param {string} chatId 群组 id
  * @param {string} pendingStreamId 流标识
@@ -198,7 +207,7 @@ export function bufferStreamChunk(chatId, pendingStreamId, chunkSeq, text) {
 }
 
 /**
- * 标记流结束，60 秒后自动清理缓冲（留余量让迟到 NACK 仍能补传）。
+ * 标记流结束，60 秒后自动清理缓冲。
  *
  * @param {string} chatId 群组 id
  * @param {string} pendingStreamId 流标识
@@ -217,7 +226,7 @@ export function finishStreamBuffer(chatId, pendingStreamId) {
 }
 
 /**
- * 取单个 chunk（用于 NACK 补传响应）。
+ * 取单个已缓冲 chunk（调试/扩展用；主路径不依赖 NACK）。
  *
  * @param {string} chatId 群组 id
  * @param {string} pendingStreamId 流标识

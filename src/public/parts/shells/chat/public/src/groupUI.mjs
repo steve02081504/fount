@@ -5,10 +5,12 @@
 
 /**
  * 创建新群组
- * @returns {Promise<string>} 群组ID
+ * @param {string} name - 群组名称
+ * @param {string} description - 群组描述
+ * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新群 ID 与默认频道 ID
  */
 export async function createGroup(name, description) {
-	const response = await fetch('/api/parts/shells:chat/group/new', {
+	const response = await fetch('/api/parts/shells:chat/groups/new', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -16,11 +18,10 @@ export async function createGroup(name, description) {
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
+	if (!response.ok)
 		throw new Error(data.error || 'Failed to create group')
-	}
 
-	return data.groupId
+	return { groupId: data.groupId, defaultChannelId: data.defaultChannelId || 'default' }
 }
 
 /**
@@ -28,18 +29,27 @@ export async function createGroup(name, description) {
  * @returns {Promise<Array>} 群组列表
  */
 export async function getGroupList() {
-	const response = await fetch('/api/parts/shells:chat/group/list', {
+	const response = await fetch('/api/parts/shells:chat/groups/list', {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include'
+		credentials: 'include',
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
-		throw new Error(data.error || 'Failed to fetch groups')
-	}
+	if (!response.ok || !Array.isArray(data))
+		throw new Error('Failed to fetch groups')
 
-	return data.groups || []
+	return data
+		.filter(r => r && r.listKind === 'p2p')
+		.map(r => ({
+			groupId: r.groupId,
+			name: r.name,
+			desc: r.desc,
+			avatar: r.avatar,
+			defaultChannelId: r.defaultChannelId,
+			memberCount: r.memberCount,
+			channelCount: r.channelCount,
+		}))
 }
 
 /**
@@ -49,7 +59,7 @@ export async function getGroupList() {
  * @returns {Promise<void>}
  */
 export async function joinGroup(groupId, inviteCode = null) {
-	const response = await fetch(`/api/parts/shells:chat/${groupId}/join`, {
+	const response = await fetch(`/api/parts/shells:chat/groups/${groupId}/join`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -57,9 +67,58 @@ export async function joinGroup(groupId, inviteCode = null) {
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
+	if (!response.ok) 
 		throw new Error(data.error || 'Failed to join group')
-	}
+	
+}
+
+/**
+ * 使用双方 Ed25519 公钥（各 64 位十六进制）创建密钥 DM；`myPubKeyHex` 须由客户端从本地密钥材料导出。
+ * @param {string} myPubKeyHex 本端公钥 hex
+ * @param {string} peerPubKeyHex 对端公钥 hex
+ * @returns {Promise<object>} 服务端 JSON（含 `groupId`、`dmSessionTag` 等）
+ */
+export async function createDirectMessageByPubKeys(myPubKeyHex, peerPubKeyHex) {
+	const response = await fetch('/api/parts/shells:chat/groups/new', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify({ template: 'dm', myPubKeyHex, peerPubKeyHex }),
+	})
+	const data = await response.json()
+	if (!response.ok)
+		throw new Error(data.error || 'Failed to create keyed DM')
+	return data
+}
+
+/**
+ * 用户名 DM：`POST …/groups/new` + `template: dm`（§14，无独立 `/dm`）。
+ * @param {string} targetUsername 对端登录名
+ * @returns {Promise<object>} 服务端 JSON（含 `groupId` 等）
+ */
+export async function createDirectMessageByUsername(targetUsername) {
+	const response = await fetch('/api/parts/shells:chat/groups/new', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify({ template: 'dm', targetUsername: String(targetUsername || '').trim() }),
+	})
+	const data = await response.json()
+	if (!response.ok)
+		throw new Error(data.error || 'Failed to create username DM')
+	return data
+}
+
+/**
+ * 拉取当前用户聊天书签条目（`GET …/bookmarks`）。
+ * @returns {Promise<object[]>} `entries` 数组
+ */
+export async function getChatBookmarks() {
+	const response = await fetch('/api/parts/shells:chat/bookmarks', { credentials: 'include' })
+	const data = await response.json()
+	if (!response.ok)
+		throw new Error('Failed to fetch bookmarks')
+	return Array.isArray(data) ? data : []
 }
 
 /**
@@ -68,16 +127,16 @@ export async function joinGroup(groupId, inviteCode = null) {
  * @returns {Promise<object>} 群组状态
  */
 export async function getGroupState(groupId) {
-	const response = await fetch(`/api/parts/shells:chat/${groupId}/state`, {
+	const response = await fetch(`/api/parts/shells:chat/groups/${groupId}/state`, {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include'
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
+	if (!response.ok) 
 		throw new Error(data.error || 'Failed to fetch group state')
-	}
+	
 
 	return data.state
 }
@@ -90,7 +149,7 @@ export async function getGroupState(groupId) {
  * @returns {Promise<void>}
  */
 export async function sendGroupMessage(groupId, channelId, content) {
-	const response = await fetch(`/api/parts/shells:chat/${groupId}/channels/${channelId}/messages`, {
+	const response = await fetch(`/api/parts/shells:chat/groups/${groupId}/channels/${channelId}/messages`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -98,9 +157,9 @@ export async function sendGroupMessage(groupId, channelId, content) {
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
+	if (!response.ok) 
 		throw new Error(data.error || 'Failed to send message')
-	}
+	
 }
 
 /**
@@ -116,16 +175,16 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
 	if (options.before) params.append('before', options.before)
 	if (options.limit) params.append('limit', options.limit)
 
-	const response = await fetch(`/api/parts/shells:chat/${groupId}/channels/${channelId}/messages?${params}`, {
+	const response = await fetch(`/api/parts/shells:chat/groups/${groupId}/channels/${channelId}/messages?${params}`, {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include'
 	})
 
 	const data = await response.json()
-	if (!response.ok) {
+	if (!response.ok) 
 		throw new Error(data.error || 'Failed to fetch messages')
-	}
+	
 
 	return data.messages || []
 }
@@ -189,6 +248,19 @@ export async function renderGroupList(container) {
 }
 
 /**
+ * 注入群组弹窗样式（自 group-ui.css），避免在模板字符串中内嵌 `<style>`。
+ */
+function ensureGroupUiCssLink() {
+	if (typeof document === 'undefined') return
+	if (document.getElementById('fount-group-ui-css')) return
+	const l = document.createElement('link')
+	l.id = 'fount-group-ui-css'
+	l.rel = 'stylesheet'
+	l.href = '/parts/shells:chat/group-ui.css'
+	document.head.appendChild(l)
+}
+
+/**
  * 显示创建群组对话框
  */
 export function showCreateGroupModal() {
@@ -207,166 +279,10 @@ export function showCreateGroupModal() {
 		UPLOAD_FILES: '上传文件', PIN_MESSAGES: '置顶消息'
 	}
 
+	ensureGroupUiCssLink()
 	const modal = document.createElement('dialog')
 	modal.className = 'modal'
 	modal.innerHTML = `
-		<style>
-			.cg-modal-box {
-				background: #2b2d31;
-				color: #dbdee1;
-				border-radius: 12px;
-				max-width: 540px;
-				width: 100%;
-				max-height: 90vh;
-				padding: 0;
-				overflow: hidden;
-				box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-				display: flex;
-				flex-direction: column;
-			}
-			#create-group-form {
-				display: flex;
-				flex-direction: column;
-				flex: 1;
-				min-height: 0;
-				overflow: hidden;
-			}
-			.cg-header {
-				background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-				padding: 28px 24px 24px;
-				color: white;
-				position: relative;
-			}
-			.cg-header h3 {
-				font-size: 20px;
-				font-weight: 700;
-				margin: 0 0 4px;
-			}
-			.cg-header p {
-				font-size: 13px;
-				opacity: 0.85;
-				margin: 0;
-			}
-			.cg-icon-bubble {
-				width: 56px; height: 56px;
-				background: rgba(255,255,255,0.18);
-				border-radius: 16px;
-				display: flex; align-items: center; justify-content: center;
-				margin-bottom: 12px;
-			}
-			.cg-body {
-				padding: 20px 24px;
-				overflow-y: auto;
-				flex: 1;
-				min-height: 0;
-			}
-			.cg-section {
-				background: #1e1f22;
-				border-radius: 8px;
-				padding: 16px;
-				margin-bottom: 14px;
-			}
-			.cg-section-title {
-				font-size: 12px; font-weight: 700;
-				text-transform: uppercase;
-				color: #949ba4;
-				letter-spacing: 0.5px;
-				margin-bottom: 10px;
-			}
-			.cg-field { margin-bottom: 12px; }
-			.cg-field:last-child { margin-bottom: 0; }
-			.cg-label {
-				display: block;
-				font-size: 12px;
-				font-weight: 700;
-				color: #b5bac1;
-				margin-bottom: 6px;
-				text-transform: uppercase;
-				letter-spacing: 0.3px;
-			}
-			.cg-input, .cg-textarea, .cg-select {
-				width: 100%;
-				background: #1e1f22;
-				border: 1px solid #1f2023;
-				color: #dbdee1;
-				padding: 10px 12px;
-				border-radius: 6px;
-				font-size: 14px;
-				outline: none;
-				box-sizing: border-box;
-				font-family: inherit;
-			}
-			.cg-section .cg-input, .cg-section .cg-textarea, .cg-section .cg-select {
-				background: #2b2d31;
-			}
-			.cg-input:focus, .cg-textarea:focus, .cg-select:focus { border-color: #5865f2; }
-			.cg-textarea { resize: vertical; min-height: 64px; }
-
-			.cg-perm-grid {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 6px;
-			}
-			.cg-perm-item {
-				display: flex;
-				align-items: center;
-				gap: 8px;
-				padding: 6px 8px;
-				border-radius: 4px;
-				cursor: pointer;
-				transition: background 0.1s;
-				font-size: 13px;
-				color: #dbdee1;
-			}
-			.cg-perm-item:hover { background: rgba(255,255,255,0.04); }
-			.cg-perm-item input[type="checkbox"] {
-				accent-color: #5865f2;
-				width: 16px; height: 16px;
-				cursor: pointer;
-			}
-
-			.cg-footer {
-				background: #2b2d31;
-				padding: 16px 24px;
-				display: flex;
-				justify-content: flex-end;
-				gap: 8px;
-				border-top: 1px solid #1f2023;
-				flex-shrink: 0;
-			}
-			.cg-btn {
-				padding: 10px 20px;
-				border-radius: 6px;
-				border: none;
-				cursor: pointer;
-				font-size: 14px;
-				font-weight: 600;
-				transition: background 0.15s;
-				font-family: inherit;
-			}
-			.cg-btn-cancel { background: transparent; color: #b5bac1; }
-			.cg-btn-cancel:hover { background: rgba(255,255,255,0.06); color: #fff; }
-			.cg-btn-primary { background: #5865f2; color: white; }
-			.cg-btn-primary:hover { background: #4752c4; }
-
-			.cg-radio-group { display: flex; gap: 8px; }
-			.cg-radio-card {
-				flex: 1;
-				background: #2b2d31;
-				border: 1.5px solid transparent;
-				padding: 12px;
-				border-radius: 8px;
-				cursor: pointer;
-				transition: all 0.15s;
-			}
-			.cg-radio-card:hover { background: #313338; }
-			.cg-radio-card.active {
-				border-color: #5865f2;
-				background: rgba(88,101,242,0.1);
-			}
-			.cg-radio-card .name { font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 4px; }
-			.cg-radio-card .desc { font-size: 12px; color: #949ba4; }
-		</style>
 		<div class="modal-box cg-modal-box">
 			<div class="cg-header">
 				<div class="cg-icon-bubble">
@@ -399,15 +315,15 @@ export function showCreateGroupModal() {
 					<div class="cg-section">
 						<div class="cg-section-title">谁可以加入</div>
 						<div class="cg-radio-group">
-							<label class="cg-radio-card active" data-policy="open">
-								<input type="radio" name="joinPolicy" value="open" checked style="display:none" />
-								<div class="name">🌐 公开</div>
-								<div class="desc">任何人通过 ID 即可加入</div>
-							</label>
-							<label class="cg-radio-card" data-policy="invite-only">
-								<input type="radio" name="joinPolicy" value="invite-only" style="display:none" />
+							<label class="cg-radio-card active" data-policy="invite-only">
+								<input type="radio" name="joinPolicy" value="invite-only" checked style="display:none" />
 								<div class="name">🔒 仅邀请</div>
 								<div class="desc">需要邀请码才能加入</div>
+							</label>
+							<label class="cg-radio-card" data-policy="pow">
+								<input type="radio" name="joinPolicy" value="pow" style="display:none" />
+								<div class="name">⛏️ 工作量证明</div>
+								<div class="desc">加入前需完成 PoW 挑战</div>
 							</label>
 						</div>
 					</div>
@@ -458,16 +374,18 @@ export function showCreateGroupModal() {
 		const joinPolicy = formData.get('joinPolicy')
 
 		try {
-			const groupId = await createGroup(name, description)
+			const { groupId, defaultChannelId } = await createGroup(name, description)
 
-			// 更新群组设置
-			if (joinPolicy !== 'open') {
-				await fetch(`/api/parts/shells:chat/${groupId}/settings`, {
+			try {
+				await fetch(`/api/parts/shells:chat/groups/${groupId}/settings`, {
 					method: 'PUT',
 					headers: { 'Content-Type': 'application/json' },
 					credentials: 'include',
 					body: JSON.stringify({ joinPolicy })
 				})
+			}
+			catch (e) {
+				console.error('update joinPolicy failed', e)
 			}
 
 			// 更新 @everyone 角色权限
@@ -476,7 +394,7 @@ export function showCreateGroupModal() {
 				const cb = modal.querySelector(`input[name="grp-perm-${perm}"]`)
 				if (cb && cb.checked) permissions[perm] = true
 			}
-			await fetch(`/api/parts/shells:chat/${groupId}/roles/${encodeURIComponent('@everyone')}/permissions`, {
+			await fetch(`/api/parts/shells:chat/groups/${groupId}/roles/${encodeURIComponent('@everyone')}/permissions`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -485,7 +403,7 @@ export function showCreateGroupModal() {
 
 			modal.close()
 			modal.remove()
-			window.location.href = `/parts/shells:chat/discord.html#${groupId}`
+			window.location.href = `/parts/shells:chat/hub/#group:${groupId}:${defaultChannelId}`
 		} catch (error) {
 			alert('创建群组失败: ' + error.message)
 		}
@@ -497,7 +415,7 @@ export function showCreateGroupModal() {
  * @param {string} groupId - 群组ID
  */
 export async function openGroup(groupId) {
-	window.location.href = `/parts/shells:chat/discord.html#${groupId}`
+	window.location.href = `/parts/shells:chat/hub/#group:${groupId}:default`
 }
 
 /**
@@ -512,92 +430,13 @@ function escapeHtml(text) {
 }
 
 /**
- * 通过群组ID加入群组（Discord 风格弹窗）
+ * 通过群组 ID 加入群组
  */
 export function joinGroupById() {
+	ensureGroupUiCssLink()
 	const modal = document.createElement('dialog')
 	modal.className = 'modal'
 	modal.innerHTML = `
-		<style>
-			.jg-modal-box {
-				background: #2b2d31;
-				color: #dbdee1;
-				border-radius: 12px;
-				max-width: 460px;
-				width: 100%;
-				padding: 0;
-				overflow: hidden;
-				box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-			}
-			.jg-header {
-				background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-				padding: 24px;
-				color: white;
-			}
-			.jg-header h3 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
-			.jg-header p { margin: 0; font-size: 13px; opacity: 0.85; }
-			.jg-body { padding: 20px 24px; }
-			.jg-label {
-				display: block;
-				font-size: 12px;
-				font-weight: 700;
-				color: #b5bac1;
-				margin-bottom: 8px;
-				text-transform: uppercase;
-				letter-spacing: 0.3px;
-			}
-			.jg-input {
-				width: 100%;
-				background: #1e1f22;
-				border: 1.5px solid #1f2023;
-				color: #dbdee1;
-				padding: 12px;
-				border-radius: 6px;
-				font-size: 15px;
-				outline: none;
-				box-sizing: border-box;
-				font-family: inherit;
-				transition: border-color 0.15s;
-			}
-			.jg-input:focus { border-color: #5865f2; }
-			.jg-hint {
-				font-size: 12px;
-				color: #949ba4;
-				margin-top: 8px;
-				line-height: 1.5;
-			}
-			.jg-hint code {
-				background: #1e1f22;
-				padding: 2px 6px;
-				border-radius: 4px;
-				color: #dbdee1;
-				font-family: 'Consolas', monospace;
-				font-size: 11px;
-			}
-			.jg-footer {
-				background: #2b2d31;
-				padding: 16px 24px;
-				display: flex;
-				justify-content: flex-end;
-				gap: 8px;
-				border-top: 1px solid #1f2023;
-			}
-			.jg-btn {
-				padding: 10px 20px;
-				border-radius: 6px;
-				border: none;
-				cursor: pointer;
-				font-size: 14px;
-				font-weight: 600;
-				transition: background 0.15s;
-				font-family: inherit;
-			}
-			.jg-btn-cancel { background: transparent; color: #b5bac1; }
-			.jg-btn-cancel:hover { background: rgba(255,255,255,0.06); color: #fff; }
-			.jg-btn-primary { background: #5865f2; color: white; }
-			.jg-btn-primary:hover { background: #4752c4; }
-			.jg-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-		</style>
 		<div class="modal-box jg-modal-box">
 			<div class="jg-header">
 				<h3>加入一个群组</h3>
@@ -631,7 +470,8 @@ export function joinGroupById() {
 		const id = modal.querySelector('#jg-id-input').value.trim()
 		if (!id) return
 		modal.close(); modal.remove()
-		window.location.href = `/parts/shells:chat/discord.html#${id}`
+		const hash = id.startsWith('group:') ? id : `group:${id}:default`
+		window.location.href = `/parts/shells:chat/hub/#${hash}`
 	})
 	modal.addEventListener('close', () => modal.remove())
 }

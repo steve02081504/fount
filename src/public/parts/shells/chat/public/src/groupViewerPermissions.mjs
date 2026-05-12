@@ -33,14 +33,3 @@ export async function viewerCanOwnerSuccession(stateJson, groupId) {
 	const p = await pr.json()
 	return p.ADMIN === true
 }
-
-/**
- * 与 `viewerCanOwnerSuccession` 相同：服务端 `home_transfer` 阈值验签集合为物化状态中具备 ADMIN 的登记成员。
- *
- * @param {object} stateJson `/groups/:id/state` 的 JSON
- * @param {string} groupId 群组 ID
- * @returns {Promise<boolean>} 当前查看者是否具备发起 home 迁移相关治理操作资格
- */
-export async function viewerCanHomeTransfer(stateJson, groupId) {
-	return viewerCanOwnerSuccession(stateJson, groupId)
-}

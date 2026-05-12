@@ -1,4 +1,4 @@
-import { appendFile, mkdir, readFile } from 'node:fs/promises'
+import { appendFile, mkdir, open, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 /**
@@ -25,4 +25,36 @@ export async function readJsonl(filePath) {
 export async function appendJsonl(filePath, record) {
 	await mkdir(dirname(filePath), { recursive: true })
 	await appendFile(filePath, `${JSON.stringify(record)}\n`, 'utf8')
+}
+
+/**
+ * 追加一行 JSONL 并 `fsync`，降低崩溃下事件流与快照不一致窗口（先持久化事件再物化快照）。
+ * @param {string} filePath 目标路径
+ * @param {object} record 记录对象
+ * @returns {Promise<void>}
+ */
+export async function appendJsonlSynced(filePath, record) {
+	await mkdir(dirname(filePath), { recursive: true })
+	const fh = await open(filePath, 'a')
+	try {
+		await fh.appendFile(`${JSON.stringify(record)}\n`, 'utf8')
+		await fh.sync()
+	}
+	finally {
+		await fh.close()
+	}
+}
+
+/**
+ * 原子写入 JSON 文件（临时文件 + rename）。
+ * @param {string} filePath 目标路径
+ * @param {object} obj 可 JSON 序列化对象
+ * @returns {Promise<void>}
+ */
+export async function writeJsonAtomic(filePath, obj) {
+	const dir = dirname(filePath)
+	await mkdir(dir, { recursive: true })
+	const tmp = `${filePath}.tmp.${process.pid}.${Date.now()}`
+	await writeFile(tmp, JSON.stringify(obj, null, '\t'), 'utf8')
+	await rename(tmp, filePath)
 }

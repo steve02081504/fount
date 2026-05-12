@@ -82,6 +82,8 @@ function ed25519PrivKeyToX25519(seed) {
  * - 当 visibility 为 null/undefined 时（全员可见），直接返回明文。
  * - 当有 visibility 限制时，使用 ECDH X25519 + AES-256-GCM 加密：
  *   对每个接收方生成独立的 ECDH 临时密钥对，以接收方 X25519 公钥封装 AES 密钥。
+ * - 当需要加密但 `context.recipientPubKeyHexes` 为空时，返回 `pending` 载荷（不含明文），
+ *   禁止把原文写入持久化层。
  *
  * @param {string} content 消息内容（明文）
  * @param {object|null|undefined} visibility 可见性约束 `{ roles?, members? }` 或 null
@@ -89,6 +91,10 @@ function ed25519PrivKeyToX25519(seed) {
  * @returns {{
  *   encrypted: false,
  *   content: string
+ * } | {
+ *   encrypted: true,
+ *   pending: true,
+ *   reason: 'no_recipient_keys'
  * } | {
  *   encrypted: true,
  *   ciphertext: string,
@@ -106,9 +112,8 @@ export function serializeMessageContent(content, visibility, context) {
 	if (!visibility)
 		return { content, encrypted: false }
 
-	// 若无接收方上下文（密钥未就绪），回退明文——调用方应确保传入 context
 	if (!context?.recipientPubKeyHexes?.length)
-		return { content, encrypted: false }
+		return { encrypted: true, pending: true, reason: 'no_recipient_keys' }
 
 	// 生成随机 AES-256 密钥和 IV
 	const aesKey = randomBytes(32)
@@ -170,6 +175,8 @@ export function serializeMessageContent(content, visibility, context) {
  *   content: string
  * } | {
  *   encrypted: true,
+ *   pending?: true,
+ *   reason?: string,
  *   ciphertext: string,
  *   iv: string,
  *   authTag: string,
@@ -186,6 +193,8 @@ export function serializeMessageContent(content, visibility, context) {
 export function deserializeMessageContent(stored, context) {
 	if (!stored.encrypted)
 		return stored.content
+	if (stored.pending === true)
+		return null
 
 	// 查找当前用户对应的加密密钥条目
 	const entry = stored.recipientKeys?.find(k => k.pubKeyHash === context?.myPubKeyHash)

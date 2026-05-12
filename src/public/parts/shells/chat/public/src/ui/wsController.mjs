@@ -47,7 +47,7 @@ function rawLineFromDagEvent(ev, channelId) {
  * @param {Function} params.loadMessages 重新拉取消息列表
  * @param {Function} params.loadState 重新拉取群组状态
  * @param {Function} params.loadBookmarks 重新拉取书签
- * @param {Function} params.getGroupWs 获取当前 WebSocket 实例（用于发送 NACK）
+ * @param {Function} params.getGroupWs 获取当前 WebSocket 实例（如停止生成等 RPC）
  * @param {Function} params.shouldLoadChannel 判断频道是否应加载
  * @param {Function} params.handleGroupWebSocketRpc RPC 消息处理器
  * @param {Function} params.handleSessionEvent 会话层事件转发
@@ -121,7 +121,7 @@ export function createWsMessageHandler({
 					state.streamRenderer.cancel()
 					state.streamRenderer = null
 				}
-				if (sid) state.streamNackState.delete(sid)
+				if (sid) state.volatileStreamReorderState.delete(sid)
 				state.volatileStreamId = sid
 				state.volatileStreamEl = document.createElement('div')
 				state.volatileStreamEl.className = 'chat chat-start py-1'
@@ -177,19 +177,16 @@ export function createWsMessageHandler({
 				const sc = state.msgScrollContainer ?? msgBox
 				sc.scrollTop = sc.scrollHeight
 				if (sid)
-					state.streamNackState.set(sid, { expectedSeq: 1, chunks: new Map() })
+					state.volatileStreamReorderState.set(sid, { expectedSeq: 1, chunks: new Map() })
 			}
 			if (msg.type === 'group_stream_chunk' && msg.channelId === channelId && msg.pendingStreamId === state.volatileStreamId) {
 				const sid = msg.pendingStreamId
 				const seq = Number(msg.chunkSeq ?? 0)
-				const st = state.streamNackState.get(sid)
+				const st = state.volatileStreamReorderState.get(sid)
 				const bodyEl = state.volatileStreamEl?.querySelector('[data-volatile-body]')
 				if (st && bodyEl && typeof msg.text === 'string') {
 					st.chunks.set(seq, msg.text)
-					// 发送 NACK 补齐缺口
-					for (let i = st.expectedSeq; i < seq; i++)
-						if (!st.chunks.has(i))
-							getGroupWs()?.send(JSON.stringify({ type: 'stream_chunk_nack', pendingStreamId: sid, missingSeq: i }))
+					// VOLATILE 无联邦 NACK（§6.4）；缺口仅本地 UI 提示
 
 					// 按序渲染
 					while (st.chunks.has(st.expectedSeq)) {
@@ -228,7 +225,7 @@ export function createWsMessageHandler({
 						console.error('group stream finish failed:', e)
 					}
 				
-				if (state.volatileStreamId) state.streamNackState.delete(state.volatileStreamId)
+				if (state.volatileStreamId) state.volatileStreamReorderState.delete(state.volatileStreamId)
 				setTimeout(() => {
 					state.volatileStreamEl?.remove()
 					state.volatileStreamEl = null
@@ -239,7 +236,7 @@ export function createWsMessageHandler({
 			// AI 定频自动触发
 			if (msg.type === 'ai_auto_trigger' && msg.channelId === channelId && msg.groupId === groupId)
 				// 调用 chat 生成接口（与 @mention 走相同路径：向 chatId=groupId 发送空触发消息）
-				fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/message`, {
+				fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/message`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ reply: { content: '', groupChannelId: channelId, isAutoTrigger: true } }),

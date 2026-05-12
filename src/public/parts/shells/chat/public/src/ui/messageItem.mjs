@@ -8,6 +8,7 @@ import { showToastI18n } from '../../../../../../scripts/toast.mjs'
 import { preprocessChatMarkdown } from '../chatMarkdown.mjs'
 import { modifyTimeLine, setCurrentChannel } from '../endpoints.mjs'
 import { getfile } from '../files.mjs'
+import { attachOffscreenEmbedGuard } from '../groupMode.mjs'
 import { arrayBufferToBase64, handleUIError, normalizeError, SWIPE_THRESHOLD } from '../utils.mjs'
 
 import { createAvatarElement } from './avatar.mjs'
@@ -231,7 +232,7 @@ export function createMessageItemRenderer(ctx) {
 	 * @returns {Promise<void>}
 	 */
 	async function postPin(targetEventId, unpin) {
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/common/${encodeURIComponent(channelId)}/pin`, {
+		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/pin`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(unpin ? { targetEventId, unpin: true } : { targetEventId }),
@@ -262,7 +263,7 @@ export function createMessageItemRenderer(ctx) {
 
 		let timelineInfo
 		try {
-			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/timeline`)
+			const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/timeline`)
 			if (r.ok) timelineInfo = await r.json()
 		}
 		catch (e) {
@@ -408,7 +409,7 @@ export function createMessageItemRenderer(ctx) {
 				menu.remove()
 				try {
 					const r = await fetch(
-						`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/threads`,
+						`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/threads`,
 						{
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
@@ -1041,6 +1042,7 @@ export function createMessageItemRenderer(ctx) {
 				bubble.replaceChildren()
 				const mdCache = {}
 				bubble.appendChild(await renderMarkdown(preprocessed, mdCache))
+				const stopEmbedGuard = attachOffscreenEmbedGuard(bubble)
 				if (fileCount > 0) {
 					const hintSpan = /** @type {HTMLElement} */ await renderTemplate('group_message_attach_hint', {})
 					setLocalizeLogic(hintSpan, () => {
@@ -1053,6 +1055,7 @@ export function createMessageItemRenderer(ctx) {
 				const fullHtml = await generateFullHtmlForMessage(standMsg, mdCache)
 				const standaloneMessageUrl = URL.createObjectURL(new Blob([fullHtml], { type: 'text/html' }))
 				onElementRemoved(bubble, () => {
+					stopEmbedGuard()
 					URL.revokeObjectURL(standaloneMessageUrl)
 				})
 				const inlineFragmentHtml = await renderMarkdownAsString(preprocessed, mdCache)

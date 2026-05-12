@@ -19,7 +19,7 @@ const activityMap = new Map()
 
 /**
  * 标记用户处于活动状态。
- * @param {string} username
+ * @param {string} username - 用户名
  */
 export function markActive(username) {
 	if (!username || typeof username !== 'string') return
@@ -28,8 +28,8 @@ export function markActive(username) {
 
 /**
  * 计算用户的当前状态。
- * @param {string} username
- * @returns {'online'|'idle'|'offline'}
+ * @param {string} username - 用户名
+ * @returns {'online'|'idle'|'offline'} 在线 / 挂起 / 离线
  */
 export function getStatus(username) {
 	if (!username) return 'offline'
@@ -43,8 +43,8 @@ export function getStatus(username) {
 
 /**
  * 批量获取用户状态。
- * @param {string[]} usernames
- * @returns {Record<string, {status:'online'|'idle'|'offline', lastActive:number|null}>}
+ * @param {string[]} usernames - 用户名列表
+ * @returns {Record<string, {status:'online'|'idle'|'offline', lastActive:number|null}>} 用户名到状态与最后活跃时间的映射
  */
 export function getBulkStatus(usernames) {
 	const result = {}

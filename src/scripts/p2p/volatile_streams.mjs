@@ -1,6 +1,6 @@
 /**
- * VOLATILE 流：stream_chunk + chunkSeq + NACK 直至 stream_end
- * 不入 DAG；供 UI/联邦层使用
+ * VOLATILE 流：stream_chunk + chunkSeq 本地缓冲，直至 stream_end 线性化。
+ * 不入 DAG；联邦不提供 stream_chunk_nack（计划 6.4），缺口仅本地 UI 提示。
  *
  * @returns {object} 带 addChunk / end / linearize / getChunk / clear 的缓冲 API
  */
@@ -55,7 +55,7 @@ export function createVolatileStreamBuffer() {
 			return { text, gapAt: null }
 		},
 		/**
-		 * 取单个 chunkSeq 的文本（用于 NACK 补传）
+		 * 取单个 chunkSeq 的文本（仅本地调试/扩展；非联邦补传协议）
 		 *
 		 * @param {string} pendingStreamId 流标识
 		 * @param {number} chunkSeq 要读取的分片序号

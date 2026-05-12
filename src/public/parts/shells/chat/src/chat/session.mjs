@@ -19,11 +19,13 @@ import { skip_report } from '../../../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../../../server/setting_loader.mjs'
 import { sendNotification } from '../../../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../../achievements/src/api.mjs'
+import { deleteChat } from '../chat.mjs'
 import { addfile, getfile } from '../files.mjs'
+import { readChannelMessagesForUser } from '../group_endpoints.mjs'
 import { generateDiff, createBufferedSyncPreviewUpdater } from '../stream.mjs'
 
 import { deleteLogContextSidecar, gcLogContextSidecars, hydrateLogContextFromSidecar, persistLogContextSidecar } from './context_sidecar.mjs'
-import { appendEvent, deleteChatData, ensureChat, getDefaultChannelId, getState, isValidChannelId, listChannelMessages } from './dag.mjs'
+import { appendEvent, ensureChat, getDefaultChannelId, getState, isValidChannelId } from './dag.mjs'
 import { syncChatLogEntryToDag, mirrorDeleteToDag, mirrorEditToDag } from './dagSync.mjs'
 import { loadLocalMailboxDecryptContext } from './e2e_mailbox.mjs'
 import { chatJsonPath, chatsRoot } from './paths.mjs'
@@ -201,21 +203,6 @@ export function onGroupWsClose(groupId) {
  */
 export function abortStreamByMessageId(messageId) {
 	StreamManager.abortByMessageId(messageId)
-}
-
-/**
- * 导入一个聊天记录。
- * @param {object} chatData - 要导入的聊天数据。
- * @param {string} username - 操作的用户名。
- * @returns {Promise<{success: boolean, newChatId?: string, message: string}>} 操作结果。
- */
-export async function importChat(chatData, username) {
-	const newChatId = await newChat(username)
-	const importedMetadata = await chatMetadata_t.fromJSON({ ...chatData, username })
-
-	chatMetadatas.set(newChatId, { username, chatMetadata: importedMetadata })
-	await saveChat(newChatId)
-	return { success: true, newChatId, message: 'Chat imported successfully' }
 }
 
 /**
@@ -572,7 +559,7 @@ export async function newMetadata(groupId, username) {
  * 生成不与内存冲突的随机聊天 ID。
  * @returns {string} 可用 groupId
  */
-export function findEmptyChatid() {
+export function findEmptyGroupId() {
 	while (true) {
 		const uuid = Math.random().toString(36).substring(2, 15)
 		if (!chatMetadatas.has(uuid)) return uuid
@@ -586,13 +573,23 @@ export function findEmptyChatid() {
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
 export async function newChat(username, options = {}) {
-	const groupId = findEmptyChatid()
+	const groupId = findEmptyGroupId()
 	await newMetadata(groupId, username)
 	await ensureChat(username, groupId, {
 		name: options.name || '聊天',
 		defaultChannelName: options.defaultChannelName,
 	})
 	return groupId
+}
+
+/**
+ * 单一入口：按声明创建聊天会话（DM/群聊共用底层 newChat + ensureChat）。
+ * @param {{ username: string, name?: string, defaultChannelName?: string }} spec - 所有者用户名与可选展示名、默认频道名
+ * @returns {Promise<string>} groupId
+ */
+export async function createChatSessionFromSpec(spec) {
+	const { username, ...options } = spec
+	return newChat(username, options)
 }
 
 /**
@@ -606,7 +603,7 @@ function getSummaryFromMetadata(groupId, chatMetadata) {
 	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 	if (!lastEntry) return null
 	return {
-		chatid: groupId,
+		groupId,
 		chars: Object.keys(chatMetadata.LastTimeSlice.chars),
 		lastMessageSender: lastEntry.name,
 		lastMessageSenderAvatar: lastEntry.avatar || null,
@@ -651,12 +648,24 @@ async function reconcileContextSidecarsWithChatLog(username, groupId, chatLog) {
  * @param {object | undefined} content DAG content
  * @param {{ myPubKeyHash: string, mySecretKeyBytes: Uint8Array } | null} decryptContext 本机解密上下文
  * @param {string} decryptUnavailableText 解密失败时的占位文本
+ * @param {string} [contentRefPlaceholder] content_ref 展示用占位（i18n）
+ * @param {string} [contentRefMismatchText] content_ref 哈希不一致提示
  * @returns {string} 可展示正文
  */
-function resolveDagMessageText(content, decryptContext, decryptUnavailableText) {
+function resolveDagMessageText(content, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) {
+	if (content?._contentRefHashMismatch)
+		return (contentRefMismatchText && String(contentRefMismatchText).trim()) || 'content_ref mismatch'
+	const ref = content?.content_ref
+	if (ref && typeof ref === 'object') {
+		const h = typeof ref.contentHash === 'string' ? ref.contentHash.trim().slice(0, 12) : ''
+		return (contentRefPlaceholder && String(contentRefPlaceholder).trim())
+			|| `[content_ref:${h || '?'}…]`
+	}
 	const e2e = content?.e2e
 	if (!e2e || e2e.encrypted !== true)
 		return content?.text ?? e2e?.content ?? ''
+	if (e2e.pending === true)
+		return decryptUnavailableText
 	if (!decryptContext)
 		return decryptUnavailableText
 	return deserializeMessageContent(e2e, decryptContext) ?? decryptUnavailableText
@@ -669,15 +678,25 @@ function resolveDagMessageText(content, decryptContext, decryptUnavailableText) 
  * @param {{ text?: string, fileCount?: number } | undefined} editOverride 编辑折叠后的覆盖字段
  * @param {{ myPubKeyHash: string, mySecretKeyBytes: Uint8Array } | null} decryptContext 本机解密上下文
  * @param {string} decryptUnavailableText 解密失败时的占位文本
+ * @param {string} [contentRefPlaceholder] content_ref 占位文案
+ * @param {string} [contentRefMismatchText] content_ref 校验失败文案
  * @returns {Promise<chatLogEntry_t>} 新构造的日志条目
  */
-async function buildChatLogEntryFromDagMessage(line, baseSlice, editOverride, decryptContext, decryptUnavailableText) {
+async function buildChatLogEntryFromDagMessage(
+	line,
+	baseSlice,
+	editOverride,
+	decryptContext,
+	decryptUnavailableText,
+	contentRefPlaceholder,
+	contentRefMismatchText,
+) {
 	const c = line.content || {}
 	const entry = new chatLogEntry_t()
 	entry.id = c.chatLogEntryId || line.eventId
 	const text = editOverride?.text != null
 		? editOverride.text
-		: resolveDagMessageText(c, decryptContext, decryptUnavailableText)
+		: resolveDagMessageText(c, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText)
 	entry.content = text ?? ''
 	entry.role = c.role || 'user'
 	const charId = line.charId || c.charId
@@ -712,10 +731,16 @@ async function buildChatLogEntryFromDagMessage(line, baseSlice, editOverride, de
  */
 async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const defaultChannelId = await getDefaultChannelId(username, groupId)
-	const lines = await listChannelMessages(username, groupId, defaultChannelId, { limit: 500 })
+	const lines = await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
 	const decryptContext = await loadLocalMailboxDecryptContext(username, groupId)
 	const decryptUnavailableText = await geti18nForUser(username, 'chat.group.e2eDecryptUnavailable')
 		.catch(() => undefined) || '消息已加密，当前设备无法解密'
+	const contentRefPlaceholder = await geti18nForUser(username, 'chat.group.contentRefBodyPending')
+		.catch(() => undefined) || ''
+	const contentRefMismatchText = await geti18nForUser(username, 'chat.group.contentRefHashMismatch')
+		.catch(() => undefined) || ''
+	const streamTruncNote = await geti18nForUser(username, 'chat.group.logicalStreamTruncated')
+		.catch(() => undefined) || ''
 	const prelude = chatMetadata.chatLog.filter(e => e.timeSlice?.greeting_type)
 	const deleted = new Set()
 	/** @type {Map<string, { text?: string, fileCount?: number, _ts: number }>} */
@@ -729,7 +754,7 @@ async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 			const prev = edits.get(id)
 			if (!prev || ts >= prev._ts)
 				edits.set(id, {
-					text: resolveDagMessageText(line.content, decryptContext, decryptUnavailableText),
+					text: resolveDagMessageText(line.content, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
 					fileCount: line.content.fileCount,
 					_ts: ts,
 				})
@@ -741,13 +766,19 @@ async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 		const cid = line.content?.chatLogEntryId
 		if (!cid || deleted.has(cid)) continue
 		const ov = edits.get(cid)
-		dagEntries.push(await buildChatLogEntryFromDagMessage(
+		const entry = await buildChatLogEntryFromDagMessage(
 			line,
 			chatMetadata.LastTimeSlice,
 			ov,
 			decryptContext,
 			decryptUnavailableText,
-		))
+			contentRefPlaceholder,
+			contentRefMismatchText,
+		)
+		if (line.content?._logicalStreamTruncated && streamTruncNote)
+			entry.content = `${entry.content}\n[${streamTruncNote}]`
+
+		dagEntries.push(entry)
 	}
 
 	// 若 DAG 无消息数据，保留原有 chatLog（向后兼容旧 JSON 格式聊天记录）
@@ -1359,9 +1390,9 @@ async function addChatLogEntry(groupId, entry) {
 			body: entry.content,
 			icon: entry.avatar || '/favicon.svg',
 			data: {
-				url: `/parts/shells:chat/#${groupId}`,
+				url: `/parts/shells:chat/hub/#group:${groupId}:default`,
 			},
-		}, `/parts/shells:chat/#${groupId}`)
+		}, `/parts/shells:chat/hub/#group:${groupId}:default`)
 
 	const freq_data = await getCharReplyFrequency(groupId)
 	let mentionTarget = null
@@ -1906,127 +1937,6 @@ export async function addUserReply(groupId, channelId, object) {
 	const user = timeSlice.player
 
 	return addChatLogEntry(groupId, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, new_timeSlice.player_id, chatMetadata.username))
-}
-
-/**
- * 仅从磁盘 JSON 读取轻量摘要（不加载完整元数据）。
- * @param {string} username 用户名
- * @param {string} groupId 聊天 ID
- * @returns {Promise<object | null>} 摘要对象或 null
- */
-async function loadChatSummary(username, groupId) {
-	const filepath = chatJsonPath(username, groupId)
-	if (!fs.existsSync(filepath)) return null
-
-	try {
-		const rawChatData = loadJsonFile(filepath)
-		const chatLog = Array.isArray(rawChatData.chatLog) && rawChatData.chatLog.length > 0
-			? rawChatData.chatLog
-			: Array.isArray(rawChatData.chatLogPrelude) ? rawChatData.chatLogPrelude : []
-		const lastEntry = chatLog[chatLog.length - 1]
-		if (!lastEntry) return { chatid: groupId, chars: [], lastMessageSender: '', lastMessageSenderAvatar: null, lastMessageContent: '', lastMessageTime: new Date(0) }
-		const chars = lastEntry.timeSlice?.chars || []
-		return {
-			chatid: groupId,
-			chars,
-			lastMessageSender: lastEntry.name || 'Unknown',
-			lastMessageSenderAvatar: lastEntry.avatar || null,
-			lastMessageContent: lastEntry.content || '',
-			lastMessageTime: new Date(lastEntry.time_stamp),
-		}
-	}
-	catch (error) {
-		console.error(`Failed to load summary for chat ${groupId}:`, error)
-		return null
-	}
-}
-
-/**
- * 返回某用户下聊天摘要列表（按最后消息时间降序）。
- * @param {string} username 用户名
- * @returns {Promise<object[]>} 摘要数组
- */
-export async function getChatList(username) {
-	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
-
-	await Promise.all(Array.from(chatMetadatas.entries()).map(async ([groupId, value]) => {
-		if (value.username === username)
-			summariesCache[groupId] ??= await loadChatSummary(username, groupId)
-	}))
-
-	const chatList = Object.values(summariesCache).filter(Boolean)
-	return chatList.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime))
-}
-
-/**
- * 批量删除聊天：删 JSON、DAG 数据、内存与摘要缓存。
- * @param {string[]} chatids 聊天 ID 列表
- * @param {string} username 所有者
- * @returns {Promise<object[]>} 每个 id 的操作结果
- */
-export async function deleteChat(chatids, username) {
-	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
-	const deletePromises = chatids.map(async groupId => {
-		try {
-			const jsonPath = chatJsonPath(username, groupId)
-			if (fs.existsSync(jsonPath)) await fs.promises.unlink(jsonPath)
-			await deleteChatData(username, groupId)
-			chatMetadatas.delete(groupId)
-			delete summariesCache[groupId]
-			return { chatid: groupId, success: true, message: 'Chat deleted successfully' }
-		}
-		catch (error) {
-			console.error(`Error deleting chat ${groupId}:`, error)
-			return { chatid: groupId, success: false, message: 'Error deleting chat', error: error.message }
-		}
-	})
-
-	const results = await Promise.all(deletePromises)
-	saveShellData(username, 'chat', 'chat_summaries_cache')
-	return results
-}
-
-/**
- * 批量复制聊天为新聊天（深拷贝元数据）。
- * @param {string[]} chatids 源聊天 ID 列表
- * @param {string} username 新聊天所有者
- * @returns {Promise<object[]>} 每个复制操作的结果
- */
-export async function copyChat(chatids, username) {
-	const copyPromises = chatids.map(async groupId => {
-		const originalChat = await loadChat(groupId)
-		if (!originalChat)
-			return { chatid: groupId, success: false, message: 'Original chat not found' }
-
-		const newChatId = await newChat(username)
-		const copiedChat = await originalChat.copy()
-		chatMetadatas.set(newChatId, { username, chatMetadata: copiedChat })
-		chatMetadatas.get(newChatId).chatMetadata.LastTimeSlice = copiedChat.chatLog[copiedChat.chatLog.length - 1].timeSlice
-		await saveChat(newChatId)
-		return { chatid: groupId, success: true, newChatId, message: 'Chat copied successfully' }
-	})
-	return Promise.all(copyPromises)
-}
-
-/**
- * 批量导出聊天元数据为可序列化对象。
- * @param {string[]} chatids 聊天 ID 列表
- * @returns {Promise<object[]>} 每个 id 的导出结果
- */
-export async function exportChat(chatids) {
-	const exportPromises = chatids.map(async groupId => {
-		try {
-			const chat = await loadChat(groupId)
-			if (!chat) return { chatid: groupId, success: false, message: 'Chat not found', error: 'Chat not found' }
-			return { chatid: groupId, success: true, data: chat }
-		}
-		catch (error) {
-			console.error(`Error exporting chat ${groupId}:`, error)
-			return { chatid: groupId, success: false, message: 'Error exporting chat', error: error.message }
-		}
-	})
-
-	return Promise.all(exportPromises)
 }
 
 /**

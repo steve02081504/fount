@@ -1,6 +1,133 @@
 {
 	"lang": "zh-CN",
 	"name": "简体中文",
+	"channels": {
+		"title": "频道",
+		"description": "频道管理系统",
+		"create": "创建频道",
+		"subscribe": "订阅",
+		"unsubscribe": "取消订阅",
+		"settings": "频道设置",
+		"list": "频道列表",
+		"members": "成员",
+		"messages": "消息",
+		"permissions": "权限设置",
+		"type": {
+			"announcement": "公告",
+			"news": "新闻",
+			"updates": "更新"
+		},
+		"role": {
+			"owner": "所有者",
+			"admin": "管理员",
+			"moderator": "版主",
+			"member": "成员",
+			"subscriber": "订阅者"
+		},
+		"errors": {
+			"notFound": "频道不存在",
+			"noPermission": "权限不足",
+			"alreadySubscribed": "已订阅该频道",
+			"notSubscribed": "未订阅该频道"
+		},
+		"success": {
+			"created": "频道创建成功",
+			"updated": "频道更新成功",
+			"deleted": "频道删除成功",
+			"subscribed": "订阅成功",
+			"unsubscribed": "取消订阅成功",
+			"posted": "消息发布成功"
+		}
+	},
+	"profile": {
+		"title": "个人资料",
+		"description": "用户个人资料管理系统",
+		"edit": "编辑资料",
+		"save": "保存",
+		"cancel": "取消",
+		"displayName": "显示名称",
+		"bio": "个人简介",
+		"email": "邮箱",
+		"status": "状态",
+		"customStatus": "自定义状态",
+		"avatar": "头像",
+		"uploadAvatar": "上传头像",
+		"preferences": "偏好设置",
+		"language": "语言",
+		"theme": "主题",
+		"notifications": "通知设置",
+		"emailNotifications": "邮件通知",
+		"pushNotifications": "推送通知",
+		"soundNotifications": "声音通知",
+		"social": "社交链接",
+		"website": "网站",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "统计信息",
+		"joinedAt": "加入时间",
+		"messageCount": "消息数",
+		"groupCount": "群组数",
+		"channelCount": "频道数",
+		"privacy": "隐私设置",
+		"showEmail": "显示邮箱",
+		"showStats": "显示统计",
+		"allowDirectMessages": "允许私信",
+		"statusOptions": {
+			"online": "在线",
+			"away": "离开",
+			"busy": "忙碌",
+			"offline": "离线"
+		},
+		"errors": {
+			"loadFailed": "加载资料失败",
+			"saveFailed": "保存资料失败",
+			"uploadFailed": "上传头像失败"
+		},
+		"success": {
+			"saved": "资料保存成功",
+			"avatarUploaded": "头像上传成功"
+		}
+	},
+	"stickers": {
+		"title": "贴纸",
+		"description": "贴纸和表情包管理系统",
+		"packs": "贴纸包",
+		"create": "创建贴纸包",
+		"upload": "上传贴纸",
+		"install": "安装",
+		"uninstall": "卸载",
+		"installed": "已安装",
+		"myPacks": "我的贴纸包",
+		"store": "贴纸广场",
+		"favorites": "收藏",
+		"recent": "最近使用",
+		"search": "搜索贴纸包",
+		"packName": "贴纸包名称",
+		"packDescription": "贴纸包描述",
+		"author": "作者",
+		"stickerCount": "贴纸数量",
+		"public": "公开",
+		"private": "私有",
+		"animated": "动态",
+		"static": "静态",
+		"tags": "标签",
+		"addTag": "添加标签",
+		"errors": {
+			"loadFailed": "加载贴纸包失败",
+			"uploadFailed": "上传贴纸失败",
+			"installFailed": "安装失败",
+			"uninstallFailed": "卸载失败",
+			"createFailed": "创建贴纸包失败",
+			"deleteFailed": "删除失败"
+		},
+		"success": {
+			"uploaded": "贴纸上传成功",
+			"installed": "安装成功",
+			"uninstalled": "卸载成功",
+			"created": "贴纸包创建成功",
+			"deleted": "删除成功"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "正在启动服务器",
@@ -743,20 +870,17 @@
 			"ownerSuccessionSubmitted": "继任投票已提交，请联系其他管理员签署。",
 			"ownerSuccessionNeedHash": "请填写候选人的公钥哈希",
 			"ownerSuccessionFailed": "继任投票提交失败",
-			"homeTransfer": "超级节点 Home 迁移",
-			"homeTransferTitle": "超级节点 Home 迁移（治理）",
-			"homeTransferStep1": "此操作会向 DAG 追加 home_transfer 事件。当群内已登记至少一名具备 ADMIN 的成员时，必须收集足够数量的管理员联署：每位管理员对规范化载荷（包含 proposedHomeNodeId、groupId、ballotId，具体字节序列以实现为准）单独签名并填入 adminSignatures。通过阈值为「登记 ADMIN 人数 × 0.5 向上取整」，且同一公钥只计一票、指纹须属于当前物化状态中的 ADMIN 集合。若尚无登记管理员，可先提交空联署表（与继任投票一致）。",
-			"homeTransferStep2": "proposedHomeNodeId 决定群组绑定的超级节点 home。若填写错误、不可达或不受信的节点 ID，可能导致消息无法同步、联邦路由异常、历史难以收敛或服务不可用。提交前请向节点运营方核实官方节点标识，并确认网络可达。",
-			"homeTransferInputLabel": "目标 proposedHomeNodeId",
-			"homeTransferAck": "我已阅读上述说明，确认节点 ID 与风险，并理解在存在管理员阈值时需额外联署方可生效。",
-			"homeTransferNext": "下一步",
-			"homeTransferBack": "上一步",
-			"homeTransferSubmit": "提交治理事件",
-			"homeTransferNeedNode": "请填写 proposedHomeNodeId",
-			"homeTransferNeedAck": "请勾选确认后再提交",
-			"homeTransferSubmitted": "home_transfer 事件已提交；若群内存在管理员阈值，请联系其他管理员完成签名联署。",
-			"homeTransferFailed": "home 迁移事件提交失败",
 			"e2eDecryptUnavailable": "消息已加密，当前设备无法解密",
+			"contentRefBodyPending": "外链正文（content_ref，尚未拉取校验）",
+			"contentRefHashMismatch": "外链正文与存储校验不一致（哈希不匹配）",
+			"logicalStreamTruncated": "长消息分片流空闲超时，后续分片已省略",
+			"settingsLogicalStreamIdle": "分片流空闲截断（毫秒）",
+			"settingsMaxDagPayload": "DAG 单事件最大字节数",
+			"settingsMailboxGeneration": "邮箱密钥世代（mailbox_generation）",
+			"settingsStreamingSfu": "流媒体 SFU WebSocket 地址（可选）",
+			"settingsPlaintextToggle": "允许明文频道（群级策略）",
+			"settingsPlaintextHint": "开启后中继与其它节点可能读取新消息明文；仅用于公告等场景。",
+			"settingsPlaintextConfirm": "确定允许明文？中继与部分节点可能读取通道内容。",
 			"ghpages": {
 				"title": "联邦群聊（静态客户端）｜fount",
 				"description": "GitHub Pages 静态页：连接超级节点、调试联邦群聊 REST/WebSocket；凭证迁移见同目录 qr-transfer。",
@@ -779,8 +903,8 @@
 				"groupWsConnecting": "连接 ${url} …",
 				"groupStateOk": "GET /state → channels=${n}",
 				"groupStateFail": "GET /state → ${status}",
-				"groupCpOk": "GET /checkpoint → epoch=${epoch} pins=${pins}",
-				"groupCpFail": "GET /checkpoint → ${status}",
+				"groupCpOk": "GET /groups/.../snapshot → epoch=${epoch} pins=${pins}",
+				"groupCpFail": "GET /groups/.../snapshot → ${status}",
 				"groupEvOk": "GET /events?limit=8 → n=${n} truncated=${t}",
 				"groupEvFail": "GET /events → ${status}（未登录时无 Cookie 为 401）",
 				"groupMsgOk": "GET /messages → n=${n}",
@@ -895,7 +1019,7 @@
 			"copied": "已复制",
 			"pinsBarTitle": "当前置顶",
 			"syncTruncated": "DAG 增量未拉全，可稍后重试或提高 limit",
-			"syncTruncatedHint": "DAG 历史过长，如问题持续请管理员发起 home_transfer 或稍后重试",
+			"syncTruncatedHint": "DAG 历史过长，可稍后重试或提高 limit",
 			"bookmarksTitle": "书签",
 			"addBookmark": "将当前频道加入书签",
 			"bookmarkExists": "该书签已存在",
@@ -1304,8 +1428,8 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "浏览历史记录"
+			"chatHub": {
+				"title": "聊天 Hub"
 			}
 		}
 	},

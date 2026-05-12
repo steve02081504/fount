@@ -238,6 +238,12 @@ function plainPreviewFromLine(ev) {
 	if (content && typeof content === 'object') {
 		if (content.text != null && String(content.text).trim())
 			return String(content.text).length > 56 ? `${String(content.text).slice(0, 56)}…` : String(content.text)
+		if (content.content_ref && typeof content.content_ref === 'object') {
+			const h = typeof content.content_ref.contentHash === 'string'
+				? content.content_ref.contentHash.trim().slice(0, 12)
+				: ''
+			return h ? `ref:${h}…` : 'ref:…'
+		}
 		const fileCount = Number(content.fileCount) || 0
 		if (fileCount > 0)
 			return geti18n('chat.group.attachmentsHint', { n: fileCount })

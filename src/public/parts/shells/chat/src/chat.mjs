@@ -5,8 +5,10 @@
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import { inspect } from 'node:util'
+
 
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
@@ -19,6 +21,7 @@ import { loadShellData, saveShellData } from '../../../../../server/setting_load
 import { sendNotification } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
+import { deleteChatData, ensureChat } from './chat/dag.mjs'
 import { addfile, getfile } from './files.mjs'
 import { generateDiff, createBufferedSyncPreviewUpdater } from './stream.mjs'
 
@@ -124,128 +127,123 @@ const StreamManager = {
 
 /**
  * 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
- * 键是聊天ID (chatId)，值是一个对象，包含用户名和聊天元数据。
+ * 键是会话 ID（`groupId`），值是一个对象，包含用户名和聊天元数据。
  * `chatMetadata` 属性可能为 `null`，表示该聊天的元数据存在于磁盘上，但尚未被完整加载到内存中。
  * @type {Map<string, { username: string, chatMetadata: chatMetadata_t | null }>}
  */
 const chatMetadatas = new Map()
-const chatUiSockets = new Map()
 const typingStatus = new Map()
 const chatDeleteTimers = new Map()
 const CHAT_UNLOAD_TIMEOUT = ms('30m')
 
 /**
+ * @type {{ broadcastEvent: (chatId: string, payload: object) => void, registerSocket: (chatId: string, ws: import('npm:ws').WebSocket) => void, countGroupSockets: (chatId: string) => number } | null}
+ */
+let shellGroupWsApi = null
+
+/**
+ * 由 `main.mjs` 在加载 shell 时注入，避免 chat ↔ websocket ↔ session 循环依赖。
+ * @param {{ broadcastEvent: (chatId: string, payload: object) => void, registerSocket: (chatId: string, ws: import('npm:ws').WebSocket) => void, countGroupSockets: (chatId: string) => number }} api 群 WS 实现
+ * @returns {void}
+ */
+export function wireHubShellWebSockets(api) {
+	shellGroupWsApi = api
+}
+
+/**
  * 更新并广播输入状态。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} charname - 角色名称。
  * @param {number} delta - 变化量 (+1 或 -1)。
  */
-function updateTypingStatus(chatid, charname, delta) {
-	if (!typingStatus.has(chatid)) typingStatus.set(chatid, new Map())
-	const chatMap = typingStatus.get(chatid)
+function updateTypingStatus(groupId, charname, delta) {
+	if (!typingStatus.has(groupId)) typingStatus.set(groupId, new Map())
+	const chatMap = typingStatus.get(groupId)
 	const current = chatMap.get(charname) || 0
 	const next = current + delta
 	if (next <= 0) chatMap.delete(charname)
 	else chatMap.set(charname, next)
 
 	const typingList = Array.from(chatMap.keys())
-	broadcastChatEvent(chatid, { type: 'typing_status', payload: { typingList } })
+	broadcastChatEvent(groupId, { type: 'typing_status', payload: { typingList } })
 }
 
 /**
  * 获取聊天的正在输入的角色列表。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {string[]} 角色列表。
  */
-function getTypingList(chatid) {
-	const chatMap = typingStatus.get(chatid)
+function getTypingList(groupId) {
+	const chatMap = typingStatus.get(groupId)
 	return chatMap ? Array.from(chatMap.keys()) : []
 }
 
 /**
- * 注册聊天UI WebSocket。
- * @param {string} chatid - 聊天ID。
- * @param {import('npm:ws').WebSocket} ws - WebSocket实例。
+ * 群 Hub / 单会话 UI 在 `WS …/groups/:groupId` 上的侧车逻辑（注册 shell 广播套接字、卸载计时）。
+ * `stop_generation` 等控制帧由 `endpoints.mjs` 与群 RPC 共用同一 `message` 监听器处理。
+ * @param {string} groupId - 聊天 ID。
+ * @param {import('npm:ws').WebSocket} ws - WebSocket 实例。
+ * @returns {void}
  */
-export function registerChatUiSocket(chatid, ws) {
-	if (chatDeleteTimers.has(chatid)) {
-		clearTimeout(chatDeleteTimers.get(chatid))
-		chatDeleteTimers.delete(chatid)
+export function registerChatUiSocket(groupId, ws) {
+	if (!shellGroupWsApi)
+		throw new Error('wireHubShellWebSockets must run before accepting WS connections')
+	if (chatDeleteTimers.has(groupId)) {
+		clearTimeout(chatDeleteTimers.get(groupId))
+		chatDeleteTimers.delete(groupId)
 	}
 
-	if (!chatUiSockets.has(chatid))
-		chatUiSockets.set(chatid, new Set())
+	shellGroupWsApi.registerSocket(groupId, ws)
 
-	const socketSet = chatUiSockets.get(chatid)
-	socketSet.add(ws)
-
-	// Send initial typing status
-	const typingList = getTypingList(chatid)
+	const typingList = getTypingList(groupId)
 	if (typingList.length > 0)
 		ws.send(JSON.stringify({ type: 'typing_status', payload: { typingList } }))
 
-	ws.on('message', (message) => {
-		try {
-			const msg = JSON.parse(message)
-			if (msg.type === 'stop_generation' && msg.payload?.messageId)
-				StreamManager.abortByMessageId(msg.payload.messageId)
-		}
-		catch (e) {
-			console.error('Error processing client websocket message:', e)
-		}
-	})
-
 	ws.on('close', () => {
-		socketSet.delete(ws)
-		const chatData = chatMetadatas.get(chatid)
-		if (!socketSet.size && chatUiSockets.delete(chatid)) {
-			StreamManager.abortAll(chatid) // Abort streams on final disconnect
-			clearTimeout(chatDeleteTimers.get(chatid))
-			chatDeleteTimers.set(chatid, setTimeout(async () => {
+		queueMicrotask(() => {
+			if (shellGroupWsApi.countGroupSockets(groupId) > 0) return
+			const chatData = chatMetadatas.get(groupId)
+			StreamManager.abortAll(groupId)
+			clearTimeout(chatDeleteTimers.get(groupId))
+			chatDeleteTimers.set(groupId, setTimeout(async () => {
 				try {
-					if (!chatData || chatUiSockets.has(chatid)) return
+					if (shellGroupWsApi.countGroupSockets(groupId) > 0) return
+					if (!chatData) return
 					if (is_VividChat(chatData.chatMetadata)) {
-						await saveChat(chatid)
+						await saveChat(groupId)
 						chatData.chatMetadata = null
 					}
-					else await deleteChat([chatid], chatData.username)
+					else await deleteChat([groupId], chatData.username)
 				}
 				finally {
-					chatDeleteTimers.delete(chatid)
+					chatDeleteTimers.delete(groupId)
 				}
 			}, CHAT_UNLOAD_TIMEOUT))
-		}
+		})
 	})
 }
 
 /**
- * 导入一个聊天记录。
- * @param {object} chatData - 要导入的聊天数据。
- * @param {string} username - 操作的用户名。
- * @returns {Promise<{success: boolean, newChatId?: string, message: string}>} 操作结果。
+ * 处理经群 WS 下行的浏览器控制帧（与 `group_ws_rpc_identity` / `rpc_call` 分轨）。
+ * @param {object} msg 已解析 JSON
+ * @returns {boolean} true 表示已消费，不再走 RPC
  */
-export async function importChat(chatData, username) {
-	const newChatId = await newChat(username)
-	const importedMetadata = await chatMetadata_t.fromJSON({ ...chatData, username })
-
-	chatMetadatas.set(newChatId, { username, chatMetadata: importedMetadata })
-	await saveChat(newChatId)
-	return { success: true, newChatId, message: 'Chat imported successfully' }
+export function handleClientWsControlFrame(msg) {
+	if (!msg || typeof msg !== 'object') return false
+	if (msg.type === 'stop_generation' && msg.payload?.messageId) {
+		StreamManager.abortByMessageId(msg.payload.messageId)
+		return true
+	}
+	return false
 }
 
 /**
  * 广播聊天事件。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {object} event - 要广播的事件。
  */
-function broadcastChatEvent(chatid, event) {
-	const sockets = chatUiSockets.get(chatid)
-	if (!sockets?.size) return
-
-	const message = JSON.stringify(event)
-	for (const ws of sockets)
-		if (ws.readyState === ws.OPEN)
-			ws.send(message)
+function broadcastChatEvent(groupId, event) {
+	shellGroupWsApi?.broadcastEvent(groupId, event)
 }
 
 /**
@@ -261,9 +259,9 @@ function initializeChatMetadatas() {
 		if (fs.existsSync(userDir)) {
 			const chatFiles = fs.readdirSync(userDir).filter(file => file.endsWith('.json'))
 			for (const file of chatFiles) {
-				const chatid = file.replace('.json', '')
-				if (!chatMetadatas.has(chatid))
-					chatMetadatas.set(chatid, { username: user, chatMetadata: null })
+				const groupId = file.replace('.json', '')
+				if (!chatMetadatas.has(groupId))
+					chatMetadatas.set(groupId, { username: user, chatMetadata: null })
 			}
 		}
 	}
@@ -619,47 +617,37 @@ class chatMetadata_t {
 
 /**
  * 为指定的聊天ID创建一个新的、空的元数据实例。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} username - 聊天的所有者用户名。
  */
-export async function newMetadata(chatid, username) {
-	chatMetadatas.set(chatid, { username, chatMetadata: await chatMetadata_t.StartNewAs(username) })
+export async function newMetadata(groupId, username) {
+	chatMetadatas.set(groupId, { username, chatMetadata: await chatMetadata_t.StartNewAs(username) })
 }
 
 /**
- * 生成一个唯一的、当前未被使用的聊天ID。
- * @returns {string} 新的唯一聊天ID。
- */
-export function findEmptyChatid() {
-	while (true) {
-		const uuid = Math.random().toString(36).substring(2, 15)
-		if (!chatMetadatas.has(uuid)) return uuid
-	}
-}
-
-/**
- * 创建一个全新的聊天。
+ * 创建一个全新的聊天（DAG 群 + 本地元数据；与 §5 `groupId === chatId` 一致）。
  * @param {string} username - 新聊天的所有者用户名。
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
 export async function newChat(username) {
-	const chatid = findEmptyChatid()
-	await newMetadata(chatid, username)
-	return chatid
+	const groupId = randomUUID()
+	await newMetadata(groupId, username)
+	await ensureChat(username, groupId)
+	return groupId
 }
 
 /**
  * 从元数据获取聊天摘要。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {chatMetadata_t} chatMetadata - 聊天元数据。
  * @returns {object | null} - 聊天摘要。
  */
-function getSummaryFromMetadata(chatid, chatMetadata) {
+function getSummaryFromMetadata(groupId, chatMetadata) {
 	if (!is_VividChat(chatMetadata)) return null
 	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 	if (!lastEntry) return null
 	return {
-		chatid,
+		groupId,
 		chars: Object.keys(chatMetadata.LastTimeSlice.chars),
 		lastMessageSender: lastEntry.name,
 		lastMessageSenderAvatar: lastEntry.avatar || null,
@@ -670,52 +658,52 @@ function getSummaryFromMetadata(chatid, chatMetadata) {
 
 /**
  * 更新聊天摘要。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {chatMetadata_t} chatMetadata - 聊天元数据。
  */
-async function updateChatSummary(chatid, chatMetadata) {
-	const { username } = chatMetadatas.get(chatid)
+async function updateChatSummary(groupId, chatMetadata) {
+	const { username } = chatMetadatas.get(groupId)
 
-	if (!chatMetadata) chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) chatMetadata = await loadChat(groupId)
 
-	const summary = getSummaryFromMetadata(chatid, chatMetadata)
+	const summary = getSummaryFromMetadata(groupId, chatMetadata)
 	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
-	if (summary) summariesCache[chatid] = summary
-	else delete summariesCache[chatid]
+	if (summary) summariesCache[groupId] = summary
+	else delete summariesCache[groupId]
 
 	saveShellData(username, 'chat', 'chat_summaries_cache')
 }
 
 /**
  * 将指定聊天的元数据保存到磁盘。
- * @param {string} chatid - 要保存的聊天ID。
+ * @param {string} groupId - 要保存的聊天ID。
  */
-export async function saveChat(chatid) {
-	const chatData = chatMetadatas.get(chatid)
+export async function saveChat(groupId) {
+	const chatData = chatMetadatas.get(groupId)
 	if (!chatData || !chatData.chatMetadata) return
 
 	const { username, chatMetadata } = chatData
 	const chatDir = getUserDictionary(username) + '/shells/chat/chats'
 	fs.mkdirSync(chatDir, { recursive: true })
-	saveJsonFile(chatDir + '/' + chatid + '.json', await chatMetadata.toData())
-	await updateChatSummary(chatid, chatMetadata)
+	saveJsonFile(chatDir + '/' + groupId + '.json', await chatMetadata.toData())
+	await updateChatSummary(groupId, chatMetadata)
 }
 
 /**
  * 从内存缓存或磁盘加载指定聊天的元数据。
- * @param {string} chatid - 要加载的聊天ID。
+ * @param {string} groupId - 要加载的聊天ID。
  * @returns {Promise<chatMetadata_t | undefined>} 聊天的元数据对象，如果找不到则返回 undefined。
  */
-export async function loadChat(chatid) {
-	const chatData = chatMetadatas.get(chatid)
+export async function loadChat(groupId) {
+	const chatData = chatMetadatas.get(groupId)
 	if (!chatData) return undefined
 
 	if (!chatData.chatMetadata) {
 		const { username } = chatData
-		const filepath = getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json'
+		const filepath = getUserDictionary(username) + '/shells/chat/chats/' + groupId + '.json'
 		if (!fs.existsSync(filepath)) return undefined
 		chatData.chatMetadata = await chatMetadata_t.fromJSON(loadJsonFile(filepath))
-		chatMetadatas.set(chatid, chatData)
+		chatMetadatas.set(groupId, chatData)
 	}
 	return chatData.chatMetadata
 }
@@ -731,13 +719,13 @@ function is_VividChat(chatMetadata) {
 
 /**
  * 为特定角色构建一个用于请求回复的上下文对象。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} charname - 将要接收请求的角色ID。
  * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} 为角色准备的请求对象。
  * @throws {Error} 如果聊天未找到。
  */
-async function getChatRequest(chatid, charname) {
-	const chatMetadata = await loadChat(chatid)
+async function getChatRequest(groupId, charname) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username, LastTimeSlice: timeSlice } = chatMetadata
@@ -762,7 +750,7 @@ async function getChatRequest(chatid, charname) {
 			fount_i18nkeys: true,
 			fount_themes: true,
 		},
-		chat_name: 'common_chat_' + chatid,
+		chat_name: 'common_chat_' + groupId,
 		char_id: charname,
 		username,
 		UserCharname,
@@ -774,7 +762,7 @@ async function getChatRequest(chatid, charname) {
 		 * 更新聊天请求。
 		 * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} - 更新后的聊天请求。
 		 */
-		Update: () => getChatRequest(chatid, charname),
+		Update: () => getChatRequest(groupId, charname),
 		/**
 		 * 添加聊天记录条目。
 		 * @param {chatLogEntry_t} entry - 聊天记录条目。
@@ -782,7 +770,7 @@ async function getChatRequest(chatid, charname) {
 		 */
 		AddChatLogEntry: async entry => {
 			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
-			return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(
+			return addChatLogEntry(groupId, await BuildChatLogEntryFromCharReply(
 				entry,
 				chatMetadata.LastTimeSlice.copy(),
 				chatMetadata.LastTimeSlice.chars[charname],
@@ -807,11 +795,11 @@ async function getChatRequest(chatid, charname) {
 
 /**
  * 在聊天中设置或更改玩家使用的人设。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string | null} personaname - 新的人设ID，或 null 表示移除人设。
  */
-export async function setPersona(chatid, personaname) {
-	const chatMetadata = await loadChat(chatid)
+export async function setPersona(groupId, personaname) {
+	const chatMetadata = await loadChat(groupId)
 	const { LastTimeSlice: timeSlice, username } = chatMetadata
 	if (!personaname) {
 		timeSlice.player = undefined
@@ -822,23 +810,23 @@ export async function setPersona(chatid, personaname) {
 		timeSlice.player_id = personaname
 	}
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'persona_set', payload: { personaname } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'persona_set', payload: { personaname } })
 }
 
 /**
  * 在聊天中设置或更改世界。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string | null} worldname - 新的世界ID，或 null 表示移除世界。
  * @returns {Promise<chatLogEntry_t | null>} 如果世界有问候语，则返回该问候语消息条目。
  */
-export async function setWorld(chatid, worldname) {
-	const chatMetadata = await loadChat(chatid)
+export async function setWorld(groupId, worldname) {
+	const chatMetadata = await loadChat(groupId)
 	if (!worldname) {
 		chatMetadata.LastTimeSlice.world = undefined
 		chatMetadata.LastTimeSlice.world_id = undefined
-		if (is_VividChat(chatMetadata)) saveChat(chatid)
-		broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname: null } })
+		if (is_VividChat(chatMetadata)) saveChat(groupId)
+		broadcastChatEvent(groupId, { type: 'world_set', payload: { worldname: null } })
 		return null
 	}
 	const { username, chatLog } = chatMetadata
@@ -850,10 +838,10 @@ export async function setWorld(chatid, worldname) {
 	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length)
 		timeSlice.greeting_type = 'world_group'
 
-	broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname } })
+	broadcastChatEvent(groupId, { type: 'world_set', payload: { worldname } })
 
 	try {
-		const request = await getChatRequest(chatid, undefined)
+		const request = await getChatRequest(groupId, undefined)
 		let result
 		switch (timeSlice.greeting_type) {
 			case 'world_single':
@@ -866,7 +854,7 @@ export async function setWorld(chatid, worldname) {
 		if (!result) return
 
 		const greeting_entry = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
-		await addChatLogEntry(chatid, greeting_entry) // 此处已广播
+		await addChatLogEntry(groupId, greeting_entry) // 此处已广播
 		return greeting_entry
 	}
 	catch {
@@ -874,19 +862,19 @@ export async function setWorld(chatid, worldname) {
 		chatMetadata.LastTimeSlice.world_id = timeSlice.world_id
 	}
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
 	return null
 }
 
 /**
  * 向聊天中添加一个新角色。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} charname - 要添加的角色ID。
  * @returns {Promise<chatLogEntry_t | null>} 如果角色有问候语，则返回该问候语消息条目。
  * @throws {Error} 如果聊天未找到。
  */
-export async function addchar(chatid, charname) {
-	const chatMetadata = await loadChat(chatid)
+export async function addchar(groupId, charname) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username } = chatMetadata
@@ -899,10 +887,10 @@ export async function addchar(chatid, charname) {
 	if (timeSlice.chars[charname]) return null
 
 	const char = timeSlice.chars[charname] = await loadPart(username, `chars/${charname}`)
-	broadcastChatEvent(chatid, { type: 'char_added', payload: { charname } })
+	broadcastChatEvent(groupId, { type: 'char_added', payload: { charname } })
 
 	// 获取问候语
-	const request = await getChatRequest(chatid, charname)
+	const request = await getChatRequest(groupId, charname)
 
 	try {
 		let result
@@ -917,38 +905,38 @@ export async function addchar(chatid, charname) {
 		if (!result) return null
 
 		const greeting_entry = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		await addChatLogEntry(chatid, greeting_entry) // 此处已广播
+		await addChatLogEntry(groupId, greeting_entry) // 此处已广播
 		return greeting_entry
 	}
 	catch (error) {
 		console.error(error)
 		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
 	}
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
 	return null
 }
 
 /**
  * 从聊天中移除一个角色。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} charname - 要移除的角色ID。
  */
-export async function removechar(chatid, charname) {
-	const chatMetadata = await loadChat(chatid)
+export async function removechar(groupId, charname) {
+	const chatMetadata = await loadChat(groupId)
 	delete chatMetadata.LastTimeSlice.chars[charname]
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'char_removed', payload: { charname } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'char_removed', payload: { charname } })
 }
 
 /**
  *向聊天中添加一个新插件。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} pluginname - 要添加的插件ID。
  * @returns {Promise<void>}
  * @throws {Error} 如果聊天未找到。
  */
-export async function addplugin(chatid, pluginname) {
-	const chatMetadata = await loadChat(chatid)
+export async function addplugin(groupId, pluginname) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username } = chatMetadata
@@ -957,112 +945,112 @@ export async function addplugin(chatid, pluginname) {
 	if (timeSlice.plugins[pluginname]) return
 
 	timeSlice.plugins[pluginname] = await loadPart(username, `plugins/${pluginname}`)
-	broadcastChatEvent(chatid, { type: 'plugin_added', payload: { pluginname } })
+	broadcastChatEvent(groupId, { type: 'plugin_added', payload: { pluginname } })
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
 }
 
 /**
  * 从聊天中移除一个插件。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} pluginname - 要移除的插件ID。
  */
-export async function removeplugin(chatid, pluginname) {
-	const chatMetadata = await loadChat(chatid)
+export async function removeplugin(groupId, pluginname) {
+	const chatMetadata = await loadChat(groupId)
 	delete chatMetadata.LastTimeSlice.plugins[pluginname]
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'plugin_removed', payload: { pluginname } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'plugin_removed', payload: { pluginname } })
 }
 
 /**
  * 设置聊天中特定角色的发言频率。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string} charname - 角色ID。
  * @param {number} frequency - 新的发言频率乘数。
  */
-export async function setCharSpeakingFrequency(chatid, charname, frequency) {
-	const chatMetadata = await loadChat(chatid)
+export async function setCharSpeakingFrequency(groupId, charname, frequency) {
+	const chatMetadata = await loadChat(groupId)
 	chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] = frequency
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'char_frequency_set', payload: { charname, frequency } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'char_frequency_set', payload: { charname, frequency } })
 }
 
 /**
  * 获取聊天中的所有角色ID列表。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<string[]>} 角色ID的数组。
  */
-export async function getCharListOfChat(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function getCharListOfChat(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	return Object.keys(chatMetadata.LastTimeSlice.chars)
 }
 
 /**
  * 获取聊天中的所有插件ID列表。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<string[]>} 插件ID的数组。
  */
-export async function getPluginListOfChat(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function getPluginListOfChat(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	return Object.keys(chatMetadata.LastTimeSlice.plugins)
 }
 
 /**
  * 获取指定范围的聊天记录。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {number} start - 起始索引。
  * @param {number} end - 结束索引。
  * @returns {Promise<chatLogEntry_t[]>} 聊天记录条目的数组。
  */
-export async function GetChatLog(chatid, start, end) {
-	const chatMetadata = await loadChat(chatid)
+export async function GetChatLog(groupId, start, end) {
+	const chatMetadata = await loadChat(groupId)
 	return chatMetadata.chatLog.slice(start, end)
 }
 
 /**
  * 获取聊天记录的总长度。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<number>} 聊天记录的长度。
  */
-export async function GetChatLogLength(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function GetChatLogLength(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	return chatMetadata.chatLog.length
 }
 
 /**
  * 获取当前聊天中用户使用的人设名称。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<string>} 人设ID。
  */
-export async function GetUserPersonaName(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function GetUserPersonaName(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	return chatMetadata.LastTimeSlice.player_id
 }
 
 /**
  * 获取当前聊天中使用的世界名称。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<string>} 世界ID。
  */
-export async function GetWorldName(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function GetWorldName(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	return chatMetadata.LastTimeSlice.world_id
 }
 
 /**
  * 向聊天中添加一条新的消息条目，并处理后续逻辑（如自动回复）。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {Array<object>} freq_data - 频率数据。
  * @param {string} initial_char - 初始角色。
  * @returns {Promise<chatLogEntry_t>} 已添加的聊天记录条目。
  */
-async function handleAutoReply(chatid, freq_data, initial_char) {
+async function handleAutoReply(groupId, freq_data, initial_char) {
 	let char = initial_char
 	while (true) {
 		freq_data = freq_data.filter(f => f.charname !== char)
 		const nextreply = await getNextCharForReply(freq_data)
 		if (nextreply) try {
-			await triggerCharReply(chatid, nextreply)
+			await triggerCharReply(groupId, nextreply)
 			return
 		} catch (error) {
 			console.error(error)
@@ -1073,14 +1061,14 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 
 /**
  * 添加聊天记录条目。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {chatLogEntry_t} entry - 聊天记录条目。
  * @returns {Promise<void>}
  */
-async function addChatLogEntry(chatid, entry) {
-	const chatMetadata = await loadChat(chatid)
+async function addChatLogEntry(groupId, entry) {
+	const chatMetadata = await loadChat(groupId)
 	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
-		await entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
+		await entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(groupId, undefined), entry)
 	else
 		chatMetadata.chatLog.push(entry)
 
@@ -1095,8 +1083,8 @@ async function addChatLogEntry(chatid, entry) {
 	chatMetadata.timeLineIndex = 0
 	chatMetadata.LastTimeSlice = entry.timeSlice
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'message_added', payload: await entry.toData(chatMetadata.username) })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'message_added', payload: await entry.toData(chatMetadata.username) })
 
 	// If the message is from a character, send a push notification via the service worker.
 	if (entry.role === 'char')
@@ -1104,28 +1092,28 @@ async function addChatLogEntry(chatid, entry) {
 			body: entry.content,
 			icon: entry.avatar || '/favicon.svg', // Use a default icon
 			data: {
-				url: `/parts/shells:chat/#${chatid}`, // URL to open on click
+				url: `/parts/shells:chat/hub/#group:${groupId}:default`, // URL to open on click
 			},
-		}, `/parts/shells:chat/#${chatid}`)
+		}, `/parts/shells:chat/hub/#group:${groupId}:default`)
 
-	const freq_data = await getCharReplyFrequency(chatid)
+	const freq_data = await getCharReplyFrequency(groupId)
 	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
+		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined), freq_data)
 	else
-		handleAutoReply(chatid, freq_data, entry.timeSlice.charname ?? null)
+		handleAutoReply(groupId, freq_data, entry.timeSlice.charname ?? null)
 
 	return entry
 }
 
 /**
  * 执行角色回复生成任务。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {import('../decl/chatLog.ts').chatReplyRequest_t} request - 聊天回复请求对象。
  * @param {object} stream - 流式生成任务的控制对象。
  * @param {chatLogEntry_t} placeholderEntry - 占位符消息条目。
  * @param {chatMetadata_t} chatMetadata - 聊天元数据。
  */
-async function executeGeneration(chatid, request, stream, placeholderEntry, chatMetadata) {
+async function executeGeneration(groupId, request, stream, placeholderEntry, chatMetadata) {
 	const entryId = placeholderEntry.id
 
 	/**
@@ -1155,17 +1143,17 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 
 		chatMetadata.LastTimeSlice = finalEntry.timeSlice
 
-		broadcastChatEvent(chatid, {
+		broadcastChatEvent(groupId, {
 			type: 'message_replaced',
 			payload: { index: idx, entry: await finalEntry.toData(chatMetadata.username) },
 		})
 
-		if (!isError && is_VividChat(chatMetadata)) saveChat(chatid)
+		if (!isError && is_VividChat(chatMetadata)) saveChat(groupId)
 		return finalEntry
 	}
 
 	try {
-		broadcastChatEvent(chatid, {
+		broadcastChatEvent(groupId, {
 			type: 'stream_start',
 			payload: { messageId: entryId },
 		})
@@ -1186,7 +1174,7 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		if (result === null) {
 			stream.abort('Generation result was null.')
 			const idx = chatMetadata.chatLog.findIndex(e => e.id === entryId)
-			if (idx !== -1) await deleteMessage(chatid, idx)
+			if (idx !== -1) await deleteMessage(groupId, idx)
 			return
 		}
 
@@ -1200,11 +1188,11 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 
 		const savedEntry = await finalizeEntry(finalEntry, false)
 
-		const freq_data = await getCharReplyFrequency(chatid)
+		const freq_data = await getCharReplyFrequency(groupId)
 		if (savedEntry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-			await savedEntry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
+			await savedEntry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined), freq_data)
 		else
-			await handleAutoReply(chatid, freq_data, savedEntry.timeSlice.charname ?? null)
+			await handleAutoReply(groupId, freq_data, savedEntry.timeSlice.charname ?? null)
 	}
 	catch (e) {
 		if (e.name === 'AbortError') {
@@ -1231,22 +1219,22 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		}
 	}
 	finally {
-		updateTypingStatus(chatid, request.char_id, -1)
+		updateTypingStatus(groupId, request.char_id, -1)
 	}
 }
 
 
 /**
  * 修改当前消息的时间线（“重新生成”功能）。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {number} delta - 切换时间线的偏移量（例如，1 表示下一个，-1 表示上一个）。
  * @returns {Promise<chatLogEntry_t>} 新的当前消息条目。
  */
-export async function modifyTimeLine(chatid, delta) {
+export async function modifyTimeLine(groupId, delta) {
 	// 1. 中止当前可能正在进行的所有流式生成，防止串台
-	StreamManager.abortAll(chatid)
+	StreamManager.abortAll(groupId)
 
-	const chatMetadata = await loadChat(chatid)
+	const chatMetadata = await loadChat(groupId)
 
 	// 2. 计算新的索引
 	let newTimeLineIndex = chatMetadata.timeLineIndex + delta
@@ -1291,7 +1279,7 @@ export async function modifyTimeLine(chatid, delta) {
 		entry = newEntry
 
 		// 广播 UI 更新 (显示加载圈)
-		broadcastChatEvent(chatid, {
+		broadcastChatEvent(groupId, {
 			type: 'message_replaced',
 			payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
 		})
@@ -1301,7 +1289,7 @@ export async function modifyTimeLine(chatid, delta) {
 			try {
 				const { charname } = timeSlice
 				// 获取合适的 request 对象
-				const request = await getChatRequest(chatid, charname || undefined)
+				const request = await getChatRequest(groupId, charname || undefined)
 				let result
 
 				const { world, chars } = timeSlice
@@ -1349,10 +1337,10 @@ export async function modifyTimeLine(chatid, delta) {
 				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry
 				chatMetadata.LastTimeSlice = newEntry.timeSlice
 
-				if (is_VividChat(chatMetadata)) saveChat(chatid)
+				if (is_VividChat(chatMetadata)) saveChat(groupId)
 
 				// 再次广播以显示内容
-				broadcastChatEvent(chatid, {
+				broadcastChatEvent(groupId, {
 					type: 'message_replaced',
 					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
 				})
@@ -1362,7 +1350,7 @@ export async function modifyTimeLine(chatid, delta) {
 				newEntry.is_generating = false
 				newEntry.id = entry.id // 保持 ID 不变
 				newEntry.timeSlice = timeSlice //设置char信息便于刷新
-				broadcastChatEvent(chatid, {
+				broadcastChatEvent(groupId, {
 					type: 'message_replaced',
 					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
 				})
@@ -1371,10 +1359,10 @@ export async function modifyTimeLine(chatid, delta) {
 		else {
 			// **普通回复逻辑 (流式)**
 			const { charname } = timeSlice
-			const request = await getChatRequest(chatid, charname)
-			const stream = StreamManager.create(chatid, newEntry.id)
+			const request = await getChatRequest(groupId, charname)
+			const stream = StreamManager.create(groupId, newEntry.id)
 			// 在后台执行生成
-			executeGeneration(chatid, request, stream, newEntry, chatMetadata)
+			executeGeneration(groupId, request, stream, newEntry, chatMetadata)
 		}
 	} else {
 		// === 简单的切换逻辑 (无生成) ===
@@ -1383,9 +1371,9 @@ export async function modifyTimeLine(chatid, delta) {
 		chatMetadata.LastTimeSlice = entry.timeSlice
 		chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
 
-		if (is_VividChat(chatMetadata)) saveChat(chatid)
+		if (is_VividChat(chatMetadata)) saveChat(groupId)
 
-		broadcastChatEvent(chatid, {
+		broadcastChatEvent(groupId, {
 			type: 'message_replaced',
 			payload: { index: chatMetadata.chatLog.length - 1, entry: await entry.toData(chatMetadata.username) }
 		})
@@ -1462,12 +1450,12 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, per
 
 /**
  * 计算并获取当前聊天中所有参与者的发言频率数据。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<{charname: string | null, frequency: number}[]>} 包含每个参与者（null代表用户）及其发言频率的数组。
  * @throws {Error} 如果聊天未找到。
  */
-async function getCharReplyFrequency(chatid) {
-	const chatMetadata = await loadChat(chatid)
+async function getCharReplyFrequency(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 	const result = [
 		{
@@ -1476,14 +1464,25 @@ async function getCharReplyFrequency(chatid) {
 		}
 	]
 
+	const onlineCount = Object.keys(chatMetadata.LastTimeSlice.chars).length + 1
+
 	for (const charname in chatMetadata.LastTimeSlice.chars) {
 		const char = chatMetadata.LastTimeSlice.chars[charname]
-		const charbase = await char.interfaces?.chat?.GetReplyFrequency?.(await getChatRequest(chatid, charname)) || 1
+		let charFreq = 1
+		if (char.interfaces?.chat?.onMessage) {
+			const spoke = await char.interfaces.chat.onMessage({
+				chatReplyRequest: await getChatRequest(groupId, charname),
+				onlineCount,
+			}).catch(() => false)
+			charFreq = spoke ? 1e6 : 0
+		}
 		const userbase = chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1
-		result.push({
-			charname,
-			frequency: charbase * userbase
-		})
+		const frequency = charFreq * userbase
+		if (frequency > 0)
+			result.push({
+				charname,
+				frequency,
+			})
 	}
 
 	return result
@@ -1505,15 +1504,15 @@ async function getNextCharForReply(frequency_data) {
 
 /**
  * 触发一个角色进行回复。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {string | null} charname - 要触发回复的角色ID。如果为 null，则会根据频率随机选择一个角色。
  */
-export async function triggerCharReply(chatid, charname) {
-	const chatMetadata = await loadChat(chatid)
+export async function triggerCharReply(groupId, charname) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	if (!charname) {
-		const frequency_data = (await getCharReplyFrequency(chatid)).filter(x => x.charname !== null) // 过滤掉用户
+		const frequency_data = (await getCharReplyFrequency(groupId)).filter(x => x.charname !== null) // 过滤掉用户
 		charname = await getNextCharForReply(frequency_data)
 		if (!charname) return
 	}
@@ -1534,30 +1533,30 @@ export async function triggerCharReply(chatid, charname) {
 
 	// Broadcast the placeholder to the frontend for immediate UI feedback,
 	// but DO NOT push it to the backend chatLog yet.
-	broadcastChatEvent(chatid, {
+	broadcastChatEvent(groupId, {
 		type: 'message_added',
 		payload: await placeholder.toData(chatMetadata.username),
 	})
 
 	// 3. Create request & stream
-	const request = await getChatRequest(chatid, charname)
-	const stream = StreamManager.create(chatid, placeholder.id)
+	const request = await getChatRequest(groupId, charname)
+	const stream = StreamManager.create(groupId, placeholder.id)
 
-	updateTypingStatus(chatid, charname, 1)
+	updateTypingStatus(groupId, charname, 1)
 
 	// 4. Execute (don't await, let it run in background)
-	executeGeneration(chatid, request, stream, placeholder, chatMetadata)
+	executeGeneration(groupId, request, stream, placeholder, chatMetadata)
 }
 
 /**
  * 添加一条用户的回复到聊天记录中。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {object} object - 包含用户消息内容的对象。
  * @returns {Promise<chatLogEntry_t>} 新增的用户消息条目。
  * @throws {Error} 如果聊天未找到。
  */
-export async function addUserReply(chatid, object) {
-	const chatMetadata = await loadChat(chatid)
+export async function addUserReply(groupId, object) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	// Achievements
@@ -1572,82 +1571,29 @@ export async function addUserReply(chatid, object) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, new_timeSlice.player_id, chatMetadata.username))
-}
-
-/**
- * 从JSON文件轻量级加载聊天的摘要信息，不进行完整的对象水合。
- * 这种方式速度更快，因为它避免了加载完整的角色/世界/人设数据。
- * @param {string} username - 聊天的所有者用户名。
- * @param {string} chatid - 聊天ID。
- * @returns {Promise<{
- *   chatid: string,
- *   chars: string[],
- *   lastMessageSender: string,
- *   lastMessageSenderAvatar: string | null,
- *   lastMessageContent: string,
- *   lastMessageTime: Date,
- * } | null>} 聊天的摘要信息，或在加载失败时返回 null。
- */
-async function loadChatSummary(username, chatid) {
-	const filepath = getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json'
-	if (!fs.existsSync(filepath)) return null
-
-	try {
-		const rawChatData = loadJsonFile(filepath)
-		const lastEntry = rawChatData.chatLog[rawChatData.chatLog.length - 1]
-		const chars = lastEntry.timeSlice?.chars || []
-		return {
-			chatid,
-			chars,
-			lastMessageSender: lastEntry.name || 'Unknown',
-			lastMessageSenderAvatar: lastEntry.avatar || null,
-			lastMessageContent: lastEntry.content || '',
-			lastMessageTime: new Date(lastEntry.time_stamp), // 确保是Date对象
-		}
-	}
-	catch (error) {
-		console.error(`Failed to load summary for chat ${chatid}:`, error)
-		return null
-	}
-}
-
-/**
- * 获取指定用户的所有聊天列表，包含摘要信息。
- * @param {string} username - 用户名。
- * @returns {Promise<Array>} 包含聊天摘要对象的数组，按最后消息时间降序排列。
- */
-export async function getChatList(username) {
-	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
-
-	await Promise.all(Array.from(chatMetadatas.entries()).map(async ([chatid, value]) => {
-		if (value.username === username)
-			summariesCache[chatid] ??= await loadChatSummary(username, chatid)
-	}))
-
-	const chatList = Object.values(summariesCache).filter(Boolean)
-	return chatList.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime))
+	return addChatLogEntry(groupId, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, new_timeSlice.player_id, chatMetadata.username))
 }
 
 /**
  * 删除一个或多个聊天。
- * @param {string[]} chatids - 要删除的聊天ID数组。
+ * @param {string[]} groupIds - 要删除的会话 ID 数组。
  * @param {string} username - 操作的用户名。
- * @returns {Promise<{chatid: string, success: boolean, message: string, error?: string}[]>} 每个聊天删除操作的结果数组。
+ * @returns {Promise<{groupId: string, success: boolean, message: string, error?: string}[]>} 每个聊天删除操作的结果数组。
  */
-export async function deleteChat(chatids, username) {
+export async function deleteChat(groupIds, username) {
 	const basedir = getUserDictionary(username) + '/shells/chat/chats/'
 	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
-	const deletePromises = chatids.map(async chatid => {
+	const deletePromises = groupIds.map(async groupId => {
 		try {
-			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
-			chatMetadatas.delete(chatid)
-			delete summariesCache[chatid]
-			return { chatid, success: true, message: 'Chat deleted successfully' }
+			if (fs.existsSync(basedir + groupId + '.json')) await fs.promises.unlink(basedir + groupId + '.json')
+			await deleteChatData(username, groupId)
+			chatMetadatas.delete(groupId)
+			delete summariesCache[groupId]
+			return { groupId, success: true, message: 'Chat deleted successfully' }
 		}
 		catch (error) {
-			console.error(`Error deleting chat ${chatid}:`, error)
-			return { chatid, success: false, message: 'Error deleting chat', error: error.message }
+			console.error(`Error deleting chat ${groupId}:`, error)
+			return { groupId, success: false, message: 'Error deleting chat', error: error.message }
 		}
 	})
 
@@ -1657,56 +1603,13 @@ export async function deleteChat(chatids, username) {
 }
 
 /**
- * 复制一个或多个聊天。
- * @param {string[]} chatids - 要复制的聊天ID数组。
- * @param {string} username - 操作的用户名。
- * @returns {Promise<{chatid: string, success: boolean, newChatId?: string, message: string}[]>} 每个聊天复制操作的结果数组。
- */
-export async function copyChat(chatids, username) {
-	const copyPromises = chatids.map(async chatid => {
-		const originalChat = await loadChat(chatid)
-		if (!originalChat)
-			return { chatid, success: false, message: 'Original chat not found' }
-
-		const newChatId = await newChat(username)
-		const copiedChat = await originalChat.copy()
-		chatMetadatas.set(newChatId, { username, chatMetadata: copiedChat })
-		chatMetadatas.get(newChatId).chatMetadata.LastTimeSlice = copiedChat.chatLog[copiedChat.chatLog.length - 1].timeSlice
-		await saveChat(newChatId)
-		return { chatid, success: true, newChatId, message: 'Chat copied successfully' }
-	})
-	return Promise.all(copyPromises)
-}
-
-/**
- * 导出指定的聊天数据。
- * @param {string[]} chatids - 要导出的聊天ID数组。
- * @returns {Promise<{chatid: string, success: boolean, data?: chatMetadata_t, message: string, error?: string}[]>} 每个聊天导出操作的结果数组。
- */
-export async function exportChat(chatids) {
-	const exportPromises = chatids.map(async chatid => {
-		try {
-			const chat = await loadChat(chatid)
-			if (!chat) return { chatid, success: false, message: 'Chat not found', error: 'Chat not found' }
-			return { chatid, success: true, data: chat }
-		}
-		catch (error) {
-			console.error(`Error exporting chat ${chatid}:`, error)
-			return { chatid, success: false, message: 'Error exporting chat', error: error.message }
-		}
-	})
-
-	return Promise.all(exportPromises)
-}
-
-/**
  * 从聊天中删除一条指定索引的消息。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {number} index - 要删除的消息在 `chatLog` 中的索引。
  * @throws {Error} 如果聊天未找到或索引无效。
  */
-export async function deleteMessage(chatid, index) {
-	const chatMetadata = await loadChat(chatid)
+export async function deleteMessage(groupId, index) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 
@@ -1749,20 +1652,20 @@ export async function deleteMessage(chatid, index) {
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'message_deleted', payload: { index } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'message_deleted', payload: { index } })
 }
 
 /**
  * 编辑聊天中的一条指定消息。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {number} index - 要编辑的消息在 `chatLog` 中的索引。
  * @param {string} new_content - 新的消息内容。
  * @returns {Promise<chatLogEntry_t>} 编辑后的消息条目。
  * @throws {Error} 如果聊天未找到或索引无效。
  */
-export async function editMessage(chatid, index, new_content) {
-	const chatMetadata = await loadChat(chatid)
+export async function editMessage(groupId, index, new_content) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 
@@ -1817,21 +1720,21 @@ export async function editMessage(chatid, index, new_content) {
 	if (index == chatMetadata.chatLog.length - 1)
 		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
 
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'message_edited', payload: { index, entry: await entry.toData(chatMetadata.username) } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'message_edited', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 
 	return entry
 }
 
 /**
  * 设置消息的用户反馈（赞/踩及可选说明）。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @param {number} index - 消息在 chatLog 中的索引。
  * @param {{ type: 'up'|'down'; content?: string }} feedback - 反馈内容。
  * @returns {Promise<chatLogEntry_t>} 更新后的消息条目。
  */
-export async function setMessageFeedback(chatid, index, feedback) {
-	const chatMetadata = await loadChat(chatid)
+export async function setMessageFeedback(groupId, index, feedback) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 	const entry = chatMetadata.chatLog[index]
@@ -1839,18 +1742,18 @@ export async function setMessageFeedback(chatid, index, feedback) {
 	entry.extension.feedback = feedback
 	if (index === chatMetadata.chatLog.length - 1 && chatMetadata.timeLines[chatMetadata.timeLineIndex]?.id === entry.id)
 		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	broadcastChatEvent(chatid, { type: 'message_replaced', payload: { index, entry: await entry.toData(chatMetadata.username) } })
+	if (is_VividChat(chatMetadata)) saveChat(groupId)
+	broadcastChatEvent(groupId, { type: 'message_replaced', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 	return entry
 }
 
 /**
  * 获取用于客户端初始化的数据。
- * @param {string} chatid - 聊天ID。
+ * @param {string} groupId - 聊天ID。
  * @returns {Promise<object>} 包含聊天状态和消息的心跳数据。
  */
-export async function getInitialData(chatid) {
-	const chatMetadata = await loadChat(chatid)
+export async function getInitialData(groupId) {
+	const chatMetadata = await loadChat(groupId)
 	if (!chatMetadata) throw skip_report(new Error('Chat not found'))
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {

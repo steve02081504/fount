@@ -74,6 +74,21 @@ export function saveShellData(username, shellname, dataname) {
 	fs.mkdirSync(getUserDictionary(username) + '/shells/' + shellname, { recursive: true })
 	saveJsonFile(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json', userShellDataSet[username][shellname][dataname])
 }
+
+/**
+ * 覆盖内存中的 shell 数据块并立即落盘（用于无法通过 `loadShellData` 返回引用安全改型的场景）。
+ * @param {string} username 用户名
+ * @param {string} shellname shell 名（如 `chat`）
+ * @param {string} dataname 数据名（不含 `.json`）
+ * @param {unknown} value 可 JSON 序列化的值
+ * @returns {void}
+ */
+export function assignShellData(username, shellname, dataname, value) {
+	userShellDataSet[username] ??= {}
+	userShellDataSet[username][shellname] ??= {}
+	userShellDataSet[username][shellname][dataname] = value
+	saveShellData(username, shellname, dataname)
+}
 on_shutdown(() => {
 	for (const username in userShellDataSet)
 		for (const shellname in userShellDataSet[username])

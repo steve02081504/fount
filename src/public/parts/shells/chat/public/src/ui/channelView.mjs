@@ -182,7 +182,7 @@ export function createChannelView({
 		const isDefault = getLastGroupSettings().defaultChannelId === channelId
 		const isChatChannel = !meta?.type || meta?.type === 'text'
 
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/messages`)
+		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages`)
 		if (!r.ok) {
 			handleUIError(new Error(`loadMessages HTTP ${r.status}`), 'chat.group.messagesLoadFailed', 'loadMessages failed')
 			return
@@ -245,7 +245,7 @@ export function createChannelView({
 						hiToggle.checked = prevMailbox
 						return
 					}
-					const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/common/${encodeURIComponent(channelId)}`, {
+					const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}`, {
 						method: 'PUT',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ encryptionScheme: wantsMailbox ? 'mailbox-ecdh' : 'none' }),
@@ -359,7 +359,7 @@ export function createChannelView({
 						btn.title = geti18n('chat.group.forceTriggerOne', { name: charName })
 					})
 					btn.addEventListener('click', async () => {
-						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/trigger-reply`, {
+						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/trigger-reply`, {
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({ charname: charName }),
@@ -385,7 +385,7 @@ export function createChannelView({
 				})
 				allBtn.addEventListener('click', async () => {
 					for (const charName of localMentionCharNames)
-						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/trigger-reply`, {
+						await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/trigger-reply`, {
 							method: 'POST',
 							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({ charname: charName }),

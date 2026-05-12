@@ -1,21 +1,22 @@
 import { Buffer } from 'node:buffer'
 
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
 
+import { addDmBlock, loadDmBlocklist } from './chat/dm_blocklist.mjs'
+import {
+	handleGroupSocketIdentityMessage,
+	handleGroupSocketRpcMessage,
+} from './chat/websocket.mjs'
 import {
 	addchar,
 	addUserReply,
-	copyChat,
-	deleteChat,
-	exportChat,
-	importChat,
 	getCharListOfChat,
 	getPluginListOfChat,
 	GetChatLog,
-	getChatList,
 	GetUserPersonaName,
 	GetWorldName,
-	newChat,
+	handleClientWsControlFrame,
 	modifyTimeLine,
 	removechar,
 	addplugin,
@@ -29,7 +30,7 @@ import {
 	GetChatLogLength,
 	setCharSpeakingFrequency,
 	getInitialData,
-	registerChatUiSocket
+	registerChatUiSocket,
 } from './chat.mjs'
 import { addfile, getfile } from './files.mjs'
 
@@ -39,165 +40,200 @@ import { addfile, getfile } from './files.mjs'
  * @param {import('npm:websocket-express').Router} router - Express路由实例，用于附加端点。
  */
 export function setEndpoints(router) {
-	router.ws('/ws/parts/shells\\:chat/ui/:chatid', authenticate, async (ws, req) => {
-		const { chatid } = req.params
-		registerChatUiSocket(chatid, ws)
-	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/initial-data', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await getInitialData(chatid))
-	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/chars', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await getCharListOfChat(chatid))
-	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/plugins', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await getPluginListOfChat(chatid))
-	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/log', authenticate, async (req, res) => {
-		const { params: { chatid }, query: { start, end } } = req
+	router.get('/api/parts/shells\\:chat/dm-blocklist', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const log = await GetChatLog(chatid, Number(start), Number(end))
-		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
+		res.status(200).json(loadDmBlocklist(username))
+	})
+	router.post('/api/parts/shells\\:chat/dm-blocklist', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const body = req.body && typeof req.body === 'object' ? req.body : {}
+		const pubKeyHash = body.pubKeyHash
+		const groupId = typeof body.groupId === 'string' ? body.groupId : undefined
+		if (typeof pubKeyHash !== 'string' || !pubKeyHash.trim())
+			return res.status(400).json({ success: false, error: 'pubKeyHash required' })
+		addDmBlock(username, pubKeyHash, groupId)
+		res.status(200).json(loadDmBlocklist(username))
 	})
 
-	router.get('/api/parts/shells\\:chat/:chatid/log/length', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await GetChatLogLength(chatid))
+	/**
+	 * 用户级书签（`shells/chat/bookmarks.json`，正文为 `{ entries: [...] }`）。
+	 */
+	router.get('/api/parts/shells\\:chat/bookmarks', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const raw = loadShellData(username, 'chat', 'bookmarks')
+		if (Array.isArray(raw))
+			assignShellData(username, 'chat', 'bookmarks', { entries: raw })
+		const o = /** @type {{ entries?: unknown }} */ loadShellData(username, 'chat', 'bookmarks')
+		const entries = Array.isArray(o.entries) ? o.entries : []
+		res.status(200).json(entries)
 	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/persona', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await GetUserPersonaName(chatid))
-	})
-
-	router.get('/api/parts/shells\\:chat/:chatid/world', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		res.status(200).json(await GetWorldName(chatid))
-	})
-
-	router.put('/api/parts/shells\\:chat/:chatid/timeline', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { delta } } = req
-		const entry = await modifyTimeLine(chatid, delta)
-		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
-	})
-
-	router.delete('/api/parts/shells\\:chat/:chatid/message/:index', authenticate, async (req, res) => {
-		const { chatid, index } = req.params
-		await deleteMessage(chatid, Number(index))
+	router.put('/api/parts/shells\\:chat/bookmarks', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const body = req.body && typeof req.body === 'object' ? req.body : {}
+		const entries = Array.isArray(body.entries) ? body.entries : []
+		assignShellData(username, 'chat', 'bookmarks', { entries })
 		res.status(200).json({ success: true })
 	})
 
-	router.put('/api/parts/shells\\:chat/:chatid/message/:index', authenticate, async (req, res) => {
-		const { params: { chatid, index }, body: { content } } = req
+	/**
+	 * 会话列表侧栏文件夹（`shells/chat/groupFolders.json`；§19 `groupFolders.json`）。
+	 */
+	router.get('/api/parts/shells\\:chat/group-folders', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const raw = loadShellData(username, 'chat', 'groupFolders')
+		const folders = raw && typeof raw === 'object' && !Array.isArray(raw) && Array.isArray(/** @type {{ folders?: unknown }} */ raw.folders)
+			? /** @type {{ folders: object[] }} */ raw.folders
+			: []
+		res.status(200).json({ folders })
+	})
+	router.put('/api/parts/shells\\:chat/group-folders', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const body = req.body && typeof req.body === 'object' ? req.body : {}
+		const folders = Array.isArray(body.folders) ? body.folders : []
+		assignShellData(username, 'chat', 'groupFolders', { folders })
+		res.status(200).json({ success: true })
+	})
+
+	// 群会话 WS（Hub / 群壳 / RPC 共用；§21，已移除 `/ui/:groupId`）
+	router.ws('/ws/parts/shells\\:chat/groups/:groupId', authenticate, async (ws, req) => {
+		const { groupId } = req.params
+		if (!groupId)
+			return void ws.close()
+		registerChatUiSocket(groupId, ws)
+		ws.on('message', raw => {
+			try {
+				const msg = JSON.parse(String(raw))
+				if (handleClientWsControlFrame(msg)) return
+				if (handleGroupSocketIdentityMessage(ws, msg)) return
+				void handleGroupSocketRpcMessage(groupId, ws, msg)
+			}
+			catch (e) {
+				console.error('group ws message error', e)
+			}
+		})
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/initial-data', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await getInitialData(groupId))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/chars', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await getCharListOfChat(groupId))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/plugins', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await getPluginListOfChat(groupId))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/log', authenticate, async (req, res) => {
+		const { params: { groupId }, query: { start, end } } = req
+		const { username } = await getUserByReq(req)
+		const log = await GetChatLog(groupId, Number(start), Number(end))
+		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/log/length', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await GetChatLogLength(groupId))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/persona', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await GetUserPersonaName(groupId))
+	})
+
+	router.get('/api/parts/shells\\:chat/groups/:groupId/world', authenticate, async (req, res) => {
+		const { groupId } = req.params
+		res.status(200).json(await GetWorldName(groupId))
+	})
+
+	router.put('/api/parts/shells\\:chat/groups/:groupId/timeline', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { delta } } = req
+		const entry = await modifyTimeLine(groupId, delta)
+		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+	})
+
+	router.delete('/api/parts/shells\\:chat/groups/:groupId/message/:index', authenticate, async (req, res) => {
+		const { groupId, index } = req.params
+		await deleteMessage(groupId, Number(index))
+		res.status(200).json({ success: true })
+	})
+
+	router.put('/api/parts/shells\\:chat/groups/:groupId/message/:index', authenticate, async (req, res) => {
+		const { params: { groupId, index }, body: { content } } = req
 		content.files = content?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		const entry = await editMessage(chatid, Number(index), content)
+		const entry = await editMessage(groupId, Number(index), content)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
 
-	router.put('/api/parts/shells\\:chat/:chatid/message/:index/feedback', authenticate, async (req, res) => {
-		const { params: { chatid, index }, body: feedback } = req
-		const entry = await setMessageFeedback(chatid, Number(index), feedback)
+	router.put('/api/parts/shells\\:chat/groups/:groupId/message/:index/feedback', authenticate, async (req, res) => {
+		const { params: { groupId, index }, body: feedback } = req
+		const entry = await setMessageFeedback(groupId, Number(index), feedback)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
 
-	router.post('/api/parts/shells\\:chat/:chatid/message', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { reply } } = req
+	router.post('/api/parts/shells\\:chat/groups/:groupId/message', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { reply } } = req
 		reply.files = reply?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		const entry = await addUserReply(chatid, reply)
+		const entry = await addUserReply(groupId, reply)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
 
-	router.post('/api/parts/shells\\:chat/:chatid/trigger-reply', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { charname } } = req
-		await triggerCharReply(chatid, charname)
+	router.post('/api/parts/shells\\:chat/groups/:groupId/trigger-reply', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { charname } } = req
+		await triggerCharReply(groupId, charname)
 		res.status(200).json({ success: true })
 	})
 
-	router.put('/api/parts/shells\\:chat/:chatid/char/:charname/frequency', authenticate, async (req, res) => {
-		const { params: { chatid, charname }, body: { frequency } } = req
-		await setCharSpeakingFrequency(chatid, charname, frequency)
+	router.put('/api/parts/shells\\:chat/groups/:groupId/char/:charname/frequency', authenticate, async (req, res) => {
+		const { params: { groupId, charname }, body: { frequency } } = req
+		await setCharSpeakingFrequency(groupId, charname, frequency)
 		res.status(200).json({ success: true })
 	})
 
-	router.put('/api/parts/shells\\:chat/:chatid/world', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { worldname } } = req
-		await setWorld(chatid, worldname)
+	router.put('/api/parts/shells\\:chat/groups/:groupId/world', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { worldname } } = req
+		await setWorld(groupId, worldname)
 		res.status(200).json({ success: true })
 	})
 
-	router.put('/api/parts/shells\\:chat/:chatid/persona', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { personaname } } = req
-		await setPersona(chatid, personaname)
+	router.put('/api/parts/shells\\:chat/groups/:groupId/persona', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { personaname } } = req
+		await setPersona(groupId, personaname)
 		res.status(200).json({ success: true })
 	})
 
-	router.post('/api/parts/shells\\:chat/:chatid/char', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { charname } } = req
-		await addchar(chatid, charname)
+	router.post('/api/parts/shells\\:chat/groups/:groupId/char', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { charname } } = req
+		await addchar(groupId, charname)
 		res.status(200).json({ success: true })
 	})
 
-	router.delete('/api/parts/shells\\:chat/:chatid/char/:charname', authenticate, async (req, res) => {
-		const { chatid, charname } = req.params
-		await removechar(chatid, charname)
+	router.delete('/api/parts/shells\\:chat/groups/:groupId/char/:charname', authenticate, async (req, res) => {
+		const { groupId, charname } = req.params
+		await removechar(groupId, charname)
 		res.status(200).json({ success: true })
 	})
 
-	router.post('/api/parts/shells\\:chat/:chatid/plugin', authenticate, async (req, res) => {
-		const { params: { chatid }, body: { pluginname } } = req
-		await addplugin(chatid, pluginname)
+	router.post('/api/parts/shells\\:chat/groups/:groupId/plugin', authenticate, async (req, res) => {
+		const { params: { groupId }, body: { pluginname } } = req
+		await addplugin(groupId, pluginname)
 		res.status(200).json({ success: true })
 	})
 
-	router.delete('/api/parts/shells\\:chat/:chatid/plugin/:pluginname', authenticate, async (req, res) => {
-		const { chatid, pluginname } = req.params
-		await removeplugin(chatid, pluginname)
+	router.delete('/api/parts/shells\\:chat/groups/:groupId/plugin/:pluginname', authenticate, async (req, res) => {
+		const { groupId, pluginname } = req.params
+		await removeplugin(groupId, pluginname)
 		res.status(200).json({ success: true })
-	})
-
-	const handleCreateNewChat = async (req, res) => {
-		const { username } = await getUserByReq(req)
-		res.status(200).json({ chatid: await newChat(username) })
-	}
-	router.post('/api/parts/shells\\:chat/new', authenticate, handleCreateNewChat)
-	// Regex fallback for routers that do not consistently parse escaped ":" route strings.
-	router.post(/^\/api\/parts\/shells:chat\/new$/, authenticate, handleCreateNewChat)
-
-	router.get('/api/parts/shells\\:chat/getchatlist', authenticate, async (req, res) => {
-		res.status(200).json(await getChatList((await getUserByReq(req)).username))
-	})
-
-	router.delete('/api/parts/shells\\:chat/delete', authenticate, async (req, res) => {
-		const result = await deleteChat(req.body.chatids, (await getUserByReq(req)).username)
-		res.status(200).json(result)
-	})
-
-	router.post('/api/parts/shells\\:chat/copy', authenticate, async (req, res) => {
-		const result = await copyChat(req.body.chatids, (await getUserByReq(req)).username)
-		res.status(200).json(result)
-	})
-
-	router.post('/api/parts/shells\\:chat/export', authenticate, async (req, res) => {
-		const result = await exportChat(req.body.chatids)
-		res.status(200).json(result)
-	})
-
-	router.post('/api/parts/shells\\:chat/import', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const result = await importChat(req.body, username)
-		res.status(result.success ? 200 : 400).json(result)
 	})
 
 	router.post('/api/parts/shells\\:chat/addfile', authenticate, async (req, res) => {
@@ -213,20 +249,5 @@ export function setEndpoints(router) {
 		const { hash } = req.query
 		const data = await getfile(username, hash)
 		res.status(200).send(data)
-	})
-
-	router.get('/virtual_files/parts/shells\\:chat/:chatid', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const exportResult = await exportChat([chatid])
-		if (!exportResult[0]?.success)
-			return res.status(500).json({ message: exportResult[0]?.message || 'Failed to export chat' })
-
-		const chatData = exportResult[0].data
-		const filename = `chat-${chatid}.json`
-		const fileContents = JSON.stringify(chatData, null, '\t')
-
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`)
-		res.setHeader('Content-Type', 'application/json; charset=utf-8')
-		res.send(fileContents)
 	})
 }

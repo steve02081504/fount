@@ -44,9 +44,9 @@ export async function expandInlineEmojiTokens(text, resolveEmojiUrl) {
  */
 export function expandInlineChannelLinks(text) {
 	let s = text.replace(CHANNEL_LINK, (_m, gid, cid) =>
-		`[#${gid}/${cid}](/parts/shells:chat/#${encodeURIComponent(gid)}:${encodeURIComponent(cid)})`)
+		`[#${gid}/${cid}](/parts/shells:chat/hub/#group:${encodeURIComponent(gid)}:${encodeURIComponent(cid)})`)
 	s = s.replace(GROUP_LINK, (_m, gid) =>
-		`[#${gid}](/parts/shells:chat/#${encodeURIComponent(gid)})`)
+		`[#${gid}](/parts/shells:chat/hub/#group:${encodeURIComponent(gid)}:default)`)
 	return s
 }
 

@@ -12,7 +12,7 @@ export let currentChatId = null
  * @returns {Promise<any>} - 响应数据。
  */
 async function callApi(endpoint, method = 'POST', body) {
-	const response = await fetch(`/api/parts/shells:chat/${currentChatId}/${endpoint}`, {
+	const response = await fetch(`/api/parts/shells:chat/groups/${currentChatId}/${endpoint}`, {
 		method,
 		headers: { 'Content-Type': 'application/json' },
 		body: body ? JSON.stringify(body) : undefined,
@@ -30,20 +30,21 @@ async function callApi(endpoint, method = 'POST', body) {
  * @returns {Promise<string>} - 新聊天的ID。
  */
 export async function createNewChat() {
-	const response = await fetch('/api/parts/shells:chat/new', {
+	const response = await fetch('/api/parts/shells:chat/groups/new', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
 		},
 		credentials: 'include',
+		body: JSON.stringify({}),
 	})
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok)
 		throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
-	if (!data?.chatid)
-		throw new Error('API response missing chatid')
-	currentChatId = data.chatid
-	return data.chatid
+	if (!data?.groupId)
+		throw new Error('API response missing groupId')
+	currentChatId = data.groupId
+	return data.groupId
 }
 
 /**
@@ -210,5 +211,24 @@ export function getInitialData() {
 	return callApi('initial-data', 'GET')
 }
 
-if (window.location.hash)
-	currentChatId = window.location.hash.substring(1)
+/**
+ * 获取当前用户会话摘要列表（供切换器等 UI）。
+ * @returns {Promise<Array<Record<string, unknown>>>} 会话摘要数组，失败或异常时为空数组
+ */
+export async function getChatListForUi() {
+	const response = await fetch('/api/parts/shells:chat/groups/list', { credentials: 'include' })
+	if (!response.ok) return []
+	const list = await response.json().catch(() => [])
+	return Array.isArray(list) ? list : []
+}
+
+{
+	const raw = (window.location.hash || '').replace(/^#/u, '')
+	if (raw.startsWith('group:')) {
+		const rest = raw.slice('group:'.length)
+		const i = rest.indexOf(':')
+		currentChatId = (i === -1 ? rest : rest.slice(0, i)) || null
+	}
+	else if (raw && !raw.includes(':'))
+		currentChatId = raw
+}

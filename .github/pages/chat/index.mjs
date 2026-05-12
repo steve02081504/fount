@@ -255,19 +255,15 @@ function getStreamBuf(sid) {
  * @param {string} sid 流会话 ID
  * @param {number} seq 分片序号
  * @param {string} text 分片文本
- * @param {(sid: string, seq: number) => void} nack 缺口时触发的 NACK 回调
  * @returns {void} 无返回值
  */
-function addStreamChunk(sid, seq, text, nack) {
+function addStreamChunk(sid, seq, text) {
 	const buf = getStreamBuf(sid)
 	buf.chunks.set(seq, text)
 	// 找连续前缀
 	let i = 0
 	while (buf.chunks.has(i)) i++
-	// 检测缺口
-	const maxSeq = Math.max(...buf.chunks.keys())
-	for (let j = i; j <= maxSeq; j++)
-		if (!buf.chunks.has(j)) nack(sid, j)
+	// VOLATILE 无联邦 NACK（§6.4）；缺口不触发补传协议
 	// 更新 UI
 	if (!buf.el) {
 		buf.el = document.createElement('div')
@@ -416,20 +412,6 @@ let ws = null
 let lastEventId = null
 
 /**
- * 通过 WebSocket 发送流分片缺失的 NACK。
- * @param {string} pendingStreamId 待补全的流 ID
- * @param {number} missingSeq 缺失的分片序号
- * @returns {Promise<void>} 无有意义返回值
- */
-async function sendNack(pendingStreamId, missingSeq) {
-	if (!ws || ws.readyState !== WebSocket.OPEN) return
-	try {
-		ws.send(JSON.stringify({ type: 'stream_chunk_nack', pendingStreamId, missingSeq }))
-	}
-	catch { /* ignore */ }
-}
-
-/**
  * 从 REST 拉取群 Checkpoint 并写入 IndexedDB。
  * @param {IDBDatabase} db 数据库实例
  * @param {string} groupId 群组 ID
@@ -439,13 +421,18 @@ async function sendNack(pendingStreamId, missingSeq) {
 async function loadCheckpoint(db, groupId, origin) {
 	const base = `${origin}/api/parts/shells:chat`
 	try {
-		const r = await fetch(`${base}/${encodeURIComponent(groupId)}/checkpoint`, fetchOpts())
+		const r = await fetch(`${base}/groups/${encodeURIComponent(groupId)}/snapshot`, fetchOpts())
 		if (!r.ok) {
 			log(geti18n(`${PREFIX}.groupCpFail`, { status: r.status }))
 			return null
 		}
-		const cp = await r.json()
-		await dbPut(db, 'checkpoints', { groupId, ...cp })
+		const body = await r.json()
+		const cp = body?.snapshot ?? null
+		if (!cp || typeof cp !== 'object') {
+			log(geti18n(`${PREFIX}.groupCpFail`, { status: 'no snapshot' }))
+			return null
+		}
+		await dbPut(db, 'checkpoints', { groupId, snapshot: cp })
 		lastCpEpoch = cp.epoch_id ?? '?'
 		refreshCpStatus()
 		log(geti18n(`${PREFIX}.groupCpOk`, { epoch: cp.epoch_id ?? '?', pins: '{}' }))
@@ -587,7 +574,7 @@ async function connect(db, identity) {
 				const sid = msg.pendingStreamId || msg.pending_stream_id
 				const seq = Number(msg.chunkSeq ?? msg.chunk_seq ?? 0)
 				const text = msg.content?.text || msg.text || ''
-				if (sid) addStreamChunk(sid, seq, text, (s, n) => sendNack(s, n))
+				if (sid) addStreamChunk(sid, seq, text)
 			}
 			else if (msg.type === 'group_stream_end' || msg.type === 'stream_end') {
 				const sid = msg.pendingStreamId || msg.pending_stream_id

@@ -16,15 +16,11 @@ import { processButtonList } from './registry_processor.mjs'
 {
 	"home_function_buttons": [ // 这将显示在主页的功能按钮中
 		{
-			info: {
-				"zh-CN": {
-					title: "浏览所有聊天记录",
-				}
-			},
-			level: 0, // level越高，优先级越高
-			url: "/parts/shells:chat/list",
-			onclick: "window.open('/parts/shells:chat/list')", //可选的自定义点击事件，如果不写则默认href为url
-			button: "<img src=\"https://example.com/icon.png\" />", //可选的自定义按钮，如果不写，则默认使用一个问号图标
+			"level": 1,
+			"info": "chat.home_function_buttons.chatHub",
+			"url": "/parts/shells:chat/hub/",
+			"onclick": "window.open('/parts/shells:chat/hub/')",
+			"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\" />"
 		}
 	],
 	"home_char_interfaces": [ // 这将显示在主页的每个角色的界面中（假若该角色支持目标interface）

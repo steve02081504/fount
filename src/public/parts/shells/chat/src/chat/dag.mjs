@@ -1,11 +1,11 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { access, mkdir, appendFile, readFile, readdir, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
 import { geti18n } from '../../../../../../scripts/i18n.mjs'
-import { buildCheckpointPayload, buildFileFoldersSnapshot, signCheckpoint } from '../../../../../../scripts/p2p/checkpoint.mjs'
-import { DEFAULT_MAX_CATCHUP_EVENTS, EPOCH_CHAIN_MAX } from '../../../../../../scripts/p2p/constants.mjs'
+import { buildCheckpointPayload, signCheckpoint } from '../../../../../../scripts/p2p/checkpoint.mjs'
+import { DEFAULT_LOGICAL_STREAM_IDLE_MS, DEFAULT_MAX_CATCHUP_EVENTS, EPOCH_CHAIN_MAX } from '../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, sign } from '../../../../../../scripts/p2p/crypto.mjs'
 import {
 	computeEventId,
@@ -13,7 +13,6 @@ import {
 	topologicalCanonicalOrder,
 } from '../../../../../../scripts/p2p/dag.mjs'
 import { nextHlc } from '../../../../../../scripts/p2p/hlc.mjs'
-import { verifyHomeTransferThreshold, verifyOwnerSuccessionThreshold } from '../../../../../../scripts/p2p/home_transfer_ballot.mjs'
 import {
 	adminPubKeyHashes,
 	emptyMaterializedState,
@@ -21,10 +20,13 @@ import {
 	materializeFromCheckpoint,
 	memberChannelPermissions,
 } from '../../../../../../scripts/p2p/materialized_state.mjs'
+import { verifyOwnerSuccessionThreshold } from '../../../../../../scripts/p2p/owner_succession_ballot.mjs'
+import { createDefaultRoles } from '../../../../../../scripts/p2p/permissions.mjs'
 
 import { gcLogContextSidecars } from './context_sidecar.mjs'
-import { readJsonl, appendJsonl } from './dag_storage.mjs'
+import { readJsonl, appendJsonlSynced, writeJsonAtomic } from './dag_storage.mjs'
 import { PUB_KEY_HASH_HEX, unsignedEventFields, validateSignature } from './dag_validator.mjs'
+import { isPubKeyHashBlocked } from './dm_blocklist.mjs'
 import {
 	ensureFederationRoom,
 	getFederationConfig,
@@ -33,11 +35,17 @@ import {
 import {
 	chatDir,
 	chatsRoot,
-	checkpointPath,
+	snapshotPath,
 	eventsPath,
 	messagesPath,
 	shellChatRoot,
 } from './paths.mjs'
+import {
+	applyDecayCollusionAfterSlash,
+	applyReputationResetToScores,
+	applySubjectiveSlashFromEvent,
+	seedMemberReputationFromIntroducer,
+} from './reputation.mjs'
 import { deleteFileAesKey } from './storage.mjs'
 import { safeReadJson, safeRm, rethrowUnlessEnoentOrEnotdir } from './utils.mjs'
 import { broadcastEvent, verifyPowSolution } from './websocket.mjs'
@@ -85,7 +93,7 @@ async function publishEventToFederation(username, chatId, signPayload) {
  * @param {{ logFailures?: boolean }} [opts] 是否在控制台输出丢弃原因
  * @returns {Promise<'ok' | 'dup' | 'invalid'>} 写入结果
  */
-async function appendValidatedRemoteEvent(username, chatId, signPayload, opts = {}) {
+export async function appendValidatedRemoteEvent(username, chatId, signPayload, opts = {}) {
 	const logFailures = opts.logFailures !== false
 	if (!signPayload || typeof signPayload !== 'object') return 'invalid'
 	const signedEvent = /** @type {Record<string, unknown>} */ signPayload
@@ -110,7 +118,17 @@ async function appendValidatedRemoteEvent(username, chatId, signPayload, opts = 
 		return 'invalid'
 	}
 
-	await appendJsonl(path, signPayload)
+	if (signedEvent.type === 'reputation_reset') {
+		const rt = typeof signedEvent.content?.targetPubKeyHash === 'string'
+			? signedEvent.content.targetPubKeyHash.trim().toLowerCase()
+			: ''
+		if (rt && isPubKeyHashBlocked(username, rt)) {
+			if (logFailures) console.error('federation: drop reputation_reset (target locally blocked)')
+			return 'invalid'
+		}
+	}
+
+	await appendJsonlSynced(path, signPayload)
 	await broadcastAndPersist(username, chatId, /** @type {object} */ signPayload, {})
 	return 'ok'
 }
@@ -135,10 +153,72 @@ async function ingestRemoteEvent(username, chatId, payload) {
 // ─── 写入频道消息流的事件类型 ─────────────────────────────────────────────────
 
 const PERSIST_MESSAGE_TYPES = new Set([
-	'message', 'message_edit', 'message_delete', 'message_feedback',
+	'message', 'message_append', 'message_edit', 'message_delete', 'message_feedback',
 	'vote_cast', 'pin_message', 'unpin_message',
 	'reaction_add', 'reaction_remove',
 ])
+
+/**
+ * @param {object} state 物化群状态
+ * @returns {string} 用于治理权限折叠的频道 id
+ */
+function governanceChannelIdForPermissions(state) {
+	const def = state.groupSettings?.defaultChannelId
+	if (def && state.channels?.[def]) return def
+	const keys = Object.keys(state.channels || {})
+	return keys[0] || 'default'
+}
+
+/**
+ * 主观信誉侧效应：Slash/连坐/reset/新成员初值（§0.1、§0.3、§6.3）。
+ * @param {string} username 用户名
+ * @param {string} chatId 群 ID
+ * @param {object} signPayload 已落盘事件
+ * @returns {Promise<void>}
+ */
+async function applyReputationHooks(username, chatId, signPayload) {
+	if (!signPayload?.type) return
+	if (signPayload.type === 'reputation_slash') {
+		await applySubjectiveSlashFromEvent(username, chatId, signPayload)
+		const { state } = await getState(username, chatId)
+		const target = typeof signPayload.content?.targetPubKeyHash === 'string'
+			? signPayload.content.targetPubKeyHash.trim().toLowerCase()
+			: ''
+		if (target)
+			await applyDecayCollusionAfterSlash(username, chatId, target, state.inviteEdges || [])
+	}
+	if (signPayload.type === 'reputation_reset') {
+		const t = typeof signPayload.content?.targetPubKeyHash === 'string'
+			? signPayload.content.targetPubKeyHash.trim().toLowerCase()
+			: ''
+		if (t) await applyReputationResetToScores(username, chatId, t)
+	}
+	if (signPayload.type === 'member_join') {
+		const sender = String(signPayload.sender || '').trim().toLowerCase()
+		if (/^[0-9a-f]{64}$/iu.test(sender)) {
+			const { state } = await getState(username, chatId)
+			const edges = [...state.inviteEdges || []].reverse()
+			let intro = ''
+			let repE = 1
+			for (const e of edges) {
+				const to = typeof e.to === 'string' ? e.to.trim().toLowerCase() : ''
+				if (to === sender) {
+					intro = typeof e.from === 'string' ? e.from.trim().toLowerCase() : ''
+					if (typeof e.rep_edge === 'number' && Number.isFinite(e.rep_edge)) repE = e.rep_edge
+					break
+				}
+			}
+			const cj = signPayload.content && typeof signPayload.content === 'object' ? signPayload.content : {}
+			if (!intro && typeof cj.introducerPubKeyHash === 'string')
+				intro = cj.introducerPubKeyHash.trim().toLowerCase()
+			const fromMember = state.members?.[sender]
+			const edgeFromJoin = typeof fromMember?.repEdgeFromIntroducer === 'number' && Number.isFinite(fromMember.repEdgeFromIntroducer)
+				? fromMember.repEdgeFromIntroducer
+				: repE
+			await seedMemberReputationFromIntroducer(username, chatId, sender, intro, edgeFromJoin)
+		}
+	}
+}
 
 /**
  * DAG 事件落盘后：WebSocket 广播、按需写频道消息行并刷新 checkpoint。
@@ -150,6 +230,12 @@ const PERSIST_MESSAGE_TYPES = new Set([
  */
 async function broadcastAndPersist(username, chatId, signPayload, persistOpts = {}) {
 	broadcastEvent(chatId, { type: 'dag_event', event: signPayload })
+	try {
+		await applyReputationHooks(username, chatId, signPayload)
+	}
+	catch (e) {
+		console.error('reputation hooks failed', e)
+	}
 	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
 		await rebuildAndSaveCheckpoint(username, chatId, persistOpts)
 		return
@@ -165,8 +251,7 @@ async function broadcastAndPersist(username, chatId, signPayload, persistOpts = 
 		receivedAt: signPayload.received_at,
 	}
 	const channelMessagesPath = messagesPath(username, chatId, channelId)
-	await mkdir(join(channelMessagesPath, '..'), { recursive: true })
-	await appendFile(channelMessagesPath, `${JSON.stringify(msgLine)}\n`, 'utf8')
+	await appendJsonlSynced(channelMessagesPath, msgLine)
 	broadcastEvent(chatId, { type: 'channel_message', channelId, message: msgLine })
 	await rebuildAndSaveCheckpoint(username, chatId, persistOpts)
 	if (signPayload.type === 'message')
@@ -181,7 +266,7 @@ async function broadcastAndPersist(username, chatId, signPayload, persistOpts = 
  * 创建新群：写入创世 `group_meta_update`、默认频道与默认频道设置事件。
  * @param {string} username 用户名
  * @param {object} body 建群参数（群 ID、名称、描述、默认频道与群主公钥哈希等）
- * @returns {Promise<{ groupId: string, checkpoint: object | null }>} 新群 ID 与当前物化检查点
+ * @returns {Promise<{ groupId: string, checkpoint: object | null, defaultChannelId: string }>} 新群 ID、检查点与默认频道
  */
 export async function createGroup(username, body) {
 	const chatId = body.groupId || randomUUID()
@@ -193,14 +278,14 @@ export async function createGroup(username, body) {
 		sender: body.ownerPubKeyHash || 'local',
 		timestamp: Date.now(),
 		hlc: { wall: Date.now(), logical: 0 },
-		prev_event_id: null,
+		prev_event_ids: [],
 		content: { name: body.name || geti18n('chat.group.defaults.groupMetaName'), desc: body.desc || '' },
 		node_id: NODE_ID,
 	}
 	const id = computeEventId(unsignedEventFields(genesisBase))
 	const signPayload = { ...unsignedEventFields(genesisBase), id, signature: '' }
 	await mkdir(chatDir(username, chatId), { recursive: true })
-	await writeFile(eventsPath(username, chatId), `${JSON.stringify(signPayload)}\n`, 'utf8')
+	await appendJsonlSynced(eventsPath(username, chatId), signPayload)
 
 	const initialChannelId = body.defaultChannelId || 'default'
 	await appendEvent(username, chatId, {
@@ -212,6 +297,7 @@ export async function createGroup(username, body) {
 			type: body.defaultChannelType || 'text',
 			name: body.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
 			syncScope: 'group',
+			encryptionScheme: 'mailbox-ecdh',
 		},
 	})
 
@@ -219,11 +305,53 @@ export async function createGroup(username, body) {
 		type: 'group_settings_update',
 		sender: 'local',
 		timestamp: Date.now(),
-		content: { defaultChannelId: initialChannelId },
+		content: {
+			defaultChannelId: initialChannelId,
+			plaintextAllowed: false,
+			logicalStreamIdleMs: DEFAULT_LOGICAL_STREAM_IDLE_MS,
+			streamingSfuWss: null,
+			maxDagPayloadBytes: 262_144,
+			mailboxGeneration: 0,
+		},
 	})
 
-	const { checkpoint } = await getState(username, chatId)
-	return { groupId: chatId, checkpoint }
+	const owner = body.ownerPubKeyHash || 'local'
+	const roles = createDefaultRoles()
+	for (const [roleId, def] of Object.entries(roles)) 
+		await appendEvent(username, chatId, {
+			type: 'role_create',
+			sender: 'local',
+			timestamp: Date.now(),
+			content: {
+				roleId,
+				name: def.name,
+				color: def.color,
+				position: def.position,
+				permissions: def.permissions,
+				isDefault: def.isDefault,
+				isHoisted: def.isHoisted,
+			},
+		})
+	
+	await appendEvent(username, chatId, {
+		type: 'member_join',
+		sender: owner,
+		timestamp: Date.now(),
+		content: {},
+	})
+	await appendEvent(username, chatId, {
+		type: 'role_assign',
+		sender: 'local',
+		timestamp: Date.now(),
+		content: { targetPubKeyHash: owner, roleId: 'admin' },
+	})
+
+	const { checkpoint, state } = await getState(username, chatId)
+	return {
+		groupId: chatId,
+		checkpoint,
+		defaultChannelId: state.groupSettings?.defaultChannelId ?? initialChannelId,
+	}
 }
 
 /**
@@ -248,7 +376,7 @@ export async function ensureChat(username, chatId, options = {}) {
 			name: options.name || geti18n('chat.group.defaults.dmChatName'),
 			desc: options.desc,
 			defaultChannelName: options.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
-			ownerPubKeyHash: options.ownerPubKeyHash,
+			ownerPubKeyHash: options.ownerPubKeyHash || username,
 		})
 		out = { groupId: chatId, created: true }
 	}
@@ -279,11 +407,11 @@ export async function deleteChatData(username, chatId) {
  */
 export async function getState(username, chatId, opts = {}) {
 	const events = await readJsonl(eventsPath(username, chatId))
-	const checkpoint = await safeReadJson(checkpointPath(username, chatId))
+	const checkpoint = await safeReadJson(snapshotPath(username, chatId))
 
 	const order = topologicalCanonicalOrder(events.map(dagEvent => ({
 		id: dagEvent.id,
-		prev_event_id: dagEvent.prev_event_id,
+		prev_event_ids: dagEvent.prev_event_ids,
 		hlc: dagEvent.hlc,
 		node_id: dagEvent.node_id,
 		sender: dagEvent.sender,
@@ -355,7 +483,7 @@ export async function rebuildAndSaveCheckpoint(username, chatId, opts = {}) {
 	if (!events.length) return null
 	const last = events[events.length - 1]
 
-	const previousCheckpoint = await safeReadJson(checkpointPath(username, chatId))
+	const previousCheckpoint = await safeReadJson(snapshotPath(username, chatId))
 
 	const prevTip = previousCheckpoint?.checkpoint_event_id
 	const prevTipIdx = prevTip ? order.indexOf(prevTip) : -1
@@ -390,25 +518,23 @@ export async function rebuildAndSaveCheckpoint(username, chatId, opts = {}) {
 			eventIdsInEpoch = previousCheckpoint.eventIdsInEpoch
 	}
 
-	const home = state.home_node_id || NODE_ID
 	const pins = foldPinOverlay(events)
-	const fileIdx = Object.fromEntries(state.fileIndex ?? new Map())
-	const fileFolders = buildFileFoldersSnapshot(state.fileIndex)
+	const fileIdx = Object.fromEntries(state.messageOverlay?.fileIndex ?? new Map())
 	let checkpointPayload = buildCheckpointPayload({
-		home_node_id: home,
+		local_node_id: null,
 		materialized: state,
 		epoch_id,
 		checkpoint_event_id: last.id,
 		eventIdsInEpoch,
 		overlay: { deletedIds: [], editHistory: {}, reactionCounts: {}, pins, fileIndex: fileIdx },
-		fileFolders,
+		fileFolders: { ...state.fileFolders || {} },
 		epoch_chain,
 	})
 	const secretKey = opts.checkpointOwnerSecretKey
 	if (secretKey && await canUseSecretKeyForCheckpointSignature(state, secretKey))
 		checkpointPayload = await signCheckpoint(checkpointPayload, secretKey)
 	await mkdir(chatDir(username, chatId), { recursive: true })
-	await writeFile(checkpointPath(username, chatId), JSON.stringify(checkpointPayload, null, '\t'), 'utf8')
+	await writeJsonAtomic(snapshotPath(username, chatId), checkpointPayload)
 	return checkpointPayload
 }
 
@@ -429,6 +555,22 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
 // ─── DAG 事件追加 ─────────────────────────────────────────────────────────────
 
 /**
+ * 校验 `message` / `message_append` 可选载荷 `content_ref`（签名字段子集）。
+ * @param {unknown} ref 引用对象
+ * @returns {void}
+ */
+function validateContentRefPayload(ref) {
+	if (!ref || typeof ref !== 'object') throw new Error('content_ref invalid')
+	const r = /** @type {Record<string, unknown>} */ ref
+	const h = typeof r.contentHash === 'string' && /^[0-9a-f]{64}$/iu.test(r.contentHash.trim())
+	const alg = typeof r.alg === 'string' && Boolean(r.alg.trim())
+	const byteLength = typeof r.byteLength === 'number' && Number.isFinite(r.byteLength) && r.byteLength >= 0
+	const loc = typeof r.storageLocator === 'string' && Boolean(r.storageLocator.trim())
+	if (!h || !alg || !byteLength || !loc)
+		throw new Error('content_ref requires contentHash (64 hex), alg, byteLength, storageLocator')
+}
+
+/**
  * 追加一条 DAG 事件：分配 HLC、可选本地签名、规则校验后写入并广播。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
@@ -437,22 +579,6 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
  * @returns {Promise<object>} 写入后的完整签名载荷对象
  */
 export async function appendEvent(username, chatId, event, secretKey) {
-	if (event.type === 'home_transfer') {
-		const { state } = await getState(username, chatId)
-		const admins = adminPubKeyHashes(state)
-		const content = event.content || {}
-		if (admins.size > 0) {
-			const sigs = content.adminSignatures
-			if (!Array.isArray(sigs) || !sigs.length) throw new Error('home_transfer requires adminSignatures')
-			const ok = await verifyHomeTransferThreshold({
-				proposedHomeNodeId: content.proposedHomeNodeId,
-				groupId: chatId,
-				ballotId: content.ballotId || '',
-				adminSignatures: sigs,
-			}, admins)
-			if (!ok) throw new Error('home_transfer threshold verification failed')
-		}
-	}
 	if (event.type === 'owner_succession_ballot') {
 		const { state } = await getState(username, chatId)
 		const admins = adminPubKeyHashes(state)
@@ -471,9 +597,11 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	}
 	if (event.type === 'member_join') {
 		const { state } = await getState(username, chatId)
-		const joinPolicy = state.groupSettings?.joinPolicy || 'open'
+		const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 		const content = event.content || {}
-		if (joinPolicy === 'invite-only' && !content.inviteCode) throw new Error('member_join requires inviteCode')
+		const activeBefore = Object.values(state.members || {}).filter(m => m?.status === 'active').length
+		if (joinPolicy === 'invite-only' && !content.inviteCode && activeBefore > 0)
+			throw new Error('member_join requires inviteCode')
 		if (joinPolicy === 'pow') {
 			const powDifficulty = Number(state.groupSettings?.powDifficulty) || 0
 			if (powDifficulty <= 0) throw new Error('pow joinPolicy requires powDifficulty >= 1')
@@ -487,10 +615,43 @@ export async function appendEvent(username, chatId, event, secretKey) {
 		const perms = memberChannelPermissions(state, event.sender, channelId)
 		if (!perms.SEND_MESSAGES) throw new Error('SEND_MESSAGES denied')
 	}
+	if (event.type === 'message') {
+		const mc = event.content && typeof event.content === 'object' ? event.content : {}
+		if (mc.content_ref && typeof mc.content_ref === 'object')
+			validateContentRefPayload(mc.content_ref)
+	}
+	if (event.type === 'message_append' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
+		const channelIdAppend = event.channelId || event.content?.channelId || 'default'
+		const { state: stAppend } = await getState(username, chatId)
+		const permsAppend = memberChannelPermissions(stAppend, event.sender, channelIdAppend)
+		if (!permsAppend.SEND_MESSAGES) throw new Error('SEND_MESSAGES denied')
+		const ac = event.content && typeof event.content === 'object' ? event.content : {}
+		if (!String(ac.logical_stream_id || '').trim()) throw new Error('message_append requires content.logical_stream_id')
+		if (ac.content_ref && typeof ac.content_ref === 'object')
+			validateContentRefPayload(ac.content_ref)
+	}
 	if (event.type === 'file_upload' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
 		const { state } = await getState(username, chatId)
 		const perms = memberChannelPermissions(state, event.sender, 'default')
 		if (!perms.UPLOAD_FILES) throw new Error('UPLOAD_FILES denied')
+	}
+	if (event.type === 'reputation_reset') {
+		const cr = event.content || {}
+		const tgt = typeof cr.targetPubKeyHash === 'string' ? cr.targetPubKeyHash.trim().toLowerCase() : ''
+		if (tgt && isPubKeyHashBlocked(username, tgt))
+			throw new Error('reputation_reset ignored for locally blocked target')
+		const { state } = await getState(username, chatId)
+		const ch = governanceChannelIdForPermissions(state)
+		const m = state.members[event.sender]
+		if (!m || m.status !== 'active') throw new Error('reputation_reset requires active membership')
+		const perms = memberChannelPermissions(state, event.sender, ch)
+		if (!perms.ADMIN && !perms.MANAGE_ROLES) throw new Error('reputation_reset requires ADMIN or MANAGE_ROLES')
+	}
+	const authzLedgerTypes = new Set(['peer_invite', 'reputation_slash', 'reputation_reset'])
+	if (authzLedgerTypes.has(event.type)) {
+		const { state } = await getState(username, chatId)
+		const m = state.members[event.sender]
+		if (!m || m.status !== 'active') throw new Error('authz event requires active member sender')
 	}
 	const roleMgmtTypes = new Set(['role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke'])
 	if (roleMgmtTypes.has(event.type) && PUB_KEY_HASH_HEX.test(String(event.sender))) {
@@ -503,11 +664,14 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	const prev = await readJsonl(eventsPath(username, chatId))
 	const last = prev[prev.length - 1]
 	const hlc = nextHlc(last?.hlc, event.timestamp)
+	const prevFromCaller = Array.isArray(event.prev_event_ids) && event.prev_event_ids.length
+		? event.prev_event_ids
+		: last?.id ? [last.id] : []
 	const base = {
 		...event,
 		groupId: chatId,
 		hlc,
-		prev_event_id: last?.id ?? null,
+		prev_event_ids: prevFromCaller,
 		received_at: Date.now(),
 		isRemote: !!event.isRemote,
 		node_id: event.node_id || NODE_ID,
@@ -529,7 +693,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	const { state: stateForSignature } = await getState(username, chatId)
 	await validateSignature(username, chatId, body, signPayload, event, secretKey, stateForSignature)
 
-	await appendJsonl(eventsPath(username, chatId), signPayload)
+	await appendJsonlSynced(eventsPath(username, chatId), signPayload)
 	await broadcastAndPersist(username, chatId, signPayload, { checkpointOwnerSecretKey: secretKey })
 	await publishEventToFederation(username, chatId, signPayload)
 
@@ -734,24 +898,6 @@ export async function appendOwnerSuccessionBallot(username, chatId, body) {
 }
 
 /**
- * 提交「超级节点 Home 迁移」治理事件（需达到管理员阈值联署，与 `verifyHomeTransferThreshold` 一致）。
- * @param {string} username 用户名
- * @param {string} chatId 群组 ID
- * @param {{ proposedHomeNodeId: string, ballotId: string, adminSignatures: object[], sender?: string }} body 目标节点、选票 ID 与管理员签名表
- * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
- */
-export async function appendHomeTransfer(username, chatId, body) {
-	const { proposedHomeNodeId, ballotId, adminSignatures, sender = 'local' } = body
-	if (!proposedHomeNodeId || !ballotId) throw new Error('proposedHomeNodeId and ballotId required')
-	return appendEvent(username, chatId, {
-		type: 'home_transfer',
-		sender,
-		timestamp: Date.now(),
-		content: { proposedHomeNodeId, ballotId, adminSignatures },
-	})
-}
-
-/**
  * 将群文件元数据写入 DAG（不含明文 `aesKey`，密钥经 checkpoint 侧信道分发）。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
@@ -920,7 +1066,7 @@ export async function listUserGroupsWithMeta(username) {
 	const ids = await listUserGroups(username)
 	return Promise.all(ids.map(async id => {
 		let name = id
-		const loadedCheckpoint = await safeReadJson(checkpointPath(username, id))
+		const loadedCheckpoint = await safeReadJson(snapshotPath(username, id))
 		if (loadedCheckpoint?.groupMeta?.name) name = loadedCheckpoint.groupMeta.name
 		return { id, name }
 	}))
@@ -945,8 +1091,8 @@ export async function getDefaultChannelId(username, chatId) {
 		const { state } = await getState(username, chatId)
 		if (state.groupSettings?.defaultChannelId)
 			return String(state.groupSettings.defaultChannelId)
-		const firstChannel = state.channels.keys().next().value
-		return firstChannel || 'default'
+		const ids = Object.keys(state.channels || {})
+		return ids[0] || 'default'
 	}
 	catch {
 		return 'default'
@@ -1026,7 +1172,7 @@ export async function pruneEventsJsonlAfterCheckpoint(username, chatId, checkpoi
 	let checkpoint = checkpointHint
 	if (!checkpoint) 
 		try {
-			checkpoint = JSON.parse(await readFile(checkpointPath(username, chatId), 'utf8'))
+			checkpoint = JSON.parse(await readFile(snapshotPath(username, chatId), 'utf8'))
 		}
 		catch {
 			return { pruned: false, kept: 0, dropped: 0 }
@@ -1043,7 +1189,7 @@ export async function pruneEventsJsonlAfterCheckpoint(username, chatId, checkpoi
 
 	const order = topologicalCanonicalOrder(events.map(dagEvent => ({
 		id: dagEvent.id,
-		prev_event_id: dagEvent.prev_event_id,
+		prev_event_ids: dagEvent.prev_event_ids,
 		hlc: dagEvent.hlc,
 		node_id: dagEvent.node_id,
 		sender: dagEvent.sender,
@@ -1061,9 +1207,21 @@ export async function pruneEventsJsonlAfterCheckpoint(username, chatId, checkpoi
 	return { pruned: true, kept: kept.length, dropped }
 }
 
+/**
+ * 供联邦层解析 Trystero 房间名时读取物化状态（避免 `federation.mjs` 与 `dag.mjs` 循环依赖）。
+ * @param {string} username 用户名
+ * @param {string} chatId 群组 ID
+ * @returns {Promise<{ state: object }>} 物化状态
+ */
+async function getStateForFederation(username, chatId) {
+	const { state } = await getState(username, chatId)
+	return { state }
+}
+
 initFederationDagDeps({
 	nodeId: NODE_ID,
 	readJsonl,
 	appendValidatedRemoteEvent,
 	ingestRemoteEvent,
+	getStateForFederation,
 })

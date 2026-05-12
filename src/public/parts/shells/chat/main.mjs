@@ -1,8 +1,11 @@
-import { hosturl } from '../../../../server/server.mjs'
-
+import { setEndpoints as registerChannelRoutesUnderChat } from './src/channels/endpoints.mjs'
+import { broadcastEvent, countGroupSockets, registerSocket } from './src/chat/websocket.mjs'
+import { wireHubShellWebSockets } from './src/chat.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
-import { setGroupEndpoints } from './src/group_endpoints.mjs'
 import { cleanFilesInterval } from './src/files.mjs'
+import { setGroupEndpoints } from './src/group_endpoints.mjs'
+import { setEndpoints as registerProfileRoutesUnderChat } from './src/profile/endpoints.mjs'
+import { setEndpoints as registerStickerRoutesUnderChat } from './src/stickers/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -36,8 +39,12 @@ export default {
 	 */
 	Load: ({ router }) => {
 		loading_count++
-		setEndpoints(router)
+		wireHubShellWebSockets({ broadcastEvent, registerSocket, countGroupSockets })
 		setGroupEndpoints(router)
+		setEndpoints(router)
+		registerChannelRoutesUnderChat(router, '/api/parts/shells:chat/channels')
+		registerProfileRoutesUnderChat(router, '/api/parts/shells:chat/profile')
+		registerStickerRoutesUnderChat(router, '/api/parts/shells:chat/stickers')
 	},
 	/**
 	 * 卸载聊天Shell，减少加载计数并在必要时清理定时器。
@@ -65,17 +72,14 @@ export default {
 					case 'start':
 						params = { charName: args[1] }
 						result = await handleAction(user, command, params)
-						console.log(`Started new chat at: ${hosturl}/parts/shells:chat/#${result}`)
 						break
 					case 'asjson':
 						params = { chatInfo: JSON.parse(args[1]) }
 						result = await handleAction(user, command, params)
-						console.log(`Loaded chat from JSON: ${args[1]}`)
 						break
 					case 'load':
 						params = { chatId: args[1] }
 						result = await handleAction(user, command, params)
-						console.log(`Continue chat at: ${hosturl}/parts/shells:chat/#${result}`)
 						break
 					case 'tail':
 						params = { chatId: args[1], n: Number(args[2] || '5') }
@@ -87,12 +91,10 @@ export default {
 					case 'send':
 						params = { chatId: args[1], message: { content: args[2] } }
 						await handleAction(user, command, params)
-						console.log(`Message sent to chat ${args[1]}`)
 						break
 					case 'edit-message':
 						params = { chatId: args[1], index: Number(args[2]), newContent: { content: args.slice(3).join(' ') } }
 						await handleAction(user, command, params)
-						console.log(`Message at index ${args[2]} in chat ${args[1]} edited.`)
 						break
 					default: {
 						const [chatId, ...rest] = args.slice(1)

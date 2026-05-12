@@ -324,7 +324,7 @@ export async function runApplyGroupHashDom({
 	 * @returns {Promise<void>} 更新完成并已刷新 state/messages 时 resolve
 	 */
 	const switchChannelType = async (newType, setAsDefault = false) => {
-		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/common/${encodeURIComponent(channelId)}`, {
+		const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ type: newType }),

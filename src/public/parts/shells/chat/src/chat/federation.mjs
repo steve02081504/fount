@@ -1,7 +1,10 @@
+import { readFile } from 'node:fs/promises'
+
 import { loadShellData } from '../../../../../../server/setting_loader.mjs'
 
-import { eventsPath } from './paths.mjs'
+import { snapshotPath, eventsPath } from './paths.mjs'
 import { normalizeJsonBoundaryValue } from './remoteProxy.mjs'
+import { computeArchiveSummary, recordGossipAllUnknownWant } from './reputation.mjs'
 
 
 /**
@@ -10,6 +13,7 @@ import { normalizeJsonBoundaryValue } from './remoteProxy.mjs'
  *   readJsonl: (path: string) => Promise<object[]>
  *   appendValidatedRemoteEvent: (username: string, chatId: string, signPayload: object, opts?: { logFailures?: boolean }) => Promise<'ok' | 'dup' | 'invalid'>
  *   ingestRemoteEvent: (username: string, chatId: string, payload: unknown) => Promise<void>
+ *   getStateForFederation?: (username: string, chatId: string) => Promise<{ state: object }>
  * }} FederationDagDeps
  */
 
@@ -48,10 +52,12 @@ export function getFederationConfig(username) {
 
 /**
  * @typedef {{
+ *   trysteroRoomName: string,
  *   room: any,
  *   sendDag: (payload: unknown, peerId: string | null) => void,
  *   sendGossipRequest: (payload: unknown, peerId: string | null) => void,
  *   sendGossipResponse: (payload: unknown, peerId: string | null) => void,
+ *   getRoster: () => Array<{ peerId: string, remoteNodeId: string | undefined }>,
  *   getPeerIdByNodeId: (nodeId: string) => string | null,
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void,
  * }} FederationSlot
@@ -61,6 +67,9 @@ export function getFederationConfig(username) {
 const federationRoomInflight = new Map()
 /** @type {Map<string, FederationSlot | null>} */
 const federationRooms = new Map()
+/** 与 `invalidateFederationRoomCache` / 房间名变更配合，丢弃过期的 join 结果。 */
+/** @type {Map<string, number>} */
+const federationRoomRebindGeneration = new Map()
 
 const gossipRequestDedupe = new Map()
 const GOSSIP_DEDUPE_MS = 30_000
@@ -68,6 +77,135 @@ const GOSSIP_DEDUPE_MS = 30_000
 /** @type {Map<string, Array<{ resolve: () => void, timer: ReturnType<typeof setTimeout> }>>} */
 const pendingGossipRequests = new Map()
 const GOSSIP_RESPONSE_WAIT_MS = 3000
+
+/** 入站 wantIds 批处理速率：每邻居每窗口 §9 */
+const GOSSIP_IN_WINDOW_MS = 60_000
+const GOSSIP_IN_MAX_BATCH = 32
+/** @type {Map<string, { count: number, resetAt: number }>} */
+const gossipInboundWantRate = new Map()
+
+/** 出站 gossip_request：每群每窗口 §9（本机发起补洞） */
+const GOSSIP_OUT_WINDOW_MS = 60_000
+const GOSSIP_OUT_MAX_BATCH = 16
+/** @type {Map<string, { count: number, resetAt: number }>} */
+const gossipOutboundWantRate = new Map()
+
+/**
+ * @param {string} username 用户名
+ * @param {string} chatId 群 ID
+ * @returns {boolean} 未超出站预算时为 true
+ */
+function takeOutgoingGossipWantSlot(username, chatId) {
+	const key = `${username}\0${chatId}`
+	const now = Date.now()
+	let e = gossipOutboundWantRate.get(key)
+	if (!e || now > e.resetAt)
+		e = { count: 0, resetAt: now + GOSSIP_OUT_WINDOW_MS }
+	if (e.count >= GOSSIP_OUT_MAX_BATCH) return false
+	e.count++
+	gossipOutboundWantRate.set(key, e)
+	if (gossipOutboundWantRate.size > 4000)
+		for (const [k, v] of gossipOutboundWantRate)
+			if (now > v.resetAt + 120_000) gossipOutboundWantRate.delete(k)
+	return true
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} chatId 群 ID
+ * @param {string} requesterId 对端节点 id
+ * @returns {boolean} 未超限则为 true
+ */
+function takeIncomingGossipWantSlot(username, chatId, requesterId) {
+	const key = `${username}\0${chatId}\0${requesterId}`
+	const now = Date.now()
+	let e = gossipInboundWantRate.get(key)
+	if (!e || now > e.resetAt)
+		e = { count: 0, resetAt: now + GOSSIP_IN_WINDOW_MS }
+
+	if (e.count >= GOSSIP_IN_MAX_BATCH) return false
+	e.count++
+	gossipInboundWantRate.set(key, e)
+	if (gossipInboundWantRate.size > 8000) 
+		for (const [k, v] of gossipInboundWantRate)
+			if (now > v.resetAt + 120_000) gossipInboundWantRate.delete(k)
+	
+	return true
+}
+
+const EVENT_ID_HEX = /^[0-9a-f]{64}$/iu
+
+/**
+ * §9 存档握手：严格对齐、可合并前缀、或本批 want 中至少一条本地可应答；分叉前沿拒绝整批且不记恶意。
+ * @param {unknown} remoteArc 对端 `archiveSummary`
+ * @param {{ hash: string, n: number, tip: string, cp: string }} localSummary 本机摘要
+ * @param {object[]} localEvents 本机 DAG 行
+ * @param {string[]} wantIds 本批请求的 id
+ * @returns {{ allow: boolean, strictAligned: boolean }} allow=处理 want；strictAligned=摘要完全一致（仅此路径计「全不存在」恶意）
+ */
+function evaluateArchiveHandshake(remoteArc, localSummary, localEvents, wantIds) {
+	if (localSummary.n === 0)
+		return { allow: true, strictAligned: false }
+	if (!remoteArc || typeof remoteArc !== 'object')
+		return { allow: false, strictAligned: false }
+	const o = /** @type {Record<string, unknown>} */ remoteArc
+	if (o.v !== 1) return { allow: false, strictAligned: false }
+	const rn = Number(o.n)
+	if (!Number.isFinite(rn) || rn < 0) return { allow: false, strictAligned: false }
+	if (rn === 0) return { allow: true, strictAligned: false }
+
+	const byId = new Map(localEvents.map(e => [e.id, e]))
+	const anyWantHit = wantIds.some(id => byId.has(id))
+
+	const rh = typeof o.hash === 'string' ? o.hash.trim().toLowerCase() : ''
+	const lh = (localSummary.hash || '').trim().toLowerCase()
+	if (rh.length === 64 && lh.length === 64 && rh === lh)
+		return { allow: true, strictAligned: true }
+
+	const rtRaw = typeof o.tip === 'string' ? o.tip.trim().toLowerCase() : ''
+	const rt = EVENT_ID_HEX.test(rtRaw) ? rtRaw : ''
+	const lt = typeof localSummary.tip === 'string' && EVENT_ID_HEX.test(localSummary.tip)
+		? localSummary.tip.trim().toLowerCase()
+		: ''
+	if (rt && byId.has(rt))
+		return { allow: true, strictAligned: false }
+	if (rt && lt && rt === lt)
+		return { allow: true, strictAligned: false }
+	if (anyWantHit)
+		return { allow: true, strictAligned: false }
+	return { allow: false, strictAligned: false }
+}
+
+/**
+ * @param {{ hash: string, n: number, tip: string, cp: string }} s 本机 `computeArchiveSummary` 结果
+ * @returns {{ v: number, hash: string, n: number, tip: string, cp: string }} 联邦载荷字段
+ */
+function wireArchiveSummary(s) {
+	return {
+		v: 1,
+		hash: s.hash,
+		n: s.n,
+		tip: s.tip || '',
+		cp: s.cp || '',
+	}
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} chatId 群 ID
+ * @param {(path: string) => Promise<object[]>} readJsonl DAG 读行
+ * @returns {Promise<{ events: object[], checkpoint: object | null, summary: { hash: string, n: number } }>} 本地事件、检查点与存档摘要
+ */
+async function loadLocalFederationArchive(username, chatId, readJsonl) {
+	const events = await readJsonl(eventsPath(username, chatId))
+	/** @type {object | null} */
+	let checkpoint = null
+	try {
+		checkpoint = JSON.parse(await readFile(snapshotPath(username, chatId), 'utf8'))
+	}
+	catch { }
+	return { events, checkpoint, summary: computeArchiveSummary(events, checkpoint) }
+}
 
 /**
  * @param {string} dedupeKey 去重键（请求者、wantIds、ttl）
@@ -192,7 +330,46 @@ function federationRoomKey(username, chatId) {
 }
 
 /**
- * 按需加入 `fount-fed-${chatId}` MQTT 房间并订阅 `dag_event`；未启用或失败时返回 null。
+ * Trystero 房间名：`groupMeta.dmKind === 'ecdh'` 且存在 `dmSessionTag` / `dmRoomLabelPrefix` 时用确定性 `dm:<tag>`，便于密钥 DM 与对端会合；否则为 `fount-fed-<groupId>`。
+ * @param {string} username 用户名
+ * @param {string} chatId 群组 ID
+ * @returns {Promise<string>} MQTT 房间 id
+ */
+async function resolveTrysteroFedRoomName(username, chatId) {
+	try {
+		const d = requireDagDeps()
+		const load = d.getStateForFederation
+		if (!load) return `fount-fed-${chatId}`
+		const { state } = await load(username, chatId)
+		const m = state?.groupMeta
+		if (m?.dmKind === 'ecdh') {
+			const st = typeof m.dmSessionTag === 'string' ? m.dmSessionTag.trim().toLowerCase().replace(/^0x/iu, '') : ''
+			if (/^[0-9a-f]{64}$/iu.test(st)) return `dm:${st}`
+			const pre = typeof m.dmRoomLabelPrefix === 'string' ? m.dmRoomLabelPrefix.trim().toLowerCase().replace(/^0x/iu, '') : ''
+			if (/^[0-9a-f]{8,64}$/iu.test(pre)) return `dm:${pre}`
+		}
+	}
+	catch {
+		/* 物化失败时回退默认房间名 */
+	}
+	return `fount-fed-${chatId}`
+}
+
+/**
+ * 群联邦连接缓存失效（例如 `POST …/groups/new`（`template: dm`）写入 `group_meta_update` 后房间名从 `fount-fed-<id>` 变为 `dm:<tag>`）。
+ * @param {string} username 用户名
+ * @param {string} chatId 群组 ID
+ * @returns {void}
+ */
+export function invalidateFederationRoomCache(username, chatId) {
+	const key = federationRoomKey(username, chatId)
+	federationRooms.delete(key)
+	federationRoomInflight.delete(key)
+	federationRoomRebindGeneration.set(key, (federationRoomRebindGeneration.get(key) || 0) + 1)
+}
+
+/**
+ * 按需加入 Trystero MQTT 房间（见 `resolveTrysteroFedRoomName`）并订阅 `dag_event`；未启用或失败时返回 null。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
  * @returns {Promise<FederationSlot | null>} 房间句柄与各类发送函数，或 null
@@ -201,11 +378,19 @@ export async function ensureFederationRoom(username, chatId) {
 	const { enabled, appId, password } = getFederationConfig(username)
 	if (!enabled || !password) return null
 	const key = federationRoomKey(username, chatId)
-	if (federationRooms.has(key)) return federationRooms.get(key)
+	const desiredRoomName = await resolveTrysteroFedRoomName(username, chatId)
+	if (federationRooms.has(key)) {
+		const existing = federationRooms.get(key)
+		if (existing?.trysteroRoomName === desiredRoomName) return existing
+		federationRooms.delete(key)
+		federationRoomRebindGeneration.set(key, (federationRoomRebindGeneration.get(key) || 0) + 1)
+	}
 	if (federationRoomInflight.has(key)) return await federationRoomInflight.get(key)
 
 	const p = (async () => {
+		const genAtJoin = federationRoomRebindGeneration.get(key) || 0
 		const { nodeId, readJsonl, ingestRemoteEvent } = requireDagDeps()
+		const trysteroRoomName = await resolveTrysteroFedRoomName(username, chatId)
 		try {
 			const { joinMqttRoom } = await import('../../../../../../scripts/p2p/federation_trystero.mjs')
 			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
@@ -213,7 +398,7 @@ export async function ensureFederationRoom(username, chatId) {
 				appId,
 				rtcPolyfill: RTCPeerConnection,
 				password,
-			}, `fount-fed-${chatId}`)
+			}, trysteroRoomName)
 
 			/** @type {Map<string, string>} peerId → nodeId */
 			const peerToNode = new Map()
@@ -319,25 +504,37 @@ export async function ensureFederationRoom(username, chatId) {
 			const [sendGossipRequest, getGossipRequest] = room.makeAction('gossip_request')
 			const [sendGossipResponse, getGossipResponse] = room.makeAction('gossip_response')
 			getGossipRequest((data, peerId) => {
-				/**
-				 *
-				 */
-				const handleGossipRequest = async () => {
+				void (async () => {
 					if (!data || typeof data !== 'object') return
-					const rawWant = /** @type {{ wantIds?: unknown, ttl?: unknown, requesterId?: unknown }} */ data.wantIds
-					const wantIds = Array.isArray(rawWant)
-						? [...new Set(rawWant.filter(id => typeof id === 'string' && /^[0-9a-f]{64}$/iu.test(id)))]
+					const raw = /** @type {{ wantIds?: unknown, ttl?: unknown, requesterId?: unknown, archiveSummary?: unknown }} */ data
+					const wantIds = Array.isArray(raw.wantIds)
+						? [...new Set(raw.wantIds.filter(id => typeof id === 'string' && /^[0-9a-f]{64}$/iu.test(id)))]
 						: []
 					if (!wantIds.length) return
-					const ttl = Number(/** @type {{ ttl?: unknown }} */ data.ttl)
-					const requesterId = /** @type {{ requesterId?: unknown }} */ data.requesterId
+					const ttl = Number(raw.ttl)
+					const requesterId = raw.requesterId
 					if (!Number.isFinite(ttl) || typeof requesterId !== 'string' || !requesterId) return
+					const { nodeId, readJsonl } = requireDagDeps()
 					if (requesterId === nodeId) return
 					const dedupeKey = `${requesterId}\0${wantIds.slice().sort().join(',')}\0${ttl}`
 					if (!takeGossipRequestSlot(dedupeKey)) return
-					const path = eventsPath(username, chatId)
-					const prev = await readJsonl(path)
+					if (!takeIncomingGossipWantSlot(username, chatId, requesterId)) return
+
+					const localArchive = await loadLocalFederationArchive(username, chatId, readJsonl)
+					const hs = evaluateArchiveHandshake(
+						raw.archiveSummary,
+						localArchive.summary,
+						localArchive.events,
+						wantIds,
+					)
+					if (!hs.allow) return
+
+					const prev = localArchive.events
 					const byId = new Map(prev.map(e => [e.id, e]))
+					const allUnknown = wantIds.length > 0 && wantIds.every(id => !byId.has(id))
+					if (allUnknown && prev.length > 0 && hs.strictAligned)
+						void recordGossipAllUnknownWant(username, chatId, requesterId).catch(e => console.error(e))
+
 					const events = wantIds.map(id => byId.get(id)).filter(Boolean)
 					if (events.length && peerId)
 						try {
@@ -349,24 +546,34 @@ export async function ensureFederationRoom(username, chatId) {
 
 					if (ttl > 0)
 						try {
-							sendGossipRequest({ wantIds, ttl: ttl - 1, requesterId }, null)
+							sendGossipRequest({
+								wantIds,
+								ttl: ttl - 1,
+								requesterId,
+								archiveSummary: raw.archiveSummary,
+							}, null)
 						}
 						catch (e) {
 							console.error('federation: gossip_request forward failed', e)
 						}
-
-				}
-				void handleGossipRequest().catch(e => console.error(e))
+				})().catch(e => console.error(e))
 			})
 			getGossipResponse((data, _peerId) => {
 				void handleGossipResponse(username, chatId, data).catch(e => console.error(e))
 			})
 			/** @type {FederationSlot} */
 			const slot = {
+				trysteroRoomName,
 				room,
 				sendDag,
 				sendGossipRequest,
 				sendGossipResponse,
+				/**
+				 * @returns {{ peerId: string, remoteNodeId: string | undefined }[]} Trystero 对等端与本机推断的 `node_id`
+				 */
+				getRoster() {
+					return [...peerToNode.entries()].map(([peerId, remoteNodeId]) => ({ peerId, remoteNodeId }))
+				},
 				/**
 				 * @param {string} nodeId_ 目标节点 id
 				 * @returns {string | null} 在线对应的 Trystero peerId，未知时为 null
@@ -379,6 +586,7 @@ export async function ensureFederationRoom(username, chatId) {
 				 */
 				sendToPeer(peerId, actionName, payload) { getActionSender(actionName)(payload, peerId) },
 			}
+			if ((federationRoomRebindGeneration.get(key) || 0) !== genAtJoin) return null
 			federationRooms.set(key, slot)
 			return slot
 		}
@@ -395,7 +603,24 @@ export async function ensureFederationRoom(username, chatId) {
 }
 
 /**
- * 统一映射 RPC 错误码：兼容历史 JSON 错误，同时显式区分参数与返回边界非法。
+ * `GET .../peers`：本群 MQTT 房内可见对等端（未启用联邦则为空列表）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @returns {Promise<{ selfNodeId: string, federationEnabled: boolean, peers: { peerId: string, remoteNodeId?: string }[] }>} 本机节点 id、是否启用联邦、对等端列表
+ */
+export async function listFederationPeersForGroup(username, groupId) {
+	const { nodeId } = requireDagDeps()
+	const cfg = getFederationConfig(username)
+	if (!cfg.enabled)
+		return { selfNodeId: nodeId, federationEnabled: false, peers: [] }
+	const slot = await ensureFederationRoom(username, groupId)
+	if (!slot?.getRoster)
+		return { selfNodeId: nodeId, federationEnabled: true, peers: [] }
+	return { selfNodeId: nodeId, federationEnabled: true, peers: slot.getRoster() }
+}
+
+/**
+ * 统一映射 RPC 错误码：区分参数与返回边界非法。
  * @param {unknown} code 原始错误码或异常对象中的 code
  * @returns {string} 对外返回的稳定错误码
  */
@@ -527,8 +752,20 @@ export async function requestMissingEventsGossip(username, chatId, query = {}) {
 				forceResolveGossipWait(username, chatId, stillMissing)
 				return
 			}
+			if (!takeOutgoingGossipWantSlot(username, chatId)) {
+				forceResolveGossipWait(username, chatId, stillMissing)
+				return
+			}
+			const { readJsonl } = requireDagDeps()
+			const localArchive = await loadLocalFederationArchive(username, chatId, readJsonl)
+			const archiveSummary = wireArchiveSummary(localArchive.summary)
 			try {
-				slot.sendGossipRequest({ wantIds: [...stillMissing], ttl: 2, requesterId: nodeId }, null)
+				slot.sendGossipRequest({
+					wantIds: [...stillMissing],
+					ttl: 2,
+					requesterId: nodeId,
+					archiveSummary,
+				}, null)
 			}
 			catch (e) {
 				console.error('federation: gossip_request failed', e)

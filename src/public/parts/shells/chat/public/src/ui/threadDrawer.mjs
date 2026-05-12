@@ -45,7 +45,7 @@ function bindLocalizedTitle(target, key, fallback) {
 }
 
 /**
- * 创建 Discord 风格的 Thread Drawer（群聊主容器内联侧边栏）。
+ * 创建群聊主容器内联的 Thread Drawer（侧边线程面板）。
  *
  * @param {object} params 工厂参数
  * @param {string} params.groupId 群组 ID
@@ -120,7 +120,7 @@ export function createThreadDrawer({ groupId, panel, createThreadRenderer }) {
 	async function fetchAndRender(threadChannelId, renderMessageItem, signal) {
 		if (!refs) return
 		const r = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(threadChannelId)}/messages`,
+			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(threadChannelId)}/messages`,
 		)
 		if (!r.ok) throw new Error(`loadMessages HTTP ${r.status}`)
 		if (signal.aborted) return

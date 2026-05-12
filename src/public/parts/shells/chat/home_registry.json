@@ -1,10 +1,10 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "chat.home_function_buttons.viewHistory",
+			"info": "chat.home_function_buttons.chatHub",
 			"level": 1,
-			"url": "/parts/shells:chat/list",
-			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
+			"url": "/parts/shells:chat/hub/",
+			"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_interfaces": {
@@ -13,7 +13,7 @@
 				"info": "chat.home_char_interfaces.main",
 				"level": 0,
 				"interface": "chat",
-				"url": "/chat?char=${name}",
+				"url": "/parts/shells:chat/new?char=${name}",
 				"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
 			}
 		]

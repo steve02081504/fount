@@ -17,11 +17,9 @@ export interface DAGEvent {
 		wall: number
 		logical: number
 	}
-	prev_event_id: string | null
+	prev_event_ids: string[]
 	content: any
 	signature: string
-	received_at?: number
-	isRemote?: boolean
 }
 
 /**
@@ -29,7 +27,6 @@ export interface DAGEvent {
  */
 export interface GroupState {
 	groupId: string
-	home_node_id: string | null
 	members: Record<string, Member>
 	members_root: string | null
 	members_pages_count: number
@@ -124,13 +121,12 @@ export interface GroupMeta {
  */
 export interface GroupSettings {
 	defaultChannelId: string
-	joinPolicy: 'open' | 'invite-only' | 'pow'
+	joinPolicy: 'invite-only' | 'pow'
 	powDifficulty: number
 	fileSizeLimit: number
 	fileQuotaBytes: number
 	fileUploadPolicy: 'all_members' | 'role_gated'
 	fileReplicationFactor?: number
-	homeCheckpointStaleDays?: number
 	lateMessageFreezeMs?: number
 }
 
@@ -171,7 +167,6 @@ export interface ChunkInfo {
  */
 export interface Checkpoint {
 	groupId: string
-	home_node_id: string | null
 	members_root: string | null
 	members_pages_count: number
 	members_page_0?: Member[]

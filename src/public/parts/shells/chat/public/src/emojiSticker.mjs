@@ -2,8 +2,8 @@
  * 表情包和贴纸发送功能
  */
 
-let emojiPicker = null
-let stickerPicker = null
+const emojiPicker = null
+const stickerPicker = null
 
 /**
  * 初始化表情包功能
@@ -25,6 +25,10 @@ const EMOJI_CATEGORIES = {
 	object: { label: '⚽ 物品', emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🥊','🥋','🎯','⛳','🥅','🏒','🏑','🏏','🪃','🎮','🎲','🧩','🎭','🎨','🎪','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🪕','🎻','🎬','🏆','🥇','🥈','🥉','🏅','🎖️','🎗️','🎫','🎟️'] }
 }
 
+/**
+ * 绑定表情按钮点击，打开表情选择器。
+ * @returns {void}
+ */
 function setupEmojiPicker() {
 	const emojiButton = document.getElementById('emoji-button')
 	if (!emojiButton) return
@@ -58,14 +62,19 @@ function showEmojiPicker() {
 		</div>
 		<div class="tabs tabs-boxed mb-2" id="emoji-category-tabs">
 			${categories.map(([key, cat], i) =>
-				`<a class="tab tab-sm ${i === 0 ? 'tab-active' : ''}" data-cat="${key}">${cat.label}</a>`
-			).join('')}
+		`<a class="tab tab-sm ${i === 0 ? 'tab-active' : ''}" data-cat="${key}">${cat.label}</a>`
+	).join('')}
 		</div>
 		<div id="emoji-grid-main" class="grid grid-cols-8 gap-1"></div>
 	`
 
 	document.body.appendChild(picker)
 
+	/**
+	 * 按分类键渲染表情网格 HTML。
+	 * @param {string} catKey - 分类键（如 face、gesture）
+	 * @returns {void}
+	 */
 	function renderGrid(catKey) {
 		const grid = picker.querySelector('#emoji-grid-main')
 		const emojis = EMOJI_CATEGORIES[catKey]?.emojis || []
@@ -143,7 +152,7 @@ export async function sendStickerMessage(stickerId, stickerUrl) {
 
 	try {
 		const response = await fetch(
-			`/api/parts/shells:chat/${groupId}/channels/${channelId}/messages`,
+			`/api/parts/shells:chat/groups/${groupId}/channels/${channelId}/messages`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -158,11 +167,11 @@ export async function sendStickerMessage(stickerId, stickerUrl) {
 			}
 		)
 
-		if (!response.ok) {
+		if (!response.ok) 
 			throw new Error('Failed to send sticker')
-		}
+		
 
-		await fetch(`/api/parts/shells:stickers/recent/${stickerId}`, {
+		await fetch(`/api/parts/shells:chat/stickers/recent/${stickerId}`, {
 			method: 'POST',
 			credentials: 'include'
 		})
@@ -174,10 +183,10 @@ export async function sendStickerMessage(stickerId, stickerUrl) {
 /**
  * 渲染消息中的贴纸
  * @param {object} message - 消息对象
- * @returns {string}
+ * @returns {string} 贴纸图片 HTML 或转义后的纯文本内容
  */
 export function renderStickerMessage(message) {
-	if (message.content.type === 'sticker') {
+	if (message.content.type === 'sticker') 
 		return `
 			<div class="sticker-message">
 				<img src="${escapeHtml(message.content.stickerUrl)}"
@@ -186,7 +195,7 @@ export function renderStickerMessage(message) {
 					onclick="viewSticker('${escapeHtml(message.content.stickerUrl)}')">
 			</div>
 		`
-	}
+	
 	return escapeHtml(message.content.text || message.content)
 }
 
@@ -210,22 +219,35 @@ window.viewSticker = function(url) {
 	modal.showModal()
 }
 
+/**
+ * 从 URL hash 解析当前群组 id。
+ * @returns {string|null} 群组 id，非群组路由时为 null
+ */
 function getCurrentGroupId() {
 	const hash = window.location.hash.slice(1)
-	if (hash.startsWith('group:')) {
+	if (hash.startsWith('group:')) 
 		return hash.split(':')[1]
-	}
+	
 	return null
 }
 
+/**
+ * 从 URL hash 解析当前频道 id。
+ * @returns {string|null} 频道 id，非群组路由时为 null
+ */
 function getCurrentChannelId() {
 	const hash = window.location.hash.slice(1)
-	if (hash.startsWith('group:')) {
+	if (hash.startsWith('group:')) 
 		return hash.split(':')[2]
-	}
+	
 	return null
 }
 
+/**
+ * HTML 转义，防止 XSS。
+ * @param {unknown} text - 任意待显示内容
+ * @returns {string} 转义后的字符串
+ */
 function escapeHtml(text) {
 	return String(text ?? '')
 		.replaceAll('&', '&amp;')
@@ -234,6 +256,10 @@ function escapeHtml(text) {
 		.replaceAll('"', '&quot;')
 }
 
+/**
+ * 在聊天输入区插入表情按钮（若尚未存在）。
+ * @returns {void}
+ */
 export function addEmojiButtonToChat() {
 	const inputContainer = document.querySelector('.chat-input')
 	if (!inputContainer) return
@@ -250,7 +276,7 @@ export function addEmojiButtonToChat() {
 	`
 
 	const sendButton = document.getElementById('send-button')
-	if (sendButton && sendButton.parentElement) {
+	if (sendButton && sendButton.parentElement) 
 		sendButton.parentElement.insertBefore(emojiButton, sendButton)
-	}
+	
 }

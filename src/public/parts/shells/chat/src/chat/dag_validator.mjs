@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { pubKeyHash, verify } from '../../../../../../scripts/p2p/crypto.mjs'
-import { signPayloadBytes } from '../../../../../../scripts/p2p/dag.mjs'
+import { signPayloadBytes, sortedPrevEventIds } from '../../../../../../scripts/p2p/dag.mjs'
 
 /** 64 位十六进制小写公钥哈希（发件人标识）格式校验。 */
 export const PUB_KEY_HASH_HEX = /^[0-9a-f]{64}$/iu
@@ -20,7 +20,7 @@ export function unsignedEventFields(event) {
 		charId: event.charId,
 		timestamp: event.timestamp,
 		hlc: event.hlc,
-		prev_event_id: event.prev_event_id ?? null,
+		prev_event_ids: sortedPrevEventIds(event.prev_event_ids),
 		content: event.content,
 		node_id: event.node_id,
 	}
@@ -80,7 +80,12 @@ export async function validateSignature(username, chatId, body, signPayload, eve
 			}
 		}
 		if (!publicKeyBytes && materializedState) {
-			const memberRecord = materializedState.members.get(sender)
+			const members = materializedState.members
+			const memberRecord = typeof members?.get === 'function'
+				? members.get(sender)
+				: members && typeof members === 'object'
+					? members[sender]
+					: undefined
 			const memberPubKeyHex = memberRecord?.pubKeyHex
 			if (memberPubKeyHex) {
 				const buffer = Buffer.from(String(memberPubKeyHex).replace(/^0x/iu, ''), 'hex')

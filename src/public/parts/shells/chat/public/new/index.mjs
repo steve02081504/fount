@@ -26,8 +26,7 @@ async function main() {
 		throw e
 	}
 
-	window.history.replaceState(null, null, '/parts/shells:chat/#' + currentChatId)
-	window.location = '/parts/shells:chat/#' + currentChatId
-	window.location.reload()
+	const hubHash = `#group:${currentChatId}:default`
+	window.location.replace(`/parts/shells:chat/hub${hubHash}`)
 }
 main()

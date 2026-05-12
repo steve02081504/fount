@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>聊天</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link href="./index.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+
+	
+</head>
+
+<body>
+	<div class="hub-app">
+		<!-- 1. 服务器栏 -->
+		<aside class="hub-server-bar" id="server-bar">
+			<a href="/parts/shells:home" class="hub-server-item" title="返回主页">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+					<polyline points="9 22 9 12 15 12 15 22"/>
+				</svg>
+				<span class="hub-server-tooltip">返回主页</span>
+			</a>
+			<div class="hub-server-divider"></div>
+			<button class="hub-server-item" data-mode="chars" title="AI 角色">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M9 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+					<path d="M17 11l1.5 1.5L21 10"/>
+					<path d="M3 21v-1a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v1"/>
+				</svg>
+				<span class="hub-server-tooltip">AI 角色</span>
+			</button>
+			<div class="hub-server-divider"></div>
+			<div id="server-list"></div>
+			<button class="hub-server-item hub-server-add" id="add-server-btn" title="新建/加入群组">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="12" y1="5" x2="12" y2="19"/>
+					<line x1="5" y1="12" x2="19" y2="12"/>
+				</svg>
+				<span class="hub-server-tooltip">新建 / 加入群组</span>
+			</button>
+		</aside>
+
+		<!-- 2. 频道栏 -->
+		<aside class="hub-channel-bar" id="channel-bar">
+			<header class="hub-channel-header" id="group-header">
+				<span id="group-name-display">选择服务器</span>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+			</header>
+			<div id="hub-pins-bookmarks-wrap" class="hub-pins-bookmarks-wrap" hidden>
+				<div class="hub-side-block">
+					<div class="hub-side-block-title">置顶</div>
+					<div id="hub-pins-wrap" class="hub-side-block-body"></div>
+				</div>
+				<div class="hub-side-block">
+					<div class="hub-side-block-title">书签</div>
+					<div id="hub-bookmarks-wrap" class="hub-side-block-body"></div>
+				</div>
+			</div>
+			<div class="hub-channel-list" id="channel-list">
+				<div style="padding: 16px; color: var(--hub-text-muted); font-size: 14px; text-align: center;">
+					← 选择左侧的服务器
+				</div>
+			</div>
+			<div class="hub-user-bar" id="user-bar" title="管理我的资料 / 贴纸" style="cursor:pointer;">
+				<div class="hub-avatar" id="my-avatar" style="width: 32px; height: 32px; font-size: 13px;">?</div>
+				<div style="flex: 1; min-width: 0;">
+					<div id="my-name" style="color: var(--hub-text-bright); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">加载中...</div>
+					<div style="color: var(--hub-text-muted); font-size: 12px;">在线</div>
+				</div>
+				<a href="/parts/shells:chat/profile" title="个人资料" style="color:var(--hub-text-muted);padding:6px;border-radius:4px;text-decoration:none;display:flex;align-items:center;" onclick="event.stopPropagation();">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+				</a>
+			</div>
+		</aside>
+
+		<!-- 3. 主聊天区 -->
+		<main class="hub-main">
+			<header class="hub-main-header">
+				<span class="hub-main-header-icon">#</span>
+				<span class="hub-main-header-title" id="channel-name-display">选择对话</span>
+				<div style="flex: 1;"></div>
+				<div id="header-search-wrap" style="position:relative;margin-right:8px;">
+					<input id="header-search" type="text" placeholder="搜索消息..." style="background:var(--hub-bg-tertiary);border:1px solid transparent;color:var(--hub-text-bright);padding:5px 10px 5px 28px;border-radius:4px;font-size:13px;width:170px;outline:none;transition:border-color 0.15s;" />
+					<svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--hub-text-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+				</div>
+				<button class="hub-icon-btn" id="toggle-members-btn" title="成员列表">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+						<circle cx="9" cy="7" r="4"/>
+						<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+						<path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+					</svg>
+				</button>
+				<button class="hub-icon-btn" id="header-settings-btn" title="设置">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+				</button>
+			</header>
+			<div id="hub-plaintext-main-banner" class="hub-plaintext-main-banner" hidden></div>
+
+			<div class="hub-messages" id="messages">
+				<div class="hub-empty">
+					<div class="hub-empty-icon">💬</div>
+					<div style="color: var(--hub-text-bright); font-size: 18px; font-weight: 600; margin-bottom: 8px;">欢迎使用 fount Chat</div>
+					<div>从左侧选择一个服务器和对话开始聊天</div>
+				</div>
+			</div>
+
+			<div class="hub-input-area">
+				<div class="hub-input-wrapper">
+					<button class="hub-icon-btn" id="upload-btn" title="上传图片" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+							<circle cx="8.5" cy="9" r="1.5"/>
+							<polyline points="21 15 16 10 5 21"/>
+						</svg>
+					</button>
+					<input type="file" id="image-upload" accept="image/*" style="display: none;" />
+					<input type="text" class="hub-input" id="message-input" placeholder="选择对话后开始聊天..." disabled />
+					<button class="hub-icon-btn" id="emoji-btn" title="表情" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"/>
+							<path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+							<line x1="9" y1="9" x2="9.01" y2="9"/>
+							<line x1="15" y1="9" x2="15.01" y2="9"/>
+						</svg>
+					</button>
+					<button class="hub-icon-btn" id="sticker-btn" title="贴纸" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="3"/>
+							<path d="M8 12h8M12 8v8"/>
+						</svg>
+					</button>
+					<button class="hub-send-btn" id="send-btn" title="发送 (Enter)" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="22" y1="2" x2="11" y2="13"/>
+							<polygon points="22 2 15 22 11 13 2 9 22 2"/>
+						</svg>
+					</button>
+					<div class="hub-sticker-picker" id="sticker-picker">
+						<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+							<span style="font-weight:600;font-size:14px;color:var(--hub-text-bright);">贴纸</span>
+							<a href="/parts/shells:chat/stickers" target="_blank" style="font-size:12px;color:var(--hub-accent);text-decoration:none;">管理贴纸 →</a>
+						</div>
+						<div class="hub-sticker-grid" id="sticker-grid">
+							<div style="grid-column:1/-1;text-align:center;color:var(--hub-text-muted);padding:20px;font-size:13px;">加载中...</div>
+						</div>
+					</div>
+					<div class="hub-emoji-picker" id="emoji-picker">
+						<div class="hub-emoji-tabs" id="emoji-tabs">
+							<button class="hub-emoji-tab active" data-tab="face">😀</button>
+							<button class="hub-emoji-tab" data-tab="gesture">👋</button>
+							<button class="hub-emoji-tab" data-tab="heart">❤️</button>
+							<button class="hub-emoji-tab" data-tab="animal">🐱</button>
+							<button class="hub-emoji-tab" data-tab="food">🍔</button>
+							<button class="hub-emoji-tab" data-tab="object">⚽</button>
+						</div>
+						<div class="hub-emoji-grid" id="emoji-grid"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- 4. 成员栏 / 右侧信息栏 -->
+		<aside class="hub-member-bar" id="member-bar">
+			<div id="info-card-host"></div>
+			<div id="member-list">
+				<div style="padding: 16px; color: var(--hub-text-muted); font-size: 14px; text-align: center;">
+					未选择对话
+				</div>
+			</div>
+		</aside>
+	</div>
+
+	<!-- ===================== 通用设置弹窗（在页内打开，不再跳转） ===================== -->
+	<dialog id="hub-settings-modal" class="modal">
+		
+		<div class="modal-box ovl-box" id="ovl-box">
+			<div class="ovl-header">
+				<h3 id="ovl-title">设置</h3>
+				<p id="ovl-subtitle"></p>
+			</div>
+			<div class="ovl-body" id="ovl-body"></div>
+			<div class="ovl-footer" id="ovl-footer"></div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>关闭</button></form>
+	</dialog>
+
+	<!-- Profile hover card -->
+	<div class="hub-hover-card" id="profile-hover-card">
+		<div class="hub-hc-banner"></div>
+		<div class="hub-hc-body">
+			<div class="hub-hc-avatar" id="hc-avatar">
+				<span id="hc-avatar-letter">?</span>
+				<span class="hub-hc-presence-dot" id="hc-presence"></span>
+			</div>
+			<div class="hub-hc-name" id="hc-name">—</div>
+			<div class="hub-hc-status" id="hc-status">离线</div>
+			<div class="hub-hc-divider"></div>
+			<div class="hub-hc-section-title">关于</div>
+			<div class="hub-hc-bio" id="hc-bio">这位用户还没有简介。</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

@@ -14,7 +14,7 @@ import { safeReadJson } from './utils.mjs'
 // ─── 文件 aesKey 安全存储（与 DAG 解耦，仅服务端持有）─────────────────────
 
 /**
- * 存储 fileId → aesKeyHex（仅 home 节点调用，不写入 DAG）
+ * 存储 fileId → aesKeyHex（仅本节点服务端持有，不写入 DAG）
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {string} fileId 文件 ID

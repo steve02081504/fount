@@ -39,7 +39,6 @@ export const AUTHZ_EVENT_TYPES = new Set([
 	'list_item_update',
 	'group_meta_update',
 	'group_settings_update',
-	'home_transfer',
 	'encrypted_mailbox_batch',
 	'owner_heartbeat',
 	'file_upload',
@@ -52,6 +51,10 @@ export const AUTHZ_EVENT_TYPES = new Set([
  * 默认晚消息冻结时间（毫秒）
  */
 export const DEFAULT_LATE_MESSAGE_FREEZE_MS = 30_000
+/**
+ * `message_append` 链在无 `stream_end` 时的空闲截断（毫秒）；与分布式群聊计划一致。
+ */
+export const DEFAULT_LOGICAL_STREAM_IDLE_MS = 150_000
 /**
  * 默认最大捕获事件数
  */

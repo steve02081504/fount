@@ -18,7 +18,7 @@ export function createReactionHandlers(ctx) {
 	const toggleReaction = async (targetEventId, emoji, remove) => {
 		try {
 			const r = await fetch(
-				`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/chat/${encodeURIComponent(channelId)}/reactions`,
+				`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/reactions`,
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

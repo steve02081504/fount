@@ -264,7 +264,8 @@ class UserSubfountManager {
 				this.actions.clear()
 			}
 
-			const { joinRoom, getRelaySockets } = await import('npm:@trystero-p2p/mqtt')
+			const { joinMqttRoom } = await import('../../../../../scripts/p2p/federation_trystero.mjs')
+			const mqtt = await import('npm:trystero/mqtt')
 			let RTCPeerConnection
 			try {
 				;({ RTCPeerConnection } = await import('npm:werift'))
@@ -282,14 +283,15 @@ class UserSubfountManager {
 					'wss://broker.emqx.io:8084/mqtt',
 				],
 			}
-			this.room = joinRoom(config, this.hostPeerId)
+			this.room = await joinMqttRoom(config, this.hostPeerId)
 
-			// 为 MQTT relay sockets 添加错误处理，防止 ECONNRESET 崩溃
 			try {
-				const sockets = getRelaySockets()
-				for (const [, socket] of Object.entries(sockets))
-					if (socket && typeof socket.on === 'function')
-						socket.on('error', () => { })
+				if (typeof mqtt.getRelaySockets === 'function') {
+					const sockets = mqtt.getRelaySockets()
+					for (const [, socket] of Object.entries(sockets))
+						if (socket && typeof socket.on === 'function')
+							socket.on('error', () => { })
+				}
 			}
 			catch { }
 
@@ -453,7 +455,7 @@ class UserSubfountManager {
 		const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 		const part = await loadPart(this.username, normalizedPartpath)
 		if (part.interfaces?.subfount?.RemoteCallBack)
-			await part.interfaces.subfount.RemoteCallBack({ data: deserialize(data), username: this.username, partpath })
+			await part.interfaces.subfount.RemoteCallBack({ data, username: this.username, partpath })
 	}
 
 	/**

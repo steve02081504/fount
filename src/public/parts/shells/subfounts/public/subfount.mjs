@@ -17,10 +17,10 @@
 
 import fs from 'node:fs'
 import os from 'node:os'
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import process from 'node:process'
 import { setInterval, clearInterval, setTimeout } from 'node:timers'
+import { fileURLToPath } from 'node:url'
 // V8 serialize 不兼容 Trystero 的 JSON 传输，直接传递原始值
 
 // 捕获 MQTT 内部网络瞬断错误，防止刷屏
@@ -40,7 +40,7 @@ if (!fs.existsSync(denoJsonPath)) {
 	fs.writeFileSync(denoJsonPath, JSON.stringify({ nodeModulesDir: 'auto' }, null, '\t') + '\n')
 	console.log('✓ 已自动创建 deno.json')
 }
-else {
+else 
 	// 确保已有 deno.json 包含 nodeModulesDir
 	try {
 		const existing = JSON.parse(fs.readFileSync(denoJsonPath, 'utf-8'))
@@ -51,12 +51,12 @@ else {
 		}
 	}
 	catch { }
-}
+
 
 // node_modules 检查已不再需要（werift 是纯 JS，无需原生构建）
 
 // --- 动态加载 npm 依赖 ---
-let exec, inquirer, RTCPeerConnection, on_shutdown, joinRoom
+let exec, inquirer, RTCPeerConnection, on_shutdown, joinMqttRoom
 try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
@@ -68,7 +68,7 @@ try {
 		;({ RTCPeerConnection } = await import('npm:node-datachannel/polyfill'))
 	}
 	;({ on_shutdown } = await import('npm:on-shutdown'))
-	;({ joinRoom } = await import('npm:@trystero-p2p/mqtt'))
+	;({ joinMqttRoom } = await import('../../../../../scripts/p2p/federation_trystero.mjs'))
 }
 catch (error) {
 	console.error('\n✗ 加载依赖失败:', error.message)
@@ -414,7 +414,7 @@ async function connectViaTrystero() {
 				'wss://broker.emqx.io:8084/mqtt',
 			],
 		}
-		room = joinRoom(config, hostRoomId)
+		room = await joinMqttRoom(config, hostRoomId)
 
 		// 设置操作处理程序
 		const actionMap = {

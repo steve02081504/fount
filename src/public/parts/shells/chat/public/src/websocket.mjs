@@ -1,6 +1,5 @@
 import { onServerEvent } from '../../../../../scripts/server_events.mjs'
 
-import { currentChatId } from './endpoints.mjs'
 import {
 	handleWorldSet,
 	handlePersonaSet,
@@ -15,70 +14,60 @@ import {
 import { handleTypingStatus } from './ui/typingIndicator.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handleStreamUpdate } from './ui/virtualQueue.mjs'
 
-let ws = null
+/** 群模式（hash #group:…）下当前活动的群组连接 */
+let groupShellWebSocket = null
 
 /**
- * Sends a message through the WebSocket.
- * @param {object} message - The message object to send.
+ * 群模式切换时绑定/解绑当前群组 WebSocket。
+ * @param {WebSocket | null} gws 群组 WS；卸载时为 null
+ * @returns {void}
  */
-export function sendWebsocketMessage(message) {
-	if (ws && ws.readyState === WebSocket.OPEN)
-		ws.send(JSON.stringify(message))
-	else
-		console.error('WebSocket is not connected.')
+export function setActiveWebSocket(gws) {
+	groupShellWebSocket = gws
+}
+
+/** @type {((msg: object) => void | Promise<void>) | null} */
+let inboundRpcExecutor = null
+
+/**
+ * @param {((msg: object) => void | Promise<void>) | null} fn 入站 RPC 执行器
+ * @returns {void}
+ */
+export function setInboundRpcExecutor(fn) {
+	inboundRpcExecutor = fn
 }
 
 /**
- * 连接到WebSocket。
+ * @param {string | null} id 本客户端在群 WS 上的 node id
+ * @returns {void}
  */
-function connect() {
-	if (!currentChatId) return
-
-	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-	const wsUrl = `${wsProtocol}//${window.location.host}/ws/parts/shells:chat/ui/${currentChatId}`
-	ws = new WebSocket(wsUrl)
-
-	/**
-	 * WebSocket收到消息时的回调。
-	 * @param {MessageEvent} event - 消息事件。
-	 */
-	ws.onmessage = (event) => {
-		try {
-			const msg = JSON.parse(event.data)
-			// Handle broadcast events
-			handleBroadcastEvent(msg)
-		}
-		catch (error) {
-			console.error('Error processing WebSocket message:', error)
-			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
-		}
-	}
-
-	/**
-	 * WebSocket关闭时的回调。
-	 */
-	ws.onclose = () => {
-		const RECONNECT_DELAY = 3000
-		console.log(`Chat UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
-		ws = null
-		setTimeout(connect, RECONNECT_DELAY)
-	}
-
-	/**
-	 * WebSocket出错时的回调。
-	 * @param {Event} err - 错误事件。
-	 */
-	ws.onerror = (err) => {
-		console.error('Chat UI WebSocket error:', err)
-	}
+export function setLocalGroupRpcClientNodeId(id) {
+	void id
 }
 
 /**
- * 处理广播事件。
- * @param {object} event - 事件。
+ * @param {WebSocket | null} _ws 预留
+ * @returns {void}
+ */
+export function setWsStatusIndicator(_ws) {
+}
+
+/**
+ * @param {WebSocket} ws 群组 WS
+ * @returns {void}
+ */
+export function attachGroupWebSocketErrorHandlers(ws) {
+	ws.addEventListener('error', ev => {
+		console.error('group WebSocket error:', ev)
+	})
+}
+
+/**
+ * 群 WS 广播帧 → 经典虚拟队列 / 侧栏（Hub 内嵌 AI 等仍可能依赖）。
+ * @param {object} event 解析后的 JSON
  * @returns {Promise<void>}
  */
-async function handleBroadcastEvent(event) {
+export async function handleBroadcastEvent(event) {
 	const { type, payload } = event
 	switch (type) {
 		case 'message_added':
@@ -128,12 +117,37 @@ async function handleBroadcastEvent(event) {
 }
 
 /**
- * 初始化WebSocket。
+ * 消费群 WS 上的 `rpc_call`。
+ * @param {object} msg 已解析 JSON
+ * @returns {Promise<boolean>} true 表示已消费
+ */
+export async function handleGroupWebSocketRpc(msg) {
+	if (!msg || typeof msg !== 'object' || msg.type !== 'rpc_call')
+		return false
+	if (!inboundRpcExecutor)
+		return false
+	await inboundRpcExecutor(msg)
+	return true
+}
+
+/**
+ * 经当前已绑定的群 WebSocket 发送 JSON（无连接则仅打日志）。
+ * @param {object} message 消息体
+ * @returns {void}
+ */
+export function sendWebsocketMessage(message) {
+	const target = groupShellWebSocket
+	if (target && target.readyState === WebSocket.OPEN)
+		target.send(JSON.stringify(message))
+	else
+		console.error('WebSocket is not connected.')
+}
+
+/**
+ * 注册部件安装/卸载监听（无经典单聊重连）。
+ * @returns {void}
  */
 export function initializeWebSocket() {
-	if (ws) return
-	connect()
-
 	onServerEvent('part-installed', ({ parttype, partname }) => {
 		addPartToSelect(parttype, partname)
 	})

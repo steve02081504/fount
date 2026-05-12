@@ -16,22 +16,16 @@ import { setActiveWebSocket, setInboundRpcExecutor, setLocalGroupRpcClientNodeId
 
 
 /**
- * 解析地址栏 hash 为群组 ID 与频道 ID（兼容旧格式 `#group:...`）。
+ * 解析地址栏 hash：`#group:{groupId}:{channelId}`。
  * @returns {{ groupId: string, channelId: string } | null} 解析结果；无效 hash 时为 null
  */
 export function parseGroupHash() {
 	const h = (location.hash || '').replace(/^#/, '')
-	if (!h) return null
-	// 格式：#groupId:channelId（旧格式：#group:groupId:channelId 向后兼容）
-	if (h.startsWith('group:')) {
-		const rest = h.slice('group:'.length)
-		const parts = rest.split(':')
-		if (parts.length < 1 || !parts[0]) return null
-		return { groupId: parts[0], channelId: parts[1] || 'default' }
-	}
-	const colonIdx = h.indexOf(':')
-	if (colonIdx <= 0) return { groupId: h, channelId: 'default' }
-	return { groupId: h.slice(0, colonIdx), channelId: h.slice(colonIdx + 1) || 'default' }
+	if (!h.startsWith('group:')) return null
+	const rest = h.slice('group:'.length)
+	const parts = rest.split(':')
+	if (parts.length < 2 || !parts[0] || !parts[1]) return null
+	return { groupId: parts[0], channelId: parts[1] }
 }
 
 let groupWs = null
@@ -224,89 +218,6 @@ export async function initGroupViewFromHash() {
 				}
 			})
 		})
-		document.getElementById('group-home-transfer-button')?.addEventListener('click', async () => {
-			const parsed = parseGroupHash()
-			if (!parsed) return
-			const dlg = await renderGroupDialogShell('modal')
-			dlg.replaceChildren(await renderTemplate('group_home_transfer_modal', {}))
-			document.body.appendChild(dlg)
-			const panes = [1, 2, 3].map(n => dlg.querySelector(`[data-ht-pane="${n}"]`))
-			const btnBack = dlg.querySelector('[data-ht-back]')
-			const btnNext = dlg.querySelector('[data-ht-next]')
-			const btnSubmit = dlg.querySelector('[data-ht-submit]')
-			/**
-			 * @param {number} step 1..3
-			 */
-			const applyStep = step => {
-				for (let i = 0; i < panes.length; i++)
-					panes[i]?.classList.toggle('hidden', i !== step - 1)
-				btnBack?.classList.toggle('hidden', step <= 1)
-				btnNext?.classList.toggle('hidden', step >= 3)
-				btnSubmit?.classList.toggle('hidden', step < 3)
-			}
-			let step = 1
-			setLocalizeLogic(dlg, () => {
-				for (const el of dlg.querySelectorAll('[data-i18n]')) {
-					const k = el.getAttribute('data-i18n')
-					if (k) el.textContent = geti18n(k)
-				}
-			})
-			applyStep(step)
-			dlg.showModal()
-			/**
-			 *
-			 */
-			const close = () => {
-				dlg.remove()
-			}
-			dlg.querySelector('[data-ht-cancel]')?.addEventListener('click', close)
-			btnBack?.addEventListener('click', () => {
-				if (step > 1) {
-					step--
-					applyStep(step)
-				}
-			})
-			btnNext?.addEventListener('click', () => {
-				if (step < 3) {
-					step++
-					applyStep(step)
-				}
-			})
-			btnSubmit?.addEventListener('click', async () => {
-				const inp = dlg.querySelector('[data-home-node-input]')
-				const proposedHomeNodeId = inp instanceof HTMLInputElement ? inp.value.trim() : ''
-				const ack = dlg.querySelector('[data-home-risk-ack]')
-				const acked = ack instanceof HTMLInputElement && ack.checked
-				if (!proposedHomeNodeId) {
-					showToastI18n('warning', 'chat.group.homeTransferNeedNode')
-					return
-				}
-				if (!acked) {
-					showToastI18n('warning', 'chat.group.homeTransferNeedAck')
-					return
-				}
-				try {
-					const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(parsed.groupId)}/home-transfer`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({
-							proposedHomeNodeId,
-							ballotId: crypto.randomUUID(),
-							adminSignatures: [],
-						}),
-					})
-					if (!r.ok) {
-						handleUIError(new Error(`home-transfer HTTP ${r.status}`), 'chat.group.homeTransferFailed', 'home transfer')
-						return
-					}
-					showToastI18n('success', 'chat.group.homeTransferSubmitted')
-					close()
-				}
-				catch (e) {
-					handleUIError(normalizeError(e), 'chat.group.homeTransferFailed', 'home transfer')
-				}
-			})
-		})
 		document.getElementById('group-create-button')?.addEventListener('click', async () => {
 			const dialog = await renderGroupDialogShell('modal modal-open')
 			dialog.replaceChildren(await renderTemplate('group_create_modal', {}))
@@ -326,14 +237,14 @@ export async function initGroupViewFromHash() {
 				const nameVal = dialog.querySelector('#new-group-name')?.value?.trim()
 				const channelVal = dialog.querySelector('#new-group-channel')?.value?.trim() || 'general'
 				dialog.remove()
-				const r = await fetch('/api/parts/shells:chat/new', {
+				const r = await fetch('/api/parts/shells:chat/groups/new', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ name: nameVal || geti18n('chat.group.newGroupName'), defaultChannelName: channelVal }),
 				})
 				if (r.ok) {
 					const { groupId: newId, channelId: newCh } = await r.json()
-					location.hash = `${newId}:${newCh || 'default'}`
+					location.hash = `group:${newId}:${newCh || 'default'}`
 				}
 				else handleUIError(new Error(`createGroup HTTP ${r.status}`), 'chat.group.createGroupFailed', 'createGroup')
 			})

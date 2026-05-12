@@ -57,10 +57,11 @@ export async function fetchDefaultChannelRedirectIfNeeded(groupId, channelId) {
 	try {
 		const stateR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state`)
 		if (stateR.ok) {
-			const stateData = await stateR.json()
-			const configuredDefault = stateData.groupSettings?.defaultChannelId
+			const body = await stateR.json()
+			const state = body?.state ?? body
+			const configuredDefault = state?.groupSettings?.defaultChannelId
 			if (configuredDefault && configuredDefault !== 'default') {
-				location.hash = `${groupId}:${configuredDefault}`
+				location.hash = `group:${groupId}:${configuredDefault}`
 				return true
 			}
 		}
@@ -86,7 +87,7 @@ export function createChannelState({ groupId, channelId, signal }) {
 		volatileStreamEl: null,
 		volatileStreamId: null,
 		streamRenderer: null,
-		streamNackState: new Map(),
+		volatileStreamReorderState: new Map(),
 		pendingEventMap: new Map(),
 		patchScheduled: false,
 		avSession: null,
@@ -100,7 +101,7 @@ export function createChannelState({ groupId, channelId, signal }) {
 		channelState.volatileStreamEl?.remove()
 		channelState.volatileStreamEl = null
 		channelState.volatileStreamId = null
-		channelState.streamNackState.clear()
+		channelState.volatileStreamReorderState.clear()
 		channelState.msgVirtualList?.destroy()
 		channelState.msgVirtualList = null
 	})
@@ -149,7 +150,9 @@ export async function fetchGroupStateData(groupId) {
 			handleUIError(new Error(`loadState HTTP ${r.status}`), 'chat.group.loadError', 'loadState failed')
 			return null
 		}
-		return await r.json()
+		const body = await r.json()
+		const state = body?.state ?? body
+		return state && typeof state === 'object' ? state : null
 	}
 	catch (e) {
 		handleUIError(e, 'chat.group.loadError', 'loadState failed')
@@ -194,14 +197,14 @@ function membersPageListFromJson(data) {
 }
 
 /**
- * 从分页 JSON 中读取总页数（兼容 `pagesCount` / `members_pages_count` / `totalPages`）。
+ * 从分页 JSON 中读取总页数（字段 `members_pages_count`）。
  * @param {unknown} data 原始响应体
  * @returns {number | null} 总页数（>=1）；无法解析时为 `null`
  */
 function membersPagesCountFromJson(data) {
 	if (!data || typeof data !== 'object') return null
 	const o = /** @type {Record<string, unknown>} */ data
-	const raw = o.pagesCount ?? o.members_pages_count ?? o.totalPages
+	const raw = o.members_pages_count
 	if (typeof raw !== 'number' || !Number.isFinite(raw)) return null
 	const n = Math.floor(raw)
 	return n >= 1 ? n : null

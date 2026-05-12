@@ -52,6 +52,7 @@ export function createGroupTypingIndicator({ groupId, channelId, wsClientId }) {
 		lastTypingPost = now
 		fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/broadcast`, {
 			method: 'POST',
+			credentials: 'include',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				payload: {

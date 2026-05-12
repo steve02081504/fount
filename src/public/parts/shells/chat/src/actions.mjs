@@ -1,8 +1,9 @@
 import {
-	loadChat, addchar, newChat, setPersona, setWorld, getChatList, addUserReply, GetChatLog, GetChatLogLength,
+	loadChat, addchar, newChat, setPersona, setWorld, addUserReply, GetChatLog, GetChatLogLength,
 	removechar, setCharSpeakingFrequency, getCharListOfChat, GetUserPersonaName, GetWorldName, modifyTimeLine,
 	triggerCharReply, deleteMessage, editMessage
 } from './chat.mjs'
+import { enumerateJoinedFederatedGroups } from './group_endpoints.mjs'
 
 /**
  * 定义了可用于聊天功能的各种操作。
@@ -60,7 +61,7 @@ export const actions = {
 	 * @param {string} root0.user - 用户的名称。
 	 * @returns {Promise<Array<string>>} - 聊天ID的数组。
 	 */
-	list: ({ user }) => getChatList(user),
+	list: ({ user }) => enumerateJoinedFederatedGroups(user),
 	/**
 	 * 向指定的聊天会话发送消息。
 	 * @param {object} root0 - 参数对象。

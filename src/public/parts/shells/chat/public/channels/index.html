@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="channels.title">频道</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+	
+</head>
+
+<body class="m-0 relative w-full">
+	<!-- 四栏布局 -->
+	<div class="dc-app">
+		<!-- 服务器栏（仅返回主页 + 创建频道） -->
+		<aside class="dc-server-bar">
+			<a href="/parts/shells:home" class="dc-server-item" title="返回主页">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+					<polyline points="9 22 9 12 15 12 15 22"/>
+				</svg>
+				<span class="dc-server-tooltip">返回主页</span>
+			</a>
+			<div style="width: 32px; height: 2px; background: var(--dc-bg-channel); border-radius: 1px; margin: 4px 0;"></div>
+			<a href="/parts/shells:chat/hub/" class="dc-server-item" title="切换到群组">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M17 20h5v-2a3 3 0 00-5.356-1.857"/><path d="M9 20H4v-2a3 3 0 015.356-1.857"/>
+					<path d="M9 20h6v-2a3 3 0 00-3-3 3 3 0 00-3 3v2z"/>
+					<circle cx="12" cy="7" r="4"/>
+				</svg>
+				<span class="dc-server-tooltip">群组</span>
+			</a>
+			<button id="create-channel-btn" class="dc-server-item" style="background: var(--dc-bg-channel); color: var(--dc-success); border: none;" title="创建频道">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+				</svg>
+				<span class="dc-server-tooltip">创建频道</span>
+			</button>
+		</aside>
+
+		<!-- 频道栏 -->
+		<aside class="dc-channel-bar">
+			<header class="dc-channel-header">
+				<span data-i18n="channels.title">频道</span>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+			</header>
+
+			<div class="dc-channel-search">
+				<input type="text" id="search-input" placeholder="搜索频道..." />
+			</div>
+			<div class="dc-quick-actions">
+				<button id="join-channel-btn" class="dc-quick-action-btn">+ 通过 ID 加入</button>
+			</div>
+
+			<div class="dc-channel-list-wrap">
+				<div class="dc-category-title">订阅频道</div>
+				<div id="channel-list" class="space-y-1">
+					<!-- 频道列表将在这里动态生成 -->
+				</div>
+			</div>
+
+			<!-- 用户卡 -->
+			<div class="dc-user-bar">
+				<div class="dc-user-avatar" id="my-avatar-mini" style="background: #5865f2;">?</div>
+				<div style="flex: 1; min-width: 0;">
+					<div id="my-name-mini" style="color: var(--dc-text-bright); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">加载中...</div>
+					<div style="color: var(--dc-text-muted); font-size: 12px;">在线</div>
+				</div>
+			</div>
+		</aside>
+
+		<!-- 主聊天区 -->
+		<main class="dc-main">
+			<!-- 频道头部 -->
+			<div id="channel-header" class="hidden">
+				<div class="flex items-center justify-between" style="width:100%">
+					<div class="flex items-center gap-3">
+						<div class="avatar hidden">
+							<div class="w-8 h-8 rounded-full">
+								<img id="channel-avatar" src="" alt="Channel Avatar" />
+							</div>
+						</div>
+						<span class="dc-main-header-icon" style="color: var(--dc-text-muted); font-size: 20px;">#</span>
+						<div>
+							<h2 id="channel-name" class="text-lg font-bold"></h2>
+							<p id="channel-description" class="text-sm opacity-70"></p>
+						</div>
+					</div>
+					<div class="flex gap-2">
+						<button id="subscribe-btn" class="btn btn-sm hidden" style="background: var(--dc-accent); color: white; border: none;">
+							<span data-i18n="channels.subscribe">订阅</span>
+						</button>
+						<button id="unsubscribe-btn" class="btn btn-sm btn-ghost hidden" style="color: var(--dc-text-muted);">
+							<span data-i18n="channels.unsubscribe">取消订阅</span>
+						</button>
+						<button id="channel-settings-btn" class="btn btn-sm btn-ghost hidden" style="color: var(--dc-text-muted);">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+						</button>
+						<button id="toggle-members-btn" class="btn btn-sm btn-ghost" title="成员列表" style="color: var(--dc-text-muted);">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- 消息列表 -->
+			<div id="messages-container" class="flex-1 overflow-y-auto p-0">
+				<div id="messages-list" class="flex flex-col">
+				</div>
+				<div id="empty-state" class="dc-empty-page">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+					</svg>
+					<p style="color: var(--dc-text-bright); font-size: 18px; font-weight: 600; margin: 16px 0 8px;">欢迎来到频道广场</p>
+					<p>从左侧选择一个频道开始浏览消息</p>
+				</div>
+			</div>
+
+			<!-- 消息输入框 -->
+			<div id="message-input-container" class="hidden relative">
+				<!-- 表情选择器 -->
+				<div id="channel-emoji-picker" class="hidden absolute mb-2 rounded-xl shadow-xl p-3 w-80 z-50" style="bottom: 60px; left: 16px;">
+					<div class="flex justify-between items-center mb-2">
+						<span class="font-bold text-sm">表情</span>
+						<button id="close-channel-emoji" class="btn btn-ghost btn-xs btn-circle">✕</button>
+					</div>
+					<div class="tabs tabs-boxed mb-2" id="ch-emoji-tabs" style="background: var(--dc-bg-input);">
+						<a class="tab tab-sm tab-active" data-tab="face">😀</a>
+						<a class="tab tab-sm" data-tab="gesture">👋</a>
+						<a class="tab tab-sm" data-tab="heart">❤️</a>
+						<a class="tab tab-sm" data-tab="animal">🐱</a>
+						<a class="tab tab-sm" data-tab="food">🍔</a>
+						<a class="tab tab-sm" data-tab="object">⚽</a>
+					</div>
+					<div id="ch-emoji-grid" class="grid grid-cols-8 gap-1 max-h-48 overflow-y-auto"></div>
+				</div>
+				<!-- 贴纸选择器 -->
+				<div id="channel-sticker-picker" class="hidden absolute mb-2 rounded-xl shadow-xl p-3 w-80 z-50" style="bottom: 60px; right: 16px;">
+					<div class="flex justify-between items-center mb-2">
+						<span class="font-bold text-sm">贴纸</span>
+						<button id="close-channel-sticker" class="btn btn-ghost btn-xs btn-circle">✕</button>
+					</div>
+					<div id="ch-sticker-grid" class="grid grid-cols-4 gap-2 max-h-56 overflow-y-auto">
+						<div class="text-center py-4 col-span-4 opacity-50 text-sm">加载中...</div>
+					</div>
+				</div>
+				<div class="flex items-end">
+					<input type="file" id="ch-image-upload" class="hidden" accept="image/*" />
+					<button type="button" id="ch-image-btn" class="btn btn-ghost btn-circle btn-sm" title="上传图片">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+						</svg>
+					</button>
+					<textarea id="message-input" class="flex-1" placeholder="输入消息..." rows="1"></textarea>
+					<button type="button" id="ch-emoji-btn" class="btn btn-ghost btn-circle btn-sm" title="表情">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+						</svg>
+					</button>
+					<button type="button" id="ch-sticker-btn" class="btn btn-ghost btn-circle btn-sm" title="贴纸">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8v8"/>
+						</svg>
+					</button>
+					<button id="send-message-btn" class="btn btn-sm" style="margin-left: 4px;">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		</main>
+
+		<!-- 成员栏 -->
+		<aside id="member-sidebar" class="hidden">
+			<div>
+				<h3>成员列表</h3>
+				<div id="channel-member-list" class="space-y-1"></div>
+			</div>
+		</aside>
+	</div>
+
+	<!-- 创建频道模态框 -->
+	<dialog id="create-channel-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg" data-i18n="channels.create">创建频道</h3>
+			<div class="py-4 space-y-4">
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">频道名称</span>
+					</label>
+					<input type="text" id="new-channel-name" class="input input-bordered" placeholder="输入频道名称" />
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">频道描述</span>
+					</label>
+					<textarea id="new-channel-description" class="textarea textarea-bordered" placeholder="输入频道描述"></textarea>
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">频道类型</span>
+					</label>
+					<select id="new-channel-type" class="select select-bordered">
+						<option value="announcement">公告</option>
+						<option value="news">新闻</option>
+						<option value="updates">更新</option>
+					</select>
+				</div>
+				<div class="form-control">
+					<label class="label cursor-pointer">
+						<span class="label-text">公开频道</span>
+						<input type="checkbox" id="new-channel-public" class="checkbox" checked />
+					</label>
+				</div>
+			</div>
+			<div class="modal-action">
+				<button id="create-channel-confirm" class="btn btn-primary">创建</button>
+				<button class="btn" onclick="document.getElementById('create-channel-modal').close()">取消</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button>close</button>
+		</form>
+	</dialog>
+
+	<!-- 频道设置模态框 -->
+	<dialog id="channel-settings-modal" class="modal">
+		<div class="modal-box max-w-lg">
+			<h3 class="font-bold text-lg mb-4">频道设置</h3>
+			<div class="space-y-4">
+				<div class="form-control">
+					<label class="label"><span class="label-text">频道名称</span></label>
+					<input type="text" id="settings-channel-name" class="input input-bordered" />
+				</div>
+				<div class="form-control">
+					<label class="label"><span class="label-text">频道描述</span></label>
+					<textarea id="settings-channel-desc" class="textarea textarea-bordered" rows="3"></textarea>
+				</div>
+				<div class="form-control">
+					<label class="label"><span class="label-text">频道类型</span></label>
+					<select id="settings-channel-type" class="select select-bordered">
+						<option value="announcement">公告</option>
+						<option value="news">新闻</option>
+						<option value="updates">更新</option>
+					</select>
+				</div>
+				<div class="form-control">
+					<label class="label cursor-pointer">
+						<span class="label-text">公开频道</span>
+						<input type="checkbox" id="settings-channel-public" class="checkbox" />
+					</label>
+				</div>
+				<div class="divider">频道ID</div>
+				<div class="text-sm opacity-70 select-all break-all" id="settings-channel-id"></div>
+			</div>
+			<div class="modal-action">
+				<button id="delete-channel-btn" class="btn btn-error">删除频道</button>
+				<button id="save-channel-settings-btn" class="btn btn-primary">保存</button>
+				<button class="btn" onclick="document.getElementById('channel-settings-modal').close()">取消</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+
+	<!-- 加入频道模态框 -->
+	<dialog id="join-channel-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-4">加入频道</h3>
+			<div class="form-control">
+				<label class="label"><span class="label-text">输入频道ID</span></label>
+				<input type="text" id="join-channel-id-input" class="input input-bordered" placeholder="例如: channel_xxxxx" />
+			</div>
+			<div class="modal-action">
+				<button id="join-channel-confirm" class="btn btn-primary">加入</button>
+				<button class="btn" onclick="document.getElementById('join-channel-modal').close()">取消</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

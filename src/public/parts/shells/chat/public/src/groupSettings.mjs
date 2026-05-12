@@ -3,6 +3,8 @@
  * 处理群组基本设置、角色权限、成员管理
  */
 
+import { geti18n, initTranslations } from '../../../scripts/i18n.mjs'
+
 let currentGroupId = null
 let currentState = null
 
@@ -10,6 +12,7 @@ let currentState = null
  * 初始化群组设置
  */
 export async function initGroupSettings() {
+	await initTranslations('chat')
 	const hash = window.location.hash.slice(1)
 	if (hash.startsWith('settings:')) {
 		const groupId = hash.split(':')[1]
@@ -27,7 +30,7 @@ async function loadGroupSettings(groupId) {
 	try {
 		currentGroupId = groupId
 
-		const response = await fetch(`/api/parts/shells:chat/${groupId}/state`, {
+		const response = await fetch(`/api/parts/shells:chat/groups/${groupId}/state`, {
 			credentials: 'include'
 		})
 
@@ -79,7 +82,6 @@ function renderGroupSettings() {
 						<span class="label-text">入群策略</span>
 					</label>
 					<select id="join-policy" class="select select-bordered">
-						<option value="open" ${currentState.groupSettings.joinPolicy === 'open' ? 'selected' : ''}>公开</option>
 						<option value="invite-only" ${currentState.groupSettings.joinPolicy === 'invite-only' ? 'selected' : ''}>仅邀请</option>
 						<option value="pow" ${currentState.groupSettings.joinPolicy === 'pow' ? 'selected' : ''}>需要 PoW</option>
 					</select>
@@ -91,6 +93,49 @@ function renderGroupSettings() {
 					</label>
 					<input type="number" id="pow-difficulty" class="input input-bordered"
 						value="${currentState.groupSettings.powDifficulty}" min="1" max="10">
+				</div>
+
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsLogicalStreamIdle'))}</span>
+					</label>
+					<input type="number" id="logical-stream-idle-ms" class="input input-bordered"
+						min="5000" max="600000" step="1000"
+						value="${Number(currentState.groupSettings.logicalStreamIdleMs) || 150000}">
+				</div>
+
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsMaxDagPayload'))}</span>
+					</label>
+					<input type="number" id="max-dag-payload-bytes" class="input input-bordered"
+						min="4096" max="8388608" step="1024"
+						value="${Number(currentState.groupSettings.maxDagPayloadBytes) || 262144}">
+				</div>
+
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsMailboxGeneration'))}</span>
+					</label>
+					<input type="number" id="mailbox-generation" class="input input-bordered" min="0" max="999999"
+						value="${Number(currentState.groupSettings.mailboxGeneration) || 0}">
+				</div>
+
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsStreamingSfu'))}</span>
+					</label>
+					<input type="text" id="streaming-sfu-wss" class="input input-bordered" placeholder="wss://..."
+						value="${escapeHtml(currentState.groupSettings.streamingSfuWss || '')}">
+				</div>
+
+				<div class="form-control">
+					<label class="label cursor-pointer justify-start gap-2 max-w-lg">
+						<input type="checkbox" id="plaintext-allowed" class="checkbox"
+							${currentState.groupSettings.plaintextAllowed ? 'checked' : ''} />
+						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsPlaintextToggle'))}</span>
+					</label>
+					<p class="text-warning text-sm mt-1">${escapeHtml(geti18n('chat.group.settingsPlaintextHint'))}</p>
 				</div>
 
 				<div class="card-actions justify-between mt-4">
@@ -164,6 +209,9 @@ function renderPermissionSettings() {
 	document.getElementById('create-role-btn')?.addEventListener('click', showCreateRoleModal)
 }
 
+/**
+ *
+ */
 function renderMembers() {
 	const container = document.getElementById('members-list')
 	if (!container) return
@@ -213,9 +261,18 @@ async function saveGroupSettings() {
 		const desc = document.getElementById('group-desc').value.trim()
 		const joinPolicy = document.getElementById('join-policy').value
 		const powDifficulty = Number.parseInt(document.getElementById('pow-difficulty').value, 10) || 4
+		const plaintextAllowed = document.getElementById('plaintext-allowed')?.checked ?? false
+		if (plaintextAllowed && !currentState.groupSettings?.plaintextAllowed) 
+			if (!confirm(geti18n('chat.group.settingsPlaintextConfirm')))
+				return
+		
+		const logicalStreamIdleMs = Number.parseInt(document.getElementById('logical-stream-idle-ms').value, 10) || 150000
+		const maxDagPayloadBytes = Number.parseInt(document.getElementById('max-dag-payload-bytes').value, 10) || 262144
+		const mailboxGeneration = Number.parseInt(document.getElementById('mailbox-generation').value, 10) || 0
+		const streamingSfuWssRaw = document.getElementById('streaming-sfu-wss')?.value?.trim() || ''
 
 		// 更新群组元数据
-		const metaResponse = await fetch(`/api/parts/shells:chat/${currentGroupId}/meta`, {
+		const metaResponse = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/meta`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
@@ -225,13 +282,18 @@ async function saveGroupSettings() {
 		if (!metaResponse.ok) throw new Error('Failed to update group meta')
 
 		// 更新群组设置
-		const settingsResponse = await fetch(`/api/parts/shells:chat/${currentGroupId}/settings`, {
+		const settingsResponse = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/settings`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
 			body: JSON.stringify({
 				joinPolicy,
-				powDifficulty
+				powDifficulty,
+				plaintextAllowed,
+				logicalStreamIdleMs,
+				maxDagPayloadBytes,
+				mailboxGeneration,
+				streamingSfuWss: streamingSfuWssRaw || null,
 			})
 		})
 
@@ -251,7 +313,7 @@ async function saveGroupSettings() {
 async function deleteGroup() {
 	if (!confirm('确定要删除此群组吗？此操作不可撤销，所有消息和成员数据将被永久删除。')) return
 	try {
-		const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}`, {
+		const resp = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}`, {
 			method: 'DELETE',
 			credentials: 'include'
 		})
@@ -276,10 +338,14 @@ const CHANNEL_PERMISSIONS = [
 
 /**
  * 更新角色权限
+ * @param {string} roleId - 角色 id
+ * @param {string} permission - 权限常量名
+ * @param {boolean} enabled - 是否授予该权限
+ * @returns {Promise<void>}
  */
 window.updateRolePermission = async function(roleId, permission, enabled) {
 	try {
-		const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}/roles/${encodeURIComponent(roleId)}/permissions`, {
+		const resp = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/roles/${encodeURIComponent(roleId)}/permissions`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
@@ -297,11 +363,13 @@ window.updateRolePermission = async function(roleId, permission, enabled) {
 
 /**
  * 删除角色
+ * @param {string} roleId - 角色 id
+ * @returns {Promise<void>}
  */
 window.deleteRole = async function(roleId) {
 	if (!confirm('确定要删除此角色吗？')) return
 	try {
-		const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}/roles/${encodeURIComponent(roleId)}`, {
+		const resp = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/roles/${encodeURIComponent(roleId)}`, {
 			method: 'DELETE',
 			credentials: 'include'
 		})
@@ -321,7 +389,7 @@ function showCreateRoleModal() {
 	const name = prompt('输入角色名称:')
 	if (!name || !name.trim()) return
 
-	fetch(`/api/parts/shells:chat/${currentGroupId}/roles`, {
+	fetch(`/api/parts/shells:chat/groups/${currentGroupId}/roles`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -330,17 +398,22 @@ function showCreateRoleModal() {
 		if (data.success) {
 			showSuccess('角色已创建')
 			await loadGroupSettings(currentGroupId)
-		} else {
+		} else 
 			showError('创建角色失败: ' + (data.error || '未知错误'))
-		}
+		
 	}).catch(err => showError('创建角色失败: ' + err.message))
 }
 
+/**
+ * 踢出成员（由设置页内联按钮调用）。
+ * @param {string} encodedUsername - URL 编码后的用户名
+ * @returns {Promise<void>}
+ */
 window.kickMember = async function(encodedUsername) {
 	const username = decodeURIComponent(encodedUsername)
 	if (!confirm(`确定踢出成员 ${username} 吗？`)) return
 	try {
-		const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}/members/${encodeURIComponent(username)}/kick`, {
+		const resp = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/members/${encodeURIComponent(username)}/kick`, {
 			method: 'POST',
 			credentials: 'include'
 		})
@@ -353,11 +426,16 @@ window.kickMember = async function(encodedUsername) {
 	}
 }
 
+/**
+ * 封禁成员（由设置页内联按钮调用）。
+ * @param {string} encodedUsername - URL 编码后的用户名
+ * @returns {Promise<void>}
+ */
 window.banMember = async function(encodedUsername) {
 	const username = decodeURIComponent(encodedUsername)
 	if (!confirm(`确定封禁成员 ${username} 吗？`)) return
 	try {
-		const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}/members/${encodeURIComponent(username)}/ban`, {
+		const resp = await fetch(`/api/parts/shells:chat/groups/${currentGroupId}/members/${encodeURIComponent(username)}/ban`, {
 			method: 'POST',
 			credentials: 'include'
 		})
@@ -371,7 +449,9 @@ window.banMember = async function(encodedUsername) {
 }
 
 /**
- * 辅助函数
+ * 将权限常量映射为中文展示名。
+ * @param {string} perm - 权限常量
+ * @returns {string} 中文名；未知时返回原常量
  */
 function getPermissionName(perm) {
 	const names = {
@@ -395,18 +475,37 @@ function getPermissionName(perm) {
 	return names[perm] || perm
 }
 
+/**
+ * HTML 转义。
+ * @param {unknown} text - 待转义内容
+ * @returns {string} 转义后的字符串
+ */
 function escapeHtml(text) {
 	return String(text ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 }
 
+/**
+ * 成功提示（alert）。
+ * @param {string} message - 提示文案
+ * @returns {void}
+ */
 function showSuccess(message) {
 	alert(message)
 }
 
+/**
+ * 错误提示（alert）。
+ * @param {string} message - 错误文案
+ * @returns {void}
+ */
 function showError(message) {
 	alert(message)
 }
 
+/**
+ * 预留：集中注册设置页事件（当前由各渲染函数自行绑定）。
+ * @returns {void}
+ */
 function setupEventListeners() {
 	// 事件监听器已在各渲染函数中设置
 }

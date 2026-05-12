@@ -6,7 +6,7 @@
 /**
  * 生成 PoW 挑战
  * @param {number} difficulty - 难度（前导零的数量）
- * @returns {object}
+ * @returns {{ challenge: string, difficulty: number, timestamp: number }} 挑战载荷
  */
 export function generateChallenge(difficulty = 4) {
 	const challenge = crypto.randomUUID()
@@ -21,29 +21,29 @@ export function generateChallenge(difficulty = 4) {
  * 解决 PoW 挑战
  * @param {string} challenge - 挑战字符串
  * @param {number} difficulty - 难度
- * @returns {Promise<object>}
+ * @returns {Promise<{ nonce: number, hash: string }>} 满足难度的 nonce 与哈希
  */
 export async function solveChallenge(challenge, difficulty) {
 	let nonce = 0
 	const target = '0'.repeat(difficulty)
 
-	while (true) {
+	for (;;) {
 		const input = `${challenge}:${nonce}`
 		const hash = await hashString(input)
 
-		if (hash.startsWith(target)) {
+		if (hash.startsWith(target)) 
 			return {
 				nonce,
 				hash
 			}
-		}
+		
 
 		nonce++
 
 		// 防止阻塞，每 1000 次迭代让出控制权
-		if (nonce % 1000 === 0) {
+		if (nonce % 1000 === 0) 
 			await new Promise(resolve => setTimeout(resolve, 0))
-		}
+		
 	}
 }
 
@@ -52,7 +52,7 @@ export async function solveChallenge(challenge, difficulty) {
  * @param {string} challenge - 挑战字符串
  * @param {number} nonce - 随机数
  * @param {number} difficulty - 难度
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} 哈希是否满足难度前缀
  */
 export async function verifyChallenge(challenge, nonce, difficulty) {
 	const input = `${challenge}:${nonce}`
@@ -65,7 +65,7 @@ export async function verifyChallenge(challenge, nonce, difficulty) {
 /**
  * 计算字符串哈希
  * @param {string} input - 输入字符串
- * @returns {Promise<string>}
+ * @returns {Promise<string>} 小写十六进制 SHA-256
  */
 async function hashString(input) {
 	const encoder = new TextEncoder()
@@ -79,6 +79,9 @@ async function hashString(input) {
  * IP 限流器
  */
 export class RateLimiter {
+	/**
+	 * @param {object} [config={}] - 限流配置（每分钟/每小时上限）
+	 */
 	constructor(config = {}) {
 		this.maxRequestsPerMinute = config.maxRequestsPerMinute || 60
 		this.maxRequestsPerHour = config.maxRequestsPerHour || 1000
@@ -88,16 +91,16 @@ export class RateLimiter {
 	/**
 	 * 检查是否允许请求
 	 * @param {string} ip - IP 地址
-	 * @returns {boolean}
+	 * @returns {boolean} 是否仍允许该 IP 发起请求
 	 */
 	checkLimit(ip) {
 		const now = Date.now()
 		const oneMinuteAgo = now - 60 * 1000
 		const oneHourAgo = now - 60 * 60 * 1000
 
-		if (!this.requests.has(ip)) {
+		if (!this.requests.has(ip)) 
 			this.requests.set(ip, [])
-		}
+		
 
 		const ipRequests = this.requests.get(ip)
 
@@ -107,14 +110,14 @@ export class RateLimiter {
 
 		// 检查分钟限制
 		const recentRequests = validRequests.filter(t => t > oneMinuteAgo)
-		if (recentRequests.length >= this.maxRequestsPerMinute) {
+		if (recentRequests.length >= this.maxRequestsPerMinute) 
 			return false
-		}
+		
 
 		// 检查小时限制
-		if (validRequests.length >= this.maxRequestsPerHour) {
+		if (validRequests.length >= this.maxRequestsPerHour) 
 			return false
-		}
+		
 
 		// 记录本次请求
 		validRequests.push(now)
@@ -131,30 +134,30 @@ export class RateLimiter {
 
 		for (const [ip, requests] of this.requests.entries()) {
 			const validRequests = requests.filter(t => t > oneHourAgo)
-			if (validRequests.length === 0) {
+			if (validRequests.length === 0) 
 				this.requests.delete(ip)
-			} else {
+			 else 
 				this.requests.set(ip, validRequests)
-			}
+			
 		}
 	}
 
 	/**
 	 * 获取剩余配额
 	 * @param {string} ip - IP 地址
-	 * @returns {object}
+	 * @returns {{ perMinute: number, perHour: number }} 剩余分钟/小时配额
 	 */
 	getQuota(ip) {
 		const now = Date.now()
 		const oneMinuteAgo = now - 60 * 1000
 		const oneHourAgo = now - 60 * 60 * 1000
 
-		if (!this.requests.has(ip)) {
+		if (!this.requests.has(ip)) 
 			return {
 				perMinute: this.maxRequestsPerMinute,
 				perHour: this.maxRequestsPerHour
 			}
-		}
+		
 
 		const ipRequests = this.requests.get(ip)
 		const recentRequests = ipRequests.filter(t => t > oneMinuteAgo).length
@@ -170,7 +173,7 @@ export class RateLimiter {
 /**
  * 启动定期清理
  * @param {RateLimiter} limiter - 限流器实例
- * @returns {number} 定时器ID
+ * @returns {number} 定时器句柄（`setInterval` 返回值）
  */
 export function startCleanup(limiter) {
 	return setInterval(() => {
