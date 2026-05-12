@@ -1,8 +1,8 @@
 import {
 	loadChat, addchar, newChat, setPersona, setWorld, getChatList, addUserReply, GetChatLog, GetChatLogLength,
-	removechar, getCharListOfChat, GetUserPersonaName, GetWorldName, modifyTimeLine,
+	removechar, setCharSpeakingFrequency, getCharListOfChat, GetUserPersonaName, GetWorldName, modifyTimeLine,
 	triggerCharReply, deleteMessage, editMessage
-} from './chat/session.mjs'
+} from './chat.mjs'
 
 /**
  * 定义了可用于聊天功能的各种操作。
@@ -36,7 +36,7 @@ export const actions = {
 		else chatId = await newChat(user)
 
 
-		if (chatInfo.world) await setWorld(chatId, null, chatInfo.world)
+		if (chatInfo.world) await setWorld(chatId, chatInfo.world)
 		if (chatInfo.persona) await setPersona(chatId, chatInfo.persona)
 		if (chatInfo.chars)
 			for (const char of chatInfo.chars)
@@ -70,7 +70,7 @@ export const actions = {
 	 */
 	send: ({ chatId, message }) => {
 		if (!chatId || !message) throw new Error('Chat ID and message are required for send command.')
-		return addUserReply(chatId, null, message)
+		return addUserReply(chatId, message)
 	},
 	/**
 	 * 获取聊天会话的最后几条消息。
@@ -81,8 +81,8 @@ export const actions = {
 	 */
 	tail: async ({ chatId, n = 5 }) => {
 		if (!chatId) throw new Error('Chat ID is required for tail command.')
-		const logLength = await GetChatLogLength(chatId, null)
-		return GetChatLog(chatId, null, Math.max(0, logLength - n), logLength)
+		const logLength = await GetChatLogLength(chatId)
+		return GetChatLog(chatId, Math.max(0, logLength - n), logLength)
 	},
 	/**
 	 * 从聊天中移除一个角色。
@@ -115,7 +115,7 @@ export const actions = {
 	 */
 	'set-world': ({ chatId, worldName }) => {
 		if (!chatId) throw new Error('Chat ID is required.')
-		return setWorld(chatId, null, worldName || null)
+		return setWorld(chatId, worldName || null)
 	},
 	/**
 	 * 获取当前用户角色。
@@ -135,7 +135,7 @@ export const actions = {
 	 */
 	'get-world': ({ chatId }) => {
 		if (!chatId) throw new Error('Chat ID is required.')
-		return GetWorldName(chatId, null)
+		return GetWorldName(chatId)
 	},
 	/**
 	 * 获取聊天中的角色列表。
@@ -148,6 +148,18 @@ export const actions = {
 		return getCharListOfChat(chatId)
 	},
 	/**
+	 * 设置角色的发言频率。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.chatId - 目标聊天的ID。
+	 * @param {string} root0.charName - 要设置频率的角色的名称。
+	 * @param {number} root0.frequency - 发言频率。
+	 * @returns {Promise<void>}
+	 */
+	'set-char-frequency': ({ chatId, charName, frequency }) => {
+		if (!chatId || !charName || !(Object(frequency) instanceof Number)) throw new Error('Chat ID, character name, and frequency are required.')
+		return setCharSpeakingFrequency(chatId, charName, frequency)
+	},
+	/**
 	 * 触发角色回复。
 	 * @param {object} root0 - 参数。
 	 * @param {string} root0.chatId - 聊天ID。
@@ -156,7 +168,7 @@ export const actions = {
 	 */
 	'trigger-reply': ({ chatId, charName }) => {
 		if (!chatId) throw new Error('Chat ID is required.')
-		return triggerCharReply(chatId, null, charName || null)
+		return triggerCharReply(chatId, charName || null)
 	},
 	/**
 	 * 删除指定索引的消息。
@@ -167,7 +179,7 @@ export const actions = {
 	 */
 	'delete-message': ({ chatId, index }) => {
 		if (!chatId || !(Object(index) instanceof Number)) throw new Error('Chat ID and message index are required.')
-		return deleteMessage(chatId, null, index)
+		return deleteMessage(chatId, index)
 	},
 	/**
 	 * 编辑指定索引的消息。
@@ -179,7 +191,7 @@ export const actions = {
 	 */
 	'edit-message': ({ chatId, index, newContent }) => {
 		if (!chatId || !(Object(index) instanceof Number) || !newContent) throw new Error('Chat ID, message index, and new content are required.')
-		return editMessage(chatId, null, index, newContent)
+		return editMessage(chatId, index, newContent)
 	},
 	/**
 	 * 修改聊天的时间线。
@@ -190,6 +202,6 @@ export const actions = {
 	 */
 	'modify-timeline': ({ chatId, delta }) => {
 		if (!chatId || !(Object(delta) instanceof Number)) throw new Error('Chat ID and delta are required.')
-		return modifyTimeLine(chatId, null, delta)
+		return modifyTimeLine(chatId, delta)
 	}
 }

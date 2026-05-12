@@ -1,173 +1,112 @@
-// 此文件不依赖旧的 virtualQueue，直接操作传入的 DOM 元素
-
-import { renderMarkdownAsString } from '../../../../../../pages/scripts/markdown.mjs'
-
-const PREVIEW_THROTTLE_MS = 150
+import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
 
 /**
- * 单条 AI 流式消息渲染器。
- * 流式阶段节流预览 Markdown；finish() 时完整渲染（无光标）。
+ * 用于实现流式渲染的类。
  */
-export class StreamRenderer {
-	/** @type {HTMLElement|null} */
-	#contentEl = null
-	/** @type {HTMLSpanElement|null} */
-	#cursorEl = null
-	#fullText = ''
-	/** @type {number} */
-	#previewRafId = 0
-	#lastPreviewTime = -PREVIEW_THROTTLE_MS
-	#rendering = false
-	#renderPending = false
-	#cancelled = false
-	/** @type {(() => void)[]} */
-	#idleWaiters = []
-
+class StreamRenderer {
 	/**
-	 * @param {HTMLElement} bodyEl  内容容器（预先插入 DOM）
+	 * 创建一个新的 StreamRenderer 实例。
 	 */
-	constructor(bodyEl) {
-		this.bodyEl = bodyEl
-		this.#ensureStreamDom()
-		this.cache = {}
+	constructor() {
+		this.streamingMessages = new Map()
+		this.animationFrameId = null
 	}
 
 	/**
-	 * 在 bodyEl 内建立「内容容器 + 持久光标」结构；仅替换内容容器的 innerHTML。
+	 * 注册一个正在进行流式传输的消息。
+	 * @param {string} id - 消息的唯一 ID。
+	 * @param {string} initialContent - 消息的初始内容。
 	 */
-	#ensureStreamDom() {
-		if (!this.bodyEl || this.#contentEl) return
-		const wrap = document.createElement('div')
-		wrap.className = 'contents stream-markdown'
-		while (this.bodyEl.firstChild)
-			wrap.appendChild(this.bodyEl.firstChild)
-		this.bodyEl.appendChild(wrap)
-		this.#contentEl = wrap
-		const cursor = document.createElement('span')
-		cursor.className = 'stream-cursor'
-		cursor.textContent = '▌'
-		this.bodyEl.appendChild(cursor)
-		this.#cursorEl = cursor
+	register(id, initialContent) {
+		this.streamingMessages.set(id, {
+			targetContent: initialContent || '',
+			displayedContent: initialContent || '',
+			lastRendered: null,
+			domElement: document.getElementById(id), // 缓存引用
+			cache: {}
+		})
+		this.startLoop()
 	}
 
 	/**
-	 * 等待当前预览渲染结束。
-	 * @returns {Promise<void>}
+	 * 更新指定消息的目标内容，用于平滑渲染。
+	 * @param {string} id - 消息的唯一 ID。
+	 * @param {string} newContent - 消息的新内容。
 	 */
-	async #waitRenderIdle() {
-		while (this.#rendering)
-			await new Promise(r => {
-				this.#idleWaiters.push(r)
-			})
+	updateTarget(id, newContent) {
+		const state = this.streamingMessages.get(id)
+		if (state) state.targetContent = newContent
+		this.startLoop()
 	}
 
-	/** 取消预览用的 rAF */
-	#cancelPreviewRaf() {
-		if (this.#previewRafId) {
-			cancelAnimationFrame(this.#previewRafId)
-			this.#previewRafId = 0
+	/**
+	 * 停止对指定消息的流式渲染。
+	 * @param {string} id - 消息的唯一 ID。
+	 */
+	stop(id) {
+		this.streamingMessages.delete(id)
+	}
+
+	/**
+	 * 开始循环渲染。
+	 */
+	startLoop() {
+		if (this.animationFrameId || !this.streamingMessages.size) return
+		/**
+		 * 一个帧的渲染逻辑
+		 */
+		const loop = async () => {
+			if (!this.streamingMessages.size) {
+				this.animationFrameId = null
+				return
+			}
+			await this.renderFrame()
+			this.animationFrameId = requestAnimationFrame(loop)
 		}
+		this.animationFrameId = requestAnimationFrame(loop)
 	}
 
-	/** 唤醒在 `_rendering` 上等待的调用方（如 finish） */
-	#flushIdleWaiters() {
-		const w = this.#idleWaiters
-		this.#idleWaiters = []
-		for (const r of w) r()
-	}
+	/**
+	 * 渲染一帧。
+	 */
+	async renderFrame() {
+		for (const [id, state] of this.streamingMessages) {
+			// 重新获取 DOM，防止虚拟列表滚动导致元素重建
+			if (!state.domElement || !state.domElement.isConnected) {
+				state.domElement = document.getElementById(id)
+				if (!state.domElement) continue
+			}
 
-	/** 若尚无 rAF，则注册一次节流检查 */
-	#schedulePreview() {
-		if (this.#previewRafId) return
-		this.#previewRafId = requestAnimationFrame(() => this.#previewRafTick())
-	}
+			// 纯追加时平滑逼近；内容重写（包括 HTML 整帧替换）直接跳到目标避免无谓闪烁
+			const { targetContent, displayedContent } = state
+			if (targetContent.startsWith(displayedContent)) {
+				const lag = targetContent.length - displayedContent.length
+				const step = Math.max(1, Math.ceil(lag / 5))
+				state.displayedContent = targetContent.substring(0, displayedContent.length + step)
+			} else
+				state.displayedContent = targetContent
 
-	/** rAF：距上次成功应用预览满节流间隔则渲染 */
-	#previewRafTick() {
-		this.#previewRafId = 0
-		if (this.#cancelled || !this.bodyEl) return
-		const now = performance.now()
-		if (now - this.#lastPreviewTime < PREVIEW_THROTTLE_MS) {
-			this.#previewRafId = requestAnimationFrame(() => this.#previewRafTick())
-			return
-		}
-		this.#doPreviewRender()
-	}
 
-	/** 串行异步预览 Markdown，末尾加流式光标 */
-	#doPreviewRender() {
-		if (this.#cancelled || !this.bodyEl) return
-		if (this.#rendering) {
-			this.#renderPending = true
-			return
-		}
-		const snapshot = this.#fullText
-		this.#rendering = true
-		this.#renderPending = false
-		;(async () => {
-			let applied = false
-			try {
-				const html = await renderMarkdownAsString(snapshot, this.cache)
-				if (this.#cancelled || !this.bodyEl) return
-				if (snapshot !== this.#fullText) {
-					this.#renderPending = true
-					return
+			// 只有内容变化才操作 DOM
+			if (state.displayedContent !== state.lastRendered) {
+				const contentEl = state.domElement.querySelector('.message-content')
+				if (contentEl) {
+					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent, state.cache)
+
+					if (state.displayedContent.trim()) {
+						const skeletonEl = state.domElement.querySelector('.skeleton-loader')
+						skeletonEl.classList.add('hidden')
+						contentEl.classList.remove('hidden')
+					}
 				}
-				this.#contentEl.innerHTML = html
-				applied = true
-			}
-			finally {
-				this.#rendering = false
-				if (applied) this.#lastPreviewTime = performance.now()
-				this.#flushIdleWaiters()
-				if (!this.#cancelled && this.bodyEl && this.#renderPending)
-					this.#schedulePreview()
-			}
-		})()
-	}
 
-	/**
-	 * 追加文本块（由 WS group_stream_chunk 调用）
-	 * @param {string} text 追加的纯文本片段
-	 */
-	appendChunk(text) {
-		if (typeof text !== 'string') return
-		const first = this.onFirstChunk
-		if (first) {
-			this.onFirstChunk = null
-			first()
+				state.lastRendered = state.displayedContent
+			}
 		}
-		this.#fullText += text
-		this.#schedulePreview()
-	}
-
-	/**
-	 * 完成流式输出，渲染完整 Markdown
-	 * @param {string} [finalText]  若提供则覆盖当前累计内容
-	 */
-	async finish(finalText) {
-		this.#cancelPreviewRaf()
-		await this.#waitRenderIdle()
-		this.#cancelPreviewRaf()
-		const full = finalText !== undefined && finalText !== null
-			? String(finalText)
-			: this.#fullText
-		if (!this.bodyEl) return
-		const html = await renderMarkdownAsString(full, this.cache)
-		if (!this.bodyEl) return
-		this.#cursorEl?.remove()
-		this.#cursorEl = null
-		if (this.#contentEl)
-			this.#contentEl.innerHTML = html
-		else
-			this.bodyEl.innerHTML = html
-	}
-
-	/** 取消（stream 提前中止时调用） */
-	cancel() {
-		this.#cancelled = true
-		this.#cancelPreviewRaf()
-		this.#renderPending = false
-		this.#flushIdleWaiters()
 	}
 }
+
+/**
+ * 流式渲染器的单例
+ */
+export const streamRenderer = new StreamRenderer()

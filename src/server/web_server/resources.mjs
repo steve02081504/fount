@@ -54,5 +54,6 @@ export function registerResources(router) {
 		return next()
 	})
 	watchFrontendChanges('/', __dirname + '/src/public/pages')
+	router.use('/uploads', express.static(__dirname + '/data/uploads'))
 	router.use(express.static(__dirname + '/src/public/pages'))
 }

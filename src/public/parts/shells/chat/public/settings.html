@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>群组设置</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="bg-base-100 min-h-screen">
+	<div class="container mx-auto p-6 max-w-6xl">
+		<!-- 顶部导航 -->
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<a href="/parts/shells:chat/group.html" class="btn btn-ghost btn-circle" id="back-to-group-link">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+					</svg>
+				</a>
+				<h1 class="text-3xl font-bold">群组设置</h1>
+			</div>
+		</div>
+
+		<!-- 标签页导航 -->
+		<div role="tablist" class="tabs tabs-boxed mb-6">
+			<a role="tab" class="tab tab-active" data-tab="general">基本设置</a>
+			<a role="tab" class="tab" data-tab="permissions">角色权限</a>
+			<a role="tab" class="tab" data-tab="members">成员管理</a>
+		</div>
+
+		<!-- 基本设置 -->
+		<div id="tab-general" class="tab-content">
+			<div id="group-settings-container"></div>
+		</div>
+
+		<!-- 角色权限 -->
+		<div id="tab-permissions" class="tab-content hidden">
+			<div id="permission-settings-container"></div>
+		</div>
+
+		<!-- 成员管理 -->
+		<div id="tab-members" class="tab-content hidden">
+			<div class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title mb-4">成员列表</h2>
+					<div id="members-list" class="space-y-2">
+						<!-- 成员列表将在这里动态生成 -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="module">
+		import { initGroupSettings } from './src/groupSettings.mjs'
+
+		const hash = window.location.hash.slice(1)
+		const groupId = hash.startsWith('settings:') ? hash.split(':')[1] : ''
+		const backLink = document.getElementById('back-to-group-link')
+		if (backLink && groupId)
+			backLink.href = `/parts/shells:chat/group.html#${groupId}`
+
+		// 初始化
+		initGroupSettings()
+
+		// 标签页切换
+		document.querySelectorAll('.tabs .tab').forEach(tab => {
+			tab.addEventListener('click', (e) => {
+				const tabName = e.target.dataset.tab
+
+				// 更新标签激活状态
+				document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('tab-active'))
+				e.target.classList.add('tab-active')
+
+				// 显示对应内容
+				document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'))
+				document.getElementById(`tab-${tabName}`)?.classList.remove('hidden')
+			})
+		})
+	</script>
+</body>
+
+</html>

@@ -1,3 +1,5 @@
+import { stripImageContent } from './messageBuilder.mjs'
+
 /**
  * 创建带重试的聊天补全请求函数。
  * @param {object} config - 服务配置（会在 URL 自动修正时被更新）。
@@ -274,6 +276,22 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				return result
 			} catch (error) {
 				if (error.name === 'AbortError') throw error
+
+				// Auto-recover: if the API rejects image_url content type, strip images and retry
+				const errMsg = JSON.stringify(error?.data ?? error?.text ?? '')
+				const hasImageContent = messages.some(m => Array.isArray(m.content) && m.content.some(p => p.type === 'image_url'))
+				if (hasImageContent && errMsg.includes('image_url')) {
+					console.warn(`API rejected image_url content for ${currentConfig.model}, retrying without images...`)
+					try {
+						const strippedMessages = stripImageContent(messages)
+						return await fetchChatCompletion(strippedMessages, currentConfig, options)
+					} catch (retryError) {
+						if (retryError.name === 'AbortError') throw retryError
+						errors.push(retryError)
+						continue
+					}
+				}
+
 				errors.push(error)
 			}
 		}

@@ -1,10 +1,12 @@
 import { showToastI18n } from '../../../../../scripts/toast.mjs'
 
+
 import { initializeAchievements } from './achievements.mjs'
-import { addCharacter, setPersona, setWorld, addPlugin } from './endpoints.mjs'
-import { initGroupViewFromHash } from './group.mjs'
-import { setupSidebar } from './ui/sidebar.mjs'
-import { handleUIError, normalizeError } from './utils.mjs'
+import { addCharacter, setPersona, setWorld, addPlugin, getInitialData } from './endpoints.mjs'
+import { setupCss } from './ui/css.mjs'
+import { initializeMessageInput } from './ui/messageInput.mjs'
+import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
+import { initializeVirtualQueue } from './ui/virtualQueue.mjs'
 import { sendWebsocketMessage, initializeWebSocket } from './websocket.mjs'
 
 // These are shared state used by the sidebar.
@@ -66,14 +68,26 @@ export function setPersonaName(name) {
  * @returns {Promise<void>}
  */
 export async function initializeChat() {
+	setupCss()
 	initializeWebSocket()
 	initializeAchievements()
+
+	const initialData = await getInitialData()
+	initializeVirtualQueue(initialData)
+	updateSidebar({
+		charlist: initialData.charlist,
+		pluginlist: initialData.pluginlist,
+		worldname: initialData.worldname,
+		personaname: initialData.personaname,
+		frequency_data: initialData.frequency_data,
+	})
 
 	if (window.Notification?.permission != 'granted')
 		Notification.requestPermission()
 
 	setupSidebar()
-	await initGroupViewFromHash()
+	// This was in index.mjs, but it makes more sense here as it's part of the chat UI
+	initializeMessageInput()
 
 	// Add global drag-and-drop support for x-fount-part
 	document.body.addEventListener('dragover', event => {
@@ -110,13 +124,8 @@ export async function initializeChat() {
 					return
 			}
 		} catch (error) {
-			const err = normalizeError(error)
-			handleUIError(
-				err,
-				'chat.dragAndDrop.errorAddingPart',
-				`Error handling dropped part (${partType}/${partName})`,
-				{ partName, error: err.message },
-			)
+			console.error(`Error handling dropped part (${partType}/${partName}):`, error)
+			showToastI18n('error', 'chat.dragAndDrop.errorAddingPart', { partName, error: error.message })
 		}
 	})
 }

@@ -1,28 +1,88 @@
 /**
- * 混合逻辑时钟：{ wall: ms, logical: number }
- *
- * @param {{ wall?: number, logical?: number }} prev 上一拍 HLC；缺省视为 0
- * @param {number} [physicalMs] 本地物理时间毫秒戳，默认 `Date.now()`
- * @returns {{ wall: number, logical: number }} 单调非减的下一拍 HLC
+ * 混合逻辑时钟 (Hybrid Logical Clock)
+ * 用于分布式系统中的事件排序
  */
-export function nextHlc(prev, physicalMs = Date.now()) {
-	const p = prev && typeof prev.wall === 'number' ? prev : { wall: 0, logical: 0 }
-	if (physicalMs > p.wall) return { wall: physicalMs, logical: 0 }
-	if (physicalMs === p.wall) return { wall: p.wall, logical: (p.logical || 0) + 1 }
-	return { wall: p.wall, logical: (p.logical || 0) + 1 }
-}
 
-/**
- * HLC tiebreaker 比较：先比 wall，再比 logical，最后用节点 id 字典序
- *
- * @param {{ wall: number, logical: number }} a 节点 A 的事件时间戳
- * @param {{ wall: number, logical: number }} b 节点 B 的事件时间戳
- * @param {string} nodeIdA 节点 A 的稳定 id（用于同拍决胜）
- * @param {string} nodeIdB 节点 B 的稳定 id
- * @returns {number} 与 `Array.prototype.sort` 一致：小于 0 表示 a 优先于 b
- */
-export function compareHlcNode(a, b, nodeIdA, nodeIdB) {
-	if (a.wall !== b.wall) return a.wall - b.wall
-	if (a.logical !== b.logical) return a.logical - b.logical
-	return String(nodeIdA).localeCompare(String(nodeIdB))
+export class HLC {
+	constructor(wall = 0, logical = 0) {
+		this.wall = wall
+		this.logical = logical
+	}
+
+	/**
+	 * 创建当前时间的 HLC
+	 * @returns {HLC}
+	 */
+	static now() {
+		return new HLC(Date.now(), 0)
+	}
+
+	/**
+	 * 更新 HLC（接收到远程事件时）
+	 * @param {HLC} remote - 远程 HLC
+	 * @returns {HLC}
+	 */
+	update(remote) {
+		const localWall = Date.now()
+
+		if (localWall > this.wall && localWall > remote.wall) {
+			return new HLC(localWall, 0)
+		}
+
+		if (this.wall === remote.wall) {
+			return new HLC(this.wall, Math.max(this.logical, remote.logical) + 1)
+		}
+
+		if (this.wall > remote.wall) {
+			return new HLC(this.wall, this.logical + 1)
+		}
+
+		return new HLC(remote.wall, remote.logical + 1)
+	}
+
+	/**
+	 * 递增 HLC（本地生成新事件时）
+	 * @returns {HLC}
+	 */
+	tick() {
+		const localWall = Date.now()
+
+		if (localWall > this.wall) {
+			return new HLC(localWall, 0)
+		}
+
+		return new HLC(this.wall, this.logical + 1)
+	}
+
+	/**
+	 * 比较两个 HLC
+	 * @param {HLC} other - 另一个 HLC
+	 * @returns {number} -1, 0, 1
+	 */
+	compare(other) {
+		if (this.wall !== other.wall) {
+			return this.wall - other.wall
+		}
+		return this.logical - other.logical
+	}
+
+	/**
+	 * 转换为 JSON
+	 * @returns {object}
+	 */
+	toJSON() {
+		return {
+			wall: this.wall,
+			logical: this.logical
+		}
+	}
+
+	/**
+	 * 从 JSON 创建 HLC
+	 * @param {object} json - JSON 对象
+	 * @returns {HLC}
+	 */
+	static fromJSON(json) {
+		return new HLC(json.wall, json.logical)
+	}
 }

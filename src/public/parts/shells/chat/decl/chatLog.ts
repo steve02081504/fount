@@ -40,7 +40,6 @@ export class chatReply_t {
 	logContextBefore?: chatLogEntry_t[]
 	logContextAfter?: chatLogEntry_t[]
 	charVisibility?: string[]
-	visibility?: { roles?: string[]; members?: string[] }
 	extension?: any
 }
 
@@ -112,13 +111,6 @@ export class chatReplyRequest_t {
 	chat_scoped_char_memory: object
 	extension: object
 	generation_options?: GenerationOptions_t
-	/** 当前成员在群中的角色 id 列表（用于 visibility.roles 匹配） */
-	member_roles?: string[]
-	/**
-	 * 跨网络 proxy：仅 char/world/user 的 info + interfaces 可用，无 Init/Load 等生命周期。
-	 * 各字段为 true 表示对应部件为远端桩。
-	 */
-	remote_proxy?: { char?: boolean; world?: boolean; user?: boolean; other_chars?: Record<string, boolean> }
 }
 
 /**
@@ -171,7 +163,6 @@ export class chatLogEntry_t {
 	logContextBefore: chatLogEntry_t[] // 内容会被展开到此信息前
 	logContextAfter: chatLogEntry_t[] // 展开到其后
 	charVisibility?: string[] // 可见的角色的char_id列表，若无则全可见
-	visibility?: { roles?: string[]; members?: string[] }
 	extension: {
 		timeSlice: {
 			chars: Map<string, CharAPI_t>;

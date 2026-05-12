@@ -1,86 +1,149 @@
-import { PERMISSION_REGISTRY_ORDER } from './constants.mjs'
-
 /**
- * 已知键按注册表顺序，未知键字典序接在末尾
- *
- * @param {Record<string, boolean>} rec 权限名 → 是否开启
- * @returns {string[]} 稳定排序后的权限键列表
+ * 权限系统
+ * 物化权限状态 + 增量计算
  */
-export function sortedPermissionKeys(rec) {
-	const known = new Set(PERMISSION_REGISTRY_ORDER)
-	const fromReg = [...PERMISSION_REGISTRY_ORDER].filter(k => k in rec)
-	const unknown = Object.keys(rec).filter(k => !known.has(k)).sort()
-	return [...fromReg, ...unknown]
+
+// 内置权限能力
+export const PERMISSIONS = {
+	VIEW_CHANNEL: 'VIEW_CHANNEL',
+	SEND_MESSAGES: 'SEND_MESSAGES',
+	SEND_STICKERS: 'SEND_STICKERS',
+	ADD_REACTIONS: 'ADD_REACTIONS',
+	MANAGE_MESSAGES: 'MANAGE_MESSAGES',
+	MANAGE_CHANNELS: 'MANAGE_CHANNELS',
+	KICK_MEMBERS: 'KICK_MEMBERS',
+	BAN_MEMBERS: 'BAN_MEMBERS',
+	MANAGE_ROLES: 'MANAGE_ROLES',
+	INVITE_MEMBERS: 'INVITE_MEMBERS',
+	STREAM: 'STREAM',
+	CREATE_THREADS: 'CREATE_THREADS',
+	UPLOAD_FILES: 'UPLOAD_FILES',
+	MANAGE_FILES: 'MANAGE_FILES',
+	PIN_MESSAGES: 'PIN_MESSAGES',
+	ADMIN: 'ADMIN'
 }
 
+// 权限顺序（用于 BigInt 编码）
+const PERMISSION_ORDER = Object.values(PERMISSIONS)
+
 /**
- * Record → BigInt 位图（仅 true 的位为 1）
- *
- * @param {Record<string, boolean>} rec 权限名 → 是否开启
- * @returns {bigint} 按 `sortedPermissionKeys` 顺序编码的位图
+ * 权限编码为 BigInt
+ * @param {Record<string, boolean>} permissions - 权限对象
+ * @returns {bigint}
  */
-export function permissionsToBigInt(rec) {
+export function encodePermissions(permissions) {
 	let bits = 0n
-	const keys = sortedPermissionKeys(rec)
-	for (let i = 0; i < keys.length; i++)
-		if (rec[keys[i]] === true)
-			bits |= 1n << BigInt(i)
+	for (let i = 0; i < PERMISSION_ORDER.length; i++) {
+		if (permissions[PERMISSION_ORDER[i]]) {
+			bits |= (1n << BigInt(i))
+		}
+	}
 	return bits
 }
 
 /**
- * 位图解码回权限 Record
- *
- * @param {bigint} bits `permissionsToBigInt` 的输出
- * @param {string[]} keys 与编码时相同顺序的权限名列表
- * @returns {Record<string, boolean>} 权限名 → 是否开启
+ * BigInt 解码为权限对象
+ * @param {bigint} bits - 权限位
+ * @returns {Record<string, boolean>}
  */
-export function bigIntToPermissions(bits, keys) {
-	const out = {}
-	for (let i = 0; i < keys.length; i++)
-		out[keys[i]] = (bits & (1n << BigInt(i))) !== 0n
-	return out
+export function decodePermissions(bits) {
+	const permissions = {}
+	for (let i = 0; i < PERMISSION_ORDER.length; i++) {
+		permissions[PERMISSION_ORDER[i]] = Boolean(bits & (1n << BigInt(i)))
+	}
+	return permissions
 }
 
 /**
- * 最终权限：(∪ roles.permissions | channelAllow) & ~channelDeny
- * ADMIN 短路为全能力 true（按 keys 并集）
- *
- * @param {{
- *   roleRecords: Record<string, boolean>[],
- *   channelAllow?: Record<string, boolean>,
- *   channelDeny?: Record<string, boolean>,
- * }} p 多角色权限与频道覆盖/拒绝规则
- * @returns {Record<string, boolean>} 合并后的有效权限
+ * 计算成员的最终权限
+ * @param {object} member - 成员对象
+ * @param {object} roles - 角色映射
+ * @param {string} channelId - 频道ID
+ * @param {object} channelPermissions - 频道权限覆写
+ * @returns {Record<string, boolean>}
  */
-export function effectivePermissions(p) {
-	const { roleRecords, channelAllow = {}, channelDeny = {} } = p
-	const keySet = new Set()
-	for (const r of roleRecords)
-		for (const k of Object.keys(r)) keySet.add(k)
-	for (const k of Object.keys(channelAllow)) keySet.add(k)
-	for (const k of Object.keys(channelDeny)) keySet.add(k)
+export function calculateMemberPermissions(member, roles, channelId, channelPermissions) {
+	// 检查是否有 ADMIN 权限
+	for (const roleId of member.roles || []) {
+		const role = roles[roleId]
+		if (role && role.permissions.ADMIN) {
+			// ADMIN 绕过所有限制
+			const adminPerms = {}
+			for (const perm of PERMISSION_ORDER) {
+				adminPerms[perm] = true
+			}
+			return adminPerms
+		}
+	}
 
-	const keys = [...keySet].sort((a, b) => {
-		const ia = PERMISSION_REGISTRY_ORDER.indexOf(a)
-		const ib = PERMISSION_REGISTRY_ORDER.indexOf(b)
-		if (ia !== -1 && ib !== -1) return ia - ib
-		if (ia !== -1) return -1
-		if (ib !== -1) return 1
-		return a.localeCompare(b)
-	})
+	// 收集所有角色权限
+	let roleBits = 0n
+	for (const roleId of member.roles || []) {
+		const role = roles[roleId]
+		if (role) {
+			roleBits |= encodePermissions(role.permissions)
+		}
+	}
 
-	for (const r of roleRecords)
-		if (r.ADMIN === true)
-			return Object.fromEntries(keys.map(k => [k, true]))
+	// 应用频道覆写
+	const channelOverride = channelPermissions?.[channelId]
+	if (channelOverride) {
+		for (const roleId of member.roles || []) {
+			const override = channelOverride[roleId]
+			if (override) {
+				const allowBits = encodePermissions(override.allow || {})
+				const denyBits = encodePermissions(override.deny || {})
+				roleBits = (roleBits | allowBits) & ~denyBits
+			}
+		}
+	}
 
-	let bits = 0n
-	for (const r of roleRecords)
-		bits |= permissionsToBigInt(r)
+	return decodePermissions(roleBits)
+}
 
-	bits |= permissionsToBigInt(channelAllow)
-	const deny = permissionsToBigInt(channelDeny)
-	bits &= ~deny
+/**
+ * 检查成员是否有指定权限
+ * @param {object} member - 成员对象
+ * @param {string} permission - 权限名称
+ * @param {object} roles - 角色映射
+ * @param {string} channelId - 频道ID
+ * @param {object} channelPermissions - 频道权限覆写
+ * @returns {boolean}
+ */
+export function hasPermission(member, permission, roles, channelId, channelPermissions) {
+	const permissions = calculateMemberPermissions(member, roles, channelId, channelPermissions)
+	return permissions[permission] === true
+}
 
-	return bigIntToPermissions(bits, keys)
+/**
+ * 创建默认角色
+ * @returns {object}
+ */
+export function createDefaultRoles() {
+	return {
+		'@everyone': {
+			name: 'Everyone',
+			color: '#99AAB5',
+			position: 0,
+			permissions: {
+				VIEW_CHANNEL: true,
+				SEND_MESSAGES: true,
+				SEND_STICKERS: true,
+				ADD_REACTIONS: true,
+				STREAM: true
+			},
+			isDefault: true,
+			isHoisted: false
+		},
+		'admin': {
+			name: 'Admin',
+			color: '#E74C3C',
+			position: 100,
+			permissions: {
+				ADMIN: true
+			},
+			isDefault: false,
+			isHoisted: true
+		}
+	}
 }

@@ -1,0 +1,3332 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Chat — Discord 风格</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<style>
+		:root {
+			--dc-bg-server: #1e1f22;
+			--dc-bg-channel: #2b2d31;
+			--dc-bg-main: #313338;
+			--dc-bg-input: #383a40;
+			--dc-bg-member: #2b2d31;
+			--dc-text-muted: #949ba4;
+			--dc-text-normal: #dbdee1;
+			--dc-text-bright: #f2f3f5;
+			--dc-accent: #5865f2;
+			--dc-hover: rgba(255, 255, 255, 0.04);
+			--dc-active: rgba(255, 255, 255, 0.08);
+			--dc-border: #1f2023;
+		}
+
+		html, body {
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			overflow: hidden;
+			background: var(--dc-bg-main);
+			color: var(--dc-text-normal);
+			font-family: 'gg sans', 'Noto Sans', system-ui, -apple-system, sans-serif;
+		}
+
+		.dc-app {
+			display: flex;
+			height: 100vh;
+			width: 100vw;
+		}
+
+		/* === 服务器栏 === */
+		.dc-server-bar {
+			width: 72px;
+			background: var(--dc-bg-server);
+			padding: 12px 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 8px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			flex-shrink: 0;
+		}
+		.dc-server-bar::-webkit-scrollbar { width: 0; }
+
+		.dc-server-item {
+			position: relative;
+			width: 48px;
+			height: 48px;
+			overflow: hidden;
+			border-radius: 24px;
+			background: var(--dc-bg-channel);
+			color: var(--dc-text-normal);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 18px;
+			cursor: pointer;
+			transition: border-radius 0.15s ease, background 0.15s ease;
+			user-select: none;
+			flex-shrink: 0;
+		}
+		.dc-server-item:hover {
+			border-radius: 16px;
+			background: var(--dc-accent);
+			color: white;
+		}
+		.dc-server-item.active {
+			border-radius: 16px;
+			background: var(--dc-accent);
+			color: white;
+		}
+
+		/* 选中指示器 */
+		.dc-server-item::before {
+			content: '';
+			position: absolute;
+			left: -16px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 4px;
+			height: 0;
+			background: white;
+			border-radius: 0 4px 4px 0;
+			transition: height 0.15s ease;
+		}
+		.dc-server-item:hover::before { height: 20px; }
+		.dc-server-item.active::before { height: 40px; }
+
+		.dc-server-tooltip {
+			position: absolute;
+			left: 60px;
+			top: 50%;
+			transform: translateY(-50%);
+			background: black;
+			color: white;
+			padding: 6px 10px;
+			border-radius: 4px;
+			font-size: 14px;
+			font-weight: 600;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.15s ease;
+			z-index: 100;
+		}
+		.dc-server-item:hover .dc-server-tooltip { opacity: 1; }
+
+		.dc-server-divider {
+			width: 32px;
+			height: 2px;
+			background: var(--dc-bg-channel);
+			border-radius: 1px;
+			margin: 4px 0;
+			flex-shrink: 0;
+		}
+
+		.dc-server-add {
+			color: #23a559;
+		}
+		.dc-server-add:hover {
+			background: #23a559;
+			color: white;
+		}
+
+		/* === 频道栏 === */
+		.dc-channel-bar {
+			width: 240px;
+			background: var(--dc-bg-channel);
+			display: flex;
+			flex-direction: column;
+			flex-shrink: 0;
+		}
+
+		.dc-channel-header {
+			padding: 12px 16px;
+			border-bottom: 1px solid var(--dc-border);
+			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+			font-weight: 700;
+			font-size: 16px;
+			color: var(--dc-text-bright);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 48px;
+			min-height: 48px;
+		}
+
+		.dc-channel-list {
+			flex: 1;
+			overflow-y: auto;
+			padding: 8px 0;
+		}
+		.dc-channel-list::-webkit-scrollbar { width: 8px; }
+		.dc-channel-list::-webkit-scrollbar-track { background: transparent; }
+		.dc-channel-list::-webkit-scrollbar-thumb { background: var(--dc-bg-server); border-radius: 4px; }
+
+		.dc-category {
+			padding: 16px 8px 4px 16px;
+			font-size: 12px;
+			font-weight: 600;
+			text-transform: uppercase;
+			color: var(--dc-text-muted);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			user-select: none;
+		}
+		.dc-category:hover { color: var(--dc-text-bright); }
+		.dc-category.collapsed .dc-category-arrow { transform: rotate(-90deg); }
+
+		.dc-category-arrow {
+			width: 12px;
+			height: 12px;
+			transition: transform 0.15s ease;
+		}
+
+		.dc-channel-item {
+			margin: 0 8px;
+			padding: 6px 8px;
+			border-radius: 4px;
+			font-size: 14px;
+			color: var(--dc-text-muted);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			transition: background 0.1s ease, color 0.1s ease;
+			user-select: none;
+		}
+		.dc-channel-item:hover {
+			background: var(--dc-hover);
+			color: var(--dc-text-normal);
+		}
+		.dc-channel-item.active {
+			background: var(--dc-active);
+			color: var(--dc-text-bright);
+		}
+
+		.dc-channel-icon {
+			width: 18px;
+			height: 18px;
+			color: var(--dc-text-muted);
+			flex-shrink: 0;
+		}
+
+		.dc-user-bar {
+			height: 52px;
+			min-height: 52px;
+			background: rgba(0, 0, 0, 0.2);
+			display: flex;
+			align-items: center;
+			padding: 0 8px;
+			gap: 8px;
+		}
+
+		/* === 主聊天区 === */
+		.dc-main {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			background: var(--dc-bg-main);
+			min-width: 0;
+		}
+
+		.dc-main-header {
+			height: 48px;
+			min-height: 48px;
+			padding: 0 16px;
+			border-bottom: 1px solid var(--dc-border);
+			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			z-index: 1;
+		}
+
+		.dc-main-header-icon {
+			color: var(--dc-text-muted);
+			font-size: 20px;
+		}
+
+		.dc-main-header-title {
+			color: var(--dc-text-bright);
+			font-weight: 700;
+			font-size: 16px;
+		}
+
+		.dc-messages {
+			flex: 1;
+			overflow-y: auto;
+			padding: 16px 0;
+			display: flex;
+			flex-direction: column;
+		}
+		.dc-messages::-webkit-scrollbar { width: 8px; }
+		.dc-messages::-webkit-scrollbar-track { background: transparent; }
+		.dc-messages::-webkit-scrollbar-thumb { background: var(--dc-bg-server); border-radius: 4px; }
+
+		.dc-message {
+			padding: 2px 16px;
+			display: flex;
+			gap: 16px;
+			position: relative;
+		}
+		.dc-message:hover { background: rgba(4, 4, 5, 0.07); }
+		.dc-message.first-in-group { margin-top: 16px; padding-top: 4px; }
+
+		/* === 系统消息（入群欢迎等） === */
+		.dc-system-message {
+			padding: 6px 16px 6px 72px;
+			color: var(--dc-text-muted);
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			position: relative;
+		}
+		.dc-system-message::before {
+			content: '';
+			position: absolute;
+			left: 32px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 22px; height: 22px;
+			background: #23a55a;
+			border-radius: 50%;
+			-webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 2a10 10 0 100 20 10 10 0 000-20zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z'/></svg>") center/14px no-repeat;
+			        mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 2a10 10 0 100 20 10 10 0 000-20zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z'/></svg>") center/14px no-repeat;
+		}
+		.dc-system-author {
+			color: var(--dc-text-bright);
+			font-weight: 600;
+		}
+		.dc-system-author:hover { text-decoration: underline; cursor: pointer; }
+		.dc-system-time { color: var(--dc-text-muted); font-size: 12px; margin-left: 6px; }
+
+		.dc-avatar {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			font-weight: 600;
+			font-size: 16px;
+			cursor: pointer;
+			user-select: none;
+			overflow: hidden;
+		}
+		.dc-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
+		.dc-message:not(.first-in-group) .dc-avatar { visibility: hidden; height: 0; }
+
+		.dc-message-body {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.dc-message-header {
+			display: flex;
+			align-items: baseline;
+			gap: 8px;
+			margin-bottom: 2px;
+		}
+		.dc-message:not(.first-in-group) .dc-message-header { display: none; }
+
+		.dc-message-author {
+			color: var(--dc-text-bright);
+			font-weight: 500;
+			font-size: 16px;
+			cursor: pointer;
+		}
+		.dc-message-author:hover { text-decoration: underline; }
+
+		.dc-message-time {
+			color: var(--dc-text-muted);
+			font-size: 12px;
+		}
+
+		.dc-message-content {
+			color: var(--dc-text-normal);
+			font-size: 16px;
+			line-height: 1.375;
+			word-wrap: break-word;
+			white-space: pre-wrap;
+		}
+		.dc-message-content img { max-width: 400px; max-height: 300px; border-radius: 6px; display: block; margin-top: 4px; }
+
+		.dc-input-area {
+			padding: 0 16px 24px;
+		}
+
+		.dc-input-wrapper {
+			background: var(--dc-bg-input);
+			border-radius: 8px;
+			padding: 0 16px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			min-height: 44px;
+			position: relative;
+		}
+
+		.dc-input {
+			flex: 1;
+			background: transparent;
+			border: none;
+			outline: none;
+			color: var(--dc-text-normal);
+			font-size: 16px;
+			padding: 11px 0;
+		}
+		.dc-input::placeholder { color: var(--dc-text-muted); }
+
+		.dc-icon-btn {
+			background: transparent;
+			border: none;
+			color: var(--dc-text-muted);
+			cursor: pointer;
+			padding: 4px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: color 0.1s ease;
+		}
+		.dc-icon-btn:hover:not(:disabled) { color: var(--dc-text-bright); }
+		.dc-icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+		.dc-icon-btn svg { width: 20px; height: 20px; }
+
+		/* 发送按钮 —— 主色块状，与图标按钮区分 */
+		.dc-send-btn {
+			background: var(--dc-accent);
+			border: none;
+			color: #fff;
+			cursor: pointer;
+			width: 36px;
+			height: 32px;
+			margin-left: 6px;
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			transition: background 0.12s ease, transform 0.08s ease, opacity 0.12s ease;
+		}
+		.dc-send-btn:hover:not(:disabled) { background: #4752c4; }
+		.dc-send-btn:active:not(:disabled) { transform: scale(0.94); }
+		.dc-send-btn:disabled { opacity: 0.4; cursor: not-allowed; background: var(--dc-bg-tertiary); color: var(--dc-text-muted); }
+		.dc-send-btn svg { width: 18px; height: 18px; transform: translate(-1px, 1px); }
+
+		/* === 成员栏 === */
+		.dc-member-bar {
+			width: 240px;
+			background: var(--dc-bg-member);
+			overflow-y: auto;
+			flex-shrink: 0;
+			padding: 16px 0;
+		}
+		.dc-member-bar::-webkit-scrollbar { width: 8px; }
+		.dc-member-bar::-webkit-scrollbar-track { background: transparent; }
+		.dc-member-bar::-webkit-scrollbar-thumb { background: var(--dc-bg-server); border-radius: 4px; }
+
+		.dc-member-group-title {
+			padding: 8px 16px 4px;
+			font-size: 12px;
+			font-weight: 600;
+			text-transform: uppercase;
+			color: var(--dc-text-muted);
+		}
+
+		.dc-member-item {
+			margin: 0 8px;
+			padding: 6px 8px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			cursor: pointer;
+			transition: background 0.1s ease;
+		}
+		.dc-member-item:hover { background: var(--dc-hover); }
+
+		.dc-member-avatar-wrap { position: relative; flex-shrink: 0; }
+		.dc-presence-dot {
+			position: absolute; right: -2px; bottom: -2px;
+			width: 12px; height: 12px; border-radius: 50%;
+			border: 2px solid var(--dc-bg-channel);
+			background: #80848e;
+			box-sizing: border-box;
+		}
+		.dc-presence-online { background: #23a55a; }
+		.dc-presence-idle { background: #f0b232; }
+		.dc-presence-offline { background: #80848e; }
+		.dc-member-avatar {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			overflow: hidden;
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			font-weight: 600;
+			font-size: 13px;
+		}
+
+		.dc-member-name {
+			color: var(--dc-text-muted);
+			font-size: 16px;
+			font-weight: 500;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		.dc-member-item.is-admin .dc-member-name { color: #f0b232; }
+		.dc-member-item:hover .dc-member-name { color: var(--dc-text-bright); }
+
+		/* === 空状态 === */
+		.dc-empty {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			color: var(--dc-text-muted);
+			text-align: center;
+			padding: 40px;
+		}
+
+		.dc-empty-icon {
+			font-size: 64px;
+			margin-bottom: 16px;
+			opacity: 0.4;
+		}
+
+		/* === Emoji picker === */
+		.dc-emoji-picker {
+			position: absolute;
+			bottom: 56px;
+			right: 0;
+			width: 320px;
+			max-height: 360px;
+			background: var(--dc-bg-channel);
+			border: 1px solid var(--dc-border);
+			border-radius: 8px;
+			padding: 12px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+			z-index: 50;
+			display: none;
+		}
+		.dc-emoji-picker.show { display: block; }
+		.dc-emoji-tabs {
+			display: flex;
+			gap: 4px;
+			margin-bottom: 8px;
+			flex-wrap: wrap;
+		}
+		.dc-emoji-tab {
+			background: transparent;
+			border: none;
+			color: var(--dc-text-muted);
+			padding: 4px 8px;
+			cursor: pointer;
+			border-radius: 4px;
+			font-size: 14px;
+		}
+		.dc-emoji-tab:hover { background: var(--dc-hover); }
+		.dc-emoji-tab.active { background: var(--dc-active); color: var(--dc-text-bright); }
+		.dc-emoji-grid {
+			display: grid;
+			grid-template-columns: repeat(8, 1fr);
+			gap: 2px;
+			max-height: 280px;
+			overflow-y: auto;
+		}
+		.dc-emoji-btn {
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			padding: 6px;
+			border-radius: 4px;
+			font-size: 22px;
+			line-height: 1;
+		}
+		.dc-emoji-btn:hover { background: var(--dc-hover); transform: scale(1.2); }
+
+		/* Sticker picker */
+		.dc-sticker-picker {
+			position: absolute;
+			bottom: 56px;
+			right: 0;
+			width: 360px;
+			max-height: 400px;
+			background: var(--dc-bg-channel);
+			border: 1px solid var(--dc-border);
+			border-radius: 8px;
+			padding: 12px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+			z-index: 50;
+			display: none;
+		}
+		.dc-sticker-picker.show { display: block; }
+		.dc-sticker-grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 6px;
+			max-height: 340px;
+			overflow-y: auto;
+		}
+		.dc-sticker-item {
+			aspect-ratio: 1;
+			background: var(--dc-bg-input);
+			border: none;
+			border-radius: 6px;
+			padding: 4px;
+			cursor: pointer;
+			transition: background 0.1s ease, transform 0.1s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.dc-sticker-item:hover { background: var(--dc-active); transform: scale(1.05); }
+		.dc-sticker-item img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+		/* === 移动端适配 === */
+		@media (max-width: 1024px) {
+			.dc-member-bar { display: none; }
+		}
+		@media (max-width: 768px) {
+			.dc-channel-bar { display: none; }
+			.dc-server-bar { width: 60px; }
+		}
+
+		/* 顶部条小按钮 */
+		.dc-top-back {
+			width: 32px;
+			height: 32px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--dc-text-muted);
+			cursor: pointer;
+		}
+		.dc-top-back:hover { background: var(--dc-hover); color: var(--dc-text-bright); }
+
+		/* === 服务器栏顶部模式切换 === */
+		.dc-server-item.mode-active { border-radius: 16px; background: var(--dc-accent); color: white; }
+		.dc-server-item.mode-active::before { height: 40px; }
+
+		/* === 右侧信息卡片 === */
+		.dc-info-card {
+			margin: 0 12px 12px;
+			background: rgba(0, 0, 0, 0.18);
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		.dc-info-banner {
+			height: 64px;
+			background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+		}
+		.dc-info-body {
+			padding: 0 12px 12px;
+			margin-top: -28px;
+		}
+		.dc-info-avatar {
+			width: 56px; height: 56px;
+			border-radius: 50%;
+			background: var(--dc-bg-channel);
+			border: 4px solid var(--dc-bg-member);
+			display: flex; align-items: center; justify-content: center;
+			color: white; font-weight: 700; font-size: 22px;
+			overflow: hidden;
+			margin-bottom: 8px;
+		}
+		.dc-info-avatar img { width: 100%; height: 100%; object-fit: cover; }
+		.dc-info-name { color: var(--dc-text-bright); font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+		.dc-info-desc { color: var(--dc-text-muted); font-size: 13px; line-height: 1.45; white-space: pre-wrap; word-wrap: break-word; max-height: 120px; overflow-y: auto; }
+		.dc-info-tag { display: inline-block; padding: 2px 8px; background: var(--dc-active); color: var(--dc-text-bright); border-radius: 10px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+
+		/* === Profile hover card === */
+		.dc-hover-card {
+			position: fixed;
+			width: 280px;
+			background: #111214;
+			border-radius: 8px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+			z-index: 1000;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.12s ease;
+			overflow: hidden;
+		}
+		.dc-hover-card.show { opacity: 1; pointer-events: auto; }
+		.dc-hc-banner { height: 60px; background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%); }
+		.dc-hc-body { padding: 0 16px 16px; margin-top: -30px; }
+		.dc-hc-avatar {
+			width: 80px; height: 80px; border-radius: 50%;
+			background: var(--dc-bg-channel);
+			border: 6px solid #111214;
+			display: flex; align-items: center; justify-content: center;
+			color: white; font-weight: 700; font-size: 28px;
+			overflow: hidden;
+			margin-bottom: 8px;
+			position: relative;
+		}
+		.dc-hc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+		.dc-hc-presence-dot {
+			position: absolute; right: 4px; bottom: 4px;
+			width: 18px; height: 18px; border-radius: 50%;
+			border: 4px solid #111214;
+			box-sizing: content-box;
+			background: #80848e;
+		}
+		.dc-hc-presence-dot.online { background: #23a55a; }
+		.dc-hc-presence-dot.idle { background: #f0b232; }
+		.dc-hc-name { color: var(--dc-text-bright); font-weight: 700; font-size: 18px; }
+		.dc-hc-status { color: var(--dc-text-muted); font-size: 13px; margin-top: 2px; }
+		.dc-hc-divider { height: 1px; background: rgba(255, 255, 255, 0.06); margin: 12px 0; }
+		.dc-hc-section-title { color: var(--dc-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+		.dc-hc-bio { color: var(--dc-text-normal); font-size: 13px; line-height: 1.5; max-height: 80px; overflow-y: auto; }
+
+		/* 消息淡入动画 */
+		@keyframes dc-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+		.dc-message, .dc-system-message { animation: dc-fade-in 0.18s ease; }
+
+		/* 角色 / 频道列表项 (复用 channel-item，加图标差异) */
+		.dc-list-item-char .dc-channel-icon { color: #eb459e; }
+		.dc-list-item-channel .dc-channel-icon { color: #5865f2; }
+
+		/* 列表加载占位 */
+		.dc-list-loading { padding: 16px; color: var(--dc-text-muted); font-size: 13px; text-align: center; }
+	</style>
+</head>
+
+<body>
+	<div class="dc-app">
+		<!-- 1. 服务器栏 -->
+		<aside class="dc-server-bar" id="server-bar">
+			<a href="/parts/shells:home" class="dc-server-item" title="返回主页">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+					<polyline points="9 22 9 12 15 12 15 22"/>
+				</svg>
+				<span class="dc-server-tooltip">返回主页</span>
+			</a>
+			<div class="dc-server-divider"></div>
+			<button class="dc-server-item" data-mode="chars" title="AI 角色">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M9 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+					<path d="M17 11l1.5 1.5L21 10"/>
+					<path d="M3 21v-1a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v1"/>
+				</svg>
+				<span class="dc-server-tooltip">AI 角色</span>
+			</button>
+			<button class="dc-server-item" data-mode="channels" title="频道">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="4" y1="9" x2="20" y2="9"/>
+					<line x1="4" y1="15" x2="20" y2="15"/>
+					<line x1="10" y1="3" x2="8" y2="21"/>
+					<line x1="16" y1="3" x2="14" y2="21"/>
+				</svg>
+				<span class="dc-server-tooltip">频道</span>
+			</button>
+			<div class="dc-server-divider"></div>
+			<div id="server-list"></div>
+			<button class="dc-server-item dc-server-add" id="add-server-btn" title="新建/加入群组">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="12" y1="5" x2="12" y2="19"/>
+					<line x1="5" y1="12" x2="19" y2="12"/>
+				</svg>
+				<span class="dc-server-tooltip">新建 / 加入群组</span>
+			</button>
+		</aside>
+
+		<!-- 2. 频道栏 -->
+		<aside class="dc-channel-bar" id="channel-bar">
+			<header class="dc-channel-header" id="group-header">
+				<span id="group-name-display">选择服务器</span>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+			</header>
+			<div class="dc-channel-list" id="channel-list">
+				<div style="padding: 16px; color: var(--dc-text-muted); font-size: 14px; text-align: center;">
+					← 选择左侧的服务器
+				</div>
+			</div>
+			<div class="dc-user-bar" id="user-bar" title="管理我的资料 / 贴纸" style="cursor:pointer;">
+				<div class="dc-avatar" id="my-avatar" style="width: 32px; height: 32px; font-size: 13px;">?</div>
+				<div style="flex: 1; min-width: 0;">
+					<div id="my-name" style="color: var(--dc-text-bright); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">加载中...</div>
+					<div style="color: var(--dc-text-muted); font-size: 12px;">在线</div>
+				</div>
+				<a href="/parts/shells:profile" title="个人资料" style="color:var(--dc-text-muted);padding:6px;border-radius:4px;text-decoration:none;display:flex;align-items:center;" onclick="event.stopPropagation();">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+				</a>
+			</div>
+		</aside>
+
+		<!-- 3. 主聊天区 -->
+		<main class="dc-main">
+			<header class="dc-main-header">
+				<span class="dc-main-header-icon">#</span>
+				<span class="dc-main-header-title" id="channel-name-display">选择对话</span>
+				<div style="flex: 1;"></div>
+				<div id="header-search-wrap" style="position:relative;margin-right:8px;">
+					<input id="header-search" type="text" placeholder="搜索消息..." style="background:var(--dc-bg-tertiary);border:1px solid transparent;color:var(--dc-text-bright);padding:5px 10px 5px 28px;border-radius:4px;font-size:13px;width:170px;outline:none;transition:border-color 0.15s;" />
+					<svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--dc-text-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+				</div>
+				<button class="dc-icon-btn" id="toggle-members-btn" title="成员列表">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+						<circle cx="9" cy="7" r="4"/>
+						<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+						<path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+					</svg>
+				</button>
+				<button class="dc-icon-btn" id="header-settings-btn" title="设置">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+				</button>
+			</header>
+
+			<div class="dc-messages" id="messages">
+				<div class="dc-empty">
+					<div class="dc-empty-icon">💬</div>
+					<div style="color: var(--dc-text-bright); font-size: 18px; font-weight: 600; margin-bottom: 8px;">欢迎使用 fount Chat</div>
+					<div>从左侧选择一个服务器和对话开始聊天</div>
+				</div>
+			</div>
+
+			<div class="dc-input-area">
+				<div class="dc-input-wrapper">
+					<button class="dc-icon-btn" id="upload-btn" title="上传图片" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+							<circle cx="8.5" cy="9" r="1.5"/>
+							<polyline points="21 15 16 10 5 21"/>
+						</svg>
+					</button>
+					<input type="file" id="image-upload" accept="image/*" style="display: none;" />
+					<input type="text" class="dc-input" id="message-input" placeholder="选择对话后开始聊天..." disabled />
+					<button class="dc-icon-btn" id="emoji-btn" title="表情" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"/>
+							<path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+							<line x1="9" y1="9" x2="9.01" y2="9"/>
+							<line x1="15" y1="9" x2="15.01" y2="9"/>
+						</svg>
+					</button>
+					<button class="dc-icon-btn" id="sticker-btn" title="贴纸" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="3"/>
+							<path d="M8 12h8M12 8v8"/>
+						</svg>
+					</button>
+					<button class="dc-send-btn" id="send-btn" title="发送 (Enter)" disabled>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="22" y1="2" x2="11" y2="13"/>
+							<polygon points="22 2 15 22 11 13 2 9 22 2"/>
+						</svg>
+					</button>
+					<div class="dc-sticker-picker" id="sticker-picker">
+						<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+							<span style="font-weight:600;font-size:14px;color:var(--dc-text-bright);">贴纸</span>
+							<a href="/parts/shells:stickers" target="_blank" style="font-size:12px;color:var(--dc-accent);text-decoration:none;">管理贴纸 →</a>
+						</div>
+						<div class="dc-sticker-grid" id="sticker-grid">
+							<div style="grid-column:1/-1;text-align:center;color:var(--dc-text-muted);padding:20px;font-size:13px;">加载中...</div>
+						</div>
+					</div>
+					<div class="dc-emoji-picker" id="emoji-picker">
+						<div class="dc-emoji-tabs" id="emoji-tabs">
+							<button class="dc-emoji-tab active" data-tab="face">😀</button>
+							<button class="dc-emoji-tab" data-tab="gesture">👋</button>
+							<button class="dc-emoji-tab" data-tab="heart">❤️</button>
+							<button class="dc-emoji-tab" data-tab="animal">🐱</button>
+							<button class="dc-emoji-tab" data-tab="food">🍔</button>
+							<button class="dc-emoji-tab" data-tab="object">⚽</button>
+						</div>
+						<div class="dc-emoji-grid" id="emoji-grid"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- 4. 成员栏 / 右侧信息栏 -->
+		<aside class="dc-member-bar" id="member-bar">
+			<div id="info-card-host"></div>
+			<div id="member-list">
+				<div style="padding: 16px; color: var(--dc-text-muted); font-size: 14px; text-align: center;">
+					未选择对话
+				</div>
+			</div>
+		</aside>
+	</div>
+
+	<!-- ===================== 通用设置弹窗（在页内打开，不再跳转） ===================== -->
+	<dialog id="dc-settings-modal" class="modal">
+		<style>
+			.dcs-box { background:#2b2d31; color:#dbdee1; border-radius:12px; max-width:560px; width:100%; padding:0; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.5); display:flex; flex-direction:column; max-height:90vh; }
+			.dcs-header { background:linear-gradient(135deg,#5865f2 0%,#4752c4 100%); padding:20px 24px; color:white; flex-shrink:0; }
+			.dcs-header h3 { font-size:18px; font-weight:700; margin:0 0 4px; }
+			.dcs-header p { font-size:13px; opacity:0.85; margin:0; }
+			.dcs-body { padding:20px 24px; overflow-y:auto; flex:1 1 auto; min-height:0; }
+			.dcs-section { margin-bottom:18px; }
+			.dcs-section h4 { font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:#b5bac1; margin:0 0 10px; }
+			.dcs-field { margin-bottom:12px; }
+			.dcs-field label { display:block; font-size:12px; font-weight:600; color:#b5bac1; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+			.dcs-input, .dcs-textarea, .dcs-select { width:100%; box-sizing:border-box; background:#1e1f22; border:1px solid #1e1f22; color:#dbdee1; padding:10px 12px; border-radius:6px; font-size:14px; font-family:inherit; outline:none; transition:border-color 0.15s; }
+			.dcs-input:focus, .dcs-textarea:focus, .dcs-select:focus { border-color:#5865f2; }
+			.dcs-textarea { resize:vertical; min-height:70px; }
+			.dcs-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px; background:#1e1f22; border-radius:6px; margin-bottom:8px; }
+			.dcs-toggle-row .dcs-tr-title { font-weight:600; color:#fff; font-size:14px; }
+			.dcs-toggle-row .dcs-tr-desc { font-size:12px; color:#949ba4; margin-top:2px; }
+			.dcs-checkbox { width:18px; height:18px; cursor:pointer; accent-color:#5865f2; }
+			.dcs-info-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; }
+			.dcs-info-row:last-child { border-bottom:none; }
+			.dcs-info-row span:first-child { color:#949ba4; }
+			.dcs-info-row span:last-child { color:#dbdee1; font-family:monospace; word-break:break-all; max-width:60%; text-align:right; }
+			.dcs-footer { padding:16px 24px; background:#232428; display:flex; justify-content:space-between; gap:8px; flex-shrink:0; border-top:1px solid rgba(255,255,255,0.06); }
+			.dcs-btn { padding:10px 18px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; border:none; font-family:inherit; transition:background 0.15s; }
+			.dcs-btn-primary { background:#5865f2; color:white; }
+			.dcs-btn-primary:hover { background:#4752c4; }
+			.dcs-btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+			.dcs-btn-cancel { background:transparent; color:#b5bac1; }
+			.dcs-btn-cancel:hover { background:rgba(255,255,255,0.06); color:#fff; }
+			.dcs-btn-danger { background:transparent; color:#f23f42; border:1px solid #f23f42; }
+			.dcs-btn-danger:hover { background:#f23f42; color:white; }
+			.dcs-error { background:rgba(242,63,66,0.1); border:1px solid #f23f42; color:#f23f42; padding:10px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none; }
+			.dcs-success { background:rgba(35,165,90,0.1); border:1px solid #23a55a; color:#23a55a; padding:10px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none; }
+		</style>
+		<div class="modal-box dcs-box" id="dcs-box">
+			<div class="dcs-header">
+				<h3 id="dcs-title">设置</h3>
+				<p id="dcs-subtitle"></p>
+			</div>
+			<div class="dcs-body" id="dcs-body"></div>
+			<div class="dcs-footer" id="dcs-footer"></div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>关闭</button></form>
+	</dialog>
+
+	<!-- Profile hover card -->
+	<div class="dc-hover-card" id="profile-hover-card">
+		<div class="dc-hc-banner"></div>
+		<div class="dc-hc-body">
+			<div class="dc-hc-avatar" id="hc-avatar">
+				<span id="hc-avatar-letter">?</span>
+				<span class="dc-hc-presence-dot" id="hc-presence"></span>
+			</div>
+			<div class="dc-hc-name" id="hc-name">—</div>
+			<div class="dc-hc-status" id="hc-status">离线</div>
+			<div class="dc-hc-divider"></div>
+			<div class="dc-hc-section-title">关于</div>
+			<div class="dc-hc-bio" id="hc-bio">这位用户还没有简介。</div>
+		</div>
+	</div>
+
+	<script type="module">
+		import { getGroupList, getGroupState, getChannelMessages, sendGroupMessage, joinGroup, showCreateGroupModal, joinGroupById } from './src/groupUI.mjs'
+
+		// ============ 状态 ============
+		let groups = []
+		let currentGroupId = null
+		let currentChannelId = null
+		let currentState = null
+		let lastMessageId = null
+		let pollTimer = null
+		let myUsername = null
+		// 由用户发送动作触发：下一次消息渲染强制滚动到底部，
+		// 与之相对，普通轮询/他人消息只在用户已在底部附近时才自动滚动，避免"抢滚动"。
+		let _forceScrollOnNext = false
+		const collapsedCategories = new Set()
+
+		// 频道独立模式（不归属任何群组）
+		let currentChannelOnlyId = null
+		let channelOnlyLastTs = 0
+		let channelOnlyMembers = []
+
+		// AI 角色 1:1 聊天嵌入模式
+		let currentAIChatId = null
+		let currentAIChar = null
+		let aiChatWs = null
+		let aiChatLogLength = 0
+		// 流式消息追踪：messageId → { index, content, content_for_show }
+		const _streamingEntries = new Map()
+
+		// ============ 工具 ============
+		function escapeHtml(text) {
+			const div = document.createElement('div')
+			div.textContent = text == null ? '' : String(text)
+			return div.innerHTML
+		}
+
+		function avatarColor(name) {
+			const colors = ['#5865f2', '#ed4245', '#fee75c', '#57f287', '#eb459e', '#f0b232', '#9b59b6', '#1abc9c']
+			let hash = 0
+			for (let i = 0; i < (name || '').length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+			return colors[Math.abs(hash) % colors.length]
+		}
+
+		function avatarInitial(name) {
+			return (name || '?').charAt(0).toUpperCase()
+		}
+
+		function formatTime(ts) {
+			const d = new Date(ts)
+			const now = new Date()
+			const isToday = d.toDateString() === now.toDateString()
+			const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1)
+			const isYesterday = d.toDateString() === yesterday.toDateString()
+			const time = d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })
+			if (isToday) return `今天 ${time}`
+			if (isYesterday) return `昨天 ${time}`
+			return d.toLocaleDateString('zh-CN') + ' ' + time
+		}
+
+		function getMessageText(msg) {
+			if (typeof msg.content === 'string') return msg.content
+			if (msg.content?.text) return msg.content.text
+			return JSON.stringify(msg.content)
+		}
+
+		// 解析入群欢迎消息：[join:greeting]
+		function parseJoinMessage(text) {
+			const m = String(text || '').match(/^\[join:([^\]]+)\]$/)
+			return m ? m[1] : null
+		}
+
+		// 渲染系统级欢迎消息行
+		function renderJoinSystemRow(msg) {
+			const sender = msg.sender || '?'
+			const time = msg.timestamp || 0
+			const greeting = parseJoinMessage(getMessageText(msg)) || '加入了对话'
+			return `
+				<div class="dc-system-message" data-message-id="${msg.id}">
+					<span><span class="dc-system-author">${escapeHtml(sender)}</span> ${escapeHtml(greeting)}</span>
+					<span class="dc-system-time">${formatTime(time)}</span>
+				</div>
+			`
+		}
+
+		// === 入群欢迎语选择器 ===
+		const JOIN_GREETINGS = [
+			'跳进了服务器', '神秘登场', '闪亮登场了', '空降到此', '来串门了',
+			'加入了狂欢', '刚刚降落', '潜入了对话', '🎉 闯入了！', '正式加入'
+		]
+		function showGreetingPicker() {
+			return new Promise(resolve => {
+				const modal = document.createElement('dialog')
+				modal.className = 'modal'
+				modal.innerHTML = `
+					<style>
+						.gp-box { background:#2b2d31; color:#dbdee1; border-radius:12px; max-width:480px; width:100%; padding:0; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+						.gp-header { background:linear-gradient(135deg,#5865f2 0%,#4752c4 100%); padding:24px; color:white; text-align:center; }
+						.gp-header h3 { font-size:20px; font-weight:700; margin:0 0 4px; }
+						.gp-header p { font-size:13px; opacity:0.85; margin:0; }
+						.gp-body { padding:18px; }
+						.gp-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+						.gp-item { background:#1e1f22; border:1.5px solid transparent; color:#dbdee1; padding:14px 12px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; font-family:inherit; transition:all 0.15s; text-align:center; }
+						.gp-item:hover { border-color:#5865f2; background:rgba(88,101,242,0.12); transform:translateY(-1px); }
+						.gp-footer { padding:0 18px 16px; display:flex; justify-content:flex-end; }
+						.gp-skip { background:transparent; color:#b5bac1; border:none; cursor:pointer; padding:8px 16px; font-size:13px; font-weight:600; border-radius:6px; font-family:inherit; }
+						.gp-skip:hover { background:rgba(255,255,255,0.06); color:#fff; }
+					</style>
+					<div class="modal-box gp-box">
+						<div class="gp-header">
+							<h3>👋 选择你的入场宣言</h3>
+							<p>让大家看看你的入场风格</p>
+						</div>
+						<div class="gp-body">
+							<div class="gp-grid">
+								${JOIN_GREETINGS.map(g => `<button class="gp-item" data-g="${escapeHtml(g)}">${escapeHtml(g)}</button>`).join('')}
+							</div>
+						</div>
+						<div class="gp-footer">
+							<button class="gp-skip" data-skip>低调登场（跳过）</button>
+						</div>
+					</div>
+					<form method="dialog" class="modal-backdrop"><button>关闭</button></form>
+				`
+				const close = (val) => { resolve(val); try { modal.close() } catch { } modal.remove() }
+				modal.querySelectorAll('.gp-item').forEach(b => b.addEventListener('click', () => close(b.dataset.g)))
+				modal.querySelector('[data-skip]').addEventListener('click', () => close(null))
+				modal.addEventListener('close', () => close(null))
+				document.body.appendChild(modal)
+				modal.showModal()
+			})
+		}
+
+		function renderMessageContent(text) {
+			let html = escapeHtml(text)
+			html = html.replace(/\[sticker:([^\]|]+)\|([^\]]+)\]/g, (_, id, url) => {
+				const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+				return `<img src="${safeUrl}" alt="sticker" style="max-width:120px;max-height:120px;" />`
+			})
+			html = html.replace(/\[sticker:([^\]]+)\]/g, () => `<span style="opacity:0.7">🖼️ 贴纸</span>`)
+			html = html.replace(/\[image:([^\]|]+)\|([^\]]+)\]/g, (_, name, url) => {
+				const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+				return `<img src="${safeUrl}" alt="${escapeHtml(name)}" onclick="window.open('${safeUrl}','_blank')" style="cursor:pointer" />`
+			})
+			return html
+		}
+
+		// ============ URL hash ============
+		function parseHash() {
+			const hash = window.location.hash.substring(1)
+			const [groupId, channelId] = hash.split('/')
+			return { groupId: groupId || null, channelId: channelId || null }
+		}
+
+		function updateHash(groupId, channelId) {
+			const newHash = channelId ? `${groupId}/${channelId}` : (groupId || '')
+			if (window.location.hash.substring(1) !== newHash) {
+				history.replaceState(null, '', '#' + newHash)
+			}
+		}
+
+		// 在线状态批量查询 + 心跳
+		async function fetchBulkPresence(usernames) {
+			if (!usernames?.length) return {}
+			try {
+				const url = '/api/presence?users=' + encodeURIComponent(usernames.join(','))
+				const resp = await fetch(url, { credentials: 'include' })
+				if (!resp.ok) return {}
+				const data = await resp.json()
+				return data?.statuses || {}
+			} catch { return {} }
+		}
+		setInterval(() => {
+			fetch('/api/presence/ping', { method: 'POST', credentials: 'include' }).catch(() => { })
+		}, 30 * 1000)
+
+		const PRESENCE_LABEL = { online: '在线', idle: '挂起', offline: '离线' }
+		async function applyPresence(rootEl, usernames) {
+			if (!usernames?.length) return
+			const statuses = await fetchBulkPresence(usernames)
+			for (const uname of usernames) {
+				const info = statuses[uname] || { status: 'offline' }
+				const dot = rootEl.querySelector(`.dc-presence-dot[data-presence-for="${CSS.escape(uname)}"]`)
+				if (dot) {
+					dot.classList.remove('dc-presence-online', 'dc-presence-idle', 'dc-presence-offline')
+					dot.classList.add(`dc-presence-${info.status}`)
+					dot.title = PRESENCE_LABEL[info.status] || '离线'
+				}
+			}
+		}
+		let _dcMemberPresenceTimer = null
+		function startMemberPresencePolling(rootEl, usernames) {
+			if (_dcMemberPresenceTimer) clearInterval(_dcMemberPresenceTimer)
+			_dcMemberPresenceTimer = setInterval(() => {
+				if (!document.body.contains(rootEl)) { clearInterval(_dcMemberPresenceTimer); _dcMemberPresenceTimer = null; return }
+				applyPresence(rootEl, usernames)
+			}, 20 * 1000)
+		}
+
+		// 头像缓存：username -> avatar URL（null 表示无头像）
+		const avatarCache = new Map()
+		async function fetchUserAvatar(username) {
+			if (!username) return null
+			if (avatarCache.has(username)) return avatarCache.get(username)
+			try {
+				const resp = await fetch(`/api/parts/shells:profile/${encodeURIComponent(username)}`, { credentials: 'include' })
+				if (!resp.ok) { avatarCache.set(username, null); return null }
+				const data = await resp.json()
+				const avatar = data?.profile?.avatar || data?.data?.avatar || data?.avatar || null
+				avatarCache.set(username, avatar || null)
+				return avatar || null
+			} catch { avatarCache.set(username, null); return null }
+		}
+
+		function bindHoverCardAnchor(el, getUname) {
+			if (!el || el.dataset.hoverBound) return
+			el.dataset.hoverBound = '1'
+			el.addEventListener('mouseenter', () => {
+				const uname = getUname()
+				if (uname) showHoverCardFor(uname, el)
+			})
+			el.addEventListener('mouseleave', (e) => {
+				// 鼠标进入悬浮卡内时不隐藏（由 hoverCard 自己处理）
+				const hc = document.getElementById('profile-hover-card')
+				if (hc && hc.contains(e.relatedTarget)) return
+				hideHoverCard()
+			})
+		}
+
+		function applyAvatarsTo(rootEl) {
+			const avEls = rootEl.querySelectorAll('.dc-avatar[data-avatar-for], .dc-member-avatar[data-avatar-for]')
+			avEls.forEach(av => {
+				const uname = av.dataset.avatarFor
+				if (!uname) return
+				bindHoverCardAnchor(av, () => av.dataset.avatarFor)
+				if (av.dataset.avatarLoaded) return
+				av.dataset.avatarLoaded = '1'
+				fetchUserAvatar(uname).then(avatar => {
+					if (avatar) av.innerHTML = `<img src="${avatar}" alt="${escapeHtml(uname)}" style="width:100%;height:100%;object-fit:cover;" />`
+				})
+			})
+			// 同步绑定消息作者名 / 成员条目
+			rootEl.querySelectorAll('.dc-message-author, .dc-system-author').forEach(au => {
+				bindHoverCardAnchor(au, () => au.textContent.trim())
+			})
+			rootEl.querySelectorAll('.dc-member-item').forEach(mi => {
+				bindHoverCardAnchor(mi, () => mi.querySelector('[data-avatar-for]')?.dataset.avatarFor)
+			})
+		}
+
+		// ============ 加载用户 ============
+		async function loadMe() {
+			try {
+				const resp = await fetch('/api/user/me', { credentials: 'include' })
+				if (!resp.ok) return
+				const me = await resp.json()
+				myUsername = me.username || me.data?.username || '?'
+				const myAvatar = document.getElementById('my-avatar')
+				const myName = document.getElementById('my-name')
+				myAvatar.textContent = avatarInitial(myUsername)
+				myAvatar.style.background = avatarColor(myUsername)
+				myName.textContent = myUsername
+				// 加载真实头像
+				const avatar = await fetchUserAvatar(myUsername)
+				if (avatar) myAvatar.innerHTML = `<img src="${avatar}" alt="${escapeHtml(myUsername)}" style="width:100%;height:100%;object-fit:cover;" />`
+			} catch { }
+		}
+
+		// ============ 服务器栏 ============
+		async function loadGroups() {
+			try {
+				groups = await getGroupList()
+				renderServerBar()
+			} catch (err) {
+				console.error('Failed to load groups:', err)
+			}
+		}
+
+		function renderServerBar() {
+			const list = document.getElementById('server-list')
+			if (!groups.length) {
+				list.innerHTML = `
+					<div class="dc-server-divider" style="width:32px;height:2px;background:var(--dc-bg-floating);margin:4px auto 8px;border-radius:1px;"></div>
+					<div style="color:var(--dc-text-muted);font-size:9px;font-weight:700;letter-spacing:0.5px;text-align:center;text-transform:uppercase;margin-bottom:6px;">群组</div>
+				`
+				return
+			}
+			const groupsHtml = groups.map(g => {
+				const initial = avatarInitial(g.name)
+				const color = avatarColor(g.name)
+				const active = g.groupId === currentGroupId ? 'active' : ''
+				return `
+					<div class="dc-server-item ${active}" data-group-id="${g.groupId}" style="background: ${active ? '' : color};">
+						${escapeHtml(initial)}
+						<span class="dc-server-tooltip">${escapeHtml(g.name)}</span>
+					</div>
+				`
+			}).join('')
+			list.innerHTML = `
+				<div class="dc-server-divider" style="width:32px;height:2px;background:var(--dc-bg-floating);margin:4px auto 6px;border-radius:1px;"></div>
+				<div style="color:var(--dc-text-muted);font-size:9px;font-weight:700;letter-spacing:0.5px;text-align:center;text-transform:uppercase;margin-bottom:6px;">群组</div>
+				${groupsHtml}
+			`
+
+			list.querySelectorAll('.dc-server-item').forEach(el => {
+				el.addEventListener('click', () => selectGroup(el.dataset.groupId))
+			})
+		}
+
+		// ============ 选择服务器 ============
+		async function selectGroup(groupId, presetChannelId = null) {
+			if (!groupId) return
+			// 离开独立频道 / AI 角色模式
+			currentChannelOnlyId = null
+			channelOnlyLastTs = 0
+			clearAIChatState()
+			if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+			currentGroupId = groupId
+			renderServerBar() // 更新高亮
+
+			try {
+				let state = await getGroupState(groupId)
+				let justJoined = false
+				if (!state.isMember) {
+					await joinGroup(groupId)
+					state = await getGroupState(groupId)
+					justJoined = true
+					// 刷新群组列表，使新加入的群组立刻出现在左侧栏
+					await loadGroups()
+				}
+				currentState = state
+
+				// 首次加入群组 → 弹出打招呼选择器，发送系统欢迎消息
+				if (justJoined) {
+					const greeting = await showGreetingPicker()
+					if (greeting) {
+						const defaultCh = state.groupSettings?.defaultChannelId || Object.keys(state.channels || {})[0]
+						if (defaultCh) {
+							try { await sendGroupMessage(groupId, defaultCh, `[join:${greeting}]`) } catch { }
+						}
+					}
+				}
+
+				document.getElementById('group-name-display').textContent = state.groupMeta.name || '群组'
+				renderChannelList(state)
+				renderMemberList(state)
+				if (typeof window.__dcAfterSelectGroup === 'function') window.__dcAfterSelectGroup(state)
+
+				const channelIds = Object.keys(state.channels || {})
+				const targetChannelId = presetChannelId && state.channels?.[presetChannelId]
+					? presetChannelId
+					: (state.groupSettings?.defaultChannelId || channelIds[0] || null)
+
+				if (targetChannelId) await selectChannel(targetChannelId)
+				else {
+					currentChannelId = null
+					updateHash(currentGroupId, null)
+					disableComposer('暂无可用对话')
+				}
+			} catch (err) {
+				alert('加载群组失败: ' + err.message)
+			}
+		}
+
+		// ============ 渲染频道列表 ============
+		function renderChannelList(state) {
+			const container = document.getElementById('channel-list')
+			const channels = state.channels || {}
+			const channelIds = Object.keys(channels)
+
+			if (!channelIds.length) {
+				container.innerHTML = `<div style="padding: 16px; color: var(--dc-text-muted); font-size: 14px;">暂无对话</div>`
+				return
+			}
+
+			// 按 category 分组（如果存在）
+			const groupsByCat = {}
+			for (const id of channelIds) {
+				const ch = channels[id]
+				const cat = ch.category || '对话'
+				if (!groupsByCat[cat]) groupsByCat[cat] = []
+				groupsByCat[cat].push({ id, ...ch })
+			}
+
+			container.innerHTML = Object.keys(groupsByCat).map(cat => {
+				const isCollapsed = collapsedCategories.has(cat)
+				const channelsHtml = isCollapsed ? '' : groupsByCat[cat].map(ch => {
+					const active = ch.id === currentChannelId ? 'active' : ''
+					return `
+						<div class="dc-channel-item ${active}" data-channel-id="${ch.id}">
+							<svg class="dc-channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<line x1="4" y1="9" x2="20" y2="9"/>
+								<line x1="4" y1="15" x2="20" y2="15"/>
+								<line x1="10" y1="3" x2="8" y2="21"/>
+								<line x1="16" y1="3" x2="14" y2="21"/>
+							</svg>
+							<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(ch.name || ch.id)}</span>
+						</div>
+					`
+				}).join('')
+
+				return `
+					<div class="dc-category ${isCollapsed ? 'collapsed' : ''}" data-cat="${escapeHtml(cat)}">
+						<svg class="dc-category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+						<span>${escapeHtml(cat)}</span>
+					</div>
+					${channelsHtml}
+				`
+			}).join('')
+
+			container.querySelectorAll('.dc-category').forEach(el => {
+				el.addEventListener('click', () => {
+					const cat = el.dataset.cat
+					if (collapsedCategories.has(cat)) collapsedCategories.delete(cat)
+					else collapsedCategories.add(cat)
+					renderChannelList(currentState)
+				})
+			})
+
+			container.querySelectorAll('.dc-channel-item').forEach(el => {
+				el.addEventListener('click', () => selectChannel(el.dataset.channelId))
+			})
+		}
+
+		// ============ 选择频道 ============
+		async function selectChannel(channelId) {
+			currentChannelId = channelId
+			updateHash(currentGroupId, channelId)
+			renderChannelList(currentState)
+
+			const channel = currentState?.channels?.[channelId]
+			document.getElementById('channel-name-display').textContent = channel?.name || channelId
+			enableComposer()
+
+			await loadMessages()
+			startPolling()
+		}
+
+		// ============ 渲染成员列表 ============
+		function renderMemberList(state) {
+			const container = document.getElementById('member-list')
+			const members = state.members || []
+			if (!members.length) {
+				container.innerHTML = `<div style="padding: 16px; color: var(--dc-text-muted); font-size: 14px;">暂无成员</div>`
+				return
+			}
+
+			const admins = members.filter(m => (m.roles || []).includes('admin'))
+			const others = members.filter(m => !(m.roles || []).includes('admin'))
+
+			const renderGroup = (title, list) => {
+				if (!list.length) return ''
+				return `
+					<div class="dc-member-group-title">${escapeHtml(title)} — ${list.length}</div>
+					${list.map(m => {
+						const uname = m.username || m.pubKeyHash || '?'
+						const isAdmin = (m.roles || []).includes('admin')
+						return `
+							<div class="dc-member-item ${isAdmin ? 'is-admin' : ''}" title="${escapeHtml(uname)}">
+								<div class="dc-member-avatar-wrap">
+									<div class="dc-member-avatar" data-avatar-for="${escapeHtml(uname)}" style="background: ${avatarColor(uname)};">${escapeHtml(avatarInitial(uname))}</div>
+									<span class="dc-presence-dot dc-presence-offline" data-presence-for="${escapeHtml(uname)}" title="离线"></span>
+								</div>
+								<div class="dc-member-name">${escapeHtml(uname)}</div>
+							</div>
+						`
+					}).join('')}
+				`
+			}
+
+			container.innerHTML = renderGroup('管理员', admins) + renderGroup('成员', others)
+			applyAvatarsTo(container)
+
+			// 加载在线状态并启动定时刷新
+			const allUsers = [...admins, ...others].map(m => m.username || m.pubKeyHash).filter(Boolean)
+			applyPresence(container, allUsers)
+			startMemberPresencePolling(container, allUsers)
+		}
+
+		// ============ 消息 ============
+		async function loadMessages() {
+			const container = document.getElementById('messages')
+			container.innerHTML = `<div class="dc-empty"><div class="loading loading-spinner"></div></div>`
+			try {
+				const messages = await getChannelMessages(currentGroupId, currentChannelId, { limit: 50 })
+				if (!messages.length) {
+					container.innerHTML = `
+						<div class="dc-empty">
+							<div class="dc-empty-icon">👋</div>
+							<div style="color: var(--dc-text-bright); font-size: 18px; font-weight: 600; margin-bottom: 8px;">欢迎来到 #${escapeHtml(currentState?.channels?.[currentChannelId]?.name || currentChannelId)}</div>
+							<div>这是该对话的开始。发送第一条消息吧！</div>
+						</div>
+					`
+					lastMessageId = null
+					return
+				}
+				container.innerHTML = renderMessages(messages)
+				lastMessageId = messages[messages.length - 1].id
+				applyAvatarsTo(container)
+				scrollToBottom()
+			} catch (err) {
+				container.innerHTML = `<div class="dc-empty"><div style="color:#ed4245">加载消息失败: ${escapeHtml(err.message)}</div></div>`
+			}
+		}
+
+		function renderMessages(messages) {
+			let html = ''
+			let prevSender = null
+			let prevTime = 0
+			for (const msg of messages) {
+				// 系统消息（入群欢迎）特殊渲染
+				if (parseJoinMessage(getMessageText(msg))) {
+					html += renderJoinSystemRow(msg)
+					prevSender = null; prevTime = 0
+					continue
+				}
+				const sender = msg.sender || '?'
+				const time = msg.timestamp || 0
+				// 同一发送者且距离上一条消息 < 5 分钟，归为同一组
+				const isFirst = sender !== prevSender || (time - prevTime) > 5 * 60 * 1000
+				const color = avatarColor(sender)
+				const initial = avatarInitial(sender)
+				html += `
+					<div class="dc-message ${isFirst ? 'first-in-group' : ''}" data-message-id="${msg.id}">
+						<div class="dc-avatar" data-avatar-for="${escapeHtml(sender)}" style="background: ${color};">${escapeHtml(initial)}</div>
+						<div class="dc-message-body">
+							<div class="dc-message-header">
+								<span class="dc-message-author">${escapeHtml(sender)}</span>
+								<span class="dc-message-time">${formatTime(time)}</span>
+							</div>
+							<div class="dc-message-content">${renderMessageContent(getMessageText(msg))}</div>
+						</div>
+					</div>
+				`
+				prevSender = sender
+				prevTime = time
+			}
+			return html
+		}
+
+		function scrollToBottom() {
+			const container = document.getElementById('messages')
+			container.scrollTop = container.scrollHeight
+		}
+
+		function startPolling() {
+			if (pollTimer) clearInterval(pollTimer)
+			pollTimer = setInterval(pollNewMessages, 2500)
+		}
+
+		async function pollNewMessages() {
+			if (!currentGroupId || !currentChannelId) return
+			try {
+				const options = { limit: 50 }
+				if (lastMessageId) options.since = lastMessageId
+				const messages = await getChannelMessages(currentGroupId, currentChannelId, options)
+				if (!messages.length) return
+
+				const container = document.getElementById('messages')
+				const empty = container.querySelector('.dc-empty')
+				if (empty) container.innerHTML = ''
+
+				// 是否在底部附近
+				const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+
+				const lastMsgEl = container.querySelector('.dc-message:last-child')
+				const lastSender = lastMsgEl?.querySelector('.dc-message-author')?.textContent
+
+				let appended = ''
+				let prevSender = lastSender
+				let prevTime = 0
+				for (const msg of messages) {
+					if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue
+					if (parseJoinMessage(getMessageText(msg))) {
+						appended += renderJoinSystemRow(msg)
+						prevSender = null; prevTime = 0
+						continue
+					}
+					const sender = msg.sender || '?'
+					const time = msg.timestamp || 0
+					const isFirst = sender !== prevSender || (time - prevTime) > 5 * 60 * 1000
+					const color = avatarColor(sender)
+					const initial = avatarInitial(sender)
+					appended += `
+						<div class="dc-message ${isFirst ? 'first-in-group' : ''}" data-message-id="${msg.id}">
+							<div class="dc-avatar" data-avatar-for="${escapeHtml(sender)}" style="background: ${color};">${escapeHtml(initial)}</div>
+							<div class="dc-message-body">
+								<div class="dc-message-header">
+									<span class="dc-message-author">${escapeHtml(sender)}</span>
+									<span class="dc-message-time">${formatTime(time)}</span>
+								</div>
+								<div class="dc-message-content">${renderMessageContent(getMessageText(msg))}</div>
+							</div>
+						</div>
+					`
+					prevSender = sender
+					prevTime = time
+				}
+				if (appended) {
+					container.insertAdjacentHTML('beforeend', appended)
+					lastMessageId = messages[messages.length - 1].id
+					applyAvatarsTo(container)
+					if (_forceScrollOnNext || nearBottom) scrollToBottom()
+					_forceScrollOnNext = false
+				}
+			} catch { }
+		}
+
+		// ============ 输入框 ============
+		function enableComposer() {
+			const input = document.getElementById('message-input')
+			input.disabled = false
+			input.placeholder = `发送消息到 #${currentState?.channels?.[currentChannelId]?.name || currentChannelId}`
+			document.getElementById('emoji-btn').disabled = false
+			document.getElementById('upload-btn').disabled = false
+			document.getElementById('sticker-btn').disabled = false
+			document.getElementById('send-btn').disabled = false
+		}
+		function disableComposer(reason) {
+			const input = document.getElementById('message-input')
+			input.disabled = true
+			input.placeholder = reason || '无法发送消息'
+			document.getElementById('emoji-btn').disabled = true
+			document.getElementById('upload-btn').disabled = true
+			document.getElementById('sticker-btn').disabled = true
+			document.getElementById('send-btn').disabled = true
+		}
+
+		// === 统一消息发送（支持群组 / 独立频道 / AI 角色） ===
+		async function sendCurrentMessage(content) {
+			// 用户主动发送：要求下一次消息渲染（无论是 poll 拉回的本人消息、
+			// AI 通过 WS 推送的回复、还是图片/贴纸触发的渲染）强制滚动到底部
+			_forceScrollOnNext = true
+			if (currentAIChatId && currentAIChar) {
+				await sendAIChatMessage(content)
+				return
+			}
+			if (currentChannelOnlyId) {
+				const resp = await fetch(`/api/parts/shells:channels/${encodeURIComponent(currentChannelOnlyId)}/post`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({ content })
+				})
+				if (!resp.ok) {
+					const data = await resp.json().catch(() => ({}))
+					throw new Error(data?.error || `HTTP ${resp.status}`)
+				}
+				await pollChannelOnly()
+				return
+			}
+			if (!currentGroupId || !currentChannelId) throw new Error('请先选择对话')
+			await sendGroupMessage(currentGroupId, currentChannelId, content)
+			await pollNewMessages()
+		}
+
+		async function submitComposer() {
+			const input = document.getElementById('message-input')
+			if (input.disabled) return
+			const content = input.value.trim()
+			if (!content) return
+			if (!currentAIChatId && !currentChannelOnlyId && (!currentGroupId || !currentChannelId)) return
+			input.value = ''
+			try {
+				await sendCurrentMessage(content)
+			} catch (err) {
+				_forceScrollOnNext = false // 发送失败：避免下次无关 poll 抢滚动
+				alert('发送失败: ' + err.message)
+				input.value = content
+			}
+		}
+
+		document.getElementById('message-input').addEventListener('keydown', (e) => {
+			if (e.key !== 'Enter') return
+			// Ctrl+Enter / Shift+Enter → 换行
+			if (e.ctrlKey || e.shiftKey || e.metaKey) {
+				e.preventDefault()
+				const input = e.target
+				const start = input.selectionStart
+				const end = input.selectionEnd
+				input.value = input.value.slice(0, start) + '\n' + input.value.slice(end)
+				input.selectionStart = input.selectionEnd = start + 1
+				return
+			}
+			e.preventDefault()
+			submitComposer()
+		})
+
+		document.getElementById('send-btn').addEventListener('click', () => {
+			submitComposer()
+			document.getElementById('message-input').focus()
+		})
+
+		// ============ 图片上传 ============
+		document.getElementById('upload-btn').addEventListener('click', () => {
+			document.getElementById('image-upload').click()
+		})
+
+		document.getElementById('image-upload').addEventListener('change', async (e) => {
+			const file = e.target.files[0]
+			if (!file) return
+			if (!currentAIChatId && !currentChannelOnlyId && (!currentGroupId || !currentChannelId)) return
+			e.target.value = ''
+			try {
+				const reader = new FileReader()
+				const dataUrl = await new Promise((resolve, reject) => {
+					reader.onload = () => resolve(reader.result)
+					reader.onerror = reject
+					reader.readAsDataURL(file)
+				})
+				await sendCurrentMessage(`[image:${file.name}|${dataUrl}]`)
+			} catch (err) {
+				alert('发送图片失败: ' + err.message)
+			}
+		})
+
+		// ============ Emoji 选择器 ============
+		const EMOJI_DATA = {
+			face: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐'],
+			gesture: ['👋','🤚','🖐️','✋','🖖','👌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏'],
+			heart: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️'],
+			animal: ['🐱','🐶','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🐢','🐍','🦎','🦂','🦀','🦑','🐙','🐠','🐟','🐡','🐬','🦈','🐳','🐋'],
+			food: ['🍔','🍟','🍕','🌭','🥪','🌮','🌯','🥙','🍣','🍤','🍥','🍱','🍙','🍚','🍛','🍜','🍝','🍞','🥐','🥖','🥨','🧀','🥚','🍳','🥘','🍲','🥗','🍿','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🥛','☕','🍵','🍶','🍺','🍻','🥂','🍷'],
+			object: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🥊','🎯','🎲','🧩','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🎻','🏆','🥇','🥈','🥉','🎁','🎀']
+		}
+
+		function renderEmojiGrid(tab) {
+			const grid = document.getElementById('emoji-grid')
+			grid.innerHTML = (EMOJI_DATA[tab] || []).map(e => `<button class="dc-emoji-btn" data-emoji="${e}">${e}</button>`).join('')
+		}
+
+		document.getElementById('emoji-btn').addEventListener('click', (e) => {
+			e.stopPropagation()
+			const picker = document.getElementById('emoji-picker')
+			picker.classList.toggle('show')
+			if (picker.classList.contains('show')) renderEmojiGrid('face')
+		})
+
+		document.getElementById('emoji-tabs').addEventListener('click', (e) => {
+			const btn = e.target.closest('[data-tab]')
+			if (!btn) return
+			document.querySelectorAll('.dc-emoji-tab').forEach(t => t.classList.remove('active'))
+			btn.classList.add('active')
+			renderEmojiGrid(btn.dataset.tab)
+		})
+
+		document.getElementById('emoji-grid').addEventListener('click', (e) => {
+			const btn = e.target.closest('[data-emoji]')
+			if (!btn) return
+			const input = document.getElementById('message-input')
+			const start = input.selectionStart || input.value.length
+			input.value = input.value.substring(0, start) + btn.dataset.emoji + input.value.substring(start)
+			input.focus()
+			document.getElementById('emoji-picker').classList.remove('show')
+		})
+
+		document.addEventListener('click', (e) => {
+			const picker = document.getElementById('emoji-picker')
+			if (picker.classList.contains('show') && !picker.contains(e.target) && !e.target.closest('#emoji-btn')) {
+				picker.classList.remove('show')
+			}
+			const sPicker = document.getElementById('sticker-picker')
+			if (sPicker.classList.contains('show') && !sPicker.contains(e.target) && !e.target.closest('#sticker-btn')) {
+				sPicker.classList.remove('show')
+			}
+		})
+
+		// ============ 贴纸选择器 ============
+		let stickersLoaded = false
+		async function loadStickers() {
+			if (stickersLoaded) return
+			stickersLoaded = true
+			const grid = document.getElementById('sticker-grid')
+			try {
+				if (!myUsername) throw new Error('未获取用户名')
+				const collResp = await fetch(`/api/parts/shells:stickers/user/${encodeURIComponent(myUsername)}`, { credentials: 'include' })
+				if (!collResp.ok) throw new Error('Failed')
+				const collData = await collResp.json()
+				if (!collData.success) throw new Error(collData.error || 'Failed')
+
+				const packs = collData.collection?.installedPacks || []
+				if (!packs.length) {
+					grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--dc-text-muted);padding:20px;font-size:13px;">暂无贴纸<br/><a href="/parts/shells:stickers" target="_blank" style="color:var(--dc-accent);">前往贴纸广场安装</a></div>`
+					return
+				}
+
+				const allStickers = []
+				for (const packId of packs) {
+					try {
+						const packResp = await fetch(`/api/parts/shells:stickers/packs/${encodeURIComponent(packId)}`, { credentials: 'include' })
+						if (!packResp.ok) continue
+						const packData = await packResp.json()
+						if (packData.success && packData.pack?.stickers) allStickers.push(...packData.pack.stickers)
+					} catch { }
+				}
+
+				if (!allStickers.length) {
+					grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--dc-text-muted);padding:20px;font-size:13px;">暂无贴纸</div>`
+					return
+				}
+
+				grid.innerHTML = allStickers.map(s => `
+					<button class="dc-sticker-item" data-sticker-id="${escapeHtml(s.id)}" data-sticker-url="${escapeHtml(s.url || '')}" title="${escapeHtml(s.name || s.id)}">
+						${s.url ? `<img src="${escapeHtml(s.url)}" alt="${escapeHtml(s.name || '')}" />` : '<span style="font-size:24px;">📦</span>'}
+					</button>
+				`).join('')
+			} catch (err) {
+				stickersLoaded = false
+				grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--dc-text-muted);padding:20px;font-size:13px;">加载失败：${escapeHtml(err.message)}</div>`
+			}
+		}
+
+		document.getElementById('sticker-btn').addEventListener('click', (e) => {
+			e.stopPropagation()
+			const picker = document.getElementById('sticker-picker')
+			document.getElementById('emoji-picker').classList.remove('show')
+			picker.classList.toggle('show')
+			if (picker.classList.contains('show')) loadStickers()
+		})
+
+		document.getElementById('sticker-grid').addEventListener('click', async (e) => {
+			const btn = e.target.closest('.dc-sticker-item')
+			if (!btn) return
+			if (!currentAIChatId && !currentChannelOnlyId && (!currentGroupId || !currentChannelId)) return
+			const stickerId = btn.dataset.stickerId
+			const stickerUrl = btn.dataset.stickerUrl
+			const tag = stickerUrl ? `[sticker:${stickerId}|${stickerUrl}]` : `[sticker:${stickerId}]`
+			document.getElementById('sticker-picker').classList.remove('show')
+			try {
+				await sendCurrentMessage(tag)
+			} catch (err) { alert('发送贴纸失败: ' + err.message) }
+		})
+
+		// ============ 添加群组按钮（自定义弹窗替代原生 confirm） ============
+		function showServerActionPicker() {
+			const modal = document.createElement('dialog')
+			modal.className = 'modal'
+			modal.innerHTML = `
+				<style>
+					.sap-box { background:#2b2d31; color:#dbdee1; border-radius:12px; max-width:460px; width:100%; padding:0; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+					.sap-header { background:linear-gradient(135deg,#5865f2 0%,#4752c4 100%); padding:24px; color:white; text-align:center; }
+					.sap-header h3 { font-size:20px; font-weight:700; margin:0 0 4px; }
+					.sap-header p { font-size:13px; opacity:0.85; margin:0; }
+					.sap-body { padding:20px; display:flex; gap:12px; }
+					.sap-card { flex:1; background:#1e1f22; border:1.5px solid transparent; border-radius:10px; padding:20px 16px; cursor:pointer; transition:all 0.15s; text-align:center; }
+					.sap-card:hover { border-color:#5865f2; background:rgba(88,101,242,0.1); transform:translateY(-2px); }
+					.sap-card-icon { font-size:36px; margin-bottom:10px; }
+					.sap-card-title { font-weight:700; font-size:15px; color:#fff; margin-bottom:4px; }
+					.sap-card-desc { font-size:12px; color:#949ba4; line-height:1.5; }
+					.sap-footer { padding:0 20px 16px; display:flex; justify-content:flex-end; }
+					.sap-btn-cancel { background:transparent; color:#b5bac1; border:none; cursor:pointer; padding:8px 16px; font-size:14px; font-weight:600; border-radius:6px; font-family:inherit; }
+					.sap-btn-cancel:hover { background:rgba(255,255,255,0.06); color:#fff; }
+				</style>
+				<div class="modal-box sap-box">
+					<div class="sap-header">
+						<h3>开始你的群组之旅</h3>
+						<p>创建一个新群组，或通过 ID 加入已有群组</p>
+					</div>
+					<div class="sap-body">
+						<div class="sap-card" data-action="create">
+							<div class="sap-card-icon">✨</div>
+							<div class="sap-card-title">创建群组</div>
+							<div class="sap-card-desc">从零开始<br/>邀请好友加入</div>
+						</div>
+						<div class="sap-card" data-action="join">
+							<div class="sap-card-icon">🔗</div>
+							<div class="sap-card-title">加入群组</div>
+							<div class="sap-card-desc">通过群组 ID<br/>加入已有群组</div>
+						</div>
+					</div>
+					<div class="sap-footer">
+						<button class="sap-btn-cancel" data-cancel>取消</button>
+					</div>
+				</div>
+				<form method="dialog" class="modal-backdrop"><button>关闭</button></form>
+			`
+			modal.querySelector('[data-action="create"]').addEventListener('click', () => {
+				modal.close(); modal.remove(); showCreateGroupModal()
+			})
+			modal.querySelector('[data-action="join"]').addEventListener('click', () => {
+				modal.close(); modal.remove(); joinGroupById()
+			})
+			modal.querySelector('[data-cancel]').addEventListener('click', () => { modal.close(); modal.remove() })
+			document.body.appendChild(modal)
+			modal.showModal()
+		}
+
+		document.getElementById('add-server-btn').addEventListener('click', showServerActionPicker)
+
+		// ============ 切换成员栏 ============
+		document.getElementById('toggle-members-btn').addEventListener('click', () => {
+			const bar = document.getElementById('member-bar')
+			bar.style.display = bar.style.display === 'none' ? '' : 'none'
+		})
+
+		// ============ 搜索（实时过滤当前消息） ============
+		document.getElementById('header-search').addEventListener('input', (e) => {
+			const q = e.target.value.trim().toLowerCase()
+			document.querySelectorAll('#messages .dc-message, #messages .dc-system-message').forEach(el => {
+				if (!q) { el.style.display = ''; return }
+				const text = (el.textContent || '').toLowerCase()
+				el.style.display = text.includes(q) ? '' : 'none'
+			})
+		})
+		document.getElementById('header-search').addEventListener('focus', (e) => {
+			e.target.style.borderColor = 'var(--dc-accent)'
+		})
+		document.getElementById('header-search').addEventListener('blur', (e) => {
+			e.target.style.borderColor = 'transparent'
+		})
+
+		// ============ 设置按钮（在页内弹出模态框，按当前上下文路由） ============
+		document.getElementById('header-settings-btn').addEventListener('click', () => {
+			if (currentGroupId) openGroupSettingsModal(currentGroupId)
+			else if (currentChannelOnlyId) openChannelSettingsModal(currentChannelOnlyId)
+			else if (currentAIChatId) openAIChatSettingsModal(currentAIChatId)
+			else window.open('/parts/shells:profile', '_blank', 'noopener')
+		})
+
+		// ============ 群组头部点击打开设置（在页内弹窗） ============
+		document.getElementById('group-header').addEventListener('click', () => {
+			if (currentGroupId) openGroupSettingsModal(currentGroupId)
+		})
+
+		// ============ 用户栏点击打开个人资料 ============
+		document.getElementById('user-bar').addEventListener('click', () => {
+			window.location.href = '/parts/shells:profile'
+		})
+
+		// ============================================================
+		// 模式切换 (AI 角色 / 频道 / 群组)
+		// ============================================================
+		let currentMode = 'groups' // 默认群组模式
+		let charsCache = null
+		let channelsCache = null
+
+		function setActiveModeTab(mode) {
+			document.querySelectorAll('.dc-server-item[data-mode]').forEach(el => {
+				el.classList.toggle('mode-active', el.dataset.mode === mode)
+			})
+		}
+
+		async function loadCharsList() {
+			if (charsCache) return charsCache
+			try {
+				const resp = await fetch('/api/getlist/chars', { credentials: 'include' })
+				if (!resp.ok) return charsCache = []
+				const list = await resp.json()
+				charsCache = Array.isArray(list) ? list : []
+				return charsCache
+			} catch { return charsCache = [] }
+		}
+
+		async function loadChannelsList() {
+			if (channelsCache) return channelsCache
+			try {
+				const resp = await fetch('/api/parts/shells:channels/list', { credentials: 'include' })
+				if (!resp.ok) return channelsCache = []
+				const data = await resp.json()
+				channelsCache = data?.channels || (Array.isArray(data) ? data : []) || []
+				return channelsCache
+			} catch { return channelsCache = [] }
+		}
+
+		async function getCharDetails(name) {
+			try {
+				const resp = await fetch(`/api/getdetails/chars/${encodeURIComponent(name)}`, { credentials: 'include' })
+				if (!resp.ok) return null
+				return await resp.json()
+			} catch { return null }
+		}
+
+		function renderCharsColumn(items) {
+			const header = document.getElementById('group-name-display')
+			const container = document.getElementById('channel-list')
+			header.textContent = 'AI 角色'
+			if (!items.length) {
+				container.innerHTML = `<div class="dc-list-loading">暂无角色，先去安装一些吧</div>`
+				return
+			}
+			container.innerHTML = `
+				<div class="dc-category"><span style="margin-left:4px;">${items.length} 个角色</span></div>
+				${items.map(name => `
+					<div class="dc-channel-item dc-list-item-char" data-char="${escapeHtml(name)}" title="${escapeHtml(name)}">
+						<svg class="dc-channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="8" r="4"/>
+							<path d="M4 21v-1a8 8 0 0 1 16 0v1"/>
+						</svg>
+						<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(name)}</span>
+					</div>
+				`).join('')}
+			`
+			container.querySelectorAll('.dc-channel-item').forEach(el => {
+				el.addEventListener('click', () => {
+					const name = el.dataset.char
+					// 在页内进入 1:1 AI 聊天
+					enterAIChat(name)
+				})
+				el.addEventListener('mouseenter', async () => {
+					if (currentAIChatId) return // 已在聊天中不覆盖右栏
+					const name = el.dataset.char
+					const details = await getCharDetails(name)
+					await renderCharInfoCard(name, details)
+				})
+			})
+
+			// 默认显示第一个角色的信息卡（如果有 且 未在聊天中）
+			if (items[0] && !currentAIChatId) getCharDetails(items[0]).then(d => renderCharInfoCard(items[0], d))
+		}
+
+		function renderChannelsColumn(items) {
+			const header = document.getElementById('group-name-display')
+			const container = document.getElementById('channel-list')
+			header.textContent = '频道'
+			const createBtnHtml = `
+				<div class="dc-category" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+					<span style="margin-left:4px;">${items.length} 个频道</span>
+					<button id="btn-create-channel" title="创建频道" style="background:transparent;border:none;color:var(--dc-text-muted);cursor:pointer;padding:2px 6px;border-radius:4px;display:flex;align-items:center;font-size:16px;line-height:1;">＋</button>
+				</div>
+			`
+			if (!items.length) {
+				container.innerHTML = `${createBtnHtml}<div class="dc-list-loading" style="margin-top:10px;">暂无频道，点击 ＋ 创建一个吧</div>`
+				container.querySelector('#btn-create-channel')?.addEventListener('click', (e) => { e.stopPropagation(); openCreateChannelModal() })
+				return
+			}
+			container.innerHTML = `
+				${createBtnHtml}
+				${items.map(ch => `
+					<div class="dc-channel-item dc-list-item-channel" data-channel-id="${escapeHtml(ch.channelId || ch.id || '')}" title="${escapeHtml(ch.name || '')}">
+						<svg class="dc-channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+						<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(ch.name || ch.channelId || '')}</span>
+					</div>
+				`).join('')}
+			`
+			container.querySelector('#btn-create-channel')?.addEventListener('click', (e) => { e.stopPropagation(); openCreateChannelModal() })
+			container.querySelectorAll('.dc-channel-item').forEach(el => {
+				el.addEventListener('click', () => {
+					const id = el.dataset.channelId
+					if (id) selectChannelOnly(id, items.find(c => (c.channelId || c.id) === id))
+				})
+			})
+		}
+
+		// === 独立频道模式 ===
+		async function selectChannelOnly(channelId, channelMeta) {
+			// 清理其他状态
+			currentGroupId = null
+			currentChannelId = null
+			currentState = null
+			clearAIChatState()
+			currentChannelOnlyId = channelId
+			channelOnlyLastTs = 0
+			updateHash(`channel:${channelId}`, null)
+
+			// 标记选中
+			document.querySelectorAll('#channel-list .dc-channel-item').forEach(el => {
+				el.classList.toggle('active', el.dataset.channelId === channelId)
+			})
+
+			// 更新顶部标题
+			const name = channelMeta?.name || channelId
+			document.getElementById('channel-name-display').textContent = name
+
+			// 自动订阅（首次进入）
+			try {
+				const subResp = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}/subscribe`, {
+					method: 'POST', credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({})
+				})
+				if (subResp.ok) {
+					// 首次订阅成功，弹出问候语
+					const greeting = await showGreetingPicker()
+					if (greeting) {
+						try {
+							await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}/post`, {
+								method: 'POST', credentials: 'include',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ content: `[join:${greeting}]` })
+							})
+						} catch { }
+					}
+				}
+			} catch { /* 已订阅或忽略 */ }
+
+			enableComposer()
+			document.getElementById('message-input').placeholder = `发送消息到 #${name}`
+
+			// 渲染右栏：频道信息卡 + 成员
+			renderChannelOnlyInfoCard(channelMeta || { name, channelId })
+			await loadChannelOnlyMembers(channelId)
+			await loadChannelOnlyMessages(channelId)
+			startChannelOnlyPolling()
+		}
+
+		function renderChannelOnlyInfoCard(channelMeta) {
+			const host = document.getElementById('info-card-host')
+			const desc = channelMeta?.description || '这个频道还没有简介。'
+			const name = channelMeta?.name || channelMeta?.channelId || '频道'
+			host.innerHTML = `
+				<div class="dc-info-card">
+					<div class="dc-info-banner"></div>
+					<div class="dc-info-body">
+						<div class="dc-info-avatar" style="background:${avatarColor(name)};">${escapeHtml(avatarInitial(name))}</div>
+						<div class="dc-info-name">#${escapeHtml(name)}</div>
+						<span class="dc-info-tag">频道</span>
+						<div class="dc-info-desc" style="margin-top:8px;">${escapeHtml(desc)}</div>
+					</div>
+				</div>
+			`
+		}
+
+		async function loadChannelOnlyMembers(channelId) {
+			const container = document.getElementById('member-list')
+			try {
+				const resp = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}/members`, { credentials: 'include' })
+				const data = resp.ok ? await resp.json() : { members: [] }
+				channelOnlyMembers = data?.members || []
+				if (!channelOnlyMembers.length) {
+					container.innerHTML = `<div style="padding:16px;color:var(--dc-text-muted);font-size:14px;">暂无成员</div>`
+					return
+				}
+				const items = channelOnlyMembers.map(m => {
+					const uname = m.username || m
+					return `
+						<div class="dc-member-item" title="${escapeHtml(uname)}">
+							<div class="dc-member-avatar-wrap">
+								<div class="dc-member-avatar" data-avatar-for="${escapeHtml(uname)}" style="background:${avatarColor(uname)};">${escapeHtml(avatarInitial(uname))}</div>
+								<span class="dc-presence-dot dc-presence-offline" data-presence-for="${escapeHtml(uname)}" title="离线"></span>
+							</div>
+							<div class="dc-member-name">${escapeHtml(uname)}</div>
+						</div>
+					`
+				}).join('')
+				container.innerHTML = `<div class="dc-member-group-title">成员 — ${channelOnlyMembers.length}</div>${items}`
+				applyAvatarsTo(container)
+				const usernames = channelOnlyMembers.map(m => m.username || m).filter(Boolean)
+				applyPresence(container, usernames)
+				startMemberPresencePolling(container, usernames)
+			} catch {
+				container.innerHTML = `<div style="padding:16px;color:var(--dc-text-muted);font-size:14px;">无法加载成员</div>`
+			}
+		}
+
+		function renderChannelOnlyMessages(messages) {
+			let html = ''
+			let prevAuthor = null
+			let prevTime = 0
+			for (const msg of messages) {
+				const author = msg.author || '?'
+				const time = msg.createdAt || 0
+				const text = msg.content || ''
+				// 系统欢迎消息
+				if (parseJoinMessage(text)) {
+					const greeting = parseJoinMessage(text)
+					html += `
+						<div class="dc-system-message" data-message-id="${msg.messageId || msg.id}">
+							<span><span class="dc-system-author">${escapeHtml(author)}</span> ${escapeHtml(greeting)}</span>
+							<span class="dc-system-time">${formatTime(time)}</span>
+						</div>
+					`
+					prevAuthor = null; prevTime = 0
+					continue
+				}
+				const isFirst = author !== prevAuthor || (time - prevTime) > 5 * 60 * 1000
+				html += `
+					<div class="dc-message ${isFirst ? 'first-in-group' : ''}" data-message-id="${msg.messageId || msg.id}">
+						<div class="dc-avatar" data-avatar-for="${escapeHtml(author)}" style="background:${avatarColor(author)};">${escapeHtml(avatarInitial(author))}</div>
+						<div class="dc-message-body">
+							<div class="dc-message-header">
+								<span class="dc-message-author">${escapeHtml(author)}</span>
+								<span class="dc-message-time">${formatTime(time)}</span>
+							</div>
+							<div class="dc-message-content">${renderMessageContent(text)}</div>
+						</div>
+					</div>
+				`
+				prevAuthor = author
+				prevTime = time
+			}
+			return html
+		}
+
+		async function loadChannelOnlyMessages(channelId) {
+			const container = document.getElementById('messages')
+			container.innerHTML = `<div class="dc-empty"><div class="loading loading-spinner"></div></div>`
+			try {
+				const resp = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}/messages?limit=50`, { credentials: 'include' })
+				const data = resp.ok ? await resp.json() : { messages: [] }
+				const messages = data?.messages || []
+				if (!messages.length) {
+					container.innerHTML = `
+						<div class="dc-empty">
+							<div class="dc-empty-icon">👋</div>
+							<div style="color:var(--dc-text-bright);font-size:18px;font-weight:600;margin-bottom:8px;">欢迎来到 #${escapeHtml(currentChannelOnlyId)}</div>
+							<div>这是该频道的开始。发送第一条消息吧！</div>
+						</div>
+					`
+					channelOnlyLastTs = 0
+					return
+				}
+				container.innerHTML = renderChannelOnlyMessages(messages)
+				channelOnlyLastTs = messages[messages.length - 1].createdAt || 0
+				applyAvatarsTo(container)
+				scrollToBottom()
+			} catch (err) {
+				container.innerHTML = `<div class="dc-empty"><div style="color:#ed4245">加载消息失败: ${escapeHtml(err.message)}</div></div>`
+			}
+		}
+
+		function startChannelOnlyPolling() {
+			if (pollTimer) clearInterval(pollTimer)
+			pollTimer = setInterval(pollChannelOnly, 2500)
+		}
+
+		async function pollChannelOnly() {
+			if (!currentChannelOnlyId) return
+			try {
+				const resp = await fetch(`/api/parts/shells:channels/${encodeURIComponent(currentChannelOnlyId)}/messages?limit=50`, { credentials: 'include' })
+				if (!resp.ok) return
+				const data = await resp.json()
+				const messages = (data?.messages || []).filter(m => (m.createdAt || 0) > channelOnlyLastTs)
+				if (!messages.length) return
+				const container = document.getElementById('messages')
+				const empty = container.querySelector('.dc-empty')
+				if (empty) container.innerHTML = ''
+				const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+				const appended = renderChannelOnlyMessages(messages)
+				if (appended) {
+					container.insertAdjacentHTML('beforeend', appended)
+					channelOnlyLastTs = messages[messages.length - 1].createdAt || channelOnlyLastTs
+					applyAvatarsTo(container)
+					if (_forceScrollOnNext || nearBottom) scrollToBottom()
+					_forceScrollOnNext = false
+				}
+			} catch { }
+		}
+
+		// AI 角色嵌入聊天（1:1 完整功能：创建/加载会话 + WS 实时回复）
+		function closeAIChatWs() {
+			if (aiChatWs) {
+				try { aiChatWs.close() } catch { }
+				aiChatWs = null
+			}
+		}
+
+		function clearAIChatState() {
+			closeAIChatWs()
+			currentAIChatId = null
+			currentAIChar = null
+			aiChatLogLength = 0
+			_streamingEntries.clear()
+		}
+
+		// 清理 AI 回复中的 Markdown 格式符号（*、**、_、__、~~ 等）
+		function cleanAIText(text) {
+			if (!text) return text
+			// 去掉成对的 ** / * / __ / _ / ~~（保留中间文字）
+			let cleaned = text
+			cleaned = cleaned.replace(/\*\*(.+?)\*\*/g, '$1')
+			cleaned = cleaned.replace(/\*(.+?)\*/g, '$1')
+			cleaned = cleaned.replace(/__(.+?)__/g, '$1')
+			cleaned = cleaned.replace(/_(.+?)_/g, '$1')
+			cleaned = cleaned.replace(/~~(.+?)~~/g, '$1')
+			// 去掉残余的孤立 * 号
+			cleaned = cleaned.replace(/\*/g, '')
+			return cleaned
+		}
+
+		// 将服务器推送的 stream_update slices 应用到本地追踪的流式内容上
+		function applyStreamSlices(tracked, slices) {
+			for (const slice of slices) {
+				if (slice.type === 'append') {
+					// slice.add = { content?: '...', content_for_show?: '...' }
+					if (slice.add.content != null) tracked.content += slice.add.content
+					if (slice.add.content_for_show != null) tracked.content_for_show += slice.add.content_for_show
+				} else if (slice.type === 'rewrite_tail') {
+					const field = slice.field || 'content'
+					if (field === 'content') tracked.content = tracked.content.slice(0, slice.index) + slice.content
+					else if (field === 'content_for_show') tracked.content_for_show = tracked.content_for_show.slice(0, slice.index) + slice.content
+				} else if (slice.type === 'set_files') {
+					tracked.files = slice.files || []
+				}
+			}
+		}
+
+		// 增量更新流式消息的 DOM
+		function updateStreamingEntryDOM(tracked) {
+			const container = document.getElementById('messages')
+			const el = container.querySelector(`[data-message-id="ai-${tracked.index}"]`)
+			if (!el) return
+			const contentEl = el.querySelector('.dc-message-content')
+			if (!contentEl) return
+			const displayText = tracked.content || ''
+			const filesHtml = (tracked.files || []).map(f => {
+				const mime = f.mime_type || ''
+				if (mime.startsWith('image/') && f.buffer)
+					return `<img src="data:${mime};base64,${f.buffer}" alt="${escapeHtml(f.name || '')}" style="max-width:380px;max-height:300px;border-radius:6px;display:block;margin-top:6px;" />`
+				return `<a href="#" class="dc-file-tag">${escapeHtml(f.name || 'file')}</a>`
+			}).join('')
+			contentEl.innerHTML = renderMessageContent(cleanAIText(displayText)) + filesHtml
+			const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120
+			if (_forceScrollOnNext || nearBottom) scrollToBottom()
+		}
+
+		function renderAIEntry(entry, index) {
+			const role = entry.role || (entry.name === myUsername ? 'user' : 'char')
+			const author = entry.name || (role === 'user' ? (myUsername || '我') : currentAIChar || 'AI')
+			const time = entry.time_stamp ? new Date(entry.time_stamp).getTime() : Date.now()
+			const rawText = entry.content || ''
+			const text = (role !== 'user') ? cleanAIText(rawText) : rawText
+			const avatarUrl = entry.avatar || ''
+			const filesHtml = (entry.files || []).map(f => {
+				const mime = f.mime_type || ''
+				if (mime.startsWith('image/') && f.buffer)
+					return `<img src="data:${mime};base64,${f.buffer}" alt="${escapeHtml(f.name || '')}" style="max-width:380px;max-height:300px;border-radius:6px;display:block;margin-top:6px;" />`
+				return `<a href="#" class="dc-file-tag">${escapeHtml(f.name || 'file')}</a>`
+			}).join('')
+			const generating = entry.is_generating ? `<span class="dc-typing-inline" style="margin-left:6px;color:var(--dc-text-muted);font-size:12px;">正在输入...</span>` : ''
+			return `
+				<div class="dc-message first-in-group dc-ai-entry" data-message-id="ai-${index}" data-role="${role}">
+					<div class="dc-avatar" data-avatar-for="${escapeHtml(author)}" style="background:${avatarColor(author)};">
+						${avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(author)}" />` : escapeHtml(avatarInitial(author))}
+					</div>
+					<div class="dc-message-body">
+						<div class="dc-message-header">
+							<span class="dc-message-author">${escapeHtml(author)}</span>
+							<span class="dc-message-time">${formatTime(time)}</span>
+							${generating}
+						</div>
+						<div class="dc-message-content">${renderMessageContent(text)}${filesHtml}</div>
+					</div>
+				</div>
+			`
+		}
+
+		function renderAIChatLog(entries) {
+			const container = document.getElementById('messages')
+			if (!entries.length) {
+				container.innerHTML = `
+					<div class="dc-empty">
+						<div class="dc-empty-icon">👋</div>
+						<div style="color:var(--dc-text-bright);font-size:18px;font-weight:600;margin-bottom:8px;">和 ${escapeHtml(currentAIChar)} 开始对话</div>
+						<div>暂无消息，开始你的第一条聊天吧！</div>
+					</div>
+				`
+				return
+			}
+			container.innerHTML = entries.map((e, i) => renderAIEntry(e, i)).join('')
+			applyAvatarsTo(container)
+			scrollToBottom()
+		}
+
+		async function loadAIChatLog() {
+			if (!currentAIChatId) return
+			const lenResp = await fetch(`/api/parts/shells:chat/${currentAIChatId}/log/length`, { credentials: 'include' })
+			const length = lenResp.ok ? await lenResp.json() : 0
+			aiChatLogLength = length
+			if (!length) { renderAIChatLog([]); return }
+			const start = Math.max(0, length - 100)
+			const resp = await fetch(`/api/parts/shells:chat/${currentAIChatId}/log?start=${start}&end=${length}`, { credentials: 'include' })
+			if (!resp.ok) {
+				document.getElementById('messages').innerHTML = `<div class="dc-empty"><div style="color:#ed4245">加载消息失败</div></div>`
+				return
+			}
+			const entries = await resp.json()
+			renderAIChatLog(entries || [])
+		}
+
+		function appendAIEntry(entry) {
+			const container = document.getElementById('messages')
+			const empty = container.querySelector('.dc-empty')
+			if (empty) container.innerHTML = ''
+			const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120
+			const thisIndex = aiChatLogLength
+			container.insertAdjacentHTML('beforeend', renderAIEntry(entry, thisIndex))
+			applyAvatarsTo(container)
+			aiChatLogLength++
+			// 如果是 AI 正在生成的占位消息，注册到流式追踪表
+			if (entry.is_generating && entry.id) {
+				_streamingEntries.set(entry.id, {
+					index: thisIndex,
+					content: entry.content || '',
+					content_for_show: entry.content_for_show || '',
+					files: entry.files || []
+				})
+			}
+			// 用户主动发送 → 强制滚动；同时，刚发送后 AI 推送的回复也应强制滚动一次，
+			// 避免用户看到自己消息但需要手滑才能看见 AI 回复。
+			const isOwnEntry = entry?.role === 'user' || entry?.author === myUsername
+			if (_forceScrollOnNext || nearBottom) {
+				scrollToBottom()
+				// 用户消息渲染后保留 flag 直到 AI 回复也滚一次
+				if (!isOwnEntry) _forceScrollOnNext = false
+			}
+		}
+
+		function replaceAIEntry(index, entry) {
+			const container = document.getElementById('messages')
+			const el = container.querySelector(`[data-message-id="ai-${index}"]`)
+			if (!el) {
+				appendAIEntry(entry)
+				return
+			}
+			const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120
+			const wrap = document.createElement('div')
+			wrap.innerHTML = renderAIEntry(entry, index)
+			el.replaceWith(wrap.firstElementChild)
+			applyAvatarsTo(container)
+			if (_forceScrollOnNext || nearBottom) {
+				scrollToBottom()
+				_forceScrollOnNext = false
+			}
+		}
+
+		function setTypingStatus(typingList) {
+			let bar = document.getElementById('ai-typing-bar')
+			if (!typingList || !typingList.length) {
+				if (bar) bar.remove()
+				return
+			}
+			if (!bar) {
+				bar = document.createElement('div')
+				bar.id = 'ai-typing-bar'
+				bar.style.cssText = 'padding:6px 16px;color:var(--dc-text-muted);font-size:13px;font-style:italic;background:var(--dc-bg-floating);border-top:1px solid var(--dc-border);'
+				const composer = document.querySelector('.dc-composer')
+				composer.parentNode.insertBefore(bar, composer)
+			}
+			bar.textContent = `${typingList.join(', ')} 正在输入...`
+		}
+
+		function connectAIChatWs(chatid) {
+			closeAIChatWs()
+			const proto = location.protocol === 'https:' ? 'wss:' : 'ws:'
+			const ws = new WebSocket(`${proto}//${location.host}/ws/parts/shells:chat/ui/${encodeURIComponent(chatid)}`)
+			aiChatWs = ws
+			ws.addEventListener('message', (ev) => {
+				let data
+				try { data = JSON.parse(ev.data) } catch { return }
+				if (currentAIChatId !== chatid) return
+				switch (data.type) {
+					case 'message_added':
+						appendAIEntry(data.payload)
+						break
+					case 'message_replaced':
+						// 流式结束后的最终替换，清理追踪状态
+						if (data.payload.entry?.id) _streamingEntries.delete(data.payload.entry.id)
+						replaceAIEntry(data.payload.index, data.payload.entry)
+						break
+					case 'message_deleted':
+						{
+							const el = document.querySelector(`[data-message-id="ai-${data.payload.index}"]`)
+							if (el) el.remove()
+						}
+						break
+					case 'typing_status':
+						setTypingStatus(data.payload?.typingList || [])
+						break
+					case 'stream_update':
+						{
+							const { messageId, slices } = data.payload || {}
+							const tracked = messageId && _streamingEntries.get(messageId)
+							if (tracked && Array.isArray(slices)) {
+								applyStreamSlices(tracked, slices)
+								updateStreamingEntryDOM(tracked)
+							}
+						}
+						break
+				}
+			})
+			ws.addEventListener('close', () => {
+				if (aiChatWs === ws) aiChatWs = null
+			})
+		}
+
+		async function findExistingChatForChar(charname) {
+			try {
+				const resp = await fetch('/api/parts/shells:chat/getchatlist', { credentials: 'include' })
+				if (!resp.ok) return null
+				const list = await resp.json()
+				if (!Array.isArray(list)) return null
+				// chat list returns summaries; find latest matching this char
+				const matches = list.filter(s => Array.isArray(s.chars) ? s.chars.includes(charname) : (s.chars && Object.keys(s.chars).includes(charname)))
+				if (!matches.length) return null
+				matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
+				return matches[0].chatid
+			} catch { return null }
+		}
+
+		async function enterAIChat(charname, opts = {}) {
+			if (!charname) return
+			// 清理其他模式
+			currentGroupId = null
+			currentChannelId = null
+			currentState = null
+			currentChannelOnlyId = null
+			channelOnlyLastTs = 0
+			if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+			closeAIChatWs()
+
+			currentAIChar = charname
+			currentMode = 'chars'
+			setActiveModeTab('chars')
+			document.getElementById('channel-name-display').textContent = charname
+			document.getElementById('messages').innerHTML = `<div class="dc-empty"><div class="loading loading-spinner"></div></div>`
+
+			// 确定 chatid：opts.chatid > URL hash > 复用最近 > 新建
+			let chatid = opts.chatid
+			if (!chatid) {
+				const hashRaw = window.location.hash.slice(1)
+				if (hashRaw.startsWith('aichat:')) chatid = hashRaw.slice('aichat:'.length)
+			}
+			if (!chatid && !opts.forceNew) chatid = await findExistingChatForChar(charname)
+
+			let needAddChar = false
+			if (!chatid) {
+				try {
+					const r = await fetch('/api/parts/shells:chat/new', {
+						method: 'POST', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({})
+					})
+					if (!r.ok) throw new Error(`HTTP ${r.status}`)
+					const data = await r.json()
+					chatid = data.chatid
+					needAddChar = true
+				} catch (e) {
+					document.getElementById('messages').innerHTML = `<div class="dc-empty"><div style="color:#ed4245">创建会话失败：${escapeHtml(e.message)}</div></div>`
+					return
+				}
+			} else {
+				// 检查是否已经包含该角色
+				try {
+					const cr = await fetch(`/api/parts/shells:chat/${chatid}/chars`, { credentials: 'include' })
+					const chars = cr.ok ? await cr.json() : []
+					if (Array.isArray(chars) && !chars.includes(charname)) needAddChar = true
+				} catch { needAddChar = true }
+			}
+
+			currentAIChatId = chatid
+			window.history.replaceState(null, '', `${location.pathname}${location.search}#aichat:${chatid}`)
+
+			if (needAddChar) {
+				try {
+					await fetch(`/api/parts/shells:chat/${chatid}/char`, {
+						method: 'POST', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ charname })
+					})
+				} catch { /* 角色加入失败时仍可继续 */ }
+			}
+
+			// 启用输入并连接 WS
+			enableComposer()
+			document.getElementById('message-input').placeholder = `给 ${charname} 发送消息（Enter 发送，Ctrl+Enter 换行）`
+			connectAIChatWs(chatid)
+			await loadAIChatLog()
+
+			// 右栏角色信息卡 + AI 介绍
+			const details = await getCharDetails(charname).catch(() => null)
+			renderCharInfoCardActive(charname, details)
+		}
+
+		async function renderCharInfoCardActive(name, details) {
+			const host = document.getElementById('info-card-host')
+			const info = details?.info || {}
+			const desc = info.description || info.summary || details?.description || '这个角色还没有自我介绍。'
+			const avatarUrl = info.avatar || details?.avatar || ''
+			const memberList = document.getElementById('member-list')
+			memberList.innerHTML = `
+				<div class="dc-member-group-title">AI 介绍</div>
+				<div style="padding: 0 16px 12px; color: var(--dc-text-normal); font-size: 13px; line-height: 1.55; white-space: pre-wrap;">${escapeHtml(desc)}</div>
+				<div class="dc-member-group-title">参与者</div>
+				<div class="dc-member-item" title="${escapeHtml(name)}">
+					<div class="dc-member-avatar-wrap">
+						<div class="dc-member-avatar" data-avatar-for="${escapeHtml(name)}" style="background:${avatarColor(name)};">
+							${avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" />` : escapeHtml(avatarInitial(name))}
+						</div>
+						<span class="dc-presence-dot dc-presence-online" title="在线"></span>
+					</div>
+					<div class="dc-member-name">${escapeHtml(name)}</div>
+				</div>
+				${myUsername ? `
+				<div class="dc-member-item" title="${escapeHtml(myUsername)}">
+					<div class="dc-member-avatar-wrap">
+						<div class="dc-member-avatar" data-avatar-for="${escapeHtml(myUsername)}" style="background:${avatarColor(myUsername)};">${escapeHtml(avatarInitial(myUsername))}</div>
+						<span class="dc-presence-dot dc-presence-online" title="在线"></span>
+					</div>
+					<div class="dc-member-name">${escapeHtml(myUsername)}</div>
+				</div>
+				` : ''}
+			`
+			host.innerHTML = `
+				<div class="dc-info-card">
+					<div class="dc-info-banner"></div>
+					<div class="dc-info-body">
+						<div class="dc-info-avatar" style="background:${avatarColor(name)};">
+							${avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" />` : escapeHtml(avatarInitial(name))}
+						</div>
+						<div class="dc-info-name">${escapeHtml(name)}</div>
+						<span class="dc-info-tag">AI 角色 · 1:1 对话</span>
+						<div class="dc-info-desc" style="margin-top:8px;">${escapeHtml(desc.length > 200 ? desc.slice(0, 200) + '…' : desc)}</div>
+					</div>
+				</div>
+			`
+			applyAvatarsTo(memberList)
+		}
+
+		async function sendAIChatMessage(content) {
+			if (!currentAIChatId || !currentAIChar) throw new Error('未选择 AI 角色')
+			const r = await fetch(`/api/parts/shells:chat/${currentAIChatId}/message`, {
+				method: 'POST', credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ reply: { content } })
+			})
+			if (!r.ok) {
+				const data = await r.json().catch(() => ({}))
+				throw new Error(data?.error || `HTTP ${r.status}`)
+			}
+			// 注意：服务器在 addUserReply -> handleAutoReply 中已自动触发回复，
+			// 不需要再调用 trigger-reply，否则会导致 AI 回复两次。
+		}
+
+		async function renderCharInfoCard(name, details) {
+			const host = document.getElementById('info-card-host')
+			const info = details?.info || {}
+			const desc = info.description || info.summary || details?.description || '这个角色还没有自我介绍。'
+			const avatarUrl = info.avatar || details?.avatar || ''
+			const memberList = document.getElementById('member-list')
+			memberList.innerHTML = `<div class="dc-member-group-title">AI 介绍</div>
+				<div style="padding: 0 16px 12px; color: var(--dc-text-normal); font-size: 13px; line-height: 1.55; white-space: pre-wrap;">${escapeHtml(desc)}</div>`
+			host.innerHTML = `
+				<div class="dc-info-card">
+					<div class="dc-info-banner"></div>
+					<div class="dc-info-body">
+						<div class="dc-info-avatar" style="background:${avatarColor(name)};">
+							${avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" />` : escapeHtml(avatarInitial(name))}
+						</div>
+						<div class="dc-info-name">${escapeHtml(name)}</div>
+						<span class="dc-info-tag">AI 角色</span>
+						<button class="dc-info-cta" data-char="${escapeHtml(name)}" style="margin-top:12px;width:100%;background:#5865f2;color:white;border:none;padding:9px 14px;border-radius:6px;font-weight:600;cursor:pointer;font-size:14px;transition:background 0.15s;">
+							💬 开始与 ${escapeHtml(name)} 聊天
+						</button>
+					</div>
+				</div>
+			`
+			const cta = host.querySelector('.dc-info-cta')
+			if (cta) {
+				cta.addEventListener('mouseenter', () => cta.style.background = '#4752c4')
+				cta.addEventListener('mouseleave', () => cta.style.background = '#5865f2')
+				cta.addEventListener('click', () => enterAIChat(name))
+			}
+		}
+
+		function renderGroupInfoCard(state) {
+			const host = document.getElementById('info-card-host')
+			const meta = state?.groupMeta || {}
+			const desc = meta.description || '这个群组还没有简介。'
+			host.innerHTML = `
+				<div class="dc-info-card">
+					<div class="dc-info-banner"></div>
+					<div class="dc-info-body">
+						<div class="dc-info-avatar" style="background:${avatarColor(meta.name || '?')};">
+							${escapeHtml(avatarInitial(meta.name || '?'))}
+						</div>
+						<div class="dc-info-name">${escapeHtml(meta.name || '群组')}</div>
+						<span class="dc-info-tag">群组</span>
+						<div class="dc-info-desc" style="margin-top:8px;">${escapeHtml(desc)}</div>
+					</div>
+				</div>
+			`
+		}
+
+		async function setMode(mode) {
+			currentMode = mode
+			setActiveModeTab(mode)
+			const container = document.getElementById('channel-list')
+			container.innerHTML = `<div class="dc-list-loading">加载中...</div>`
+			document.getElementById('member-list').innerHTML = ''
+			document.getElementById('info-card-host').innerHTML = ''
+
+			// 切换模式时停止轮询；保留当前模式的活动会话
+			const keepChannelSession = mode === 'channels' && currentChannelOnlyId
+			const keepAISession = mode === 'chars' && currentAIChatId
+			if (!keepChannelSession) {
+				if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+				currentChannelOnlyId = null
+				channelOnlyLastTs = 0
+			}
+			if (!keepAISession) clearAIChatState()
+			if (mode === 'chars' && !keepAISession) {
+				disableComposer('选择一个 AI 角色开始聊天...')
+				document.getElementById('messages').innerHTML = `<div class="dc-empty"><div class="dc-empty-icon">🤖</div><div style="color:var(--dc-text-bright);font-size:18px;font-weight:600;margin-bottom:8px;">AI 角色</div><div>从左侧列表选择一个 AI 角色开始对话</div></div>`
+				document.getElementById('channel-name-display').textContent = 'AI 角色'
+			} else if (mode === 'channels' && !keepChannelSession) {
+				disableComposer('选择对话后开始聊天...')
+				document.getElementById('messages').innerHTML = `<div class="dc-empty"><div class="dc-empty-icon">#</div><div style="color:var(--dc-text-bright);font-size:18px;font-weight:600;margin-bottom:8px;">选择一个频道</div><div>从左侧列表选择频道开始聊天</div></div>`
+				document.getElementById('channel-name-display').textContent = '频道'
+			}
+
+			if (mode === 'chars') {
+				const list = await loadCharsList()
+				renderCharsColumn(list)
+			} else if (mode === 'channels') {
+				const list = await loadChannelsList()
+				renderChannelsColumn(list)
+			} else if (mode === 'groups') {
+				// 还原群组模式：若有当前群组就刷新它
+				if (currentGroupId && currentState) {
+					renderChannelList(currentState)
+					renderMemberList(currentState)
+					renderGroupInfoCard(currentState)
+				} else {
+					container.innerHTML = `<div class="dc-list-loading">← 选择左侧的服务器</div>`
+				}
+			}
+		}
+
+		document.querySelectorAll('.dc-server-item[data-mode]').forEach(el => {
+			el.addEventListener('click', () => setMode(el.dataset.mode))
+		})
+
+		// 暴露给 selectGroup 调用，作为副作用钩子
+		window.__dcAfterSelectGroup = (state) => {
+			currentMode = 'groups'
+			setActiveModeTab('groups')
+			if (state) renderGroupInfoCard(state)
+		}
+
+		// ============================================================
+		// Profile hover card
+		// ============================================================
+		const hoverCard = document.getElementById('profile-hover-card')
+		let _hcHideTimer = null
+
+		async function showHoverCardFor(username, anchorEl) {
+			if (!username) return
+			clearTimeout(_hcHideTimer)
+			// 避免同一个目标重复触发：若卡片已在显示且用户名一致，则跳过
+			if (hoverCard.classList.contains('show') && hoverCard.dataset.uname === username) return
+			hoverCard.dataset.uname = username
+			const rect = anchorEl.getBoundingClientRect()
+			let left = rect.right + 8
+			let top = rect.top
+			if (left + 280 > window.innerWidth) left = rect.left - 288
+			if (top + 320 > window.innerHeight) top = window.innerHeight - 330
+			if (top < 8) top = 8
+			hoverCard.style.left = left + 'px'
+			hoverCard.style.top = top + 'px'
+
+			document.getElementById('hc-name').textContent = username
+			document.getElementById('hc-avatar-letter').textContent = avatarInitial(username)
+			document.getElementById('hc-avatar').style.background = avatarColor(username)
+			document.getElementById('hc-avatar').dataset.uname = username
+			document.getElementById('hc-bio').textContent = '加载中...'
+
+			hoverCard.classList.add('show')
+
+			// 异步加载头像 + 在线状态
+			const [avatar, statuses] = await Promise.all([
+				fetchUserAvatar(username),
+				fetchBulkPresence([username])
+			])
+			if (document.getElementById('hc-avatar').dataset.uname !== username) return
+			if (avatar) {
+				document.getElementById('hc-avatar').innerHTML = `<img src="${escapeHtml(avatar)}" alt=""/><span class="dc-hc-presence-dot" id="hc-presence"></span>`
+			}
+			const status = statuses[username]?.status || 'offline'
+			const dot = document.getElementById('hc-presence')
+			if (dot) {
+				dot.classList.remove('online', 'idle')
+				if (status === 'online' || status === 'idle') dot.classList.add(status)
+			}
+			document.getElementById('hc-status').textContent = PRESENCE_LABEL[status] || '离线'
+			document.getElementById('hc-bio').textContent = '这位用户暂无简介。'
+		}
+
+		function hideHoverCard() {
+			clearTimeout(_hcHideTimer)
+			_hcHideTimer = setTimeout(() => {
+				hoverCard.classList.remove('show')
+				delete hoverCard.dataset.uname
+			}, 220)
+		}
+
+		hoverCard.addEventListener('mouseenter', () => clearTimeout(_hcHideTimer))
+		hoverCard.addEventListener('mouseleave', hideHoverCard)
+
+		function getAnchorUsername(target) {
+			if (!target) return null
+			let uname = target.dataset.avatarFor
+			if (!uname) {
+				if (target.classList.contains('dc-message-author') || target.classList.contains('dc-system-author'))
+					uname = target.textContent.trim()
+				else if (target.classList.contains('dc-member-item'))
+					uname = target.querySelector('[data-avatar-for]')?.dataset.avatarFor
+			}
+			return uname && uname !== '?' ? uname : null
+		}
+
+		document.addEventListener('mouseover', (e) => {
+			const target = e.target.closest('[data-avatar-for], .dc-message-author, .dc-member-item, .dc-system-author')
+			if (!target) return
+			// 如果鼠标从同一个 anchor 的内部子元素之间移动，relatedTarget 仍在 target 内 → 跳过
+			if (target.contains(e.relatedTarget)) return
+			const uname = getAnchorUsername(target)
+			if (uname) showHoverCardFor(uname, target)
+		})
+		document.addEventListener('mouseout', (e) => {
+			const target = e.target.closest('[data-avatar-for], .dc-message-author, .dc-member-item, .dc-system-author')
+			if (!target) return
+			// 鼠标仍在 target 内移动（移到子元素），不要隐藏
+			if (target.contains(e.relatedTarget)) return
+			// 鼠标移到了悬浮卡上，不要隐藏
+			if (hoverCard.contains(e.relatedTarget)) return
+			hideHoverCard()
+		})
+
+		// ============================================================
+		// 设置弹窗：通用打开/关闭工具
+		// ============================================================
+		const dcsModal = document.getElementById('dc-settings-modal')
+
+		function openDcsModal({ title, subtitle, body, footer }) {
+			document.getElementById('dcs-title').textContent = title || '设置'
+			document.getElementById('dcs-subtitle').textContent = subtitle || ''
+			document.getElementById('dcs-body').innerHTML = body || ''
+			document.getElementById('dcs-footer').innerHTML = footer || ''
+			if (!dcsModal.open) dcsModal.showModal()
+		}
+		function closeDcsModal() {
+			try { dcsModal.close() } catch { }
+		}
+		function dcsShowMsg(type, msg) {
+			const body = document.getElementById('dcs-body')
+			const cls = type === 'error' ? 'dcs-error' : 'dcs-success'
+			let host = body.querySelector(`.${cls}`)
+			if (!host) {
+				host = document.createElement('div')
+				host.className = cls
+				body.prepend(host)
+			}
+			host.textContent = msg
+			host.style.display = 'block'
+			if (type === 'success') setTimeout(() => { host.style.display = 'none' }, 2500)
+		}
+
+		// ============================================================
+		// 创建频道弹窗（Discord 风格）
+		// ============================================================
+		function openCreateChannelModal() {
+			openDcsModal({
+				title: '创建频道',
+				subtitle: '创建一个新的频道用于发布内容',
+				body: `
+					<div class="dcs-section">
+						<h4>基本信息</h4>
+						<div class="dcs-field">
+							<label>频道名称 <span style="color:#f23f42">*</span></label>
+							<input type="text" id="cc-name" class="dcs-input" maxlength="50" placeholder="例如：项目公告" />
+						</div>
+						<div class="dcs-field">
+							<label>频道描述</label>
+							<textarea id="cc-desc" class="dcs-textarea" maxlength="200" placeholder="简要介绍这个频道的用途"></textarea>
+						</div>
+						<div class="dcs-field">
+							<label>频道类型</label>
+							<select id="cc-type" class="dcs-select">
+								<option value="announcement">公告 — 重要通知</option>
+								<option value="news">新闻 — 资讯发布</option>
+								<option value="updates">更新 — 项目更新</option>
+							</select>
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>谁可以加入</h4>
+						<div class="dcs-toggle-row">
+							<div>
+								<div class="dcs-tr-title">公开频道</div>
+								<div class="dcs-tr-desc">所有人可见与订阅；关闭则仅限受邀者</div>
+							</div>
+							<input type="checkbox" id="cc-public" class="dcs-checkbox" checked />
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>默认成员权限</h4>
+						<div class="dcs-toggle-row">
+							<div>
+								<div class="dcs-tr-title">允许发布消息</div>
+								<div class="dcs-tr-desc">订阅者可以在频道发送消息</div>
+							</div>
+							<input type="checkbox" id="cc-can-post" class="dcs-checkbox" />
+						</div>
+						<div class="dcs-toggle-row">
+							<div>
+								<div class="dcs-tr-title">允许评论</div>
+								<div class="dcs-tr-desc">订阅者可以对消息发表评论</div>
+							</div>
+							<input type="checkbox" id="cc-can-comment" class="dcs-checkbox" />
+						</div>
+					</div>
+				`,
+				footer: `
+					<button class="dcs-btn dcs-btn-cancel" id="cc-cancel">取消</button>
+					<button class="dcs-btn dcs-btn-primary" id="cc-submit">创建频道</button>
+				`
+			})
+			document.getElementById('cc-cancel').addEventListener('click', closeDcsModal)
+			document.getElementById('cc-submit').addEventListener('click', async () => {
+				const name = document.getElementById('cc-name').value.trim()
+				if (!name) { dcsShowMsg('error', '请填写频道名称'); return }
+				const description = document.getElementById('cc-desc').value.trim()
+				const type = document.getElementById('cc-type').value
+				const isPublic = document.getElementById('cc-public').checked
+				const canPostAll = document.getElementById('cc-can-post').checked
+				const canComment = document.getElementById('cc-can-comment').checked
+				const submitBtn = document.getElementById('cc-submit')
+				submitBtn.disabled = true; submitBtn.textContent = '创建中...'
+				try {
+					const resp = await fetch('/api/parts/shells:channels/create', {
+						method: 'POST', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							name, description, type,
+							permissions: {
+								isPublic,
+								canComment,
+								// canPost 留空表示仅 owner，勾选则用 ['*'] 表示所有订阅者
+								canPost: canPostAll ? ['*'] : undefined
+							}
+						})
+					})
+					const data = await resp.json()
+					if (!resp.ok || !data.success) throw new Error(data.error || '创建失败')
+					dcsShowMsg('success', '频道创建成功')
+					channelsCache = null
+					setTimeout(async () => {
+						closeDcsModal()
+						const list = await loadChannelsList()
+						renderChannelsColumn(list)
+						const newId = data.channel?.channelId
+						if (newId) await selectChannelOnly(newId, data.channel)
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '创建失败: ' + err.message)
+					submitBtn.disabled = false; submitBtn.textContent = '创建频道'
+				}
+			})
+		}
+
+		// ============================================================
+		// AI 角色聊天设置弹窗
+		// ============================================================
+		async function openAIChatSettingsModal(chatid) {
+			const charname = currentAIChar || '?'
+			openDcsModal({
+				title: 'AI 聊天设置',
+				subtitle: `与 ${charname} 的会话`,
+				body: `
+					<div class="dcs-section">
+						<h4>会话信息</h4>
+						<div class="dcs-info-row"><span>角色</span><span>${escapeHtml(charname)}</span></div>
+						<div class="dcs-info-row"><span>会话 ID</span><span>${escapeHtml(chatid)}</span></div>
+						<div class="dcs-info-row"><span>消息数</span><span>${aiChatLogLength}</span></div>
+					</div>
+					<div class="dcs-section">
+						<h4>快捷操作</h4>
+						<div class="dcs-toggle-row" id="aics-export" style="cursor:pointer;">
+							<div>
+								<div class="dcs-tr-title">导出会话</div>
+								<div class="dcs-tr-desc">将完整对话历史下载为文件</div>
+							</div>
+							<span style="color:#5865f2;">↓</span>
+						</div>
+						<div class="dcs-toggle-row" id="aics-advanced" style="cursor:pointer;">
+							<div>
+								<div class="dcs-tr-title">高级设置（角色 / 世界 / 插件）</div>
+								<div class="dcs-tr-desc">在新标签页打开完整聊天设置</div>
+							</div>
+							<span style="color:#5865f2;">↗</span>
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>危险区域</h4>
+						<div style="font-size:13px;color:#949ba4;margin-bottom:8px;">删除此会话将永久移除所有消息，此操作不可恢复。</div>
+					</div>
+				`,
+				footer: `
+					<button class="dcs-btn dcs-btn-danger" id="aics-delete">删除会话</button>
+					<button class="dcs-btn dcs-btn-cancel" id="aics-close">关闭</button>
+				`
+			})
+			document.getElementById('aics-close').addEventListener('click', closeDcsModal)
+			document.getElementById('aics-export').addEventListener('click', () => {
+				window.open(`/virtual_files/parts/shells:chat/${encodeURIComponent(chatid)}`, '_blank', 'noopener')
+			})
+			document.getElementById('aics-advanced').addEventListener('click', () => {
+				window.open(`/parts/shells:chat/#${chatid}`, '_blank', 'noopener')
+			})
+			document.getElementById('aics-delete').addEventListener('click', async () => {
+				if (!confirm(`确认删除与 ${charname} 的会话？此操作不可恢复。`)) return
+				try {
+					const r = await fetch('/api/parts/shells:chat/delete', {
+						method: 'DELETE', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ chatids: [chatid] })
+					})
+					if (!r.ok) throw new Error('删除失败')
+					dcsShowMsg('success', '会话已删除')
+					setTimeout(() => {
+						closeDcsModal()
+						clearAIChatState()
+						window.location.hash = ''
+						setMode('chars')
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '删除失败: ' + err.message)
+				}
+			})
+		}
+
+		// ============================================================
+		// 频道设置弹窗（独立频道）
+		// ============================================================
+		async function openChannelSettingsModal(channelId) {
+			openDcsModal({
+				title: '频道设置',
+				subtitle: '加载中...',
+				body: `<div style="text-align:center;color:var(--dc-text-muted);padding:40px;">加载中...</div>`,
+				footer: ''
+			})
+			let detail = null
+			try {
+				const r = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}`, { credentials: 'include' })
+				const data = await r.json()
+				if (!r.ok || !data.success) throw new Error(data.error || '加载失败')
+				detail = data.channel
+			} catch (err) {
+				openDcsModal({
+					title: '频道设置', subtitle: '',
+					body: `<div class="dcs-error" style="display:block;">加载失败: ${escapeHtml(err.message)}</div>`,
+					footer: `<span></span><button class="dcs-btn dcs-btn-cancel" id="cs-close">关闭</button>`
+				})
+				document.getElementById('cs-close').addEventListener('click', closeDcsModal)
+				return
+			}
+
+			const isOwner = detail.owner === myUsername
+			const isAdmin = isOwner || (detail.admins || []).includes(myUsername)
+
+			openDcsModal({
+				title: '频道设置',
+				subtitle: `# ${detail.name}`,
+				body: `
+					<div class="dcs-section">
+						<h4>基本信息</h4>
+						<div class="dcs-field">
+							<label>频道名称</label>
+							<input type="text" id="cs-name" class="dcs-input" value="${escapeHtml(detail.name)}" ${isAdmin ? '' : 'disabled'} maxlength="50" />
+						</div>
+						<div class="dcs-field">
+							<label>频道描述</label>
+							<textarea id="cs-desc" class="dcs-textarea" ${isAdmin ? '' : 'disabled'} maxlength="200">${escapeHtml(detail.description || '')}</textarea>
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>谁可以加入</h4>
+						<div class="dcs-toggle-row">
+							<div>
+								<div class="dcs-tr-title">公开频道</div>
+								<div class="dcs-tr-desc">所有人可见与订阅</div>
+							</div>
+							<input type="checkbox" id="cs-public" class="dcs-checkbox" ${detail.permissions?.isPublic ? 'checked' : ''} ${isAdmin ? '' : 'disabled'} />
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>默认成员权限</h4>
+						<div class="dcs-toggle-row">
+							<div>
+								<div class="dcs-tr-title">允许评论</div>
+								<div class="dcs-tr-desc">订阅者可对消息进行评论</div>
+							</div>
+							<input type="checkbox" id="cs-comment" class="dcs-checkbox" ${detail.permissions?.canComment ? 'checked' : ''} ${isAdmin ? '' : 'disabled'} />
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>频道信息</h4>
+						<div class="dcs-info-row"><span>所有者</span><span>${escapeHtml(detail.owner || '?')}</span></div>
+						<div class="dcs-info-row"><span>订阅者数</span><span>${(detail.subscribers || []).length}</span></div>
+						<div class="dcs-info-row"><span>频道 ID</span><span>${escapeHtml(detail.channelId)}</span></div>
+					</div>
+					${!isAdmin ? `<div style="font-size:12px;color:#949ba4;text-align:center;padding:8px;">你不是该频道管理员，无法修改设置</div>` : ''}
+				`,
+				footer: isAdmin ? `
+					<button class="dcs-btn dcs-btn-danger" id="cs-delete">${isOwner ? '删除频道' : '取消订阅'}</button>
+					<div style="display:flex;gap:8px;">
+						<button class="dcs-btn dcs-btn-cancel" id="cs-cancel">取消</button>
+						<button class="dcs-btn dcs-btn-primary" id="cs-save">保存修改</button>
+					</div>
+				` : `
+					<button class="dcs-btn dcs-btn-danger" id="cs-unsub">取消订阅</button>
+					<button class="dcs-btn dcs-btn-cancel" id="cs-close">关闭</button>
+				`
+			})
+			document.getElementById('cs-cancel')?.addEventListener('click', closeDcsModal)
+			document.getElementById('cs-close')?.addEventListener('click', closeDcsModal)
+			document.getElementById('cs-save')?.addEventListener('click', async () => {
+				const name = document.getElementById('cs-name').value.trim()
+				const description = document.getElementById('cs-desc').value.trim()
+				const isPublic = document.getElementById('cs-public').checked
+				const canComment = document.getElementById('cs-comment').checked
+				if (!name) { dcsShowMsg('error', '请填写频道名称'); return }
+				try {
+					const r = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}`, {
+						method: 'PUT', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							name, description,
+							permissions: { ...(detail.permissions || {}), isPublic, canComment }
+						})
+					})
+					const data = await r.json()
+					if (!r.ok || !data.success) throw new Error(data.error || '保存失败')
+					dcsShowMsg('success', '频道设置已保存')
+					channelsCache = null
+					setTimeout(async () => {
+						closeDcsModal()
+						const list = await loadChannelsList()
+						renderChannelsColumn(list)
+						document.getElementById('channel-name-display').textContent = name
+						renderChannelOnlyInfoCard({ ...detail, name, description })
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '保存失败: ' + err.message)
+				}
+			})
+			const doDelete = async () => {
+				if (!confirm(isOwner ? `确认删除频道 #${detail.name}？此操作不可恢复。` : `确认取消订阅频道 #${detail.name}？`)) return
+				try {
+					if (isOwner) {
+						const r = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}`, { method: 'DELETE', credentials: 'include' })
+						const data = await r.json()
+						if (!r.ok || !data.success) throw new Error(data.error || '删除失败')
+					} else {
+						const r = await fetch(`/api/parts/shells:channels/${encodeURIComponent(channelId)}/unsubscribe`, { method: 'POST', credentials: 'include' })
+						if (!r.ok) throw new Error('取消订阅失败')
+					}
+					dcsShowMsg('success', isOwner ? '频道已删除' : '已取消订阅')
+					channelsCache = null
+					setTimeout(async () => {
+						closeDcsModal()
+						currentChannelOnlyId = null
+						if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+						const list = await loadChannelsList()
+						renderChannelsColumn(list)
+						document.getElementById('channel-name-display').textContent = '频道'
+						document.getElementById('messages').innerHTML = `<div class="dc-empty"><div class="dc-empty-icon">#</div><h2>选择一个频道</h2><p>从左侧列表选择频道开始聊天</p></div>`
+						document.getElementById('info-card-host').innerHTML = ''
+						document.getElementById('member-list').innerHTML = `<div style="padding:16px;color:var(--dc-text-muted);font-size:14px;text-align:center;">未选择对话</div>`
+						window.location.hash = ''
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '操作失败: ' + err.message)
+				}
+			}
+			document.getElementById('cs-delete')?.addEventListener('click', doDelete)
+			document.getElementById('cs-unsub')?.addEventListener('click', doDelete)
+		}
+
+		// ============================================================
+		// 群组设置弹窗
+		// ============================================================
+		async function openGroupSettingsModal(groupId) {
+			openDcsModal({
+				title: '群组设置',
+				subtitle: '加载中...',
+				body: `<div style="text-align:center;color:var(--dc-text-muted);padding:40px;">加载中...</div>`,
+				footer: ''
+			})
+			let state = null
+			try {
+				state = await getGroupState(groupId)
+			} catch (err) {
+				openDcsModal({
+					title: '群组设置', subtitle: '',
+					body: `<div class="dcs-error" style="display:block;">加载失败: ${escapeHtml(err.message)}</div>`,
+					footer: `<span></span><button class="dcs-btn dcs-btn-cancel" id="gs-close">关闭</button>`
+				})
+				document.getElementById('gs-close').addEventListener('click', closeDcsModal)
+				return
+			}
+
+			const isAdmin = (state.myRoles || []).includes('admin')
+			const meta = state.groupMeta || {}
+			const settings = state.groupSettings || {}
+			const memberCount = state.memberCount || (state.members ? Object.values(state.members).filter(m => m?.status === 'active').length : 0)
+
+			openDcsModal({
+				title: '群组设置',
+				subtitle: meta.name || '群组',
+				body: `
+					<div class="dcs-section">
+						<h4>基本信息</h4>
+						<div class="dcs-field">
+							<label>群组名称</label>
+							<input type="text" id="gs-name" class="dcs-input" value="${escapeHtml(meta.name || '')}" ${isAdmin ? '' : 'disabled'} maxlength="50" />
+						</div>
+						<div class="dcs-field">
+							<label>群组描述</label>
+							<textarea id="gs-desc" class="dcs-textarea" ${isAdmin ? '' : 'disabled'} maxlength="200">${escapeHtml(meta.desc || '')}</textarea>
+						</div>
+					</div>
+					<div class="dcs-section">
+						<h4>谁可以加入</h4>
+						<div class="dcs-field">
+							<label>入群策略</label>
+							<select id="gs-policy" class="dcs-select" ${isAdmin ? '' : 'disabled'}>
+								<option value="open" ${settings.joinPolicy === 'open' ? 'selected' : ''}>公开 — 任何人可加入</option>
+								<option value="invite-only" ${settings.joinPolicy === 'invite-only' ? 'selected' : ''}>仅邀请 — 仅受邀者可加入</option>
+								<option value="pow" ${settings.joinPolicy === 'pow' ? 'selected' : ''}>需要 PoW 验证</option>
+							</select>
+						</div>
+						${settings.joinPolicy === 'pow' || true ? `
+						<div class="dcs-field" id="gs-pow-wrap" style="${settings.joinPolicy === 'pow' ? '' : 'display:none;'}">
+							<label>PoW 难度（1-10）</label>
+							<input type="number" id="gs-pow" class="dcs-input" value="${settings.powDifficulty || 4}" min="1" max="10" ${isAdmin ? '' : 'disabled'} />
+						</div>` : ''}
+					</div>
+					<div class="dcs-section">
+						<h4>群组信息</h4>
+						<div class="dcs-info-row"><span>成员数</span><span>${memberCount}</span></div>
+						<div class="dcs-info-row"><span>群组 ID</span><span>${escapeHtml(groupId)}</span></div>
+						<div class="dcs-info-row"><span>你的角色</span><span>${(state.myRoles || ['@everyone']).join(' / ')}</span></div>
+					</div>
+					${!isAdmin ? `<div style="font-size:12px;color:#949ba4;text-align:center;padding:8px;">你不是管理员，无法修改群组设置</div>` : `
+					<div class="dcs-section">
+						<h4>高级管理</h4>
+						<div class="dcs-toggle-row" id="gs-advanced" style="cursor:pointer;">
+							<div>
+								<div class="dcs-tr-title">权限与角色管理</div>
+								<div class="dcs-tr-desc">在新标签页打开角色 / 频道权限编辑器</div>
+							</div>
+							<span style="color:#5865f2;">↗</span>
+						</div>
+					</div>
+					`}
+				`,
+				footer: isAdmin ? `
+					<button class="dcs-btn dcs-btn-danger" id="gs-delete">删除群组</button>
+					<div style="display:flex;gap:8px;">
+						<button class="dcs-btn dcs-btn-cancel" id="gs-cancel">取消</button>
+						<button class="dcs-btn dcs-btn-primary" id="gs-save">保存修改</button>
+					</div>
+				` : `
+					<span></span>
+					<button class="dcs-btn dcs-btn-cancel" id="gs-close">关闭</button>
+				`
+			})
+			document.getElementById('gs-cancel')?.addEventListener('click', closeDcsModal)
+			document.getElementById('gs-close')?.addEventListener('click', closeDcsModal)
+			document.getElementById('gs-policy')?.addEventListener('change', (e) => {
+				const wrap = document.getElementById('gs-pow-wrap')
+				if (wrap) wrap.style.display = e.target.value === 'pow' ? '' : 'none'
+			})
+			document.getElementById('gs-advanced')?.addEventListener('click', () => {
+				window.open(`/parts/shells:chat/group.html#${groupId}`, '_blank', 'noopener')
+			})
+			document.getElementById('gs-save')?.addEventListener('click', async () => {
+				const name = document.getElementById('gs-name').value.trim()
+				const desc = document.getElementById('gs-desc').value.trim()
+				const joinPolicy = document.getElementById('gs-policy').value
+				const powDifficulty = Number.parseInt(document.getElementById('gs-pow')?.value, 10) || 4
+				if (!name) { dcsShowMsg('error', '请填写群组名称'); return }
+				try {
+					const r1 = await fetch(`/api/parts/shells:chat/${groupId}/meta`, {
+						method: 'PUT', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ name, desc })
+					})
+					if (!r1.ok) throw new Error('保存基本信息失败')
+					const r2 = await fetch(`/api/parts/shells:chat/${groupId}/settings`, {
+						method: 'PUT', credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ joinPolicy, powDifficulty })
+					})
+					if (!r2.ok) throw new Error('保存策略失败')
+					dcsShowMsg('success', '群组设置已保存')
+					setTimeout(async () => {
+						closeDcsModal()
+						await loadGroups()
+						if (currentGroupId === groupId) {
+							document.getElementById('group-name-display').textContent = name
+						}
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '保存失败: ' + err.message)
+				}
+			})
+			document.getElementById('gs-delete')?.addEventListener('click', async () => {
+				if (!confirm(`确认删除群组 ${meta.name}？此操作不可恢复。`)) return
+				try {
+					const r = await fetch(`/api/parts/shells:chat/${groupId}`, { method: 'DELETE', credentials: 'include' })
+					const data = await r.json()
+					if (!r.ok || !data.success) throw new Error(data.error || '删除失败')
+					dcsShowMsg('success', '群组已删除')
+					setTimeout(async () => {
+						closeDcsModal()
+						currentGroupId = null
+						await loadGroups()
+						setMode('chars')
+						window.location.hash = ''
+					}, 600)
+				} catch (err) {
+					dcsShowMsg('error', '删除失败: ' + err.message)
+				}
+			})
+		}
+
+		// ============ 初始化 ============
+		async function init() {
+			await loadMe()
+			await loadGroups()
+
+			// 处理 URL 查询参数与 hash 路由
+			const urlParams = new URLSearchParams(window.location.search)
+			const charParam = urlParams.get('char')
+
+			const { groupId, channelId } = parseHash()
+			const hashRaw = window.location.hash.slice(1)
+
+			// 已存在更具体的 hash 路由时优先 hash（用户当前导航位置），仅在无 hash 时使用 ?char=
+			const hasSpecificHash = hashRaw.startsWith('aichat:') || hashRaw.startsWith('channel:') ||
+				(groupId && groups.find(g => g.groupId === groupId))
+
+			if (charParam && !hasSpecificHash) {
+				// 切换到 AI 角色模式并直接进入聊天
+				await setMode('chars')
+				await loadCharsList()
+				document.querySelectorAll('#channel-list .dc-channel-item').forEach(el => {
+					el.classList.toggle('active', el.dataset.char === charParam)
+				})
+				await enterAIChat(charParam)
+			} else if (hashRaw.startsWith('aichat:')) {
+				// 从 hash 恢复 AI 聊天会话
+				await setMode('chars')
+				const chatid = hashRaw.slice('aichat:'.length)
+				try {
+					const cr = await fetch(`/api/parts/shells:chat/${chatid}/chars`, { credentials: 'include' })
+					const chars = cr.ok ? await cr.json() : []
+					if (chars.length) await enterAIChat(chars[0], { chatid })
+				} catch { }
+			} else if (hashRaw.startsWith('channel:')) {
+				// 直链频道：#channel:ID
+				await setMode('channels')
+				const channelOnlyId = hashRaw.slice('channel:'.length)
+				const list = await loadChannelsList()
+				const meta = list.find(c => (c.channelId || c.id) === channelOnlyId)
+				if (channelOnlyId) await selectChannelOnly(channelOnlyId, meta)
+			} else if (groupId) {
+				// 注：原先这里限制了 `groups.find(...)`，导致 LAN 设备/新登录用户
+				// 通过 "加入群组" 输入 groupId 后跳转到 #groupId 时，因为还不在
+				// 自己的群组列表中而被 fallback 到 AI 面板，自动加群流程被吞掉。
+				// 直接交给 selectGroup —— 它内部会自动 getGroupState →
+				// 若非成员则 joinGroup() 再 re-fetch，并按需弹出打招呼。
+				// 错误（不存在 / 无权限 / PoW 等）由 selectGroup 内部 alert 提示。
+				await selectGroup(groupId, channelId)
+			} else {
+				// 默认显示 AI 角色面板
+				await setMode('chars')
+			}
+		}
+
+		window.addEventListener('hashchange', () => {
+			const hashRaw = window.location.hash.slice(1)
+			if (hashRaw.startsWith('aichat:')) return // 仅同步 URL，会话状态不重载
+			if (hashRaw.startsWith('channel:')) {
+				const id = hashRaw.slice('channel:'.length)
+				if (id && id !== currentChannelOnlyId) selectChannelOnly(id)
+				return
+			}
+			const { groupId, channelId } = parseHash()
+			if (groupId && groupId !== currentGroupId) {
+				selectGroup(groupId, channelId)
+			} else if (channelId && channelId !== currentChannelId && currentState?.channels?.[channelId]) {
+				selectChannel(channelId)
+			}
+		})
+
+		init()
+	</script>
+</body>
+
+</html>

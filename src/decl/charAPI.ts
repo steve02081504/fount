@@ -169,13 +169,11 @@ export class CharAPI_t {
 			 */
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
 			/**
-			 * 新消息到达时触发，角色决定是否主动发言。
-			 * 返回 true 表示发言，false 表示不发言。
-			 * 典型实现：return Math.random() < (1 / onlineCount) * frequency * 2
-			 * @param {object} event - 事件上下文 { chatReplyRequest: chatReplyRequest_t, onlineCount: number }
-			 * @returns {Promise<boolean>}
+			 * 获取回复频率。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @returns {Promise<number>} - 回复频率。
 			 */
-			onMessage?: (event: { chatReplyRequest: chatReplyRequest_t, onlineCount: number }) => Promise<boolean>
+			GetReplyFrequency?: (arg: chatReplyRequest_t) => Promise<number>
 			/**
 			 * 编辑消息。
 			 * @param {object} arg - 参数对象。

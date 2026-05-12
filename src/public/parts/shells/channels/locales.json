@@ -1,0 +1,84 @@
+{
+	"zh-CN": {
+		"name": "频道",
+		"description": "频道管理系统",
+		"channels": {
+			"title": "频道",
+			"create": "创建频道",
+			"subscribe": "订阅",
+			"unsubscribe": "取消订阅",
+			"settings": "频道设置",
+			"list": "频道列表",
+			"members": "成员",
+			"messages": "消息",
+			"permissions": "权限设置",
+			"type": {
+				"announcement": "公告",
+				"news": "新闻",
+				"updates": "更新"
+			},
+			"role": {
+				"owner": "所有者",
+				"admin": "管理员",
+				"moderator": "版主",
+				"member": "成员",
+				"subscriber": "订阅者"
+			},
+			"errors": {
+				"notFound": "频道不存在",
+				"noPermission": "权限不足",
+				"alreadySubscribed": "已订阅该频道",
+				"notSubscribed": "未订阅该频道"
+			},
+			"success": {
+				"created": "频道创建成功",
+				"updated": "频道更新成功",
+				"deleted": "频道删除成功",
+				"subscribed": "订阅成功",
+				"unsubscribed": "取消订阅成功",
+				"posted": "消息发布成功"
+			}
+		}
+	},
+	"en-US": {
+		"name": "Channels",
+		"description": "Channel management system",
+		"channels": {
+			"title": "Channels",
+			"create": "Create Channel",
+			"subscribe": "Subscribe",
+			"unsubscribe": "Unsubscribe",
+			"settings": "Channel Settings",
+			"list": "Channel List",
+			"members": "Members",
+			"messages": "Messages",
+			"permissions": "Permissions",
+			"type": {
+				"announcement": "Announcement",
+				"news": "News",
+				"updates": "Updates"
+			},
+			"role": {
+				"owner": "Owner",
+				"admin": "Admin",
+				"moderator": "Moderator",
+				"member": "Member",
+				"subscriber": "Subscriber"
+			},
+			"errors": {
+				"notFound": "Channel not found",
+				"noPermission": "Permission denied",
+				"alreadySubscribed": "Already subscribed",
+				"notSubscribed": "Not subscribed"
+			},
+			"success": {
+				"created": "Channel created successfully",
+				"updated": "Channel updated successfully",
+				"deleted": "Channel deleted successfully",
+				"subscribed": "Subscribed successfully",
+				"unsubscribed": "Unsubscribed successfully",
+				"posted": "Message posted successfully"
+			}
+		}
+	}
+}

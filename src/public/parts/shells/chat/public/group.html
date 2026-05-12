@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>群组聊天</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<style>
+		.chat-container {
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+		}
+
+		.chat-header {
+			flex-shrink: 0;
+			border-bottom: 1px solid var(--color-base-300);
+		}
+
+		.chat-body {
+			flex: 1;
+			display: flex;
+			overflow: hidden;
+		}
+
+		.message-area {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.messages {
+			flex: 1;
+			overflow-y: auto;
+			padding: 1rem;
+		}
+
+		.message-input-area {
+			flex-shrink: 0;
+			border-top: 1px solid var(--color-base-300);
+			padding: 1rem;
+		}
+
+		.member-list {
+			width: 220px;
+			border-left: 1px solid var(--color-base-300);
+			overflow-y: auto;
+		}
+
+		@media (max-width: 768px) {
+			.member-list {
+				display: none;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chat-container">
+		<!-- 顶部导航 -->
+		<div class="chat-header navbar bg-base-200">
+			<div class="navbar-start">
+				<a href="/parts/shells:home" class="btn btn-ghost">
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+					</svg>
+				</a>
+				<div class="flex items-center gap-2">
+					<span class="badge badge-primary badge-sm">群组</span>
+					<h1 class="text-xl font-bold" id="group-name">加载中...</h1>
+					<span class="text-xs opacity-50" id="group-member-count"></span>
+				</div>
+			</div>
+			<div class="navbar-end">
+				<button id="group-settings-btn" class="btn btn-ghost btn-circle hidden" title="群组设置">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+					</svg>
+				</button>
+			</div>
+		</div>
+
+		<!-- 主体区域 -->
+		<div class="chat-body">
+			<!-- 消息区域 -->
+			<div class="message-area">
+				<div class="messages" id="messages-container">
+					<div class="text-center py-8 text-base-content/50">
+						加载中...
+					</div>
+				</div>
+
+				<!-- 消息输入 -->
+				<div class="message-input-area relative">
+					<form id="message-form" class="flex gap-2 items-center">
+						<input type="file" id="image-upload" class="hidden" accept="image/*" />
+						<button type="button" id="group-image-button" class="btn btn-ghost btn-circle btn-sm" title="上传图片">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+							</svg>
+						</button>
+						<input type="text" id="message-input" class="input input-bordered flex-1" placeholder="输入消息..." disabled />
+						<button type="button" id="group-sticker-button" class="btn btn-ghost btn-circle btn-sm" title="贴纸">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+							</svg>
+						</button>
+						<button type="button" id="group-emoji-button" class="btn btn-ghost btn-circle btn-sm" title="表情">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</button>
+						<button type="submit" class="btn btn-primary" disabled>发送</button>
+					</form>
+					<!-- 贴纸选择器 -->
+					<div id="group-sticker-picker" class="absolute bottom-14 right-28 bg-base-200 rounded-lg shadow-xl p-4 w-80 max-h-80 overflow-y-auto z-50 hidden">
+						<div class="flex justify-between items-center mb-2">
+							<h3 class="font-bold">选择贴纸</h3>
+							<button id="close-group-sticker" class="btn btn-ghost btn-xs btn-circle">✕</button>
+						</div>
+						<div id="sticker-grid" class="grid grid-cols-4 gap-2">
+							<div class="text-center py-4 col-span-4 opacity-50 text-sm">加载中...</div>
+						</div>
+					</div>
+					<div id="group-emoji-picker" class="absolute bottom-14 right-16 bg-base-200 rounded-lg shadow-xl p-4 w-80 max-h-80 overflow-y-auto z-50 hidden">
+						<div class="flex justify-between items-center mb-2">
+							<h3 class="font-bold">选择表情</h3>
+							<button id="close-group-emoji" class="btn btn-ghost btn-xs btn-circle">✕</button>
+						</div>
+						<div class="tabs tabs-boxed mb-2" id="emoji-tabs">
+							<a class="tab tab-sm tab-active" data-tab="face">😀 表情</a>
+							<a class="tab tab-sm" data-tab="gesture">👋 手势</a>
+							<a class="tab tab-sm" data-tab="heart">❤️ 心</a>
+							<a class="tab tab-sm" data-tab="animal">🐱 动物</a>
+							<a class="tab tab-sm" data-tab="food">🍔 食物</a>
+							<a class="tab tab-sm" data-tab="object">⚽ 物品</a>
+						</div>
+						<div id="emoji-grid" class="grid grid-cols-8 gap-1"></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 成员列表 -->
+			<div class="member-list bg-base-100">
+				<div class="p-4">
+					<h3 class="font-bold mb-2">成员</h3>
+					<div id="member-list-container">
+						<div class="loading loading-spinner loading-sm"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 群组设置模态框 -->
+	<dialog id="group-settings-modal" class="modal">
+		<div class="modal-box max-w-lg">
+			<h3 class="font-bold text-lg mb-4">群组设置</h3>
+			<div class="space-y-4">
+				<div class="form-control">
+					<label class="label"><span class="label-text">群组名称</span></label>
+					<input type="text" id="settings-group-name" class="input input-bordered" maxlength="50" />
+				</div>
+				<div class="form-control">
+					<label class="label"><span class="label-text">群组描述</span></label>
+					<textarea id="settings-group-desc" class="textarea textarea-bordered" rows="3" maxlength="200"></textarea>
+				</div>
+				<div class="form-control">
+					<label class="label"><span class="label-text">入群策略</span></label>
+					<select id="settings-join-policy" class="select select-bordered">
+						<option value="open">公开 - 任何人可加入</option>
+						<option value="invite-only">仅邀请</option>
+						<option value="pow">需要 PoW</option>
+					</select>
+				</div>
+				<div class="divider">群组ID</div>
+				<div class="text-sm opacity-70 select-all break-all" id="settings-group-id"></div>
+			</div>
+			<div class="modal-action">
+				<button id="delete-group-btn" class="btn btn-error">删除群组</button>
+				<button id="save-group-settings-btn" class="btn btn-primary">保存</button>
+				<button class="btn" onclick="document.getElementById('group-settings-modal').close()">取消</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+
+	<script type="module">
+		import { getGroupState, getChannelMessages, sendGroupMessage, joinGroup } from './src/groupUI.mjs'
+
+		let currentGroupId = null
+		let currentChannelId = null
+		let currentState = null
+		let lastMessageId = null
+		let pollTimer = null
+		let isAdmin = false
+
+		// 从 URL hash 获取群组 ID
+		function getGroupIdFromHash() {
+			return window.location.hash.substring(1)
+		}
+
+		// 加载群组信息
+		async function loadGroup() {
+			currentGroupId = getGroupIdFromHash()
+			if (!currentGroupId) {
+				window.location.href = '/parts/shells:home'
+				return
+			}
+
+			try {
+				let state = await getGroupState(currentGroupId)
+				document.getElementById('group-name').textContent = state.groupMeta.name
+				document.getElementById('group-member-count').textContent = `${state.memberCount || 0} 位成员`
+
+				// 如果不是成员，自动加入群组
+				if (!state.isMember) {
+					try {
+						await joinGroup(currentGroupId)
+						state = await getGroupState(currentGroupId)
+					} catch (joinError) {
+						alert('加入群组失败: ' + joinError.message)
+						window.location.href = '/parts/shells:home'
+						return
+					}
+				}
+
+				currentState = state
+
+				// 判断是否为管理员
+				isAdmin = (state.myRoles || []).includes('admin')
+
+				// 显示/隐藏设置按钮（仅管理员可见）
+				const settingsBtn = document.getElementById('group-settings-btn')
+				settingsBtn.classList.toggle('hidden', !isAdmin)
+
+				// 加载成员列表（显示头像和用户名）
+				loadMembers(state)
+
+				// 使用默认频道（对用户透明）
+				const channelIds = Object.keys(state.channels || {})
+				const defaultChannelId = state.groupSettings?.defaultChannelId || channelIds[0]
+				if (defaultChannelId) {
+					currentChannelId = defaultChannelId
+					enableComposer()
+					await loadMessages()
+					startPolling()
+				} else {
+					currentChannelId = null
+					disableComposer('暂无可用频道')
+				}
+			} catch (error) {
+				alert('加载群组失败: ' + error.message)
+				window.location.href = '/parts/shells:home'
+			}
+		}
+
+		// 根据用户名生成一致的头像颜色
+		function avatarColor(name) {
+			const colors = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899']
+			let hash = 0
+			for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+			return colors[Math.abs(hash) % colors.length]
+		}
+
+		// 加载成员列表（头像 + 用户名）
+		function loadMembers(state) {
+			const container = document.getElementById('member-list-container')
+			const members = state.members || []
+			if (!members.length) {
+				container.innerHTML = `<p class="text-sm text-base-content/50">${state.memberCount || 0} 位成员</p>`
+				return
+			}
+			container.innerHTML = members.map(m => {
+				const uname = m.username || m.pubKeyHash || '?'
+				const initial = uname.charAt(0).toUpperCase()
+				const color = avatarColor(uname)
+				const roleLabel = (m.roles || []).includes('admin') ? '管理员' : '成员'
+				return `
+				<div class="flex items-center gap-2 p-2 rounded hover:bg-base-200">
+					<div class="avatar placeholder">
+						<div class="rounded-full w-8 h-8 flex items-center justify-center text-white font-bold" style="background:${color}">
+							<span class="text-xs">${escapeHtml(initial)}</span>
+						</div>
+					</div>
+					<div class="min-w-0 flex-1">
+						<div class="text-sm font-medium truncate">${escapeHtml(uname)}</div>
+						<div class="text-xs opacity-50">${roleLabel}</div>
+					</div>
+				</div>`
+			}).join('')
+		}
+
+		function enableComposer() {
+			const input = document.getElementById('message-input')
+			const sendButton = document.querySelector('#message-form button[type="submit"]')
+			if (input) { input.disabled = false; input.placeholder = '输入消息...' }
+			if (sendButton) sendButton.disabled = false
+		}
+
+		function disableComposer(reason) {
+			const input = document.getElementById('message-input')
+			const sendButton = document.querySelector('#message-form button[type="submit"]')
+			if (input) { input.disabled = true; input.placeholder = reason || '无法发送消息' }
+			if (sendButton) sendButton.disabled = true
+		}
+
+		// 获取消息文本内容
+		function getMessageText(msg) {
+			if (typeof msg.content === 'string') return msg.content
+			if (msg.content && msg.content.text) return msg.content.text
+			return JSON.stringify(msg.content)
+		}
+
+		// 处理贴纸/图片标签
+		function renderMessageContent(text) {
+			let html = escapeHtml(text)
+			// [sticker:id|url] 格式
+			html = html.replace(/\[sticker:([^\]|]+)\|([^\]]+)\]/g, (_, id, url) => {
+				const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+				return `<img src="${safeUrl}" alt="sticker" style="max-width:120px;max-height:120px;border-radius:8px;display:inline-block" />`
+			})
+			// [sticker:id] 格式
+			html = html.replace(/\[sticker:([^\]]+)\]/g, (_, id) => {
+				return `<span style="display:inline-block;padding:2px 8px;background:var(--b3,#333);border-radius:4px;font-size:0.875rem;opacity:0.7">🖼️ 贴纸</span>`
+			})
+			// [image:name|url] 格式
+			html = html.replace(/\[image:([^\]|]+)\|([^\]]+)\]/g, (_, name, url) => {
+				const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+				return `<img src="${safeUrl}" alt="${name}" style="max-width:300px;max-height:300px;border-radius:8px;display:block;margin:4px 0;cursor:pointer" onclick="window.open('${safeUrl}','_blank')" />`
+			})
+			return html
+		}
+
+		// 加载消息
+		async function loadMessages() {
+			const container = document.getElementById('messages-container')
+			container.innerHTML = '<div class="loading loading-spinner loading-lg"></div>'
+
+			try {
+				const messages = await getChannelMessages(currentGroupId, currentChannelId, { limit: 50 })
+
+				if (messages.length === 0) {
+					container.innerHTML = '<div class="text-center py-8 text-base-content/50">暂无消息</div>'
+					return
+				}
+
+				container.innerHTML = messages.map(msg => `
+					<div class="chat chat-start" data-message-id="${msg.id}">
+						<div class="chat-header">
+							${escapeHtml(msg.sender)}
+							<time class="text-xs opacity-50">${new Date(msg.timestamp).toLocaleTimeString()}</time>
+						</div>
+						<div class="chat-bubble">${renderMessageContent(getMessageText(msg))}</div>
+					</div>
+				`).join('')
+
+				lastMessageId = messages[messages.length - 1].id
+				// 滚动到底部
+				container.scrollTop = container.scrollHeight
+			} catch (error) {
+				container.innerHTML = `<div class="alert alert-error">加载消息失败: ${escapeHtml(error.message)}</div>`
+			}
+		}
+
+		// 发送消息
+		document.getElementById('message-form').addEventListener('submit', async (e) => {
+			e.preventDefault()
+			const input = document.getElementById('message-input')
+			const content = input.value.trim()
+
+			if (!content || !currentChannelId) return
+
+			try {
+				await sendGroupMessage(currentGroupId, currentChannelId, content)
+				input.value = ''
+				await loadMessages()
+			} catch (error) {
+				alert('发送消息失败: ' + error.message)
+			}
+		})
+
+		// 轮询新消息
+		function startPolling() {
+			if (pollTimer) clearInterval(pollTimer)
+			pollTimer = setInterval(pollNewMessages, 2000)
+		}
+
+		async function pollNewMessages() {
+			if (!currentGroupId || !currentChannelId) return
+			try {
+				const options = { limit: 50 }
+				if (lastMessageId) options.since = lastMessageId
+
+				const messages = await getChannelMessages(currentGroupId, currentChannelId, options)
+				if (!messages.length) return
+
+				const container = document.getElementById('messages-container')
+				// 如果currently showing "暂无消息", clear it
+				if (container.querySelector('.text-center')) {
+					container.innerHTML = ''
+				}
+
+				for (const msg of messages) {
+					if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue
+					const html = `
+						<div class="chat chat-start" data-message-id="${msg.id}">
+							<div class="chat-header">
+								${escapeHtml(msg.sender)}
+								<time class="text-xs opacity-50">${new Date(msg.timestamp).toLocaleTimeString()}</time>
+							</div>
+							<div class="chat-bubble">${renderMessageContent(getMessageText(msg))}</div>
+						</div>
+					`
+					container.insertAdjacentHTML('beforeend', html)
+				}
+
+				lastMessageId = messages[messages.length - 1].id
+				container.scrollTop = container.scrollHeight
+			} catch { }
+		}
+
+		// HTML 转义
+		function escapeHtml(text) {
+			const div = document.createElement('div')
+			div.textContent = text
+			return div.innerHTML
+		}
+
+		// 打开群组设置模态框
+		function openGroupSettings() {
+			if (!currentState || !isAdmin) return
+			document.getElementById('settings-group-name').value = currentState.groupMeta.name || ''
+			document.getElementById('settings-group-desc').value = currentState.groupMeta.desc || ''
+			document.getElementById('settings-join-policy').value = currentState.groupSettings?.joinPolicy || 'open'
+			document.getElementById('settings-group-id').textContent = currentGroupId
+			document.getElementById('group-settings-modal').showModal()
+		}
+
+		// 齿轮按钮点击打开群组设置
+		document.getElementById('group-settings-btn').addEventListener('click', openGroupSettings)
+
+		// 保存群组设置
+		document.getElementById('save-group-settings-btn').addEventListener('click', async () => {
+			const name = document.getElementById('settings-group-name').value.trim()
+			const desc = document.getElementById('settings-group-desc').value.trim()
+			const joinPolicy = document.getElementById('settings-join-policy').value
+			if (!name) { alert('请输入群组名称'); return }
+
+			try {
+				// 更新群组元数据
+				const metaResp = await fetch(`/api/parts/shells:chat/${currentGroupId}/meta`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({ name, desc })
+				})
+				if (!metaResp.ok) throw new Error('更新群组信息失败')
+
+				// 更新群组设置
+				const settingsResp = await fetch(`/api/parts/shells:chat/${currentGroupId}/settings`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({ joinPolicy })
+				})
+				if (!settingsResp.ok) throw new Error('更新群组设置失败')
+
+				alert('群组设置已保存')
+				document.getElementById('group-settings-modal').close()
+
+				// 刷新页面数据
+				document.getElementById('group-name').textContent = name
+				currentState.groupMeta.name = name
+				currentState.groupMeta.desc = desc
+				currentState.groupSettings.joinPolicy = joinPolicy
+			} catch (error) {
+				alert('保存失败: ' + error.message)
+			}
+		})
+
+		// 删除群组
+		document.getElementById('delete-group-btn').addEventListener('click', async () => {
+			if (!confirm('确定要删除此群组吗？此操作不可撤销，所有消息和成员数据将被永久删除。')) return
+			try {
+				const resp = await fetch(`/api/parts/shells:chat/${currentGroupId}`, {
+					method: 'DELETE',
+					credentials: 'include'
+				})
+				const data = await resp.json()
+				if (!resp.ok || !data.success) throw new Error(data.error || '删除群组失败')
+				alert('群组已删除')
+				window.location.href = '/parts/shells:home'
+			} catch (error) {
+				alert('删除群组失败: ' + error.message)
+			}
+		})
+
+		// --- 表情选择器 ---
+		const EMOJI_DATA = {
+			face: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐'],
+			gesture: ['👋','🤚','🖐️','✋','🖖','👌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪'],
+			heart: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️','🫶','💏','💑','🫂'],
+			animal: ['🐱','🐶','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🐢','🐍','🦎','🦂','🦀','🦑','🐙','🐠','🐟','🐡','🐬','🦈','🐳','🐋'],
+			food: ['🍔','🍟','🍕','🌭','🥪','🌮','🌯','🥙','🥚','🍳','🥘','🍲','🥣','🥗','🍿','🧈','🧂','🥫','🍱','🍘','🍙','🍚','🍛','🍜','🍝','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🍵','🫖','🧃','🍶','🍺','🍻','🥂','🍷'],
+			object: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🥊','🥋','🎯','⛳','🥅','🏒','🏑','🏏','🪃','🎮','🎲','🧩','🎭','🎨','🎪','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🪕','🎻','🎬','🏆','🥇','🥈','🥉','🏅','🎖️','🎗️','🎫','🎟️']
+		}
+
+		let currentEmojiTab = 'face'
+
+		function renderEmojiGrid(tab) {
+			const grid = document.getElementById('emoji-grid')
+			if (!grid) return
+			const emojis = EMOJI_DATA[tab] || []
+			grid.innerHTML = emojis.map(e =>
+				`<button type="button" class="btn btn-ghost btn-sm text-xl hover:scale-125 transition-transform" data-emoji="${e}">${e}</button>`
+			).join('')
+		}
+
+		document.getElementById('group-emoji-button')?.addEventListener('click', (e) => {
+			e.stopPropagation()
+			const picker = document.getElementById('group-emoji-picker')
+			picker.classList.toggle('hidden')
+			if (!picker.classList.contains('hidden')) {
+				renderEmojiGrid(currentEmojiTab)
+			}
+		})
+
+		document.getElementById('close-group-emoji')?.addEventListener('click', () => {
+			document.getElementById('group-emoji-picker')?.classList.add('hidden')
+		})
+
+		document.getElementById('emoji-tabs')?.addEventListener('click', (e) => {
+			const tab = e.target.closest('[data-tab]')
+			if (!tab) return
+			currentEmojiTab = tab.dataset.tab
+			document.querySelectorAll('#emoji-tabs .tab').forEach(t => t.classList.remove('tab-active'))
+			tab.classList.add('tab-active')
+			renderEmojiGrid(currentEmojiTab)
+		})
+
+		document.getElementById('emoji-grid')?.addEventListener('click', (e) => {
+			const btn = e.target.closest('[data-emoji]')
+			if (!btn) return
+			const input = document.getElementById('message-input')
+			if (input) {
+				const start = input.selectionStart || input.value.length
+				input.value = input.value.substring(0, start) + btn.dataset.emoji + input.value.substring(start)
+				input.focus()
+			}
+			document.getElementById('group-emoji-picker')?.classList.add('hidden')
+		})
+
+		document.addEventListener('click', (e) => {
+			const emojiPicker = document.getElementById('group-emoji-picker')
+			if (emojiPicker && !emojiPicker.contains(e.target) && e.target.id !== 'group-emoji-button' && !e.target.closest('#group-emoji-button')) {
+				emojiPicker.classList.add('hidden')
+			}
+			const stickerPicker = document.getElementById('group-sticker-picker')
+			if (stickerPicker && !stickerPicker.contains(e.target) && e.target.id !== 'group-sticker-button' && !e.target.closest('#group-sticker-button')) {
+				stickerPicker.classList.add('hidden')
+			}
+		})
+
+		// --- 贴纸选择器 ---
+		let stickersLoaded = false
+		let stickerItemsBound = false
+		async function loadGroupStickers() {
+			const grid = document.getElementById('sticker-grid')
+			try {
+				if (stickersLoaded) return
+				stickersLoaded = true
+
+				const meResp = await fetch('/api/user/me', { credentials: 'include' })
+				if (!meResp.ok) throw new Error('Failed to fetch user')
+				const me = await meResp.json()
+				const username = me.username || me.data?.username
+				if (!username) throw new Error('No username found')
+
+				const collectionResp = await fetch(`/api/parts/shells:stickers/user/${encodeURIComponent(username)}`, {
+					credentials: 'include'
+				})
+				if (!collectionResp.ok) throw new Error('Failed to fetch sticker collection')
+				const collectionData = await collectionResp.json()
+				if (!collectionData.success) throw new Error(collectionData.error || 'Failed to fetch sticker collection')
+
+				const installedPacks = collectionData.collection?.installedPacks || []
+				if (!installedPacks.length) {
+					grid.innerHTML = '<div class="text-center py-4 col-span-4 opacity-50 text-sm">暂无可用贴纸</div>'
+					return
+				}
+
+				const allStickers = []
+				for (const packId of installedPacks) {
+					try {
+						const packResp = await fetch(`/api/parts/shells:stickers/packs/${encodeURIComponent(packId)}`, {
+							credentials: 'include'
+						})
+						if (!packResp.ok) continue
+						const packData = await packResp.json()
+						if (!packData.success || !packData.pack?.stickers) continue
+						for (const sticker of packData.pack.stickers) {
+							allStickers.push(sticker)
+						}
+					} catch { }
+				}
+
+				if (!allStickers.length) {
+					grid.innerHTML = '<div class="text-center py-4 col-span-4 opacity-50 text-sm">暂无可用贴纸</div>'
+					return
+				}
+
+				grid.innerHTML = allStickers.map(s => `
+						<div class="aspect-square bg-base-300 rounded-lg p-1 hover:bg-base-100 transition-colors cursor-pointer sticker-pick-item"
+							 data-sticker-id="${s.id}" data-sticker-url="${escapeHtml(s.url || '')}" title="${escapeHtml(s.name || s.id)}">
+							${s.url ? `<img src="${escapeHtml(s.url)}" alt="${escapeHtml(s.name || '')}" class="w-full h-full object-contain" />` : '<span class="text-2xl flex items-center justify-center h-full">📦</span>'}
+						</div>
+					`).join('')
+
+				if (!stickerItemsBound) {
+					stickerItemsBound = true
+					grid.addEventListener('click', async (e) => {
+					const item = e.target.closest('.sticker-pick-item')
+					if (!item || !currentChannelId) return
+					const stickerId = item.dataset.stickerId
+					const stickerUrl = item.dataset.stickerUrl
+					const stickerTag = stickerUrl ? `[sticker:${stickerId}|${stickerUrl}]` : `[sticker:${stickerId}]`
+					try {
+						await sendGroupMessage(currentGroupId, currentChannelId, stickerTag)
+						await fetch(`/api/parts/shells:stickers/recent/${encodeURIComponent(stickerId)}`, {
+							method: 'POST',
+							credentials: 'include'
+						})
+						await loadMessages()
+						document.getElementById('group-sticker-picker')?.classList.add('hidden')
+					} catch (err) {
+						alert('发送贴纸失败: ' + err.message)
+					}
+					})
+				}
+			} catch (err) {
+				console.error('Load stickers error:', err)
+				stickersLoaded = false
+				grid.innerHTML = '<div class="text-center py-4 col-span-4 opacity-50 text-sm">加载贴纸失败</div>'
+			}
+		}
+
+		document.getElementById('group-sticker-button')?.addEventListener('click', (e) => {
+			e.stopPropagation()
+			const picker = document.getElementById('group-sticker-picker')
+			picker.classList.toggle('hidden')
+			if (!picker.classList.contains('hidden')) loadGroupStickers()
+		})
+
+		document.getElementById('close-group-sticker')?.addEventListener('click', () => {
+			document.getElementById('group-sticker-picker')?.classList.add('hidden')
+		})
+
+		// --- 图片上传 ---
+		document.getElementById('group-image-button')?.addEventListener('click', () => {
+			if (!currentChannelId) { alert('暂无可用频道'); return }
+			document.getElementById('image-upload')?.click()
+		})
+
+		document.getElementById('image-upload')?.addEventListener('change', async (e) => {
+			const file = e.target.files[0]
+			if (!file || !currentChannelId) return
+			e.target.value = ''
+
+			try {
+				// 转为 base64 data URL
+				const reader = new FileReader()
+				const dataUrl = await new Promise((resolve, reject) => {
+					reader.onload = () => resolve(reader.result)
+					reader.onerror = reject
+					reader.readAsDataURL(file)
+				})
+
+				const imgTag = `[image:${file.name}|${dataUrl}]`
+				await sendGroupMessage(currentGroupId, currentChannelId, imgTag)
+				await loadMessages()
+			} catch (err) {
+				alert('发送图片失败: ' + err.message)
+			}
+		})
+
+		// 初始化
+		loadGroup()
+
+		// 监听 hash 变化
+		window.addEventListener('hashchange', loadGroup)
+
+	</script>
+</body>
+
+</html>

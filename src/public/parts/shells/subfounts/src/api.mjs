@@ -1,5 +1,18 @@
 import { randomUUID } from 'node:crypto'
-import { deserialize } from 'node:v8'
+import EventEmitter from 'node:events'
+import process from 'node:process'
+// V8 serialize/deserialize 不兼容 Trystero 的 JSON 传输，已改用直接传递
+
+// Trystero MQTT 客户端在重连时会累加 listeners，提高上限避免警告
+EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
+
+// 捕获 Trystero MQTT 内部的 ECONNRESET 等网络瞬断错误，防止进程崩溃
+process.on('uncaughtException', (err) => {
+	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
+		return // 网络瞬断，Trystero 会自动重连
+	console.error('Uncaught exception:', err)
+	process.exit(1)
+})
 
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
@@ -251,15 +264,34 @@ class UserSubfountManager {
 				this.actions.clear()
 			}
 
-			const { joinMqttRoom } = await import('../../../../../scripts/p2p/federation_trystero.mjs')
-			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
+			const { joinRoom, getRelaySockets } = await import('npm:@trystero-p2p/mqtt')
+			let RTCPeerConnection
+			try {
+				;({ RTCPeerConnection } = await import('npm:werift'))
+			}
+			catch {
+				;({ RTCPeerConnection } = await import('npm:node-datachannel/polyfill'))
+			}
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
 			const config = {
 				appId: 'fount-subfounts',
 				rtcPolyfill: RTCPeerConnection,
 				password: codesData.password, // 使用连接密码进行加密
+				relayUrls: [
+					'wss://broker-cn.emqx.io:8084/mqtt',
+					'wss://broker.emqx.io:8084/mqtt',
+				],
 			}
-			this.room = await joinMqttRoom(config, this.hostPeerId)
+			this.room = joinRoom(config, this.hostPeerId)
+
+			// 为 MQTT relay sockets 添加错误处理，防止 ECONNRESET 崩溃
+			try {
+				const sockets = getRelaySockets()
+				for (const [, socket] of Object.entries(sockets))
+					if (socket && typeof socket.on === 'function')
+						socket.on('error', () => { })
+			}
+			catch { }
 
 			// 设置操作处理程序
 			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']
@@ -338,7 +370,7 @@ class UserSubfountManager {
 					if (data.isError)
 						pending.reject(new Error(data.payload?.error || data.payload || 'Unknown error'))
 					else
-						pending.resolve(deserialize(data.payload))
+						pending.resolve(data.payload)
 				}
 			}
 

@@ -5,8 +5,6 @@
 /** @typedef {import('../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
-import { canViewMessage } from './chat/visibility.mjs'
-
 /**
  * 获取单部分提示。
  * @returns {{text: Array, additional_chat_log: Array, extension: object}} - 单部分提示对象。
@@ -46,7 +44,7 @@ export async function buildPromptStruct(
 		locales,
 	}
 
-	if (world?.interfaces?.chat?.GetPrompt) result.world_prompt = world.interfaces.chat.GetPrompt(args)
+	if (world?.interfaces?.chat) result.world_prompt = world.interfaces.chat.GetPrompt(args)
 	if (user?.interfaces?.chat) result.user_prompt = user.interfaces.chat.GetPrompt(args)
 	if (char?.interfaces?.chat) result.char_prompt = char.interfaces.chat.GetPrompt(args)
 	for (const other_char of Object.keys(other_chars))
@@ -55,22 +53,6 @@ export async function buildPromptStruct(
 		result.plugin_prompts[plugin] = plugins[plugin].interfaces.chat?.GetPrompt?.(args)
 
 	result.world_prompt = await result.world_prompt
-	if (world?.interfaces?.chat?.GetGroupPrompt) {
-		const gp = await world.interfaces.chat.GetGroupPrompt(args)
-		if (gp?.public)
-			result.world_prompt.text.push({
-				content: gp.public,
-				description: 'world group prompt (public)',
-				important: 5,
-			})
-		const mid = args.extension?.memberId
-		if (mid && gp?.perMember?.[mid])
-			result.world_prompt.text.push({
-				content: gp.perMember[mid],
-				description: 'world group prompt (per-member)',
-				important: 6,
-			})
-	}
 	result.user_prompt = await result.user_prompt
 	result.char_prompt = await result.char_prompt
 	for (const other_char of Object.keys(result.other_chars_prompts))
@@ -181,28 +163,7 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 			content: `用户对另一时间线中的此次回复进行了${label}，原因：${feedback.content}。`
 		})
 	}
-	return flat_result.filter(entry => entryVisibleForPrompt(entry, prompt))
-}
-
-/**
- * 日志条目是否应对当前 prompt 的视角可见。
- * @param {chatLogEntry_t} entry 日志条目
- * @param {chatReplyRequest_t} prompt 当前请求上下文
- * @returns {boolean} 是否纳入 prompt 聊天记录
- */
-function entryVisibleForPrompt(entry, prompt) {
-	const vis = entry.visibility
-	const legacy = entry.charVisibility
-	if (!vis && (!legacy || !legacy.length)) return true
-	const viewer = {
-		memberId: prompt.extension?.memberId || (prompt.char_id ? `${prompt.username}:${prompt.char_id}` : prompt.username),
-		roles: prompt.member_roles || prompt.extension?.member_roles || [],
-		charId: prompt.char_id,
-	}
-	if (legacy?.length)
-		return canViewMessage({ members: legacy }, viewer)
-	if (!vis.roles?.length && !vis.members?.length) return true
-	return canViewMessage(vis, viewer)
+	return flat_result.filter(entry => !entry.charVisibility || entry.charVisibility.includes(prompt.char_id))
 }
 
 /**

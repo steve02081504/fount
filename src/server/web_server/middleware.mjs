@@ -6,6 +6,7 @@ import fileUpload from 'npm:express-fileupload'
 import { console } from '../../scripts/i18n.mjs'
 import { auth_request } from '../auth.mjs'
 import { info } from '../info.mjs'
+import { markActive } from '../presence.mjs'
 import { webRequestHappened } from '../server.mjs'
 
 /**
@@ -35,6 +36,11 @@ export function registerMiddleware(router) {
 				url: req.url.replace(/fount-apikey=[^&]*/, 'fount-apikey=45450721')
 			})
 		webRequestHappened()
+		// 响应结束时若已认证（req.user 由 authenticate 中间件填充），则标记该用户活跃
+		res.on('finish', () => {
+			const uname = req.user?.username
+			if (uname) markActive(uname)
+		})
 		return next()
 	})
 
@@ -53,10 +59,17 @@ export function registerMiddleware(router) {
 		express.urlencoded({ limit: 5 * 1024 * 1024, extended: true })
 	))
 
-	router.use(diff_if_auth(
-		fileUpload({ limits: { fileSize: Infinity } }),
-		fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } })
-	))
+	const authedFileUpload = fileUpload({ limits: { fileSize: Infinity } })
+	const unauthedFileUpload = fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } })
+	router.use(async (req, res, next) => {
+		// Keep legacy file upload only for chat/addfile.
+		// Other multipart endpoints use multer and must receive the raw stream.
+		if (!req.path.startsWith('/api/parts/shells:chat/addfile'))
+			return next()
+		if (await auth_request(req, res))
+			return authedFileUpload(req, res, next)
+		return unauthedFileUpload(req, res, next)
+	})
 
 	router.use(cookieParser())
 }

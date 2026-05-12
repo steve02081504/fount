@@ -1,6 +1,7 @@
 import { hosturl } from '../../../../server/server.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
+import { setGroupEndpoints } from './src/group_endpoints.mjs'
 import { cleanFilesInterval } from './src/files.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -36,6 +37,7 @@ export default {
 	Load: ({ router }) => {
 		loading_count++
 		setEndpoints(router)
+		setGroupEndpoints(router)
 	},
 	/**
 	 * 卸载聊天Shell，减少加载计数并在必要时清理定时器。

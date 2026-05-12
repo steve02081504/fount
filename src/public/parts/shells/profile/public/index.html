@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="profile.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="bg-base-100 min-h-screen">
+	<div class="container mx-auto p-4 sm:p-6 max-w-7xl">
+		<!-- 顶部导航 -->
+		<div class="navbar bg-base-200 rounded-xl shadow-md mb-6">
+			<div class="flex-1">
+				<h1 class="text-2xl font-bold px-4" data-i18n="profile.title">个人资料</h1>
+			</div>
+			<div class="flex-none gap-2">
+				<button id="edit-btn" class="btn btn-primary btn-sm sm:btn-md gap-2">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+					</svg>
+					<span data-i18n="profile.edit">编辑资料</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- 左侧：个人信息卡片 -->
+			<div class="lg:col-span-1">
+				<div class="card bg-base-200 shadow-xl overflow-hidden sticky top-6">
+					<!-- 封面横幅 -->
+					<div class=
+										
+					"profile-banner h-28 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20 relative">
+						<div class="absolute inset-0 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221.5%22%20fill%3D%22rgba(255%2C255%2C255%2C0.08)%22%2F%3E%3C%2Fsvg%3E')] opacity-50"></div>
+					</div>
+					<div class="card-body pt-0 -mt-16 relative z-10">
+						<div class="flex flex-col items-center text-center">
+							<!-- 头像 -->
+							<div class="avatar mb-3">
+								<div class="w-28 h-28 rounded-full ring-4 ring-base-200 shadow-lg bg-base-100">
+									<img id="profile-avatar" src="" alt="Avatar" />
+								</div>
+							</div>
+
+							<!-- 基本信息 -->
+							<h2 id="profile-display-name" class="text-xl font-bold"></h2>
+							<p id="profile-username" class="text-sm opacity-60 mb-2"></p>
+
+							<div id="profile-status-badge" class="badge badge-success gap-1.5 mb-2">
+								<div class="w-2 h-2 rounded-full bg-current"></div>
+								<span id="profile-status"></span>
+							</div>
+
+							<p id="profile-custom-status" class="text-xs opacity-50 italic mb-3"></p>
+							<p id="profile-bio" class="text-sm leading-relaxed opacity-80 mb-3 px-2"></p>
+
+							<!-- 邮箱 -->
+							<div id="profile-email-row" class="flex items-center gap-1.5 text-xs opacity-60 mb-3 hidden">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+								<span id="profile-email"></span>
+							</div>
+
+							<!-- 社交链接 -->
+							<div id="social-links" class="flex gap-2 mb-2">
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<!-- 右侧：详细信息和贴纸管理 -->
+			<div class="lg:col-span-2 space-y-6">
+				<!-- 偏好设置卡片 -->
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title gap-2 mb-4">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+							偏好设置
+						</h2>
+						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div class="flex items-center gap-3 bg-base-300/50 rounded-xl px-4 py-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+								<div>
+									<div class="text-xs opacity-50">语言</div>
+									<div id="profile-language" class="text-sm font-medium"></div>
+								</div>
+							</div>
+							<div class="flex items-center gap-3 bg-base-300/50 rounded-xl px-4 py-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+								<div>
+									<div class="text-xs opacity-50">主题</div>
+									<div id="profile-theme" class="text-sm font-medium"></div>
+								</div>
+							</div>
+							<div class="flex items-center gap-3 bg-base-300/50 rounded-xl px-4 py-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+								<div>
+									<div class="text-xs opacity-50">通知</div>
+									<div id="profile-notifications" class="text-sm font-medium"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 我的群组 -->
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title gap-2 mb-4">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+							我的群组
+						</h2>
+						<div id="profile-groups" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div class="text-center py-6 opacity-50" id="no-groups">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+								<p class="text-sm">暂未加入任何群组</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 我的频道 -->
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title gap-2 mb-4">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" /></svg>
+							我的频道
+						</h2>
+						<div id="profile-channels" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div class="text-center py-6 opacity-50" id="no-channels">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" /></svg>
+								<p class="text-sm">暂无频道</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 个人信息概览 -->
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title gap-2 mb-4">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A8 8 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+							用户信息概览
+						</h2>
+						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">用户 ID</div>
+								<div id="summary-username" class="font-medium truncate">-</div>
+							</div>
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">账号状态</div>
+								<div id="summary-status" class="font-medium">-</div>
+							</div>
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">邮箱可见性</div>
+								<div id="summary-email-visibility" class="font-medium">-</div>
+							</div>
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">主题偏好</div>
+								<div id="summary-theme" class="font-medium">-</div>
+							</div>
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">语言偏好</div>
+								<div id="summary-language" class="font-medium">-</div>
+							</div>
+							<div class="bg-base-300/50 rounded-xl p-4">
+								<div class="text-xs opacity-60 mb-1">社交链接数量</div>
+								<div id="summary-social-count" class="font-medium">0</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 编辑资料模态框 -->
+	<dialog id="edit-profile-modal" class="modal">
+		<div class="modal-box max-w-2xl">
+			<h3 class="font-bold text-lg mb-4" data-i18n="profile.edit">编辑资料</h3>
+
+			<div class="space-y-4">
+				<!-- 头像上传 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.avatar">头像</span>
+					</label>
+					<div class="flex items-center gap-4">
+						<div class="avatar">
+							<div class="w-20 h-20 rounded-full">
+								<img id="edit-avatar-preview" src="" alt="Avatar Preview" />
+							</div>
+						</div>
+						<input type="file" id="avatar-upload" accept="image/*" class="file-input file-input-bordered" />
+					</div>
+				</div>
+
+				<!-- 显示名称 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.displayName">显示名称</span>
+					</label>
+					<input type="text" id="edit-display-name" class="input input-bordered" />
+				</div>
+
+				<!-- 个人简介 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.bio">个人简介</span>
+					</label>
+					<textarea id="edit-bio" class="textarea textarea-bordered" rows="3"></textarea>
+				</div>
+
+				<!-- 邮箱 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.email">邮箱</span>
+					</label>
+					<input type="email" id="edit-email" class="input input-bordered" />
+				</div>
+
+				<!-- 状态 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.status">状态</span>
+					</label>
+					<select id="edit-status" class="select select-bordered">
+						<option value="online">在线</option>
+						<option value="away">离开</option>
+						<option value="busy">忙碌</option>
+						<option value="offline">离线</option>
+					</select>
+				</div>
+
+				<!-- 自定义状态 -->
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text" data-i18n="profile.customStatus">自定义状态</span>
+					</label>
+					<input type="text" id="edit-custom-status" class="input input-bordered" placeholder="正在做什么..." />
+				</div>
+
+				<!-- 社交链接 -->
+				<div class="collapse collapse-arrow bg-base-200">
+					<input type="checkbox" />
+					<div class="collapse-title font-medium" data-i18n="profile.social">社交链接</div>
+					<div class="collapse-content space-y-3">
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text" data-i18n="profile.website">网站</span>
+							</label>
+							<input type="url" id="edit-website" class="input input-bordered input-sm" />
+						</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text" data-i18n="profile.github">GitHub</span>
+							</label>
+							<input type="text" id="edit-github" class="input input-bordered input-sm" />
+						</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text" data-i18n="profile.twitter">Twitter</span>
+							</label>
+							<input type="text" id="edit-twitter" class="input input-bordered input-sm" />
+						</div>
+					</div>
+				</div>
+
+				<!-- 偏好设置 -->
+				<div class="collapse collapse-arrow bg-base-200">
+					<input type="checkbox" />
+					<div class="collapse-title font-medium" data-i18n="profile.preferences">偏好设置</div>
+					<div class="collapse-content space-y-3">
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text" data-i18n="profile.language">语言</span>
+							</label>
+							<select id="edit-language" class="select select-bordered select-sm">
+								<option value="zh-CN">简体中文</option>
+								<option value="en-US">English</option>
+							</select>
+						</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text" data-i18n="profile.theme">主题</span>
+							</label>
+							<select id="edit-theme" class="select select-bordered select-sm">
+								<option value="auto">自动</option>
+								<option value="light">浅色</option>
+								<option value="dark">深色</option>
+							</select>
+						</div>
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<span class="label-text" data-i18n="profile.emailNotifications">邮件通知</span>
+								<input type="checkbox" id="edit-email-notif" class="checkbox checkbox-sm" />
+							</label>
+						</div>
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<span class="label-text" data-i18n="profile.pushNotifications">推送通知</span>
+								<input type="checkbox" id="edit-push-notif" class="checkbox checkbox-sm" />
+							</label>
+						</div>
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<span class="label-text" data-i18n="profile.soundNotifications">声音通知</span>
+								<input type="checkbox" id="edit-sound-notif" class="checkbox checkbox-sm" />
+							</label>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="modal-action">
+				<button id="save-profile-btn" class="btn btn-primary">
+					<span data-i18n="profile.save">保存</span>
+				</button>
+				<button class="btn" onclick="document.getElementById('edit-profile-modal').close()">
+					<span data-i18n="profile.cancel">取消</span>
+				</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button>close</button>
+		</form>
+	</dialog>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

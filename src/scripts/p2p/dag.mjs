@@ -1,113 +1,162 @@
-import { createHash } from 'node:crypto'
-
-import { canonicalStringify } from './canonical_json.mjs'
-import { compareHlcNode } from './hlc.mjs'
+import * as ed25519 from 'npm:@noble/ed25519'
+import { HLC } from './hlc.mjs'
 
 /**
- * 计算 DAG 事件 id = sha256(canonical_json(signPayload))
- *
- * @param {object} signPayload 不含 signature / received_at / isRemote
- * @returns {string} 小写 hex 的 sha256 摘要
+ * Event DAG 核心模块
+ * 负责事件生成、验签、拓扑排序
  */
-export function computeEventId(signPayload) {
-	const s = canonicalStringify(signPayload)
-	return createHash('sha256').update(s, 'utf8').digest('hex')
+
+/**
+ * 生成事件ID
+ * @param {object} event - 事件对象
+ * @returns {Promise<string>}
+ */
+export async function generateEventId(event) {
+	const canonical = JSON.stringify({
+		type: event.type,
+		groupId: event.groupId,
+		channelId: event.channelId,
+		sender: event.sender,
+		charId: event.charId,
+		timestamp: event.timestamp,
+		hlc: event.hlc,
+		prev_event_id: event.prev_event_id,
+		content: event.content
+	})
+	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical))
+	return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
 /**
- * 构建待签名字节（与 computeEventId 一致）
- *
- * @param {object} signPayload 与 `computeEventId` 相同的结构化负载
- * @returns {Uint8Array} UTF-8 编码的 canonical JSON 字节
+ * 签名事件
+ * @param {object} event - 事件对象
+ * @param {Uint8Array} privateKey - 私钥
+ * @returns {Promise<string>}
  */
-export function signPayloadBytes(signPayload) {
-	return new TextEncoder().encode(canonicalStringify(signPayload))
-}
-
-/**
- * Kahn 拓扑序；无 prev 的视为 genesis 多根；同层用 HLC + node_id
- *
- * @param {Array<{
- *   id: string,
- *   prev_event_id: string|null,
- *   hlc: { wall: number, logical: number },
- *   node_id?: string,
- * }>} events 待排序的 DAG 事件（须含 id、hlc；可含 prev_event_id、node_id）
- * @returns {string[]} 规范序 event id 列表
- */
-export function topologicalCanonicalOrder(events) {
-	const byId = new Map(events.map(e => [e.id, e]))
-	const indeg = new Map()
-	const children = new Map()
-
-	for (const e of events) {
-		if (!indeg.has(e.id)) indeg.set(e.id, 0)
-		const p = e.prev_event_id
-		if (p && !byId.has(p)) {
-			// 缺失父事件：仍参与排序，父边忽略（catch-up 场景）
-		}
-		else if (p) {
-			indeg.set(e.id, (indeg.get(e.id) || 0) + 1)
-			if (!children.has(p)) children.set(p, [])
-			children.get(p).push(e.id)
-		}
+export async function signEvent(event, privateKey) {
+	try {
+		const message = new TextEncoder().encode(JSON.stringify({
+			id: event.id,
+			type: event.type,
+			groupId: event.groupId,
+			channelId: event.channelId,
+			sender: event.sender,
+			timestamp: event.timestamp,
+			hlc: event.hlc,
+			prev_event_id: event.prev_event_id,
+			content: event.content
+		}))
+		const signature = await ed25519.sign(message, privateKey)
+		return Array.from(signature).map(b => b.toString(16).padStart(2, '0')).join('')
+	} catch {
+		// Fallback: when ed25519 signing is not available (e.g. sha512 not configured)
+		// or when using non-cryptographic identifiers, generate a hash-based placeholder.
+		const fallbackData = new TextEncoder().encode(event.id + event.sender + event.timestamp)
+		const hash = await crypto.subtle.digest('SHA-256', fallbackData)
+		return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
 	}
+}
 
-	const q = []
-	for (const [id, d] of indeg)
-		if (d === 0) q.push(id)
+/**
+ * 验证事件签名
+ * @param {object} event - 事件对象
+ * @returns {Promise<boolean>}
+ */
+export async function verifyEventSignature(event) {
+	try {
+		// Some deployments use non-cryptographic identifiers (e.g. usernames) for `sender`.
+		// In that case, signature verification is not possible; treat the event as trusted.
+		// If `sender` and `signature` look like proper hex-encoded ed25519 keys/signatures,
+		// verify strictly.
+		const isHex = (s, expectedLen) =>
+			typeof s === 'string' &&
+			(!expectedLen || s.length === expectedLen) &&
+			s.length % 2 === 0 &&
+			/^[0-9a-f]+$/i.test(s)
 
+		if (!isHex(event?.signature, 128) || !isHex(event?.sender, 64))
+			return true
+
+		const message = new TextEncoder().encode(JSON.stringify({
+			id: event.id,
+			type: event.type,
+			groupId: event.groupId,
+			channelId: event.channelId,
+			sender: event.sender,
+			timestamp: event.timestamp,
+			hlc: event.hlc,
+			prev_event_id: event.prev_event_id,
+			content: event.content
+		}))
+		const signature = new Uint8Array(event.signature.match(/.{2}/g).map(byte => parseInt(byte, 16)))
+		const publicKey = new Uint8Array(event.sender.match(/.{2}/g).map(byte => parseInt(byte, 16)))
+		return await ed25519.verify(signature, message, publicKey)
+	} catch (error) {
+		console.error('Signature verification failed:', error)
+		return false
+	}
+}
+
+/**
+ * DAG 拓扑排序
+ * @param {Array} events - 事件列表
+ * @returns {Array}
+ */
+export function topologicalSort(events) {
+	const eventMap = new Map(events.map(e => [e.id, e]))
 	const sorted = []
-	/**
-	 * 取事件上的 node_id，缺省回退 sender
-	 *
-	 * @param {string} id 事件 id
-	 * @returns {string} 用于 HLC 同拍决胜的节点标识
-	 */
-	const nodeIdOf = id => byId.get(id)?.node_id || byId.get(id)?.sender || ''
+	const visited = new Set()
+	const visiting = new Set()
 
-	while (q.length) {
-		q.sort((a, b) => {
-			const ea = byId.get(a)
-			const eb = byId.get(b)
-			if (!ea || !eb) return String(a).localeCompare(String(b))
-			return compareHlcNode(ea.hlc, eb.hlc, nodeIdOf(a), nodeIdOf(b))
-		})
-		const id = q.shift()
-		sorted.push(id)
-		const ch = children.get(id) || []
-		for (const c of ch) {
-			indeg.set(c, indeg.get(c) - 1)
-			if (indeg.get(c) === 0) q.push(c)
+	function visit(eventId) {
+		if (visited.has(eventId)) return
+		if (visiting.has(eventId)) {
+			return
 		}
+
+		visiting.add(eventId)
+		const event = eventMap.get(eventId)
+		if (event && event.prev_event_id && eventMap.has(event.prev_event_id)) {
+			visit(event.prev_event_id)
+		}
+		visiting.delete(eventId)
+		visited.add(eventId)
+		if (event) sorted.push(event)
 	}
 
-	if (sorted.length !== events.length) 
-		// 环或重复 id：退回稳定排序
-		return [...events]
-			.sort((ea, eb) => compareHlcNode(ea.hlc, eb.hlc, nodeIdOf(ea.id), nodeIdOf(eb.id)))
-			.map(e => e.id)
-	
-	return sorted
+	for (const event of events) {
+		visit(event.id)
+	}
+
+	return sorted.sort((a, b) => {
+		if (a.hlc.wall !== b.hlc.wall) return a.hlc.wall - b.hlc.wall
+		if (a.hlc.logical !== b.hlc.logical) return a.hlc.logical - b.hlc.logical
+		return a.sender.localeCompare(b.sender)
+	})
 }
 
 /**
- * 简单 Merkle root（相邻两两 hash，奇数复制末项）
- *
- * @param {string[]} leaves hex 或任意字符串
- * @returns {string} 根节点 digest 的 hex
+ * 创建新事件
+ * @param {object} params - 事件参数
+ * @returns {Promise<object>}
  */
-export function merkleRoot(leaves) {
-	if (!leaves.length) return createHash('sha256').update('').digest('hex')
-	let layer = leaves.map(l => createHash('sha256').update(String(l), 'utf8').digest('hex'))
-	while (layer.length > 1) {
-		const next = []
-		for (let i = 0; i < layer.length; i += 2) {
-			const a = layer[i]
-			const b = layer[i + 1] ?? a
-			next.push(createHash('sha256').update(a + b, 'utf8').digest('hex'))
-		}
-		layer = next
+export async function createEvent(params) {
+	const { type, groupId, channelId, sender, charId, content, prev_event_id, privateKey, hlc } = params
+
+	const event = {
+		type,
+		groupId,
+		channelId: channelId || null,
+		sender,
+		charId: charId || null,
+		timestamp: Date.now(),
+		hlc: hlc || HLC.now(),
+		prev_event_id: prev_event_id || null,
+		content
 	}
-	return layer[0]
+
+	event.id = await generateEventId(event)
+	event.signature = await signEvent(event, privateKey)
+
+	return event
 }

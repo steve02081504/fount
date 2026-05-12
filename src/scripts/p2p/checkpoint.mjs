@@ -1,142 +1,239 @@
-import { Buffer } from 'node:buffer'
-
-import { canonicalStringify } from './canonical_json.mjs'
-import { MEMBERS_PAGE_SIZE } from './constants.mjs'
-import { sign as edSign, verify as edVerify } from './crypto.mjs'
-import { merkleRoot } from './dag.mjs'
+import fs from 'node:fs'
+import path from 'node:path'
+import { topologicalSort } from './dag.mjs'
+import { buildStateFromEvents, applyEvent } from './materialized_state.mjs'
 
 /**
- * 由 fileIndex 物化 Map 生成 folderId → { fileIds } 快照（供 Checkpoint）
- *
- * @param {Map<string, unknown>} [fileIndex] 文件 id → 元数据（含可选 folderId）
- * @returns {Record<string, { fileIds: string[] }>} 文件夹 id 到其下文件 id 列表
+ * Checkpoint 管理
+ * 负责 Checkpoint 的生成、签发、验证
  */
-export function buildFileFoldersSnapshot(fileIndex) {
-	if (!fileIndex || !(fileIndex instanceof Map)) return {}
-	/** @type {Map<string, string[]>} */
-	const byFolder = new Map()
-	for (const [fid, meta] of fileIndex) {
-		const m = meta && typeof meta === 'object' ? /** @type {{ folderId?: string }} */ meta : {}
-		const folder = m.folderId != null && m.folderId !== '' ? String(m.folderId) : 'default'
-		if (!byFolder.has(folder)) byFolder.set(folder, [])
-		byFolder.get(folder).push(String(fid))
+
+const CHECKPOINT_DIR = path.join(process.cwd(), 'data', 'checkpoints')
+
+/**
+ * 确保目录存在
+ * @param {string} dir - 目录路径
+ */
+function ensureDir(dir) {
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir, { recursive: true })
 	}
-	/** @type {Record<string, { fileIds: string[] }>} */
-	const out = {}
-	for (const [folderId, ids] of byFolder) 
-		out[folderId] = { fileIds: [...ids].sort() }
-	
-	return out
 }
 
 /**
- * 构建 Checkpoint 可序列化对象（home 签名前）
- *
- * @param {object} p 解构入参
- * @param {string} p.home_node_id 当前 home 节点 id
- * @param {ReturnType<typeof import('./materialized_state.mjs').emptyMaterializedState>} p.materialized 物化群状态
- * @param {string} p.epoch_id 本 checkpoint 所属 epoch
- * @param {string} p.checkpoint_event_id 触发 checkpoint 的事件 id
- * @param {string[]} p.eventIdsInEpoch 本 epoch 内已纳入的事件 id 列表
- * @param {Record<string, unknown>} [p.overlay] 消息层 overlay 快照
- * @param {Record<string, { fileIds: string[] }>} [p.fileFolders] 文件目录快照
- * @param {unknown[]} [p.epoch_chain] epoch 链元数据
- * @returns {object} 可供 canonicalStringify 与签名的纯数据对象
+ * 创建 Checkpoint
+ * @param {object} state - 物化状态
+ * @param {Array} events - 事件列表
+ * @returns {object}
  */
-export function buildCheckpointPayload({
-	home_node_id,
-	materialized,
-	epoch_id,
-	checkpoint_event_id,
-	eventIdsInEpoch,
-	overlay = {},
-	fileFolders = {},
-	epoch_chain = [],
-}) {
-	const members = [...materialized.members.keys()]
-	const pages = []
-	for (let i = 0; i < members.length; i += MEMBERS_PAGE_SIZE)
-		pages.push(members.slice(i, i + MEMBERS_PAGE_SIZE))
+export function createCheckpoint(state, events) {
+	// 计算成员分页
+	const members = Object.values(state.members).filter(m => m.status === 'active')
+	const membersPerPage = 500
+	const pagesCount = Math.ceil(members.length / membersPerPage)
 
-	const memberPageHashes = pages.map((page, idx) =>
-		merkleRoot(page.map(h => `${idx}:${h}`)),
+	// 计算 Epoch root hash
+	const epochRootHash = calculateEpochRootHash(events)
+
+	// 转换 messageOverlay 为可序列化格式
+	const serializableOverlay = {
+		deletedIds: Array.from(state.messageOverlay.deletedIds),
+		editHistory: Array.from(state.messageOverlay.editHistory.entries()),
+		reactionCounts: Array.from(state.messageOverlay.reactionCounts.entries()),
+		pins: Array.from(state.messageOverlay.pins.entries()),
+		fileIndex: Array.from(state.messageOverlay.fileIndex.entries())
+	}
+
+	const checkpoint = {
+		groupId: state.groupId,
+		home_node_id: state.home_node_id,
+		members_root: calculateMembersRoot(members),
+		members_pages_count: pagesCount,
+		members_page_0: pagesCount === 1 ? members : members.slice(0, membersPerPage),
+		roles: state.roles,
+		channelPermissions: state.channelPermissions,
+		channels: state.channels,
+		fileFolders: state.fileFolders,
+		groupMeta: state.groupMeta,
+		groupSettings: state.groupSettings,
+		messageOverlay: serializableOverlay,
+		checkpoint_event_id: state.checkpoint_event_id,
+		epoch_id: state.epoch_id,
+		epoch_root_hash: epochRootHash,
+		created_at: Date.now()
+	}
+
+	return checkpoint
+}
+
+/**
+ * 计算 Epoch root hash
+ * @param {Array} events - 事件列表
+ * @returns {string}
+ */
+function calculateEpochRootHash(events) {
+	if (events.length === 0) return null
+
+	const eventIds = events.map(e => e.id).sort()
+	const combined = eventIds.join('')
+	const encoder = new TextEncoder()
+	const data = encoder.encode(combined)
+
+	return crypto.subtle.digest('SHA-256', data).then(hash =>
+		Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
 	)
-	const members_root = merkleRoot(memberPageHashes)
-	const epoch_root_hash = merkleRoot(eventIdsInEpoch)
+}
 
-	const rolesObj = Object.fromEntries(materialized.roles)
-	const channelsObj = Object.fromEntries(materialized.channels)
-	/** 供本地 getState 增量重放：完整成员快照（与 members_root 并存） */
-	const members_record = Object.fromEntries(
-		[...materialized.members.entries()].map(([k, v]) => [k, {
-			pubKeyHex: v.pubKeyHex,
-			roles: [...v.roles || []],
-			profile: v.profile,
-		}]),
-	)
+/**
+ * 计算成员 Merkle root
+ * @param {Array} members - 成员列表
+ * @returns {string}
+ */
+function calculateMembersRoot(members) {
+	if (members.length === 0) return null
 
+	const hashes = members.map(m => {
+		const data = JSON.stringify(m)
+		const encoder = new TextEncoder()
+		return crypto.subtle.digest('SHA-256', encoder.encode(data))
+	})
+
+	return Promise.all(hashes).then(results => {
+		const combined = results.map(r =>
+			Array.from(new Uint8Array(r)).map(b => b.toString(16).padStart(2, '0')).join('')
+		).join('')
+
+		const encoder = new TextEncoder()
+		return crypto.subtle.digest('SHA-256', encoder.encode(combined)).then(hash =>
+			Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+		)
+	})
+}
+
+/**
+ * 保存 Checkpoint
+ * @param {string} groupId - 群组ID
+ * @param {object} checkpoint - Checkpoint 对象
+ * @returns {Promise<void>}
+ */
+export async function saveCheckpoint(groupId, checkpoint) {
+	ensureDir(CHECKPOINT_DIR)
+	const checkpointPath = path.join(CHECKPOINT_DIR, `${groupId}.json`)
+
+	// 等待异步哈希计算完成
+	if (checkpoint.members_root instanceof Promise) {
+		checkpoint.members_root = await checkpoint.members_root
+	}
+	if (checkpoint.epoch_root_hash instanceof Promise) {
+		checkpoint.epoch_root_hash = await checkpoint.epoch_root_hash
+	}
+
+	await fs.promises.writeFile(checkpointPath, JSON.stringify(checkpoint, null, 2))
+}
+
+/**
+ * 加载 Checkpoint
+ * @param {string} groupId - 群组ID
+ * @returns {Promise<object|null>}
+ */
+export async function loadCheckpoint(groupId) {
+	const checkpointPath = path.join(CHECKPOINT_DIR, `${groupId}.json`)
+
+	if (!fs.existsSync(checkpointPath)) {
+		return null
+	}
+
+	const data = await fs.promises.readFile(checkpointPath, 'utf-8')
+	const checkpoint = JSON.parse(data)
+
+	// 恢复 messageOverlay 为 Map 和 Set
+	checkpoint.messageOverlay = {
+		deletedIds: new Set(checkpoint.messageOverlay.deletedIds),
+		editHistory: new Map(checkpoint.messageOverlay.editHistory),
+		reactionCounts: new Map(checkpoint.messageOverlay.reactionCounts),
+		pins: new Map(checkpoint.messageOverlay.pins),
+		fileIndex: new Map(checkpoint.messageOverlay.fileIndex)
+	}
+
+	return checkpoint
+}
+
+/**
+ * 获取成员分页
+ * @param {string} groupId - 群组ID
+ * @param {number} pageIndex - 页码
+ * @returns {Promise<Array>}
+ */
+export async function getMembersPage(groupId, pageIndex) {
+	const checkpoint = await loadCheckpoint(groupId)
+	if (!checkpoint) return []
+
+	if (pageIndex === 0 && checkpoint.members_page_0) {
+		return checkpoint.members_page_0
+	}
+
+	// 从完整成员列表中分页
+	const membersPath = path.join(CHECKPOINT_DIR, `${groupId}_members.json`)
+	if (!fs.existsSync(membersPath)) return []
+
+	const data = await fs.promises.readFile(membersPath, 'utf-8')
+	const allMembers = JSON.parse(data)
+
+	const membersPerPage = 500
+	const start = pageIndex * membersPerPage
+	const end = start + membersPerPage
+
+	return allMembers.slice(start, end)
+}
+
+/**
+ * 保存完整成员列表
+ * @param {string} groupId - 群组ID
+ * @param {Array} members - 成员列表
+ * @returns {Promise<void>}
+ */
+export async function saveMembers(groupId, members) {
+	ensureDir(CHECKPOINT_DIR)
+	const membersPath = path.join(CHECKPOINT_DIR, `${groupId}_members.json`)
+	await fs.promises.writeFile(membersPath, JSON.stringify(members, null, 2))
+}
+
+/**
+ * 验证 Checkpoint 完整性
+ * @param {object} checkpoint - Checkpoint 对象
+ * @param {Array} events - 事件列表
+ * @returns {Promise<boolean>}
+ */
+export async function verifyCheckpoint(checkpoint, events) {
+	const calculatedHash = await calculateEpochRootHash(events)
+	return calculatedHash === checkpoint.epoch_root_hash
+}
+
+/**
+ * 从 Checkpoint 恢复状态
+ * @param {object} checkpoint - Checkpoint 对象
+ * @returns {object}
+ */
+export function restoreStateFromCheckpoint(checkpoint) {
 	return {
-		home_node_id,
-		members_root,
-		members_pages_count: pages.length,
-		members_page_0: pages[0] || [],
-		members_record,
-		roles: rolesObj,
-		channelPermissions: serializeChannelPerms(materialized.channelPermissions),
-		channels: channelsObj,
-		fileFolders,
-		groupMeta: materialized.groupMeta,
-		groupSettings: materialized.groupSettings,
-		delegatedOwnerPubKeyHash: materialized.delegatedOwnerPubKeyHash ?? null,
-		privateMailboxEpochs: Object.fromEntries(materialized.privateMailboxEpochs ?? new Map()),
-		messageOverlay: overlay,
-		checkpoint_event_id,
-		epoch_id,
-		eventIdsInEpoch,
-		epoch_root_hash,
-		epoch_chain,
+		groupId: checkpoint.groupId,
+		home_node_id: checkpoint.home_node_id,
+		members: checkpoint.members_page_0.reduce((acc, m) => {
+			acc[m.pubKeyHash] = m
+			return acc
+		}, {}),
+		members_root: checkpoint.members_root,
+		members_pages_count: checkpoint.members_pages_count,
+		roles: checkpoint.roles,
+		channelPermissions: checkpoint.channelPermissions,
+		channels: checkpoint.channels,
+		fileFolders: checkpoint.fileFolders,
+		groupMeta: checkpoint.groupMeta,
+		groupSettings: checkpoint.groupSettings,
+		messageOverlay: checkpoint.messageOverlay,
+		checkpoint_event_id: checkpoint.checkpoint_event_id,
+		epoch_id: checkpoint.epoch_id,
+		epoch_root_hash: checkpoint.epoch_root_hash,
+		bannedMembers: new Set()
 	}
 }
-
-/**
- * @param {object} payload buildCheckpointPayload 的返回值
- * @param {Uint8Array} ownerPrivKey 群主私钥
- * @returns {Promise<object>} 带 owner_signature 的 checkpoint
- */
-export async function signCheckpoint(payload, ownerPrivKey) {
-	const unsigned = { ...payload }
-	delete unsigned.owner_signature
-	const msg = new TextEncoder().encode(canonicalStringify(unsigned))
-	const sig = await edSign(msg, ownerPrivKey)
-	return { ...payload, owner_signature: Buffer.from(sig).toString('hex') }
-}
-
-/**
- * @param {object} checkpoint 带 owner_signature 的 checkpoint
- * @param {Uint8Array} ownerPubKey 群主公钥
- * @returns {Promise<boolean>} 验签是否通过
- */
-export async function verifyCheckpointSignature(checkpoint, ownerPubKey) {
-	const sigHex = checkpoint?.owner_signature
-	if (typeof sigHex !== 'string' || !sigHex.trim()) return false
-	const sig = Buffer.from(sigHex.trim(), 'hex')
-	if (sig.length !== 64) return false
-	const unsigned = { ...checkpoint }
-	delete unsigned.owner_signature
-	const msg = new TextEncoder().encode(canonicalStringify(unsigned))
-	return edVerify(new Uint8Array(sig), msg, ownerPubKey)
-}
-
-/**
- * 将 channelPermissions Map 转为可 JSON 的普通对象
- *
- * @param {Map<string, Map<string, unknown>>} channelPermMap 频道 id → 角色 id 到 allow/deny 等结构
- * @returns {Record<string, Record<string, unknown>>} `Object.fromEntries` 后的可 JSON 嵌套对象
- */
-function serializeChannelPerms(channelPermMap) {
-	const out = {}
-	for (const [chId, rMap] of channelPermMap)
-		out[chId] = Object.fromEntries(rMap)
-	return out
-}
-

@@ -1,0 +1,106 @@
+{
+	"zh-CN": {
+		"name": "个人资料",
+		"description": "用户个人资料管理系统",
+		"profile": {
+			"title": "个人资料",
+			"edit": "编辑资料",
+			"save": "保存",
+			"cancel": "取消",
+			"displayName": "显示名称",
+			"bio": "个人简介",
+			"email": "邮箱",
+			"status": "状态",
+			"customStatus": "自定义状态",
+			"avatar": "头像",
+			"uploadAvatar": "上传头像",
+			"preferences": "偏好设置",
+			"language": "语言",
+			"theme": "主题",
+			"notifications": "通知设置",
+			"emailNotifications": "邮件通知",
+			"pushNotifications": "推送通知",
+			"soundNotifications": "声音通知",
+			"social": "社交链接",
+			"website": "网站",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "统计信息",
+			"joinedAt": "加入时间",
+			"messageCount": "消息数",
+			"groupCount": "群组数",
+			"channelCount": "频道数",
+			"privacy": "隐私设置",
+			"showEmail": "显示邮箱",
+			"showStats": "显示统计",
+			"allowDirectMessages": "允许私信",
+			"statusOptions": {
+				"online": "在线",
+				"away": "离开",
+				"busy": "忙碌",
+				"offline": "离线"
+			},
+			"errors": {
+				"loadFailed": "加载资料失败",
+				"saveFailed": "保存资料失败",
+				"uploadFailed": "上传头像失败"
+			},
+			"success": {
+				"saved": "资料保存成功",
+				"avatarUploaded": "头像上传成功"
+			}
+		}
+	},
+	"en-US": {
+		"name": "Profile",
+		"description": "User profile management system",
+		"profile": {
+			"title": "Profile",
+			"edit": "Edit Profile",
+			"save": "Save",
+			"cancel": "Cancel",
+			"displayName": "Display Name",
+			"bio": "Bio",
+			"email": "Email",
+			"status": "Status",
+			"customStatus": "Custom Status",
+			"avatar": "Avatar",
+			"uploadAvatar": "Upload Avatar",
+			"preferences": "Preferences",
+			"language": "Language",
+			"theme": "Theme",
+			"notifications": "Notifications",
+			"emailNotifications": "Email Notifications",
+			"pushNotifications": "Push Notifications",
+			"soundNotifications": "Sound Notifications",
+			"social": "Social Links",
+			"website": "Website",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "Statistics",
+			"joinedAt": "Joined At",
+			"messageCount": "Messages",
+			"groupCount": "Groups",
+			"channelCount": "Channels",
+			"privacy": "Privacy",
+			"showEmail": "Show Email",
+			"showStats": "Show Stats",
+			"allowDirectMessages": "Allow Direct Messages",
+			"statusOptions": {
+				"online": "Online",
+				"away": "Away",
+				"busy": "Busy",
+				"offline": "Offline"
+			},
+			"errors": {
+				"loadFailed": "Failed to load profile",
+				"saveFailed": "Failed to save profile",
+				"uploadFailed": "Failed to upload avatar"
+			},
+			"success": {
+				"saved": "Profile saved successfully",
+				"avatarUploaded": "Avatar uploaded successfully"
+			}
+		}
+	}
+}

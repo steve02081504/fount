@@ -16,59 +16,6 @@ export async function getChatList() {
 	}
 }
 
-/**
- * 列出本账户下的所有聊天/群组（含名称）。
- * @returns {Promise<{ groupIds: string[], groups: Array<{id: string, name: string}> }>} 群组 ID 列表与带名称的群组信息
- */
-export async function getGroupList() {
-	const response = await fetch('/api/parts/shells:chat/list')
-	if (!response.ok)
-		return { groupIds: [], groups: [] }
-	const data = await response.json()
-	if (!data.groups)
-		data.groups = (data.groupIds || []).map(id => ({ id, name: id }))
-	return data
-}
-
-/**
- * 创建私聊房间（随机 groupId）。
- * @returns {Promise<{ groupId?: string }>} 新建私聊的 groupId（失败时为空对象）
- */
-export async function createDmRoom() {
-	const response = await fetch('/api/parts/shells:chat/dm', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-	})
-	if (!response.ok)
-		return {}
-	return response.json()
-}
-
-/**
- * 本地群组文件夹（shellData/chat/groupFolders.json）
- * @returns {Promise<{ folders: Array<{ id: string, name: string, color?: string, chatIds: string[] }> }>} 文件夹列表结构
- */
-export async function getGroupFolders() {
-	const response = await fetch('/api/parts/shells:chat/groupFolders')
-	if (!response.ok)
-		return { folders: [] }
-	return response.json()
-}
-
-/**
- * 保存本地群组文件夹配置。
- * @param {{ folders: object[] }} body 包含 folders 数组的请求体
- * @returns {Promise<boolean>} 是否保存成功（HTTP 2xx）
- */
-export async function saveGroupFolders(body) {
-	const response = await fetch('/api/parts/shells:chat/groupFolders', {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body),
-	})
-	return response.ok
-}
-
 import { getPartDetails } from '../../../../../scripts/parts.mjs'
 
 const char_details_cache = {}
@@ -110,10 +57,7 @@ export async function copyChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(e => {
-			if (!(e instanceof SyntaxError)) throw e
-			return {}
-		}), { response })
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response })
 
 	return response.json()
 }
@@ -134,10 +78,7 @@ export async function importChat(chatData) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(e => {
-			if (!(e instanceof SyntaxError)) throw e
-			return {}
-		}), { response })
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response })
 
 	return response.json()
 }
@@ -158,10 +99,7 @@ export async function deleteChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(e => {
-			if (!(e instanceof SyntaxError)) throw e
-			return {}
-		}), { response })
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response })
 
 	return response.json()
 }
@@ -182,10 +120,7 @@ export async function exportChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(e => {
-			if (!(e instanceof SyntaxError)) throw e
-			return {}
-		}), { response })
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response })
 
 	return response.json()
 }

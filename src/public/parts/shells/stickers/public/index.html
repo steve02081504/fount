@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>贴纸广场</title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="bg-base-100">
+	<!-- 导航栏 -->
+	<div class="navbar bg-base-200 shadow-lg">
+		<div class="flex-1">
+			<a href="/parts/shells:home" class="btn btn-ghost normal-case text-xl">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+				</svg>
+				返回
+			</a>
+			<span class="text-2xl font-bold ml-4">贴纸广场</span>
+		</div>
+		<div class="flex-none gap-2">
+			<button id="create-pack-btn" class="btn btn-primary">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				创建贴纸包
+			</button>
+			<button id="upload-sticker-btn" class="btn btn-secondary">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+				</svg>
+				上传贴纸
+			</button>
+		</div>
+	</div>
+
+	<!-- 主内容区 -->
+	<div class="container mx-auto p-6">
+		<!-- 搜索栏 -->
+		<div class="mb-6">
+			<input type="text" id="search-input" placeholder="搜索贴纸包..." class="input input-bordered w-full max-w-md" />
+		</div>
+
+		<!-- 标签页 -->
+		<div class="tabs tabs-boxed mb-6">
+			<a class="tab tab-active" data-tab="all">全部</a>
+			<a class="tab" data-tab="installed">已安装</a>
+			<a class="tab" data-tab="my-packs">我的贴纸包</a>
+		</div>
+
+		<!-- 贴纸包列表 -->
+		<div id="packs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+			<!-- 贴纸包卡片将在这里动态生成 -->
+		</div>
+
+		<!-- 空状态 -->
+		<div id="empty-state" class="text-center py-12 hidden">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-base-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+			</svg>
+			<p class="text-xl text-base-content opacity-50 mt-4">暂无贴纸包</p>
+		</div>
+	</div>
+
+	<!-- 创建贴纸包模态框 -->
+	<dialog id="create-pack-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-4">创建贴纸包</h3>
+			<form id="create-pack-form">
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">贴纸包名称</span>
+					</label>
+					<input type="text" id="pack-name" placeholder="输入贴纸包名称" class="input input-bordered" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">描述</span>
+					</label>
+					<textarea id="pack-description" placeholder="输入描述" class="textarea textarea-bordered" rows="3"></textarea>
+				</div>
+				<div class="form-control mb-4">
+					<label class="label cursor-pointer">
+						<span class="label-text">公开</span>
+						<input type="checkbox" id="pack-public" class="checkbox" checked />
+					</label>
+				</div>
+				<div class="modal-action">
+					<button type="button" class="btn" onclick="document.getElementById('create-pack-modal').close()">取消</button>
+					<button type="submit" class="btn btn-primary">创建</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+
+	<!-- 上传贴纸模态框 -->
+	<dialog id="upload-sticker-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-4">上传贴纸</h3>
+			<form id="upload-sticker-form">
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">选择贴纸包</span>
+					</label>
+					<select id="select-pack" class="select select-bordered" required>
+						<option value="">请选择贴纸包</option>
+					</select>
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">贴纸名称</span>
+					</label>
+					<input type="text" id="sticker-name" placeholder="输入贴纸名称" class="input input-bordered" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">选择图片</span>
+					</label>
+					<input type="file" id="sticker-file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" class="file-input file-input-bordered" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text">标签（用逗号分隔）</span>
+					</label>
+					<input type="text" id="sticker-tags" placeholder="例如: 可爱, 表情, 动物" class="input input-bordered" />
+				</div>
+				<div class="modal-action">
+					<button type="button" class="btn" onclick="document.getElementById('upload-sticker-modal').close()">取消</button>
+					<button type="submit" class="btn btn-primary">上传</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+
+	<!-- 贴纸包详情模态框 -->
+	<dialog id="pack-detail-modal" class="modal">
+		<div class="modal-box max-w-4xl">
+			<h3 class="font-bold text-lg mb-4" id="detail-pack-name"></h3>
+			<p class="text-sm opacity-70 mb-4" id="detail-pack-description"></p>
+			<div class="mb-4">
+				<span class="badge badge-primary" id="detail-pack-author"></span>
+				<span class="badge badge-secondary ml-2" id="detail-pack-count"></span>
+			</div>
+			<div class="divider"></div>
+			<div id="detail-stickers-container" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 max-h-96 overflow-y-auto">
+				<!-- 贴纸将在这里动态生成 -->
+			</div>
+			<div class="modal-action">
+				<button type="button" id="delete-pack-btn" class="btn btn-error hidden">删除贴纸包</button>
+				<button type="button" class="btn" onclick="document.getElementById('pack-detail-modal').close()">关闭</button>
+				<button type="button" id="install-pack-btn" class="btn btn-primary">安装</button>
+				<button type="button" id="uninstall-pack-btn" class="btn btn-warning hidden">卸载</button>
+			</div>
+		</div>
+	</dialog>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>
