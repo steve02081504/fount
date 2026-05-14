@@ -26,28 +26,6 @@ async function callApi(endpoint, method = 'POST', body) {
 }
 
 /**
- * 创建新聊天。
- * @returns {Promise<string>} - 新聊天的ID。
- */
-export async function createNewChat() {
-	const response = await fetch('/api/parts/shells:chat/groups/new', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		credentials: 'include',
-		body: JSON.stringify({}),
-	})
-	const data = await response.json().catch(() => ({}))
-	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
-	if (!data?.groupId)
-		throw new Error('API response missing groupId')
-	currentChatId = data.groupId
-	return data.groupId
-}
-
-/**
  * 添加角色。
  * @param {string} charname - 角色名称。
  * @returns {Promise<any>} - 响应数据。

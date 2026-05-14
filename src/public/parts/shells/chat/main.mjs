@@ -1,4 +1,3 @@
-import { setEndpoints as registerChannelRoutesUnderChat } from './src/channels/endpoints.mjs'
 import { broadcastEvent, countGroupSockets, registerSocket } from './src/chat/websocket.mjs'
 import { wireHubShellWebSockets } from './src/chat.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
@@ -42,7 +41,6 @@ export default {
 		wireHubShellWebSockets({ broadcastEvent, registerSocket, countGroupSockets })
 		setGroupEndpoints(router)
 		setEndpoints(router)
-		registerChannelRoutesUnderChat(router, '/api/parts/shells:chat/channels')
 		registerProfileRoutesUnderChat(router, '/api/parts/shells:chat/profile')
 		registerStickerRoutesUnderChat(router, '/api/parts/shells:chat/stickers')
 	},

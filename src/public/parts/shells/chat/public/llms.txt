@@ -12,8 +12,10 @@
 ### GET /parts/shells:chat/hub/
 - 用途：聊天 Hub（Discord 式侧栏），集中展示会话、群组与文件夹收录；原独立「聊天记录列表」页面已移除。
 
-### GET /parts/shells:chat/new
-- 用途：新建聊天页面，用于创建新的聊天会话。可通过 URL 参数指定初始角色（`?char=${name}`）。
+### GET /parts/shells:chat/new/
+- 用途：**仅重定向** 至 `/parts/shells:chat/hub/`，保留 `?char=` 查询串与 hash。新建会话与角色入口请直接使用 **`/parts/shells:chat/hub/?char=…`**。
+
+- **已移除**：`/parts/shells:chat/group/`、`/parts/shells:chat/groups/` 等仅跳转 Hub 的静态路径；会话入口统一为 **`/parts/shells:chat/hub/`** + `#group:{groupId}:{channelId}`（或 `?char=`）。
 
 ---
 
@@ -34,6 +36,8 @@
 
 ### GET /api/parts/shells:chat/groups/list
 - 用途：返回当前用户已加入的 **DAG 联邦群 / DM** 摘要（`listKind: 'p2p'`），供 Hub 与切换器使用。
+
+- **已删除**：根级 `GET/POST /api/parts/shells:chat/channels/...`（与 `…/groups/:groupId/channels/…` 重复）；频道与消息一律经 **`…/groups/:groupId/channels/:channelId/…`**。
 
 ### GET /api/parts/shells:chat/groups/:groupId/state
 - 用途：当前用户可见的群状态（`channels`、`groupSettings`、`roles` 等）。`state.pinsByChannel` 为 **频道 id → 置顶消息 event id[]**（来自本地 checkpoint overlay，§7.3），Hub 侧栏「置顶」直接消费该字段。
@@ -153,6 +157,9 @@
 ---
 
 ## 联邦群：频道消息与分片
+
+### POST /api/parts/shells:chat/groups/:groupId/channels/:channelId/message
+- Body：JSON。`reply`（与根级 `…/groups/:groupId/message` 同类）或 `content`；写入 DAG `message` 事件并广播 `channel_message`。
 
 ### POST /api/parts/shells:chat/groups/:groupId/channels/:channelId/message-append
 - Body：JSON。`logical_stream_id`（字符串，必填，与首条 `message` 的 `eventId` 或 `content.logical_stream_id` 对齐）、`text`（字符串，可选分片正文）、可选 `chunk_index`（数字）、可选 `content_ref`（外链块，与 DAG 校验规则一致）。

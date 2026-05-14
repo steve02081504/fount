@@ -32,8 +32,8 @@ import { processButtonList } from './registry_processor.mjs'
 			},
 			level: 0,
 			interface: "chat",
-			url: "/parts/shells:chat/new?char=${name}", //这里的name是约定的宏，由前端完成替换
-			onclick: "window.open('/parts/shells:chat/new?char=${name}')", //可选的自定义点击事件，如果不写则默认href为url
+			url: "/parts/shells:chat/hub/?char=${name}", //这里的name是约定的宏，由前端完成替换
+			onclick: "window.open('/parts/shells:chat/hub/?char=${name}')", //可选的自定义点击事件，如果不写则默认href为url
 			button: "<img src=\"https://example.com/icon.png\" />", //可选的自定义按钮，如果不写，则默认使用一个问号图标
 		}
 	]

@@ -1,32 +1,6 @@
 /**
- * 创建新聊天的页面逻辑。
+ * 兼容入口：重定向至 Hub（`?char=` 与 hash 原样保留，由 Hub 解析）。
  */
-import { initTranslations, console } from '../../../scripts/i18n.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
-import { currentChatId, createNewChat, addCharacter } from '../src/endpoints.mjs'
-
-/**
- * 初始化页面，创建一个新的聊天会话，根据 URL 参数添加一个角色（如果提供），然后重定向到主聊天页面。
- * @returns {Promise<void>}
- */
-async function main() {
-	await initTranslations('chat.new')
-	applyTheme()
-
-	try {
-		await createNewChat()
-		const searchParams = new URLSearchParams(window.location.search)
-		const charToAdd = searchParams.get('char')
-		if (charToAdd) await addCharacter(charToAdd)
-	}
-	catch (e) {
-		console.error(e)
-		showToast('error', e.stack || e.message || e)
-		throw e
-	}
-
-	const hubHash = `#group:${currentChatId}:default`
-	window.location.replace(`/parts/shells:chat/hub${hubHash}`)
-}
-main()
+const q = window.location.search || ''
+const h = window.location.hash || ''
+window.location.replace(`/parts/shells:chat/hub/${q}${h}`)
