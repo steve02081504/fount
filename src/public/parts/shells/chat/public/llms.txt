@@ -10,12 +10,9 @@
 - 用途：立即 **重定向** 至 `/parts/shells:chat/hub/`，并保留当前 `location.hash`（如 `#group:…`）。不再渲染旧版单页聊天 DOM。
 
 ### GET /parts/shells:chat/hub/
-- 用途：聊天 Hub（Discord 式侧栏），集中展示会话、群组与文件夹收录；原独立「聊天记录列表」页面已移除。
+- 用途：聊天 Hub（Discord 式侧栏），集中展示会话、群组与文件夹收录；原独立「聊天记录列表」页面已移除。带角色直达时使用 **`/parts/shells:chat/hub/?char=…`**；带会话定位时使用 **`#group:{groupId}:{channelId}`**。
 
-### GET /parts/shells:chat/new/
-- 用途：**仅重定向** 至 `/parts/shells:chat/hub/`，保留 `?char=` 查询串与 hash。新建会话与角色入口请直接使用 **`/parts/shells:chat/hub/?char=…`**。
-
-- **已移除**：`/parts/shells:chat/group/`、`/parts/shells:chat/groups/` 等仅跳转 Hub 的静态路径；会话入口统一为 **`/parts/shells:chat/hub/`** + `#group:{groupId}:{channelId}`（或 `?char=`）。
+- **已移除静态占位页**：`/parts/shells:chat/new/`、`/parts/shells:chat/group/`、`/parts/shells:chat/groups/`（曾仅跳转 Hub）；入口仅 **`/parts/shells:chat/hub/`**。
 
 ---
 
