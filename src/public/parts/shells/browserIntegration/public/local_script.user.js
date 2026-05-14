@@ -23,3 +23,16 @@
 // @grant        GM_info
 // @require      ${file_protocol_url}
 // ==/UserScript==
+
+setTimeout(() => { // fuck firefox
+	if (!unsafeWindow.fount) alert(`\
+due to your browser's privacy settings, fount Browser Integration script cant load it from file:// protocol.
+you need to install the script manually from:
+
+${file_protocol_url}
+
+and in the future, you'll need manually update the script.
+
+try Chrome if you want to automatically update the script and avoid breaking changes from fount messing up your fount Browser Integration.
+`)
+}, 2000)

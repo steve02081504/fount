@@ -31,7 +31,7 @@ export function setEndpoints(router) {
 			const mainScriptFileUrl = pathToFileURL(publicScriptPath).href
 
 			const template = await fs.promises.readFile(localScriptTemplatePath, 'utf-8')
-			const content = template.replace('${file_protocol_url}', mainScriptFileUrl)
+			const content = template.replaceAll('${file_protocol_url}', mainScriptFileUrl)
 			res.status(200).send(content)
 		}
 		else {
