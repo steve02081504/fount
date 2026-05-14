@@ -346,6 +346,10 @@ export function applyEvent(state, event) {
 			break
 		}
 
+		case 'dag_tip_merge':
+			// 纯拓扑合并事件：不修改物化成员/频道，仅收敛多父（计划 §0 多父 DAG）。
+			break
+
 		case 'peer_invite': {
 			const c = event.content && typeof event.content === 'object' ? event.content : {}
 			const from = typeof c.from === 'string' && c.from

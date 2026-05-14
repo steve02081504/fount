@@ -10,6 +10,7 @@ import { pubKeyHash, sign } from '../../../../../../scripts/p2p/crypto.mjs'
 import {
 	computeEventId,
 	signPayloadBytes,
+	sortedPrevEventIds,
 	topologicalCanonicalOrder,
 } from '../../../../../../scripts/p2p/dag.mjs'
 import { nextHlc } from '../../../../../../scripts/p2p/hlc.mjs'
@@ -54,6 +55,92 @@ import { broadcastEvent, verifyPowSolution } from './websocket.mjs'
  *
  */
 export { requestMissingEventsGossip } from './federation.mjs'
+
+/** 懒同步频道时视为「频道内载荷」的事件（其余类型在 `syncScope:channel` 下默认全量透传）。 */
+const CHANNEL_SYNC_MESSAGE_TYPES = new Set([
+	'message',
+	'message_append',
+	'message_edit',
+	'message_delete',
+	'message_feedback',
+	'vote_cast',
+	'reaction_add',
+	'reaction_remove',
+	'pin_message',
+	'unpin_message',
+])
+
+/**
+ * @param {object} e DAG 事件
+ * @returns {string} 归一化频道 id（缺省为 `default`）
+ */
+export function effectiveEventChannelIdForSync(e) {
+	const c = e.content && typeof e.content === 'object' ? e.content : {}
+	const fromTop = typeof e.channelId === 'string' && e.channelId.trim() ? e.channelId.trim() : ''
+	const fromContent = typeof c.channelId === 'string' && c.channelId.trim() ? c.channelId.trim() : ''
+	return fromTop || fromContent || 'default'
+}
+
+/**
+ * `syncScope:'channel'` 下是否应将该事件纳入对该频道的增量同步切片。
+ * @param {object} e 事件
+ * @param {string} channelId 目标频道
+ * @returns {boolean} 是否纳入懒同步切片
+ */
+export function eventMatchesLazyChannelScope(e, channelId) {
+	const t = e.type
+	if (!CHANNEL_SYNC_MESSAGE_TYPES.has(t)) {
+		if (t === 'list_item_update') {
+			const c = e.content && typeof e.content === 'object' ? e.content : {}
+			const cid = typeof c.channelId === 'string' ? c.channelId.trim() : ''
+			return cid === channelId
+		}
+		return true
+	}
+	return effectiveEventChannelIdForSync(e) === channelId
+}
+
+/**
+ * 计算当前 DAG 叶事件 id 集合（未被任何 `prev_event_ids` 引用的已存事件）。
+ * @param {object[]} events 已排序的 JSONL 行
+ * @returns {string[]} tip id 列表（文件顺序，非规范序）
+ */
+export function computeDagTipIds(events) {
+	if (!events.length) return []
+	const referenced = new Set()
+	for (const ev of events) {
+		const prevs = Array.isArray(ev.prev_event_ids) ? ev.prev_event_ids : []
+		for (const p of prevs) 
+			if (typeof p === 'string' && p) referenced.add(p)
+		
+	}
+	const tips = []
+	for (const ev of events) 
+		if (typeof ev.id === 'string' && ev.id && !referenced.has(ev.id)) tips.push(ev.id)
+	
+	return tips
+}
+
+/**
+ * 将当前所有 DAG 叶合并为单条多父事件（§0 多父汇合）。
+ * @param {string} username 用户
+ * @param {string} chatId 群
+ * @param {string} sender 成员键（通常为会话用户名或 pubKeyHash）
+ * @param {Uint8Array} [secretKey] 可选 Ed25519 私钥
+ * @returns {Promise<object>} 签名后事件
+ */
+export async function mergeDagTips(username, chatId, sender, secretKey) {
+	const rows = await readJsonl(eventsPath(username, chatId))
+	const tips = computeDagTipIds(rows)
+	if (tips.length < 2) throw new Error('dag_tip_merge: fewer than 2 tips')
+	return appendEvent(username, chatId, {
+		type: 'dag_tip_merge',
+		sender,
+		timestamp: Date.now(),
+		content: { mergedTipCount: tips.length },
+		prev_event_ids: sortedPrevEventIds(tips),
+	}, secretKey)
+}
 
 /**
  * 校验频道 ID 是否合法（仅允许 [\w.-]，最长 128 字符）。
@@ -647,6 +734,22 @@ export async function appendEvent(username, chatId, event, secretKey) {
 		const perms = memberChannelPermissions(state, event.sender, ch)
 		if (!perms.ADMIN && !perms.MANAGE_ROLES) throw new Error('reputation_reset requires ADMIN or MANAGE_ROLES')
 	}
+	if (event.type === 'dag_tip_merge') {
+		const rows = await readJsonl(eventsPath(username, chatId))
+		const tips = computeDagTipIds(rows)
+		if (tips.length < 2) throw new Error('dag_tip_merge: no fork')
+		const expected = sortedPrevEventIds(tips)
+		const got = sortedPrevEventIds(event.prev_event_ids)
+		if (expected.length !== got.length || expected.some((v, i) => v !== got[i]))
+			throw new Error('dag_tip_merge: prev_event_ids must list all current DAG tips')
+		const { state } = await getState(username, chatId)
+		const sender = String(event.sender || '')
+		const m = state.members[sender]
+		if (!m || m.status !== 'active') throw new Error('dag_tip_merge requires active member sender')
+		const ch = governanceChannelIdForPermissions(state)
+		const perms = memberChannelPermissions(state, sender, ch)
+		if (!perms.MANAGE_CHANNELS) throw new Error('dag_tip_merge requires MANAGE_CHANNELS')
+	}
 	const authzLedgerTypes = new Set(['peer_invite', 'reputation_slash', 'reputation_reset'])
 	if (authzLedgerTypes.has(event.type)) {
 		const { state } = await getState(username, chatId)
@@ -998,18 +1101,35 @@ export async function maybeAutoTriggerCharReply(username, chatId, channelId) {
  * 分页返回 DAG 事件，供客户端增量同步与补拉。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
- * @param {{ since?: string, limit?: number }} q 游标 `since`（上一已知事件 ID）与条数上限
+ * @param {{ since?: string, limit?: number, channelId?: string }} q 游标 `since`、条数上限、可选 `channelId`（仅当该频道 `syncScope==='channel'` 时启用懒同步切片，§9）
  * @returns {Promise<{ events: object[], truncated: boolean }>} 事件切片及是否因上限被截断
  */
 export async function syncEvents(username, chatId, q) {
 	const events = await readJsonl(eventsPath(username, chatId))
+	let work = events
+	const channelId = typeof q.channelId === 'string' && q.channelId.trim() ? q.channelId.trim() : ''
+	if (channelId) {
+		const { state } = await getState(username, chatId)
+		const scope = state.channels?.[channelId]?.syncScope
+		if (scope === 'channel') {
+			const order = topologicalCanonicalOrder(events.map(dagEvent => ({
+				id: dagEvent.id,
+				prev_event_ids: dagEvent.prev_event_ids,
+				hlc: dagEvent.hlc,
+				node_id: dagEvent.node_id,
+				sender: dagEvent.sender,
+			})))
+			const byId = new Map(events.map(dagEvent => [dagEvent.id, dagEvent]))
+			work = order.map(id => byId.get(id)).filter(Boolean).filter(e => eventMatchesLazyChannelScope(e, channelId))
+		}
+	}
 	const limit = Math.min(Number(q.limit) || DEFAULT_MAX_CATCHUP_EVENTS, DEFAULT_MAX_CATCHUP_EVENTS)
 	if (!q.since) {
-		const slice = events.slice(-limit)
-		return { events: slice, truncated: events.length > limit }
+		const slice = work.slice(-limit)
+		return { events: slice, truncated: work.length > limit }
 	}
-	const idx = events.findIndex(dagEvent => dagEvent.id === q.since)
-	const slice = idx === -1 ? events : events.slice(idx + 1)
+	const idx = work.findIndex(dagEvent => dagEvent.id === q.since)
+	const slice = idx === -1 ? work : work.slice(idx + 1)
 	return { events: slice.slice(0, limit), truncated: slice.length > limit }
 }
 

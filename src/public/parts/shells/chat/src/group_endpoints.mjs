@@ -10,19 +10,22 @@ import {
 	appendReactionEvent,
 	appendUnpinEvent,
 	appendValidatedRemoteEvent,
+	computeDagTipIds,
 	createGroup as dagCreateGroup,
 	deleteChatData,
 	getState,
 	listUserGroups,
+	mergeDagTips,
 	syncEvents,
 } from './chat/dag.mjs'
 import { readJsonl } from './chat/dag_storage.mjs'
 import { isPubKeyHashBlocked } from './chat/dm_blocklist.mjs'
 import { listFederationPeersForGroup, ensureFederationRoom, getFederationConfig, invalidateFederationRoomCache } from './chat/federation.mjs'
 import { foldMessageAppendStreamLines } from './chat/fold_channel_message_lines.mjs'
-import { messagesPath } from './chat/paths.mjs'
+import { messagesPath, eventsPath } from './chat/paths.mjs'
+import { loadPeers } from './chat/peers.mjs'
 import { loadReputation } from './chat/reputation.mjs'
-import { broadcastEvent, setPowChallenge } from './chat/websocket.mjs'
+import { setPowChallenge } from './chat/websocket.mjs'
 import { loadChat, modifyTimeLine, triggerCharReply } from './chat.mjs'
 
 /** Ed25519 公钥 32 字节 → 64 位十六进制（小写）。 */
@@ -384,7 +387,7 @@ export function setGroupEndpoints(router) {
 		}
 	})
 
-	/** 联邦对等端列表（Trystero 房间 roster；未启用联邦时 peers 为空）。 */
+	/** 联邦对等端 + 本地 `peers.json` 稀疏池线索（§7.2、§19）。 */
 	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/peers$/, authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
@@ -395,11 +398,58 @@ export function setGroupEndpoints(router) {
 				return res.status(403).json({ success: false, error: 'Not a member' })
 
 			const roster = await listFederationPeersForGroup(username, groupId)
-			res.status(200).json({ success: true, ...roster })
+			const stored = await loadPeers(username, groupId)
+			res.status(200).json({
+				success: true,
+				selfNodeId: roster.selfNodeId,
+				federationEnabled: roster.federationEnabled,
+				peers: roster.peers,
+				trustedPeers: stored.trustedPeers,
+				explorePeers: stored.explorePeers,
+				blockedPeers: stored.blockedPeers,
+			})
 		}
 		catch (error) {
 			console.error('Get peers error:', error)
 			res.status(500).json({ success: false, error: error.message })
+		}
+	})
+
+	/** 当前 DAG 叶 id（多父分叉检测；§0）。 */
+	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/tips$/, authenticate, async (req, res) => {
+		try {
+			const { username } = await getUserByReq(req)
+			const groupId = req.params[0]
+			const { state } = await getState(username, groupId)
+			const member = state.members[username]
+			if (!member || member.status !== 'active')
+				return res.status(403).json({ success: false, error: 'Not a member' })
+
+			const events = await readJsonl(eventsPath(username, groupId))
+			res.status(200).json({ success: true, tips: computeDagTipIds(events) })
+		}
+		catch (error) {
+			console.error('Get dag tips error:', error)
+			res.status(500).json({ success: false, error: error.message })
+		}
+	})
+
+	/** 将当前所有 DAG 叶合并为一条多父 `dag_tip_merge` 事件（需 `MANAGE_CHANNELS`）。 */
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/merge-tips$/, authenticate, async (req, res) => {
+		try {
+			const { username } = await getUserByReq(req)
+			const groupId = req.params[0]
+			const { state } = await getState(username, groupId)
+			const member = state.members[username]
+			if (!member || member.status !== 'active')
+				return res.status(403).json({ success: false, error: 'Not a member' })
+
+			const event = await mergeDagTips(username, groupId, username)
+			res.status(200).json({ success: true, event })
+		}
+		catch (error) {
+			console.error('Merge dag tips error:', error)
+			res.status(400).json({ success: false, error: error.message })
 		}
 	})
 
@@ -430,27 +480,6 @@ export function setGroupEndpoints(router) {
 		}
 		catch (error) {
 			console.error('Get members page error:', error)
-			res.status(500).json({ success: false, error: error.message })
-		}
-	})
-
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/broadcast$/, authenticate, async (req, res) => {
-		try {
-			const groupId = req.params[0]
-			const payload = req.body?.payload
-			if (!payload || typeof payload !== 'object')
-				return res.status(400).json({ success: false, error: 'Invalid payload' })
-
-			const { username } = await getUserByReq(req)
-			const { state } = await getState(username, groupId)
-			if (!state.members[username] || state.members[username].status !== 'active')
-				return res.status(403).json({ success: false, error: 'Not a member' })
-
-			broadcastEvent(groupId, payload)
-			res.status(204).end()
-		}
-		catch (error) {
-			console.error('Group broadcast error:', error)
 			res.status(500).json({ success: false, error: error.message })
 		}
 	})
@@ -585,9 +614,13 @@ export function setGroupEndpoints(router) {
 		try {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
+			const channelId = typeof req.query.channelId === 'string' && req.query.channelId.trim()
+				? req.query.channelId.trim()
+				: undefined
 			const { events, truncated } = await syncEvents(username, groupId, {
 				since: typeof req.query.since === 'string' ? req.query.since : undefined,
 				limit: req.query.limit,
+				channelId,
 			})
 			res.status(200).json({ success: true, events, truncated })
 		}

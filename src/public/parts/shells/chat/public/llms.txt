@@ -39,6 +39,20 @@
 ### GET /api/parts/shells:chat/groups/:groupId/state
 - 用途：当前用户可见的群状态（`channels`、`groupSettings`、`roles` 等）。`state.pinsByChannel` 为 **频道 id → 置顶消息 event id[]**（来自本地 checkpoint overlay，§7.3），Hub 侧栏「置顶」直接消费该字段。
 
+### GET /api/parts/shells:chat/groups/:groupId/events
+- 查询：`since`（上一已知事件 id）、`limit`、`channelId`（可选）。当目标频道 `syncScope === 'channel'` 时，仅返回该懒同步切片（全局结构事件 + 该频道消息类事件，§9）。
+
+### GET /api/parts/shells:chat/groups/:groupId/dag/tips
+- 用途：返回当前 DAG **叶事件 id** 列表；长度 ≥2 表示存在未汇合分叉，可调用 `merge-tips`。
+
+### POST /api/parts/shells:chat/groups/:groupId/dag/merge-tips
+- 用途：写入 **`dag_tip_merge`** 多父事件，将当前全部叶合并为单 tip；调用方须具备 **`MANAGE_CHANNELS`**。成功返回 `{ success, event }`。
+
+### GET /api/parts/shells:chat/groups/:groupId/peers
+- 用途：Trystero 房内 roster，外加本地持久化 **`peers.json`** 字段：`trustedPeers`、`explorePeers`、`blockedPeers`（联邦拉取 roster 时会将 `remoteNodeId` 并入 `explorePeers`，§7.2）。
+
+- **已移除**：`POST …/groups/:groupId/broadcast`（任意 JSON 广播面过大）；实时推送由服务端在 DAG/消息路径内 `broadcastEvent` 驱动。
+
 ### GET /api/parts/shells:chat/bookmarks
 - 用途：返回用户级书签条目数组（持久化于 `shells/chat/bookmarks.json`，形如 `{ entries: [...] }` 的 `entries` 列表）。
 

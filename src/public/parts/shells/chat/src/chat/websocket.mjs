@@ -151,24 +151,60 @@ export function countGroupSockets(chatId) {
 	return sockets.get(chatId)?.size ?? 0
 }
 
+/** 出站 tie-break（§6.4 优先级：数值越小越优先）。 */
+let wsOutSeq = 0
+const WS_OUT_CAP = 48
+
 /**
- * 向某群组下所有已连接 WS 广播 JSON 消息（带时间戳字段 t）
- *
+ * @param {object} payload 广播体
+ * @returns {number} 0 DAG、1 频道消息、2 一般、4 VOLATILE（typing / stream_chunk 等）
+ */
+function inferBroadcastPriority(payload) {
+	if (!payload || typeof payload !== 'object') return 2
+	const t = payload.type
+	if (t === 'dag_event') return 0
+	if (t === 'channel_message') return 1
+	if (t === 'typing' || t === 'stream_chunk' || t === 'ai_stream_chunk' || t === 'group_stream_chunk') return 4
+	if (t === 'ai_auto_trigger' || t === 'group_stream_end') return 3
+	return 2
+}
+
+/**
+ * 向某群组下所有已连接 WS 广播 JSON 消息（带时间戳字段 `t`）；拥塞时丢弃低优先级（VOLATILE）。
  * @param {string} chatId 群组 id
- * @param {object} payload 业务负载（会浅拷贝并附加 `t`）
+ * @param {object} payload 业务负载
  * @returns {void}
  */
 export function broadcastEvent(chatId, payload) {
 	const set = sockets.get(chatId)
 	if (!set) return
+	const pri = inferBroadcastPriority(payload)
 	const raw = JSON.stringify({ ...payload, t: Date.now() })
-	for (const ws of set)
-		try {
-			ws.send(raw)
+	for (const ws of set) {
+		if (!ws._fountOutQ) ws._fountOutQ = []
+		const q = ws._fountOutQ
+		q.push({ raw, pri, seq: ++wsOutSeq })
+		while (q.length > WS_OUT_CAP) {
+			let worst = 0
+			for (let i = 1; i < q.length; i++) {
+				const a = q[i], b = q[worst]
+				if (a.pri > b.pri || (a.pri === b.pri && a.seq < b.seq)) worst = i
+			}
+			q.splice(worst, 1)
 		}
-		catch (e) {
-			console.error('broadcast failed', e)
+		q.sort((a, b) => a.pri !== b.pri ? a.pri - b.pri : a.seq - b.seq)
+		while (q.length) {
+			const item = q.shift()
+			try {
+				ws.send(item.raw)
+			}
+			catch (e) {
+				console.error('broadcast failed', e)
+				q.unshift(item)
+				break
+			}
 		}
+	}
 }
 
 // ─── 流式 AI chunk 短窗口缓冲（VOLATILE best-effort；不提供联邦 stream_chunk_nack，§6.4）────────

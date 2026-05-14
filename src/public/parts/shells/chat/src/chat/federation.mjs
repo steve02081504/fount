@@ -616,7 +616,10 @@ export async function listFederationPeersForGroup(username, groupId) {
 	const slot = await ensureFederationRoom(username, groupId)
 	if (!slot?.getRoster)
 		return { selfNodeId: nodeId, federationEnabled: true, peers: [] }
-	return { selfNodeId: nodeId, federationEnabled: true, peers: slot.getRoster() }
+	const peers = slot.getRoster()
+	const { recordExplorePeersFromRoster } = await import('./peers.mjs')
+	void recordExplorePeersFromRoster(username, groupId, peers).catch(e => console.error('peers.json PEX merge failed', e))
+	return { selfNodeId: nodeId, federationEnabled: true, peers }
 }
 
 /**

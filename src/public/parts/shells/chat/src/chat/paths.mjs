@@ -52,6 +52,16 @@ export function reputationPath(username, chatId) {
 }
 
 /**
+ * PEX / 稀疏池线索（§7.2；本地 `peers.json`）。
+ * @param {string} username 本地账户名
+ * @param {string} chatId 群组 ID
+ * @returns {string} `peers.json` 绝对路径
+ */
+export function peersPath(username, chatId) {
+	return join(chatDir(username, chatId), 'peers.json')
+}
+
+/**
  * 频道消息派生日志 JSONL 路径。
  * @param {string} username 本地账户名
  * @param {string} chatId 群组或会话 ID
