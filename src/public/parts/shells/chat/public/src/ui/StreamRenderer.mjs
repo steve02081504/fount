@@ -70,6 +70,12 @@ class StreamRenderer {
 	 * 渲染一帧。
 	 */
 	async renderFrame() {
+		const chatContainer = document.getElementById('chat-messages')
+		const wasNearBottom = chatContainer &&
+			chatContainer.scrollTop >= chatContainer.scrollHeight - chatContainer.clientHeight - 150
+
+		let anyContentUpdated = false
+
 		for (const [id, state] of this.streamingMessages) {
 			// 重新获取 DOM，防止虚拟列表滚动导致元素重建
 			if (!state.domElement || !state.domElement.isConnected) {
@@ -101,8 +107,12 @@ class StreamRenderer {
 				}
 
 				state.lastRendered = state.displayedContent
+				anyContentUpdated = true
 			}
 		}
+
+		if (anyContentUpdated && wasNearBottom && chatContainer)
+			chatContainer.scrollTop = chatContainer.scrollHeight
 	}
 }
 
