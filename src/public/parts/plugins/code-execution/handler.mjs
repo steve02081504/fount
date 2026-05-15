@@ -7,7 +7,13 @@ import util from 'node:util'
 import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
-import { defineInlineToolUses } from '../../shells/chat/src/stream.mjs'
+import {
+	defineInlineToolUses,
+	defineToolUseBlocks,
+	getChatI18n,
+	renderMarkdownCodeBlock,
+	renderMarkdownInlineCode
+} from '../../shells/chat/src/stream.mjs'
 
 /**
  * 暂停执行指定的毫秒数。
@@ -302,10 +308,10 @@ export async function codeExecutionReplyHandler(result, args) {
 
 		let replacements
 		if (cachedResults?.length)
-			replacements = cachedResults.map(res => {
+			replacements = await Promise.all(cachedResults.map(res => {
 				if (res instanceof Error) throw res
 				return res
-			})
+			}))
 		else
 			// 古法计算
 			replacements = await Promise.all(
@@ -363,10 +369,10 @@ export async function codeExecutionReplyHandler(result, args) {
 
 			let replacements
 			if (cachedResults?.length)
-				replacements = cachedResults.map(res => {
+				replacements = await Promise.all(cachedResults.map(res => {
 					if (res instanceof Error) throw res
 					return res
-				})
+				}))
 			else {
 				// 古法计算
 				const runner_regex_g = new RegExp(`<inline-${shell_name}>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
@@ -437,27 +443,86 @@ export async function codeExecutionReplyHandler(result, args) {
  * @returns {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").CharReplyPreviewUpdater_t} - 新的更新器。
  */
 export function GetCodeExecutionPreviewUpdater(next) {
+	/**
+	 * 将代码渲染为“正在执行语言”的展开代码块。
+	 * @param {string} code - 代码内容。
+	 * @param {string} lang - 语言标签。
+	 * @param {object} args - 预览更新参数。
+	 * @returns {string} 渲染后的 Markdown 代码块。
+	 */
+	function renderRunningCodeBlock(code, lang, args) {
+		return renderMarkdownCodeBlock(code, {
+			lang,
+			title: getChatI18n(args, 'chat.messageView.toolRunningLang', { lang })
+		})
+	}
+
+	/**
+	 * 渲染 inline-js 未闭合或待执行内容。
+	 * @param {string} code - inline 代码。
+	 * @param {object} args - 预览更新参数。
+	 * @returns {string} 渲染后的 Markdown 内容。
+	 */
+	function renderInlineJsPending(code, args) {
+		if (/[\r\n]/.test(code))
+			return renderRunningCodeBlock(code, 'js', args)
+		return renderMarkdownInlineCode(code, 'js')
+	}
+
 	const toolDefs = [
 		['inline-js', '<inline-js>', '</inline-js>', async (code) => {
-			const jsrunner = code
-			const coderesult = await async_eval(jsrunner, {})
+			const coderesult = await async_eval(code, {})
 			if (coderesult.error) throw coderesult.error
 			return coderesult.result + ''
-		}]
+		}, renderInlineJsPending]
+	]
+	const runBlocks = [
+		{
+			start: '<run-js>',
+			end: '</run-js>',
+			/**
+			 * 渲染 `<run-js>` 未闭合或待执行内容。
+			 * @param {string} code - 代码块内容。
+			 * @param {object} args - 预览更新参数。
+			 * @returns {string} 渲染后的 Markdown 内容。
+			 */
+			renderPending: (code, args) => renderRunningCodeBlock(code, 'js', args),
+		}
 	]
 
 	// 添加所有可用的 shell 内联工具
 	for (const shell_name in shell_exec_map) {
 		if (!available[shell_name]) continue
+		/**
+		 * 渲染 inline-shell 未闭合或待执行内容。
+		 * @param {string} code - inline 代码。
+		 * @param {object} args - 预览更新参数。
+		 * @returns {string} 渲染后的 Markdown 内容。
+		 */
+		const renderInlineShellPending = (code, args) => {
+			if (/[\r\n]/.test(code))
+				return renderRunningCodeBlock(code, shell_name, args)
+			return renderMarkdownInlineCode(code, shell_name)
+		}
+		runBlocks.push({
+			start: `<run-${shell_name}>`,
+			end: `</run-${shell_name}>`,
+			/**
+			 * 渲染 `<run-*>` shell 块未闭合或待执行内容。
+			 * @param {string} code - 代码块内容。
+			 * @param {object} args - 预览更新参数。
+			 * @returns {string} 渲染后的 Markdown 内容。
+			 */
+			renderPending: (code, args) => renderRunningCodeBlock(code, shell_name, args),
+		})
 		toolDefs.push([
 			`inline-${shell_name}`,
 			`<inline-${shell_name}>`,
 			`</inline-${shell_name}>`,
 			async (code) => {
-				const runner = code
 				let shell_result
 				try {
-					shell_result = await shell_exec_map[shell_name](runner, { no_ansi_terminal_sequences: true })
+					shell_result = await shell_exec_map[shell_name](code, { no_ansi_terminal_sequences: true })
 				} catch (err) {
 					shell_result = err
 				}
@@ -465,12 +530,13 @@ export function GetCodeExecutionPreviewUpdater(next) {
 				if (shell_result instanceof Error) throw shell_result
 
 				if (shell_result.code)
-					throw new Error(`${shell_name} execution of code '${runner}' failed with exit code ${shell_result.exitCode}`)
+					throw new Error(`${shell_name} execution of code '${code}' failed with exit code ${shell_result.exitCode}`)
 
 				return shell_result.stdout.trim()
-			}
+			},
+			renderInlineShellPending
 		])
 	}
 
-	return defineInlineToolUses(toolDefs)(next)
+	return defineToolUseBlocks(runBlocks)(defineInlineToolUses(toolDefs)(next))
 }

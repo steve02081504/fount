@@ -1295,6 +1295,11 @@
 				"success": "分享成功！链接已复制到剪贴板。<br>此功能由 ${provider} 提供支持。<br>[赞助他们。](${sponsorLink})"
 			},
 			"commonToolCalling": "正在调用工具",
+			"toolRunningLang": "正在执行${lang}",
+			"toolSearchingContent": "正在搜索${content}",
+			"toolOverridingFilepath": "正在覆写${filepath}",
+			"toolReplacingFilepath": "正在替换${filepath}",
+			"toolReadingFilepath": "正在读取${filepath}",
 			"reasoningDetailsTitle": "推理过程",
 			"logprobsNotApplicable": "不适用",
 			"logprobsTopLogprobsMeta": "top_logprobs（已选：${token}）",
