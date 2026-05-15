@@ -148,7 +148,7 @@ export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
 /**
  * 合并工具块起止模式的 RegExp flags（去掉 `g`/`y`，供单次 `exec` 与具名组组合使用）。
  * @param {...(string|RegExp)} specs - `pair.start`、`pair.end` 等。
- * @returns {string}
+ * @returns {string} 合并去重后的 flags（已移除 `g`/`y`）。
  */
 function mergeToolBlockFlags(...specs) {
 	let flags = ''

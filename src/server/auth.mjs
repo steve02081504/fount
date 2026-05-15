@@ -514,15 +514,15 @@ export async function try_auth_request(req, res) {
 	}
 
 	// 2. Cookie 令牌认证
-	const { accessToken, refreshToken, apiAccessToken, apiRefreshToken } = req.cookies
+	const { accessToken = undefined, refreshToken = undefined, apiAccessToken = undefined, apiRefreshToken = undefined } = req.cookies
 	let decoded = accessToken ? await verifyToken(accessToken) : null
-	if (decoded && decoded.type !== 'api') {
+	if (decoded?.type !== 'api') {
 		req.user = config.data.users[decoded.username]
 		return
 	}
 
 	decoded = apiAccessToken ? await verifyToken(apiAccessToken) : null
-	if (decoded && decoded.type === 'api') {
+	if (decoded?.type === 'api') {
 		req.user = config.data.users[decoded.username]
 		return
 	}
@@ -532,7 +532,7 @@ export async function try_auth_request(req, res) {
 	if (refreshToken) refreshResult = await refresh(refreshToken, req)
 	else if (apiRefreshToken) refreshResult = await refreshApiToken(apiRefreshToken, req)
 
-	if (!refreshResult || !refreshResult.success) {
+	if (!refreshResult?.success) {
 		clearAuthCookies(res, getSecureCookieOptions(req))
 		return Unauthorized(refreshResult?.message || 'Session expired, please login again.')
 	}

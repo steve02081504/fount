@@ -24,6 +24,11 @@
 // @require      ${file_protocol_url}
 // ==/UserScript==
 
+/* eslint-disable curly */
+/* eslint-disable no-return-assign */
+// eslint-disable-next-line no-redeclare
+/* global unsafeWindow, file_protocol_url */
+
 setTimeout(() => { // fuck firefox
 	if (!unsafeWindow.fount) alert(`\
 due to your browser's privacy settings, fount Browser Integration script cant load it from file:// protocol.
