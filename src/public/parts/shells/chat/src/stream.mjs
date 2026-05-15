@@ -1,6 +1,114 @@
+import languageMap from 'https://esm.sh/lang-map'
+
 import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n.mjs'
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { handleError } from '../../../../../server/server.mjs'
+
+/**
+ * 渲染“正在调用工具”占位符（HTML/Markdown/纯文本三态）。
+ * @param {object} args - 预览更新参数。
+ * @returns {string} 占位符文本。
+ */
+function renderToolCallingPlaceholder(args) {
+	/**
+	 * 获取“正在调用工具”本地化文本。
+	 * @returns {string} 本地化文本。
+	 */
+	const toolCallingText = () => geti18nForLocales(
+		[...args.locales ?? [], ...localhostLocales],
+		'chat.messageView.commonToolCalling'
+	)
+	if (args.supported_functions.html)
+		return `\
+<div class="tool-call-placeholder card bg-base-100 shadow-xl">
+	<div class="card-body">
+	${args.supported_functions.fount_i18nkeys ?
+			'<span class="tool-call-placeholder-text" data-i18n="chat.messageView.commonToolCalling"></span>' :
+			`<span class="tool-call-placeholder-text">${toolCallingText()}</span>`
+}
+	</div>
+</div>
+`
+	if (args.supported_functions.markdown)
+		return `*[[${toolCallingText()}]]*`
+	return `(${toolCallingText()})`
+}
+
+/**
+ * 获取聊天相关的 i18n 文本。
+ * @param {object} args - 预览更新参数。
+ * @param {import('../../../../../decl/locale_data.ts').LocaleKey} key - i18n 键。
+ * @param {Record<string, any>} [params={}] - 插值参数。
+ * @returns {string} 本地化文本。
+ */
+export function getChatI18n(args, key, params = {}) {
+	return geti18nForLocales(
+		[...args.locales ?? [], ...localhostLocales],
+		key,
+		params
+	)
+}
+
+/**
+ * 生成可安全包裹任意代码内容的 Markdown 围栏（长度恒大于内容里连续反引号最大值且至少 3）。
+ * @param {string} code - 代码内容。
+ * @returns {string} 围栏字符串。
+ */
+function getSafeFence(code) {
+	return '`'.repeat(1 + Math.max(
+		2,
+		...(String(code).match(/`+/g) || []).map(x => x.length)
+	))
+}
+
+/**
+ * 转义 Markdown 代码块 info string 中的引号与反斜杠。
+ * @param {string} value - 原始值。
+ * @returns {string} 转义后的值。
+ */
+function escapeMarkdownInfoStringValue(value) {
+	return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+/**
+ * 按目标文件路径后缀推断代码高亮语言。
+ * @param {string} filepath - 文件路径。
+ * @returns {string} 语言标识，无法推断时返回空字符串。
+ */
+export function inferCodeLanguageFromPath(filepath) {
+	const normalized = String(filepath || '').replace(/\\/g, '/')
+	const filename = normalized.split('/').pop()?.toLowerCase() || ''
+	const ext = filename.match(/\.(?<ext>[^.]+)$/)?.groups.ext || 'txt'
+	return languageMap.languages(ext)?.[0]
+}
+
+/**
+ * 渲染带语言与标题的 Markdown 代码块。
+ * @param {string} code - 代码内容。
+ * @param {{lang?: string, title?: string}} [options] - 渲染选项。
+ * @returns {string} Markdown 代码块字符串。
+ */
+export function renderMarkdownCodeBlock(code, options = {}) {
+	const content = String(code ?? '')
+	const fence = getSafeFence(content)
+	const { lang = '', title = '' } = options
+	const info = [
+		lang.trim(),
+		title ? `title="${escapeMarkdownInfoStringValue(title)}"` : '',
+	].filter(Boolean).join(' ')
+	return `${fence}${info ? info : ''}\n${content}\n${fence}`
+}
+
+/**
+ * 渲染单行内联代码（会转义反引号，可选附加 fount 内联高亮语言）。
+ * @param {string} code - 单行代码内容。
+ * @param {string} [lang=''] - 高亮语言。
+ * @returns {string} 内联代码字符串。
+ */
+export function renderMarkdownInlineCode(code, lang = '') {
+	const escaped = String(code ?? '').replace(/`/g, '\\`')
+	return `\`${escaped}${lang ? `{:${lang}}` : ''}\``
+}
 
 /**
  * 将异步的回复预览更新器包装为同步接口：内部维护最新 reply 的 buffer，
@@ -38,61 +146,76 @@ export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
 }
 
 /**
+ * 合并工具块起止模式的 RegExp flags（去掉 `g`/`y`，供单次 `exec` 与具名组组合使用）。
+ * @param {...(string|RegExp)} specs - `pair.start`、`pair.end` 等。
+ * @returns {string}
+ */
+function mergeToolBlockFlags(...specs) {
+	let flags = ''
+	for (const s of specs)
+		if (s instanceof RegExp) flags += s.flags
+	return [...new Set(flags.split('').filter(f => f !== 'g' && f !== 'y'))].join('')
+}
+
+/**
  * 定义工具调用隐藏器。
- * @param {{start: string|RegExp, end: string|RegExp}[]} toolPairs - 工具对数组。
+ * 每个工具对支持可选的 `renderPending` 和 `renderComplete` 渲染函数：
+ * - 若提供，则将对应内容写入 `content_for_show`（原始 `content` 保持不变，供后续执行逻辑使用）；
+ * - 未提供 `renderComplete` 时，闭合块与未闭合块共用 `renderPending`（若也未提供则均为占位 HTML/Markdown）。
+ * 闭合块与未闭合块均通过 `meta.groups` 暴露具名捕获：`fountToolStart`、`fountToolContent`；
+ * 仅闭合块另有 `fountToolEnd`。
+ * @param {{
+ *   start: string|RegExp,
+ *   end: string|RegExp,
+ *   renderPending?: (content: string, args: object, meta?: { groups: { fountToolStart: string, fountToolContent: string, fountToolEnd?: string } }) => string,
+ *   renderComplete?: (content: string, args: object, meta?: { groups: { fountToolStart: string, fountToolContent: string, fountToolEnd?: string } }) => string
+ * }[]} toolPairs - 工具对数组。
  * @returns {import('../decl/chatLog.ts').CharReplyPreviewUpdater_t} - 回复预览更新器获取器。
  */
 export function defineToolUseBlocks(toolPairs) {
-	const pattern = new RegExp(`(${toolPairs.map(pair => {
-		const start = pair.start instanceof RegExp ? pair.start.source : escapeRegExp(pair.start)
-		const end = pair.end instanceof RegExp ? pair.end.source : escapeRegExp(pair.end)
-		return `(?:${start})[\\s\\S]*?(?:(?:${end})|$)`
-	}).join('|')})`, 'g')
 	return (next) => (args, reply) => {
-		/**
-		 * 获取工具调用本地化文本。
-		 * @returns {string} 工具调用本地化文本。
-		 */
-		const toolCallingText = () => geti18nForLocales(
-			[...args.locales ?? [], ...localhostLocales],
-			'chat.messageView.commonToolCalling'
-		)
-		let { content } = reply
-		content = content.replace(pattern,
-			args.supported_functions.html ? `\
-<div class="tool-call-placeholder card bg-base-100 shadow-xl">
-	<div class="card-body">
-	${args.supported_functions.fount_i18nkeys ?
-					'<span class="tool-call-placeholder-text" data-i18n="chat.messageView.commonToolCalling"></span>' :
-					`<span class="tool-call-placeholder-text">${toolCallingText()}</span>`
+		let display = reply.content_for_show ?? reply.content ?? ''
+		for (const pair of toolPairs) {
+			const pendingRenderer = pair.renderPending || ((...pendingArgs) => renderToolCallingPlaceholder(pendingArgs[1]))
+			const completeRenderer = pair.renderComplete || pendingRenderer
+			const sPattern = pair.start instanceof RegExp ? pair.start.source : escapeRegExp(pair.start)
+			const ePattern = pair.end instanceof RegExp ? pair.end.source : escapeRegExp(pair.end)
+			const blockFlags = mergeToolBlockFlags(pair.start, pair.end)
+			const completeRgx = new RegExp(`(?<fountToolStart>${sPattern})(?<fountToolContent>[\\s\\S]*?)(?<fountToolEnd>${ePattern})`, `${blockFlags}g`)
+			display = display.replace(
+				completeRgx,
+				(...replaceArgs) => {
+					const groups = replaceArgs.at(-1)
+					return completeRenderer(groups.fountToolContent, args, { groups })
 				}
-	</div>
-</div>
-`
-				:
-				args.supported_functions.markdown ?
-					`*[[${toolCallingText()}]]*` :
-					`(${toolCallingText()})`
-		)
-		pattern.lastIndex = 0
-		next?.(args, { ...reply, content })
+			)
+			const pendingMatch = new RegExp(`(?<fountToolStart>${sPattern})(?<fountToolContent>[\\s\\S]*)$`, blockFlags).exec(display)
+			if (pendingMatch) {
+				const { groups } = pendingMatch
+				display = display.slice(0, pendingMatch.index) + pendingRenderer(groups.fountToolContent, args, { groups })
+			}
+		}
+		reply.content_for_show = display
+		next?.(args, reply)
 	}
 }
 
 /**
  * 定义内联工具使用处理器，支持执行和缓存。
- * @param {Array<[string, string|RegExp, string|RegExp, (content: string) => string|Promise<string>]>} toolDefs - 工具定义数组，每个元素为 [id, start, end, exec]。
+ * @param {Array<[string, string|RegExp, string|RegExp, (content: string, args: object) => string|Promise<string>, ((content: string, args: object) => string)?]>} toolDefs
+ *   工具定义数组，每个元素为 [id, start, end, exec, renderPending?]。
+ *   `renderPending`：可选，对流式中尚未闭合的块进行自定义渲染（替换写入 content）；
+ *   若不提供则默认使用“正在调用工具”占位符。
  * @returns {import('../decl/chatLog.ts').CharReplyPreviewUpdater_t} - 回复预览更新器。
  */
 export function defineInlineToolUses(toolDefs) {
-	return (next) => async (args, reply) => {
+	return (next) => (args, reply) => {
+		let display = reply.content_for_show ?? reply.content ?? ''
 		args.extension ??= {}
-		args.extension.streamInlineToolsResults ??= {}
-		const cacheMap = args.extension.streamInlineToolsResults
+		const cacheMap = args.extension.streamInlineToolsResults ??= {}
 
-		for (const [id, start, end, exec] of toolDefs) {
-			cacheMap[id] ??= []
-			const cache = cacheMap[id]
+		for (const [id, start, end, exec, renderPending] of toolDefs) {
+			const cache = cacheMap[id] ??= []
 
 			const sPattern = start instanceof RegExp ? start.source : escapeRegExp(start)
 			const ePattern = end instanceof RegExp ? end.source : escapeRegExp(end)
@@ -101,26 +224,16 @@ export function defineInlineToolUses(toolDefs) {
 			const completeRgx = new RegExp(`(?:${sPattern})([\\s\\S]*?)(?:${ePattern})`, 'g')
 			const matches = [...reply.content.matchAll(completeRgx)]
 
-			const promises = []
 			for (let i = 0; i < matches.length; i++) {
-				if (cache[i] === undefined)
+				const matchedContent = matches[i][1]
+				if (!(i in cache)) cache[i] = (async () => {
 					try {
-						const matchedContent = matches[i][1]
-						cache[i] = exec(matchedContent, args)
+						return cache[i] = await exec(matchedContent, args)
 					} catch (error) {
 						cache[i] = error
 					}
-
-				if (cache[i] instanceof Promise)
-					promises.push(
-						cache[i]
-							.then((res) => (cache[i] = res))
-							.catch((err) => (cache[i] = err))
-					)
+				})()
 			}
-
-			// 等待当前工具的所有新执行完成，以便并在这一帧渲染结果
-			if (promises.length > 0) await Promise.all(promises)
 
 			// 清理多余缓存 (如果文本被截断或重新生成导致匹配减少)
 			if (matches.length < cache.length)
@@ -128,17 +241,24 @@ export function defineInlineToolUses(toolDefs) {
 
 			// 将已完成的工具调用替换为结果
 			let index = 0
-			reply.content = reply.content.replace(completeRgx, (match) => {
+			const pendingRenderer = renderPending || ((...pendingArgs) => renderToolCallingPlaceholder(pendingArgs[1]))
+			display = display.replace(completeRgx, (_, matchedContent) => {
 				const item = cache[index++]
+				if (item instanceof Promise) return pendingRenderer(matchedContent, args)
 				if (item instanceof Error) return `[Error: ${item.message}]`
 				return String(item)
 			})
 
-			// 隐藏未完成的工具调用
-			const pendingRgx = new RegExp(`(?:${sPattern})[\\s\\S]*$`)
-			reply.content = reply.content.replace(pendingRgx, '')
+			// 处理未完成的工具调用：默认渲染为工具占位符
+			const pendingRgx = new RegExp(`(?:${sPattern})([\\s\\S]*)$`)
+			const pendingMatch = pendingRgx.exec(display)
+			if (pendingMatch) {
+				const rendered = pendingRenderer(pendingMatch[1] ?? '', args)
+				display = display.slice(0, pendingMatch.index ?? 0) + rendered
+			}
 		}
 
+		reply.content_for_show = display
 		next?.(args, reply)
 	}
 }
