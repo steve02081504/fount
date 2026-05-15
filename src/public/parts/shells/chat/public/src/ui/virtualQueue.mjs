@@ -17,6 +17,27 @@ const deletionListeners = []
 // which is necessary for applying slices correctly.
 const streamingMessages = new Map()
 
+// 滚动意图追踪：用 flag 代替每次内联检查 scrollTop，
+// 防止平滑滚动动画途中 scrollTop 尚未到达底部导致误判。
+let shouldAutoScroll = true
+// 程序化滚动抑制截止时间：窗口内 scroll 事件不更新 flag，避免平滑动画干扰
+let programmaticScrollUntil = 0
+
+chatMessagesContainer.addEventListener('scroll', () => {
+	if (Date.now() < programmaticScrollUntil) return
+	shouldAutoScroll = chatMessagesContainer.scrollTop >=
+		chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 100
+}, { passive: true })
+
+/**
+ * 在执行程序化滚动前调用，将 shouldAutoScroll 置为 true 并抑制
+ * 平滑动画期间的 scroll 事件（避免中间帧误判为"不在底部"）。
+ */
+function markProgrammaticScroll() {
+	shouldAutoScroll = true
+	programmaticScrollUntil = Date.now() + 500
+}
+
 /**
  * 获取消息当前应展示的文本（优先 content_for_show）。
  * @param {object} message - 消息对象。
@@ -100,6 +121,8 @@ export async function initializeVirtualQueue(initialData) {
 		virtualList.destroy()
 
 	streamingMessages.clear()
+	shouldAutoScroll = true
+	programmaticScrollUntil = 0
 	if (streamRenderer)
 		streamRenderer.streamingMessages.clear()
 
@@ -207,15 +230,15 @@ export async function handleMessageAdded(message) {
 			setTimeout(async () => {
 				if (itemState.pendingRender) {
 					itemState.pendingRender = false
-					const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
-					await virtualList.appendItem(message, shouldScroll)
+					if (shouldAutoScroll) markProgrammaticScroll()
+					await virtualList.appendItem(message, shouldAutoScroll)
 					streamRenderer.register(message.id, getDisplayContent(message))
 				}
 			}, 500)
 		} else {
 			// 普通消息直接添加
-			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
-			await virtualList.appendItem(message, shouldScroll)
+			if (shouldAutoScroll) markProgrammaticScroll()
+			await virtualList.appendItem(message, shouldAutoScroll)
 		}
 	})
 }
@@ -236,8 +259,8 @@ export async function handleMessageReplaced(index, message) {
 		// 此时直接作为新消息添加到列表底部
 		if (itemState?.pendingRender) {
 			itemState.pendingRender = false
-			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
-			await virtualList.appendItem(message, shouldScroll)
+			if (shouldAutoScroll) markProgrammaticScroll()
+			await virtualList.appendItem(message, shouldAutoScroll)
 			streamingMessages.delete(message.id)
 			updateLastCharMessageArrows()
 			return
@@ -369,8 +392,8 @@ export async function handleStreamUpdate({ messageId, slices }) {
 		// 如果消息处于 pendingRender 状态，说明是第一次收到流更新
 		// 此时才将消息添加到列表（开始渲染）
 		if (itemState.pendingRender) {
-			const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
-			await virtualList.appendItem(itemState.messageData, shouldScroll)
+			if (shouldAutoScroll) markProgrammaticScroll()
+			await virtualList.appendItem(itemState.messageData, shouldAutoScroll)
 			itemState.pendingRender = false
 			// 注册到 streamRenderer
 			streamRenderer.register(messageId, getDisplayContent(itemState.messageData))
