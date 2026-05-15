@@ -989,9 +989,8 @@ if ($is_running) {
 }
 
 # 执行 fount
-$Script:is_debug = $false
 function debug_on {
-	$Script:is_debug = $true
+	$env:FOUNT_DEBUG = $true
 	if (Get-Command chrome -ErrorAction Ignore) {
 		$hasNodeDevtoolsWindow = Get-Process chrome -ErrorAction Ignore | Where-Object {
 			$title = $_.MainWindowTitle
@@ -1088,7 +1087,7 @@ function run {
 	Write-TaskbarProgress -Percent 25
 	Set-Title "𝓯"
 	try {
-		if ($Script:is_debug) {
+		if ($env:FOUNT_DEBUG) {
 			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 		}
 		else {
@@ -1469,6 +1468,16 @@ elseif ($args[0] -eq 'log') {
 	}
 	finally {
 		Unregister-FountApplicationRestart
+	}
+	exit $LastExitCode
+}
+elseif ($args[0] -eq 'debug') {
+	$runargs = $args[1..$args.Count]
+	try {
+		& $PSScriptRoot/fount.ps1 keepalive debug @runargs
+	}
+	finally {
+		Write-TaskbarProgressClear
 	}
 	exit $LastExitCode
 }

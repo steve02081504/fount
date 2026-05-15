@@ -367,15 +367,15 @@ export async function codeExecutionReplyHandler(result, args) {
 			const original = result.content
 			const cachedResults = args.extension?.streamInlineToolsResults?.[`inline-${shell_name}`]
 
-		let replacements
-		if (cachedResults?.length)
-			replacements = await Promise.all(cachedResults.map(res => {
-				if (res instanceof Error) throw res
-				return res
-			}))
-		else {
-			// 古法计算
-			const runner_regex_g = new RegExp(`<inline-${shell_name}>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
+			let replacements
+			if (cachedResults?.length)
+				replacements = await Promise.all(cachedResults.map(res => {
+					if (res instanceof Error) throw res
+					return res
+				}))
+			else {
+				// 古法计算
+				const runner_regex_g = new RegExp(`<inline-${shell_name}>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
 				replacements = await Promise.all(
 					Array.from(content.matchAll(runner_regex_g))
 						.map(async match => {
@@ -480,6 +480,12 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		{
 			start: '<run-js>',
 			end: '</run-js>',
+			/**
+			 * 渲染 `<run-js>` 未闭合或待执行内容。
+			 * @param {string} code - 代码块内容。
+			 * @param {object} args - 预览更新参数。
+			 * @returns {string} 渲染后的 Markdown 内容。
+			 */
 			renderPending: (code, args) => renderRunningCodeBlock(code, 'js', args),
 		}
 	]
@@ -501,6 +507,12 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		runBlocks.push({
 			start: `<run-${shell_name}>`,
 			end: `</run-${shell_name}>`,
+			/**
+			 * 渲染 `<run-*>` shell 块未闭合或待执行内容。
+			 * @param {string} code - 代码块内容。
+			 * @param {object} args - 预览更新参数。
+			 * @returns {string} 渲染后的 Markdown 内容。
+			 */
 			renderPending: (code, args) => renderRunningCodeBlock(code, shell_name, args),
 		})
 		toolDefs.push([
