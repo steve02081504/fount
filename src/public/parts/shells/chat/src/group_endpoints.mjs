@@ -102,33 +102,25 @@ function isFullySignedRemoteDagEvent(ev) {
  * @returns {void}
  */
 function validateLocalAuthzPayload(type, content, username, state) {
-	const c = content && typeof content === 'object' ? content : null
-	if (!c) throw new Error('content object required')
+	if (!content || typeof content !== 'object') throw new Error('content object required')
 	if (type === 'reputation_slash' || type === 'reputation_reset') {
-		const t = typeof c.targetPubKeyHash === 'string' ? c.targetPubKeyHash.trim() : ''
-		if (!t) throw new Error('targetPubKeyHash required')
-		const tm = state.members?.[t]
-		if (!tm || tm.status !== 'active') throw new Error('target must be active member')
-		if (type === 'reputation_slash' && t === username) throw new Error('cannot slash self')
+		const targetPubKeyHash = content.targetPubKeyHash?.trim()
+		if (!targetPubKeyHash) throw new Error('targetPubKeyHash required')
+		if (state.members[targetPubKeyHash]?.status !== 'active') throw new Error('target must be active member')
+		if (type === 'reputation_slash' && targetPubKeyHash === username) throw new Error('cannot slash self')
 		return
 	}
 	if (type === 'peer_invite') {
-		let from = typeof c.from === 'string' ? c.from.trim() : ''
-		const to = (typeof c.to === 'string' ? c.to.trim() : '')
-			|| (typeof c.invitee === 'string' ? c.invitee.trim() : '')
-		if (!from && typeof c.introducer === 'string') from = c.introducer.trim()
-		if (!from) from = username
-		if (from !== username) throw new Error('peer_invite introducer must match caller')
-		if (!to || to === username) throw new Error('peer_invite requires distinct invitee')
-		const fm = state.members?.[from]
-		if (!fm || fm.status !== 'active') throw new Error('introducer must be active member')
-		// §6.3 §11.1：encrypted_H 为 pairwise ECDH 加密的当前 H，O(1) 分发给新成员
-		// encrypted_H 若提供须为对象（{ ephemPub, iv, ciphertext, authTag }）；服务端将自动注入
-		if (c.encrypted_H !== undefined) {
-			const eh = c.encrypted_H
-			if (typeof eh !== 'object' || eh === null ||
-				typeof eh.ephemPub !== 'string' || typeof eh.iv !== 'string' ||
-				typeof eh.ciphertext !== 'string' || typeof eh.authTag !== 'string')
+		const introducer = content.from?.trim() || content.introducer?.trim() || username
+		const invitee = content.to?.trim() || content.invitee?.trim()
+		if (introducer !== username) throw new Error('peer_invite introducer must match caller')
+		if (!invitee || invitee === username) throw new Error('peer_invite requires distinct invitee')
+		if (state.members[introducer]?.status !== 'active') throw new Error('introducer must be active member')
+		if (content.encrypted_H !== undefined) {
+			const encryptedH = content.encrypted_H
+			if (typeof encryptedH !== 'object' ||
+				typeof encryptedH.ephemPub !== 'string' || typeof encryptedH.iv !== 'string' ||
+				typeof encryptedH.ciphertext !== 'string' || typeof encryptedH.authTag !== 'string')
 				throw new Error('peer_invite.encrypted_H must be a GSH-encrypted object or omitted (server injects)')
 		}
 	}
@@ -143,8 +135,8 @@ function validateLocalAuthzPayload(type, content, username, state) {
  */
 async function validateLocalAuthzBatch(username, groupId, events) {
 	const { state } = await getState(username, groupId)
+	if (!isActiveMember(state, username)) throw new Error('Not a member')
 	const member = state.members[username]
-	if (!member || member.status !== 'active') throw new Error('Not a member')
 	for (const ev of events) {
 		if (!ev || typeof ev !== 'object') throw new Error('invalid event entry')
 		if (isFullySignedRemoteDagEvent(ev)) continue
@@ -153,8 +145,8 @@ async function validateLocalAuthzBatch(username, groupId, events) {
 			throw new Error(`local unsigned append only for: ${[...LOCAL_APPEND_AUTHZ_TYPES].join(', ')} (or pass full signed remote events with id+signature)`)
 		validateLocalAuthzPayload(t, ev.content, username, state)
 		if (t === 'reputation_reset') {
-			const c = ev.content && typeof ev.content === 'object' ? ev.content : {}
-			const tgt = typeof c.targetPubKeyHash === 'string' ? c.targetPubKeyHash.trim().toLowerCase() : ''
+			const eventContent = ev.content || {}
+			const tgt = eventContent.targetPubKeyHash?.trim().toLowerCase() || ''
 			if (tgt && isPubKeyHashBlocked(username, tgt))
 				throw new Error('reputation_reset ignored for locally blocked target')
 			const ch = governanceChannelId(state)
@@ -182,7 +174,7 @@ export async function enumerateJoinedFederatedGroups(username) {
 		try {
 			const { state } = await getState(username, groupId)
 			const m = state.members[username]
-			if (!m || m.status !== 'active') continue
+			if (m?.status !== 'active') continue
 			let lastActivity = 0
 			for (const mb of Object.values(state.members || {})) 
 				if (mb?.joinedAt && typeof mb.joinedAt === 'number' && mb.joinedAt > lastActivity)
@@ -224,12 +216,12 @@ export async function readChannelMessagesForUser(username, groupId, channelId, q
 	let lines = await readJsonl(messagesPath(username, groupId, channelId))
 	lines = await decryptChannelMessageLines(username, groupId, channelId, lines)
 	if (q.since) {
-		const i = lines.findIndex(m => m.eventId === q.since)
-		if (i !== -1) lines = lines.slice(i + 1)
+		const sinceIndex = lines.findIndex(message => message.eventId === q.since)
+		if (sinceIndex !== -1) lines = lines.slice(sinceIndex + 1)
 	}
 	if (q.before) {
-		const i = lines.findIndex(m => m.eventId === q.before)
-		if (i !== -1) lines = lines.slice(0, i)
+		const beforeIndex = lines.findIndex(message => message.eventId === q.before)
+		if (beforeIndex !== -1) lines = lines.slice(0, beforeIndex)
 	}
 	const lim = q.limit != null ? Number(q.limit) : undefined
 	if (Number.isFinite(lim) && lim > 0) lines = lines.slice(-lim)
@@ -406,9 +398,9 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const reputation = await loadReputation(username, groupId)
 			res.status(200).json({ success: true, reputation })
@@ -425,9 +417,9 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const roster = await listFederationPeersForGroup(username, groupId)
 			const stored = await loadPeers(username, groupId)
@@ -453,9 +445,9 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const events = await readJsonl(eventsPath(username, groupId))
 			res.status(200).json({ success: true, tips: computeDagTipIds(events) })
@@ -472,9 +464,9 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const event = await mergeDagTips(username, groupId, username)
 			res.status(200).json({ success: true, event })
@@ -494,9 +486,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 			const pageIdx = Math.max(0, Number(req.params[1]) || 0)
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const actives = Object.entries(state.members || {}).filter(([, m]) => m?.status === 'active')
 			const pages = Math.max(1, Math.ceil(actives.length / MEMBERS_PAGE_SIZE))
@@ -696,20 +688,15 @@ export function setGroupEndpoints(router) {
 						applied++
 				}
 				else {
-					const content = event.content && typeof event.content === 'object' ? { ...event.content } : {}
+					const content = { ...event.content || {} }
 
 					// §11.1 §6.3：peer_invite 本地简体形，服务端自动注入 encrypted_H
 					if (event.type === 'peer_invite' && !content.encrypted_H) {
 						const inviteePubKeyHex = normalizeDmPubKeyHex(content.to || content.invitee || '')
-						if (PUB_KEY_HEX_64.test(inviteePubKeyHex)) {
-							const hEntry = await getCurrentH(username, groupId)
-							if (hEntry) 
-								try {
-									content.encrypted_H = encryptHForMember(hEntry.h, inviteePubKeyHex)
-									content.h_generation = hEntry.generation
-								}
-								catch { /* 加密失败不阻断事件写入 */ }
-							
+						const hEntry = await getCurrentH(username, groupId)
+						if (PUB_KEY_HEX_64.test(inviteePubKeyHex) && hEntry) {
+							content.encrypted_H = encryptHForMember(hEntry.h, inviteePubKeyHex)
+							content.h_generation = hEntry.generation
 						}
 					}
 
@@ -737,9 +724,9 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const isAdmin = (member.roles || []).includes('admin')
 			if (!isAdmin)
@@ -760,9 +747,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 			const channelId = req.params[1]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -786,9 +773,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 			const channelId = req.params[1]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -811,9 +798,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 			const channelId = req.params[1]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -840,9 +827,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'targetEventId and emoji required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -873,9 +860,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'targetEventId required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -899,9 +886,9 @@ export function setGroupEndpoints(router) {
 			const parentChannelId = req.params[1]
 			const { parentEventId } = req.body || {}
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[parentChannelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -941,9 +928,9 @@ export function setGroupEndpoints(router) {
 			const channelId = req.params[1]
 			const { reply, content: rawContent } = req.body || {}
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -975,7 +962,7 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const channelId = req.params[1]
-			const body = req.body && typeof req.body === 'object' ? req.body : {}
+			const body = req.body || {}
 			const logical_stream_id = typeof body.logical_stream_id === 'string' ? body.logical_stream_id.trim() : ''
 			const text = typeof body.text === 'string' ? body.text : ''
 			const chunk_index = body.chunk_index != null ? Number(body.chunk_index) : undefined
@@ -984,9 +971,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'logical_stream_id required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 			const canSend = canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, channelId)
@@ -1021,9 +1008,9 @@ export function setGroupEndpoints(router) {
 			const { since, before, limit } = req.query
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1053,9 +1040,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'channelId required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1124,9 +1111,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'Channel name is required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const canManageChannels = canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, state.groupSettings.defaultChannelId)
 			if (!canManageChannels)
@@ -1155,9 +1142,9 @@ export function setGroupEndpoints(router) {
 			const { name, desc, type, isPrivate, parentChannelId } = req.body
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1205,9 +1192,9 @@ export function setGroupEndpoints(router) {
 			const channelId = req.params[1]
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1243,9 +1230,9 @@ export function setGroupEndpoints(router) {
 				: 'default'
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[pubKeyHash]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, pubKeyHash))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[pubKeyHash]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1269,9 +1256,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 			const channelId = req.params[1]
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1299,9 +1286,9 @@ export function setGroupEndpoints(router) {
 				return res.status(400).json({ success: false, error: 'roleId is required' })
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 			if (!state.roles[roleId])
@@ -1332,9 +1319,9 @@ export function setGroupEndpoints(router) {
 			const { name, color } = req.body
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, state.groupSettings.defaultChannelId, state.channelPermissions)
 			if (!canManageRoles)
@@ -1374,9 +1361,9 @@ export function setGroupEndpoints(router) {
 			const roleId = decodeURIComponent(req.params[1])
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, state.groupSettings.defaultChannelId, state.channelPermissions)
 			if (!canManageRoles)
@@ -1410,9 +1397,9 @@ export function setGroupEndpoints(router) {
 			const action = req.params[2]
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const requiredPermission = action === 'ban' ? PERMISSIONS.BAN_MEMBERS : PERMISSIONS.KICK_MEMBERS
 			const canModerate = hasPermission(member, requiredPermission, state.roles, state.groupSettings.defaultChannelId, state.channelPermissions)
@@ -1474,9 +1461,9 @@ export function setGroupEndpoints(router) {
 			const { permission, enabled, permissions: bulkPermissions } = req.body
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, state.groupSettings.defaultChannelId, state.channelPermissions)
 			if (!canManageRoles)
 				return res.status(403).json({ success: false, error: 'No permission to manage roles' })
@@ -1515,9 +1502,9 @@ export function setGroupEndpoints(router) {
 			const { content } = req.body
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 			if (!state.channels[channelId])
 				return res.status(404).json({ success: false, error: 'Channel not found' })
 
@@ -1547,9 +1534,9 @@ export function setGroupEndpoints(router) {
 			const groupId = req.params[0]
 
 			const { state } = await getState(username, groupId)
-			const member = state.members[username]
-			if (!member || member.status !== 'active')
+			if (!isActiveMember(state, username))
 				return res.status(403).json({ success: false, error: 'Not a member' })
+			const member = state.members[username]
 
 			const activeCount = Object.values(state.members || {}).filter(m => m?.status === 'active').length
 			const ch = governanceChannelId(state)

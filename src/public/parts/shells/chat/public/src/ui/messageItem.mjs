@@ -490,7 +490,7 @@ export function createMessageItemRenderer(ctx) {
 	 * @param {number} _index 在列表中的索引
 	 * @returns {Promise<HTMLElement>} 渲染好的消息容器
 	 */
-	async function renderMessageItem(m, _index) {
+	async function renderMessageItem(m) {
 		const displayMessages = getDisplayMessages()
 		const memberAvatarCache = getMemberAvatarCache()
 		const div = /** @type {HTMLElement} */ await renderTemplate('group_message_row_shell', {})

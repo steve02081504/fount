@@ -5,11 +5,7 @@
  */
 export const DEFAULT_HLC_MAX_SKEW_MS = 3_600_000
 
-/**
- * 须在 skew 超出阈值时硬拒绝的类型（折叠/权限链相关）。
- * @type {ReadonlySet<string>}
- */
-/** 超 skew 时隔离、不入库（§0 消息类软处理简化为丢弃） */
+/** 超 skew 时隔离、不入库（§0 消息类） */
 export const MESSAGE_HLC_QUARANTINE_TYPES = new Set([
 	'message',
 	'message_append',
@@ -20,9 +16,7 @@ export const MESSAGE_HLC_QUARANTINE_TYPES = new Set([
 	'message_feedback',
 ])
 
-/**
- *
- */
+/** 超 skew 时硬拒绝的治理类事件（§0） */
 export const GOVERNANCE_HLC_HARD_REJECT_TYPES = new Set([
 	'member_kick',
 	'member_ban',
@@ -42,54 +36,46 @@ export const GOVERNANCE_HLC_HARD_REJECT_TYPES = new Set([
 ])
 
 /**
- * @param {{ groupSettings?: { hlcMaxSkewMs?: unknown } } | null | undefined} state 物化群状态
- * @returns {number} 正整数 skew 上限（毫秒）
+ * @param {{ groupSettings?: { hlcMaxSkewMs?: unknown } }} state 物化群状态
+ * @returns {number} skew 上限（毫秒）
  */
 export function resolveHlcMaxSkewMs(state) {
-	const raw = state?.groupSettings?.hlcMaxSkewMs
-	const n = Number(raw)
+	const n = Number(state.groupSettings?.hlcMaxSkewMs)
 	return Number.isFinite(n) && n > 0 ? Math.floor(n) : DEFAULT_HLC_MAX_SKEW_MS
 }
 
 /**
- * @param {{ type?: unknown, hlc?: unknown }} event DAG 事件
- * @param {number} maxSkewMs skew 上限（毫秒）
- * @returns {number | null} 未来偏移毫秒；无法计算时为 null
+ * @param {{ hlc?: { wall?: number } }} event DAG 事件
+ * @returns {number | null} 未来偏移毫秒；非未来时为 null
  */
-export function hlcFutureDriftMs(event, maxSkewMs) {
-	void maxSkewMs
-	if (!event || typeof event !== 'object') return null
-	const hlc = event.hlc && typeof event.hlc === 'object' ? event.hlc : null
-	const wall = hlc && typeof hlc.wall === 'number' && Number.isFinite(hlc.wall) ? hlc.wall : null
-	if (wall == null) return null
+export function hlcFutureDriftMs(event) {
+	const wall = event.hlc?.wall
+	if (!Number.isFinite(wall)) return null
 	const drift = wall - Date.now()
 	return drift > 0 ? drift : null
 }
 
 /**
  * 消息类事件 HLC 是否超出允许未来偏移（§0 隔离语义）。
- * @param {{ type?: unknown, hlc?: unknown }} event DAG 事件
+ * @param {{ type?: string, hlc?: { wall?: number } }} event DAG 事件
  * @param {number} maxSkewMs 允许的未来偏移上限（毫秒）
- * @returns {boolean} 是否应隔离（消息类超远未来戳）
+ * @returns {boolean} 是否应隔离
  */
 export function isMessageHlcQuarantined(event, maxSkewMs) {
-	const t = typeof event.type === 'string' ? event.type : ''
-	if (!MESSAGE_HLC_QUARANTINE_TYPES.has(t)) return false
-	const drift = hlcFutureDriftMs(event, maxSkewMs)
+	if (!MESSAGE_HLC_QUARANTINE_TYPES.has(event.type)) return false
+	const drift = hlcFutureDriftMs(event)
 	return drift != null && drift > maxSkewMs
 }
 
 /**
  * 治理类事件 HLC 超 skew 时抛出（§0 硬拒绝）。
- * @param {{ type?: unknown, hlc?: unknown }} event DAG 事件
+ * @param {{ type?: string, hlc?: { wall?: number } }} event DAG 事件
  * @param {number} maxSkewMs 允许的未来偏移上限（毫秒）
  * @returns {void}
  */
 export function assertGovernanceHlcSkewAllowed(event, maxSkewMs) {
-	if (!event || typeof event !== 'object') return
-	const t = typeof event.type === 'string' ? event.type : ''
-	if (!GOVERNANCE_HLC_HARD_REJECT_TYPES.has(t)) return
-	const drift = hlcFutureDriftMs(event, maxSkewMs)
+	if (!GOVERNANCE_HLC_HARD_REJECT_TYPES.has(event.type)) return
+	const drift = hlcFutureDriftMs(event)
 	if (drift != null && drift > maxSkewMs)
-		throw new Error(`governance event HLC skew too large (${t}, max ${maxSkewMs}ms)`)
+		throw new Error(`governance event HLC skew too large (${event.type}, max ${maxSkewMs}ms)`)
 }

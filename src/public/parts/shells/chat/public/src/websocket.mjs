@@ -46,10 +46,9 @@ export function setLocalGroupRpcClientNodeId(id) {
 }
 
 /**
- * @param {WebSocket | null} _ws 预留
  * @returns {void}
  */
-export function setWsStatusIndicator(_ws) {
+export function setWsStatusIndicator() {
 }
 
 /**

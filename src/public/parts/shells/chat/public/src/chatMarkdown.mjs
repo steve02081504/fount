@@ -26,8 +26,10 @@ function stripUntrustedDangerous(html) {
  */
 export async function expandInlineEmojiTokens(text, resolveEmojiUrl) {
 	if (!resolveEmojiUrl)
-		return text.replace(EMOJI_TOKEN, (_m, g, e) =>
-			`![emoji](about:blank#fount-emoji:${encodeURIComponent(g)}/${encodeURIComponent(e)})`)
+		return text.replace(EMOJI_TOKEN, (match, groupId, emojiId) => {
+			void match
+			return `![emoji](about:blank#fount-emoji:${encodeURIComponent(groupId)}/${encodeURIComponent(emojiId)})`
+		})
 	let out = text
 	for (const m of [...text.matchAll(EMOJI_TOKEN)]) {
 		const url = await resolveEmojiUrl(m[1], m[2]).catch(() => null)
@@ -43,10 +45,14 @@ export async function expandInlineEmojiTokens(text, resolveEmojiUrl) {
  * @returns {string} 展开群/频道链接后的文本
  */
 export function expandInlineChannelLinks(text) {
-	let s = text.replace(CHANNEL_LINK, (_m, gid, cid) =>
-		`[#${gid}/${cid}](/parts/shells:chat/hub/#group:${encodeURIComponent(gid)}:${encodeURIComponent(cid)})`)
-	s = s.replace(GROUP_LINK, (_m, gid) =>
-		`[#${gid}](/parts/shells:chat/hub/#group:${encodeURIComponent(gid)}:default)`)
+	let s = text.replace(CHANNEL_LINK, (match, groupId, channelId) => {
+		void match
+		return `[#${groupId}/${channelId}](/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)})`
+	})
+	s = s.replace(GROUP_LINK, (match, groupId) => {
+		void match
+		return `[#${groupId}](/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:default)`
+	})
 	return s
 }
 

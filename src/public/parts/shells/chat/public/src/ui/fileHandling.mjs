@@ -8,9 +8,10 @@ import { handleUIError, normalizeError } from '../utils.mjs'
  */
 function b64PlainToU8(b64) {
 	const bin = atob(b64)
-	const out = new Uint8Array(bin.length)
-	for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
-	return out
+	const bytes = new Uint8Array(bin.length)
+	for (let byteIndex = 0; byteIndex < bin.length; byteIndex++)
+		bytes[byteIndex] = bin.charCodeAt(byteIndex)
+	return bytes
 }
 
 /**
@@ -136,8 +137,8 @@ export function createFileHandlers(ctx) {
 		removeIcon.alt = ''
 		removeBtn.appendChild(removeIcon)
 		removeBtn.addEventListener('click', () => {
-			const idx = pendingFiles.findIndex(f => f.id === id)
-			if (idx !== -1) pendingFiles.splice(idx, 1)
+			const pendingIndex = pendingFiles.findIndex(entry => entry.id === id)
+			if (pendingIndex !== -1) pendingFiles.splice(pendingIndex, 1)
 			wrap.remove()
 			if (!pendingFiles.length) container.classList.add('hidden')
 		})
@@ -167,8 +168,10 @@ export function createFileHandlers(ctx) {
 			}
 
 			const { createWriteStream } = await import('https://esm.sh/streamsaver@2.0.6')
-			const streamOpts = meta.totalSize != null ? { size: meta.totalSize } : {}
-			const fileStream = createWriteStream(fileName || meta.name || fileId, streamOpts)
+			const fileStream = createWriteStream(
+				fileName || meta.name || fileId,
+				meta.totalSize != null ? { size: meta.totalSize } : {},
+			)
 			const writer = fileStream.getWriter()
 
 			try {
@@ -209,21 +212,20 @@ export function createFileHandlers(ctx) {
 			if (!metaR.ok) return null
 			const meta = await metaR.json()
 			if (!Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) return null
-			const bufs = []
+			const chunks = []
 			for (const chunk of meta.chunkManifest) {
 				const plain = await fetchDecryptedChunk(groupId, fileId, chunk)
 				if (!plain) return null
-				bufs.push(plain)
+				chunks.push(plain)
 			}
-			const total = bufs.reduce((n, b) => n + b.byteLength, 0)
-			const merged = new Uint8Array(total)
-			let off = 0
-			for (const b of bufs) {
-				merged.set(b, off)
-				off += b.byteLength
+			const totalBytes = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0)
+			const merged = new Uint8Array(totalBytes)
+			let writeOffset = 0
+			for (const chunk of chunks) {
+				merged.set(chunk, writeOffset)
+				writeOffset += chunk.byteLength
 			}
-			const blob = new Blob([merged], { type: mimeType || meta.mimeType || 'application/octet-stream' })
-			return URL.createObjectURL(blob)
+			return URL.createObjectURL(new Blob([merged], { type: mimeType || meta.mimeType || 'application/octet-stream' }))
 		}
 		catch (e) {
 			handleUIError(normalizeError(e), 'chat.group.fileLoadFailed', 'fetchGroupFileAsBlob')

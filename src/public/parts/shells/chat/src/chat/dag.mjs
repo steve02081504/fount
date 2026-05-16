@@ -82,33 +82,30 @@ const CHANNEL_SYNC_MESSAGE_TYPES = new Set([
 ])
 
 /**
- * @param {object} e DAG 事件
+ * @param {object} event DAG 事件
  * @returns {string} 归一化频道 id（缺省为 `default`）
  */
-export function effectiveEventChannelIdForSync(e) {
-	const c = e.content && typeof e.content === 'object' ? e.content : {}
-	const fromTop = typeof e.channelId === 'string' && e.channelId.trim() ? e.channelId.trim() : ''
-	const fromContent = typeof c.channelId === 'string' && c.channelId.trim() ? c.channelId.trim() : ''
+export function effectiveEventChannelIdForSync(event) {
+	const content = event?.content || {}
+	const fromTop = event.channelId?.trim() || ''
+	const fromContent = content.channelId?.trim() || ''
 	return fromTop || fromContent || 'default'
 }
 
 /**
  * `syncScope:'channel'` 下是否应将该事件纳入对该频道的增量同步切片。
- * @param {object} e 事件
+ * @param {object} event 事件
  * @param {string} channelId 目标频道
  * @returns {boolean} 是否纳入懒同步切片
  */
-export function eventMatchesLazyChannelScope(e, channelId) {
-	const t = e.type
-	if (!CHANNEL_SYNC_MESSAGE_TYPES.has(t)) {
-		if (t === 'list_item_update') {
-			const c = e.content && typeof e.content === 'object' ? e.content : {}
-			const cid = typeof c.channelId === 'string' ? c.channelId.trim() : ''
-			return cid === channelId
-		}
+export function eventMatchesLazyChannelScope(event, channelId) {
+	const eventType = event.type
+	if (!CHANNEL_SYNC_MESSAGE_TYPES.has(eventType)) {
+		if (eventType === 'list_item_update')
+			return (event?.content?.channelId?.trim() || '') === channelId
 		return true
 	}
-	return effectiveEventChannelIdForSync(e) === channelId
+	return effectiveEventChannelIdForSync(event) === channelId
 }
 
 /**
@@ -262,13 +259,9 @@ export async function appendValidatedRemoteEvent(username, chatId, signPayload, 
  * @returns {Promise<void>} 处理结束（丢弃非法/重复事件亦为正常完成）
  */
 async function ingestRemoteEvent(username, chatId, payload) {
-	let signPayload = payload
-	if (payload && typeof payload === 'object' && 'event' in /** @type {object} */ payload
-		&& typeof /** @type {{ event?: object }} */ payload.event === 'object'
-		&& /** @type {{ event?: object }} */ payload.event)
-		signPayload = /** @type {{ event: object }} */ payload.event
-	if (!signPayload || typeof signPayload !== 'object') return
-	await appendValidatedRemoteEvent(username, chatId, /** @type {object} */ signPayload, { logFailures: true })
+	const signedEvent = payload?.event ?? payload
+	if (!signedEvent || typeof signedEvent !== 'object') return
+	await appendValidatedRemoteEvent(username, chatId, signedEvent, { logFailures: true })
 }
 
 // ─── 写入频道消息流的事件类型 ─────────────────────────────────────────────────
@@ -329,9 +322,9 @@ async function applyReputationHooks(username, chatId, signPayload) {
 					break
 				}
 			}
-			const cj = signPayload.content && typeof signPayload.content === 'object' ? signPayload.content : {}
-			if (!intro && typeof cj.introducerPubKeyHash === 'string')
-				intro = cj.introducerPubKeyHash.trim().toLowerCase()
+			const joinContent = signPayload.content || {}
+			if (!intro && joinContent.introducerPubKeyHash)
+				intro = joinContent.introducerPubKeyHash.trim().toLowerCase()
 			const fromMember = state.members?.[sender]
 			const edgeFromJoin = typeof fromMember?.repEdgeFromIntroducer === 'number' && Number.isFinite(fromMember.repEdgeFromIntroducer)
 				? fromMember.repEdgeFromIntroducer
@@ -750,20 +743,17 @@ export async function appendEvent(username, chatId, event, secretKey) {
 		const perms = memberChannelPermissions(state, event.sender, channelId)
 		if (!perms.SEND_MESSAGES) throw new Error('SEND_MESSAGES denied')
 	}
-	if (event.type === 'message') {
-		const mc = event.content && typeof event.content === 'object' ? event.content : {}
-		if (mc.content_ref && typeof mc.content_ref === 'object')
-			validateContentRefPayload(mc.content_ref)
-	}
+	if (event.type === 'message' && event.content?.content_ref)
+		validateContentRefPayload(event.content.content_ref)
 	if (event.type === 'message_append' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
 		const channelIdAppend = event.channelId || event.content?.channelId || 'default'
 		const { state: stAppend } = await getState(username, chatId)
 		const permsAppend = memberChannelPermissions(stAppend, event.sender, channelIdAppend)
 		if (!permsAppend.SEND_MESSAGES) throw new Error('SEND_MESSAGES denied')
-		const ac = event.content && typeof event.content === 'object' ? event.content : {}
-		if (!String(ac.logical_stream_id || '').trim()) throw new Error('message_append requires content.logical_stream_id')
-		if (ac.content_ref && typeof ac.content_ref === 'object')
-			validateContentRefPayload(ac.content_ref)
+		const appendContent = event.content || {}
+		if (!String(appendContent.logical_stream_id || '').trim()) throw new Error('message_append requires content.logical_stream_id')
+		if (appendContent.content_ref)
+			validateContentRefPayload(appendContent.content_ref)
 	}
 	if (event.type === 'file_upload' && PUB_KEY_HASH_HEX.test(String(event.sender))) {
 		const { state } = await getState(username, chatId)
@@ -777,8 +767,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 			throw new Error('reputation_reset ignored for locally blocked target')
 		const { state } = await getState(username, chatId)
 		const ch = governanceChannelIdForPermissions(state)
-		const m = state.members[event.sender]
-		if (!m || m.status !== 'active') throw new Error('reputation_reset requires active membership')
+		if (state.members[event.sender]?.status !== 'active') throw new Error('reputation_reset requires active membership')
 		const perms = memberChannelPermissions(state, event.sender, ch)
 		if (!perms.ADMIN && !perms.MANAGE_ROLES) throw new Error('reputation_reset requires ADMIN or MANAGE_ROLES')
 	}
@@ -792,8 +781,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 			throw new Error('dag_tip_merge: prev_event_ids must list all current DAG tips')
 		const { state } = await getState(username, chatId)
 		const sender = String(event.sender || '')
-		const m = state.members[sender]
-		if (!m || m.status !== 'active') throw new Error('dag_tip_merge requires active member sender')
+		if (state.members[sender]?.status !== 'active') throw new Error('dag_tip_merge requires active member sender')
 		const ch = governanceChannelIdForPermissions(state)
 		const perms = memberChannelPermissions(state, sender, ch)
 		if (!perms.MANAGE_CHANNELS) throw new Error('dag_tip_merge requires MANAGE_CHANNELS')
@@ -801,8 +789,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	const authzLedgerTypes = new Set(['peer_invite', 'reputation_slash', 'reputation_reset'])
 	if (authzLedgerTypes.has(event.type)) {
 		const { state } = await getState(username, chatId)
-		const m = state.members[event.sender]
-		if (!m || m.status !== 'active') throw new Error('authz event requires active member sender')
+		if (state.members[event.sender]?.status !== 'active') throw new Error('authz event requires active member sender')
 	}
 	const roleMgmtTypes = new Set(['role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke'])
 	if (roleMgmtTypes.has(event.type) && PUB_KEY_HASH_HEX.test(String(event.sender))) {
@@ -822,8 +809,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	let eventForWrite = event
 	if (GSH_ENCRYPT_EVENT_TYPES.has(event.type)) {
 		const channelForGsh = event.channelId || event.content?.channelId || 'default'
-		const plain = event.content && typeof event.content === 'object' ? event.content : {}
-		const encrypted = await encryptEventContent(username, chatId, channelForGsh, plain)
+		const encrypted = await encryptEventContent(username, chatId, channelForGsh, event.content || {})
 		eventForWrite = { ...event, content: encrypted }
 	}
 

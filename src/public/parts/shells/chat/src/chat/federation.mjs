@@ -547,7 +547,7 @@ export async function ensureFederationRoom(username, chatId) {
 				})
 			})
 
-			getCharRpcResponse((data, _peerId) => {
+			getCharRpcResponse(data => {
 				if (!isRecord(data)) return
 				/**
 				 *
@@ -565,10 +565,8 @@ export async function ensureFederationRoom(username, chatId) {
 					const peers = await loadPeers(username, chatId)
 					const remoteNodeId = peerToNode.get(peerId)
 					if (remoteNodeId && isSubjectBlocked(peers, remoteNodeId)) return
-					const ev = data && typeof data === 'object' && 'event' in /** @type {object} */ data
-						? /** @type {{ event?: { sender?: string } }} */ data.event
-						: /** @type {{ sender?: string }} */ data
-					const sender = typeof ev?.sender === 'string' ? ev.sender.trim() : ''
+					const signedEvent = data?.event ?? data
+					const sender = signedEvent?.sender?.trim() || ''
 					if (sender && isSubjectBlocked(peers, sender)) return
 					await ingestRemoteEvent(username, chatId, data)
 				})().catch(e => console.error(e))
@@ -638,7 +636,7 @@ export async function ensureFederationRoom(username, chatId) {
 						})
 				})().catch(e => console.error(e))
 			})
-			getGossipResponse((data, _peerId) => {
+			getGossipResponse(data => {
 				void handleGossipResponse(username, chatId, data).catch(e => console.error(e))
 			})
 			/** @type {FederationSlot} */
@@ -712,10 +710,10 @@ export async function ensureFederationRoom(username, chatId) {
 					return [...peerToNode.entries()].map(([peerId, remoteNodeId]) => ({ peerId, remoteNodeId }))
 				},
 				/**
-				 * @param {string} nodeId_ 目标节点 id
+				 * @param {string} targetNodeId 目标节点 id
 				 * @returns {string | null} 在线对应的 Trystero peerId，未知时为 null
 				 */
-				getPeerIdByNodeId(nodeId_) { return nodeToPeer.get(nodeId_) ?? null },
+				getPeerIdByNodeId(targetNodeId) { return nodeToPeer.get(targetNodeId) ?? null },
 				/**
 				 * @param {string} peerId 目标 Trystero peer id
 				 * @param {string} actionName Trystero action 名称
@@ -835,17 +833,12 @@ export async function handleGossipResponse(username, chatId, data) {
 	if (!Array.isArray(rawList)) return
 	/** @type {Set<string>} */
 	const receivedIds = new Set()
-	for (const rawEv of rawList) {
-		/** @type {unknown} */
-		let ev = rawEv
-		if (rawEv && typeof rawEv === 'object' && 'event' in /** @type {object} */ rawEv) {
-			const wrapped = /** @type {{ event?: object }} */ rawEv.event
-			if (wrapped && typeof wrapped === 'object') ev = wrapped
-		}
-		if (!ev || typeof ev !== 'object') continue
-		const id = /** @type {{ id?: unknown }} */ ev.id
-		if (typeof id === 'string' && /^[0-9a-f]{64}$/iu.test(id)) receivedIds.add(id)
-		await appendValidatedRemoteEvent(username, chatId, /** @type {object} */ ev, { logFailures: false })
+	for (const rawEvent of rawList) {
+		const signedEvent = rawEvent?.event ?? rawEvent
+		if (!signedEvent || typeof signedEvent !== 'object') continue
+		if (typeof signedEvent.id === 'string' && /^[0-9a-f]{64}$/iu.test(signedEvent.id))
+			receivedIds.add(signedEvent.id)
+		await appendValidatedRemoteEvent(username, chatId, signedEvent, { logFailures: false })
 	}
 	notifyGossipWaiters(username, chatId, receivedIds)
 }
@@ -854,28 +847,22 @@ export async function handleGossipResponse(username, chatId, data) {
  * 按 ID 查询本地已有事件；可选合并 `peerEvents` 中经签名校验的条目（供离线互传或后续联邦扩展）。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
- * @param {{ missingEventIds?: string[], wantIds?: string[], eventIds?: string[], peerEvents?: unknown[] }} [query] 查询与可选对端事件
+ * @param {{ wantIds?: string[], peerEvents?: unknown[] }} [query] 查询与可选对端事件
  * @returns {Promise<{ found: boolean, events: object[], stillMissing: string[], mergedFromPeer: number }>} 是否凑齐、已命中事件、仍缺 ID、合并条数
  */
 export async function requestMissingEventsGossip(username, chatId, query = {}) {
 	const { nodeId, readJsonl, appendValidatedRemoteEvent } = requireDagDeps()
-	const raw = query.missingEventIds ?? query.wantIds ?? query.eventIds
-	const wantIds = Array.isArray(raw)
-		? [...new Set(raw.filter(id => typeof id === 'string' && /^[0-9a-f]{64}$/iu.test(id)))]
-		: []
+	const wantIds = [...new Set(
+		(query.wantIds || []).filter(id => typeof id === 'string' && /^[0-9a-f]{64}$/iu.test(id)),
+	)]
 
 	let mergedFromPeer = 0
 	const peerEvents = Array.isArray(query.peerEvents) ? query.peerEvents : []
-	for (const rawEv of peerEvents) {
-		/** @type {unknown} */
-		let ev = rawEv
-		if (rawEv && typeof rawEv === 'object' && 'event' in /** @type {object} */ rawEv) {
-			const wrapped = /** @type {{ event?: object }} */ rawEv.event
-			if (wrapped && typeof wrapped === 'object') ev = wrapped
-		}
-		if (!ev || typeof ev !== 'object') continue
-		const r = await appendValidatedRemoteEvent(username, chatId, /** @type {object} */ ev, { logFailures: false })
-		if (r === 'ok') mergedFromPeer++
+	for (const rawEvent of peerEvents) {
+		const signedEvent = rawEvent?.event ?? rawEvent
+		if (!signedEvent || typeof signedEvent !== 'object') continue
+		if (await appendValidatedRemoteEvent(username, chatId, signedEvent, { logFailures: false }) === 'ok')
+			mergedFromPeer++
 	}
 
 	const events = await readJsonl(eventsPath(username, chatId))

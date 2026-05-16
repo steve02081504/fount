@@ -10,6 +10,13 @@ import {
 } from '/parts/shells:chat/src/groupUI.mjs'
 import { initializeWebSocket } from '../src/websocket.mjs'
 
+import { avatarColor, avatarInitial, escapeHtml, formatTime } from './domUtils.mjs'
+import {
+	appendChannelMessagesHtml,
+	renderMessageContent,
+	renderMessages,
+} from './messageRender.mjs'
+
 // ============ 状态 ============
 let groups = []
 /** 侧栏文件夹（`GET …/group-folders`；与 §19 `groupFolders.json` 对齐） */
@@ -22,7 +29,7 @@ let pollTimer = null
 let myUsername = null
 // 由用户发送动作触发：下一次消息渲染强制滚动到底部，
 // 与之相对，普通轮询/他人消息只在用户已在底部附近时才自动滚动，避免"抢滚动"。
-let _forceScrollOnNext = false
+let forceScrollOnNext = false
 const collapsedCategories = new Set()
 
 // AI 角色 1:1 聊天嵌入模式（底层仍为 DAG 群 /groups/:groupId）
@@ -31,86 +38,9 @@ let currentAIChar = null
 let aiChatWs = null
 let aiChatLogLength = 0
 // 流式消息追踪：messageId → { index, content, content_for_show }
-const _streamingEntries = new Map()
+const streamingEntries = new Map()
 
 // ============ 工具 ============
-/**
- * 将文本转为可安全插入 HTML 的字符串。
- * @param {string|null|undefined} text - 原始文本
- * @returns {string} 转义后的 HTML 片段
- */
-function escapeHtml(text) {
-	const div = document.createElement('div')
-	div.textContent = text == null ? '' : String(text)
-	return div.innerHTML
-}
-
-/**
- * 根据名称生成稳定的头像背景色。
- * @param {string} [name] - 用户名或展示名
- * @returns {string} CSS 颜色值
- */
-function avatarColor(name) {
-	const colors = [
-		'#5865f2',
-		'#ed4245',
-		'#fee75c',
-		'#57f287',
-		'#eb459e',
-		'#f0b232',
-		'#9b59b6',
-		'#1abc9c',
-	]
-	let hash = 0
-	for (let i = 0; i < (name || '').length; i++) 
-		hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  
-	return colors[Math.abs(hash) % colors.length]
-}
-
-/**
- * 取名称首字符作为头像占位字母。
- * @param {string} [name] - 用户名或展示名
- * @returns {string} 单个大写字母
- */
-function avatarInitial(name) {
-	return (name || '?').charAt(0).toUpperCase()
-}
-
-/**
- * 将时间戳格式化为相对「今天/昨天」的简短展示。
- * @param {number} ts - 毫秒时间戳
- * @returns {string} 本地化时间字符串
- */
-function formatTime(ts) {
-	const d = new Date(ts)
-	const now = new Date()
-	const isToday = d.toDateString() === now.toDateString()
-	const yesterday = new Date(now)
-	yesterday.setDate(now.getDate() - 1)
-	const isYesterday = d.toDateString() === yesterday.toDateString()
-	const time = d.toLocaleTimeString('zh-CN', {
-		hour: '2-digit',
-		minute: '2-digit',
-		hour12: false,
-	})
-	if (isToday) return `今天 ${time}`
-	if (isYesterday) return `昨天 ${time}`
-	return d.toLocaleDateString('zh-CN') + ' ' + time
-}
-
-/**
- * 从消息对象中提取纯文本内容。
- * @param {{content?: *}} msg - 群组或频道消息
- * @returns {string} 展示用文本
- */
-function getMessageText(msg) {
-	if (typeof msg.content === 'string') return msg.content
-	if (msg.content?.text) return msg.content.text
-	return JSON.stringify(msg.content)
-}
-
-
 /**
  * 显示或隐藏 Hub 频道栏内「置顶 / 书签」折叠区。
  * @param {boolean} on 是否显示
@@ -153,9 +83,7 @@ async function refreshHubPinsBookmarks() {
 		return
 	}
 	setHubPinsBookmarksWrapVisible(true)
-	const pinsBy = currentState.pinsByChannel && typeof currentState.pinsByChannel === 'object'
-		? currentState.pinsByChannel
-		: {}
+	const pinsBy = currentState.pinsByChannel || {}
 	const pinRows = []
 	for (const [cid, ids] of Object.entries(pinsBy)) {
 		if (!Array.isArray(ids) || !ids.length) continue
@@ -202,37 +130,6 @@ async function refreshHubPinsBookmarks() {
 		return `<a class="hub-side-link" href="${escapeHtml(href)}">${title}</a>`
 	})
 	bmHost.innerHTML = bmRows.length ? bmRows.join('') : '<div class="hub-side-muted">当前群无书签</div>'
-}
-
-// 解析入群欢迎消息：[join:greeting]
-/**
- * 解析 `[join:问候语]` 格式的系统消息正文。
- * @param {string} [text] - 消息文本
- * @returns {string|null} 问候语片段；不匹配则为 null
- */
-function parseJoinMessage(text) {
-	const m = String(text || '').match(/^\[join:([^\]]+)\]$/)
-	return m ? m[1] : null
-}
-
-// 渲染系统级欢迎消息行
-/**
- * 渲染入群欢迎类系统消息的 HTML 行。
- * @param {{id?: string, sender?: string, timestamp?: number, content?: *}} msg - 消息对象
- * @returns {string} 系统消息行的 HTML 字符串
- */
-function renderJoinSystemRow(msg) {
-	const sender = msg.sender || '?'
-	const time = msg.timestamp || 0
-	const greeting = parseJoinMessage(getMessageText(msg)) || '加入了对话'
-	return `
-<div class="hub-system-message" data-message-id="${msg.id}">
-<span><span class="hub-system-author">${escapeHtml(sender)}</span> ${
-	escapeHtml(greeting)
-}</span>
-<span class="hub-system-time">${formatTime(time)}</span>
-</div>
-`
 }
 
 // === 入群欢迎语选择器 ===
@@ -303,36 +200,6 @@ ${
 		document.body.appendChild(modal)
 		modal.showModal()
 	})
-}
-
-/**
- * 将纯文本转为可插入消息区的 HTML（贴纸/图片占位等）。
- * @param {string} text - 原始消息文本
- * @returns {string} 带内联标签的 HTML
- */
-function renderMessageContent(text) {
-	let html = escapeHtml(text)
-	html = html.replace(/\[sticker:([^\]|]+)\|([^\]]+)\]/g, (_, id, url) => {
-		const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(
-			/&gt;/g,
-			'>',
-		).replace(/&quot;/g, '"')
-		return `<img src="${safeUrl}" alt="sticker" style="max-width:120px;max-height:120px;" />`
-	})
-	html = html.replace(
-		/\[sticker:([^\]]+)\]/g,
-		() => '<span style="opacity:0.7">🖼️ 贴纸</span>',
-	)
-	html = html.replace(/\[image:([^\]|]+)\|([^\]]+)\]/g, (_, name, url) => {
-		const safeUrl = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(
-			/&gt;/g,
-			'>',
-		).replace(/&quot;/g, '"')
-		return `<img src="${safeUrl}" alt="${
-			escapeHtml(name)
-		}" onclick="window.open('${safeUrl}','_blank')" style="cursor:pointer" />`
-	})
-	return html
 }
 
 // ============ URL hash ============
@@ -414,7 +281,7 @@ async function applyPresence(rootEl, usernames) {
 		}
 	}
 }
-let _hubMemberPresenceTimer = null
+let hubMemberPresenceTimer = null
 /**
  * 定时刷新成员在线状态；根节点从文档移除时自动停止。
  * @param {HTMLElement} rootEl - 成员列表容器
@@ -422,11 +289,11 @@ let _hubMemberPresenceTimer = null
  * @returns {void} 无
  */
 function startMemberPresencePolling(rootEl, usernames) {
-	if (_hubMemberPresenceTimer) clearInterval(_hubMemberPresenceTimer)
-	_hubMemberPresenceTimer = setInterval(() => {
+	if (hubMemberPresenceTimer) clearInterval(hubMemberPresenceTimer)
+	hubMemberPresenceTimer = setInterval(() => {
 		if (!document.body.contains(rootEl)) {
-			clearInterval(_hubMemberPresenceTimer)
-			_hubMemberPresenceTimer = null
+			clearInterval(hubMemberPresenceTimer)
+			hubMemberPresenceTimer = null
 			return
 		}
 		applyPresence(rootEl, usernames)
@@ -943,53 +810,6 @@ async function loadMessages() {
 }
 
 /**
- * 将消息数组渲染为消息列表 HTML。
- * @param {Array<{id?: string, sender?: string, timestamp?: number, content?: *}>} messages - 消息列表
- * @returns {string} 消息区 HTML 字符串
- */
-function renderMessages(messages) {
-	let html = ''
-	let prevSender = null
-	let prevTime = 0
-	for (const msg of messages) {
-		// 系统消息（入群欢迎）特殊渲染
-		if (parseJoinMessage(getMessageText(msg))) {
-			html += renderJoinSystemRow(msg)
-			prevSender = null
-			prevTime = 0
-			continue
-		}
-		const sender = msg.sender || '?'
-		const time = msg.timestamp || 0
-		// 同一发送者且距离上一条消息 < 5 分钟，归为同一组
-		const isFirst = sender !== prevSender || (time - prevTime) > 5 * 60 * 1000
-		const color = avatarColor(sender)
-		const initial = avatarInitial(sender)
-		html += `
-<div class="hub-message ${
-      isFirst ? 'first-in-group' : ''
-}" data-message-id="${msg.id}">
-<div class="hub-avatar" data-avatar-for="${
-	escapeHtml(sender)
-}" style="background: ${color};">${escapeHtml(initial)}</div>
-<div class="hub-message-body">
-<div class="hub-message-header">
-<span class="hub-message-author">${escapeHtml(sender)}</span>
-<span class="hub-message-time">${formatTime(time)}</span>
-</div>
-<div class="hub-message-content">${
-	renderMessageContent(getMessageText(msg))
-}</div>
-</div>
-</div>
-`
-		prevSender = sender
-		prevTime = time
-	}
-	return html
-}
-
-/**
  *
  */
 function scrollToBottom() {
@@ -1010,75 +830,27 @@ function startPolling() {
  */
 async function pollNewMessages() {
 	if (!currentGroupId || !currentChannelId) return
-	try {
-		const options = { limit: 50 }
-		if (lastMessageId) options.since = lastMessageId
-		const messages = await getChannelMessages(
-			currentGroupId,
-			currentChannelId,
-			options,
-		)
-		if (!messages.length) return
+	const options = { limit: 50 }
+	if (lastMessageId) options.since = lastMessageId
+	const messages = await getChannelMessages(currentGroupId, currentChannelId, options)
+	if (!messages.length) return
 
-		const container = document.getElementById('messages')
-		const empty = container.querySelector('.hub-empty')
-		if (empty) container.innerHTML = ''
+	const container = document.getElementById('messages')
+	const empty = container.querySelector('.hub-empty')
+	if (empty) container.innerHTML = ''
 
-		// 是否在底部附近
-		const nearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-        100
+	const nearBottom =
+		container.scrollHeight - container.scrollTop - container.clientHeight < 100
+	const lastSender = container.querySelector('.hub-message:last-child .hub-message-author')?.textContent
+	const fresh = messages.filter(message => !container.querySelector(`[data-message-id="${message.id}"]`))
+	const { html: appended } = appendChannelMessagesHtml(fresh, lastSender)
+	if (!appended) return
 
-		const lastMsgEl = container.querySelector('.hub-message:last-child')
-		const lastSender = lastMsgEl?.querySelector('.hub-message-author')
-			?.textContent
-
-		let appended = ''
-		let prevSender = lastSender
-		let prevTime = 0
-		for (const msg of messages) {
-			if (container.querySelector(`[data-message-id="${msg.id}"]`)) continue
-			if (parseJoinMessage(getMessageText(msg))) {
-				appended += renderJoinSystemRow(msg)
-				prevSender = null
-				prevTime = 0
-				continue
-			}
-			const sender = msg.sender || '?'
-			const time = msg.timestamp || 0
-			const isFirst = sender !== prevSender ||
-        (time - prevTime) > 5 * 60 * 1000
-			const color = avatarColor(sender)
-			const initial = avatarInitial(sender)
-			appended += `
-<div class="hub-message ${
-        isFirst ? 'first-in-group' : ''
-}" data-message-id="${msg.id}">
-<div class="hub-avatar" data-avatar-for="${
-	escapeHtml(sender)
-}" style="background: ${color};">${escapeHtml(initial)}</div>
-<div class="hub-message-body">
-<div class="hub-message-header">
-<span class="hub-message-author">${escapeHtml(sender)}</span>
-<span class="hub-message-time">${formatTime(time)}</span>
-</div>
-<div class="hub-message-content">${
-	renderMessageContent(getMessageText(msg))
-}</div>
-</div>
-</div>
-`
-			prevSender = sender
-			prevTime = time
-		}
-		if (appended) {
-			container.insertAdjacentHTML('beforeend', appended)
-			lastMessageId = messages[messages.length - 1].id
-			applyAvatarsTo(container)
-			if (_forceScrollOnNext || nearBottom) scrollToBottom()
-			_forceScrollOnNext = false
-		}
-	} catch {}
+	container.insertAdjacentHTML('beforeend', appended)
+	lastMessageId = messages[messages.length - 1].id
+	applyAvatarsTo(container)
+	if (forceScrollOnNext || nearBottom) scrollToBottom()
+	forceScrollOnNext = false
 }
 
 // ============ 输入框 ============
@@ -1120,7 +892,7 @@ function disableComposer(reason) {
 async function sendCurrentMessage(content) {
 	// 用户主动发送：要求下一次消息渲染（无论是 poll 拉回的本人消息、
 	// AI 通过 WS 推送的回复、还是图片/贴纸触发的渲染）强制滚动到底部
-	_forceScrollOnNext = true
+	forceScrollOnNext = true
 	if (currentAIChatId && currentAIChar) {
 		await sendAIChatMessage(content)
 		return
@@ -1143,7 +915,7 @@ async function submitComposer() {
 	try {
 		await sendCurrentMessage(content)
 	} catch (err) {
-		_forceScrollOnNext = false // 发送失败：避免下次无关 poll 抢滚动
+		forceScrollOnNext = false // 发送失败：避免下次无关 poll 抢滚动
 		alert('发送失败: ' + err.message)
 		input.value = content
 	}
@@ -1837,7 +1609,7 @@ function clearAIChatState() {
 	currentAIChatId = null
 	currentAIChar = null
 	aiChatLogLength = 0
-	_streamingEntries.clear()
+	streamingEntries.clear()
 }
 
 // 清理 AI 回复中的 Markdown 格式符号（*、**、_、__、~~ 等）
@@ -1917,7 +1689,7 @@ function updateStreamingEntryDOM(tracked) {
     filesHtml
 	const nearBottom =
     container.scrollHeight - container.scrollTop - container.clientHeight < 120
-	if (_forceScrollOnNext || nearBottom) scrollToBottom()
+	if (forceScrollOnNext || nearBottom) scrollToBottom()
 }
 
 /**
@@ -1992,7 +1764,7 @@ function renderAIChatLog(entries) {
 `
 		return
 	}
-	container.innerHTML = entries.map((e, i) => renderAIEntry(e, i)).join('')
+	container.innerHTML = entries.map((entry, index) => renderAIEntry(entry, index)).join('')
 	applyAvatarsTo(container)
 	scrollToBottom()
 }
@@ -2043,7 +1815,7 @@ function appendAIEntry(entry) {
 	aiChatLogLength++
 	// 如果是 AI 正在生成的占位消息，注册到流式追踪表
 	if (entry.is_generating && entry.id) 
-		_streamingEntries.set(entry.id, {
+		streamingEntries.set(entry.id, {
 			index: thisIndex,
 			content: entry.content || '',
 			content_for_show: entry.content_for_show || '',
@@ -2053,10 +1825,10 @@ function appendAIEntry(entry) {
 	// 用户主动发送 → 强制滚动；同时，刚发送后 AI 推送的回复也应强制滚动一次，
 	// 避免用户看到自己消息但需要手滑才能看见 AI 回复。
 	const isOwnEntry = entry?.role === 'user' || entry?.author === myUsername
-	if (_forceScrollOnNext || nearBottom) {
+	if (forceScrollOnNext || nearBottom) {
 		scrollToBottom()
 		// 用户消息渲染后保留 flag 直到 AI 回复也滚一次
-		if (!isOwnEntry) _forceScrollOnNext = false
+		if (!isOwnEntry) forceScrollOnNext = false
 	}
 }
 
@@ -2079,9 +1851,9 @@ function replaceAIEntry(index, entry) {
 	wrap.innerHTML = renderAIEntry(entry, index)
 	el.replaceWith(wrap.firstElementChild)
 	applyAvatarsTo(container)
-	if (_forceScrollOnNext || nearBottom) {
+	if (forceScrollOnNext || nearBottom) {
 		scrollToBottom()
-		_forceScrollOnNext = false
+		forceScrollOnNext = false
 	}
 }
 
@@ -2136,7 +1908,7 @@ function connectAIChatWs(groupId) {
 			case 'message_replaced':
 				// 流式结束后的最终替换，清理追踪状态
 				if (data.payload.entry?.id) 
-					_streamingEntries.delete(data.payload.entry.id)
+					streamingEntries.delete(data.payload.entry.id)
         
 				replaceAIEntry(data.payload.index, data.payload.entry)
 				break
@@ -2154,7 +1926,7 @@ function connectAIChatWs(groupId) {
 			case 'stream_update':
 				{
 					const { messageId, slices } = data.payload || {}
-					const tracked = messageId && _streamingEntries.get(messageId)
+					const tracked = messageId && streamingEntries.get(messageId)
 					if (tracked && Array.isArray(slices)) {
 						applyStreamSlices(tracked, slices)
 						updateStreamingEntryDOM(tracked)
@@ -2541,7 +2313,7 @@ window.__hubAfterSelectGroup = (state) => {
 // Profile hover card
 // ============================================================
 const hoverCard = document.getElementById('profile-hover-card')
-let _hcHideTimer = null
+let hoverCardHideTimer = null
 
 /**
  * 在鼠标锚点附近展示用户资料悬浮卡并异步加载头像与在线状态。
@@ -2551,7 +2323,7 @@ let _hcHideTimer = null
  */
 async function showHoverCardFor(username, anchorEl) {
 	if (!username) return
-	clearTimeout(_hcHideTimer)
+	clearTimeout(hoverCardHideTimer)
 	// 避免同一个目标重复触发：若卡片已在显示且用户名一致，则跳过
 	if (
 		hoverCard.classList.contains('show') && hoverCard.dataset.uname === username
@@ -2602,14 +2374,14 @@ async function showHoverCardFor(username, anchorEl) {
  *
  */
 function hideHoverCard() {
-	clearTimeout(_hcHideTimer)
-	_hcHideTimer = setTimeout(() => {
+	clearTimeout(hoverCardHideTimer)
+	hoverCardHideTimer = setTimeout(() => {
 		hoverCard.classList.remove('show')
 		delete hoverCard.dataset.uname
 	}, 220)
 }
 
-hoverCard.addEventListener('mouseenter', () => clearTimeout(_hcHideTimer))
+hoverCard.addEventListener('mouseenter', () => clearTimeout(hoverCardHideTimer))
 hoverCard.addEventListener('mouseleave', hideHoverCard)
 
 /**
@@ -2687,10 +2459,10 @@ function closeOvlModal() {
 /**
  * 在设置浮层主体顶部展示成功或错误提示文案。
  * @param {'error'|'success'} type - 提示类型
- * @param {string} msg - 展示给用户的说明文字
+ * @param {string} text 展示给用户的说明文字
  * @returns {void} 无
  */
-function ovlShowMsg(type, msg) {
+function showOverlayNotice(type, text) {
 	const body = document.getElementById('ovl-body')
 	const cls = type === 'error' ? 'ovl-error' : 'ovl-success'
 	let host = body.querySelector(`.${cls}`)
@@ -2699,7 +2471,7 @@ function ovlShowMsg(type, msg) {
 		host.className = cls
 		body.prepend(host)
 	}
-	host.textContent = msg
+	host.textContent = text
 	host.style.display = 'block'
 	if (type === 'success') 
 		setTimeout(() => {
@@ -2772,7 +2544,7 @@ async function openAIChatSettingsModal(groupId) {
 			)
 			const data = await r.json().catch(() => ({}))
 			if (!r.ok || !data.success) throw new Error(data.error || '删除失败')
-			ovlShowMsg('success', '会话已删除')
+			showOverlayNotice('success', '会话已删除')
 			setTimeout(() => {
 				closeOvlModal()
 				clearAIChatState()
@@ -2780,7 +2552,7 @@ async function openAIChatSettingsModal(groupId) {
 				setMode('chars')
 			}, 600)
 		} catch (err) {
-			ovlShowMsg('error', '删除失败: ' + err.message)
+			showOverlayNotice('error', '删除失败: ' + err.message)
 		}
 	})
 }
@@ -2937,7 +2709,7 @@ ${
 		const powDifficulty =
       Number.parseInt(document.getElementById('gs-pow')?.value, 10) || 4
 		if (!name) {
-			ovlShowMsg('error', '请填写群组名称')
+			showOverlayNotice('error', '请填写群组名称')
 			return
 		}
 		try {
@@ -2958,7 +2730,7 @@ ${
 				},
 			)
 			if (!r2.ok) throw new Error('保存策略失败')
-			ovlShowMsg('success', '群组设置已保存')
+			showOverlayNotice('success', '群组设置已保存')
 			setTimeout(async () => {
 				closeOvlModal()
 				await loadGroups()
@@ -2967,7 +2739,7 @@ ${
         
 			}, 600)
 		} catch (err) {
-			ovlShowMsg('error', '保存失败: ' + err.message)
+			showOverlayNotice('error', '保存失败: ' + err.message)
 		}
 	})
 	document.getElementById('gs-delete')?.addEventListener('click', async () => {
@@ -2979,7 +2751,7 @@ ${
 			})
 			const data = await r.json()
 			if (!r.ok || !data.success) throw new Error(data.error || '删除失败')
-			ovlShowMsg('success', '群组已删除')
+			showOverlayNotice('success', '群组已删除')
 			setTimeout(async () => {
 				closeOvlModal()
 				currentGroupId = null
@@ -2988,7 +2760,7 @@ ${
 				window.location.hash = ''
 			}, 600)
 		} catch (err) {
-			ovlShowMsg('error', '删除失败: ' + err.message)
+			showOverlayNotice('error', '删除失败: ' + err.message)
 		}
 	})
 }
