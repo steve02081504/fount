@@ -1,5 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 
+
+import { encryptHForMember } from '../../../../../scripts/p2p/gsh.mjs'
 import { calculateMemberPermissions, hasPermission, PERMISSIONS } from '../../../../../scripts/p2p/permissions.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 
@@ -24,6 +26,7 @@ import { isPubKeyHashBlocked } from './chat/dm_blocklist.mjs'
 import { verifyDmLinkSignature } from './chat/dm_link_verify.mjs'
 import { listFederationPeersForGroup, ensureFederationRoom, getFederationConfig, invalidateFederationRoomCache } from './chat/federation.mjs'
 import { foldMessageAppendStreamLines } from './chat/fold_channel_message_lines.mjs'
+import { getCurrentH, initGroupH } from './chat/gsh_store.mjs'
 import { messagesPath, eventsPath } from './chat/paths.mjs'
 import { loadPeers } from './chat/peers.mjs'
 import { loadReputation } from './chat/reputation.mjs'
@@ -118,9 +121,14 @@ function validateLocalAuthzPayload(type, content, username, state) {
 		const fm = state.members?.[from]
 		if (!fm || fm.status !== 'active') throw new Error('introducer must be active member')
 		// §6.3 §11.1：encrypted_H 为 pairwise ECDH 加密的当前 H，O(1) 分发给新成员
-		// 格式校验：若提供则须为非空字符串（具体长度由客户端加密方案决定）
-		if (c.encrypted_H !== undefined && (typeof c.encrypted_H !== 'string' || !c.encrypted_H.trim()))
-			throw new Error('peer_invite.encrypted_H must be a non-empty string if provided')
+		// encrypted_H 若提供须为对象（{ ephemPub, iv, ciphertext, authTag }）；服务端将自动注入
+		if (c.encrypted_H !== undefined) {
+			const eh = c.encrypted_H
+			if (typeof eh !== 'object' || eh === null ||
+				typeof eh.ephemPub !== 'string' || typeof eh.iv !== 'string' ||
+				typeof eh.ciphertext !== 'string' || typeof eh.authTag !== 'string')
+				throw new Error('peer_invite.encrypted_H must be a GSH-encrypted object or omitted (server injects)')
+		}
 	}
 }
 
@@ -348,6 +356,8 @@ export function setGroupEndpoints(router) {
 					ownerPubKeyHash: username,
 				})
 				const gid = result.groupId
+				// §11：群初始化时生成 GSH H（generation 0）
+				await initGroupH(username, gid)
 				await appendDagEvent(username, gid, {
 					type: 'group_meta_update',
 					sender: username,
@@ -373,6 +383,8 @@ export function setGroupEndpoints(router) {
 				defaultChannelName: body.defaultChannelName,
 				defaultChannelId: body.defaultChannelId,
 			})
+			// §11：群初始化时生成 GSH H（generation 0）
+			await initGroupH(username, result.groupId)
 			res.status(201).json({
 				success: true,
 				groupId: result.groupId,
@@ -681,13 +693,30 @@ export function setGroupEndpoints(router) {
 						applied++
 				}
 				else {
+					const content = event.content && typeof event.content === 'object' ? { ...event.content } : {}
+
+					// §11.1 §6.3：peer_invite 本地简体形，服务端自动注入 encrypted_H
+					if (event.type === 'peer_invite' && !content.encrypted_H) {
+						const inviteePubKeyHex = normalizeDmPubKeyHex(content.to || content.invitee || '')
+						if (PUB_KEY_HEX_64.test(inviteePubKeyHex)) {
+							const hEntry = await getCurrentH(username, groupId)
+							if (hEntry) 
+								try {
+									content.encrypted_H = encryptHForMember(hEntry.h, inviteePubKeyHex)
+									content.h_generation = hEntry.generation
+								}
+								catch { /* 加密失败不阻断事件写入 */ }
+							
+						}
+					}
+
 					await appendDagEvent(username, groupId, {
 						type: event.type,
 						sender: username,
 						timestamp: typeof event.timestamp === 'number' && Number.isFinite(event.timestamp)
 							? event.timestamp
 							: Date.now(),
-						content: event.content && typeof event.content === 'object' ? event.content : {},
+						content,
 					})
 					applied++
 				}
@@ -890,7 +919,7 @@ export function setGroupEndpoints(router) {
 					desc: '',
 					parentChannelId,
 					syncScope: 'channel',
-					encryptionScheme: state.channels[parentChannelId]?.encryptionScheme || 'mailbox-ecdh',
+					// GSH 统一加密（§11），频道无需存储 encryptionScheme
 				},
 			})
 			res.status(201).json({ success: true, channelId: newChannelId })
@@ -1120,7 +1149,7 @@ export function setGroupEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
 			const channelId = req.params[1]
-			const { name, desc, type, isPrivate, parentChannelId, encryptionScheme, encryptionVersion } = req.body
+			const { name, desc, type, isPrivate, parentChannelId } = req.body
 
 			const { state } = await getState(username, groupId)
 			const member = state.members[username]
@@ -1148,12 +1177,6 @@ export function setGroupEndpoints(router) {
 				updates.isPrivate = Boolean(isPrivate)
 			if (parentChannelId !== undefined)
 				updates.parentChannelId = parentChannelId || null
-			if (encryptionScheme !== undefined)
-				updates.encryptionScheme = encryptionScheme === 'none' ? null : String(encryptionScheme)
-			if (encryptionVersion !== undefined) {
-				const v = Number(encryptionVersion)
-				if (Number.isFinite(v)) updates.encryptionVersion = Math.floor(v)
-			}
 
 			if (Object.keys(updates).length === 0)
 				return res.status(400).json({ success: false, error: 'No channel updates provided' })
@@ -1398,15 +1421,29 @@ export function setGroupEndpoints(router) {
 			if (targetUsername === username)
 				return res.status(400).json({ success: false, error: 'Cannot moderate yourself' })
 
-			const kickBody = req.body && typeof req.body === 'object' ? req.body : {}
 			const content = { targetPubKeyHash: targetUsername }
 
 			if (action === 'kick') {
-				// §11.2 GSH O(1) 轮换字段：客户端提供；服务端透传进 DAG
-				if (typeof kickBody.key_generation === 'number' && Number.isFinite(kickBody.key_generation))
-					content.key_generation = Math.floor(kickBody.key_generation)
-				if (typeof kickBody.new_H_nonce === 'string' && kickBody.new_H_nonce.trim())
-					content.new_H_nonce = kickBody.new_H_nonce.trim()
+			// §11.2 GSH O(1) 轮换：服务端自动生成 nonce 并推导新 H
+				const { generateHNonce, deriveNewH } = await import('../../../../../scripts/p2p/gsh.mjs')
+				const { appendH } = await import('./chat/gsh_store.mjs')
+				const hEntry = await getCurrentH(username, groupId)
+				if (hEntry) {
+					const nonce = generateHNonce()
+					const newGen = hEntry.generation + 1
+					content.key_generation = newGen
+					content.new_H_nonce = nonce
+					// event_id 在 appendDagEvent 内部计算，需在写完后推导 H_new
+					const kickEvent = await appendDagEvent(username, groupId, {
+						type: 'member_kick',
+						sender: username,
+						timestamp: Date.now(),
+						content,
+					})
+					const newH = deriveNewH(hEntry.h, kickEvent.id, nonce)
+					await appendH(username, groupId, newGen, newH)
+					return res.status(200).json({ success: true })
+				}
 			}
 
 			await appendDagEvent(username, groupId, {
@@ -1497,28 +1534,33 @@ export function setGroupEndpoints(router) {
 		}
 	})
 
-	/** §6.3 主动 GSH 密钥轮换（`key_rotate`）；须 `ADMIN`/`MANAGE_ROLES` 或 DM 双方成员。 */
+	/** §6.3 主动 GSH 密钥轮换（`key_rotate`）；须 `ADMIN`/`MANAGE_ROLES` 或 DM 双方成员。服务端自动生成 nonce 并更新 gsh.json。 */
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/key-rotate$/, authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
 			const groupId = req.params[0]
-			const body = req.body && typeof req.body === 'object' ? req.body : {}
-			const { key_generation, new_H_nonce } = body
-			if (typeof key_generation !== 'number' || !Number.isFinite(key_generation) || key_generation < 0)
-				return res.status(400).json({ success: false, error: 'key_generation (non-negative integer) required' })
-			if (typeof new_H_nonce !== 'string' || !new_H_nonce.trim())
-				return res.status(400).json({ success: false, error: 'new_H_nonce required' })
 
 			const { state } = await getState(username, groupId)
 			const member = state.members[username]
 			if (!member || member.status !== 'active')
 				return res.status(403).json({ success: false, error: 'Not a member' })
 
+			const { generateHNonce, deriveNewH } = await import('../../../../../scripts/p2p/gsh.mjs')
+			const { appendH } = await import('./chat/gsh_store.mjs')
+
+			const hEntry = await getCurrentH(username, groupId)
+			if (!hEntry)
+				return res.status(400).json({ success: false, error: 'No H initialized for this group' })
+
+			const nonce = generateHNonce()
+			const newGen = hEntry.generation + 1
 			const event = await appendKeyRotateEvent(username, groupId, {
-				key_generation,
-				new_H_nonce,
+				key_generation: newGen,
+				new_H_nonce: nonce,
 				sender: username,
 			})
+			const newH = deriveNewH(hEntry.h, event.id, nonce)
+			await appendH(username, groupId, newGen, newH)
 			res.status(200).json({ success: true, event })
 		}
 		catch (error) {

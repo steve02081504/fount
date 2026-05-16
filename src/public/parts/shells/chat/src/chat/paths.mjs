@@ -104,13 +104,13 @@ export function sidecarPath(username, groupId, channelId, messageId) {
 }
 
 /**
- * 群文件 AES 密钥侧车 JSON（不入 DAG）。
+ * GSH 状态 JSON 路径（H 代数历史，§11，§19）。
  * @param {string} username 本地账户名
  * @param {string} groupId 会话 / 群 ID
- * @returns {string} 密钥表 JSON 绝对路径
+ * @returns {string} `gsh.json` 绝对路径
  */
-export function aesKeysPath(username, groupId) {
-	return join(chatDir(username, groupId), 'file_aes_keys.json')
+export function gshPath(username, groupId) {
+	return join(chatDir(username, groupId), 'gsh.json')
 }
 
 /**

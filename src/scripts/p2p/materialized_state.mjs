@@ -48,7 +48,6 @@ export function createInitialState(groupId, creatorPubKeyHash) {
 				syncScope: 'group',
 				isPrivate: false,
 				createdAt: Date.now(),
-				encryptionScheme: 'mailbox-ecdh',
 			}
 		},
 		fileFolders: {},
@@ -67,13 +66,12 @@ export function createInitialState(groupId, creatorPubKeyHash) {
 			fileReplicationFactor: 2,
 			lateMessageFreezeMs: 30000,
 			logicalStreamIdleMs: 150_000,
-			plaintextAllowed: false,
 			streamingSfuWss: null,
 			maxDagPayloadBytes: 262_144,
-			mailboxGeneration: 0,
 		},
 		reputationLedger: [],
 		inviteEdges: [],
+		gshRotations: [],
 		messageOverlay: {
 			deletedIds: new Set(),
 			editHistory: new Map(),
@@ -109,6 +107,7 @@ export function applyEvent(state, event) {
 
 	if (!Array.isArray(newState.reputationLedger)) newState.reputationLedger = []
 	if (!Array.isArray(newState.inviteEdges)) newState.inviteEdges = []
+	if (!Array.isArray(newState.gshRotations)) newState.gshRotations = []
 
 	switch (event.type) {
 		case 'member_join': {
@@ -132,9 +131,19 @@ export function applyEvent(state, event) {
 			break
 
 		case 'member_kick':
-			if (newState.members[event.content.targetPubKeyHash]) 
+			if (newState.members[event.content.targetPubKeyHash])
 				newState.members[event.content.targetPubKeyHash].status = 'kicked'
-			
+			// §11.2 GSH O(1) 轮换：记录最新 H 代数与 nonce，供客户端推导 H_new
+			if (typeof event.content.key_generation === 'number' && typeof event.content.new_H_nonce === 'string') {
+				if (!newState.gshRotations) newState.gshRotations = []
+				newState.gshRotations.push({
+					eventId: event.id,
+					generation: event.content.key_generation,
+					nonce: event.content.new_H_nonce,
+					type: 'kick',
+					targetPubKeyHash: event.content.targetPubKeyHash,
+				})
+			}
 			break
 
 		case 'member_ban':
@@ -199,8 +208,6 @@ export function applyEvent(state, event) {
 				isPrivate: event.content.isPrivate || false,
 				subRoomId: event.content.subRoomId || null,
 				createdAt: event.timestamp,
-				encryptionScheme: event.content.encryptionScheme,
-				encryptionVersion: event.content.encryptionVersion,
 			}
 			break
 
@@ -277,13 +284,15 @@ export function applyEvent(state, event) {
 			break
 
 		case 'file_upload':
+			// §10.3 GSH 方案：文件密钥由 KDF(H,"file",fileId) 推导，无需存 aesKey
 			newState.messageOverlay.fileIndex.set(event.content.fileId, {
-				aesKey: event.content.aesKey,
 				name: event.content.name,
 				size: event.content.size,
 				mimeType: event.content.mimeType,
 				folderId: event.content.folderId,
-				chunkManifest: event.content.chunkManifest
+				chunkManifest: event.content.chunkManifest,
+				key_generation: event.content.key_generation ?? null,
+				storageLocator: event.content.storageLocator ?? null,
 			})
 			break
 
@@ -347,7 +356,20 @@ export function applyEvent(state, event) {
 		}
 
 		case 'dag_tip_merge':
-			// 纯拓扑合并事件：不修改物化成员/频道，仅收敛多父（计划 §0 多父 DAG）。
+			// 纯拓扑合并事件：不修改物化成员/频道，仅收敛多父（§0 多父 DAG）。
+			break
+
+		case 'key_rotate':
+			// §6.3 主动 GSH H 轮换：与 member_kick 相同，记录到 gshRotations
+			if (typeof event.content?.key_generation === 'number' && typeof event.content?.new_H_nonce === 'string') {
+				if (!newState.gshRotations) newState.gshRotations = []
+				newState.gshRotations.push({
+					eventId: event.id,
+					generation: event.content.key_generation,
+					nonce: event.content.new_H_nonce,
+					type: 'rotate',
+				})
+			}
 			break
 
 		case 'peer_invite': {
@@ -361,6 +383,8 @@ export function applyEvent(state, event) {
 			if (from && to) {
 				const edge = { from, to, at: event.timestamp }
 				if (c.rep_edge !== undefined) edge.rep_edge = clampRepEdge(c.rep_edge)
+				// §11.1 §6.3：encrypted_H 供接收方（新成员）用自身私钥解密获取当前 H
+				if (c.encrypted_H && typeof c.encrypted_H === 'object') edge.encrypted_H = c.encrypted_H
 				newState.inviteEdges.push(edge)
 			}
 			break
@@ -405,13 +429,12 @@ export function emptyMaterializedState() {
 			fileReplicationFactor: 2,
 			lateMessageFreezeMs: 30_000,
 			logicalStreamIdleMs: 150_000,
-			plaintextAllowed: false,
 			streamingSfuWss: null,
 			maxDagPayloadBytes: 262_144,
-			mailboxGeneration: 0,
 		},
 		reputationLedger: [],
 		inviteEdges: [],
+		gshRotations: [],
 		messageOverlay: {
 			deletedIds: new Set(),
 			editHistory: new Map(),
@@ -486,6 +509,9 @@ export function materializeFromCheckpoint(checkpoint) {
 			: [],
 		inviteEdges: Array.isArray(mr.inviteEdges)
 			? JSON.parse(JSON.stringify(mr.inviteEdges))
+			: [],
+		gshRotations: Array.isArray(mr.gshRotations)
+			? JSON.parse(JSON.stringify(mr.gshRotations))
 			: [],
 	}
 }
