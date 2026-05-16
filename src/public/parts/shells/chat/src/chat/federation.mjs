@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { loadShellData } from '../../../../../../server/setting_loader.mjs'
 
 import { snapshotPath, eventsPath } from './paths.mjs'
+import { isSubjectBlocked, loadPeers } from './peers.mjs'
 import { normalizeJsonBoundaryValue } from './remoteProxy.mjs'
 import { computeArchiveSummary, recordGossipAllUnknownWant } from './reputation.mjs'
 
@@ -559,8 +560,18 @@ export async function ensureFederationRoom(username, chatId) {
 			})
 
 			const [sendDagRaw, getDag] = room.makeAction('dag_event')
-			getDag((data, _peerId) => {
-				void ingestRemoteEvent(username, chatId, data).catch(e => console.error(e))
+			getDag((data, peerId) => {
+				void (async () => {
+					const peers = await loadPeers(username, chatId)
+					const remoteNodeId = peerToNode.get(peerId)
+					if (remoteNodeId && isSubjectBlocked(peers, remoteNodeId)) return
+					const ev = data && typeof data === 'object' && 'event' in /** @type {object} */ data
+						? /** @type {{ event?: { sender?: string } }} */ data.event
+						: /** @type {{ sender?: string }} */ data
+					const sender = typeof ev?.sender === 'string' ? ev.sender.trim() : ''
+					if (sender && isSubjectBlocked(peers, sender)) return
+					await ingestRemoteEvent(username, chatId, data)
+				})().catch(e => console.error(e))
 			})
 			const [sendGossipRequestRaw, getGossipRequest] = room.makeAction('gossip_request')
 			const [sendGossipResponseRaw, getGossipResponse] = room.makeAction('gossip_response')
@@ -579,6 +590,8 @@ export async function ensureFederationRoom(username, chatId) {
 					if (!Number.isFinite(ttl) || typeof requesterId !== 'string' || !requesterId) return
 					const { nodeId, readJsonl } = requireDagDeps()
 					if (requesterId === nodeId) return
+					const peers = await loadPeers(username, chatId)
+					if (isSubjectBlocked(peers, requesterId)) return
 					const dedupeKey = `${requesterId}\0${wantIds.slice().sort().join(',')}\0${ttl}`
 					if (!takeGossipRequestSlot(dedupeKey)) return
 					if (!takeIncomingGossipWantSlot(username, chatId, requesterId)) return

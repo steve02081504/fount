@@ -26,10 +26,11 @@ import { isPubKeyHashBlocked } from './chat/dm_blocklist.mjs'
 import { verifyDmLinkSignature } from './chat/dm_link_verify.mjs'
 import { listFederationPeersForGroup, ensureFederationRoom, getFederationConfig, invalidateFederationRoomCache } from './chat/federation.mjs'
 import { foldMessageAppendStreamLines } from './chat/fold_channel_message_lines.mjs'
+import { registerGroupFileRoutes } from './chat/group_files.mjs'
 import { decryptChannelMessageLines } from './chat/gsh_content.mjs'
 import { getCurrentH, initGroupH } from './chat/gsh_store.mjs'
 import { messagesPath, eventsPath } from './chat/paths.mjs'
-import { loadPeers } from './chat/peers.mjs'
+import { addBlockedPeer, loadPeers } from './chat/peers.mjs'
 import { loadReputation } from './chat/reputation.mjs'
 import { setPowChallenge } from './chat/websocket.mjs'
 import { loadChat, modifyTimeLine, triggerCharReply } from './chat.mjs'
@@ -1444,6 +1445,7 @@ export function setGroupEndpoints(router) {
 					})
 					const newH = deriveNewH(hEntry.h, kickEvent.id, nonce)
 					await appendH(username, groupId, newGen, newH)
+					await addBlockedPeer(username, groupId, targetUsername)
 					return res.status(200).json({ success: true })
 				}
 			}
@@ -1454,6 +1456,8 @@ export function setGroupEndpoints(router) {
 				timestamp: Date.now(),
 				content,
 			})
+			if (action === 'ban' || action === 'kick')
+				await addBlockedPeer(username, groupId, targetUsername)
 			res.status(200).json({ success: true })
 		}
 		catch (error) {
@@ -1582,4 +1586,6 @@ export function setGroupEndpoints(router) {
 			res.status(400).json({ success: false, error: error.message })
 		}
 	})
+
+	registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS)
 }

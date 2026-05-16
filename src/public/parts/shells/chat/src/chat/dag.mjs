@@ -39,7 +39,12 @@ import {
 	GSH_ENCRYPT_EVENT_TYPES,
 } from './gsh_content.mjs'
 import { applyGshRotationFromEvent, initGroupH } from './gsh_store.mjs'
-import { assertGovernanceHlcSkewAllowed, DEFAULT_HLC_MAX_SKEW_MS, resolveHlcMaxSkewMs } from './hlc_policy.mjs'
+import {
+	assertGovernanceHlcSkewAllowed,
+	DEFAULT_HLC_MAX_SKEW_MS,
+	isMessageHlcQuarantined,
+	resolveHlcMaxSkewMs,
+} from './hlc_policy.mjs'
 import {
 	chatDir,
 	chatsRoot,
@@ -226,6 +231,21 @@ export async function appendValidatedRemoteEvent(username, chatId, signPayload, 
 	}
 	catch (e) {
 		if (logFailures) console.error('federation: drop remote event (HLC governance skew)', e)
+		return 'invalid'
+	}
+
+	const senderKey = typeof signedEvent.sender === 'string' ? signedEvent.sender.trim() : ''
+	if (senderKey) {
+		const { loadPeers, isSubjectBlocked } = await import('./peers.mjs')
+		const peers = await loadPeers(username, chatId)
+		if (isSubjectBlocked(peers, senderKey)) {
+			if (logFailures) console.error('federation: drop remote event (blocked peer)')
+			return 'invalid'
+		}
+	}
+
+	if (isMessageHlcQuarantined(signedEvent, resolveHlcMaxSkewMs(state))) {
+		if (logFailures) console.error('federation: quarantine message (HLC skew)')
 		return 'invalid'
 	}
 

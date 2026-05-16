@@ -2,18 +2,32 @@ import { arrayBufferToBase64 } from '../../../../../../../scripts/p2p/bytes_code
 import { handleUIError, normalizeError } from '../utils.mjs'
 
 /**
- * 将加密的 chunk HTTP 响应解密为 Uint8Array。
- * @param {Response} response HTTP 响应（JSON 密文）
- * @param {CryptoKey} aesKey AES-GCM 密钥
- * @param {string} ivHex IV 十六进制
- * @returns {Promise<Uint8Array>} 解密得到的明文
+ * 将服务端返回的明文 base64 转为 Uint8Array。
+ * @param {string} b64 base64 明文
+ * @returns {Uint8Array} 字节
  */
-async function decryptResponseStream(response, aesKey, ivHex) {
-	const { data: b64 } = await response.json()
-	const cipherBuf = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer
-	const iv = new Uint8Array(ivHex.match(/.{2}/gu).map(h => parseInt(h, 16)))
-	const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, cipherBuf)
-	return new Uint8Array(plain)
+function b64PlainToU8(b64) {
+	const bin = atob(b64)
+	const out = new Uint8Array(bin.length)
+	for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+	return out
+}
+
+/**
+ * 拉取并解密单个分块（GSH 在服务端 `KDF(H,"file",fileId)` 完成）。
+ * @param {string} gid 群 ID
+ * @param {string} fileId 文件 ID
+ * @param {object} chunk manifest 项
+ * @returns {Promise<Uint8Array | null>} 明文或 null
+ */
+async function fetchDecryptedChunk(gid, fileId, chunk) {
+	const q = new URLSearchParams({ locator: chunk.storageLocator, fileId })
+	if (chunk.key_generation != null) q.set('key_generation', String(chunk.key_generation))
+	const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(gid)}/chunks?${q}`)
+	if (!r.ok) return null
+	const body = await r.json()
+	if (!body?.data) return null
+	return b64PlainToU8(body.data)
 }
 
 /**
@@ -28,49 +42,34 @@ export function createFileHandlers(ctx) {
 	const pendingFiles = []
 
 	/**
-	 * 上传群文件：AES-256-GCM 加密分块并写 DAG（与下载/内联渲染共用同一套 chunk 管线）。
+	 * 上传群文件：明文经认证 HTTP 提交，Deno 侧 GSH 加密落盘（§10.3，无 aes-key）。
 	 * @param {File} file 浏览器 File 对象
 	 * @returns {Promise<void>}
 	 */
 	const uploadGroupFile = async (file) => {
 		if (!file) return
 		try {
-			/**
-			 * 计算缓冲区 SHA-256 十六进制摘要。
-			 * @param {ArrayBuffer} buf 输入数据
-			 * @returns {Promise<string>} 64 字符小写 hex
-			 */
-			const hashHex = async buf => {
-				const ab = await crypto.subtle.digest('SHA-256', buf)
-				return Array.from(new Uint8Array(ab)).map(b => b.toString(16).padStart(2, '0')).join('')
-			}
-
-			// AES-256-GCM 加密 → chunk 上传 → DAG file_upload + aesKey 存储
-			const rawKey = crypto.getRandomValues(new Uint8Array(32))
-			const aesKey = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', true, ['encrypt'])
-			const iv = crypto.getRandomValues(new Uint8Array(12))
-			const plainBuf = await file.arrayBuffer()
-			const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBuf)
-			const chunkHash = await hashHex(cipherBuf)
-			// 上传加密块
+			const fileId = crypto.randomUUID()
+			const plainB64 = arrayBufferToBase64(await file.arrayBuffer())
 			const uploadR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chunkHash, data: arrayBufferToBase64(cipherBuf) }),
+				body: JSON.stringify({ fileId, data: plainB64 }),
 			})
 			if (!uploadR.ok) {
 				handleUIError(new Error(`uploadGroupFile chunk HTTP ${uploadR.status}`), 'chat.group.fileUploadFailed', 'uploadGroupFile chunk')
 				return
 			}
-			const { storageLocator } = await uploadR.json()
-			const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('')
-			const fileId = crypto.randomUUID()
-			// DAG file_upload（不含 aesKey）
+			const { storageLocator, chunkHash, ivHex, key_generation } = await uploadR.json()
 			const evR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					fileId, name: file.name, size: file.size, mimeType: file.type,
+					fileId,
+					name: file.name,
+					size: file.size,
+					mimeType: file.type,
+					key_generation,
 					chunkManifest: [{ chunkIndex: 0, chunkHash, storageLocator, ivHex }],
 				}),
 			})
@@ -78,15 +77,6 @@ export function createFileHandlers(ctx) {
 				handleUIError(new Error(`uploadGroupFile files HTTP ${evR.status}`), 'chat.group.fileUploadFailed', 'uploadGroupFile files')
 				return
 			}
-			// 存储 aesKey（认证信道）
-			const aesKeyHex = Array.from(rawKey).map(b => b.toString(16).padStart(2, '0')).join('')
-			await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/aes-key`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ aesKeyHex }),
-			}).catch(e => {
-				handleUIError(normalizeError(e), 'chat.group.fileUploadFailed', 'uploadGroupFile aes-key PUT')
-			})
 			showToastI18n('success', 'chat.group.fileUploaded')
 			await loadMessages()
 		}
@@ -171,12 +161,10 @@ export function createFileHandlers(ctx) {
 				return
 			}
 			const meta = await metaR.json()
-			if (!meta.aesKeyHex || !Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) {
-				handleUIError(new Error('downloadGroupFile: missing aes key or manifest'), 'chat.group.fileNoKey', 'downloadGroupFile')
+			if (!Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) {
+				handleUIError(new Error('downloadGroupFile: missing manifest'), 'chat.group.fileNoKey', 'downloadGroupFile')
 				return
 			}
-			const rawKey = new Uint8Array(meta.aesKeyHex.match(/.{2}/gu).map(b => parseInt(b, 16)))
-			const aesKey = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['decrypt'])
 
 			const { createWriteStream } = await import('https://esm.sh/streamsaver@2.0.6')
 			const streamOpts = meta.totalSize != null ? { size: meta.totalSize } : {}
@@ -185,13 +173,12 @@ export function createFileHandlers(ctx) {
 
 			try {
 				for (const chunk of meta.chunkManifest) {
-					const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks?locator=${encodeURIComponent(chunk.storageLocator)}`)
-					if (!r.ok) {
+					const plain = await fetchDecryptedChunk(groupId, fileId, chunk)
+					if (!plain) {
 						await writer.abort()
-						handleUIError(new Error(`downloadGroupFile chunk HTTP ${r.status}`), 'chat.group.fileDownloadFailed', 'downloadGroupFile chunk')
+						handleUIError(new Error('downloadGroupFile chunk decrypt failed'), 'chat.group.fileDownloadFailed', 'downloadGroupFile chunk')
 						return
 					}
-					const plain = await decryptResponseStream(r, aesKey, chunk.ivHex)
 					await writer.write(plain)
 				}
 				await writer.close()
@@ -221,14 +208,11 @@ export function createFileHandlers(ctx) {
 			const metaR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
 			if (!metaR.ok) return null
 			const meta = await metaR.json()
-			if (!meta.aesKeyHex || !Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) return null
-			const keyBytes = new Uint8Array(meta.aesKeyHex.match(/.{2}/gu).map(h => parseInt(h, 16)))
-			const aesKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['decrypt'])
+			if (!Array.isArray(meta.chunkManifest) || !meta.chunkManifest.length) return null
 			const bufs = []
 			for (const chunk of meta.chunkManifest) {
-				const chunkR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks?locator=${encodeURIComponent(chunk.storageLocator)}`)
-				if (!chunkR.ok) return null
-				const plain = await decryptResponseStream(chunkR, aesKey, chunk.ivHex)
+				const plain = await fetchDecryptedChunk(groupId, fileId, chunk)
+				if (!plain) return null
 				bufs.push(plain)
 			}
 			const total = bufs.reduce((n, b) => n + b.byteLength, 0)

@@ -78,6 +78,33 @@ export async function savePeers(username, groupId, data) {
 }
 
 /**
+ * 将主体加入本群 `blockedPeers`（踢人/拉黑后拒绝联邦中继，§11.0）。
+ * @param {string} username 用户
+ * @param {string} groupId 群
+ * @param {string} peerKey 节点 id 或成员 pubKeyHash
+ * @returns {Promise<void>}
+ */
+export async function addBlockedPeer(username, groupId, peerKey) {
+	const id = String(peerKey || '').trim()
+	if (!id) return
+	const cur = await loadPeers(username, groupId)
+	if (!cur.blockedPeers.includes(id))
+		cur.blockedPeers.push(id)
+	await savePeers(username, groupId, cur)
+}
+
+/**
+ * @param {PeersFile} peers peers.json 内容
+ * @param {string} subject 发送方 pubKeyHash 或 remoteNodeId
+ * @returns {boolean} 是否已拉黑
+ */
+export function isSubjectBlocked(peers, subject) {
+	const s = String(subject || '').trim()
+	if (!s) return false
+	return peers.blockedPeers.includes(s)
+}
+
+/**
  * 将 Trystero roster 中的 `remoteNodeId` 并入 `explorePeers`（稀疏池探索集，§0、§4）。
  * @param {string} username 用户
  * @param {string} groupId 群
