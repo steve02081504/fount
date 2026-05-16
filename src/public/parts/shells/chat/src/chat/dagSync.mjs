@@ -1,5 +1,4 @@
-import { appendEvent, ensureChat, getDefaultChannelId, getState, isValidChannelId, listChannelMessages } from './dag.mjs'
-import { applyMailboxE2EToDagContent } from './e2e_mailbox.mjs'
+import { appendEvent, ensureChat, getDefaultChannelId, isValidChannelId, listChannelMessages } from './dag.mjs'
 
 /**
  * 将日志条目的 content 字段规范为可写入 DAG 的纯文本。
@@ -53,15 +52,13 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		const recentMessages = await listChannelMessages(username, groupId, channelIdForDag, { limit: 1 })
 		const prevMessageEventId = recentMessages[recentMessages.length - 1]?.eventId
 		if (prevMessageEventId) content.prevMessageEventId = prevMessageEventId
-		const { state } = await getState(username, groupId)
-		const contentForDag = applyMailboxE2EToDagContent(content, text.slice(0, 200_000), state, channelIdForDag)
 		await appendEvent(username, groupId, {
 			type: 'message',
 			channelId: channelIdForDag,
 			sender,
 			timestamp: ts,
 			charId: entry.timeSlice?.charname,
-			content: contentForDag,
+			content,
 		})
 	}
 	catch (e) {
@@ -118,14 +115,12 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 			text: text.slice(0, 200_000),
 		}
 		if (hasFiles) content.fileCount = entry.files.length
-		const { state } = await getState(username, groupId)
-		const contentForDag = applyMailboxE2EToDagContent(content, text.slice(0, 200_000), state, channelIdForDag)
 		await appendEvent(username, groupId, {
 			type: 'message_edit',
 			channelId: channelIdForDag,
 			sender: 'local',
 			timestamp: Date.now(),
-			content: contentForDag,
+			content,
 		})
 	}
 	catch (e) {

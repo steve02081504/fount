@@ -6,6 +6,7 @@ import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import { resolveContentRefsInMessageLines } from './chat/content_ref_resolve.mjs'
 import {
 	appendEvent as appendDagEvent,
+	appendKeyRotateEvent,
 	appendPinEvent,
 	appendReactionEvent,
 	appendUnpinEvent,
@@ -116,6 +117,10 @@ function validateLocalAuthzPayload(type, content, username, state) {
 		if (!to || to === username) throw new Error('peer_invite requires distinct invitee')
 		const fm = state.members?.[from]
 		if (!fm || fm.status !== 'active') throw new Error('introducer must be active member')
+		// §6.3 §11.1：encrypted_H 为 pairwise ECDH 加密的当前 H，O(1) 分发给新成员
+		// 格式校验：若提供则须为非空字符串（具体长度由客户端加密方案决定）
+		if (c.encrypted_H !== undefined && (typeof c.encrypted_H !== 'string' || !c.encrypted_H.trim()))
+			throw new Error('peer_invite.encrypted_H must be a non-empty string if provided')
 	}
 }
 
@@ -1393,11 +1398,22 @@ export function setGroupEndpoints(router) {
 			if (targetUsername === username)
 				return res.status(400).json({ success: false, error: 'Cannot moderate yourself' })
 
+			const kickBody = req.body && typeof req.body === 'object' ? req.body : {}
+			const content = { targetPubKeyHash: targetUsername }
+
+			if (action === 'kick') {
+				// §11.2 GSH O(1) 轮换字段：客户端提供；服务端透传进 DAG
+				if (typeof kickBody.key_generation === 'number' && Number.isFinite(kickBody.key_generation))
+					content.key_generation = Math.floor(kickBody.key_generation)
+				if (typeof kickBody.new_H_nonce === 'string' && kickBody.new_H_nonce.trim())
+					content.new_H_nonce = kickBody.new_H_nonce.trim()
+			}
+
 			await appendDagEvent(username, groupId, {
 				type: action === 'ban' ? 'member_ban' : 'member_kick',
 				sender: username,
 				timestamp: Date.now(),
-				content: { targetPubKeyHash: targetUsername },
+				content,
 			})
 			res.status(200).json({ success: true })
 		}
@@ -1477,6 +1493,36 @@ export function setGroupEndpoints(router) {
 		}
 		catch (error) {
 			console.error('Send channel message error:', error)
+			res.status(400).json({ success: false, error: error.message })
+		}
+	})
+
+	/** §6.3 主动 GSH 密钥轮换（`key_rotate`）；须 `ADMIN`/`MANAGE_ROLES` 或 DM 双方成员。 */
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/key-rotate$/, authenticate, async (req, res) => {
+		try {
+			const { username } = await getUserByReq(req)
+			const groupId = req.params[0]
+			const body = req.body && typeof req.body === 'object' ? req.body : {}
+			const { key_generation, new_H_nonce } = body
+			if (typeof key_generation !== 'number' || !Number.isFinite(key_generation) || key_generation < 0)
+				return res.status(400).json({ success: false, error: 'key_generation (non-negative integer) required' })
+			if (typeof new_H_nonce !== 'string' || !new_H_nonce.trim())
+				return res.status(400).json({ success: false, error: 'new_H_nonce required' })
+
+			const { state } = await getState(username, groupId)
+			const member = state.members[username]
+			if (!member || member.status !== 'active')
+				return res.status(403).json({ success: false, error: 'Not a member' })
+
+			const event = await appendKeyRotateEvent(username, groupId, {
+				key_generation,
+				new_H_nonce,
+				sender: username,
+			})
+			res.status(200).json({ success: true, event })
+		}
+		catch (error) {
+			console.error('Key rotate error:', error)
 			res.status(400).json({ success: false, error: error.message })
 		}
 	})

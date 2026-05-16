@@ -3,9 +3,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { renderTemplate } from '../../../../../../pages/scripts/template.mjs'
 import { createVirtualList } from '../../../../../../pages/scripts/virtualList.mjs'
 import { geti18n, setLocalizeLogic } from '../../../../../../scripts/i18n.mjs'
-import { showToastI18n } from '../../../../../../scripts/toast.mjs'
-import { viewerCanCryptoMigrate } from '../groupViewerPermissions.mjs'
-import { handleUIError, normalizeError } from '../utils.mjs'
+import { handleUIError } from '../utils.mjs'
 
 import { buildDisplayChain, mergeChannelMessagesForDisplay, orderedActivePinTargets, plainPreviewFromLine } from './dagMessageUtils.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
@@ -213,128 +211,13 @@ export function createChannelView({
 			const hiToggle = ctrlBar.querySelector('[data-high-privacy-toggle]')
 			const encCap = ctrlBar.querySelector('[data-encryption-caption]')
 			if (meta?.isPrivate && privRow && hiToggle instanceof HTMLInputElement) {
+				// §11 GSH 统一加密方案：私密频道均强制 GSH 加密（无降级选项）
 				privRow.classList.remove('hidden')
-				/**
-				 *
-				 */
-				const syncEncCaption = () => {
-					if (!encCap) return
-					const m = getLastChannelMeta()
-					const mailbox = m?.encryptionScheme === 'mailbox-ecdh'
-					encCap.textContent = geti18n(mailbox ? 'chat.group.channelEncryptionMailbox' : 'chat.group.channelEncryptionNone')
-				}
-				/**
-				 *
-				 */
-				const syncEncUi = () => {
-					const m = getLastChannelMeta()
-					const mailbox = m?.encryptionScheme === 'mailbox-ecdh'
-					hiToggle.checked = mailbox
-					syncEncCaption()
-				}
-				if (encCap) setLocalizeLogic(encCap, syncEncCaption)
-				syncEncUi()
-				hiToggle.addEventListener('change', async () => {
-					const wantsMailbox = hiToggle.checked
-					const prevMailbox = getLastChannelMeta()?.encryptionScheme === 'mailbox-ecdh'
-					if (wantsMailbox === prevMailbox) return
-					const ok = wantsMailbox
-						? confirm(geti18n('chat.group.channelEncryptionEnableWarning'))
-						: confirm(geti18n('chat.group.channelEncryptionDisableWarning'))
-					if (!ok) {
-						hiToggle.checked = prevMailbox
-						return
-					}
-					const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}`, {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ encryptionScheme: wantsMailbox ? 'mailbox-ecdh' : 'none' }),
-					})
-					if (!r.ok) {
-						hiToggle.checked = prevMailbox
-						handleUIError(new Error(`encryption update HTTP ${r.status}`), 'chat.group.channelUpdateFailed', 'channel encryption update')
-						return
-					}
-					if (reloadStateAndMessages)
-						await reloadStateAndMessages()
-					syncEncUi()
+				if (encCap) setLocalizeLogic(encCap, () => {
+					encCap.textContent = geti18n('chat.group.channelEncryptionGsh')
 				})
-				const cryptoRow = ctrlBar.querySelector('[data-channel-admin-crypto-row]')
-				const cryptoBtn = ctrlBar.querySelector('[data-action="channel-crypto-migrate"]')
-				if (cryptoRow && cryptoBtn) {
-					/**
-					 *
-					 */
-					const syncCryptoMigrateRow = async () => {
-						if (!getLastChannelMeta()?.isPrivate) {
-							cryptoRow.classList.add('hidden')
-							return
-						}
-						try {
-							const stR = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state`)
-							const st = stR.ok ? await stR.json() : null
-							const allow = await viewerCanCryptoMigrate(st, groupId, channelId)
-							cryptoRow.classList.toggle('hidden', !allow)
-						}
-						catch {
-							cryptoRow.classList.add('hidden')
-						}
-					}
-					await syncCryptoMigrateRow()
-					cryptoBtn.addEventListener('click', async () => {
-						const dlg = document.createElement('dialog')
-						dlg.className = 'modal'
-						const box = await renderTemplate('channel_crypto_migrate_modal', {})
-						dlg.replaceChildren(box)
-						document.body.appendChild(dlg)
-						signal.addEventListener('abort', () => {
-							if (dlg.isConnected) dlg.remove()
-						}, { once: true })
-						setLocalizeLogic(dlg, () => {
-							for (const el of dlg.querySelectorAll('[data-i18n]')) {
-								const k = el.getAttribute('data-i18n')
-								if (k) el.textContent = geti18n(k)
-							}
-						})
-						dlg.showModal()
-						/**
-						 *
-						 */
-						const close = () => {
-							dlg.remove()
-						}
-						box.querySelector('[data-crypto-cancel]')?.addEventListener('click', close)
-						box.querySelector('[data-crypto-confirm]')?.addEventListener('click', async () => {
-							const sel = box.querySelector('[data-crypto-scheme]')
-							const newScheme = sel instanceof HTMLSelectElement ? sel.value : 'aes-256-gcm'
-							const m = getLastChannelMeta()
-							const curV = m?.encryptionVersion
-							const newVersion = typeof curV === 'number' && Number.isFinite(curV)
-								? Math.max(1, Math.floor(curV) + 1)
-								: 2
-							try {
-								const r = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/crypto-migrate`, {
-									method: 'POST',
-									headers: { 'Content-Type': 'application/json' },
-									body: JSON.stringify({ newScheme, newVersion }),
-								})
-								if (!r.ok) {
-									handleUIError(new Error(`crypto-migrate HTTP ${r.status}`), 'chat.group.channelCryptoMigrateFailed', 'channel crypto-migrate')
-									return
-								}
-								showToastI18n('success', 'chat.group.channelCryptoMigrateSuccess')
-								close()
-								if (reloadStateAndMessages)
-									await reloadStateAndMessages()
-								await syncCryptoMigrateRow()
-								syncEncUi()
-							}
-							catch (e) {
-								handleUIError(normalizeError(e), 'chat.group.channelCryptoMigrateFailed', 'channel crypto-migrate')
-							}
-						})
-					})
-				}
+				hiToggle.checked = true
+				hiToggle.disabled = true
 			}
 			const localMentionCharNames = [...new Set(
 				getMentionCharNames()

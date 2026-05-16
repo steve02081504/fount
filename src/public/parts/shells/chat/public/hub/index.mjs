@@ -110,20 +110,6 @@ function getMessageText(msg) {
 	return JSON.stringify(msg.content)
 }
 
-/**
- * §11：群级或频道级允许明文时用于 Hub 警示（近似：任一为 true 即提示）。
- * @param {{ groupSettings?: { plaintextAllowed?: boolean }, channels?: Record<string, { plaintextAllowed?: boolean }> }} state 群状态
- * @param {string} channelId 当前频道 id
- * @returns {boolean} 是否展示明文警示
- */
-function hubPlaintextEffective(state, channelId) {
-	if (!state || !channelId) return false
-	const gs = state.groupSettings?.plaintextAllowed === true
-	const ch = state.channels?.[channelId]
-	if (ch?.plaintextAllowed === false) return false
-	if (gs) return true
-	return ch?.plaintextAllowed === true
-}
 
 /**
  * 显示或隐藏 Hub 频道栏内「置顶 / 书签」折叠区。
@@ -149,15 +135,9 @@ function updateHubPlaintextMainBanner() {
 		el.textContent = ''
 		return
 	}
-	if (hubPlaintextEffective(currentState, currentChannelId)) {
-		el.removeAttribute('hidden')
-		el.textContent =
-			'安全提示：本群或当前频道允许明文消息，中继与其他节点可能读取内容。请勿发送真名、密码或机密。'
-	}
-	else {
-		el.setAttribute('hidden', '')
-		el.textContent = ''
-	}
+	// §11 GSH 强制加密，无明文警示逻辑
+	el.setAttribute('hidden', '')
+	el.textContent = ''
 }
 
 /**

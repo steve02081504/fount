@@ -113,30 +113,13 @@ function renderGroupSettings() {
 						value="${Number(currentState.groupSettings.maxDagPayloadBytes) || 262144}">
 				</div>
 
-				<div class="form-control">
-					<label class="label">
-						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsMailboxGeneration'))}</span>
-					</label>
-					<input type="number" id="mailbox-generation" class="input input-bordered" min="0" max="999999"
-						value="${Number(currentState.groupSettings.mailboxGeneration) || 0}">
-				</div>
-
-				<div class="form-control">
-					<label class="label">
-						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsStreamingSfu'))}</span>
-					</label>
-					<input type="text" id="streaming-sfu-wss" class="input input-bordered" placeholder="wss://..."
-						value="${escapeHtml(currentState.groupSettings.streamingSfuWss || '')}">
-				</div>
-
-				<div class="form-control">
-					<label class="label cursor-pointer justify-start gap-2 max-w-lg">
-						<input type="checkbox" id="plaintext-allowed" class="checkbox"
-							${currentState.groupSettings.plaintextAllowed ? 'checked' : ''} />
-						<span class="label-text">${escapeHtml(geti18n('chat.group.settingsPlaintextToggle'))}</span>
-					</label>
-					<p class="text-warning text-sm mt-1">${escapeHtml(geti18n('chat.group.settingsPlaintextHint'))}</p>
-				</div>
+			<div class="form-control">
+				<label class="label">
+					<span class="label-text">${escapeHtml(geti18n('chat.group.settingsStreamingSfu'))}</span>
+				</label>
+				<input type="text" id="streaming-sfu-wss" class="input input-bordered" placeholder="wss://..."
+					value="${escapeHtml(currentState.groupSettings.streamingSfuWss || '')}">
+			</div>
 
 				<div class="card-actions justify-between mt-4">
 					<button id="delete-group-btn" class="btn btn-error">删除群组</button>
@@ -261,14 +244,8 @@ async function saveGroupSettings() {
 		const desc = document.getElementById('group-desc').value.trim()
 		const joinPolicy = document.getElementById('join-policy').value
 		const powDifficulty = Number.parseInt(document.getElementById('pow-difficulty').value, 10) || 4
-		const plaintextAllowed = document.getElementById('plaintext-allowed')?.checked ?? false
-		if (plaintextAllowed && !currentState.groupSettings?.plaintextAllowed) 
-			if (!confirm(geti18n('chat.group.settingsPlaintextConfirm')))
-				return
-		
 		const logicalStreamIdleMs = Number.parseInt(document.getElementById('logical-stream-idle-ms').value, 10) || 150000
 		const maxDagPayloadBytes = Number.parseInt(document.getElementById('max-dag-payload-bytes').value, 10) || 262144
-		const mailboxGeneration = Number.parseInt(document.getElementById('mailbox-generation').value, 10) || 0
 		const streamingSfuWssRaw = document.getElementById('streaming-sfu-wss')?.value?.trim() || ''
 
 		// 更新群组元数据
@@ -289,10 +266,8 @@ async function saveGroupSettings() {
 			body: JSON.stringify({
 				joinPolicy,
 				powDifficulty,
-				plaintextAllowed,
 				logicalStreamIdleMs,
 				maxDagPayloadBytes,
-				mailboxGeneration,
 				streamingSfuWss: streamingSfuWssRaw || null,
 			})
 		})

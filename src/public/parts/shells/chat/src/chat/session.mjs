@@ -27,10 +27,8 @@ import { generateDiff, createBufferedSyncPreviewUpdater } from '../stream.mjs'
 import { deleteLogContextSidecar, gcLogContextSidecars, hydrateLogContextFromSidecar, persistLogContextSidecar } from './context_sidecar.mjs'
 import { appendEvent, ensureChat, getDefaultChannelId, getState, isValidChannelId } from './dag.mjs'
 import { syncChatLogEntryToDag, mirrorDeleteToDag, mirrorEditToDag } from './dagSync.mjs'
-import { loadLocalMailboxDecryptContext } from './e2e_mailbox.mjs'
 import { chatJsonPath, chatsRoot } from './paths.mjs'
 import { createCharRpcDispatcher } from './rpcDispatcher.mjs'
-import { deserializeMessageContent } from './visibility.mjs'
 import { broadcastEvent as broadcastGroupEvent, bufferStreamChunk, finishStreamBuffer } from './websocket.mjs'
 
 /**
@@ -644,15 +642,14 @@ async function reconcileContextSidecarsWithChatLog(username, groupId, chatLog) {
 }
 
 /**
- * 解析 DAG 消息正文；若为 mailbox-ecdh 载荷且本机有种子则尝试解密。
+ * 解析 DAG 消息正文；GSH 加密内容在 GSH 实现前显示占位。
  * @param {object | undefined} content DAG content
- * @param {{ myPubKeyHash: string, mySecretKeyBytes: Uint8Array } | null} decryptContext 本机解密上下文
- * @param {string} decryptUnavailableText 解密失败时的占位文本
+ * @param {string} decryptUnavailableText GSH 加密内容占位文本（§11）
  * @param {string} [contentRefPlaceholder] content_ref 展示用占位（i18n）
  * @param {string} [contentRefMismatchText] content_ref 哈希不一致提示
  * @returns {string} 可展示正文
  */
-function resolveDagMessageText(content, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) {
+function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) {
 	if (content?._contentRefHashMismatch)
 		return (contentRefMismatchText && String(contentRefMismatchText).trim()) || 'content_ref mismatch'
 	const ref = content?.content_ref
@@ -664,11 +661,8 @@ function resolveDagMessageText(content, decryptContext, decryptUnavailableText, 
 	const e2e = content?.e2e
 	if (!e2e || e2e.encrypted !== true)
 		return content?.text ?? e2e?.content ?? ''
-	if (e2e.pending === true)
-		return decryptUnavailableText
-	if (!decryptContext)
-		return decryptUnavailableText
-	return deserializeMessageContent(e2e, decryptContext) ?? decryptUnavailableText
+	// GSH 加密内容（§11），GSH 完整实现前无法解密
+	return decryptUnavailableText
 }
 
 /**
@@ -676,8 +670,7 @@ function resolveDagMessageText(content, decryptContext, decryptUnavailableText, 
  * @param {object} line DAG 消息事件行
  * @param {timeSlice_t} baseSlice 作为快照基准的时间切片
  * @param {{ text?: string, fileCount?: number } | undefined} editOverride 编辑折叠后的覆盖字段
- * @param {{ myPubKeyHash: string, mySecretKeyBytes: Uint8Array } | null} decryptContext 本机解密上下文
- * @param {string} decryptUnavailableText 解密失败时的占位文本
+ * @param {string} decryptUnavailableText GSH 加密内容占位文本
  * @param {string} [contentRefPlaceholder] content_ref 占位文案
  * @param {string} [contentRefMismatchText] content_ref 校验失败文案
  * @returns {Promise<chatLogEntry_t>} 新构造的日志条目
@@ -686,7 +679,6 @@ async function buildChatLogEntryFromDagMessage(
 	line,
 	baseSlice,
 	editOverride,
-	decryptContext,
 	decryptUnavailableText,
 	contentRefPlaceholder,
 	contentRefMismatchText,
@@ -696,7 +688,7 @@ async function buildChatLogEntryFromDagMessage(
 	entry.id = c.chatLogEntryId || line.eventId
 	const text = editOverride?.text != null
 		? editOverride.text
-		: resolveDagMessageText(c, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText)
+		: resolveDagMessageText(c, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText)
 	entry.content = text ?? ''
 	entry.role = c.role || 'user'
 	const charId = line.charId || c.charId
@@ -732,7 +724,6 @@ async function buildChatLogEntryFromDagMessage(
 async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const defaultChannelId = await getDefaultChannelId(username, groupId)
 	const lines = await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
-	const decryptContext = await loadLocalMailboxDecryptContext(username, groupId)
 	const decryptUnavailableText = await geti18nForUser(username, 'chat.group.e2eDecryptUnavailable')
 		.catch(() => undefined) || '消息已加密，当前设备无法解密'
 	const contentRefPlaceholder = await geti18nForUser(username, 'chat.group.contentRefBodyPending')
@@ -754,7 +745,7 @@ async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 			const prev = edits.get(id)
 			if (!prev || ts >= prev._ts)
 				edits.set(id, {
-					text: resolveDagMessageText(line.content, decryptContext, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
+					text: resolveDagMessageText(line.content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
 					fileCount: line.content.fileCount,
 					_ts: ts,
 				})
@@ -770,7 +761,6 @@ async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 			line,
 			chatMetadata.LastTimeSlice,
 			ov,
-			decryptContext,
 			decryptUnavailableText,
 			contentRefPlaceholder,
 			contentRefMismatchText,

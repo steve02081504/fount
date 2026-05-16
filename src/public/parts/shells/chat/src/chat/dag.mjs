@@ -48,7 +48,6 @@ import {
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
 } from './reputation.mjs'
-import { deleteFileAesKey } from './storage.mjs'
 import { safeReadJson, safeRm, rethrowUnlessEnoentOrEnotdir } from './utils.mjs'
 import { broadcastEvent, verifyPowSolution } from './websocket.mjs'
 
@@ -393,7 +392,6 @@ export async function createGroup(username, body) {
 			type: body.defaultChannelType || 'text',
 			name: body.defaultChannelName || geti18n('chat.group.defaults.defaultChannelName'),
 			syncScope: 'group',
-			encryptionScheme: 'mailbox-ecdh',
 		},
 	})
 
@@ -403,12 +401,10 @@ export async function createGroup(username, body) {
 		timestamp: Date.now(),
 		content: {
 			defaultChannelId: initialChannelId,
-			plaintextAllowed: false,
 			logicalStreamIdleMs: DEFAULT_LOGICAL_STREAM_IDLE_MS,
 			hlcMaxSkewMs: DEFAULT_HLC_MAX_SKEW_MS,
 			streamingSfuWss: null,
 			maxDagPayloadBytes: 262_144,
-			mailboxGeneration: 0,
 		},
 	})
 
@@ -935,47 +931,6 @@ export async function appendUnpinEvent(username, chatId, channelId, targetEventI
 }
 
 /**
- * 私密频道密钥分发：E2E 密文批次，服务端不解密内容。
- * @param {string} username 用户名
- * @param {string} chatId 群组 ID
- * @param {{ channelId: string, epoch: number, ciphertexts?: object[], sender?: string }} body 邮箱批次参数（频道、epoch、密文数组等）
- * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
- */
-export async function appendEncryptedMailboxBatch(username, chatId, body) {
-	const { channelId, epoch, ciphertexts = [], sender = 'local' } = body
-	if (!channelId) throw new Error('channelId required')
-	const { state } = await getState(username, chatId)
-	const lastAt = state.privateMailboxLastPostAt?.get(channelId) || 0
-	if (Date.now() - lastAt < 500) throw new Error('mailbox rate limited')
-	return appendEvent(username, chatId, {
-		type: 'encrypted_mailbox_batch',
-		channelId,
-		sender,
-		timestamp: Date.now(),
-		content: { channelId, epoch, ciphertexts },
-	})
-}
-
-/**
- * 记录私密频道加密方案迁移（硬切换预留，供客户端按版本协商）。
- * @param {string} username 用户名
- * @param {string} chatId 群组 ID
- * @param {{ channelId: string, newScheme: string, newVersion?: number, sender?: string }} body 迁移参数
- * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
- */
-export async function appendChannelCryptoMigrate(username, chatId, body) {
-	const { channelId, newScheme, newVersion, sender = 'local' } = body
-	if (!channelId || !newScheme) throw new Error('channelId and newScheme required')
-	return appendEvent(username, chatId, {
-		type: 'channel_crypto_migrate',
-		channelId,
-		sender,
-		timestamp: Date.now(),
-		content: { channelId, newScheme, newVersion: newVersion ?? 1 },
-	})
-}
-
-/**
  * 记录群主或其代理节点的活跃心跳。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
@@ -1012,31 +967,65 @@ export async function appendOwnerSuccessionBallot(username, chatId, body) {
 }
 
 /**
- * 将群文件元数据写入 DAG（不含明文 `aesKey`，密钥经 checkpoint 侧信道分发）。
+ * 主动 GSH 密钥轮换（§6.3 `key_rotate`）：`ADMIN` 或 DM 双方均可发起，推导逻辑与 `member_kick` 一致。
+ * 推导：`H_new = HASH(H_old || rotate_event_id || new_H_nonce)`。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
- * @param {object} meta 文件 ID、名称、大小、MIME、分块清单等元信息
+ * @param {{ key_generation: number, new_H_nonce: string, sender?: string }} body 轮换参数
  * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
  */
-export async function appendFileUploadEvent(username, chatId, meta) {
-	const fileId = meta.fileId || randomUUID()
+export async function appendKeyRotateEvent(username, chatId, body) {
+	const { key_generation, new_H_nonce, sender = 'local' } = body
+	if (typeof key_generation !== 'number' || !Number.isFinite(key_generation) || key_generation < 0)
+		throw new Error('key_generation (non-negative integer) required')
+	if (typeof new_H_nonce !== 'string' || !new_H_nonce.trim())
+		throw new Error('new_H_nonce required')
+	if (PUB_KEY_HASH_HEX.test(String(sender))) {
+		const { state } = await getState(username, chatId)
+		const ch = governanceChannelIdForPermissions(state)
+		const perms = memberChannelPermissions(state, sender, ch)
+		if (!perms.ADMIN && !perms.MANAGE_ROLES)
+			throw new Error('key_rotate requires ADMIN or MANAGE_ROLES')
+	}
 	return appendEvent(username, chatId, {
-		type: 'file_upload',
-		sender: meta.sender || 'local',
+		type: 'key_rotate',
+		sender,
 		timestamp: Date.now(),
-		content: {
-			fileId,
-			name: meta.name,
-			size: meta.size,
-			mimeType: meta.mimeType,
-			folderId: meta.folderId,
-			chunkManifest: meta.chunkManifest || [],
-		},
+		content: { key_generation: Math.floor(key_generation), new_H_nonce: new_H_nonce.trim() },
 	})
 }
 
 /**
- * 删除群文件：先清理密钥存储，再追加 `file_delete` 事件。
+ * 将群文件元数据写入 DAG（不含明文 `aesKey`；§10.3 GSH KDF 方案下密钥由 `KDF(H,"file",fileId)` 推导）。
+ * @param {string} username 用户名
+ * @param {string} chatId 群组 ID
+ * @param {object} meta 文件 ID、名称、大小、MIME、分块清单、上传时 H 代数等元信息
+ * @param {number} [meta.key_generation] 上传时当前 GSH H 代数（§10.3 辅助 GC 与吊销判定）
+ * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
+ */
+export async function appendFileUploadEvent(username, chatId, meta) {
+	const fileId = meta.fileId || randomUUID()
+	const content = {
+		fileId,
+		name: meta.name,
+		size: meta.size,
+		mimeType: meta.mimeType,
+		folderId: meta.folderId,
+		chunkManifest: meta.chunkManifest || [],
+	}
+	if (typeof meta.key_generation === 'number' && Number.isFinite(meta.key_generation))
+		content.key_generation = Math.floor(meta.key_generation)
+	return appendEvent(username, chatId, {
+		type: 'file_upload',
+		sender: meta.sender || 'local',
+		timestamp: Date.now(),
+		content,
+	})
+}
+
+/**
+ * 追加 `file_delete` 事件（逻辑删除；§10.4）。
+ * GSH 方案下密钥由 `KDF(H,"file",fileId)` 推导，踢人/`key_rotate` 后旧密钥自然失效，无需单独吊销。
  * @param {string} username 用户名
  * @param {string} chatId 群组 ID
  * @param {string} fileId 文件 ID
@@ -1044,7 +1033,6 @@ export async function appendFileUploadEvent(username, chatId, meta) {
  * @returns {Promise<object>} `appendEvent` 返回的签名事件对象
  */
 export async function appendFileDeleteEvent(username, chatId, fileId, sender = 'local') {
-	await deleteFileAesKey(username, chatId, fileId)
 	return appendEvent(username, chatId, {
 		type: 'file_delete',
 		sender,
