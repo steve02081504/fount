@@ -76,14 +76,26 @@ export async function joinGroup(groupId, inviteCode = null) {
  * 使用双方 Ed25519 公钥（各 64 位十六进制）创建密钥 DM；`myPubKeyHex` 须由客户端从本地密钥材料导出。
  * @param {string} myPubKeyHex 本端公钥 hex
  * @param {string} peerPubKeyHex 对端公钥 hex
+ * @param {{ dmIntroNonce?: string, dmIntroSig?: string }} [dmLinkProof] 可选 First Contact 签名（§16）
  * @returns {Promise<object>} 服务端 JSON（含 `groupId`、`dmSessionTag` 等）
  */
-export async function createDirectMessageByPubKeys(myPubKeyHex, peerPubKeyHex) {
+export async function createDirectMessageByPubKeys(myPubKeyHex, peerPubKeyHex, dmLinkProof = undefined) {
+	const body = { template: 'dm', myPubKeyHex, peerPubKeyHex }
+	if (dmLinkProof && typeof dmLinkProof === 'object') {
+		const n = typeof dmLinkProof.dmIntroNonce === 'string' ? dmLinkProof.dmIntroNonce.trim() : ''
+		const s = typeof dmLinkProof.dmIntroSig === 'string' ? dmLinkProof.dmIntroSig.trim() : ''
+		if ((n.length > 0) !== (s.length > 0))
+			throw new Error('dmIntroNonce and dmIntroSig must be provided together')
+		if (n.length > 0) {
+			body.dmIntroNonce = n
+			body.dmIntroSig = s.replace(/^0x/iu, '')
+		}
+	}
 	const response = await fetch('/api/parts/shells:chat/groups/new', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
-		body: JSON.stringify({ template: 'dm', myPubKeyHex, peerPubKeyHex }),
+		body: JSON.stringify(body),
 	})
 	const data = await response.json()
 	if (!response.ok)
@@ -475,6 +487,11 @@ export function joinGroupById() {
 	})
 	modal.addEventListener('close', () => modal.remove())
 }
+
+/**
+ *
+ */
+export { buildDmLinkSignableBytes, createDmLink, formatDmLinkUrl, getDmLinkNonce, rotateDmLink } from './dmLink.mjs'
 
 // 全局函数暴露
 window.showCreateGroupModal = showCreateGroupModal

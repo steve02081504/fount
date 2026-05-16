@@ -20,6 +20,7 @@ import {
 } from './chat/dag.mjs'
 import { readJsonl } from './chat/dag_storage.mjs'
 import { isPubKeyHashBlocked } from './chat/dm_blocklist.mjs'
+import { verifyDmLinkSignature } from './chat/dm_link_verify.mjs'
 import { listFederationPeersForGroup, ensureFederationRoom, getFederationConfig, invalidateFederationRoomCache } from './chat/federation.mjs'
 import { foldMessageAppendStreamLines } from './chat/fold_channel_message_lines.mjs'
 import { messagesPath, eventsPath } from './chat/paths.mjs'
@@ -310,6 +311,17 @@ export function setGroupEndpoints(router) {
 						return res.status(400).json({ success: false, error: 'myPubKeyHex and peerPubKeyHex must be 64 hex chars' })
 					if (myN === peerN)
 						return res.status(400).json({ success: false, error: 'peerPubKeyHex must differ from myPubKeyHex' })
+					const dmNonce = typeof body.dmIntroNonce === 'string' ? body.dmIntroNonce.trim() : ''
+					const dmSig = typeof body.dmIntroSig === 'string' ? body.dmIntroSig.trim().replace(/^0x/iu, '') : ''
+					const hasDmNonce = dmNonce.length > 0
+					const hasDmSig = dmSig.length > 0
+					if (hasDmNonce !== hasDmSig)
+						return res.status(400).json({
+							success: false,
+							error: 'provide both dmIntroNonce and dmIntroSig for DM link proof or omit both',
+						})
+					if (hasDmNonce && !await verifyDmLinkSignature(peerN, dmNonce, dmSig))
+						return res.status(400).json({ success: false, error: 'invalid dm intro link signature' })
 					const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myN, peerN)
 					dmMeta = {
 						dmKind: 'ecdh',

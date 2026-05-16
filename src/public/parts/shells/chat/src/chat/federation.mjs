@@ -6,6 +6,59 @@ import { snapshotPath, eventsPath } from './paths.mjs'
 import { normalizeJsonBoundaryValue } from './remoteProxy.mjs'
 import { computeArchiveSummary, recordGossipAllUnknownWant } from './reputation.mjs'
 
+/** Trystero 单房间出站上限（§6.4）；溢出丢弃队列尾部（最低优先级）。 */
+const FED_OUT_CAP = 64
+
+/**
+ * 联邦出站优先级队列：pri 越小越先发送。
+ * @returns {{ enqueue: (pri: number, run: () => void) => void }} 出站调度
+ */
+function createFedOutQueue() {
+	let seq = 0
+	/** @type {{ pri: number, seq: number, run: () => void }[]} */
+	const q = []
+	let scheduled = false
+
+	/** @returns {void} */
+	function flush() {
+		scheduled = false
+		while (q.length) {
+			const { run } = q.shift()
+			try {
+				run()
+			}
+			catch (e) {
+				console.error('federation: outbound queue send failed', e)
+			}
+		}
+	}
+
+	return {
+		/**
+		 * @param {number} pri 0 DAG、1 gossip 请求、2 gossip 应答、3 identity/rpc、10 VOLATILE
+		 * @param {() => void} run Trystero 发送闭包
+		 * @returns {void}
+		 */
+		enqueue(pri, run) {
+			seq++
+			const item = { pri, seq, run }
+			let lo = 0
+			let hi = q.length
+			while (lo < hi) {
+				const mid = (lo + hi) >> 1
+				const c = pri - q[mid].pri || item.seq - q[mid].seq
+				if (c < 0) hi = mid
+				else lo = mid + 1
+			}
+			q.splice(lo, 0, item)
+			while (q.length > FED_OUT_CAP) q.pop()
+			if (!scheduled) {
+				scheduled = true
+				queueMicrotask(flush)
+			}
+		},
+	}
+}
 
 /**
  * @typedef {{
@@ -57,6 +110,7 @@ export function getFederationConfig(username) {
  *   sendDag: (payload: unknown, peerId: string | null) => void,
  *   sendGossipRequest: (payload: unknown, peerId: string | null) => void,
  *   sendGossipResponse: (payload: unknown, peerId: string | null) => void,
+ *   sendFedVolatile: (payload: unknown, peerId: string | null) => void,
  *   getRoster: () => Array<{ peerId: string, remoteNodeId: string | undefined }>,
  *   getPeerIdByNodeId: (nodeId: string) => string | null,
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void,
@@ -399,6 +453,7 @@ export async function ensureFederationRoom(username, chatId) {
 				rtcPolyfill: RTCPeerConnection,
 				password,
 			}, trysteroRoomName)
+			const fedOut = createFedOutQueue()
 
 			/** @type {Map<string, string>} peerId → nodeId */
 			const peerToNode = new Map()
@@ -433,8 +488,14 @@ export async function ensureFederationRoom(username, chatId) {
 			})
 
 			room.onPeerJoin(peerId => {
-				try { sendIdentity({ nodeId }, peerId) }
-				catch (e) { console.error('federation: identity_announce failed', e) }
+				fedOut.enqueue(3, () => {
+					try {
+						sendIdentity({ nodeId }, peerId)
+					}
+					catch (e) {
+						console.error('federation: identity_announce failed', e)
+					}
+				})
 			})
 
 			room.onPeerLeave(peerId => {
@@ -497,12 +558,14 @@ export async function ensureFederationRoom(username, chatId) {
 				void handleCharRpcResponse().catch(e => console.error(e))
 			})
 
-			const [sendDag, getDag] = room.makeAction('dag_event')
+			const [sendDagRaw, getDag] = room.makeAction('dag_event')
 			getDag((data, _peerId) => {
 				void ingestRemoteEvent(username, chatId, data).catch(e => console.error(e))
 			})
-			const [sendGossipRequest, getGossipRequest] = room.makeAction('gossip_request')
-			const [sendGossipResponse, getGossipResponse] = room.makeAction('gossip_response')
+			const [sendGossipRequestRaw, getGossipRequest] = room.makeAction('gossip_request')
+			const [sendGossipResponseRaw, getGossipResponse] = room.makeAction('gossip_response')
+			const [sendFedVolatileRaw, getFedVolatileRaw] = room.makeAction('fed_volatile')
+			getFedVolatileRaw(() => {})
 			getGossipRequest((data, peerId) => {
 				void (async () => {
 					if (!data || typeof data !== 'object') return
@@ -537,25 +600,29 @@ export async function ensureFederationRoom(username, chatId) {
 
 					const events = wantIds.map(id => byId.get(id)).filter(Boolean)
 					if (events.length && peerId)
-						try {
-							sendGossipResponse({ events, requesterId }, peerId)
-						}
-						catch (e) {
-							console.error('federation: gossip_response failed', e)
-						}
+						fedOut.enqueue(2, () => {
+							try {
+								sendGossipResponseRaw({ events, requesterId }, peerId)
+							}
+							catch (e) {
+								console.error('federation: gossip_response failed', e)
+							}
+						})
 
 					if (ttl > 0)
-						try {
-							sendGossipRequest({
-								wantIds,
-								ttl: ttl - 1,
-								requesterId,
-								archiveSummary: raw.archiveSummary,
-							}, null)
-						}
-						catch (e) {
-							console.error('federation: gossip_request forward failed', e)
-						}
+						fedOut.enqueue(1, () => {
+							try {
+								sendGossipRequestRaw({
+									wantIds,
+									ttl: ttl - 1,
+									requesterId,
+									archiveSummary: raw.archiveSummary,
+								}, null)
+							}
+							catch (e) {
+								console.error('federation: gossip_request forward failed', e)
+							}
+						})
 				})().catch(e => console.error(e))
 			})
 			getGossipResponse((data, _peerId) => {
@@ -565,9 +632,66 @@ export async function ensureFederationRoom(username, chatId) {
 			const slot = {
 				trysteroRoomName,
 				room,
-				sendDag,
-				sendGossipRequest,
-				sendGossipResponse,
+				/**
+				 * DAG 出站（prio 0，经联邦队列）。
+				 * @param {unknown} payload 事件载荷
+				 * @param {string | null} peerId Trystero 目标或对等广播用的 null
+				 * @returns {void}
+				 */
+				sendDag: (payload, peerId) =>
+					fedOut.enqueue(0, () => {
+						try {
+							sendDagRaw(payload, peerId)
+						}
+						catch (e) {
+							console.error('federation: sendDag failed', e)
+						}
+					}),
+				/**
+				 * Gossip want 出站（prio 1）。
+				 * @param {unknown} payload gossip 载荷
+				 * @param {string | null} peerId 目标 peer
+				 * @returns {void}
+				 */
+				sendGossipRequest: (payload, peerId) =>
+					fedOut.enqueue(1, () => {
+						try {
+							sendGossipRequestRaw(payload, peerId)
+						}
+						catch (e) {
+							console.error('federation: sendGossipRequest failed', e)
+						}
+					}),
+				/**
+				 * Gossip 应答出站（prio 2）。
+				 * @param {unknown} payload 应答载荷
+				 * @param {string | null} peerId 目标 peer
+				 * @returns {void}
+				 */
+				sendGossipResponse: (payload, peerId) =>
+					fedOut.enqueue(2, () => {
+						try {
+							sendGossipResponseRaw(payload, peerId)
+						}
+						catch (e) {
+							console.error('federation: sendGossipResponse failed', e)
+						}
+					}),
+				/**
+				 * VOLATILE 等价最佳努力通道（prio 10，拥塞时先丢）。
+				 * @param {unknown} payload 任意 JSON 可序列化体
+				 * @param {string | null} peerId 目标或对等 null
+				 * @returns {void}
+				 */
+				sendFedVolatile: (payload, peerId) =>
+					fedOut.enqueue(10, () => {
+						try {
+							sendFedVolatileRaw(payload, peerId)
+						}
+						catch (e) {
+							console.error('federation: sendFedVolatile failed', e)
+						}
+					}),
 				/**
 				 * @returns {{ peerId: string, remoteNodeId: string | undefined }[]} Trystero 对等端与本机推断的 `node_id`
 				 */

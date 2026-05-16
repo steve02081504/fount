@@ -33,6 +33,7 @@ import {
 	getFederationConfig,
 	initFederationDagDeps,
 } from './federation.mjs'
+import { assertGovernanceHlcSkewAllowed, DEFAULT_HLC_MAX_SKEW_MS, resolveHlcMaxSkewMs } from './hlc_policy.mjs'
 import {
 	chatDir,
 	chatsRoot,
@@ -213,6 +214,14 @@ export async function appendValidatedRemoteEvent(username, chatId, signPayload, 
 			if (logFailures) console.error('federation: drop reputation_reset (target locally blocked)')
 			return 'invalid'
 		}
+	}
+
+	try {
+		assertGovernanceHlcSkewAllowed(signedEvent, resolveHlcMaxSkewMs(state))
+	}
+	catch (e) {
+		if (logFailures) console.error('federation: drop remote event (HLC governance skew)', e)
+		return 'invalid'
 	}
 
 	await appendJsonlSynced(path, signPayload)
@@ -396,6 +405,7 @@ export async function createGroup(username, body) {
 			defaultChannelId: initialChannelId,
 			plaintextAllowed: false,
 			logicalStreamIdleMs: DEFAULT_LOGICAL_STREAM_IDLE_MS,
+			hlcMaxSkewMs: DEFAULT_HLC_MAX_SKEW_MS,
 			streamingSfuWss: null,
 			maxDagPayloadBytes: 262_144,
 			mailboxGeneration: 0,
@@ -794,6 +804,7 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	}
 
 	const { state: stateForSignature } = await getState(username, chatId)
+	assertGovernanceHlcSkewAllowed(signPayload, resolveHlcMaxSkewMs(stateForSignature))
 	await validateSignature(username, chatId, body, signPayload, event, secretKey, stateForSignature)
 
 	await appendJsonlSynced(eventsPath(username, chatId), signPayload)
