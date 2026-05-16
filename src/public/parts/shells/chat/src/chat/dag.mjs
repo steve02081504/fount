@@ -33,6 +33,12 @@ import {
 	getFederationConfig,
 	initFederationDagDeps,
 } from './federation.mjs'
+import {
+	decryptEventContent,
+	encryptEventContent,
+	GSH_ENCRYPT_EVENT_TYPES,
+} from './gsh_content.mjs'
+import { applyGshRotationFromEvent, initGroupH } from './gsh_store.mjs'
 import { assertGovernanceHlcSkewAllowed, DEFAULT_HLC_MAX_SKEW_MS, resolveHlcMaxSkewMs } from './hlc_policy.mjs'
 import {
 	chatDir,
@@ -331,15 +337,25 @@ async function broadcastAndPersist(username, chatId, signPayload, persistOpts = 
 	catch (e) {
 		console.error('reputation hooks failed', e)
 	}
+	try {
+		await applyGshRotationFromEvent(username, chatId, signPayload)
+	}
+	catch (e) {
+		console.error('gsh rotation hook failed', e)
+	}
 	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
 		await rebuildAndSaveCheckpoint(username, chatId, persistOpts)
 		return
 	}
 	const channelId = signPayload.channelId || signPayload.content?.channelId || 'default'
+	const storedContent = signPayload.content
+	const displayContent = GSH_ENCRYPT_EVENT_TYPES.has(signPayload.type)
+		? await decryptEventContent(username, chatId, channelId, storedContent)
+		: storedContent
 	const msgLine = {
 		eventId: signPayload.id,
 		type: signPayload.type,
-		content: signPayload.content,
+		content: storedContent,
 		sender: signPayload.sender,
 		charId: signPayload.charId,
 		timestamp: signPayload.timestamp,
@@ -347,7 +363,11 @@ async function broadcastAndPersist(username, chatId, signPayload, persistOpts = 
 	}
 	const channelMessagesPath = messagesPath(username, chatId, channelId)
 	await appendJsonlSynced(channelMessagesPath, msgLine)
-	broadcastEvent(chatId, { type: 'channel_message', channelId, message: msgLine })
+	broadcastEvent(chatId, {
+		type: 'channel_message',
+		channelId,
+		message: { ...msgLine, content: displayContent },
+	})
 	await rebuildAndSaveCheckpoint(username, chatId, persistOpts)
 	if (signPayload.type === 'message')
 		void maybeAutoTriggerCharReply(username, chatId, channelId).catch(e => {
@@ -438,6 +458,8 @@ export async function createGroup(username, body) {
 		timestamp: Date.now(),
 		content: { targetPubKeyHash: owner, roleId: 'admin' },
 	})
+
+	await initGroupH(username, chatId)
 
 	const { checkpoint, state } = await getState(username, chatId)
 	return {
@@ -776,8 +798,17 @@ export async function appendEvent(username, chatId, event, secretKey) {
 	const prevFromCaller = Array.isArray(event.prev_event_ids) && event.prev_event_ids.length
 		? event.prev_event_ids
 		: last?.id ? [last.id] : []
+
+	let eventForWrite = event
+	if (GSH_ENCRYPT_EVENT_TYPES.has(event.type)) {
+		const channelForGsh = event.channelId || event.content?.channelId || 'default'
+		const plain = event.content && typeof event.content === 'object' ? event.content : {}
+		const encrypted = await encryptEventContent(username, chatId, channelForGsh, plain)
+		eventForWrite = { ...event, content: encrypted }
+	}
+
 	const base = {
-		...event,
+		...eventForWrite,
 		groupId: chatId,
 		hlc,
 		prev_event_ids: prevFromCaller,
@@ -1142,11 +1173,13 @@ export async function syncEvents(username, chatId, q) {
  */
 export async function listChannelMessages(username, chatId, channelId, q) {
 	const lines = await readJsonl(messagesPath(username, chatId, channelId))
+	const { decryptChannelMessageLines } = await import('./gsh_content.mjs')
+	const decrypted = await decryptChannelMessageLines(username, chatId, channelId, lines)
 	const limit = Math.min(Number(q.limit) || 200, 500)
-	if (!q.before) return lines.slice(-limit)
-	const idx = lines.findIndex(line => line.eventId === q.before)
+	if (!q.before) return decrypted.slice(-limit)
+	const idx = decrypted.findIndex(line => line.eventId === q.before)
 	if (idx <= 0) return []
-	return lines.slice(Math.max(0, idx - limit), idx)
+	return decrypted.slice(Math.max(0, idx - limit), idx)
 }
 
 /**

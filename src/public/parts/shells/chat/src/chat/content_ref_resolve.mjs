@@ -52,6 +52,7 @@ export async function resolveContentRefsInMessageLines(username, lines) {
 		if (line.type !== 'message') return line
 		const c = line.content
 		if (!c || typeof c !== 'object' || !c.content_ref) return line
+		if (c.gsh && typeof c.gsh === 'object' && c.gsh.scheme === 'gsh') return line
 		if (c.e2e && typeof c.e2e === 'object' && c.e2e.encrypted === true) return line
 
 		const res = await resolveMessageContentRef(username, c)

@@ -134,3 +134,28 @@ export async function appendH(username, groupId, generation, h_hex) {
 	data.generations.sort((a, b) => a.gen - b.gen)
 	await saveGsh(username, groupId, data)
 }
+
+/**
+ * 从已落盘的 `member_kick` / `key_rotate` 事件推导并写入新 H（联邦入站与本地踢人共用）。
+ * @param {string} username 本地用户
+ * @param {string} groupId 群 ID
+ * @param {{ id: string, type: string, content?: { key_generation?: number, new_H_nonce?: string } }} event 签名事件
+ * @returns {Promise<void>}
+ */
+export async function applyGshRotationFromEvent(username, groupId, event) {
+	if (event.type !== 'member_kick' && event.type !== 'key_rotate') return
+	const c = event.content && typeof event.content === 'object' ? event.content : {}
+	const gen = c.key_generation
+	const nonce = typeof c.new_H_nonce === 'string' ? c.new_H_nonce.trim() : ''
+	if (typeof gen !== 'number' || !Number.isFinite(gen) || gen < 0 || !nonce) return
+
+	const hEntry = await getCurrentH(username, groupId)
+	if (!hEntry) return
+
+	const { deriveNewH } = await import('../../../../../../scripts/p2p/gsh.mjs')
+	const newGen = Math.floor(gen)
+	if (newGen <= hEntry.generation) return
+
+	const newH = deriveNewH(hEntry.h, event.id, nonce)
+	await appendH(username, groupId, newGen, newH)
+}

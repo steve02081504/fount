@@ -26,6 +26,7 @@ import { isPubKeyHashBlocked } from './chat/dm_blocklist.mjs'
 import { verifyDmLinkSignature } from './chat/dm_link_verify.mjs'
 import { listFederationPeersForGroup, ensureFederationRoom, getFederationConfig, invalidateFederationRoomCache } from './chat/federation.mjs'
 import { foldMessageAppendStreamLines } from './chat/fold_channel_message_lines.mjs'
+import { decryptChannelMessageLines } from './chat/gsh_content.mjs'
 import { getCurrentH, initGroupH } from './chat/gsh_store.mjs'
 import { messagesPath, eventsPath } from './chat/paths.mjs'
 import { loadPeers } from './chat/peers.mjs'
@@ -220,6 +221,7 @@ export async function enumerateJoinedFederatedGroups(username) {
  */
 export async function readChannelMessagesForUser(username, groupId, channelId, q) {
 	let lines = await readJsonl(messagesPath(username, groupId, channelId))
+	lines = await decryptChannelMessageLines(username, groupId, channelId, lines)
 	if (q.since) {
 		const i = lines.findIndex(m => m.eventId === q.since)
 		if (i !== -1) lines = lines.slice(i + 1)
@@ -1544,6 +1546,18 @@ export function setGroupEndpoints(router) {
 			const member = state.members[username]
 			if (!member || member.status !== 'active')
 				return res.status(403).json({ success: false, error: 'Not a member' })
+
+			const activeCount = Object.values(state.members || {}).filter(m => m?.status === 'active').length
+			const ch = governanceChannelId(state)
+			const perms = calculateMemberPermissions(
+				member,
+				state.roles,
+				ch,
+				state.channelPermissions || {},
+			)
+			const isDmPair = activeCount === 2
+			if (!isDmPair && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ROLES])
+				return res.status(403).json({ success: false, error: 'key_rotate requires ADMIN or MANAGE_ROLES' })
 
 			const { generateHNonce, deriveNewH } = await import('../../../../../scripts/p2p/gsh.mjs')
 			const { appendH } = await import('./chat/gsh_store.mjs')
