@@ -1446,9 +1446,9 @@ if [[ $# -gt 0 && ($1 == "server" || $1 == "keepalive") ]]; then
 	run_deno -V
 fi
 
-is_debug=0
 debug_on() {
-	is_debug=1
+	FOUNT_DEBUG=1
+	export FOUNT_DEBUG
 	if [[ $OS_TYPE == "Darwin" ]]; then
 		if [ -d "/Applications/Google Chrome.app" ]; then
 			open -a "Google Chrome" --new --args --new-window
@@ -1534,7 +1534,7 @@ run() {
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
 	set_title "𝓯"
-	if [[ $is_debug -eq 1 ]]; then
+	if [[ $$FOUNT_DEBUG -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
@@ -1727,6 +1727,11 @@ remove)
 	;;
 log)
 	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
+	exit $?
+	;;
+debug)
+	trap 'write_taskbar_progress_clear' EXIT INT TERM
+	"$0" keepalive debug "${@:2}"
 	exit $?
 	;;
 *)
