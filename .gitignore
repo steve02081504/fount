@@ -24,6 +24,7 @@
 /build
 /.build
 /_build
+/.env.local
 /.stack-work
 /src/runner/polyglot/stack/.stack-work
 /src/runner/polyglot/stack/fount-stack-runner.cabal
