@@ -1,0 +1,124 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Atlas Cloud",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "Access Atlas Cloud's OpenAI-compatible LLM endpoint.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"zh-CN": {
+			"name": "Atlas Cloud",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "访问 Atlas Cloud 的 OpenAI 兼容 LLM 接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"zh-TW": {
+			"name": "Atlas Cloud",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"emoji": {
+			"name": "☁️🧠",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "☁️🤖",
+			"description_markdown": "☁️🔌➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"☁️",
+				"🔌",
+				"🧠"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "Access Atlas Cloud's OpenAI-compatible LLM endpoint.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "访问 Atlas Cloud 的 OpenAI 兼容 LLM 接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "☁️🤖",
+			"description_markdown": "☁️🔌➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"☁️",
+				"🔌",
+				"🧠"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		}
+	}
+}
