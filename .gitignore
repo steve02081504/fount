@@ -4,6 +4,8 @@
 /temp
 /temp.txt
 /temp.md
+/.env
+/.env.local
 /.idea
 /.noupdate
 /.noerrorreport
