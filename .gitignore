@@ -4,6 +4,8 @@
 /temp
 /temp.txt
 /temp.md
+/.env
+/.env.local
 /.idea
 /.noupdate
 /.noerrorreport
@@ -24,7 +26,6 @@
 /build
 /.build
 /_build
-/.env.local
 /.stack-work
 /src/runner/polyglot/stack/.stack-work
 /src/runner/polyglot/stack/fount-stack-runner.cabal
