@@ -1503,12 +1503,16 @@ elseif ($args[0] -eq 'server') {
 else {
 	$originalTitle = Get-Title
 	try {
-		Write-TaskbarProgress -Percent 25
-		Set-Title "𝓯"
-		& $PSScriptRoot/fount.ps1 background keepalive @args
-		Set-Title "𝓯𝓸"
-		Write-TaskbarProgress
-		& $PSScriptRoot/fount.ps1 log
+		if ($args[0]) {
+			run @args
+		} else {
+			Write-TaskbarProgress -Percent 25
+			Set-Title "𝓯"
+			& $PSScriptRoot/fount.ps1 background keepalive @args
+			Set-Title "𝓯𝓸"
+			Write-TaskbarProgress
+			& $PSScriptRoot/fount.ps1 log
+		}
 	}
 	finally {
 		Set-Title $originalTitle
