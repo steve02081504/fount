@@ -40,9 +40,9 @@ export let sentry_enabled
  */
 function set_sentry_enabled(new_sentry_enabled) {
 	// deno-lint-ignore no-cond-assign
-	if (sentry_enabled = new_sentry_enabled) Sentry.init({
+	if (sentry_enabled = new_sentry_enabled) try { Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	})
+	})} catch (error) { console.error(error) }
 }
 set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
 console.noBreadcrumb = {
