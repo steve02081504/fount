@@ -1737,12 +1737,16 @@ debug)
 *)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
 	original_title=$(get_title)
-	write_taskbar_progress 25
-	set_title "𝓯"
-	"$0" background keepalive "$@"
-	set_title "𝓯𝓸"
-	write_taskbar_progress
-	"$0" log
+	if [ "$1" ]; then
+		run "${@:1}"
+	else
+		write_taskbar_progress 25
+		set_title "𝓯"
+		"$0" background keepalive "$@"
+		set_title "𝓯𝓸"
+		write_taskbar_progress
+		"$0" log
+	fi
 	set_title "$original_title"
 	exit $?
 	;;
