@@ -491,13 +491,13 @@ function mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache) {
 	let mergedAiReplyExtension = {}
 	if (!aiReplyObjectCache) return { mergedAiReply, mergedAiReplyExtension }
 	for (const message of sorted) {
-		const mid = message.message_id
-		const cached = aiReplyObjectCache[mid]
+		const telegramMessageId = message.message_id
+		const cached = aiReplyObjectCache[telegramMessageId]
 		if (!cached) continue
 		mergedAiReply = { ...mergedAiReply, ...cached }
 		if (cached.extension)
 			mergedAiReplyExtension = { ...mergedAiReplyExtension, ...cached.extension }
-		delete aiReplyObjectCache[mid]
+		delete aiReplyObjectCache[telegramMessageId]
 	}
 	return { mergedAiReply, mergedAiReplyExtension }
 }
@@ -764,5 +764,5 @@ export function splitTelegramReply(reply, split_length = 4096) {
 			messages.push(currentMessage)
 
 
-	return messages.filter(msg => msg.trim().length)
+	return messages.filter(line => line.trim().length)
 }

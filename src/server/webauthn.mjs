@@ -12,6 +12,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 import { ms, msstr } from '../scripts/ms.mjs'
 
 import {
+	authMutationFail,
 	bumpUserFailedLoginAttempts,
 	completeSuccessfulLogin,
 	getAllUserNames,
@@ -103,7 +104,7 @@ export function getWebAuthnRelyingParty(req) {
  */
 export async function webauthnRegistrationBegin(username, req) {
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, success: false, i18nKey: 'auth.webauthn.registrationUserNotFound' }
+	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registrationUserNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin, rpName } = getWebAuthnRelyingParty(req)
@@ -126,7 +127,7 @@ export async function webauthnRegistrationBegin(username, req) {
 	})
 
 	storeWebAuthnChallenge(`registration:${username}`, options.challenge)
-	return { status: 200, success: true, options, rp: { rpID, origin } }
+	return { status: 200, options, rp: { rpID, origin } }
 }
 
 /**
@@ -139,10 +140,10 @@ export async function webauthnRegistrationBegin(username, req) {
 export async function webauthnRegistrationComplete(username, credentialResponse, nickname, req) {
 	const pending = takeWebAuthnChallengeEntry(`registration:${username}`)
 	if (!pending)
-		return { status: 401, success: false, i18nKey: 'auth.webauthn.registrationSessionExpired' }
+		return { status: 401, i18nKey: 'auth.webauthn.registrationSessionExpired' }
 
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, success: false, i18nKey: 'auth.webauthn.registrationUserNotFound' }
+	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registrationUserNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin } = getWebAuthnRelyingParty(req)
@@ -157,7 +158,7 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 		})
 
 		if (!result.verified || !result.registrationInfo)
-			return { status: 400, success: false, i18nKey: 'auth.webauthn.registrationVerifyFailed' }
+			return { status: 400, i18nKey: 'auth.webauthn.registrationVerifyFailed' }
 
 		const { credential, credentialDeviceType, credentialBackedUp } = result.registrationInfo
 		const publicKeyB64 = Buffer.from(credential.publicKey).toString('base64url')
@@ -173,10 +174,10 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 			createdAt: Date.now(),
 		})
 		save_config()
-		return { status: 200, success: true }
+		return { status: 200 }
 	} catch (error) {
 		console.error('Passkey registration verification failed:', error)
-		return { status: 400, success: false, i18nKey: 'auth.webauthn.registrationFailed' }
+		return { status: 400, i18nKey: 'auth.webauthn.registrationFailed' }
 	}
 }
 
@@ -195,7 +196,7 @@ export async function webauthnLoginBegin(req) {
 
 	const authSessionToken = randomBytes(32).toString('hex')
 	storeWebAuthnChallenge(`authentication_discoverable:${authSessionToken}`, options.challenge)
-	return { status: 200, success: true, options, authSessionToken }
+	return { status: 200, options, authSessionToken }
 }
 
 /**
@@ -204,23 +205,23 @@ export async function webauthnLoginBegin(req) {
  * @param {string} authSessionToken - begin 返回的会话令牌。
  * @param {string} deviceId - 客户端设备 ID。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<object>} 成功时与 {@link ./auth.mjs} `completeSuccessfulLogin` 同类字段；失败时含 `success: false`、`status`、`i18nKey`（及可选 `i18nParams`）。
+ * @returns {Promise<object>} 成功时与 {@link ./auth.mjs} `completeSuccessfulLogin` 同类字段；失败时含 `status`、`i18nKey`（及可选 `i18nParams`）。
  */
 export async function webauthnLoginComplete(credentialResponse, authSessionToken, deviceId, req) {
 	const pending = takeWebAuthnChallengeEntry(`authentication_discoverable:${authSessionToken || ''}`)
 	if (!pending)
-		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiSessionExpired' }
+		return { status: 401, i18nKey: 'auth.webauthn.apiSessionExpired' }
 
 	const credId = credentialResponse?.id
 	const found = findUserByWebAuthnCredentialId(credId)
 	if (!found)
-		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiUnknownPasskey' }
+		return { status: 401, i18nKey: 'auth.webauthn.apiUnknownPasskey' }
 
 	const { user, stored } = found
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
 		const timeLeft = msstr(authData.lockedUntil - Date.now())
-		return { status: 403, success: false, i18nKey: 'auth.error.accountLockedRetry', i18nParams: { timeLeft } }
+		return { status: 403, i18nKey: 'auth.error.accountLockedRetry', i18nParams: { timeLeft } }
 	}
 
 	const { rpID, origin } = getWebAuthnRelyingParty(req)
@@ -244,7 +245,7 @@ export async function webauthnLoginComplete(credentialResponse, authSessionToken
 		if (!result.verified) {
 			const bump = bumpUserFailedLoginAttempts(user)
 			if (bump.locked) return bump.response
-			return { status: 401, success: false, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
+			return { status: 401, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
 		}
 
 		stored.counter = result.authenticationInfo.newCounter
@@ -255,7 +256,7 @@ export async function webauthnLoginComplete(credentialResponse, authSessionToken
 		console.error('Passkey authentication verification failed:', error)
 		const bump = bumpUserFailedLoginAttempts(user)
 		if (bump.locked) return bump.response
-		return { status: 401, success: false, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
+		return { status: 401, i18nKey: 'auth.webauthn.apiPasskeyVerificationFailed' }
 	}
 }
 
@@ -278,21 +279,20 @@ export function listWebAuthnCredentials(username) {
  * @param {string} username - 用户名。
  * @param {string} credentialId - 凭据 ID（base64url）。
  * @param {string} password - 账户密码（校验用）。
- * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 是否成功或错误键。
+ * @returns {Promise<void>}
  */
 export async function removeWebAuthnCredential(username, credentialId, password) {
 	const user = getUserByUsername(username)
 	if (!user?.auth?.webauthnCredentials)
-		return { success: false, i18nKey: 'auth.webauthn.removeUserNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'auth.webauthn.removeUserNotFound' })
 
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, i18nKey: 'auth.webauthn.removeInvalidPassword', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'auth.webauthn.removeInvalidPassword' })
 
 	const idx = user.auth.webauthnCredentials.findIndex(c => c.id === credentialId)
 	if (idx === -1)
-		return { success: false, i18nKey: 'auth.webauthn.removePasskeyNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'auth.webauthn.removePasskeyNotFound' })
 
 	user.auth.webauthnCredentials.splice(idx, 1)
 	save_config()
-	return { success: true }
 }

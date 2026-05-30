@@ -113,7 +113,7 @@ async function handleFiles(files) {
  * @returns {Promise<void>}
  */
 async function renderFileList() {
-	fileList.innerHTML = ''
+	fileList.replaceChildren()
 	for (const file of selectedFiles) {
 		const fileItem = await renderTemplate('import_file_item', { fileName: file.name })
 		fileList.appendChild(fileItem)

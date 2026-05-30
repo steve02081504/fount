@@ -30,13 +30,13 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:themeManage/save', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const id = saveTheme(username, req.body)
-		res.json({ success: true, id })
+		res.json({ id })
 	})
 
 	// 删除主题
 	router.delete('/api/parts/shells\\:themeManage/theme/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		deleteTheme(username, req.params.id)
-		res.json({ success: true })
+		res.status(200).json({})
 	})
 }

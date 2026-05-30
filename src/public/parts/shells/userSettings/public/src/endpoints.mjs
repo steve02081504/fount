@@ -1,5 +1,5 @@
 /**
- * UserSettings shell：`callApi` 仅 fetch；JSON 且 `success: false`、或非 JSON 的错误响应会抛带有负载内容的 Error。
+ * UserSettings shell：`callApi` 以 `response.ok` 判断成败；非 JSON 错误响应会抛带有负载内容的 Error。
  * @param {string} endpoint - 端点。
  * @param {'GET' | 'POST'} [method='POST'] - 方法。
  * @param {any} [body] - 正文。
@@ -13,15 +13,17 @@ async function callApi(endpoint, method = 'POST', body) {
 	})
 	const contentType = response.headers.get('content-type')
 	if (contentType?.includes('application/json')) {
-		const data = await response.json()
-		if (!data.success) throw Object.assign(new Error('API request failed'), data)
-		return data
+		if (!response.ok) {
+			const data = await response.json().catch(() => ({}))
+			throw Object.assign(new Error('API request failed'), data, { response })
+		}
+		return response.json()
 	}
 	const text = await response.text()
 	if (!response.ok)
-		throw Object.assign(new Error('API request failed'), { i18nKey: 'userSettings.shell.responseNotJson' })
+		throw Object.assign(new Error('API request failed'), { i18nKey: 'userSettings.shell.responseNotJson', response })
 
-	return { success: true, data: text }
+	return { data: text }
 }
 
 /**

@@ -70,7 +70,7 @@ export async function isFountPart(buffer) {
 					if (normalizedPath == 'fount.json') resolve(true)
 				})
 				stream.on('end', () => resolve(false))
-				stream.on('error', err => reject(err))
+				stream.on('error', reject)
 			})
 		}
 		catch (err7z) {
@@ -126,7 +126,7 @@ export async function unzipDirectory(buffer, targetPath) {
 			await new Promise((resolve, reject) => {
 				const stream = seven.extractFull(tempFilePath7z, targetPath, { $bin: sevenZipPath })
 				stream.on('end', () => resolve())
-				stream.on('error', err => reject(err))
+				stream.on('error', reject)
 			})
 		}
 		catch (err7z) {

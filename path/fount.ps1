@@ -1520,6 +1520,15 @@ elseif ($args[0] -eq 'server') {
 		Write-TaskbarProgressClear
 	}
 }
+elseif ($args[0] -eq 'shutdown' -or $args[0] -eq 'reboot') {
+	try {
+		run @args
+	}
+	finally {
+		Write-TaskbarProgressClear
+	}
+	exit $LastExitCode
+}
 else {
 	$originalTitle = Get-Title
 	try {

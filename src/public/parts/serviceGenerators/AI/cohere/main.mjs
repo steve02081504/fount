@@ -1,5 +1,5 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -81,7 +81,7 @@ async function GetSource(config) {
 					content: system_prompt
 				}]
 			}
-			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
+			mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				request.messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',

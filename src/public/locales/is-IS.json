@@ -40,7 +40,8 @@
 			"socketError": "Socket villa: ${error}",
 			"parseResponseFailed": "Mistókst að þátta svar netþjóns: ${error}",
 			"cannotParseResponse": "Gat ekki þáttað svar netþjóns",
-			"unknownError": "Óþekkt villa"
+			"unknownError": "Óþekkt villa",
+			"partPathRequired": "Vinsamlegast tilgreindu íhlutaslóð."
 		},
 		"partManager": {
 			"partInited": "Hluti ${partpath} hefur verið frumstilltur",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Reikningurinn hefur verið læstur, vinsamlegast reyndu aftur eftir ${timeLeft}.",
 			"accountLockedAttempts": "Reikningnum hefur verið læst tímabundið vegna of margra misheppnaðra innskráningartilrauna.",
 			"powValidationFailed": "Öryggisstaðfesting mistókst, vinsamlegast reyndu aftur.",
+			"tokenAndSolutionsRequired": "token og solutions eru nauðsynleg.",
 			"apiErrorBodyUnreadable": "Þjónninn skilaði upplýsingum sem ekki var hægt að þátta. Vinsamlegast reyndu aftur síðar."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			},
 			"commonToolCalling": "Kallar á tól",
+			"toolRunningLang": "Keyrir ${lang}",
+			"toolSearchingContent": "Leitar að ${content}",
+			"toolOverridingFilepath": "Skrifar yfir ${filepath}",
+			"toolReplacingFilepath": "Skiptir út í ${filepath}",
+			"toolReadingFilepath": "Les ${filepath}",
 			"reasoningDetailsTitle": "Rökhugsunarferli",
 			"logprobsNotApplicable": "ekki við",
 			"logprobsTopLogprobsMeta": "top_logprobs (valið: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "API lykillinn fannst ekki.",
 			"revokeMissingJti": "Vinsamlegast tilgreindu lykilinn sem á að afturkalla.",
 			"revokeMissingPassword": "Til að afturkalla lykil þarf lykilorð.",
+			"verifyMissingApiKey": "Vinsamlegast gefðu upp API lykil.",
 			"revokeButton": "Afturkalla",
 			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
 			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Nýtt þemaheiti:",
 			"deleteConfirm": "Ertu viss um að þú viljir eyða þemanu ${id}?",
 			"saved": "Vistað!",
-			"failedToSave": "Vistun mistókst"
+			"failedToSave": "Vistun mistókst",
+			"failedToDelete": "Ekki tókst að eyða þemanu: ${message}",
+			"failedToClone": "Ekki tókst að afrita þema: ${message}"
 		},
 		"themes": {
 			"auto": "Sjálfvirkt",

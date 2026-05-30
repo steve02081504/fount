@@ -32,10 +32,11 @@ export function moltbookFetch(apiKey, path, opts = {}) {
  */
 export async function moltbookJson(apiKey, path, opts = {}) {
 	const res = await moltbookFetch(apiKey, path, opts)
-	const data = await res.json().catch(() => ({}))
-	if (!res.ok)
+	if (!res.ok) {
+		const data = await res.json().catch(() => ({}))
 		return { success: false, error: data.error || res.statusText, hint: data.hint }
-	return data
+	}
+	return res.json()
 }
 
 /**
@@ -49,5 +50,6 @@ export async function moltbookRegister(body) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body),
 	})
-	return res.json().catch(() => ({}))
+	if (!res.ok) return res.json().catch(() => ({}))
+	return res.json()
 }

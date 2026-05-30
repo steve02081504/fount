@@ -35,7 +35,7 @@ export async function createMCPClient(config) {
 
 	if (config.roots)
 		client.setRequestHandler(ListRootsRequestSchema, () => ({
-			roots: config.roots.map(r => Object(r) instanceof String ? { uri: r.startsWith('file:') ? r : `file://${r}`, name: r.split(/\//).pop() || r } : r)
+			roots: config.roots.map(root => Object(root) instanceof String ? { uri: root.startsWith('file:') ? root : `file://${root}`, name: root.split(/\//).pop() || root } : root)
 		}))
 
 	if (config.samplingHandler)

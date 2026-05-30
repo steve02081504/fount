@@ -237,7 +237,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					const firstMessageInQueue = myQueue[0]
 					const fetchedMessages = await tryFewTimes(() => firstMessageInQueue.channel.messages.fetch({ limit: MAX_FETCH_COUNT, before: firstMessageInQueue.id }))
 					const historicalMessages = Array.from(fetchedMessages.values()).reverse()
-					const entries = (await Promise.all(historicalMessages.map(msg => DiscordMessageToFountChatLogEntry(msg)))).filter(Boolean)
+					const entries = (await Promise.all(historicalMessages.map(DiscordMessageToFountChatLogEntry))).filter(Boolean)
 					ChannelChatLogs[channelId] = MargeChatLog(entries)
 				}
 

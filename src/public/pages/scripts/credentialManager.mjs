@@ -6,6 +6,8 @@
  */
 import CryptoJS from 'https://esm.sh/crypto-js'
 
+import { ping } from './endpoints.mjs'
+
 /**
  * 获取用于加密/解密的密钥。
  * @param {string} secret - 密钥。
@@ -289,7 +291,7 @@ export async function transferEncryptedCredentials(uuid, redirectUrl) {
 export async function redirectToLoginInfo(redirectUrl = '/login', username = null, password = null) {
 	if (redirectUrl.startsWith('/')) redirectUrl = window.location.origin + redirectUrl
 
-	const { uuid } = await fetch('/api/ping', { credentials: 'omit' }).then(res => res.json())
+	const { uuid } = await ping()
 	if (!uuid) throw new Error('Could not fetch instance UUID.')
 
 	const loginInfoUrl = new URL('https://steve02081504.github.io/fount/login_info/')

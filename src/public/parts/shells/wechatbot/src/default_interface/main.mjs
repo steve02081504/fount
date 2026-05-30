@@ -119,11 +119,11 @@ function splitWechatText(text, maxBytes = WECHAT_TEXT_MAX_BYTES) {
 
 /**
  * 提取微信消息的文本内容。
- * @param {object} msg 微信消息对象。
- * @returns {string} 拼接后的文本内容，无文本时返回空字符串。
+ * @param {object} wechatMessage 微信消息对象
+ * @returns {string} 拼接后的文本内容，无文本时返回空字符串
  */
-function extractInboundText(msg) {
-	return (msg.item_list || [])
+function extractInboundText(wechatMessage) {
+	return (wechatMessage.item_list || [])
 		.filter(item => item.type === MessageItemType.TEXT && item.text_item?.text)
 		.map(item => item.text_item.text)
 		.join('\n').trim()
@@ -131,11 +131,11 @@ function extractInboundText(msg) {
 
 /**
  * 判断消息是否包含可从 CDN 拉取的媒体项。
- * @param {object} msg 微信消息对象。
- * @returns {boolean} 存在带 encrypt_query_param 或 full_url 的媒体引用时为 true。
+ * @param {object} wechatMessage 微信消息对象
+ * @returns {boolean} 存在带 encrypt_query_param 或 full_url 的媒体引用时为 true
  */
-function hasDownloadableMediaItem(msg) {
-	return (msg.item_list || []).some(item =>
+function hasDownloadableMediaItem(wechatMessage) {
+	return (wechatMessage.item_list || []).some(item =>
 		['image_item', 'file_item', 'video_item', 'voice_item'].some(key => {
 			const media = item[key]?.media
 			return media && (media.encrypt_query_param || media.full_url)
@@ -809,26 +809,26 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 					loggedReady = true
 				}
 
-				for (const msg of resp?.msgs || []) {
-					const dedupKey = msg.message_id != null ? `m${msg.message_id}` : `s${msg.seq}:${msg.client_id || ''}`
+				for (const wechatMessage of resp?.msgs || []) {
+					const dedupKey = wechatMessage.message_id != null ? `m${wechatMessage.message_id}` : `s${wechatMessage.seq}:${wechatMessage.client_id || ''}`
 					if (processedIds.has(dedupKey)) continue
 					processedIds.add(dedupKey)
 
-					if (msg.message_type !== MessageType.USER) continue
-					if (msg.message_state === MessageState.GENERATING) continue
+					if (wechatMessage.message_type !== MessageType.USER) continue
+					if (wechatMessage.message_state === MessageState.GENERATING) continue
 
-					const inboundText = extractInboundText(msg)
-					if (!inboundText && !hasDownloadableMediaItem(msg)) continue
+					const inboundText = extractInboundText(wechatMessage)
+					if (!inboundText && !hasDownloadableMediaItem(wechatMessage)) continue
 
-					const entry = await wechatMessageToEntry(msg)
+					const entry = await wechatMessageToEntry(wechatMessage)
 					if (!entry) continue
 
 					appendToLog(entry)
-					if (msg.from_user_id)
-						lastToUserId = msg.from_user_id
-					lastContextToken = String(msg.context_token || '')
+					if (wechatMessage.from_user_id)
+						lastToUserId = wechatMessage.from_user_id
+					lastContextToken = String(wechatMessage.context_token || '')
 
-					await doReply(msg)
+					await doReply(wechatMessage)
 				}
 			}
 		}

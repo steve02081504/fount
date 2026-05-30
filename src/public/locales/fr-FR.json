@@ -40,7 +40,8 @@
 			"socketError": "Erreur de socket : ${error}",
 			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
 			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
-			"unknownError": "Erreur inconnue."
+			"unknownError": "Erreur inconnue.",
+			"partPathRequired": "Veuillez indiquer le chemin du composant."
 		},
 		"partManager": {
 			"partInited": "Le composant ${partpath} a été initialisé",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Le compte a été verrouillé, veuillez réessayer après ${timeLeft}.",
 			"accountLockedAttempts": "Le compte a été temporairement verrouillé en raison d'un trop grand nombre de tentatives de connexion infructueuses.",
 			"powValidationFailed": "La vérification de sécurité a échoué. Veuillez réessayer.",
+			"tokenAndSolutionsRequired": "Le token et les solutions sont requis.",
 			"apiErrorBodyUnreadable": "Le serveur a renvoyé des informations qui n'ont pas pu être analysées. Veuillez réessayer plus tard."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
 			"commonToolCalling": "Appel de l'outil",
+			"toolRunningLang": "Exécution de ${lang}",
+			"toolSearchingContent": "Recherche de ${content}",
+			"toolOverridingFilepath": "Écrasement de ${filepath}",
+			"toolReplacingFilepath": "Remplacement dans ${filepath}",
+			"toolReadingFilepath": "Lecture de ${filepath}",
 			"reasoningDetailsTitle": "Processus de raisonnement",
 			"logprobsNotApplicable": "non applicable",
 			"logprobsTopLogprobsMeta": "top_logprobs (sélectionné : ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "La clé API n'a pas été trouvée.",
 			"revokeMissingJti": "Veuillez spécifier la clé à révoquer.",
 			"revokeMissingPassword": "La révocation d'une clé nécessite un mot de passe.",
+			"verifyMissingApiKey": "Veuillez fournir une clé API.",
 			"revokeButton": "Révoquer",
 			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
 			"revokeSuccess": "La clé API a été révoquée avec succès.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Nouveau nom du thème :",
 			"deleteConfirm": "Êtes-vous sûr de vouloir supprimer le thème ${id} ?",
 			"saved": "Enregistré !",
-			"failedToSave": "Échec de l'enregistrement"
+			"failedToSave": "Échec de l'enregistrement",
+			"failedToDelete": "Impossible de supprimer le thème : ${message}",
+			"failedToClone": "Impossible de copier le thème : ${message}"
 		},
 		"themes": {
 			"auto": "Automatique",

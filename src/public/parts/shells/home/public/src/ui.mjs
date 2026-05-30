@@ -6,7 +6,7 @@ import { onElementRemoved } from '../../../scripts/onElementRemoved.mjs'
 import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/parts.mjs'
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../../scripts/search.mjs'
 import { svgInliner } from '../../../scripts/svgInliner.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
+import { mountTemplate, renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { viewTransition } from '../../../scripts/viewTransition.mjs'
 
 import { defaultIcons, genericDefaultIcon } from './constants.mjs'
@@ -115,10 +115,8 @@ export async function renderFilteredItems(partTypeObject, filteredPaths) {
 	const currentContainer = partTypesContainers.querySelector(`#${partTypeName}-container`)
 	if (!currentContainer) return
 
-	if (!filteredPaths.length) {
-		currentContainer.innerHTML = ''
-		return currentContainer.appendChild(await renderTemplate('empty_list_view'))
-	}
+	if (!filteredPaths.length)
+		return mountTemplate(currentContainer, 'empty_list_view')
 
 	const skeletonMap = new Map()
 
@@ -136,10 +134,9 @@ export async function renderFilteredItems(partTypeObject, filteredPaths) {
 
 	const elements = await Promise.all(elementPromises)
 
-	currentContainer.innerHTML = ''
-	const fragment = document.createDocumentFragment()
-	elements.forEach(el => fragment.appendChild(el))
-	currentContainer.appendChild(fragment)
+	currentContainer.replaceChildren()
+	for (const el of elements)
+		currentContainer.appendChild(el)
 
 	// 异步替换骨架屏
 	skeletonMap.forEach(async (skeleton, partPath) => {

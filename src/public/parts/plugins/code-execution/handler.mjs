@@ -464,7 +464,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 	 * @returns {string} 渲染后的 Markdown 内容。
 	 */
 	function renderInlineJsPending(code, args) {
-		if (/[\r\n]/.test(code))
+		if (/[\n\r]/.test(code))
 			return renderRunningCodeBlock(code, 'js', args)
 		return renderMarkdownInlineCode(code, 'js')
 	}
@@ -500,7 +500,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		 * @returns {string} 渲染后的 Markdown 内容。
 		 */
 		const renderInlineShellPending = (code, args) => {
-			if (/[\r\n]/.test(code))
+			if (/[\n\r]/.test(code))
 				return renderRunningCodeBlock(code, shell_name, args)
 			return renderMarkdownInlineCode(code, shell_name)
 		}

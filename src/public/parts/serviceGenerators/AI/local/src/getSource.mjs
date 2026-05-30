@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-cpp'
 
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 
@@ -20,7 +20,7 @@ import { buildSamplingReplayOptions, collectLocalLogprobs, createStreamingLogpro
  * @returns {Array<{role: string, content: string}>} 供 Llama 会话使用的 role/content 消息数组。
  */
 function buildChatMessages(prompt_struct, config) {
-	const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+	const messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 		const images = (chatLogEntry.files || [])
 			.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
 		let { content } = chatLogEntry
@@ -152,9 +152,9 @@ export async function GetSource(config) {
 	const llama = await getLlama(config.llama_options ?? {})
 	const model = await llama.loadModel({
 		modelPath: resolvedPath,
-		...config.load_model_options ?? {},
+		...config.load_model_options,
 	})
-	const contextOptions = { ...config.context_options ?? {} }
+	const contextOptions = { ...config.context_options }
 	if (config.prompt_options?.logprobs && (contextOptions.sequences ?? 1) < 2)
 		contextOptions.sequences = 2
 	const context = await model.createContext(contextOptions)
@@ -176,7 +176,7 @@ export async function GetSource(config) {
 		 */
 		Call: async (prompt) => {
 			const sequence = context.getSequence()
-			const sessionOpts = buildLlamaSessionOptions({ ...config.session_options ?? {} }, sequence)
+			const sessionOpts = buildLlamaSessionOptions({ ...config.session_options }, sequence)
 			const session = new LlamaChatSession(sessionOpts)
 			try {
 				const text = await session.prompt(prompt, buildPromptCallOptions(config, {
@@ -232,7 +232,7 @@ export async function GetSource(config) {
 				}
 
 			const sessionOpts = buildLlamaSessionOptions({
-				...config.session_options ?? {},
+				...config.session_options,
 				...mergedSystemPrompt ? { systemPrompt: mergedSystemPrompt } : {},
 			}, sequence)
 			const session = new LlamaChatSession(sessionOpts)
@@ -277,7 +277,7 @@ export async function GetSource(config) {
 							if (!logprobCollector.isReady) {
 								const seq = session.sequence
 								const prefixLen = Math.max(0, seq.contextTokens.length - streamTokens.length)
-								await logprobCollector.init([...seq.contextTokens.slice(0, prefixLen)])
+								await logprobCollector.init(seq.contextTokens.slice(0, prefixLen))
 							}
 							const rows = await logprobCollector.collectBatch(streamTokens.slice(prevLen))
 							let anyNew = false

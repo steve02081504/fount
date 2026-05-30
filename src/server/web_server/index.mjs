@@ -50,6 +50,16 @@ FinalRouter.use(async (req, res) => {
 	if (req.accepts('html')) return betterSendFile(res.status(404), __dirname + '/src/public/pages/404/index.html')
 	res.status(404).type('txt').send('Not found')
 })
+const codeToMessage = {
+	404: 'Not found',
+	500: 'Internal Server Error',
+	403: 'Forbidden',
+	401: 'Unauthorized',
+	400: 'Bad Request',
+	409: 'Conflict',
+	406: 'Not Acceptable',
+	405: 'Method Not Allowed',
+}
 /**
  * 应用程序的主错误处理程序。
  * @param {Error} err - 错误对象。
@@ -61,7 +71,11 @@ FinalRouter.use(async (req, res) => {
 const errorHandler = (err, req, res, next) => {
 	if (!err.skip_report) Sentry.captureException(err)
 	console.error(err)
-	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message || err.cause?.message || String(err) })
+	res.status(err.code ?? 500).json(err.json ?? {
+		message: codeToMessage[err.code ?? 500],
+		error: err.message || err.cause?.message || String(err),
+		errors: err.errors,
+	})
 }
 
 PartsRouter.use(errorHandler)

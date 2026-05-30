@@ -334,7 +334,7 @@ async function i18nElement(element) {
 		await translateSingularElement(element)
 
 	const elements = element.querySelectorAll('[data-i18n]')
-	await Promise.all([...elements].map(el => translateSingularElement(el)))
+	await Promise.all([...elements].map(translateSingularElement))
 	return element
 }
 
@@ -1230,23 +1230,23 @@ function connect(host, protocol, username, apikey) {
 		 */
 		ws.onmessage = async (event) => {
 			resolve()
-			const msg = JSON.parse(event.data)
-			if (msg.type === 'init_success') {
-				pageId = msg.payload.pageId
+			const wireMessage = JSON.parse(event.data)
+			if (wireMessage.type === 'init_success') {
+				pageId = wireMessage.payload.pageId
 				return
 			}
 
-			if (msg.type === 'page-event-show-toast' && msg.data) {
+			if (wireMessage.type === 'page-event-show-toast' && wireMessage.data) {
 				const { host: fountHost } = await getStoredData()
-				if (window.location.host === fountHost) return sendResponse(msg.requestId, { success: true })
+				if (window.location.host === fountHost) return sendResponse(wireMessage.requestId, { success: true })
 
-				const { type, message, duration } = msg.data
+				const { type, message, duration } = wireMessage.data
 				showToast(type, message, duration)
 
-				return sendResponse(msg.requestId, { success: true })
+				return sendResponse(wireMessage.requestId, { success: true })
 			}
 
-			if (msg.requestId) handleCommand(msg)
+			if (wireMessage.requestId) handleCommand(wireMessage)
 		}
 		/**
 		 * WebSocket 'close' 事件处理程序。
@@ -1302,13 +1302,13 @@ async function checkCspAndWarn() {
 
 /**
  * 处理来自 WebSocket 的命令。
- * @param {object} msg - WebSocket 消息。
+ * @param {object} wireMessage - WebSocket 消息。
  * @returns {Promise<void>}
  */
-async function handleCommand(msg) {
+async function handleCommand(wireMessage) {
 	let payload
 	try {
-		switch (msg.type) {
+		switch (wireMessage.type) {
 			case 'get_full_html':
 				payload = { html: document.documentElement.outerHTML }
 				break
@@ -1317,7 +1317,7 @@ async function handleCommand(msg) {
 				break
 			case 'run_js': {
 				await checkCspAndWarn()
-				const { script, callbackInfo } = msg.payload
+				const { script, callbackInfo } = wireMessage.payload
 				let callback = null
 				if (callbackInfo)
 					/**
@@ -1337,16 +1337,16 @@ async function handleCommand(msg) {
 				break
 			}
 			case 'danmaku': {
-				showDanmaku(msg.payload)
+				showDanmaku(wireMessage.payload)
 				payload = { success: true }
 				break
 			}
-			default: throw new Error(`Unknown command type: ${msg.type}`)
+			default: throw new Error(`Unknown command type: ${wireMessage.type}`)
 		}
-		sendResponse(msg.requestId, payload)
+		sendResponse(wireMessage.requestId, payload)
 	}
 	catch (error) {
-		sendResponse(msg.requestId, { error: error.message, stack: error.stack }, true)
+		sendResponse(wireMessage.requestId, { error: error.message, stack: error.stack }, true)
 	}
 }
 

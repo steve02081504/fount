@@ -1,6 +1,6 @@
 import { with_timeout } from '../../../../../scripts/await_timeout.mjs'
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 import { BlackboxAI } from './blackbox.mjs'
 
@@ -72,7 +72,7 @@ async function GetSource(config) {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
 			const messages = []
-			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
+			mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',

@@ -6,6 +6,7 @@ import { setInterval, setTimeout } from 'node:timers'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
+import { httpError } from '../scripts/http_error.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { ms, msstr } from '../scripts/ms.mjs'
@@ -77,14 +78,24 @@ export function getSecureCookieOptions(req) {
 }
 
 /**
- * 业务层在失败 JSON 上附带 `httpStatus`；路由层据此设状态码，缺省或非数字则 400。
- * @param {{ success: boolean, httpStatus?: number }} result - 变更类 API 的返回体。
- * @returns {number} 适用于 `res.status` 的 HTTP 状态码。
+ * @param {number} status HTTP 状态码
+ * @param {Record<string, unknown>} json 响应 JSON（通常含 `i18nKey`）
+ * @returns {never} 始终抛出 HttpError，不会返回。
  */
-export function mutationResponseHttpStatus(result) {
-	if (result.success) return 200
-	const code = Number(result.httpStatus ?? 400)
-	return Number.isFinite(code) ? code : 400
+export function authMutationFail(status, json) {
+	const message = String(json.i18nKey ?? json.message ?? json.error ?? `HTTP ${status}`)
+	throw httpError(status, message, { json })
+}
+
+/**
+ * 发送 `{ status, ...fields }` 形态的业务结果（不含 `success`）。
+ * @param {import('npm:express').Response} res Express 响应
+ * @param {{ status: number } & Record<string, unknown>} result 业务结果
+ * @returns {void}
+ */
+export function respondAuthResult(res, result) {
+	const { status = 200, success, ...json } = result
+	res.status(status).json(json)
 }
 
 /**
@@ -274,19 +285,19 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 	try {
 		const decoded = await verifyToken(refreshTokenValue)
 		if (!decoded || (options.expectedType && decoded.type !== options.expectedType))
-			return { status: 401, success: false, message: `Invalid or revoked ${options.tokenName} refresh token` }
+			return { status: 401, message: `Invalid or revoked ${options.tokenName} refresh token` }
 
 
 		const user = getUserByUsername(decoded.username)
 		if (!user || !user.auth || !user.auth[options.userTokenArrayKey])
-			return { status: 401, success: false, message: `User not found or ${options.tokenName} refresh tokens unavailable` }
+			return { status: 401, message: `User not found or ${options.tokenName} refresh tokens unavailable` }
 
 
 		const tokenEntry = user.auth[options.userTokenArrayKey].find(t => t.jti === decoded.jti)
 
 		if (!tokenEntry || !options.validateEntry(tokenEntry, decoded)) {
 			if (tokenEntry) await revokeToken(refreshTokenValue, options.mismatchRevokeReason)
-			return { status: 401, success: false, message: `${options.tokenName} refresh token not found or validation mismatch` }
+			return { status: 401, message: `${options.tokenName} refresh token not found or validation mismatch` }
 		}
 
 		// 更新条目信息
@@ -311,13 +322,12 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 
 		return {
 			status: 200,
-			success: true,
 			[options.accessTokenKey]: newAccessToken,
 			[options.refreshTokenKey]: newRefreshToken,
 		}
 	} catch (error) {
 		console.errorI18n(options.errorI18nKey, { error: error.message })
-		return { status: 401, success: false, message: `Error refreshing ${options.tokenName} token` }
+		return { status: 401, message: `Error refreshing ${options.tokenName} token` }
 	}
 }
 
@@ -448,7 +458,7 @@ export async function logout(req, res) {
 
 	clearAuthCookies(res, getSecureCookieOptions(req))
 	save_config()
-	res.status(200).json({ success: true })
+	res.status(200).json({})
 }
 
 /**
@@ -532,7 +542,7 @@ export async function try_auth_request(req, res) {
 	if (refreshToken) refreshResult = await refresh(refreshToken, req)
 	else if (apiRefreshToken) refreshResult = await refreshApiToken(apiRefreshToken, req)
 
-	if (!refreshResult?.success) {
+	if (refreshResult?.status !== 200) {
 		clearAuthCookies(res, getSecureCookieOptions(req))
 		return Unauthorized(refreshResult?.message || 'Session expired, please login again.')
 	}
@@ -586,7 +596,7 @@ export async function authenticate(req, res, next) {
 		if (req.accepts('html') && req.method === 'GET')
 			return res.redirect(`/login?redirect=${path}`)
 
-		return res.status(401).json({ success: false, message })
+		return res.status(401).json({ message })
 	}
 
 	try {
@@ -712,20 +722,19 @@ export async function verifyPassword(password, hashedPassword) {
  * @param {string} username - 用户名。
  * @param {string} currentPassword - 当前密码。
  * @param {string} newPassword - 新密码。
- * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 操作结果。
+ * @returns {Promise<void>}
  */
 export async function changeUserPassword(username, currentPassword, newPassword) {
 	const user = getUserByUsername(username)
 	if (!user || !user.auth)
-		return { success: false, i18nKey: 'userSettings.errors.accountNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.errors.accountNotFound' })
 
 	const isValidPassword = await verifyPassword(currentPassword, user.auth.password)
 	if (!isValidPassword)
-		return { success: false, i18nKey: 'userSettings.changePassword.invalidCurrent', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'userSettings.changePassword.invalidCurrent' })
 
 	user.auth.password = await hashPassword(newPassword)
 	save_config()
-	return { success: true }
 }
 
 /**
@@ -759,19 +768,19 @@ export async function generateApiKey(username, description = 'New API Key') {
  * @param {string} username - 用户名。
  * @param {string} jti - 要撤销的 API 密钥的 JTI。
  * @param {string} password - 用于验证的用户密码。
- * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 操作结果。
+ * @returns {Promise<void>}
  */
 export async function revokeApiKey(username, jti, password) {
 	const user = getUserByUsername(username)
 	if (!user?.auth?.apiKeys)
-		return { success: false, i18nKey: 'userSettings.apiKeys.noKeysForUser', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.noKeysForUser' })
 
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, i18nKey: 'userSettings.apiKeys.revokeWrongPassword', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'userSettings.apiKeys.revokeWrongPassword' })
 
 	const keyIndex = user.auth.apiKeys.findIndex(key => key.jti === jti)
 	if (keyIndex === -1)
-		return { success: false, i18nKey: 'userSettings.apiKeys.keyNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.keyNotFound' })
 
 	const hashToRemove = Object.keys(config.data.apiKeys).find(hash => config.data.apiKeys[hash].jti === jti)
 	if (hashToRemove) delete config.data.apiKeys[hashToRemove]
@@ -789,7 +798,6 @@ export async function revokeApiKey(username, jti, password) {
 	user.auth.apiRefreshTokens = user.auth.apiRefreshTokens.filter(token => token.apiKeyJti !== jti)
 
 	save_config()
-	return { success: true }
 }
 
 /**
@@ -797,19 +805,19 @@ export async function revokeApiKey(username, jti, password) {
  * @param {string} username - 用户名。
  * @param {string} tokenJti - 要撤销的刷新令牌的 JTI。
  * @param {string} password - 用于验证的用户密码。
- * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 操作结果。
+ * @returns {Promise<void>}
  */
 export async function revokeUserDeviceByJti(username, tokenJti, password) {
 	const user = getUserByUsername(username)
 	if (!user?.auth?.refreshTokens)
-		return { success: false, i18nKey: 'userSettings.userDevices.listNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.userDevices.listNotFound' })
 
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, i18nKey: 'userSettings.userDevices.revokeWrongPassword', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'userSettings.userDevices.revokeWrongPassword' })
 
 	const tokenIndex = user.auth.refreshTokens.findIndex(token => token.jti === tokenJti)
 	if (tokenIndex === -1)
-		return { success: false, i18nKey: 'userSettings.userDevices.deviceNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.userDevices.deviceNotFound' })
 
 	const revokedToken = user.auth.refreshTokens.splice(tokenIndex, 1)[0]
 	if (revokedToken?.jti)
@@ -820,21 +828,20 @@ export async function revokeUserDeviceByJti(username, tokenJti, password) {
 		}
 
 	save_config()
-	return { success: true }
 }
 
 /**
  * 删除用户帐户及其数据，需要密码验证。
  * @param {string} username - 要删除的帐户的用户名。
  * @param {string} password - 用户密码。
- * @returns {Promise<{ success: boolean, i18nKey?: string, httpStatus?: number }>} 操作结果。
+ * @returns {Promise<void>}
  */
 export async function deleteUserAccount(username, password) {
 	const user = getUserByUsername(username)
 	if (!user?.auth)
-		return { success: false, i18nKey: 'userSettings.errors.accountNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.errors.accountNotFound' })
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, i18nKey: 'userSettings.deleteAccount.wrongPassword', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'userSettings.deleteAccount.wrongPassword' })
 
 	await events.emit('BeforeUserDeleted', { username })
 
@@ -857,7 +864,6 @@ export async function deleteUserAccount(username, password) {
 		fs.rmSync(userDirectoryPath, { recursive: true, force: true })
 
 	await events.emit('AfterUserDeleted', { username })
-	return { success: true }
 }
 
 /**
@@ -865,20 +871,20 @@ export async function deleteUserAccount(username, password) {
  * @param {string} currentUsername - 当前用户名。
  * @param {string} newUsername - 新用户名。
  * @param {string} password - 用户密码。
- * @returns {Promise<{ success: boolean, i18nKey?: string, i18nParams?: Record<string, string>, httpStatus?: number }>} 操作结果。
+ * @returns {Promise<void>}
  */
 export async function renameUser(currentUsername, newUsername, password) {
 	const user = getUserByUsername(currentUsername)
 	if (!user?.auth)
-		return { success: false, i18nKey: 'userSettings.errors.accountNotFound', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.errors.accountNotFound' })
 	if (!await verifyPassword(password, user.auth.password))
-		return { success: false, i18nKey: 'userSettings.renameUser.wrongPassword', httpStatus: 401 }
+		authMutationFail(401, { i18nKey: 'userSettings.renameUser.wrongPassword' })
 
 	if (currentUsername === newUsername)
-		return { success: false, i18nKey: 'userSettings.renameUser.mustDiffer', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.renameUser.mustDiffer' })
 
 	if (getUserByUsername(newUsername))
-		return { success: false, i18nKey: 'userSettings.renameUser.taken', httpStatus: 400 }
+		authMutationFail(400, { i18nKey: 'userSettings.renameUser.taken' })
 
 	await events.emit('BeforeUserRenamed', { oldUsername: currentUsername, newUsername })
 
@@ -901,17 +907,14 @@ export async function renameUser(currentUsername, newUsername, password) {
 		config.data.users[currentUsername] = user
 		delete config.data.users[newUsername]
 		console.error('Error moving user data directory:', error)
-		return {
-			success: false,
+		authMutationFail(400, {
 			i18nKey: 'userSettings.renameUser.moveFailed',
 			i18nParams: { detail: String(error?.message ?? error).slice(0, 240) },
-			httpStatus: 400,
-		}
+		})
 	}
 
 	save_config()
 	await events.emit('AfterUserRenamed', { oldUsername: currentUsername, newUsername })
-	return { success: true }
 }
 
 /**
@@ -958,7 +961,7 @@ export function bumpUserFailedLoginAttempts(user) {
 		console.warnI18n('fountConsole.auth.accountLockedLog', { username: user.username })
 		return {
 			locked: true,
-			response: { status: 403, success: false, i18nKey: 'auth.error.accountLockedAttempts' },
+			response: { status: 403, i18nKey: 'auth.error.accountLockedAttempts' },
 		}
 	}
 	save_config()
@@ -991,12 +994,12 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			const fakeUserId = crypto.randomUUID()
 			const accessToken = await generateAccessToken({ username, userId: fakeUserId }, fakePrivateKey)
 			const refreshToken = await generateRefreshToken({ username, userId: fakeUserId }, deviceId, fakePrivateKey)
-			return { status: 200, success: true, accessToken, refreshToken }
+			return { status: 200, accessToken, refreshToken }
 		}
 		// 时间攻击保护
 		const delay = Math.max(0, avgVerifyTime * 0.9 + Math.random() * avgVerifyTime * 0.2)
 		await new Promise(resolve => setTimeout(resolve, delay).unref())
-		return { status: 401, success: false, i18nKey: 'auth.error.invalidCredentials', ...response }
+		return { status: 401, i18nKey: 'auth.error.invalidCredentials', ...response }
 	}
 
 	if (!user) return await handleFailedLogin()
@@ -1004,7 +1007,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	const authData = user.auth
 	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
 		const timeLeft = msstr(authData.lockedUntil - Date.now())
-		return { status: 403, success: false, i18nKey: 'auth.error.accountLockedRetry', i18nParams: { timeLeft } }
+		return { status: 403, i18nKey: 'auth.error.accountLockedRetry', i18nParams: { timeLeft } }
 	}
 
 	const startTime = Date.now()
@@ -1026,7 +1029,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
  * @param {object} user - config 中的用户对象（含 username、auth）。
  * @param {string} deviceId - 设备 ID。
  * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {Promise<{status: number, success: boolean, accessToken: string, refreshToken: string}>} 成功时的状态码与一对 JWT。
+ * @returns {Promise<{status: number, accessToken: string, refreshToken: string}>} 成功时的状态码与一对 JWT。
  */
 export async function completeSuccessfulLogin(user, deviceId, req) {
 	const { username } = user
@@ -1064,7 +1067,7 @@ export async function completeSuccessfulLogin(user, deviceId, req) {
 	})
 	save_config()
 
-	return { status: 200, success: true, accessToken, refreshToken }
+	return { status: 200, accessToken, refreshToken }
 }
 
 
@@ -1075,9 +1078,9 @@ export async function completeSuccessfulLogin(user, deviceId, req) {
  * @returns {Promise<object>} 包含状态码和用户信息的对象。
  */
 export async function register(username, password) {
-	if (getUserByUsername(username)?.auth) return { status: 409, success: false, i18nKey: 'auth.error.accountAlreadyExists' }
+	if (getUserByUsername(username)?.auth) return { status: 409, i18nKey: 'auth.error.accountAlreadyExists' }
 	const newUser = await createUser(username, password)
-	return { status: 201, success: true, user: { username: newUser.username, userId: newUser.auth.userId, createdAt: newUser.createdAt } }
+	return { status: 201, user: { username: newUser.username, userId: newUser.auth.userId, createdAt: newUser.createdAt } }
 }
 
 /**
@@ -1088,14 +1091,14 @@ export async function register(username, password) {
  * @returns {Promise<object>} 操作结果。
  */
 export async function setApiCookieResponse(apiKey, req, res) {
-	if (!apiKey) return { status: 400, success: false, error: 'API key is required.' }
+	if (!apiKey) return { status: 400, error: 'API key is required.' }
 
 	const user = await verifyApiKey(apiKey)
-	if (!user) return { status: 401, success: false, error: 'Invalid API key.' }
+	if (!user) return { status: 401, error: 'Invalid API key.' }
 
 	const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
 	const apiKeyInfo = config.data.apiKeys[hash]
-	if (!apiKeyInfo) return { status: 500, success: false, error: 'API key data inconsistency.' }
+	if (!apiKeyInfo) return { status: 500, error: 'API key data inconsistency.' }
 
 	const payload = { username: user.username, userId: user.auth.userId }
 	const apiAccessToken = await generateApiAccessToken(payload)
@@ -1116,7 +1119,7 @@ export async function setApiCookieResponse(apiKey, req, res) {
 	res.cookie('apiAccessToken', apiAccessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
 	res.cookie('apiRefreshToken', apiRefreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 
-	return { status: 200, success: true, message: 'API cookie set successfully.' }
+	return { status: 200, message: 'API cookie set successfully.' }
 }
 
 

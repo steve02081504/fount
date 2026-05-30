@@ -78,9 +78,8 @@ achievementsContainer.addEventListener('click', async (event) => {
 		card.style.pointerEvents = 'none' // Prevent further clicks
 		card.classList.add('opacity-50')
 		try {
-			const result = await api.lockAchievement(partpath, id, 'relock_by_clicking')
-			if (result.success) // The server will send an event to reload, but we can do it faster
-				await renderAchievements()
+			await api.lockAchievement(partpath, id, 'relock_by_clicking')
+			await renderAchievements()
 		} catch (e) {
 			console.error('Failed to relock achievement', e)
 			card.style.pointerEvents = 'auto'

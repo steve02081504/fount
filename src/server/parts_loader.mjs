@@ -544,7 +544,7 @@ async function shallowLoadDefaultPartsForUser(user) {
  * @returns {Promise<void>}
  */
 export async function shallowLoadAllDefaultParts() {
-	await Promise.all(Object.values(getAllUsers()).map(user => shallowLoadDefaultPartsForUser(user)))
+	await Promise.all(Object.values(getAllUsers()).map(shallowLoadDefaultPartsForUser))
 }
 
 /**
@@ -559,7 +559,7 @@ export async function baseMjsPartUnloader(path) {
 	 */
 	async function codeunloader(path) {
 		/*
-		todo: implement codeunloader after moving fount from deno to bun/done
+		todo: implement codeunloader after moving fount from deno to bun
 		deno ll never support this, see also:
 		https://github.com/denoland/deno/issues/27820
 		https://github.com/denoland/deno/issues/28126
@@ -571,7 +571,7 @@ export async function baseMjsPartUnloader(path) {
 		fs.readdirSync(path, { withFileTypes: true, recursive: true })
 			.filter(file => file.isFile() && /\.(js|ts|mjs|cjs|wasm)$/.test(file.name))
 			.map(file => file.parentPath + '/' + file.name)
-			.map(f => codeunloader(f).catch(console.error))
+			.map(file => codeunloader(file).catch(console.error))
 	)
 }
 

@@ -19,8 +19,11 @@
 
 - **Create New Parts**: Mimic existing examples in `@src/public/parts/` or `@data/users/.../chars/`.
 - **UI (Shells)**: Decoupled from backend. Use API endpoints in `src/server/web_server/endpoints.mjs`.
-- **I18n**: Only modify `src/locales/zh-CN.json`; `update-locales.py` handles the rest.
-- **Standards**: Run `eslint --fix --quiet` after changes. No logging unless error/warning.
+- **I18n**: Only modify `src/public/locales/zh-CN.json`; `update-locales.py` handles the rest.
+- **Standards**: Run `eslint --fix --quiet` after changes(NO `npx`, just `eslint`). No logging unless error/warning.
+- **Debug file logs** (`debug_logs/`, gitignored): `debugLog(name, data)` — server: `src/scripts/debug_log.mjs`; browser: `src/public/pages/scripts/debug_log.mjs` (`POST /api/test/debug-log`, requires login).
+- **Restart server**: Run `fount reboot` to restart the fount server after code or config changes.
+- **curl / API testing**: Pass API key on protected routes, e.g. `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PowerShell: `$env:FOUNT_API_KEY`; bash: `$FOUNT_API_KEY`).
 
 ## 4. Specialized Guides
 

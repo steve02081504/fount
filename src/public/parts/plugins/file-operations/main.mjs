@@ -48,7 +48,7 @@ function renderViewFileBlock(content, args) {
  * @returns {string} 渲染结果。
  */
 function renderReplaceFileBlock(content, args) {
-	const fileBlocks = [...content.matchAll(/<file\s+path="(?<filepath>[^"]+)">(?<filecontent>[\s\S]*?)<\/file>/g)]
+	const fileBlocks = [...content.matchAll(/<file\s+path="(?<filepath>[^"]+)">(?<filecontent>[\S\s]*?)<\/file>/g)]
 	if (!fileBlocks.length) {
 		const filepath = content.match(/<file\s+path="([^"]+)"/)?.[1] || 'unknown'
 		return renderFileOperationCodeBlock(args, filepath, content, 'chat.messageView.toolReplacingFilepath')

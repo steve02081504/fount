@@ -1,4 +1,4 @@
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
 
 /**
  * 将 prompt_struct 转成 OpenAI 兼容消息数组。
@@ -10,7 +10,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../.
 export function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
 	const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
 
-	let messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+	let messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 		const uid = Math.random().toString(36).slice(2, 10)
 		let textContent = `\
 <message "${uid}">

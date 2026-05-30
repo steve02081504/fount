@@ -83,14 +83,14 @@ export async function setEndpoints(router) {
 	router.get('/api/parts/shells\\:subfounts/list', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const subfounts = getAllSubfounts(username)
-		res.json({ success: true, subfounts })
+		res.json({ subfounts })
 	})
 
 	// 获取已连接的分机
 	router.get('/api/parts/shells\\:subfounts/connected', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const subfounts = getConnectedSubfounts(username)
-		res.json({ success: true, subfounts })
+		res.json({ subfounts })
 	})
 
 	// 在分机上执行代码
@@ -103,7 +103,7 @@ export async function setEndpoints(router) {
 
 		const { peerId } = getConnectionCode(username)
 		const result = await executeCodeOnSubfount(username, subfountId, script, callbackInfo, peerId)
-		res.json({ success: true, result })
+		res.json({ result })
 	})
 
 	// 在分机上执行 shell 命令
@@ -116,7 +116,7 @@ export async function setEndpoints(router) {
 
 		const { peerId } = getConnectionCode(username)
 		const result = await executeShellOnSubfount(username, subfountId, command, shell || null, options || {}, peerId)
-		res.json({ success: true, result })
+		res.json({ result })
 	})
 
 	// 获取分机信息，包括 shell 可用性
@@ -145,7 +145,7 @@ export async function setEndpoints(router) {
 			shells: subfount.id === 0 ? hostShells : subfount.deviceInfo?.shells || null,
 		}))
 
-		res.json({ success: true, subfounts: subfountsWithShells })
+		res.json({ subfounts: subfountsWithShells })
 	})
 
 	// 设置设备备注
@@ -156,6 +156,6 @@ export async function setEndpoints(router) {
 		if (!deviceId) return res.status(400).json({ error: 'deviceId is required.' })
 
 		setDeviceDescription(username, deviceId, description || null)
-		res.json({ success: true })
+		res.status(200).json({})
 	})
 }

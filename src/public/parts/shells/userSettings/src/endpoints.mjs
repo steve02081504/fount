@@ -8,7 +8,7 @@ import {
 	changeUserPassword, revokeUserDeviceByJti,
 	renameUser, deleteUserAccount,
 	getUserDictionary, getUserByUsername as getUserConfig,
-	mutationResponseHttpStatus,
+	respondAuthResult,
 	REFRESH_TOKEN_EXPIRY_DURATION,
 	verifyPassword,
 } from '../../../../../server/auth.mjs'
@@ -78,7 +78,7 @@ function formatBytes(bytes, decimals = 2) {
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:userSettings/stats', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
-		if (!userReqData) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!userReqData) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
 		const userDirectory = getUserDictionary(userReqData.username)
@@ -92,9 +92,7 @@ export function setEndpoints(router) {
 		const folderSizeNum = getDirectorySize(userDirectory).then(size => userReqData.directorySize = size)
 		const folderSize = formatBytes(userReqData.directorySize || await folderSizeNum)
 
-		res.json({
-			success: true,
-			username: userReqData.username,
+		res.json({ username: userReqData.username,
 			creationDate,
 			folderSize,
 			folderPath: userDirectory
@@ -103,21 +101,21 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:userSettings/change_password', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { currentPassword, newPassword } = req.body
 		if (!currentPassword || !newPassword)
-			return res.status(400).json({ success: false, i18nKey: 'userSettings.changePassword.missingFields' })
+			return res.status(400).json({ i18nKey: 'userSettings.changePassword.missingFields' })
 
-		const result = await changeUserPassword(user.username, currentPassword, newPassword)
-		res.status(mutationResponseHttpStatus(result)).json(result)
+		await changeUserPassword(user.username, currentPassword, newPassword)
+		res.status(200).json({})
 	})
 
 	router.get('/api/parts/shells\\:userSettings/devices', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)
-		if (!userReqData) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!userReqData) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
-		if (!userFullConfig?.auth?.refreshTokens) return res.json({ success: true, devices: [] })
+		if (!userFullConfig?.auth?.refreshTokens) return res.json({ devices: [] })
 
 		let currentRefreshJti = null
 		try {
@@ -134,65 +132,61 @@ export function setEndpoints(router) {
 			isCurrentSession: Boolean(currentRefreshJti && token.jti === currentRefreshJti),
 		})).sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0))
 
-		res.json({ success: true, devices })
+		res.json({ devices })
 	})
 
 	router.post('/api/parts/shells\\:userSettings/revoke_device', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { tokenJti, password } = req.body
 		if (!tokenJti || !password)
-			return res.status(400).json({ success: false, i18nKey: 'userSettings.userDevices.revokeMissingParams' })
+			return res.status(400).json({ i18nKey: 'userSettings.userDevices.revokeMissingParams' })
 
-		const result = await revokeUserDeviceByJti(user.username, tokenJti, password)
-		res.status(mutationResponseHttpStatus(result)).json(result)
+		await revokeUserDeviceByJti(user.username, tokenJti, password)
+		res.status(200).json({})
 	})
 
 	router.post('/api/parts/shells\\:userSettings/rename_user', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { newUsername, password } = req.body
 		if (!newUsername || !password)
-			return res.status(400).json({ success: false, i18nKey: 'userSettings.renameUser.missingParams' })
+			return res.status(400).json({ i18nKey: 'userSettings.renameUser.missingParams' })
 
-		const result = await renameUser(user.username, newUsername, password)
-		if (result.success) {
-			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
-			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
-		}
-		res.status(mutationResponseHttpStatus(result)).json(result)
+		await renameUser(user.username, newUsername, password)
+		res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.status(200).json({})
 	})
 
 	router.post('/api/parts/shells\\:userSettings/delete_account', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
-		if (!password) return res.status(400).json({ success: false, i18nKey: 'userSettings.deleteAccount.missingPassword' })
+		if (!password) return res.status(400).json({ i18nKey: 'userSettings.deleteAccount.missingPassword' })
 
-		const result = await deleteUserAccount(user.username, password)
-		if (result.success) {
-			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
-			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
-		}
-		res.status(mutationResponseHttpStatus(result)).json(result)
+		await deleteUserAccount(user.username, password)
+		res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.status(200).json({})
 	})
 
 	router.get('/api/parts/shells\\:userSettings/webauthn_credentials', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
-		res.json({ success: true, credentials: listWebAuthnCredentials(user.username) })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
+		res.json({ credentials: listWebAuthnCredentials(user.username) })
 	})
 
 	router.get('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const config = await getEditorCommandConfig(user.username)
-		res.json({ success: true, config })
+		res.json({ config })
 	})
 
 	router.post('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const { editorId, command, argsTemplate } = req.body || {}
 		const editorPreset = getAvailableEditorById(editorId)
 		const merged = {
@@ -201,12 +195,12 @@ export function setEndpoints(router) {
 			argsTemplate: argsTemplate || editorPreset?.argsTemplate,
 		}
 		const config = await setEditorCommandConfig(user.username, merged)
-		res.json({ success: true, config })
+		res.json({ config })
 	})
 
 	router.post('/api/parts/shells\\:userSettings/open_editor', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const { filePath, line, column } = req.body || {}
 		const result = await openEditor(user.username, filePath, line, column)
 		res.json(result)
@@ -214,33 +208,31 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
-			return res.status(401).json({ success: false, i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
-		const result = await webauthnRegistrationBegin(user.username, req)
-		res.status(result.status).json(result)
+			return res.status(401).json({ i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
+		respondAuthResult(res, await webauthnRegistrationBegin(user.username, req))
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_complete', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { credential, nickname, password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
-			return res.status(401).json({ success: false, i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
+			return res.status(401).json({ i18nKey: 'userSettings.passkeys.apiInvalidPassword' })
 		if (!credential)
-			return res.status(400).json({ success: false, i18nKey: 'userSettings.passkeys.apiMissingCredential' })
-		const result = await webauthnRegistrationComplete(user.username, credential, nickname, req)
-		res.status(result.status).json(result)
+			return res.status(400).json({ i18nKey: 'userSettings.passkeys.apiMissingCredential' })
+		respondAuthResult(res, await webauthnRegistrationComplete(user.username, credential, nickname, req))
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_remove', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, i18nKey: 'userSettings.shell.unauthorized' })
+		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { credentialId, password } = req.body
 		if (!credentialId || !password)
-			return res.status(400).json({ success: false, i18nKey: 'userSettings.passkeys.apiRemoveParamsRequired' })
-		const result = await removeWebAuthnCredential(user.username, credentialId, password)
-		res.status(mutationResponseHttpStatus(result)).json(result)
+			return res.status(400).json({ i18nKey: 'userSettings.passkeys.apiRemoveParamsRequired' })
+		await removeWebAuthnCredential(user.username, credentialId, password)
+		res.status(200).json({})
 	})
 }

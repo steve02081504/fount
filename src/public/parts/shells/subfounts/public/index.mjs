@@ -203,8 +203,8 @@ function connectWebSocket() {
 	 */
 	ws.onmessage = (event) => {
 		try {
-			const msg = JSON.parse(event.data)
-			if (msg.type === 'subfounts_update') renderSubfounts(msg.payload)
+			const wireMessage = JSON.parse(event.data)
+			if (wireMessage.type === 'subfounts_update') renderSubfounts(wireMessage.payload)
 		}
 		catch (error) {
 			console.error('Error processing WebSocket message:', error)

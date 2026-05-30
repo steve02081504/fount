@@ -21,9 +21,15 @@ export default {
 	info,
 	interfaces: {
 		serviceGenerator: {
+			/**
+			 * @returns {Promise<{ js: string }>} 配置页脚本
+			 */
 			GetConfigDisplayContent: async () => ({
 				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
 			}),
+			/**
+			 * @returns {Promise<object>} 默认配置模板
+			 */
 			GetConfigTemplate: async () => structuredClone(configTemplate),
 			GetSource,
 		}
@@ -143,6 +149,11 @@ async function GetSource(config, { SaveConfig }) {
 			}
 
 			const i18nRender = { locales: prompt_struct.locales, supported_functions }
+			/**
+			 * @param {object} partialResult 流式/最终回复对象
+			 * @param {boolean} [streaming] 是否流式预览
+			 * @returns {void}
+			 */
 			const buildShow = (partialResult, streaming = false) => {
 				let show = enableLogprobsShow ? buildContentForShowFromLogprobs(partialResult, { useThemeStyles, ...i18nRender }) : null
 				if (enableHtmlShow) {
@@ -152,6 +163,10 @@ async function GetSource(config, { SaveConfig }) {
 				if (show != null) partialResult.content_for_show = show
 			}
 
+			/**
+			 * @param {object} partialResult 流式片段
+			 * @returns {void}
+			 */
 			const previewUpdater = partialResult => {
 				const previewReply = { ...partialResult }
 				buildShow(previewReply, true)
@@ -167,10 +182,29 @@ async function GetSource(config, { SaveConfig }) {
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: {
+			/**
+			 * @returns {number} 恒为 0（无本地 tokenizer 占用）
+			 */
 			free: () => 0,
+			/**
+			 * @param {string} prompt 文本
+			 * @returns {string} 原样返回
+			 */
 			encode: prompt => prompt,
+			/**
+			 * @param {string} tokens 令牌串
+			 * @returns {string} 原样返回
+			 */
 			decode: tokens => tokens,
+			/**
+			 * @param {string} token 单令牌
+			 * @returns {string} 原样返回
+			 */
 			decode_single: token => token,
+			/**
+			 * @param {string} prompt 文本
+			 * @returns {number} 字符长度
+			 */
 			get_token_count: prompt => prompt.length
 		}
 	}

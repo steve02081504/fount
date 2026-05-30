@@ -4,7 +4,7 @@
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 
 import {
@@ -150,7 +150,7 @@ async function loadAndDisplayDevices() {
 	noDevicesText.classList.add('hidden')
 
 	try {
-		deviceList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
+		await mountTemplate(deviceList, 'listLoading', { escapeAttr })
 		const result = await getDevices()
 
 		deviceList.replaceChildren()
@@ -254,7 +254,7 @@ async function loadAndDisplayApiKeys() {
 	noApiKeysText.classList.add('hidden')
 
 	try {
-		apiKeyList.replaceChildren(await renderTemplate('listLoading', { escapeAttr }))
+		await mountTemplate(apiKeyList, 'listLoading', { escapeAttr })
 		const result = await getApiKeys()
 
 		apiKeyList.replaceChildren()
@@ -339,9 +339,7 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
  */
 async function loadEditorCommandConfigUI() {
 	try {
-		const result = await getEditorCommandConfig()
-		if (!result.success) throw new Error(result.message || 'Load editor command config failed')
-		const { config } = result
+		const { config } = await getEditorCommandConfig()
 		editorPresetSelect.replaceChildren()
 		for (const editor of config.availableEditors || []) {
 			const option = document.createElement('option')
@@ -363,9 +361,8 @@ async function loadEditorCommandConfigUI() {
 
 editorPresetSelect.addEventListener('change', async () => {
 	try {
-		const result = await getEditorCommandConfig()
-		if (!result.success) return
-		const editor = (result.config?.availableEditors || []).find(item => item.id === editorPresetSelect.value)
+		const { config } = await getEditorCommandConfig()
+		const editor = (config?.availableEditors || []).find(item => item.id === editorPresetSelect.value)
 		if (!editor) return
 		editorCommandInput.value = editor.command || editorCommandInput.value
 		editorArgsTemplateInput.value = editor.argsTemplate || editorArgsTemplateInput.value
@@ -376,12 +373,11 @@ editorPresetSelect.addEventListener('change', async () => {
 editorCommandForm.addEventListener('submit', async event => {
 	event.preventDefault()
 	try {
-		const result = await saveEditorCommandConfig(
+		await saveEditorCommandConfig(
 			editorPresetSelect.value,
 			editorCommandInput.value.trim(),
 			editorArgsTemplateInput.value.trim()
 		)
-		if (!result.success) throw new Error(result.message || 'Save editor command config failed')
 		showToastI18n('success', 'userSettings.editorCommand.saveSuccess')
 		await loadEditorCommandConfigUI()
 	}
@@ -397,8 +393,7 @@ testEditorCommandBtn.addEventListener('click', async () => {
 	try {
 		const line = Number(editorTestLine.value) || 1
 		const column = Number(editorTestColumn.value) || 1
-		const result = await openEditor(filePath, line, column)
-		if (!result.success) throw new Error(result.message || 'Open editor failed')
+		await openEditor(filePath, line, column)
 		showToastI18n('success', 'userSettings.editorCommand.testSuccess')
 	}
 	catch (error) {

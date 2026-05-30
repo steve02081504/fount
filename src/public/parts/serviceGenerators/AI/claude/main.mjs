@@ -191,7 +191,7 @@ ${chatLogEntry.content}
 			 * @param {string} prompt - 要计算令牌的提示。
 			 * @returns {number} 令牌数。
 			 */
-			get_token_count: prompt => countTokens(prompt),
+			get_token_count: countTokens,
 		}
 	}
 

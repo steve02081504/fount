@@ -5,10 +5,10 @@ import seedrandom from 'npm:seedrandom'
 
 /**
  * 字符串哈希
- * @param {string} str 字符串
- * @returns {string} 字符串的 SHA256 哈希值。
+ * @param {string} input 输入字符串
+ * @returns {string} 字符串的 SHA256 哈希值
  */
-const STRING_HASH = str => sha256(str).toString()
+const STRING_HASH = input => sha256(input).toString()
 
 /**
  * 获取变量

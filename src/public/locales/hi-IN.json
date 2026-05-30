@@ -40,7 +40,8 @@
 			"socketError": "सॉकेट त्रुटि: ${error}",
 			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
 			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता",
-			"unknownError": "अज्ञात त्रुटि"
+			"unknownError": "अज्ञात त्रुटि",
+			"partPathRequired": "कृपया कंपोनент पथ प्रदान करें।"
 		},
 		"partManager": {
 			"partInited": "घटक ${partpath} प्रारंभ किया गया है",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "खाता लॉक कर दिया गया है, कृपया ${timeLeft} के बाद पुनः प्रयास करें।",
 			"accountLockedAttempts": "बहुत से असफल लॉगिन प्रयासों के कारण खाता अस्थायी रूप से लॉक कर दिया गया है।",
 			"powValidationFailed": "सुरक्षा सत्यापन विफल रहा, कृपया पुनः प्रयास करें।",
+			"tokenAndSolutionsRequired": "token और solutions आवश्यक हैं।",
 			"apiErrorBodyUnreadable": "सर्वर ने वह जानकारी लौटा दी जिसे पार्स नहीं किया जा सका। कृपया बाद में पुन: प्रयास करें।"
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "लिंक साझा किया गया! लिंक को क्लिपबोर्ड पर कॉपी किया गया. <br>यह सुविधा ${provider} द्वारा समर्थित है। <br>[उन्हें प्रायोजित करें। ](${sponsorLink})"
 			},
 			"commonToolCalling": "टूल कॉल किया जा रहा है",
+			"toolRunningLang": "${lang} चलाया जा रहा है",
+			"toolSearchingContent": "${content} की खोज की जा रही है",
+			"toolOverridingFilepath": "${filepath} अधिलेखित किया जा रहा है",
+			"toolReplacingFilepath": "${filepath} में अंश बदला जा रहा है",
+			"toolReadingFilepath": "${filepath} पढ़ा जा रहा है",
 			"reasoningDetailsTitle": "तर्क प्रक्रिया",
 			"logprobsNotApplicable": "लागू नहीं",
 			"logprobsTopLogprobsMeta": "top_logprobs (चयनित: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "एपीआई कुंजी नहीं मिली.",
 			"revokeMissingJti": "कृपया निरस्त करने की कुंजी निर्दिष्ट करें.",
 			"revokeMissingPassword": "किसी कुंजी को निरस्त करने के लिए पासवर्ड की आवश्यकता होती है।",
+			"verifyMissingApiKey": "कृपया API कुंजी प्रदान करें।",
 			"revokeButton": "रद्द करना",
 			"revokeConfirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
 			"revokeSuccess": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "नई थीम का नाम:",
 			"deleteConfirm": "क्या आप वाकई थीम ${id} हटाना चाहते हैं?",
 			"saved": "सहेजा गया!",
-			"failedToSave": "सहेजना विफल"
+			"failedToSave": "सहेजना विफल",
+			"failedToDelete": "थीम हटाई नहीं जा सकी: ${message}",
+			"failedToClone": "थीम की प्रतिलिपि नहीं बन सकी: ${message}"
 		},
 		"themes": {
 			"auto": "स्वचालित",

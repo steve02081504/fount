@@ -74,11 +74,17 @@ function buildPostHeaders(opts) {
 	return headers
 }
 
-const DEFAULT_LONG_POLL_TIMEOUT_MS = 35_000
+/**
+ * 默认长轮询超时时间
+ */
+export const DEFAULT_LONG_POLL_TIMEOUT_MS = 35_000
 const DEFAULT_API_TIMEOUT_MS = 15_000
 const DEFAULT_CONFIG_TIMEOUT_MS = 10_000
 const AES_BLOCK_SIZE = 16
-const UploadMediaType = {
+/**
+ * 媒体类型
+ */
+export const UploadMediaType = {
 	IMAGE: 1,
 	VIDEO: 2,
 	FILE: 3,
@@ -396,9 +402,3 @@ export function createWechatApi(opts) {
 		},
 	}
 }
-
-/**
- * 默认长轮询超时时间。
- * @type {number}
- */
-export { DEFAULT_LONG_POLL_TIMEOUT_MS, UploadMediaType }

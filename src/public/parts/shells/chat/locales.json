@@ -3,8 +3,8 @@
 		"en-UK": {
 			"name": "Chat",
 			"avatar": "https://api.iconify.design/fluent/chat-16-regular.svg",
-			"description": "Create and manage chat sessions with AI characters.",
-			"description_markdown": "This shell allows you to start new chat sessions, load existing ones, and interact with AI characters in real-time.",
+			"description": "Create and manage chat sessions with characters.",
+			"description_markdown": "This shell allows you to start new chat sessions, load existing ones, and interact with characters in real-time.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",

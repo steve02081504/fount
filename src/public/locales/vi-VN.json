@@ -40,7 +40,8 @@
 			"socketError": "Lỗi Socket: ${error}",
 			"parseResponseFailed": "Phân tích phản hồi từ máy chủ thất bại: ${error}",
 			"cannotParseResponse": "Không thể phân tích phản hồi từ máy chủ.",
-			"unknownError": "Lỗi không xác định."
+			"unknownError": "Lỗi không xác định.",
+			"partPathRequired": "Vui lòng cung cấp đường dẫn thành phần."
 		},
 		"partManager": {
 			"partInited": "Thành phần ${partpath} đã được khởi tạo",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Tài khoản đã bị khóa, vui lòng thử lại sau ${timeLeft}.",
 			"accountLockedAttempts": "Tài khoản đã bị khóa tạm thời do đăng nhập thất bại quá nhiều lần.",
 			"powValidationFailed": "Xác minh bảo mật không thành công. Vui lòng thử lại.",
+			"tokenAndSolutionsRequired": "Cần có token và solutions.",
 			"apiErrorBodyUnreadable": "Máy chủ trả về thông tin không thể phân tích được. Vui lòng thử lại sau."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 			},
 			"commonToolCalling": "Đang gọi công cụ",
+			"toolRunningLang": "Đang thực thi ${lang}",
+			"toolSearchingContent": "Đang tìm kiếm ${content}",
+			"toolOverridingFilepath": "Đang ghi đè ${filepath}",
+			"toolReplacingFilepath": "Đang thay thế nội dung trong ${filepath}",
+			"toolReadingFilepath": "Đang đọc ${filepath}",
 			"reasoningDetailsTitle": "Quá trình suy luận",
 			"logprobsNotApplicable": "không áp dụng",
 			"logprobsTopLogprobsMeta": "top_logprobs (đã chọn: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "Không tìm thấy khóa API.",
 			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
 			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
+			"verifyMissingApiKey": "Vui lòng cung cấp khóa API.",
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
 			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Tên chủ đề mới:",
 			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",
 			"saved": "Đã lưu!",
-			"failedToSave": "Lưu không thành công"
+			"failedToSave": "Lưu không thành công",
+			"failedToDelete": "Không thể xóa chủ đề: ${message}",
+			"failedToClone": "Không thể sao chép chủ đề: ${message}"
 		},
 		"themes": {
 			"auto": "Tự động",

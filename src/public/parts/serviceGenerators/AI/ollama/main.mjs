@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { Ollama } from 'npm:ollama'
 
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -93,7 +93,7 @@ async function GetSource(config) {
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
-			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+			const messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const images = (chatLogEntry.files || [])
 					.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
 					.map(file => file.buffer.toString('base64'))

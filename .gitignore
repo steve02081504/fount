@@ -15,6 +15,7 @@
 /.notimers
 /im.steve
 /data
+/debug_logs
 /.vm_data_*
 /node_modules
 /full_locales

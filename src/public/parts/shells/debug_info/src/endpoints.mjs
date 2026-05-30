@@ -69,15 +69,10 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:debug_info/open_source', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' })
+		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		if (!is_local_ip_from_req(req))
-			return res.status(403).json({ success: false, message: 'Forbidden on non-local request.' })
+			return res.status(403).json({ message: 'Forbidden on non-local request.' })
 		const { filePath, line, column } = req.body || {}
-		try {
-			const result = await openEditor(user.username, filePath, line, column)
-			res.json(result)
-		} catch (error) {
-			res.status(400).json({ success: false, message: error.message || 'Failed to open source location.' })
-		}
+		res.json(await openEditor(user.username, filePath, line, column))
 	})
 }

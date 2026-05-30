@@ -13,6 +13,7 @@
   - `llms.txt`: AI-readable API documentation.
 - `src/`: Backend logic.
   - `endpoints.mjs`: Define routes using `router.get/post/ws`. Path format: `/api/parts/shells\\:<name>/...`.
+  - **HTTP API**: Success = 2xx JSON body without a `success` wrapper; expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs` (global `errorHandler` uses `err.code` / `err.json`). Avoid route-level try/catch that only maps errors to 500.
 - `home_registry.json`: Registers the shell on the Home page.
 
 ## 3. Implementation Checklist

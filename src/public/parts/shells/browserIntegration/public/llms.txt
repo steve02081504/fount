@@ -31,11 +31,11 @@
 ## 自动运行脚本
 
 ### GET /api/parts/shells:browserIntegration/autorun-scripts
-- 用途：获取当前用户配置的自动运行脚本列表。返回 `{ success: true, scripts: [...] }`，每项含 `id`、`urlRegex`、`script`、`comment`、`createdAt` 等。
+- 用途：获取当前用户配置的自动运行脚本列表。返回 `{ scripts: [...] }`，每项含 `id`、`urlRegex`、`script`、`comment`、`createdAt` 等。
 
 ### POST /api/parts/shells:browserIntegration/autorun-scripts
 - Body：JSON。`urlRegex`（字符串，必填），匹配 URL 的正则。`script`（字符串，必填），要执行的脚本内容。`comment`（字符串，可选）。
-- 用途：添加新的自动运行脚本。返回 `{ success: true, script: newScript }`，newScript 含生成的 `id`。
+- 用途：添加新的自动运行脚本。返回 `{ script: newScript }`（201），newScript 含生成的 `id`。
 
 ### DELETE /api/parts/shells:browserIntegration/autorun-scripts/:id
 - 路径：id 为脚本 ID（GET autorun-scripts 返回的每项 script.id，UUID 字符串）。

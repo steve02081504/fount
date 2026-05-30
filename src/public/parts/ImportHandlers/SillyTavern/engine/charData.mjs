@@ -1,12 +1,12 @@
 /** @enum {number} */
-const world_info_logic = {
+export const world_info_logic = {
 	AND_ANY: 0,
 	NOT_ALL: 1,
 	NOT_ANY: 2,
 	AND_ALL: 3,
 }
 /** @enum {number} */
-const world_info_position = {
+export const world_info_position = {
 	before: 0,
 	after: 1,
 	ANTop: 2,
@@ -19,7 +19,7 @@ const world_info_position = {
  * 正则表达式脚本放置位置
  * @enum {number} Where the regex script should be applied
  */
-const regex_placement = {
+export const regex_placement = {
 	/**
 	 * 显示文本
 	 * @deprecated MD Display is deprecated. Do not use.
@@ -32,12 +32,12 @@ const regex_placement = {
 	WORLD_INFO: 5,
 }
 /** @enum {number} */
-const wi_anchor_position = {
+export const wi_anchor_position = {
 	before: 0,
 	after: 1,
 }
 /** @enum {number} */
-const extension_prompt_roles = {
+export const extension_prompt_roles = {
 	SYSTEM: 0,
 	USER: 1,
 	ASSISTANT: 2,
@@ -45,7 +45,7 @@ const extension_prompt_roles = {
 /**
  * world info entry
  */
-class WorldInfoEntry {
+export class WorldInfoEntry {
 	/**
 	 * the id of the entry
 	 * @type {number}
@@ -219,7 +219,7 @@ class WorldInfoEntry {
 /**
  * 世界信息手册
  */
-class WorldInfoBook {
+export class WorldInfoBook {
 	/**
 	 * the name of the book
 	 * @type {string}
@@ -234,7 +234,7 @@ class WorldInfoBook {
 /**
  * 正则表达式脚本信息
  */
-class regex_script_info {
+export class regex_script_info {
 	/**
 	 * the name of the script
 	 * @type {string}
@@ -299,7 +299,7 @@ class regex_script_info {
 /**
  * v2 角色数据
  */
-class v2CharData {
+export class v2CharData {
 	/**
 	 * the name of the character
 	 * @type {string}
@@ -424,7 +424,7 @@ class v2CharData {
 /**
  * v1 角色数据
  */
-class v1CharData {
+export class v1CharData {
 	/**
 	 * the name of the character
 	 * @type {string}
@@ -494,7 +494,7 @@ const extension_pepos = ['talkativeness', 'fav']
  * @param {v2CharData} data - The V2 data object containing character information.
  * @returns {v1CharData} The V1 character data extracted from the V2 data.
  */
-function GetV1CharDataFromV2(data) {
+export function GetV1CharDataFromV2(data) {
 	/** @type {v1CharData} */
 	let aret = {}
 	for (const key of move_pepos) if (data[key]) aret[key] = data[key]
@@ -517,7 +517,7 @@ function GetV1CharDataFromV2(data) {
  * @param {v1CharData} data - The V1 data object containing character information.
  * @returns {v2CharData} The V2 character data extracted from the V1 data.
  */
-function GetV2CharDataFromV1(data) {
+export function GetV2CharDataFromV1(data) {
 	if (data.data) return data.data
 	/** @type {v2CharData} */
 	const aret = { extensions: {} }
@@ -527,11 +527,4 @@ function GetV2CharDataFromV1(data) {
 	delete aret.create_date
 	data.data = aret
 	return aret
-}
-/**
- * Exported modules
- */
-export {
-	v2CharData, v1CharData, GetV1CharDataFromV2, GetV2CharDataFromV1, WorldInfoBook, WorldInfoEntry,
-	regex_placement, world_info_logic, world_info_position, wi_anchor_position, extension_prompt_roles, regex_script_info
 }
