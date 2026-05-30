@@ -40,7 +40,8 @@
 			"socketError": "소켓 오류: ${error}",
 			"parseResponseFailed": "서버 응답 구문 분석에 실패했습니다: ${error}",
 			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다.",
-			"unknownError": "알 수 없는 오류가 발생했습니다."
+			"unknownError": "알 수 없는 오류가 발생했습니다.",
+			"partPathRequired": "구성 요소 경로가 필요합니다."
 		},
 		"partManager": {
 			"partInited": "${partpath} 컴포넌트가 초기화되었습니다.",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "계정이 잠겼습니다. ${timeLeft} 후에 다시 시도해 주세요.",
 			"accountLockedAttempts": "로그인 시도 실패 횟수가 너무 많아 계정이 일시적으로 잠겼습니다.",
 			"powValidationFailed": "봇 방지 확인에 실패했습니다. 다시 시도해 주세요.",
+			"tokenAndSolutionsRequired": "토큰과 솔루션을 제공해야 합니다.",
 			"apiErrorBodyUnreadable": "서버가 구문 분석할 수 없는 정보를 반환했습니다. 나중에 다시 시도해 주세요."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "API 키를 찾을 수 없습니다.",
 			"revokeMissingJti": "취소할 키를 지정하세요.",
 			"revokeMissingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
+			"verifyMissingApiKey": "API 키가 필요합니다.",
 			"revokeButton": "해지",
 			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
 			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",

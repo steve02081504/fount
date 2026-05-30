@@ -40,7 +40,8 @@
 			"socketError": "خطأ في المقبس: ${error}",
 			"parseResponseFailed": "فشل تحليل استجابة الخادم: ${error}",
 			"cannotParseResponse": "لا يمكن تحليل استجابة الخادم",
-			"unknownError": "خطأ غير معروف"
+			"unknownError": "خطأ غير معروف",
+			"partPathRequired": "مسار المكون مطلوب."
 		},
 		"partManager": {
 			"partInited": "تمت تهيئة المكون ${partpath}.",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "تم قفل الحساب، يرجى المحاولة مرة أخرى بعد ${timeLeft}.",
 			"accountLockedAttempts": "تم قفل الحساب مؤقتًا بسبب محاولات تسجيل دخول فاشلة كثيرة.",
 			"powValidationFailed": "فشل التحقق الأمني، يرجى المحاولة مرة أخرى.",
+			"tokenAndSolutionsRequired": "يجب توفير الرموز والحلول.",
 			"apiErrorBodyUnreadable": "قام الخادم بإرجاع معلومات لا يمكن تحليلها. يرجى المحاولة مرة أخرى لاحقا."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "لم يتم العثور على مفتاح API.",
 			"revokeMissingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
 			"revokeMissingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
+			"verifyMissingApiKey": "مطلوب مفتاح API.",
 			"revokeButton": "إلغاء",
 			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
 			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",

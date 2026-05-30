@@ -40,7 +40,8 @@
 			"socketError": "Socket villa: ${error}",
 			"parseResponseFailed": "Mistókst að þátta svar netþjóns: ${error}",
 			"cannotParseResponse": "Gat ekki þáttað svar netþjóns",
-			"unknownError": "Óþekkt villa"
+			"unknownError": "Óþekkt villa",
+			"partPathRequired": "Íhlutaslóð er nauðsynleg."
 		},
 		"partManager": {
 			"partInited": "Hluti ${partpath} hefur verið frumstilltur",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Reikningurinn hefur verið læstur, vinsamlegast reyndu aftur eftir ${timeLeft}.",
 			"accountLockedAttempts": "Reikningnum hefur verið læst tímabundið vegna of margra misheppnaðra innskráningartilrauna.",
 			"powValidationFailed": "Öryggisstaðfesting mistókst, vinsamlegast reyndu aftur.",
+			"tokenAndSolutionsRequired": "Útvega þarf tákn og lausnir.",
 			"apiErrorBodyUnreadable": "Þjónninn skilaði upplýsingum sem ekki var hægt að þátta. Vinsamlegast reyndu aftur síðar."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "API lykillinn fannst ekki.",
 			"revokeMissingJti": "Vinsamlegast tilgreindu lykilinn sem á að afturkalla.",
 			"revokeMissingPassword": "Til að afturkalla lykil þarf lykilorð.",
+			"verifyMissingApiKey": "API lykil er krafist.",
 			"revokeButton": "Afturkalla",
 			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
 			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",

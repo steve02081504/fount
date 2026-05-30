@@ -40,7 +40,8 @@
 			"socketError": "Lỗi Socket: ${error}",
 			"parseResponseFailed": "Phân tích phản hồi từ máy chủ thất bại: ${error}",
 			"cannotParseResponse": "Không thể phân tích phản hồi từ máy chủ.",
-			"unknownError": "Lỗi không xác định."
+			"unknownError": "Lỗi không xác định.",
+			"partPathRequired": "Đường dẫn thành phần là bắt buộc."
 		},
 		"partManager": {
 			"partInited": "Thành phần ${partpath} đã được khởi tạo",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Tài khoản đã bị khóa, vui lòng thử lại sau ${timeLeft}.",
 			"accountLockedAttempts": "Tài khoản đã bị khóa tạm thời do đăng nhập thất bại quá nhiều lần.",
 			"powValidationFailed": "Xác minh bảo mật không thành công. Vui lòng thử lại.",
+			"tokenAndSolutionsRequired": "Token và giải pháp cần được cung cấp.",
 			"apiErrorBodyUnreadable": "Máy chủ trả về thông tin không thể phân tích được. Vui lòng thử lại sau."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "Không tìm thấy khóa API.",
 			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
 			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
+			"verifyMissingApiKey": "Cần có khóa API.",
 			"revokeButton": "Thu hồi",
 			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
 			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",

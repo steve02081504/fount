@@ -40,7 +40,8 @@
 			"socketError": "Erreur de socket : ${error}",
 			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
 			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
-			"unknownError": "Erreur inconnue."
+			"unknownError": "Erreur inconnue.",
+			"partPathRequired": "Le chemin du composant est requis."
 		},
 		"partManager": {
 			"partInited": "Le composant ${partpath} a été initialisé",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Le compte a été verrouillé, veuillez réessayer après ${timeLeft}.",
 			"accountLockedAttempts": "Le compte a été temporairement verrouillé en raison d'un trop grand nombre de tentatives de connexion infructueuses.",
 			"powValidationFailed": "La vérification de sécurité a échoué. Veuillez réessayer.",
+			"tokenAndSolutionsRequired": "Des jetons et des solutions doivent être fournis.",
 			"apiErrorBodyUnreadable": "Le serveur a renvoyé des informations qui n'ont pas pu être analysées. Veuillez réessayer plus tard."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "La clé API n'a pas été trouvée.",
 			"revokeMissingJti": "Veuillez spécifier la clé à révoquer.",
 			"revokeMissingPassword": "La révocation d'une clé nécessite un mot de passe.",
+			"verifyMissingApiKey": "Une clé API est requise.",
 			"revokeButton": "Révoquer",
 			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
 			"revokeSuccess": "La clé API a été révoquée avec succès.",

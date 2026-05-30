@@ -40,7 +40,8 @@
 			"socketError": "🔌❌: ${error}",
 			"parseResponseFailed": "🤔📨❌: ${error}",
 			"cannotParseResponse": "🤷‍♂️📨",
-			"unknownError": "❓🤷‍♂️❌"
+			"unknownError": "❓🤷‍♂️❌",
+			"partPathRequired": "需要提供组件路径。"
 		},
 		"partManager": {
 			"partInited": "🧩${partpath} 🌟✅",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "🔒⌛️ ${timeLeft}",
 			"accountLockedAttempts": "🔒❌🔄",
 			"powValidationFailed": "🤖✅❌🔁",
+			"tokenAndSolutionsRequired": "需要提供 token 和 solutions。",
 			"apiErrorBodyUnreadable": "🖥️📄❓🔁"
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "🔑❌",
 			"revokeMissingJti": "🔑🆔❌",
 			"revokeMissingPassword": "🔑📋❌",
+			"verifyMissingApiKey": "需要提供 API 密钥。",
 			"revokeButton": "🗑️",
 			"revokeConfirm": "🤔🗑️❓",
 			"revokeSuccess": "✅🗑️",

@@ -40,7 +40,8 @@
 			"socketError": "Socketfout: ${error}",
 			"parseResponseFailed": "Parseren van serverrespons mislukt: ${error}",
 			"cannotParseResponse": "Kan serverrespons niet parseren",
-			"unknownError": "Onbekende fout"
+			"unknownError": "Onbekende fout",
+			"partPathRequired": "Componentpad is vereist."
 		},
 		"partManager": {
 			"partInited": "Component ${partpath} is geïnitialiseerd",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Account is vergrendeld. Probeer het opnieuw na ${timeLeft}.",
 			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
 			"powValidationFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
+			"tokenAndSolutionsRequired": "Er moeten tokens en oplossingen worden verstrekt.",
 			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "De API-sleutel is niet gevonden.",
 			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
 			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
+			"verifyMissingApiKey": "Er is een API-sleutel vereist.",
 			"revokeButton": "Herroepen",
 			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
 			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",

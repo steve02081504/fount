@@ -40,7 +40,8 @@
 			"socketError": "Ошибка сокета: ${error}",
 			"parseResponseFailed": "Не удалось обработать ответ сервера: ${error}",
 			"cannotParseResponse": "Невозможно обработать ответ сервера.",
-			"unknownError": "Неизвестная ошибка."
+			"unknownError": "Неизвестная ошибка.",
+			"partPathRequired": "Укажите путь к компоненту."
 		},
 		"partManager": {
 			"partInited": "Компонент ${partpath} инициализирован.",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Аккаунт заблокирован. Повторите попытку через ${timeLeft}.",
 			"accountLockedAttempts": "Учетная запись временно заблокирована из-за слишком большого количества неудачных попыток входа в систему.",
 			"powValidationFailed": "Не удалось пройти проверку безопасности. Повторите попытку.",
+			"tokenAndSolutionsRequired": "Необходимо предоставить токены и решения.",
 			"apiErrorBodyUnreadable": "Сервер вернул информацию, которую не удалось проанализировать. Пожалуйста, повторите попытку позже."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "Ключ API не найден.",
 			"revokeMissingJti": "Пожалуйста, укажите ключ для отзыва.",
 			"revokeMissingPassword": "Для отзыва ключа требуется пароль.",
+			"verifyMissingApiKey": "Требуется ключ API.",
 			"revokeButton": "Отозвать",
 			"revokeConfirm": "Вы уверены, что хотите отозвать этот ключ API?",
 			"revokeSuccess": "Ключ API был успешно отозван.",

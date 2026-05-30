@@ -40,7 +40,8 @@
 			"socketError": "ソケットエラー：${error}",
 			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
 			"cannotParseResponse": "サーバー応答を解析できません。",
-			"unknownError": "不明なエラーが発生しました。"
+			"unknownError": "不明なエラーが発生しました。",
+			"partPathRequired": "コンポーネントのパスは必須です。"
 		},
 		"partManager": {
 			"partInited": "コンポーネント ${partpath} が初期化されました",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "アカウントはロックされています。${timeLeft} 後にもう一度お試しください。",
 			"accountLockedAttempts": "ログイン試行の失敗回数が多すぎるため、アカウントは一時的にロックされました。",
 			"powValidationFailed": "セキュリティ検証に失敗しました。もう一度お試しください。",
+			"tokenAndSolutionsRequired": "トークンとソリューションを提供する必要があります。",
 			"apiErrorBodyUnreadable": "サーバーは解析できない情報を返しました。後でもう一度試してください。"
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "API キーが見つかりませんでした。",
 			"revokeMissingJti": "取り消すキーを指定してください。",
 			"revokeMissingPassword": "キーを取り消すにはパスワードが必要です。",
+			"verifyMissingApiKey": "API キーが必要です。",
 			"revokeButton": "取り消す",
 			"revokeConfirm": "このAPIキーを取り消したいですか？",
 			"revokeSuccess": "APIキーは正常に取り消されました。",

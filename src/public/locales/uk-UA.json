@@ -40,7 +40,8 @@
 			"socketError": "Помилка сокета: ${error}",
 			"parseResponseFailed": "Не вдалося розібрати відповідь сервера: ${error}",
 			"cannotParseResponse": "Неможливо розібрати відповідь сервера",
-			"unknownError": "Невідома помилка"
+			"unknownError": "Невідома помилка",
+			"partPathRequired": "Необхідний шлях до компонента."
 		},
 		"partManager": {
 			"partInited": "Компонент ${partpath} ініціалізовано",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Обліковий запис заблоковано. Повторіть спробу через ${timeLeft}.",
 			"accountLockedAttempts": "Обліковий запис тимчасово заблоковано через забагато невдалих спроб входу.",
 			"powValidationFailed": "Перевірку безпеки не пройдено. Повторіть спробу.",
+			"tokenAndSolutionsRequired": "Необхідно надати маркери та рішення.",
 			"apiErrorBodyUnreadable": "Сервер повернув інформацію, яку не вдалося проаналізувати. Спробуйте пізніше."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "Ключ API не знайдено.",
 			"revokeMissingJti": "Будь ласка, вкажіть ключ для відкликання.",
 			"revokeMissingPassword": "Для анулювання ключа потрібен пароль.",
+			"verifyMissingApiKey": "Потрібен ключ API.",
 			"revokeButton": "Відкликати",
 			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
 			"revokeSuccess": "Ключ API успішно відкликаний.",

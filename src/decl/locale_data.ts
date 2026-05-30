@@ -48,6 +48,7 @@ export type LocaleData = {
 			parseResponseFailed: string
 			cannotParseResponse: string
 			unknownError: string
+			partPathRequired: string
 		}
 		partManager: {
 			partInited: string
@@ -433,6 +434,7 @@ export type LocaleData = {
 			accountLockedRetry: string
 			accountLockedAttempts: string
 			powValidationFailed: string
+			tokenAndSolutionsRequired: string
 			apiErrorBodyUnreadable: string
 		}
 		webauthn: {
@@ -1476,6 +1478,7 @@ export type LocaleData = {
 			keyNotFound: string
 			revokeMissingJti: string
 			revokeMissingPassword: string
+			verifyMissingApiKey: string
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string

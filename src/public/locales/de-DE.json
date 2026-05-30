@@ -40,7 +40,8 @@
 			"socketError": "Socket-Fehler: ${error}",
 			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
 			"cannotParseResponse": "Serverantwort kann nicht geparst werden",
-			"unknownError": "Unbekannter Fehler"
+			"unknownError": "Unbekannter Fehler",
+			"partPathRequired": "Komponentenpfad ist erforderlich."
 		},
 		"partManager": {
 			"partInited": "Komponente ${partpath} wurde initialisiert",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Das Konto wurde gesperrt. Bitte versuchen Sie es nach ${timeLeft} erneut.",
 			"accountLockedAttempts": "Das Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt.",
 			"powValidationFailed": "Die Sicherheitsüberprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+			"tokenAndSolutionsRequired": "Es müssen Token und Lösungen bereitgestellt werden.",
 			"apiErrorBodyUnreadable": "Der Server hat Informationen zurückgegeben, die nicht analysiert werden konnten. Bitte versuchen Sie es später noch einmal."
 		},
 		"webauthn": {
@@ -1487,6 +1489,7 @@
 			"keyNotFound": "Der API-Schlüssel wurde nicht gefunden.",
 			"revokeMissingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
 			"revokeMissingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
+			"verifyMissingApiKey": "Es ist ein API-Schlüssel erforderlich.",
 			"revokeButton": "Widerrufen",
 			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
 			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
