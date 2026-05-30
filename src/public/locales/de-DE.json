@@ -1733,7 +1733,9 @@
 			"newThemeName": "Name des neuen Themas:",
 			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",
 			"saved": "Gespeichert!",
-			"failedToSave": "Speichern fehlgeschlagen"
+			"failedToSave": "Speichern fehlgeschlagen",
+			"failedToDelete": "Thema konnte nicht gelöscht werden: ${message}",
+			"failedToClone": "Thema konnte nicht kopiert werden: ${message}"
 		},
 		"themes": {
 			"auto": "Automatisch",

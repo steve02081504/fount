@@ -1733,7 +1733,9 @@
 			"newThemeName": "Tên chủ đề mới:",
 			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",
 			"saved": "Đã lưu!",
-			"failedToSave": "Lưu không thành công"
+			"failedToSave": "Lưu không thành công",
+			"failedToDelete": "Không thể xóa chủ đề: ${message}",
+			"failedToClone": "Không thể sao chép chủ đề: ${message}"
 		},
 		"themes": {
 			"auto": "Tự động",

@@ -1723,6 +1723,8 @@ export type LocaleData = {
 			deleteConfirm: string
 			saved: string
 			failedToSave: string
+			failedToDelete: string
+			failedToClone: string
 		}
 		themes: {
 			auto: string
@@ -2828,6 +2830,8 @@ export type LocaleKeyParams = {
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
+	'themeManage.editor.failedToClone': { message: string | number }
+	'themeManage.editor.failedToDelete': { message: string | number }
 	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }
 	'tutorial.progressMessages.keyboardPress': { keyboardIcon: string | number }
 	'tutorial.progressMessages.mobileClick': { phoneIcon: string | number }

@@ -1733,7 +1733,9 @@
 			"newThemeName": "Nieuwe themanaam:",
 			"deleteConfirm": "Weet je zeker dat je het thema ${id} wilt verwijderen?",
 			"saved": "Opgeslagen!",
-			"failedToSave": "Opslaan mislukt"
+			"failedToSave": "Opslaan mislukt",
+			"failedToDelete": "Thema kon niet worden verwijderd: ${message}",
+			"failedToClone": "Thema kon niet worden gekopieerd: ${message}"
 		},
 		"themes": {
 			"auto": "Automatisch",

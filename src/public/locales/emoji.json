@@ -1733,7 +1733,9 @@
 			"newThemeName": "🆕🎨:",
 			"deleteConfirm": "🗑️🎨 ${id}❓",
 			"saved": "💾✅",
-			"failedToSave": "💾❌"
+			"failedToSave": "💾❌",
+			"failedToDelete": "🗑️❌ ${message}",
+			"failedToClone": "📋❌ ${message}"
 		},
 		"themes": {
 			"auto": "⚙️",

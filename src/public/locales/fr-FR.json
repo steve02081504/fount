@@ -1733,7 +1733,9 @@
 			"newThemeName": "Nouveau nom du thème :",
 			"deleteConfirm": "Êtes-vous sûr de vouloir supprimer le thème ${id} ?",
 			"saved": "Enregistré !",
-			"failedToSave": "Échec de l'enregistrement"
+			"failedToSave": "Échec de l'enregistrement",
+			"failedToDelete": "Impossible de supprimer le thème : ${message}",
+			"failedToClone": "Impossible de copier le thème : ${message}"
 		},
 		"themes": {
 			"auto": "Automatique",

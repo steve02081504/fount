@@ -1733,7 +1733,9 @@
 			"newThemeName": "Nýtt þemaheiti:",
 			"deleteConfirm": "Ertu viss um að þú viljir eyða þemanu ${id}?",
 			"saved": "Vistað!",
-			"failedToSave": "Vistun mistókst"
+			"failedToSave": "Vistun mistókst",
+			"failedToDelete": "Ekki tókst að eyða þemanu: ${message}",
+			"failedToClone": "Ekki tókst að afrita þema: ${message}"
 		},
 		"themes": {
 			"auto": "Sjálfvirkt",

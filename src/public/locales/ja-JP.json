@@ -1733,7 +1733,9 @@
 			"newThemeName": "新しいテーマ名:",
 			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",
 			"saved": "保存しました！",
-			"failedToSave": "保存に失敗しました"
+			"failedToSave": "保存に失敗しました",
+			"failedToDelete": "テーマを削除できませんでした：${message}",
+			"failedToClone": "テーマを複製できませんでした：${message}"
 		},
 		"themes": {
 			"auto": "自動",

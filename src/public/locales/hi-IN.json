@@ -1733,7 +1733,9 @@
 			"newThemeName": "नई थीम का नाम:",
 			"deleteConfirm": "क्या आप वाकई थीम ${id} हटाना चाहते हैं?",
 			"saved": "सहेजा गया!",
-			"failedToSave": "सहेजना विफल"
+			"failedToSave": "सहेजना विफल",
+			"failedToDelete": "थीम हटाई नहीं जा सकी: ${message}",
+			"failedToClone": "थीम की प्रतिलिपि नहीं बन सकी: ${message}"
 		},
 		"themes": {
 			"auto": "स्वचालित",

@@ -1733,7 +1733,9 @@
 			"newThemeName": "Nuovo nome del tema:",
 			"deleteConfirm": "Sei sicuro di voler eliminare il tema ${id}?",
 			"saved": "Salvato!",
-			"failedToSave": "Salvataggio non riuscito"
+			"failedToSave": "Salvataggio non riuscito",
+			"failedToDelete": "Impossibile eliminare il tema: ${message}",
+			"failedToClone": "Impossibile copiare il tema: ${message}"
 		},
 		"themes": {
 			"auto": "Automatico",

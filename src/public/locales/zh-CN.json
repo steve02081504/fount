@@ -1734,8 +1734,8 @@
 			"deleteConfirm": "确定要删除主题 ${id} 吗？",
 			"saved": "已保存！",
 			"failedToSave": "保存失败",
-			"failedToDelete": "删除主题失败：${message}",
-			"failedToClone": "复制主题失败：${message}"
+			"failedToDelete": "无法删除主题：${message}",
+			"failedToClone": "无法复制主题：${message}"
 		},
 		"themes": {
 			"auto": "自动",

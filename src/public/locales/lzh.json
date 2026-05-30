@@ -1733,7 +1733,9 @@
 			"newThemeName": "新風貌之名：",
 			"deleteConfirm": "欲刪風貌 ${id} 乎？",
 			"saved": "已存！",
-			"failedToSave": "存之未果"
+			"failedToSave": "存之未果",
+			"failedToDelete": "刪風貌未果：${message}",
+			"failedToClone": "臨摹風貌未果：${message}"
 		},
 		"themes": {
 			"auto": "隨天時",

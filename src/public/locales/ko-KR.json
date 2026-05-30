@@ -1733,7 +1733,9 @@
 			"newThemeName": "새 테마 이름:",
 			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",
 			"saved": "저장되었습니다!",
-			"failedToSave": "저장 실패"
+			"failedToSave": "저장 실패",
+			"failedToDelete": "테마를 삭제하지 못했습니다: ${message}",
+			"failedToClone": "테마를 복사하지 못했습니다: ${message}"
 		},
 		"themes": {
 			"auto": "자동",

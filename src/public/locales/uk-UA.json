@@ -1733,7 +1733,9 @@
 			"newThemeName": "Нова назва теми:",
 			"deleteConfirm": "Ви впевнені, що хочете видалити тему ${id}?",
 			"saved": "Збережено!",
-			"failedToSave": "Не вдалося зберегти"
+			"failedToSave": "Не вдалося зберегти",
+			"failedToDelete": "Не вдалося видалити тему: ${message}",
+			"failedToClone": "Не вдалося скопіювати тему: ${message}"
 		},
 		"themes": {
 			"auto": "Автоматична",

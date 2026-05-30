@@ -1733,7 +1733,9 @@
 			"newThemeName": "新主題名稱：",
 			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
 			"saved": "已儲存！",
-			"failedToSave": "儲存失敗"
+			"failedToSave": "儲存失敗",
+			"failedToDelete": "無法刪除主題：${message}",
+			"failedToClone": "無法複製主題：${message}"
 		},
 		"themes": {
 			"auto": "自動",

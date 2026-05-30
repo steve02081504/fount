@@ -1733,7 +1733,9 @@
 			"newThemeName": "اسم المظهر الجديد:",
 			"deleteConfirm": "هل أنت متأكد أنك تريد حذف المظهر ${id}؟",
 			"saved": "تم الحفظ!",
-			"failedToSave": "فشل الحفظ"
+			"failedToSave": "فشل الحفظ",
+			"failedToDelete": "تعذّر حذف المظهر: ${message}",
+			"failedToClone": "تعذّر نسخ المظهر: ${message}"
 		},
 		"themes": {
 			"auto": "تلقائي",
