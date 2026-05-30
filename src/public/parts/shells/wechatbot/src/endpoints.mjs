@@ -12,7 +12,7 @@ import { pollQrSession, startQrSession } from './wechat_qr.mjs'
  */
 function applyQrLoginResult(username, pollResult) {
 	const existingConfig = getBotConfig(username, pollResult.botname)
-	const botSpecificConfig = { ...existingConfig.config || {} }
+	const botSpecificConfig = { ...existingConfig.config }
 	const normalizedUrl = String(pollResult.apiBaseUrl || DEFAULT_WECHAT_ILINK_BASE).replace(/\/+$/, '')
 
 	if (pollResult.ilinkUserId && (!botSpecificConfig.OwnerWeChatId || String(botSpecificConfig.OwnerWeChatId).includes('your_')))
