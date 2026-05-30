@@ -914,14 +914,19 @@ function Assert-FountDirWritable {
 	}
 }
 
+function Invoke-SystemScript([string]$Script) {
+	$b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($Script))
+	Invoke-SystemCommand -Application 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $b64"
+}
+
 function Invoke-FountInitForce([string]$FountDir) {
 	Test-PWSHModule PowerRunAsSystem
 	Test-PWSHModule LockingProcessKiller
 	Import-Module PowerRunAsSystem -ErrorAction Stop
-	$lckBase     = (Get-Module LockingProcessKiller -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).ModuleBase
-	$denoInfo    = try { deno info --json 2>$null | ConvertFrom-Json } catch { $null }
-	$resolve     = { try { (Get-Item $_ -ErrorAction Stop).FullName } catch { $_ } }
-	$denoDirs    = if ($denoInfo) {
+	$lckBase = (Get-Module LockingProcessKiller -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).ModuleBase
+	$denoInfo = try { deno info --json 2>$null | ConvertFrom-Json } catch { $null }
+	$resolve = { try { (Get-Item $_ -ErrorAction Stop).FullName } catch { $_ } }
+	$denoDirs = if ($denoInfo) {
 		$all = $denoInfo.PSObject.Properties.Value |
 			Where-Object { $_ -is [string] -and [IO.Path]::IsPathRooted($_) -and (Test-Path $_) } |
 			ForEach-Object $resolve | Select-Object -Unique
@@ -930,55 +935,70 @@ function Invoke-FountInitForce([string]$FountDir) {
 			$p = $_.ToLower().TrimEnd('\') + '\'
 			-not ($all | Where-Object { $q = $_.ToLower().TrimEnd('\') + '\'; $q -ne $p -and $p.StartsWith($q) })
 		}
-	} else { @("$env:LOCALAPPDATA\deno") }
-	$dirFull     = & $resolve $FountDir
+	} else {
+		@(
+			(Join-Path $env:LOCALAPPDATA 'deno'),
+			(Join-Path $HOME '.deno')
+		) | Where-Object { Test-Path $_ } | ForEach-Object { & $resolve $_ }
+	}
+	$dirFull = & $resolve $FountDir
 	$profileFull = & $resolve $env:USERPROFILE
 	$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-	$pathEnv     = $env:PATH  -replace "'", "''"
-	$lckEsc      = $lckBase   -replace "'", "''"
-	$dirEsc      = $dirFull   -replace "'", "''"
-	$ps1Esc      = (Join-Path $dirFull 'path\fount.ps1') -replace "'", "''"
-	$userEsc     = $currentUser  -replace "'", "''"
-	$profileEsc  = $profileFull  -replace "'", "''"
-	$denoDirsJoined = ($denoDirs | ForEach-Object { $_ -replace "'","''" }) -join '|'
-	$cmd = @"
-`$env:PATH = '$pathEnv'
-`$explorerWas = [bool](Get-Process -Name explorer -ErrorAction SilentlyContinue)
+	$lckEsc = $lckBase -replace "'", "''"
+	$dirEsc = $dirFull -replace "'", "''"
+	$userEsc = $currentUser -replace "'", "''"
+	$profileEsc = $profileFull -replace "'", "''"
+	$denoDirsJoined = ($denoDirs | ForEach-Object { $_ -replace "'", "''" }) -join '|'
+	$ps1Path = Join-Path $dirFull 'path\fount.ps1'
+	$explorerWas = [bool](Get-Process -Name explorer -ErrorAction SilentlyContinue)
+
+	Invoke-SystemScript @"
 Import-Module '$lckEsc'
 `$targets = (@('$dirEsc') + ('$denoDirsJoined' -split '\|')) | Where-Object { `$_ } | Select-Object -Unique
-`$userProfile = '$profileEsc'
-
-Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
 foreach (`$t in `$targets) {
+	Stop-LockingProcess -Path `$t -ErrorAction SilentlyContinue
 	if (Test-Path `$t) {
 		icacls "`$t" /setowner "NT AUTHORITY\SYSTEM" /T /C /Q
 		icacls "`$t" /reset /T /C /Q
 		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
 	}
 }
+"@
 
-& powershell.exe -NoProfile -ExecutionPolicy Bypass -File '$ps1Esc' init
+	& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $ps1Path init
+	$initExit = if ($null -ne $LASTEXITCODE) { $LASTEXITCODE } else { 0 }
 
-Stop-LockingProcess -Path '$dirEsc' -ErrorAction SilentlyContinue
+	Invoke-SystemScript @"
+Import-Module '$lckEsc'
+`$targets = (@('$dirEsc') + ('$denoDirsJoined' -split '\|')) | Where-Object { `$_ } | Select-Object -Unique
+`$userProfile = '$profileEsc'
+`$fountDir = '$dirEsc'
+function Test-PathUnderHome([string]`$Home, [string]`$Path) {
+	`$h = `$Home.TrimEnd('\')
+	`$p = `$Path.TrimEnd('\')
+	return (`$p -eq `$h) -or `$p.StartsWith("`$h\", [StringComparison]::OrdinalIgnoreCase)
+}
 foreach (`$t in `$targets) {
+	Stop-LockingProcess -Path `$t -ErrorAction SilentlyContinue
 	if (Test-Path `$t) {
 		icacls "`$t" /reset /T /C /Q
 		icacls "`$t" /grant:r "NT AUTHORITY\SYSTEM:(OI)(CI)F" "BUILTIN\Administrators:(OI)(CI)F" "$($userEsc):(OI)(CI)F" /T /C /Q
-		if (`$t.ToLower().StartsWith(`$userProfile.ToLower())) {
+		if ((Test-PathUnderHome `$userProfile `$t) -or (`$t.TrimEnd('\') -eq `$fountDir.TrimEnd('\'))) {
 			icacls "`$t" /setowner '$userEsc' /T /C /Q
 		}
 	}
 }
-
-if (`$explorerWas -and -not (Get-Process -Name explorer -ErrorAction SilentlyContinue)) { Start-Process explorer.exe }
 "@
-	$b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
-	Invoke-SystemCommand -Application "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $b64"
+
+	if ($explorerWas -and -not (Get-Process -Name explorer -ErrorAction SilentlyContinue)) {
+		Start-Process explorer.exe
+	}
+
+	return $initExit
 }
 
 if ($args[0] -eq 'init' -and $args[1] -eq 'force') {
-	Invoke-FountInitForce -FountDir $FOUNT_DIR
-	exit $LastExitCode
+	exit (Invoke-FountInitForce -FountDir $FOUNT_DIR)
 }
 
 $is_running = $args.Count -ne 0 -and ($args[0] -eq 'server' -or $args[0] -eq 'keepalive')
