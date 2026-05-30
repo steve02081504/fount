@@ -1,6 +1,7 @@
 /**
  * 代理 shell 的客户端逻辑。
  */
+import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
 import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
@@ -29,13 +30,7 @@ let apiKey = localStorage.getItem('proxy-apikey')
 async function checkApiKey() {
 	if (!apiKey) return renderApiKey()
 
-	const response = await fetch('/api/apikey/verify', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ apiKey }),
-	})
+	const response = await verifyApiKey(apiKey)
 	if (!response.ok) throw new Error('Failed to verify API key')
 	const data = await response.json()
 	if (!data.valid) {
@@ -52,18 +47,7 @@ async function checkApiKey() {
  */
 async function generateApiKey() {
 	try {
-		const response = await fetch('/api/apikey/create', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ description: 'Proxy Shell API Key' }),
-		})
-		if (!response.ok) {
-			const errorData = await response.json()
-			throw new Error(errorData.message || 'Failed to generate API key')
-		}
-		const data = await response.json()
+		const data = await createApiKey('Proxy Shell API Key')
 		apiKey = data.apiKey
 		localStorage.setItem('proxy-apikey', apiKey)
 		renderApiKey()

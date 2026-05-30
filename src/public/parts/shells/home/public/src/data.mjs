@@ -1,4 +1,4 @@
-import { getAllCachedPartDetails } from '../../../../../scripts/parts.mjs'
+import { getAllCachedPartDetails, getPartDetails } from '../../../../../scripts/parts.mjs'
 
 /**
  * 部件详细信息缓存，以便其他模块可以访问。
@@ -29,11 +29,7 @@ export async function getpartDetails(partPath, useCache = true) {
 	if (useCache && partDetailsCache[partPath] && !partDetailsCache[partPath].supportedInterfaces.includes('info'))
 		return partDetailsCache[partPath]
 
-	const url = new URL(`/api/getdetails/${partPath}`, window.location.origin)
-	if (!useCache) url.searchParams.set('nocache', 'true')
-	const response = await fetch(url)
-	if (!response.ok) throw new Error(`Failed to fetch part details for ${partPath}: ${response.status}`)
-	partDetailsCache[partPath] = await response.json()
+	partDetailsCache[partPath] = await getPartDetails(partPath, !useCache)
 	return partDetailsCache[partPath]
 }
 

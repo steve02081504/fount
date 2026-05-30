@@ -16,6 +16,7 @@ import {
 } from '/scripts/themeViewTransition.mjs'
 
 import { extractColorsFromImage } from './colorUtils.mjs'
+import { deleteCustomTheme, getCustomTheme, listCustomThemes, saveCustomTheme } from './src/endpoints.mjs'
 
 applyTheme()
 await initTranslations('themeManage')
@@ -38,9 +39,8 @@ let previewStyleTag = null
  * @returns {Promise<void>}
  */
 async function fetchCustomThemes() {
-	const res = await fetch('/api/parts/shells:themeManage/list')
-	if (res.ok) {
-		customThemes = await res.json()
+	try {
+		customThemes = await listCustomThemes()
 		// Inject Custom CSS for Previews
 		let styleTag = document.getElementById('custom-themes-css')
 		if (!styleTag) {
@@ -49,8 +49,9 @@ async function fetchCustomThemes() {
 			document.head.appendChild(styleTag)
 		}
 		styleTag.textContent = customThemes.map((t) => t.css).join('\n')
-	} else
+	} catch {
 		customThemes = []
+	}
 }
 
 // --- List View Logic ---
@@ -205,7 +206,7 @@ async function handleThemeApply(id, isCustom) {
  */
 async function handleDelete(id) {
 	if (!await confirmI18n('themeManage.editor.deleteConfirm', { id })) return
-	await fetch(`/api/parts/shells:themeManage/theme/${id}`, { method: 'DELETE' })
+	await deleteCustomTheme(id)
 	if (getCurrentTheme() === id) setTheme('light') // Fallback
 	renderList()
 }
@@ -219,8 +220,7 @@ async function handleDelete(id) {
 async function handleClone(id, isCustom) {
 	let css = ''
 	if (isCustom) {
-		const res = await fetch(`/api/parts/shells:themeManage/theme/${id}`)
-		const data = await res.json()
+		const data = await getCustomTheme(id)
 		css = data.css
 	} else {
 		// Generate CSS from built-in theme
@@ -261,16 +261,11 @@ async function handleClone(id, isCustom) {
 
 	// If cloning a custom theme with MJS, include it
 	if (isCustom) {
-		const res = await fetch(`/api/parts/shells:themeManage/theme/${id}`)
-		const data = await res.json()
+		const data = await getCustomTheme(id)
 		if (data.mjs) newData.mjs = data.mjs
 	}
 
-	await fetch('/api/parts/shells:themeManage/save', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(newData),
-	})
+	await saveCustomTheme(newData)
 	renderList()
 }
 
@@ -660,17 +655,14 @@ async function openEditor(themeData) {
 })
 `
 
-			const res = await fetch('/api/parts/shells:themeManage/save', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
-			})
-
-			if (res.ok) {
+			try {
+				await saveCustomTheme(payload)
 				showToastI18n('success', 'themeManage.editor.saved')
 				handleThemeApply(id, true)
 				closeEditor()
-			} else showToastI18n('error', 'themeManage.editor.failedToSave')
+			} catch {
+				showToastI18n('error', 'themeManage.editor.failedToSave')
+			}
 		},
 	)
 

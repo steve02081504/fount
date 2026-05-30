@@ -5,7 +5,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { unlockAchievement, getPartList, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
+import { unlockAchievement, getPartList, getPartBranches, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -59,7 +59,7 @@ function handleFetchError(customMessage) {
  */
 async function loadPartBranches() {
 	try {
-		partBranches = await fetch('/api/getpartbranches').then(r => r.json())
+		partBranches = await getPartBranches()
 	}
 	catch (error) {
 		handleFetchError('serviceSource_manager.alerts.fetchBranchesFailed')(error)
