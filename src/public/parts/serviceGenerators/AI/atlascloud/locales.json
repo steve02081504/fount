@@ -30,18 +30,33 @@
 			],
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		},
-		"zh-TW": {
-			"name": "Atlas Cloud",
+		"ar-SA": {
+			"name": "سحابة الأطلس",
 			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
-			"description": "Atlas Cloud",
-			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"description": "سحابة الأطلس",
+			"description_markdown": "قم بالوصول إلى واجهة LLM المتوافقة مع OpenAI من Atlas Cloud.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"atlascloud",
+				"com.atlascloud",
+				"openai",
+				"LLM",
+				"مزود"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"de-DE": {
+			"name": "Atlaswolke",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlaswolke",
+			"description_markdown": "Greifen Sie auf die OpenAI-kompatible LLM-Schnittstelle von Atlas Cloud zu.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Atlascloud",
 				"openai",
 				"llm",
-				"provider"
+				"Anbieter"
 			],
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		},
@@ -56,6 +71,216 @@
 				"☁️",
 				"🔌",
 				"🧠"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"es-ES": {
+			"name": "Nube del Atlas",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nube del Atlas",
+			"description_markdown": "Acceda a la interfaz LLM compatible con OpenAI de Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"nube de atlas",
+				"abierto",
+				"llm",
+				"proveedor"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"fr-FR": {
+			"name": "Nuage Atlas",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nuage Atlas",
+			"description_markdown": "Accédez à l'interface LLM compatible OpenAI d'Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"nuage d'atlas",
+				"ouvert",
+				"llm",
+				"fournisseur"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"hi-IN": {
+			"name": "एटलस बादल",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "एटलस बादल",
+			"description_markdown": "एटलस क्लाउड के ओपनएआई-संगत एलएलएम इंटरफ़ेस तक पहुंचें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"एटलसक्लाउड",
+				"openai",
+				"एलएलएम",
+				"प्रदाता"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"is-IS": {
+			"name": "Atlasský",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlasský",
+			"description_markdown": "Fáðu aðgang að OpenAI-samhæfu LLM viðmóti Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlasský",
+				"opnai",
+				"llm",
+				"veitanda"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"it-IT": {
+			"name": "Nube dell'Atlante",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nube dell'Atlante",
+			"description_markdown": "Accedi all'interfaccia LLM compatibile con OpenAI di Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Atlascloud",
+				"openai",
+				"llm",
+				"fornitore"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ja-JP": {
+			"name": "アトラスクラウド",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "アトラスクラウド",
+			"description_markdown": "Atlas Cloud の OpenAI 互換 LLM インターフェイスにアクセスします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"アトラスクラウド",
+				"オープンナイ",
+				"llm",
+				"プロバイダー"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ko-KR": {
+			"name": "아틀라스 클라우드",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "아틀라스 클라우드",
+			"description_markdown": "Atlas Cloud의 OpenAI 호환 LLM 인터페이스에 액세스하세요.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"아틀라스클라우드",
+				"개방하다",
+				"ㅋㅋㅋ",
+				"공급자"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"lzh": {
+			"name": "Atlas Cloud",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "访问 Atlas Cloud 的 OpenAI 兼容 LLM 接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"nl-NL": {
+			"name": "Atlaswolk",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlaswolk",
+			"description_markdown": "Toegang tot de OpenAI-compatibele LLM-interface van Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlaswolk",
+				"openai",
+				"llm",
+				"aanbieder"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"pt-PT": {
+			"name": "Nuvem Atlas",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nuvem Atlas",
+			"description_markdown": "Acesse a interface LLM compatível com OpenAI da Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"aberto",
+				"llm",
+				"provedor"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ru-RU": {
+			"name": "Атлас Облако",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Атлас Облако",
+			"description_markdown": "Получите доступ к OpenAI-совместимому интерфейсу LLM Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Атласоблако",
+				"опенай",
+				"лм",
+				"поставщик"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"uk-UA": {
+			"name": "Атлас Хмара",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Атлас Хмара",
+			"description_markdown": "Доступ до сумісного з OpenAI LLM інтерфейсу Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"vi-VN": {
+			"name": "Đám mây Atlas",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Đám mây Atlas",
+			"description_markdown": "Truy cập giao diện LLM tương thích với OpenAI của Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"tập bản đồ",
+				"openai",
+				"ừm",
+				"nhà cung cấp"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"zh-TW": {
+			"name": "Atlas Cloud",
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
 			],
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		}
@@ -91,20 +316,35 @@
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
 			"provider": "Atlas Cloud"
 		},
-		"zh-TW": {
+		"ar-SA": {
 			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
-			"description": "Atlas Cloud",
-			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"description": "سحابة الأطلس",
+			"description_markdown": "قم بالوصول إلى واجهة LLM المتوافقة مع OpenAI من Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "ستيف02081504",
+			"tags": [
+				"com.atlascloud",
+				"openai",
+				"LLM",
+				"مزود"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "سحابة الأطلس"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlaswolke",
+			"description_markdown": "Greifen Sie auf die OpenAI-kompatible LLM-Schnittstelle von Atlas Cloud zu.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"atlascloud",
+				"Atlascloud",
 				"openai",
 				"llm",
-				"provider"
+				"Anbieter"
 			],
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
-			"provider": "Atlas Cloud"
+			"provider": "Atlaswolke"
 		},
 		"emoji": {
 			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
@@ -116,6 +356,216 @@
 				"☁️",
 				"🔌",
 				"🧠"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nube del Atlas",
+			"description_markdown": "Acceda a la interfaz LLM compatible con OpenAI de Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"nube de atlas",
+				"abierto",
+				"llm",
+				"proveedor"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Nube del Atlas"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nuage Atlas",
+			"description_markdown": "Accédez à l'interface LLM compatible OpenAI d'Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"nuage d'atlas",
+				"ouvert",
+				"llm",
+				"fournisseur"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Nuage Atlas"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "एटलस बादल",
+			"description_markdown": "एटलस क्लाउड के ओपनएआई-संगत एलएलएम इंटरफ़ेस तक पहुंचें।",
+			"version": "0.0.0",
+			"author": "स्टीव02081504",
+			"tags": [
+				"एटलसक्लाउड",
+				"openai",
+				"एलएलएम",
+				"प्रदाता"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "एटलस बादल"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlasský",
+			"description_markdown": "Fáðu aðgang að OpenAI-samhæfu LLM viðmóti Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlasský",
+				"opnai",
+				"llm",
+				"veitanda"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlasský"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nube dell'Atlante",
+			"description_markdown": "Accedi all'interfaccia LLM compatibile con OpenAI di Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Atlascloud",
+				"openai",
+				"llm",
+				"fornitore"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Nube dell'Atlante"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "アトラスクラウド",
+			"description_markdown": "Atlas Cloud の OpenAI 互換 LLM インターフェイスにアクセスします。",
+			"version": "0.0.0",
+			"author": "スティーブ02081504",
+			"tags": [
+				"アトラスクラウド",
+				"オープンナイ",
+				"llm",
+				"プロバイダー"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "アトラスクラウド"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "아틀라스 클라우드",
+			"description_markdown": "Atlas Cloud의 OpenAI 호환 LLM 인터페이스에 액세스하세요.",
+			"version": "0.0.0",
+			"author": "스티브02081504",
+			"tags": [
+				"아틀라스클라우드",
+				"개방하다",
+				"ㅋㅋㅋ",
+				"공급자"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "아틀라스 클라우드"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "访问 Atlas Cloud 的 OpenAI 兼容 LLM 接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlas Cloud"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlaswolk",
+			"description_markdown": "Toegang tot de OpenAI-compatibele LLM-interface van Atlas Cloud.",
+			"version": "0,0,0",
+			"author": "steve02081504",
+			"tags": [
+				"atlaswolk",
+				"openai",
+				"llm",
+				"aanbieder"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Atlaswolk"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Nuvem Atlas",
+			"description_markdown": "Acesse a interface LLM compatível com OpenAI da Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "Steve02081504",
+			"tags": [
+				"atlascloud",
+				"aberto",
+				"llm",
+				"provedor"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Nuvem Atlas"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Атлас Облако",
+			"description_markdown": "Получите доступ к OpenAI-совместимому интерфейсу LLM Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "Стив02081504",
+			"tags": [
+				"Атласоблако",
+				"опенай",
+				"лм",
+				"поставщик"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Атлас Облако"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Атлас Хмара",
+			"description_markdown": "Доступ до сумісного з OpenAI LLM інтерфейсу Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Атлас Хмара"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Đám mây Atlas",
+			"description_markdown": "Truy cập giao diện LLM tương thích với OpenAI của Atlas Cloud.",
+			"version": "0.0.0",
+			"author": "Steve02081504",
+			"tags": [
+				"tập bản đồ",
+				"openai",
+				"ừm",
+				"nhà cung cấp"
+			],
+			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Đám mây Atlas"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
+			"description": "Atlas Cloud",
+			"description_markdown": "存取 Atlas Cloud 的 OpenAI 相容 LLM 端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"atlascloud",
+				"openai",
+				"llm",
+				"provider"
 			],
 			"home_page": "https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
 			"provider": "Atlas Cloud"

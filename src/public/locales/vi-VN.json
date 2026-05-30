@@ -877,6 +877,11 @@
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 			},
 			"commonToolCalling": "Đang gọi công cụ",
+			"toolRunningLang": "Đang thực thi ${lang}",
+			"toolSearchingContent": "Đang tìm kiếm ${content}",
+			"toolOverridingFilepath": "Ghi đè ${filepath}",
+			"toolReplacingFilepath": "Thay thế ${filepath}",
+			"toolReadingFilepath": "Đang đọc ${filepath}",
 			"reasoningDetailsTitle": "Quá trình suy luận",
 			"logprobsNotApplicable": "không áp dụng",
 			"logprobsTopLogprobsMeta": "top_logprobs (đã chọn: ${token})",

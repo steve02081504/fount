@@ -877,6 +877,11 @@
 				"success": "Ссылка успешно создана! Скопирована в буфер обмена. <br>Эта функция поддерживается ${provider}. <br>[Поддержать их.](${sponsorLink})"
 			},
 			"commonToolCalling": "Вызов инструмента...",
+			"toolRunningLang": "Выполнение ${lang}",
+			"toolSearchingContent": "Ищу ${content}",
+			"toolOverridingFilepath": "Перезапись ${filepath}",
+			"toolReplacingFilepath": "Замена ${filepath}",
+			"toolReadingFilepath": "Чтение ${filepath}",
 			"reasoningDetailsTitle": "Процесс рассуждения",
 			"logprobsNotApplicable": "н/д",
 			"logprobsTopLogprobsMeta": "top_logprobs (выбрано: ${token})",

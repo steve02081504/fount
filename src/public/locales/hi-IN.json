@@ -877,6 +877,11 @@
 				"success": "लिंक साझा किया गया! लिंक को क्लिपबोर्ड पर कॉपी किया गया. <br>यह सुविधा ${provider} द्वारा समर्थित है। <br>[उन्हें प्रायोजित करें। ](${sponsorLink})"
 			},
 			"commonToolCalling": "टूल कॉल किया जा रहा है",
+			"toolRunningLang": "${lang} का निष्पादन",
+			"toolSearchingContent": "${content} की खोज की जा रही है",
+			"toolOverridingFilepath": "${filepath} को ओवरराइट करना",
+			"toolReplacingFilepath": "${filepath} को प्रतिस्थापित करना",
+			"toolReadingFilepath": "${filepath} पढ़ना",
 			"reasoningDetailsTitle": "तर्क प्रक्रिया",
 			"logprobsNotApplicable": "लागू नहीं",
 			"logprobsTopLogprobsMeta": "top_logprobs (चयनित: ${token})",

@@ -877,6 +877,11 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
+			"toolRunningLang": "${lang} uitvoeren",
+			"toolSearchingContent": "Zoeken naar ${content}",
+			"toolOverridingFilepath": "${filepath} overschrijven",
+			"toolReplacingFilepath": "${filepath} vervangen",
+			"toolReadingFilepath": "${filepath} lezen",
 			"reasoningDetailsTitle": "Redeneringsproces",
 			"logprobsNotApplicable": "niet van toepassing",
 			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",

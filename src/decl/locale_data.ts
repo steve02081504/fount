@@ -866,6 +866,11 @@ export type LocaleData = {
 				success: string
 			}
 			commonToolCalling: string
+			toolRunningLang: string
+			toolSearchingContent: string
+			toolOverridingFilepath: string
+			toolReplacingFilepath: string
+			toolReadingFilepath: string
 			reasoningDetailsTitle: string
 			logprobsNotApplicable: string
 			logprobsTopLogprobsMeta: string
@@ -2714,6 +2719,11 @@ export type LocaleKeyParams = {
 	'chat.messageView.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
 	'chat.messageView.logprobsTopLogprobsMeta': { token: string | number }
 	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
+	'chat.messageView.toolOverridingFilepath': { filepath: string | number }
+	'chat.messageView.toolReadingFilepath': { filepath: string | number }
+	'chat.messageView.toolReplacingFilepath': { filepath: string | number }
+	'chat.messageView.toolRunningLang': { lang: string | number }
+	'chat.messageView.toolSearchingContent': { content: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
 	'chat_history.confirmDeleteMultiChats': { count: string | number }

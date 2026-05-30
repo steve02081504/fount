@@ -877,6 +877,11 @@
 				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
 			},
 			"commonToolCalling": "도구 호출 중",
+			"toolRunningLang": "${lang} 실행 중",
+			"toolSearchingContent": "${content} 검색 중",
+			"toolOverridingFilepath": "${filepath} 덮어쓰기",
+			"toolReplacingFilepath": "${filepath} 교체",
+			"toolReadingFilepath": "${filepath} 읽는 중",
 			"reasoningDetailsTitle": "추론 과정",
 			"logprobsNotApplicable": "해당 없음",
 			"logprobsTopLogprobsMeta": "top_logprobs (선택됨: ${token})",

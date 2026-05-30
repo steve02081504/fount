@@ -877,6 +877,11 @@
 				"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
 			},
 			"commonToolCalling": "Виклик інструменту",
+			"toolRunningLang": "Виконання ${lang}",
+			"toolSearchingContent": "Пошук ${content}",
+			"toolOverridingFilepath": "Перезапис ${filepath}",
+			"toolReplacingFilepath": "Заміна ${filepath}",
+			"toolReadingFilepath": "Читання ${filepath}",
 			"reasoningDetailsTitle": "Процес міркування",
 			"logprobsNotApplicable": "н/д",
 			"logprobsTopLogprobsMeta": "top_logprobs (вибрано: ${token})",

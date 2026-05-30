@@ -877,6 +877,11 @@
 				"success": "共有に成功しました！リンクがクリップボードにコピーしました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
 			},
 			"commonToolCalling": "ツールを呼び出し中",
+			"toolRunningLang": "${lang} を実行しています",
+			"toolSearchingContent": "${content} を検索しています",
+			"toolOverridingFilepath": "${filepath} を上書きする",
+			"toolReplacingFilepath": "${filepath} を置き換えます",
+			"toolReadingFilepath": "${filepath} の読み取り中",
 			"reasoningDetailsTitle": "推論プロセス",
 			"logprobsNotApplicable": "適用できない",
 			"logprobsTopLogprobsMeta": "top_logprobs (選択済み: ${token})",

@@ -877,6 +877,11 @@
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			},
 			"commonToolCalling": "Kallar á tól",
+			"toolRunningLang": "Keyrir ${lang}",
+			"toolSearchingContent": "Leitar að ${content}",
+			"toolOverridingFilepath": "Skrifar yfir ${filepath}",
+			"toolReplacingFilepath": "Skiptir út ${filepath}",
+			"toolReadingFilepath": "Að lesa ${filepath}",
 			"reasoningDetailsTitle": "Rökhugsunarferli",
 			"logprobsNotApplicable": "ekki við",
 			"logprobsTopLogprobsMeta": "top_logprobs (valið: ${token})",

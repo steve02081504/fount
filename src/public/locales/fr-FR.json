@@ -877,6 +877,11 @@
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			},
 			"commonToolCalling": "Appel de l'outil",
+			"toolRunningLang": "Exécution de ${lang}",
+			"toolSearchingContent": "Recherche de ${content}",
+			"toolOverridingFilepath": "Écrasement de ${filepath}",
+			"toolReplacingFilepath": "Remplacement de ${filepath}",
+			"toolReadingFilepath": "Lecture de ${filepath}",
 			"reasoningDetailsTitle": "Processus de raisonnement",
 			"logprobsNotApplicable": "non applicable",
 			"logprobsTopLogprobsMeta": "top_logprobs (sélectionné : ${token})",

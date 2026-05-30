@@ -877,6 +877,11 @@
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			},
 			"commonToolCalling": "Calling tool",
+			"toolRunningLang": "Executing ${lang}",
+			"toolSearchingContent": "Searching for ${content}",
+			"toolOverridingFilepath": "Overwriting ${filepath}",
+			"toolReplacingFilepath": "Replacing ${filepath}",
+			"toolReadingFilepath": "Reading ${filepath}",
 			"reasoningDetailsTitle": "Reasoning",
 			"logprobsNotApplicable": "N/A",
 			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",

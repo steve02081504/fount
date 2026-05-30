@@ -877,6 +877,11 @@
 				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Este rol es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
 			},
 			"commonToolCalling": "Llamando a la herramienta",
+			"toolRunningLang": "Ejecutando ${lang}",
+			"toolSearchingContent": "Buscando ${content}",
+			"toolOverridingFilepath": "Sobrescribiendo ${filepath}",
+			"toolReplacingFilepath": "Reemplazo de ${filepath}",
+			"toolReadingFilepath": "Leyendo ${filepath}",
 			"reasoningDetailsTitle": "Proceso de razonamiento",
 			"logprobsNotApplicable": "no aplicable",
 			"logprobsTopLogprobsMeta": "top_logprobs (seleccionado: ${token})",
