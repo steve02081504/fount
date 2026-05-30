@@ -283,11 +283,11 @@ function mountRenderedNode(parent, node) {
  * @param {Element} parent 父节点
  * @param {string} template 模板路径（相对 templates 根）
  * @param {object} [data] 模板数据
- * @returns {Promise<Element | DocumentFragment | Document>} 渲染节点
+ * @returns {Promise<Element>} 挂载后的父节点（内容已移入 parent）
  */
 export async function mountTemplate(parent, template, data = {}) {
 	const node = await renderTemplate(template, data)
 	parent.replaceChildren()
 	mountRenderedNode(parent, node)
-	return node
+	return parent
 }

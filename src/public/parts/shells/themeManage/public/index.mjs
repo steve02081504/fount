@@ -51,6 +51,8 @@ async function fetchCustomThemes() {
 		styleTag.textContent = customThemes.map((t) => t.css).join('\n')
 	} catch (err) {
 		console.error('Failed to load custom themes', err)
+		const styleTag = document.getElementById('custom-themes-css')
+		if (styleTag) styleTag.textContent = ''
 		customThemes = []
 	}
 }
@@ -226,10 +228,12 @@ async function handleDelete(id) {
  */
 async function handleClone(id, isCustom) {
 	try {
+		const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
+		if (!newId) return
 		let css = ''
+		const sourceCustom = isCustom ? await getCustomTheme(id) : null
 		if (isCustom) {
-			const data = await getCustomTheme(id)
-			css = data.css
+			css = sourceCustom.css
 		} else {
 			// Generate CSS from built-in theme
 			const vars = []
@@ -258,21 +262,14 @@ async function handleClone(id, isCustom) {
 				document.body.removeChild(container)
 			}
 
-			css = `[data-theme="PLACEHOLDER"] {\n  ${vars.join('\n  ')}\n}`
+			css = `[data-theme="${newId}"] {\n  ${vars.join('\n  ')}\n}`
 		}
 
-		const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
-		if (!newId) return
 
 		const newData = {
 			id: newId,
-			css: css.replace('PLACEHOLDER', newId),
-		}
-
-		// If cloning a custom theme with MJS, include it
-		if (isCustom) {
-			const data = await getCustomTheme(id)
-			if (data.mjs) newData.mjs = data.mjs
+			css,
+			mjs: sourceCustom?.mjs || '',
 		}
 
 		await saveCustomTheme(newData)
