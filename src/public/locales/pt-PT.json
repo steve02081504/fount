@@ -445,7 +445,7 @@
 			"accountLockedRetry": "A conta foi bloqueada. Tente novamente após ${timeLeft}.",
 			"accountLockedAttempts": "A conta foi temporariamente bloqueada devido a demasiadas tentativas falhadas de início de sessão.",
 			"powValidationFailed": "A verificação falhou. Tente novamente.",
-			"tokenAndSolutionsRequired": "É necessário fornecer token e solutions.",
+			"tokenAndSolutionsRequired": "É necessário fornecer token e soluções.",
 			"apiErrorBodyUnreadable": "O servidor devolveu informação que não pôde ser analisada. Tente novamente mais tarde."
 		},
 		"webauthn": {
