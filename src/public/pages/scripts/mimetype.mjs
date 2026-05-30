@@ -23,7 +23,10 @@ export async function mimetypeFromBufferAndName(buffer, name = '') {
 	result ||= mimetype.lookup(name)
 	if (!result) {
 		const sample = bytes.subarray(0, Math.min(bytes.length, 4096))
-		result = new TextDecoder().decode(sample).isWellFormed() ? 'text/plain' : undefined
+		try {
+			new TextDecoder('utf-8', { fatal: true }).decode(sample)
+			result = 'text/plain'
+		} catch { /* binary */ }
 	}
 	return result || 'application/octet-stream'
 }

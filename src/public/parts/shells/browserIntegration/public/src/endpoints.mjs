@@ -51,12 +51,6 @@ export function addAutoRunScript(scriptData) {
  * @param {string} id - 要删除的脚本的 ID。
  * @returns {Promise<void>} - 成功时无 body。
  */
-export async function deleteAutoRunScript(id) {
-	const response = await fetch(`/api/parts/shells:browserIntegration/autorun-scripts/${id}`, {
-		method: 'DELETE',
-	})
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
-		throw Object.assign(new Error(data.message || response.statusText), data, { response })
-	}
+export function deleteAutoRunScript(id) {
+	return callApi(`autorun-scripts/${id}`, 'DELETE')
 }

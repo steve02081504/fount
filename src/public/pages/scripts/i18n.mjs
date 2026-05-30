@@ -78,7 +78,12 @@ export let main_locale = 'en-UK'
  * @returns {string[]} 首选语言列表。
  */
 export function loadPreferredLangs() {
-	return JSON.parse(localStorage.getItem(preferredLangsStorageKey) || '[]').filter(Boolean)
+	try {
+		const parsed = JSON.parse(localStorage.getItem(preferredLangsStorageKey) || '[]')
+		return Array.isArray(parsed) ? parsed.filter(Boolean) : []
+	} catch {
+		return []
+	}
 }
 
 /**

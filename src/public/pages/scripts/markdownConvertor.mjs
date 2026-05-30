@@ -1081,7 +1081,6 @@ export async function GetMarkdownConvertor({
 	return processor.use(rehypeStringify, {
 		allowDangerousCharacters: true,
 		allowDangerousHtml: true,
-		tightBreaks: true,
 	})
 }
 

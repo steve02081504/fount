@@ -92,8 +92,8 @@ export function getLocaleData(localeList) {
 export async function getLocaleDataForUser(username, preferredlocaleList) {
 	if (!username) return getLocaleData(preferredlocaleList)
 	const effectivePreferred = [
-		...preferredlocaleList ?? [],
 		...getUserByUsername(username)?.locales ?? [],
+		...preferredlocaleList ?? [],
 	]
 	const result = {
 		...getLocaleData(effectivePreferred)

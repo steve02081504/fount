@@ -137,7 +137,7 @@ export function registerEndpoints(router) {
 	router.post('/api/pow/redeem', async (req, res) => {
 		const { pow } = await import('../../scripts/pow.mjs')
 		const { token, solutions } = req.body
-		if (!token || !solutions) return res.status(400).json({ message: 'token and solutions required' })
+		if (!token || !solutions) return res.status(400).json({ i18nKey: 'auth.error.tokenAndSolutionsRequired' })
 		res.json(await pow.redeemChallenge({ token, solutions }))
 	})
 
@@ -255,7 +255,7 @@ export function registerEndpoints(router) {
 
 	router.post('/api/apikey/verify', async (req, res) => {
 		const { apiKey } = req.body
-		if (!apiKey) return res.status(400).json({ error: 'API key is required.' })
+		if (!apiKey) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.verifyMissingApiKey' })
 
 		const user = await verifyApiKey(apiKey)
 		res.status(200).json({ valid: !!user })
@@ -286,7 +286,7 @@ export function registerEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { partpath } = req.body
 		const normalized = partpath?.replace?.(/:/g, '/')
-		if (!normalized) return res.status(400).json({ error: 'Part path is required.' })
+		if (!normalized) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
 		await loadPart(username, normalized)
 		res.status(200).json({ message: `Part ${normalized} loaded successfully.` })
 	})

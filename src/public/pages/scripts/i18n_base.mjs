@@ -44,6 +44,5 @@ export async function initTranslations(pageid = saved_pageid, preferredLangs = l
 }
 
 onServerEvent('locale-updated', async () => {
-	console.log('Received locale update notification. Re-initializing translations...')
 	await initTranslations()
 })
