@@ -240,7 +240,7 @@ export async function lockAchievement(username, partpath, achievementId, reason)
 	saveShellData(username, 'achievements', 'data')
 
 	if (reason === 'relock_by_clicking')
-		unlockAchievement(username, 'shells/achievements', 'relock_by_clicking')
+		await unlockAchievement(username, 'shells/achievements', 'relock_by_clicking')
 
 	return {}
 }

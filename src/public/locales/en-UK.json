@@ -41,7 +41,7 @@
 			"parseResponseFailed": "Failed to parse server response: ${error}",
 			"cannotParseResponse": "Cannot parse server response",
 			"unknownError": "Unknown error",
-			"partPathRequired": "Component path is required."
+			"partPathRequired": "Please provide a component path."
 		},
 		"partManager": {
 			"partInited": "Component ${partpath} has been initialized",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "Account has been locked, please try again after ${timeLeft}.",
 			"accountLockedAttempts": "The account has been temporarily locked due to too many failed login attempts.",
 			"powValidationFailed": "Verification check failed. Please try again.",
-			"tokenAndSolutionsRequired": "Tokens and solutions need to be provided.",
+			"tokenAndSolutionsRequired": "Token and solutions are required.",
 			"apiErrorBodyUnreadable": "The server returned information that could not be parsed. Please try again later."
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "The API key was not found.",
 			"revokeMissingJti": "Please specify the key to revoke.",
 			"revokeMissingPassword": "Revoking a key requires a password.",
-			"verifyMissingApiKey": "An API key is required.",
+			"verifyMissingApiKey": "Please provide an API key.",
 			"revokeButton": "Revoke",
 			"revokeConfirm": "Are you sure you want to revoke this API key?",
 			"revokeSuccess": "The API key has been successfully revoked.",

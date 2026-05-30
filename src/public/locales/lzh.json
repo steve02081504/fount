@@ -41,7 +41,7 @@
 			"parseResponseFailed": "解復令失利：${error}",
 			"cannotParseResponse": "復令難解，如讀天書",
 			"unknownError": "天有不測之禍",
-			"partPathRequired": "需要提供组件路径。"
+			"partPathRequired": "件径不可缺。"
 		},
 		"partManager": {
 			"partInited": "${partpath} 之器初設既成",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "戶籍暫鎖，請候 ${timeLeft} 後復試。",
 			"accountLockedAttempts": "登臺屢敗，戶籍暫閉。",
 			"powValidationFailed": "人機之驗未竟，請復試。",
-			"tokenAndSolutionsRequired": "需要提供 token 和 solutions。",
+			"tokenAndSolutionsRequired": "token、solutions 缺一不可。",
 			"apiErrorBodyUnreadable": "伺服所答難辨，請少待復試。"
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "未見此符鑰。",
 			"revokeMissingJti": "請指欲廢之鑰。",
 			"revokeMissingPassword": "廢鑰須具信物。",
-			"verifyMissingApiKey": "需要提供 API 密钥。",
+			"verifyMissingApiKey": "须具 API 符钥。",
 			"revokeButton": "廢止",
 			"revokeConfirm": "確欲廢此符鑰乎？",
 			"revokeSuccess": "符鑰已廢。",

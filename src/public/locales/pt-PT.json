@@ -41,7 +41,7 @@
 			"parseResponseFailed": "Falha ao analisar a resposta do servidor: ${error}",
 			"cannotParseResponse": "Não é possível analisar a resposta do servidor.",
 			"unknownError": "Erro desconhecido.",
-			"partPathRequired": "O caminho do componente é obrigatório."
+			"partPathRequired": "Indique o caminho do componente."
 		},
 		"partManager": {
 			"partInited": "O componente ${partpath} foi inicializado",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "A conta foi bloqueada. Tente novamente após ${timeLeft}.",
 			"accountLockedAttempts": "A conta foi temporariamente bloqueada devido a demasiadas tentativas falhadas de início de sessão.",
 			"powValidationFailed": "A verificação falhou. Tente novamente.",
-			"tokenAndSolutionsRequired": "Tokens e soluções precisam ser fornecidos.",
+			"tokenAndSolutionsRequired": "É necessário fornecer token e solutions.",
 			"apiErrorBodyUnreadable": "O servidor devolveu informação que não pôde ser analisada. Tente novamente mais tarde."
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "A chave API não foi encontrada.",
 			"revokeMissingJti": "Especifique a chave a ser revogada.",
 			"revokeMissingPassword": "Para revogar uma chave é necessária a palavra-passe.",
-			"verifyMissingApiKey": "É necessária uma chave de API.",
+			"verifyMissingApiKey": "Forneça uma chave API.",
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
 			"revokeSuccess": "A chave da API foi revogada com sucesso.",

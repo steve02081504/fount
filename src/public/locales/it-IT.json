@@ -41,7 +41,7 @@
 			"parseResponseFailed": "Impossibile analizzare la risposta del server: ${error}",
 			"cannotParseResponse": "Impossibile analizzare la risposta del server.",
 			"unknownError": "Errore sconosciuto.",
-			"partPathRequired": "Il percorso del componente è obbligatorio."
+			"partPathRequired": "Specifica il percorso del componente."
 		},
 		"partManager": {
 			"partInited": "Il componente ${partpath} è stato inizializzato",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "L'account è stato bloccato, riprova dopo ${timeLeft}.",
 			"accountLockedAttempts": "L'account è stato temporaneamente bloccato a causa di troppi tentativi di accesso non riusciti.",
 			"powValidationFailed": "Verifica di sicurezza non riuscita. Riprova.",
-			"tokenAndSolutionsRequired": "È necessario fornire token e soluzioni.",
+			"tokenAndSolutionsRequired": "Token e solutions obbligatori.",
 			"apiErrorBodyUnreadable": "Il server ha restituito informazioni che non è stato possibile analizzare. Per favore riprova più tardi."
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "La chiave API non è stata trovata.",
 			"revokeMissingJti": "Si prega di specificare la chiave da revocare.",
 			"revokeMissingPassword": "La revoca di una chiave richiede una password.",
-			"verifyMissingApiKey": "È richiesta una chiave API.",
+			"verifyMissingApiKey": "Fornisci una chiave API.",
 			"revokeButton": "Revoca",
 			"revokeConfirm": "Sei sicuro di voler revocare questa chiave API?",
 			"revokeSuccess": "La chiave API è stata revocata con successo.",

@@ -41,7 +41,7 @@
 			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
 			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता",
 			"unknownError": "अज्ञात त्रुटि",
-			"partPathRequired": "घटक पथ आवश्यक है."
+			"partPathRequired": "कृपया कंपोनент पथ प्रदान करें।"
 		},
 		"partManager": {
 			"partInited": "घटक ${partpath} प्रारंभ किया गया है",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "खाता लॉक कर दिया गया है, कृपया ${timeLeft} के बाद पुनः प्रयास करें।",
 			"accountLockedAttempts": "बहुत से असफल लॉगिन प्रयासों के कारण खाता अस्थायी रूप से लॉक कर दिया गया है।",
 			"powValidationFailed": "सुरक्षा सत्यापन विफल रहा, कृपया पुनः प्रयास करें।",
-			"tokenAndSolutionsRequired": "टोकन और समाधान प्रदान करने की आवश्यकता है।",
+			"tokenAndSolutionsRequired": "token और solutions आवश्यक हैं।",
 			"apiErrorBodyUnreadable": "सर्वर ने वह जानकारी लौटा दी जिसे पार्स नहीं किया जा सका। कृपया बाद में पुन: प्रयास करें।"
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "एपीआई कुंजी नहीं मिली.",
 			"revokeMissingJti": "कृपया निरस्त करने की कुंजी निर्दिष्ट करें.",
 			"revokeMissingPassword": "किसी कुंजी को निरस्त करने के लिए पासवर्ड की आवश्यकता होती है।",
-			"verifyMissingApiKey": "एक एपीआई कुंजी आवश्यक है.",
+			"verifyMissingApiKey": "कृपया API कुंजी प्रदान करें।",
 			"revokeButton": "रद्द करना",
 			"revokeConfirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
 			"revokeSuccess": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",

@@ -41,7 +41,7 @@
 			"parseResponseFailed": "解析服务器响应失败: ${error}",
 			"cannotParseResponse": "无法解析服务器响应",
 			"unknownError": "未知错误",
-			"partPathRequired": "需要提供组件路径。"
+			"partPathRequired": "请提供组件路径。"
 		},
 		"partManager": {
 			"partInited": "组件${partpath}已初始化",
@@ -445,7 +445,7 @@
 			"accountLockedRetry": "账户已锁定，请于 ${timeLeft} 后再试。",
 			"accountLockedAttempts": "因登录失败次数过多，账户已被暂时锁定。",
 			"powValidationFailed": "人机验证失败，请重试。",
-			"tokenAndSolutionsRequired": "需要提供 token 和 solutions。",
+			"tokenAndSolutionsRequired": "请提供 token 和 solutions。",
 			"apiErrorBodyUnreadable": "服务器返回了无法解析的信息，请稍后重试。"
 		},
 		"webauthn": {
@@ -1489,7 +1489,7 @@
 			"keyNotFound": "未找到该 API 密钥。",
 			"revokeMissingJti": "请指定要撤销的密钥。",
 			"revokeMissingPassword": "撤销密钥需要提供密码。",
-			"verifyMissingApiKey": "需要提供 API 密钥。",
+			"verifyMissingApiKey": "请提供 API 密钥。",
 			"revokeButton": "撤销",
 			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
 			"revokeSuccess": "API 密钥已成功撤销。",

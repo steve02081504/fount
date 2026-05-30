@@ -131,16 +131,16 @@ export function getBestLocale(preferredlocaleList, localeList) {
  * @returns {Promise<void>}
  */
 export async function runInitTranslations(pageid, preferredLangs, loadBundle) {
-	lastKnownLangs = preferredLangs
 	try {
 		const result = await loadBundle()
-		if (result)
+		if (result) {
 			setI18nBundle(result.bundle, result.locale, pageid, preferredLangs)
+			applyTranslations()
+		}
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
-	if (i18n) applyTranslations()
 }
 
 /**
