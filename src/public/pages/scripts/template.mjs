@@ -267,7 +267,12 @@ export async function renderTemplateAsHtmlString(template, data = {}) {
  * @returns {void}
  */
 function mountRenderedNode(parent, node) {
-	if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.DOCUMENT_FRAGMENT_NODE)
+	if (node.nodeType === Node.DOCUMENT_NODE) {
+		const children = (node.body ?? node.documentElement)?.childNodes
+		if (children?.length) parent.append(...children)
+		else if (node.documentElement) parent.appendChild(node.documentElement)
+	}
+	else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE)
 		parent.append(...node.childNodes)
 	else
 		parent.appendChild(node)

@@ -1733,7 +1733,9 @@
 			"newThemeName": "新主题名称：",
 			"deleteConfirm": "确定要删除主题 ${id} 吗？",
 			"saved": "已保存！",
-			"failedToSave": "保存失败"
+			"failedToSave": "保存失败",
+			"failedToDelete": "删除主题失败：${message}",
+			"failedToClone": "复制主题失败：${message}"
 		},
 		"themes": {
 			"auto": "自动",

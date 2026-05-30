@@ -49,7 +49,8 @@ async function fetchCustomThemes() {
 			document.head.appendChild(styleTag)
 		}
 		styleTag.textContent = customThemes.map((t) => t.css).join('\n')
-	} catch {
+	} catch (err) {
+		console.error('Failed to load custom themes', err)
 		customThemes = []
 	}
 }
@@ -206,7 +207,13 @@ async function handleThemeApply(id, isCustom) {
  */
 async function handleDelete(id) {
 	if (!await confirmI18n('themeManage.editor.deleteConfirm', { id })) return
-	await deleteCustomTheme(id)
+	try {
+		await deleteCustomTheme(id)
+	} catch (err) {
+		console.error('Failed to delete custom theme', err)
+		showToastI18n('error', 'themeManage.editor.failedToDelete', { message: err.message })
+		return
+	}
 	if (getCurrentTheme() === id) setTheme('light') // Fallback
 	renderList()
 }
@@ -218,55 +225,62 @@ async function handleDelete(id) {
  * @returns {Promise<void>}
  */
 async function handleClone(id, isCustom) {
-	let css = ''
-	if (isCustom) {
-		const data = await getCustomTheme(id)
-		css = data.css
-	} else {
-		// Generate CSS from built-in theme
-		const vars = []
-		DAISY_COLORS.forEach((color) => {
-			const hex = getComputedColor(color, id)
-			vars.push(`--color-${color}: ${hex};`)
-			if (DAISY_MAP[color])
-				vars.push(`--${DAISY_MAP[color]}: from ${hex} l c h;`)
-		})
+	try {
+		let css = ''
+		if (isCustom) {
+			const data = await getCustomTheme(id)
+			css = data.css
+		} else {
+			// Generate CSS from built-in theme
+			const vars = []
+			DAISY_COLORS.forEach((color) => {
+				const hex = getComputedColor(color, id)
+				vars.push(`--color-${color}: ${hex};`)
+				if (DAISY_MAP[color])
+					vars.push(`--${DAISY_MAP[color]}: from ${hex} l c h;`)
+			})
 
-		// Try to read common variables
-		const container = document.createElement('div')
-		container.dataset.theme = id
-		container.style.position = 'absolute'
-		container.style.visibility = 'hidden'
-		container.style.pointerEvents = 'none'
-		document.body.appendChild(container)
+			// Try to read common variables
+			const container = document.createElement('div')
+			container.dataset.theme = id
+			container.style.position = 'absolute'
+			container.style.visibility = 'hidden'
+			container.style.pointerEvents = 'none'
+			document.body.appendChild(container)
 
-		const roundedBox = getComputedStyle(container).getPropertyValue('--rounded-box').trim()
-		const borderBtn = getComputedStyle(container).getPropertyValue('--border-btn').trim()
+			try {
+				const roundedBox = getComputedStyle(container).getPropertyValue('--rounded-box').trim()
+				const borderBtn = getComputedStyle(container).getPropertyValue('--border-btn').trim()
 
-		document.body.removeChild(container)
+				if (roundedBox) vars.push(`--rounded-box: ${roundedBox};`)
+				if (borderBtn) vars.push(`--border-btn: ${borderBtn};`)
+			} finally {
+				document.body.removeChild(container)
+			}
 
-		if (roundedBox) vars.push(`--rounded-box: ${roundedBox};`)
-		if (borderBtn) vars.push(`--border-btn: ${borderBtn};`)
+			css = `[data-theme="PLACEHOLDER"] {\n  ${vars.join('\n  ')}\n}`
+		}
 
-		css = `[data-theme="PLACEHOLDER"] {\n  ${vars.join('\n  ')}\n}`
+		const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
+		if (!newId) return
+
+		const newData = {
+			id: newId,
+			css: css.replace('PLACEHOLDER', newId),
+		}
+
+		// If cloning a custom theme with MJS, include it
+		if (isCustom) {
+			const data = await getCustomTheme(id)
+			if (data.mjs) newData.mjs = data.mjs
+		}
+
+		await saveCustomTheme(newData)
+		renderList()
+	} catch (err) {
+		console.error('Failed to clone theme', err)
+		showToastI18n('error', 'themeManage.editor.failedToClone', { message: err.message })
 	}
-
-	const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
-	if (!newId) return
-
-	const newData = {
-		id: newId,
-		css: css.replace('PLACEHOLDER', newId),
-	}
-
-	// If cloning a custom theme with MJS, include it
-	if (isCustom) {
-		const data = await getCustomTheme(id)
-		if (data.mjs) newData.mjs = data.mjs
-	}
-
-	await saveCustomTheme(newData)
-	renderList()
 }
 
 // --- Editor Logic ---
@@ -660,7 +674,8 @@ async function openEditor(themeData) {
 				showToastI18n('success', 'themeManage.editor.saved')
 				handleThemeApply(id, true)
 				closeEditor()
-			} catch {
+			} catch (err) {
+				console.error('Failed to save custom theme', err)
 				showToastI18n('error', 'themeManage.editor.failedToSave')
 			}
 		},

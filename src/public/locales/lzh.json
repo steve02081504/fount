@@ -41,7 +41,7 @@
 			"parseResponseFailed": "解復令失利：${error}",
 			"cannotParseResponse": "復令難解，如讀天書",
 			"unknownError": "天有不測之禍",
-			"partPathRequired": "件径不可缺。"
+			"partPathRequired": "件徑不可缺。"
 		},
 		"partManager": {
 			"partInited": "${partpath} 之器初設既成",
