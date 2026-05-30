@@ -48,6 +48,7 @@ export type LocaleData = {
 			parseResponseFailed: string
 			cannotParseResponse: string
 			unknownError: string
+			partPathRequired: string
 		}
 		partManager: {
 			partInited: string
@@ -433,6 +434,7 @@ export type LocaleData = {
 			accountLockedRetry: string
 			accountLockedAttempts: string
 			powValidationFailed: string
+			tokenAndSolutionsRequired: string
 			apiErrorBodyUnreadable: string
 		}
 		webauthn: {
@@ -866,6 +868,11 @@ export type LocaleData = {
 				success: string
 			}
 			commonToolCalling: string
+			toolRunningLang: string
+			toolSearchingContent: string
+			toolOverridingFilepath: string
+			toolReplacingFilepath: string
+			toolReadingFilepath: string
 			reasoningDetailsTitle: string
 			logprobsNotApplicable: string
 			logprobsTopLogprobsMeta: string
@@ -1471,6 +1478,7 @@ export type LocaleData = {
 			keyNotFound: string
 			revokeMissingJti: string
 			revokeMissingPassword: string
+			verifyMissingApiKey: string
 			revokeButton: string
 			revokeConfirm: string
 			revokeSuccess: string
@@ -1715,6 +1723,8 @@ export type LocaleData = {
 			deleteConfirm: string
 			saved: string
 			failedToSave: string
+			failedToDelete: string
+			failedToClone: string
 		}
 		themes: {
 			auto: string
@@ -2714,6 +2724,11 @@ export type LocaleKeyParams = {
 	'chat.messageView.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
 	'chat.messageView.logprobsTopLogprobsMeta': { token: string | number }
 	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
+	'chat.messageView.toolOverridingFilepath': { filepath: string | number }
+	'chat.messageView.toolReadingFilepath': { filepath: string | number }
+	'chat.messageView.toolReplacingFilepath': { filepath: string | number }
+	'chat.messageView.toolRunningLang': { lang: string | number }
+	'chat.messageView.toolSearchingContent': { content: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
 	'chat_history.confirmDeleteMultiChats': { count: string | number }
@@ -2815,6 +2830,8 @@ export type LocaleKeyParams = {
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
+	'themeManage.editor.failedToClone': { message: string | number }
+	'themeManage.editor.failedToDelete': { message: string | number }
 	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }
 	'tutorial.progressMessages.keyboardPress': { keyboardIcon: string | number }
 	'tutorial.progressMessages.mobileClick': { phoneIcon: string | number }

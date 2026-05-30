@@ -2,7 +2,7 @@ import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { initTranslations } from '/scripts/i18n.mjs'
 import { createVirtualList } from '/scripts/virtualList.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { onServerEvent } from '/scripts/server_events.mjs'
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 
@@ -50,17 +50,35 @@ let logLevelFilter = 'all'
  */
 const bytesToGiB = bytes => (bytes / 1024 ** 3).toFixed(2)
 
+const FOUNT_REPO_COMMITS = 'https://api.github.com/repos/steve02081504/fount/commits'
+
+/**
+ * 获取 GitHub 上指定分支的最新提交 SHA。
+ * @param {string} branch - 分支名。
+ * @returns {Promise<string|null>} 提交 SHA，失败时返回 null。
+ */
+async function fetchRemoteCommitSha(branch) {
+	const res = await fetch(`${FOUNT_REPO_COMMITS}/${encodeURIComponent(branch)}`, { cache: 'no-cache' })
+	if (!res.ok) return null
+	const { sha } = await res.json()
+	return sha
+}
+
 /**
  * 获取版本信息并更新 UI。
  */
 async function fetchVersionInfo() {
 	try {
-		const localVer = (await ping()).ver
+		const { ver: localVer, branch: currentBranch } = await ping()
 		localVersion.textContent = localVer
 		debugData.version.local = localVer
 
-		const remoteRes = await fetch('https://api.github.com/repos/steve02081504/fount/commits/master', { cache: 'no-cache' })
-		const { sha: remoteVer } = await remoteRes.json()
+		const compareBranch = currentBranch || 'master'
+		debugData.version.branch = compareBranch
+		let remoteVer = await fetchRemoteCommitSha(compareBranch)
+		if (!remoteVer && compareBranch !== 'master')
+			remoteVer = await fetchRemoteCommitSha('master')
+		if (!remoteVer) throw new Error('remote version unavailable')
 		remoteVersion.textContent = remoteVer
 		debugData.version.remote = remoteVer
 
@@ -94,12 +112,10 @@ async function fetchSystemInfo() {
 			{ key: 'Memory', val: `Total: ${bytesToGiB(memory.total)} GB / Free: ${bytesToGiB(memory.free)} GB` },
 		]
 
-		systemInfoTable.innerHTML = ''
-		systemInfoTable.appendChild(await renderTemplate('system_info_table', { rows }))
+		await mountTemplate(systemInfoTable, 'system_info_table', { rows })
 
 		debugData.connectivity.backend = connectivity
-		backendChecks.innerHTML = ''
-		backendChecks.appendChild(await renderTemplate('connectivity_list', { checks: connectivity }))
+		await mountTemplate(backendChecks, 'connectivity_list', { checks: connectivity })
 	} catch (error) {
 		console.error('System info fetch failed:', error)
 		systemInfoTable.innerHTML = '<tr><td colspan="2" class="text-error text-center" data-i18n="debug_info.systemInfo.failed"></td></tr>'
@@ -118,8 +134,7 @@ async function checkFrontendConnectivity() {
 		{ id: 'check-fount-public', name: 'fount Public', url: 'https://steve02081504.github.io/fount' }
 	]
 
-	frontendChecks.innerHTML = ''
-	frontendChecks.appendChild(await renderTemplate('connectivity_list', { checks }))
+	await mountTemplate(frontendChecks, 'connectivity_list', { checks })
 
 	for (const check of checks) {
 		const start = Date.now()
@@ -176,9 +191,12 @@ async function fetchAutoUpdateStatus() {
  * @returns {Promise<void>}
  */
 async function handleOpenSource(callsite) {
-	const result = await openSource(callsite.filePath, callsite.line, callsite.column)
-	if (!result.success)
-		showToastI18n('error', 'debug_info.logs.openSourceFailed', { message: result.message || 'failed' })
+	try {
+		await openSource(callsite.filePath, callsite.line, callsite.column)
+	}
+	catch (error) {
+		showToastI18n('error', 'debug_info.logs.openSourceFailed', { message: error.message || 'failed' })
+	}
 }
 
 /**
@@ -303,6 +321,7 @@ Timestamp: ${timestamp}
 
 Version Status
 --------------
+Branch: ${version.branch || 'master'}
 Local: ${version.local || 'Unknown'}
 Remote: ${version.remote || 'Unknown'}
 Status: ${versionIndicator.textContent}

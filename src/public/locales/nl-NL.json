@@ -40,7 +40,8 @@
 			"socketError": "Socketfout: ${error}",
 			"parseResponseFailed": "Parseren van serverrespons mislukt: ${error}",
 			"cannotParseResponse": "Kan serverrespons niet parseren",
-			"unknownError": "Onbekende fout"
+			"unknownError": "Onbekende fout",
+			"partPathRequired": "Geef een componentpad op."
 		},
 		"partManager": {
 			"partInited": "Component ${partpath} is geïnitialiseerd",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Account is vergrendeld. Probeer het opnieuw na ${timeLeft}.",
 			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
 			"powValidationFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
+			"tokenAndSolutionsRequired": "Token en solutions zijn vereist.",
 			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool aanroepen",
+			"toolRunningLang": "${lang} wordt uitgevoerd",
+			"toolSearchingContent": "${content} wordt gezocht",
+			"toolOverridingFilepath": "${filepath} wordt overschreven",
+			"toolReplacingFilepath": "${filepath} wordt aangepast",
+			"toolReadingFilepath": "${filepath} wordt gelezen",
 			"reasoningDetailsTitle": "Redeneringsproces",
 			"logprobsNotApplicable": "niet van toepassing",
 			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "De API-sleutel is niet gevonden.",
 			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
 			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
+			"verifyMissingApiKey": "Geef een API-sleutel op.",
 			"revokeButton": "Herroepen",
 			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
 			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Nieuwe themanaam:",
 			"deleteConfirm": "Weet je zeker dat je het thema ${id} wilt verwijderen?",
 			"saved": "Opgeslagen!",
-			"failedToSave": "Opslaan mislukt"
+			"failedToSave": "Opslaan mislukt",
+			"failedToDelete": "Thema kon niet worden verwijderd: ${message}",
+			"failedToClone": "Thema kon niet worden gekopieerd: ${message}"
 		},
 		"themes": {
 			"auto": "Automatisch",

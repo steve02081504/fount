@@ -33,7 +33,7 @@
 
 ### POST /api/parts/shells:themeManage/save
 - Body：JSON。可选字段 `id`（不传则自动生成）；建议含 `name` 及与 GET theme/:id 返回结构一致的配置对象（如 daisyUI 相关变量等）。服务端会写入 `lastModified`。
-- 用途：保存（新建或更新）主题。返回 `{ success: true, id }`。
+- 用途：保存（新建或更新）主题。返回 `{ id }`。
 
 ### DELETE /api/parts/shells:themeManage/theme/:id
 - 路径：id 为主题 ID。

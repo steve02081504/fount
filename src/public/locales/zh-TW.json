@@ -40,7 +40,8 @@
 			"socketError": "Socket 錯誤: ${error}",
 			"parseResponseFailed": "解析伺服器回應失敗: ${error}",
 			"cannotParseResponse": "無法解析伺服器回應",
-			"unknownError": "未知錯誤"
+			"unknownError": "未知錯誤",
+			"partPathRequired": "請提供組件路徑。"
 		},
 		"partManager": {
 			"partInited": "組件 ${partpath} 已初始化",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "帳戶已鎖定，請於 ${timeLeft} 後再試。",
 			"accountLockedAttempts": "因登入失敗次數過多，帳戶已被暫時鎖定。",
 			"powValidationFailed": "人機驗證失敗，請重試。",
+			"tokenAndSolutionsRequired": "請提供 token 與 solutions。",
 			"apiErrorBodyUnreadable": "伺服器傳回了無法剖析的訊息，請稍後再試。"
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "分享成功！連結已複製到剪貼簿。<br>此功能由 ${provider} 提供支援。<br>[贊助他們。](${sponsorLink})"
 			},
 			"commonToolCalling": "正在呼叫工具",
+			"toolRunningLang": "正在執行${lang}",
+			"toolSearchingContent": "正在搜尋${content}",
+			"toolOverridingFilepath": "正在覆寫${filepath}",
+			"toolReplacingFilepath": "正在局部替換${filepath}",
+			"toolReadingFilepath": "正在讀取${filepath}",
 			"reasoningDetailsTitle": "推理過程",
 			"logprobsNotApplicable": "不適用",
 			"logprobsTopLogprobsMeta": "top_logprobs（已選：${token}）",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "找不到該 API 金鑰。",
 			"revokeMissingJti": "請指定要撤銷的金鑰。",
 			"revokeMissingPassword": "撤銷金鑰需要提供密碼。",
+			"verifyMissingApiKey": "請提供 API 金鑰。",
 			"revokeButton": "撤銷",
 			"revokeConfirm": "您確定要撤銷此 API 金鑰嗎？",
 			"revokeSuccess": "API 金鑰已成功撤銷。",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "新主題名稱：",
 			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
 			"saved": "已儲存！",
-			"failedToSave": "儲存失敗"
+			"failedToSave": "儲存失敗",
+			"failedToDelete": "無法刪除主題：${message}",
+			"failedToClone": "無法複製主題：${message}"
 		},
 		"themes": {
 			"auto": "自動",

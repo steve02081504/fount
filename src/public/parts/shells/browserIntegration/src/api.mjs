@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto'
 import { setInterval, setTimeout } from 'node:timers'
 
+import { httpError } from '../../../../../scripts/http_error.mjs'
 import { ms } from '../../../../../scripts/ms.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
@@ -529,17 +530,15 @@ export function addAutoRunScript(username, { urlRegex, script, comment }) {
  * 删除指定用户的自动运行脚本。
  * @param {string} username - 用户的名称。
  * @param {string} id - 要删除的脚本的ID。
- * @returns {object} - 操作结果。
+ * @returns {void}
  */
 export function removeAutoRunScript(username, id) {
 	const data = getScriptsData(username)
 	const initialLength = data.scripts.length
 	data.scripts = data.scripts.filter(s => s.id !== id)
 	if (data.scripts.length === initialLength)
-		return { success: false, message: 'Script not found.' }
-
+		throw httpError(404, 'Script not found.')
 	saveShellData(username, 'browserIntegration', DATA_NAME)
-	return { success: true, message: 'Script removed.' }
 }
 
 /**
@@ -547,15 +546,15 @@ export function removeAutoRunScript(username, id) {
  * @param {string} username - 用户的名称。
  * @param {string} id - 要更新的脚本的ID。
  * @param {object} fields - 要更新的字段。
- * @returns {object} - 操作结果。
+ * @returns {object} 更新后的脚本。
  */
 export function updateAutoRunScript(username, id, fields) {
 	const data = getScriptsData(username)
 	const script = data.scripts.find(s => s.id === id)
-	if (!script) return { success: false, message: 'Script not found.' }
+	if (!script) throw httpError(404, 'Script not found.')
 	Object.assign(script, { ...fields, id })
 	saveShellData(username, 'browserIntegration', DATA_NAME)
-	return { success: true, message: 'Script updated.', script }
+	return script
 }
 
 /**

@@ -16,6 +16,7 @@ import {
 } from '/scripts/themeViewTransition.mjs'
 
 import { extractColorsFromImage } from './colorUtils.mjs'
+import { deleteCustomTheme, getCustomTheme, listCustomThemes, saveCustomTheme } from './src/endpoints.mjs'
 
 applyTheme()
 await initTranslations('themeManage')
@@ -38,9 +39,8 @@ let previewStyleTag = null
  * @returns {Promise<void>}
  */
 async function fetchCustomThemes() {
-	const res = await fetch('/api/parts/shells:themeManage/list')
-	if (res.ok) {
-		customThemes = await res.json()
+	try {
+		customThemes = await listCustomThemes()
 		// Inject Custom CSS for Previews
 		let styleTag = document.getElementById('custom-themes-css')
 		if (!styleTag) {
@@ -49,8 +49,12 @@ async function fetchCustomThemes() {
 			document.head.appendChild(styleTag)
 		}
 		styleTag.textContent = customThemes.map((t) => t.css).join('\n')
-	} else
+	} catch (err) {
+		console.error('Failed to load custom themes', err)
+		const styleTag = document.getElementById('custom-themes-css')
+		if (styleTag) styleTag.textContent = ''
 		customThemes = []
+	}
 }
 
 // --- List View Logic ---
@@ -205,7 +209,13 @@ async function handleThemeApply(id, isCustom) {
  */
 async function handleDelete(id) {
 	if (!await confirmI18n('themeManage.editor.deleteConfirm', { id })) return
-	await fetch(`/api/parts/shells:themeManage/theme/${id}`, { method: 'DELETE' })
+	try {
+		await deleteCustomTheme(id)
+	} catch (err) {
+		console.error('Failed to delete custom theme', err)
+		showToastI18n('error', 'themeManage.editor.failedToDelete', { message: err.message })
+		return
+	}
 	if (getCurrentTheme() === id) setTheme('light') // Fallback
 	renderList()
 }
@@ -217,61 +227,57 @@ async function handleDelete(id) {
  * @returns {Promise<void>}
  */
 async function handleClone(id, isCustom) {
-	let css = ''
-	if (isCustom) {
-		const res = await fetch(`/api/parts/shells:themeManage/theme/${id}`)
-		const data = await res.json()
-		css = data.css
-	} else {
-		// Generate CSS from built-in theme
-		const vars = []
-		DAISY_COLORS.forEach((color) => {
-			const hex = getComputedColor(color, id)
-			vars.push(`--color-${color}: ${hex};`)
-			if (DAISY_MAP[color])
-				vars.push(`--${DAISY_MAP[color]}: from ${hex} l c h;`)
-		})
+	try {
+		const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
+		if (!newId) return
+		let css = ''
+		const sourceCustom = isCustom ? await getCustomTheme(id) : null
+		if (isCustom) {
+			css = sourceCustom.css
+		} else {
+			// Generate CSS from built-in theme
+			const vars = []
+			DAISY_COLORS.forEach((color) => {
+				const hex = getComputedColor(color, id)
+				vars.push(`--color-${color}: ${hex};`)
+				if (DAISY_MAP[color])
+					vars.push(`--${DAISY_MAP[color]}: from ${hex} l c h;`)
+			})
 
-		// Try to read common variables
-		const container = document.createElement('div')
-		container.dataset.theme = id
-		container.style.position = 'absolute'
-		container.style.visibility = 'hidden'
-		container.style.pointerEvents = 'none'
-		document.body.appendChild(container)
+			// Try to read common variables
+			const container = document.createElement('div')
+			container.dataset.theme = id
+			container.style.position = 'absolute'
+			container.style.visibility = 'hidden'
+			container.style.pointerEvents = 'none'
+			document.body.appendChild(container)
 
-		const roundedBox = getComputedStyle(container).getPropertyValue('--rounded-box').trim()
-		const borderBtn = getComputedStyle(container).getPropertyValue('--border-btn').trim()
+			try {
+				const roundedBox = getComputedStyle(container).getPropertyValue('--rounded-box').trim()
+				const borderBtn = getComputedStyle(container).getPropertyValue('--border-btn').trim()
 
-		document.body.removeChild(container)
+				if (roundedBox) vars.push(`--rounded-box: ${roundedBox};`)
+				if (borderBtn) vars.push(`--border-btn: ${borderBtn};`)
+			} finally {
+				document.body.removeChild(container)
+			}
 
-		if (roundedBox) vars.push(`--rounded-box: ${roundedBox};`)
-		if (borderBtn) vars.push(`--border-btn: ${borderBtn};`)
+			css = `[data-theme="${newId}"] {\n  ${vars.join('\n  ')}\n}`
+		}
 
-		css = `[data-theme="PLACEHOLDER"] {\n  ${vars.join('\n  ')}\n}`
+
+		const newData = {
+			id: newId,
+			css,
+			mjs: sourceCustom?.mjs || '',
+		}
+
+		await saveCustomTheme(newData)
+		renderList()
+	} catch (err) {
+		console.error('Failed to clone theme', err)
+		showToastI18n('error', 'themeManage.editor.failedToClone', { message: err.message })
 	}
-
-	const newId = await promptI18n('themeManage.editor.newThemeName', { id }, `copy-${id}`)
-	if (!newId) return
-
-	const newData = {
-		id: newId,
-		css: css.replace('PLACEHOLDER', newId),
-	}
-
-	// If cloning a custom theme with MJS, include it
-	if (isCustom) {
-		const res = await fetch(`/api/parts/shells:themeManage/theme/${id}`)
-		const data = await res.json()
-		if (data.mjs) newData.mjs = data.mjs
-	}
-
-	await fetch('/api/parts/shells:themeManage/save', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(newData),
-	})
-	renderList()
 }
 
 // --- Editor Logic ---
@@ -431,16 +437,14 @@ async function openEditor(themeData) {
 	currentEditId = themeData ? themeData.id : ''
 
 	// Render Editor
-	const editorHtml = await renderTemplate('editor', {
-		isNew: !themeData,
-		name: currentEditId,
-		css: themeData ? themeData.css : '',
-	})
-
 	// Swap View
 	themeListContainer.style.display = 'none'
 	searchInput.parentElement.style.display = 'none' // Hide search bar
-	listPanel.appendChild(editorHtml)
+	listPanel.appendChild(await renderTemplate('editor', {
+		isNew: !themeData,
+		name: currentEditId,
+		css: themeData ? themeData.css : '',
+	}))
 
 	// --- Bind Editor Events ---
 
@@ -662,17 +666,15 @@ async function openEditor(themeData) {
 })
 `
 
-			const res = await fetch('/api/parts/shells:themeManage/save', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
-			})
-
-			if (res.ok) {
+			try {
+				await saveCustomTheme(payload)
 				showToastI18n('success', 'themeManage.editor.saved')
 				handleThemeApply(id, true)
 				closeEditor()
-			} else showToastI18n('error', 'themeManage.editor.failedToSave')
+			} catch (err) {
+				console.error('Failed to save custom theme', err)
+				showToastI18n('error', 'themeManage.editor.failedToSave')
+			}
 		},
 	)
 

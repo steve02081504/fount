@@ -40,7 +40,8 @@
 			"socketError": "🔌❌: ${error}",
 			"parseResponseFailed": "🤔📨❌: ${error}",
 			"cannotParseResponse": "🤷‍♂️📨",
-			"unknownError": "❓🤷‍♂️❌"
+			"unknownError": "❓🤷‍♂️❌",
+			"partPathRequired": "🧩📍❌"
 		},
 		"partManager": {
 			"partInited": "🧩${partpath} 🌟✅",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "🔒⌛️ ${timeLeft}",
 			"accountLockedAttempts": "🔒❌🔄",
 			"powValidationFailed": "🤖✅❌🔁",
+			"tokenAndSolutionsRequired": "🏷️🧮❌",
 			"apiErrorBodyUnreadable": "🖥️📄❓🔁"
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
+			"toolRunningLang": "▶️ ${lang}",
+			"toolSearchingContent": "🔍 ${content}",
+			"toolOverridingFilepath": "📝 ${filepath}",
+			"toolReplacingFilepath": "🔄 ${filepath}",
+			"toolReadingFilepath": "📖 ${filepath}",
 			"reasoningDetailsTitle": "🧠📜",
 			"logprobsNotApplicable": "N/A",
 			"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "🔑❌",
 			"revokeMissingJti": "🔑🆔❌",
 			"revokeMissingPassword": "🔑📋❌",
+			"verifyMissingApiKey": "🔑❌",
 			"revokeButton": "🗑️",
 			"revokeConfirm": "🤔🗑️❓",
 			"revokeSuccess": "✅🗑️",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "🆕🎨:",
 			"deleteConfirm": "🗑️🎨 ${id}❓",
 			"saved": "💾✅",
-			"failedToSave": "💾❌"
+			"failedToSave": "💾❌",
+			"failedToDelete": "🗑️❌ ${message}",
+			"failedToClone": "📋❌ ${message}"
 		},
 		"themes": {
 			"auto": "⚙️",

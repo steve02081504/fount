@@ -1,8 +1,10 @@
 /**
  * IDE 集成配置页：API 密钥、角色选择、一站式 Agent 脚本 URL（Zed 用 deno 跑远端脚本）。
  */
+import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
+import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations, geti18n, setLocalizeLogic } from '/scripts/i18n.mjs'
+import { initTranslations } from '/scripts/i18n.mjs'
 import { renderMarkdown } from '/scripts/markdown.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 
@@ -90,9 +92,8 @@ async function loadSupportedEditors() {
 		const p = Object.assign(document.createElement('p'), {
 			className: 'text-sm text-error'
 		})
-		setLocalizeLogic(p, () => {
-			p.textContent = geti18n('ide_integration.supportedEditorsError', { message: error.message })
-		})
+		p.dataset.i18n = 'ide_integration.supportedEditorsError'
+		p.dataset.message = error.message
 		container.appendChild(p)
 	}
 }
@@ -100,7 +101,6 @@ async function loadSupportedEditors() {
 loadSupportedEditors()
 
 const { origin } = window.location
-const listUrl = `${origin}/api/getlist/chars`
 const scriptPath = `${origin}/parts/shells:ideIntegration/fount_ide_agent.mjs`
 
 const acpCharSelect = document.getElementById('acp-char-select')
@@ -157,8 +157,10 @@ async function updateZedConfig() {
  * 加载角色列表并填充下拉框。
  */
 async function loadCharList() {
-	const res = await fetch(listUrl, { credentials: 'include' })
-	if (!res.ok) {
+	let list
+	try {
+		list = await getPartList('chars')
+	} catch {
 		const opt = document.createElement('option')
 		opt.value = ''
 		opt.dataset.i18n = 'ide_integration.charListError'
@@ -166,7 +168,6 @@ async function loadCharList() {
 		acpCharSelect.appendChild(opt)
 		return
 	}
-	const list = await res.json()
 	acpCharSelect.innerHTML = ''
 	const empty = document.createElement('option')
 	empty.value = ''
@@ -202,11 +203,7 @@ let apiKey = localStorage.getItem('ide_integration-apikey')
  */
 async function checkApiKey() {
 	if (apiKey) {
-		const res = await fetch('/api/apikey/verify', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ apiKey }),
-		})
+		const res = await verifyApiKey(apiKey)
 		if (res.ok) {
 			const data = await res.json()
 			if (!data.valid) {
@@ -226,16 +223,7 @@ async function checkApiKey() {
  */
 async function generateApiKey() {
 	try {
-		const res = await fetch('/api/apikey/create', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ description: 'IDE Integration ACP' }),
-		})
-		if (!res.ok) {
-			const error = await res.json()
-			throw new Error(error.message || 'Failed to create API key')
-		}
-		const data = await res.json()
+		const data = await createApiKey('IDE Integration ACP')
 		apiKey = data.apiKey
 		localStorage.setItem('ide_integration-apikey', apiKey)
 		renderApiKey()

@@ -12,7 +12,7 @@ import { pollQrSession, startQrSession } from './wechat_qr.mjs'
  */
 function applyQrLoginResult(username, pollResult) {
 	const existingConfig = getBotConfig(username, pollResult.botname)
-	const botSpecificConfig = { ...existingConfig.config || {} }
+	const botSpecificConfig = { ...existingConfig.config }
 	const normalizedUrl = String(pollResult.apiBaseUrl || DEFAULT_WECHAT_ILINK_BASE).replace(/\/+$/, '')
 
 	if (pollResult.ilinkUserId && (!botSpecificConfig.OwnerWeChatId || String(botSpecificConfig.OwnerWeChatId).includes('your_')))
@@ -93,13 +93,8 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:wechatbot/qrcode/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body || {}
-		try {
-			const out = await startQrSession({ username, botname: botname || null })
-			res.status(200).json(out)
-		}
-		catch (e) {
-			res.status(500).json({ message: e?.message || String(e) })
-		}
+		const out = await startQrSession({ username, botname: botname || null })
+		res.status(200).json(out)
 	})
 
 	router.get('/api/parts/shells\\:wechatbot/qrcode/poll', authenticate, async (req, res) => {

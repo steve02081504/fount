@@ -40,7 +40,8 @@
 			"socketError": "Errore socket: ${error}",
 			"parseResponseFailed": "Impossibile analizzare la risposta del server: ${error}",
 			"cannotParseResponse": "Impossibile analizzare la risposta del server.",
-			"unknownError": "Errore sconosciuto."
+			"unknownError": "Errore sconosciuto.",
+			"partPathRequired": "Specifica il percorso del componente."
 		},
 		"partManager": {
 			"partInited": "Il componente ${partpath} è stato inizializzato",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "L'account è stato bloccato, riprova dopo ${timeLeft}.",
 			"accountLockedAttempts": "L'account è stato temporaneamente bloccato a causa di troppi tentativi di accesso non riusciti.",
 			"powValidationFailed": "Verifica di sicurezza non riuscita. Riprova.",
+			"tokenAndSolutionsRequired": "Token e solutions obbligatori.",
 			"apiErrorBodyUnreadable": "Il server ha restituito informazioni che non è stato possibile analizzare. Per favore riprova più tardi."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili.](${sponsorLink})"
 			},
 			"commonToolCalling": "Esecuzione strumento",
+			"toolRunningLang": "Esecuzione di ${lang}",
+			"toolSearchingContent": "Ricerca di ${content}",
+			"toolOverridingFilepath": "Sovrascrittura di ${filepath}",
+			"toolReplacingFilepath": "Sostituzione in ${filepath}",
+			"toolReadingFilepath": "Lettura di ${filepath}",
 			"reasoningDetailsTitle": "Processo di ragionamento",
 			"logprobsNotApplicable": "non applicabile",
 			"logprobsTopLogprobsMeta": "top_logprobs (selezionato: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "La chiave API non è stata trovata.",
 			"revokeMissingJti": "Si prega di specificare la chiave da revocare.",
 			"revokeMissingPassword": "La revoca di una chiave richiede una password.",
+			"verifyMissingApiKey": "Fornisci una chiave API.",
 			"revokeButton": "Revoca",
 			"revokeConfirm": "Sei sicuro di voler revocare questa chiave API?",
 			"revokeSuccess": "La chiave API è stata revocata con successo.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Nuovo nome del tema:",
 			"deleteConfirm": "Sei sicuro di voler eliminare il tema ${id}?",
 			"saved": "Salvato!",
-			"failedToSave": "Salvataggio non riuscito"
+			"failedToSave": "Salvataggio non riuscito",
+			"failedToDelete": "Impossibile eliminare il tema: ${message}",
+			"failedToClone": "Impossibile copiare il tema: ${message}"
 		},
 		"themes": {
 			"auto": "Automatico",

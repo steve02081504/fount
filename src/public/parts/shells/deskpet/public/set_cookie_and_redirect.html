@@ -15,36 +15,21 @@
 
 <body>
 	<main aria-hidden="true"><!-- Setup page; content is script-driven --></main>
-	<script>
-		// Get URL parameters
+	<script type="module">
+		import { getApiCookie } from '/scripts/endpoints.mjs'
+
 		const urlParams = new URLSearchParams(window.location.search)
 		const apikey = urlParams.get('apikey')
 		const redirect = urlParams.get('redirect')
 
-		if (!apikey || !redirect) {
+		if (!apikey || !redirect)
 			document.body.innerHTML = '<h1>Error: Missing parameters</h1>'
-			return
+		else try {
+			await getApiCookie(apikey)
+			window.location.href = decodeURIComponent(redirect)
+		} catch (error) {
+			document.body.innerHTML = `<h1>Error: ${error.error || error.message || 'Failed to set cookie'}</h1>`
 		}
-
-		// Set API cookie via POST request
-		fetch('/api/get-api-cookie', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ apiKey: apikey }),
-		})
-			.then(response => response.json())
-			.then(result => {
-				if (result.success)
-					// Redirect to the actual pet URL
-					window.location.href = decodeURIComponent(redirect)
-				else
-					document.body.innerHTML = `<h1>Error: ${result.error || 'Failed to set cookie'}</h1>`
-			})
-			.catch(error => {
-				document.body.innerHTML = `<h1>Error: ${error.message}</h1>`
-			})
 	</script>
 </body>
 

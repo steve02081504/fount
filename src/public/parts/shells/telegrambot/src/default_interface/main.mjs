@@ -150,17 +150,17 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				if (ctx.chat.type === 'private')
 					shouldReply = true
 				else if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup')
-					outer: for (const msg of triggerMessages) {
-						const originalMessageText = msg.text || msg.caption || ''
+					outer: for (const triggerMessage of triggerMessages) {
+						const originalMessageText = triggerMessage.text || triggerMessage.caption || ''
 						if (botInfo.username && originalMessageText.toLowerCase().includes(`@${botInfo.username.toLowerCase()}`)) {
 							shouldReply = true
 							break
 						}
-						if (msg.reply_to_message?.from?.id === botInfo.id) {
+						if (triggerMessage.reply_to_message?.from?.id === botInfo.id) {
 							shouldReply = true
 							break
 						}
-						const entityList = [...msg.entities || [], ...msg.caption_entities || []]
+						const entityList = [...triggerMessage.entities || [], ...triggerMessage.caption_entities || []]
 						for (const entity of entityList)
 							if (entity.type === 'mention') {
 								const mention = originalMessageText.substring(entity.offset, entity.offset + entity.length)

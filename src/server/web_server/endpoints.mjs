@@ -2,12 +2,13 @@ import fs from 'node:fs'
 
 import cors from 'npm:cors'
 
+import { debugLog } from '../../scripts/debug_log.mjs'
 import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, mutationResponseHttpStatus } from '../auth.mjs'
-import { currentGitCommit } from '../autoupdate.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import {
@@ -43,13 +44,13 @@ async function ensurePowTokenOr401(req, res) {
 	if (is_local_ip_from_req(req)) return true
 	const { powToken } = req.body
 	if (!powToken) {
-		res.status(401).json({ success: false, i18nKey: 'auth.error.powValidationFailed' })
+		res.status(401).json({ i18nKey: 'auth.error.powValidationFailed' })
 		return false
 	}
 	const { pow } = await import('../../scripts/pow.mjs')
 	const { success } = await pow.validateToken(powToken)
 	if (!success) {
-		res.status(401).json({ success: false, i18nKey: 'auth.error.powValidationFailed' })
+		res.status(401).json({ i18nKey: 'auth.error.powValidationFailed' })
 		return false
 	}
 	return true
@@ -102,18 +103,26 @@ export function registerEndpoints(router) {
 		Promise.reject(skip_report(new Error('test error')))
 		return res.status(200).json({ message: 'hell yeah!' })
 	})
+	router.post('/api/test/debug-log', authenticate, async (req, res) => {
+		const { name, data } = req.body
+		await debugLog(name, data)
+		res.status(204).end()
+	})
 	router.get('/api/ping', cors(), async (req, res) => {
 		const is_local_ip = is_local_ip_from_req(req)
 		let hosturl_in_local_ip
 		let ver
+		let branch
 		if (is_local_ip || await auth_request(req, res)) {
 			try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
 			ver = currentGitCommit
+			branch = currentGitBranch
 		}
 		return res.status(200).json({
 			message: 'pong',
 			client_name: 'fount',
 			ver,
+			branch,
 			uuid: config.uuid,
 			is_local_ip,
 			hosturl_in_local_ip,
@@ -128,7 +137,7 @@ export function registerEndpoints(router) {
 	router.post('/api/pow/redeem', async (req, res) => {
 		const { pow } = await import('../../scripts/pow.mjs')
 		const { token, solutions } = req.body
-		if (!token || !solutions) return res.status(400).json({ success: false })
+		if (!token || !solutions) return res.status(400).json({ i18nKey: 'auth.error.tokenAndSolutionsRequired' })
 		res.json(await pow.redeemChallenge({ token, solutions }))
 	})
 
@@ -160,20 +169,18 @@ export function registerEndpoints(router) {
 		if (!await ensurePowTokenOr401(req, res)) return
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid, req)
-		const { accessToken, refreshToken, ...safeResult } = result
-		// 在登录成功时设置 Cookie
-		if (result.status === 200) {
+		const { status, accessToken, refreshToken, ...json } = result
+		if (status === 200 && accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
-			res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION }) // 短效
-			res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION }) // 长效
+			res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
+			res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 		}
-		res.status(result.status).json(safeResult)
+		res.status(status).json(json)
 	})
 
 	router.post('/api/webauthn/login/begin', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		if (!await ensurePowTokenOr401(req, res)) return
-		const result = await webauthnLoginBegin(req)
-		res.status(result.status).json(result)
+		respondAuthResult(res, await webauthnLoginBegin(req))
 	})
 
 	router.post('/api/webauthn/login/complete', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
@@ -181,18 +188,18 @@ export function registerEndpoints(router) {
 		const { credential, deviceid, authSessionToken } = req.body
 		const token = String(authSessionToken ?? '').trim()
 		if (!credential)
-			return res.status(400).json({ success: false, i18nKey: 'auth.webauthn.errorCredentialRequired' })
+			return res.status(400).json({ i18nKey: 'auth.webauthn.errorCredentialRequired' })
 		if (!token)
-			return res.status(400).json({ success: false, i18nKey: 'auth.webauthn.errorAuthSessionRequired' })
+			return res.status(400).json({ i18nKey: 'auth.webauthn.errorAuthSessionRequired' })
 		const deviceId = deviceid?.trim?.() || 'unknown'
 		const result = await webauthnLoginComplete(credential, token, deviceId, req)
-		const { accessToken, refreshToken, ...safeResult } = result
-		if (result.status === 200 && result.accessToken) {
+		const { status, accessToken, refreshToken, ...json } = result
+		if (status === 200 && accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
 			res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
 			res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 		}
-		res.status(result.status).json(safeResult)
+		res.status(status).json(json)
 	})
 
 	router.post('/api/register/generateverificationcode', async (req, res) => {
@@ -208,12 +215,11 @@ export function registerEndpoints(router) {
 			if (!await ensurePowTokenOr401(req, res)) return
 
 			if (verifyVerificationCode(verificationcode, ip) === false) {
-				res.status(401).json({ success: false, i18nKey: 'auth.error.verificationCodeError' })
+				res.status(401).json({ i18nKey: 'auth.error.verificationCodeError' })
 				return
 			}
 		}
-		const result = await register(username, password)
-		res.status(result.status).json(result)
+		respondAuthResult(res, await register(username, password))
 	})
 
 	router.post('/api/logout', authenticate, logout)
@@ -222,44 +228,42 @@ export function registerEndpoints(router) {
 		const user = await getUserByReq(req)
 		const { description } = req.body
 		const { apiKey, jti } = await generateApiKey(user.username, description)
-		res.status(201).json({ success: true, apiKey, jti })
+		res.status(201).json({ apiKey, jti })
 	})
 
 	router.get('/api/apikey/list', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const userConfig = getUserByUsername(user.username)
-		const apiKeys = (userConfig.auth.apiKeys || []).map(key => ({
+		const apiKeys = (user.auth.apiKeys || []).map(key => ({
 			jti: key.jti,
 			prefix: key.prefix,
 			description: key.description,
 			createdAt: key.createdAt,
 			lastUsed: key.lastUsed,
 		}))
-		res.status(200).json({ success: true, apiKeys })
+		res.status(200).json({ apiKeys })
 	})
 
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { jti, password } = req.body
-		if (!jti) return res.status(400).json({ success: false, i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
-		if (!password) return res.status(400).json({ success: false, i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
+		if (!jti) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
+		if (!password) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
 
-		const result = await revokeApiKey(user.username, jti, password)
-		res.status(mutationResponseHttpStatus(result)).json(result)
+		await revokeApiKey(user.username, jti, password)
+		res.status(200).json({})
 	})
 
 	router.post('/api/apikey/verify', async (req, res) => {
 		const { apiKey } = req.body
-		if (!apiKey) return res.status(400).json({ success: false, error: 'API key is required.' })
+		if (!apiKey) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.verifyMissingApiKey' })
 
 		const user = await verifyApiKey(apiKey)
-		res.status(200).json({ success: true, valid: !!user })
+		res.status(200).json({ valid: !!user })
 	})
 
 	router.post('/api/get-api-cookie', async (req, res) => {
 		const { apiKey } = req.body
-		const result = await setApiCookieResponse(apiKey, req, res)
-		res.status(result.status).json(result)
+		respondAuthResult(res, await setApiCookieResponse(apiKey, req, res))
 	})
 
 	router.get('/api/whoami', authenticate, async (req, res) => {
@@ -282,9 +286,9 @@ export function registerEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const { partpath } = req.body
 		const normalized = partpath?.replace?.(/:/g, '/')
-		if (!normalized) return res.status(400).json({ success: false, error: 'Part path is required.' })
+		if (!normalized) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
 		await loadPart(username, normalized)
-		res.status(200).json({ success: true, message: `Part ${normalized} loaded successfully.` })
+		res.status(200).json({ message: `Part ${normalized} loaded successfully.` })
 	})
 
 	// Generic path handlers

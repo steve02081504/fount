@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import { join } from 'node:path'
 
+import { httpError } from '../../../../../scripts/http_error.mjs'
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartBranches, getPartDetails, GetPartPath } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, loadTempData } from '../../../../../server/setting_loader.mjs'
@@ -168,11 +169,11 @@ export async function unlockAchievement(username, partpath, achievementId) {
 	const achievement = registry[partpath]?.[achievementId]
 
 	if (!achievement)
-		return { success: false, message: 'Achievement not found.' }
+		throw httpError(404, 'Achievement not found.')
 
 	const data = getUserAchievementData(username)
 	if (data.unlocked[partpath]?.[achievementId])
-		return { success: true, message: 'Achievement already unlocked.' }
+		return { message: 'Achievement already unlocked.' }
 
 	const unlockedTime = new Date().toISOString();
 	(data.unlocked[partpath] ??= {})[achievementId] = unlockedTime
@@ -206,7 +207,6 @@ export async function unlockAchievement(username, partpath, achievementId) {
 	sendEventToUser(username, 'achievement-unlocked', { achievement: unlockedAchievement })
 
 	return {
-		success: true,
 		achievement: {
 			[achievementId]: unlockedAchievement,
 		},
@@ -226,11 +226,11 @@ export async function lockAchievement(username, partpath, achievementId, reason)
 	const achievement = registry[partpath]?.[achievementId]
 
 	if (!achievement)
-		return { success: false, message: 'Achievement not found.' }
+		throw httpError(404, 'Achievement not found.')
 
 	const data = getUserAchievementData(username)
 	if (!data.unlocked[partpath]?.[achievementId])
-		return { success: true, message: 'Achievement not unlocked.' }
+		return { message: 'Achievement not unlocked.' }
 
 	delete data.unlocked[partpath][achievementId]
 
@@ -240,9 +240,9 @@ export async function lockAchievement(username, partpath, achievementId, reason)
 	saveShellData(username, 'achievements', 'data')
 
 	if (reason === 'relock_by_clicking')
-		unlockAchievement(username, 'shells/achievements', 'relock_by_clicking')
+		await unlockAchievement(username, 'shells/achievements', 'relock_by_clicking')
 
-	return { success: true }
+	return {}
 }
 
 /**

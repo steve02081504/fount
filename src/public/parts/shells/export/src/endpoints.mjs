@@ -23,26 +23,15 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
-		try {
-			const fountJson = await getFountJson(username, partpath)
-			res.json(fountJson)
-		}
-		catch (error) {
-			res.status(500).json({ message: error.message })
-		}
+		res.json(await getFountJson(username, partpath))
 	})
 
 	router.post('/api/parts/shells\\:export/share', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const partpath = (req.body.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
-		try {
-			const link = await createShareLink(username, partpath, req.body.expiration, req.body.withData)
-			res.json({ link })
-		}
-		catch (error) {
-			res.status(500).json({ message: error.message })
-		}
+		const link = await createShareLink(username, partpath, req.body.expiration, req.body.withData)
+		res.json({ link })
 	})
 
 	router.get('/virtual_files/parts/shells\\:export/download/*partpath', authenticate, async (req, res) => {

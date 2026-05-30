@@ -1,9 +1,10 @@
 /**
  * 代理 shell 的客户端逻辑。
  */
+import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
 import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
 
 applyTheme()
@@ -29,13 +30,7 @@ let apiKey = localStorage.getItem('proxy-apikey')
 async function checkApiKey() {
 	if (!apiKey) return renderApiKey()
 
-	const response = await fetch('/api/apikey/verify', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ apiKey }),
-	})
+	const response = await verifyApiKey(apiKey)
 	if (!response.ok) throw new Error('Failed to verify API key')
 	const data = await response.json()
 	if (!data.valid) {
@@ -52,18 +47,7 @@ async function checkApiKey() {
  */
 async function generateApiKey() {
 	try {
-		const response = await fetch('/api/apikey/create', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ description: 'Proxy Shell API Key' }),
-		})
-		if (!response.ok) {
-			const errorData = await response.json()
-			throw new Error(errorData.message || 'Failed to generate API key')
-		}
-		const data = await response.json()
+		const data = await createApiKey('Proxy Shell API Key')
 		apiKey = data.apiKey
 		localStorage.setItem('proxy-apikey', apiKey)
 		renderApiKey()
@@ -78,10 +62,8 @@ async function generateApiKey() {
  * @returns {Promise<void>}
  */
 async function renderApiKey() {
-	apiKeySection.innerHTML = '' // Clear section
 	if (apiKey) {
-		const apiKeyElement = await renderTemplate('api_key_display', { apiKey })
-		apiKeySection.appendChild(apiKeyElement)
+		await mountTemplate(apiKeySection, 'api_key_display', { apiKey })
 
 		document.getElementById('copyApiKeyButton').addEventListener('click', () => {
 			navigator.clipboard.writeText(apiKey)
@@ -101,8 +83,7 @@ async function renderApiKey() {
 		proxyApiUrlQueryInput.value = `${apiUrl}?fount-apikey=${apiKey}`
 	}
 	else {
-		const generateButtonElement = await renderTemplate('generate_api_key_button')
-		apiKeySection.appendChild(generateButtonElement)
+		await mountTemplate(apiKeySection, 'generate_api_key_button')
 
 		document.getElementById('generateApiKeyButton').addEventListener('click', generateApiKey)
 		proxyApiUrlQueryInput.value = ''

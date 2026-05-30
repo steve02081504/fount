@@ -1,9 +1,9 @@
 /** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
+import { initTranslations, preferredLangsStorageKey } from './i18n_base.mjs'
 import { onElementRemoved } from './onElementRemoved.mjs'
 import { escapeRegExp } from './regex.mjs'
-import { onServerEvent } from './server_events.mjs'
 
 /**
  * 本地化键
@@ -62,8 +62,10 @@ export function setLocalizeLogic(element, logic) {
 }
 
 let i18n
-let saved_pageid
-let lastKnownLangs
+/** @type {string|undefined} */
+export let saved_pageid
+/** @type {string[]|undefined} */
+export let lastKnownLangs
 
 /**
  * 主要区域设置。
@@ -76,7 +78,12 @@ export let main_locale = 'en-UK'
  * @returns {string[]} 首选语言列表。
  */
 export function loadPreferredLangs() {
-	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]').filter(Boolean)
+	try {
+		const parsed = JSON.parse(localStorage.getItem(preferredLangsStorageKey) || '[]')
+		return Array.isArray(parsed) ? parsed.filter(Boolean) : []
+	} catch {
+		return []
+	}
 }
 
 /**
@@ -87,51 +94,76 @@ export function loadPreferredLangs() {
 export async function savePreferredLangs(langs) {
 	const oldLangs = loadPreferredLangs()
 	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
-	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs || []))
+	await setLocales(langs)
+}
+
+/**
+ * 写入首选语言并重新加载翻译。
+ * @param {string[]} langs - 首选语言列表。
+ * @returns {Promise<void>}
+ */
+export async function setLocales(langs) {
+	localStorage.setItem(preferredLangsStorageKey, JSON.stringify(langs || []))
 	await initTranslations()
 }
 
 /**
- * 获取可用的区域设置。
- * @returns {Promise<object>} 可用的区域设置。
+ * 从优先列表中选取与可用列表最匹配的区域设置。
+ * @param {string[]} preferredlocaleList - 优先区域设置列表。
+ * @param {string[]} localeList - 可用区域设置列表。
+ * @returns {string} 最佳匹配的区域设置代码。
  */
-export async function getAvailableLocales() {
-	const response = await fetch('/api/getavailablelocales')
-	if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-	return response.json()
+export function getBestLocale(preferredlocaleList, localeList) {
+	for (const preferredlocale of preferredlocaleList) {
+		if (localeList.includes(preferredlocale))
+			return preferredlocale
+		const temp = localeList.find(name => name.startsWith(preferredlocale.split('-')[0]))
+		if (temp) return temp
+	}
+	return 'en-UK'
 }
 
 /**
- * 从服务器获取多语言数据并初始化翻译。
- * @param {string} [pageid] - 页面 ID。
- * @param {string[]} [preferredLangs] - 用户手动设置的优先语言列表
+ * initTranslations 共用流程：更新状态、加载 bundle、应用到 DOM。
+ * @param {string|undefined} pageid - 页面 ID。
+ * @param {string[]} preferredLangs - 首选语言列表。
+ * @param {() => Promise<{ bundle: object, locale: string }|undefined>} loadBundle - 加载翻译 bundle。
  * @returns {Promise<void>}
  */
-export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
-	saved_pageid = pageid
-	lastKnownLangs = preferredLangs
-	main_locale = [...preferredLangs, navigator.language, ...navigator.languages, 'en-UK'].filter(Boolean)[0]
+export async function runInitTranslations(pageid, preferredLangs, loadBundle) {
 	try {
-		const url = new URL('/api/getlocaledata', location.origin)
-		url.searchParams.set('preferred', preferredLangs.join(','))
-
-		const response = await fetch(url)
-		if (!response.ok)
-			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
-
-		i18n = await response.json()
+		const result = await loadBundle()
+		if (result)
+			setI18nBundle(result.bundle, result.locale, pageid, preferredLangs)
+		else {
+			if (pageid) saved_pageid = pageid
+			lastKnownLangs = preferredLangs
+		}
+		applyTranslations()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
-	if (i18n) applyTranslations()
 }
 
 /**
- * 获取嵌套对象的值。
- * @param {object} obj - 对象。
- * @param {string} key - 键。
- * @returns {any} 嵌套对象的值。
+ * 设置翻译 bundle。
+ * @param {object} bundle 翻译 JSON
+ * @param {string} locale 主 locale
+ * @param {string} pageid 页面 id
+ * @param {string[]} [langs] 已知首选语言
+ */
+export function setI18nBundle(bundle, locale, pageid, langs) {
+	i18n = bundle
+	main_locale = locale
+	saved_pageid = pageid
+	if (langs) lastKnownLangs = langs
+}
+
+/**
+ * @param {object} obj 对象。
+ * @param {string} key 点分隔键。
+ * @returns {any|undefined} 嵌套值。
  */
 function getNestedValue(obj, key) {
 	const keys = key.split('.')
@@ -287,7 +319,11 @@ export function geti18n(key, params = {}) {
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 	return key
 }
-const { console } = globalThis
+
+/**
+ *
+ */
+export const {console} = globalThis
 
 /**
  * 将值转换为字符串。
@@ -297,6 +333,22 @@ const { console } = globalThis
 function toString(value) {
 	return value + ''
 }
+
+/**
+ * @param {(text: string) => void} log - 底层日志函数。
+ * @returns {(key: LocaleKey, params?: object) => void} 本地化日志函数。
+ */
+function withI18n(log) {
+	return (key, params = {}) => {
+		try {
+			console.stackFrameSkipCount++
+			log(toString(geti18n(key, params)))
+		} finally {
+			console.stackFrameSkipCount--
+		}
+	}
+}
+
 /**
  * 无参数的本地化键重载
  * @overload
@@ -319,14 +371,7 @@ function toString(value) {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.infoI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.info(toString(geti18n(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
+console.infoI18n = withI18n(console.info)
 
 /**
  * 无参数的本地化键重载
@@ -350,14 +395,7 @@ console.infoI18n = (key, params = {}) => {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.logI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.log(toString(geti18n(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
+console.logI18n = withI18n(console.log)
 
 /**
  * 无参数的本地化键重载
@@ -381,14 +419,7 @@ console.logI18n = (key, params = {}) => {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.warnI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.warn(toString(geti18n(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
+console.warnI18n = withI18n(console.warn)
 
 /**
  * 无参数的本地化键重载
@@ -412,14 +443,7 @@ console.warnI18n = (key, params = {}) => {
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
-console.errorI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.error(toString(geti18n(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
+console.errorI18n = withI18n(console.error)
 
 /**
  * 无参数的本地化键重载
@@ -536,7 +560,6 @@ export function confirmI18n(key, params = {}) {
  * 导出的控制台对象。
  * @type {Console}
  */
-export { console }
 
 /**
  * 翻译单个元素。
@@ -573,30 +596,32 @@ function translateSingularElement(element) {
 			// deno-lint-ignore no-cond-assign
 			if (element.textContent ||= literal_value) updated = true
 		}
-		else if (!Array.isArray(getNestedValue(i18n, key)) && (getNestedValue(i18n, key) instanceof Object)) {
-			if (!Object.keys(getNestedValue(i18n, key)).length) break
-			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
-			for (const attr of attributes) {
-				const specificKey = `${key}.${attr}`
-				const translation = geti18n_nowarn(specificKey, element.dataset)
-				if (translation) updateAttribute(attr, translation)
+		else {
+			const nested = getNestedValue(i18n, key)
+			if (!Array.isArray(nested) && nested instanceof Object) {
+				if (!Object.keys(nested).length) break
+				const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
+				for (const attr of attributes) {
+					const specificKey = `${key}.${attr}`
+					const translation = geti18n_nowarn(specificKey, element.dataset)
+					if (translation) updateAttribute(attr, translation)
+				}
+				const values = ['textContent', 'innerHTML']
+				for (const attr of values) {
+					const specificKey = `${key}.${attr}`
+					const translation = geti18n_nowarn(specificKey, element.dataset)
+					if (translation) updateValue(attr, translation)
+				}
+				const dataset = geti18n_nowarn(`${key}.dataset`)
+				if (dataset) Object.assign(element.dataset, dataset)
+				updated = true
 			}
-			const values = ['textContent', 'innerHTML']
-			for (const attr of values) {
-				const specificKey = `${key}.${attr}`
-				const translation = geti18n_nowarn(specificKey, element.dataset)
-				if (translation) updateValue(attr, translation)
+			else if (geti18n_nowarn(key)) {
+				const translation = toString(geti18n_nowarn(key, element.dataset))
+				if (element.innerHTML !== translation)
+					element.innerHTML = translation
+				updated = true
 			}
-			const dataset = geti18n_nowarn(`${key}.dataset`)
-			if (dataset) Object.assign(element.dataset, dataset)
-			updated = true
-		}
-		else if (geti18n_nowarn(key)) {
-			const translation = toString(geti18n_nowarn(key, element.dataset))
-			if (element.innerHTML !== translation)
-				element.innerHTML = translation
-
-			updated = true
 		}
 		if (updated) break
 	}
@@ -644,21 +669,6 @@ export function i18nElement(element, {
 	return element
 }
 
-window.addEventListener('languagechange', async () => {
-	await initTranslations()
-})
-window.addEventListener('visibilitychange', async () => {
-	if (document.visibilityState != 'visible') return
-
-	const preferredLangs = loadPreferredLangs()
-	if (saved_pageid && JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
-		await initTranslations()
-})
-
-onServerEvent('locale-updated', async () => {
-	console.log('Received locale update notification. Re-initializing translations...')
-	await initTranslations()
-})
 
 // Watch for changes in the DOM
 const i18nObserver = new MutationObserver((mutationsList) => {
@@ -669,7 +679,7 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 				if (node.nodeType === Node.ELEMENT_NODE)
 					i18nElement(node, { skip_report: true })
 			})
-		else if (mutation.type === 'attributes')  // No need to check attributeName, since we are filtering
+		else if (mutation.type === 'attributes' && mutation.target.dataset.i18n)
 			translateSingularElement(mutation.target)
 })
 
@@ -683,3 +693,22 @@ function observeBody() {
 
 if (document.body) observeBody()
 else window.addEventListener('DOMContentLoaded', observeBody)
+
+/**
+ *
+ */
+export {
+	preferredLangsStorageKey,
+	initTranslations,
+	getAvailableLocales,
+	getLocaleNames,
+} from './i18n_base.mjs'
+
+window.addEventListener('languagechange', () => initTranslations())
+window.addEventListener('visibilitychange', async () => {
+	if (document.visibilityState !== 'visible') return
+	const preferredLangs = loadPreferredLangs()
+	if (saved_pageid && JSON.stringify(lastKnownLangs) !== JSON.stringify(preferredLangs))
+		await initTranslations()
+})
+

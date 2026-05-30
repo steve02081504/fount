@@ -40,7 +40,8 @@
 			"socketError": "Socket-Fehler: ${error}",
 			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
 			"cannotParseResponse": "Serverantwort kann nicht geparst werden",
-			"unknownError": "Unbekannter Fehler"
+			"unknownError": "Unbekannter Fehler",
+			"partPathRequired": "Bitte geben Sie einen Komponentenpfad an."
 		},
 		"partManager": {
 			"partInited": "Komponente ${partpath} wurde initialisiert",
@@ -444,6 +445,7 @@
 			"accountLockedRetry": "Das Konto wurde gesperrt. Bitte versuchen Sie es nach ${timeLeft} erneut.",
 			"accountLockedAttempts": "Das Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt.",
 			"powValidationFailed": "Die Sicherheitsüberprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+			"tokenAndSolutionsRequired": "Token und solutions sind erforderlich.",
 			"apiErrorBodyUnreadable": "Der Server hat Informationen zurückgegeben, die nicht analysiert werden konnten. Bitte versuchen Sie es später noch einmal."
 		},
 		"webauthn": {
@@ -877,6 +879,11 @@
 				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
 			},
 			"commonToolCalling": "Tool wird aufgerufen",
+			"toolRunningLang": "${lang} wird ausgeführt",
+			"toolSearchingContent": "Suche ${content}",
+			"toolOverridingFilepath": "${filepath} wird überschrieben",
+			"toolReplacingFilepath": "${filepath} wird teilweise ersetzt",
+			"toolReadingFilepath": "${filepath} wird gelesen",
 			"reasoningDetailsTitle": "Argumentationsprozess",
 			"logprobsNotApplicable": "nicht anwendbar",
 			"logprobsTopLogprobsMeta": "top_logprobs (ausgewählt: ${token})",
@@ -1482,6 +1489,7 @@
 			"keyNotFound": "Der API-Schlüssel wurde nicht gefunden.",
 			"revokeMissingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
 			"revokeMissingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
+			"verifyMissingApiKey": "Bitte geben Sie einen API-Schlüssel an.",
 			"revokeButton": "Widerrufen",
 			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
 			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
@@ -1725,7 +1733,9 @@
 			"newThemeName": "Name des neuen Themas:",
 			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",
 			"saved": "Gespeichert!",
-			"failedToSave": "Speichern fehlgeschlagen"
+			"failedToSave": "Speichern fehlgeschlagen",
+			"failedToDelete": "Thema konnte nicht gelöscht werden: ${message}",
+			"failedToClone": "Thema konnte nicht kopiert werden: ${message}"
 		},
 		"themes": {
 			"auto": "Automatisch",

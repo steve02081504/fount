@@ -1,4 +1,3 @@
-import { console } from '../../../../../scripts/i18n.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 
 import { runPet, stopPet, getRunningPets } from './pet_runner.mjs'
@@ -11,35 +10,19 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:deskpet/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.body
-		try {
-			await runPet(username, charname)
-			res.status(200).json({ message: 'Pet started successfully', charname })
-		} catch (error) {
-			console.error(`[DeskPet] API error starting pet ${charname}:`, error)
-			res.status(500).json({ message: error.message })
-		}
+		await runPet(username, charname)
+		res.status(200).json({ message: 'Pet started successfully', charname })
 	})
 
 	router.post('/api/parts/shells\\:deskpet/stop', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { charname } = req.body
-		try {
-			await stopPet(username, charname)
-			res.status(200).json({ message: 'Pet stopped successfully', charname })
-		} catch (error) {
-			console.error(`[DeskPet] API error stopping pet ${charname}:`, error)
-			res.status(500).json({ message: error.message })
-		}
+		await stopPet(username, charname)
+		res.status(200).json({ message: 'Pet stopped successfully', charname })
 	})
 
 	router.get('/api/parts/shells\\:deskpet/getrunningpetlist', authenticate, async (req, res) => {
-		try {
-			const { username } = await getUserByReq(req)
-			const running = getRunningPets(username)
-			res.status(200).json(running)
-		} catch (error) {
-			console.error('[DeskPet] API error getting running pet list:', error)
-			res.status(500).json({ message: error.message })
-		}
+		const { username } = await getUserByReq(req)
+		res.status(200).json(getRunningPets(username))
 	})
 }
