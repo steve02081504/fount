@@ -80,7 +80,7 @@ export function getSecureCookieOptions(req) {
 /**
  * @param {number} status HTTP 状态码
  * @param {Record<string, unknown>} json 响应 JSON（通常含 `i18nKey`）
- * @returns {never}
+ * @returns {never} 始终抛出 HttpError，不会返回。
  */
 export function authMutationFail(status, json) {
 	const message = String(json.i18nKey ?? json.message ?? json.error ?? `HTTP ${status}`)

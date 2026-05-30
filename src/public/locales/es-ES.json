@@ -880,7 +880,7 @@
 			"toolRunningLang": "Ejecutando ${lang}",
 			"toolSearchingContent": "Buscando ${content}",
 			"toolOverridingFilepath": "Sobrescribiendo ${filepath}",
-			"toolReplacingFilepath": "Reemplazo de ${filepath}",
+			"toolReplacingFilepath": "Reemplazando en ${filepath}",
 			"toolReadingFilepath": "Leyendo ${filepath}",
 			"reasoningDetailsTitle": "Proceso de razonamiento",
 			"logprobsNotApplicable": "no aplicable",

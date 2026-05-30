@@ -19,7 +19,7 @@ export class HttpError extends Error {
  * @param {number} code HTTP 状态码
  * @param {string} message Error 消息
  * @param {Record<string, unknown>} [body] 见 {@link HttpError}
- * @returns {HttpError}
+ * @returns {HttpError} 用于 throw 的 HttpError 实例。
  */
 export function httpError(code, message, body = {}) {
 	return new HttpError(code, message, body)

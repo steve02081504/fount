@@ -880,7 +880,7 @@
 			"toolRunningLang": "正在執行${lang}",
 			"toolSearchingContent": "正在搜尋${content}",
 			"toolOverridingFilepath": "正在覆寫${filepath}",
-			"toolReplacingFilepath": "正在替換${filepath}",
+			"toolReplacingFilepath": "正在局部替換${filepath}",
 			"toolReadingFilepath": "正在讀取${filepath}",
 			"reasoningDetailsTitle": "推理過程",
 			"logprobsNotApplicable": "不適用",

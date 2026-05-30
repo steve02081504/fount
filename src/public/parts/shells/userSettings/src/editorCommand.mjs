@@ -4,8 +4,8 @@ import path from 'node:path'
 
 import { where_command } from 'npm:@steve02081504/exec'
 
-import { getUserDictionary } from '../../../../../server/auth.mjs'
 import { httpError } from '../../../../../scripts/http_error.mjs'
+import { getUserDictionary } from '../../../../../server/auth.mjs'
 
 const EDITOR_CONFIG_RELATIVE_PATH = path.join('settings', 'editor-command.json')
 

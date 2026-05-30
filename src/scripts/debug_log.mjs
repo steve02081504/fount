@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { __dirname } from "../server/base.mjs";
+
+import { __dirname } from '../server/base.mjs'
 
 const dir = path.resolve(__dirname + '/debug_logs')
 

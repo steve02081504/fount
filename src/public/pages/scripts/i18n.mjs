@@ -138,7 +138,9 @@ export async function runInitTranslations(pageid, preferredLangs, loadBundle) {
 	if (i18n) applyTranslations()
 }
 
-/** @param {object} bundle 翻译 JSON
+/**
+ * 设置翻译 bundle。
+ * @param {object} bundle 翻译 JSON
  * @param {string} locale 主 locale
  * @param {string} pageid 页面 id
  * @param {string[]} [langs] 已知首选语言

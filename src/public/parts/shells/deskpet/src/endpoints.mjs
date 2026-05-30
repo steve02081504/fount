@@ -1,4 +1,3 @@
-import { console } from '../../../../../scripts/i18n.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 
 import { runPet, stopPet, getRunningPets } from './pet_runner.mjs'
