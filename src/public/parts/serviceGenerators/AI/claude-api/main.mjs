@@ -2,7 +2,7 @@
 import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -137,7 +137,7 @@ async function GetSource(config) {
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
 			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
-			const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+			const messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 				const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
 
 				// 内容可以是文本和图片的混合数组

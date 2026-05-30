@@ -224,7 +224,7 @@ async function fetchDefaultParts() {
  * 根据 `fileList` 变量渲染文件列表 UI。
  */
 async function renderFileList() {
-	fileListContainer.innerHTML = ''
+	fileListContainer.replaceChildren()
 	for (const fileName of fileList) {
 		const listItem = await renderTemplate('file_list_item', { fileName })
 

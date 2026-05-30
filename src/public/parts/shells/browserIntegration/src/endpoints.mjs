@@ -88,24 +88,22 @@ export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const scripts = listAutoRunScripts(username)
-		res.json({ success: true, scripts })
+		res.json({ scripts })
 	})
 
 	router.post('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		try {
-			const newScript = addAutoRunScript(username, req.body)
-			res.status(201).json({ success: true, script: newScript })
-		}
-		catch (error) {
-			res.status(400).json({ success: false, message: error.message })
-		}
+		const { urlRegex, script, comment } = req.body || {}
+		if (!urlRegex || !script)
+			return res.status(400).json({ message: 'Missing required fields for auto-run script.' })
+		const newScript = addAutoRunScript(username, { urlRegex, script, comment })
+		res.status(201).json({ script: newScript })
 	})
 
 	router.delete('/api/parts/shells\\:browserIntegration/autorun-scripts/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { id } = req.params
-		const result = removeAutoRunScript(username, id)
-		res.status(result.success ? 200 : 404).json(result)
+		removeAutoRunScript(username, id)
+		res.status(200).json({})
 	})
 }

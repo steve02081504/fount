@@ -29,7 +29,7 @@
 - 用途：注销当前用户账户。
 
 ### GET /api/parts/shells:userSettings/devices
-- 用途：获取当前用户已登录设备列表。返回 `{ success: true, devices: [...] }`，每项含 `deviceId`、`jti`、`expiry`、`lastSeen`、`ipAddress`、`userAgent` 等。撤销设备时使用其中的 `jti` 作为 tokenJti。
+- 用途：获取当前用户已登录设备列表。返回 `{ devices: [...] }`，每项含 `deviceId`、`jti`、`expiry`、`lastSeen`、`ipAddress`、`userAgent` 等。撤销设备时使用其中的 `jti` 作为 tokenJti。
 
 ### POST /api/parts/shells:userSettings/revoke_device
 - Body：JSON。`tokenJti`（字符串，必填，来自 GET devices 返回的某设备的 `jti` 字段）、`password`（字符串，必填）。

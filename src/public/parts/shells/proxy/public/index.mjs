@@ -3,7 +3,7 @@
  */
 import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
 
 applyTheme()
@@ -78,10 +78,8 @@ async function generateApiKey() {
  * @returns {Promise<void>}
  */
 async function renderApiKey() {
-	apiKeySection.innerHTML = '' // Clear section
 	if (apiKey) {
-		const apiKeyElement = await renderTemplate('api_key_display', { apiKey })
-		apiKeySection.appendChild(apiKeyElement)
+		await mountTemplate(apiKeySection, 'api_key_display', { apiKey })
 
 		document.getElementById('copyApiKeyButton').addEventListener('click', () => {
 			navigator.clipboard.writeText(apiKey)
@@ -101,8 +99,7 @@ async function renderApiKey() {
 		proxyApiUrlQueryInput.value = `${apiUrl}?fount-apikey=${apiKey}`
 	}
 	else {
-		const generateButtonElement = await renderTemplate('generate_api_key_button')
-		apiKeySection.appendChild(generateButtonElement)
+		await mountTemplate(apiKeySection, 'generate_api_key_button')
 
 		document.getElementById('generateApiKeyButton').addEventListener('click', generateApiKey)
 		proxyApiUrlQueryInput.value = ''

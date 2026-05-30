@@ -2,7 +2,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { confirmI18n } from '/scripts/i18n.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
-import { renderTemplate } from '/scripts/template.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/template.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,
@@ -52,7 +52,7 @@ async function loadWebAuthnBrowserRegistration() {
  * @returns {Promise<void>}
  */
 export async function loadPasskeysList() {
-	passkeyList.replaceChildren(await renderTemplate('listLoading'))
+	await mountTemplate(passkeyList, 'listLoading')
 	noPasskeysText.classList.add('hidden')
 
 	try {

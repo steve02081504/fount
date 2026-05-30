@@ -2,26 +2,10 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { fileTypeFromBuffer } from 'npm:file-type'
-import mimetype from 'npm:mime-types'
-
+import { mimetypeFromBufferAndName } from '../../public/pages/scripts/mimetype.mjs'
 import { __dirname } from '../base.mjs'
 
 const TEMPLATE_PATH = path.join(__dirname, 'src/public/pages/directory-listing/index.html')
-
-/**
- * 根据文件内容（Buffer）和文件名推断 MIME 类型。
- * @param {Buffer} buffer - 文件内容（或前 N 字节）。
- * @param {string} name - 文件名。
- * @returns {Promise<string>} 推断出的 MIME 类型。
- */
-async function mimetypeFromBufferAndName(buffer, name) {
-	let result = (await fileTypeFromBuffer(buffer))?.mime
-	result ||= mimetype.lookup(name)
-	result ||= buffer.toString('utf-8').isWellFormed() ? 'text/plain' : undefined
-	result ||= 'application/octet-stream'
-	return result
-}
 
 /**
  * 格式化文件大小。

@@ -260,3 +260,29 @@ export async function renderTemplateAsHtmlString(template, data = {}) {
 	}
 	return node.outerHTML
 }
+
+/**
+ * @param {Element} parent 父节点
+ * @param {Element | DocumentFragment} node 模板输出
+ * @returns {void}
+ */
+function mountRenderedNode(parent, node) {
+	if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE)
+		parent.append(...node.childNodes)
+	else
+		parent.appendChild(node)
+}
+
+/**
+ * 清空父节点并挂载模板渲染结果。
+ * @param {Element} parent 父节点
+ * @param {string} template 模板路径（相对 templates 根）
+ * @param {object} [data] 模板数据
+ * @returns {Promise<Element | DocumentFragment | Document>} 渲染节点
+ */
+export async function mountTemplate(parent, template, data = {}) {
+	const node = await renderTemplate(template, data)
+	parent.replaceChildren()
+	mountRenderedNode(parent, node)
+	return node
+}

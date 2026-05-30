@@ -93,13 +93,8 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:wechatbot/qrcode/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { botname } = req.body || {}
-		try {
-			const out = await startQrSession({ username, botname: botname || null })
-			res.status(200).json(out)
-		}
-		catch (e) {
-			res.status(500).json({ message: e?.message || String(e) })
-		}
+		const out = await startQrSession({ username, botname: botname || null })
+		res.status(200).json(out)
 	})
 
 	router.get('/api/parts/shells\\:wechatbot/qrcode/poll', authenticate, async (req, res) => {

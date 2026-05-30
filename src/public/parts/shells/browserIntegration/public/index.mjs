@@ -2,7 +2,7 @@
  * 浏览器集成页面的主要客户端逻辑。
  */
 import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
 
@@ -30,9 +30,8 @@ const autoRunScriptsCache = new Map()
  * @returns {Promise<void>}
  */
 async function renderPages(pages) {
-	while (pagesListDiv.firstChild) pagesListDiv.removeChild(pagesListDiv.firstChild)
-	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
-	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
+	if (!pages.length) await mountTemplate(pagesListDiv, 'empty_state')
+	else await mountTemplate(pagesListDiv, 'page_table', { pages })
 }
 
 const RECONNECT_DELAY = 5000
@@ -47,9 +46,9 @@ function connectWebSocket() {
 	/** @param {MessageEvent} event - 收到的 WebSocket 消息事件。 */
 	ws.onmessage = async (event) => {
 		try {
-			const msg = JSON.parse(event.data)
-			if (msg.type === 'pages_update') {
-				const pages = msg.payload
+			const wireMessage = JSON.parse(event.data)
+			if (wireMessage.type === 'pages_update') {
+				const pages = wireMessage.payload
 				const newPagesJson = JSON.stringify(pages)
 				if (lastPages === newPagesJson) return // Avoid unnecessary re-renders
 				lastPages = newPagesJson
@@ -67,8 +66,7 @@ function connectWebSocket() {
 	 * WebSocket 'close' 事件处理程序。
 	 */
 	ws.onclose = async () => {
-		pagesListDiv.innerHTML = ''
-		pagesListDiv.appendChild(await renderTemplate('error_message'))
+		await mountTemplate(pagesListDiv, 'error_message')
 		setTimeout(connectWebSocket, RECONNECT_DELAY)
 	}
 
@@ -104,8 +102,7 @@ function showViewScriptModal(scriptId) {
  */
 async function handleDeleteScript(scriptId) {
 	if (confirm(geti18n('browser_integration.autorun.confirm_delete'))) try {
-		const deleteResult = await api.deleteAutoRunScript(scriptId)
-		if (!deleteResult.success) throw new Error(deleteResult.message)
+		await api.deleteAutoRunScript(scriptId)
 
 		window.dispatchEvent(new CustomEvent('fount-autorun-script-update', {
 			detail: { action: 'delete', script: { id: scriptId } }
@@ -126,17 +123,15 @@ async function loadAndRenderAutoRunScripts() {
 	try {
 		autorunScriptList.innerHTML = /* html */ '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
 		const result = await api.getAutoRunScripts()
-		if (!result.success) throw new Error(result.message)
 
-		autorunScriptList.innerHTML = ''
 		if (!result.scripts.length)
-			autorunScriptList.appendChild(await renderTemplate('autorun_empty_state'))
+			await mountTemplate(autorunScriptList, 'autorun_empty_state')
 		else {
 			autoRunScriptsCache.clear()
 			result.scripts.forEach(script => autoRunScriptsCache.set(script.id, script))
-			autorunScriptList.appendChild(await renderTemplate('autorun_script_table', {
-				scripts: result.scripts
-			}))
+			await mountTemplate(autorunScriptList, 'autorun_script_table', {
+				scripts: result.scripts,
+			})
 		}
 	} catch (error) {
 		console.error('Failed to load auto-run scripts:', error)
@@ -160,7 +155,6 @@ async function handleAddScript(e) {
 
 	try {
 		const result = await api.addAutoRunScript(scriptData)
-		if (!result.success) throw new Error(result.message)
 
 		window.dispatchEvent(new CustomEvent('fount-autorun-script-update', {
 			detail: {

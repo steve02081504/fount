@@ -1,14 +1,14 @@
 /**
- * 解析 JSON：`response.ok` 为 false 则 reject；`!data.success` 则抛带负载内容的 Error。
+ * 解析 JSON：`response.ok` 为 false 则 reject 并附带响应体。
  * @param {Response} response - fetch 响应。
  * @returns {Promise<object>} 解析后的 JSON 对象。
  */
 async function finishAuthenticatedJsonMutation(response) {
-	const data = await response.json().catch(() => ({}))
-	if (!response.ok)
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({}))
 		return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), data, { response }))
-	if (!data.success) throw Object.assign(new Error('API request failed'), data)
-	return data
+	}
+	return response.json()
 }
 
 /**

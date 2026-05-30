@@ -1001,14 +1001,23 @@ function rehypeCacheWrite() {
  * 获取 Markdown 转换器。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {Array<unknown>} [options.extraRemarkPlugins] - 插入 remarkRehype 之前的 remark 插件。
+ * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件。
  * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
  */
-export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
-	return unified()
+export async function GetMarkdownConvertor({
+	isStandalone = false,
+	extraRemarkPlugins = [],
+	extraRehypePlugins = [],
+} = {}) {
+	let processor = unified()
 		.use(remarkParse)
 		.use(remarkDisable, { disable: ['codeIndented'] })
 		.use(remarkBreaks)
 		.use(remarkMath)
+	for (const plugin of extraRemarkPlugins)
+		processor = processor.use(plugin)
+	processor = processor
 		.use(remarkRehype, { allowDangerousHtml: true })
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
@@ -1067,11 +1076,13 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(rehypeKatex)
 		.use(rehypeCacheWrite)
 		.use(rehypeAddDaisyuiClass)
-		.use(rehypeStringify, {
-			allowDangerousCharacters: true,
-			allowDangerousHtml: true,
-			tightBreaks: true,
-		})
+	for (const plugin of extraRehypePlugins)
+		processor = processor.use(plugin)
+	return processor.use(rehypeStringify, {
+		allowDangerousCharacters: true,
+		allowDangerousHtml: true,
+		tightBreaks: true,
+	})
 }
 
 // --- 全局样式注入 ---

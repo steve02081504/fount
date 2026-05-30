@@ -15,7 +15,22 @@ import { sendEventToAll } from './web_server/event_dispatcher.mjs'
  * @type {string|null}
  */
 export let currentGitCommit = null
-git('rev-parse', 'HEAD').catch(() => null).then(commit => { currentGitCommit = commit })
+/**
+ * 当前 Git 分支名（detached HEAD 时为 null）。
+ * @type {string|null}
+ */
+export let currentGitBranch = null
+
+/**
+ * 刷新当前 HEAD 提交与分支名。
+ * @returns {Promise<void>}
+ */
+async function refreshGitRef() {
+	currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+	const branch = await git('rev-parse', '--abbrev-ref', 'HEAD').catch(() => null)
+	currentGitBranch = branch && branch !== 'HEAD' ? branch : null
+}
+refreshGitRef()
 
 /**
  * 检查上游 git 存储库的更新，并在必要时重新启动应用程序。
@@ -47,7 +62,7 @@ async function checkUpstream() {
 	}
 	else {
 		await git('reset', '--hard', '@{u}')
-		currentGitCommit = await git('rev-parse', 'HEAD')
+		await refreshGitRef()
 		sendEventToAll?.('server-updated', { commitId: currentGitCommit })
 	}
 }

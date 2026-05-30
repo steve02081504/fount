@@ -11,7 +11,7 @@ import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { source_dead } from '../../../serviceSources/AI/main.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -153,22 +153,20 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 	let bestK = 0 // 可以保留的最新消息数量
 
 	while (low <= high) {
-		const mid = Math.floor((low + high) / 2)
-		if (!mid) {
-			low = mid + 1
+		const trialCount = Math.floor((low + high) / 2)
+		if (!trialCount) {
+			low = trialCount + 1
 			continue
 		}
 
-		// 取最新的 mid 条记录
-		const trialHistory = history.slice(-mid)
+		const trialHistory = history.slice(-trialCount)
 		const trialTokens = await getTokens(trialHistory)
 
 		if (trialTokens <= historyTokenLimit) {
-			// 当前数量的 token 未超限，尝试保留更多
-			bestK = mid
-			low = mid + 1
+			bestK = trialCount
+			low = trialCount + 1
 		}
-		else high = mid - 1 // 超限了，需要减少记录数量
+		else high = trialCount - 1
 	}
 
 	if (bestK < history.length)
@@ -184,11 +182,11 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
  */
 function isGeminiApiKeyError(err) {
 	if (!err) return false
-	const msg = err.message || err.cause?.message || String(err)
+	const errorText = err.message || err.cause?.message || String(err)
 	const isApiError = err.status === 400 || err.name === 'ApiError'
-	const hasApiKeyInvalid = /API key not valid|API_KEY_INVALID|INVALID_ARGUMENT/.test(msg) ||
-		msg.includes('"reason":"API_KEY_INVALID"') ||
-		msg.includes('"status":"INVALID_ARGUMENT"')
+	const hasApiKeyInvalid = /API key not valid|API_KEY_INVALID|INVALID_ARGUMENT/.test(errorText) ||
+		errorText.includes('"reason":"API_KEY_INVALID"') ||
+		errorText.includes('"status":"INVALID_ARGUMENT"')
 	return isApiError && hasApiKeyInvalid
 }
 
@@ -382,7 +380,7 @@ system:
 
 				let totalFileTokens = 0 // 单独跟踪文件 token
 
-				let chatHistory = margeStructPromptChatLog(prompt_struct)
+				let chatHistory = mergeStructPromptChatLog(prompt_struct)
 				if (base_result.extension?.gemini_API_data && chatHistory.length > 0) {
 					chatHistory[chatHistory.length - 1].extension ??= {}
 					chatHistory[chatHistory.length - 1].extension.gemini_API_data ??= base_result.extension.gemini_API_data

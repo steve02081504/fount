@@ -32,7 +32,7 @@ function runFount(done) {
 /**
  * 启动 fount。
  */
-export { runFount as run }
+export const run = runFount
 /**
  * 默认导出。
  */

@@ -40,7 +40,7 @@ export function regenerateCode() {
  * 设置指定设备的描述备注。
  * @param {number} deviceId - 设备 ID。
  * @param {string|null} description - 描述文本，传入空字符串会被转为 null。
- * @returns {Promise<{success: boolean}>} 操作结果。
+ * @returns {Promise<object>} 操作结果。
  */
 export function setDescription(deviceId, description) {
 	return callApi('set-description', 'POST', { deviceId, description: description || null })
@@ -50,7 +50,7 @@ export function setDescription(deviceId, description) {
  * 在指定分机上执行代码。
  * @param {number} subfountId - 目标分机 ID（0 为本机）。
  * @param {string} script - 要执行的脚本内容。
- * @returns {Promise<{success: boolean, result: any}>} 执行结果。
+ * @returns {Promise<{result: any}>} 执行结果。
  */
 export function executeCode(subfountId, script) {
 	return callApi('execute', 'POST', { subfountId, script })

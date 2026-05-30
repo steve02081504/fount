@@ -1945,6 +1945,11 @@ debug)
 	"$0" keepalive debug "${@:2}"
 	exit $?
 	;;
+shutdown|reboot)
+	trap 'write_taskbar_progress_clear' EXIT INT TERM
+	run "${@:1}"
+	exit $?
+	;;
 *)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
 	original_title=$(get_title)

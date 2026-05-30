@@ -15,7 +15,8 @@ export async function getAutoUpdateEnabled() {
  */
 export async function postRestart() {
 	const res = await fetch(`${BASE}/restart`, { method: 'POST' })
-	return { ok: res.ok, data: await res.json().catch(() => ({})) }
+	if (!res.ok) return { ok: false, data: await res.json().catch(() => ({})) }
+	return { ok: true, data: await res.json() }
 }
 
 /**
@@ -33,7 +34,7 @@ export async function getSystemInfo() {
  * @param {string} filePath - 文件路径。
  * @param {number} line - 行号。
  * @param {number} column - 列号。
- * @returns {Promise<{success: boolean, message?: string}>} 打开结果。
+ * @returns {Promise<{command: string, args: string[]}>} 打开结果。
  */
 export async function openSource(filePath, line, column) {
 	const res = await fetch(`${BASE}/open_source`, {
@@ -41,6 +42,10 @@ export async function openSource(filePath, line, column) {
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({ filePath, line, column }),
 	})
+	if (!res.ok) {
+		const data = await res.json().catch(() => ({}))
+		throw Object.assign(new Error(data.message || res.statusText), data)
+	}
 	return res.json()
 }
 

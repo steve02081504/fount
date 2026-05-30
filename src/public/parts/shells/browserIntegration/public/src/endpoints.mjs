@@ -16,15 +16,17 @@ async function callApi(endpoint, method = 'POST', body) {
 		body: body ? JSON.stringify(body) : undefined,
 	})
 	const contentType = response.headers.get('content-type')
-	if (contentType && contentType.indexOf('application/json') !== -1)
+	if (contentType?.includes('application/json')) {
+		if (!response.ok) {
+			const data = await response.json().catch(() => ({}))
+			throw Object.assign(new Error(data.message || response.statusText), data, { response })
+		}
 		return response.json()
-	else {
-		const text = await response.text()
-		if (!response.ok)
-			return { success: false, message: text || response.statusText }
-
-		return { success: true, data: text }
 	}
+	const text = await response.text()
+	if (!response.ok)
+		throw Object.assign(new Error(text || response.statusText), { response })
+	return { data: text }
 }
 
 /**
@@ -47,8 +49,14 @@ export function addAutoRunScript(scriptData) {
 /**
  * 删除一个自动运行脚本。
  * @param {string} id - 要删除的脚本的 ID。
- * @returns {Promise<any>} - API 响应。
+ * @returns {Promise<void>} - 成功时无 body。
  */
-export function deleteAutoRunScript(id) {
-	return callApi(`autorun-scripts/${id}`, 'DELETE')
+export async function deleteAutoRunScript(id) {
+	const response = await fetch(`/api/parts/shells:browserIntegration/autorun-scripts/${id}`, {
+		method: 'DELETE',
+	})
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({}))
+		throw Object.assign(new Error(data.message || response.statusText), data, { response })
+	}
 }

@@ -34,13 +34,12 @@
 			},
 			body: JSON.stringify({ apiKey: apikey }),
 		})
-			.then(response => response.json())
-			.then(result => {
-				if (result.success)
-					// Redirect to the actual pet URL
+			.then(async response => {
+				const result = await response.json().catch(() => ({}))
+				if (response.ok)
 					window.location.href = decodeURIComponent(redirect)
 				else
-					document.body.innerHTML = `<h1>Error: ${result.error || 'Failed to set cookie'}</h1>`
+					document.body.innerHTML = `<h1>Error: ${result.error || result.message || 'Failed to set cookie'}</h1>`
 			})
 			.catch(error => {
 				document.body.innerHTML = `<h1>Error: ${error.message}</h1>`

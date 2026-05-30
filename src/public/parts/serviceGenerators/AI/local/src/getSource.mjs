@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-cpp'
 
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 
@@ -20,7 +20,7 @@ import { buildSamplingReplayOptions, collectLocalLogprobs, createStreamingLogpro
  * @returns {Array<{role: string, content: string}>} 供 Llama 会话使用的 role/content 消息数组。
  */
 function buildChatMessages(prompt_struct, config) {
-	const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+	const messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 		const images = (chatLogEntry.files || [])
 			.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
 		let { content } = chatLogEntry

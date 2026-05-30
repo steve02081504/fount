@@ -29,7 +29,11 @@ import { escapeRegExp } from './regex.mjs'
  * @typedef {import('../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
 
-const console = baseConsole
+/**
+ * 导出的控制台对象。
+ * @type {Console}
+ */
+export const console = baseConsole
 /**
  * 所有可用区域设置的列表。
  * @type {{id: string, name: string}[]}
@@ -87,17 +91,18 @@ export function getLocaleData(localeList) {
  */
 export async function getLocaleDataForUser(username, preferredlocaleList) {
 	if (!username) return getLocaleData(preferredlocaleList)
+	const effectivePreferred = [
+		...preferredlocaleList ?? [],
+		...getUserByUsername(username)?.locales ?? [],
+	]
 	const result = {
-		...getLocaleData([
-			...preferredlocaleList ?? [],
-			...getUserByUsername(username)?.locales ?? [],
-		])
+		...getLocaleData(effectivePreferred)
 	}
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
 	for (const partpath in partsLocaleLists) {
-		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[partpath])
+		const resultLocale = getbestlocale(effectivePreferred, partsLocaleLists[partpath])
 		partsLocaleCache[partpath] ??= {}
 		const partdata = partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
 		Object.assign(result, partdata)
@@ -374,7 +379,7 @@ export function geti18nForLocales(localeList, key, params = {}) {
  * @returns {string} - 翻译后的文本。
  */
 export async function geti18nForUser(username, key, params = {}) {
-	return baseGeti18n(await getLocaleDataForUser(username), key, params)
+	return baseGeti18n(await getLocaleDataForUser(username, localhostLocales), key, params)
 }
 /**
  * 无参数的本地化键重载
@@ -637,8 +642,3 @@ export function promptI18n(key, params = {}) {
 export function confirmI18n(key, params = {}) {
 	return confirm(toString(geti18n(key, params)))
 }
-/**
- * 导出的控制台对象。
- * @type {Console}
- */
-export { console }

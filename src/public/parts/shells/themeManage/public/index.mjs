@@ -431,16 +431,14 @@ async function openEditor(themeData) {
 	currentEditId = themeData ? themeData.id : ''
 
 	// Render Editor
-	const editorHtml = await renderTemplate('editor', {
-		isNew: !themeData,
-		name: currentEditId,
-		css: themeData ? themeData.css : '',
-	})
-
 	// Swap View
 	themeListContainer.style.display = 'none'
 	searchInput.parentElement.style.display = 'none' // Hide search bar
-	listPanel.appendChild(editorHtml)
+	listPanel.appendChild(await renderTemplate('editor', {
+		isNew: !themeData,
+		name: currentEditId,
+		css: themeData ? themeData.css : '',
+	}))
 
 	// --- Bind Editor Events ---
 

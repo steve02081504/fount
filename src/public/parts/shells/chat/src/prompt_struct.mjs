@@ -131,7 +131,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {chatLogEntry_t[]} - 聊天记录条目数组。
  */
-export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
+export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
 	const result = [
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
@@ -175,7 +175,7 @@ export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	const result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')
-	margeStructPromptChatLog(prompt).forEach(chatLogEntry => {
+	mergeStructPromptChatLog(prompt).forEach(chatLogEntry => {
 		result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
 	})
 

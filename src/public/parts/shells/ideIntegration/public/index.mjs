@@ -2,7 +2,7 @@
  * IDE 集成配置页：API 密钥、角色选择、一站式 Agent 脚本 URL（Zed 用 deno 跑远端脚本）。
  */
 import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations, geti18n, setLocalizeLogic } from '/scripts/i18n.mjs'
+import { initTranslations } from '/scripts/i18n.mjs'
 import { renderMarkdown } from '/scripts/markdown.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 
@@ -90,9 +90,8 @@ async function loadSupportedEditors() {
 		const p = Object.assign(document.createElement('p'), {
 			className: 'text-sm text-error'
 		})
-		setLocalizeLogic(p, () => {
-			p.textContent = geti18n('ide_integration.supportedEditorsError', { message: error.message })
-		})
+		p.dataset.i18n = 'ide_integration.supportedEditorsError'
+		p.dataset.message = error.message
 		container.appendChild(p)
 	}
 }

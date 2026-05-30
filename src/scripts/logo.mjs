@@ -9,5 +9,5 @@ export async function printTerminalImage() {
 	await fetch('https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b').
 		then(res => res.arrayBuffer()).
 		then(buffer => terminalImage.default.buffer(Buffer.from(buffer))).
-		then(text => process.stdout.write(text))
+		then(chunk => process.stdout.write(chunk))
 }
