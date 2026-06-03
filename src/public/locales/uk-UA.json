@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git не встановлено, пропустіть git pull",
 				"repoNotFoundSkippingPull": "Репозиторій не знайдено, пропустіть git pull",
 				"fetchFailed": "Не вдалося отримати з «походження».",
+				"fetchFailedSkippingUpdate": "Не вдалося отримати оновлення з GitHub, оновлення пропущено.",
+				"remoteRefUnavailable": "Віддалене посилання \"${ref}\" недоступне, а синхронізацію Git пропущено.",
 				"installFailedWinget": "Оскільки встановлення Winget не вдалося, Git неможливо встановити. Будь ласка, встановіть його вручну.",
 				"installFailedManual": "Не вдалося встановити Git, будь ласка, встановіть його вручну."
 			},
