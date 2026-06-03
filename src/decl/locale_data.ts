@@ -150,6 +150,8 @@ export type LocaleData = {
 				notInstalledSkippingPull: string
 				repoNotFoundSkippingPull: string
 				fetchFailed: string
+				fetchFailedSkippingUpdate: string
+				remoteRefUnavailable: string
 				installFailedWinget: string
 				installFailedManual: string
 			}
@@ -2768,6 +2770,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number }
+	'fountConsole.path.git.remoteRefUnavailable': { ref: string | number }
 	'fountConsole.path.install.packageFailed': { package: string | number }
 	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
 	'fountConsole.path.install.permissionDeniedNotRoot': { path: string | number }

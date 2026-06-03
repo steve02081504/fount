@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git がインストールされていないため、git pull をスキップします",
 				"repoNotFoundSkippingPull": "リポジトリが見つかりません。git pull をスキップします",
 				"fetchFailed": "「origin」からの取得に失敗しました。",
+				"fetchFailedSkippingUpdate": "GitHub から更新を取得できませんでした。更新をスキップします。",
+				"remoteRefUnavailable": "リモート参照「${ref}」を利用できません。Git の同期をスキップします。",
 				"installFailedWinget": "Winget のインストールに失敗したため、Git をインストールできません。手動でインストールしてください。",
 				"installFailedManual": "Git をインストールできません。手動でインストールしてください。"
 			},

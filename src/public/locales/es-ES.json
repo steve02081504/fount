@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git no está instalado, omita git pull",
 				"repoNotFoundSkippingPull": "Repositorio no encontrado, omita git pull",
 				"fetchFailed": "No se pudo obtener del \"origen\".",
+				"fetchFailedSkippingUpdate": "No se pudieron obtener las actualizaciones desde GitHub; actualización omitida.",
+				"remoteRefUnavailable": "La referencia remota «${ref}» no está disponible; sincronización con Git omitida.",
 				"installFailedWinget": "Dado que la instalación de Winget falló, no se puede instalar Git. Instálelo manualmente.",
 				"installFailedManual": "No se puede instalar Git, instálelo manualmente."
 			},

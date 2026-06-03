@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "🚫 🐙🐱 ➡️ ⏭️ pull",
 				"repoNotFoundSkippingPull": "❓ repo ➡️ ⏭️ pull",
 				"fetchFailed": "❌☁️📥",
+				"fetchFailedSkippingUpdate": "❌🐙🐱📥 ➡️ ⏭️🔄",
+				"remoteRefUnavailable": "❌🔗'${ref}' ➡️ ⏭️🐙🐱🔄",
 				"installFailedWinget": "❌ winget ➡️ ❌ 🐙🐱",
 				"installFailedManual": "❌ 🐙🐱 ➡️ ✋📥"
 			},

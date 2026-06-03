@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git ist nicht installiert, Git Pull überspringen",
 				"repoNotFoundSkippingPull": "Repository nicht gefunden, Git Pull überspringen",
 				"fetchFailed": "Fehler beim Abrufen von „Ursprung“.",
+				"fetchFailedSkippingUpdate": "GitHub-Updates konnten nicht abgerufen werden; Update übersprungen.",
+				"remoteRefUnavailable": "Remote-Referenz „${ref}“ nicht verfügbar; Git-Synchronisierung übersprungen.",
 				"installFailedWinget": "Da die Winget-Installation fehlgeschlagen ist, kann Git nicht installiert werden. Bitte installieren Sie es manuell.",
 				"installFailedManual": "Git kann nicht installiert werden. Bitte installieren Sie es manuell."
 			},

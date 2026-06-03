@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git is niet geïnstalleerd, sla git pull over",
 				"repoNotFoundSkippingPull": "Repository niet gevonden, sla git pull over",
 				"fetchFailed": "Kan niet vanaf 'oorsprong' komen.",
+				"fetchFailedSkippingUpdate": "Updates van GitHub ophalen mislukt; update overgeslagen.",
+				"remoteRefUnavailable": "Externe referentie '${ref}' niet beschikbaar; Git-synchronisatie overgeslagen.",
 				"installFailedWinget": "Omdat de Winget-installatie mislukte, kan Git niet worden geïnstalleerd. Installeer het handmatig.",
 				"installFailedManual": "Kan Git niet installeren. Installeer het handmatig."
 			},
