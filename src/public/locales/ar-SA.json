@@ -143,8 +143,8 @@
 				"notInstalledSkippingPull": "لم يتم تثبيت Git، قم بتخطي سحب git",
 				"repoNotFoundSkippingPull": "لم يتم العثور على المستودع، قم بتخطي سحب git",
 				"fetchFailed": "فشل في الحصول على \"الأصل\".",
-				"fetchFailedSkippingUpdate": "غير قادر على الحصول على التحديث من GitHub، تم تخطي التحديث.",
-				"remoteRefUnavailable": "المرجع البعيد \"${ref}\" غير متاح وتم تخطي مزامنة Git.",
+				"fetchFailedSkippingUpdate": "تعذّر جلب التحديثات من GitHub؛ تم تخطي التحديث.",
+				"remoteRefUnavailable": "المرجع البعيد «${ref}» غير متاح؛ تم تخطي مزامنة Git.",
 				"installFailedWinget": "منذ فشل تثبيت Winget، لا يمكن تثبيت Git. الرجاء تثبيته يدويا.",
 				"installFailedManual": "غير قادر على تثبيت Git، يرجى تثبيته يدويًا."
 			},
