@@ -715,30 +715,61 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
+function Invoke-GitForFount([string[]]$GitArgs) {
+	$prevPrompt = $env:GIT_TERMINAL_PROMPT
+	$prevLocks = $env:GIT_OPTIONAL_LOCKS
+	$env:GIT_TERMINAL_PROMPT = '0'
+	$env:GIT_OPTIONAL_LOCKS = '0'
+	try {
+		& git -C "$FOUNT_DIR" @GitArgs
+	}
+	finally {
+		if ($null -ne $prevPrompt) { $env:GIT_TERMINAL_PROMPT = $prevPrompt }
+		else { Remove-Item Env:\GIT_TERMINAL_PROMPT -ErrorAction Ignore }
+		if ($null -ne $prevLocks) { $env:GIT_OPTIONAL_LOCKS = $prevLocks }
+		else { Remove-Item Env:\GIT_OPTIONAL_LOCKS -ErrorAction Ignore }
+	}
+}
+
+function Test-FountGitRef($Ref = 'HEAD') {
+	Invoke-GitForFount rev-parse --verify $Ref 2>$null
+	return ($LastExitCode -eq 0)
+}
+
 function Save-FountGitUncommittedBackup {
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
 	if (-not (Test-Path -LiteralPath "$FOUNT_DIR/.git")) { return }
-	$status = git -C "$FOUNT_DIR" status --porcelain
+	$status = Invoke-GitForFount status --porcelain
 	if (-not $status) { return }
 
 	$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
 	$diffFilePath = Join-Path -Path $env:TEMP -ChildPath "fount-local-changes-diff_$timestamp.diff"
 
-	$headExists = $false
-	git -C "$FOUNT_DIR" rev-parse --verify HEAD 2>$null | Out-Null
-	if ($LASTEXITCODE -eq 0) { $headExists = $true }
+	$headExists = Test-FountGitRef
 
-	git -C "$FOUNT_DIR" add -A 2>$null | Out-Null
-	git -C "$FOUNT_DIR" diff --cached 2>$null | Out-File -FilePath $diffFilePath -Encoding utf8
+	Invoke-GitForFount add -A
+	Invoke-GitForFount diff --cached | Out-File -FilePath $diffFilePath -Encoding utf8
 	if ($headExists) {
-		git -C "$FOUNT_DIR" reset HEAD 2>$null | Out-Null
+		Invoke-GitForFount reset HEAD
 	}
 	else {
-		git -C "$FOUNT_DIR" reset 2>$null | Out-Null
+		Invoke-GitForFount reset
 	}
 
 	Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
 	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green
+}
+
+function Sync-FountGitToRef($Ref) {
+	if (-not (Test-FountGitRef $Ref)) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
+		return $false
+	}
+	Save-FountGitUncommittedBackup
+	Invoke-GitForFount clean -fd | Out-Host
+	if ($LastExitCode -ne 0) { return $false }
+	Invoke-GitForFount reset --hard $Ref | Out-Host
+	return ($LastExitCode -eq 0)
 }
 
 function fount_upgrade {
@@ -751,65 +782,101 @@ function fount_upgrade {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		git -C "$FOUNT_DIR" init -b master
-		git -C "$FOUNT_DIR" config core.autocrlf false
-		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
+		Invoke-GitForFount init -b master
+		Invoke-GitForFount config core.autocrlf false
+		Invoke-GitForFount remote add origin https://github.com/steve02081504/fount.git
 		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
-		git -C "$FOUNT_DIR" fetch origin master --depth 1
-		if ($LastExitCode) { Write-Error (Get-I18n -key 'git.fetchFailed'); return }
-		Save-FountGitUncommittedBackup
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		Invoke-GitForFount fetch origin master --depth 1
+		if ($LastExitCode -ne 0) {
+			Write-Warning (Get-I18n -key 'git.fetchFailed')
+			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			return
+		}
+		Sync-FountGitToRef 'origin/master' | Out-Null
+		return
 	}
 
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFoundSkippingPull')
+		return
 	}
-	else {
-		git -C "$FOUNT_DIR" config core.autocrlf false
-		git -C "$FOUNT_DIR" fetch origin
-		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
-		if ($currentBranch -eq 'HEAD') {
-			Write-Host (Get-I18n -key 'git.notOnBranch')
-			Save-FountGitUncommittedBackup
-			git -C "$FOUNT_DIR" clean -fd
-			git -C "$FOUNT_DIR" reset --hard "origin/master"
-			git -C "$FOUNT_DIR" checkout master
-			$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
-		}
-		$remoteBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
-		if (-not $remoteBranch) {
-			Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{branch = $currentBranch })
-			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master
-			$remoteBranch = "origin/master"
-		}
-		$mergeBase = git -C "$FOUNT_DIR" merge-base $currentBranch $remoteBranch
-		$localCommit = git -C "$FOUNT_DIR" rev-parse $currentBranch
-		$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
-		$status = git -C "$FOUNT_DIR" status --porcelain
 
-		if ($localCommit -ne $remoteCommit) {
-			if ($mergeBase -eq $localCommit) {
-				Write-Host (Get-I18n -key 'git.updatingFromRemote')
-				if ($status) { Save-FountGitUncommittedBackup }
-				git -C "$FOUNT_DIR" fetch origin
-				git -C "$FOUNT_DIR" reset --hard $remoteBranch
-			}
-			elseif ($mergeBase -eq $remoteCommit) {
-				Write-Host (Get-I18n -key 'git.localBranchAhead')
-				if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
-			}
-			else {
-				Write-Host (Get-I18n -key 'git.branchesDiverged')
-				if ($status) { Save-FountGitUncommittedBackup }
-				git -C "$FOUNT_DIR" fetch origin
-				git -C "$FOUNT_DIR" reset --hard $remoteBranch
-			}
+	Invoke-GitForFount config core.autocrlf false
+	$hasHead = Test-FountGitRef
+	Invoke-GitForFount fetch origin
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
+
+	if (-not $hasHead -and -not (Test-FountGitRef)) {
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
+
+	$currentBranch = Invoke-GitForFount rev-parse --abbrev-ref HEAD 2>$null
+	if ($LastExitCode -ne 0) { $currentBranch = 'HEAD' }
+	if ($currentBranch -eq 'HEAD') {
+		if (-not (Test-FountGitRef 'origin/master')) {
+			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
+			return
 		}
-		else {
-			Write-Host (Get-I18n -key 'git.alreadyUpToDate')
+		Write-Host (Get-I18n -key 'git.notOnBranch')
+		if (-not (Sync-FountGitToRef 'origin/master')) { return }
+		Invoke-GitForFount checkout master
+		$currentBranch = Invoke-GitForFount rev-parse --abbrev-ref HEAD 2>$null
+	}
+
+	if (-not (Test-FountGitRef)) {
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
+
+	$remoteBranch = Invoke-GitForFount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+	if (-not $remoteBranch) {
+		if (-not (Test-FountGitRef 'origin/master')) {
+			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
+			return
+		}
+		Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{branch = $currentBranch })
+		Invoke-GitForFount branch --set-upstream-to origin/master
+		$remoteBranch = 'origin/master'
+	}
+
+	if (-not (Test-FountGitRef $remoteBranch)) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $remoteBranch })
+		return
+	}
+
+	$mergeBase = Invoke-GitForFount merge-base $currentBranch $remoteBranch 2>$null
+	$localCommit = Invoke-GitForFount rev-parse $currentBranch 2>$null
+	$remoteCommit = Invoke-GitForFount rev-parse $remoteBranch 2>$null
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
+	$status = Invoke-GitForFount status --porcelain
+
+	if ($localCommit -ne $remoteCommit) {
+		if ($mergeBase -eq $localCommit) {
+			Write-Host (Get-I18n -key 'git.updatingFromRemote')
+			if ($status) { Save-FountGitUncommittedBackup }
+			Invoke-GitForFount reset --hard $remoteBranch
+		}
+		elseif ($mergeBase -eq $remoteCommit) {
+			Write-Host (Get-I18n -key 'git.localBranchAhead')
 			if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 		}
+		else {
+			Write-Host (Get-I18n -key 'git.branchesDiverged')
+			if ($status) { Save-FountGitUncommittedBackup }
+			Invoke-GitForFount reset --hard $remoteBranch
+		}
+	}
+	else {
+		Write-Host (Get-I18n -key 'git.alreadyUpToDate')
+		if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 	}
 }
 
@@ -966,7 +1033,7 @@ foreach (`$t in `$targets) {
 "@
 
 	& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $ps1Path init
-	$initExit = if ($null -ne $LASTEXITCODE) { $LASTEXITCODE } else { 0 }
+	$initExit = if ($null -ne $LastExitCode) { $LastExitCode } else { 0 }
 
 	Invoke-SystemScript @"
 Import-Module '$lckEsc'
@@ -1126,11 +1193,19 @@ function run {
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
-			git -C "$FOUNT_DIR" config core.autocrlf false
-			Save-FountGitUncommittedBackup
-			git -C "$FOUNT_DIR" clean -fd
-			git -C "$FOUNT_DIR" reset --hard "origin/master"
-			git -C "$FOUNT_DIR" gc --aggressive --prune=now --force
+			Invoke-GitForFount config core.autocrlf false
+			$hasHead = Test-FountGitRef
+			Invoke-GitForFount fetch origin 2>$null
+			$fetchOk = ($LastExitCode -eq 0)
+			if ((Test-FountGitRef 'origin/master') -and ($hasHead -or $fetchOk)) {
+				if (Sync-FountGitToRef 'origin/master') {
+					Invoke-GitForFount gc --aggressive --prune=now --force
+				}
+			}
+			elseif (-not $fetchOk) {
+				Write-Warning (Get-I18n -key 'git.fetchFailed')
+				Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			}
 		}
 	}
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {

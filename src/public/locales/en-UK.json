@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git is not installed, skip git pull",
 				"repoNotFoundSkippingPull": "Repository not found, skip git pull",
 				"fetchFailed": "Failed to get from 'origin'.",
+				"fetchFailedSkippingUpdate": "Could not fetch updates from GitHub; update skipped.",
+				"remoteRefUnavailable": "Remote ref '${ref}' unavailable; Git sync skipped.",
 				"installFailedWinget": "Since Winget installation failed, Git cannot be installed. Please install it manually.",
 				"installFailedManual": "Unable to install Git, please install it manually."
 			},
