@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "未安裝 Git，跳過 git pull",
 				"repoNotFoundSkippingPull": "未找到儲存庫，跳過 git pull",
 				"fetchFailed": "從 'origin' 獲取失敗。",
+				"fetchFailedSkippingUpdate": "無法從 GitHub 取得更新，已略過更新。",
+				"remoteRefUnavailable": "遠端引用「${ref}」不可用，已略過 Git 同步。",
 				"installFailedWinget": "由於 Winget 安裝失敗，無法安裝 Git，請手動安裝。",
 				"installFailedManual": "無法安裝 Git，請手動安裝。"
 			},

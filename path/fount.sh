@@ -933,10 +933,18 @@ install_ipc_tools() {
 	install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 }
 
+invoke_git_for_fount() {
+	GIT_TERMINAL_PROMPT=0 GIT_OPTIONAL_LOCKS=0 git -C "$FOUNT_DIR" "$@"
+}
+
+fount_git_ref_exists() {
+	invoke_git_for_fount rev-parse --verify "$1" &>/dev/null
+}
+
 fount_git_backup_uncommitted() {
 	command -v git &>/dev/null || return 0
 	[ -d "$FOUNT_DIR/.git" ] || return 0
-	if [ -z "$(git -C "$FOUNT_DIR" status --porcelain)" ]; then
+	if [ -z "$(invoke_git_for_fount status --porcelain)" ]; then
 		return 0
 	fi
 
@@ -945,25 +953,57 @@ fount_git_backup_uncommitted() {
 	local tmp_base="${TMPDIR:-/tmp}"
 	local diff_file_path="$tmp_base/fount-local-changes-diff_$timestamp.diff"
 
-	git -C "$FOUNT_DIR" add -A 2>/dev/null || true
-	git -C "$FOUNT_DIR" diff --cached >"$diff_file_path" 2>/dev/null || true
-	if git -C "$FOUNT_DIR" rev-parse --verify HEAD &>/dev/null; then
-		git -C "$FOUNT_DIR" reset HEAD 2>/dev/null || true
+	invoke_git_for_fount add -A || return 1
+	if ! invoke_git_for_fount diff --cached >"$diff_file_path"; then
+		return 1
+	fi
+	if fount_git_ref_exists HEAD; then
+		invoke_git_for_fount reset HEAD || return 1
 	else
-		git -C "$FOUNT_DIR" reset 2>/dev/null || true
+		invoke_git_for_fount reset || return 1
 	fi
 
 	echo -e "${C_YELLOW}$(get_i18n 'git.localChangesDetected')${C_RESET}"
 	echo -e "${C_GREEN}$(get_i18n 'git.backupSavedTo' 'path' "${C_CYAN}$diff_file_path${C_RESET}")"
 }
 
+fount_git_sync_to_ref() {
+	local ref="$1"
+	if ! fount_git_ref_exists "$ref"; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' "$ref")${C_RESET}" >&2
+		return 1
+	fi
+	fount_git_backup_uncommitted || return 1
+	invoke_git_for_fount clean -fd || return 1
+	invoke_git_for_fount reset --hard "$ref"
+}
+
 git_reset_and_clean() {
-	if command -v git &>/dev/null; then
-		fount_git_backup_uncommitted
-		git -C "$FOUNT_DIR" config core.autocrlf false
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
-		git -C "$FOUNT_DIR" gc --aggressive --prune=now --force
+	command -v git &>/dev/null || return 0
+	invoke_git_for_fount config core.autocrlf false
+	local has_head=0 fetch_ok=0
+	if fount_git_ref_exists HEAD; then has_head=1; fi
+	invoke_git_for_fount fetch origin
+	if [ $? -eq 0 ]; then fetch_ok=1; fi
+	if ! fount_git_ref_exists origin/master; then
+		if [ "$fetch_ok" -eq 0 ]; then
+			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		fi
+		return 1
+	fi
+	if [ "$has_head" -eq 0 ] && [ "$fetch_ok" -eq 0 ]; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+	if [ "$fetch_ok" -eq 0 ]; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+	if fount_git_sync_to_ref origin/master; then
+		invoke_git_for_fount gc --aggressive --prune=now --force
 	fi
 }
 
@@ -1410,65 +1450,95 @@ fount_upgrade() {
 	fi
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		get_i18n 'git.repoNotFound'
-		git -C "$FOUNT_DIR" init -b master
-		git -C "$FOUNT_DIR" config core.autocrlf false
-		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
+		invoke_git_for_fount init -b master
+		invoke_git_for_fount config core.autocrlf false
+		invoke_git_for_fount remote add origin https://github.com/steve02081504/fount.git || true
 		get_i18n 'git.fetchingAndResetting'
-		if ! git -C "$FOUNT_DIR" fetch origin master --depth 1; then
-			echo -e "${C_RED}$(get_i18n 'git.fetchFailed')${C_RESET}"
+		if ! invoke_git_for_fount fetch origin master --depth 1; then
+			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
 			return 1
 		fi
-		git_reset_and_clean
-	else
-		git -C "$FOUNT_DIR" config core.autocrlf false
-		git -C "$FOUNT_DIR" fetch origin
-		local currentBranch
-		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
-		if [ "$currentBranch" = "HEAD" ]; then
-			get_i18n 'git.notOnBranch'
-			git_reset_and_clean
-			git -C "$FOUNT_DIR" checkout master
-			currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
+		fount_git_sync_to_ref origin/master || return 1
+		return 0
+	fi
+
+	invoke_git_for_fount config core.autocrlf false
+	local has_head=0
+	if fount_git_ref_exists HEAD; then has_head=1; fi
+	if ! invoke_git_for_fount fetch origin; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+	if [ "$has_head" -eq 0 ] && ! fount_git_ref_exists HEAD; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+
+	local currentBranch
+	currentBranch=$(invoke_git_for_fount rev-parse --abbrev-ref HEAD 2>/dev/null) || currentBranch=HEAD
+	if [ "$currentBranch" = "HEAD" ]; then
+		if ! fount_git_ref_exists origin/master; then
+			echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' 'origin/master')${C_RESET}" >&2
+			return 1
 		fi
-		local remoteBranch
-		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
-		if [ -z "$remoteBranch" ]; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.noUpstreamBranch' 'branch' "$currentBranch")${C_RESET}" >&2
-			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master "$currentBranch"
-			remoteBranch="origin/master"
+		get_i18n 'git.notOnBranch'
+		fount_git_sync_to_ref origin/master || return 1
+		invoke_git_for_fount checkout master
+		currentBranch=$(invoke_git_for_fount rev-parse --abbrev-ref HEAD)
+	fi
+
+	if ! fount_git_ref_exists HEAD; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+
+	local remoteBranch
+	remoteBranch=$(invoke_git_for_fount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+	if [ -z "$remoteBranch" ]; then
+		if ! fount_git_ref_exists origin/master; then
+			echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' 'origin/master')${C_RESET}" >&2
+			return 1
 		fi
-		local git_status
-		git_status=$(git -C "$FOUNT_DIR" status --porcelain)
-		local mergeBase
-		mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
-		local localCommit
-		localCommit=$(git -C "$FOUNT_DIR" rev-parse "$currentBranch")
-		local remoteCommit
-		remoteCommit=$(git -C "$FOUNT_DIR" rev-parse "$remoteBranch")
-		if [ "$localCommit" != "$remoteCommit" ]; then
-			if [ "$mergeBase" = "$localCommit" ]; then
-				get_i18n 'git.updatingFromRemote'
-				if [ -n "$git_status" ]; then
-					fount_git_backup_uncommitted
-				fi
-				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
-			elif [ "$mergeBase" = "$remoteCommit" ]; then
-				get_i18n 'git.localBranchAhead'
-				if [ -n "$git_status" ]; then
-					echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
-				fi
-			else
-				get_i18n 'git.branchesDiverged'
-				if [ -n "$git_status" ]; then
-					fount_git_backup_uncommitted
-				fi
-				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
+		echo -e "${C_YELLOW}$(get_i18n 'git.noUpstreamBranch' 'branch' "$currentBranch")${C_RESET}" >&2
+		invoke_git_for_fount branch --set-upstream-to origin/master "$currentBranch"
+		remoteBranch="origin/master"
+	fi
+	if ! fount_git_ref_exists "$remoteBranch"; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' "$remoteBranch")${C_RESET}" >&2
+		return 1
+	fi
+
+	local git_status
+	git_status=$(invoke_git_for_fount status --porcelain)
+	local mergeBase localCommit remoteCommit
+	mergeBase=$(invoke_git_for_fount merge-base "$currentBranch" "$remoteBranch" 2>/dev/null) || return 1
+	localCommit=$(invoke_git_for_fount rev-parse "$currentBranch" 2>/dev/null) || return 1
+	remoteCommit=$(invoke_git_for_fount rev-parse "$remoteBranch" 2>/dev/null) || return 1
+	if [ "$localCommit" != "$remoteCommit" ]; then
+		if [ "$mergeBase" = "$localCommit" ]; then
+			get_i18n 'git.updatingFromRemote'
+			if [ -n "$git_status" ]; then
+				fount_git_backup_uncommitted || return 1
 			fi
-		else
-			get_i18n 'git.alreadyUpToDate'
+			invoke_git_for_fount reset --hard "$remoteBranch"
+		elif [ "$mergeBase" = "$remoteCommit" ]; then
+			get_i18n 'git.localBranchAhead'
 			if [ -n "$git_status" ]; then
 				echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
 			fi
+		else
+			get_i18n 'git.branchesDiverged'
+			if [ -n "$git_status" ]; then
+				fount_git_backup_uncommitted || return 1
+			fi
+			invoke_git_for_fount reset --hard "$remoteBranch"
+		fi
+	else
+		get_i18n 'git.alreadyUpToDate'
+		if [ -n "$git_status" ]; then
+			echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
 		fi
 	fi
 }

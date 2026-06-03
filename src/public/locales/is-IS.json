@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git er ekki uppsett, slepptu git pull",
 				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu git pull",
 				"fetchFailed": "Mistókst að fá frá 'uppruna'.",
+				"fetchFailedSkippingUpdate": "Ekki tókst að sækja uppfærslur frá GitHub; uppfærslu sleppt.",
+				"remoteRefUnavailable": "Fjartilvísunin '${ref}' er ekki tiltæk; Git-samstillingu sleppt.",
 				"installFailedWinget": "Þar sem Winget uppsetning mistókst er ekki hægt að setja Git upp. Vinsamlegast settu það upp handvirkt.",
 				"installFailedManual": "Get ekki sett upp Git, vinsamlegast settu það upp handvirkt."
 			},

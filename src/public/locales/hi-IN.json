@@ -143,6 +143,8 @@
 				"notInstalledSkippingPull": "Git स्थापित नहीं है, git पुल छोड़ें",
 				"repoNotFoundSkippingPull": "रिपॉजिटरी नहीं मिली, गिट पुल छोड़ें",
 				"fetchFailed": "'उत्पत्ति' से प्राप्त करने में विफल.",
+				"fetchFailedSkippingUpdate": "GitHub से अपडेट प्राप्त करने में विफल; अपडेट छोड़ा गया।",
+				"remoteRefUnavailable": "दूरस्थ संदर्भ '${ref}' उपलब्ध नहीं है; Git समन्वयन छोड़ा गया।",
 				"installFailedWinget": "चूँकि विंगेट इंस्टॉलेशन विफल हो गया, Git इंस्टॉल नहीं किया जा सकता। कृपया इसे मैन्युअल रूप से इंस्टॉल करें.",
 				"installFailedManual": "Git इंस्टॉल करने में असमर्थ, कृपया इसे मैन्युअल रूप से इंस्टॉल करें।"
 			},
