@@ -6,7 +6,7 @@
 	"configurations": [
 		{
 			"request": "launch",
-			"name": "Launch Program",
+			"name": "fount server",
 			"type": "node",
 			"program": "${workspaceFolder}/src/server/index.mjs",
 			"cwd": "${workspaceFolder}",
@@ -21,7 +21,11 @@
 				"${workspaceFolder}/deno.json",
 				"--v8-flags=--expose-gc"
 			],
-			"attachSimplePort": 9229
+			"attachSimplePort": 9229,
+			"skipFiles": [
+				"**/node_modules/@steve02081504/virtual-console/**/node-console.mjs",
+				"${workspaceFolder}/src/scripts/i18n.mjs",
+			]
 		}
 	]
 }
