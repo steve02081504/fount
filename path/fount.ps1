@@ -796,11 +796,6 @@ function fount_upgrade {
 		return
 	}
 
-	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Write-Host (Get-I18n -key 'git.repoNotFoundSkippingPull')
-		return
-	}
-
 	Invoke-GitForFount config core.autocrlf false
 	$hasHead = Test-FountGitRef
 	Invoke-GitForFount fetch origin
@@ -850,7 +845,15 @@ function fount_upgrade {
 	}
 
 	$mergeBase = Invoke-GitForFount merge-base $currentBranch $remoteBranch 2>$null
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
 	$localCommit = Invoke-GitForFount rev-parse $currentBranch 2>$null
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
 	$remoteCommit = Invoke-GitForFount rev-parse $remoteBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')

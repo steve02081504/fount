@@ -953,12 +953,14 @@ fount_git_backup_uncommitted() {
 	local tmp_base="${TMPDIR:-/tmp}"
 	local diff_file_path="$tmp_base/fount-local-changes-diff_$timestamp.diff"
 
-	invoke_git_for_fount add -A || true
-	invoke_git_for_fount diff --cached >"$diff_file_path" || true
+	invoke_git_for_fount add -A || return 1
+	if ! invoke_git_for_fount diff --cached >"$diff_file_path"; then
+		return 1
+	fi
 	if fount_git_ref_exists HEAD; then
-		invoke_git_for_fount reset HEAD || true
+		invoke_git_for_fount reset HEAD || return 1
 	else
-		invoke_git_for_fount reset || true
+		invoke_git_for_fount reset || return 1
 	fi
 
 	echo -e "${C_YELLOW}$(get_i18n 'git.localChangesDetected')${C_RESET}"
@@ -971,7 +973,7 @@ fount_git_sync_to_ref() {
 		echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' "$ref")${C_RESET}" >&2
 		return 1
 	fi
-	fount_git_backup_uncommitted
+	fount_git_backup_uncommitted || return 1
 	invoke_git_for_fount clean -fd || return 1
 	invoke_git_for_fount reset --hard "$ref"
 }
@@ -991,6 +993,11 @@ git_reset_and_clean() {
 		return 1
 	fi
 	if [ "$has_head" -eq 0 ] && [ "$fetch_ok" -eq 0 ]; then
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
+		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		return 1
+	fi
+	if [ "$fetch_ok" -eq 0 ]; then
 		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
 		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
 		return 1
@@ -1513,7 +1520,7 @@ fount_upgrade() {
 		if [ "$mergeBase" = "$localCommit" ]; then
 			get_i18n 'git.updatingFromRemote'
 			if [ -n "$git_status" ]; then
-				fount_git_backup_uncommitted
+				fount_git_backup_uncommitted || return 1
 			fi
 			invoke_git_for_fount reset --hard "$remoteBranch"
 		elif [ "$mergeBase" = "$remoteCommit" ]; then
@@ -1524,7 +1531,7 @@ fount_upgrade() {
 		else
 			get_i18n 'git.branchesDiverged'
 			if [ -n "$git_status" ]; then
-				fount_git_backup_uncommitted
+				fount_git_backup_uncommitted || return 1
 			fi
 			invoke_git_for_fount reset --hard "$remoteBranch"
 		fi
