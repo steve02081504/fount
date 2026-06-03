@@ -37,7 +37,7 @@ function startProfile(name) {
  *   exclusiveMemoryChangeInMB: number
  * }} 性能分析结果。
  */
-function endProfile() {
+function endProfile(name) {
 	console.profileEnd(name)
 	const profilerStack = getProfilerStack()
 
@@ -45,6 +45,10 @@ function endProfile() {
 	const endMemory = getMemoryUsage()
 
 	const currentFrame = profilerStack.pop()
+	if (currentFrame.name !== name) {
+		console.error(`endProfile: name mismatch: ${currentFrame.name} != ${name}`)
+		return
+	}
 	const { startTime, startMemory } = currentFrame
 
 	const totalTimeInMs = endTime - startTime
@@ -77,6 +81,6 @@ export function doProfile(name, fn) {
 	return asyncLocalStorage.run([...getProfilerStack()], async () => {
 		startProfile(name)
 		await fn()
-		return endProfile()
+		return endProfile(name)
 	})
 }

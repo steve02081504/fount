@@ -22,6 +22,8 @@
 /path/deno
 /path/deno.exe
 
+*.cpuprofile
+
 /target
 /.gradle
 /build
