@@ -732,7 +732,7 @@ function Invoke-GitForFount([string[]]$GitArgs) {
 }
 
 function Test-FountGitRef($Ref = 'HEAD') {
-	Invoke-GitForFount rev-parse --verify $Ref 2>$null
+	Invoke-GitForFount rev-parse --verify $Ref *> $null
 	return ($LastExitCode -eq 0)
 }
 
