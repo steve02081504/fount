@@ -13,9 +13,8 @@
 - 用途：默认宠物页面，用于设置和查看默认桌面宠物配置。
 
 ### GET /parts/shells:deskpet/set_cookie_and_redirect
-- 用途：设置 cookie 并重定向页面，用于桌面宠物窗口的认证和初始化流程。
-
----
+- 查询：apikey（临时 API Key）、redirect（目标宠物页 URL，URL 编码）
+- 用途：WebView 启动链：将 apikey 写入 `fount-apikey` Cookie 后跳转到 redirect；后续同源请求带 Cookie 即可认证。
 
 ## 桌面宠物
 

@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "Cache wird entfernt...",
-				"reinstallingDependencies": "Abhängigkeiten werden neu installiert...",
 				"cleaningDenoCaches": "Deno-Cache bereinigen...",
 				"cleaningOldPwshModules": "Bereinigen alter pwsh-Module ..."
 			},

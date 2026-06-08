@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "Fjarlægir skyndiminni...",
-				"reinstallingDependencies": "Setur upp ósjálfstæði aftur...",
 				"cleaningDenoCaches": "Hreinsar Deno skyndiminni...",
 				"cleaningOldPwshModules": "Hreinsar upp gamlar pwsh einingar..."
 			},

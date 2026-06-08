@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "جارٍ إزالة ذاكرة التخزين المؤقت...",
-				"reinstallingDependencies": "إعادة تثبيت التبعيات...",
 				"cleaningDenoCaches": "تنظيف ذاكرة التخزين المؤقت دينو...",
 				"cleaningOldPwshModules": "تنظيف وحدات pwsh القديمة..."
 			},
