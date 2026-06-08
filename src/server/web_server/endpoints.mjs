@@ -7,7 +7,7 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -248,8 +248,14 @@ export function registerEndpoints(router) {
 		const { jti, password } = req.body
 		if (!jti) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
 		if (!password) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
+		if (!user?.auth?.apiKeys?.length)
+			return res.status(400).json({ i18nKey: 'userSettings.apiKeys.noKeysForUser' })
+		if (!await verifyPassword(password, user.auth.password))
+			return res.status(401).json({ i18nKey: 'userSettings.apiKeys.revokeWrongPassword' })
+		if (!user.auth.apiKeys.some(key => key.jti === jti))
+			return res.status(400).json({ i18nKey: 'userSettings.apiKeys.keyNotFound' })
 
-		await revokeApiKey(user.username, jti, password)
+		await revokeApiKeyByJti(user.username, jti)
 		res.status(200).json({})
 	})
 
@@ -259,11 +265,6 @@ export function registerEndpoints(router) {
 
 		const user = await verifyApiKey(apiKey)
 		res.status(200).json({ valid: !!user })
-	})
-
-	router.post('/api/get-api-cookie', async (req, res) => {
-		const { apiKey } = req.body
-		respondAuthResult(res, await setApiCookieResponse(apiKey, req, res))
 	})
 
 	router.get('/api/whoami', authenticate, async (req, res) => {

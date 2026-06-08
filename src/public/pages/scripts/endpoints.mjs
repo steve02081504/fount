@@ -281,17 +281,3 @@ export async function verifyApiKey(apiKey) {
 	})
 }
 
-/**
- * 获取 API cookie。
- * @param {string} apiKey - 要使用的 API 密钥。
- * @returns {Promise<object>} - 服务器响应。
- */
-export async function getApiCookie(apiKey) {
-	const response = await fetch('/api/get-api-cookie', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ apiKey }),
-	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
-}

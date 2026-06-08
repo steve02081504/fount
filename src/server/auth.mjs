@@ -106,8 +106,6 @@ export function respondAuthResult(res, result) {
 function clearAuthCookies(res, options) {
 	res.clearCookie('accessToken', options)
 	res.clearCookie('refreshToken', options)
-	res.clearCookie('apiAccessToken', options)
-	res.clearCookie('apiRefreshToken', options)
 }
 
 /**
@@ -186,7 +184,6 @@ export async function initAuth() {
 		if (config.data.users[user].auth) {
 			config.data.users[user].auth.refreshTokens ??= []
 			config.data.users[user].auth.apiKeys ??= []
-			config.data.users[user].auth.apiRefreshTokens ??= []
 			config.data.users[user].auth.webauthnCredentials ??= []
 		}
 
@@ -205,16 +202,6 @@ export async function generateAccessToken(payload, signingKey = privateKey) {
 }
 
 /**
- * 生成一个 API 访问令牌。
- * @param {object} payload - 令牌的有效载荷。
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
- * @returns {Promise<string>} 生成的 API 访问令牌。
- */
-export async function generateApiAccessToken(payload, signingKey = privateKey) {
-	return generateToken({ ...payload, type: 'api' }, ACCESS_TOKEN_EXPIRY, signingKey)
-}
-
-/**
  * 生成一个刷新令牌。
  * @param {object} payload - 令牌的有效载荷。
  * @param {string} deviceId - 设备的唯一标识符。
@@ -223,17 +210,6 @@ export async function generateApiAccessToken(payload, signingKey = privateKey) {
  */
 async function generateRefreshToken(payload, deviceId = 'unknown', signingKey = privateKey) {
 	return generateToken({ ...payload, deviceId }, REFRESH_TOKEN_EXPIRY, signingKey)
-}
-
-/**
- * 生成一个 API 刷新令牌。
- * @param {object} payload - 令牌的有效载荷。
- * @param {string} apiKeyJti - 关联的 API 密钥的 JTI。
- * @param {jose.KeyLike} [signingKey=privateKey] - 签名密钥。
- * @returns {Promise<string>} 生成的 API 刷新令牌。
- */
-async function generateApiRefreshToken(payload, apiKeyJti, signingKey = privateKey) {
-	return generateToken({ ...payload, apiKeyJti, type: 'apiRefresh' }, REFRESH_TOKEN_EXPIRY, signingKey)
 }
 
 /**
@@ -287,11 +263,9 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 		if (!decoded || (options.expectedType && decoded.type !== options.expectedType))
 			return { status: 401, message: `Invalid or revoked ${options.tokenName} refresh token` }
 
-
 		const user = getUserByUsername(decoded.username)
 		if (!user || !user.auth || !user.auth[options.userTokenArrayKey])
 			return { status: 401, message: `User not found or ${options.tokenName} refresh tokens unavailable` }
-
 
 		const tokenEntry = user.auth[options.userTokenArrayKey].find(t => t.jti === decoded.jti)
 
@@ -381,56 +355,6 @@ async function refresh(refreshTokenValue, req) {
 }
 
 /**
- * 刷新 API 访问令牌。
- * @param {string} apiRefreshTokenValue - 客户端提供的 API 刷新令牌。
- * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {Promise<object>} 包含刷新结果的对象。
- */
-async function refreshApiToken(apiRefreshTokenValue, req) {
-	return handleTokenRefresh(apiRefreshTokenValue, req, {
-		tokenName: 'API',
-		expectedType: 'apiRefresh',
-		userTokenArrayKey: 'apiRefreshTokens',
-		/**
-		 * 验证 API 令牌条目。
-		 * @param {object} entry - 用户的 API 令牌条目。
-		 * @param {object} decoded - 解码后的 API 刷新令牌。
-		 * @returns {boolean} 如果条目有效，则返回 true。
-		 */
-		validateEntry: (entry, decoded) => entry.apiKeyJti === decoded.apiKeyJti,
-		mismatchRevokeReason: 'api-refresh-key-mismatch',
-		/**
-		 * 生成新的 API 访问令牌。
-		 * @param {object} payload - API 访问令牌的有效载荷。
-		 * @returns {Promise<string>} 新的 API 访问令牌。
-		 */
-		generateAccessToken: (payload) => generateApiAccessToken(payload),
-		/**
-		 * 生成新的 API 刷新令牌。
-		 * @param {object} payload - API 刷新令牌的有效载荷。
-		 * @param {object} entry - 旧的令牌条目。
-		 * @returns {Promise<string>} 新的 API 刷新令牌。
-		 */
-		generateRefreshToken: (payload, entry) => generateApiRefreshToken(payload, entry.apiKeyJti),
-		/**
-		 * 获取新的 API 令牌条目。
-		 * @param {object} decoded - 解码后的新 API 刷新令牌。
-		 * @param {object} oldEntry - 旧的令牌条目。
-		 * @returns {object} 新的 API 令牌条目。
-		 */
-		getNewTokenEntry: (decoded, oldEntry) => ({
-			jti: decoded.jti,
-			apiKeyJti: oldEntry.apiKeyJti,
-			expiry: decoded.exp * 1000,
-		}),
-		accessTokenKey: 'apiAccessToken',
-		refreshTokenKey: 'apiRefreshToken',
-		errorI18nKey: 'fountConsole.auth.apiRefreshTokenError',
-	})
-}
-
-
-/**
  * 用户登出。
  * @param {import('npm:express').Request} req - Express 请求对象。
  * @param {import('npm:express').Response} res - Express 响应对象。
@@ -462,13 +386,22 @@ export async function logout(req, res) {
 }
 
 /**
+ * 计算 API 密钥的 SHA-256 哈希（`config.data.apiKeys` 的键）。
+ * @param {string} apiKey - API 密钥明文。
+ * @returns {string} 十六进制哈希。
+ */
+function hashApiKey(apiKey) {
+	return crypto.createHash('sha256').update(apiKey).digest('hex')
+}
+
+/**
  * 验证 API 密钥。
  * @param {string} apiKey - 要验证的 API 密钥。
  * @returns {Promise<object|null>} 如果成功，则返回用户对象，否则返回 null。
  */
 export async function verifyApiKey(apiKey) {
 	try {
-		const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
+		const hash = hashApiKey(apiKey)
 		const keyInfo = config.data.apiKeys[hash]
 		if (!keyInfo) return null
 
@@ -491,6 +424,8 @@ export async function verifyApiKey(apiKey) {
 
 /**
  * 尝试对请求进行身份验证，成功则填充 req.user。
+ * 按序尝试：API Key（WebSocket 子协议 / Bearer / 查询 `fount-apikey` / Cookie `fount-apikey`）→
+ * Cookie `accessToken` → 用 Cookie `refreshToken` 刷新会话。
  * @param {import('npm:express').Request} req - Express 请求对象。
  * @param {import('npm:express').Response} res - Express 响应对象。
  * @throws {Error} 如果认证失败。
@@ -517,6 +452,7 @@ export async function try_auth_request(req, res) {
 		if (authHeader?.startsWith?.('Bearer ')) apiKey = authHeader.substring(7)
 	}
 	apiKey ||= req.query?.['fount-apikey']
+	apiKey ||= req.cookies?.['fount-apikey']
 	if (apiKey) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
@@ -524,48 +460,49 @@ export async function try_auth_request(req, res) {
 	}
 
 	// 2. Cookie 令牌认证
-	const { accessToken = undefined, refreshToken = undefined, apiAccessToken = undefined, apiRefreshToken = undefined } = req.cookies
-	let decoded = accessToken ? await verifyToken(accessToken) : null
-	if (decoded?.type !== 'api') {
-		req.user = config.data.users[decoded.username]
-		return
-	}
-
-	decoded = apiAccessToken ? await verifyToken(apiAccessToken) : null
-	if (decoded?.type === 'api') {
+	const { accessToken = undefined, refreshToken = undefined } = req.cookies
+	const decoded = accessToken ? await verifyToken(accessToken) : null
+	if (decoded) {
 		req.user = config.data.users[decoded.username]
 		return
 	}
 
 	// 3. 尝试刷新令牌
-	let refreshResult
-	if (refreshToken) refreshResult = await refresh(refreshToken, req)
-	else if (apiRefreshToken) refreshResult = await refreshApiToken(apiRefreshToken, req)
-
-	if (refreshResult?.status !== 200) {
+	if (!refreshToken) {
 		clearAuthCookies(res, getSecureCookieOptions(req))
-		return Unauthorized(refreshResult?.message || 'Session expired, please login again.')
+		return Unauthorized('Session expired, please login again.')
+	}
+
+	const refreshResult = await refresh(refreshToken, req)
+	if (refreshResult.status !== 200) {
+		clearAuthCookies(res, getSecureCookieOptions(req))
+		return Unauthorized(refreshResult.message || 'Session expired, please login again.')
 	}
 
 	// 4. 刷新成功，设置 Cookies 并验证新令牌
 	const cookieOptions = getSecureCookieOptions(req)
-	let newAccessTokenValue
-	if (refreshResult.accessToken) {
-		res.cookie('accessToken', refreshResult.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
-		res.cookie('refreshToken', refreshResult.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
-		req.cookies.accessToken = refreshResult.accessToken // 为后续中间件更新 req
-		newAccessTokenValue = refreshResult.accessToken
-	} else if (refreshResult.apiAccessToken) {
-		res.cookie('apiAccessToken', refreshResult.apiAccessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
-		res.cookie('apiRefreshToken', refreshResult.apiRefreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
-		req.cookies.apiAccessToken = refreshResult.apiAccessToken
-		newAccessTokenValue = refreshResult.apiAccessToken
-	}
+	res.cookie('accessToken', refreshResult.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
+	res.cookie('refreshToken', refreshResult.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
+	req.cookies.accessToken = refreshResult.accessToken
 
-	const newDecodedToken = await verifyToken(newAccessTokenValue)
+	const newDecodedToken = await verifyToken(refreshResult.accessToken)
 	if (!newDecodedToken) return Unauthorized('Failed to verify newly refreshed token.')
 
 	req.user = config.data.users[newDecodedToken.username]
+}
+
+/**
+ * 未授权响应：与 `authenticate` 一致——GET 且接受 HTML 时重定向登录，否则 401 JSON。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ * @param {string} [message='Unauthorized'] - 错误消息。
+ * @returns {import('npm:express').Response} 已发送的重定向或 JSON 响应
+ */
+export function respondUnauthorized(req, res, message = 'Unauthorized') {
+	const path = encodeURIComponent(req.originalUrl)
+	if (req.accepts('html') && req.method === 'GET')
+		return res.redirect(`/login?redirect=${path}`)
+	return res.status(401).json({ message })
 }
 
 /**
@@ -586,25 +523,12 @@ export function auth_request(req, res) {
  * @returns {Promise<void>}
  */
 export async function authenticate(req, res, next) {
-	/**
-	 * 处理未授权的请求。
-	 * @param {string} [message='Unauthorized'] - 错误消息。
-	 * @returns {void}
-	 */
-	const Unauthorized = (message = 'Unauthorized') => {
-		const path = encodeURIComponent(req.originalUrl)
-		if (req.accepts('html') && req.method === 'GET')
-			return res.redirect(`/login?redirect=${path}`)
-
-		return res.status(401).json({ message })
-	}
-
 	try {
 		await try_auth_request(req, res)
 		next?.()
 	}
 	catch (error) {
-		return Unauthorized(error.message)
+		return respondUnauthorized(req, res, error.message)
 	}
 }
 
@@ -685,7 +609,6 @@ async function createUser(username, password) {
 			lockedUntil: null,
 			refreshTokens: [],
 			apiKeys: [],
-			apiRefreshTokens: [],
 			webauthnCredentials: [],
 		},
 		...loadJsonFile(path.join(__dirname, 'default', 'templates', 'user.json')),
@@ -748,7 +671,7 @@ export async function generateApiKey(username, description = 'New API Key') {
 	if (!user) throw new Error('User not found')
 
 	const apiKey = `${crypto.randomBytes(32).toString('base64url')}`
-	const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
+	const hash = hashApiKey(apiKey)
 	const jti = crypto.randomUUID()
 
 	config.data.apiKeys[hash] = { username, jti }
@@ -764,40 +687,52 @@ export async function generateApiKey(username, description = 'New API Key') {
 }
 
 /**
- * 撤销 API 密钥。
- * @param {string} username - 用户名。
- * @param {string} jti - 要撤销的 API 密钥的 JTI。
- * @param {string} password - 用于验证的用户密码。
- * @returns {Promise<void>}
+ * 从全局索引与用户列表中删除指定 hash 的 API Key 记录。
+ * @param {string} hash - `config.data.apiKeys` 中的 SHA-256 键。
+ * @returns {boolean} 是否删除了记录。
  */
-export async function revokeApiKey(username, jti, password) {
+function deleteApiKeyHash(hash) {
+	const keyInfo = config.data.apiKeys[hash]
+	if (!keyInfo) return false
+
+	const { username, jti } = keyInfo
+	delete config.data.apiKeys[hash]
+
 	const user = getUserByUsername(username)
-	if (!user?.auth?.apiKeys)
-		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.noKeysForUser' })
-
-	if (!await verifyPassword(password, user.auth.password))
-		authMutationFail(401, { i18nKey: 'userSettings.apiKeys.revokeWrongPassword' })
-
-	const keyIndex = user.auth.apiKeys.findIndex(key => key.jti === jti)
-	if (keyIndex === -1)
-		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.keyNotFound' })
-
-	const hashToRemove = Object.keys(config.data.apiKeys).find(hash => config.data.apiKeys[hash].jti === jti)
-	if (hashToRemove) delete config.data.apiKeys[hashToRemove]
-	user.auth.apiKeys.splice(keyIndex, 1)
-
-	// 撤销关联的 API 刷新令牌
-	const tokensToRevoke = user.auth.apiRefreshTokens.filter(token => token.apiKeyJti === jti)
-	for (const token of tokensToRevoke)
-		config.data.revokedTokens[token.jti] = {
-			expiry: token.expiry,
-			type: 'api-refresh-revoked-by-apikey',
-			revokedAt: Date.now(),
-		}
-
-	user.auth.apiRefreshTokens = user.auth.apiRefreshTokens.filter(token => token.apiKeyJti !== jti)
+	const keyIndex = user?.auth?.apiKeys?.findIndex(key => key.jti === jti) ?? -1
+	if (keyIndex !== -1) user.auth.apiKeys.splice(keyIndex, 1)
 
 	save_config()
+	return true
+}
+
+/**
+ * 按明文 API Key 撤销（调用方负责鉴权；无 key 时入口可用 jti 查 hash 后调 deleteApiKeyHash）。
+ * @param {string} apiKey - API 密钥明文。
+ * @returns {void}
+ * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ */
+export function revokeApiKey(apiKey) {
+	if (!apiKey) return
+
+	if (!deleteApiKeyHash(hashApiKey(apiKey)))
+		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.keyNotFound' })
+}
+
+/**
+ * 按 JTI 撤销 API 密钥（设置页列表等无明文 key 的场景；调用方须已校验归属）。
+ * @param {string} username - 密钥所有者用户名。
+ * @param {string} jti - API 密钥 JTI。
+ * @returns {void}
+ * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ */
+export function revokeApiKeyByJti(username, jti) {
+	const hash = Object.keys(config.data.apiKeys).find(h =>
+		config.data.apiKeys[h].jti === jti && config.data.apiKeys[h].username === username,
+	)
+	if (!hash)
+		authMutationFail(400, { i18nKey: 'userSettings.apiKeys.keyNotFound' })
+	deleteApiKeyHash(hash)
 }
 
 /**
@@ -1082,46 +1017,6 @@ export async function register(username, password) {
 	const newUser = await createUser(username, password)
 	return { status: 201, user: { username: newUser.username, userId: newUser.auth.userId, createdAt: newUser.createdAt } }
 }
-
-/**
- * 使用 API 密钥设置认证 Cookies。
- * @param {string} apiKey - API 密钥。
- * @param {import('npm:express').Request} req - Express 请求对象。
- * @param {import('npm:express').Response} res - Express 响应对象。
- * @returns {Promise<object>} 操作结果。
- */
-export async function setApiCookieResponse(apiKey, req, res) {
-	if (!apiKey) return { status: 400, error: 'API key is required.' }
-
-	const user = await verifyApiKey(apiKey)
-	if (!user) return { status: 401, error: 'Invalid API key.' }
-
-	const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
-	const apiKeyInfo = config.data.apiKeys[hash]
-	if (!apiKeyInfo) return { status: 500, error: 'API key data inconsistency.' }
-
-	const payload = { username: user.username, userId: user.auth.userId }
-	const apiAccessToken = await generateApiAccessToken(payload)
-	const apiRefreshToken = await generateApiRefreshToken(payload, apiKeyInfo.jti)
-	const decodedApiRefreshToken = jose.decodeJwt(apiRefreshToken)
-
-	user.auth.apiRefreshTokens = user.auth.apiRefreshTokens.filter(t => t.apiKeyJti !== apiKeyInfo.jti)
-	user.auth.apiRefreshTokens.push({
-		jti: decodedApiRefreshToken.jti,
-		apiKeyJti: apiKeyInfo.jti,
-		expiry: decodedApiRefreshToken.exp * 1000,
-		ipAddress: req?.ip,
-		userAgent: req?.headers?.['user-agent'],
-		lastSeen: Date.now(),
-	})
-
-	const cookieOptions = getSecureCookieOptions(req)
-	res.cookie('apiAccessToken', apiAccessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
-	res.cookie('apiRefreshToken', apiRefreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
-
-	return { status: 200, message: 'API cookie set successfully.' }
-}
-
 
 // --- 定时清理任务 ---
 

@@ -1,7 +1,7 @@
 import express from 'npm:express'
 
 import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
-import { auth_request, getUserByReq } from '../auth.mjs'
+import { auth_request, getUserByReq, respondUnauthorized } from '../auth.mjs'
 import { events } from '../events.mjs'
 import { loadPart } from '../parts_loader.mjs'
 
@@ -17,10 +17,8 @@ const partsAPIregex = /^\/(api|ws|virtual_files)\/parts\/([^/]+)/
 PartsRouter.use(async (req, res, next) => {
 	const match = partsAPIregex.exec(req.path)
 	if (!match) return next()
-	if (!await auth_request(req, res)) {
-		console.error('skip part router because auth failed')
-		return next()
-	}
+	if (!await auth_request(req, res))
+		return respondUnauthorized(req, res)
 	const { username } = await getUserByReq(req)
 	if (!username) return next()
 

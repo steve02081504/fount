@@ -1,7 +1,7 @@
 # fount 基础 API 入口点说明
 
 fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 API 调用规范与用途，便于 AI Agent 操作 fount 系统。
-除特别说明外，需认证的接口支持：Cookie（accessToken/apiAccessToken）、Authorization: Bearer <apiKey>、或查询参数 fount-apikey=<apiKey>。
+除特别说明外，需认证的接口支持：Cookie（accessToken/refreshToken，或 fount-apikey=<apiKey>）、Authorization: Bearer <apiKey>、或查询参数 fount-apikey=<apiKey>。
 
 ---
 
@@ -74,10 +74,6 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 ### POST /api/apikey/verify
 - Body：apiKey
 - 用途：验证 API Key 是否有效，返回 valid: true/false。
-
-### POST /api/get-api-cookie
-- Body：apiKey
-- 用途：用 API Key 换取并设置 apiAccessToken/apiRefreshToken Cookie，便于浏览器端使用。
 
 ### GET /api/whoami
 - 认证：需要

@@ -1,14 +1,14 @@
 import { on_shutdown } from 'npm:on-shutdown'
 
 import { console } from '../../../../../scripts/i18n.mjs'
-import { generateApiKey, revokeApiKey } from '../../../../../server/auth.mjs' // Import generateApiKey and revokeApiKey
+import { generateApiKey, revokeApiKey } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { hosturl } from '../../../../../server/server.mjs'
 import { sendEventToAll } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs' // Import unlockAchievement
 
-const runningPets = {} // { [username]: { [charname]: { webview, apiKeyJti } } }
+const runningPets = {} // { [username]: { [charname]: { webview, apiKey } } }
 
 /**
  * 运行宠物。
@@ -33,16 +33,9 @@ export async function runPet(username, charname) {
 			throw new Error(`Character ${charname} does not provide a valid pet URL.`)
 
 
-		const originalPetUrl = petConfig.url
-
-		// Generate a temporary API key for the webview
-		const { apiKey, jti } = await generateApiKey(username, `DeskPet-${charname}-temp-key`)
-
+		const { apiKey } = await generateApiKey(username, `DeskPet-${charname}-temp-key`)
 		const intermediatePageUrl = `${hosturl}/parts/shells:deskpet/set_cookie_and_redirect.html`
-		const encodedOriginalPetUrl = encodeURIComponent(originalPetUrl)
-		const encodedApiKey = encodeURIComponent(apiKey)
-
-		const finalUrl = `${intermediatePageUrl}?apikey=${encodedApiKey}&redirect=${encodedOriginalPetUrl}`
+		const finalUrl = `${intermediatePageUrl}?apikey=${encodeURIComponent(apiKey)}&redirect=${encodeURIComponent(petConfig.url)}`
 
 		const { WebUI } = await import('jsr:@webui/deno-webui')
 
@@ -64,13 +57,13 @@ export async function runPet(username, charname) {
 			delete runningPets[username][charname]
 			if (!Object.keys(runningPets[username]).length) delete runningPets[username]
 
-			await revokeApiKey(jti)
+			await revokeApiKey(apiKey)
 			EndJob(username, 'shells/deskpet', charname)
 			sendEventToAll('deskpet-list-updated')
 		})
 
 		runningPets[username] ??= {}
-		runningPets[username][charname] = { webview: myWindow, apiKeyJti: jti }
+		runningPets[username][charname] = { webview: myWindow, apiKey }
 		sendEventToAll('deskpet-list-updated')
 		unlockAchievement(username, 'shells/deskpet', 'start_deskpet') // Trigger achievement here
 	} catch (error) {
@@ -95,7 +88,7 @@ export async function stopPet(username, charname) {
 		petInfo.webview.destroy()
 
 		// Revoke the API key
-		await revokeApiKey(petInfo.apiKeyJti)
+		await revokeApiKey(petInfo.apiKey)
 
 		EndJob(username, 'shells/deskpet', charname)
 		sendEventToAll('deskpet-list-updated')
@@ -119,7 +112,7 @@ export async function pausePet(username, charname) {
 		delete runningPets[username]
 
 	petInfo.webview.destroy()
-	await revokeApiKey(petInfo.apiKeyJti)
+	await revokeApiKey(petInfo.apiKey)
 	sendEventToAll('deskpet-list-updated')
 }
 on_shutdown(async () => {
