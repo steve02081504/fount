@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "कैश हटाया जा रहा है...",
-				"reinstallingDependencies": "निर्भरताएँ पुनः स्थापित की जा रही हैं...",
 				"cleaningDenoCaches": "डेनो कैश साफ़ किया जा रहा है...",
 				"cleaningOldPwshModules": "पुराने pwsh मॉड्यूल की सफ़ाई..."
 			},

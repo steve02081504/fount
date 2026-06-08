@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "Cache verwijderen...",
-				"reinstallingDependencies": "Afhankelijkheden opnieuw installeren...",
 				"cleaningDenoCaches": "Deno-cache opschonen...",
 				"cleaningOldPwshModules": "Oude pwsh-modules opruimen..."
 			},

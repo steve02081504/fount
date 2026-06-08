@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "正在移除快取...",
-				"reinstallingDependencies": "正在重新安裝相依套件...",
 				"cleaningDenoCaches": "正在清理 Deno 快取...",
 				"cleaningOldPwshModules": "正在清理舊的 pwsh 模組..."
 			},

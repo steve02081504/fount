@@ -1148,9 +1148,9 @@ function run {
 	Write-TaskbarProgress -Percent 5
 	$originalTitle = Get-Title
 	Set-Title ""
-	$v8Flags = "--expose-gc"
+	$v8Flags = ""
 	if ($env:FOUNT_V8_FLAGS) {
-		$v8Flags += ",$env:FOUNT_V8_FLAGS"
+		$v8Flags = $env:FOUNT_V8_FLAGS
 	}
 	$heapSizeMB = 100 # Default to 100MB
 	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
@@ -1168,7 +1168,8 @@ function run {
 		}
 	}
 	Write-TaskbarProgress -Percent 10
-	$v8Flags += ",--initial-heap-size=${heapSizeMB}"
+	if ($v8Flags) { $v8Flags += ",--initial-heap-size=${heapSizeMB}" }
+	else { $v8Flags = "--initial-heap-size=${heapSizeMB}" }
 
 	if (-not $env:FOUNT_START_TIME) {
 		$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
@@ -1217,7 +1218,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
 	Write-TaskbarProgress -Percent 70
 	Write-Host (Get-I18n -key 'install.installingDependencies')
-	deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	Write-TaskbarProgress -Percent 85
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning (Get-I18n -key 'install.untrustedPartsWarning')
@@ -1280,16 +1281,13 @@ public class ExplorerRefresher {
 if ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
-		Write-Host (Get-I18n -key 'clean.removingCaches')
-		Remove-Item -Force -Recurse -ErrorAction Ignore "$FOUNT_DIR/node_modules"
 		if ($args[1] -eq 'force') {
+			Write-Host (Get-I18n -key 'clean.removingCaches')
 			Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
 		}
 	}
-	Write-Host (Get-I18n -key 'clean.reinstallingDependencies')
-	run shutdown
 	Write-Host (Get-I18n -key 'clean.cleaningDenoCaches')
-	deno clean
+	deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host (Get-I18n -key 'clean.cleaningOldPwshModules')
 	$Latest = Get-InstalledModule -Name @('ps12exe', 'fount-pwsh') -ErrorAction Ignore
 	foreach ($module in $Latest) {

@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "正清除緩存...",
-				"reinstallingDependencies": "正重裝其依賴...",
 				"cleaningDenoCaches": "正清理 Deno 之緩存...",
 				"cleaningOldPwshModules": "正清理舊 pwsh 模塊..."
 			},

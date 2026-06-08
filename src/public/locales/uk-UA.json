@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "Видалення кешу...",
-				"reinstallingDependencies": "Перевстановлення залежностей...",
 				"cleaningDenoCaches": "Очищення кешу Deno...",
 				"cleaningOldPwshModules": "Очищення старих модулів pwsh..."
 			},

@@ -1,11 +1,14 @@
 import process from 'node:process'
+import { setFlagsFromString } from 'node:v8'
+import { runInNewContext } from 'node:vm'
+
 /**
  * 触发一次垃圾回收。
  * @returns {void}
  */
 export function gc() {
-	if (!globalThis.gc) return console.warn('Garbage collection is not exposed. Skipping GC.')
-	globalThis.gc({
+	setFlagsFromString('--expose_gc')
+	runInNewContext('gc')({
 		execution: 'sync',
 		flavor: 'last-resort',
 		type: 'major'

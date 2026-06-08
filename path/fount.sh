@@ -1792,9 +1792,9 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
-	v8_flags="--expose-gc"
+	v8_flags=""
 	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
-		v8_flags="$v8_flags,$FOUNT_V8_FLAGS"
+		v8_flags="$FOUNT_V8_FLAGS"
 	fi
 	heap_size_mb=100 # Default to 100MB
 	config_path="$FOUNT_DIR/data/config.json"
@@ -1805,7 +1805,11 @@ run() {
 			heap_size_mb=$calculated_mb
 		fi
 	fi
-	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
+	if [[ -n "$v8_flags" ]]; then
+		v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
+	else
+		v8_flags="--initial-heap-size=${heap_size_mb}"
+	fi
 	write_taskbar_progress 10
 	if [ -z "$FOUNT_START_TIME" ]; then
 		FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
@@ -1840,7 +1844,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	write_taskbar_progress 70
 	get_i18n 'install.installingDependencies'
-	run_deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	run_deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	write_taskbar_progress 85
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
@@ -1861,16 +1865,12 @@ init)
 clean)
 	if [ -d "$FOUNT_DIR/node_modules" ]; then
 		run shutdown
-		get_i18n 'clean.removingCaches'
-		rm -rf "$FOUNT_DIR/node_modules"
 		if [ "$2" = 'force' ]; then
 			find "$FOUNT_DIR" -name "*_cache.json" -type f -delete
 		fi
 	fi
-	get_i18n 'clean.reinstallingDependencies'
-	run shutdown
 	get_i18n 'clean.cleaningDenoCaches'
-	run_deno clean
+	run_deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	write_taskbar_progress_clear
 	;;
 keepalive)
