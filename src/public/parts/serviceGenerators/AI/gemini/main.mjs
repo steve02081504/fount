@@ -81,7 +81,7 @@ export default {
 const configTemplate = {
 	name: 'gemini-flash-exp',
 	apikey: process.env.GEMINI_API_KEY || '',
-	model: 'gemini-2.0-flash-exp-image-generation',
+	model: process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp-image-generation',
 	max_input_tokens: 1048576,
 	model_arguments: {
 		responseMimeType: 'text/plain',
@@ -89,7 +89,7 @@ const configTemplate = {
 	},
 	disable_default_prompt: false,
 	system_prompt_at_depth: 10,
-	base_url: '',
+	base_url: process.env.GEMINI_BASE_URL || '',
 	use_stream: true,
 	keep_thought_signature: true,
 	allowed_mime_types: defaultSupportedFileTypes,
