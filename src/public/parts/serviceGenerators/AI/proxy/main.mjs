@@ -39,9 +39,9 @@ export default {
 
 const configTemplate = {
 	name: 'openai-proxy',
-	url: 'https://api.openai.com/v1/chat/completions',
-	model: 'gpt-3.5-turbo',
-	apikey: '',
+	url: process.env.OPENAI_API_URL || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1/chat/completions',
+	model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+	apikey: process.env.OPENAI_API_KEY || '',
 	model_arguments: {
 		temperature: 1,
 		n: 1,
