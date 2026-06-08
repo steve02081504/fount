@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "Removendo cache...",
-				"reinstallingDependencies": "Reinstalando dependências...",
 				"cleaningDenoCaches": "Limpando o cache do Deno...",
 				"cleaningOldPwshModules": "Limpando módulos pwsh antigos..."
 			},

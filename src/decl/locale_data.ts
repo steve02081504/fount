@@ -179,7 +179,6 @@ export type LocaleData = {
 			}
 			clean: {
 				removingCaches: string
-				reinstallingDependencies: string
 				cleaningDenoCaches: string
 				cleaningOldPwshModules: string
 			}

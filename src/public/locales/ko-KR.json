@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "캐시 삭제 중...",
-				"reinstallingDependencies": "종속성을 다시 설치하는 중...",
 				"cleaningDenoCaches": "Deno 캐시를 청소하는 중...",
 				"cleaningOldPwshModules": "오래된 pwsh 모듈을 정리 중..."
 			},

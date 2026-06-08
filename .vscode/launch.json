@@ -18,8 +18,7 @@
 				"--allow-scripts",
 				"--allow-all",
 				"-c",
-				"${workspaceFolder}/deno.json",
-				"--v8-flags=--expose-gc"
+				"${workspaceFolder}/deno.json"
 			],
 			"attachSimplePort": 9229,
 			"skipFiles": [
