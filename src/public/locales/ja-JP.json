@@ -172,7 +172,6 @@
 			},
 			"clean": {
 				"removingCaches": "キャッシュを削除しています...",
-				"reinstallingDependencies": "依存関係を再インストールしています...",
 				"cleaningDenoCaches": "Deno キャッシュをクリーニングしています...",
 				"cleaningOldPwshModules": "古い pwsh モジュールをクリーンアップしています..."
 			},
