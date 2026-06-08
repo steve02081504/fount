@@ -48,7 +48,7 @@ let onJsonUpdate = () => 0
  */
 function handleFetchError(customMessage) {
 	return error => {
-		console.error(geti18n(customMessage, { error: error.stack }))
+		console.errorI18n(customMessage, { error: error.stack })
 		showToastI18n('error', customMessage, { error: error.stack })
 		throw error // Re-throw the error to be caught by the caller if needed.
 	}
