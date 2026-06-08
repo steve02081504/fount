@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Onbeperkte AI-bronintegratie",
-			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
+			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 		},
 		"language_selector": {
 			"button": {

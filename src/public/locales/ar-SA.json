@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "تكامل غير مقيد لمصادر الذكاء الاصطناعي",
-			"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
+			"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، [Atlas Cloud](${atlasCloudLink})، [Evolink](${evolinkLink})، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
 		},
 		"language_selector": {
 			"button": {

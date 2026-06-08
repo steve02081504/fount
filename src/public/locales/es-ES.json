@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Integración sin límites con orígenes de IA",
-			"description": "fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
+			"description": "fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
 		},
 		"language_selector": {
 			"button": {

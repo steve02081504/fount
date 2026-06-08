@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Свободная интеграция AI-источников",
-			"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-fountм — OpenAI, Claude, OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
+			"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-fountм — OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
 		},
 		"language_selector": {
 			"button": {
