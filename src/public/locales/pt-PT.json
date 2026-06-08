@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Integração Livre com founts de IA",
-			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
+			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
 		"language_selector": {
 			"button": {

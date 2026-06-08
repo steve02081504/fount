@@ -122,7 +122,7 @@ function renderModels(div, model_ids) {
  * @returns {void}
  */
 function showModelsError(div, error) {
-	console.error('Failed to fetch models:', error)
+	console.error('Failed to fetch Evolink models:', error)
 	div.replaceChildren()
 	const errorDiv = document.createElement('div')
 	errorDiv.className = 'text-error'

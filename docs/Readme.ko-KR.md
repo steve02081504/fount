@@ -138,7 +138,7 @@ fount의 프로젝트 아키텍처는 개발자의 습관을 충분히 고려하
   fount는 Windows, macOS, Linux, 심지어 Android에서도 원활하게 실행되며, 직접 설치 또는 Docker의 유연성을 통해 다양한 요구를 충족합니다.
 
 - **제한 없는 AI 소스 통합: 무한을 포용하다**
-  fount는 AI 소스 연결에 있어 타의 추종을 불허하는 *선택*과 *유연성*을 제공합니다. AI 소스 생성기의 사용자 정의 JavaScript 코드를 사용하면 OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral 등 _어떤_ AI 소스에도 연결할 수 있습니다. 코드의 흐름 속에서 복잡한 정규 표현식을 신중하게 설계하고, 방대한 API 라이브러리를 호출하며, 멀티미디어 리소스를 삽입할 수 있습니다. fount는 또한 지능적인 요청 라우팅을 달성하기 위해 API 풀 생성을 기본적으로 지원합니다. 통신의 로직은 _당신의_ 의지에 따르며, 코드의 힘으로 형성됩니다.
+  fount는 AI 소스 연결에 있어 타의 추종을 불허하는 *선택*과 *유연성*을 제공합니다. AI 소스 생성기의 사용자 정의 JavaScript 코드를 사용하면 OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), [Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral 등 _어떤_ AI 소스에도 연결할 수 있습니다. 코드의 흐름 속에서 복잡한 정규 표현식을 신중하게 설계하고, 방대한 API 라이브러리를 호출하며, 멀티미디어 리소스를 삽입할 수 있습니다. fount는 또한 지능적인 요청 라우팅을 달성하기 위해 API 풀 생성을 기본적으로 지원합니다. 통신의 로직은 _당신의_ 의지에 따르며, 코드의 힘으로 형성됩니다.
   ![이미지](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 캐릭터의 바다에서 길을 잃었거나 잊혀진 이야기를 찾고 있다면, [**활기차고 친근한 저희 커뮤니티**](https://t.me/GentianAphrodite)가 당신의 방문을 기다립니다. 이곳은 개발자와 창작자들이 그들의 지혜와 창작물을 공유하는 같은 생각을 가진 사람들의 안식처입니다.

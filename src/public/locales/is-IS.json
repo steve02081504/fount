@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Óheft samþætting gervigreindarheimilda",
-			"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
+			"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
 		},
 		"language_selector": {
 			"button": {

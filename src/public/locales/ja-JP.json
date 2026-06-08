@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "AIソースとの自由な連携",
-			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 		},
 		"language_selector": {
 			"button": {

@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "不受束缚的 AI 源集成",
-			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
+			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
 		"language_selector": {
 			"button": {

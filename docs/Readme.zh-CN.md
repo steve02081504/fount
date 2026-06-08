@@ -138,7 +138,7 @@ fount 的项目架构设计充分考虑了开发者的习惯。
   fount 可在 Windows、macOS、Linux 甚至 Android 上无缝运行，通过直接安装或 Docker 的灵活性来满足你的不同需求。
 
 - **无拘无束的 AI 源集成：拥抱无限**
-  fount 在连接 AI 源方面，提供了无与伦比的*选择*与*灵活性*。在 AI 源生成器中，自定义的 JavaScript 代码允许你连接到*任何* AI 源——OpenAI、Claude、[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在流动的代码中，你可以精心设计复杂的正则表达式，调用浩如烟海的 API 库，乃至嵌入多媒体资源。fount 亦原生支持创建 API 池，以实现智能的请求路由。通信的逻辑，听凭*你*的意愿，由代码的力量来塑造。
+  fount 在连接 AI 源方面，提供了无与伦比的*选择*与*灵活性*。在 AI 源生成器中，自定义的 JavaScript 代码允许你连接到*任何* AI 源——OpenAI、Claude、[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、[Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……在流动的代码中，你可以精心设计复杂的正则表达式，调用浩如烟海的 API 库，乃至嵌入多媒体资源。fount 亦原生支持创建 API 池，以实现智能的请求路由。通信的逻辑，听凭*你*的意愿，由代码的力量来塑造。
   ![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://t.me/GentianAphrodite)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。

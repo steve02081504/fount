@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "海納百川，有容乃大",
-			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
+			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 		},
 		"language_selector": {
 			"button": {
