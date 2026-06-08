@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKey } from '../../../../server/auth.mjs'
+import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKeyByJti } from '../../../../server/auth.mjs'
 
 import { getEditorCommandConfig, openEditor, setEditorCommandConfig } from './editorCommand.mjs'
 
@@ -156,7 +156,7 @@ export const actions = {
 		return { apiKey, message: 'Store it securely, it will not be shown again.' }
 	},
 	/**
-			 * 撤销 API 密钥。
+	 * 撤销 API 密钥。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.jti - JTI。
@@ -164,7 +164,8 @@ export const actions = {
 	 */
 	'revoke-apikey': async ({ user, jti }) => {
 		if (!jti) throw new Error('JTI of the key to revoke is required.')
-		return await revokeApiKey(user, jti)
+		await revokeApiKeyByJti(user, jti)
+		return {}
 	},
 	/**
 	 * 获取编辑器命令配置。
