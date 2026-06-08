@@ -240,7 +240,7 @@
 		},
 		"feature4": {
 			"title": "Tích hợp Nguồn AI không giới hạn",
-			"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
+			"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
 		},
 		"language_selector": {
 			"button": {
