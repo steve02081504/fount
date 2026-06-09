@@ -20,12 +20,12 @@ jobs:
       - uses: denoland/setup-deno@v2
         id: deno
         with:
-          deno-version: vx.x.x
-          cache: true
+          deno-version: latest
+          cache-hash: fount
       - uses: actions/cache@v5
         with:
           path: ./node_modules
-          key: fount-CI-node-modules
+          key: fount-node-modules
       - name: Install server dependencies
         run: |
           for i in $(seq 1 13); do
@@ -38,21 +38,33 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          gh extension install actions/gh-actions-cache
-          gh actions-cache delete "fount-CI-node-modules" --confirm
-          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}" --confirm
+          gh extension install actions/gh-actions-cache || true
+          gh actions-cache delete "fount-node-modules" --confirm || true
+          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount" --confirm || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Save Cache
+      - name: clean before cache save
+        continue-on-error: true
+        shell: bash
+        run: |
+          ENTRYPOINTS=()
+          add_entry() { [ -f "$1" ] && ENTRYPOINTS+=("$1"); }
+          add_entry "./src/server/index.mjs"
+          add_entry "./.github/workflows/verify_server.mjs"
+          [ ${#ENTRYPOINTS[@]} -eq 0 ] && exit 0
+          deno clean --except "${ENTRYPOINTS[@]}"
+      - name: Save node_modules Cache
+        continue-on-error: true
         uses: actions/cache/save@v5
         with:
           path: ./node_modules
-          key: fount-CI-node-modules
+          key: fount-node-modules
       - name: get deno dir
         shell: bash
         run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
-      - name: Save Cache
+      - name: Save deno Cache
+        continue-on-error: true
         uses: actions/cache/save@v5
         with:
           path: ${{ env.DENO_DIR }}
-          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}
+          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount
