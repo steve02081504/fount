@@ -95,7 +95,10 @@ function extractPromptContent(blocks) {
  * 所有业务逻辑（含 slash 命令、config options、modes）均由接口提供，此处仅转发。
  */
 class ServerFountAgent {
-	/** @type {{ SetupSession?: Function, Reply: Function, TeardownSession?: Function, SetSessionConfigOption?: Function, SetSessionMode?: Function }|null} */
+	/**
+	 * IDE 集成接口实例。
+	 * @type {{ SetupSession?: Function, Reply: Function, TeardownSession?: Function, SetSessionConfigOption?: Function, SetSessionMode?: Function }|null}
+	 */
 	#iface = null
 
 	/**
@@ -108,9 +111,15 @@ class ServerFountAgent {
 		this.connection = connection
 		this.username = username
 		this.charname = charname
-		/** @type {Map<string, { history: Array, pendingPrompt: AbortController|null, sessionData: object|null }>} */
+		/**
+		 * 映射表。
+		 * @type {Map<string, { history: Array, pendingPrompt: AbortController|null, sessionData: object|null }>}
+		 */
 		this.sessions = new Map()
-		/** @type {import('npm:@agentclientprotocol/sdk').ClientCapabilities|null} */
+		/**
+		 * ACP 客户端能力声明。
+		 * @type {import('npm:@agentclientprotocol/sdk').ClientCapabilities|null}
+		 */
 		this.clientCapabilities = null
 	}
 
@@ -377,7 +386,10 @@ export async function handleAcpWs(ws, req) {
 		return
 	}
 
-	/** @type {ServerFountAgent|null} */
+	/**
+	 * 当前 ACP 会话代理。
+	 * @type {ServerFountAgent|null}
+	 */
 	let agent = null
 
 	ws.on('close', async () => {

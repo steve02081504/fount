@@ -1,4 +1,7 @@
-/** @type {import('npm:@sentry/browser')} */
+/**
+ * Sentry 浏览器 SDK 模块。
+ * @type {import('npm:@sentry/browser')}
+ */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { initTranslations, preferredLangsStorageKey } from './i18n_base.mjs'
@@ -62,9 +65,15 @@ export function setLocalizeLogic(element, logic) {
 }
 
 let i18n
-/** @type {string|undefined} */
+/**
+ * 当前页面 ID（i18n 初始化时保存）。
+ * @type {string|undefined}
+ */
 export let saved_pageid
-/** @type {string[]|undefined} */
+/**
+ * 最近已知的用户首选语言列表。
+ * @type {string[]|undefined}
+ */
 export let lastKnownLangs
 
 /**
@@ -161,6 +170,7 @@ export function setI18nBundle(bundle, locale, pageid, langs) {
 }
 
 /**
+ * 按点分隔键从嵌套对象中取值。
  * @param {object} obj 对象。
  * @param {string} key 点分隔键。
  * @returns {any|undefined} 嵌套值。
@@ -295,7 +305,7 @@ export function geti18n_nowarn(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {string}
+ * @returns {string | undefined}
  */
 /**
  * 有参数的本地化键重载
@@ -303,7 +313,7 @@ export function geti18n_nowarn(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
+ * @returns {string | undefined}
  */
 /**
  * 根据提供的键（key）获取翻译后的文本。
@@ -320,9 +330,7 @@ export function geti18n(key, params = {}) {
 	return key
 }
 
-/**
- *
- */
+/** 导出全局 console，供下方本地化 console 包装使用。 */
 export const {console} = globalThis
 
 /**
@@ -335,6 +343,7 @@ function toString(value) {
 }
 
 /**
+ * 将底层日志函数包装为支持本地化键的日志函数。
  * @param {(text: string) => void} log - 底层日志函数。
  * @returns {(key: LocaleKey, params?: object) => void} 本地化日志函数。
  */
@@ -355,7 +364,7 @@ function withI18n(log) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string | undefined}
  */
 /**
  * 有参数的本地化键重载
@@ -363,7 +372,7 @@ function withI18n(log) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string | undefined}
  */
 /**
  * 使用 i18n 打印 info 消息。
@@ -379,7 +388,7 @@ console.infoI18n = withI18n(console.info)
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string | undefined}
  */
 /**
  * 有参数的本地化键重载
@@ -387,7 +396,7 @@ console.infoI18n = withI18n(console.info)
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string | undefined}
  */
 /**
  * 使用 i18n 打印 log 消息。
@@ -403,7 +412,7 @@ console.logI18n = withI18n(console.log)
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 有参数的本地化键重载
@@ -411,7 +420,7 @@ console.logI18n = withI18n(console.log)
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 使用 i18n 打印 warn 消息。
@@ -449,7 +458,6 @@ console.errorI18n = withI18n(console.error)
  * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
- * @param {string} id
  * @param {TKey} key
  * @param {Record<string, any>} [params]
  * @returns {void}
@@ -458,7 +466,6 @@ console.errorI18n = withI18n(console.error)
  * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
- * @param {string} id
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
  * @returns {void}
@@ -511,7 +518,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {string|null}
+ * @returns {void}
  */
 /**
  * 有参数的本地化键重载
@@ -519,7 +526,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {string|null}
+ * @returns {void}
  */
 /**
  * 使用 i18n 显示 prompt。
@@ -537,7 +544,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {boolean}
+ * @returns {void}
  */
 /**
  * 有参数的本地化键重载
@@ -545,7 +552,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {boolean}
+ * @returns {void}
  */
 /**
  * 使用 i18n 显示 confirm。
@@ -694,9 +701,7 @@ function observeBody() {
 if (document.body) observeBody()
 else window.addEventListener('DOMContentLoaded', observeBody)
 
-/**
- *
- */
+/** 从 i18n_base 再导出公共 API。 */
 export {
 	preferredLangsStorageKey,
 	initTranslations,

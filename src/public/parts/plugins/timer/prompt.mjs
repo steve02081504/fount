@@ -1,5 +1,11 @@
-/** @typedef {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} chatReplyRequest_t */
-/** @typedef {import('../../../../decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t */
+/**
+ * 聊天回复请求类型别名。
+ * @typedef {import('../../../../decl/pluginAPI.ts').chatReplyRequest_t} chatReplyRequest_t
+ */
+/**
+ * 单段提示词类型别名。
+ * @typedef {import('../../../../decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t
+ */
 
 import { takePendingNotification } from './state.mjs'
 

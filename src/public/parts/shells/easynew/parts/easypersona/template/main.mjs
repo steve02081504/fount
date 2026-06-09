@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../src/decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/**
+ * 用户 API 类型别名。
+ * @typedef {import('../../../../../src/decl/userAPI.ts').UserAPI_t} UserAPI_t
+ */
 
 import path from 'node:path'
 
@@ -8,7 +11,10 @@ import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_load
 const partRoot = import.meta.dirname
 const partJsonPath = path.join(partRoot, 'partdata.json')
 
-/** @type {any} */
+/**
+ * 任意类型值。
+ * @type {any}
+ */
 let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
@@ -32,7 +38,10 @@ function updateInfo() {
 }
 updateInfo()
 
-/** @type {UserAPI_t} */
+/**
+ * 用户 API 实例。
+ * @type {UserAPI_t}
+ */
 export default {
 	info,
 

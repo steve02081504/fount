@@ -21,7 +21,10 @@ ${chatLogEntry.content}
 </message "${uid}">
 `
 
-		/** @type {{role: 'user'|'assistant'|'system', content: string | object[]}} */
+		/**
+		 * 消息对象。
+		 * @type {{role: 'user'|'assistant'|'system', content: string | object[]}}
+		 */
 		const message = {
 			role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
 			content: textContent,
@@ -118,7 +121,10 @@ ${chatLogEntry.content}
 	if (config.convert_config?.forceRoleAlternation) {
 		const oldMessages = messages
 		messages = []
-		/** @type {'user'|'assistant'|'system'|null} */
+		/**
+		 * 消息角色。
+		 * @type {'user'|'assistant'|'system'|null}
+		 */
 		let lastRole = null
 
 		for (const m of oldMessages) {

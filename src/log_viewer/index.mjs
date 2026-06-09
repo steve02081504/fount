@@ -83,7 +83,10 @@ async function writeEntry(entry) {
 }
 
 let stopRequested = false
-/** @type {ReturnType<typeof connectLogWire> | null} */
+/**
+ * 当前日志 WebSocket 连接实例。
+ * @type {ReturnType<typeof connectLogWire> | null}
+ */
 let connection = null
 
 /**
@@ -241,7 +244,11 @@ function runOneConnection(ctx) {
  * @returns {Promise<void>} 仅在 `process.exit` 被调用时实际终止。
  */
 async function main() {
-	const exitCodeSlot = { value: /** @type {number | null} */ null }
+	/**
+	 * 进程退出码槽位。
+	 * @type {{ value: number | null }}
+	 */
+	const exitCodeSlot = { value: null }
 	/**
 	 * 由 `runOneConnection` 用于回传 `fount_exit` 携带的退出码。
 	 * @param {number} code - 服务器报告的退出码。

@@ -63,7 +63,7 @@ const fetchJson = async (url, fallback = null) => {
 	}
 }
 
-/** Comments JSON URL: same path works for GitHub Pages and pages-server proxy */
+/** 评论 JSON 的 URL：GitHub Pages 与 pages-server 代理均可使用同一路径。 */
 const COMMENTS_JSON_URL = new URL('../../data/comments.json', import.meta.url).href
 
 const [initialUserData, initialRepoData] = await Promise.all([
@@ -721,8 +721,8 @@ async function main() {
 	const MAX_SHAKE_INTENSITY = 5
 
 	/**
-	 * Gradually reduces the shake intensity until it stops.
-	 * @param {HTMLElement} element The element to decay shake for.
+	 * 逐渐降低元素的抖动强度直至停止。
+	 * @param {HTMLElement} element 要衰减抖动的元素。
 	 * @returns {void}
 	 */
 	function decayShake(element) {
@@ -744,8 +744,8 @@ async function main() {
 	}
 
 	/**
-	 * Applies a decaying shake effect to an element on click.
-	 * @param {HTMLElement} element The element to make shakable.
+	 * 为元素绑定点击抖动效果，强度随点击次数递增并自动衰减。
+	 * @param {HTMLElement} element 要绑定抖动的元素。
 	 * @returns {void}
 	 */
 	function setupClickToShake(element) {

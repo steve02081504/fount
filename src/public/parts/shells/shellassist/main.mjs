@@ -5,7 +5,10 @@ import { setEndpoints } from './src/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../decl/basedefs.ts').info_t} info_t */
+/**
+ * 部件信息类型别名。
+ * @typedef {import('../../../../decl/basedefs.ts').info_t} info_t
+ */
 
 /**
  * Shell aassist 的入口点。

@@ -7,7 +7,10 @@ const confirmationPasswordInput = document.getElementById('confirmationPassword'
 const confirmPasswordBtn = document.getElementById('confirmPasswordBtn')
 const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
 
-/** @type {{ resolve: (v: string) => void, reject: (e: Error) => void } | null} */
+/**
+ * 密码确认弹窗的 Promise 控制柄。
+ * @type {{ resolve: (v: string) => void, reject: (e: Error) => void }}
+ */
 let passwordConfirmationContext = null
 
 let cachedPassword = null

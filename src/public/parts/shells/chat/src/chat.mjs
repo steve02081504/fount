@@ -1,8 +1,23 @@
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
-/** @typedef {import('../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
-/** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
+/**
+ * 世界 API 类型别名。
+ * @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t
+ */
+/**
+ * 用户 API 类型别名。
+ * @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t
+ */
+/**
+ * 插件 API 类型别名。
+ * @typedef {import('../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
+ */
+/**
+ * 区域设置类型别名。
+ * @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t
+ */
 
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
@@ -409,7 +424,10 @@ class timeSlice_t {
  * 代表聊天记录中的单条消息条目。
  */
 class chatLogEntry_t {
-	/** @type {string} 永久唯一标识符 (UUID v4) */
+	/**
+	 * 永久唯一标识符 (UUID v4)。
+	 * @type {string}
+	 */
 	id
 	/** 发言者显示的名称。 */
 	name
@@ -431,7 +449,10 @@ class chatLogEntry_t {
 	files = []
 	/** 扩展字段，用于存储插件或其他模块的附加信息。 */
 	extension = {}
-	/** @type {boolean} 标记此消息是否仍在生成中。 */
+	/**
+	 * 标记此消息是否仍在生成中。
+	 * @type {boolean}
+	 */
 	is_generating = false
 
 	/**
@@ -503,14 +524,16 @@ class chatLogEntry_t {
 class chatMetadata_t {
 	/** 此聊天所属的用户名。 */
 	username
-	/** 主聊天记录，按时间顺序排列。 */
-	/** @type {chatLogEntry_t[]} */
+	/**
+	 * 主聊天记录，按时间顺序排列。
+	 * @type {chatLogEntry_t[]}
+	 */
 	chatLog = []
 	/**
 	 * 时间线分支数组。用于支持消息的“重新生成”功能。
 	 * `chatLog`中最后一条消息，会对应`timeLines`中的多个可能版本。
+	 * @type {chatLogEntry_t[]}
 	 */
-	/** @type {chatLogEntry_t[]} */
 	timeLines = []
 	/**
 	 * 当前在`timeLines`数组中选择的分支索引。
@@ -749,7 +772,10 @@ async function getChatRequest(chatid, charname) {
 	const other_chars = { ...timeSlice.chars }
 	delete other_chars[charname]
 
-	/** @type {import('../decl/chatLog.ts').chatReplyRequest_t} */
+	/**
+	 * 为角色回复请求组装的上下文对象。
+	 * @type {import('../decl/chatLog.ts').chatReplyRequest_t}
+	 */
 	const result = {
 		supported_functions: {
 			markdown: true,
@@ -941,7 +967,7 @@ export async function removechar(chatid, charname) {
 }
 
 /**
- *向聊天中添加一个新插件。
+ * 向聊天中添加一个新插件。
  * @param {string} chatid - 聊天ID。
  * @param {string} pluginname - 要添加的插件ID。
  * @returns {Promise<void>}
@@ -1768,7 +1794,7 @@ export async function editMessage(chatid, index, new_content) {
 
 	/**
 	 * 生成请求。
-	 * @returns {object} - 请求对象。
+	 * @returns {{index: number, chat_log: chatLogEntry_t[], chat_entry: chatLogEntry_t}} - 请求对象。
 	 */
 	function geneRequest() {
 		return {

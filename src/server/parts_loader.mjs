@@ -691,7 +691,10 @@ export async function loadPartBase(username, partpath, Initargs, {
 		if (!parts_set[username][partpath]) {
 			const profile = await doProfile(`part:${partpath}:load`, async () => {
 				parts_set[username][partpath] = (async () => {
-					/** @type {T} */
+					/**
+					 * 已加载的部件实例。
+					 * @type {T}
+					 */
 					const part = await baseloadPart(username, partpath, {
 						pathGetter,
 						/**
@@ -781,7 +784,10 @@ export async function unloadPartBase(username, partpath, unLoadargs, {
 	unLoader = part => part.Unload?.(unLoadargs),
 	afterUnload = baseMjsPartUnloader
 } = {}) {
-	/** @type {T} */
+	/**
+	 * 待卸载的部件实例。
+	 * @type {T}
+	 */
 	const part = parts_set[username]?.[partpath]
 	if (!part) return
 	try {
@@ -834,7 +840,10 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	}
 } = {}) {
 	parts_set[username] ??= {}
-	/** @type {T | undefined} */
+	/**
+	 * 当前或待重载的部件实例。
+	 * @type {T | undefined}
+	 */
 	let part = parts_set[username][partpath]
 	const parent = path.dirname(partpath)
 	const partname = path.basename(partpath)
@@ -964,7 +973,10 @@ function getSfwInfo(info) {
  * @returns {Promise<PartDetails>} 一个解析为详细部件信息的承诺。
  */
 export async function getPartDetails(username, partpath, nocache = false) {
-	/** @type {PartDetails | undefined} */
+	/**
+	 * 部件详情（缓存或新加载）。
+	 * @type {PartDetails | undefined}
+	 */
 	let details = nocache ? undefined : loadData(username, 'parts_details_cache')?.[partpath]
 	const user = getUserByUsername(username)
 	if (!details) details = await nocacheGetPartBaseDetails(username, partpath)

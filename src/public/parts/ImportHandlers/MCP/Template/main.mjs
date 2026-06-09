@@ -6,7 +6,10 @@ import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../src/server/parts_loader.mjs'
 
-/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
+/**
+ * 插件 API 类型别名。
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t
+ */
 
 const pluginDir = import.meta.dirname
 const dataPath = path.join(pluginDir, 'data.json')
@@ -181,7 +184,10 @@ Use <mcp-resource uri="..."/>
 ` : ''].join('\n\n')
 }
 
-/** @type {pluginAPI_t} */
+/**
+ * MCP 插件默认导出对象。
+ * @type {pluginAPI_t}
+ */
 export default {
 	info: {
 		'': {

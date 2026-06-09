@@ -1,6 +1,9 @@
 // load Sentry
 
-/** @type {import('npm:@sentry/browser')} */
+/**
+ * Sentry 浏览器 SDK 模块。
+ * @type {import('npm:@sentry/browser')}
+ */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './scripts/server_events.mjs'

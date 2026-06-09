@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t */
+/**
+ * 翻译源类型别名。
+ * @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t
+ */
 
 import { loadTranslateSourceFromNameOrConfigData } from '../../../serviceSources/translate/main.mjs'
 
@@ -58,7 +61,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		config.sources.length,
 		config.max_fail_count || new Set(config.sources.map(source => source.generator)).size == 1 ? 3 : Infinity
 	)
-	/** @type {TranslateSource_t} */
+	/**
+	 * 翻译源实例。
+	 * @type {TranslateSource_t}
+	 */
 	const result = {
 		type: 'web-translate',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

@@ -14,6 +14,7 @@ let availableLocales = []
 const localeNames = new Map()
 
 /**
+ * 获取可用的 locale 代码列表。
  * @returns {string[]} 可用的 locale 代码列表。
  */
 export function getAvailableLocales() {
@@ -21,6 +22,7 @@ export function getAvailableLocales() {
 }
 
 /**
+ * 获取 locale 代码到显示名的映射。
  * @returns {Map<string, string>} locale 代码到显示名的映射。
  */
 export function getLocaleNames() {
@@ -28,6 +30,7 @@ export function getLocaleNames() {
 }
 
 /**
+ * 初始化翻译资源。
  * @param {string} [pageid] 页面 ID。
  * @param {string[]} [preferredLangs] 首选语言列表。
  * @returns {Promise<void>}

@@ -15,8 +15,14 @@ import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../.
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 const defaultSupportedFileTypes = [
 	'application/pdf',
@@ -295,7 +301,10 @@ async function GetSource(config) {
 		}))
 	}
 
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		is_paid: false,

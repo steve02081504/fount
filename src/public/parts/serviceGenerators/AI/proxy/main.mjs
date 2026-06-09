@@ -9,8 +9,14 @@ import { clearFormat } from './src/responseFormat.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 /**
  * Proxy AI 来源生成器模块定义。
@@ -68,7 +74,10 @@ const configTemplate = {
 async function GetSource(config, { SaveConfig }) {
 	config.use_stream ??= true
 	const fetchChatCompletionWithRetry = createFetchChatCompletionWithRetry(config, { SaveConfig })
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
@@ -79,9 +88,9 @@ async function GetSource(config, { SaveConfig }) {
 		extension: {},
 
 		/**
-		 * 调用 AI 源。
-		 * @param {string} prompt - 要发送给 AI 的提示。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+		 * 使用纯文本提示调用 Proxy 提供方。
+		 * @param {string} prompt 要发送的提示内容。
+		 * @returns {Promise<{content: string, files: any[]}>} 提供方返回结果。
 		 */
 		Call: async prompt => {
 			return await fetchChatCompletionWithRetry(config.convert_config?.forceNoSystemMessages ? [

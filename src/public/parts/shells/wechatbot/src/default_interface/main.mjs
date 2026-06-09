@@ -20,9 +20,18 @@ import {
 
 ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => '') || (await import('npm:@ffmpeg-installer/ffmpeg')).default.path)
 
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
-/** @typedef {FountChatLogEntryBase & { extension?: { wechat_message_id?: string, [key: string]: any } }} chatLogEntry_t_simple */
+/**
+ * 聊天回复类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
+ */
+/**
+ * fount 聊天日志条目基类类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
+ */
+/**
+ * 简化聊天日志条目类型别名。
+ * @typedef {FountChatLogEntryBase & { extension?: { wechat_message_id?: string, [key: string]: any } }} chatLogEntry_t_simple
+ */
 
 /**
  * 按用户/角色索引当前正在运行的微信 Bot 对外 JS API（发消息、读历史等）。
@@ -394,6 +403,7 @@ function cloneChatLogEntries(entries) {
 }
 
 /**
+ * 创建SimpleWechatInterface。
  * @param {import('../../../../../../decl/charAPI.ts').CharAPI_t} charAPI 角色 API 实例。
  * @param {string} ownerUsername 所有者用户名。
  * @param {string} botCharname 机器人角色名。
@@ -445,6 +455,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	 */
 	function buildMediaMessageItem(args) {
 		/**
+		 * 微信消息处理回调。
 		 * @param {object} cdnMedia - CDN media 引用（与 @tencent-weixin/openclaw-weixin send.ts 一致）。
 		 * @returns {object} 附带 encrypt_type 的发送侧 media 对象。
 		 */
@@ -503,7 +514,11 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		/** 长轮询游标：服务端返回的 get_updates_buf，用于接续拉取。 */
 		let getUpdatesCursor = ''
 		let longPollTimeoutMs = DEFAULT_LONG_POLL_TIMEOUT_MS
-		const chatLog = /** @type {chatLogEntry_t_simple[]} */[]
+		/**
+		 * 当前会话的聊天日志缓冲。
+		 * @type {chatLogEntry_t_simple[]}
+		 */
+		const chatLog = []
 		let lastToUserId = ''
 		let lastContextToken = ''
 		const chatScopedCharMemory = {}
@@ -636,6 +651,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		}
 
 		/**
+		 * 将微信消息对象转换为聊天日志条目。
 		 * @param {object} wxMsg 微信消息对象。
 		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的聊天日志条目。
 		 */

@@ -1,9 +1,27 @@
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
-/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
-/** @typedef {import('../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
+/**
+ * 用户 API 类型别名。
+ * @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t
+ */
+/**
+ * 世界 API 类型别名。
+ * @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t
+ */
+/**
+ * 聊天日志条目类型别名。
+ * @typedef {import('../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t
+ */
+/**
+ * 聊天回复请求类型别名。
+ * @typedef {import('../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t
+ */
 
 /**
  * 获取单部分提示。
@@ -28,7 +46,10 @@ export async function buildPromptStruct(
 	detail_level = 3
 ) {
 	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname, timelines, locales } = args
-	/** @type {prompt_struct_t} */
+	/**
+	 * 提示结构构建结果。
+	 * @type {prompt_struct_t}
+	 */
 	const result = {
 		char_id,
 		UserCharname,
@@ -76,7 +97,7 @@ export async function buildPromptStruct(
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {string} - 单个字符串。
  */
-export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ prompt) {
+export function structPromptToSingleNoChatLog(prompt) {
 	const result = []
 
 	{
@@ -131,7 +152,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {chatLogEntry_t[]} - 聊天记录条目数组。
  */
-export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
+export function mergeStructPromptChatLog(prompt) {
 	const result = [
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
@@ -140,7 +161,10 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin?.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
-	/** @type {chatLogEntry_t[]} */
+	/**
+	 * 扁平化后的聊天记录条目数组。
+	 * @type {chatLogEntry_t[]}
+	 */
 	const flat_result = []
 	for (const entry of result) {
 		if (entry.logContextBefore) flat_result.push(...entry.logContextBefore)
@@ -171,7 +195,7 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {string} - 单个字符串。
  */
-export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
+export function structPromptToSingle(prompt) {
 	const result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')

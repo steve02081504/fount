@@ -335,7 +335,7 @@ function baseGeti18n(localeData, key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 有参数的本地化键重载
@@ -343,7 +343,7 @@ function baseGeti18n(localeData, key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 根据首选区域设置列表和翻译键获取翻译后的文本。
@@ -361,7 +361,7 @@ export function geti18nForLocales(localeList, key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 有参数的本地化键重载
@@ -369,7 +369,7 @@ export function geti18nForLocales(localeList, key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 根据用户名和翻译键获取翻译后的文本。
@@ -387,7 +387,7 @@ export async function geti18nForUser(username, key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 有参数的本地化键重载
@@ -395,7 +395,7 @@ export async function geti18nForUser(username, key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string}
  */
 /**
  * 根据提供的键（key）获取翻译后的文本。
@@ -425,9 +425,9 @@ function toString(value) {
 /**
  * 无参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithParams} TKey
+ * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
+ * @param {Record<string, any>} [params]
  * @returns {void}
  */
 /**
@@ -447,17 +447,17 @@ console.infoI18n = (key, params = {}) => {
 /**
  * 有参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithoutParams} TKey
+ * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
- * @param {Record<string, any>} [params]
+ * @param {LocaleKeyParams[TKey]} params
  * @returns {void}
  */
 /**
  * 无参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithParams} TKey
+ * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
+ * @param {Record<string, any>} [params]
  * @returns {void}
  */
 /**
@@ -515,9 +515,9 @@ console.warnI18n = (key, params = {}) => {
 /**
  * 无参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithParams} TKey
+ * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
+ * @param {Record<string, any>} [params]
  * @returns {void}
  */
 /**
@@ -538,7 +538,6 @@ console.errorI18n = (key, params = {}) => {
  * 无参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
- * @param {string} id
  * @param {TKey} key
  * @param {Record<string, any>} [params]
  * @returns {void}
@@ -547,7 +546,6 @@ console.errorI18n = (key, params = {}) => {
  * 有参数的本地化键重载
  * @overload
  * @template {LocaleKeyWithParams} TKey
- * @param {string} id
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
  * @returns {void}
@@ -598,7 +596,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {string | null}
+ * @returns {void}
  */
 /**
  * 有参数的本地化键重载
@@ -606,7 +604,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {string | null}
+ * @returns {void}
  */
 /**
  * 使用 i18n 显示提示。
@@ -623,7 +621,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {boolean}
+ * @returns {void}
  */
 /**
  * 有参数的本地化键重载
@@ -631,7 +629,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {boolean}
+ * @returns {void}
  */
 /**
  * 使用 i18n 显示确认。

@@ -9,17 +9,35 @@ const IDLE_TIMEOUT_MS = ms('30s')
 /** 空闲检查之间的毫秒数。 */
 const IDLE_CHECK_INTERVAL_MS = ms('5m')
 
-/** @type {number} */
+/**
+ * 上次标记为繁忙的时间戳。
+ * @type {number}
+ */
 let lastBusyTime = Date.now()
-/** @type {number} */
+/**
+ * 当前正在执行的动作数量。
+ * @type {number}
+ */
 let runningActions = 0
-/** @type {Function[]} */
+/**
+ * 空闲时重复执行的回调列表。
+ * @type {Function[]}
+ */
 const idleRuns = []
-/** @type {Function[]} */
+/**
+ * 空闲时仅执行一次的回调列表。
+ * @type {Function[]}
+ */
 const idleRunOnces = []
-/** @type {ReturnType<typeof setTimeout> | null} */
+/**
+ * 空闲检测定时器 ID。
+ * @type {ReturnType<typeof setTimeout> | null}
+ */
 let timeoutId = null
-/** @type {boolean} */
+/**
+ * 空闲检测是否已停止。
+ * @type {boolean}
+ */
 let stopped = true
 
 /**

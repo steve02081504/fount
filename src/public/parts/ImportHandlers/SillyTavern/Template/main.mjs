@@ -32,15 +32,36 @@ function getLocale(localesParam, key) {
 	return locales[key]?.['en-UK'] || Object.values(locales[key] || {})[0]
 }
 
-/** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
-/** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
-/** @typedef {import('../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
+/**
+ * 插件 API 类型别名。
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
+ */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 聊天回复请求类型别名。
+ * @typedef {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t
+ */
+/**
+ * SillyTavern 角色数据类型别名。
+ * @typedef {import('../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t
+ */
 
-/** @type {AIsource_t} */
+/**
+ * 当前使用的 AI 源实例。
+ * @type {AIsource_t}
+ */
 let AIsource = null
-/** @type {Record<string, PluginAPI_t>} */
+/**
+ * 已加载的插件映射表。
+ * @type {Record<string, PluginAPI_t>}
+ */
 let plugins = {}
 
 let username = ''
@@ -49,10 +70,16 @@ const chardir = import.meta.dirname
 const charurl = `/parts/chars:${encodeURIComponent(path.basename(chardir))}`
 const charjson = path.join(chardir, 'chardata.json')
 
-/** @type {chardata_t} */
+/**
+ * 从 chardata.json 加载的角色数据。
+ * @type {chardata_t}
+ */
 let chardata = JSON.parse(fs.readFileSync(charjson))
 
-/** @type {CharAPI_t} */
+/**
+ * SillyTavern 角色卡默认导出。
+ * @type {CharAPI_t}
+ */
 export default {
 	info: {
 		'': {
@@ -176,7 +203,10 @@ export default {
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/**
+				 * 流式回复结果容器。
+				 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
+				 */
 				const result = {
 					content: '',
 					logContextBefore: [],

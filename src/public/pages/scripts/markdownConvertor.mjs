@@ -255,7 +255,10 @@ g.classGroup .title { font-weight: bolder !important; }
 	}))
 
 	return async (tree) => {
-		/** @type {{ node: any, index: number, parent: any }[]} */
+		/**
+		 * 待替换的 Mermaid 代码块节点列表。
+		 * @type {{ node: any, index: number, parent: any }[]}
+		 */
 		const targets = []
 
 		visit(tree, 'element', (node, index, parent) => {

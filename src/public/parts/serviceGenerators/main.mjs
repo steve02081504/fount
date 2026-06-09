@@ -5,9 +5,7 @@ import { loadPartBase, unloadPartBase } from '../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 源生成器根部件。
- */
+/** 服务源生成器根部件，负责加载各类 AI/搜索/翻译等生成器子部件。 */
 export default {
 	info,
 	/**

@@ -119,7 +119,10 @@ export function renderMarkdownInlineCode(code, lang = '') {
  * @returns {(reply: { content?: string, content_for_show?: string, files?: Array }) => void} 同步的预览更新器，可直接作为 generation_options.replyPreviewUpdater。
  */
 export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
-	/** @type {{ content?: string, content_for_show?: string, files?: Array } | null} */
+	/**
+	 * 流式回复过程中最近一次预览内容。
+	 * @type {{ content?: string, content_for_show?: string, files?: Array<object> }}
+	 */
 	let lastReply = null
 	let drainScheduled = false
 	let pending = Promise.resolve()
@@ -484,7 +487,8 @@ export function createPacedFakeStream(options) {
 	}
 
 	/**
-	 * 取消所有排队和正在执行的推流。已调度的 setTimeout 回调会因 generation 失配而静默跳过。
+	 * 取消所有排队和正在执行的推流。
+	 * 已调度的 setTimeout 回调会因 generation 失配而静默跳过。
 	 */
 	function cancel() {
 		generation++
