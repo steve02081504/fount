@@ -5,8 +5,9 @@
  */
 export function GetShellWorld(shelltype) {
 	/**
-	* @type {import('../../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
-	*/
+	 * 世界 API 实例。
+	 * @type {import('../../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
+	 */
 	const world = {
 		info: {
 			'zh-CN': {

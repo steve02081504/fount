@@ -38,7 +38,10 @@ let autoUpdateEnabled = false
 const canOpenEditor = await ping().then(data => data.is_local_ip).catch(() => 0)
 const logsStore = []
 let logsVirtualList = null
-/** @type {ReturnType<typeof attachLogWire> | null} */
+/**
+ * 日志 WebSocket 连接句柄。
+ * @type {ReturnType<typeof attachLogWire> | null}
+ */
 let logsWireHandle = null
 let logFilterText = ''
 let logLevelFilter = 'all'
@@ -282,7 +285,7 @@ function connectLogsWs() {
 		 */
 		onSnapshot: (entries) => {
 			logsStore.length = 0
-			logsStore.push(.../** @type {any[]} */ entries)
+			logsStore.push(...entries)
 			initLogsVirtualList()
 		},
 		/**
@@ -291,7 +294,7 @@ function connectLogsWs() {
 		 * @returns {Promise<void>}
 		 */
 		onAppend: async (entry) => {
-			logsStore.push(/** @type {any} */ entry)
+			logsStore.push(entry)
 			if (entryMatchesFilter(entry, logFilterText, logLevelFilter)) {
 				const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
 				if (logsVirtualList)

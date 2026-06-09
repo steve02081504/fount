@@ -1,11 +1,21 @@
-/** @enum {number} */
+/**
+ * SillyTavern 角色卡与世界信息数据结构定义。
+ * 提供 V1/V2 角色卡类型、世界信息条目及相关转换函数。
+ */
+/**
+ * 世界信息逻辑枚举。
+ * @enum {number}
+ */
 export const world_info_logic = {
 	AND_ANY: 0,
 	NOT_ALL: 1,
 	NOT_ANY: 2,
 	AND_ALL: 3,
 }
-/** @enum {number} */
+/**
+ * 世界信息插入位置枚举。
+ * @enum {number}
+ */
 export const world_info_position = {
 	before: 0,
 	after: 1,
@@ -16,13 +26,13 @@ export const world_info_position = {
 	EMBottom: 6,
 }
 /**
- * 正则表达式脚本放置位置
- * @enum {number} Where the regex script should be applied
+ * 正则表达式脚本放置位置。
+ * @enum {number}
  */
 export const regex_placement = {
 	/**
-	 * 显示文本
-	 * @deprecated MD Display is deprecated. Do not use.
+	 * 显示文本。
+	 * @deprecated MD Display 已弃用，请勿使用。
 	 */
 	MD_DISPLAY: 0,
 	USER_INPUT: 1,
@@ -31,457 +41,447 @@ export const regex_placement = {
 	// 4 - sendAs (legacy)
 	WORLD_INFO: 5,
 }
-/** @enum {number} */
+/**
+ * 世界信息锚点位置枚举。
+ * @enum {number}
+ */
 export const wi_anchor_position = {
 	before: 0,
 	after: 1,
 }
-/** @enum {number} */
+/**
+ * 扩展提示词角色枚举。
+ * @enum {number}
+ */
 export const extension_prompt_roles = {
 	SYSTEM: 0,
 	USER: 1,
 	ASSISTANT: 2,
 }
-/**
- * world info entry
- */
+/** 世界信息条目。 */
 export class WorldInfoEntry {
 	/**
-	 * the id of the entry
+	 * 条目 ID。
 	 * @type {number}
 	 */
 	id
 	/**
-	 * the keys of the entry
+	 * 触发关键词。
 	 * @type {string[]}
 	 */
 	keys
 	/**
-	 * the secondary keys of the entry
+	 * 次要触发关键词。
 	 * @type {string[]}
 	 */
 	secondary_keys
 	/**
-	 * the comment of the entry
+	 * 条目备注。
 	 * @type {string}
 	 */
 	comment
 	/**
-	 * the content of the entry
+	 * 条目内容。
 	 * @type {string}
 	 */
 	content
 	/**
-	 * is this entry a constant
+	 * 是否为常量条目。
 	 * @type {boolean}
 	 */
 	constant
 	/**
-	 * is this entry case selective
+	 * 是否启用选择性匹配。
 	 * @type {boolean}
 	 */
 	selective
 	/**
-	 * the insertion order of the entry
+	 * 插入顺序。
 	 * @type {number}
 	 * @default 100
 	 */
 	insertion_order
 	/**
-	 * is this entry enabled
+	 * 是否启用。
 	 * @type {boolean}
 	 * @default true
 	 */
 	enabled
 	/**
-	 * the position of the entry
+	 * 插入位置。
 	 * @type {"before_char" | "after_char" | string}
 	 * @default "before_char"
 	 */
 	position
-	/**
-	 * the extension datas of the entry
-	 */
+	/** 扩展数据。 */
 	extensions = {
 		/**
-		 * the position of the entry
+		 * 扩展字段中的插入位置。
 		 * @type {number}
 		 * @default 0
 		 */
 		position: 0,
 		/**
-		 * is this entry excluded from recursion
+		 * 是否排除递归。
 		 * @type {boolean}
 		 * @default false
 		 */
 		exclude_recursion: false,
 		/**
-		 * the display index of the entry
+		 * 显示索引。
 		 * @type {number}
 		 */
 		display_index: 0,
 		/**
-		 * the probability of the entry
+		 * 触发概率。
 		 * @type {number}
 		 * @default 100
 		 */
 		probability: 100,
 		/**
-		 * is the probability of the entry used
+		 * 是否使用触发概率。
 		 * @type {boolean}
 		 * @default true
 		 */
 		useProbability: true,
 		/**
-		 * the depth of the entry
+		 * 扫描深度。
 		 * @type {number}
 		 * @default 4
 		 */
 		depth: 4,
 		/**
-		 * the selective logic of the entry
+		 * 选择性逻辑。
 		 * @type {world_info_logic}
 		 * @default 0
 		 */
 		selectiveLogic: 0,
 		/**
-		 * the group of the entry
+		 * 所属分组。
 		 * @type {string}
 		 */
 		group: '',
 		/**
-		 * is the group override of the entry
+		 * 是否覆盖分组。
 		 * @type {boolean}
 		 * @default false
 		 */
 		group_override: false,
 		/**
-		 * is the entry prevented from recursion
+		 * 是否阻止递归。
 		 * @type {boolean}
 		 * @default false
 		 */
 		prevent_recursion: false,
 		/**
-		 * the scan depth of the entry
+		 * 扫描深度上限。
 		 * @type {number}
 		 * @default null
 		 */
 		scan_depth: null,
 		/**
-		 * is the entry matched with whole words
+		 * 是否整词匹配。
 		 * @type {boolean}
 		 * @default null
 		 */
 		match_whole_words: null,
 		/**
-		 * is the entry case sensitive
+		 * 是否区分大小写。
 		 * @type {boolean}
 		 * @default null
 		 */
 		case_sensitive: null,
 		/**
-		 * the automation id of the entry
+		 * 自动化 ID。
 		 * @type {string}
 		 */
 		automation_id: '',
 		/**
-		 * the role of the entry
+		 * 消息角色。
 		 * @type {number}
 		 * @default 0
 		 */
 		role: 0,
 		/**
-		 * is the entry vectorized
+		 * 是否已向量化。
 		 * @type {boolean}
 		 * @default false
 		 */
 		vectorized: false,
 		/**
-		 * the number of the entry sticky
+		 * 粘性计数。
 		 * @type {number}
 		 * @default 0
 		 */
 		sticky: 0,
 		/**
-		 * the entry's trigger is delayed until Nth recursion
+		 * 触发延迟至第 N 次递归。
 		 * @type {number}
 		 * @default 0
 		 */
 		delay_until_recursion: 0,
 		/**
-		 * the cooldown of the entry
+		 * 冷却时间。
 		 * @type {number}
 		 * @default 0
 		 */
 		cooldown: 0,
 	}
 }
-/**
- * 世界信息手册
- */
+/** 世界信息手册。 */
 export class WorldInfoBook {
 	/**
-	 * the name of the book
+	 * 手册名称。
 	 * @type {string}
 	 */
 	name
 	/**
-	 * the entries of the book
+	 * 条目列表。
 	 * @type {WorldInfoEntry[]}
 	 */
 	entries
 }
-/**
- * 正则表达式脚本信息
- */
+/** 正则表达式脚本信息。 */
 export class regex_script_info {
 	/**
-	 * the name of the script
+	 * 脚本名称。
 	 * @type {string}
 	 */
 	scriptName
 	/**
-	 * the find regex
+	 * 查找正则。
 	 * @type {string}
 	 */
 	findRegex
 	/**
-	 * the replace string
+	 * 替换字符串。
 	 * @type {string}
 	 */
 	replaceString
 	/**
-	 * the trim strings
+	 * 修剪字符串列表。
 	 * @type {string[]}
 	 */
 	trimStrings
 	/**
-	 * the placement
+	 * 应用位置。
 	 * @type {number[]}
 	 */
 	placement
 	/**
-	 * is the script disabled
+	 * 是否禁用。
 	 * @type {boolean}
 	 */
 	disabled
 	/**
-	 * is the script markdown only
+	 * 是否仅处理 Markdown。
 	 * @type {boolean}
 	 */
 	markdownOnly
 	/**
-	 * is the script prompt only
+	 * 是否仅处理提示词。
 	 * @type {boolean}
 	 */
 	promptOnly
 	/**
-	 * is the script run on edit
+	 * 是否在编辑时运行。
 	 * @type {boolean}
 	 */
 	runOnEdit
 	/**
-	 * is the script substitute regex
+	 * 是否替换正则。
 	 * @type {boolean}
 	 */
 	substituteRegex
 	/**
-	 * the min depth
+	 * 最小深度。
 	 * @type {number}
 	 */
 	minDepth
 	/**
-	 * the max depth
+	 * 最大深度。
 	 * @type {number}
 	 */
 	maxDepth
 }
-/**
- * v2 角色数据
- */
+/** V2 角色数据。 */
 export class v2CharData {
 	/**
-	 * the name of the character
+	 * 角色名称。
 	 * @type {string}
 	 */
 	name
 	/**
-	 * the description of the character
+	 * 角色描述。
 	 * @type {string}
 	 */
 	description
 	/**
-	 * character's version
+	 * 角色版本。
 	 * @type {string}
 	 */
 	character_version
 	/**
-	 * a short personality description of the character
+	 * 角色性格简述。
 	 * @type {string}
 	 */
 	personality
 	/**
-	 * a scenario description of the character
+	 * 场景描述。
 	 * @type {string}
 	 */
 	scenario
 	/**
-	 * the first message in the conversation
+	 * 开场白。
 	 * @type {string}
 	 */
 	first_mes
 	/**
-	 * the example message in the conversation
+	 * 对话示例。
 	 * @type {string}
 	 */
 	mes_example
 	/**
-	 * creator's notes of the character
+	 * 创作者备注。
 	 * @type {string}
 	 */
 	creator_notes
 	/**
-	 * the tags of the character
+	 * 标签列表。
 	 * @type {string[]}
 	 */
 	tags
 	/**
-	 * system_prompt override
+	 * 系统提示词覆盖。
 	 * @type {string}
 	 */
 	system_prompt
 	/**
-	 * post_history_instructions
+	 * 历史后指令。
 	 * @type {string}
 	 */
 	post_history_instructions
 	/**
-	 * creator's name
+	 * 创作者名称。
 	 * @type {string}
 	 */
 	creator
 	/**
-	 * creator's name
+	 * 创建者标识。
 	 * @type {string}
 	 */
 	create_by
 	/**
-	 * alternate_greetings for user choices
+	 * 可选问候语列表。
 	 * @type {string[]}
 	 */
 	alternate_greetings
-	/**
-	 * extra data
-	 */
+	/** 扩展数据。 */
 	extensions = {
 		/**
-		 * talkativeness
+		 * 健谈度。
 		 * @type {number}
 		 */
 		talkativeness: 0.5,
 		/**
-		 * fav
+		 * 是否收藏。
 		 * @type {boolean}
 		 */
 		fav: false,
 		/**
-		 * world
+		 * 关联世界。
 		 * @type {string}
 		 */
 		world: '',
-		/**
-		 * depth_prompt
-		 */
+		/** 深度提示词。 */
 		depth_prompt: {
 			/**
-			 * depth
+			 * 深度。
 			 * @type {number}
 			 */
 			depth: 4,
 			/**
-			 * prompt
+			 * 提示词。
 			 * @type {string}
 			 */
 			prompt: '',
 			/**
-			 * role
+			 * 消息角色。
 			 * @type {"system" | "user" | "assistant"}
 			 */
 			role: 'system'
 		},
 		/**
-		 * regex_scripts
+		 * 正则脚本列表。
 		 * @type {regex_script_info[]}
 		 */
 		regex_scripts: [],
 	}
 	/**
-	 * the charbook
+	 * 角色世界信息手册。
 	 * @type {WorldInfoBook}
 	 */
 	character_book
 }
-/**
- * v1 角色数据
- */
+/** V1 角色数据。 */
 export class v1CharData {
 	/**
-	 * the name of the character
+	 * 角色名称。
 	 * @type {string}
 	 */
 	name
 	/**
-	 * the description of the character
+	 * 角色描述。
 	 * @type {string}
 	 */
 	description
 	/**
-	 * a short personality description of the character
+	 * 角色性格简述。
 	 * @type {string}
 	 */
 	personality
 	/**
-	 * a scenario description of the character
+	 * 场景描述。
 	 * @type {string}
 	 */
 	scenario
 	/**
-	 * the first message in the conversation
+	 * 开场白。
 	 * @type {string}
 	 */
 	first_mes
 	/**
-	 * the example message in the conversation
+	 * 对话示例。
 	 * @type {string}
 	 */
 	mes_example
 	/**
-	 * creator's notes of the character
+	 * 创作者备注。
 	 * @type {string}
 	 */
 	creatorcomment
 	/**
-	 * the tags of the character
+	 * 标签列表。
 	 * @type {string[]}
 	 */
 	tags
 	/**
-	 * talkativeness
+	 * 健谈度。
 	 * @type {number}
 	 */
 	talkativeness
 	/**
-	 * fav
+	 * 是否收藏。
 	 * @type {boolean}
 	 */
 	fav
 	/**
-	 * create_date
+	 * 创建日期。
 	 * @type {string}
 	 */
 	create_date
 	/**
-	 * v2 data extension
+	 * V2 数据扩展。
 	 * @type {v2CharData}
 	 */
 	data
@@ -489,13 +489,15 @@ export class v1CharData {
 const move_pepos = ['name', 'description', 'personality', 'scenario', 'first_mes', 'mes_example', 'tags', 'create_by', 'create_date']
 const extension_pepos = ['talkativeness', 'fav']
 /**
- * Retrieves V1 character data from V2 data.
- *
- * @param {v2CharData} data - The V2 data object containing character information.
- * @returns {v1CharData} The V1 character data extracted from the V2 data.
+ * 从 V2 角色数据提取 V1 格式。
+ * @param {v2CharData} data 包含角色信息的 V2 数据对象。
+ * @returns {v1CharData} 从 V2 数据提取的 V1 角色数据。
  */
 export function GetV1CharDataFromV2(data) {
-	/** @type {v1CharData} */
+	/**
+	 * V1 角色数据对象。
+	 * @type {v1CharData}
+	 */
 	let aret = {}
 	for (const key of move_pepos) if (data[key]) aret[key] = data[key]
 	for (const key of extension_pepos) aret[key] = data.extensions[key]
@@ -512,14 +514,16 @@ export function GetV1CharDataFromV2(data) {
 	return aret
 }
 /**
- * Retrieves V2 character data from V1 data.
- *
- * @param {v1CharData} data - The V1 data object containing character information.
- * @returns {v2CharData} The V2 character data extracted from the V1 data.
+ * 从 V1 角色数据提取 V2 格式。
+ * @param {v1CharData} data 包含角色信息的 V1 数据对象。
+ * @returns {v2CharData} 从 V1 数据提取的 V2 角色数据。
  */
 export function GetV2CharDataFromV1(data) {
 	if (data.data) return data.data
-	/** @type {v2CharData} */
+	/**
+	 * V2 角色数据对象。
+	 * @type {v2CharData}
+	 */
 	const aret = { extensions: {} }
 	for (const key of move_pepos) if (data[key]) aret[key] = data[key]
 	for (const key of extension_pepos) aret.extensions[key] = data[key]

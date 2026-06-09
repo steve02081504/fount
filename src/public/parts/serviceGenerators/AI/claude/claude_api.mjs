@@ -81,9 +81,7 @@ async function checkResErr(res, throwIt = true) {
 	return err
 }
 
-/**
- * ClewdStream 类的模拟，用于非流式响应。
- */
+/** 用于非流式响应的 ClewdStream 模拟类。 */
 class ClewdSimulation {
 	/**
 	 * 创建 ClewdSimulation 的实例。

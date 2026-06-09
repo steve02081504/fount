@@ -232,9 +232,9 @@ async function handleClone(id, isCustom) {
 		if (!newId) return
 		let css = ''
 		const sourceCustom = isCustom ? await getCustomTheme(id) : null
-		if (isCustom) {
+		if (isCustom)
 			css = sourceCustom.css
-		} else {
+		else {
 			// Generate CSS from built-in theme
 			const vars = []
 			DAISY_COLORS.forEach((color) => {

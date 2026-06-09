@@ -257,7 +257,10 @@ let stylesInjected = false
  * @param {(ref: string) => Promise<unknown>} requestExpandRef - 按引用 ID 向服务端请求展开的异步函数。
  */
 async function resolveAllTruncated(node, requestExpandRef) {
-	/** @type {Map<string, object[]>} */
+	/**
+	 * 映射表。
+	 * @type {Map<string, object[]>}
+	 */
 	const refToNodes = new Map()
 	/**
 	 * 递归遍历快照树，收集所有待展开的 `truncated` 节点。
@@ -765,7 +768,10 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 		const fileName = callsite.filePath.split(/[/\\]/).pop()
 		const labelText = `${fileName}:${callsite.line}`
 		const titleText = `${callsite.filePath}:${callsite.line}:${callsite.column}`
-		/** @type {HTMLElement} */
+		/**
+		 * DOM 元素引用。
+		 * @type {HTMLElement}
+		 */
 		let sourceEl
 		if (canClick) {
 			const btn = document.createElement('button')

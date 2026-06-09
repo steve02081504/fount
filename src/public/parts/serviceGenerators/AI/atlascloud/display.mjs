@@ -1,5 +1,8 @@
 let cachedCacheKey = ''
-/** @type {string[]|null} */
+/**
+ * 缓存的模型 ID 列表。
+ * @type {string[]|null}
+ */
 let cachedModelIds = null
 let latestModelsRequestId = 0
 

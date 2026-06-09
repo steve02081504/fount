@@ -173,6 +173,10 @@ class UserPageManager {
 			pageInfo.hasFocus = false
 
 			if (this.focusedPageId === pageId)
+				/**
+				 * 当前具有浏览器焦点的页面的ID。
+				 * @type {number | undefined}
+				 */
 				this.focusedPageId = undefined
 
 			this.broadcastUiUpdate()

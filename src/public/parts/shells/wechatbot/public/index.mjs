@@ -1,6 +1,4 @@
-/**
- * WeChat 机器人 shell 的客户端逻辑。
- */
+/** 微信机器人 shell 的客户端逻辑。 */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
 import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
@@ -64,11 +62,15 @@ let botList = []
 let charList = []
 let selectedBot = null
 let isDirty = false
-/** @type {boolean} Controls the sequential QR poll loop. */
+/**
+ * 控制二维码轮询循环是否继续运行。
+ * @type {boolean}
+ */
 let qrPollActive = false
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 渲染机器人下拉选择框。
+ * @returns {Promise<void>}
  */
 async function renderBotDropdown() {
 	const disabled = !botList.length
@@ -86,9 +88,9 @@ async function renderBotDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
-		 *
+		 * 选中机器人时加载其配置。
 		 * @param {any} selectedItem 下拉框选中项。
- * @returns {Promise<any>} 操作执行结果。
+		 * @returns {Promise<any>} 选中项处理结果。
 		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
@@ -100,7 +102,8 @@ async function renderBotDropdown() {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 渲染角色下拉选择框。
+ * @returns {Promise<void>}
  */
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
@@ -114,9 +117,9 @@ async function renderCharDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
-		 *
+		 * 选中角色时加载对应配置模板。
 		 * @param {any} selectedItem 下拉框选中项。
- * @returns {any} 操作执行结果。
+		 * @returns {any} 无返回值。
 		 */
 		onSelect: (selectedItem) => {
 			const charName = selectedItem ? selectedItem.value : null
@@ -126,8 +129,9 @@ async function renderCharDropdown() {
 }
 
 /**
+ * 加载指定机器人的配置到编辑器。
  * @param {string} botname 机器人名称。
- * @returns {Promise<void>} 返回值。
+ * @returns {Promise<void>}
  */
 async function loadBotConfig(botname) {
 	selectedBot = botname
@@ -159,12 +163,12 @@ async function loadBotConfig(botname) {
 			configEditor = createJsonEditor(configEditorContainer, {
 				label: geti18n('wechat_bots.configCard.labels.config'),
 				/**
-				 *
+				 * 配置编辑器内容变更时标记为未保存。
 				 * @param {any} updatedContent 编辑器更新后的内容。
 				 * @param {any} previousContent 编辑器更新前的内容。
 				 * @param {any} root0 解构参数对象。
 				 * @param {any} root0.error 错误对象。
- * @returns {any} 返回值。
+				 * @returns {any} 变更回调返回值。
 				 */
 				onChange: (updatedContent, previousContent, { error }) => {
 					if (!error) isDirty = true
@@ -183,7 +187,8 @@ async function loadBotConfig(botname) {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 创建新机器人并刷新列表。
+ * @returns {Promise<void>}
  */
 async function handleNewBot() {
 	const botname = promptI18n('wechat_bots.prompts.newBotName')?.trim()
@@ -209,7 +214,8 @@ async function handleNewBot() {
 }
 
 /**
- * @returns {Promise<void>} 操作执行结果。
+ * 删除当前选中的机器人配置。
+ * @returns {Promise<void>}
  */
 async function handleDeleteBot() {
 	if (!selectedBot) return
@@ -234,8 +240,9 @@ async function handleDeleteBot() {
 }
 
 /**
+ * 角色选择变更时加载对应配置模板。
  * @param {string} selectedChar 选中的角色名。
- * @returns {Promise<void>} 操作执行结果。
+ * @returns {Promise<void>}
  */
 async function handleCharSelectChange(selectedChar) {
 	if (isDirty && !confirmI18n('wechat_bots.alerts.unsavedChanges')) return
@@ -251,8 +258,8 @@ async function handleCharSelectChange(selectedChar) {
 }
 
 /**
- *
- * @returns {any} 操作执行结果。
+ * 切换 Token 输入框的显示/隐藏。
+ * @returns {any} 无返回值。
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
@@ -261,11 +268,11 @@ function handleToggleToken() {
 }
 
 /**
- * Runs an async button action: shows a loading spinner, then a success/error icon.
+ * 执行异步按钮操作并显示加载/成功/失败图标反馈。
  * @param {HTMLButtonElement} button 触发操作的按钮元素。
  * @param {HTMLImageElement} statusIcon 按钮状态图标元素。
- * @param {() => Promise<void>} action 动作名称。
- * @returns {Promise<any>} 操作执行结果。
+ * @param {() => Promise<void>} action 要执行的异步操作。
+ * @returns {Promise<any>} 操作完成后的 Promise。
  */
 async function withButtonFeedback(button, statusIcon, action) {
 	statusIcon.src = ICON_LOADING
@@ -290,7 +297,8 @@ async function withButtonFeedback(button, statusIcon, action) {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 保存当前机器人的配置。
+ * @returns {Promise<void>}
  */
 async function handleSaveConfig() {
 	if (!selectedBot) return
@@ -311,9 +319,9 @@ async function handleSaveConfig() {
 }
 
 /**
- * Updates the start/stop button text and color to reflect the current running state.
+ * 根据运行状态更新启动/停止按钮的文案与样式。
  * @param {boolean} isRunning 机器人是否正在运行。
- * @returns {any} 操作执行结果。
+ * @returns {any} 无返回值。
  */
 function setStartStopButtonUI(isRunning) {
 	startStopStatusText.dataset.i18n = isRunning
@@ -325,7 +333,8 @@ function setStartStopButtonUI(isRunning) {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 启动或停止当前选中的机器人。
+ * @returns {Promise<void>}
  */
 async function handleStartStopBot() {
 	if (!selectedBot) return
@@ -342,7 +351,8 @@ async function handleStartStopBot() {
 }
 
 /**
- * @returns {Promise<void>} 操作执行结果。
+ * 查询运行状态并同步启动/停止按钮 UI。
+ * @returns {Promise<void>}
  */
 async function updateStartStopButtonState() {
 	try {
@@ -355,7 +365,8 @@ async function updateStartStopButtonState() {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 从 URL 参数初始化机器人与角色选择。
+ * @returns {Promise<void>}
  */
 async function initializeFromURLParams() {
 	const urlParams = new URLSearchParams(window.location.search)
@@ -398,17 +409,17 @@ async function initializeFromURLParams() {
 }
 
 /**
- *
- * @returns {any} 返回值。
+ * 停止二维码登录轮询循环。
+ * @returns {any} 无返回值。
  */
 function stopQrPoll() {
 	qrPollActive = false
 }
 
 /**
- * Handles a single QR poll response, updating the UI accordingly.
+ * 处理单次二维码轮询响应并更新界面。
  * @param {{ done: boolean, status?: string, connected?: boolean, token?: string, apiBaseUrl?: string, qrcodeUrl?: string, error?: string }} result 轮询结果对象。
- * @returns {Promise<any>} 返回值。
+ * @returns {Promise<any>} 操作完成后的 Promise。
  */
 async function handleQrPollResult(result) {
 	if (result.status === 'scanned')
@@ -438,10 +449,10 @@ async function handleQrPollResult(result) {
 }
 
 /**
- * Sequentially polls QR login status until done or stopped.
- * Uses sequential requests to avoid piling up concurrent long-poll calls.
+ * 顺序轮询二维码登录状态，直到完成或停止。
+ * 使用串行请求避免堆积并发长轮询。
  * @param {string} sessionKey 二维码登录会话键。
- * @returns {Promise<any>} 操作执行结果。
+ * @returns {Promise<any>} 操作完成后的 Promise。
  */
 async function startQrPolling(sessionKey) {
 	qrPollActive = true
@@ -462,7 +473,8 @@ async function startQrPolling(sessionKey) {
 }
 
 /**
- * @returns {Promise<void>} 返回值。
+ * 发起微信二维码登录并启动轮询。
+ * @returns {Promise<void>}
  */
 async function handleQrStart() {
 	if (!selectedBot) {
@@ -487,8 +499,8 @@ async function handleQrStart() {
 }
 
 /**
- *
- * @returns {Promise<any>} 操作执行结果。
+ * 初始化页面：应用主题、翻译并绑定事件。
+ * @returns {Promise<any>} 操作完成后的 Promise。
  */
 async function init() {
 	applyTheme()

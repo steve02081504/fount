@@ -1,8 +1,11 @@
 import { info_t, locale_t } from './basedefs.ts'
 
 /**
- * 翻译结果
+ * 翻译服务源类型定义。
+ * 包含翻译结果数据结构及翻译源接口的声明。
  */
+
+/** 单次翻译的结果。 */
 export class TranslateResult_t {
 	/** 翻译后的文本 */
 	text: string

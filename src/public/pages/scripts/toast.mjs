@@ -1,4 +1,7 @@
-/** @type {import('npm:@sentry/browser')} */
+/**
+ * Sentry 浏览器 SDK 模块。
+ * @type {import('npm:@sentry/browser')}
+ */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { geti18n, setLocalizeLogic } from './i18n.mjs'
@@ -6,7 +9,10 @@ import { geti18n, setLocalizeLogic } from './i18n.mjs'
 /** 显式设置的 toast 容器；为 null 时使用默认的 #toast-container。 */
 let toastContainer = null
 
-/** 未传 duration 时使用的默认持续时间（毫秒）；0 表示不自动消失。页面可设为 0 以得到 showMessage 式常驻提示。 */
+/**
+ * 未传 duration 时使用的默认持续时间（毫秒）；0 表示不自动消失。
+ * 页面可设为 0 以得到 showMessage 式常驻提示。
+ */
 let defaultToastDuration = 4000
 
 const icons = {

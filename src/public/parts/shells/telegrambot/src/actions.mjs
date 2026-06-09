@@ -17,14 +17,14 @@ import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfi
  */
 export const actions = {
 	/**
-			 * 列出机器人。
+	 * 列出机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @returns {Promise<string[]>} - 机器人列表。
 	 */
 	list: ({ user }) => getBotList(user),
 	/**
-			 * 创建机器人。
+	 * 创建机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。
@@ -36,7 +36,7 @@ export const actions = {
 		return `Bot '${botname}' created.`
 	},
 	/**
-			 * 删除机器人。
+	 * 删除机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。
@@ -48,7 +48,7 @@ export const actions = {
 		return `Bot '${botname}' deleted.`
 	},
 	/**
-			 * 配置机器人。
+	 * 配置机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。
@@ -61,7 +61,7 @@ export const actions = {
 		return `Bot '${botname}' configured.`
 	},
 	/**
-			 * 获取机器人配置。
+	 * 获取机器人配置。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。
@@ -72,7 +72,7 @@ export const actions = {
 		return getPartData(user, botname)
 	},
 	/**
-			 * 获取机器人配置模板。
+	 * 获取机器人配置模板。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.charname - 角色名称。
@@ -83,7 +83,7 @@ export const actions = {
 		return getBotConfigTemplate(user, charname)
 	},
 	/**
-			 * 启动机器人。
+	 * 启动机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。
@@ -95,7 +95,7 @@ export const actions = {
 		return `Bot '${botname}' started.`
 	},
 	/**
-			 * 停止机器人。
+	 * 停止机器人。
 	 * @param {object} params - 参数。
 	 * @param {string} params.user - 用户。
 	 * @param {string} params.botname - 机器人名称。

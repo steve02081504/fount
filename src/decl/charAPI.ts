@@ -232,11 +232,11 @@ export class CharAPI_t {
 		 */
 		discord?: {
 			/**
-			 * Discord Gateway Intents。
+			 * Discord 网关意图（Gateway Intents）配置。
 			 */
 			Intents?: DiscordGatewayIntentBits[]
 			/**
-			 * Discord Partials。
+			 * Discord 部分对象（Partials）配置。
 			 */
 			Partials?: DiscordPartials[]
 			/**

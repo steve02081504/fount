@@ -23,7 +23,10 @@ import { save_config } from './server.mjs'
 
 const CHALLENGE_TTL_MS = ms('5m')
 
-/** @type {Map<string, { challenge: string, expires: number }>} */
+/**
+ * 待验证的 WebAuthn 挑战缓存。
+ * @type {Map<string, { challenge: string, expires: number }>}
+ */
 const webauthnChallenges = new Map()
 
 /**
@@ -46,6 +49,7 @@ on_shutdown(() => {
 })
 
 /**
+ * 存储带过期时间的 WebAuthn 挑战。
  * @param {string} key - Map 键。
  * @param {string} challenge - WebAuthn 挑战（base64url）。
  * @returns {void}
@@ -58,6 +62,7 @@ function storeWebAuthnChallenge(key, challenge) {
 }
 
 /**
+ * 取出并删除 WebAuthn 挑战条目。
  * @param {string} key - Map 键。
  * @returns {{ challenge: string } | null} 未过期则返回挑战条目，否则为 null。
  */
@@ -86,6 +91,7 @@ function findUserByWebAuthnCredentialId(credentialId) {
 }
 
 /**
+ * 从请求中解析 WebAuthn 依赖方信息。
  * @param {import('npm:express').Request} req - HTTP 请求（Host、Origin 等）。
  * @returns {{ rpID: string, origin: string, rpName: string }} 依赖方 ID、来源与显示名。
  */
@@ -98,6 +104,7 @@ export function getWebAuthnRelyingParty(req) {
 }
 
 /**
+ * 开始 Passkey 注册流程，下发注册选项。
  * @param {string} username - 当前登录用户名。
  * @param {import('npm:express').Request} req - HTTP 请求。
  * @returns {Promise<{ status: number, success: boolean, options?: object, rp?: object, i18nKey?: string }>} 注册选项或错误信息。
@@ -131,6 +138,7 @@ export async function webauthnRegistrationBegin(username, req) {
 }
 
 /**
+ * 完成 Passkey 注册，验证凭据并写入用户库。
  * @param {string} username - 当前登录用户名。
  * @param {object} credentialResponse - 浏览器 `navigator.credentials.create` 的 JSON 结果。
  * @param {string} [nickname] - 用户备注名（可选）。
@@ -261,6 +269,7 @@ export async function webauthnLoginComplete(credentialResponse, authSessionToken
 }
 
 /**
+ * 列出用户已注册的 Passkey 凭据摘要。
  * @param {string} username - 用户名。
  * @returns {object[]} 不含公钥的凭据摘要列表。
  */
@@ -276,6 +285,7 @@ export function listWebAuthnCredentials(username) {
 }
 
 /**
+ * 删除用户指定的 Passkey 凭据（需验证密码）。
  * @param {string} username - 用户名。
  * @param {string} credentialId - 凭据 ID（base64url）。
  * @param {string} password - 账户密码（校验用）。

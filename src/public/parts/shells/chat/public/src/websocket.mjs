@@ -18,8 +18,8 @@ import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handle
 let ws = null
 
 /**
- * Sends a message through the WebSocket.
- * @param {object} message - The message object to send.
+ * 通过 WebSocket 发送消息。
+ * @param {object} message 要发送的消息对象。
  */
 export function sendWebsocketMessage(message) {
 	if (ws && ws.readyState === WebSocket.OPEN)

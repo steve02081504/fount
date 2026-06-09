@@ -53,6 +53,8 @@ async function run() {
 	}
 	/**
 	 * WebSocket 错误处理。
+	 * @param {object} event - 错误事件。
+	 * @returns {void} 无返回值。
 	 */
 	ws.onerror = () => {
 		process.exitCode = 1

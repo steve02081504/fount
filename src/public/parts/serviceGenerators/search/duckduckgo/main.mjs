@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t */
+/**
+ * 搜索源类型别名。
+ * @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t
+ */
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -35,7 +38,10 @@ const configTemplate = {
  * @returns {Promise<SearchSource_t>} 搜索源。
  */
 async function GetSource(config) {
-	/** @type {SearchSource_t} */
+	/**
+	 * 搜索源实例。
+	 * @type {SearchSource_t}
+	 */
 	const result = {
 		type: 'web-search',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

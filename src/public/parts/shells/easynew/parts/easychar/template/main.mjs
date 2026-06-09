@@ -1,6 +1,15 @@
-/** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 插件 API 类型别名。
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
+ */
 
 import path from 'node:path'
 
@@ -31,15 +40,24 @@ function getLocale(localesParam, key) {
 	return locales[key]?.['en-UK'] || Object.values(locales[key] || {})[0]
 }
 
-/** @type {AIsource_t} */
+/**
+ * AI 源实例。
+ * @type {AIsource_t}
+ */
 let AIsource
-/** @type {Record<string, PluginAPI_t>} */
+/**
+ * 插件 API 映射表。
+ * @type {Record<string, PluginAPI_t>}
+ */
 let plugins = {}
 let username
 const partRoot = import.meta.dirname
 const partJsonPath = path.join(partRoot, 'partdata.json')
 
-/** @type {any} */
+/**
+ * 任意类型值。
+ * @type {any}
+ */
 let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
@@ -64,7 +82,10 @@ function updateInfo() {
 }
 updateInfo()
 
-/** @type {CharAPI_t} */
+/**
+ * 角色 API 实例。
+ * @type {CharAPI_t}
+ */
 export default {
 	info,
 	/**
@@ -184,7 +205,10 @@ export default {
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
-				/** @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t} */
+				/**
+				 * 提示结构构建结果。
+				 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
+				 */
 				const result = {
 					content: '',
 					logContextBefore: [],

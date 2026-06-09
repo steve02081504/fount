@@ -80,9 +80,18 @@ async function toFileObj(pathOrFileObj) {
 	return { name: pathOrFileObj.name, buffer, mime_type }
 }
 
-/** @typedef {import("../../../../decl/pluginAPI.ts").ReplyHandler_t} ReplyHandler_t */
-/** @typedef {import("../../../../decl/prompt_struct.ts").prompt_struct_t} prompt_struct_t */
-/** @typedef {import("../../../../public/parts/shells/chat/decl/chatLog.ts").chatLogEntry_t} chatLogEntry_t */
+/**
+ * 回复处理器类型别名。
+ * @typedef {import("../../../../decl/pluginAPI.ts").ReplyHandler_t} ReplyHandler_t
+ */
+/**
+ * 结构化提示类型别名。
+ * @typedef {import("../../../../decl/prompt_struct.ts").prompt_struct_t} prompt_struct_t
+ */
+/**
+ * 聊天记录条目类型别名。
+ * @typedef {import("../../../../public/parts/shells/chat/decl/chatLog.ts").chatLogEntry_t} chatLogEntry_t
+ */
 
 /**
  * 处理被执行代码的回调。

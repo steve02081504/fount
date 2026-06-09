@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t */
+/**
+ * 翻译源类型别名。
+ * @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t
+ */
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -36,7 +39,10 @@ export default {
  */
 async function GetSource(config) {
 	const error = new Error('This is an empty translate source, which is a placeholder for a previously used generator that error in loading or has been uninstalled or renamed. Please select a new generator.')
-	/** @type {TranslateSource_t} */
+	/**
+	 * 翻译源实例。
+	 * @type {TranslateSource_t}
+	 */
 	const result = {
 		type: 'web-translate',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

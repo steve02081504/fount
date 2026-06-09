@@ -1,4 +1,7 @@
-/** @type {import('npm:@sentry/browser')} */
+/**
+ * Sentry 浏览器 SDK 模块类型。
+ * @type {import('npm:@sentry/browser')}
+ */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 

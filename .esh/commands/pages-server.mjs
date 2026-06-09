@@ -1,7 +1,7 @@
 /**
- * This script provides a local static page server that mimics the GitHub Pages deployment.
- * It uses Express to serve files from their original locations, avoiding the need for a copy/build step.
- * It is based on the build process defined in `.github/workflows/pages.yaml`.
+ * 本地静态页面服务器，模拟 GitHub Pages 部署。
+ * 使用 Express 从原始路径提供文件，无需复制/构建步骤。
+ * 构建流程参考 `.github/workflows/pages.yaml`。
  */
 
 import path from 'node:path'

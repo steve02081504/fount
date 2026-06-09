@@ -1,5 +1,11 @@
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
 
@@ -131,7 +137,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		return currentResult
 	}
 
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -163,7 +172,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			// 从 prompt_struct 中提取内容用于条件判断
 			const content = prompt_struct.chat_log
 				.map(entry => entry.content)

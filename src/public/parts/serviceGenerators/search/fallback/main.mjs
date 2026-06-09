@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t */
+/**
+ * 搜索源类型别名。
+ * @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t
+ */
 
 import { loadSearchSourceFromNameOrConfigData } from '../../../serviceSources/search/main.mjs'
 
@@ -51,7 +54,10 @@ async function GetSource(config, { username, SaveConfig }) {
 	const sources = await Promise.all(config.sources.map(source => loadSearchSourceFromNameOrConfigData(username, source, unnamedSources, {
 		SaveConfig
 	})))
-	/** @type {SearchSource_t} */
+	/**
+	 * 搜索源实例。
+	 * @type {SearchSource_t}
+	 */
 	const result = {
 		type: 'web-search',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

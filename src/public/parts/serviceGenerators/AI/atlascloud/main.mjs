@@ -10,11 +10,17 @@ import { clearFormat } from '../proxy/src/responseFormat.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 /**
- * Atlas Cloud AI source generator.
+ * Atlas Cloud AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
@@ -22,12 +28,14 @@ export default {
 	interfaces: {
 		serviceGenerator: {
 			/**
+			 * 获取配置页显示脚本。
 			 * @returns {Promise<{ js: string }>} 配置页脚本
 			 */
 			GetConfigDisplayContent: async () => ({
 				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
 			}),
 			/**
+			 * 获取默认配置模板。
 			 * @returns {Promise<object>} 默认配置模板
 			 */
 			GetConfigTemplate: async () => structuredClone(configTemplate),
@@ -57,9 +65,9 @@ const configTemplate = {
 }
 
 /**
- * Merge persisted config with the Atlas Cloud defaults.
- * @param {object} [config] - Stored config.
- * @returns {object} Merged config.
+ * 将持久化配置与 Atlas Cloud 默认配置合并。
+ * @param {object} [config] 已存储的配置。
+ * @returns {object} 合并后的配置。
  */
 function normalizeConfig(config = {}) {
 	return {
@@ -81,9 +89,9 @@ function normalizeConfig(config = {}) {
 }
 
 /**
- * Build localized metadata from the Atlas Cloud definitions.
- * @param {object} config - Provider config.
- * @returns {Record<string, any>} Localized metadata.
+ * 根据 Atlas Cloud 定义构建本地化元数据。
+ * @param {object} config 提供方配置。
+ * @returns {Record<string, any>} 本地化元数据。
  */
 function buildProductInfo(config) {
 	return Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
@@ -95,16 +103,19 @@ function buildProductInfo(config) {
 }
 
 /**
- * Create the Atlas Cloud AI source.
- * @param {object} config - Stored config object.
- * @param {{ SaveConfig: Function }} root0 - Generator dependencies.
- * @returns {Promise<AIsource_t>} AI source.
+ * 创建 Atlas Cloud AI 来源实例。
+ * @param {object} config 已存储的配置对象。
+ * @param {{ SaveConfig: Function }} root0 生成器依赖。
+ * @returns {Promise<AIsource_t>} AI 来源实例。
  */
 async function GetSource(config, { SaveConfig }) {
 	config = normalizeConfig(config)
 	config.use_stream ??= true
 	const fetchChatCompletionWithRetry = createFetchChatCompletionWithRetry(config, { SaveConfig })
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: buildProductInfo(config),
@@ -112,9 +123,9 @@ async function GetSource(config, { SaveConfig }) {
 		extension: {},
 
 		/**
-		 * Call the provider with a plain prompt.
-		 * @param {string} prompt - Prompt content.
-		 * @returns {Promise<{content: string, files: any[]}>} Provider result.
+		 * 使用纯文本提示调用提供方。
+		 * @param {string} prompt 提示词内容。
+		 * @returns {Promise<{content: string, files: any[]}>} 提供方返回结果。
 		 */
 		Call: async prompt => {
 			return await fetchChatCompletionWithRetry(config.convert_config?.forceNoSystemMessages ? [
@@ -130,10 +141,10 @@ async function GetSource(config, { SaveConfig }) {
 			])
 		},
 		/**
-		 * Call the provider with fount's structured prompt.
-		 * @param {prompt_struct_t} prompt_struct - Structured prompt input.
-		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - Generation options.
-		 * @returns {Promise<{content: string, files: any[]}>} Provider result.
+		 * 使用 fount 结构化提示词调用提供方。
+		 * @param {prompt_struct_t} prompt_struct 结构化提示词输入。
+		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] 生成选项。
+		 * @returns {Promise<{content: string, files: any[]}>} 提供方返回结果。
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
@@ -150,6 +161,7 @@ async function GetSource(config, { SaveConfig }) {
 
 			const i18nRender = { locales: prompt_struct.locales, supported_functions }
 			/**
+			 * 构建 content_for_show 展示内容。
 			 * @param {object} partialResult 流式/最终回复对象
 			 * @param {boolean} [streaming] 是否流式预览
 			 * @returns {void}
@@ -164,6 +176,7 @@ async function GetSource(config, { SaveConfig }) {
 			}
 
 			/**
+			 * 预览更新器，将流式片段推送给上游。
 			 * @param {object} partialResult 流式片段
 			 * @returns {void}
 			 */
@@ -183,25 +196,30 @@ async function GetSource(config, { SaveConfig }) {
 		},
 		tokenizer: {
 			/**
-			 * @returns {number} 恒为 0（无本地 tokenizer 占用）
+			 * 释放分词器占用（本地无 tokenizer，恒为 0）。
+			 * @returns {number} 恒为 0
 			 */
 			free: () => 0,
 			/**
+			 * 编码文本（无本地 tokenizer，原样返回）。
 			 * @param {string} prompt 文本
 			 * @returns {string} 原样返回
 			 */
 			encode: prompt => prompt,
 			/**
+			 * 解码令牌串（无本地 tokenizer，原样返回）。
 			 * @param {string} tokens 令牌串
 			 * @returns {string} 原样返回
 			 */
 			decode: tokens => tokens,
 			/**
+			 * 解码单个令牌（无本地 tokenizer，原样返回）。
 			 * @param {string} token 单令牌
 			 * @returns {string} 原样返回
 			 */
 			decode_single: token => token,
 			/**
+			 * 统计文本长度作为令牌数近似值。
 			 * @param {string} prompt 文本
 			 * @returns {number} 字符长度
 			 */

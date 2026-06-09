@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -36,7 +39,10 @@ export default {
  */
 async function GetSource(config) {
 	const error = new Error('This is an empty AI source, which is a placeholder for a previously used generator that error in loading or has been uninstalled or renamed. Please select a new generator.')
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

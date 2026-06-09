@@ -10,8 +10,14 @@ import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 import { splitLastUserPrompt } from './chatHistory.mjs'
 import { buildSamplingReplayOptions, collectLocalLogprobs, createStreamingLogprobsCollector } from './localLogprobs.mjs'
 
-/** @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 结构化提示类型别名。
+ * @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 /**
  * 构建聊天消息
@@ -159,7 +165,10 @@ export async function GetSource(config) {
 		contextOptions.sequences = 2
 	const context = await model.createContext(contextOptions)
 
-	/** @type {AIsource_t} */
+	/**
+	 * 本地 GGUF 模型 AI 源对象。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -196,14 +205,17 @@ export async function GetSource(config) {
 		 * @param {object} options - 选项。
 		 * @returns {Promise<{content: string}>} 结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
 			const enableLogprobsShow = config.prompt_options?.logprobs && supported_functions?.html
 			const useThemeStyles = supported_functions?.fount_themes ?? false
 			const logprobsRenderOpts = { useThemeStyles, locales: prompt_struct.locales, supported_functions }
 			const streamStartAt = Date.now()
 			let firstChunkAt = null
-			/** @type {import('npm:node-llama-cpp').Token[]} */
+			/**
+			 * 流式生成过程中收集的 token 列表。
+			 * @type {import('npm:node-llama-cpp').Token[]}
+			 */
 			const streamTokens = []
 			let logprobQueue = Promise.resolve()
 
@@ -221,7 +233,10 @@ export async function GetSource(config) {
 
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 			const sequence = context.getSequence()
-			/** @type {import('npm:node-llama-cpp').LlamaContextSequence|null} */
+			/**
+			 * 用于 logprobs 回放的上下文序列。
+			 * @type {import('npm:node-llama-cpp').LlamaContextSequence|null}
+			 */
 			let replaySequence = null
 			if (enableLogprobsShow && useStream)
 				try {

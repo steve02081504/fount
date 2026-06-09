@@ -4,7 +4,10 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/s
 
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { GetShellWorld } from './world.mjs'
-/** @typedef {import('../../../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
+/**
+ * 聊天日志条目类型别名。
+ * @typedef {import('../../../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t
+ */
 
 /**
  * 获取默认的 ShellAssist 接口。
@@ -47,7 +50,10 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 	 * }>}
 	 */
 	async function shellAssistMain(args) {
-		/** @type {chatLogEntry_t[]} */
+		/**
+		 * 聊天记录条目数组。
+		 * @type {chatLogEntry_t[]}
+		 */
 		const chat_log = []
 		for (const entry of args.shellhistory)
 			if (entry.command)

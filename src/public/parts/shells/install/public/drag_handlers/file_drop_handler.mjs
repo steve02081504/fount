@@ -1,11 +1,11 @@
 import { importFiles } from '../src/endpoints.mjs'
 
 /**
- * Drag-in handler for file drops.
- * Processes dropped files and initiates installation.
- * @param {DataTransfer} dataTransfer - The DataTransfer object from the drop event.
- * @param {object} handlerConfig - The configuration for this handler.
- * @returns {Promise<boolean>} True if handled, false otherwise.
+ * 安装 shell 的文件拖放处理器。
+ * 接收用户拖入的文件并触发安装流程。
+ * @param {DataTransfer} dataTransfer 拖放事件中的 DataTransfer 对象。
+ * @param {object} handlerConfig 此处理器的配置。
+ * @returns {Promise<boolean>} 已处理返回 true，否则返回 false。
  */
 export default async function (dataTransfer, handlerConfig) {
 	if (!dataTransfer.files?.length) return false

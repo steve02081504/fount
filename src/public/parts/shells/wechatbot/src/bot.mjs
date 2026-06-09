@@ -10,7 +10,10 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { createWechatApi, DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
 
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
 
 /**
  * 确保角色具有微信接口，如果未实现则回退到内置的简单实现。

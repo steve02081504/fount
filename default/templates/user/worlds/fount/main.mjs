@@ -2,22 +2,40 @@ import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
+/**
+ * 世界 API 类型别名。
+ * @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t
+ */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t
+ */
 
 
 const summary = {
-	/** @type {AIsource_t} */
-	AIsource: null, //总结用AI源
-	/** @type {number} */
-	startLength: 60, // 每次达到多少消息开始总结
-	/** @type {number} */
-	size: 20, // 每次总结多少消息
+	/**
+	 * 用于对话总结的 AI 源。
+	 * @type {AIsource_t}
+	 */
+	AIsource: null,
+	/**
+	 * 触发总结的消息条数阈值。
+	 * @type {number}
+	 */
+	startLength: 60,
+	/**
+	 * 每次总结截取的消息条数。
+	 * @type {number}
+	 */
+	size: 20,
 }
 
 let username
 
-/** @type {WorldAPI_t} */
+/**
+ * 世界 API 导出类型。
+ * @type {WorldAPI_t}
+ */
 export default {
 	info,
 	/**

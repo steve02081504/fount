@@ -47,7 +47,10 @@ const configTemplate = {
 async function GetSource(config) {
 	const duckduckgo = new DuckDuckGoAPI(config)
 
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -85,7 +88,7 @@ async function GetSource(config) {
 		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
 			const messages = []

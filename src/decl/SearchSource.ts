@@ -1,8 +1,11 @@
 import { info_t, locale_t } from './basedefs.ts'
 
 /**
- * 搜索结果项
+ * 搜索服务源类型定义。
+ * 包含单条搜索结果、结果集合及搜索源接口的声明。
  */
+
+/** 单条搜索结果项。 */
 export class SearchResultItem_t {
 	/** 标题 */
 	title: string

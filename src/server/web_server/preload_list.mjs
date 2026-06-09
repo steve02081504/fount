@@ -257,10 +257,16 @@ function scanDirectoryForTypedUrls(rootDir) {
 
 const PUBLIC_ROOT = path.join(__dirname, 'src', 'public')
 
-/** @type {PreloadResource[] | null} */
+/**
+ * 全局共用预加载资源列表缓存。
+ * @type {PreloadResource[] | null}
+ */
 let commonCache = null
 
-/** @type {Map<string, PreloadResource[]>} */
+/**
+ * 按用户缓存的预加载资源列表。
+ * @type {Map<string, PreloadResource[]>}
+ */
 const userCaches = new Map()
 
 /**

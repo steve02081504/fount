@@ -5,7 +5,9 @@ import { getMoltbookPrompt } from './prompt.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** 插件配置：按角色存储的 Moltbook 密钥（由 SetData 注入，GetData 返回；ReplyHandler 从 parts_config 按用户读取） */
+/**
+ * 插件配置：按角色存储的 Moltbook 密钥（由 SetData 注入，GetData 返回；ReplyHandler 从 parts_config 按用户读取）
+ */
 let pluginData = { apikeys: {} }
 
 /**

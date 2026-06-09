@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t */
+/**
+ * 搜索源类型别名。
+ * @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t
+ */
 
 import { loadSearchSourceFromNameOrConfigData } from '../../../serviceSources/search/main.mjs'
 
@@ -58,7 +61,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		config.sources.length,
 		config.max_fail_count || new Set(config.sources.map(source => source.generator)).size == 1 ? 3 : Infinity
 	)
-	/** @type {SearchSource_t} */
+	/**
+	 * 搜索源实例。
+	 * @type {SearchSource_t}
+	 */
 	const result = {
 		type: 'web-search',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

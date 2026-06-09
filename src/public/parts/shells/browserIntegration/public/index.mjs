@@ -43,7 +43,10 @@ function connectWebSocket() {
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/parts/shells:browserIntegration/ui`
 	const ws = new WebSocket(wsUrl)
 
-	/** @param {MessageEvent} event - 收到的 WebSocket 消息事件。 */
+	/**
+	 * 收到的 WebSocket 消息事件。
+	 * @param {MessageEvent} event - 收到的 WebSocket 消息事件。
+	 */
 	ws.onmessage = async (event) => {
 		try {
 			const wireMessage = JSON.parse(event.data)

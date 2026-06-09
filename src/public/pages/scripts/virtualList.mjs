@@ -93,7 +93,8 @@ export function createVirtualList({
 	}
 
 	/**
-	 * 对整个队列进行全量渲染。主要用于初始化或完全刷新。
+	 * 对整个队列进行全量渲染。
+	 * 主要用于初始化或完全刷新。
 	 */
 	async function renderQueue() {
 		const fragment = document.createDocumentFragment()
@@ -123,7 +124,7 @@ export function createVirtualList({
 	/**
 	 * 修剪队列，移除离视口太远的 DOM 元素以防止 DOM 无限增长。
 	 * 如果队列长度未超过 maxQueueSize，则不进行修剪。
-	 * 否则，确定一个“可见元素及缓冲区”的范围，
+	 * 否则，确定一个「可见元素及缓冲区」的范围，
 	 * 从而从队列的头部和尾部移除超出 maxQueueSize 限制的元素。
 	 * 它在每次增量加载（prependItems/appendItems）或追加新项目时被调用。
 	 */

@@ -28,7 +28,10 @@ const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
 const addPasskeyForm = document.getElementById('addPasskeyForm')
 const newPasskeyNameInput = document.getElementById('newPasskeyName')
 
-/** @type {((opts: object) => Promise<object>) | null} */
+/**
+ * WebAuthn 注册函数（按需动态加载）。
+ * @type {((opts: object) => Promise<object>) | null}
+ */
 let startRegistrationFn = null
 
 /**
@@ -89,6 +92,7 @@ export async function loadPasskeysList() {
 }
 
 /**
+ * 凭证。
  * @param {object} cred - 凭证。
  * @returns {Promise<void>}
  */
@@ -110,6 +114,7 @@ async function onRemovePasskeyClick(cred) {
 }
 
 /**
+ * 提交事件。
  * @param {SubmitEvent} event - 提交事件。
  * @returns {Promise<void>}
  */

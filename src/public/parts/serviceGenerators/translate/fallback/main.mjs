@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t */
+/**
+ * 翻译源类型别名。
+ * @typedef {import('../../../../../decl/TranslateSource.ts').TranslateSource_t} TranslateSource_t
+ */
 
 import { loadTranslateSourceFromNameOrConfigData } from '../../../serviceSources/translate/main.mjs'
 
@@ -51,7 +54,10 @@ async function GetSource(config, { username, SaveConfig }) {
 	const sources = await Promise.all(config.sources.map(source => loadTranslateSourceFromNameOrConfigData(username, source, unnamedSources, {
 		SaveConfig
 	})))
-	/** @type {TranslateSource_t} */
+	/**
+	 * 翻译源实例。
+	 * @type {TranslateSource_t}
+	 */
 	const result = {
 		type: 'web-translate',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

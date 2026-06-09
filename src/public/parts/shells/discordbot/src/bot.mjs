@@ -8,7 +8,10 @@ import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
 
 /**
  * 启动 Discord Bot

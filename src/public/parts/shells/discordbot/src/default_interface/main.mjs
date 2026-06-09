@@ -8,15 +8,28 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/p
 
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
 
-/** @typedef {import('npm:discord.js').Message} Message */
-/** @typedef {import('npm:discord.js').Client} DiscordClient */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
 /**
- *  @typedef { (FountChatLogEntryBase & {
- *	extension?: {discord_message_id?: string, [key: string]: any }
+ * Discord 消息类型别名。
+ * @typedef {import('npm:discord.js').Message} Message
+ */
+/**
+ * Discord 客户端类型别名。
+ * @typedef {import('npm:discord.js').Client} DiscordClient
+ */
+/**
+ * fount 聊天日志条目基类类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
+ */
+/**
+ * 含 Discord 消息 ID 扩展字段的简化聊天日志条目类型别名。
+ * @typedef { (FountChatLogEntryBase & {
+ *   extension?: {discord_message_id?: string, [key: string]: any }
  * })} chatLogEntry_t_simple
  */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
+/**
+ * 聊天回复类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
+ */
 
 /**
  * 按用户/角色索引当前正在运行的默认 Discord Bot 客户端实例。
@@ -98,7 +111,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		const ChannelMessageQueues = {} // Record<string, Message<boolean>[]>
 		const ChannelHandlers = {}      // Record<string, Promise<void>>
 
-		/** @type {Record<string, ChatReply_t>} 键为 bot 发出的 Discord 消息 ID，值为对应 AI 回复对象。 */
+		/**
+		 * 键为 bot 发出的 Discord 消息 ID，值为对应 AI 回复对象。
+		 * @type {Record<string, ChatReply_t>}
+		 */
 		const aiReplyObjectCache = {}
 
 		/**
@@ -179,7 +195,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			const isFromOwner = author.username === config.OwnerUserName
 
 			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
-			/** @type {chatLogEntry_t_simple} */
+			/**
+			 * 转换后的聊天日志条目。
+			 * @type {chatLogEntry_t_simple}
+			 */
 			const entry = {
 				...cachedAIReply,
 				time_stamp: fullMessage.createdTimestamp,

@@ -13,9 +13,18 @@ import {
 	extractStickerIdsFromMarkdown
 } from './tools.mjs'
 
-/** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
-/** @typedef {import('npm:telegraf').Context} TelegrafContext */
-/** @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/**
+ * Telegraf 实例类型别名。
+ * @typedef {import('npm:telegraf').Telegraf} TelegrafInstance
+ */
+/**
+ * Telegraf 上下文类型别名。
+ * @typedef {import('npm:telegraf').Context} TelegrafContext
+ */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
 
 /**
  * 按用户/角色索引当前正在运行的默认 Telegram Bot 实例。
@@ -35,9 +44,18 @@ const charBotRegistry = {}
 export function getTelegramBotForChar(username, charname) {
 	return charBotRegistry[username]?.[charname]
 }
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
-/** @typedef {import('./tools.mjs').chatLogEntry_t_simple} chatLogEntry_t_simple */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
+/**
+ * fount 聊天日志条目类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
+ */
+/**
+ * 简化聊天日志条目类型别名。
+ * @typedef {import('./tools.mjs').chatLogEntry_t_simple} chatLogEntry_t_simple
+ */
+/**
+ * 聊天回复类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
+ */
 
 /**
  * 重试函数
@@ -109,9 +127,15 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const botDisplayName = (await getPartInfo(charAPI, localhostLocales[0]))?.name || botCharname
 
-		/** @type {Record<string, chatLogEntry_t_simple[]>} */
+		/**
+		 * 各逻辑频道的聊天日志缓冲。
+		 * @type {Record<string, chatLogEntry_t_simple[]>}
+		 */
 		const ChannelChatLogs = {}
-		/** @type {Record<string, any>} */
+		/**
+		 * 各频道角色作用域记忆。
+		 * @type {Record<string, any>}
+		 */
 		const ChannelCharScopedMemory = {}
 		/**
 		 * 缓存bot发送AI回复时，AI原始的回复对象。键是bot发出的Telegram消息ID。
@@ -119,10 +143,16 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * @type {Record<number, ChatReply_t>}
 		 */
 		const aiReplyObjectCache = {}
-		/** @type {Record<number, string>} 用户 ID → 显示名称 */
+		/**
+		 * 用户 ID 到显示名称的缓存。
+		 * @type {Record<number, string>}
+		 */
 		const userDisplayNameCache = {}
 
-		/** @type {Map<string, { messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }>} */
+		/**
+		 * Telegram 相册（media_group）合并缓冲。
+		 * @type {Map<string, { messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }>}
+		 */
 		const telegramMediaGroupBuffers = new Map()
 
 		/**
@@ -447,7 +477,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		}
 
 		bot.on('edited_message', async ctx_generic => {
-			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>} */
+			/**
+			 * 收窄后的编辑消息上下文。
+			 * @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>}
+			 */
 			const ctx = ctx_generic
 			if (!ctx.update?.edited_message) return
 
@@ -481,7 +514,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		})
 
 		bot.on('message', async ctx_generic => {
-			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
+			/**
+			 * 收窄后的普通消息上下文。
+			 * @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>}
+			 */
 			const ctx = ctx_generic
 			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
 

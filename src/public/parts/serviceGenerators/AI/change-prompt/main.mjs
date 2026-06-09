@@ -1,5 +1,11 @@
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 import { formatStr } from '../../../../../scripts/format.mjs'
 import { parseRegexFromString } from '../../../../../scripts/regex.mjs'
@@ -85,7 +91,10 @@ async function GetSource(config, { username, SaveConfig }) {
 	const base_source = await loadAIsourceFromNameOrConfigData(username, config.base_source, unnamedSources, {
 		SaveConfig
 	})
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -113,7 +122,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
 				UserCharname: prompt_struct.UserCharname,

@@ -5,6 +5,7 @@
 import { showToastI18n } from '/scripts/toast.mjs'
 
 /**
+ * 捕获到的错误。
  * @param {any} error - 捕获到的错误。
  * @returns {boolean} 是否为密码弹窗取消或关闭（不应再 toast）。
  */

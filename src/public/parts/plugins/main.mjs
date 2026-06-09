@@ -5,9 +5,7 @@ import { loadPartBase, unloadPartBase } from '../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 插件根部件。
- */
+/** 插件根部件，负责加载与管理所有用户插件类型的子部件。 */
 export default {
 	info,
 	/**

@@ -4,7 +4,10 @@
  * @returns {{ history: Array<{type: string, text?: string, response?: string[]}>, lastUser: string }} 分离最后一次用户输入。
  */
 export function splitLastUserPrompt(messages) {
-	/** @type {Array<{type: string, text?: string, response?: string[]}>} */
+	/**
+	 * 聊天历史条目数组。
+	 * @type {Array<{type: string, text?: string, response?: string[]}>}
+	 */
 	const history = []
 	for (const m of messages)
 		if (m.role === 'user') history.push({ type: 'user', text: String(m.content) })

@@ -37,7 +37,7 @@ function buildKeyList(keys, isSensitive, isFullWordMatch) {
  * @param {string} content 要匹配的内容
  * @returns {boolean} 是否匹配
  */
-function isAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
+function isAnyMatch(list, content) {
 	for (const key of list)
 		if (key.test(content)) return true // 如果任何一个正则表达式匹配，则返回 true
 	return false
@@ -49,7 +49,7 @@ function isAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
  * @param {string} content 要匹配的内容
  * @returns {boolean} 是否匹配
  */
-function isAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
+function isAllMatch(list, content) {
 	for (const key of list)
 		if (!key.test(content)) return false // 如果任何一个正则表达式不匹配，则返回 false
 	return true
@@ -61,7 +61,7 @@ function isAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
  * @param {string} content 要匹配的内容
  * @returns {boolean} 是否匹配
  */
-function notAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
+function notAnyMatch(list, content) {
 	for (const key of list)
 		if (key.test(content)) return false // 如果任何一个正则表达式匹配，则返回 false
 	return true
@@ -73,7 +73,7 @@ function notAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) 
  * @param {string} content 要匹配的内容
  * @returns {boolean} 是否匹配
  */
-function notAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
+function notAllMatch(list, content) {
 	for (const key of list)
 		if (!key.test(content)) return true // 如果任何一个正则表达式不匹配，则返回 true
 	return false
@@ -140,7 +140,10 @@ export function GetActivatedWorldInfoEntries(
 	env,
 	memory
 ) {
-	/** @type {WorldInfoEntry[]} */
+	/**
+	 * 启用条目的深拷贝列表。
+	 * @type {WorldInfoEntry[]}
+	 */
 	let WIdata_copy = structuredClone(WIentries.filter(e => e.enabled)) // 使用 structuredClone 进行深拷贝
 	let aret = [] // 存储激活的 WI 条目
 
