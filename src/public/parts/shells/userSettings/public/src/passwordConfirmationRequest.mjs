@@ -9,7 +9,7 @@ const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
 
 /**
  * 密码确认弹窗的 Promise 控制柄。
- * @type {{ resolve: (v: string) => void, reject: (e: Error) => void }}
+ * @type {{ resolve: (v: string) => void, reject: (e: Error) => void } | null}
  */
 let passwordConfirmationContext = null
 

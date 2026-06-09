@@ -45,11 +45,11 @@ function getLocale(localesParam, key) {
  */
 /**
  * 单段提示词类型别名。
- * @typedef {import("../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t
+ * @typedef {import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t
  */
 /**
  * 聊天回复请求类型别名。
- * @typedef {import("../../../../../src/public/parts/shells/chat/decl/prompt_struct.ts').chatReplyRequest_t} chatReplyRequest_t
+ * @typedef {import('../../../../../src/public/parts/shells/chat/decl/prompt_struct.ts').chatReplyRequest_t} chatReplyRequest_t
  */
 /**
  * V2 角色数据类型别名。

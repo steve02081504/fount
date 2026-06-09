@@ -49,8 +49,7 @@ export default {
 			 * @returns {Promise<any>} 加载的部件实例。
 			 */
 			loadSubPart: (my_paths, username, partname) => {
-				// 尝试加载为搜索生成器
-				return loadPartBase(username, 'serviceGenerators/translate/' + partname)
+				return loadPartBase(username, 'serviceGenerators/' + partname)
 			},
 			/**
 			 * 卸载子部件。

@@ -1794,7 +1794,7 @@ export async function editMessage(chatid, index, new_content) {
 
 	/**
 	 * 生成请求。
-	 * @returns {{index: number, chat_log: chatLogEntry_t[], chat_entry: chatLogEntry_t}} - 请求对象。
+	 * @returns {{index: number, original: chatLogEntry_t, edited: string, chat_log: chatLogEntry_t[]}} - 请求对象。
 	 */
 	function geneRequest() {
 		return {

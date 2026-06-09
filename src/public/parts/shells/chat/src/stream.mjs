@@ -121,7 +121,7 @@ export function renderMarkdownInlineCode(code, lang = '') {
 export function createBufferedSyncPreviewUpdater(asyncPreviewUpdater) {
 	/**
 	 * 流式回复过程中最近一次预览内容。
-	 * @type {{ content?: string, content_for_show?: string, files?: Array<object> }}
+	 * @type {{ content?: string, content_for_show?: string, files?: Array<object> } | null}
 	 */
 	let lastReply = null
 	let drainScheduled = false

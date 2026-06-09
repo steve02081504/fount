@@ -12,7 +12,7 @@ import pngChunksExtract from 'npm:png-chunks-extract'
  * 	card: object,
  * 	assets: Map<string, Buffer>,
  * 	image: Buffer,
- * 	spec: 'ccv3' | 'ccv2' | null
+ * 	spec: 'ccv3' | 'ccv2' | 'ccv2_generic' | null
  * }>}
  *   card: 解析后的卡片JSON对象
  *   assets: Map<asset_path, asset_buffer>

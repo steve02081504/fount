@@ -423,11 +423,11 @@ function toString(value) {
  * @returns {void}
  */
 /**
- * 无参数的本地化键重载
+ * 有参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithoutParams} TKey
+ * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
- * @param {Record<string, any>} [params]
+ * @param {LocaleKeyParams[TKey]} params
  * @returns {void}
  */
 /**
@@ -513,11 +513,11 @@ console.warnI18n = (key, params = {}) => {
  * @returns {void}
  */
 /**
- * 无参数的本地化键重载
+ * 有参数的本地化键重载
  * @overload
- * @template {LocaleKeyWithoutParams} TKey
+ * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
- * @param {Record<string, any>} [params]
+ * @param {LocaleKeyParams[TKey]} params
  * @returns {void}
  */
 /**
@@ -596,7 +596,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {string | null}
  */
 /**
  * 有参数的本地化键重载
@@ -604,7 +604,7 @@ export function alertI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {string | null}
  */
 /**
  * 使用 i18n 显示提示。
@@ -621,7 +621,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
  * @param {Record<string, any>} [params]
- * @returns {void}
+ * @returns {boolean}
  */
 /**
  * 有参数的本地化键重载
@@ -629,7 +629,7 @@ export function promptI18n(key, params = {}) {
  * @template {LocaleKeyWithParams} TKey
  * @param {TKey} key
  * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
+ * @returns {boolean}
  */
 /**
  * 使用 i18n 显示确认。
