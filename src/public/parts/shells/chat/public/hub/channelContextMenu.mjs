@@ -16,7 +16,7 @@ import {
 } from '../src/api/groupChannel.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { renderChannelList, selectChannel } from './groupNav.mjs'
+import { renderHubChannelSidebar, selectChannel } from './groupNav.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuEl = null
@@ -36,7 +36,7 @@ async function refreshChannelsAfterManage(channelId) {
 	const groupId = hubStore.currentGroupId
 	if (!groupId) return
 	hubStore.currentState = await getGroupState(groupId)
-	await renderChannelList(hubStore.currentState)
+	await renderHubChannelSidebar(hubStore.currentState)
 	const stillExists = hubStore.currentState?.channels?.[channelId]
 	if (hubStore.currentChannelId === channelId && !stillExists) {
 		const fallback = hubStore.currentState?.groupSettings?.defaultChannelId || 'default'

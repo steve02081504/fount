@@ -31,6 +31,24 @@
 	color: var(--hub-text-bright);
 }
 
+.hub-private-chat-sidebar {
+	color: var(--hub-text-muted);
+}
+
+.hub-private-chat-back {
+	color: var(--hub-text-muted);
+	font-weight: 500;
+}
+
+.hub-private-chat-back:hover {
+	color: var(--hub-text-bright);
+	background: var(--hub-hover);
+}
+
+.hub-private-channel-list-host .hub-channel-create-button {
+	margin-bottom: 4px;
+}
+
 /* —— 角色列表 —— */
 .hub-char-list-header {
 	padding: 16px 14px 8px;

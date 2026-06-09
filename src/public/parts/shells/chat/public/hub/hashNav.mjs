@@ -33,7 +33,7 @@ export async function navigateFromHash() {
 		await loadGroups()
 		const binding = friendBindingForGroup(groupId)
 		if (binding) {
-			await enterFriendChat({ groupId, binding })
+			await enterFriendChat({ groupId, binding, channelId: channelId || undefined })
 			return
 		}
 

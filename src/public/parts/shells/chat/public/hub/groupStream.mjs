@@ -10,7 +10,7 @@ import { StreamRenderer } from '../src/ui/StreamRenderer.mjs'
 import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { renderChannelList } from './groupNav.mjs'
+import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeNotifyHubMessage } from './hubNotifications.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
 
@@ -398,7 +398,7 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 			void (async () => {
 				try {
 					hubStore.currentState = await getGroupState(hubStore.currentGroupId)
-					await renderChannelList(hubStore.currentState)
+					await renderHubChannelSidebar(hubStore.currentState)
 				}
 				catch { /* empty */ }
 			})()

@@ -12,8 +12,10 @@ import { hubStore } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
 import {
+	isPrivateChatActive,
 	renderChannelList,
 	renderGroupInfoCard,
+	renderHubChannelSidebar,
 	renderMemberList,
 } from './groupNav.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
@@ -68,8 +70,12 @@ export async function setMode(mode) {
 	}
 
 	refreshHubHeaderButtons()
-	if (mode === 'friends')
-		await renderFriendsColumn(await loadFriendsList())
+	if (mode === 'friends') 
+		if (isPrivateChatActive() && hubStore.currentState)
+			await renderHubChannelSidebar(hubStore.currentState)
+		else
+			await renderFriendsColumn(await loadFriendsList())
+	
 	else if (mode === 'groups')
 		if (!hubStore.currentGroupId || !hubStore.currentState) {
 			setPinsBookmarksWrapVisible(false)

@@ -38,7 +38,7 @@ import { showChannelContextMenu } from './channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from './channels.mjs'
 import { authorDisplayLabel, avatarColor, avatarInitial, escapeHtml, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
-import { consumePendingJoin, inviteCodeFromUrl, updateHash } from './core/urlHash.mjs'
+import { consumePendingJoin, inviteCodeFromUrl, updateFriendsHash, updateHash } from './core/urlHash.mjs'
 import { resetFilesDrawerWire } from './files.mjs'
 import {
 	closeGroupWebSocket,
@@ -76,6 +76,77 @@ async function rebindFederationRoomQuiet(groupId, opts = {}) {
 }
 
 /**
+ * @returns {boolean} 好友模式下是否处于活跃私聊会话
+ */
+export function isPrivateChatActive() {
+	return hubStore.currentMode === 'friends' && !!hubStore.privateGroup.groupId
+}
+
+/**
+ * @returns {HTMLElement | null} 频道列表挂载容器
+ */
+function getChannelListContainer() {
+	if (isPrivateChatActive()) {
+		const host = document.getElementById('hub-private-channel-list-host')
+		if (host) return host
+	}
+	return document.getElementById('hub-channel-list')
+}
+
+/**
+ * 渲染 Hub 侧栏频道区（群模式直出列表；私聊模式含返回按钮与话题列表）。
+ * @param {object} state 群组状态
+ * @returns {Promise<void>}
+ */
+export async function renderHubChannelSidebar(state) {
+	if (isPrivateChatActive()) {
+		const root = document.getElementById('hub-channel-list')
+		await mountTemplate(root, 'hub/nav/private_chat_sidebar_shell', {})
+		root.querySelector('#hub-private-chat-back')?.addEventListener('click', () => {
+			void backToFriendsList()
+		})
+		i18nElement(root)
+	}
+	await renderChannelList(state)
+}
+
+/**
+ * 从私聊返回好友列表 idle 视图。
+ * @returns {Promise<void>}
+ */
+export async function backToFriendsList() {
+	const { cancelScheduledChannelRefresh, disableComposer, refreshHubHeaderButtons } = await import('./messages/messages.mjs')
+	const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
+	cancelScheduledChannelRefresh()
+	closeGroupWebSocket()
+	clearPrivateGroupState()
+	setHubState('currentGroupId', null)
+	setHubState('currentChannelId', null)
+	setHubState('currentState', null)
+	updateFriendsHash()
+	disableComposer('chat.hub.composerDisabled')
+	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
+		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
+	})
+	const groupNameEl = document.getElementById('hub-group-name-display')
+	if (groupNameEl) {
+		groupNameEl.textContent = ''
+		groupNameEl.dataset.i18n = 'chat.hub.friendsTag'
+		i18nElement(groupNameEl)
+	}
+	const channelTitle = document.getElementById('hub-channel-name-display')
+	if (channelTitle) {
+		channelTitle.textContent = ''
+		channelTitle.dataset.i18n = 'chat.hub.friendsHeader'
+		i18nElement(channelTitle)
+	}
+	document.getElementById('hub-info-card-host').innerHTML = ''
+	await renderFriendsColumn(await loadFriendsList())
+	refreshHubHeaderButtons()
+	updateStatusBanners()
+}
+
+/**
  * 渲染右侧群组信息卡。
  * @param {object} state 群组状态
  * @returns {void}
@@ -101,7 +172,8 @@ export async function renderGroupInfoCard(state) {
  * @returns {void}
  */
 export async function renderChannelList(state) {
-	const container = document.getElementById('hub-channel-list')
+	const container = getChannelListContainer()
+	if (!container) return
 	const channels = state.channels || {}
 	const channelIds = Object.keys(channels)
 	if (!channelIds.length) {
@@ -149,7 +221,7 @@ export async function renderChannelList(state) {
 			const category = el.dataset.cat
 			if (hubStore.collapsedCategories.has(category)) hubStore.collapsedCategories.delete(category)
 			else hubStore.collapsedCategories.add(category)
-			void renderChannelList(hubStore.currentState)
+			void renderHubChannelSidebar(hubStore.currentState)
 		})
 	})
 	container.querySelectorAll('.hub-channel-item').forEach(el => {
@@ -198,7 +270,7 @@ async function showCreateChannelModal() {
 					const channelId = await createChannel(groupId, name, type)
 					close()
 					setHubState('currentState', await getGroupState(groupId))
-					await renderChannelList(hubStore.currentState)
+					await renderHubChannelSidebar(hubStore.currentState)
 					await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannelSuccess')
 				}
@@ -271,9 +343,11 @@ async function syncGroupFromNetwork(groupId) {
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer, loadMessages } = await import('./messages/messages.mjs')
 	setHubState('currentChannelId', channelId)
+	if (isPrivateChatActive())
+		hubStore.privateGroup.channelId = channelId
 	updateHash(hubStore.currentGroupId, channelId)
 	void warmCharEntityHashCache()
-	await renderChannelList(hubStore.currentState)
+	await renderHubChannelSidebar(hubStore.currentState)
 	const channel = hubStore.currentState?.channels?.[channelId]
 	if (hubStore.currentGroupId)
 		rebindFederationRoomQuiet(hubStore.currentGroupId, { channelId })

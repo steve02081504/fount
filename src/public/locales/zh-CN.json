@@ -1970,6 +1970,8 @@
 			"friendsCount": "${count} 个好友",
 			"charTag": "角色",
 			"friendsTag": "好友",
+			"backToFriends": "返回好友",
+			"dmTopicsTitle": "话题",
 			"friendsContextNewChat": "新建聊天",
 			"friendsRestartConfirm": "将解除与「${name}」的私聊绑定并新建会话，确定吗？",
 			"friendsRestartOk": "已开启新的私聊",

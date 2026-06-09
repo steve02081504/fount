@@ -19,7 +19,8 @@ import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
-import { closeGroupWebSocket, connectGroupWebSocket } from './groupStream.mjs'
+import { selectChannel } from './groupNav.mjs'
+import { closeGroupWebSocket } from './groupStream.mjs'
 import { loadGroups } from './serverBar.mjs'
 
 /** @type {AbortController | null} 当前进行中的私聊进入操作 */
@@ -160,27 +161,40 @@ async function resolveFriendGroupId(binding, opts, signal) {
 }
 
 /**
+ * @param {object} state 群 state
+ * @param {string | null | undefined} preferredChannelId 优先频道
+ * @returns {string} 可用频道 ID
+ */
+function resolvePrivateChannelId(state, preferredChannelId) {
+	const channels = state?.channels || {}
+	const defaultId = state?.groupSettings?.defaultChannelId || 'default'
+	if (preferredChannelId && channels[preferredChannelId]) return preferredChannelId
+	if (channels[defaultId]) return defaultId
+	const keys = Object.keys(channels)
+	return keys[0] || 'default'
+}
+
+/**
  * 进入好友私聊：与用户 DM 相同，走群频道 + 群 WS；角色回复由服务端按群 char 列表触发。
  * @param {string} groupId 群 ID
  * @param {import('../src/friendBinding.mjs').FriendBinding} binding 绑定
  * @param {AbortSignal} signal 取消信号
+ * @param {string | null | undefined} [channelIdOpt] 目标频道（hash 或调用方指定）
  * @returns {Promise<void>}
  */
-async function openFriendGroupChat(groupId, binding, signal) {
+async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	throwIfAborted(signal)
 	closeGroupWebSocket()
 
 	const state = await getGroupState(groupId)
 	throwIfAborted(signal)
-	const channelId = state?.groupSettings?.defaultChannelId || 'default'
+	const resolvedChannelId = resolvePrivateChannelId(state, channelIdOpt)
 	const displayName = binding.displayName || binding.charname || state.groupMeta?.name || groupId
 
 	hubStore.privateGroup.peerEntityHash = binding.entityHash
 	hubStore.privateGroup.charName = binding.charname || null
 	hubStore.privateGroup.groupId = groupId
-	hubStore.privateGroup.channelId = channelId
 	hubStore.currentGroupId = groupId
-	hubStore.currentChannelId = channelId
 	hubStore.currentState = state
 
 	hubStore.privateGroup.onEnterPrivateGroup({
@@ -189,7 +203,11 @@ async function openFriendGroupChat(groupId, binding, signal) {
 		displayName,
 	})
 
-	document.getElementById('hub-channel-name-display').textContent = displayName
+	const groupNameEl = document.getElementById('hub-group-name-display')
+	if (groupNameEl) {
+		delete groupNameEl.dataset.i18n
+		groupNameEl.textContent = displayName
+	}
 	if (binding.charname) {
 		const details = await getCharDetails(binding.charname)
 		throwIfAborted(signal)
@@ -198,16 +216,12 @@ async function openFriendGroupChat(groupId, binding, signal) {
 	else
 		document.getElementById('hub-info-card-host').innerHTML = ''
 
-	window.history.replaceState(null, '', `${location.pathname}${location.search}#group:${encodeURIComponent(groupId)}:${channelId}`)
-
 	const existingBinding = friendBindingForGroup(groupId)
 	if (!friendBindingsEqual(existingBinding, binding))
 		await setGroupFriendBinding(groupId, binding)
 	throwIfAborted(signal)
 	await loadGroups()
 
-	const { enableComposer, loadMessages } = await import('./messages/messages.mjs')
-	enableComposer()
 	const input = document.getElementById('hub-message-input')
 	if (input)
 		if (binding.charname) {
@@ -219,16 +233,8 @@ async function openFriendGroupChat(groupId, binding, signal) {
 			input.setAttribute('data-i18n', 'chat.hub.friendChatComposer')
 		}
 
-
-	connectGroupWebSocket(groupId, channelId)
-	await loadMessages()
-	const { updateStatusBanners } = await import('./banners.mjs')
-	updateStatusBanners()
 	throwIfAborted(signal)
-
-	const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
-	if (hubStore.currentMode === 'friends')
-		await renderFriendsColumn(await loadFriendsList())
+	await selectChannel(resolvedChannelId)
 }
 
 /**
@@ -236,6 +242,7 @@ async function openFriendGroupChat(groupId, binding, signal) {
  * @param {string} [opts.groupId] 群 ID
  * @param {import('../src/friendBinding.mjs').FriendBinding} [opts.binding] 绑定
  * @param {boolean} [opts.forceNew] 强制新建群（仅角色）
+ * @param {string} [opts.channelId] 打开时选中的频道 ID
  * @returns {Promise<void>}
  */
 export async function enterFriendChat(opts = {}) {
@@ -263,7 +270,8 @@ export async function enterFriendChat(opts = {}) {
 		)
 		if (!groupId) return
 		throwIfAborted(signal)
-		await openFriendGroupChat(groupId, binding, signal)
+		const channelId = opts.channelId || parseHash().channelId || undefined
+		await openFriendGroupChat(groupId, binding, signal, channelId)
 	}
 	catch (error) {
 		if (signal.aborted) return
