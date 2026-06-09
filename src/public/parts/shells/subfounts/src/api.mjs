@@ -247,6 +247,10 @@ class UserSubfountManager {
 			// 离开现有房间（如果有）
 			if (this.room) {
 				this.room.leave()
+				/**
+				 * Trystero 房间实例
+				 * @type {any}
+				 */
 				this.room = null
 				this.actions.clear()
 			}

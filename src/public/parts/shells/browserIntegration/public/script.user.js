@@ -24,7 +24,8 @@
 // ==/UserScript==
 
 /**
- * fount 浏览器集成用户脚本。允许 fount 角色与网页交互。
+ * fount 浏览器集成用户脚本。
+ * 允许 fount 角色与网页交互。
  */
 
 /* eslint-disable curly */
@@ -488,9 +489,15 @@ let connectionTimeoutId = null
 let apiKeyRefreshPromise = null
 const blockedHosts = new Map()
 
-/** @type {number} 最后一次成功刷新 API 密钥的时间戳。 */
+/**
+ * 最后一次成功刷新 API 密钥的时间戳。
+ * @type {number}
+ */
 let lastRefreshTimestamp = 0
-/** @constant {number} 忽略刷新后过时 401 错误的宽限期（毫秒）。 */
+/**
+ * 忽略刷新后过时 401 错误的宽限期（毫秒）。
+ * @constant {number}
+ */
 const REFRESH_GRACE_PERIOD_MS = 5000
 
 let cspWarningShown = false
@@ -1277,15 +1284,17 @@ async function checkCspAndWarn() {
 	try {
 		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', {
 			/**
-			* @param {string} s - 要创建脚本的字符串。
-			* @returns {string} 创建的脚本字符串。
-			*/
+			 * 要创建脚本的字符串。
+			 * @param {string} s - 要创建脚本的字符串。
+			 * @returns {string} 创建的脚本字符串。
+			 */
 			createScript: s => s
 		}) ?? {
 			/**
-			* @param {string} s - 要创建脚本的字符串。
-			* @returns {string} 创建的脚本字符串。
-			*/
+			 * 要创建脚本的字符串。
+			 * @param {string} s - 要创建脚本的字符串。
+			 * @returns {string} 创建的脚本字符串。
+			 */
 			createScript: s => s
 		}
 

@@ -6,8 +6,14 @@ import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../.
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 // Claude 支持的图片 MIME 类型
 const defaultSupportedImageTypes = [
@@ -76,7 +82,10 @@ async function GetSource(config) {
 
 	const client = new Anthropic(clientOptions)
 
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -123,7 +132,7 @@ async function GetSource(config) {
 		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
 			// Check for abort before starting

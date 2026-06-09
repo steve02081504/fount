@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t */
+/**
+ * 回复处理器类型别名。
+ * @typedef {import('../../../../decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t
+ */
 
 import { getTimers, removeTimer, setTimer } from '../../../../server/timers.mjs'
 

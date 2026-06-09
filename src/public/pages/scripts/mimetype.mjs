@@ -3,6 +3,7 @@ import mime from 'https://esm.sh/mime'
 import mimetype from 'https://esm.sh/mime-types'
 
 /**
+ * 将多种缓冲区类型统一转换为 Uint8Array。
  * @param {ArrayBuffer | Uint8Array | Buffer} buffer 文件内容（或前 N 字节）
  * @returns {Uint8Array} 统一为 Uint8Array 视图
  */

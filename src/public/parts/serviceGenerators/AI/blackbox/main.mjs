@@ -6,8 +6,14 @@ import { BlackboxAI } from './blackbox.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 
 /**
  * Blackbox AI 来源生成器模块定义。
@@ -42,7 +48,10 @@ const configTemplate = {
  */
 async function GetSource(config) {
 	const blackbox = new BlackboxAI(config)
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
@@ -63,12 +72,12 @@ async function GetSource(config) {
 			}
 		},
 		/**
-	 * 使用结构化提示调用 AI 源。
-	 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-	 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
-	 * @returns {Promise<{content: string}>} AI 的返回结果。
-	 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+		 * @returns {Promise<{content: string}>} AI 的返回结果。
+		 */
+		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
 			const messages = []

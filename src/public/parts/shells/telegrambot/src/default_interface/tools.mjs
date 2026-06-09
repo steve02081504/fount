@@ -14,26 +14,35 @@ import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
  * Telegram 消息实体类型
  * @typedef {import('npm:telegraf/typings/core/types/typegram').MessageEntity} TelegramMessageEntity
  */
-/** @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
-/** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
+/**
+ * 角色 API 类型别名。
+ * @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ */
+/**
+ * fount 聊天日志条目基类类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
+ */
+/**
+ * 聊天回复类型别名。
+ * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
+ */
 
 /**
  * 简化的 fount 聊天日志条目类型，用于默认接口。
  * 扩展信息与自定义接口的 fountEntry.extension 结构尽量保持一致。
  * @typedef { (FountChatLogEntryBase & {
- *  extension?: {
- *      platform: 'telegram',
- *      platform_message_ids?: (number | string)[], // 消息ID数组
- *      platform_channel_id?: number | string,      // Telegram chat.id
- *      platform_user_id?: number | string,         // Telegram from.id
- *      telegram_message_thread_id?: number,   // 分区ID
- *      is_from_owner?: boolean,
- *      telegram_message_obj?: TelegramMessageType, // 原始TG消息对象
- *      content_parts?: string[],
- *      telegram_media_group_id?: string,
- *      [key: string]: any
- *  }
+ * 	extension?: {
+ * 		platform: 'telegram',
+ * 		platform_message_ids?: (number | string)[], // 消息ID数组
+ * 		platform_channel_id?: number | string,      // Telegram chat.id
+ * 		platform_user_id?: number | string,         // Telegram from.id
+ * 		telegram_message_thread_id?: number,   // 分区ID
+ * 		is_from_owner?: boolean,
+ * 		telegram_message_obj?: TelegramMessageType, // 原始TG消息对象
+ * 		content_parts?: string[],
+ * 		telegram_media_group_id?: string,
+ * 		[key: string]: any
+ * 	}
  * })} chatLogEntry_t_simple
  */
 
@@ -207,6 +216,7 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 }
 
 /**
+ * 类型别名。
  * @typedef {{ name: string, buffer: Buffer, mime_type: string, description: string }} TelegramResolvedFile_t
  */
 /**
@@ -230,7 +240,10 @@ function getTelegramApiFromCtx(ctx) {
  * @returns {TelegramLazyFileLoader_t[]} 每个元素为「执行时下载单附件」的异步函数。
  */
 export function createLazyTelegramMessageFileLoaders(ctx, message) {
-	/** @type {TelegramLazyFileLoader_t[]} */
+	/**
+	 * Telegram 附件懒加载器列表。
+	 * @type {TelegramLazyFileLoader_t[]}
+	 */
 	const loaders = []
 	const telegramApi = getTelegramApiFromCtx(ctx)
 	if (!telegramApi) {
@@ -563,7 +576,10 @@ export async function telegramMediaGroupMessagesToFountChatLogEntry(ctx, message
 
 	const time_stamp = Math.max(...sorted.map(m => (m.edit_date ?? m.date) * 1000))
 
-	/** @type {chatLogEntry_t_simple} */
+	/**
+	 * 转换后的聊天日志条目。
+	 * @type {chatLogEntry_t_simple}
+	 */
 	const entry = {
 		...mergedAiReply,
 		time_stamp,
@@ -657,7 +673,10 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 	if (!content.trim() && !files.length && !cachedAIReply)
 		return null
 
-	/** @type {chatLogEntry_t_simple} */
+	/**
+	 * 转换后的聊天日志条目。
+	 * @type {chatLogEntry_t_simple}
+	 */
 	const entry = {
 		...cachedAIReply,
 		time_stamp: message.edit_date ? message.edit_date * 1000 : message.date * 1000,

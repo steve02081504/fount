@@ -127,14 +127,20 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 		let bufferedStream = null
 		if (options.connection && options.sessionId)
 			bufferedStream = createBufferedLineBasedStream({
-				/** @param {string} piece - 文本片段。 */
+				/**
+				 * 文本片段。
+				 * @param {string} piece - 文本片段。
+				 */
 				onChunk: (piece) => {
 					options.connection.sessionUpdate({
 						sessionId: options.sessionId,
 						update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: piece } },
 					})
 				},
-				/** @param {{ buffer: ArrayBuffer|Buffer|Uint8Array, mime_type?: string }} file - 文件对象。 */
+				/**
+				 * 参数说明。
+				 * @param {{ buffer: ArrayBuffer|Buffer|Uint8Array, mime_type?: string }} file - 文件对象。
+				 */
 				onFile: (file) => {
 					if (!file?.buffer) return
 					const mime = file.mime_type || 'application/octet-stream'

@@ -28,7 +28,10 @@ const passwordInput = document.getElementById('password')
 const webauthnLoginRow = document.getElementById('webauthn-login-row')
 const webauthnLoginBtn = document.getElementById('webauthn-login-btn')
 
-/** @type {((opts: object) => Promise<object>) | null} */
+/**
+ * WebAuthn 认证启动函数，未加载时为 null。
+ * @type {((opts: object) => Promise<object>) | null}
+ */
 let startAuthenticationFn = null
 
 const isLocalOrigin = await ping().then(data => data.is_local_ip).catch(() => false)
@@ -70,6 +73,7 @@ function showLoginMessage(payload) {
 }
 
 /**
+ * 清空登录页错误提示显示。
  * @returns {void}
  */
 function clearLoginErrorDisplay() {

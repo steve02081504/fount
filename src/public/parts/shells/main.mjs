@@ -5,9 +5,7 @@ import { loadPartBase } from '../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 用户交互界面根部件。
- */
+/** 用户交互界面（Shell）根部件，负责加载所有前端交互界面子部件。 */
 export default {
 	info,
 	/**

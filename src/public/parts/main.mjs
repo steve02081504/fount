@@ -5,17 +5,20 @@ import { loadPartBase } from '../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/** @typedef {import('../../decl/basedefs.ts').info_t} info_t */
-
-/** @type {Record<string, Record<string, any>>} */
-const subparts = {}
-
 /**
- * 全局根部件的入口点。
+ * 部件信息类型别名。
+ * @typedef {import('../../decl/basedefs.ts').info_t} info_t
  */
 
 /**
- * 全局根部件
+ * 已加载子部件实例的嵌套映射表。
+ * @type {Record<string, Record<string, any>>}
+ */
+const subparts = {}
+
+/**
+ * 全局根部件入口，作为所有部件类型的顶层挂载点。
+ * 负责加载子部件目录并暴露统一的部件生命周期接口。
  */
 export default {
 	/**

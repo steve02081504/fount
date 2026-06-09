@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t */
+/**
+ * 搜索源类型别名。
+ * @typedef {import('../../../../../decl/SearchSource.ts').SearchSource_t} SearchSource_t
+ */
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -36,7 +39,10 @@ export default {
  */
 async function GetSource(config) {
 	const error = new Error('This is an empty search source, which is a placeholder for a previously used generator that error in loading or has been uninstalled or renamed. Please select a new generator.')
-	/** @type {SearchSource_t} */
+	/**
+	 * 搜索源实例。
+	 * @type {SearchSource_t}
+	 */
 	const result = {
 		type: 'web-search',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

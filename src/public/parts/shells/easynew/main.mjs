@@ -17,7 +17,10 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
-/** @type {import('../../../../decl/shellAPI.ts').ShellAPI_t} */
+/**
+ * Shell API 实例。
+ * @type {import('../../../../decl/shellAPI.ts').ShellAPI_t}
+ */
 export default {
 	info,
 

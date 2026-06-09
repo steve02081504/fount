@@ -19,6 +19,7 @@ export async function getAvailableLocales() {
 }
 
 /**
+ * 获取各语言区域的显示名称映射（静态 Pages 占位实现）。
  * @returns {Map<string, string>} 空映射（静态 Pages 专用 API 的占位实现）。
  */
 export function getLocaleNames() {

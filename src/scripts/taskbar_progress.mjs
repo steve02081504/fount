@@ -1,5 +1,6 @@
 /**
- * 任务栏进度
+ * 终端任务栏进度指示工具。
+ * 在支持 ANSI 的终端中显示、更新或清除任务栏进度状态。
  */
 import process from 'node:process'
 

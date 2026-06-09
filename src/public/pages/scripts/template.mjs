@@ -262,6 +262,7 @@ export async function renderTemplateAsHtmlString(template, data = {}) {
 }
 
 /**
+ * 将渲染后的模板节点挂载到父元素。
  * @param {Element} parent 父节点
  * @param {Element | DocumentFragment | Document} node 模板输出
  * @returns {void}

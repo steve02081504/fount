@@ -5,9 +5,7 @@ import { loadPartBase } from '../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 服务源根部件。
- */
+/** 服务源根部件，负责加载与管理已配置的服务源实例子部件。 */
 export default {
 	info,
 	/**

@@ -1,5 +1,11 @@
-/** @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/**
+ * AI 源类型别名。
+ * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
+ */
+/**
+ * 提示词结构类型别名。
+ * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
+ */
 import { loadAIsourceFromNameOrConfigData, source_dead } from '../../../serviceSources/AI/main.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -104,7 +110,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		}
 	}
 
-	/** @type {AIsource_t} */
+	/**
+	 * AI 源实例。
+	 * @type {AIsource_t}
+	 */
 	const result = {
 		type: 'text-chat',
 		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {

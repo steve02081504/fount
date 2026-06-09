@@ -13,12 +13,14 @@ const SESSION_TTL_MS = 5 * 60_000
 const MAX_QR_REFRESH = 3
 
 /**
+ * 构建微信 liteapp 扫码页 URL。
  * @param {string} qrcode 二维码标识
  * @returns {string} 微信 liteapp 扫码页完整 URL
  */
 const buildQrCodeUrl = qrcode => `https://liteapp.weixin.qq.com/q/7GiQu1?bot_type=3&qrcode=${qrcode}`
 
 /**
+ * 微信二维码登录会话对象。
  * @typedef {{
  *   username: string
  *   botname: string | null
@@ -29,11 +31,14 @@ const buildQrCodeUrl = qrcode => `https://liteapp.weixin.qq.com/q/7GiQu1?bot_typ
  * }} QrSession
  */
 
-/** @type {Map<string, QrSession>} */
+/**
+ * 二维码登录会话映射表。
+ * @type {Map<string, QrSession>}
+ */
 const sessions = new Map()
 
 /**
- *
+ * 清理过期的二维码登录会话。
  * @returns {any} 返回值。
  */
 function purgeExpired() {
@@ -44,6 +49,7 @@ function purgeExpired() {
 }
 
 /**
+ * 规范化 API 基础地址字符串。
  * @param {string | undefined} baseurl 基础地址字符串。
  * @returns {any} 返回值。
  */
@@ -55,7 +61,7 @@ function normalizeServiceBaseUrl(baseurl) {
 }
 
 /**
- * Fetches a fresh QR code image from the iLink gateway.
+ * 从 iLink 网关获取新的二维码图片。
  * @returns {Promise<{ qrcode: string, qrcode_img_content: string }>} 返回二维码数据。
  */
 async function fetchFreshQrCode() {
@@ -72,6 +78,7 @@ async function fetchFreshQrCode() {
 }
 
 /**
+ * 启动微信二维码登录会话。
  * @param {string} username 用户名。
  * @param {string | null} botname 机器人名称。
  * @returns {Promise<any>} 二维码内容与图片地址。
@@ -97,6 +104,7 @@ export async function startQrSession({ username, botname }) {
 }
 
 /**
+ * 轮询QrSession。
  * @param {string} sessionKey 二维码登录会话键。
  * @param {string} username 用户名。
  * @returns {Promise<any>} 扫码会话初始化结果。

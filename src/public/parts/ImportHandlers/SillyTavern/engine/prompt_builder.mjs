@@ -69,10 +69,7 @@ export function promptBuilder(
 	 * 添加世界信息
 	 * @param {WorldInfoEntry} entry 世界信息条目
 	 */
-	function add_WI(
-		/** @type {WorldInfoEntry} */
-		entry
-	) {
+	function add_WI(entry) {
 		const { content } = entry
 		switch (entry.extensions.position) {
 			case world_info_position.atDepth: {
@@ -137,7 +134,10 @@ export function promptBuilder(
 	mes_examples = [...before_EMEntries, ...mes_examples, ...after_EMEntries].filter(e => e)
 	aret.mes_examples = mes_examples
 
-	/** @type {import('../../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} */
+	/**
+	 * 角色提示词构建结果。
+	 * @type {import('../../../../../../src/decl/prompt_struct.ts').single_part_prompt_t}
+	 */
 	const char_prompt_result = {
 		text: [],
 		additional_chat_log: additional_chat_log.map(e => ({

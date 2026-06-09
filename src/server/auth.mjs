@@ -38,11 +38,20 @@ const argon2Loaded = import('npm:@node-rs/argon2').catch(async error => {
 
 // --- 常量定义 ---
 const ACCESS_TOKEN_EXPIRY = '1d'
-/** @constant {number} 访问令牌的持续时间（毫秒）。 */
+/**
+ * 访问令牌的持续时间（毫秒）。
+ * @constant {number}
+ */
 export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY)
-/** @constant {string} 刷新令牌的过期时间。 */
+/**
+ * 刷新令牌的过期时间字符串。
+ * @constant {string}
+ */
 export const REFRESH_TOKEN_EXPIRY = '30d'
-/** @constant {number} 刷新令牌的持续时间（毫秒）。 */
+/**
+ * 刷新令牌的持续时间（毫秒）。
+ * @constant {number}
+ */
 export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY)
 const ACCOUNT_LOCK_TIME = '10m'
 const MAX_LOGIN_ATTEMPTS = 5
@@ -52,13 +61,25 @@ const JWT_CACHE_SIZE = 32
 
 // --- 模块级变量 ---
 
-/** @type {jose.KeyLike} */
+/**
+ * JWT 签名私钥。
+ * @type {jose.KeyLike}
+ */
 let privateKey
-/** @type {jose.KeyLike} */
+/**
+ * JWT 验签公钥。
+ * @type {jose.KeyLike}
+ */
 let publicKey
-/** @type {Object<string, number>} */
+/**
+ * 各用户登录失败次数记录。
+ * @type {Object<string, number>}
+ */
 const loginFailures = {}
-/** @type {Map<string, object>} */
+/**
+ * 已解析 JWT 的 LRU 缓存。
+ * @type {Map<string, object>}
+ */
 const jwtCache = new Map()
 
 // --- 辅助函数 ---
@@ -78,6 +99,7 @@ export function getSecureCookieOptions(req) {
 }
 
 /**
+ * 认证变更失败时抛出 HttpError。
  * @param {number} status HTTP 状态码
  * @param {Record<string, unknown>} json 响应 JSON（通常含 `i18nKey`）
  * @returns {never} 始终抛出 HttpError，不会返回。

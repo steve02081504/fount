@@ -1,4 +1,7 @@
-/** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/**
+ * 世界 API 类型别名。
+ * @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t
+ */
 
 import path from 'node:path'
 
@@ -8,7 +11,10 @@ import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_load
 const partRoot = import.meta.dirname
 const partJsonPath = path.join(partRoot, 'partdata.json')
 
-/** @type {any} */
+/**
+ * easyworld 部件 JSON 配置。
+ * @type {any}
+ */
 let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
@@ -32,7 +38,10 @@ function updateInfo() {
 }
 updateInfo()
 
-/** @type {WorldAPI_t} */
+/**
+ * 世界 API 实例。
+ * @type {WorldAPI_t}
+ */
 export default {
 	info,
 

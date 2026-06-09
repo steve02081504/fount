@@ -76,8 +76,8 @@ export type StreamPayload<T, slice_t = T, remove_t = T> = {
 }
 
 /**
- * 流的控制器定义
- * 使用标准 AsyncGenerator，或者返回一个带 cancel 的对象
+ * 流的控制器定义。
+ * 使用标准 AsyncGenerator，或者返回一个带 cancel 的对象。
  */
 export type StreamResponse<T, slice_t = T, remove_t = T> = {
 	/**
