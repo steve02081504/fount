@@ -8,7 +8,7 @@ import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
-import { createBufferedLineBasedStream } from '../../../chat/src/stream.mjs'
+import { createBufferedLineBasedStream } from '../../../chat/src/stream/lineBasedStream.mjs'
 
 import { buildACPClientToolsPlugin } from './acp_client_tools_plugin.mjs'
 import { buildMCPPlugin } from './mcp_plugin.mjs'

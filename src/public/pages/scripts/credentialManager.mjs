@@ -190,7 +190,6 @@ export async function retrieveAndDecryptCredentials(fileId, from, hashParams, uu
 			if (encryptedFromHash)
 				encryptedData = decodeURIComponent(encryptedFromHash)
 		}
-
 	else {
 		const encryptedFromHash = hashParams.get('encrypted_creds')
 		if (encryptedFromHash)

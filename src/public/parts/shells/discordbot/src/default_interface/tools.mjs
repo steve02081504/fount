@@ -77,7 +77,6 @@ export function splitDiscordReply(reply, split_length = 2000) {
 				last = ''
 			}
 			else last = content_slice
-
 		else if (last)
 			last += '\n' + content_slice
 		else

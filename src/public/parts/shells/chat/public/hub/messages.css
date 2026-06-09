@@ -1,0 +1,189 @@
+/* Hub 消息区：布局由 DaisyUI chat 组件承担，此处仅保留无法用工具类表达的规则 */
+
+.hub-messages {
+	overflow-y: auto;
+}
+
+.hub-messages::-webkit-scrollbar {
+	width: 8px;
+}
+
+.hub-messages::-webkit-scrollbar-thumb {
+	background: var(--hub-bg-server);
+	border-radius: 4px;
+}
+
+/* 连续同作者：隐藏重复头像（chat-image） */
+.chat.hub-message-row:not(.first-in-group) .chat-image {
+	visibility: hidden;
+	height: 0;
+	margin: 0;
+}
+
+.chat.hub-message-row:not(.first-in-group) .chat-header {
+	display: none;
+}
+
+.chat.hub-message-row.first-in-group {
+	margin-top: 1.25rem;
+}
+
+/* 系统消息 */
+.hub-system-message {
+	padding: 6px 16px 6px 72px;
+	color: var(--hub-text-muted);
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 投票块 */
+.hub-vote-block {
+	margin-top: 4px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--color-base-300);
+	border: 1px solid var(--hub-border);
+	max-width: 420px;
+}
+
+.hub-vote-option {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 8px 10px;
+	border-radius: 6px;
+	background: var(--color-base-200);
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	overflow: hidden;
+}
+
+.hub-vote-option-bar {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 3px;
+	background: var(--color-primary);
+	opacity: 0.5;
+}
+
+/* 消息行 hover 由 .hub-message-row / components.css 承担 */
+.chat.hub-message-row {
+	transition: background 0.12s ease;
+}
+
+/* 操作栏展开/收起（非常驻） */
+.hub-message-actions--anim {
+	opacity: 0;
+	pointer-events: none;
+	margin-top: 0;
+	transition: opacity 0.15s ease, margin-top 0.15s ease;
+}
+
+.chat.hub-message-row:hover .hub-message-actions--anim,
+.chat.hub-message-row:focus-within .hub-message-actions--anim {
+	opacity: 1;
+	pointer-events: auto;
+	margin-top: 4px;
+}
+
+.hub-message-actions--always {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.hub-message-action {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.hub-message-action .hub-action-icon {
+	width: 16px;
+	height: 16px;
+	opacity: 0.8;
+}
+
+.hub-message-action-menu {
+	min-width: 28px;
+}
+
+.hub-message-pending {
+	opacity: 0.55;
+}
+
+.hub-streaming-body:not(:empty)~.hub-streaming-skeleton {
+	display: none;
+}
+
+/* 角色消息时间线箭头 */
+.chat.hub-message-row[data-char-id] {
+	position: relative;
+}
+
+.hub-char-timeline-arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: none;
+	background: var(--color-base-300);
+	color: var(--color-base-content);
+	opacity: 0;
+	cursor: pointer;
+	transition: opacity 0.15s;
+}
+
+.hub-char-entry:hover .hub-char-timeline-arrow,
+.chat.hub-message-row[data-char-id]:hover .hub-char-timeline-arrow {
+	opacity: 0.85;
+}
+
+.hub-char-timeline-arrow.left {
+	left: -36px;
+}
+
+.hub-char-timeline-arrow.right {
+	right: -36px;
+}
+
+#hub-messages .chat-start.hub-message-row[data-char-id] .chat-header .font-semibold {
+	transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, transform 0.3s ease;
+	transform-origin: top;
+	max-height: 3rem;
+	overflow: hidden;
+}
+
+#hub-messages.hide-char-names .chat-start.hub-message-row[data-char-id] .chat-header .font-semibold {
+	opacity: 0;
+	max-height: 0;
+	margin: 0 !important;
+	transform: scaleY(0);
+}
+
+.hub-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	padding: 48px 24px;
+	text-align: center;
+	color: var(--hub-text-muted);
+}
+
+.hub-empty-icon {
+	font-size: 48px;
+	margin-bottom: 16px;
+	opacity: 0.5;
+}

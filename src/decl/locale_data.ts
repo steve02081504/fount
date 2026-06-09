@@ -1007,7 +1007,7 @@ export type LocaleData = {
 			}
 		}
 		home_function_buttons: {
-			viewHistory: {
+			chatHub: {
 				title: string
 			}
 		}

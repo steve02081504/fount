@@ -1,0 +1,38 @@
+<div class="card bg-base-200 shadow-xl">
+	<div class="card-body">
+		<div class="flex justify-between items-center mb-4">
+			<h2 class="card-title" data-i18n="chat.group.settingsPage.rolesTitle"></h2>
+			<button id="group-settings-create-role-button" class="btn btn-primary btn-sm">
+				<img src="https://api.iconify.design/line-md/plus.svg" class="h-5 w-5" alt="" aria-hidden="true" />
+				<span data-i18n="chat.group.settingsPage.createRole"></span>
+			</button>
+		</div>
+		<div class="space-y-3">
+			${Object.entries(currentState.roles).map(([roleId, role]) => /* html */`
+			<div class="collapse collapse-arrow bg-base-300">
+				<input type="checkbox" />
+				<div class="collapse-title font-medium flex items-center gap-2">
+					<div class="w-4 h-4 rounded-full" style="background-color: ${escapeHtml(role.color)}"></div>
+					${escapeHtml(role.name)}
+					${role.isDefault ? '<span class="badge badge-sm" data-i18n="chat.group.settingsPage.roleDefault"></span>' : ''}
+				</div>
+				<div class="collapse-content">
+					<div class="grid grid-cols-2 gap-2 mt-2">
+						${allPermissions.map(perm => /* html */`
+						<label class="label cursor-pointer justify-start gap-2">
+							<input type="checkbox" class="checkbox checkbox-sm" ${role.permissions[perm] ? 'checked' : '' } data-action="update-permission" data-role-id="${escapeHtml(roleId)}" data-perm="${perm}">
+							<span class="label-text text-sm" data-i18n="chat.group.settingsPage.perm${perm}"></span>
+						</label>
+						`).join('')}
+					</div>
+					${!role.isDefault ? /* html */`
+					<div class="flex gap-2 mt-4">
+						<button class="btn btn-sm btn-error" data-action="delete-role" data-role-id="${escapeHtml(roleId)}" data-i18n="chat.group.settingsPage.deleteRole"></button>
+					</div>
+					` : ''}
+				</div>
+			</div>
+			`).join('')}
+		</div>
+	</div>
+</div>

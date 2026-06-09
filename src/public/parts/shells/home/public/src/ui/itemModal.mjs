@@ -44,7 +44,6 @@ export function createActionButtons(part, interfacesRegistry) {
 						{ geti18n }
 					)
 				})
-
 			else {
 				button.href = interfaceItem.url
 					.replaceAll('${name}', partname)

@@ -9,27 +9,29 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { onServerEvent } from './scripts/server_events.mjs'
 
 let skipBreadcrumb = false
-try { Sentry.init({
-	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	/**
-	 * 在 Sentry 捕获面包屑事件之前进行处理。
-	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
-	 * @param {object} hint - 包含原始事件等信息的辅助对象。
-	 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
-	 */
-	beforeBreadcrumb: (breadcrumb, hint) => {
-		if (skipBreadcrumb) return null
-		return breadcrumb
-	},
-	sendDefaultPii: true,
-	tunnel: '/api/sentrytunnel',
-	integrations: [
-		Sentry.browserTracingIntegration()
-	],
-	// Performance Monitoring
-	tracesSampleRate: 1.0,
-	tracePropagationTargets: [window.location.origin || 'localhost'],
-}) } catch (error) { console.error(error) }
+try {
+	Sentry.init({
+		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		/**
+		 * 在 Sentry 捕获面包屑事件之前进行处理。
+		 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
+		 * @param {object} hint - 包含原始事件等信息的辅助对象。
+		 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
+		 */
+		beforeBreadcrumb: (breadcrumb, hint) => {
+			if (skipBreadcrumb) return null
+			return breadcrumb
+		},
+		sendDefaultPii: true,
+		tunnel: '/api/sentrytunnel',
+		integrations: [
+			Sentry.browserTracingIntegration()
+		],
+		// Performance Monitoring
+		tracesSampleRate: 1.0,
+		tracePropagationTargets: [window.location.origin || 'localhost'],
+	})
+} catch (error) { console.error(error) }
 console.noBreadcrumb = {
 	/**
 	 * 写入日志并跳过面包屑记录

@@ -6,23 +6,71 @@
  * 此脚本通过 Trystero 连接到主 fount 实例
  * 并执行主机发送的 JavaScript 代码。
  *
- * 用法:
- *   deno run -A subfount.mjs <host-room-id> <password>
+ * 首次使用:
+ *   1. 将此文件放入一个空文件夹
+ *   2. 在该文件夹中运行: deno install --allow-scripts --entrypoint subfount.mjs
+ *   3. 然后运行: deno run -A subfount.mjs <host-room-id> <password>
  *
  * 或交互式运行:
  *   deno run -A subfount.mjs
  */
 
+import fs from 'node:fs'
 import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
 import { setInterval, clearInterval, setTimeout } from 'node:timers'
-import { serialize } from 'node:v8'
+import { fileURLToPath } from 'node:url'
+// V8 serialize 不兼容 Trystero 的 JSON 传输，直接传递原始值
 
-import { exec } from 'npm:@steve02081504/exec'
-import inquirer from 'npm:inquirer'
-import { RTCPeerConnection } from 'npm:node-datachannel/polyfill'
-import { on_shutdown } from 'npm:on-shutdown'
-import { joinRoom } from 'npm:trystero/mqtt'
+// 捕获 MQTT 内部网络瞬断错误，防止刷屏
+process.on('uncaughtException', (err) => {
+	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
+		return
+	console.error('Uncaught exception:', err)
+	process.exit(1)
+})
+
+// --- 自动引导：确保 deno.json 和 node_modules 存在 ---
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const denoJsonPath = path.join(__dirname, 'deno.json')
+
+if (!fs.existsSync(denoJsonPath)) {
+	fs.writeFileSync(denoJsonPath, JSON.stringify({ nodeModulesDir: 'auto' }, null, '\t') + '\n')
+	console.log('Created deno.json')
+}
+else 
+	// 确保已有 deno.json 包含 nodeModulesDir
+	try {
+		const existing = JSON.parse(fs.readFileSync(denoJsonPath, 'utf-8'))
+		if (!existing.nodeModulesDir) {
+			existing.nodeModulesDir = 'auto'
+			fs.writeFileSync(denoJsonPath, JSON.stringify(existing, null, '\t') + '\n')
+			console.log('Updated deno.json (added nodeModulesDir)')
+		}
+	}
+	catch { }
+
+
+// node_modules 检查已不再需要（werift 是纯 JS，无需原生构建）
+
+// --- 动态加载 npm 依赖 ---
+let exec, inquirer, on_shutdown, joinMqttRoomWithDefaults
+try {
+	;({ exec } = await import('npm:@steve02081504/exec'))
+	;({ default: inquirer } = await import('npm:inquirer'))
+	;({ on_shutdown } = await import('npm:on-shutdown'))
+	;({ joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs'))
+}
+catch (error) {
+	console.error('\nFailed to load dependencies:', error.message)
+	console.log('\nTo fix:')
+	console.log('  1. Ensure deno.json exists in this directory (auto-created on first run)')
+	console.log('  2. Run: deno install --allow-scripts --entrypoint subfount.mjs')
+	console.log('  3. Re-run this script\n')
+	process.exit(1)
+}
 
 const args = process.argv.slice(2)
 
@@ -271,7 +319,7 @@ async function handleRunCode(message, peerId) {
 			callback = async (data) => {
 				await actions.sendCallback({
 					partpath: callbackInfo.partpath,
-					data: serialize(data),
+					data,
 				}, hostPeerId)
 			}
 
@@ -281,7 +329,7 @@ async function handleRunCode(message, peerId) {
 		// 通过 Trystero 发送结果回传
 		await actions.sendResponse({
 			requestId,
-			payload: serialize(evalResult),
+			payload: evalResult,
 		}, hostPeerId)
 
 		// 执行代码后更新设备信息
@@ -319,7 +367,7 @@ async function handleShellExec(message, peerId) {
 			const result = await shell_exec_map[shell](command, options || {})
 			await actions.sendResponse({
 				requestId,
-				payload: serialize(result),
+				payload: result,
 			}, hostPeerId)
 			return
 		}
@@ -328,7 +376,7 @@ async function handleShellExec(message, peerId) {
 		const result = await exec(command, options || {})
 		await actions.sendResponse({
 			requestId,
-			payload: serialize(result),
+			payload: result,
 		}, hostPeerId)
 	}
 	catch (error) {
@@ -350,12 +398,11 @@ async function connectViaTrystero() {
 		// 生成机器 ID（用于分配数字 ID）
 		deviceId = await generateDeviceId()
 
-		const config = {
+		room = await joinMqttRoomWithDefaults({
 			appId: 'fount-subfounts',
-			rtcPolyfill: RTCPeerConnection,
-			password, // 使用连接密码进行加密
-		}
-		room = joinRoom(config, hostRoomId)
+			password,
+			roomId: hostRoomId,
+		})
 
 		// 设置操作处理程序
 		const actionMap = {

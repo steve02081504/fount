@@ -12,7 +12,7 @@
  * - tool_call        → 每次工具调用报告 tool_call / tool_call_update 到 IDE
  * - permission       → 写文件/终端前请求用户授权
  */
-import { defineToolUseBlocks } from '../../../../shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../shells/chat/src/stream/toolBlocks.mjs'
 
 let toolCallCounter = 0
 

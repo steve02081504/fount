@@ -1,0 +1,61 @@
+<dialog id="hub-profile-edit-modal" class="modal">
+	<div class="modal-box max-w-3xl hub-profile-edit-box">
+		<h3 class="font-bold text-lg mb-3" data-i18n="profile.edit"></h3>
+		<div class="hub-profile-edit-layout">
+			<aside class="hub-profile-edit-locales">
+				<div class="hub-profile-locale-tabs" data-profile-locale-tabs></div>
+				<p class="hub-profile-locale-hint text-xs opacity-60 mt-2" data-i18n="chat.hub.profileEdit.localeHint"></p>
+			</aside>
+			<div class="hub-profile-edit-form space-y-3 min-w-0 flex-1">
+				<div class="form-control">
+					<label class="label py-1"><span class="label-text text-xs opacity-70" data-i18n="profile.avatarLabel"></span></label>
+					<div class="flex items-center gap-3">
+						<div class="avatar">
+							<div class="w-14 h-14 rounded-full">
+								<img id="hub-profile-edit-avatar-preview" src="" alt="" />
+							</div>
+						</div>
+						<input type="file" id="hub-profile-edit-avatar-upload" accept="image/*" class="file-input file-input-bordered file-input-sm flex-1" />
+					</div>
+				</div>
+				<div class="form-control">
+					<label class="label py-1"><span class="label-text" data-i18n="profile.name"></span></label>
+					<input type="text" id="hub-profile-edit-name" class="input input-bordered input-sm" />
+					<span class="label-text-alt opacity-50" data-profile-default-name></span>
+				</div>
+				<div class="form-control">
+					<label class="label py-1"><span class="label-text" data-i18n="profile.description"></span></label>
+					<textarea id="hub-profile-edit-description-markdown" class="textarea textarea-bordered textarea-sm" rows="4"></textarea>
+				</div>
+				<div class="form-control">
+					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.tagsLabel"></span></label>
+					<input type="text" id="hub-profile-edit-tags" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.tagsPlaceholder" />
+				</div>
+				<div class="form-control">
+					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.linksLabel"></span></label>
+					<textarea id="hub-profile-edit-links" class="textarea textarea-bordered textarea-sm font-mono text-xs" rows="3" data-i18n="chat.hub.profileEdit.linksPlaceholder"></textarea>
+				</div>
+				<div class="grid grid-cols-2 gap-2">
+					<div class="form-control">
+						<label class="label py-1"><span class="label-text" data-i18n="profile.status"></span></label>
+						<select id="hub-profile-edit-status" class="select select-bordered select-sm">
+							<option value="online" data-i18n="profile.statusOptions.online"></option>
+							<option value="away" data-i18n="profile.statusOptions.away"></option>
+							<option value="busy" data-i18n="profile.statusOptions.busy"></option>
+							<option value="offline" data-i18n="profile.statusOptions.offline"></option>
+						</select>
+					</div>
+					<div class="form-control">
+						<label class="label py-1"><span class="label-text" data-i18n="profile.customStatusLabel"></span></label>
+						<input type="text" id="hub-profile-edit-custom-status" class="input input-bordered input-sm" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-action mt-4">
+			<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-cancel" data-i18n="common.cancel"></button>
+			<button type="button" class="btn btn-primary btn-sm" id="hub-profile-edit-save" data-i18n="common.save"></button>
+		</div>
+	</div>
+	<form method="dialog" class="modal-backdrop"><button type="submit">close</button></form>
+</dialog>

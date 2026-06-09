@@ -24,4 +24,6 @@
 4. **Docs**: Add `public/llms.txt` for AI discovery.
 
 **Example**: See `src/public/parts/shells/shellassist/` for a complete reference.
+**Chat Hub** (federation UI): [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md) — local trust domain vs external ingress.
+
 **See also**: [Root AGENTS.md](../../../../AGENTS.md)

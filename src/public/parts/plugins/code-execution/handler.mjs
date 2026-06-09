@@ -7,13 +7,8 @@ import util from 'node:util'
 import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
-import {
-	defineInlineToolUses,
-	defineToolUseBlocks,
-	getChatI18n,
-	renderMarkdownCodeBlock,
-	renderMarkdownInlineCode
-} from '../../shells/chat/src/stream.mjs'
+import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/stream/markdown.mjs'
+import { defineInlineToolUses, defineToolUseBlocks } from '../../shells/chat/src/stream/toolBlocks.mjs'
 
 /**
  * 暂停执行指定的毫秒数。

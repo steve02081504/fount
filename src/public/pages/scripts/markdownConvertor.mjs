@@ -1004,12 +1004,14 @@ function rehypeCacheWrite() {
  * 获取 Markdown 转换器。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {boolean} [options.allowDangerousHtml=true] - 是否保留 Markdown 内联 HTML（不可信作者应传 false）。
  * @param {Array<unknown>} [options.extraRemarkPlugins] - 插入 remarkRehype 之前的 remark 插件。
  * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件。
  * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
  */
 export async function GetMarkdownConvertor({
 	isStandalone = false,
+	allowDangerousHtml = true,
 	extraRemarkPlugins = [],
 	extraRehypePlugins = [],
 } = {}) {
@@ -1021,7 +1023,7 @@ export async function GetMarkdownConvertor({
 	for (const plugin of extraRemarkPlugins)
 		processor = processor.use(plugin)
 	processor = processor
-		.use(remarkRehype, { allowDangerousHtml: true })
+		.use(remarkRehype, { allowDangerousHtml })
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeSpoiler)
@@ -1082,8 +1084,8 @@ export async function GetMarkdownConvertor({
 	for (const plugin of extraRehypePlugins)
 		processor = processor.use(plugin)
 	return processor.use(rehypeStringify, {
-		allowDangerousCharacters: true,
-		allowDangerousHtml: true,
+		allowDangerousCharacters: allowDangerousHtml,
+		allowDangerousHtml,
 	})
 }
 

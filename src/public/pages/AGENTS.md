@@ -14,6 +14,8 @@
 
 - **`theme.mjs`**: DaisyUI theme management. Always call `applyTheme()` first.
 - **`template.mjs`**: HTML templating with i18n support. Use `renderTemplate(name, data)` and `parent.appendChild(await renderTemplate(...))` to append; `mountTemplate(parent, name, data)` to replace a container; `renderTemplateAsHtmlString` for HTML fragments.
+- **`dialog.mjs`**: `openDialogFromTemplate(templateName, data, { onReady })` and `pickFromDialog` for `<dialog class="modal">` lifecycle.
+- **`memo.mjs`**: `memoizePromise` / `createLruMap` for browser-side dedupe caches.
 - **`toast.mjs`**: Notifications (`showToast`, `showToastI18n`).
 - **`cssValues.mjs`**: Dynamic CSS variable manipulation.
 

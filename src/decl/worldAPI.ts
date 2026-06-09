@@ -1,6 +1,7 @@
 import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
+import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 /**
@@ -104,6 +105,18 @@ export class WorldAPI_t {
 			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
 			 */
 			GetPrompt?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * 多人场景：返回公用 prompt + 按 memberId 的专属 prompt（可选；与 GetPrompt 并存时由 shell 合并）。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @returns {Promise<GroupPrompt_t | null>} - 无则 null
+			 */
+			GetGroupPrompt?: (arg: chatReplyRequest_t) => Promise<GroupPrompt_t | null>
+			/**
+			 * 可选：由世界决定发言顺序（yield char 则触发该成员回复；yield user 则提示用户回合）。
+			 * @param {SpeakingOrderContext_t & { chatReplyRequest?: chatReplyRequest_t }} ctx - 群/频道与可选完整请求
+			 * @returns {AsyncIterable<MemberTurn_t>} - 异步迭代器
+			 */
+			GetSpeakingOrder?: (ctx: SpeakingOrderContext_t & { chatReplyRequest?: chatReplyRequest_t }) => AsyncIterable<MemberTurn_t>
 			/**
 			 * 调整提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

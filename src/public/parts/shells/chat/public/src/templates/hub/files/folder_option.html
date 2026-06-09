@@ -1,0 +1,6 @@
+<option value="" data-i18n="chat.hub.filesRootFolder"></option>
+${folderEntries.map(([id, f]) => {
+const name = f?.name || id
+const sel = id === selectedFolderId ? ' selected' : ''
+return `<option value="${escapeHtml(id)}" ${sel}>${escapeHtml(name)}</option>`
+}).join('')}

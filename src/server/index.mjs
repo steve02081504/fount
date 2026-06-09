@@ -40,9 +40,11 @@ export let sentry_enabled
  */
 function set_sentry_enabled(new_sentry_enabled) {
 	// deno-lint-ignore no-cond-assign
-	if (sentry_enabled = new_sentry_enabled) try { Sentry.init({
-		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	})} catch (error) { console.error(error) }
+	if (sentry_enabled = new_sentry_enabled) try {
+		Sentry.init({
+			dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		})
+	} catch (error) { console.error(error) }
 }
 set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
 console.noBreadcrumb = {
@@ -141,25 +143,27 @@ if (args.length) {
 const result = await init(fount_config)
 
 // 如果提供了命令，则通过 IPC 发送到已运行的实例。
-if (command_obj) await (async () => { try {
-	const { IPCManager } = await import('./ipc_server/index.mjs')
-	const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
-	switch (command_obj.type) {
-		case 'runpart': {
-			const { outputs } = result
-			console.log(outputs)
+if (command_obj) await (async () => {
+	try {
+		const { IPCManager } = await import('./ipc_server/index.mjs')
+		const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
+		switch (command_obj.type) {
+			case 'runpart': {
+				const { outputs } = result
+				console.log(outputs)
+			}
 		}
+	} catch (err) {
+		if (command_obj.exit)
+			if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
+			else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
+				console.errorI18n('fountConsole.ipc.noInstanceRunning')
+				return process.exit(1)
+			}
+		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
+		throw err
 	}
-} catch (err) {
-	if (command_obj.exit)
-		if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
-		else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
-			console.errorI18n('fountConsole.ipc.noInstanceRunning')
-			return process.exit(1)
-		}
-	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
-	throw err
-}})()
+})()
 
 console.profileEnd('server start')
 

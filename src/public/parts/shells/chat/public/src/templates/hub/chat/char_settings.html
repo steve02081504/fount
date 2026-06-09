@@ -1,0 +1,31 @@
+<div class="char-settings-body">
+	<div class="hub-overlay-section space-y-3">
+		<h4 data-i18n="chat.hub.sessionInfo"></h4>
+		<div class="hub-overlay-info-row"><span data-i18n="chat.hub.sessionRole"></span><span>${escapeHtml(charname)}</span></div>
+		<div class="hub-overlay-info-row"><span data-i18n="chat.hub.sessionId"></span><span>${escapeHtml(groupId)}</span></div>
+		<div class="hub-overlay-info-row"><span data-i18n="chat.hub.sessionMessages"></span><span>${logLength}</span></div>
+	</div>
+	<div class="hub-overlay-section space-y-3" id="hub-character-chat-config-host"></div>
+	<div class="hub-overlay-section space-y-3">
+		<h4 data-i18n="chat.hub.quickActions"></h4>
+		<div class="hub-overlay-toggle-row flex items-center justify-between gap-2 rounded-lg bg-base-200 p-3" id="hub-character-chat-advanced" style="cursor:pointer;">
+			<div>
+				<div class="hub-overlay-toggle-title" data-i18n="chat.hub.advancedSettings"></div>
+				<div class="hub-overlay-toggle-description" data-i18n="chat.hub.advancedSettingsDescription"></div>
+			</div>
+			<span class="text-primary">↗</span>
+		</div>
+	</div>
+	<div class="hub-overlay-section space-y-3">
+		<h4 data-i18n="chat.hub.dangerZone"></h4>
+		${friendBound
+		? '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.unbindFriendDescription"></div>'
+		: '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.deleteSessionDescription"></div>'}
+	</div>
+</div>
+<div class="char-settings-footer">
+	${friendBound
+	? '<button type="button" class="hub-overlay-button hub-overlay-button-danger btn btn-error btn-outline" id="hub-character-chat-unbind" data-i18n="chat.hub.unbindFriend"></button>'
+	: '<button type="button" class="hub-overlay-button hub-overlay-button-danger btn btn-error btn-outline" id="hub-character-chat-delete" data-i18n="chat.hub.deleteSession"></button>'}
+	<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-ghost" id="hub-character-chat-close" data-i18n="chat.hub.modalClose"></button>
+</div>

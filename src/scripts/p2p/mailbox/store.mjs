@@ -1,0 +1,187 @@
+import { mkdir, readFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
+
+import { writeJsonlSynced } from '../dag/storage.mjs'
+import { isHex64, normalizeHex64 } from '../hexIds.mjs'
+import {
+	defaultTtlMsForTier,
+	sortMailboxForRetention,
+} from '../mailbox_importance.mjs'
+import {
+	MAX_BUCKET_BYTES,
+	MAX_BUCKET_ENTRIES,
+	mailboxBucketKey,
+	mailboxRecordBytes,
+	pruneMailboxBuckets,
+	pruneMailboxGlobalFair,
+} from '../mailbox_prune.mjs'
+import { mailboxStorePath } from '../user_paths.mjs'
+
+/** 再导出 mailbox 修剪常量与工具。 */
+export { MAX_BUCKET_BYTES, MAX_BUCKET_ENTRIES, mailboxBucketKey, mailboxRecordBytes }
+
+const MAX_ENTRY_BYTES = 256 * 1024
+
+/**
+ * @typedef {'trusted' | 'normal' | 'quarantine'} MailboxTier
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   app: string,
+ *   toPubKeyHash: string,
+ *   dmSessionTag?: string,
+ *   groupId?: string,
+ *   channelId?: string,
+ *   envelope: object,
+ *   storedAt: number,
+ *   expiresAt: number,
+ *   fromNodeHash: string,
+ *   hop: number,
+ *   tier?: MailboxTier,
+ *   importance?: number,
+ * }} MailboxRecord
+ */
+
+/**
+ * @param {number} hop 转发跳数
+ * @returns {MailboxTier} 信誉分层
+ */
+export function mailboxTierFromHop(hop) {
+	if (hop <= 0) return 'trusted'
+	if (hop === 1) return 'normal'
+	return 'quarantine'
+}
+
+/**
+ * @param {string} username replica
+ * @returns {Promise<MailboxRecord[]>} 全部有效记录
+ */
+async function readAll(username) {
+	try {
+		const text = await readFile(mailboxStorePath(username), 'utf8')
+		return text.split('\n').filter(Boolean).map(line => JSON.parse(line))
+	}
+	catch { return [] }
+}
+
+/**
+ * @param {string} username replica
+ * @param {MailboxRecord[]} rows 待写入记录
+ * @returns {Promise<void>} 无返回值
+ */
+async function writeAll(username, rows) {
+	const filePath = mailboxStorePath(username)
+	await mkdir(dirname(filePath), { recursive: true })
+	const now = Date.now()
+	const kept = pruneMailboxGlobalFair(
+		pruneMailboxBuckets(sortMailboxForRetention(rows.filter(record => record.expiresAt > now))),
+	)
+	await writeJsonlSynced(filePath, kept)
+}
+
+/**
+ * @param {object} envelope 载荷
+ * @returns {string} 稳定信封 id
+ */
+export function mailboxEnvelopeId(envelope) {
+	const id = String(envelope?.id || '').trim().toLowerCase()
+	if (!id) throw new Error('mailbox envelope id required')
+	return id
+}
+
+/**
+ * @param {string} username replica
+ * @param {object} record mailbox 记录字段
+ * @returns {Promise<boolean>} 是否新写入
+ */
+export async function storeMailboxRecord(username, record) {
+	if (JSON.stringify(record.envelope).length > MAX_ENTRY_BYTES) return false
+	const toPubKeyHash = normalizeHex64(record.toPubKeyHash)
+	if (!isHex64(toPubKeyHash)) return false
+	const hop = Math.min(3, Math.max(0, Number(record.hop) || 0))
+	const tier = record.tier
+	if (!['trusted', 'normal', 'quarantine'].includes(tier)) return false
+	if (tier === 'quarantine' && hop > 0) return false
+	const app = String(record.app || '').trim()
+	if (!app) return false
+	let id
+	try {
+		id = mailboxEnvelopeId(record.envelope)
+	}
+	catch {
+		return false
+	}
+	const rows = await readAll(username)
+	if (rows.some(row => row.id === id)) return false
+	const ttlMs = Number(record.ttlMs) || defaultTtlMsForTier(tier)
+	rows.push({
+		id,
+		app,
+		toPubKeyHash,
+		dmSessionTag: record.dmSessionTag?.trim().toLowerCase() || undefined,
+		groupId: record.groupId || undefined,
+		channelId: record.channelId || undefined,
+		envelope: record.envelope,
+		storedAt: Date.now(),
+		expiresAt: Date.now() + ttlMs,
+		fromNodeHash: String(record.fromNodeHash || '').trim(),
+		hop,
+		tier,
+		importance: Number.isFinite(Number(record.importance)) ? Number(record.importance) : undefined,
+	})
+	await writeAll(username, rows)
+	return true
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} toPubKeyHash 收件人
+ * @returns {Promise<string[]>} record id 列表
+ */
+export async function listMailboxIdsForRecipient(username, toPubKeyHash) {
+	const recipient = normalizeHex64(toPubKeyHash)
+	return (await readAll(username))
+		.filter(record => record.toPubKeyHash === recipient)
+		.map(record => record.id)
+}
+
+/**
+ * @param {string} username replica
+ * @param {string[]} ids record id 列表
+ * @returns {Promise<MailboxRecord[]>} 匹配记录
+ */
+export async function getMailboxRecords(username, ids) {
+	const want = new Set(ids.map(id => String(id).trim().toLowerCase()))
+	return (await readAll(username)).filter(record => want.has(record.id))
+}
+
+/**
+ * @param {string} username replica
+ * @param {string[]} ids 待删除 id
+ * @returns {Promise<void>} 无返回值
+ */
+export async function deleteMailboxRecords(username, ids) {
+	const drop = new Set(ids)
+	await writeAll(username, (await readAll(username)).filter(record => !drop.has(record.id)))
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} toPubKeyHash 收件人
+ * @returns {Promise<MailboxRecord[]>} 待发记录（不删除）
+ */
+export async function takeMailboxForRecipient(username, toPubKeyHash) {
+	const recipient = normalizeHex64(toPubKeyHash)
+	return (await readAll(username)).filter(record => record.toPubKeyHash === recipient)
+}
+
+/**
+ * @param {string} username replica
+ * @returns {Promise<number>} 未过期条数
+ */
+export async function countMailboxPending(username) {
+	const now = Date.now()
+	return (await readAll(username)).filter(record => record.expiresAt > now).length
+}
