@@ -304,7 +304,7 @@ function Set-FountFileAttributes {
 function Get-WTfountCmd($ArgumentList = @()) {
 	$FilePath = "powershell.exe"
 	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
-	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+	if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {
 		if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
 			Register-FountTerminalProfile
 		}
@@ -543,7 +543,7 @@ elseif ($args[0] -eq 'background') {
 		$TargetPath = "powershell.exe"
 		$runargs = $runargs | ForEach-Object { ($_ -replace '\', '\\') -replace '"', '\"' }
 		$Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" `"$($runargs -join '" "')`""
-		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+		if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {
 			$TargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 			$Arguments = "-p fount powershell.exe $Arguments"
 		}
