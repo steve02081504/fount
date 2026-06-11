@@ -16,6 +16,20 @@ import {
 } from '../../shells/chat/src/stream.mjs'
 
 /**
+ * 带语法高亮地将代码输出到控制台，失败时静默降级为普通输出。
+ * @param {string} label - 日志前缀。
+ * @param {string} code - 要输出的代码。
+ * @param {string} [lang] - 语言标识，不传时自动检测。
+ */
+async function logCode(label, code, lang) {
+	try {
+		const { highlight } = await import('npm:cli-highlight')
+		console.info(label + '\n' + highlight(code, { language: lang, ignoreIllegals: true }))
+	}
+	catch { console.info(label, code) }
+}
+
+/**
  * 暂停执行指定的毫秒数。
  * @param {number} [ms=100] - 要暂停的毫秒数。
  * @returns {Promise<void>}
@@ -287,22 +301,22 @@ export async function codeExecutionReplyHandler(result, args) {
 			files: []
 		}
 		if (step.runType === 'js') {
-			console.info('AI运行的JS代码：', step.code)
+			await logCode(`${args.Charname} running JS code:`, step.code, 'js')
 			const coderesult = await run_jscode_for_AI(step.code)
-			console.info('coderesult', coderesult)
+			console.info(`${args.Charname} JS result:`, coderesult)
 			toolEntry.content = '执行结果：\n' + util.inspect(coderesult, { depth: 4 })
 			result.extension.execed_codes[step.code] = coderesult
 		}
 		else {
 			const shell_name = step.runType
-			console.info(`AI运行的${shell_name}代码：`, step.code)
+			await logCode(`${args.Charname} running ${shell_name} code:`, step.code, shell_name)
 			let shell_result
 			try { shell_result = await shell_exec_map[shell_name](step.code, { no_ansi_terminal_sequences: true }) } catch (err) { shell_result = err }
 			result.extension.execed_codes[step.code] = shell_result
 			if (shell_result.stdall)
 				for (const key of ['stdout', 'stderr'])
 					delete shell_result[key]
-			console.info(`${shell_name} result`, shell_result)
+			console.info(`${args.Charname} ${shell_name} result:`, shell_result)
 			toolEntry.content = '执行结果：\n' + util.inspect(shell_result)
 		}
 		AddLongTimeLog(toolEntry)
@@ -327,9 +341,9 @@ export async function codeExecutionReplyHandler(result, args) {
 				Array.from(content.matchAll(/<inline-js>(?<code>[^]*?)<\/inline-js>/g))
 					.map(async match => {
 						const jsrunner = match.groups.code
-						console.info('AI内联运行的JS代码：', jsrunner)
+						await logCode(`${args.Charname} running inline JS code:`, jsrunner, 'js')
 						const coderesult = await run_jscode_for_AI(jsrunner)
-						console.info('coderesult', coderesult)
+						console.info(`${args.Charname} inline JS result:`, coderesult)
 						if (coderesult.error) throw coderesult.error
 						return coderesult.result + ''
 					})
@@ -389,7 +403,7 @@ export async function codeExecutionReplyHandler(result, args) {
 					Array.from(content.matchAll(runner_regex_g))
 						.map(async match => {
 							const runner = match.groups.code
-							console.info(`AI内联运行的${shell_name}代码：`, runner)
+							await logCode(`${args.Charname} running inline ${shell_name} code:`, runner, shell_name)
 							let shell_result
 							try {
 								shell_result = await shell_exec_map[shell_name](runner, { no_ansi_terminal_sequences: true })
