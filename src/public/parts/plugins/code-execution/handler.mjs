@@ -191,7 +191,7 @@ export async function codeExecutionReplyHandler(result, args) {
 			 * @returns {void}
 			 */
 			js_eval_context.callback = (reason, promise) => {
-				if (!js_eval_context.eval_result && !(promise instanceof Promise))
+				if (!(promise instanceof Promise))
 					throw new Error('callback函数的第二个参数必须是一个Promise对象')
 				/**
 				 * 处理回调函数。
