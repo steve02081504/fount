@@ -182,7 +182,14 @@
 				"failedToStart": "即使在自动修复尝试后，fount 仍在短时间内启动失败。请检查日志中的错误。",
 				"initFailed": "fount 初始化失败。正在退出。"
 			},
+			"terminalKeybindings": {
+				"registered": "已配置终端按键映射修补。",
+				"wtPatchFailed": "无法修补 Windows Terminal 设置 ${path}：${message}",
+				"wtRemoved": "已从 Windows Terminal 设置移除 fount 按键映射配置：${path}",
+				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正在移除终端按键绑定补丁...",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 卸载完成。",
 				"removingFountInstallationDir": "正在移除 fount 安装目录...",

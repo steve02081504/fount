@@ -29,6 +29,7 @@ import { skip_report, config, save_config } from '../server.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
+import { runEvalCode } from './eval_service.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { logServiceWebSocketHandler } from './log_service.mjs'
 import { betterSendFile } from './resources.mjs'
@@ -92,6 +93,13 @@ export function registerEndpoints(router) {
 		if (is_local_ip_from_req(req)) return next()
 		return authenticate(req, res, next)
 	}, logServiceWebSocketHandler)
+
+	router.post('/api/eval', async (req, res, next) => {
+		if (is_local_ip_from_req(req)) return next()
+		return authenticate(req, res, next)
+	}, async (req, res) => {
+		res.status(200).json(await runEvalCode(req.body.code))
+	})
 
 	router.get('/api/test/error', (req, res) => {
 		throw skip_report(new Error('test error'))
