@@ -812,14 +812,14 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 	// 清空按钮
 	const clearBtn = document.createElement('button')
 	clearBtn.className = 'log-clear-btn'
-	clearBtn.dataset.i18n = 'debug_info.logs.toolbar.clear'
+	clearBtn.dataset.i18n = 'log_viewer.logs.toolbar.clear'
 	clearBtn.addEventListener('click', () => onClear?.())
 
 	// 过滤输入框
 	const filterInput = document.createElement('input')
 	filterInput.type = 'text'
 	filterInput.className = 'log-filter-input'
-	filterInput.dataset.i18n = 'debug_info.logs.toolbar.filter'
+	filterInput.dataset.i18n = 'log_viewer.logs.toolbar.filter'
 
 	// 级别过滤按钮
 	const levelBtns = document.createElement('div')
@@ -834,7 +834,7 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 		btn.type = 'button'
 		btn.className = `log-level-btn${id === 'all' ? ' active' : ''}`
 		btn.dataset.lvl = id
-		btn.dataset.i18n = `debug_info.logs.levels.${id}`
+		btn.dataset.i18n = `log_viewer.logs.levels.${id}`
 		btn.addEventListener('click', () => {
 			activeLevel = id
 			for (const [k, el] of Object.entries(btnEls))

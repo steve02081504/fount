@@ -1,13 +1,13 @@
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 
+import { createEvalWs } from './endpoints.mjs'
 import { renderLogItem } from './log.mjs'
-import { createEvalWs } from './src/endpoints.mjs'
 
-const HISTORY_KEY = 'debug_info.repl.history'
+const HISTORY_KEY = 'log_viewer.repl.history'
 const MAX_HISTORY = 100
 
 /**
- * 初始化 debug_info 浏览器 REPL。
+ * 初始化 log_viewer 浏览器 REPL。
  * @param {object} opts - 选项。
  * @param {boolean} [opts.canOpenEditor=false] - 是否允许源码跳转。
  * @param {(callsite: object) => void | Promise<void>} [opts.onOpenSource] - 打开源码回调。

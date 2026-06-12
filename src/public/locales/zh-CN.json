@@ -105,6 +105,10 @@
 				"clearTerminalScreen": {
 					"title": "清空终端屏幕",
 					"tooltip": "清空终端屏幕"
+				},
+				"openTerminal": {
+					"title": "打开终端",
+					"tooltip": "在窗口中打开日志查看器与 REPL"
 				}
 			}
 		},
@@ -2490,6 +2494,33 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "日志终端",
+		"connectionError": "无法连接日志服务。请在本机访问或登录后重试。",
+		"logs": {
+			"openSourceFailed": "无法在编辑器中打开源码：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "按内容筛选…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "普通",
+				"info": "信息",
+				"warn": "警告",
+				"error": "错误",
+				"debug": "调试"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "输入 JavaScript 代码…"
+			},
+			"hint": "Enter 运行 · Shift+Enter 换行 · Tab 补全 · ↑↓ 浏览历史"
+		}
+	},
 	"debug_info": {
 		"title": "调试与系统信息",
 		"description": "获取有关您的 fount 安装的详细调试和系统信息。这对于故障排除和支持请求非常有帮助。",
@@ -2523,29 +2554,6 @@
 		"updateSuccess": "正在重启服务器",
 		"updateFailed": "更新请求失败",
 		"autoUpdateNotEnabled": "未启用自动更新",
-		"logs": {
-			"title": "日志",
-			"openSourceFailed": "无法在编辑器中打开源码：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "按内容筛选…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "普通",
-				"info": "信息",
-				"warn": "警告",
-				"error": "错误",
-				"debug": "调试"
-			}
-		},
-		"repl": {
-			"title": "JavaScript REPL",
-			"placeholder": "输入 JavaScript 代码…",
-			"hint": "Enter 运行 · Shift+Enter 换行 · Tab 补全 · ↑↓ 浏览历史"
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

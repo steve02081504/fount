@@ -89,27 +89,10 @@
 			</div>
 		</div>
 
-		<!-- Backend Logs -->
+		<!-- Log viewer terminal -->
 		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title" data-i18n="debug_info.logs.title"></h2>
-				<div class="rounded-box border border-base-300 overflow-hidden">
-					<div id="log-toolbar-container" class="log-container"></div>
-					<div id="backend-log-list" class="h-[32rem] overflow-auto bg-base-100 log-container"></div>
-				</div>
-			</div>
-		</div>
-
-		<!-- REPL -->
-		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title" data-i18n="debug_info.repl.title"></h2>
-				<div id="repl-output" class="rounded-box border border-base-300 overflow-auto max-h-64 bg-base-200 log-container mb-2 text-sm"></div>
-				<div class="relative">
-					<textarea id="repl-input" class="textarea textarea-bordered w-full font-mono text-sm" rows="3" data-i18n="debug_info.repl.input"></textarea>
-					<ul id="repl-completions" class="hidden absolute bottom-full left-0 right-0 mb-1 menu bg-base-100 border border-base-300 rounded-box shadow-lg max-h-48 overflow-auto z-10 p-1"></ul>
-				</div>
-				<p class="text-xs opacity-60 mt-1" data-i18n="debug_info.repl.hint"></p>
+			<div class="card-body p-0">
+				<iframe src="/log_viewer/" class="w-full h-[40rem] rounded-box border-0" title="log viewer"></iframe>
 			</div>
 		</div>
 	</main>
