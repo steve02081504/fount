@@ -1,7 +1,6 @@
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 
 import { createEvalWs } from './endpoints.mjs'
-import { renderLogItem } from './log.mjs'
 import { editBackspace, editInsertChar, isPairInputEvent } from './repl_pairs.mjs'
 
 const HISTORY_KEY = 'log_viewer.repl.history'
@@ -11,15 +10,14 @@ const COMPLETION_DEBOUNCE_MS = 150
 /**
  * 初始化 log_viewer 浏览器 REPL。
  * @param {object} opts - 选项。
- * @param {boolean} [opts.canOpenEditor=false] - 是否允许源码跳转。
- * @param {(callsite: object) => void | Promise<void>} [opts.onOpenSource] - 打开源码回调。
+ * @param {(entry: object) => void | Promise<void>} [opts.onAppendEntry] - 向主日志区追加条目。
+ * @param {(fn: ((ref: string) => Promise<unknown>) | null) => void} [opts.onEvalExpandRef] - eval 展开引用注册。
  * @returns {void}
  */
-export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
-	const outputEl = document.getElementById('repl-output')
+export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 	const inputEl = /** @type {HTMLTextAreaElement | null} */ document.getElementById('repl-input')
 	const completionsEl = document.getElementById('repl-completions')
-	if (!outputEl || !inputEl || !completionsEl) return
+	if (!inputEl || !completionsEl) return
 
 	/** @type {ReturnType<typeof attachLogWire> | null} */
 	let evalWire = null
@@ -75,6 +73,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 		rejectAllPending('eval_wire_closed')
 		evalWire?.detach()
 		evalWire = null
+		onEvalExpandRef?.(null)
 	}
 
 	/**
@@ -117,8 +116,10 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			onClose: () => {
 				rejectAllPending('eval_wire_closed')
 				evalWire = null
+				onEvalExpandRef?.(null)
 			},
 		})
+		onEvalExpandRef?.(makeExpandRef())
 		return evalWire
 	}
 
@@ -155,39 +156,38 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	}
 
 	/**
-	 * 将求值载荷渲染到输出区。
-	 * @param {object} payload - eval_result 载荷。
-	 * @returns {void}
+	 * 标记条目来自 eval 会话（truncated 展开走 eval wire）。
+	 * @param {object} entry - 日志条目。
+	 * @returns {object} 带 `_evalSession` 的条目。
 	 */
-	function appendEvalPayload(payload) {
-		const renderOpts = {
-			canOpenEditor,
-			onOpenSource,
-			requestExpandRef: makeExpandRef(),
-		}
-		/**
-		 * @param {object} entry - 日志形条目。
-		 * @returns {void}
-		 */
-		const appendEntry = (entry) => {
-			const row = renderLogItem(entry, renderOpts)
-			outputEl.appendChild(row)
-		}
+	function tagEvalEntry(entry) {
+		return { ...entry, _evalSession: true }
+	}
+
+	/**
+	 * 将求值载荷追加到主日志区。
+	 * @param {object} payload - eval_result 载荷。
+	 * @returns {Promise<void>}
+	 */
+	async function appendEvalPayload(payload) {
+		if (Array.isArray(payload.outputEntries)) 
+			for (const entry of payload.outputEntries)
+				await onAppendEntry?.(tagEvalEntry(entry))
+		
 		if (payload.error !== undefined)
-			appendEntry({
+			await onAppendEntry?.(tagEvalEntry({
 				method: 'error',
 				level: 'error',
 				segments: [{ kind: 'value', snapshot: payload.error }],
 				plainText: '',
-			})
+			}))
 		else if ('result' in payload)
-			appendEntry({
+			await onAppendEntry?.(tagEvalEntry({
 				method: 'result',
 				level: 'log',
 				segments: [{ kind: 'value', snapshot: payload.result }],
 				plainText: '',
-			})
-		outputEl.scrollTop = outputEl.scrollHeight
+			}))
 	}
 
 	/**
@@ -367,18 +367,24 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 		historyIndex = -1
 		historyDraft = ''
 		evalInFlight = true
-		const echo = document.createElement('div')
-		echo.className = 'opacity-70 font-mono text-xs mb-1 whitespace-pre-wrap'
-		echo.textContent = `❯ ${code}`
-		outputEl.appendChild(echo)
+		const echoText = `❯ ${code}`
+		await onAppendEntry?.({
+			method: 'repl',
+			level: 'log',
+			segments: [{ kind: 'text', text: echoText }],
+			plainText: echoText,
+		})
 		try {
 			const payload = await sendWireRequest({ type: 'eval_request', code })
-			appendEvalPayload(payload)
+			await appendEvalPayload(payload)
 		} catch (err) {
-			const errRow = document.createElement('div')
-			errRow.className = 'text-error font-mono text-sm'
-			errRow.textContent = String(err?.message ?? err)
-			outputEl.appendChild(errRow)
+			const msg = String(err?.message ?? err)
+			await onAppendEntry?.({
+				method: 'error',
+				level: 'error',
+				segments: [{ kind: 'text', text: msg }],
+				plainText: msg,
+			})
 		} finally {
 			evalInFlight = false
 			inputEl.value = ''

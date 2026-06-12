@@ -23,6 +23,8 @@ let logFilterText = ''
 let logLevelFilter = 'all'
 let logsConnectionAttempt = 0
 let hasShownConnectionError = false
+/** @type {((ref: string) => Promise<unknown>) | null} */
+let evalRequestExpandRef = null
 
 /**
  * 构建打开源码的回调。
@@ -97,6 +99,11 @@ function initLogsVirtualList() {
 		 * @returns {Promise<unknown>} 展开后的子树快照。
 		 */
 		requestExpandRef: (ref) => {
+			if (item._evalSession) {
+				if (!evalRequestExpandRef)
+					return Promise.reject(new Error('eval WebSocket not ready'))
+				return evalRequestExpandRef(ref)
+			}
 			if (!logsWireHandle)
 				return Promise.reject(new Error('log WebSocket not ready'))
 			return logsWireHandle.requestExpand(ref)
@@ -110,6 +117,20 @@ function initLogsVirtualList() {
 		renderItem: renderLogEntry,
 		initialIndex: filtered.length ? filtered.length - 1 : 0,
 	})
+}
+
+/**
+ * 向日志区追加单条条目（REPL 回显/求值结果等）。
+ * @param {object} entry - 日志条目。
+ * @returns {Promise<void>}
+ */
+async function appendLogEntry(entry) {
+	logsStore.push(entry)
+	if (entryMatchesFilter(entry, logFilterText, logLevelFilter)) {
+		const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
+		if (logsVirtualList)
+			await logsVirtualList.appendItem(entry, nearBottom)
+	}
 }
 
 /**
@@ -211,4 +232,12 @@ if (logToolbarContainer) {
 }
 
 connectLogsWs()
-initRepl({ canOpenEditor, onOpenSource: handleOpenSource })
+initRepl({
+	onAppendEntry: appendLogEntry,
+	/**
+	 * REPL eval 会话就绪时注册 truncated 展开函数。
+	 * @param {((ref: string) => Promise<unknown>) | null} fn - 展开函数；断链时传 null。
+	 * @returns {void}
+	 */
+	onEvalExpandRef: (fn) => { evalRequestExpandRef = fn },
+})
