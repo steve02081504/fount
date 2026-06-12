@@ -175,18 +175,22 @@ export function resolveInputRows(text) {
 /**
  * 当前终端布局：上方 `scrollBottom` 行为日志滚动区，其下为圆角输入框。
  * @param {number} inputRows - 输入区行数。
+ * @param {number | null} [boxAnchorTop] - 输入框上边框锚定行号；resize 后贴日志末尾时使用，
+ *   高于贴底位置时框与屏底之间留空白。`null` 表示贴底。
  * @returns {TerminalLayout} 列宽、行高与分区行号。
  */
-export function getLayout(inputRows) {
+export function getLayout(inputRows, boxAnchorTop = null) {
 	const cols = process.stdout.columns || 80
 	const rows = process.stdout.rows || 24
 	const clamped = Math.min(inputRows, maxInputRowsForTerminal(rows))
-	const scrollBottom = Math.max(1, rows - clamped - 2)
+	const bottomBoxTop = Math.max(2, rows - clamped - 1)
+	const boxTop = Math.max(2, Math.min(boxAnchorTop ?? bottomBoxTop, bottomBoxTop))
+	const scrollBottom = boxTop - 1
 	return {
 		cols, rows, scrollBottom,
-		boxTop: scrollBottom + 1,
-		inputStart: scrollBottom + 2,
-		boxBottom: scrollBottom + 2 + clamped,
+		boxTop,
+		inputStart: boxTop + 1,
+		boxBottom: boxTop + 1 + clamped,
 		inputRows: clamped,
 	}
 }
