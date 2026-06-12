@@ -1838,7 +1838,7 @@ elseif ($args[0] -eq 'remove') {
 elseif ($args[0] -eq 'log') {
 	try {
 		Register-FountApplicationRestart
-		deno run --watch-hmr --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
 	}
 	finally {
 		Unregister-FountApplicationRestart
