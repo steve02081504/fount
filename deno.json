@@ -15,6 +15,7 @@
 		"geneexe": "deno run -A path/fount.mjs geneexe",
 		"remove": "deno run -A path/fount.mjs remove",
 		"nop": "deno run -A path/fount.mjs nop",
+		"log": "deno run -A path/fount.mjs log",
 
 		"start": "deno run -A path/fount.mjs",
 		"stop": "deno run -A path/fount.mjs shutdown",
