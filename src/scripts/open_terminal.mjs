@@ -2,31 +2,17 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
 
+import open from 'npm:open'
+
 import { __dirname } from '../server/base.mjs'
-import { config } from '../server/server.mjs'
+import { hosturl } from '../server/server.mjs'
 
 /**
- * 读取 fount 监听端口。
- * @returns {number} 端口号。
- */
-function getServerPort() {
-	if (Number.isFinite(config?.port)) return config.port
-	return 8931
-}
-
-/**
- * 使用 WebUI 打开内置 log_viewer 页面。
+ * 打开内置 log_viewer 浏览器窗口。
  * @returns {Promise<void>}
  */
 export async function openLogViewerWindow() {
-	const url = `http://127.0.0.1:${getServerPort()}/log_viewer/`
-	const { WebUI } = await import('jsr:@webui/deno-webui')
-	const win = new WebUI()
-	win.setSize(960, 720)
-	win.setFrameless(false)
-	win.setTransparent(false)
-	win.setResizable(true)
-	void win.show(url)
+	await open(hosturl + '/log_viewer/')
 }
 
 /**
