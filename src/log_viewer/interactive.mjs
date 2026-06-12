@@ -1,130 +1,32 @@
 /**
- * Cliffy 交互式日志查看器：日志直接写入终端滚动区（可用终端自带滚动条），
- * 仅重绘底部 REPL 输入区。
- * @see https://cliffy.io/docs/v1.2.1
+ * 交互式日志查看器：日志直接写入终端滚动区（DECSTBM，可用终端自带滚动条），
+ * 底部固定一个圆角 REPL 输入框，提交至 `/api/eval`。
+ *
+ * 按键解析的纯函数见 {@link module:keys}，渲染几何与绘制见 {@link module:render}。
  */
 import path from 'node:path'
 import process from 'node:process'
 
-import { ansi } from 'jsr:@cliffy/ansi'
-import { read as readStdin } from 'jsr:@cliffy/internal@1.2.1/runtime/read'
-import { setRaw } from 'jsr:@cliffy/internal@1.2.1/runtime/set-raw'
 import { parse as parseKeyCodes } from 'jsr:@cliffy/keycode'
 import { renderAnsi } from 'npm:@steve02081504/virtual-console/node'
 import { WireLogEntry } from 'npm:@steve02081504/virtual-console/wire/client'
 
 import { createHistoryStore } from './history.mjs'
-
-const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g
-const LEVEL_PREFIX_COLORS = {
-	error: '\x1b[31m',
-	warn: '\x1b[33m',
-	info: '\x1b[36m',
-	debug: '\x1b[2m',
-}
-const ANSI_RESET = '\x1b[0m'
-const MIN_INPUT_ROWS = 1
-/** 恢复全屏滚动区域（DECSTBM reset）。 */
-const SCROLL_REGION_RESET = '\x1b[r'
-const BRACKETED_PASTE_ON = '\x1b[?2004h'
-const BRACKETED_PASTE_OFF = '\x1b[?2004l'
-const PASTE_START = '\x1b[200~'
-const PASTE_END = '\x1b[201~'
-const WORD_CHAR = /[\w$]/
-/** Deno 下勿碰 `process.stdin`（Node 兼容层会与 `Deno.stdin` 抢读字节，导致丢键、隔键才送达）。 */
-const IS_DENO = 'Deno' in globalThis
-/** xterm Shift+Enter CSI（如 `[13;2~`）；keycode 常映射为 `f3`+Shift。 */
-const SHIFT_ENTER_CSI = /;2;13|\[13;2[~u$^]|\b13;2[~u]/
-
-/**
- * 解析后的按键事件（由 `@cliffy/keycode` 的 `KeyCode` 适配）。
- * @typedef {object} KeyEvent
- * @property {string} [key] - 键名（如 `return` / `enter` / `up`）。
- * @property {string} [char] - 字符值（可打印键）。
- * @property {string} [sequence] - 原始转义序列。
- * @property {string} [code] - CSI code（如 `[13;2u`）。
- * @property {boolean} ctrlKey - Ctrl 修饰。
- * @property {boolean} metaKey - Meta/Alt 修饰。
- * @property {boolean} shiftKey - Shift 修饰。
- */
-
-/** 开符号 → 闭符号（半角/全角/弯引号/直角与书名号/夹注与隅足号等）。 @type {ReadonlyMap<string, string>} */
-const OPEN_TO_CLOSE = new Map([
-	['\'', '\''],
-	['"', '"'],
-	['`', '`'],
-	['(', ')'],
-	['[', ']'],
-	['{', '}'],
-	['（', '）'],
-	['﹙', '﹚'],
-	['【', '】'],
-	['［', '］'],
-	['﹝', '﹞'],
-	['｛', '｝'],
-	['﹛', '﹜'],
-	['「', '」'],
-	['『', '』'],
-	['《', '》'],
-	['〈', '〉'],
-	['〔', '〕'],
-	['〖', '〗'],
-	['〘', '〙'],
-	['〚', '〛'],
-	['｢', '｣'],
-	['＇', '＇'],
-	['＂', '＂'],
-	['\u2018', '\u2019'],
-	['\u201C', '\u201D'],
-])
-/** @type {ReadonlySet<string>} */
-const CLOSE_CHARS = new Set(OPEN_TO_CLOSE.values())
-
-/**
- * 解析 Kitty / CSI-u 按键（Cliffy 常解析为 `undefined`）。
- * @param {KeyEvent} event - 按键事件。
- * @returns {'submit' | 'newline' | 'ctrlBackspace' | 'interrupt' | null} 动作或 `null`。
- */
-function kittyKeyAction(event) {
-	const src = event.code ?? event.sequence ?? ''
-	if (!src) return null
-	if (/99;5u/.test(src)) return 'interrupt'
-	if (/\[13;2u$/.test(src) || (/13;2[~u]/.test(src) && /;2/.test(src))) return 'newline'
-	const enter = src.match(/\[13(?:;(\d+))?u$/) ?? src.match(/13(?:;(\d+))?u/)
-	if (enter) {
-		const mod = Number(enter[1] ?? '1')
-		if (mod === 2) return 'newline'
-		if (mod === 1 || mod === 5) return 'submit'
-	}
-	if (/\[127;5u$/.test(src) || /127;5u/.test(src)) return 'ctrlBackspace'
-	return null
-}
-
-/**
- * 是否为 Shift+Enter 的 xterm / 集成终端 CSI 变体。
- * @param {KeyEvent} event - 按键事件。
- * @returns {boolean} 是否应插入换行。
- */
-function isShiftEnterCsi(event) {
-	const seq = event.sequence ?? ''
-	const code = event.code ?? ''
-	if (/13;2[~u$^]/.test(seq) || /13;2[~u$^]/.test(code)) return true
-	if (SHIFT_ENTER_CSI.test(seq)) return true
-	if (event.code === '[13~' && event.shiftKey) return true
-	if (event.key === 'f3' && event.shiftKey) return true
-	return false
-}
-
-/**
- * 过滤 IME 切换等产生的无效按键（避免吞掉后续真实按键）。
- * @param {KeyEvent} event - 按键事件。
- * @returns {boolean} 是否应忽略。
- */
-function isImeNoise(event) {
-	if (event.char === '\x00') return true
-	if (event.key === 'undefined' && !event.char) return true
-	return false
-}
+import {
+	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON, CLOSE_CHARS, OPEN_TO_CLOSE, PASTE_END, PASTE_START,
+	charAt, charBefore, deleteWordBackward, deleteWordForward,
+	isImeNoise, isShiftEnterCsi, kittyKeyAction,
+	nextWordBoundary, normalizePaste, prevWordBoundary,
+} from './keys.mjs'
+import { geti18n } from './locale.mjs'
+import {
+	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_LINE,
+	INPUT_PAD_LEFT, INPUT_PAD_RIGHT, LEVEL_PREFIX_COLORS, MIN_INPUT_ROWS,
+	SCROLL_REGION_RESET, THEME,
+	countInputLines, cursorTo, getInputView, getLayout, highlightInputLines,
+	inputLinePrefix, plainOffsetToRowCol, renderBottomBorder, renderScrollbarCell,
+	renderTopBorder, resolveInputRows, rowColToPlainOffset, textWidthBefore, truncateByWidth,
+} from './render.mjs'
 
 /**
  * @typedef {object} InteractiveViewer
@@ -137,257 +39,7 @@ function isImeNoise(event) {
  */
 
 /**
- * @typedef {object} TerminalLayout
- * @property {number} cols - 列宽。
- * @property {number} rows - 行高。
- * @property {number} scrollBottom - 日志滚动区末行（含）。
- * @property {number} sepRow - 分隔线行号。
- * @property {number} inputStart - 输入区首行。
- * @property {number} inputRows - 输入区行数。
- */
-
-/**
- * 输入文本占用的逻辑行数（空输入为 1 行）。
- * @param {string} text - 纯文本。
- * @returns {number} 行数（至少 1）。
- */
-function countInputLines(text) {
-	return Math.max(MIN_INPUT_ROWS, text.split('\n').length)
-}
-
-/**
- * 当前终端允许的最大输入行数（不超过界面下半，含分隔线）。
- * @param {number} rows - 终端总行数。
- * @returns {number} 最大输入行数。
- */
-function maxInputRowsForTerminal(rows) {
-	return Math.max(MIN_INPUT_ROWS, Math.floor(rows / 2))
-}
-
-/**
- * 按内容与终端高度解析输入区行数。
- * @param {string} text - 纯文本。
- * @returns {number} 实际使用的输入行数。
- */
-function resolveInputRows(text) {
-	const rows = process.stdout.rows || 24
-	return Math.min(maxInputRowsForTerminal(rows), countInputLines(text))
-}
-
-/**
- * 截断一行至终端可见宽度（粗略剥离 ANSI 后切分）。
- * @param {string} text - 含 ANSI 的文本。
- * @param {number} maxCols - 列宽上限。
- * @returns {string} 截断后的文本。
- */
-function truncateVisible(text, maxCols) {
-	const plain = text.replace(ANSI_ESCAPE, '')
-	if (plain.length <= maxCols) return text
-	return plain.slice(0, maxCols)
-}
-
-/**
- * 当前终端布局：上方 `scrollBottom` 行为日志滚动区，其下为分隔线 + REPL。
- * @param {number} inputRows - 输入区行数。
- * @returns {TerminalLayout} 列宽、行高与分区行号。
- */
-function getLayout(inputRows) {
-	const cols = process.stdout.columns || 80
-	const rows = process.stdout.rows || 24
-	const clamped = Math.min(inputRows, maxInputRowsForTerminal(rows))
-	const scrollBottom = Math.max(1, rows - clamped - 1)
-	return {
-		cols, rows, scrollBottom,
-		sepRow: scrollBottom + 1,
-		inputStart: scrollBottom + 2,
-		inputRows: clamped,
-	}
-}
-
-/**
- * 将纯文本偏移转为行/列（0-based）。
- * @param {string} text - 纯文本。
- * @param {number} offset - 字节偏移。
- * @returns {{ line: number, col: number }} 光标所在行与列。
- */
-function plainOffsetToRowCol(text, offset) {
-	const clamped = Math.max(0, Math.min(offset, text.length))
-	const before = text.slice(0, clamped)
-	const lines = before.split('\n')
-	return { line: lines.length - 1, col: lines[lines.length - 1].length }
-}
-
-/**
- * 行/列转纯文本偏移。
- * @param {string} text - 纯文本。
- * @param {number} line - 行号（0-based）。
- * @param {number} col - 列号（0-based）。
- * @returns {number} 字节偏移。
- */
-function rowColToPlainOffset(text, line, col) {
-	const lines = text.split('\n')
-	let offset = 0
-	for (let i = 0; i < line; i++) offset += lines[i].length + 1
-	offset += Math.min(col, lines[line]?.length ?? 0)
-	return offset
-}
-
-/**
- * 规范化粘贴文本。
- * @param {string} text - 原始剪贴板文本。
- * @returns {string} 规范化后的文本。
- */
-function normalizePaste(text) {
-	return text.replace(/\r\n?/g, '\n').replaceAll('\x1b', '')
-}
-
-/**
- * 绘制输入区右侧模拟滚动条的一格。
- * @param {number} rowIndex - 视口内行索引。
- * @param {number} viewportRows - 视口行数。
- * @param {number} totalLines - 总行数。
- * @param {number} scrollTop - 视口首行索引。
- * @returns {string} 含 ANSI 的单字符。
- */
-function renderScrollbarCell(rowIndex, viewportRows, totalLines, scrollTop) {
-	if (totalLines <= viewportRows) return ' '
-	const thumbRows = Math.max(1, Math.round(viewportRows * viewportRows / totalLines))
-	const maxScroll = totalLines - viewportRows
-	const thumbStart = maxScroll > 0
-		? Math.round(scrollTop / maxScroll * (viewportRows - thumbRows))
-		: 0
-	if (rowIndex >= thumbStart && rowIndex < thumbStart + thumbRows)
-		return '\x1b[90m█\x1b[0m'
-	return '\x1b[90m│\x1b[0m'
-}
-
-/**
- * 逐行语法高亮，避免 ANSI 码干扰光标列计算。
- * @param {string} text - 纯文本输入。
- * @param {(code: string) => string} highlightJs - 高亮函数。
- * @returns {string} 高亮后的多行文本。
- */
-function highlightInputLines(text, highlightJs) {
-	if (!text) return ''
-	return text.split('\n').map(line => highlightJs(line)).join('\n')
-}
-
-/**
- * 计算输入区可见行与光标位置（顶对齐，超出时随光标滚动视口）。
- * @param {string} highlighted - 高亮后的输入全文。
- * @param {number} inputStart - 输入区首行行号。
- * @param {number} cursorLine - 光标所在行（0-based）。
- * @param {number} cursorCol - 光标所在列（0-based）。
- * @param {number} inputRows - 输入区可见行数。
- * @param {number} scrollTop - 视口首行索引。
- * @returns {{ visible: string[], cursorRow: number, cursorCol: number, scrollTop: number }} 可见行、光标与滚动位置。
- */
-function getInputView(highlighted, inputStart, cursorLine, cursorCol, inputRows, scrollTop) {
-	const lines = highlighted.split('\n')
-	const totalLines = lines.length
-	const maxScroll = Math.max(0, totalLines - inputRows)
-	let startLine = Math.max(0, Math.min(scrollTop, maxScroll))
-	if (cursorLine < startLine) startLine = cursorLine
-	if (cursorLine >= startLine + inputRows) startLine = cursorLine - inputRows + 1
-	startLine = Math.max(0, Math.min(startLine, maxScroll))
-
-	/** @type {string[]} */
-	let visible
-	if (totalLines > inputRows)
-		visible = lines.slice(startLine, startLine + inputRows)
-	else {
-		visible = [...lines]
-		while (visible.length < inputRows) visible.push('')
-	}
-
-	const cursorRow = inputStart + (cursorLine - startLine)
-	return { visible, cursorRow, cursorCol: 1 + cursorCol, scrollTop: startLine }
-}
-
-/**
- * 向左跳到词界（readline 风格：`\w` 为词字符）。
- * @param {string} text - 纯文本。
- * @param {number} pos - 当前偏移。
- * @returns {number} 新偏移。
- */
-function prevWordBoundary(text, pos) {
-	if (pos <= 0) return 0
-	let i = pos - 1
-	while (i > 0 && /\s/.test(text[i])) i--
-	if (WORD_CHAR.test(text[i])) {
-		while (i > 0 && WORD_CHAR.test(text[i - 1])) i--
-		return i
-	}
-	while (i > 0 && !/\s/.test(text[i - 1])) i--
-	return i
-}
-
-/**
- * 向右跳到词界。
- * @param {string} text - 纯文本。
- * @param {number} pos - 当前偏移。
- * @returns {number} 新偏移。
- */
-function nextWordBoundary(text, pos) {
-	if (pos >= text.length) return text.length
-	let i = pos
-	if (WORD_CHAR.test(text[i]))
-		while (i < text.length && WORD_CHAR.test(text[i])) i++
-	else if (!/\s/.test(text[i]))
-		while (i < text.length && !/\s/.test(text[i])) i++
-	while (i < text.length && /\s/.test(text[i])) i++
-	return i
-}
-
-/**
- * 从光标处向前删除一个词。
- * @param {string} text - 纯文本。
- * @param {number} pos - 当前偏移。
- * @returns {{ text: string, pos: number }} 新文本与光标。
- */
-function deleteWordForward(text, pos) {
-	const end = nextWordBoundary(text, pos)
-	return { text: text.slice(0, pos) + text.slice(end), pos }
-}
-
-/**
- * 从光标处向后删除一个词。
- * @param {string} text - 纯文本。
- * @param {number} pos - 当前偏移。
- * @returns {{ text: string, pos: number }} 新文本与光标。
- */
-function deleteWordBackward(text, pos) {
-	const start = prevWordBoundary(text, pos)
-	return { text: text.slice(0, start) + text.slice(pos), pos: start }
-}
-
-/**
- * 取偏移前的最后一个 Unicode 字符。
- * @param {string} text - 纯文本。
- * @param {number} offset - 光标偏移。
- * @returns {string | null} 前一字符，无则 `null`。
- */
-function charBefore(text, offset) {
-	if (offset <= 0) return null
-	const head = text.slice(0, offset)
-	const code = head.codePointAt(head.length - 1)
-	return code === undefined ? null : String.fromCodePoint(code)
-}
-
-/**
- * 取偏移处 Unicode 字符。
- * @param {string} text - 纯文本。
- * @param {number} offset - 光标偏移。
- * @returns {string | null} 当前字符，无则 `null`。
- */
-function charAt(text, offset) {
-	if (offset >= text.length) return null
-	const code = text.codePointAt(offset)
-	return code === undefined ? null : String.fromCodePoint(code)
-}
-
-/**
- * 创建 Cliffy 交互界面（终端滚动日志 + 固定 REPL），不接管主循环。
+ * 创建交互界面（终端滚动日志 + 固定 REPL 输入框），不接管主循环。
  * @param {object} root0 - 选项。
  * @param {number} root0.port - fount 监听端口（用于 `/api/eval`）。
  * @param {() => Promise<string>} root0.generateLogo - 生成 ASCII logo。
@@ -399,6 +51,8 @@ function charAt(text, offset) {
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
 	const EVAL_URL = `http://127.0.0.1:${port}/api/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
+	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline')
+
 	let input = ''
 	let cursor = 0
 	/** @type {number | null} 正在浏览的历史索引；`null` 表示编辑当前草稿。 */
@@ -420,9 +74,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let replTornDown = false
 	/** 交互界面已激活（滚动区 + REPL）；连接就绪前勿动终端，避免光标跳到 scrollBottom 撑出大片空白。 */
 	let activated = false
-	/** REPL 键盘循环是否已启动。 */
+	/** REPL 键盘监听是否已启动。 */
 	let inputLoopStarted = false
-	/** 中断 REPL 键盘循环（tearDown 时置位）。 */
+	/** 停止处理 stdin（tearDown 时置位）。 */
 	let stdinReadAbort = false
 
 	/** @type {(code: string) => string} */
@@ -438,6 +92,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		highlightJs = wrapHighlight(highlight)
 	}).catch(() => { /* 降级为纯文本 */ })
 
+	// #region 终端模式与生命周期
+
 	/**
 	 * @returns {string} 仅设置 DECSTBM 滚动区（不移动光标，避免激活前/重绘时撑出空白行）。
 	 */
@@ -447,7 +103,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 将上方区域设为 DECSTBM 滚动区，新日志在此滚动，底部输入区不受影响。
+	 * 将上方区域设为 DECSTBM 滚动区，新日志在此滚动，底部输入框不受影响。
 	 * @returns {void}
 	 */
 	function applyScrollRegion() {
@@ -455,54 +111,48 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.write(setScrollRegionSeq())
 	}
 
-	/**
-	 * 输入区行数变化时，擦除新旧 REPL 占用的全部终端行（含分隔线）。
-	 * @param {number} prevRows - 先前输入行数。
-	 * @param {number} nextRows - 新输入行数。
-	 * @returns {string} ANSI 擦除序列。
-	 */
-	function eraseReplBand(prevRows, nextRows) {
-		if (prevRows === nextRows) return ''
-		const oldLayout = getLayout(prevRows)
-		const newLayout = getLayout(nextRows)
-		const { cols } = newLayout
-		const blank = ' '.repeat(cols)
-		const firstRow = Math.min(oldLayout.sepRow, newLayout.sepRow)
-		const lastRow = Math.max(
-			oldLayout.inputStart + prevRows - 1,
-			newLayout.inputStart + nextRows - 1,
-		)
-		let out = ''
-		for (let row = firstRow; row <= lastRow; row++)
-			out += ansi.cursorTo(1, row).toString() + ansi.eraseLine()
-				+ ansi.cursorTo(1, row).text(blank).toString()
-		return out
-	}
+	/** @type {((chunk: Uint8Array) => void) | null} */
+	let stdinListener = null
+	const stdinDecoder = new TextDecoder()
 
 	/**
-	 * 开启 stdin raw 模式（仅一次，循环内不反复开关，避免 cooked 模式吃键）。
+	 * 开启 stdin raw 模式并持续监听。
+	 *
+	 * 必须走 `process.stdin`（node:tty）而非 `Deno.stdin.read`：Windows 下后者按控制台
+	 * 代码页读取，IME / 非 ASCII 输入会变成无效 UTF-8（`�`）；node:tty 路径经
+	 * `ReadConsoleInputW` 正确编码为 UTF-8，并把功能键映射成 VT 序列。
 	 * @returns {void}
 	 */
-	function enableRawStdin() {
-		try { setRaw(true) } catch { /* ignore */ }
-		if (!IS_DENO) {
-			try { process.stdin.setRawMode?.(true) } catch { /* ignore */ }
-			try { process.stdin.resume?.() } catch { /* ignore */ }
+	function startInputLoop() {
+		try { process.stdin.setRawMode?.(true) } catch { /* 非 TTY */ }
+		process.stdin.resume()
+		/**
+		 * @param {Uint8Array} chunk - stdin 原始数据块。
+		 * @returns {void}
+		 */
+		stdinListener = chunk => {
+			if (replTornDown || stdinReadAbort) return
+			handleStdinChunk(stdinDecoder.decode(chunk, { stream: true }))
 		}
+		process.stdin.on('data', stdinListener)
 	}
 
 	/**
-	 * 恢复 stdin 为 cooked 模式。
+	 * 恢复 stdin 为 cooked 模式并停止监听。
 	 * @returns {void}
 	 */
 	function restoreStdin() {
 		stdinReadAbort = true
-		try { setRaw(false) } catch { /* ignore */ }
-		if (!IS_DENO) try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
+		if (stdinListener) {
+			process.stdin.off('data', stdinListener)
+			stdinListener = null
+		}
+		try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
+		try { process.stdin.pause() } catch { /* ignore */ }
 	}
 
 	/**
-	 * 退出时擦除 REPL 区：恢复全屏滚动，覆写分界线与输入行，归还终端给 shell。
+	 * 退出时擦除 REPL 输入框：恢复全屏滚动，光标回到日志末尾，归还终端给 shell。
 	 * @returns {void}
 	 */
 	function tearDownRepl() {
@@ -511,13 +161,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		pendingInputRedraw = false
 		if (!activated) return
 		restoreStdin()
-		const { rows, sepRow, inputStart } = getLayout(renderedInputRows)
-		const lastReplRow = inputStart + renderedInputRows - 1
+		const { boxTop, boxBottom } = getLayout(renderedInputRows)
 		let out = ANSI_RESET
-		for (let row = sepRow; row <= lastReplRow; row++)
-			out += `\x1b[${row};1H\x1b[2K`
-		out += BRACKETED_PASTE_OFF + SCROLL_REGION_RESET + `\x1b[1;${rows}r`
-		out += `\x1b[${rows};1H\x1b[2K` + ansi.cursorShow()
+		for (let row = boxTop; row <= boxBottom; row++)
+			out += cursorTo(1, row) + ERASE_LINE
+		out += BRACKETED_PASTE_OFF + SCROLL_REGION_RESET
+		out += CURSOR_RESTORE + ANSI_RESET + CURSOR_SHOW
 		process.stdout.write(out)
 	}
 
@@ -527,64 +176,106 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	if (process.stdout.isTTY)
 		process.stdout.on('resize', () => {
 			if (replTornDown || !activated) return
-			applyScrollRegion()
+			// 终端高度变化后，DECSC 保存的日志位置可能落入输入框带：
+			// 先放开滚动区，用 LF 下探-回退把日志末尾钳回滚动区内，再恢复分区。
+			const clamp = getLayout(resolveInputRows(input)).inputRows + 2
+			process.stdout.write(
+				SCROLL_REGION_RESET + CURSOR_RESTORE
+				+ '\n'.repeat(clamp) + `\x1b[${clamp}A` + CURSOR_SAVE
+				+ setScrollRegionSeq(),
+			)
 			scheduleInputRedraw()
 		})
 
 	/**
-	 * 首次写入或 WebSocket 就绪时激活交互界面：清屏、设滚动区、启动 REPL。
+	 * 首次写入或 WebSocket 就绪时激活交互界面：不清屏，从当前光标处继续输出（与纯文本模式一致）。
+	 * 先垫出输入框所需行数（光标贴底时让终端滚动），再把光标移回日志续写处并 DECSC 保存——
+	 * 此后日志位置始终经 DECSC/DECRC 在重绘间传递。
 	 * @returns {void}
 	 */
 	function ensureActivated() {
 		if (replTornDown || activated) return
 		activated = true
-		if (process.stdout.isTTY) process.stdout.write('\x1b[2J\x1b[1;1H')
-		process.stdout.write(BRACKETED_PASTE_ON)
+		const reserve = getLayout(resolveInputRows(input)).inputRows + 2
+		process.stdout.write('\n'.repeat(reserve) + `\x1b[${reserve}A\r` + CURSOR_SAVE + BRACKETED_PASTE_ON)
 		applyScrollRegion()
 		if (!inputLoopStarted) {
 			inputLoopStarted = true
-			runInputLoop().catch(onFatal)
+			startInputLoop()
 		}
 		scheduleInputRedraw()
 	}
 
+	// #endregion
+
+	// #region 绘制
+
 	/**
-	 * 仅重绘底部分隔线与 REPL 输入区。
+	 * 输入区行数变化时，擦除新旧输入框占用的全部终端行。
+	 * @param {number} prevRows - 先前输入行数。
+	 * @param {number} nextRows - 新输入行数。
+	 * @returns {string} ANSI 擦除序列。
+	 */
+	function eraseReplBand(prevRows, nextRows) {
+		if (prevRows === nextRows) return ''
+		const oldLayout = getLayout(prevRows)
+		const newLayout = getLayout(nextRows)
+		const firstRow = Math.min(oldLayout.boxTop, newLayout.boxTop)
+		const lastRow = Math.max(oldLayout.boxBottom, newLayout.boxBottom)
+		let out = ''
+		for (let row = firstRow; row <= lastRow; row++)
+			out += cursorTo(1, row) + ERASE_LINE
+		return out
+	}
+
+	/**
+	 * 仅重绘底部 REPL 输入框（上边框 + 输入行 + 下边框）。
 	 * @returns {void}
 	 */
 	function redrawInputArea() {
 		if (replTornDown) return
 		const inputRows = resolveInputRows(input)
 		const prevRows = renderedInputRows
-		const { cols, sepRow, inputStart } = getLayout(inputRows)
-		const contentCols = Math.max(1, cols - 1)
+		const { cols, boxTop, inputStart, boxBottom } = getLayout(inputRows)
+		const contentCols = Math.max(1, cols - INPUT_PAD_LEFT - INPUT_PAD_RIGHT)
 		const totalLines = countInputLines(input)
 		let out = ''
-		if (inputRows !== prevRows)
+		if (inputRows !== prevRows) {
+			if (inputRows > prevRows) {
+				// 输入框长高时滚动区随之变矮：趁旧滚动区还生效，用 LF 下探-回退把日志上滚，
+				// 防止日志末尾落入新输入框带、后续 DECRC 把日志写进框里。
+				const delta = inputRows - prevRows
+				out += CURSOR_RESTORE + '\n'.repeat(delta) + `\x1b[${delta}A` + CURSOR_SAVE
+			}
 			out += eraseReplBand(prevRows, inputRows) + setScrollRegionSeq()
-		out += ansi.cursorHide()
+		}
+		out += CURSOR_HIDE
 
-		const label = ' js '
-		const ruleLen = Math.max(0, contentCols - label.length)
-		out += ansi.cursorTo(1, sepRow).toString() + ansi.eraseLine()
-			+ ansi.cursorTo(1, sepRow).text(`\x1b[36m${'─'.repeat(ruleLen)}${label}\x1b[0m`).toString()
-			+ ansi.cursorTo(cols, sepRow).text(' ').toString()
+		out += cursorTo(1, boxTop) + ERASE_LINE + renderTopBorder(cols, evalInFlight)
 
-		const { line, col } = plainOffsetToRowCol(input, cursor)
+		const { line: cursorLine, col: cursorCol } = plainOffsetToRowCol(input, cursor)
 		const view = getInputView(
-			highlightInputLines(input, highlightJs), inputStart, line, col, inputRows, inputScrollTop,
+			highlightInputLines(input, highlightJs), inputStart, cursorLine, inputRows, inputScrollTop,
 		)
 		inputScrollTop = view.scrollTop
-		const { visible, cursorRow, cursorCol } = view
 		for (let i = 0; i < inputRows; i++) {
 			const row = inputStart + i
-			const bar = renderScrollbarCell(i, inputRows, totalLines, inputScrollTop)
-			out += ansi.cursorTo(1, row).toString() + ansi.eraseLine()
-				+ ansi.cursorTo(1, row).text(truncateVisible(visible[i] ?? '', contentCols)).toString()
-				+ ansi.cursorTo(cols, row).text(bar).toString()
+			const logicalLine = view.scrollTop + i
+			out += cursorTo(1, row) + ERASE_LINE
+				+ `${THEME.frame}│ ${ANSI_RESET}`
+				+ inputLinePrefix(logicalLine, totalLines)
+				+ truncateByWidth(view.visible[i] ?? '', contentCols)
+				+ cursorTo(cols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
 		}
 
-		out += ansi.cursorTo(cursorCol, cursorRow).toString() + ansi.cursorShow()
+		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, replHint)
+
+		const cursorLineText = input.split('\n')[cursorLine] ?? ''
+		const screenCol = Math.min(
+			INPUT_PAD_LEFT + 1 + textWidthBefore(cursorLineText, cursorCol),
+			Math.max(1, cols - INPUT_PAD_RIGHT),
+		)
+		out += cursorTo(screenCol, view.cursorRow) + CURSOR_SHOW
 		process.stdout.write(out)
 		renderedInputRows = inputRows
 	}
@@ -603,17 +294,20 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 向日志滚动区追加输出，再恢复底部输入区。
+	 * 向日志滚动区追加输出（DECRC 回到上次日志末尾，写完 DECSC 保存），再恢复底部输入框。
 	 * @param {string} text - 原始 ANSI 文本。
 	 * @returns {void}
 	 */
 	function writeLog(text) {
 		if (replTornDown || !text) return
 		ensureActivated()
-		const { scrollBottom } = getLayout(resolveInputRows(input))
-		process.stdout.write(ansi.cursorTo(1, scrollBottom).toString() + text)
+		process.stdout.write(CURSOR_RESTORE + text + CURSOR_SAVE)
 		scheduleInputRedraw()
 	}
+
+	// #endregion
+
+	// #region 求值
 
 	/**
 	 * 渲染 wire 求值载荷为 ANSI 文本。
@@ -623,16 +317,16 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	async function renderEvalPayload(payload) {
 		let text = ''
 		/** @returns {Promise<null>} 本地 REPL 不请求远程展开。 */
-		async function requestExpand() { return null }
+		function requestExpand() { return Promise.resolve(null) }
 		const wireCtx = { requestExpand, supportsAnsi: true }
 		for (const entryJson of payload.outputEntries ?? []) {
 			const entry = new WireLogEntry(entryJson, wireCtx)
 			text += await entry.renderString({ indent: '  ', maxDepth: 5 })
 		}
 		if (payload.result !== undefined)
-			text += `\x1b[36m←\x1b[0m ${renderAnsi([{ kind: 'value', snapshot: payload.result }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
+			text += `${THEME.accent}←${ANSI_RESET} ${renderAnsi([{ kind: 'value', snapshot: payload.result }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
 		if (payload.error !== undefined)
-			text += `\x1b[31m✖\x1b[0m ${renderAnsi([{ kind: 'value', snapshot: payload.error }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
+			text += `${THEME.error}✖${ANSI_RESET} ${renderAnsi([{ kind: 'value', snapshot: payload.error }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
 		return text
 	}
 
@@ -649,12 +343,15 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		inputScrollTop = 0
 		historyBrowseIndex = null
 		historyDraft = ''
-		// 多行提交后输入区缩行时，须先同步重绘再 writeLog，否则异步 eraseReplBand 会擦掉刚写入的 `>` 行。
-		redrawInputArea()
-		if (!code.trim()) return
+		if (!code.trim()) {
+			redrawInputArea()
+			return
+		}
 
-		writeLog(`\x1b[90m>\x1b[0m ${highlightInputLines(code, highlightJs).replace(/\n/g, '\n  ')}\n`)
 		evalInFlight = true
+		// 多行提交后输入区缩行时，须先同步重绘再 writeLog，否则异步 eraseReplBand 会擦掉刚写入的回显行。
+		redrawInputArea()
+		writeLog(`${THEME.accent}❯${ANSI_RESET} ${highlightInputLines(code, highlightJs).replace(/\n/g, '\n  ')}\n`)
 		try {
 			const res = await fetch(EVAL_URL, {
 				method: 'POST',
@@ -663,16 +360,21 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				signal: AbortSignal.timeout(120_000),
 			})
 			if (!res.ok) {
-				writeLog(`\x1b[31m[eval ${res.status}] ${await res.text()}\x1b[0m\n`)
+				writeLog(`${THEME.error}[eval ${res.status}] ${await res.text()}${ANSI_RESET}\n`)
 				return
 			}
 			writeLog(await renderEvalPayload(await res.json()))
 		} catch (err) {
-			writeLog(`\x1b[31m[eval] ${err?.message ?? err}\x1b[0m\n`)
+			writeLog(`${THEME.error}[eval] ${err?.message ?? err}${ANSI_RESET}\n`)
 		} finally {
 			evalInFlight = false
+			scheduleInputRedraw()
 		}
 	}
+
+	// #endregion
+
+	// #region 输入编辑
 
 	/**
 	 * 退出历史浏览，恢复为编辑当前行。
@@ -755,13 +457,11 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (!before) return
 		const beforeLen = before.length
 		const after = charAt(input, cursor)
-		if (after && OPEN_TO_CLOSE.get(before) === after) {
+		if (after && OPEN_TO_CLOSE.get(before) === after)
 			input = input.slice(0, cursor - beforeLen) + input.slice(cursor + after.length)
-			cursor -= beforeLen
-		} else {
+		else
 			input = input.slice(0, cursor - beforeLen) + input.slice(cursor)
-			cursor -= beforeLen
-		}
+		cursor -= beforeLen
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
 	}
@@ -774,6 +474,20 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (cursor >= input.length) return
 		exitHistoryBrowse()
 		input = input.slice(0, cursor) + input.slice(cursor + 1)
+		scheduleInputRedraw()
+	}
+
+	/**
+	 * 用词界删除结果更新输入（无变化则忽略）。
+	 * @param {{ text: string, pos: number }} next - 新文本与光标。
+	 * @returns {void}
+	 */
+	function applyWordDelete(next) {
+		if (next.text === input) return
+		exitHistoryBrowse()
+		input = next.text
+		cursor = next.pos
+		syncInputScrollToCursor()
 		scheduleInputRedraw()
 	}
 
@@ -898,10 +612,14 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		scheduleInputRedraw()
 	}
 
+	// #endregion
+
+	// #region 按键分发
+
 	/**
-	 * Enter / Shift+Enter：Cliffy 将 `\r` 映射为 `return`、`\n` 映射为 `enter`。
+	 * Enter / Shift+Enter：keycode 将 `\r` 映射为 `return`、`\n` 映射为 `enter`。
 	 * 部分终端 Enter 发送 `\r\n` 两键，需合并为提交；单独 `\n` 或 Shift+Enter 为换行。
-	 * @param {KeyEvent} event - 按键事件。
+	 * @param {import('./keys.mjs').KeyEvent} event - 按键事件。
 	 * @returns {void}
 	 */
 	function handleReturnOrEnter(event) {
@@ -926,7 +644,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 
 	/**
 	 * 处理单次按键。
-	 * @param {KeyEvent} event - 按键事件。
+	 * @param {import('./keys.mjs').KeyEvent} event - 按键事件。
 	 * @returns {void}
 	 */
 	function handleKey(event) {
@@ -944,13 +662,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 		if (kitty === 'ctrlBackspace') {
 			pendingReturnSubmit = false
-			const next = deleteWordBackward(input, cursor)
-			if (next.text !== input) {
-				exitHistoryBrowse()
-				input = next.text
-				cursor = next.pos
-				scheduleInputRedraw()
-			}
+			applyWordDelete(deleteWordBackward(input, cursor))
 			return
 		}
 		if (kitty === 'interrupt' || (event.ctrlKey && event.key === 'c')) {
@@ -1012,31 +724,13 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'backspace') {
-			if (event.ctrlKey) {
-				const next = deleteWordBackward(input, cursor)
-				if (next.text !== input) {
-					exitHistoryBrowse()
-					input = next.text
-					cursor = next.pos
-					scheduleInputRedraw()
-				}
-				return
-			}
-			deleteBeforeCursor()
+			if (event.ctrlKey) applyWordDelete(deleteWordBackward(input, cursor))
+			else deleteBeforeCursor()
 			return
 		}
 		if (event.key === 'delete') {
-			if (event.ctrlKey) {
-				const next = deleteWordForward(input, cursor)
-				if (next.text !== input) {
-					exitHistoryBrowse()
-					input = next.text
-					cursor = next.pos
-					scheduleInputRedraw()
-				}
-				return
-			}
-			deleteAtCursor()
+			if (event.ctrlKey) applyWordDelete(deleteWordForward(input, cursor))
+			else deleteAtCursor()
 			return
 		}
 		if (event.char && event.char >= ' ' && !event.ctrlKey && !event.metaKey)
@@ -1105,27 +799,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 	}
 
-	/**
-	 * 后台 REPL 键盘循环：保持 raw 模式、单读者直读 stdin。
-	 * 勿用 Cliffy keypress：其每读 8 字节就开关一次 raw，且同批次解析出的多个按键要等下次
-	 * 读取才出队——快速输入/`\r\n` 会丢键、回车发不出去。
-	 * @returns {Promise<void>}
-	 */
-	async function runInputLoop() {
-		stdinReadAbort = false
-		enableRawStdin()
-		const buffer = new Uint8Array(4096)
-		const decoder = new TextDecoder()
-		while (!replTornDown && !stdinReadAbort) {
-			let bytesRead
-			try {
-				bytesRead = await readStdin(buffer)
-			} catch { break }
-			if (bytesRead === null) break
-			if (replTornDown || stdinReadAbort) break
-			handleStdinChunk(decoder.decode(buffer.subarray(0, bytesRead), { stream: true }))
-		}
-	}
+	// #endregion
+
+	// #region LogSink 接口
 
 	/**
 	 * 写入一条 wire 日志（`await entry.renderString()`，与进程内 {@link LogEntry#toString} 同源 ANSI 管线）。
@@ -1152,9 +828,10 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	async function clear() {
 		ensureActivated()
 		const { scrollBottom } = getLayout(resolveInputRows(input))
-		let out = `\x1b[1;${scrollBottom}r` + ansi.cursorTo(1, 1).toString()
+		let out = `\x1b[1;${scrollBottom}r`
 		for (let row = 1; row <= scrollBottom; row++)
-			out += ansi.cursorTo(1, row).toString() + ansi.eraseLine()
+			out += cursorTo(1, row) + ERASE_LINE
+		out += cursorTo(1, 1) + CURSOR_SAVE
 		process.stdout.write(out)
 		writeLog(await generateLogo())
 		onClearComplete?.()
@@ -1178,6 +855,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		ensureActivated()
 		scheduleInputRedraw()
 	}
+
+	// #endregion
 
 	return { writeEntry, appendText, clear, showInitialInfo, focusInput, tearDown: tearDownRepl }
 }

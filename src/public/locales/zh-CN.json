@@ -109,6 +109,9 @@
 			}
 		},
 		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登录",
+		"logViewer": {
+			"replHint": "enter 运行 · shift+enter 换行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",

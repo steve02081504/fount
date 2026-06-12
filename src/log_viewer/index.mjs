@@ -23,6 +23,7 @@ import { setWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { createInteractiveViewer } from './interactive.mjs'
+import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
 
 setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(50)
@@ -46,14 +47,6 @@ function readServerPort() {
 const PORT = readServerPort()
 const PING_URL = `http://127.0.0.1:${PORT}/api/ping`
 const WS_URL = `ws://127.0.0.1:${PORT}/ws/logs`
-
-const ANSI_RESET = '\x1b[0m'
-const LEVEL_PREFIX_COLORS = {
-	error: '\x1b[31m',
-	warn: '\x1b[33m',
-	info: '\x1b[36m',
-	debug: '\x1b[2m',
-}
 
 /**
  * 顶层错误兜底（供异步日志写入复用）。
