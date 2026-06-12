@@ -2482,6 +2482,7 @@
 	},
 	"log_viewer": {
 		"title": "Logs",
+		"description": "View live fount server logs and run a JavaScript REPL in the browser.",
 		"logs": {
 			"openSourceFailed": "Could not open source file: ${message}",
 			"toolbar": {

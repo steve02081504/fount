@@ -2496,6 +2496,7 @@
 	},
 	"log_viewer": {
 		"title": "日志终端",
+		"description": "查看 fount 实时服务器日志，并在浏览器中运行 JavaScript REPL。",
 		"connectionError": "无法连接日志服务。请在本机访问或登录后重试。",
 		"logs": {
 			"openSourceFailed": "无法在编辑器中打开源码：${message}",
