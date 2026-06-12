@@ -4,7 +4,6 @@
  *
  * 按键解析的纯函数见 {@link module:keys}，渲染几何与绘制见 {@link module:render}。
  */
-import { appendFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -96,12 +95,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let renderedCompletionRows = 0
 	/** 输入框上边框锚定行（`null` 表示贴底）。 */
 	let boxAnchorTop = null
-	/** 上次绘制时光标在框带内的行偏移（自框带顶起算，含补全带与上边框）。 */
-	let renderedCursorBandRow = 1
-	/** 上次绘制时光标的终端列（cell）。 */
-	let renderedCursorCol = 1
-	/** @type {((row: number) => void)[]} 等待 CPR（光标位置报告）回包的回调。 */
-	const cprResolvers = []
 	/** resize 处理进行中（期间日志写入进缓冲、跳过常规重绘）。 */
 	let resizeInFlight = false
 	/** resize 处理期间又收到 resize 事件，需再跑一轮。 */
@@ -313,25 +306,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.write(setScrollRegionSeq())
 	}
 
-	/**
-	 * 查询光标当前终端行号（CPR，`CSI 6n`）；回包由 {@link handleStdinChunk} 剥离。
-	 * @param {number} [timeoutMs] - 超时毫秒数，超时返回 `null`。
-	 * @returns {Promise<number | null>} 1-based 行号。
-	 */
-	function queryCursorRow(timeoutMs = 200) {
-		return new Promise(resolve => {
-			const timer = setTimeout(() => {
-				const i = cprResolvers.indexOf(handler)
-				if (i >= 0) cprResolvers.splice(i, 1)
-				resolve(null)
-			}, timeoutMs)
-			/** @param {number} row - CPR 报告的行号。 */
-			const handler = row => { clearTimeout(timer); resolve(row) }
-			cprResolvers.push(handler)
-			process.stdout.write('\x1b[6n')
-		})
-	}
-
 	/** @type {((chunk: Uint8Array) => void) | null} */
 	let stdinListener = null
 	const stdinDecoder = new TextDecoder()
@@ -400,10 +374,23 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.on('resize', () => { handleResize() })
 
 	/**
+	 * reflow 后旧输入框带占用的物理行数：每行满屏宽，按 `ceil(旧宽/新宽)` 折行。
+	 * @param {number} oldCols - 绘制时列宽。
+	 * @param {number} newCols - 当前列宽。
+	 * @param {number} logicalBandRows - 框带逻辑行数（补全 + 上下边框 + 输入行）。
+	 * @param {number} terminalRows - 终端行高。
+	 * @returns {number} 自屏底向上需擦除的行数。
+	 */
+	function replReflowBandRows(oldCols, newCols, logicalBandRows, terminalRows) {
+		const wrapFactor = Math.ceil(oldCols / newCols)
+		return Math.min(logicalBandRows * wrapFactor, terminalRows)
+	}
+
+	/**
 	 * 串行化 resize 处理：进行期间日志写入缓冲，结束后统一回放并重绘。
 	 * @returns {void}
 	 */
-	async function handleResize() {
+	function handleResize() {
 		if (replTornDown || !activated) return
 		if (resizeInFlight) {
 			resizeAgain = true
@@ -414,7 +401,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		try {
 			do {
 				resizeAgain = false
-				await performResize()
+				performResize()
 			} while (resizeAgain && !replTornDown)
 		} finally {
 			resizeInFlight = false
@@ -427,29 +414,23 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	/**
 	 * 处理一次终端尺寸变化。
 	 *
-	 * reflow 后唯一可靠的地标是光标——终端带着光标所在行移动，而光标停在输入框内。
-	 * 趁光标未动先查 CPR 拿到其真实行号（`CSI r` 会把光标归位，必须在动滚动区之前）；
-	 * 框带各行均按 `renderedCols` 满宽绘制，变窄时每行软折为 `ceil(旧宽/新宽)` 行，
-	 * 由「CPR 行号 − 光标上方的框带物理行数」反推框带顶，其上一行即日志续写点。
-	 * 把输入框锚定回框带顶原位（不引入任何滚动），擦除旧框带并重绘。
-	 * CPR 超时则退化为贴底重绘。
-	 * @returns {Promise<void>}
+	 * 输入框每行绘制为满屏宽；变窄后整带软折行，物理高度约为
+	 * `框带逻辑行数 × ceil(旧宽/新宽)`。自屏底向上擦除该高度，再把日志续写点设到滚动区末行并保存，
+	 * 贴底重绘输入框。
+	 * @returns {void}
 	 */
-	async function performResize() {
+	function performResize() {
 		if (replTornDown) return
-		const cprRow = await queryCursorRow()
-		if (replTornDown) return
+		boxAnchorTop = null
+		const inputRows = resolveInputRows(input)
 		const rows = process.stdout.rows || 24
 		const cols = process.stdout.columns || 80
-		const wrap = Math.max(1, Math.ceil(renderedCols / cols))
-		boxAnchorTop = cprRow === null
-			? null
-			: Math.max(2, cprRow - renderedCursorBandRow * wrap - Math.floor((renderedCursorCol - 1) / cols))
-		const { scrollBottom, boxTop } = layoutOf(resolveInputRows(input))
-		const eraseFrom = Math.min(boxTop, boxAnchorTop ?? boxTop)
+		const logicalBandRows = renderedInputRows + 2 + renderedCompletionRows
+		const eraseRows = replReflowBandRows(renderedCols, cols, logicalBandRows, rows)
+		const { scrollBottom } = layoutOf(inputRows)
 		let out = SCROLL_REGION_RESET
-		for (let row = eraseFrom; row <= rows; row++)
-			out += cursorTo(1, row) + ERASE_LINE
+		for (let i = 0; i < eraseRows; i++)
+			out += cursorTo(1, rows - i) + ERASE_LINE
 		out += cursorTo(1, scrollBottom) + CURSOR_SAVE + setScrollRegionSeq()
 		process.stdout.write(out)
 		renderedCompletionRows = 0
@@ -567,8 +548,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.write(out)
 		renderedInputRows = inputRows
 		renderedCols = cols
-		renderedCursorBandRow = completionRows + (view.cursorRow - boxTop)
-		renderedCursorCol = screenCol
 	}
 
 	/**
@@ -1092,12 +1071,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function handleStdinChunk(text) {
-		// 仅在有 CPR 等待者时剥离回包，避免误吞同形序列（如 shift+F3 的 `CSI 1;2R`）。
-		if (cprResolvers.length)
-			text = text.replace(/\x1b\[(\d+);\d+R/, (_m, row) => {
-				cprResolvers.shift()?.(Number(row))
-				return ''
-			})
 		let rest = text
 		while (rest) {
 			if (pasteActive) {
