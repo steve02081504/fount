@@ -964,19 +964,19 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			requestCompletion().catch(onFatal)
 			return
 		}
-		if (event.key === 'escape') 
+		if (event.key === 'escape')
 			if (completionActive) {
 				clearCompletion()
 				scheduleInputRedraw()
 				return
 			}
-		
-		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter')) 
+
+		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
 			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
 				acceptCompletion()
 				return
 			}
-		
+
 		const kitty = kittyKeyAction(event)
 		if (kitty === 'newline' || isShiftEnterCsi(event)) {
 			pendingReturnSubmit = false
