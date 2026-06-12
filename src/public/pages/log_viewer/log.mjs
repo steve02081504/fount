@@ -247,6 +247,147 @@ const STYLES = /* css */ `
 	font-family: inherit;
 }
 .log-clear-btn:hover { opacity: 1; }
+
+/* REPL 输入（贴日志区底部，风格对齐 CLI log_viewer） */
+.repl-panel {
+	flex-shrink: 0;
+	border-top: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
+	background: color-mix(in oklch, var(--color-base-content, currentColor) 2.5%, var(--color-base-100, #fff));
+}
+.repl-frame-top,
+.repl-frame-bottom {
+	display: flex;
+	align-items: center;
+	gap: 0;
+	padding: 0 8px;
+	font-size: 11px;
+	line-height: 1.5;
+	color: color-mix(in oklch, var(--color-base-content, currentColor) 50%, transparent);
+	user-select: none;
+}
+.repl-frame-top { padding-top: 3px; }
+.repl-frame-bottom { padding-bottom: 4px; }
+.repl-frame-corner,
+.repl-frame-corner-end { flex-shrink: 0; }
+.repl-frame-label {
+	flex-shrink: 0;
+	color: var(--color-info, #3b82f6);
+	padding: 0 1px;
+}
+.repl-frame-line {
+	flex: 1;
+	min-width: 8px;
+	border-top: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 22%, transparent);
+	margin: 0 4px;
+	height: 0;
+	align-self: center;
+}
+.repl-frame-busy {
+	flex-shrink: 0;
+	color: var(--color-info, #3b82f6);
+	opacity: 0;
+	width: 0;
+	overflow: hidden;
+	transition: opacity 0.15s, width 0.15s;
+}
+.repl-frame-busy.active {
+	opacity: 1;
+	width: auto;
+	margin-right: 2px;
+}
+.repl-frame-hint {
+	flex: 1;
+	min-width: 0;
+	text-align: center;
+	opacity: 0.55;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.repl-input-area {
+	position: relative;
+	padding: 0 6px 2px;
+}
+.repl-editor-wrap {
+	overflow: auto;
+	max-height: min(40vh, 240px);
+}
+.repl-editor {
+	display: flex;
+	align-items: flex-start;
+	min-height: calc(1.5em + 8px);
+}
+.repl-gutter {
+	flex-shrink: 0;
+	padding: 4px 4px 4px 6px;
+	line-height: 1.5;
+	text-align: center;
+	user-select: none;
+}
+.repl-gutter-line {
+	height: 1.5em;
+}
+.repl-gutter-prompt {
+	color: var(--color-info, #3b82f6);
+}
+.repl-gutter-cont {
+	opacity: 0.45;
+}
+.repl-stack {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+}
+.repl-highlight,
+.repl-input-edit {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 4px 8px 4px 0;
+	border: none;
+	outline: none;
+	font: inherit;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-wrap: anywhere;
+	tab-size: 2;
+}
+.repl-highlight {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+	color: var(--color-base-content, currentColor);
+}
+.repl-input-edit {
+	position: relative;
+	z-index: 1;
+	min-height: calc(1.5em + 8px);
+	resize: none;
+	overflow: hidden;
+	color: transparent;
+	caret-color: var(--color-base-content, currentColor);
+	background: transparent;
+}
+.repl-completions {
+	position: absolute;
+	bottom: 100%;
+	left: 6px;
+	right: 6px;
+	margin: 0 0 4px;
+	padding: 4px;
+	list-style: none;
+	font: inherit;
+	background: var(--color-base-100, #fff);
+	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 18%, transparent);
+	border-radius: var(--radius-box, 0.5rem);
+	box-shadow: 0 4px 16px color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
+	max-height: 12rem;
+	overflow: auto;
+	z-index: 20;
+}
+.repl-completions.hidden { display: none; }
 `
 
 let stylesInjected = false
@@ -325,6 +466,14 @@ function renderLogStringNode(text, { quoted = false, className = 'log-str' } = {
 	else
 		wrapper.innerHTML = html
 	return wrapper
+}
+
+/**
+ * 注入日志面板样式（幂等，仅首次插入 `<style>`）。
+ * @returns {void}
+ */
+export function ensureLogViewerStyles() {
+	injectStyles()
 }
 
 /**

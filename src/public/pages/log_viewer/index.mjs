@@ -8,6 +8,7 @@ import { ping } from '/scripts/endpoints.mjs'
 import { createLogsWs, openSource } from './endpoints.mjs'
 import { renderLogItem, createLogToolbar, entryMatchesFilter } from './log.mjs'
 import { initRepl } from './repl.mjs'
+import { mountReplPanel } from './repl_ui.mjs'
 
 applyTheme()
 await initTranslations('log_viewer')
@@ -232,7 +233,15 @@ if (logToolbarContainer) {
 }
 
 connectLogsWs()
+
+const replPanel = document.getElementById('repl-panel')
+const replUi = replPanel ? mountReplPanel(replPanel, {
+	placeholder: geti18n('log_viewer.repl.input.placeholder'),
+	hint: geti18n('log_viewer.repl.hint'),
+}) : null
+
 initRepl({
+	replUi,
 	onAppendEntry: appendLogEntry,
 	/**
 	 * REPL eval 会话就绪时注册 truncated 展开函数。
@@ -241,3 +250,5 @@ initRepl({
 	 */
 	onEvalExpandRef: (fn) => { evalRequestExpandRef = fn },
 })
+
+replUi?.focus()

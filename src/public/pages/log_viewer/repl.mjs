@@ -10,13 +10,14 @@ const COMPLETION_DEBOUNCE_MS = 150
 /**
  * 初始化 log_viewer 浏览器 REPL。
  * @param {object} opts - 选项。
+ * @param {ReturnType<import('./repl_ui.mjs').mountReplPanel>} opts.replUi - REPL 输入 UI。
  * @param {(entry: object) => void | Promise<void>} [opts.onAppendEntry] - 向主日志区追加条目。
  * @param {(fn: ((ref: string) => Promise<unknown>) | null) => void} [opts.onEvalExpandRef] - eval 展开引用注册。
  * @returns {void}
  */
-export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
-	const inputEl = /** @type {HTMLTextAreaElement | null} */ document.getElementById('repl-input')
-	const completionsEl = document.getElementById('repl-completions')
+export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
+	if (!replUi) return
+	const { inputEl, completionsEl, syncInputView, setBusy } = replUi
 	if (!inputEl || !completionsEl) return
 
 	/** @type {ReturnType<typeof attachLogWire> | null} */
@@ -259,7 +260,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 			li.className = 'block w-full'
 			const btn = document.createElement('button')
 			btn.type = 'button'
-			btn.className = `block w-full text-left px-2 py-1 rounded font-mono text-sm${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
+			btn.className = `block w-full text-left px-2 py-0.5 rounded${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
 			btn.textContent = completionItems[i]
 			btn.addEventListener('mousedown', (e) => {
 				e.preventDefault()
@@ -297,6 +298,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 		const pos = completionReplaceStart + item.length
 		inputEl.setSelectionRange(pos, pos)
 		hideCompletions()
+		syncInputView()
 		scheduleCompletionRefresh()
 	}
 
@@ -367,6 +369,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 		historyIndex = -1
 		historyDraft = ''
 		evalInFlight = true
+		setBusy(true)
 		const echoText = `❯ ${code}`
 		await onAppendEntry?.({
 			method: 'repl',
@@ -387,7 +390,9 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 			})
 		} finally {
 			evalInFlight = false
+			setBusy(false)
 			inputEl.value = ''
+			syncInputView()
 		}
 	}
 
@@ -421,6 +426,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 	})
 
 	inputEl.addEventListener('input', () => {
+		syncInputView()
 		if (inputEl.value) ensureEvalWire()
 		historyIndex = -1
 		scheduleCompletionRefresh()
@@ -481,6 +487,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 			if (historyIndex === -1) historyDraft = inputEl.value
 			historyIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
 			inputEl.value = history[historyIndex]
+			syncInputView()
 			scheduleCompletionRefresh()
 			return
 		}
@@ -494,6 +501,7 @@ export function initRepl({ onAppendEntry, onEvalExpandRef } = {}) {
 				historyIndex++
 				inputEl.value = history[historyIndex]
 			}
+			syncInputView()
 			scheduleCompletionRefresh()
 		}
 	})
