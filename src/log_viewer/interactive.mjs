@@ -99,6 +99,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let renderedBoxTop = null
 	/** @type {number | null} 上次绘制的光标终端行号（resize 时配合 CPR 推算 reflow 偏移）。 */
 	let renderedCursorRow = null
+	/** @type {number | null} 上次绘制的光标终端列号（resize 时估算当前行 reflow 偏移）。 */
+	let renderedCursorCol = null
 	/** @type {((pos: { row: number, col: number }) => void)[]} 等待 CPR（光标位置报告）回包的回调。 */
 	const cprResolvers = []
 	/** resize 处理进行中（期间日志写入进缓冲、跳过常规重绘）。 */
@@ -468,15 +470,22 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const prevCursorRow = renderedCursorRow
 		const inputRows = resolveInputRows(input)
 		const rows = process.stdout.rows || 24
+		const cols = process.stdout.columns || 80
 		let out = SCROLL_REGION_RESET
 		if (pos && pos.row >= 1 && pos.row <= rows && prevBoxTop !== null && prevCursorRow !== null) {
-			const bandAbove = prevCursorRow - prevBoxTop + renderedCompletionRows
+			// 旧框带每一行在变窄后可能软折成多行；按旧/新列宽估算 reflow 后
+			// “框带顶到光标所在物理行”的行距，避免低估导致残影。
+			const wrapFactor = Math.max(1, Math.ceil(renderedCols / cols))
+			const bandAboveLogical = Math.max(0, prevCursorRow - prevBoxTop + renderedCompletionRows)
+			const cursorRowExtra = Math.floor((Math.max(1, renderedCursorCol ?? 1) - 1) / cols)
+			const bandAbove = bandAboveLogical * wrapFactor + cursorRowExtra
 			const ghostTop = Math.max(2, pos.row - bandAbove)
 			const maxLogEnd = Math.max(1, rows - inputRows - 2)
 			// 日志末尾低于新输入框所需位置（如变窄导致日志折行变长）：
 			// 趁滚动区已是全屏，把整屏上滚，顶部行推入 scrollback，保住日志尾部而非擦掉。
 			const overflow = ghostTop - 1 - maxLogEnd
-			if (overflow > 0)
+			// 仅在真正“变窄”时上滚；变宽时若估算有偏差，宁可保守地留空，也不吞掉上方日志。
+			if (overflow > 0 && cols < renderedCols)
 				out += cursorTo(1, rows) + '\n'.repeat(overflow)
 			const logEnd = Math.max(1, Math.min(ghostTop - 1, maxLogEnd))
 			boxAnchorTop = logEnd + 1 >= rows - inputRows - 1 ? null : logEnd + 1
@@ -621,6 +630,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		renderedCols = cols
 		renderedBoxTop = boxTop
 		renderedCursorRow = view.cursorRow
+		renderedCursorCol = screenCol
 	}
 
 	/**
