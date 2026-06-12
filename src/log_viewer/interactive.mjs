@@ -515,10 +515,15 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 */
 	async function renderEvalPayload(payload) {
 		const conn = await ensureEvalWire()
-		const wireCtx = {
-			requestExpand: (ref, maxDepth) => conn.requestExpand(ref, maxDepth),
-			supportsAnsi: true,
+		/**
+		 * @param {string} ref - 展开引用 ID。
+		 * @param {number} [maxDepth] - 最大深度。
+		 * @returns {Promise<unknown>} 展开后的快照。
+		 */
+		function requestExpand(ref, maxDepth) {
+			return conn.requestExpand(ref, maxDepth)
 		}
+		const wireCtx = { requestExpand, supportsAnsi: true }
 		let text = ''
 		for (const entryJson of payload.outputEntries ?? []) {
 			const entry = new WireLogEntry(entryJson, wireCtx)
