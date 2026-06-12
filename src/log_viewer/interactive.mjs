@@ -62,6 +62,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let evalInFlight = false
 	/** 上次绘制的输入区行数（缩小时需擦除多余行）。 */
 	let renderedInputRows = MIN_INPUT_ROWS
+	/** 上次绘制时的终端列宽（变窄时旧框每行会折行，需按倍数擦除）。 */
+	let renderedCols = process.stdout.columns || 80
 	/** 输入视口首行索引（内容超出可见行时滚动）。 */
 	let inputScrollTop = 0
 	/** 括号粘贴模式缓冲。 */
@@ -356,14 +358,27 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	if (process.stdout.isTTY)
 		process.stdout.on('resize', () => {
 			if (replTornDown || !activated) return
+			const layout = getLayout(resolveInputRows(input))
+			// 变窄时旧框每行（写满 renderedCols 列）会被终端折行成多行；
+			// 光标在旧框内，缩放后终端把它锚向屏底，故旧框带折行后贴在屏幕底部。
+			// 按折行倍数推算旧框带现在的总行数，从屏底向上逐行擦除。
+			const wrapFactor = Math.max(1, Math.ceil(renderedCols / layout.cols))
+			const bandRows = Math.min(
+				(renderedInputRows + 2 + renderedCompletionRows) * wrapFactor,
+				layout.rows,
+			)
+			let eraseBand = ''
+			for (let i = 0; i < bandRows; i++)
+				eraseBand += cursorTo(1, layout.rows - i) + ERASE_LINE
 			// 终端高度变化后，DECSC 保存的日志位置可能落入输入框带：
-			// 先放开滚动区，用 LF 下探-回退把日志末尾钳回滚动区内；
-			// 旧尺寸下绘制的输入框/补全条必然在日志末尾下方，整段擦除后再恢复分区重绘。
-			const clamp = getLayout(resolveInputRows(input)).inputRows + 2
+			// 先放开滚动区，恢复到日志末尾（缩小时该位置只会偏下、不会高于真实日志末尾），
+			// 立即向下整段擦除残余——必须在 LF 下探之前，否则下探引发的滚动
+			// 会把残影推到擦除起点上方；随后再钳回滚动区内并恢复分区重绘。
+			const clamp = layout.inputRows + 2
 			process.stdout.write(
-				SCROLL_REGION_RESET + CURSOR_RESTORE
+				SCROLL_REGION_RESET + eraseBand + CURSOR_RESTORE + ERASE_BELOW
 				+ '\n'.repeat(clamp) + `\x1b[${clamp}A` + CURSOR_SAVE
-				+ ERASE_BELOW + setScrollRegionSeq(),
+				+ setScrollRegionSeq(),
 			)
 			renderedCompletionRows = 0
 			scheduleInputRedraw()
@@ -479,6 +494,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		out += cursorTo(screenCol, view.cursorRow) + CURSOR_SHOW
 		process.stdout.write(out)
 		renderedInputRows = inputRows
+		renderedCols = cols
 	}
 
 	/**
