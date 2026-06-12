@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "📜",
+		"logs": {
+			"openSourceFailed": "📂📜❌: ${message}",
+			"toolbar": {
+				"clear": "🧹",
+				"filter": {
+					"placeholder": "🔎…"
+				}
+			},
+			"levels": {
+				"all": "∗",
+				"log": "📝",
+				"info": "ℹ️",
+				"warn": "⚠️",
+				"error": "⛔",
+				"debug": "🐛"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "🐞 & 🖥️ℹ️",
 		"description": "ℹ️ ➡️ 🐞 & 🖥️",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "🔄✅",
 		"updateFailed": "❌🔄",
 		"autoUpdateNotEnabled": "🚫🔄",
-		"logs": {
-			"title": "📜",
-			"openSourceFailed": "📂📜❌: ${message}",
-			"toolbar": {
-				"clear": "🧹",
-				"filter": {
-					"placeholder": "🔎…"
-				}
-			},
-			"levels": {
-				"all": "∗",
-				"log": "📝",
-				"info": "ℹ️",
-				"warn": "⚠️",
-				"error": "⛔",
-				"debug": "🐛"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

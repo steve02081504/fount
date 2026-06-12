@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "로그",
+		"logs": {
+			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
+			"toolbar": {
+				"clear": "비우기",
+				"filter": {
+					"placeholder": "필터…"
+				}
+			},
+			"levels": {
+				"all": "전체",
+				"log": "로그",
+				"info": "정보",
+				"warn": "경고",
+				"error": "오류",
+				"debug": "디버그"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "디버깅 및 시스템 정보",
 		"description": "fount 설치에 대한 자세한 디버깅 및 시스템 정보를 얻으십시오. 이는 문제 해결 및 지원 요청에 매우 유용합니다.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "서버를 다시 시작하는 중입니다.",
 		"updateFailed": "업데이트 요청 실패",
 		"autoUpdateNotEnabled": "자동 업데이트가 활성화되지 않았습니다.",
-		"logs": {
-			"title": "로그",
-			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
-			"toolbar": {
-				"clear": "비우기",
-				"filter": {
-					"placeholder": "필터…"
-				}
-			},
-			"levels": {
-				"all": "전체",
-				"log": "로그",
-				"info": "정보",
-				"warn": "경고",
-				"error": "오류",
-				"debug": "디버그"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

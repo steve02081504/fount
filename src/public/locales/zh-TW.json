@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "紀錄",
+		"logs": {
+			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "依內容篩選…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "一般",
+				"info": "資訊",
+				"warn": "警告",
+				"error": "錯誤",
+				"debug": "偵錯"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "除錯與系統資訊",
 		"description": "獲取有關您的 fount 安裝的詳細除錯和系統資訊。這對於故障排除和支援請求非常有幫助。",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "正在重啟伺服器",
 		"updateFailed": "更新請求失敗",
 		"autoUpdateNotEnabled": "未啟用自動更新",
-		"logs": {
-			"title": "紀錄",
-			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "依內容篩選…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "一般",
-				"info": "資訊",
-				"warn": "警告",
-				"error": "錯誤",
-				"debug": "偵錯"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

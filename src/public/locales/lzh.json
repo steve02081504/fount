@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "日誌",
+		"logs": {
+			"openSourceFailed": "啟閱原始碼卷未果：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "依文篩之…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "常錄",
+				"info": "訊息",
+				"warn": "警示",
+				"error": "錯誤",
+				"debug": "調試"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "糾錯與系統之情",
 		"description": "觀此 fount 系統之詳情，以備糾錯排難之用，甚爲有益。",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "伺服正重啟",
 		"updateFailed": "更新之請未果",
 		"autoUpdateNotEnabled": "自動更新未啟",
-		"logs": {
-			"title": "日誌",
-			"openSourceFailed": "啟閱原始碼卷未果：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "依文篩之…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "常錄",
-				"info": "訊息",
-				"warn": "警示",
-				"error": "錯誤",
-				"debug": "調試"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

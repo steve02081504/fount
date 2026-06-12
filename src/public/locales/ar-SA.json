@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "السجلات",
+		"logs": {
+			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
+			"toolbar": {
+				"clear": "مسح",
+				"filter": {
+					"placeholder": "تصفية…"
+				}
+			},
+			"levels": {
+				"all": "الكل",
+				"log": "سجل",
+				"info": "معلومات",
+				"warn": "تحذير",
+				"error": "خطأ",
+				"debug": "تصحيح"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "تصحيح الأخطاء ومعلومات النظام",
 		"description": "احصل على تصحيح الأخطاء ومعلومات النظام التفصيلية حول تثبيت fount لديك. يعد هذا مفيدًا جدًا لاستكشاف الأخطاء وإصلاحها وطلبات الدعم.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "يتم إعادة تشغيل الخادم",
 		"updateFailed": "فشل طلب التحديث",
 		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
-		"logs": {
-			"title": "السجلات",
-			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
-			"toolbar": {
-				"clear": "مسح",
-				"filter": {
-					"placeholder": "تصفية…"
-				}
-			},
-			"levels": {
-				"all": "الكل",
-				"log": "سجل",
-				"info": "معلومات",
-				"warn": "تحذير",
-				"error": "خطأ",
-				"debug": "تصحيح"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

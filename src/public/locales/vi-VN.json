@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Nhật ký",
+		"logs": {
+			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
+			"toolbar": {
+				"clear": "Xóa",
+				"filter": {
+					"placeholder": "Lọc…"
+				}
+			},
+			"levels": {
+				"all": "Tất cả",
+				"log": "Log",
+				"info": "Thông tin",
+				"warn": "Cảnh báo",
+				"error": "Lỗi",
+				"debug": "Gỡ lỗi"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Gỡ lỗi và thông tin hệ thống",
 		"description": "Nhận thông tin hệ thống và gỡ lỗi chi tiết về cài đặt fount của bạn. Điều này rất hữu ích cho việc khắc phục sự cố và yêu cầu hỗ trợ.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Máy chủ đang khởi động lại",
 		"updateFailed": "Yêu cầu cập nhật không thành công",
 		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
-		"logs": {
-			"title": "Nhật ký",
-			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
-			"toolbar": {
-				"clear": "Xóa",
-				"filter": {
-					"placeholder": "Lọc…"
-				}
-			},
-			"levels": {
-				"all": "Tất cả",
-				"log": "Log",
-				"info": "Thông tin",
-				"warn": "Cảnh báo",
-				"error": "Lỗi",
-				"debug": "Gỡ lỗi"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

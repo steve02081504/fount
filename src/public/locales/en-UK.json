@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Logs",
+		"logs": {
+			"openSourceFailed": "Could not open source file: ${message}",
+			"toolbar": {
+				"clear": "Clear",
+				"filter": {
+					"placeholder": "Filter…"
+				}
+			},
+			"levels": {
+				"all": "All",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Debug & System Info",
 		"description": "Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Server is restarting",
 		"updateFailed": "Update request failed",
 		"autoUpdateNotEnabled": "Automatic updates are not enabled",
-		"logs": {
-			"title": "Logs",
-			"openSourceFailed": "Could not open source file: ${message}",
-			"toolbar": {
-				"clear": "Clear",
-				"filter": {
-					"placeholder": "Filter…"
-				}
-			},
-			"levels": {
-				"all": "All",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Warn",
-				"error": "Error",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

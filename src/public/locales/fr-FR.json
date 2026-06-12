@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Journaux",
+		"logs": {
+			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
+			"toolbar": {
+				"clear": "Vider",
+				"filter": {
+					"placeholder": "Filtrer…"
+				}
+			},
+			"levels": {
+				"all": "Tous",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avertissement",
+				"error": "Erreur",
+				"debug": "Débogage"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Débogage et informations système",
 		"description": "Obtenez des informations détaillées sur le débogage et le système sur votre installation de fount. Ceci est très utile pour le dépannage et les demandes d’assistance.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Le serveur redémarre",
 		"updateFailed": "La demande de mise à jour a échoué",
 		"autoUpdateNotEnabled": "Les mises à jour automatiques ne sont pas activées",
-		"logs": {
-			"title": "Journaux",
-			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
-			"toolbar": {
-				"clear": "Vider",
-				"filter": {
-					"placeholder": "Filtrer…"
-				}
-			},
-			"levels": {
-				"all": "Tous",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Avertissement",
-				"error": "Erreur",
-				"debug": "Débogage"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Registos",
+		"logs": {
+			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
+			"toolbar": {
+				"clear": "Limpar",
+				"filter": {
+					"placeholder": "Filtrar…"
+				}
+			},
+			"levels": {
+				"all": "Todos",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Aviso",
+				"error": "Erro",
+				"debug": "Depuração"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Depuração e informações do sistema",
 		"description": "Obtenha depuração detalhada e informações do sistema sobre a instalação do seu fount. Isso é muito útil para solução de problemas e solicitações de suporte.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "O servidor está reiniciando",
 		"updateFailed": "Falha na solicitação de atualização",
 		"autoUpdateNotEnabled": "As atualizações automáticas não estão habilitadas",
-		"logs": {
-			"title": "Registos",
-			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
-			"toolbar": {
-				"clear": "Limpar",
-				"filter": {
-					"placeholder": "Filtrar…"
-				}
-			},
-			"levels": {
-				"all": "Todos",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Aviso",
-				"error": "Erro",
-				"debug": "Depuração"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "ログ",
+		"logs": {
+			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
+			"toolbar": {
+				"clear": "クリア",
+				"filter": {
+					"placeholder": "絞り込み…"
+				}
+			},
+			"levels": {
+				"all": "すべて",
+				"log": "ログ",
+				"info": "情報",
+				"warn": "警告",
+				"error": "エラー",
+				"debug": "デバッグ"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "デバッグとシステム情報",
 		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得します。これは、トラブルシューティングやサポート リクエストに非常に役立ちます。",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "サーバーが再起動中です",
 		"updateFailed": "更新リクエストが失敗しました",
 		"autoUpdateNotEnabled": "自動更新が有効になっていません",
-		"logs": {
-			"title": "ログ",
-			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
-			"toolbar": {
-				"clear": "クリア",
-				"filter": {
-					"placeholder": "絞り込み…"
-				}
-			},
-			"levels": {
-				"all": "すべて",
-				"log": "ログ",
-				"info": "情報",
-				"warn": "警告",
-				"error": "エラー",
-				"debug": "デバッグ"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

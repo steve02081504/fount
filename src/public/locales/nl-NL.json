@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Logboek",
+		"logs": {
+			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
+			"toolbar": {
+				"clear": "Wissen",
+				"filter": {
+					"placeholder": "Filteren…"
+				}
+			},
+			"levels": {
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Waarschuwing",
+				"error": "Fout",
+				"debug": "Debug"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Foutopsporing en systeeminformatie",
 		"description": "Ontvang gedetailleerde foutopsporing en systeeminformatie over uw fount-installatie. Dit is erg handig bij het oplossen van problemen en ondersteuningsverzoeken.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "De server wordt opnieuw opgestart",
 		"updateFailed": "Updateverzoek is mislukt",
 		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
-		"logs": {
-			"title": "Logboek",
-			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
-			"toolbar": {
-				"clear": "Wissen",
-				"filter": {
-					"placeholder": "Filteren…"
-				}
-			},
-			"levels": {
-				"all": "Alle",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Waarschuwing",
-				"error": "Fout",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

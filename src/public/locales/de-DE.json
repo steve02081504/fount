@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Protokoll",
+		"logs": {
+			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
+			"toolbar": {
+				"clear": "Leeren",
+				"filter": {
+					"placeholder": "Filtern…"
+				}
+			},
+			"levels": {
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warnung",
+				"error": "Fehler",
+				"debug": "Debug"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Debugging und Systeminformationen",
 		"description": "Erhalten Sie detaillierte Debugging- und Systeminformationen zu Ihrer fount-Installation. Dies ist sehr hilfreich bei der Fehlerbehebung und bei Supportanfragen.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Der Server wird neu gestartet",
 		"updateFailed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
-		"logs": {
-			"title": "Protokoll",
-			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
-			"toolbar": {
-				"clear": "Leeren",
-				"filter": {
-					"placeholder": "Filtern…"
-				}
-			},
-			"levels": {
-				"all": "Alle",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Warnung",
-				"error": "Fehler",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

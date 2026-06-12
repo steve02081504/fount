@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "लॉग",
+		"logs": {
+			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
+			"toolbar": {
+				"clear": "खाली करें",
+				"filter": {
+					"placeholder": "फ़िल्टर…"
+				}
+			},
+			"levels": {
+				"all": "सभी",
+				"log": "लॉग",
+				"info": "जानकारी",
+				"warn": "चेतावनी",
+				"error": "त्रुटि",
+				"debug": "डीबग"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "डिबगिंग और सिस्टम सूचना",
 		"description": "अपने fount इंस्टॉलेशन के बारे में विस्तृत डिबगिंग और सिस्टम जानकारी प्राप्त करें। यह समस्या निवारण और समर्थन अनुरोधों के लिए बहुत उपयोगी है।",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "सर्वर पुनः प्रारंभ हो रहा है",
 		"updateFailed": "अद्यतन अनुरोध विफल रहा",
 		"autoUpdateNotEnabled": "स्वचालित अपडेट सक्षम नहीं हैं",
-		"logs": {
-			"title": "लॉग",
-			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
-			"toolbar": {
-				"clear": "खाली करें",
-				"filter": {
-					"placeholder": "फ़िल्टर…"
-				}
-			},
-			"levels": {
-				"all": "सभी",
-				"log": "लॉग",
-				"info": "जानकारी",
-				"warn": "चेतावनी",
-				"error": "त्रुटि",
-				"debug": "डीबग"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

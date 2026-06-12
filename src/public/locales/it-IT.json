@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Registro",
+		"logs": {
+			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
+			"toolbar": {
+				"clear": "Svuota",
+				"filter": {
+					"placeholder": "Filtra…"
+				}
+			},
+			"levels": {
+				"all": "Tutti",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avviso",
+				"error": "Errore",
+				"debug": "Debug"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Debug e informazioni di sistema",
 		"description": "Ottieni informazioni dettagliate sul debug e sul sistema sull'installazione di fount. Questo è molto utile per la risoluzione dei problemi e le richieste di supporto.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Il server si sta riavviando",
 		"updateFailed": "Richiesta di aggiornamento non riuscita",
 		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
-		"logs": {
-			"title": "Registro",
-			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
-			"toolbar": {
-				"clear": "Svuota",
-				"filter": {
-					"placeholder": "Filtra…"
-				}
-			},
-			"levels": {
-				"all": "Tutti",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Avviso",
-				"error": "Errore",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

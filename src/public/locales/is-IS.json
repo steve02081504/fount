@@ -2480,6 +2480,26 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Annáll",
+		"logs": {
+			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
+			"toolbar": {
+				"clear": "Hreinsa",
+				"filter": {
+					"placeholder": "Sía…"
+				}
+			},
+			"levels": {
+				"all": "Allt",
+				"log": "Log",
+				"info": "Upplýsingar",
+				"warn": "Viðvörun",
+				"error": "Villa",
+				"debug": "Villuleit"
+			}
+		}
+	},
 	"debug_info": {
 		"title": "Villuleit og kerfisupplýsingar",
 		"description": "Fáðu nákvæmar villuleitar- og kerfisupplýsingar um uppsetningu fount. Þetta er mjög gagnlegt fyrir úrræðaleit og stuðningsbeiðnir.",
@@ -2513,24 +2533,6 @@
 		"updateSuccess": "Þjónninn er að endurræsa",
 		"updateFailed": "Uppfærslubeiðni mistókst",
 		"autoUpdateNotEnabled": "Sjálfvirkar uppfærslur eru ekki virkar",
-		"logs": {
-			"title": "Annáll",
-			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
-			"toolbar": {
-				"clear": "Hreinsa",
-				"filter": {
-					"placeholder": "Sía…"
-				}
-			},
-			"levels": {
-				"all": "Allt",
-				"log": "Log",
-				"info": "Upplýsingar",
-				"warn": "Viðvörun",
-				"error": "Villa",
-				"debug": "Villuleit"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {
