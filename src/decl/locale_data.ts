@@ -116,6 +116,9 @@ export type LocaleData = {
 			}
 		}
 		botStarted: string
+		logViewer: {
+			replHint: string
+		}
 		path: {
 			protocol: {
 				description: string
@@ -189,7 +192,14 @@ export type LocaleData = {
 				failedToStart: string
 				initFailed: string
 			}
+			terminalKeybindings: {
+				registered: string
+				wtPatchFailed: string
+				wtRemoved: string
+				editorRemoved: string
+			}
 			remove: {
+				removingTerminalKeybindings: string
 				removingFount: string
 				fountUninstallationComplete: string
 				removingFountInstallationDir: string
@@ -2520,6 +2530,11 @@ export type LocaleData = {
 				debug: string
 			}
 		}
+		repl: {
+			title: string
+			placeholder: string
+			hint: string
+		}
 		home_function_buttons: {
 			debug: {
 				main: {
@@ -2783,6 +2798,9 @@ export type LocaleKeyParams = {
 	'fountConsole.path.shortcut.desktopShortcutCreated': { path: string | number }
 	'fountConsole.path.shortcut.shortcutNotSupported': { os: string | number }
 	'fountConsole.path.shortcut.startMenuShortcutCreated': { path: string | number }
+	'fountConsole.path.terminalKeybindings.editorRemoved': { path: string | number }
+	'fountConsole.path.terminalKeybindings.wtPatchFailed': { message: string | number; path: string | number }
+	'fountConsole.path.terminalKeybindings.wtRemoved': { path: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
 	'fountConsole.server.localUrl': { url: string | number }
 	'fountConsole.server.mdns.bonjourFailed': { error: string | number }

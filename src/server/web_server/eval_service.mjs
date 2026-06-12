@@ -182,17 +182,6 @@ export async function computeCompletion(code, cursor) {
 }
 
 /**
- * 在隔离虚拟控制台中异步求值 JavaScript，返回 wire 序列化载荷。
- * @param {string} code - 待求值代码（async-eval 语法）。
- * @param {{ allocRef: (target: object) => string }} expansionScope - 惰性展开作用域。
- * @returns {Promise<object>} wire JSON 载荷。
- */
-export async function runEvalCode(code, expansionScope) {
-	const evalResult = await async_eval(code)
-	return serializeEvalWirePayload(evalResult, expansionScope)
-}
-
-/**
  * 回收 eval WebSocket 会话持有的展开引用宿主。
  * @param {object[]} heldEntries - 求值输出 LogEntry 引用列表。
  * @returns {void}
