@@ -932,8 +932,14 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'enter') {
+			// `\r\n` 的第二键：提交。单独 `\n`（如未打补丁终端的 Shift+Enter）插入换行。
+			if (pendingReturnSubmit) {
+				pendingReturnSubmit = false
+				submitEval().catch(onFatal)
+				return
+			}
 			pendingReturnSubmit = false
-			submitEval().catch(onFatal)
+			insertAtCursor('\n')
 			return
 		}
 		// `\r`：同批次若紧跟 `\n` 由 `enter` 分支提交；否则下一微任务提交。
@@ -946,36 +952,23 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
+	 * 在补全列表中循环选中项。
+	 * @param {number} delta - 方向（-1 上，+1 下）。
+	 * @returns {void}
+	 */
+	function cycleCompletion(delta) {
+		if (!completionActive || completionItems.length <= 1) return
+		completionIndex = (completionIndex + delta + completionItems.length) % completionItems.length
+		scheduleInputRedraw()
+	}
+
+	/**
 	 * 处理单次按键。
 	 * @param {import('./keys.mjs').KeyEvent} event - 按键事件。
 	 * @returns {void}
 	 */
 	function handleKey(event) {
 		if (isImeNoise(event)) return
-		if (event.key === 'tab') {
-			if (completionActive && completionItems.length) {
-				if (event.shiftKey)
-					completionIndex = (completionIndex - 1 + completionItems.length) % completionItems.length
-				else
-					completionIndex = (completionIndex + 1) % completionItems.length
-				scheduleInputRedraw()
-				return
-			}
-			requestCompletion().catch(onFatal)
-			return
-		}
-		if (event.key === 'escape')
-			if (completionActive) {
-				clearCompletion()
-				scheduleInputRedraw()
-				return
-			}
-
-		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
-			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
-				acceptCompletion()
-				return
-			}
 
 		const kitty = kittyKeyAction(event)
 		if (kitty === 'newline' || isShiftEnterCsi(event)) {
@@ -998,11 +991,37 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			process.kill(process.pid, 'SIGINT')
 			return
 		}
+
+		if (event.key === 'tab') {
+			if (completionActive && completionItems.length) {
+				cycleCompletion(event.shiftKey ? -1 : 1)
+				return
+			}
+			requestCompletion().catch(onFatal)
+			return
+		}
+		if (event.key === 'escape')
+			if (completionActive) {
+				clearCompletion()
+				scheduleInputRedraw()
+				return
+			}
+
+		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
+			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
+				acceptCompletion()
+				return
+			}
+
 		if (event.ctrlKey && event.key === 'v') {
 			pasteFromClipboard().catch(onFatal)
 			return
 		}
 		if (event.key === 'up') {
+			if (completionActive && completionItems.length > 1) {
+				cycleCompletion(-1)
+				return
+			}
 			if (event.ctrlKey) {
 				jumpInputStart()
 				return
@@ -1020,6 +1039,10 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'down') {
+			if (completionActive && completionItems.length > 1) {
+				cycleCompletion(1)
+				return
+			}
 			if (event.ctrlKey) {
 				jumpInputEnd()
 				return

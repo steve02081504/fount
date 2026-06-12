@@ -209,9 +209,10 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 		completionsEl.classList.remove('hidden')
 		for (let i = 0; i < completionItems.length; i++) {
 			const li = document.createElement('li')
+			li.className = 'block w-full'
 			const btn = document.createElement('button')
 			btn.type = 'button'
-			btn.className = `w-full text-left px-2 py-1 rounded font-mono text-sm${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
+			btn.className = `block w-full text-left px-2 py-1 rounded font-mono text-sm${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
 			btn.textContent = completionItems[i]
 			btn.addEventListener('mousedown', (e) => {
 				e.preventDefault()

@@ -81,15 +81,16 @@ export function kittyKeyAction(event) {
 }
 
 /**
- * 是否为 Shift+Enter 的 xterm / 集成终端 CSI 变体。
+ * 是否为 Shift+Enter（含 xterm `CSI 13;2 ~` / CSI-u `13;2u`、以及 `\n` 前的修饰 Enter）。
  * @param {KeyEvent} event - 按键事件。
  * @returns {boolean} 是否应插入换行。
  */
 export function isShiftEnterCsi(event) {
+	if (event.shiftKey && (event.key === 'return' || event.key === 'enter')) return true
 	const seq = event.sequence ?? ''
 	const code = event.code ?? ''
 	if (/13;2[~u$^]/.test(seq) || /13;2[~u$^]/.test(code)) return true
-	if (SHIFT_ENTER_CSI.test(seq)) return true
+	if (SHIFT_ENTER_CSI.test(seq) || SHIFT_ENTER_CSI.test(code)) return true
 	if (event.code === '[13~' && event.shiftKey) return true
 	if (event.key === 'f3' && event.shiftKey) return true
 	return false
