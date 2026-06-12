@@ -113,6 +113,10 @@ export type LocaleData = {
 					title: string
 					tooltip: string
 				}
+				openTerminal: {
+					title: string
+					tooltip: string
+				}
 			}
 		}
 		botStarted: string
@@ -2479,6 +2483,33 @@ export type LocaleData = {
 			}
 		}
 	}
+	log_viewer: {
+		title: string
+		connectionError: string
+		logs: {
+			openSourceFailed: string
+			toolbar: {
+				clear: string
+				filter: {
+					placeholder: string
+				}
+			}
+			levels: {
+				all: string
+				log: string
+				info: string
+				warn: string
+				error: string
+				debug: string
+			}
+		}
+		repl: {
+			input: {
+				placeholder: string
+			}
+			hint: string
+		}
+	}
 	debug_info: {
 		title: string
 		description: string
@@ -2512,29 +2543,6 @@ export type LocaleData = {
 		updateSuccess: string
 		updateFailed: string
 		autoUpdateNotEnabled: string
-		logs: {
-			title: string
-			openSourceFailed: string
-			toolbar: {
-				clear: string
-				filter: {
-					placeholder: string
-				}
-			}
-			levels: {
-				all: string
-				log: string
-				info: string
-				warn: string
-				error: string
-				debug: string
-			}
-		}
-		repl: {
-			title: string
-			placeholder: string
-			hint: string
-		}
 		home_function_buttons: {
 			debug: {
 				main: {
@@ -2750,7 +2758,6 @@ export type LocaleKeyParams = {
 	'chat_history.confirmDeleteMultiChats': { count: string | number }
 	'chat_history.select_checkbox.aria-label': { chars: string | number }
 	'code_block.copy_failed': { error: string | number }
-	'debug_info.logs.openSourceFailed': { message: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
@@ -2822,6 +2829,7 @@ export type LocaleKeyParams = {
 	'import.errors.textImportFailed': { message: string | number }
 	'installer_wait_screen.feature4.description': { atlasCloudLink: string | number; evolinkLink: string | number }
 	'installer_wait_screen.footer.error_message': { error: string | number }
+	'log_viewer.logs.openSourceFailed': { message: string | number }
 	'login_info.modal.retrieve_error': { error: string | number }
 	'login_info.modal.transfer_error': { error: string | number }
 	'part_config.alerts.loadEditorFailed': { message: string | number }

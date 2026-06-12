@@ -41,6 +41,8 @@ export const CURSOR_HIDE = '\x1b[?25l'
 export const CURSOR_SHOW = '\x1b[?25h'
 /** 擦除整行。 */
 export const ERASE_LINE = '\x1b[2K'
+/** 擦除光标至屏幕末尾（ED 0）。 */
+export const ERASE_BELOW = '\x1b[0J'
 /** 保存光标位置与属性（DECSC）。 */
 export const CURSOR_SAVE = '\x1b7'
 /** 恢复光标位置与属性（DECRC）。 */

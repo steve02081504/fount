@@ -19,7 +19,7 @@ import {
 } from './keys.mjs'
 import { geti18n } from './locale.mjs'
 import {
-	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_LINE,
+	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_BELOW, ERASE_LINE,
 	INPUT_PAD_LEFT, INPUT_PAD_RIGHT, LEVEL_PREFIX_COLORS, MIN_INPUT_ROWS,
 	SCROLL_REGION_RESET, THEME,
 	countInputLines, cursorTo, getInputView, getLayout, highlightInputLines,
@@ -357,13 +357,15 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.on('resize', () => {
 			if (replTornDown || !activated) return
 			// 终端高度变化后，DECSC 保存的日志位置可能落入输入框带：
-			// 先放开滚动区，用 LF 下探-回退把日志末尾钳回滚动区内，再恢复分区。
+			// 先放开滚动区，用 LF 下探-回退把日志末尾钳回滚动区内；
+			// 旧尺寸下绘制的输入框/补全条必然在日志末尾下方，整段擦除后再恢复分区重绘。
 			const clamp = getLayout(resolveInputRows(input)).inputRows + 2
 			process.stdout.write(
 				SCROLL_REGION_RESET + CURSOR_RESTORE
 				+ '\n'.repeat(clamp) + `\x1b[${clamp}A` + CURSOR_SAVE
-				+ setScrollRegionSeq(),
+				+ ERASE_BELOW + setScrollRegionSeq(),
 			)
+			renderedCompletionRows = 0
 			scheduleInputRedraw()
 		})
 
