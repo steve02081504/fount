@@ -1,6 +1,6 @@
 /**
  * 交互式日志查看器：日志直接写入终端滚动区（DECSTBM，可用终端自带滚动条），
- * 底部固定一个圆角 REPL 输入框，提交至 `/api/eval`。
+ * 底部固定一个圆角 REPL 输入框，提交至 `/ws/eval`。
  *
  * 按键解析的纯函数见 {@link module:keys}，渲染几何与绘制见 {@link module:render}。
  */
@@ -8,8 +8,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { parse as parseKeyCodes } from 'jsr:@cliffy/keycode'
-import { renderAnsi } from 'npm:@steve02081504/virtual-console/node'
-import { WireLogEntry } from 'npm:@steve02081504/virtual-console/wire/client'
+import { connectLogWire, WireLogEntry } from 'npm:@steve02081504/virtual-console/wire/client'
 
 import { createHistoryStore } from './history.mjs'
 import {
@@ -24,8 +23,9 @@ import {
 	INPUT_PAD_LEFT, INPUT_PAD_RIGHT, LEVEL_PREFIX_COLORS, MIN_INPUT_ROWS,
 	SCROLL_REGION_RESET, THEME,
 	countInputLines, cursorTo, getInputView, getLayout, highlightInputLines,
-	inputLinePrefix, plainOffsetToRowCol, renderBottomBorder, renderScrollbarCell,
-	renderTopBorder, resolveInputRows, rowColToPlainOffset, textWidthBefore, truncateByWidth,
+	inputLinePrefix, plainOffsetToRowCol, renderBottomBorder, renderCompletionBand,
+	renderScrollbarCell, renderTopBorder, resolveInputRows, rowColToPlainOffset,
+	completionGhostSuffix, getCompletionVisibleRows, textWidthBefore, truncateByWidth,
 } from './render.mjs'
 
 /**
@@ -41,7 +41,7 @@ import {
 /**
  * 创建交互界面（终端滚动日志 + 固定 REPL 输入框），不接管主循环。
  * @param {object} root0 - 选项。
- * @param {number} root0.port - fount 监听端口（用于 `/api/eval`）。
+ * @param {number} root0.port - fount 监听端口（用于 `/ws/eval`）。
  * @param {() => Promise<string>} root0.generateLogo - 生成 ASCII logo。
  * @param {(err: Error) => void} root0.onFatal - 致命错误处理。
  * @param {string} [root0.fountDir] - fount 根目录（历史文件路径）。
@@ -49,9 +49,9 @@ import {
  * @returns {InteractiveViewer} 日志与 REPL 控件。
  */
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
-	const EVAL_URL = `http://127.0.0.1:${port}/api/eval`
+	const EVAL_WS_URL = `ws://127.0.0.1:${port}/ws/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
-	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline')
+	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline · tab complete')
 
 	let input = ''
 	let cursor = 0
@@ -78,6 +78,19 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let inputLoopStarted = false
 	/** 停止处理 stdin（tearDown 时置位）。 */
 	let stdinReadAbort = false
+	/** @type {ReturnType<typeof connectLogWire> | null} */
+	let evalConn = null
+	/** @type {Map<string, { resolve: (v: object) => void, reject: (e: Error) => void }>} */
+	const pendingEvalRequests = new Map()
+	let nextEvalRequestId = 1
+	let completionActive = false
+	/** @type {string[]} */
+	let completionItems = []
+	let completionIndex = 0
+	let completionReplaceStart = 0
+	let completionReplaceEnd = 0
+	/** 上次绘制的补全行数（用于擦除）。 */
+	let renderedCompletionRows = 0
 
 	/** @type {(code: string) => string} */
 	let highlightJs = code => code
@@ -91,6 +104,171 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	import('npm:cli-highlight').then(({ highlight }) => {
 		highlightJs = wrapHighlight(highlight)
 	}).catch(() => { /* 降级为纯文本 */ })
+
+	/**
+	 * 拒绝所有挂起的 eval/completion 请求。
+	 * @param {string} message - 错误消息。
+	 * @returns {void}
+	 */
+	function rejectAllEvalRequests(message) {
+		for (const { reject } of pendingEvalRequests.values())
+			reject(new Error(message))
+		pendingEvalRequests.clear()
+	}
+
+	/**
+	 * 关闭 eval WebSocket 并回收挂起请求。
+	 * @returns {void}
+	 */
+	function tearDownEvalWire() {
+		rejectAllEvalRequests('eval_wire_closed')
+		if (!evalConn) return
+		try { evalConn.close() } catch { /* ignore */ }
+		try { evalConn.detach() } catch { /* ignore */ }
+		evalConn = null
+	}
+
+	/**
+	 * 建立或等待 eval WebSocket 就绪（首次输入时懒连接）。
+	 * @returns {Promise<NonNullable<typeof evalConn>>} 已 OPEN 的 eval 连接句柄。
+	 */
+	function ensureEvalWire() {
+		if (evalConn?.ws?.readyState === WebSocket.OPEN)
+			return Promise.resolve(evalConn)
+		if (evalConn?.ws?.readyState === WebSocket.CONNECTING)
+			return new Promise((resolve, reject) => {
+				const ws = evalConn.ws
+				/**
+				 * @returns {void}
+				 */
+				const onOpen = () => {
+					ws.removeEventListener('error', onError)
+					resolve(evalConn)
+				}
+				/**
+				 * @returns {void}
+				 */
+				const onError = () => {
+					ws.removeEventListener('open', onOpen)
+					reject(new Error('eval_ws_error'))
+				}
+				ws.addEventListener('open', onOpen, { once: true })
+				ws.addEventListener('error', onError, { once: true })
+			})
+		if (evalConn) {
+			try { evalConn.detach() } catch { /* ignore */ }
+			evalConn = null
+		}
+		return new Promise((resolve, reject) => {
+			evalConn = connectLogWire(EVAL_WS_URL, {
+				extensionHandlers: {
+					/**
+					 * @param {{ id?: string }} raw - eval 结果帧。
+					 * @returns {void}
+					 */
+					eval_result: (raw) => {
+						const id = String(raw?.id ?? '')
+						const pending = pendingEvalRequests.get(id)
+						if (!pending) return
+						pendingEvalRequests.delete(id)
+						pending.resolve(raw)
+					},
+					/**
+					 * @param {{ id?: string }} raw - 补全结果帧。
+					 * @returns {void}
+					 */
+					completion_result: (raw) => {
+						const id = String(raw?.id ?? '')
+						const pending = pendingEvalRequests.get(id)
+						if (!pending) return
+						pendingEvalRequests.delete(id)
+						pending.resolve(raw)
+					},
+				},
+				/**
+				 * @returns {void}
+				 */
+				onClose: () => {
+					rejectAllEvalRequests('eval_wire_closed')
+					evalConn = null
+				},
+				onFatal,
+			})
+			const ws = evalConn.ws
+			if (ws.readyState === WebSocket.OPEN) resolve(evalConn)
+			else {
+				ws.addEventListener('open', () => resolve(evalConn), { once: true })
+				ws.addEventListener('error', () => reject(new Error('eval_ws_error')), { once: true })
+			}
+		})
+	}
+
+	/**
+	 * 首次有输入时懒建 eval 链。
+	 * @param {boolean} wasEmpty - 变更前输入是否为空。
+	 * @returns {void}
+	 */
+	function maybeConnectEvalOnFirstInput(wasEmpty) {
+		if (!wasEmpty || replTornDown) return
+		ensureEvalWire().catch(onFatal)
+	}
+
+	/**
+	 * 发送带 id 的 JSON 请求并等待 extension 回包。
+	 * @param {object} payload - 请求体（不含 id）。
+	 * @returns {Promise<object>} 响应载荷。
+	 */
+	async function sendEvalWireRequest(payload) {
+		const conn = await ensureEvalWire()
+		const id = String(nextEvalRequestId++)
+		return new Promise((resolve, reject) => {
+			pendingEvalRequests.set(id, { resolve, reject })
+			if (!conn.sendJson({ ...payload, id }))
+				reject(new Error('eval_wire_send_failed'))
+		})
+	}
+
+	/**
+	 * 清除补全 UI 状态。
+	 * @returns {void}
+	 */
+	function clearCompletion() {
+		completionActive = false
+		completionItems = []
+		completionIndex = 0
+	}
+
+	/**
+	 * 应用当前选中的补全项。
+	 * @returns {void}
+	 */
+	function acceptCompletion() {
+		if (!completionActive || !completionItems.length) return
+		const item = completionItems[completionIndex]
+		input = input.slice(0, completionReplaceStart) + item + input.slice(completionReplaceEnd)
+		cursor = completionReplaceStart + item.length
+		clearCompletion()
+		syncInputScrollToCursor()
+		scheduleInputRedraw()
+	}
+
+	/**
+	 * 请求服务端补全并更新补全态。
+	 * @returns {Promise<void>}
+	 */
+	async function requestCompletion() {
+		const result = await sendEvalWireRequest({
+			type: 'completion_request',
+			code: input,
+			cursor,
+		})
+		completionItems = Array.isArray(result.items) ? result.items.map(String) : []
+		completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : cursor
+		completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : cursor
+		completionIndex = 0
+		completionActive = completionItems.length > 0
+		scheduleInputRedraw()
+	}
 
 	// #region 终端模式与生命周期
 
@@ -159,6 +337,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (replTornDown) return
 		replTornDown = true
 		pendingInputRedraw = false
+		tearDownEvalWire()
+		clearCompletion()
 		if (!activated) return
 		restoreStdin()
 		const { boxTop, boxBottom } = getLayout(renderedInputRows)
@@ -261,12 +441,31 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		for (let i = 0; i < inputRows; i++) {
 			const row = inputStart + i
 			const logicalLine = view.scrollTop + i
+			const { line: cursorLine } = plainOffsetToRowCol(input, cursor)
+			let lineText = view.visible[i] ?? ''
+			if (completionActive && logicalLine === cursorLine && completionItems[completionIndex]) {
+				const ghost = completionGhostSuffix(
+					input, completionReplaceStart, completionReplaceEnd, completionItems[completionIndex],
+				)
+				if (ghost)
+					lineText += `${THEME.dim}${ghost}${ANSI_RESET}`
+			}
 			out += cursorTo(1, row) + ERASE_LINE
 				+ `${THEME.frame}│ ${ANSI_RESET}`
 				+ inputLinePrefix(logicalLine, totalLines)
-				+ truncateByWidth(view.visible[i] ?? '', contentCols)
+				+ truncateByWidth(lineText, contentCols)
 				+ cursorTo(cols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
 		}
+
+		const completionRows = getCompletionVisibleRows(completionItems.length, completionActive)
+		const eraseCompletionRows = Math.max(renderedCompletionRows, completionRows)
+		for (let i = 0; i < eraseCompletionRows; i++) {
+			const row = boxTop - eraseCompletionRows + i
+			if (row >= 1) out += cursorTo(1, row) + ERASE_LINE
+		}
+		if (completionRows)
+			out += renderCompletionBand(cols, boxTop, completionItems, completionIndex, completionActive)
+		renderedCompletionRows = completionRows
 
 		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, replHint)
 
@@ -310,32 +509,52 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	// #region 求值
 
 	/**
-	 * 渲染 wire 求值载荷为 ANSI 文本。
-	 * @param {object} payload - `/api/eval` 响应体。
+	 * 渲染 wire 求值载荷为 ANSI 文本（支持惰性展开）。
+	 * @param {object} payload - `eval_result` 响应体。
 	 * @returns {Promise<string>} ANSI 渲染后的求值输出。
 	 */
 	async function renderEvalPayload(payload) {
+		const conn = await ensureEvalWire()
+		const wireCtx = {
+			requestExpand: (ref, maxDepth) => conn.requestExpand(ref, maxDepth),
+			supportsAnsi: true,
+		}
 		let text = ''
-		/** @returns {Promise<null>} 本地 REPL 不请求远程展开。 */
-		function requestExpand() { return Promise.resolve(null) }
-		const wireCtx = { requestExpand, supportsAnsi: true }
 		for (const entryJson of payload.outputEntries ?? []) {
 			const entry = new WireLogEntry(entryJson, wireCtx)
-			text += await entry.renderString({ indent: '  ', maxDepth: 5 })
+			text += await entry.renderString({ indent: '  ', maxDepth: 8 })
+		}
+		/**
+		 * @param {unknown} snapshot - 序列化快照。
+		 * @param {'result' | 'error'} kind - 前缀样式。
+		 * @returns {Promise<string>} 渲染行。
+		 */
+		async function renderSnapshotLine(snapshot, kind) {
+			if (snapshot === undefined) return ''
+			const entry = new WireLogEntry({
+				method: kind,
+				level: kind === 'error' ? 'error' : 'log',
+				timestamp: Date.now(),
+				segments: [{ kind: 'value', snapshot }],
+			}, wireCtx)
+			const prefix = kind === 'error' ? `${THEME.error}✖` : `${THEME.accent}←`
+			const body = await entry.renderString({ indent: '  ', maxDepth: 8 })
+			return `${prefix}${ANSI_RESET} ${body}\n`
 		}
 		if (payload.result !== undefined)
-			text += `${THEME.accent}←${ANSI_RESET} ${renderAnsi([{ kind: 'value', snapshot: payload.result }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
+			text += await renderSnapshotLine(payload.result, 'result')
 		if (payload.error !== undefined)
-			text += `${THEME.error}✖${ANSI_RESET} ${renderAnsi([{ kind: 'value', snapshot: payload.error }], { colorize: true, indent: '  ', maxDepth: 5 })}\n`
+			text += await renderSnapshotLine(payload.error, 'error')
 		return text
 	}
 
 	/**
-	 * 提交 REPL 输入至 `/api/eval` 并展示结果。
+	 * 提交 REPL 输入至 `/ws/eval` 并展示结果。
 	 * @returns {Promise<void>}
 	 */
 	async function submitEval() {
 		if (evalInFlight) return
+		clearCompletion()
 		const code = input.trimEnd()
 		if (code.trim()) historyStore.push(code)
 		input = ''
@@ -353,17 +572,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		redrawInputArea()
 		writeLog(`${THEME.accent}❯${ANSI_RESET} ${highlightInputLines(code, highlightJs).replace(/\n/g, '\n  ')}\n`)
 		try {
-			const res = await fetch(EVAL_URL, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ code }),
-				signal: AbortSignal.timeout(120_000),
-			})
-			if (!res.ok) {
-				writeLog(`${THEME.error}[eval ${res.status}] ${await res.text()}${ANSI_RESET}\n`)
-				return
-			}
-			writeLog(await renderEvalPayload(await res.json()))
+			const payload = await sendEvalWireRequest({ type: 'eval_request', code })
+			writeLog(await renderEvalPayload(payload))
 		} catch (err) {
 			writeLog(`${THEME.error}[eval] ${err?.message ?? err}${ANSI_RESET}\n`)
 		} finally {
@@ -403,9 +613,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function insertAtCursor(text) {
+		const wasEmpty = !input.length
 		exitHistoryBrowse()
+		clearCompletion()
 		input = input.slice(0, cursor) + text + input.slice(cursor)
 		cursor += text.length
+		maybeConnectEvalOnFirstInput(wasEmpty)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
 	}
@@ -416,11 +629,14 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function insertCharAtCursor(ch) {
+		const wasEmpty = !input.length
 		exitHistoryBrowse()
+		clearCompletion()
 		const close = OPEN_TO_CLOSE.get(ch)
 		if (close !== undefined) {
 			input = input.slice(0, cursor) + ch + close + input.slice(cursor)
 			cursor += ch.length
+			maybeConnectEvalOnFirstInput(wasEmpty)
 			scheduleInputRedraw()
 			return
 		}
@@ -432,6 +648,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 		input = input.slice(0, cursor) + ch + input.slice(cursor)
 		cursor += ch.length
+		maybeConnectEvalOnFirstInput(wasEmpty)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
 	}
@@ -443,6 +660,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function deleteBeforeCursor() {
 		if (cursor <= 0) return
 		exitHistoryBrowse()
+		clearCompletion()
 		const { line } = plainOffsetToRowCol(input, cursor)
 		const lineStart = rowColToPlainOffset(input, line, 0)
 		// 行首（含该行第一个字符处）：退格应删掉 `\n` 并回到上一行末尾
@@ -473,6 +691,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function deleteAtCursor() {
 		if (cursor >= input.length) return
 		exitHistoryBrowse()
+		clearCompletion()
 		input = input.slice(0, cursor) + input.slice(cursor + 1)
 		scheduleInputRedraw()
 	}
@@ -485,6 +704,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function applyWordDelete(next) {
 		if (next.text === input) return
 		exitHistoryBrowse()
+		clearCompletion()
 		input = next.text
 		cursor = next.pos
 		syncInputScrollToCursor()
@@ -649,6 +869,31 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 */
 	function handleKey(event) {
 		if (isImeNoise(event)) return
+		if (event.key === 'tab') {
+			if (completionActive && completionItems.length) {
+				if (event.shiftKey)
+					completionIndex = (completionIndex - 1 + completionItems.length) % completionItems.length
+				else
+					completionIndex = (completionIndex + 1) % completionItems.length
+				scheduleInputRedraw()
+				return
+			}
+			requestCompletion().catch(onFatal)
+			return
+		}
+		if (event.key === 'escape') 
+			if (completionActive) {
+				clearCompletion()
+				scheduleInputRedraw()
+				return
+			}
+		
+		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter')) 
+			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
+				acceptCompletion()
+				return
+			}
+		
 		const kitty = kittyKeyAction(event)
 		if (kitty === 'newline' || isShiftEnterCsi(event)) {
 			pendingReturnSubmit = false

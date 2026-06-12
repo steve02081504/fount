@@ -315,3 +315,58 @@ export function renderScrollbarCell(rowIndex, viewportRows, totalLines, scrollTo
 	const isThumb = rowIndex >= thumbStart && rowIndex < thumbStart + thumbRows
 	return `${THEME.frame}${isThumb ? '█' : '│'}${ANSI_RESET}`
 }
+
+/** 补全下拉最大可见行数。 */
+export const MAX_COMPLETION_ROWS = 5
+
+/**
+ * 补全下拉占用的终端行数。
+ * @param {number} itemCount - 候选数量。
+ * @param {boolean} active - 是否显示补全。
+ * @returns {number} 行数。
+ */
+export function getCompletionVisibleRows(itemCount, active) {
+	if (!active || itemCount <= 0) return 0
+	return Math.min(MAX_COMPLETION_ROWS, itemCount)
+}
+
+/**
+ * 在输入框上边框上方绘制补全候选列表。
+ * @param {number} cols - 终端列宽。
+ * @param {number} boxTop - 输入框上边框行号。
+ * @param {string[]} items - 候选列表。
+ * @param {number} selectedIndex - 当前选中下标。
+ * @param {boolean} active - 是否激活。
+ * @returns {string} ANSI 序列。
+ */
+export function renderCompletionBand(cols, boxTop, items, selectedIndex, active) {
+	const rows = getCompletionVisibleRows(items.length, active)
+	if (!rows) return ''
+	const startIdx = items.length <= rows
+		? 0
+		: Math.max(0, Math.min(selectedIndex - Math.floor(rows / 2), items.length - rows))
+	let out = ''
+	for (let i = 0; i < rows; i++) {
+		const row = boxTop - rows + i
+		const itemIdx = startIdx + i
+		const item = items[itemIdx] ?? ''
+		const marker = itemIdx === selectedIndex ? `${THEME.accent}▸ ` : `${THEME.frame}  `
+		const line = truncateByWidth(`${marker}${item}${ANSI_RESET}`, Math.max(1, cols - 2))
+		out += cursorTo(1, row) + ERASE_LINE + line
+	}
+	return out
+}
+
+/**
+ * 计算行内幽灵补全后缀（已输入前缀之后的剩余部分）。
+ * @param {string} input - 当前输入。
+ * @param {number} replaceStart - 替换区间起点。
+ * @param {number} replaceEnd - 替换区间终点。
+ * @param {string} candidate - 当前候选完整文本。
+ * @returns {string} 幽灵后缀（纯文本）。
+ */
+export function completionGhostSuffix(input, replaceStart, replaceEnd, candidate) {
+	const typed = input.slice(replaceStart, replaceEnd)
+	if (!candidate.startsWith(typed)) return ''
+	return candidate.slice(typed.length)
+}

@@ -8,6 +8,7 @@ import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wir
 
 import { ping } from '/scripts/endpoints.mjs'
 import { renderLogItem, createLogToolbar, entryMatchesFilter } from './log.mjs'
+import { initRepl } from './repl.mjs'
 import { createLogsWs, getAutoUpdateEnabled, getSystemInfo, openSource, postRestart } from './src/endpoints.mjs'
 
 applyTheme()
@@ -440,3 +441,4 @@ fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
 connectLogsWs()
+initRepl({ canOpenEditor, onOpenSource: handleOpenSource })

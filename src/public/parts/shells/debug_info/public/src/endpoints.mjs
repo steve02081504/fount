@@ -57,3 +57,12 @@ export function createLogsWs() {
 	const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 	return new WebSocket(`${wsProto}//${window.location.host}/ws/logs`)
 }
+
+/**
+ * 创建 eval REPL WebSocket 连接。
+ * @returns {WebSocket} eval WS。
+ */
+export function createEvalWs() {
+	const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+	return new WebSocket(`${wsProto}//${window.location.host}/ws/eval`)
+}
