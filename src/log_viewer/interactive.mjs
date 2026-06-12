@@ -51,7 +51,7 @@ import {
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
 	const EVAL_WS_URL = `ws://127.0.0.1:${port}/ws/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
-	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline · tab complete')
+	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline')
 
 	let input = ''
 	let cursor = 0
@@ -91,6 +91,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let completionIndex = 0
 	let completionReplaceStart = 0
 	let completionReplaceEnd = 0
+	/** 补全请求代次（丢弃过期响应）。 */
+	let completionRequestSeq = 0
+	/** @type {ReturnType<typeof setTimeout> | null} */
+	let completionRefreshTimer = null
+	/** Escape 关闭补全后，直至下次编辑前不再自动弹出。 */
+	let completionSuppressed = false
 	/** 上次绘制的补全行数（用于擦除）。 */
 	let renderedCompletionRows = 0
 	/** 输入框上边框锚定行（`null` 表示贴底）。 */
@@ -256,6 +262,36 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
+	 * 取消待执行的补全刷新。
+	 * @returns {void}
+	 */
+	function cancelCompletionRefresh() {
+		if (completionRefreshTimer === null) return
+		clearTimeout(completionRefreshTimer)
+		completionRefreshTimer = null
+	}
+
+	/**
+	 * 输入变化后防抖请求补全（有候选项时自动展示）。
+	 * @returns {void}
+	 */
+	function scheduleCompletionRefresh() {
+		if (replTornDown) return
+		completionSuppressed = false
+		cancelCompletionRefresh()
+		completionRefreshTimer = setTimeout(() => {
+			completionRefreshTimer = null
+			if (replTornDown || completionSuppressed) return
+			if (!input.length) {
+				clearCompletion()
+				scheduleInputRedraw()
+				return
+			}
+			requestCompletion().catch(onFatal)
+		}, 150)
+	}
+
+	/**
 	 * 应用当前选中的补全项。
 	 * @returns {void}
 	 */
@@ -267,6 +303,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		clearCompletion()
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -274,17 +311,27 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {Promise<void>}
 	 */
 	async function requestCompletion() {
-		const result = await sendEvalWireRequest({
-			type: 'completion_request',
-			code: input,
-			cursor,
-		})
-		completionItems = Array.isArray(result.items) ? result.items.map(String) : []
-		completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : cursor
-		completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : cursor
-		completionIndex = 0
-		completionActive = completionItems.length > 0
-		scheduleInputRedraw()
+		const seq = ++completionRequestSeq
+		const snapCode = input
+		const snapCursor = cursor
+		try {
+			const result = await sendEvalWireRequest({
+				type: 'completion_request',
+				code: snapCode,
+				cursor: snapCursor,
+			})
+			if (seq !== completionRequestSeq || snapCode !== input || snapCursor !== cursor) return
+			completionItems = Array.isArray(result.items) ? result.items.map(String) : []
+			completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : snapCursor
+			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : snapCursor
+			completionIndex = 0
+			completionActive = completionItems.length > 0
+			scheduleInputRedraw()
+		} catch {
+			if (seq !== completionRequestSeq) return
+			clearCompletion()
+			scheduleInputRedraw()
+		}
 	}
 
 	// #region 终端模式与生命周期
@@ -354,6 +401,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (replTornDown) return
 		replTornDown = true
 		pendingInputRedraw = false
+		cancelCompletionRefresh()
 		tearDownEvalWire()
 		clearCompletion()
 		if (!activated) return
@@ -602,18 +650,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return conn.requestExpand(ref, maxDepth)
 		}
 		const wireCtx = { requestExpand, supportsAnsi: true }
-		let text = ''
-		for (const entryJson of payload.outputEntries ?? []) {
-			const entry = new WireLogEntry(entryJson, wireCtx)
-			text += await entry.renderString({ indent: '  ', maxDepth: 8 })
-		}
 		/**
 		 * @param {unknown} snapshot - 序列化快照。
 		 * @param {'result' | 'error'} kind - 前缀样式。
 		 * @returns {Promise<string>} 渲染行。
 		 */
 		async function renderSnapshotLine(snapshot, kind) {
-			if (snapshot === undefined) return ''
 			const entry = new WireLogEntry({
 				method: kind,
 				level: kind === 'error' ? 'error' : 'log',
@@ -624,11 +666,11 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			const body = await entry.renderString({ indent: '  ', maxDepth: 8 })
 			return `${prefix}${ANSI_RESET} ${body}\n`
 		}
-		if (payload.result !== undefined)
-			text += await renderSnapshotLine(payload.result, 'result')
 		if (payload.error !== undefined)
-			text += await renderSnapshotLine(payload.error, 'error')
-		return text
+			return renderSnapshotLine(payload.error, 'error')
+		if ('result' in payload)
+			return renderSnapshotLine(payload.result, 'result')
+		return ''
 	}
 
 	/**
@@ -637,6 +679,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 */
 	async function submitEval() {
 		if (evalInFlight) return
+		cancelCompletionRefresh()
+		completionSuppressed = false
 		clearCompletion()
 		const code = input.trimEnd()
 		if (code.trim()) historyStore.push(code)
@@ -688,6 +732,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		cursor = text.length
 		const visible = resolveInputRows(text)
 		inputScrollTop = Math.max(0, countInputLines(text) - visible)
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -698,12 +743,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function insertAtCursor(text) {
 		const wasEmpty = !input.length
 		exitHistoryBrowse()
-		clearCompletion()
 		input = input.slice(0, cursor) + text + input.slice(cursor)
 		cursor += text.length
 		maybeConnectEvalOnFirstInput(wasEmpty)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -714,19 +759,20 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function insertCharAtCursor(ch) {
 		const wasEmpty = !input.length
 		exitHistoryBrowse()
-		clearCompletion()
 		const close = OPEN_TO_CLOSE.get(ch)
 		if (close !== undefined) {
 			input = input.slice(0, cursor) + ch + close + input.slice(cursor)
 			cursor += ch.length
 			maybeConnectEvalOnFirstInput(wasEmpty)
 			scheduleInputRedraw()
+			scheduleCompletionRefresh()
 			return
 		}
 		const next = charAt(input, cursor)
 		if (CLOSE_CHARS.has(ch) && next === ch) {
 			cursor += ch.length
 			scheduleInputRedraw()
+			scheduleCompletionRefresh()
 			return
 		}
 		input = input.slice(0, cursor) + ch + input.slice(cursor)
@@ -734,6 +780,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		maybeConnectEvalOnFirstInput(wasEmpty)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -743,7 +790,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function deleteBeforeCursor() {
 		if (cursor <= 0) return
 		exitHistoryBrowse()
-		clearCompletion()
 		const { line } = plainOffsetToRowCol(input, cursor)
 		const lineStart = rowColToPlainOffset(input, line, 0)
 		// 行首（含该行第一个字符处）：退格应删掉 `\n` 并回到上一行末尾
@@ -752,6 +798,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			cursor -= 1
 			syncInputScrollToCursor()
 			scheduleInputRedraw()
+			scheduleCompletionRefresh()
 			return
 		}
 		const before = charBefore(input, cursor)
@@ -765,6 +812,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		cursor -= beforeLen
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -774,9 +822,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function deleteAtCursor() {
 		if (cursor >= input.length) return
 		exitHistoryBrowse()
-		clearCompletion()
 		input = input.slice(0, cursor) + input.slice(cursor + 1)
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -787,11 +835,11 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function applyWordDelete(next) {
 		if (next.text === input) return
 		exitHistoryBrowse()
-		clearCompletion()
 		input = next.text
 		cursor = next.pos
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -803,6 +851,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		cursor = Math.max(0, Math.min(pos, input.length))
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -835,6 +884,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		cursor = rowColToPlainOffset(input, newLine, col)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -858,6 +908,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		cursor = 0
 		inputScrollTop = 0
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -869,6 +920,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const visible = resolveInputRows(input)
 		inputScrollTop = Math.max(0, countInputLines(input) - visible)
 		scheduleInputRedraw()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -994,14 +1046,19 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 
 		if (event.key === 'tab') {
 			if (completionActive && completionItems.length) {
-				cycleCompletion(event.shiftKey ? -1 : 1)
+				acceptCompletion()
 				return
 			}
-			requestCompletion().catch(onFatal)
+			if (event.shiftKey)
+				moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - 1)
+			else
+				moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + 1)
 			return
 		}
 		if (event.key === 'escape')
-			if (completionActive) {
+			if (completionActive || completionSuppressed) {
+				completionSuppressed = true
+				cancelCompletionRefresh()
 				clearCompletion()
 				scheduleInputRedraw()
 				return

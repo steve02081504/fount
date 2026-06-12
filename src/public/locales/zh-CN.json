@@ -114,7 +114,7 @@
 		},
 		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登录",
 		"logViewer": {
-			"replHint": "enter 运行 · shift+enter 换行 · tab 补全"
+			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"path": {
 			"protocol": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "输入 JavaScript 代码…"
 			},
-			"hint": "Enter 运行 · Shift+Enter 换行 · Tab 补全 · ↑↓ 浏览历史"
+			"hint": "Enter 运行 · Shift+Enter 换行 · ↑↓ 浏览历史"
 		}
 	},
 	"debug_info": {

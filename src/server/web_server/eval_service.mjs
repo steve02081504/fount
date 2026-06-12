@@ -21,17 +21,17 @@ const JS_KEYWORDS = new Set([
  * 将 `async_eval` 结果转为可 JSON 传输的 wire 载荷（与 virtual-console log wire 同形）。
  * @param {{ outputEntries: { toJSON: () => object }[]; result?: unknown; error?: unknown }} evalResult - 求值结果。
  * @param {{ allocRef: (target: object) => string } | null} [expansionScope] - 惰性展开作用域。
- * @returns {object} 含 `outputEntries`、可选 `result` / `error` 快照的对象。
+ * @returns {object} 含 `outputEntries`、成功时必有 `result` 快照、失败时 `error` 快照的对象。
  */
 export function serializeEvalWirePayload(evalResult, expansionScope = null) {
 	const snapOpts = { maxDepth: WIRE_MAX_DEPTH, expansionScope }
 	const payload = {
 		outputEntries: evalResult.outputEntries.map(entry => entry.toJSON()),
 	}
-	if (evalResult.result !== undefined)
-		payload.result = serializeArgSnapshot(evalResult.result, snapOpts)
 	if (evalResult.error !== undefined)
 		payload.error = serializeArgSnapshot(evalResult.error, snapOpts)
+	else
+		payload.result = serializeArgSnapshot(evalResult.result, snapOpts)
 	return payload
 }
 

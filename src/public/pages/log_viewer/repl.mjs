@@ -5,6 +5,7 @@ import { renderLogItem } from './log.mjs'
 
 const HISTORY_KEY = 'log_viewer.repl.history'
 const MAX_HISTORY = 100
+const COMPLETION_DEBOUNCE_MS = 150
 
 /**
  * 初始化 log_viewer 浏览器 REPL。
@@ -33,6 +34,10 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	let completionIndex = 0
 	let completionReplaceStart = 0
 	let completionReplaceEnd = 0
+	let completionRequestSeq = 0
+	/** @type {ReturnType<typeof setTimeout> | null} */
+	let completionRefreshTimer = null
+	let completionSuppressed = false
 	let evalInFlight = false
 
 	try {
@@ -166,20 +171,18 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			const row = renderLogItem(entry, renderOpts)
 			outputEl.appendChild(row)
 		}
-		for (const entry of payload.outputEntries ?? [])
-			appendEntry(entry)
-		if (payload.result !== undefined)
-			appendEntry({
-				method: 'result',
-				level: 'log',
-				segments: [{ kind: 'value', snapshot: payload.result }],
-				plainText: '',
-			})
 		if (payload.error !== undefined)
 			appendEntry({
 				method: 'error',
 				level: 'error',
 				segments: [{ kind: 'value', snapshot: payload.error }],
+				plainText: '',
+			})
+		else if ('result' in payload)
+			appendEntry({
+				method: 'result',
+				level: 'log',
+				segments: [{ kind: 'value', snapshot: payload.result }],
 				plainText: '',
 			})
 		outputEl.scrollTop = outputEl.scrollHeight
@@ -194,6 +197,34 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 		completionIndex = 0
 		completionsEl.classList.add('hidden')
 		completionsEl.replaceChildren()
+	}
+
+	/**
+	 * 取消待执行的补全刷新。
+	 * @returns {void}
+	 */
+	function cancelCompletionRefresh() {
+		if (completionRefreshTimer === null) return
+		clearTimeout(completionRefreshTimer)
+		completionRefreshTimer = null
+	}
+
+	/**
+	 * 输入变化后防抖请求补全。
+	 * @returns {void}
+	 */
+	function scheduleCompletionRefresh() {
+		completionSuppressed = false
+		cancelCompletionRefresh()
+		completionRefreshTimer = setTimeout(() => {
+			completionRefreshTimer = null
+			if (completionSuppressed) return
+			if (!inputEl.value) {
+				hideCompletions()
+				return
+			}
+			requestCompletion()
+		}, COMPLETION_DEBOUNCE_MS)
 	}
 
 	/**
@@ -236,6 +267,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 		const pos = completionReplaceStart + item.length
 		inputEl.setSelectionRange(pos, pos)
 		hideCompletions()
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -243,18 +275,40 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	 * @returns {Promise<void>}
 	 */
 	async function requestCompletion() {
+		const seq = ++completionRequestSeq
 		const code = inputEl.value
 		const cursor = inputEl.selectionStart ?? code.length
 		try {
 			const result = await sendWireRequest({ type: 'completion_request', code, cursor })
+			if (seq !== completionRequestSeq) return
+			if (code !== inputEl.value || cursor !== (inputEl.selectionStart ?? inputEl.value.length)) return
 			completionItems = Array.isArray(result.items) ? result.items.map(String) : []
 			completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : cursor
 			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : cursor
 			completionIndex = 0
 			showCompletions()
 		} catch {
+			if (seq !== completionRequestSeq) return
 			hideCompletions()
 		}
+	}
+
+	/**
+	 * 模拟水平方向键移动光标。
+	 * @param {number} delta - 列偏移（-1 左，+1 右）。
+	 * @returns {void}
+	 */
+	function moveCaretHorizontal(delta) {
+		const start = inputEl.selectionStart ?? 0
+		const end = inputEl.selectionEnd ?? start
+		if (start !== end) {
+			const pos = delta < 0 ? Math.min(start, end) : Math.max(start, end)
+			inputEl.setSelectionRange(pos, pos)
+			return
+		}
+		const pos = Math.max(0, Math.min(inputEl.value.length, start + delta))
+		inputEl.setSelectionRange(pos, pos)
+		scheduleCompletionRefresh()
 	}
 
 	/**
@@ -263,6 +317,8 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	 */
 	async function submitEval() {
 		if (evalInFlight) return
+		cancelCompletionRefresh()
+		completionSuppressed = false
 		hideCompletions()
 		const code = inputEl.value.trimEnd()
 		if (!code.trim()) return
@@ -294,47 +350,47 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 
 	inputEl.addEventListener('input', () => {
 		if (inputEl.value) ensureEvalWire()
-		hideCompletions()
 		historyIndex = -1
+		scheduleCompletionRefresh()
 	})
 
 	inputEl.addEventListener('keydown', (e) => {
 		if (e.key === 'Tab') {
 			e.preventDefault()
 			if (completionItems.length) {
-				if (e.shiftKey)
-					completionIndex = (completionIndex - 1 + completionItems.length) % completionItems.length
-				else
-					completionIndex = (completionIndex + 1) % completionItems.length
-				showCompletions()
+				acceptCompletion()
 				return
 			}
-			requestCompletion()
+			moveCaretHorizontal(e.shiftKey ? -1 : 1)
 			return
 		}
 		if (e.key === 'Escape') {
-			hideCompletions()
+			if (completionItems.length || completionSuppressed) {
+				completionSuppressed = true
+				cancelCompletionRefresh()
+				hideCompletions()
+			}
 			return
 		}
-		if (completionItems.length && (e.key === 'Enter' || e.key === 'ArrowRight')) 
+		if (completionItems.length && (e.key === 'Enter' || e.key === 'ArrowRight'))
 			if (e.key === 'ArrowRight' || !e.shiftKey) {
 				e.preventDefault()
 				acceptCompletion()
 				return
 			}
-		
+
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault()
 			submitEval()
 			return
 		}
-		if (e.key === 'ArrowUp' && completionItems.length) {
+		if (e.key === 'ArrowUp' && completionItems.length > 1) {
 			e.preventDefault()
 			completionIndex = (completionIndex - 1 + completionItems.length) % completionItems.length
 			showCompletions()
 			return
 		}
-		if (e.key === 'ArrowDown' && completionItems.length) {
+		if (e.key === 'ArrowDown' && completionItems.length > 1) {
 			e.preventDefault()
 			completionIndex = (completionIndex + 1) % completionItems.length
 			showCompletions()
@@ -346,6 +402,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			if (historyIndex === -1) historyDraft = inputEl.value
 			historyIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
 			inputEl.value = history[historyIndex]
+			scheduleCompletionRefresh()
 			return
 		}
 		if (e.key === 'ArrowDown' && !completionItems.length) {
@@ -358,6 +415,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 				historyIndex++
 				inputEl.value = history[historyIndex]
 			}
+			scheduleCompletionRefresh()
 		}
 	})
 
