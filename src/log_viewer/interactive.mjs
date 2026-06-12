@@ -25,7 +25,7 @@ import {
 	countInputLines, cursorTo, getInputView, getLayout, highlightInputLines,
 	inputLinePrefix, plainOffsetToRowCol, renderBottomBorder, renderCompletionBand,
 	renderScrollbarCell, renderTopBorder, resolveInputRows, rowColToPlainOffset,
-	completionGhostSuffix, getCompletionVisibleRows, textWidthBefore, truncateByWidth,
+	getCompletionVisibleRows, textWidthBefore, truncateByWidth,
 } from './render.mjs'
 
 /**
@@ -88,6 +88,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let completionActive = false
 	/** @type {string[]} */
 	let completionItems = []
+	let completionSuffixes = []
 	let completionIndex = 0
 	let completionReplaceStart = 0
 	let completionReplaceEnd = 0
@@ -258,6 +259,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function clearCompletion() {
 		completionActive = false
 		completionItems = []
+		completionSuffixes = []
 		completionIndex = 0
 	}
 
@@ -298,9 +300,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 */
 	function completionPendingSuffix(index = completionIndex) {
 		if (!completionActive || !completionItems.length) return false
-		const item = completionItems[index]
-		if (!item) return false
-		return !!completionGhostSuffix(input, completionReplaceStart, completionReplaceEnd, item)
+		return (completionSuffixes[index] ?? '').length > 0
 	}
 
 	/**
@@ -338,6 +338,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			})
 			if (seq !== completionRequestSeq || snapCode !== input || snapCursor !== cursor) return
 			completionItems = Array.isArray(result.items) ? result.items.map(String) : []
+			completionSuffixes = Array.isArray(result.suffixes)
+				? result.suffixes.map(String)
+				: completionItems.map(() => '')
 			completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : snapCursor
 			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : snapCursor
 			completionIndex = 0
@@ -580,9 +583,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			const { line: cursorLine } = plainOffsetToRowCol(input, cursor)
 			let lineText = view.visible[i] ?? ''
 			if (completionActive && logicalLine === cursorLine && completionItems[completionIndex]) {
-				const ghost = completionGhostSuffix(
-					input, completionReplaceStart, completionReplaceEnd, completionItems[completionIndex],
-				)
+				const ghost = completionSuffixes[completionIndex] ?? ''
 				if (ghost)
 					lineText += `${THEME.dim}${ghost}${ANSI_RESET}`
 			}
@@ -866,7 +867,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function moveCursor(pos) {
-		cursor = Math.max(0, Math.min(pos, input.length))
+		const next = Math.max(0, Math.min(pos, input.length))
+		if (next === cursor) {
+			scheduleInputRedraw()
+			return
+		}
+		cursor = next
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
 		scheduleCompletionRefresh()
@@ -1086,19 +1092,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				return
 			}
 
-		if (completionActive && completionItems.length && completionPendingSuffix()
-			&& (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
-			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
-				acceptCompletion()
-				return
-			}
-
-		if (completionActive && (event.key === 'right' || event.key === 'return' || event.key === 'enter')
-			&& (event.key === 'right' || !event.shiftKey)) {
-			clearCompletion()
-			scheduleInputRedraw()
-		}
-
 		if (event.ctrlKey && event.key === 'v') {
 			pasteFromClipboard().catch(onFatal)
 			return
@@ -1153,10 +1146,25 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'right') {
+			if (cursor >= input.length && !event.ctrlKey) {
+				if (completionActive && completionItems.length && completionPendingSuffix()) {
+					acceptCompletion()
+					return
+				}
+				return
+			}
+			if (completionActive) {
+				clearCompletion()
+				scheduleInputRedraw()
+			}
 			moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + 1)
 			return
 		}
 		if (event.key === 'return' || event.key === 'enter') {
+			if (completionActive) {
+				clearCompletion()
+				scheduleInputRedraw()
+			}
 			handleReturnOrEnter(event)
 			return
 		}

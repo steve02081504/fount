@@ -31,6 +31,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	let history = []
 	/** @type {string[]} */
 	let completionItems = []
+	let completionSuffixes = []
 	let completionIndex = 0
 	let completionReplaceStart = 0
 	let completionReplaceEnd = 0
@@ -194,6 +195,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	 */
 	function hideCompletions() {
 		completionItems = []
+		completionSuffixes = []
 		completionIndex = 0
 		completionsEl.classList.add('hidden')
 		completionsEl.replaceChildren()
@@ -228,6 +230,19 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	}
 
 	/**
+	 * 将当前选中候选项滚到补全列表可视区域中间。
+	 * @returns {void}
+	 */
+	function scrollCompletionSelectionIntoView() {
+		const selected = completionsEl.children[completionIndex]
+		if (!(selected instanceof HTMLElement)) return
+		const maxScroll = completionsEl.scrollHeight - completionsEl.clientHeight
+		if (maxScroll <= 0) return
+		const target = selected.offsetTop - (completionsEl.clientHeight - selected.offsetHeight) / 2
+		completionsEl.scrollTop = Math.max(0, Math.min(maxScroll, target))
+	}
+
+	/**
 	 * 显示补全候选。
 	 * @returns {void}
 	 */
@@ -253,6 +268,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			li.appendChild(btn)
 			completionsEl.appendChild(li)
 		}
+		scrollCompletionSelectionIntoView()
 	}
 
 	/**
@@ -262,11 +278,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	 */
 	function completionPendingSuffix(index = completionIndex) {
 		if (!completionItems.length) return false
-		const item = completionItems[index]
-		if (!item) return false
-		const typed = inputEl.value.slice(completionReplaceStart, completionReplaceEnd)
-		if (!item.startsWith(typed)) return true
-		return item.length > typed.length
+		return (completionSuffixes[index] ?? '').length > 0
 	}
 
 	/**
@@ -300,6 +312,9 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			if (seq !== completionRequestSeq) return
 			if (code !== inputEl.value || cursor !== (inputEl.selectionStart ?? inputEl.value.length)) return
 			completionItems = Array.isArray(result.items) ? result.items.map(String) : []
+			completionSuffixes = Array.isArray(result.suffixes)
+				? result.suffixes.map(String)
+				: completionItems.map(() => '')
 			completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : cursor
 			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : cursor
 			completionIndex = 0
@@ -327,6 +342,7 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			return
 		}
 		const pos = Math.max(0, Math.min(inputEl.value.length, start + delta))
+		if (pos === start) return
 		inputEl.setSelectionRange(pos, pos)
 		scheduleCompletionRefresh()
 	}
@@ -393,15 +409,18 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			}
 			return
 		}
-		if (completionItems.length && completionPendingSuffix() && (e.key === 'Enter' || e.key === 'ArrowRight'))
-			if (e.key === 'ArrowRight' || !e.shiftKey) {
-				e.preventDefault()
-				acceptCompletion()
+		if (e.key === 'ArrowRight') {
+			const start = inputEl.selectionStart ?? 0
+			const end = inputEl.selectionEnd ?? start
+			if (start === end && start >= inputEl.value.length) {
+				if (completionItems.length && completionPendingSuffix()) {
+					e.preventDefault()
+					acceptCompletion()
+				}
 				return
 			}
-
-		if (completionItems.length && (e.key === 'Enter' || e.key === 'ArrowRight') && !e.shiftKey)
-			hideCompletions()
+			if (completionItems.length) hideCompletions()
+		}
 
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault()

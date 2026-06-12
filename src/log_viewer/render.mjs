@@ -362,17 +362,3 @@ export function renderCompletionBand(cols, boxTop, items, selectedIndex, active)
 	}
 	return out
 }
-
-/**
- * 计算行内幽灵补全后缀（已输入前缀之后的剩余部分）。
- * @param {string} input - 当前输入。
- * @param {number} replaceStart - 替换区间起点。
- * @param {number} replaceEnd - 替换区间终点。
- * @param {string} candidate - 当前候选完整文本。
- * @returns {string} 幽灵后缀（纯文本）。
- */
-export function completionGhostSuffix(input, replaceStart, replaceEnd, candidate) {
-	const typed = input.slice(replaceStart, replaceEnd)
-	if (!candidate.startsWith(typed)) return ''
-	return candidate.slice(typed.length)
-}

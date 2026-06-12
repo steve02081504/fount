@@ -5,17 +5,15 @@ import {
 } from 'npm:@steve02081504/virtual-console/node'
 import { handleClientWireMessage } from 'npm:@steve02081504/virtual-console/wire/server'
 
+import {
+	JS_KEYWORDS,
+	enrichCompletionWirePayload,
+	filterByCompletionPrefix,
+	parseCompletionContext,
+} from './repl_completion.mjs'
+
 const WIRE_MAX_DEPTH = 5
 const COMPLETION_MAX_ITEMS = 50
-
-/** @type {ReadonlySet<string>} */
-const JS_KEYWORDS = new Set([
-	'async', 'await', 'break', 'case', 'catch', 'class', 'const', 'continue',
-	'debugger', 'default', 'delete', 'do', 'else', 'export', 'extends', 'false',
-	'finally', 'for', 'function', 'if', 'import', 'in', 'instanceof', 'let',
-	'new', 'null', 'of', 'return', 'super', 'switch', 'this', 'throw', 'true',
-	'try', 'typeof', 'undefined', 'var', 'void', 'while', 'with', 'yield',
-])
 
 /**
  * 将 `async_eval` 结果转为可 JSON 传输的 wire 载荷（与 virtual-console log wire 同形）。
@@ -33,77 +31,6 @@ export function serializeEvalWirePayload(evalResult, expansionScope = null) {
 	else
 		payload.result = serializeArgSnapshot(evalResult.result, snapOpts)
 	return payload
-}
-
-/**
- * 在 `before` 中查找最后一个不在字符串/模板字面量内的 `.`。
- * @param {string} before - 光标前的文本。
- * @returns {number} 下标，无则 -1。
- */
-function findLastDotOutsideStrings(before) {
-	let inSingle = false
-	let inDouble = false
-	let inTemplate = false
-	let escape = false
-	let lastDot = -1
-	for (let i = 0; i < before.length; i++) {
-		const ch = before[i]
-		if (escape) {
-			escape = false
-			continue
-		}
-		if (ch === '\\') {
-			escape = true
-			continue
-		}
-		if (!inDouble && ch === '\'') {
-			inSingle = !inSingle
-			continue
-		}
-		if (!inSingle && ch === '"') {
-			inDouble = !inDouble
-			continue
-		}
-		if (!inSingle && !inDouble && ch === '`') {
-			inTemplate = !inTemplate
-			continue
-		}
-		if (!inSingle && !inDouble && !inTemplate && ch === '.')
-			lastDot = i
-	}
-	return lastDot
-}
-
-/**
- * 解析补全上下文：成员访问或裸标识符。
- * @param {string} code - 完整输入。
- * @param {number} cursor - 光标偏移。
- * @returns {{ kind: 'member', receiver: string, fragment: string, replaceStart: number, replaceEnd: number } | { kind: 'identifier', fragment: string, replaceStart: number, replaceEnd: number } | null} 补全上下文，无法解析时为 `null`。
- */
-function parseCompletionContext(code, cursor) {
-	const before = code.slice(0, Math.max(0, Math.min(cursor, code.length)))
-	const lastDot = findLastDotOutsideStrings(before)
-	if (lastDot >= 0) {
-		const receiver = before.slice(0, lastDot).trimEnd()
-		const fragment = before.slice(lastDot + 1)
-		if (!receiver) return null
-		return {
-			kind: 'member',
-			receiver,
-			fragment,
-			replaceStart: lastDot + 1,
-			replaceEnd: cursor,
-		}
-	}
-	const idMatch = before.match(/([\w$]*)$/)
-	if (!idMatch) return null
-	const fragment = idMatch[1]
-	return {
-		kind: 'identifier',
-		fragment,
-		replaceStart: cursor - fragment.length,
-		replaceEnd: cursor,
-	}
 }
 
 /**
@@ -143,9 +70,7 @@ function collectGlobalCandidates(fragment) {
 		for (const k of Object.getOwnPropertyNames(globalThis))
 			if (/^[\w$]+$/.test(k)) names.add(k)
 	} catch { /* ignore */ }
-	const lower = fragment.toLowerCase()
-	return [...names]
-		.filter(n => n.toLowerCase().startsWith(lower))
+	return filterByCompletionPrefix(fragment, names)
 		.sort()
 		.slice(0, COMPLETION_MAX_ITEMS)
 }
@@ -154,30 +79,36 @@ function collectGlobalCandidates(fragment) {
  * 求值式成员/标识符补全。
  * @param {string} code - 当前输入全文。
  * @param {number} cursor - 光标偏移。
- * @returns {Promise<{ items: string[], replaceStart: number, replaceEnd: number }>} 补全结果。
+ * @returns {Promise<{ items: string[], replaceStart: number, replaceEnd: number, suffixes: string[] }>} 补全结果。
  */
 export async function computeCompletion(code, cursor) {
 	const ctx = parseCompletionContext(code, cursor)
 	if (!ctx)
-		return { items: [], replaceStart: cursor, replaceEnd: cursor }
+		return enrichCompletionWirePayload(code, { items: [], replaceStart: cursor, replaceEnd: cursor })
 
 	if (ctx.kind === 'identifier') {
 		const items = collectGlobalCandidates(ctx.fragment)
-		return { items, replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd }
+		return enrichCompletionWirePayload(code, {
+			items, replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd,
+		})
 	}
 
 	try {
 		const evalResult = await async_eval(`return (${ctx.receiver})`)
 		if (evalResult.error)
-			return { items: [], replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd }
+			return enrichCompletionWirePayload(code, {
+				items: [], replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd,
+			})
 		const names = collectPropertyNames(evalResult.result)
-		const lower = ctx.fragment.toLowerCase()
-		const items = names
-			.filter(n => n.toLowerCase().startsWith(lower))
+		const items = filterByCompletionPrefix(ctx.fragment, names)
 			.slice(0, COMPLETION_MAX_ITEMS)
-		return { items, replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd }
+		return enrichCompletionWirePayload(code, {
+			items, replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd,
+		})
 	} catch {
-		return { items: [], replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd }
+		return enrichCompletionWirePayload(code, {
+			items: [], replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd,
+		})
 	}
 }
 
@@ -268,6 +199,7 @@ export function evalServiceWebSocketHandler(ws) {
 						items: [],
 						replaceStart: 0,
 						replaceEnd: 0,
+						suffixes: [],
 					})
 				}
 			})()
