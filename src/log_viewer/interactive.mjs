@@ -19,7 +19,7 @@ import {
 } from './keys.mjs'
 import { geti18n } from './locale.mjs'
 import {
-	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_BELOW, ERASE_LINE,
+	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_LINE,
 	INPUT_PAD_LEFT, INPUT_PAD_RIGHT, LEVEL_PREFIX_COLORS, MIN_INPUT_ROWS,
 	SCROLL_REGION_RESET, THEME,
 	countInputLines, cursorTo, getInputView, getLayout, highlightInputLines,
@@ -93,16 +93,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let completionReplaceEnd = 0
 	/** 上次绘制的补全行数（用于擦除）。 */
 	let renderedCompletionRows = 0
-	/** 输入框上边框锚定行（resize 后贴日志末尾、下方留白；`null` 表示贴底）。 */
+	/** 输入框上边框锚定行（`null` 表示贴底）。 */
 	let boxAnchorTop = null
-	/** @type {number | null} 上次绘制的输入框上边框行号（resize 时定位旧框带）。 */
-	let renderedBoxTop = null
-	/** @type {number | null} 上次绘制的光标终端行号（resize 时配合 CPR 推算 reflow 偏移）。 */
-	let renderedCursorRow = null
-	/** @type {number | null} 上次绘制的光标终端列号（resize 时估算当前行 reflow 偏移）。 */
-	let renderedCursorCol = null
-	/** @type {((pos: { row: number, col: number }) => void)[]} 等待 CPR（光标位置报告）回包的回调。 */
-	const cprResolvers = []
 	/** resize 处理进行中（期间日志写入进缓冲、跳过常规重绘）。 */
 	let resizeInFlight = false
 	/** resize 处理期间又收到 resize 事件，需再跑一轮。 */
@@ -379,57 +371,26 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		try { tearDownRepl() } catch { /* ignore */ }
 	})
 	if (process.stdout.isTTY)
-		process.stdout.on('resize', () => { handleResize().catch(onFatal) })
-
-	// eslint-disable-next-line no-control-regex
-	const CPR_RE = /\x1b\[(\d+);(\d+)R/
-	/**
-	 * 截取 stdin 中的 CPR（光标位置报告）回包并喂给等待者。
-	 * 仅在有等待者时启用，避免误吞带修饰键的 F3（同为 `CSI 1;mR`）。
-	 * @param {string} text - stdin 文本。
-	 * @returns {string} 剥离 CPR 后的文本。
-	 */
-	function consumeCpr(text) {
-		let m
-		while (cprResolvers.length && (m = CPR_RE.exec(text))) {
-			cprResolvers.shift()?.({ row: Number(m[1]), col: Number(m[2]) })
-			text = text.slice(0, m.index) + text.slice(m.index + m[0].length)
-		}
-		return text
-	}
+		process.stdout.on('resize', () => { handleResize() })
 
 	/**
-	 * 查询光标当前位置（DSR 6 / CPR）。终端 reflow 会带着光标所在行移动，
-	 * 这是 resize 后"旧内容去了哪"唯一可靠的锚点。
-	 * @param {number} [timeoutMs] - 等待回包超时。
-	 * @returns {Promise<{ row: number, col: number } | null>} 光标位置；超时或非 TTY 为 `null`。
+	 * reflow 后旧输入框带占用的物理行数：每行满屏宽，按 `ceil(旧宽/新宽)` 折行。
+	 * @param {number} oldCols - 绘制时列宽。
+	 * @param {number} newCols - 当前列宽。
+	 * @param {number} logicalBandRows - 框带逻辑行数（补全 + 上下边框 + 输入行）。
+	 * @param {number} terminalRows - 终端行高。
+	 * @returns {number} 自屏底向上需擦除的行数。
 	 */
-	function queryCursorRow(timeoutMs = 250) {
-		if (!process.stdin.isTTY || replTornDown) return Promise.resolve(null)
-		return new Promise(resolve => {
-			/**
-			 * @param {{ row: number, col: number }} pos - CPR 回包。
-			 * @returns {void}
-			 */
-			const entry = pos => {
-				clearTimeout(timer)
-				resolve(pos)
-			}
-			const timer = setTimeout(() => {
-				const i = cprResolvers.indexOf(entry)
-				if (i >= 0) cprResolvers.splice(i, 1)
-				resolve(null)
-			}, timeoutMs)
-			cprResolvers.push(entry)
-			process.stdout.write('\x1b[6n')
-		})
+	function replReflowBandRows(oldCols, newCols, logicalBandRows, terminalRows) {
+		const wrapFactor = Math.ceil(oldCols / newCols)
+		return Math.min(logicalBandRows * wrapFactor, terminalRows)
 	}
 
 	/**
 	 * 串行化 resize 处理：进行期间日志写入缓冲，结束后统一回放并重绘。
-	 * @returns {Promise<void>}
+	 * @returns {void}
 	 */
-	async function handleResize() {
+	function handleResize() {
 		if (replTornDown || !activated) return
 		if (resizeInFlight) {
 			resizeAgain = true
@@ -440,7 +401,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		try {
 			do {
 				resizeAgain = false
-				await performResize()
+				performResize()
 			} while (resizeAgain && !replTornDown)
 		} finally {
 			resizeInFlight = false
@@ -453,65 +414,24 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	/**
 	 * 处理一次终端尺寸变化。
 	 *
-	 * 没有任何终端序列能把滚进 scrollback 的内容拉回屏幕，也没有"内容到哪结束"的查询；
-	 * 唯一可靠的锚点是 CPR 报告的光标行——reflow 时终端带着光标所在行移动，而光标停在输入框内。
-	 * 由光标行减去框带在光标上方的行数（框区各行均为绝对定位绘制的硬换行，reflow 不会改变其行数）
-	 * 即得旧框带顶部，其上一行就是日志末尾：据此精确擦除残影，并把输入框重新锚定在
-	 * 日志末尾正下方（而非强制贴底），框到屏底之间留空白，避免日志与输入框之间出现无意义空行。
-	 * @returns {Promise<void>}
+	 * 输入框每行绘制为满屏宽；变窄后整带软折行，物理高度约为
+	 * `框带逻辑行数 × ceil(旧宽/新宽)`。自屏底向上擦除该高度，再把日志续写点设到滚动区末行并保存，
+	 * 贴底重绘输入框。
+	 * @returns {void}
 	 */
-	async function performResize() {
-		// 必须先查 CPR 再动滚动区：DECSTBM（含复位 `CSI r`）会把光标归位到 (1,1)，
-		// 要趁光标还停在输入框内时拿到 reflow 后的真实行号。
-		const pos = await queryCursorRow()
+	function performResize() {
 		if (replTornDown) return
-		// 快照取在 await 之后：若等待期间发生过重绘，rendered* 与 CPR 光标位置仍是一致的一对。
-		const prevBoxTop = renderedBoxTop
-		const prevCursorRow = renderedCursorRow
+		boxAnchorTop = null
 		const inputRows = resolveInputRows(input)
 		const rows = process.stdout.rows || 24
 		const cols = process.stdout.columns || 80
+		const logicalBandRows = renderedInputRows + 2 + renderedCompletionRows
+		const eraseRows = replReflowBandRows(renderedCols, cols, logicalBandRows, rows)
+		const { scrollBottom } = layoutOf(inputRows)
 		let out = SCROLL_REGION_RESET
-		if (pos && pos.row >= 1 && pos.row <= rows && prevBoxTop !== null && prevCursorRow !== null) {
-			// 旧框带每一行在变窄后可能软折成多行；按旧/新列宽估算 reflow 后
-			// “框带顶到光标所在物理行”的行距，避免低估导致残影。
-			const wrapFactor = Math.max(1, Math.ceil(renderedCols / cols))
-			const bandAboveLogical = Math.max(0, prevCursorRow - prevBoxTop + renderedCompletionRows)
-			const cursorRowExtra = Math.floor((Math.max(1, renderedCursorCol ?? 1) - 1) / cols)
-			const bandAbove = bandAboveLogical * wrapFactor + cursorRowExtra
-			const ghostTop = Math.max(2, pos.row - bandAbove)
-			const maxLogEnd = Math.max(1, rows - inputRows - 2)
-			// 日志末尾低于新输入框所需位置（如变窄导致日志折行变长）：
-			// 趁滚动区已是全屏，把整屏上滚，顶部行推入 scrollback，保住日志尾部而非擦掉。
-			const overflow = ghostTop - 1 - maxLogEnd
-			// 仅在真正“变窄”时上滚；变宽时若估算有偏差，宁可保守地留空，也不吞掉上方日志。
-			if (overflow > 0 && cols < renderedCols)
-				out += cursorTo(1, rows) + '\n'.repeat(overflow)
-			const logEnd = Math.max(1, Math.min(ghostTop - 1, maxLogEnd))
-			boxAnchorTop = logEnd + 1 >= rows - inputRows - 1 ? null : logEnd + 1
-			// 修正日志续写位置：行号取推算的日志末尾（VPA 保列），列沿用 DECSC 保存的列
-			//（日志几乎总以换行结尾，列为 1）；随后向下整段擦除旧框带与残留空行。
-			out += CURSOR_RESTORE + `\x1b[${logEnd}d` + CURSOR_SAVE
-			for (let row = logEnd + 1; row <= rows; row++)
-				out += cursorTo(1, row) + ERASE_LINE
-		} else {
-			// CPR 不可用时退化为启发式：变窄时旧框每行（写满 renderedCols 列）可能折行，
-			// 按折行倍数从屏底向上逐行擦除；DECSC 保存的日志位置可能落入输入框带，
-			// 恢复后立即向下擦除残余，再用 LF 下探-回退钳回滚动区内。
-			boxAnchorTop = null
-			const layout = layoutOf(inputRows)
-			const wrapFactor = Math.max(1, Math.ceil(renderedCols / layout.cols))
-			const bandRows = Math.min(
-				(renderedInputRows + 2 + renderedCompletionRows) * wrapFactor,
-				layout.rows,
-			)
-			for (let i = 0; i < bandRows; i++)
-				out += cursorTo(1, layout.rows - i) + ERASE_LINE
-			const clamp = layout.inputRows + 2
-			out += CURSOR_RESTORE + ERASE_BELOW
-				+ '\n'.repeat(clamp) + `\x1b[${clamp}A` + CURSOR_SAVE
-		}
-		out += setScrollRegionSeq()
+		for (let i = 0; i < eraseRows; i++)
+			out += cursorTo(1, rows - i) + ERASE_LINE
+		out += cursorTo(1, scrollBottom) + CURSOR_SAVE + setScrollRegionSeq()
 		process.stdout.write(out)
 		renderedCompletionRows = 0
 		redrawInputArea()
@@ -628,9 +548,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		process.stdout.write(out)
 		renderedInputRows = inputRows
 		renderedCols = cols
-		renderedBoxTop = boxTop
-		renderedCursorRow = view.cursorRow
-		renderedCursorCol = screenCol
 	}
 
 	/**
@@ -1186,7 +1103,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function dispatchKeys(text) {
-		if (cprResolvers.length) text = consumeCpr(text)
 		if (!text) return
 		/** @type {import('jsr:@cliffy/keycode').KeyCode[]} */
 		let keys
