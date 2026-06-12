@@ -558,11 +558,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const inputRows = resolveInputRows(input)
 		const prevRows = renderedInputRows
 		const { cols, scrollBottom, boxTop, inputStart, boxBottom } = layoutOf(inputRows)
-		// ConPTY/WT 会把写满整行宽度的行视为软折行：resize 时这些行会被折行/合并，
-		// 产生残影并吞并相邻内容，也破坏 CPR 推算所依赖的"框带行数恒定"。
-		// 故框区一律不触碰最右一列，保证各行是硬换行。
-		const drawCols = Math.max(1, cols - 1)
-		const contentCols = Math.max(1, drawCols - INPUT_PAD_LEFT - INPUT_PAD_RIGHT)
+		const contentCols = Math.max(1, cols - INPUT_PAD_LEFT - INPUT_PAD_RIGHT)
 		const totalLines = countInputLines(input)
 		let out = ''
 		if (inputRows !== prevRows) {
@@ -576,7 +572,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 		out += CURSOR_HIDE
 
-		out += cursorTo(1, boxTop) + ERASE_LINE + renderTopBorder(drawCols, evalInFlight)
+		out += cursorTo(1, boxTop) + ERASE_LINE + renderTopBorder(cols, evalInFlight)
 
 		const { line: cursorLine, col: cursorCol } = plainOffsetToRowCol(input, cursor)
 		const view = getInputView(
@@ -599,7 +595,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				+ `${THEME.frame}│ ${ANSI_RESET}`
 				+ inputLinePrefix(logicalLine, totalLines)
 				+ truncateByWidth(lineText, contentCols)
-				+ cursorTo(drawCols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
+				+ cursorTo(cols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
 		}
 
 		const completionRows = getCompletionVisibleRows(completionItems.length, completionActive)
@@ -612,12 +608,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			out += renderCompletionBand(cols, boxTop, completionItems, completionIndex, completionActive)
 		renderedCompletionRows = completionRows
 
-		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(drawCols, replHint)
+		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, replHint)
 
 		const cursorLineText = input.split('\n')[cursorLine] ?? ''
 		const screenCol = Math.min(
 			INPUT_PAD_LEFT + 1 + textWidthBefore(cursorLineText, cursorCol),
-			Math.max(1, drawCols - INPUT_PAD_RIGHT),
+			Math.max(1, cols - INPUT_PAD_RIGHT),
 		)
 		out += cursorTo(screenCol, view.cursorRow) + CURSOR_SHOW
 		process.stdout.write(out)
