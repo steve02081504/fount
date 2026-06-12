@@ -459,8 +459,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {Promise<void>}
 	 */
 	async function performResize() {
-		// 先放开滚动区再查询，避免后续光标移动触发分区滚动。
-		process.stdout.write(SCROLL_REGION_RESET)
+		// 必须先查 CPR 再动滚动区：DECSTBM（含复位 `CSI r`）会把光标归位到 (1,1)，
+		// 要趁光标还停在输入框内时拿到 reflow 后的真实行号。
 		const pos = await queryCursorRow()
 		if (replTornDown) return
 		// 快照取在 await 之后：若等待期间发生过重绘，rendered* 与 CPR 光标位置仍是一致的一对。
@@ -468,11 +468,17 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const prevCursorRow = renderedCursorRow
 		const inputRows = resolveInputRows(input)
 		const rows = process.stdout.rows || 24
-		let out = ''
+		let out = SCROLL_REGION_RESET
 		if (pos && pos.row >= 1 && pos.row <= rows && prevBoxTop !== null && prevCursorRow !== null) {
 			const bandAbove = prevCursorRow - prevBoxTop + renderedCompletionRows
 			const ghostTop = Math.max(2, pos.row - bandAbove)
-			const logEnd = Math.max(1, Math.min(ghostTop - 1, rows - inputRows - 2))
+			const maxLogEnd = Math.max(1, rows - inputRows - 2)
+			// 日志末尾低于新输入框所需位置（如变窄导致日志折行变长）：
+			// 趁滚动区已是全屏，把整屏上滚，顶部行推入 scrollback，保住日志尾部而非擦掉。
+			const overflow = ghostTop - 1 - maxLogEnd
+			if (overflow > 0)
+				out += cursorTo(1, rows) + '\n'.repeat(overflow)
+			const logEnd = Math.max(1, Math.min(ghostTop - 1, maxLogEnd))
 			boxAnchorTop = logEnd + 1 >= rows - inputRows - 1 ? null : logEnd + 1
 			// 修正日志续写位置：行号取推算的日志末尾（VPA 保列），列沿用 DECSC 保存的列
 			//（日志几乎总以换行结尾，列为 1）；随后向下整段擦除旧框带与残留空行。
@@ -552,7 +558,11 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const inputRows = resolveInputRows(input)
 		const prevRows = renderedInputRows
 		const { cols, scrollBottom, boxTop, inputStart, boxBottom } = layoutOf(inputRows)
-		const contentCols = Math.max(1, cols - INPUT_PAD_LEFT - INPUT_PAD_RIGHT)
+		// ConPTY/WT 会把写满整行宽度的行视为软折行：resize 时这些行会被折行/合并，
+		// 产生残影并吞并相邻内容，也破坏 CPR 推算所依赖的"框带行数恒定"。
+		// 故框区一律不触碰最右一列，保证各行是硬换行。
+		const drawCols = Math.max(1, cols - 1)
+		const contentCols = Math.max(1, drawCols - INPUT_PAD_LEFT - INPUT_PAD_RIGHT)
 		const totalLines = countInputLines(input)
 		let out = ''
 		if (inputRows !== prevRows) {
@@ -566,7 +576,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 		out += CURSOR_HIDE
 
-		out += cursorTo(1, boxTop) + ERASE_LINE + renderTopBorder(cols, evalInFlight)
+		out += cursorTo(1, boxTop) + ERASE_LINE + renderTopBorder(drawCols, evalInFlight)
 
 		const { line: cursorLine, col: cursorCol } = plainOffsetToRowCol(input, cursor)
 		const view = getInputView(
@@ -589,7 +599,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				+ `${THEME.frame}│ ${ANSI_RESET}`
 				+ inputLinePrefix(logicalLine, totalLines)
 				+ truncateByWidth(lineText, contentCols)
-				+ cursorTo(cols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
+				+ cursorTo(drawCols, row) + renderScrollbarCell(i, inputRows, totalLines, view.scrollTop)
 		}
 
 		const completionRows = getCompletionVisibleRows(completionItems.length, completionActive)
@@ -602,12 +612,12 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			out += renderCompletionBand(cols, boxTop, completionItems, completionIndex, completionActive)
 		renderedCompletionRows = completionRows
 
-		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, replHint)
+		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(drawCols, replHint)
 
 		const cursorLineText = input.split('\n')[cursorLine] ?? ''
 		const screenCol = Math.min(
 			INPUT_PAD_LEFT + 1 + textWidthBefore(cursorLineText, cursorCol),
-			Math.max(1, cols - INPUT_PAD_RIGHT),
+			Math.max(1, drawCols - INPUT_PAD_RIGHT),
 		)
 		out += cursorTo(screenCol, view.cursorRow) + CURSOR_SHOW
 		process.stdout.write(out)

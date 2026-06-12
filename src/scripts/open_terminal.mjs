@@ -42,6 +42,9 @@ export function spawnFountLog() {
 			detached: true,
 			stdio: 'ignore',
 			cwd: fountDir,
+			env: {
+				FOUNT_CLICK: '1',
+			},
 		}).unref()
 		return
 	}
@@ -56,7 +59,14 @@ export function spawnFountLog() {
 		['alacritty', ['-e', fountScript, 'log']],
 	]
 	for (const [cmd, args] of terminals) {
-		const child = spawn(cmd, args, { detached: true, stdio: 'ignore', cwd: fountDir })
+		const child = spawn(cmd, args, {
+			detached: true,
+			stdio: 'ignore',
+			cwd: fountDir,
+			env: {
+				FOUNT_CLICK: '1',
+			},
+		})
 		child.on('error', () => { /* try next */ })
 		child.unref()
 		return
@@ -72,7 +82,9 @@ export function spawnFountLog() {
 export async function openTerminal() {
 	try {
 		await openLogViewerWindow()
-	} catch {
+	}
+	catch(err) {
+		console.error(err)
 		spawnFountLog()
 	}
 }
