@@ -256,11 +256,28 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	}
 
 	/**
+	 * 当前选中候选项是否仍有未输入的后缀。
+	 * @param {number} [index] - 候选项下标。
+	 * @returns {boolean} 是否仍有可接受的后缀。
+	 */
+	function completionPendingSuffix(index = completionIndex) {
+		if (!completionItems.length) return false
+		const item = completionItems[index]
+		if (!item) return false
+		const typed = inputEl.value.slice(completionReplaceStart, completionReplaceEnd)
+		if (!item.startsWith(typed)) return true
+		return item.length > typed.length
+	}
+
+	/**
 	 * 应用当前补全项到输入框。
 	 * @returns {void}
 	 */
 	function acceptCompletion() {
-		if (!completionItems.length) return
+		if (!completionItems.length || !completionPendingSuffix()) {
+			hideCompletions()
+			return
+		}
 		const item = completionItems[completionIndex]
 		const value = inputEl.value
 		inputEl.value = value.slice(0, completionReplaceStart) + item + value.slice(completionReplaceEnd)
@@ -286,7 +303,10 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			completionReplaceStart = Number.isFinite(result.replaceStart) ? result.replaceStart : cursor
 			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : cursor
 			completionIndex = 0
-			showCompletions()
+			if (completionItems.length === 1 && !completionPendingSuffix(0))
+				hideCompletions()
+			else
+				showCompletions()
 		} catch {
 			if (seq !== completionRequestSeq) return
 			hideCompletions()
@@ -357,10 +377,11 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 	inputEl.addEventListener('keydown', (e) => {
 		if (e.key === 'Tab') {
 			e.preventDefault()
-			if (completionItems.length) {
+			if (completionItems.length && completionPendingSuffix()) {
 				acceptCompletion()
 				return
 			}
+			if (completionItems.length) hideCompletions()
 			moveCaretHorizontal(e.shiftKey ? -1 : 1)
 			return
 		}
@@ -372,12 +393,15 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			}
 			return
 		}
-		if (completionItems.length && (e.key === 'Enter' || e.key === 'ArrowRight'))
+		if (completionItems.length && completionPendingSuffix() && (e.key === 'Enter' || e.key === 'ArrowRight'))
 			if (e.key === 'ArrowRight' || !e.shiftKey) {
 				e.preventDefault()
 				acceptCompletion()
 				return
 			}
+
+		if (completionItems.length && (e.key === 'Enter' || e.key === 'ArrowRight') && !e.shiftKey)
+			hideCompletions()
 
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault()

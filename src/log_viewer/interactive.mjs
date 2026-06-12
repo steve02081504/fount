@@ -292,11 +292,27 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
+	 * 当前选中候选项是否仍有未输入的后缀（可接受补全）。
+	 * @param {number} [index] - 候选项下标，默认当前选中项。
+	 * @returns {boolean} 是否仍有可接受的后缀。
+	 */
+	function completionPendingSuffix(index = completionIndex) {
+		if (!completionActive || !completionItems.length) return false
+		const item = completionItems[index]
+		if (!item) return false
+		return !!completionGhostSuffix(input, completionReplaceStart, completionReplaceEnd, item)
+	}
+
+	/**
 	 * 应用当前选中的补全项。
 	 * @returns {void}
 	 */
 	function acceptCompletion() {
-		if (!completionActive || !completionItems.length) return
+		if (!completionActive || !completionItems.length || !completionPendingSuffix()) {
+			clearCompletion()
+			scheduleInputRedraw()
+			return
+		}
 		const item = completionItems[completionIndex]
 		input = input.slice(0, completionReplaceStart) + item + input.slice(completionReplaceEnd)
 		cursor = completionReplaceStart + item.length
@@ -326,6 +342,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			completionReplaceEnd = Number.isFinite(result.replaceEnd) ? result.replaceEnd : snapCursor
 			completionIndex = 0
 			completionActive = completionItems.length > 0
+			if (completionActive && completionItems.length === 1 && !completionPendingSuffix(0))
+				clearCompletion()
 			scheduleInputRedraw()
 		} catch {
 			if (seq !== completionRequestSeq) return
@@ -1045,9 +1063,13 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 
 		if (event.key === 'tab') {
-			if (completionActive && completionItems.length) {
+			if (completionActive && completionItems.length && completionPendingSuffix()) {
 				acceptCompletion()
 				return
+			}
+			if (completionActive) {
+				clearCompletion()
+				scheduleInputRedraw()
 			}
 			if (event.shiftKey)
 				moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - 1)
@@ -1064,11 +1086,18 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				return
 			}
 
-		if (completionActive && completionItems.length && (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
+		if (completionActive && completionItems.length && completionPendingSuffix()
+			&& (event.key === 'right' || event.key === 'return' || event.key === 'enter'))
 			if (event.key === 'right' || (!event.shiftKey && (event.key === 'return' || event.key === 'enter'))) {
 				acceptCompletion()
 				return
 			}
+
+		if (completionActive && (event.key === 'right' || event.key === 'return' || event.key === 'enter')
+			&& (event.key === 'right' || !event.shiftKey)) {
+			clearCompletion()
+			scheduleInputRedraw()
+		}
 
 		if (event.ctrlKey && event.key === 'v') {
 			pasteFromClipboard().catch(onFatal)
