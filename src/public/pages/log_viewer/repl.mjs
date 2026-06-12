@@ -2,6 +2,7 @@ import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wir
 
 import { createEvalWs } from './endpoints.mjs'
 import { renderLogItem } from './log.mjs'
+import { editBackspace, editInsertChar, isPairInputEvent } from './repl_pairs.mjs'
 
 const HISTORY_KEY = 'log_viewer.repl.history'
 const MAX_HISTORY = 100
@@ -383,6 +384,35 @@ export function initRepl({ canOpenEditor = false, onOpenSource } = {}) {
 			inputEl.value = ''
 		}
 	}
+
+	inputEl.addEventListener('beforeinput', (e) => {
+		if (!isPairInputEvent(e)) return
+		const start = inputEl.selectionStart ?? 0
+		const end = inputEl.selectionEnd ?? start
+		if (start !== end) return
+		if (e.inputType === 'insertText' && e.data?.length === 1) {
+			const next = editInsertChar(inputEl.value, start, e.data)
+			const plain = inputEl.value.slice(0, start) + e.data + inputEl.value.slice(start)
+			if (next.value === plain && next.caret === start + e.data.length) return
+			e.preventDefault()
+			inputEl.value = next.value
+			inputEl.setSelectionRange(next.caret, next.caret)
+			inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+			return
+		}
+		if (e.inputType === 'deleteContentBackward') {
+			const next = editBackspace(inputEl.value, start)
+			if (!next) return
+			const plain = start > 0
+				? { value: inputEl.value.slice(0, start - 1) + inputEl.value.slice(start), caret: start - 1 }
+				: null
+			if (plain && next.value === plain.value && next.caret === plain.caret) return
+			e.preventDefault()
+			inputEl.value = next.value
+			inputEl.setSelectionRange(next.caret, next.caret)
+			inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+		}
+	})
 
 	inputEl.addEventListener('input', () => {
 		if (inputEl.value) ensureEvalWire()

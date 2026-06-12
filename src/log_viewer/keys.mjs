@@ -190,6 +190,43 @@ export function charAt(text, offset) {
 }
 
 /**
+ * 插入单字符：开符号补闭符号；重复输入闭符号则跳过已有闭符号。
+ * @param {string} value - 当前文本。
+ * @param {number} caret - 光标（无选区）。
+ * @param {string} ch - 待插入字符。
+ * @returns {{ value: string, caret: number }} 新文本与光标。
+ */
+export function editInsertChar(value, caret, ch) {
+	const close = OPEN_TO_CLOSE.get(ch)
+	if (close !== undefined)
+		return { value: value.slice(0, caret) + ch + close + value.slice(caret), caret: caret + ch.length }
+	const next = charAt(value, caret)
+	if (CLOSE_CHARS.has(ch) && next === ch)
+		return { value, caret: caret + ch.length }
+	return { value: value.slice(0, caret) + ch + value.slice(caret), caret: caret + ch.length }
+}
+
+/**
+ * 退格：空成对符号时一并删除闭符号。
+ * @param {string} value - 当前文本。
+ * @param {number} caret - 光标（无选区）。
+ * @returns {{ value: string, caret: number } | null} 新状态；无法退格时 `null`。
+ */
+export function editBackspace(value, caret) {
+	if (caret <= 0) return null
+	const before = charBefore(value, caret)
+	if (!before) return null
+	const beforeLen = before.length
+	const after = charAt(value, caret)
+	if (after && OPEN_TO_CLOSE.get(before) === after)
+		return {
+			value: value.slice(0, caret - beforeLen) + value.slice(caret + after.length),
+			caret: caret - beforeLen,
+		}
+	return { value: value.slice(0, caret - beforeLen) + value.slice(caret), caret: caret - beforeLen }
+}
+
+/**
  * 规范化粘贴文本（统一换行符、剥离 ESC）。
  * @param {string} text - 原始剪贴板文本。
  * @returns {string} 规范化后的文本。

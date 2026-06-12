@@ -12,8 +12,8 @@ import { connectLogWire, WireLogEntry } from 'npm:@steve02081504/virtual-console
 
 import { createHistoryStore } from './history.mjs'
 import {
-	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON, CLOSE_CHARS, OPEN_TO_CLOSE, PASTE_END, PASTE_START,
-	charAt, charBefore, deleteWordBackward, deleteWordForward,
+	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON, PASTE_END, PASTE_START,
+	deleteWordBackward, deleteWordForward, editBackspace, editInsertChar,
 	isImeNoise, isShiftEnterCsi, kittyKeyAction,
 	nextWordBoundary, normalizePaste, prevWordBoundary,
 } from './keys.mjs'
@@ -778,24 +778,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function insertCharAtCursor(ch) {
 		const wasEmpty = !input.length
 		exitHistoryBrowse()
-		const close = OPEN_TO_CLOSE.get(ch)
-		if (close !== undefined) {
-			input = input.slice(0, cursor) + ch + close + input.slice(cursor)
-			cursor += ch.length
-			maybeConnectEvalOnFirstInput(wasEmpty)
-			scheduleInputRedraw()
-			scheduleCompletionRefresh()
-			return
-		}
-		const next = charAt(input, cursor)
-		if (CLOSE_CHARS.has(ch) && next === ch) {
-			cursor += ch.length
-			scheduleInputRedraw()
-			scheduleCompletionRefresh()
-			return
-		}
-		input = input.slice(0, cursor) + ch + input.slice(cursor)
-		cursor += ch.length
+		const next = editInsertChar(input, cursor, ch)
+		input = next.value
+		cursor = next.caret
 		maybeConnectEvalOnFirstInput(wasEmpty)
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
@@ -820,15 +805,10 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			scheduleCompletionRefresh()
 			return
 		}
-		const before = charBefore(input, cursor)
-		if (!before) return
-		const beforeLen = before.length
-		const after = charAt(input, cursor)
-		if (after && OPEN_TO_CLOSE.get(before) === after)
-			input = input.slice(0, cursor - beforeLen) + input.slice(cursor + after.length)
-		else
-			input = input.slice(0, cursor - beforeLen) + input.slice(cursor)
-		cursor -= beforeLen
+		const next = editBackspace(input, cursor)
+		if (!next) return
+		input = next.value
+		cursor = next.caret
 		syncInputScrollToCursor()
 		scheduleInputRedraw()
 		scheduleCompletionRefresh()
