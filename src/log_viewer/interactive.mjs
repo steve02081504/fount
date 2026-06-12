@@ -7,8 +7,9 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { ansi } from 'jsr:@cliffy/ansi'
+import { read as readStdin } from 'jsr:@cliffy/internal@1.2.1/runtime/read'
 import { setRaw } from 'jsr:@cliffy/internal@1.2.1/runtime/set-raw'
-import { keypress } from 'jsr:@cliffy/keypress'
+import { parse as parseKeyCodes } from 'jsr:@cliffy/keycode'
 import { renderAnsi } from 'npm:@steve02081504/virtual-console/node'
 import { WireLogEntry } from 'npm:@steve02081504/virtual-console/wire/client'
 
@@ -30,10 +31,22 @@ const BRACKETED_PASTE_OFF = '\x1b[?2004l'
 const PASTE_START = '\x1b[200~'
 const PASTE_END = '\x1b[201~'
 const WORD_CHAR = /[\w$]/
-/** Deno 下勿同时 `setRaw` 与 `process.stdin.setRawMode`，否则 stdin 隔键才送达。 */
+/** Deno 下勿碰 `process.stdin`（Node 兼容层会与 `Deno.stdin` 抢读字节，导致丢键、隔键才送达）。 */
 const IS_DENO = 'Deno' in globalThis
-/** xterm Shift+Enter CSI（如 `[13;2~`）；Cliffy 常映射为 `f3`+Shift。 */
+/** xterm Shift+Enter CSI（如 `[13;2~`）；keycode 常映射为 `f3`+Shift。 */
 const SHIFT_ENTER_CSI = /;2;13|\[13;2[~u$^]|\b13;2[~u]/
+
+/**
+ * 解析后的按键事件（由 `@cliffy/keycode` 的 `KeyCode` 适配）。
+ * @typedef {object} KeyEvent
+ * @property {string} [key] - 键名（如 `return` / `enter` / `up`）。
+ * @property {string} [char] - 字符值（可打印键）。
+ * @property {string} [sequence] - 原始转义序列。
+ * @property {string} [code] - CSI code（如 `[13;2u`）。
+ * @property {boolean} ctrlKey - Ctrl 修饰。
+ * @property {boolean} metaKey - Meta/Alt 修饰。
+ * @property {boolean} shiftKey - Shift 修饰。
+ */
 
 /** 开符号 → 闭符号（半角/全角/弯引号/直角与书名号/夹注与隅足号等）。 @type {ReadonlyMap<string, string>} */
 const OPEN_TO_CLOSE = new Map([
@@ -69,7 +82,7 @@ const CLOSE_CHARS = new Set(OPEN_TO_CLOSE.values())
 
 /**
  * 解析 Kitty / CSI-u 按键（Cliffy 常解析为 `undefined`）。
- * @param {import('jsr:@cliffy/keypress').KeyPressEvent} event - 按键事件。
+ * @param {KeyEvent} event - 按键事件。
  * @returns {'submit' | 'newline' | 'ctrlBackspace' | 'interrupt' | null} 动作或 `null`。
  */
 function kittyKeyAction(event) {
@@ -89,7 +102,7 @@ function kittyKeyAction(event) {
 
 /**
  * 是否为 Shift+Enter 的 xterm / 集成终端 CSI 变体。
- * @param {import('jsr:@cliffy/keypress').KeyPressEvent} event - 按键事件。
+ * @param {KeyEvent} event - 按键事件。
  * @returns {boolean} 是否应插入换行。
  */
 function isShiftEnterCsi(event) {
@@ -104,7 +117,7 @@ function isShiftEnterCsi(event) {
 
 /**
  * 过滤 IME 切换等产生的无效按键（避免吞掉后续真实按键）。
- * @param {import('jsr:@cliffy/keypress').KeyPressEvent} event - 按键事件。
+ * @param {KeyEvent} event - 按键事件。
  * @returns {boolean} 是否应忽略。
  */
 function isImeNoise(event) {
@@ -399,6 +412,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let inputScrollTop = 0
 	/** 括号粘贴模式缓冲。 */
 	let bracketedPasteBuf = ''
+	/** 正在接收括号粘贴数据（已见 `PASTE_START`，未见 `PASTE_END`）。 */
+	let pasteActive = false
 	/** 已收到 `\r`，等待同批次 `\n` 以区分 Enter（`\r\n`）与单独 `\r`。 */
 	let pendingReturnSubmit = false
 	/** 已拆除 REPL，禁止再重绘或改终端模式。 */
@@ -465,13 +480,15 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 保持 raw 模式读取 stdin（Cliffy keypress 每读一次就关 raw，会导致终端回显与 IME 乱序）。
+	 * 开启 stdin raw 模式（仅一次，循环内不反复开关，避免 cooked 模式吃键）。
 	 * @returns {void}
 	 */
 	function enableRawStdin() {
 		try { setRaw(true) } catch { /* ignore */ }
-		if (!IS_DENO) try { process.stdin.setRawMode?.(true) } catch { /* ignore */ }
-		try { process.stdin.resume?.() } catch { /* ignore */ }
+		if (!IS_DENO) {
+			try { process.stdin.setRawMode?.(true) } catch { /* ignore */ }
+			try { process.stdin.resume?.() } catch { /* ignore */ }
+		}
 	}
 
 	/**
@@ -493,7 +510,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		replTornDown = true
 		pendingInputRedraw = false
 		if (!activated) return
-		try { keypress().dispose() } catch { /* ignore */ }
 		restoreStdin()
 		const { rows, sepRow, inputStart } = getLayout(renderedInputRows)
 		const lastReplRow = inputStart + renderedInputRows - 1
@@ -850,27 +866,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 处理括号粘贴片段。
-	 * @param {string} chunk - 粘贴数据块。
-	 * @returns {void}
-	 */
-	function handleBracketedPasteChunk(chunk) {
-		if (!chunk) return
-		let data = chunk
-		if (data.includes(PASTE_START)) {
-			data = data.split(PASTE_START).pop() ?? ''
-			bracketedPasteBuf = ''
-		}
-		if (data.includes(PASTE_END)) {
-			bracketedPasteBuf += data.split(PASTE_END)[0] ?? ''
-			insertAtCursor(normalizePaste(bracketedPasteBuf))
-			bracketedPasteBuf = ''
-			return
-		}
-		bracketedPasteBuf += data
-	}
-
-	/**
 	 * 上一条历史命令。
 	 * @returns {void}
 	 */
@@ -906,7 +901,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	/**
 	 * Enter / Shift+Enter：Cliffy 将 `\r` 映射为 `return`、`\n` 映射为 `enter`。
 	 * 部分终端 Enter 发送 `\r\n` 两键，需合并为提交；单独 `\n` 或 Shift+Enter 为换行。
-	 * @param {import('jsr:@cliffy/keypress').KeyPressEvent} event - 按键事件。
+	 * @param {KeyEvent} event - 按键事件。
 	 * @returns {void}
 	 */
 	function handleReturnOrEnter(event) {
@@ -931,12 +926,11 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 
 	/**
 	 * 处理单次按键。
-	 * @param {import('jsr:@cliffy/keypress').KeyPressEvent} event - 按键事件。
+	 * @param {KeyEvent} event - 按键事件。
 	 * @returns {void}
 	 */
 	function handleKey(event) {
 		if (isImeNoise(event)) return
-		const seq = event.sequence ?? ''
 		const kitty = kittyKeyAction(event)
 		if (kitty === 'newline' || isShiftEnterCsi(event)) {
 			pendingReturnSubmit = false
@@ -962,10 +956,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (kitty === 'interrupt' || (event.ctrlKey && event.key === 'c')) {
 			tearDownRepl()
 			process.kill(process.pid, 'SIGINT')
-			return
-		}
-		if (seq.includes(PASTE_START) || seq.includes(PASTE_END) || bracketedPasteBuf) {
-			handleBracketedPasteChunk(seq || event.char || '')
 			return
 		}
 		if (event.ctrlKey && event.key === 'v') {
@@ -1054,19 +1044,87 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 后台 REPL 键盘循环。Cliffy keypress 每读一次会关 raw；每次处理后重新开启以免终端抢回显。
+	 * 处理一段 stdin 原始文本：剥离括号粘贴片段后逐键解析分发。
+	 * @param {string} text - 解码后的 stdin 数据。
+	 * @returns {void}
+	 */
+	function handleStdinChunk(text) {
+		let rest = text
+		while (rest) {
+			if (pasteActive) {
+				const end = rest.indexOf(PASTE_END)
+				if (end === -1) {
+					bracketedPasteBuf += rest
+					return
+				}
+				bracketedPasteBuf += rest.slice(0, end)
+				insertAtCursor(normalizePaste(bracketedPasteBuf))
+				bracketedPasteBuf = ''
+				pasteActive = false
+				rest = rest.slice(end + PASTE_END.length)
+				continue
+			}
+			const start = rest.indexOf(PASTE_START)
+			if (start === -1) {
+				dispatchKeys(rest)
+				return
+			}
+			dispatchKeys(rest.slice(0, start))
+			pasteActive = true
+			rest = rest.slice(start + PASTE_START.length)
+		}
+	}
+
+	/**
+	 * 解析按键序列并逐个分发；解析失败（断裂转义序列等）时退化为按可打印字符插入。
+	 * @param {string} text - 不含括号粘贴标记的 stdin 数据。
+	 * @returns {void}
+	 */
+	function dispatchKeys(text) {
+		if (!text) return
+		/** @type {import('jsr:@cliffy/keycode').KeyCode[]} */
+		let keys
+		try {
+			keys = parseKeyCodes(text)
+		} catch {
+			for (const ch of text)
+				if (ch >= ' ') insertCharAtCursor(ch)
+			return
+		}
+		for (const key of keys) {
+			if (replTornDown || stdinReadAbort) return
+			handleKey({
+				key: key.name,
+				char: key.char,
+				sequence: key.sequence,
+				code: key.code,
+				ctrlKey: !!key.ctrl,
+				metaKey: !!key.meta,
+				shiftKey: !!key.shift,
+			})
+		}
+	}
+
+	/**
+	 * 后台 REPL 键盘循环：保持 raw 模式、单读者直读 stdin。
+	 * 勿用 Cliffy keypress：其每读 8 字节就开关一次 raw，且同批次解析出的多个按键要等下次
+	 * 读取才出队——快速输入/`\r\n` 会丢键、回车发不出去。
 	 * @returns {Promise<void>}
 	 */
 	async function runInputLoop() {
 		stdinReadAbort = false
 		enableRawStdin()
-		try {
-			for await (const event of keypress()) {
-				if (replTornDown || stdinReadAbort) break
-				enableRawStdin()
-				handleKey(event)
-			}
-		} catch { /* dispose / EOF */ }
+		const buffer = new Uint8Array(4096)
+		const decoder = new TextDecoder()
+		while (!replTornDown && !stdinReadAbort) {
+			let bytesRead
+			try {
+				bytesRead = await readStdin(buffer)
+			} catch { break }
+			if (bytesRead === null) break
+			if (replTornDown || stdinReadAbort) break
+			handleStdinChunk(decoder.decode(buffer.subarray(0, bytesRead), { stream: true }))
+		}
 	}
 
 	/**
