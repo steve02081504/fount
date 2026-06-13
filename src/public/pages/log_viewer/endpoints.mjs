@@ -1,6 +1,16 @@
 const DEBUG_INFO_BASE = '/api/parts/shells:debug_info'
 
 /**
+ * 创建 WebSocket 连接。
+ * @param {string} path - WS 路径（如 `/ws/logs`）。
+ * @returns {WebSocket} WebSocket 实例。
+ */
+function createWs(path) {
+	const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+	return new WebSocket(`${wsProto}//${window.location.host}${path}`)
+}
+
+/**
  * 打开日志调用位置对应源码。
  * @param {string} filePath - 文件路径。
  * @param {number} line - 行号。
@@ -25,8 +35,7 @@ export async function openSource(filePath, line, column) {
  * @returns {WebSocket} 日志 WS。
  */
 export function createLogsWs() {
-	const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-	return new WebSocket(`${wsProto}//${window.location.host}/ws/logs`)
+	return createWs('/ws/logs')
 }
 
 /**
@@ -34,6 +43,5 @@ export function createLogsWs() {
  * @returns {WebSocket} eval WS。
  */
 export function createEvalWs() {
-	const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-	return new WebSocket(`${wsProto}//${window.location.host}/ws/eval`)
+	return createWs('/ws/eval')
 }

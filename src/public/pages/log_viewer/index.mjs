@@ -14,6 +14,8 @@ await initTranslations('log_viewer')
 
 const backendLogList = document.getElementById('backend-log-list')
 
+const SCROLL_NEAR_BOTTOM_THRESHOLD = 64
+
 const canOpenEditor = await ping().then(data => data.is_local_ip).catch(() => 0)
 const logsStore = []
 let logsVirtualList = null
@@ -135,7 +137,7 @@ function initLogsVirtualList() {
 async function appendLogEntry(entry) {
 	logsStore.push(entry)
 	if (entryMatchesFilter(entry, logFilterText, logLevelFilter)) {
-		const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
+		const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < SCROLL_NEAR_BOTTOM_THRESHOLD
 		if (logsVirtualList)
 			await logsVirtualList.appendItem(entry, nearBottom)
 	}

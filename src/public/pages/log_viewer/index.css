@@ -43,7 +43,6 @@
 .log-content {
 	flex: 1;
 	min-width: 0;
-	word-break: break-word;
 	overflow-wrap: anywhere;
 }
 .log-args {
@@ -97,7 +96,7 @@
 	max-width: 100%;
 	vertical-align: top;
 	box-sizing: border-box;
-	word-break: break-word;
+	overflow-wrap: anywhere;
 }
 
 /* 可展开节点 */
@@ -327,7 +326,6 @@
 	font: inherit;
 	line-height: 1.5;
 	white-space: pre-wrap;
-	word-break: break-word;
 	overflow-wrap: anywhere;
 	tab-size: 2;
 }

@@ -29,6 +29,7 @@ export function spawnFountLog() {
 			stdio: 'ignore',
 			cwd: fountDir,
 			env: {
+				...process.env,
 				FOUNT_CLICK: '1',
 			},
 		}).unref()
@@ -67,7 +68,7 @@ export async function openTerminal() {
 	try {
 		await openLogViewerWindow()
 	}
-	catch(err) {
+	catch (err) {
 		console.error(err)
 		spawnFountLog()
 	}
