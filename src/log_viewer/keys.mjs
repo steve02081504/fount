@@ -174,7 +174,13 @@ export function deleteWordBackward(text, pos) {
 function charBefore(text, offset) {
 	if (offset <= 0) return null
 	const head = text.slice(0, offset)
-	const code = head.codePointAt(head.length - 1)
+	const lastIdx = head.length - 1
+	const lastUnit = head.charCodeAt(lastIdx)
+	if (lastUnit >= 0xDC00 && lastUnit <= 0xDFFF && lastIdx >= 1) {
+		const code = head.codePointAt(lastIdx - 1)
+		return code === undefined ? null : String.fromCodePoint(code)
+	}
+	const code = head.codePointAt(lastIdx)
 	return code === undefined ? null : String.fromCodePoint(code)
 }
 
@@ -191,6 +197,26 @@ function charAt(text, offset) {
 }
 
 /**
+ * 光标左侧字符的 UTF-16 长度（至少 1）。
+ * @param {string} text - 纯文本。
+ * @param {number} offset - 光标偏移。
+ * @returns {number} 长度。
+ */
+export function charLenBefore(text, offset) {
+	return charBefore(text, offset)?.length ?? 1
+}
+
+/**
+ * 光标处字符的 UTF-16 长度（至少 1）。
+ * @param {string} text - 纯文本。
+ * @param {number} offset - 光标偏移。
+ * @returns {number} 长度。
+ */
+export function charLenAt(text, offset) {
+	return charAt(text, offset)?.length ?? 1
+}
+
+/**
  * 插入单字符：开符号补闭符号；重复输入闭符号则跳过已有闭符号。
  * @param {string} value - 当前文本。
  * @param {number} caret - 光标（无选区）。
@@ -199,8 +225,12 @@ function charAt(text, offset) {
  */
 export function editInsertChar(value, caret, ch) {
 	const close = OPEN_TO_CLOSE.get(ch)
-	if (close !== undefined)
+	if (close !== undefined) {
+		const next = charAt(value, caret)
+		if (next === close)
+			return { value, caret: caret + ch.length }
 		return { value: value.slice(0, caret) + ch + close + value.slice(caret), caret: caret + ch.length }
+	}
 	const next = charAt(value, caret)
 	if (CLOSE_CHARS.has(ch) && next === ch)
 		return { value, caret: caret + ch.length }

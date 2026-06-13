@@ -38,9 +38,7 @@ export function createHistoryStore(fountDir) {
 	function load() {
 		try {
 			const raw = fs.readFileSync(filePath, 'utf-8')
-			const data = JSON.parse(raw)
-			if (Array.isArray(data?.entries))
-				entries = data.entries.filter(entry => typeof entry === 'string')
+			entries = JSON.parse(raw).entries.map(String)
 		} catch { /* 首次运行或文件损坏 */ }
 	}
 
@@ -78,7 +76,7 @@ export function createHistoryStore(fountDir) {
 		if (!trimmed) return
 		if (entries[entries.length - 1] === trimmed) return
 		entries.push(trimmed)
-		if (entries.length > MAX_ENTRIES) entries = entries.slice(-MAX_ENTRIES)
+		entries = entries.slice(-MAX_ENTRIES)
 		scheduleSave()
 	}
 

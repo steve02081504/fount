@@ -346,7 +346,7 @@ export function renderCompletionBand(cols, boxTop, items, selectedIndex, active)
 		: Math.max(0, Math.min(selectedIndex - Math.floor(rows / 2), items.length - rows))
 	let out = ''
 	for (let i = 0; i < rows; i++) {
-		const row = boxTop - rows + i
+		const row = Math.max(1, boxTop - rows + i)
 		const itemIdx = startIdx + i
 		const item = items[itemIdx] ?? ''
 		const marker = itemIdx === selectedIndex ? `${THEME.accent}▸ ` : `${THEME.frame}  `

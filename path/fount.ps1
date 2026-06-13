@@ -407,9 +407,8 @@ $script:FountTerminalKeyPatches = @(
 
 $script:FountEditorTerminalKeyPatches = @(
 	@{
-		Marker = 'shiftEnter'
-		Key    = 'shift+enter'
-		Text   = "`e[13;2u"
+		Key  = 'shift+enter'
+		Text = "`e[13;2u"
 	}
 )
 
@@ -452,8 +451,8 @@ function Get-FountEditorKeybindingsPaths {
 	return $paths | Select-Object -Unique
 }
 
-function Test-FountSameKeyCombo([string]$KeysA, [string]$KeysB) {
-	($KeysA -replace '\s', '').ToLower() -eq ($KeysB -replace '\s', '').ToLower()
+function Test-FountIsFountPatchEntry($Entry) {
+	$Entry.PSObject.Properties['isfountPatch'] -and $Entry.isfountPatch -eq $true
 }
 
 function Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
@@ -482,8 +481,6 @@ function Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
 	$changed = $false
 	foreach ($patch in $script:FountTerminalKeyPatches) {
 		$before = $raw
-		$keysPattern = [regex]::Escape($patch.Keys)
-		$raw = $raw -replace "(?ms)\{\s*`"keys`"\s*:\s*`"$keysPattern`"[^}]*\},?\s*", "`n"
 		$raw = Remove-FountWtJsonBlocks $raw $patch.Id
 		# InputJson 为 WT 字面量 \u001b…；用 %% 占位符注入，避免 -f/双引号把 [13;2u] 吃掉。
 		$actionTpl = @'
@@ -547,27 +544,20 @@ function Merge-FountEditorKeybindings([string]$KeybindingsPath) {
 	$entries = [System.Collections.Generic.List[object]]::new()
 	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
 
-	$markers = $script:FountEditorTerminalKeyPatches | ForEach-Object { $_.Marker }
 	$changed = $false
 	for ($i = $entries.Count - 1; $i -ge 0; $i--) {
-		$entry = $entries[$i]
-		if ($entry.PSObject.Properties['__fountPatch'] -and ($entry.__fountPatch -in $markers)) {
-			$entries.RemoveAt($i); $changed = $true; continue
-		}
-		foreach ($patch in $script:FountEditorTerminalKeyPatches) {
-			if (Test-FountSameKeyCombo $entry.key $patch.Key) {
-				$entries.RemoveAt($i); $changed = $true; break
-			}
+		if (Test-FountIsFountPatchEntry $entries[$i]) {
+			$entries.RemoveAt($i); $changed = $true
 		}
 	}
 
 	foreach ($patch in $script:FountEditorTerminalKeyPatches) {
 		$entries.Add([ordered]@{
-				key      = $patch.Key
-				command  = 'workbench.action.terminal.sendSequence'
-				args     = [ordered]@{ text = $patch.Text }
-				when     = 'terminalFocus'
-				__fountPatch = $patch.Marker
+				key          = $patch.Key
+				command      = 'workbench.action.terminal.sendSequence'
+				args         = [ordered]@{ text = $patch.Text }
+				when         = 'terminalFocus'
+				isfountPatch = $true
 			})
 		$changed = $true
 	}
@@ -583,10 +573,9 @@ function Split-FountEditorKeybindings([string]$KeybindingsPath) {
 	if (-not (Test-Path $KeybindingsPath)) { return $false }
 	$entries = [System.Collections.Generic.List[object]]::new()
 	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
-	$markers = $script:FountEditorTerminalKeyPatches | ForEach-Object { $_.Marker }
 	$changed = $false
 	for ($i = $entries.Count - 1; $i -ge 0; $i--) {
-		if ($entries[$i].PSObject.Properties['__fountPatch'] -and ($entries[$i].__fountPatch -in $markers)) {
+		if (Test-FountIsFountPatchEntry $entries[$i]) {
 			$entries.RemoveAt($i); $changed = $true
 		}
 	}

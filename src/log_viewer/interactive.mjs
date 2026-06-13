@@ -15,7 +15,7 @@ import {
 	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON,
 	KITTY_KEYBOARD_OFF, KITTY_KEYBOARD_ON, PASTE_END, PASTE_START,
 	deleteWordBackward, deleteWordForward, editBackspace, editInsertChar,
-	isImeNoise, isShiftEnterCsi, kittyKeyAction,
+	charLenAt, charLenBefore, isImeNoise, isShiftEnterCsi, kittyKeyAction,
 	nextWordBoundary, normalizePaste, prevWordBoundary,
 } from './keys.mjs'
 import { geti18n } from './locale.mjs'
@@ -181,6 +181,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				 */
 				const onOpen = () => {
 					ws.removeEventListener('error', onError)
+					ws.removeEventListener('close', onClose)
 					resolve(evalConn)
 				}
 				/**
@@ -188,10 +189,20 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				 */
 				const onError = () => {
 					ws.removeEventListener('open', onOpen)
+					ws.removeEventListener('close', onClose)
 					reject(new Error('eval_ws_error'))
+				}
+				/**
+				 * @returns {void}
+				 */
+				const onClose = () => {
+					ws.removeEventListener('open', onOpen)
+					ws.removeEventListener('error', onError)
+					reject(new Error('eval_ws_closed'))
 				}
 				ws.addEventListener('open', onOpen, { once: true })
 				ws.addEventListener('error', onError, { once: true })
+				ws.addEventListener('close', onClose, { once: true })
 			})
 		if (evalConn) {
 			try { evalConn.detach() } catch { /* ignore */ }
@@ -217,6 +228,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			else {
 				ws.addEventListener('open', () => resolve(evalConn), { once: true })
 				ws.addEventListener('error', () => reject(new Error('eval_ws_error')), { once: true })
+				ws.addEventListener('close', () => reject(new Error('eval_ws_closed')), { once: true })
 			}
 		})
 	}
@@ -241,8 +253,15 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		const id = String(nextEvalRequestId++)
 		return new Promise((resolve, reject) => {
 			pendingEvalRequests.set(id, { resolve, reject })
-			if (!conn.sendJson({ ...payload, id }))
-				reject(new Error('eval_wire_send_failed'))
+			try {
+				if (!conn.sendJson({ ...payload, id })) {
+					pendingEvalRequests.delete(id)
+					reject(new Error('eval_wire_send_failed'))
+				}
+			} catch (err) {
+				pendingEvalRequests.delete(id)
+				reject(err)
+			}
 		})
 	}
 
@@ -819,7 +838,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	function deleteAtCursor() {
 		if (cursor >= input.length) return
 		exitHistoryBrowse()
-		input = input.slice(0, cursor) + input.slice(cursor + 1)
+		const len = charLenAt(input, cursor)
+		input = input.slice(0, cursor) + input.slice(cursor + len)
 		scheduleInputRedraw()
 		scheduleCompletionRefresh()
 	}
@@ -1058,9 +1078,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				scheduleInputRedraw()
 			}
 			if (event.shiftKey)
-				moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - 1)
+				moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - charLenBefore(input, cursor))
 			else
-				moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + 1)
+				moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + charLenAt(input, cursor))
 			return
 		}
 		if (event.key === 'escape')
@@ -1122,7 +1142,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'left') {
-			moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - 1)
+			moveCursor(event.ctrlKey ? prevWordBoundary(input, cursor) : cursor - charLenBefore(input, cursor))
 			return
 		}
 		if (event.key === 'right') {
@@ -1137,7 +1157,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				clearCompletion()
 				scheduleInputRedraw()
 			}
-			moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + 1)
+			moveCursor(event.ctrlKey ? nextWordBoundary(input, cursor) : cursor + charLenAt(input, cursor))
 			return
 		}
 		if (event.key === 'return' || event.key === 'enter') {

@@ -1292,7 +1292,7 @@ merge_fount_editor_keybindings() {
 	local parent patch merged entries before
 	parent=$(dirname "$keybindings_path")
 	mkdir -p "$parent"
-	patch='{"key":"shift+enter","command":"workbench.action.terminal.sendSequence","args":{"text":"\u001b[13;2u"},"when":"terminalFocus","__fountPatch":"shiftEnter"}'
+	patch='{"key":"shift+enter","command":"workbench.action.terminal.sendSequence","args":{"text":"\u001b[13;2u"},"when":"terminalFocus","isfountPatch":true}'
 	before='[]'
 	if [ -f "$keybindings_path" ]; then
 		before=$(jq -c '
@@ -1302,10 +1302,7 @@ merge_fount_editor_keybindings() {
 		' "$keybindings_path" 2>/dev/null) || before='[]'
 	fi
 	entries=$(echo "$before" | jq -c --argjson patch "$patch" '
-		map(select(
-			.__fountPatch != "shiftEnter"
-			and ((.key // "") | ascii_downcase | gsub("\\s"; "")) != "shift+enter"
-		)) + [$patch]
+		map(select(.isfountPatch != true)) + [$patch]
 	')
 	merged=$(echo "$entries" | jq '.')
 	[ "$before" = "$(echo "$entries" | jq -c '.')" ] && return 1
@@ -1318,7 +1315,7 @@ split_fount_editor_keybindings() {
 	[ -f "$keybindings_path" ] || return 0
 	command -v jq &>/dev/null || return 1
 	local filtered
-	filtered=$(jq -c 'map(select(.__fountPatch != "shiftEnter"))' "$keybindings_path" 2>/dev/null) || return 1
+	filtered=$(jq -c 'map(select(.isfountPatch != true))' "$keybindings_path" 2>/dev/null) || return 1
 	if [ "$filtered" = "[]" ]; then
 		rm -f "$keybindings_path"
 	else

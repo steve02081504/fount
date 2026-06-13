@@ -173,6 +173,7 @@ async function pollUntilServerReady() {
 	while (!stopRequested) try {
 		const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
 		if (res.ok) return
+		else throw new Error(String(res.status))
 	} catch {
 		await sleep(delay)
 		delay = Math.min(delay * 2, 5000)

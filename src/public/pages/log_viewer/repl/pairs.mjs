@@ -43,7 +43,13 @@ export const CLOSE_CHARS = new Set(OPEN_TO_CLOSE.values())
 function charBefore(text, offset) {
 	if (offset <= 0) return null
 	const head = text.slice(0, offset)
-	const code = head.codePointAt(head.length - 1)
+	const lastIdx = head.length - 1
+	const lastUnit = head.charCodeAt(lastIdx)
+	if (lastUnit >= 0xDC00 && lastUnit <= 0xDFFF && lastIdx >= 1) {
+		const code = head.codePointAt(lastIdx - 1)
+		return code === undefined ? null : String.fromCodePoint(code)
+	}
+	const code = head.codePointAt(lastIdx)
 	return code === undefined ? null : String.fromCodePoint(code)
 }
 
