@@ -73,6 +73,7 @@ export function setEndpoints(router) {
 		if (!is_local_ip_from_req(req))
 			return res.status(403).json({ message: 'Forbidden on non-local request.' })
 		const { filePath, line, column } = req.body || {}
-		res.json(await openEditor(user.username, filePath, line, column))
+		await openEditor(user.username, filePath, line, column)
+		res.status(200).json({})
 	})
 }

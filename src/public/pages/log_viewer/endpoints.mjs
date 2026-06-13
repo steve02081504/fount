@@ -15,7 +15,7 @@ function createWs(path) {
  * @param {string} filePath - 文件路径。
  * @param {number} line - 行号。
  * @param {number} column - 列号。
- * @returns {Promise<{command: string, args: string[]}>} 打开结果。
+ * @returns {Promise<void>}
  */
 export async function openSource(filePath, line, column) {
 	const res = await fetch(`${DEBUG_INFO_BASE}/open_source`, {
@@ -27,7 +27,6 @@ export async function openSource(filePath, line, column) {
 		const data = await res.json().catch(() => ({}))
 		throw Object.assign(new Error(data.message || res.statusText), data)
 	}
-	return res.json()
 }
 
 /**

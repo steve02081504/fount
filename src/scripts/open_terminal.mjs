@@ -1,11 +1,13 @@
-import { spawn, spawnSync } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
 
+import { where_command } from 'npm:@steve02081504/exec'
 import open from 'npm:open'
 
 import { __dirname } from '../server/base.mjs'
 import { hosturl } from '../server/server.mjs'
+
+import { launchDetachedProgram } from './launch_external.mjs'
 
 /**
  * 打开内置 log_viewer 浏览器窗口。
@@ -17,22 +19,20 @@ export async function openLogViewerWindow() {
 
 /**
  * 在可见终端中启动 `fount log` CLI。
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function spawnFountLog() {
+export async function spawnFountLog() {
 	const fountDir = __dirname
 	const fountScript = path.join(fountDir, 'path', process.platform === 'win32' ? 'fount.bat' : 'fount')
+	const spawnEnv = { FOUNT_CLICK: '1' }
 
 	if (process.platform === 'win32') {
-		spawn('cmd.exe', ['/c', 'start', '', 'cmd', '/k', fountScript, 'log'], {
-			detached: true,
-			stdio: 'ignore',
+		await launchDetachedProgram({
+			command: 'cmd.exe',
+			args: ['/c', 'start', '', 'cmd', '/k', fountScript, 'log'],
 			cwd: fountDir,
-			env: {
-				...process.env,
-				FOUNT_CLICK: '1',
-			},
-		}).unref()
+			env: spawnEnv,
+		})
 		return
 	}
 
@@ -45,19 +45,18 @@ export function spawnFountLog() {
 		['kitty', [fountScript, 'log']],
 		['alacritty', ['-e', fountScript, 'log']],
 	]
-	const spawnEnv = { ...process.env, FOUNT_CLICK: '1' }
 	for (const [command, args] of terminals) {
-		if (spawnSync('which', [command], { stdio: 'ignore' }).status !== 0) continue
-		spawn(command, args, {
-			detached: true,
-			stdio: 'ignore',
-			cwd: fountDir,
-			env: spawnEnv,
-		}).unref()
+		try {
+			await where_command(command)
+		}
+		catch {
+			continue
+		}
+		await launchDetachedProgram({ command, args, cwd: fountDir, env: spawnEnv })
 		return
 	}
 
-	spawn(fountScript, ['log'], { detached: true, stdio: 'ignore', cwd: fountDir, env: spawnEnv }).unref()
+	await launchDetachedProgram({ command: fountScript, args: ['log'], cwd: fountDir, env: spawnEnv })
 }
 
 /**
@@ -70,6 +69,6 @@ export async function openTerminal() {
 	}
 	catch (err) {
 		console.error(err)
-		spawnFountLog()
+		await spawnFountLog()
 	}
 }
