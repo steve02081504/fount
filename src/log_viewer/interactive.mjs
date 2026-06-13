@@ -429,8 +429,10 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (!activated) return
 		restoreStdin()
 		const { boxTop, boxBottom } = layoutOf(renderedInputRows)
+		// 补全候选带绘制在 boxTop 之上，退出时一并擦除，避免候选列表残留在屏幕上。
+		const firstRow = Math.max(1, boxTop - renderedCompletionRows)
 		let out = ANSI_RESET
-		for (let row = boxTop; row <= boxBottom; row++)
+		for (let row = firstRow; row <= boxBottom; row++)
 			out += cursorTo(1, row) + ERASE_LINE
 		out += KITTY_KEYBOARD_OFF + BRACKETED_PASTE_OFF + SCROLL_REGION_RESET
 		out += CURSOR_RESTORE + ANSI_RESET + CURSOR_SHOW

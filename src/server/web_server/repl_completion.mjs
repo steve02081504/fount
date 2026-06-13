@@ -71,9 +71,9 @@ export function parseCompletionContext(code, cursor) {
 			replaceEnd: cursor,
 		}
 	}
-	const idMatch = before.match(/([\w$]*)$/)
-	if (!idMatch) return null
-	const fragment = idMatch[1]
+	const fragment = before.match(/([\w$]*)$/)?.[1] ?? ''
+	// 无已输入前缀的裸标识符（如换行/空格后）不补全，否则会列出全部全局名。
+	if (!fragment) return null
 	return {
 		kind: 'identifier',
 		fragment,

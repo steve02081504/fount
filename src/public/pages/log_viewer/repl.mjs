@@ -370,14 +370,14 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		historyDraft = ''
 		evalInFlight = true
 		setBusy(true)
-		const echoText = `❯ ${code}`
-		await onAppendEntry?.({
-			method: 'repl',
-			level: 'log',
-			segments: [{ kind: 'text', text: echoText }],
-			plainText: echoText,
-		})
 		try {
+			const echoText = `❯ ${code}`
+			await onAppendEntry?.({
+				method: 'repl',
+				level: 'log',
+				segments: [{ kind: 'text', text: echoText }],
+				plainText: echoText,
+			})
 			const payload = await sendWireRequest({ type: 'eval_request', code })
 			await appendEvalPayload(payload)
 		} catch (err) {
@@ -425,14 +425,26 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		}
 	})
 
-	inputEl.addEventListener('input', () => {
+	inputEl.addEventListener('input', (e) => {
 		syncInputView()
 		if (inputEl.value) ensureEvalWire()
 		historyIndex = -1
+		// 合成中（IME 未上屏）不请求补全，避免对半成品文本误补全。
+		if (e.isComposing) return
 		scheduleCompletionRefresh()
 	})
 
+	// 失焦时清理补全候选，避免下拉残留在面板上。
+	// 点击候选项靠 mousedown.preventDefault 保住焦点，不会误触此处。
+	inputEl.addEventListener('blur', () => {
+		cancelCompletionRefresh()
+		hideCompletions()
+	})
+
 	inputEl.addEventListener('keydown', (e) => {
+		// 输入法合成期间（如中文选词）的 Enter/方向键应交还给 IME，
+		// 否则按 Enter 选词会被当成提交/拦截，导致「Enter 无法发送」。
+		if (e.isComposing || e.keyCode === 229) return
 		if (e.key === 'Tab') {
 			e.preventDefault()
 			if (completionItems.length && completionPendingSuffix()) {
@@ -482,6 +494,8 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			return
 		}
 		if (e.key === 'ArrowUp' && !completionItems.length) {
+			// 多行编辑：光标不在首行时交还文本框上移，仅首行才回溯历史。
+			if (inputEl.value.slice(0, inputEl.selectionStart ?? 0).includes('\n')) return
 			if (!history.length) return
 			e.preventDefault()
 			if (historyIndex === -1) historyDraft = inputEl.value
@@ -492,6 +506,8 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			return
 		}
 		if (e.key === 'ArrowDown' && !completionItems.length) {
+			// 多行编辑：光标不在末行时交还文本框下移。
+			if (inputEl.value.slice(inputEl.selectionEnd ?? inputEl.value.length).includes('\n')) return
 			if (historyIndex === -1) return
 			e.preventDefault()
 			if (historyIndex >= history.length - 1) {
