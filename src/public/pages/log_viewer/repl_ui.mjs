@@ -1,14 +1,20 @@
-import { ansiToHtml } from 'https://esm.sh/@steve02081504/ansi2html'
+import { createHighlighter } from 'https://esm.sh/shiki'
 
-/** @type {((code: string, opts: object) => string) | null} */
-let highlightJs = null
+/** 与 {@link module:markdownConvertor} 同源主题。 */
+const SHIKI_THEMES = { light: 'github-light', dark: 'github-dark-dimmed' }
+
+/** @type {import('https://esm.sh/shiki').Highlighter | null} */
+let highlighter = null
 /** @type {(() => void) | null} */
 let resyncHighlight = null
 
-import('https://esm.sh/cli-highlight').then((mod) => {
-	highlightJs = mod.highlight
+createHighlighter({
+	themes: Object.values(SHIKI_THEMES),
+	langs: ['javascript'],
+}).then(h => {
+	highlighter = h
 	resyncHighlight?.()
-}).catch(() => { /* 降级为纯文本 */ })
+}).catch(() => { /* 降级为 escapeHtml */ })
 
 /**
  * HTML 转义。
@@ -23,14 +29,19 @@ function escapeHtml(text) {
 }
 
 /**
- * 单行 JS 语法高亮（与 CLI log_viewer 同源 cli-highlight + ANSI→HTML）。
- * @param {string} line - 单行代码。
- * @returns {string} HTML。
+ * 单行 JavaScript 高亮（Shiki `structure: 'inline'`，适配 textarea 叠层）。
+ * @param {string} line - 单行源码。
+ * @returns {string} HTML 片段。
  */
 function highlightLine(line) {
-	if (!highlightJs) return escapeHtml(line)
+	if (!highlighter) return escapeHtml(line)
 	try {
-		return ansiToHtml(highlightJs(line, { language: 'js', ignoreIllegals: true }))
+		return highlighter.codeToHtml(line || ' ', {
+			lang: 'javascript',
+			themes: SHIKI_THEMES,
+			defaultColor: false,
+			structure: 'inline',
+		})
 	} catch {
 		return escapeHtml(line)
 	}
@@ -147,7 +158,7 @@ export function mountReplPanel(container, { placeholder = '', hint = '' } = {}) 
 		const lines = text.split('\n')
 		const lineCount = Math.max(1, lines.length)
 		updateGutter(lineCount)
-		highlightEl.innerHTML = lines.map(line => highlightLine(line)).join('\n') || '&nbsp;'
+		highlightEl.innerHTML = lines.map(highlightLine).join('\n') || '&nbsp;'
 		inputEl.style.height = '0'
 		inputEl.style.height = `${Math.max(inputEl.scrollHeight, stackEl.offsetHeight)}px`
 	}

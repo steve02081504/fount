@@ -366,3 +366,11 @@
 	z-index: 20;
 }
 .repl-completions.hidden { display: none; }
+
+/* Shiki 双主题（与 markdownConvertor 一致） */
+[color-scheme*="light"] .repl-highlight [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-light);
+}
+[color-scheme*="dark"] .repl-highlight [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-dark);
+}
