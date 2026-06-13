@@ -175,7 +175,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return Promise.resolve(evalConn)
 		if (evalConn?.ws?.readyState === WebSocket.CONNECTING)
 			return new Promise((resolve, reject) => {
-				const ws = evalConn.ws
+				const { ws } = evalConn
 				/**
 				 * @returns {void}
 				 */
@@ -212,7 +212,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				},
 				onFatal,
 			})
-			const ws = evalConn.ws
+			const { ws } = evalConn
 			if (ws.readyState === WebSocket.OPEN) resolve(evalConn)
 			else {
 				ws.addEventListener('open', () => resolve(evalConn), { once: true })

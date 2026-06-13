@@ -161,10 +161,10 @@ export function evalServiceWebSocketHandler(ws) {
 		}
 
 		const message = /** @type {Record<string, unknown>} */ parsed
-		const type = message.type
+		const { type } = message
 
 		if (type === 'eval_request') {
-			const id = message.id
+			const { id } = message
 			const code = String(message.code ?? '')
 			void (async () => {
 				try {
@@ -191,7 +191,7 @@ export function evalServiceWebSocketHandler(ws) {
 		}
 
 		if (type === 'completion_request') {
-			const id = message.id
+			const { id } = message
 			const code = String(message.code ?? '')
 			const cursor = Number(message.cursor)
 			void (async () => {

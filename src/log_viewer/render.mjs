@@ -60,8 +60,8 @@ export const INPUT_PAD_LEFT = 4
 /** 输入框右侧装饰宽度：` ` + 边框/滚动条。 */
 export const INPUT_PAD_RIGHT = 2
 
-// eslint-disable-next-line no-control-regex
-const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g
+// deno-lint-ignore no-control-regex
+const ANSI_ESCAPE = /\x1b\[[\d;]*m/g
 /** 终端上占两列的字符（CJK 及其标点、全角等常用区段）。 */
 const WIDE_CHAR = /[\u1100-\u115F\u2E80-\uA4CF\uA960-\uA97F\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/
 

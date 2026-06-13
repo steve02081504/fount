@@ -21,7 +21,7 @@ export const KITTY_KEYBOARD_OFF = '\x1b[<u'
 
 const WORD_CHAR = /[\w$]/
 /** xterm/rxvt Shift+Enter CSI（`13;2~` / `13;2u` / `13;2$` / `13;2^`，含反序 `;2;13`）。 */
-const SHIFT_ENTER_CSI = /13;2[~u$^]|;2;13/
+const SHIFT_ENTER_CSI = /13;2[$^u~]|;2;13/
 /** kitty CSI-u 按键：`CSI 键码 [; 修饰] u`。 */
 const KITTY_CSI_U = /\[(\d+)(?:;(\d+))?u/
 

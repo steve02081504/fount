@@ -170,10 +170,10 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	 * @returns {Promise<void>}
 	 */
 	async function appendEvalPayload(payload) {
-		if (Array.isArray(payload.outputEntries)) 
+		if (Array.isArray(payload.outputEntries))
 			for (const entry of payload.outputEntries)
 				await onAppendEntry?.(tagEvalEntry(entry))
-		
+
 		if (payload.error !== undefined)
 			await onAppendEntry?.(tagEvalEntry({
 				method: 'error',
@@ -292,7 +292,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			return
 		}
 		const item = completionItems[completionIndex]
-		const value = inputEl.value
+		const { value } = inputEl
 		inputEl.value = value.slice(0, completionReplaceStart) + item + value.slice(completionReplaceEnd)
 		const pos = completionReplaceStart + item.length
 		inputEl.setSelectionRange(pos, pos)
