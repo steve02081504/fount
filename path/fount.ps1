@@ -408,7 +408,7 @@ $script:FountTerminalKeyPatches = @(
 $script:FountEditorTerminalKeyPatches = @(
 	@{
 		Key  = 'shift+enter'
-		Text = "`e[13;2u"
+		Text = "$([char]27)[13;2u"
 	}
 )
 
