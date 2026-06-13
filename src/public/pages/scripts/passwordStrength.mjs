@@ -1,9 +1,9 @@
-import { zxcvbn, zxcvbnOptions } from 'https://esm.sh/@zxcvbn-ts/core'
+import { ZxcvbnFactory } from 'https://esm.sh/@zxcvbn-ts/core'
 import * as zxcvbnCommonPackage from 'https://esm.sh/@zxcvbn-ts/language-common'
 
 import { geti18n, i18nElement, setLocalizeLogic } from './i18n.mjs'
 
-zxcvbnOptions.setOptions({
+const zxcvbnInstance = new ZxcvbnFactory({
 	graphs: zxcvbnCommonPackage.adjacencyGraphs,
 	dictionary: {
 		...zxcvbnCommonPackage.dictionary,
@@ -24,7 +24,7 @@ function updateZxcvbnTranslations() {
  * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
  */
 function evaluatePasswordStrength(password) {
-	const result = zxcvbn(password)
+	const result = zxcvbnInstance.check(password)
 	let feedbackText = ''
 	let borderColorClass = ''
 
