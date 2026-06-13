@@ -1,7 +1,5 @@
 import { ansiToHtml } from 'https://esm.sh/@steve02081504/ansi2html'
 
-import { ensureLogViewerStyles } from './log.mjs'
-
 /** @type {((code: string, opts: object) => string) | null} */
 let highlightJs = null
 /** @type {(() => void) | null} */
@@ -47,8 +45,6 @@ function highlightLine(line) {
  * @returns {{ inputEl: HTMLTextAreaElement, completionsEl: HTMLElement, syncInputView: () => void, setBusy: (busy: boolean) => void, focus: () => void }} REPL UI 句柄。
  */
 export function mountReplPanel(container, { placeholder = '', hint = '' } = {}) {
-	ensureLogViewerStyles()
-
 	const frameTop = document.createElement('div')
 	frameTop.className = 'repl-frame-top'
 	frameTop.innerHTML = '<span class="repl-frame-corner">╭─</span>'
