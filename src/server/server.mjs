@@ -121,10 +121,12 @@ let lastErrorTime = 0
  */
 export function handleError(err) {
 	// avoid notify spam like https://github.com/denoland/deno/issues/32803
+	const message = err?.message || String(err)
 	if (
-		lastError?.message !== err?.message &&
+		lastError?.message !== message &&
 		Date.now() - lastErrorTime > ms('30m')
-	) notify('Error', err.message)
+	) notify('Error', message)
+	debugger
 	console.error(err)
 	lastError = err
 	lastErrorTime = Date.now()

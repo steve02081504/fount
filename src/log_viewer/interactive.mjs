@@ -12,7 +12,8 @@ import { connectLogWire, WireLogEntry } from 'npm:@steve02081504/virtual-console
 
 import { createHistoryStore } from './history.mjs'
 import {
-	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON, PASTE_END, PASTE_START,
+	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON,
+	KITTY_KEYBOARD_OFF, KITTY_KEYBOARD_ON, PASTE_END, PASTE_START,
 	deleteWordBackward, deleteWordForward, editBackspace, editInsertChar,
 	isImeNoise, isShiftEnterCsi, kittyKeyAction,
 	nextWordBoundary, normalizePaste, prevWordBoundary,
@@ -431,7 +432,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		let out = ANSI_RESET
 		for (let row = boxTop; row <= boxBottom; row++)
 			out += cursorTo(1, row) + ERASE_LINE
-		out += BRACKETED_PASTE_OFF + SCROLL_REGION_RESET
+		out += KITTY_KEYBOARD_OFF + BRACKETED_PASTE_OFF + SCROLL_REGION_RESET
 		out += CURSOR_RESTORE + ANSI_RESET + CURSOR_SHOW
 		process.stdout.write(out)
 	}
@@ -516,7 +517,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		if (replTornDown || activated) return
 		activated = true
 		const reserve = layoutOf(resolveInputRows(input)).inputRows + 2
-		process.stdout.write('\n'.repeat(reserve) + `\x1b[${reserve}A\r` + CURSOR_SAVE + BRACKETED_PASTE_ON)
+		process.stdout.write('\n'.repeat(reserve) + `\x1b[${reserve}A\r` + CURSOR_SAVE + BRACKETED_PASTE_ON + KITTY_KEYBOARD_ON)
 		applyScrollRegion()
 		if (!inputLoopStarted) {
 			inputLoopStarted = true
@@ -1024,8 +1025,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function handleKey(event) {
-		if (isImeNoise(event)) return
-
+		// kitty 协议下 Shift+Enter 等会解析为 `name: 'undefined'` 的 CSI-u 序列，
+		// 须先于 IME 噪声过滤识别，否则会被 isImeNoise 当作无效按键丢弃。
 		const kitty = kittyKeyAction(event)
 		if (kitty === 'newline' || isShiftEnterCsi(event)) {
 			pendingReturnSubmit = false
@@ -1047,6 +1048,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			process.kill(process.pid, 'SIGINT')
 			return
 		}
+
+		if (isImeNoise(event)) return
 
 		if (event.key === 'tab') {
 			if (completionActive && completionItems.length && completionPendingSuffix()) {

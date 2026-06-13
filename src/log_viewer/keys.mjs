@@ -11,10 +11,19 @@ export const PASTE_END = '\x1b[201~'
 export const BRACKETED_PASTE_ON = '\x1b[?2004h'
 /** 关闭括号粘贴模式。 */
 export const BRACKETED_PASTE_OFF = '\x1b[?2004l'
+/**
+ * 压入 kitty 键盘协议（flag 1：消歧转义码）。启用后终端会把 Shift+Enter 等带修饰键
+ * 报告为 CSI-u 序列（如 `\x1b[13;2u`），从而与裸 Enter 区分开。不支持的终端会忽略它。
+ */
+export const KITTY_KEYBOARD_ON = '\x1b[>1u'
+/** 弹出此前压入的 kitty 键盘协议标志，恢复终端原状。 */
+export const KITTY_KEYBOARD_OFF = '\x1b[<u'
 
 const WORD_CHAR = /[\w$]/
-/** xterm Shift+Enter CSI（如 `[13;2~`）；keycode 常映射为 `f3`+Shift。 */
-const SHIFT_ENTER_CSI = /;2;13|\[13;2[~u$^]|\b13;2[~u]/
+/** xterm/rxvt Shift+Enter CSI（`13;2~` / `13;2u` / `13;2$` / `13;2^`，含反序 `;2;13`）。 */
+const SHIFT_ENTER_CSI = /13;2[~u$^]|;2;13/
+/** kitty CSI-u 按键：`CSI 键码 [; 修饰] u`。 */
+const KITTY_CSI_U = /\[(\d+)(?:;(\d+))?u/
 
 /**
  * 解析后的按键事件（由 `@cliffy/keycode` 的 `KeyCode` 适配）。
@@ -66,17 +75,14 @@ export const CLOSE_CHARS = new Set(OPEN_TO_CLOSE.values())
  * @returns {'submit' | 'newline' | 'ctrlBackspace' | 'interrupt' | null} 动作或 `null`。
  */
 export function kittyKeyAction(event) {
-	const src = event.code ?? event.sequence ?? ''
-	if (!src) return null
-	if (/99;5u/.test(src)) return 'interrupt'
-	if (/\[13;2u$/.test(src) || (/13;2[~u]/.test(src) && /;2/.test(src))) return 'newline'
-	const enter = src.match(/\[13(?:;(\d+))?u$/) ?? src.match(/13(?:;(\d+))?u/)
-	if (enter) {
-		const mod = Number(enter[1] ?? '1')
-		if (mod === 2) return 'newline'
-		if (mod === 1 || mod === 5) return 'submit'
-	}
-	if (/\[127;5u$/.test(src) || /127;5u/.test(src)) return 'ctrlBackspace'
+	const match = KITTY_CSI_U.exec(event.code ?? event.sequence ?? '')
+	if (!match) return null
+	const keyCode = Number(match[1])
+	const mod = Number(match[2] ?? '1')
+	if (keyCode === 99 && mod === 5) return 'interrupt' // Ctrl+C
+	if (keyCode === 127 && mod === 5) return 'ctrlBackspace' // Ctrl+Backspace
+	if (keyCode === 13) // Enter
+		return mod === 2 ? 'newline' : mod === 1 || mod === 5 ? 'submit' : null
 	return null
 }
 
@@ -87,13 +93,8 @@ export function kittyKeyAction(event) {
  */
 export function isShiftEnterCsi(event) {
 	if (event.shiftKey && (event.key === 'return' || event.key === 'enter')) return true
-	const seq = event.sequence ?? ''
-	const code = event.code ?? ''
-	if (/13;2[~u$^]/.test(seq) || /13;2[~u$^]/.test(code)) return true
-	if (SHIFT_ENTER_CSI.test(seq) || SHIFT_ENTER_CSI.test(code)) return true
-	if (event.code === '[13~' && event.shiftKey) return true
-	if (event.key === 'f3' && event.shiftKey) return true
-	return false
+	if (event.shiftKey && (event.key === 'f3' || event.code === '[13~')) return true
+	return SHIFT_ENTER_CSI.test(`${event.sequence ?? ''}\n${event.code ?? ''}`)
 }
 
 /**
