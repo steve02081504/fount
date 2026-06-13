@@ -15,7 +15,7 @@ const zxcvbnInstance = new ZxcvbnFactory({
  * @returns {void}
  */
 function updateZxcvbnTranslations() {
-	zxcvbnOptions.setOptions({ translations: geti18n('zxcvbn') })
+	zxcvbnInstance.options.setOptions({ translations: geti18n('zxcvbn') })
 }
 
 /**
