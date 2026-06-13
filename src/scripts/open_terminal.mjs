@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -44,21 +44,19 @@ export function spawnFountLog() {
 		['kitty', [fountScript, 'log']],
 		['alacritty', ['-e', fountScript, 'log']],
 	]
-	for (const [cmd, args] of terminals) {
-		const child = spawn(cmd, args, {
+	const spawnEnv = { ...process.env, FOUNT_CLICK: '1' }
+	for (const [command, args] of terminals) {
+		if (spawnSync('which', [command], { stdio: 'ignore' }).status !== 0) continue
+		spawn(command, args, {
 			detached: true,
 			stdio: 'ignore',
 			cwd: fountDir,
-			env: {
-				FOUNT_CLICK: '1',
-			},
-		})
-		child.on('error', () => { /* try next */ })
-		child.unref()
+			env: spawnEnv,
+		}).unref()
 		return
 	}
 
-	spawn(fountScript, ['log'], { detached: true, stdio: 'ignore', cwd: fountDir }).unref()
+	spawn(fountScript, ['log'], { detached: true, stdio: 'ignore', cwd: fountDir, env: spawnEnv }).unref()
 }
 
 /**

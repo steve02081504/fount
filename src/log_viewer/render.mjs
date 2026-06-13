@@ -10,9 +10,7 @@
  */
 import process from 'node:process'
 
-/**
- *
- */
+/** ANSI SGR 重置。 */
 export const ANSI_RESET = '\x1b[0m'
 /** 日志级别 → 行前缀色。 */
 export const LEVEL_PREFIX_COLORS = {
@@ -30,7 +28,6 @@ export const THEME = {
 	/** 错误。 */
 	error: '\x1b[31m',
 	dim: '\x1b[2m',
-	reset: ANSI_RESET,
 }
 
 /** 恢复全屏滚动区域（DECSTBM reset）。 */
@@ -41,8 +38,6 @@ export const CURSOR_HIDE = '\x1b[?25l'
 export const CURSOR_SHOW = '\x1b[?25h'
 /** 擦除整行。 */
 export const ERASE_LINE = '\x1b[2K'
-/** 擦除光标至屏幕末尾（ED 0）。 */
-export const ERASE_BELOW = '\x1b[0J'
 /** 保存光标位置与属性（DECSC）。 */
 export const CURSOR_SAVE = '\x1b7'
 /** 恢复光标位置与属性（DECRC）。 */
@@ -58,9 +53,7 @@ export function cursorTo(col, row) {
 	return `\x1b[${row};${col}H`
 }
 
-/**
- *
- */
+/** 输入区最少可见行数。 */
 export const MIN_INPUT_ROWS = 1
 /** 输入框左侧装饰宽度：`│ ` + 提示符 `❯ `。 */
 export const INPUT_PAD_LEFT = 4

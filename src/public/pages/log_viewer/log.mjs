@@ -947,12 +947,11 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 /**
  * 创建日志工具栏并绑定过滤逻辑。
  * @param {object} opts - 工具栏配置。
- * @param {HTMLElement} opts.container - 日志列表容器（当前实现未直接使用，保留接口）。
  * @param {() => void} opts.onClear - 用户点击清空时调用。
  * @param {(filterText: string, levelFilter: string) => void} opts.onFilter - 文本或级别变更时调用。
  * @returns {HTMLElement} 工具栏根元素。
  */
-export function createLogToolbar({ container: _container, onClear, onFilter }) {
+export function createLogToolbar({ onClear, onFilter }) {
 	injectStyles()
 
 	const toolbar = document.createElement('div')

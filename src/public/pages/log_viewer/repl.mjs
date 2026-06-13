@@ -78,6 +78,19 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	}
 
 	/**
+	 * 按请求 id 兑现 eval/completion 回包。
+	 * @param {{ id?: string }} raw - wire 响应帧。
+	 * @returns {void}
+	 */
+	function resolveWireReply(raw) {
+		const id = String(raw?.id ?? '')
+		const slot = pending.get(id)
+		if (!slot) return
+		pending.delete(id)
+		slot.resolve(raw)
+	}
+
+	/**
 	 * 首次输入时懒建 eval WebSocket。
 	 * @returns {ReturnType<typeof attachLogWire>} eval wire 句柄。
 	 */
@@ -88,28 +101,8 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		const ws = createEvalWs()
 		evalWire = attachLogWire(ws, {
 			extensionHandlers: {
-				/**
-				 * @param {{ id?: string }} raw - eval 结果。
-				 * @returns {void}
-				 */
-				eval_result: (raw) => {
-					const id = String(raw?.id ?? '')
-					const slot = pending.get(id)
-					if (!slot) return
-					pending.delete(id)
-					slot.resolve(raw)
-				},
-				/**
-				 * @param {{ id?: string }} raw - 补全结果。
-				 * @returns {void}
-				 */
-				completion_result: (raw) => {
-					const id = String(raw?.id ?? '')
-					const slot = pending.get(id)
-					if (!slot) return
-					pending.delete(id)
-					slot.resolve(raw)
-				},
+				eval_result: resolveWireReply,
+				completion_result: resolveWireReply,
 			},
 			/**
 			 * @returns {void}
@@ -159,10 +152,10 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	/**
 	 * 标记条目来自 eval 会话（truncated 展开走 eval wire）。
 	 * @param {object} entry - 日志条目。
-	 * @returns {object} 带 `_evalSession` 的条目。
+	 * @returns {object} 带 `fromEvalSession` 的条目。
 	 */
 	function tagEvalEntry(entry) {
-		return { ...entry, _evalSession: true }
+		return { ...entry, fromEvalSession: true }
 	}
 
 	/**

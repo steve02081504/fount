@@ -113,7 +113,7 @@ export function matchesCompletionPrefix(typed, candidate) {
  * @returns {string[]} 匹配项。
  */
 export function filterByCompletionPrefix(fragment, names) {
-	return [...names].filter(n => matchesCompletionPrefix(fragment, n))
+	return [...names].filter(name => matchesCompletionPrefix(fragment, name))
 }
 
 /**

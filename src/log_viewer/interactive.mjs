@@ -154,6 +154,19 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
+	 * 按请求 id 兑现 eval/completion 回包。
+	 * @param {{ id?: string }} raw - wire 响应帧。
+	 * @returns {void}
+	 */
+	function resolveEvalWireReply(raw) {
+		const id = String(raw?.id ?? '')
+		const pending = pendingEvalRequests.get(id)
+		if (!pending) return
+		pendingEvalRequests.delete(id)
+		pending.resolve(raw)
+	}
+
+	/**
 	 * 建立或等待 eval WebSocket 就绪（首次输入时懒连接）。
 	 * @returns {Promise<NonNullable<typeof evalConn>>} 已 OPEN 的 eval 连接句柄。
 	 */
@@ -187,28 +200,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		return new Promise((resolve, reject) => {
 			evalConn = connectLogWire(EVAL_WS_URL, {
 				extensionHandlers: {
-					/**
-					 * @param {{ id?: string }} raw - eval 结果帧。
-					 * @returns {void}
-					 */
-					eval_result: (raw) => {
-						const id = String(raw?.id ?? '')
-						const pending = pendingEvalRequests.get(id)
-						if (!pending) return
-						pendingEvalRequests.delete(id)
-						pending.resolve(raw)
-					},
-					/**
-					 * @param {{ id?: string }} raw - 补全结果帧。
-					 * @returns {void}
-					 */
-					completion_result: (raw) => {
-						const id = String(raw?.id ?? '')
-						const pending = pendingEvalRequests.get(id)
-						if (!pending) return
-						pendingEvalRequests.delete(id)
-						pending.resolve(raw)
-					},
+					eval_result: resolveEvalWireReply,
+					completion_result: resolveEvalWireReply,
 				},
 				/**
 				 * @returns {void}
@@ -673,7 +666,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		function requestExpand(ref, maxDepth) {
 			return conn.requestExpand(ref, maxDepth)
 		}
-		const wireCtx = { requestExpand, supportsAnsi: true }
+		const wireContext = { requestExpand, supportsAnsi: true }
 		/**
 		 * @param {unknown} snapshot - 序列化快照。
 		 * @param {'result' | 'error'} kind - 前缀样式。
@@ -685,7 +678,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 				level: kind === 'error' ? 'error' : 'log',
 				timestamp: Date.now(),
 				segments: [{ kind: 'value', snapshot }],
-			}, wireCtx)
+			}, wireContext)
 			const prefix = kind === 'error' ? `${THEME.error}✖` : `${THEME.accent}←`
 			const body = await entry.renderString({ indent: '  ', maxDepth: 8 })
 			return `${prefix}${ANSI_RESET} ${body}\n`

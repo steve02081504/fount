@@ -171,7 +171,7 @@ export function deleteWordBackward(text, pos) {
  * @param {number} offset - 光标偏移。
  * @returns {string | null} 前一字符，无则 `null`。
  */
-export function charBefore(text, offset) {
+function charBefore(text, offset) {
 	if (offset <= 0) return null
 	const head = text.slice(0, offset)
 	const code = head.codePointAt(head.length - 1)
@@ -184,7 +184,7 @@ export function charBefore(text, offset) {
  * @param {number} offset - 光标偏移。
  * @returns {string | null} 当前字符，无则 `null`。
  */
-export function charAt(text, offset) {
+function charAt(text, offset) {
 	if (offset >= text.length) return null
 	const code = text.codePointAt(offset)
 	return code === undefined ? null : String.fromCodePoint(code)

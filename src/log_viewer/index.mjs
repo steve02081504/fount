@@ -38,8 +38,8 @@ const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsA
 function readServerPort() {
 	try {
 		const raw = fs.readFileSync(path.join(FOUNT_DIR, 'data/config.json'), 'utf-8')
-		const cfg = JSON.parse(raw)
-		if (Number.isFinite(cfg?.port)) return cfg.port
+		const config = JSON.parse(raw)
+		if (Number.isFinite(config?.port)) return config.port
 	} catch { /* 配置缺失或损坏：使用默认端口 */ }
 	return 8931
 }
@@ -181,11 +181,11 @@ async function pollUntilServerReady() {
 
 /**
  * 建立一次 WebSocket 连接并等待其结束（断连或 `fount_exit`）。
- * 返回结束原因；若是 `fount_exit`，将退出码写入 `ctx.setExitCode`。
- * @param {{ setExitCode: (code: number) => void }} ctx - 用于回传 `fount_exit` 的退出码。
+ * 返回结束原因；若是 `fount_exit`，将退出码写入 `exitContext.setExitCode`。
+ * @param {{ setExitCode: (code: number) => void }} exitContext - 用于回传 `fount_exit` 的退出码。
  * @returns {Promise<'fount_exit' | 'close'>} 解析为本次连接的终止原因。
  */
-function runOneConnection(ctx) {
+function runOneConnection(exitContext) {
 	/**
 	 * Promise 执行器，作为本次连接的状态机。
 	 * @param {(reason: 'fount_exit' | 'close') => void} resolve - 兑现器。
@@ -213,7 +213,7 @@ function runOneConnection(ctx) {
 		 * @returns {void}
 		 */
 		const handleFountExit = (raw) => {
-			ctx.setExitCode(Number.isFinite(raw?.code) ? raw.code : 0)
+			exitContext.setExitCode(Number.isFinite(raw?.code) ? raw.code : 0)
 			finish('fount_exit')
 		}
 
@@ -317,7 +317,7 @@ async function main() {
 	 * @returns {void}
 	 */
 	const setExitCode = (code) => { exitCodeSlot.value = code }
-	const ctx = { setExitCode }
+	const exitContext = { setExitCode }
 
 	/**
 	 * SIGINT 处理：标记停止，拆除 REPL、关闭当前连接，立即以 130 退出。
@@ -335,7 +335,7 @@ async function main() {
 	while (!stopRequested) {
 		await pollUntilServerReady()
 		if (stopRequested) break
-		const reason = await runOneConnection(ctx)
+		const reason = await runOneConnection(exitContext)
 
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0

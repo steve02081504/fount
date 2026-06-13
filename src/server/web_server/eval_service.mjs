@@ -44,16 +44,16 @@ function collectPropertyNames(obj, max = COMPLETION_MAX_ITEMS) {
 	const names = new Set()
 	/** @type {Set<object>} */
 	const seen = new Set()
-	let cur = obj
-	while (cur && cur !== Object.prototype && typeof cur === 'object' && !seen.has(cur)) {
-		seen.add(cur)
+	let current = obj
+	while (current && current !== Object.prototype && typeof current === 'object' && !seen.has(current)) {
+		seen.add(current)
 		try {
-			for (const k of Object.getOwnPropertyNames(cur)) {
-				if (k === 'constructor' || k.startsWith('__')) continue
-				if (/^[\w$]+$/.test(k)) names.add(k)
+			for (const propertyName of Object.getOwnPropertyNames(current)) {
+				if (propertyName === 'constructor' || propertyName.startsWith('__')) continue
+				if (/^[\w$]+$/.test(propertyName)) names.add(propertyName)
 			}
 		} catch { break }
-		try { cur = Object.getPrototypeOf(cur) } catch { break }
+		try { current = Object.getPrototypeOf(current) } catch { break }
 	}
 	return [...names].sort().slice(0, max)
 }
@@ -67,8 +67,8 @@ function collectGlobalCandidates(fragment) {
 	/** @type {Set<string>} */
 	const names = new Set(JS_KEYWORDS)
 	try {
-		for (const k of Object.getOwnPropertyNames(globalThis))
-			if (/^[\w$]+$/.test(k)) names.add(k)
+		for (const propertyName of Object.getOwnPropertyNames(globalThis))
+			if (/^[\w$]+$/.test(propertyName)) names.add(propertyName)
 	} catch { /* ignore */ }
 	return filterByCompletionPrefix(fragment, names)
 		.sort()

@@ -42,13 +42,21 @@ async function handleOpenSource(callsite) {
 }
 
 /**
+ * 当前过滤条件下的日志条目。
+ * @returns {object[]} 过滤后的条目列表。
+ */
+function getFilteredEntries() {
+	return logsStore.filter(entry => entryMatchesFilter(entry, logFilterText, logLevelFilter))
+}
+
+/**
  * 获取经过过滤的日志切片。
  * @param {number} offset - 在过滤结果数组中的起始下标。
  * @param {number} limit - 最大返回条数；为 0 或省略时一直取到末尾。
  * @returns {{items: object[], total: number}} `items` 为当前页条目，`total` 为过滤后总数。
  */
 function getFilteredSlice(offset, limit) {
-	const filtered = logsStore.filter(e => entryMatchesFilter(e, logFilterText, logLevelFilter))
+	const filtered = getFilteredEntries()
 	return {
 		items: filtered.slice(offset, limit ? offset + limit : undefined),
 		total: filtered.length,
@@ -100,7 +108,7 @@ function initLogsVirtualList() {
 		 * @returns {Promise<unknown>} 展开后的子树快照。
 		 */
 		requestExpandRef: (ref) => {
-			if (item._evalSession) {
+			if (item.fromEvalSession) {
 				if (!evalRequestExpandRef)
 					return Promise.reject(new Error('eval WebSocket not ready'))
 				return evalRequestExpandRef(ref)
@@ -111,7 +119,7 @@ function initLogsVirtualList() {
 		},
 	})
 
-	const filtered = logsStore.filter(e => entryMatchesFilter(e, logFilterText, logLevelFilter))
+	const filtered = getFilteredEntries()
 	logsVirtualList = createVirtualList({
 		container: backendLogList,
 		fetchData: fetchLogSlice,
@@ -177,14 +185,7 @@ function connectLogsWs() {
 		 * @param {object} entry - 新日志条目。
 		 * @returns {Promise<void>}
 		 */
-		onAppend: async (entry) => {
-			logsStore.push(entry)
-			if (entryMatchesFilter(entry, logFilterText, logLevelFilter)) {
-				const nearBottom = Math.abs((backendLogList.scrollHeight - backendLogList.scrollTop) - backendLogList.clientHeight) < 64
-				if (logsVirtualList)
-					await logsVirtualList.appendItem(entry, nearBottom)
-			}
-		},
+		onAppend: appendLogEntry,
 		/**
 		 * 服务端通知清空：重置本地缓冲与 UI。
 		 * @returns {void}
@@ -208,7 +209,6 @@ function connectLogsWs() {
 const logToolbarContainer = document.getElementById('log-toolbar-container')
 if (logToolbarContainer) {
 	const toolbar = createLogToolbar({
-		container: backendLogList,
 		/**
 		 * 用户清空日志：优先通过 WS 同步服务端，否则仅清空前端视图。
 		 * @returns {void}
