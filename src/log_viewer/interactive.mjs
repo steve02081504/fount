@@ -435,7 +435,9 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		for (let row = firstRow; row <= boxBottom; row++)
 			out += cursorTo(1, row) + ERASE_LINE
 		out += KITTY_KEYBOARD_OFF + BRACKETED_PASTE_OFF + SCROLL_REGION_RESET
-		out += CURSOR_RESTORE + ANSI_RESET + CURSOR_SHOW
+		// 光标落到擦除区起点（紧接最后一行可见日志），让 shell 提示符从这里续写，
+		// 不再 DECRC 回到旧日志位（补全带展开时该位置正处于已擦除的空行中，会留下空行）。
+		out += cursorTo(1, firstRow) + ANSI_RESET + CURSOR_SHOW
 		process.stdout.write(out)
 	}
 
