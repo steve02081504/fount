@@ -18,11 +18,20 @@ self.onmessage = async e => {
 	switch (e.data.type) {
 		case 'init': {
 			__dirname = e.data.__dirname
-			const result = await main()
-			self.postMessage({
-				type: 'resolve',
-				data: result,
-			})
+			try {
+				const result = await main()
+				self.postMessage({
+					type: 'resolve',
+					data: result,
+				})
+			}
+			catch (error) {
+				// `self.onerror` 仅捕获同步错误，此处处理异步 rejection。
+				self.postMessage({
+					type: 'reject',
+					data: error?.stack || error?.message || String(error),
+				})
+			}
 			break
 		}
 	}
