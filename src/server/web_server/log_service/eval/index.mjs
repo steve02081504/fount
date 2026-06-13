@@ -11,6 +11,7 @@ import {
 	filterByCompletionPrefix,
 	parseCompletionContext,
 } from './completion.mjs'
+import { config } from "../../../server.mjs";
 
 const WIRE_MAX_DEPTH = 5
 const COMPLETION_MAX_ITEMS = 50
@@ -94,7 +95,9 @@ export async function computeCompletion(code, cursor) {
 	}
 
 	try {
-		const evalResult = await async_eval(`return (${ctx.receiver})`)
+		const evalResult = await async_eval(`(${ctx.receiver})`, {
+			config
+		})
 		if (evalResult.error)
 			return enrichCompletionWirePayload(code, {
 				items: [], replaceStart: ctx.replaceStart, replaceEnd: ctx.replaceEnd,
@@ -164,7 +167,9 @@ export function evalServiceWebSocketHandler(ws) {
 			const code = String(message.code ?? '')
 			void (async () => {
 				try {
-					const evalResult = await async_eval(code)
+					const evalResult = await async_eval(code, {
+						config
+					})
 					for (const entry of evalResult.outputEntries)
 						heldEntries.push(entry)
 					sendJson({
