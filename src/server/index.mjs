@@ -6,8 +6,6 @@
 import fs from 'node:fs'
 import process from 'node:process'
 
-import * as Sentry from 'npm:@sentry/deno'
-
 import { console } from '../scripts/i18n.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
@@ -16,6 +14,7 @@ import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
 import { startIdleCheck, stopIdleCheck } from './idle.mjs'
 import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
+import { set_sentry_enabled } from './sentry_state.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
@@ -28,24 +27,6 @@ setWindowTitle('𝓯𝓸')
 SetTaskbarProgress(50)
 
 // 初始化 Sentry 进行错误报告。
-/**
- * 是否启用 Sentry 进行错误报告
- * @type {boolean}
- */
-export let sentry_enabled
-/**
- * 设置 Sentry 是否启用
- * @param {boolean} new_sentry_enabled - 是否启用 Sentry
- * @returns {void}
- */
-function set_sentry_enabled(new_sentry_enabled) {
-	// deno-lint-ignore no-cond-assign
-	if (sentry_enabled = new_sentry_enabled) try {
-		Sentry.init({
-			dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-		})
-	} catch (error) { console.error(error) }
-}
 set_sentry_enabled(!fs.existsSync(__dirname + '/.noerrorreport'))
 console.noBreadcrumb = {
 	/**

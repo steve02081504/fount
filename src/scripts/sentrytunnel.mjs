@@ -1,4 +1,4 @@
-import { sentry_enabled } from '../server/index.mjs'
+import { sentry_enabled } from '../server/sentry_state.mjs'
 
 /**
  * 将 Sentry 事件隧道传输到 Sentry 服务器。
