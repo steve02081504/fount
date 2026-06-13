@@ -1156,7 +1156,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (event.key === 'backspace') {
-			if (event.ctrlKey) applyWordDelete(deleteWordBackward(input, cursor))
+			// \b 是 Ctrl+Backspace 的转义，统一按整词删除。
+			if (event.ctrlKey || event.sequence?.endsWith('\b')) applyWordDelete(deleteWordBackward(input, cursor))
 			else deleteBeforeCursor()
 			return
 		}
