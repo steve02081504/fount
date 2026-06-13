@@ -1,7 +1,13 @@
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 
-import { createEvalWs } from './endpoints.mjs'
-import { editBackspace, editInsertChar, isPairInputEvent } from './repl_pairs.mjs'
+import { createEvalWs } from '../endpoints.mjs'
+
+import { editBackspace, editInsertChar, isPairInputEvent } from './pairs.mjs'
+
+/**
+ *
+ */
+export { mountReplPanel } from './ui.mjs'
 
 const HISTORY_KEY = 'log_viewer.repl.history'
 const MAX_HISTORY = 100
@@ -10,7 +16,7 @@ const COMPLETION_DEBOUNCE_MS = 150
 /**
  * 初始化 log_viewer 浏览器 REPL。
  * @param {object} opts - 选项。
- * @param {ReturnType<import('./repl_ui.mjs').mountReplPanel>} opts.replUi - REPL 输入 UI。
+ * @param {ReturnType<import('./ui.mjs').mountReplPanel>} opts.replUi - REPL 输入 UI。
  * @param {(entry: object) => void | Promise<void>} [opts.onAppendEntry] - 向主日志区追加条目。
  * @param {(fn: ((ref: string) => Promise<unknown>) | null) => void} [opts.onEvalExpandRef] - eval 展开引用注册。
  * @returns {void}
