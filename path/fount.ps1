@@ -396,17 +396,12 @@ function Register-FountTerminalProfile {
 	}
 }
 
-# REPL 所需终端按键：仅重映射 Shift+Enter / Ctrl+Backspace 为 CSI-u（不启用整会话 Kitty 协议，避免影响其它程序）。
+# REPL 所需终端按键。Shift+Enter 在终端层与裸 Enter 同码（都发 CR），必须重映射为 CSI-u 才能区分。
 $script:FountTerminalKeyPatches = @(
 	@{
 		Id        = 'fount.sendInput.shiftEnter'
 		Keys      = 'shift+enter'
 		InputJson = '\u001b[13;2u'
-	},
-	@{
-		Id        = 'fount.sendInput.ctrlBackspace'
-		Keys      = 'ctrl+backspace'
-		InputJson = '\u001b[127;5u'
 	}
 )
 
@@ -415,11 +410,6 @@ $script:FountEditorTerminalKeyPatches = @(
 		Marker = 'shiftEnter'
 		Key    = 'shift+enter'
 		Text   = "`e[13;2u"
-	},
-	@{
-		Marker = 'ctrlBackspace'
-		Key    = 'ctrl+backspace'
-		Text   = "`e[127;5u"
 	}
 )
 
