@@ -5,13 +5,14 @@ import {
 } from 'npm:@steve02081504/virtual-console/node'
 import { handleClientWireMessage } from 'npm:@steve02081504/virtual-console/wire/server'
 
+import { config } from '../../../server.mjs'
+
 import {
 	JS_KEYWORDS,
 	enrichCompletionWirePayload,
 	filterByCompletionPrefix,
 	parseCompletionContext,
 } from './completion.mjs'
-import { config } from "../../../server.mjs";
 
 const WIRE_MAX_DEPTH = 5
 const COMPLETION_MAX_ITEMS = 50
