@@ -114,7 +114,7 @@
 		},
 		"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot ${platform} ${botusername}.",
 		"logViewer": {
-			"replHint": "Enter để chạy · Shift+Enter xuống dòng"
+			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
 		},
 		"path": {
 			"protocol": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Nhập mã JavaScript…"
 			},
-			"hint": "Enter để chạy · Shift+Enter xuống dòng · ↑↓ duyệt lịch sử"
+			"hint": "Enter để chạy · Shift+Enter để xuống dòng · ↑↓ duyệt lịch sử"
 		}
 	},
 	"debug_info": {

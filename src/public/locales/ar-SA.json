@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "فتح الطرفية",
-					"tooltip": "فتح عارض السجلات مع REPL في نافذة"
+					"tooltip": "افتح عارض السجلات مع REPL في نافذة"
 				}
 			}
 		},
 		"botStarted": "تم تسجيل دخول الشخصية ${charname} ${platform} على بوت ${botusername}",
 		"logViewer": {
-			"replHint": "Enter للتشغيل · Shift+Enter للسطر الجديد"
+			"replHint": "Enter للتشغيل · Shift+Enter لسطر جديد"
 		},
 		"path": {
 			"protocol": {
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "السجلات",
-		"description": "اعرض سجلات خادم fount المباشرة وشغّل REPL للـ JavaScript في متصفحك.",
-		"connectionError": "تعذّر الاتصال بخدمة السجلات. يرجى المحاولة مجددًا بعد الوصول محليًا أو تسجيل الدخول.",
+		"description": "اعرض سجلات خادم fount المباشرة وشغّل مفسّر JavaScript (REPL) في متصفحك.",
+		"connectionError": "تعذّر الاتصال بخدمة السجلات. يُرجى المحاولة مجددًا بعد الوصول إلى fount محليًا أو تسجيل الدخول.",
 		"logs": {
 			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
 			"toolbar": {

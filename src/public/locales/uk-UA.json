@@ -108,7 +108,7 @@
 				},
 				"openTerminal": {
 					"title": "Відкрити термінал",
-					"tooltip": "Відкрити переглядач журналів із REPL у вікні"
+					"tooltip": "Відкрити переглядач журналів із REPL у новому вікні"
 				}
 			}
 		},
@@ -196,7 +196,7 @@
 				"editorRemoved": "Конфігурацію fount видалено з прив'язок клавіш термінала редактора: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Видалення патча прив’язки клавіш терміналу...",
+				"removingTerminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
 				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
 				"removingFountInstallationDir": "Видалення каталогу встановлення fount...",

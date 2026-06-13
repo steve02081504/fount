@@ -108,7 +108,7 @@
 				},
 				"openTerminal": {
 					"title": "Ouvrir le terminal",
-					"tooltip": "Ouvrir l'afficheur de journaux avec REPL dans une fenêtre"
+					"tooltip": "Ouvrir la visionneuse de journaux avec REPL dans une fenêtre"
 				}
 			}
 		},
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Saisir du code JavaScript…"
 			},
-			"hint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne · ↑↓ historique"
+			"hint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne · ↑↓ parcourir l'historique"
 		}
 	},
 	"debug_info": {

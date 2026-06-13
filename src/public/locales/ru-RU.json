@@ -190,10 +190,10 @@
 				"initFailed": "Инициализация fount не удалась. Выход."
 			},
 			"terminalKeybindings": {
-				"registered": "Патч раскладки клавиш терминала настроен.",
+				"registered": "Патч привязок клавиш терминала настроен.",
 				"wtPatchFailed": "Не удалось изменить настройки Windows Terminal ${path}: ${message}",
 				"wtRemoved": "Конфигурация клавиш fount удалена из Windows Terminal: ${path}",
-				"editorRemoved": "Конфигурация fount удалена из раскладки терминала редактора: ${path}"
+				"editorRemoved": "Конфигурация fount удалена из привязок клавиш терминала редактора: ${path}"
 			},
 			"remove": {
 				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
@@ -2495,7 +2495,7 @@
 		}
 	},
 	"log_viewer": {
-		"title": "Журнал",
+		"title": "Журналы",
 		"description": "Просматривайте журналы сервера fount в реальном времени и запускайте JavaScript REPL в браузере.",
 		"connectionError": "Не удалось подключиться к службе журналов. Повторите попытку после локального доступа или входа в систему.",
 		"logs": {

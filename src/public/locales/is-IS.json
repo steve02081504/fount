@@ -2496,7 +2496,7 @@
 	},
 	"log_viewer": {
 		"title": "Annáll",
-		"description": "Skoðaðu lifandi fount-þjónannaskrár og keyrðu JavaScript REPL í vafranum.",
+		"description": "Skoðaðu rauntímaskrár fount-þjónsins og keyrðu JavaScript REPL í vafranum.",
 		"connectionError": "Ekki tókst að tengjast annálaþjónustu. Reyndu aftur eftir að hafa opnað fount staðbundið eða skráð þig inn.",
 		"logs": {
 			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Sláðu inn JavaScript-kóða…"
 			},
-			"hint": "Enter til að keyra · Shift+Enter fyrir nýja línu · ↑↓ ferðast í gegnum sögu"
+			"hint": "Enter til að keyra · Shift+Enter fyrir nýja línu · ↑↓ fletta í gegnum sögu"
 		}
 	},
 	"debug_info": {

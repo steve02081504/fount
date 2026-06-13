@@ -114,7 +114,7 @@
 		},
 		"botStarted": "캐릭터 ${charname}님이 ${platform} 봇 ${botusername}에 로그인했습니다.",
 		"logViewer": {
-			"replHint": "Enter 실행 · Shift+Enter 줄바꿈"
+			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"path": {
 			"protocol": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "JavaScript 코드 입력…"
 			},
-			"hint": "Enter 실행 · Shift+Enter 줄바꿈 · ↑↓ 기록 탐색"
+			"hint": "Enter로 실행 · Shift+Enter 줄바꿈 · ↑↓ 기록 탐색"
 		}
 	},
 	"debug_info": {

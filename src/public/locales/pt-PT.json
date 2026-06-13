@@ -108,7 +108,7 @@
 				},
 				"openTerminal": {
 					"title": "Abrir terminal",
-					"tooltip": "Abrir o visualizador de registos com REPL numa janela"
+					"tooltip": "Abrir o visualizador de registos com REPL numa nova janela"
 				}
 			}
 		},
@@ -2497,7 +2497,7 @@
 	"log_viewer": {
 		"title": "Registos",
 		"description": "Veja os registos em tempo real do servidor fount e execute um REPL JavaScript no navegador.",
-		"connectionError": "Não foi possível ligar ao serviço de registos. Tente novamente após aceder localmente ou iniciar sessão.",
+		"connectionError": "Não foi possível ligar ao serviço de registos. Tente novamente depois de aceder ao fount localmente ou de iniciar sessão.",
 		"logs": {
 			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
 			"toolbar": {

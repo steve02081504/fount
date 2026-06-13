@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registros",
-		"description": "Consulta los registros en vivo del servidor fount y ejecuta un REPL de JavaScript en el navegador.",
-		"connectionError": "No se pudo conectar al servicio de registros. Inténtalo de nuevo tras acceder localmente o iniciar sesión.",
+		"description": "Consulta en tiempo real los registros del servidor fount y ejecuta un REPL de JavaScript en el navegador.",
+		"connectionError": "No se pudo conectar al servicio de registros. Inténtalo de nuevo tras acceder a fount en local o iniciar sesión.",
 		"logs": {
 			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}",
 			"toolbar": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Introduce código JavaScript…"
 			},
-			"hint": "Enter para ejecutar · Shift+Enter para nueva línea · ↑↓ historial"
+			"hint": "Enter para ejecutar · Shift+Enter para nueva línea · ↑↓ recorrer historial"
 		}
 	},
 	"debug_info": {

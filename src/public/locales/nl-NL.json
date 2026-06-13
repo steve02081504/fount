@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "JavaScript-code invoeren…"
 			},
-			"hint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel · ↑↓ door geschiedenis bladeren"
+			"hint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel · ↑↓ door de geschiedenis bladeren"
 		}
 	},
 	"debug_info": {

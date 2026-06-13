@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "Open terminal",
-					"tooltip": "Open the log viewer with REPL in a window"
+					"tooltip": "Open the log viewer with a REPL in a new window"
 				}
 			}
 		},
 		"botStarted": "Character ${charname} has logged in to the ${platform} Bot ${botusername}.",
 		"logViewer": {
-			"replHint": "Enter to run · Shift+Enter for new line"
+			"replHint": "Enter to run · Shift+Enter for a new line"
 		},
 		"path": {
 			"protocol": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Enter JavaScript code…"
 			},
-			"hint": "Enter to run · Shift+Enter for new line · ↑↓ browse history"
+			"hint": "Enter to run · Shift+Enter for a new line · ↑↓ browse history"
 		}
 	},
 	"debug_info": {

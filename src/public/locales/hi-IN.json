@@ -114,7 +114,7 @@
 		},
 		"botStarted": "कैरेक्टर ${charname} ने ${platform} बॉट ${botusername} पर लॉगिन किया है।",
 		"logViewer": {
-			"replHint": "Enter चलाएँ · Shift+Enter नई पंक्ति"
+			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"path": {
 			"protocol": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "JavaScript कोड दर्ज करें…"
 			},
-			"hint": "Enter चलाएँ · Shift+Enter नई पंक्ति · ↑↓ इतिहास ब्राउज़ करें"
+			"hint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति · ↑↓ इतिहास ब्राउज़ करें"
 		}
 	},
 	"debug_info": {

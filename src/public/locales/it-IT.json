@@ -108,7 +108,7 @@
 				},
 				"openTerminal": {
 					"title": "Apri terminale",
-					"tooltip": "Apri il visualizzatore log con REPL in una finestra"
+					"tooltip": "Apri il visualizzatore dei log con REPL in una finestra"
 				}
 			}
 		},

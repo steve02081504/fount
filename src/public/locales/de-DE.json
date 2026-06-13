@@ -108,7 +108,7 @@
 				},
 				"openTerminal": {
 					"title": "Terminal öffnen",
-					"tooltip": "Log-Viewer mit REPL in einem Fenster öffnen"
+					"tooltip": "Log-Viewer mit REPL in einem neuen Fenster öffnen"
 				}
 			}
 		},
@@ -2495,9 +2495,9 @@
 		}
 	},
 	"log_viewer": {
-		"title": "Protokoll",
-		"description": "Live-Serverprotokolle von fount anzeigen und JavaScript-REPL im Browser ausführen.",
-		"connectionError": "Verbindung zum Protokolldienst fehlgeschlagen. Bitte erneut versuchen, nachdem Sie lokal zugegriffen oder sich angemeldet haben.",
+		"title": "Protokolle",
+		"description": "Live-Serverprotokolle von fount anzeigen und ein JavaScript-REPL im Browser ausführen.",
+		"connectionError": "Verbindung zum Protokolldienst fehlgeschlagen. Bitte versuchen Sie es erneut, nachdem Sie lokal auf fount zugegriffen oder sich angemeldet haben.",
 		"logs": {
 			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
 			"toolbar": {
