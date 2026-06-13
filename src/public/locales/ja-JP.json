@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "ターミナルを開く",
-					"tooltip": "REPL を使用してウィンドウでログ ビューアを開く"
+					"tooltip": "REPL 付きログビューアをウィンドウで開く"
 				}
 			}
 		},
 		"botStarted": "キャラクター「${charname}」が${platform}ボット「${botusername}」にログインしました。",
 		"logViewer": {
-			"replHint": "Enter で実行します。Shift+Enter でラップします。"
+			"replHint": "Enter で実行 · Shift+Enter で改行"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "フォントの初期化に失敗しました。退出中。"
 			},
 			"terminalKeybindings": {
-				"registered": "ターミナルキーマップのパッチ適用が設定されました。",
-				"wtPatchFailed": "Windows ターミナル設定 ${path}:${message} にパッチを適用できません",
-				"wtRemoved": "Windows ターミナル設定から削除されたキーマップ構成が見つかりました: ${path}",
-				"editorRemoved": "エディタターミナルのキーマップから削除されたフォント設定: ${path}"
+				"registered": "ターミナルのキーバインドパッチを設定しました。",
+				"wtPatchFailed": "Windows Terminal の設定 ${path} にパッチを適用できません: ${message}",
+				"wtRemoved": "Windows Terminal の設定から fount のキーバインドを削除しました: ${path}",
+				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "ターミナルキーバインドパッチを削除しています...",
+				"removingTerminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
 				"removingFount": "フォントを削除しています...",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"removingFountInstallationDir": "fount インストール ディレクトリを削除しています...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "ログ",
-		"description": "見つかったライブサーバーログを表示し、ブラウザで JavaScript REPL を実行します。",
-		"connectionError": "ログサービスに接続できません。ローカルにアクセスまたはログインした後、再度お試しください。",
+		"description": "fount のリアルタイムサーバーログを表示し、ブラウザで JavaScript REPL を実行します。",
+		"connectionError": "ログサービスに接続できません。ローカルでアクセスするかログインしてから再度お試しください。",
 		"logs": {
 			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "JavaScript コードを入力してください…"
+				"placeholder": "JavaScript コードを入力…"
 			},
-			"hint": "Enterで実行・Shift+Enterで行を折り返す・↑↓閲覧履歴"
+			"hint": "Enter で実行 · Shift+Enter で改行 · ↑↓ 履歴をたどる"
 		}
 	},
 	"debug_info": {

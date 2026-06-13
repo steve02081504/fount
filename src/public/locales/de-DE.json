@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "Terminal öffnen",
-					"tooltip": "Öffnen Sie den Log Viewer im Fenster mit REPL"
+					"tooltip": "Log-Viewer mit REPL in einem Fenster öffnen"
 				}
 			}
 		},
 		"botStarted": "Char ${charname} hat sich beim ${platform}-Bot ${botusername} angemeldet.",
 		"logViewer": {
-			"replHint": "Eingabetaste zum Ausführen · Umschalt+Eingabetaste zum Umbrechen"
+			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen."
 			},
 			"terminalKeybindings": {
-				"registered": "Terminal-Keymap-Patching konfiguriert.",
-				"wtPatchFailed": "Die Windows-Terminal-Einstellung ${path}:${message} konnte nicht gepatcht werden.",
-				"wtRemoved": "Konfiguration der Quellen-Keymap aus den Windows-Terminal-Einstellungen entfernt: ${path}",
-				"editorRemoved": "Schriftartkonfiguration aus Editor-Terminal-Keymap entfernt: ${path}"
+				"registered": "Terminal-Tastenkürzel-Patch konfiguriert.",
+				"wtPatchFailed": "Windows-Terminal-Einstellungen konnten nicht gepatcht werden (${path}): ${message}",
+				"wtRemoved": "fount-Tastenkürzel aus Windows-Terminal-Einstellungen entfernt: ${path}",
+				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Terminal-Tastenbindungspatch wird entfernt...",
+				"removingTerminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
 				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
 				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Protokoll",
-		"description": "Sehen Sie sich die Live-Serverprotokolle von Font an und führen Sie JavaScript REPL in Ihrem Browser aus.",
-		"connectionError": "Es konnte keine Verbindung zum Protokolldienst hergestellt werden. Bitte versuchen Sie es erneut, nachdem Sie lokal darauf zugegriffen oder sich angemeldet haben.",
+		"description": "Live-Serverprotokolle von fount anzeigen und JavaScript-REPL im Browser ausführen.",
+		"connectionError": "Verbindung zum Protokolldienst fehlgeschlagen. Bitte erneut versuchen, nachdem Sie lokal zugegriffen oder sich angemeldet haben.",
 		"logs": {
 			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "Geben Sie den JavaScript-Code ein…"
+				"placeholder": "JavaScript-Code eingeben…"
 			},
-			"hint": "Eingabetaste zum Ausführen · Umschalt+Eingabetaste zum Umbrechen der Zeile · ↑↓ Browserverlauf"
+			"hint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch · ↑↓ Verlauf durchblättern"
 		}
 	},
 	"debug_info": {

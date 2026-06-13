@@ -107,14 +107,14 @@
 					"tooltip": "Effacer l'écran du terminal"
 				},
 				"openTerminal": {
-					"title": "Terminal ouvert",
-					"tooltip": "Ouvrez la visionneuse de journaux dans la fenêtre avec REPL"
+					"title": "Ouvrir le terminal",
+					"tooltip": "Ouvrir l'afficheur de journaux avec REPL dans une fenêtre"
 				}
 			}
 		},
 		"botStarted": "Le personnage ${charname} s'est connecté au bot ${platform} ${botusername}.",
 		"logViewer": {
-			"replHint": "entrez pour exécuter · maj+entrée pour terminer"
+			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "L'initialisation de la fount a échoué. Sortir."
 			},
 			"terminalKeybindings": {
-				"registered": "Correction du mappage de clavier du terminal configurée.",
-				"wtPatchFailed": "Impossible de corriger le paramètre du terminal Windows ${path}:${message}",
-				"wtRemoved": "Configuration du mappage de clavier de police supprimée des paramètres du terminal Windows : ${path}",
-				"editorRemoved": "Configuration de la police supprimée du plan de clavier du terminal de l'éditeur : ${path}"
+				"registered": "Correctif des raccourcis du terminal configuré.",
+				"wtPatchFailed": "Impossible de modifier les paramètres de Windows Terminal ${path} : ${message}",
+				"wtRemoved": "Configuration des raccourcis fount supprimée des paramètres de Windows Terminal : ${path}",
+				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Suppression du correctif de liaison de clé de terminal...",
+				"removingTerminalKeybindings": "Suppression du correctif de raccourcis du terminal...",
 				"removingFount": "Suppression de la fount...",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
 				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Journaux",
-		"description": "Consultez les journaux du serveur Font Live et exécutez JavaScript REPL dans votre navigateur.",
-		"connectionError": "Impossible de se connecter au service de journalisation. Veuillez réessayer après avoir accédé ou connecté localement.",
+		"description": "Consultez les journaux du serveur fount en direct et exécutez un REPL JavaScript dans votre navigateur.",
+		"connectionError": "Impossible de se connecter au service de journaux. Veuillez réessayer après avoir accédé à fount en local ou vous être connecté.",
 		"logs": {
 			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "Entrez le code JavaScript…"
+				"placeholder": "Saisir du code JavaScript…"
 			},
-			"hint": "Entrée pour exécuter · Maj+Entrée pour terminer la ligne · ↑↓ Historique de navigation"
+			"hint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne · ↑↓ historique"
 		}
 	},
 	"debug_info": {

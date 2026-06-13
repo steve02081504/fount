@@ -107,14 +107,14 @@
 					"tooltip": "清空終端機螢幕"
 				},
 				"openTerminal": {
-					"title": "打開終端",
-					"tooltip": "在視窗中開啟日誌檢視器與 REPL"
+					"title": "開啟終端機",
+					"tooltip": "在新視窗中開啟日誌檢視器與 REPL"
 				}
 			}
 		},
 		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登入",
 		"logViewer": {
-			"replHint": "enter 運行 · shift+enter 換行"
+			"replHint": "Enter 執行 · Shift+Enter 換行"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "fount 初始化失敗。正在退出。"
 			},
 			"terminalKeybindings": {
-				"registered": "已配置終端按鍵映射修補。",
+				"registered": "已設定終端機按鍵對應修補。",
 				"wtPatchFailed": "無法修補 Windows Terminal 設定 ${path}：${message}",
-				"wtRemoved": "已從 Windows Terminal 設定移除 fount 按鍵映射配置：${path}",
-				"editorRemoved": "已從編輯器終端機按鍵映射移除 fount 配置：${path}"
+				"wtRemoved": "已從 Windows Terminal 設定移除 fount 按鍵對應：${path}",
+				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "正在移除終端按鍵綁定補丁...",
+				"removingTerminalKeybindings": "正在移除終端機按鍵綁定修補…",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 解除安裝完成。",
 				"removingFountInstallationDir": "正在移除 fount 安裝目錄...",
@@ -2497,7 +2497,7 @@
 	"log_viewer": {
 		"title": "紀錄",
 		"description": "查看 fount 即時伺服器日誌，並在瀏覽器中執行 JavaScript REPL。",
-		"connectionError": "無法連線日誌服務。請在本機存取或登入後重試。",
+		"connectionError": "無法連線至日誌服務。請在本機存取或登入後再試。",
 		"logs": {
 			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
 			"toolbar": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "輸入 JavaScript 程式碼…"
 			},
-			"hint": "Enter 運行 · Shift+Enter 換行 · ↑↓ 瀏覽歷史"
+			"hint": "Enter 執行 · Shift+Enter 換行 · ↑↓ 瀏覽歷史"
 		}
 	},
 	"debug_info": {

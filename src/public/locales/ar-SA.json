@@ -107,14 +107,14 @@
 					"tooltip": "امسح الشاشة الطرفية"
 				},
 				"openTerminal": {
-					"title": "فتح المحطة",
-					"tooltip": "افتح عارض السجل في النافذة باستخدام REPL"
+					"title": "فتح الطرفية",
+					"tooltip": "فتح عارض السجلات مع REPL في نافذة"
 				}
 			}
 		},
 		"botStarted": "تم تسجيل دخول الشخصية ${charname} ${platform} على بوت ${botusername}",
 		"logViewer": {
-			"replHint": "أدخل للتشغيل · Shift+Enter للالتفاف"
+			"replHint": "Enter للتشغيل · Shift+Enter للسطر الجديد"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "فشلت تهيئة الخط. الخروج."
 			},
 			"terminalKeybindings": {
-				"registered": "تم تكوين تصحيح خريطة المفاتيح الطرفية.",
-				"wtPatchFailed": "غير قادر على تصحيح إعداد Windows Terminal ${path}:${message}",
-				"wtRemoved": "تمت إزالة تكوين خريطة المفاتيح الموجودة من إعدادات Windows Terminal: ${path}",
-				"editorRemoved": "تمت إزالة تكوين المصدر من خريطة المفاتيح الطرفية للمحرر: ${path}"
+				"registered": "تم تكوين ترقيع اختصارات الطرفية.",
+				"wtPatchFailed": "تعذّر ترقيع إعدادات Windows Terminal ${path}: ${message}",
+				"wtRemoved": "تمت إزالة إعدادات اختصارات fount من Windows Terminal: ${path}",
+				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "إزالة تصحيح ربط المفتاح الطرفي...",
+				"removingTerminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
 				"removingFount": "جارٍ إزالة fount...",
 				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
 				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "السجلات",
-		"description": "قم بعرض سجلات الخادم المباشرة وتشغيل JavaScript REPL في متصفحك.",
-		"connectionError": "غير قادر على الاتصال بخدمة السجل. يرجى المحاولة مرة أخرى بعد الوصول أو تسجيل الدخول محليًا.",
+		"description": "اعرض سجلات خادم fount المباشرة وشغّل REPL للـ JavaScript في متصفحك.",
+		"connectionError": "تعذّر الاتصال بخدمة السجلات. يرجى المحاولة مجددًا بعد الوصول محليًا أو تسجيل الدخول.",
 		"logs": {
 			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "أدخل كود جافا سكريبت..."
+				"placeholder": "أدخل كود JavaScript…"
 			},
-			"hint": "أدخل للتشغيل · Shift+Enter لالتفاف الخط · ↑↓ تاريخ التصفح"
+			"hint": "Enter للتشغيل · Shift+Enter لسطر جديد · ↑↓ سجل الأوامر"
 		}
 	},
 	"debug_info": {

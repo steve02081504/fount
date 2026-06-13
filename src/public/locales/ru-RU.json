@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "Открыть терминал",
-					"tooltip": "Открыть просмотрщик журналов в окне с помощью REPL"
+					"tooltip": "Открыть просмотрщик журналов с REPL в окне"
 				}
 			}
 		},
 		"botStarted": "Персонаж ${charname} вошел в ${platform} бот ${botusername}.",
 		"logViewer": {
-			"replHint": "Enter для запуска · Shift+Enter для переноса"
+			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
 		},
 		"path": {
 			"protocol": {
@@ -190,10 +190,10 @@
 				"initFailed": "Инициализация fount не удалась. Выход."
 			},
 			"terminalKeybindings": {
-				"registered": "Настроено исправление раскладки клавиатуры терминала.",
-				"wtPatchFailed": "Невозможно исправить настройку терминала Windows ${path}:${message}",
-				"wtRemoved": "Конфигурация раскладки клавиатуры удалена из настроек терминала Windows: ${path}",
-				"editorRemoved": "Конфигурация Fount удалена из раскладки клавиатуры терминала редактора: ${path}"
+				"registered": "Патч раскладки клавиш терминала настроен.",
+				"wtPatchFailed": "Не удалось изменить настройки Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Конфигурация клавиш fount удалена из Windows Terminal: ${path}",
+				"editorRemoved": "Конфигурация fount удалена из раскладки терминала редактора: ${path}"
 			},
 			"remove": {
 				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Журнал",
-		"description": "Просмотрите журналы живого сервера и запустите JavaScript REPL в своем браузере.",
-		"connectionError": "Невозможно подключиться к службе журналов. Пожалуйста, повторите попытку после доступа или входа в систему локально.",
+		"description": "Просматривайте журналы сервера fount в реальном времени и запускайте JavaScript REPL в браузере.",
+		"connectionError": "Не удалось подключиться к службе журналов. Повторите попытку после локального доступа или входа в систему.",
 		"logs": {
 			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
 			"toolbar": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Введите код JavaScript…"
 			},
-			"hint": "Enter для запуска · Shift+Enter для переноса строки · ↑↓ История просмотра"
+			"hint": "Enter — выполнить · Shift+Enter — новая строка · ↑↓ история команд"
 		}
 	},
 	"debug_info": {

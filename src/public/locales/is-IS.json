@@ -107,14 +107,14 @@
 					"tooltip": "Hreinsaðu flugstöðvarskjáinn"
 				},
 				"openTerminal": {
-					"title": "Opið flugstöð",
-					"tooltip": "Opnaðu annálaskoðara í glugganum með REPL"
+					"title": "Opna skel",
+					"tooltip": "Opna annálaskoða með REPL í glugga"
 				}
 			}
 		},
 		"botStarted": "Persónan ${charname} hefur skráð sig inn á ${platform} Bot ${botusername}",
 		"logViewer": {
-			"replHint": "enter til að keyra · shift+enter til að vefja"
+			"replHint": "Enter til að keyra · Shift+Enter fyrir nýja línu"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Uppsetning leturs mistókst. Hætta."
 			},
 			"terminalKeybindings": {
-				"registered": "Pjattun á lyklaborði flugstöðvar stillt.",
-				"wtPatchFailed": "Ekki tókst að laga Windows Terminal stillinguna ${path}:${message}",
-				"wtRemoved": "Uppsetning font lyklamynda fjarlægð úr stillingum Windows Terminal: ${path}",
-				"editorRemoved": "Uppsetning leturgerðar fjarlægð úr lyklamynd ritstjórastöðvar: ${path}"
+				"registered": "Lagfæring lyklaborðsviðmóts skels stillt.",
+				"wtPatchFailed": "Ekki tókst að lagfæra stillingar Windows Terminal ${path}: ${message}",
+				"wtRemoved": "fount-lyklaborðsstillingum fjarlægt úr Windows Terminal: ${path}",
+				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Fjarlægir tengilyklabindingaplástur...",
+				"removingTerminalKeybindings": "Fjarlægir lagfæringu lyklaborðsviðmóts skels...",
 				"removingFount": "Fjarlægir leturgerð...",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
 				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Annáll",
-		"description": "Skoðaðu lifandi netþjónaskrár og keyrðu JavaScript REPL í vafranum þínum.",
-		"connectionError": "Ekki er hægt að tengjast logþjónustu. Vinsamlegast reyndu aftur eftir að hafa opnað eða skráð þig inn á staðnum.",
+		"description": "Skoðaðu lifandi fount-þjónannaskrár og keyrðu JavaScript REPL í vafranum.",
+		"connectionError": "Ekki tókst að tengjast annálaþjónustu. Reyndu aftur eftir að hafa opnað fount staðbundið eða skráð þig inn.",
 		"logs": {
 			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "Sláðu inn JavaScript kóða..."
+				"placeholder": "Sláðu inn JavaScript-kóða…"
 			},
-			"hint": "Enter til að keyra · Shift+Enter til að vefja línuna · ↑↓ Vafraferill"
+			"hint": "Enter til að keyra · Shift+Enter fyrir nýja línu · ↑↓ ferðast í gegnum sögu"
 		}
 	},
 	"debug_info": {

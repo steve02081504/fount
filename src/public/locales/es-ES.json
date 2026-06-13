@@ -107,14 +107,14 @@
 					"tooltip": "Limpiar la pantalla del terminal"
 				},
 				"openTerminal": {
-					"title": "Terminal abierta",
-					"tooltip": "Abrir el visor de registros en la ventana con REPL"
+					"title": "Abrir terminal",
+					"tooltip": "Abrir el visor de registros con REPL en una ventana"
 				}
 			}
 		},
 		"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de ${platform} ${botusername}.",
 		"logViewer": {
-			"replHint": null
+			"replHint": "Enter para ejecutar · Shift+Enter para nueva línea"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Error al inicializar la fount. Saliendo."
 			},
 			"terminalKeybindings": {
-				"registered": "Parcheo del mapa de teclas del terminal configurado.",
-				"wtPatchFailed": "No se puede parchear la configuración de la Terminal de Windows ${path}:${message}",
-				"wtRemoved": "Configuración del mapa de teclas fuente eliminada de la configuración de la Terminal de Windows: ${path}",
-				"editorRemoved": "Configuración de fuente eliminada del mapa de teclas del terminal del editor: ${path}"
+				"registered": "Parche de atajos de teclado del terminal configurado.",
+				"wtPatchFailed": "No se pudo aplicar el parche a la configuración de Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Configuración de atajos de fount eliminada de Windows Terminal: ${path}",
+				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Eliminando el parche de enlace de clave del terminal...",
+				"removingTerminalKeybindings": "Eliminando parche de atajos del terminal...",
 				"removingFount": "Eliminando fount...",
 				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
 				"removingFountInstallationDir": "Eliminando el directorio de instalación de founts...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registros",
-		"description": "Vea los registros del servidor fuente en vivo y ejecute JavaScript REPL en su navegador.",
-		"connectionError": "No se puede conectar al servicio de registro. Inténtelo de nuevo después de acceder o iniciar sesión localmente.",
+		"description": "Consulta los registros en vivo del servidor fount y ejecuta un REPL de JavaScript en el navegador.",
+		"connectionError": "No se pudo conectar al servicio de registros. Inténtalo de nuevo tras acceder localmente o iniciar sesión.",
 		"logs": {
 			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "Ingrese el código JavaScript…"
+				"placeholder": "Introduce código JavaScript…"
 			},
-			"hint": "Enter para ejecutar · Shift+Enter para ajustar la línea · ↑↓ Historial de navegación"
+			"hint": "Enter para ejecutar · Shift+Enter para nueva línea · ↑↓ historial"
 		}
 	},
 	"debug_info": {

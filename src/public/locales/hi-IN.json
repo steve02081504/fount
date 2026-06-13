@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "टर्मिनल खोलें",
-					"tooltip": "आरईपीएल के साथ विंडो में लॉग व्यूअर खोलें"
+					"tooltip": "REPL के साथ विंडो में लॉग व्यूअर खोलें"
 				}
 			}
 		},
 		"botStarted": "कैरेक्टर ${charname} ने ${platform} बॉट ${botusername} पर लॉगिन किया है।",
 		"logViewer": {
-			"replHint": "चलाने के लिए दर्ज करें · रैप करने के लिए शिफ्ट+एंटर करें"
+			"replHint": "Enter चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"path": {
 			"protocol": {
@@ -190,10 +190,10 @@
 				"initFailed": "फव्वारा आरंभीकरण विफल रहा. बाहर निकलना."
 			},
 			"terminalKeybindings": {
-				"registered": "टर्मिनल कीमैप पैचिंग कॉन्फ़िगर किया गया।",
-				"wtPatchFailed": "Windows टर्मिनल सेटिंग को पैच करने में असमर्थ ${path}:${message}",
-				"wtRemoved": "विंडोज टर्मिनल सेटिंग्स से फाउंटेन कीमैप कॉन्फ़िगरेशन हटा दिया गया: ${path}",
-				"editorRemoved": "संपादक टर्मिनल कीमैप से फाउंटेन कॉन्फ़िगरेशन हटा दिया गया: ${path}"
+				"registered": "टर्मिनल की-बाइंडिंग पैच कॉन्फ़िगर किया गया।",
+				"wtPatchFailed": "Windows Terminal सेटिंग ${path} में पैच नहीं लगाया जा सका: ${message}",
+				"wtRemoved": "Windows Terminal सेटिंग से fount की-बाइंडिंग हटाई गई: ${path}",
+				"editorRemoved": "संपादक टर्मिनल की-बाइंडिंग से fount कॉन्फ़िगरेशन हटाया गया: ${path}"
 			},
 			"remove": {
 				"removingTerminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "लॉग",
-		"description": "फाउंटेन लाइव सर्वर लॉग देखें और अपने ब्राउज़र में जावास्क्रिप्ट आरईपीएल चलाएं।",
-		"connectionError": "लॉग सेवा से कनेक्ट करने में असमर्थ. कृपया स्थानीय रूप से एक्सेस या लॉग इन करने के बाद पुनः प्रयास करें।",
+		"description": "fount के लाइव सर्वर लॉग देखें और ब्राउज़र में JavaScript REPL चलाएँ।",
+		"connectionError": "लॉग सेवा से कनेक्ट नहीं हो सका। कृपया स्थानीय रूप से पहुँचने या लॉग इन करने के बाद पुनः प्रयास करें।",
 		"logs": {
 			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "जावास्क्रिप्ट कोड दर्ज करें..."
+				"placeholder": "JavaScript कोड दर्ज करें…"
 			},
-			"hint": "चलाने के लिए Enter · लाइन को लपेटने के लिए Shift+Enter · ↑↓ ब्राउज़िंग इतिहास"
+			"hint": "Enter चलाएँ · Shift+Enter नई पंक्ति · ↑↓ इतिहास ब्राउज़ करें"
 		}
 	},
 	"debug_info": {

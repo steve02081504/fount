@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "터미널 열기",
-					"tooltip": "REPL을 사용하여 창에서 로그 뷰어 열기"
+					"tooltip": "REPL이 포함된 로그 뷰어를 창에서 열기"
 				}
 			}
 		},
 		"botStarted": "캐릭터 ${charname}님이 ${platform} 봇 ${botusername}에 로그인했습니다.",
 		"logViewer": {
-			"replHint": "실행하려면 Enter · 줄바꿈하려면 Shift+Enter"
+			"replHint": "Enter 실행 · Shift+Enter 줄바꿈"
 		},
 		"path": {
 			"protocol": {
@@ -190,10 +190,10 @@
 				"initFailed": "fount 초기화에 실패했습니다. 종료합니다."
 			},
 			"terminalKeybindings": {
-				"registered": "터미널 키맵 패치가 구성되었습니다.",
-				"wtPatchFailed": "Windows 터미널 설정 ${path}:${message}를 패치할 수 없습니다.",
-				"wtRemoved": "Windows 터미널 설정에서 제거된 글꼴 키맵 구성: ${path}",
-				"editorRemoved": "편집기 터미널 키맵에서 제거된 글꼴 구성: ${path}"
+				"registered": "터미널 키 바인딩 패치를 구성했습니다.",
+				"wtPatchFailed": "Windows Terminal 설정 ${path}에 패치를 적용할 수 없습니다: ${message}",
+				"wtRemoved": "Windows Terminal 설정에서 fount 키 바인딩을 제거했습니다: ${path}",
+				"editorRemoved": "편집기 터미널 키 바인딩에서 fount 설정을 제거했습니다: ${path}"
 			},
 			"remove": {
 				"removingTerminalKeybindings": "터미널 키 바인딩 패치 제거 중...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "로그",
-		"description": "펀트 라이브 서버 로그를 보고 브라우저에서 JavaScript REPL을 실행하세요.",
-		"connectionError": "로그 서비스에 연결할 수 없습니다. 로컬로 접속 또는 로그인 후 다시 시도해 주세요.",
+		"description": "fount 실시간 서버 로그를 보고 브라우저에서 JavaScript REPL을 실행하세요.",
+		"connectionError": "로그 서비스에 연결할 수 없습니다. 로컬에서 접속하거나 로그인한 뒤 다시 시도해 주세요.",
 		"logs": {
 			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "자바스크립트 코드를 입력하세요…"
+				"placeholder": "JavaScript 코드 입력…"
 			},
-			"hint": "실행하려면 Enter · 줄바꿈하려면 Shift+Enter · ↑↓ 검색 기록"
+			"hint": "Enter 실행 · Shift+Enter 줄바꿈 · ↑↓ 기록 탐색"
 		}
 	},
 	"debug_info": {

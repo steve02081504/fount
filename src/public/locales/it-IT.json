@@ -107,14 +107,14 @@
 					"tooltip": "Cancella lo schermo del terminale"
 				},
 				"openTerminal": {
-					"title": "Terminale aperto",
-					"tooltip": "Apri il visualizzatore registro nella finestra con REPL"
+					"title": "Apri terminale",
+					"tooltip": "Apri il visualizzatore log con REPL in una finestra"
 				}
 			}
 		},
 		"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot ${platform} ${botusername}.",
 		"logViewer": {
-			"replHint": "invio per eseguire · MAIUSC+INVIO per andare a capo"
+			"replHint": "Invio per eseguire · Maiusc+Invio per nuova riga"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
 			"terminalKeybindings": {
-				"registered": "Patch mappa tastiera terminale configurata.",
-				"wtPatchFailed": "Impossibile applicare la patch all'impostazione del terminale Windows ${path}:${message}",
-				"wtRemoved": "Configurazione della mappa dei tasti di origine rimossa dalle impostazioni del terminale Windows: ${path}",
-				"editorRemoved": "Configurazione del font rimossa dalla mappatura dei tasti del terminale dell'editor: ${path}"
+				"registered": "Patch delle scorciatoie del terminale configurata.",
+				"wtPatchFailed": "Impossibile applicare la patch alle impostazioni di Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Configurazione scorciatoie fount rimossa da Windows Terminal: ${path}",
+				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Rimozione della patch di associazione della chiave del terminale in corso...",
+				"removingTerminalKeybindings": "Rimozione patch scorciatoie del terminale...",
 				"removingFount": "Rimozione di fount...",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registro",
-		"description": "Visualizza i log del server live dei font ed esegui JavaScript REPL nel tuo browser.",
-		"connectionError": "Impossibile connettersi al servizio di registro. Riprova dopo aver effettuato l'accesso o effettuato l'accesso in locale.",
+		"description": "Visualizza i log del server fount in tempo reale ed esegui un REPL JavaScript nel browser.",
+		"connectionError": "Impossibile connettersi al servizio di log. Riprova dopo aver acceduto localmente o effettuato l'accesso.",
 		"logs": {
 			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
 			"toolbar": {
@@ -2517,9 +2517,9 @@
 		},
 		"repl": {
 			"input": {
-				"placeholder": "Inserisci il codice JavaScript..."
+				"placeholder": "Inserisci codice JavaScript…"
 			},
-			"hint": "Invio per eseguire · Maiusc+Invio per mandare a capo la riga · ↑↓ Cronologia di navigazione"
+			"hint": "Invio per eseguire · Maiusc+Invio per nuova riga · ↑↓ scorri cronologia"
 		}
 	},
 	"debug_info": {

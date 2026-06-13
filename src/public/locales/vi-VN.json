@@ -107,14 +107,14 @@
 					"tooltip": "Xóa màn hình terminal"
 				},
 				"openTerminal": {
-					"title": "Mở thiết bị đầu cuối",
-					"tooltip": "Mở trình xem nhật ký trong cửa sổ bằng REPL"
+					"title": "Mở terminal",
+					"tooltip": "Mở trình xem nhật ký kèm REPL trong cửa sổ"
 				}
 			}
 		},
 		"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot ${platform} ${botusername}.",
 		"logViewer": {
-			"replHint": "enter để chạy · shift+enter để bọc"
+			"replHint": "Enter để chạy · Shift+Enter xuống dòng"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Khởi tạo fount không thành công. Đang thoát."
 			},
 			"terminalKeybindings": {
-				"registered": "Đã định cấu hình bản vá sơ đồ bàn phím của thiết bị đầu cuối.",
-				"wtPatchFailed": "Không thể vá cài đặt Windows Terminal ${path}:${message}",
-				"wtRemoved": "Cấu hình sơ đồ bàn phím của phông chữ đã bị xóa khỏi cài đặt Windows Terminal: ${path}",
-				"editorRemoved": "Đã xóa cấu hình phông chữ khỏi sơ đồ bàn phím thiết bị đầu cuối của trình soạn thảo: ${path}"
+				"registered": "Đã cấu hình bản vá phím tắt terminal.",
+				"wtPatchFailed": "Không thể vá cài đặt Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Đã xóa cấu hình phím tắt fount khỏi Windows Terminal: ${path}",
+				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Đang xóa bản vá ràng buộc khóa đầu cuối...",
+				"removingTerminalKeybindings": "Đang gỡ bản vá phím tắt terminal...",
 				"removingFount": "Đang xóa fount...",
 				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
 				"removingFountInstallationDir": "Đang xóa thư mục cài đặt fount...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Nhật ký",
-		"description": "Xem nhật ký máy chủ trực tiếp của nguồn và chạy REPL JavaScript trong trình duyệt của bạn.",
-		"connectionError": "Không thể kết nối với dịch vụ nhật ký. Vui lòng thử lại sau khi truy cập hoặc đăng nhập cục bộ.",
+		"description": "Xem nhật ký máy chủ fount theo thời gian thực và chạy JavaScript REPL trong trình duyệt.",
+		"connectionError": "Không thể kết nối dịch vụ nhật ký. Vui lòng thử lại sau khi truy cập cục bộ hoặc đăng nhập.",
 		"logs": {
 			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
 			"toolbar": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "Nhập mã JavaScript…"
 			},
-			"hint": "Enter để chạy · Shift+Enter để ngắt dòng · ↑↓ Lịch sử duyệt web"
+			"hint": "Enter để chạy · Shift+Enter xuống dòng · ↑↓ duyệt lịch sử"
 		}
 	},
 	"debug_info": {

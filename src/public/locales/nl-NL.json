@@ -108,13 +108,13 @@
 				},
 				"openTerminal": {
 					"title": "Terminal openen",
-					"tooltip": "Open logviewer in venster met REPL"
+					"tooltip": "Logviewer met REPL in een venster openen"
 				}
 			}
 		},
 		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
 		"logViewer": {
-			"replHint": "enter om uit te voeren · shift+enter om terug te lopen"
+			"replHint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel"
 		},
 		"path": {
 			"protocol": {
@@ -190,13 +190,13 @@
 				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
 			"terminalKeybindings": {
-				"registered": "Terminal-toetsenbordpatching geconfigureerd.",
-				"wtPatchFailed": "Kan de Windows Terminal-instelling ${path}:${message} niet patchen",
-				"wtRemoved": "Configuratie van font-toetsenbord verwijderd uit Windows Terminal-instellingen: ${path}",
-				"editorRemoved": "Fontconfiguratie verwijderd uit toetsenbordindeling van editorterminal: ${path}"
+				"registered": "Terminal-toetsenpatch geconfigureerd.",
+				"wtPatchFailed": "Windows Terminal-instelling ${path} kon niet worden gepatcht: ${message}",
+				"wtRemoved": "fount-toetsenconfiguratie verwijderd uit Windows Terminal: ${path}",
+				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: ${path}"
 			},
 			"remove": {
-				"removingTerminalKeybindings": "Terminal-sleutelbindende patch verwijderen...",
+				"removingTerminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
 				"removingFount": "fount verwijderen...",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
@@ -2496,8 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Logboek",
-		"description": "Bekijk de live serverlogboeken van de bron en voer de JavaScript REPL uit in uw browser.",
-		"connectionError": "Kan geen verbinding maken met de logservice. Probeer het opnieuw nadat u lokaal toegang heeft gekregen of ingelogd bent.",
+		"description": "Bekijk live fount-serverlogboeken en voer JavaScript REPL uit in je browser.",
+		"connectionError": "Kan geen verbinding maken met de logservice. Probeer het opnieuw nadat je lokaal toegang hebt of bent ingelogd.",
 		"logs": {
 			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
 			"toolbar": {
@@ -2519,7 +2519,7 @@
 			"input": {
 				"placeholder": "JavaScript-code invoeren…"
 			},
-			"hint": "Enter om uit te voeren · Shift+Enter om de regel te laten doorlopen · ↑↓ Browsegeschiedenis"
+			"hint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel · ↑↓ door geschiedenis bladeren"
 		}
 	},
 	"debug_info": {
