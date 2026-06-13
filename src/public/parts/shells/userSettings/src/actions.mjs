@@ -195,9 +195,9 @@ export const actions = {
 	 * @param {string} params.filePath - 文件路径。
 	 * @param {number} [params.line=1] - 行号。
 	 * @param {number} [params.column=1] - 列号。
-	 * @returns {Promise<object>} 打开结果。
+	 * @returns {Promise<void>}
 	 */
 	'open-editor': async ({ user, filePath, line, column }) => {
 		return await openEditor(user, filePath, line, column)
-	}
+	},
 }

@@ -29,7 +29,7 @@ function startProfile(name) {
 
 /**
  * 结束最近一次的性能分析，并计算相关指标。
- * @param {string} name 分析帧名称
+ * @param {string} name - 与 startProfile 对应的分析帧名称
  * @returns {{
  *   startTime: Date,
  *   totalTimeInMs: number,

@@ -95,7 +95,7 @@ class LocalSubfountExecutor extends SubfountExecutor {
 	 * @returns {Promise<any>} - 执行结果。
 	 */
 	async executeCode(script, callbackInfo = null) {
-		const { async_eval } = await import('https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs')
+		const { async_eval } = await import('https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs')
 
 		let callback = null
 		if (callbackInfo)

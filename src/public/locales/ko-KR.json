@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "터미널 화면 지우기",
 					"tooltip": "터미널 화면 지우기"
+				},
+				"openTerminal": {
+					"title": "터미널 열기",
+					"tooltip": "REPL이 포함된 로그 뷰어를 창에서 열기"
 				}
 			}
 		},
 		"botStarted": "캐릭터 ${charname}님이 ${platform} 봇 ${botusername}에 로그인했습니다.",
+		"logViewer": {
+			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: fount 프로토콜",
@@ -182,7 +189,14 @@
 				"failedToStart": "자동 수리를 시도한 후에도 잠시 동안 fount가 작동하지 않는 현상이 발생합니다. 로그에서 오류를 확인하세요.",
 				"initFailed": "fount 초기화에 실패했습니다. 종료합니다."
 			},
+			"terminalKeybindings": {
+				"registered": "터미널 키 바인딩 패치를 구성했습니다.",
+				"wtPatchFailed": "Windows Terminal 설정 ${path}에 패치를 적용할 수 없습니다: ${message}",
+				"wtRemoved": "Windows Terminal 설정에서 fount 키 바인딩을 제거했습니다: ${path}",
+				"editorRemoved": "편집기 터미널 키 바인딩에서 fount 설정을 제거했습니다: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "터미널 키 바인딩 패치 제거 중...",
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
 				"removingFountInstallationDir": "fount 설치 디렉터리를 제거하는 중...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "로그",
+		"description": "fount 실시간 서버 로그를 보고 브라우저에서 JavaScript REPL을 실행하세요.",
+		"connectionError": "로그 서비스에 연결할 수 없습니다. 로컬에서 접속하거나 로그인한 뒤 다시 시도해 주세요.",
+		"logs": {
+			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
+			"toolbar": {
+				"clear": "비우기",
+				"filter": {
+					"placeholder": "필터…"
+				}
+			},
+			"levels": {
+				"all": "전체",
+				"log": "로그",
+				"info": "정보",
+				"warn": "경고",
+				"error": "오류",
+				"debug": "디버그"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript 코드 입력…"
+			},
+			"hint": "Enter로 실행 · Shift+Enter 줄바꿈 · ↑↓ 기록 탐색"
+		}
+	},
 	"debug_info": {
 		"title": "디버깅 및 시스템 정보",
 		"description": "fount 설치에 대한 자세한 디버깅 및 시스템 정보를 얻으십시오. 이는 문제 해결 및 지원 요청에 매우 유용합니다.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "서버를 다시 시작하는 중입니다.",
 		"updateFailed": "업데이트 요청 실패",
 		"autoUpdateNotEnabled": "자동 업데이트가 활성화되지 않았습니다.",
-		"logs": {
-			"title": "로그",
-			"openSourceFailed": "소스 파일을 열 수 없습니다: ${message}",
-			"toolbar": {
-				"clear": "비우기",
-				"filter": {
-					"placeholder": "필터…"
-				}
-			},
-			"levels": {
-				"all": "전체",
-				"log": "로그",
-				"info": "정보",
-				"warn": "경고",
-				"error": "오류",
-				"debug": "디버그"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {
