@@ -29,9 +29,8 @@ import { skip_report, config, save_config } from '../server.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
-import { evalServiceWebSocketHandler } from './eval_service.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
-import { logServiceWebSocketHandler } from './log_service.mjs'
+import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 

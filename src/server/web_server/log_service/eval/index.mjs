@@ -10,7 +10,7 @@ import {
 	enrichCompletionWirePayload,
 	filterByCompletionPrefix,
 	parseCompletionContext,
-} from './repl_completion.mjs'
+} from './completion.mjs'
 
 const WIRE_MAX_DEPTH = 5
 const COMPLETION_MAX_ITEMS = 50
