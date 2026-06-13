@@ -89,14 +89,10 @@
 			</div>
 		</div>
 
-		<!-- Backend Logs -->
+		<!-- Log viewer terminal -->
 		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title" data-i18n="debug_info.logs.title"></h2>
-				<div class="rounded-box border border-base-300 overflow-hidden">
-					<div id="log-toolbar-container" class="log-container"></div>
-					<div id="backend-log-list" class="h-[32rem] overflow-auto bg-base-100 log-container"></div>
-				</div>
+			<div class="card-body p-0">
+				<iframe src="/log_viewer/" class="w-full h-[40rem] rounded-box border-0" title="log viewer"></iframe>
 			</div>
 		</div>
 	</main>

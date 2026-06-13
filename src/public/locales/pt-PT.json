@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Limpar o ecrã do terminal",
 					"tooltip": "Limpar o ecrã do terminal"
+				},
+				"openTerminal": {
+					"title": "Abrir terminal",
+					"tooltip": "Abrir o visualizador de registos com REPL numa nova janela"
 				}
 			}
 		},
 		"botStarted": "O personagem ${charname} ligou-se ao bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "Enter para executar · Shift+Enter para nova linha"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:protocolo de fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
 				"initFailed": "Falha na inicialização da fount. Saindo."
 			},
+			"terminalKeybindings": {
+				"registered": "Patch de atalhos do terminal configurado.",
+				"wtPatchFailed": "Não foi possível aplicar patch às definições do Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Configuração de atalhos fount removida do Windows Terminal: ${path}",
+				"editorRemoved": "Configuração fount removida dos atalhos do terminal do editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "A remover patch de atalhos do terminal...",
 				"removingFount": "Removendo fount...",
 				"fountUninstallationComplete": "desinstalação da fount concluída.",
 				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Registos",
+		"description": "Veja os registos em tempo real do servidor fount e execute um REPL JavaScript no navegador.",
+		"connectionError": "Não foi possível ligar ao serviço de registos. Tente novamente depois de aceder ao fount localmente ou de iniciar sessão.",
+		"logs": {
+			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
+			"toolbar": {
+				"clear": "Limpar",
+				"filter": {
+					"placeholder": "Filtrar…"
+				}
+			},
+			"levels": {
+				"all": "Todos",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Aviso",
+				"error": "Erro",
+				"debug": "Depuração"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Introduzir código JavaScript…"
+			},
+			"hint": "Enter para executar · Shift+Enter para nova linha · ↑↓ percorrer histórico"
+		}
+	},
 	"debug_info": {
 		"title": "Depuração e informações do sistema",
 		"description": "Obtenha depuração detalhada e informações do sistema sobre a instalação do seu fount. Isso é muito útil para solução de problemas e solicitações de suporte.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "O servidor está reiniciando",
 		"updateFailed": "Falha na solicitação de atualização",
 		"autoUpdateNotEnabled": "As atualizações automáticas não estão habilitadas",
-		"logs": {
-			"title": "Registos",
-			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
-			"toolbar": {
-				"clear": "Limpar",
-				"filter": {
-					"placeholder": "Filtrar…"
-				}
-			},
-			"levels": {
-				"all": "Todos",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Aviso",
-				"error": "Erro",
-				"debug": "Depuração"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

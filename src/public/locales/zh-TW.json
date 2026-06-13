@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "清空終端機螢幕",
 					"tooltip": "清空終端機螢幕"
+				},
+				"openTerminal": {
+					"title": "開啟終端機",
+					"tooltip": "在新視窗中開啟日誌檢視器與 REPL"
 				}
 			}
 		},
 		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登入",
+		"logViewer": {
+			"replHint": "Enter 執行 · Shift+Enter 換行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協定",
@@ -182,7 +189,14 @@
 				"failedToStart": "即使在自動修復嘗試後，fount 仍在短時間內啟動失敗。請檢查日誌中的錯誤。",
 				"initFailed": "fount 初始化失敗。正在退出。"
 			},
+			"terminalKeybindings": {
+				"registered": "已設定終端機按鍵對應修補。",
+				"wtPatchFailed": "無法修補 Windows Terminal 設定 ${path}：${message}",
+				"wtRemoved": "已從 Windows Terminal 設定移除 fount 按鍵對應：${path}",
+				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正在移除終端機按鍵綁定修補…",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 解除安裝完成。",
 				"removingFountInstallationDir": "正在移除 fount 安裝目錄...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "紀錄",
+		"description": "查看 fount 即時伺服器日誌，並在瀏覽器中執行 JavaScript REPL。",
+		"connectionError": "無法連線至日誌服務。請在本機存取或登入後再試。",
+		"logs": {
+			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "依內容篩選…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "一般",
+				"info": "資訊",
+				"warn": "警告",
+				"error": "錯誤",
+				"debug": "偵錯"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "輸入 JavaScript 程式碼…"
+			},
+			"hint": "Enter 執行 · Shift+Enter 換行 · ↑↓ 瀏覽歷史"
+		}
+	},
 	"debug_info": {
 		"title": "除錯與系統資訊",
 		"description": "獲取有關您的 fount 安裝的詳細除錯和系統資訊。這對於故障排除和支援請求非常有幫助。",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "正在重啟伺服器",
 		"updateFailed": "更新請求失敗",
 		"autoUpdateNotEnabled": "未啟用自動更新",
-		"logs": {
-			"title": "紀錄",
-			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "依內容篩選…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "一般",
-				"info": "資訊",
-				"warn": "警告",
-				"error": "錯誤",
-				"debug": "偵錯"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

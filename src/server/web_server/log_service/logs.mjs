@@ -2,11 +2,11 @@
 import { createLogWireWebSocketHandler } from 'npm:@steve02081504/virtual-console/wire/server'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console, geti18n } from '../../scripts/i18n.mjs'
-import { ms } from '../../scripts/ms.mjs'
-import { get_hosturl_in_local_ip } from '../../scripts/ratelimit.mjs'
-import { baseScriptLoadedTime } from '../base.mjs'
-import { config, hosturl } from '../server.mjs'
+import { console, geti18n } from '../../../scripts/i18n.mjs'
+import { ms } from '../../../scripts/ms.mjs'
+import { get_hosturl_in_local_ip } from '../../../scripts/ratelimit.mjs'
+import { baseScriptLoadedTime } from '../../base.mjs'
+import { config, hosturl } from '../../server.mjs'
 
 
 /**

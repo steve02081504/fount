@@ -1,4 +1,4 @@
-import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
+import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs'
 
 /**
  * 通过评估嵌入式表达式异步格式化字符串。

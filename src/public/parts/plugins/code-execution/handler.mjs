@@ -4,7 +4,7 @@ import path from 'node:path'
 import process from 'node:process'
 import util from 'node:util'
 
-import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
+import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
 import {

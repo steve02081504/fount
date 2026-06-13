@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Xóa màn hình terminal",
 					"tooltip": "Xóa màn hình terminal"
+				},
+				"openTerminal": {
+					"title": "Mở terminal",
+					"tooltip": "Mở trình xem nhật ký kèm REPL trong cửa sổ"
 				}
 			}
 		},
 		"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: giao thức fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, fount vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
 				"initFailed": "Khởi tạo fount không thành công. Đang thoát."
 			},
+			"terminalKeybindings": {
+				"registered": "Đã cấu hình bản vá phím tắt terminal.",
+				"wtPatchFailed": "Không thể vá cài đặt Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Đã xóa cấu hình phím tắt fount khỏi Windows Terminal: ${path}",
+				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Đang gỡ bản vá phím tắt terminal...",
 				"removingFount": "Đang xóa fount...",
 				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
 				"removingFountInstallationDir": "Đang xóa thư mục cài đặt fount...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Nhật ký",
+		"description": "Xem nhật ký máy chủ fount theo thời gian thực và chạy JavaScript REPL trong trình duyệt.",
+		"connectionError": "Không thể kết nối dịch vụ nhật ký. Vui lòng thử lại sau khi truy cập cục bộ hoặc đăng nhập.",
+		"logs": {
+			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
+			"toolbar": {
+				"clear": "Xóa",
+				"filter": {
+					"placeholder": "Lọc…"
+				}
+			},
+			"levels": {
+				"all": "Tất cả",
+				"log": "Log",
+				"info": "Thông tin",
+				"warn": "Cảnh báo",
+				"error": "Lỗi",
+				"debug": "Gỡ lỗi"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Nhập mã JavaScript…"
+			},
+			"hint": "Enter để chạy · Shift+Enter để xuống dòng · ↑↓ duyệt lịch sử"
+		}
+	},
 	"debug_info": {
 		"title": "Gỡ lỗi và thông tin hệ thống",
 		"description": "Nhận thông tin hệ thống và gỡ lỗi chi tiết về cài đặt fount của bạn. Điều này rất hữu ích cho việc khắc phục sự cố và yêu cầu hỗ trợ.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Máy chủ đang khởi động lại",
 		"updateFailed": "Yêu cầu cập nhật không thành công",
 		"autoUpdateNotEnabled": "Cập nhật tự động không được kích hoạt",
-		"logs": {
-			"title": "Nhật ký",
-			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
-			"toolbar": {
-				"clear": "Xóa",
-				"filter": {
-					"placeholder": "Lọc…"
-				}
-			},
-			"levels": {
-				"all": "Tất cả",
-				"log": "Log",
-				"info": "Thông tin",
-				"warn": "Cảnh báo",
-				"error": "Lỗi",
-				"debug": "Gỡ lỗi"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

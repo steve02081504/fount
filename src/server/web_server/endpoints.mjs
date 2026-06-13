@@ -30,7 +30,7 @@ import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
-import { logServiceWebSocketHandler } from './log_service.mjs'
+import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -92,6 +92,11 @@ export function registerEndpoints(router) {
 		if (is_local_ip_from_req(req)) return next()
 		return authenticate(req, res, next)
 	}, logServiceWebSocketHandler)
+
+	router.ws('/ws/eval', (req, res, next) => {
+		if (is_local_ip_from_req(req)) return next()
+		return authenticate(req, res, next)
+	}, evalServiceWebSocketHandler)
 
 	router.get('/api/test/error', (req, res) => {
 		throw skip_report(new Error('test error'))

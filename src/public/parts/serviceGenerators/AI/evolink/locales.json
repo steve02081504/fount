@@ -4,7 +4,7 @@
 			"name": "Evolink",
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "Access Evolink's OpenAI-compatible LLM endpoint (Anthropic Messages API also supported), with a large model catalogue including GPT-5.5, Claude, Gemini 3.x and DeepSeek V4.",
+			"description_markdown": "Access Evolink's OpenAI-compatible LLM endpoint, with Anthropic Messages API support. Choose from a wide range of models, including GPT-5.5, Claude, Gemini 3.x, and DeepSeek V4.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -20,7 +20,7 @@
 			"name": "Evolink",
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "访问 Evolink 的 OpenAI 兼容 LLM 接口（同时支持 Anthropic Messages API），可用模型众多，包括 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "访问 Evolink 的 OpenAI 兼容 LLM 接口，并支持 Anthropic Messages API。可选模型丰富，涵盖 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -32,11 +32,11 @@
 			],
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		},
-		"zh-TW": {
+		"ar-SA": {
 			"name": "Evolink",
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "存取 Evolink 的 OpenAI 相容 LLM 端點（同時支援 Anthropic Messages API），可用模型眾多，包括 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "اتصل بنقطة نهاية LLM المتوافقة مع OpenAI من Evolink، مع دعم Anthropic Messages API. متاح مجموعة واسعة من النماذج، منها GPT-5.5 وClaude وGemini 3.x وDeepSeek V4.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -44,7 +44,23 @@
 				"openai",
 				"anthropic",
 				"llm",
-				"provider"
+				"مزود"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"de-DE": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Nutzen Sie Evolinks OpenAI-kompatiblen LLM-Endpunkt mit Unterstützung für die Anthropic Messages API. Große Modellauswahl – darunter GPT-5.5, Claude, Gemini 3.x und DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"Anbieter"
 			],
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		},
@@ -61,13 +77,237 @@
 				"🧠"
 			],
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"es-ES": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accede al endpoint LLM compatible con OpenAI de Evolink, con soporte de Anthropic Messages API. Amplia selección de modelos, como GPT-5.5, Claude, Gemini 3.x y DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"proveedor"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"fr-FR": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accédez au point de terminaison LLM compatible OpenAI d'Evolink, avec prise en charge de l'API Anthropic Messages. Large choix de modèles, dont GPT-5.5, Claude, Gemini 3.x et DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fournisseur"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"hi-IN": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink का OpenAI-संगत LLM एंडपॉइंट इस्तेमाल करें, Anthropic Messages API के साथ। GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 सहित कई मॉडल उपलब्ध हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"प्रदाता"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"is-IS": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Fáðu aðgang að OpenAI-samhæfðum LLM-viðmóti Evolink með stuðning við Anthropic Messages API. Stórt úrval líkana, m.a.t. GPT-5.5, Claude, Gemini 3.x og DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"veitandi"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"it-IT": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accedi all'endpoint LLM compatibile con OpenAI di Evolink, con supporto per l'API Anthropic Messages. Vasta scelta di modelli, tra cui GPT-5.5, Claude, Gemini 3.x e DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fornitore"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ja-JP": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink の OpenAI 互換 LLM エンドポイントに接続できます。Anthropic Messages API にも対応。GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 など、多数のモデルから選べます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"プロバイダー"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ko-KR": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink의 OpenAI 호환 LLM 엔드포인트에 연결하세요. Anthropic Messages API도 지원하며 GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 등 다양한 모델을 사용할 수 있습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"공급자"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"lzh": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "接 Evolink 之 OpenAI 相容 LLM 端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"提供者"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"nl-NL": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Maak verbinding met het OpenAI-compatibele LLM-eindpunt van Evolink, met ondersteuning voor de Anthropic Messages API. Ruime keuze uit modellen, waaronder GPT-5.5, Claude, Gemini 3.x en DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"aanbieder"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"pt-PT": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Aceda ao endpoint LLM compatível com OpenAI da Evolink, com suporte para a API Anthropic Messages. Ampla seleção de modelos, como GPT-5.5, Claude, Gemini 3.x e DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fornecedor"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"ru-RU": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Подключайтесь к OpenAI-совместимому LLM-эндпоинту Evolink с поддержкой Anthropic Messages API. Широкий выбор моделей, включая GPT-5.5, Claude, Gemini 3.x и DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"uk-UA": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Підключайтеся до LLM-ендпоінту Evolink із сумісністю з OpenAI та підтримкою Anthropic Messages API. Широкий вибір моделей, зокрема GPT-5.5, Claude, Gemini 3.x і DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"vi-VN": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Kết nối tới endpoint LLM tương thích OpenAI của Evolink, hỗ trợ Anthropic Messages API. Nhiều mô hình sẵn có, bao gồm GPT-5.5, Claude, Gemini 3.x và DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"nhà cung cấp"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+		},
+		"zh-TW": {
+			"name": "Evolink",
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "連接 Evolink 的 OpenAI 相容 LLM 端點，並支援 Anthropic Messages API。可選模型豐富，涵蓋 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"供應商"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "Access Evolink's OpenAI-compatible LLM endpoint (Anthropic Messages API also supported), with a large model catalogue including GPT-5.5, Claude, Gemini 3.x and DeepSeek V4.",
+			"description_markdown": "Access Evolink's OpenAI-compatible LLM endpoint, with Anthropic Messages API support. Choose from a wide range of models, including GPT-5.5, Claude, Gemini 3.x, and DeepSeek V4.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -83,7 +323,7 @@
 		"zh-CN": {
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "访问 Evolink 的 OpenAI 兼容 LLM 接口（同时支持 Anthropic Messages API），可用模型众多，包括 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "访问 Evolink 的 OpenAI 兼容 LLM 接口，并支持 Anthropic Messages API。可选模型丰富，涵盖 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -96,10 +336,10 @@
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
 			"provider": "Evolink"
 		},
-		"zh-TW": {
+		"ar-SA": {
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "存取 Evolink 的 OpenAI 相容 LLM 端點（同時支援 Anthropic Messages API），可用模型眾多，包括 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "اتصل بنقطة نهاية LLM المتوافقة مع OpenAI من Evolink، مع دعم Anthropic Messages API. متاح مجموعة واسعة من النماذج، منها GPT-5.5 وClaude وGemini 3.x وDeepSeek V4.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -107,7 +347,23 @@
 				"openai",
 				"anthropic",
 				"llm",
-				"provider"
+				"مزود"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Nutzen Sie Evolinks OpenAI-kompatiblen LLM-Endpunkt mit Unterstützung für die Anthropic Messages API. Große Modellauswahl – darunter GPT-5.5, Claude, Gemini 3.x und DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"Anbieter"
 			],
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
 			"provider": "Evolink"
@@ -122,6 +378,230 @@
 				"🔗",
 				"🔌",
 				"🧠"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accede al endpoint LLM compatible con OpenAI de Evolink, con soporte de Anthropic Messages API. Amplia selección de modelos, como GPT-5.5, Claude, Gemini 3.x y DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"proveedor"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accédez au point de terminaison LLM compatible OpenAI d'Evolink, avec prise en charge de l'API Anthropic Messages. Large choix de modèles, dont GPT-5.5, Claude, Gemini 3.x et DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fournisseur"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink का OpenAI-संगत LLM एंडपॉइंट इस्तेमाल करें, Anthropic Messages API के साथ। GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 सहित कई मॉडल उपलब्ध हैं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"प्रदाता"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Fáðu aðgang að OpenAI-samhæfðum LLM-viðmóti Evolink með stuðning við Anthropic Messages API. Stórt úrval líkana, m.a.t. GPT-5.5, Claude, Gemini 3.x og DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"veitandi"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Accedi all'endpoint LLM compatibile con OpenAI di Evolink, con supporto per l'API Anthropic Messages. Vasta scelta di modelli, tra cui GPT-5.5, Claude, Gemini 3.x e DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fornitore"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink の OpenAI 互換 LLM エンドポイントに接続できます。Anthropic Messages API にも対応。GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 など、多数のモデルから選べます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"プロバイダー"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Evolink의 OpenAI 호환 LLM 엔드포인트에 연결하세요. Anthropic Messages API도 지원하며 GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 등 다양한 모델을 사용할 수 있습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"공급자"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "接 Evolink 之 OpenAI 相容 LLM 端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"提供者"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Maak verbinding met het OpenAI-compatibele LLM-eindpunt van Evolink, met ondersteuning voor de Anthropic Messages API. Ruime keuze uit modellen, waaronder GPT-5.5, Claude, Gemini 3.x en DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"aanbieder"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Aceda ao endpoint LLM compatível com OpenAI da Evolink, com suporte para a API Anthropic Messages. Ampla seleção de modelos, como GPT-5.5, Claude, Gemini 3.x e DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"fornecedor"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Подключайтесь к OpenAI-совместимому LLM-эндпоинту Evolink с поддержкой Anthropic Messages API. Широкий выбор моделей, включая GPT-5.5, Claude, Gemini 3.x и DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Підключайтеся до LLM-ендпоінту Evolink із сумісністю з OpenAI та підтримкою Anthropic Messages API. Широкий вибір моделей, зокрема GPT-5.5, Claude, Gemini 3.x і DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"провайдер"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "Kết nối tới endpoint LLM tương thích OpenAI của Evolink, hỗ trợ Anthropic Messages API. Nhiều mô hình sẵn có, bao gồm GPT-5.5, Claude, Gemini 3.x và DeepSeek V4.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"nhà cung cấp"
+			],
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"provider": "Evolink"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
+			"description": "Evolink",
+			"description_markdown": "連接 Evolink 的 OpenAI 相容 LLM 端點，並支援 Anthropic Messages API。可選模型豐富，涵蓋 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"evolink",
+				"openai",
+				"anthropic",
+				"llm",
+				"供應商"
 			],
 			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
 			"provider": "Evolink"

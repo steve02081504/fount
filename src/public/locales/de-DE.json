@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Terminalbildschirm leeren",
 					"tooltip": "Terminalbildschirm leeren"
+				},
+				"openTerminal": {
+					"title": "Terminal öffnen",
+					"tooltip": "Log-Viewer mit REPL in einem neuen Fenster öffnen"
 				}
 			}
 		},
 		"botStarted": "Char ${charname} hat sich beim ${platform}-Bot ${botusername} angemeldet.",
+		"logViewer": {
+			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount-Protokoll",
@@ -182,7 +189,14 @@
 				"failedToStart": "Selbst nach automatischen Reparaturversuchen startet fount auch nach kurzer Zeit nicht. Bitte überprüfen Sie die Protokolle auf Fehler.",
 				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal-Tastenkürzel-Patch konfiguriert.",
+				"wtPatchFailed": "Windows-Terminal-Einstellungen konnten nicht gepatcht werden (${path}): ${message}",
+				"wtRemoved": "fount-Tastenkürzel aus Windows-Terminal-Einstellungen entfernt: ${path}",
+				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
 				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
 				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Protokolle",
+		"description": "Live-Serverprotokolle von fount anzeigen und ein JavaScript-REPL im Browser ausführen.",
+		"connectionError": "Verbindung zum Protokolldienst fehlgeschlagen. Bitte versuchen Sie es erneut, nachdem Sie lokal auf fount zugegriffen oder sich angemeldet haben.",
+		"logs": {
+			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
+			"toolbar": {
+				"clear": "Leeren",
+				"filter": {
+					"placeholder": "Filtern…"
+				}
+			},
+			"levels": {
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warnung",
+				"error": "Fehler",
+				"debug": "Debug"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript-Code eingeben…"
+			},
+			"hint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch · ↑↓ Verlauf durchblättern"
+		}
+	},
 	"debug_info": {
 		"title": "Debugging und Systeminformationen",
 		"description": "Erhalten Sie detaillierte Debugging- und Systeminformationen zu Ihrer fount-Installation. Dies ist sehr hilfreich bei der Fehlerbehebung und bei Supportanfragen.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Der Server wird neu gestartet",
 		"updateFailed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
-		"logs": {
-			"title": "Protokoll",
-			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
-			"toolbar": {
-				"clear": "Leeren",
-				"filter": {
-					"placeholder": "Filtern…"
-				}
-			},
-			"levels": {
-				"all": "Alle",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Warnung",
-				"error": "Fehler",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

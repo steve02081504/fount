@@ -133,7 +133,6 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		}
 
 		try {
-			// eslint-disable-next-line no-constant-condition
 			while (true) {
 				if (signal?.aborted) {
 					const err = new Error('User Aborted')

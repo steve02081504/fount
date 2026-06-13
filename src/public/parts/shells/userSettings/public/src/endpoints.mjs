@@ -143,8 +143,8 @@ export async function saveEditorCommandConfig(editorId, command, argsTemplate) {
  * @param {string} filePath - 文件路径。
  * @param {number} line - 行号。
  * @param {number} column - 列号。
- * @returns {Promise<any>} - 打开结果。
+ * @returns {Promise<void>}
  */
 export async function openEditor(filePath, line, column) {
-	return callApi('open_editor', 'POST', { filePath, line, column })
+	await callApi('open_editor', 'POST', { filePath, line, column })
 }

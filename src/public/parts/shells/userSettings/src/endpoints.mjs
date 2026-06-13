@@ -202,8 +202,8 @@ export function setEndpoints(router) {
 		const user = await getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const { filePath, line, column } = req.body || {}
-		const result = await openEditor(user.username, filePath, line, column)
-		res.json(result)
+		await openEditor(user.username, filePath, line, column)
+		res.status(200).json({})
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {

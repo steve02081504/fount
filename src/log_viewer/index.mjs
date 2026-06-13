@@ -3,6 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
+ * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
@@ -21,10 +22,14 @@ import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_pro
 import { setWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
+import { createInteractiveViewer } from './interactive.mjs'
+import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
+
 setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(50)
 
 const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
+const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsAnsi
 
 /**
  * 从 `data/config.json` 读取服务器端口；读取/解析失败时回落到默认 8931。
@@ -33,8 +38,8 @@ const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
 function readServerPort() {
 	try {
 		const raw = fs.readFileSync(path.join(FOUNT_DIR, 'data/config.json'), 'utf-8')
-		const cfg = JSON.parse(raw)
-		if (Number.isFinite(cfg?.port)) return cfg.port
+		const config = JSON.parse(raw)
+		if (Number.isFinite(config?.port)) return config.port
 	} catch { /* 配置缺失或损坏：使用默认端口 */ }
 	return 8931
 }
@@ -43,20 +48,13 @@ const PORT = readServerPort()
 const PING_URL = `http://127.0.0.1:${PORT}/api/ping`
 const WS_URL = `ws://127.0.0.1:${PORT}/ws/logs`
 
-const ANSI_RESET = '\x1b[0m'
-const LEVEL_PREFIX_COLORS = {
-	error: '\x1b[31m',
-	warn: '\x1b[33m',
-	info: '\x1b[36m',
-	debug: '\x1b[2m',
-}
-
 /**
  * 顶层错误兜底（供异步日志写入复用）。
  * @param {Error} err - 未捕获的致命错误。
  * @returns {void}
  */
 function onFatal(err) {
+	try { logSink.tearDown?.() } catch { /* ignore */ }
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
 	process.exit(1)
 }
@@ -70,24 +68,101 @@ function sleep(milliseconds) {
 	return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
-/**
- * 写入一条已渲染的日志（`await entry.renderString()`，与进程内 {@link LogEntry#toString} 同源 ANSI 管线；勿用 `toString()`，{@link WireLogEntry} 未覆写会落到 `[object Object]`）。
- * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - `connectLogWire` 下发的异步条目。
- * @returns {Promise<void>}
- */
-async function writeEntry(entry) {
-	const body = await entry.renderString({ indent: '  ', maxDepth: 5 })
-	const color = LEVEL_PREFIX_COLORS[entry?.level]
-	const text = color ? `${color}${body}${ANSI_RESET}` : body
-	process.stdout.write(text)
-}
-
 let stopRequested = false
 /**
  * 当前日志 WebSocket 连接实例。
  * @type {ReturnType<typeof connectLogWire> | null}
  */
 let connection = null
+
+/**
+ * @typedef {object} LogSink
+ * @property {(entry: import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry) => Promise<void>} writeEntry - 写入 wire 日志条目。
+ * @property {(text: string) => void | Promise<void>} appendText - 追加原始文本。
+ * @property {() => Promise<void>} clear - 清空日志区。
+ * @property {(text: string) => Promise<void>} showInitialInfo - 显示 logo 与初始信息。
+ * @property {(() => void) | undefined} [focusInput] - 聚焦输入区（交互模式）。
+ * @property {(() => void) | undefined} [tearDown] - 退出前清理（交互模式）。
+ */
+
+/**
+ * 向 stdout 写入一条 wire 日志（`await entry.renderString()`，与进程内 {@link LogEntry#toString} 同源 ANSI 管线；勿用 `toString()`，{@link WireLogEntry} 未覆写会落到 `[object Object]`）。
+ * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - `connectLogWire` 下发的异步条目。
+ * @returns {Promise<void>}
+ */
+async function plainWriteEntry(entry) {
+	const body = await entry.renderString({ indent: '  ', maxDepth: 5 })
+	const color = LEVEL_PREFIX_COLORS[entry?.level]
+	const text = color ? `${color}${body}${ANSI_RESET}` : body
+	process.stdout.write(text)
+}
+
+/**
+ * 向 stdout 追加原始文本。
+ * @param {string} text - 文本内容。
+ * @returns {void}
+ */
+function plainAppendText(text) {
+	process.stdout.write(text)
+}
+
+/**
+ * 清屏并请求随机 tip。
+ * @returns {Promise<void>}
+ */
+async function plainClear() {
+	if (supportsAnsi) process.stdout.write('\x1Bc')
+	console.clear()
+	await printTerminalImage().catch(_ => 0)
+	requestRandTip()
+}
+
+/**
+ * 显示 logo 与初始信息。
+ * @param {string} text - 服务器下发的附加文本。
+ * @returns {Promise<void>}
+ */
+async function plainShowInitialInfo(text) {
+	console.log(await runSimpleWorker('logogener'))
+	process.stdout.write(text)
+}
+
+/**
+ * 构建纯 stdout 日志写入器。
+ * @returns {LogSink} 写入 `process.stdout` 的日志接收器。
+ */
+function createPlainSink() {
+	return {
+		writeEntry: plainWriteEntry,
+		appendText: plainAppendText,
+		clear: plainClear,
+		showInitialInfo: plainShowInitialInfo,
+	}
+}
+
+/** @returns {Promise<string>} ASCII logo 文本。 */
+function generateLogo() {
+	return runSimpleWorker('logogener')
+}
+
+/**
+ * 向服务器请求一条随机 tip（clear 后由日志服务 `output` 帧回传）。
+ * @returns {void}
+ */
+function requestRandTip() {
+	connection?.sendJson?.({ type: 'rand_tip' })
+}
+
+/** @type {LogSink} */
+const logSink = INTERACTIVE
+	? createInteractiveViewer({
+		port: PORT,
+		generateLogo,
+		onFatal,
+		fountDir: FOUNT_DIR,
+		onClearComplete: requestRandTip,
+	})
+	: createPlainSink()
 
 /**
  * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限），用户 Ctrl+C 则结束。
@@ -98,6 +173,7 @@ async function pollUntilServerReady() {
 	while (!stopRequested) try {
 		const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
 		if (res.ok) return
+		else throw new Error(String(res.status))
 	} catch {
 		await sleep(delay)
 		delay = Math.min(delay * 2, 5000)
@@ -105,43 +181,12 @@ async function pollUntilServerReady() {
 }
 
 /**
- * 处理快照消息：清屏后逐条打印缓冲中的历史日志。
- * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry[]} entries - 快照条目列表。
- * @returns {Promise<void>}
- */
-async function handleSnapshot(entries) {
-	for (const entry of entries)
-		await writeEntry(entry)
-}
-
-/**
- * 处理追加消息：直接打印新进来的单条。
- * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - 线路条目。
- * @returns {Promise<void>}
- */
-async function handleAppend(entry) {
-	await writeEntry(entry)
-}
-
-/**
- * 处理服务器侧 clear 广播：清空终端屏幕。
- * @returns {Promise<void>}
- */
-async function handleClear() {
-	if (supportsAnsi) process.stdout.write('\x1Bc')
-	console.clear()
-	await printTerminalImage().catch(_ => 0)
-	connection.sendJson({ type: 'rand_tip' })
-	return
-}
-
-/**
  * 建立一次 WebSocket 连接并等待其结束（断连或 `fount_exit`）。
- * 返回结束原因；若是 `fount_exit`，将退出码写入闭包外的 `pendingExitCode`。
- * @param {{ setExitCode: (code: number) => void }} ctx - 用于回传 `fount_exit` 的退出码。
+ * 返回结束原因；若是 `fount_exit`，将退出码写入 `exitContext.setExitCode`。
+ * @param {{ setExitCode: (code: number) => void }} exitContext - 用于回传 `fount_exit` 的退出码。
  * @returns {Promise<'fount_exit' | 'close'>} 解析为本次连接的终止原因。
  */
-function runOneConnection(ctx) {
+function runOneConnection(exitContext) {
 	/**
 	 * Promise 执行器，作为本次连接的状态机。
 	 * @param {(reason: 'fount_exit' | 'close') => void} resolve - 兑现器。
@@ -169,17 +214,18 @@ function runOneConnection(ctx) {
 		 * @returns {void}
 		 */
 		const handleFountExit = (raw) => {
-			ctx.setExitCode(Number.isFinite(raw?.code) ? raw.code : 0)
+			exitContext.setExitCode(Number.isFinite(raw?.code) ? raw.code : 0)
 			finish('fount_exit')
 		}
 
 		/**
-		 * 处理服务器打开事件：设置窗口标题和任务栏进度。
+		 * 处理服务器打开事件：设置窗口标题和任务栏进度，并聚焦 REPL。
 		 * @returns {void}
 		 */
 		const handleOpen = () => {
 			setWindowTitle('𝓯𝓸𝓾𝓷𝓽')
 			ClearTaskbarProgress()
+			logSink.focusInput?.()
 		}
 
 		/**
@@ -195,26 +241,43 @@ function runOneConnection(ctx) {
 		const handleError = () => { /* noop */ }
 
 		/**
-		 * 处理输出事件：直接打印新进来的单条。
-		 * @param {object} raw - 原始 JSON 对象。
-		 * @param {string} raw.text - 输出文本。
-		 * @returns {Promise<void>}
+		 * 处理输出事件：经 `logSink` 追加原始文本。
+		 * @param {{ text: string }} raw - 扩展 `output` 帧。
+		 * @returns {void}
 		 */
-		const handleOutput = (raw) => {
-			process.stdout.write(raw.text)
+		const handleOutput = (raw) => { logSink.appendText(raw.text) }
+
+		/**
+		 * 处理初始信息事件：logo 须在本线程按窗口宽度生成。
+		 * @param {{ text: string }} raw - 扩展 `show_initial_info` 帧。
+		 * @returns {void}
+		 */
+		const handleShowInitialInfo = (raw) => { logSink.showInitialInfo(raw.text).catch(onFatal) }
+
+		/**
+		 * 处理快照消息：逐条写入缓冲中的历史日志。
+		 * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry[]} entries - 快照条目列表。
+		 * @returns {void}
+		 */
+		const handleSnapshot = (entries) => {
+			(async () => {
+				for (const entry of entries)
+					await logSink.writeEntry(entry)
+			})().catch(onFatal)
 		}
 
 		/**
-		 * 处理初始信息事件：打印初始信息。
-		 * logo text需要根据窗口宽度变化所以必须通过本线程生成
-		 * @param {object} raw - 原始 JSON 对象。
-		 * @param {string} raw.text - 初始信息文本。
-		 * @returns {Promise<void>}
+		 * 处理追加消息：写入单条新日志。
+		 * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - 线路条目。
+		 * @returns {void}
 		 */
-		const handleShowInitialInfo = async (raw) => {
-			console.log(await runSimpleWorker('logogener'))
-			process.stdout.write(raw.text)
-		}
+		const handleAppend = (entry) => { logSink.writeEntry(entry).catch(onFatal) }
+
+		/**
+		 * 处理服务器侧 clear 广播：经 `logSink` 清空日志区。
+		 * @returns {void}
+		 */
+		const handleClear = () => { logSink.clear().catch(onFatal) }
 
 		try {
 			connection = connectLogWire(WS_URL, {
@@ -255,14 +318,15 @@ async function main() {
 	 * @returns {void}
 	 */
 	const setExitCode = (code) => { exitCodeSlot.value = code }
-	const ctx = { setExitCode }
+	const exitContext = { setExitCode }
 
 	/**
-	 * SIGINT 处理：标记停止，关闭当前连接，立即以 130 退出。
+	 * SIGINT 处理：标记停止，拆除 REPL、关闭当前连接，立即以 130 退出。
 	 * @returns {void}
 	 */
 	const onSigint = () => {
 		stopRequested = true
+		try { logSink.tearDown?.() } catch { /* ignore */ }
 		try { connection?.close?.() } catch { /* ignore */ }
 		process.exit(130)
 	}
@@ -272,7 +336,7 @@ async function main() {
 	while (!stopRequested) {
 		await pollUntilServerReady()
 		if (stopRequested) break
-		const reason = await runOneConnection(ctx)
+		const reason = await runOneConnection(exitContext)
 
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0
@@ -283,6 +347,7 @@ async function main() {
 				backoff = 500
 				continue
 			}
+			try { logSink.tearDown?.() } catch { /* ignore */ }
 			process.exit(code)
 		}
 

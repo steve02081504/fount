@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Wis het terminalscherm",
 					"tooltip": "Wis het terminalscherm"
+				},
+				"openTerminal": {
+					"title": "Terminal openen",
+					"tooltip": "Logviewer met REPL in een venster openen"
 				}
 			}
 		},
 		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -182,7 +189,14 @@
 				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
 				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal-toetsenpatch geconfigureerd.",
+				"wtPatchFailed": "Windows Terminal-instelling ${path} kon niet worden gepatcht: ${message}",
+				"wtRemoved": "fount-toetsenconfiguratie verwijderd uit Windows Terminal: ${path}",
+				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
 				"removingFount": "fount verwijderen...",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Logboek",
+		"description": "Bekijk live fount-serverlogboeken en voer JavaScript REPL uit in je browser.",
+		"connectionError": "Kan geen verbinding maken met de logservice. Probeer het opnieuw nadat je lokaal toegang hebt of bent ingelogd.",
+		"logs": {
+			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
+			"toolbar": {
+				"clear": "Wissen",
+				"filter": {
+					"placeholder": "Filteren…"
+				}
+			},
+			"levels": {
+				"all": "Alle",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Waarschuwing",
+				"error": "Fout",
+				"debug": "Debug"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript-code invoeren…"
+			},
+			"hint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel · ↑↓ door de geschiedenis bladeren"
+		}
+	},
 	"debug_info": {
 		"title": "Foutopsporing en systeeminformatie",
 		"description": "Ontvang gedetailleerde foutopsporing en systeeminformatie over uw fount-installatie. Dit is erg handig bij het oplossen van problemen en ondersteuningsverzoeken.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "De server wordt opnieuw opgestart",
 		"updateFailed": "Updateverzoek is mislukt",
 		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
-		"logs": {
-			"title": "Logboek",
-			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
-			"toolbar": {
-				"clear": "Wissen",
-				"filter": {
-					"placeholder": "Filteren…"
-				}
-			},
-			"levels": {
-				"all": "Alle",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Waarschuwing",
-				"error": "Fout",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

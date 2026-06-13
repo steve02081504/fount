@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Clear the terminal screen",
 					"tooltip": "Clear the terminal screen"
+				},
+				"openTerminal": {
+					"title": "Open terminal",
+					"tooltip": "Open the log viewer with a REPL in a new window"
 				}
 			}
 		},
 		"botStarted": "Character ${charname} has logged in to the ${platform} Bot ${botusername}.",
+		"logViewer": {
+			"replHint": "Enter to run · Shift+Enter for a new line"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -182,7 +189,14 @@
 				"failedToStart": "Even after automatic repair attempts, the fount fails to start for a short period of time. Please check the logs for errors.",
 				"initFailed": "fount initialization failed. Exiting."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal keybinding patch configured.",
+				"wtPatchFailed": "Failed to patch Windows Terminal settings (${path}): ${message}",
+				"wtRemoved": "Removed fount keybinding configuration from Windows Terminal settings: ${path}",
+				"editorRemoved": "Removed fount configuration from editor terminal keybindings: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Removing terminal keybinding patch...",
 				"removingFount": "Removing fount...",
 				"fountUninstallationComplete": "fount uninstallation completed.",
 				"removingFountInstallationDir": "Removing fount installation directory...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Logs",
+		"description": "View live fount server logs and run a JavaScript REPL in your browser.",
+		"connectionError": "Unable to connect to the log service. Please try again after accessing fount locally or logging in.",
+		"logs": {
+			"openSourceFailed": "Could not open source file: ${message}",
+			"toolbar": {
+				"clear": "Clear",
+				"filter": {
+					"placeholder": "Filter…"
+				}
+			},
+			"levels": {
+				"all": "All",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Enter JavaScript code…"
+			},
+			"hint": "Enter to run · Shift+Enter for a new line · ↑↓ browse history"
+		}
+	},
 	"debug_info": {
 		"title": "Debug & System Info",
 		"description": "Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Server is restarting",
 		"updateFailed": "Update request failed",
 		"autoUpdateNotEnabled": "Automatic updates are not enabled",
-		"logs": {
-			"title": "Logs",
-			"openSourceFailed": "Could not open source file: ${message}",
-			"toolbar": {
-				"clear": "Clear",
-				"filter": {
-					"placeholder": "Filter…"
-				}
-			},
-			"levels": {
-				"all": "All",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Warn",
-				"error": "Error",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

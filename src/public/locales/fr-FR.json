@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Effacer l'écran du terminal",
 					"tooltip": "Effacer l'écran du terminal"
+				},
+				"openTerminal": {
+					"title": "Ouvrir le terminal",
+					"tooltip": "Ouvrir la visionneuse de journaux avec REPL dans une fenêtre"
 				}
 			}
 		},
 		"botStarted": "Le personnage ${charname} s'est connecté au bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Même après des tentatives de réparation automatiques, fount ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
 				"initFailed": "L'initialisation de la fount a échoué. Sortir."
 			},
+			"terminalKeybindings": {
+				"registered": "Correctif des raccourcis du terminal configuré.",
+				"wtPatchFailed": "Impossible de modifier les paramètres de Windows Terminal ${path} : ${message}",
+				"wtRemoved": "Configuration des raccourcis fount supprimée des paramètres de Windows Terminal : ${path}",
+				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Suppression du correctif de raccourcis du terminal...",
 				"removingFount": "Suppression de la fount...",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
 				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Journaux",
+		"description": "Consultez les journaux du serveur fount en direct et exécutez un REPL JavaScript dans votre navigateur.",
+		"connectionError": "Impossible de se connecter au service de journaux. Veuillez réessayer après avoir accédé à fount en local ou vous être connecté.",
+		"logs": {
+			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
+			"toolbar": {
+				"clear": "Vider",
+				"filter": {
+					"placeholder": "Filtrer…"
+				}
+			},
+			"levels": {
+				"all": "Tous",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avertissement",
+				"error": "Erreur",
+				"debug": "Débogage"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Saisir du code JavaScript…"
+			},
+			"hint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne · ↑↓ parcourir l'historique"
+		}
+	},
 	"debug_info": {
 		"title": "Débogage et informations système",
 		"description": "Obtenez des informations détaillées sur le débogage et le système sur votre installation de fount. Ceci est très utile pour le dépannage et les demandes d’assistance.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Le serveur redémarre",
 		"updateFailed": "La demande de mise à jour a échoué",
 		"autoUpdateNotEnabled": "Les mises à jour automatiques ne sont pas activées",
-		"logs": {
-			"title": "Journaux",
-			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
-			"toolbar": {
-				"clear": "Vider",
-				"filter": {
-					"placeholder": "Filtrer…"
-				}
-			},
-			"levels": {
-				"all": "Tous",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Avertissement",
-				"error": "Erreur",
-				"debug": "Débogage"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

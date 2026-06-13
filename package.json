@@ -22,6 +22,7 @@
 		"geneexe": "node path/fount.mjs geneexe",
 		"remove": "node path/fount.mjs remove",
 		"nop": "node path/fount.mjs nop",
+		"log": "node path/fount.mjs log",
 
 		"start": "node path/fount.mjs",
 		"stop": "node path/fount.mjs shutdown",

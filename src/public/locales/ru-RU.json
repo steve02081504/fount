@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Очистить экран терминала",
 					"tooltip": "Очистить экран терминала"
+				},
+				"openTerminal": {
+					"title": "Открыть терминал",
+					"tooltip": "Открыть просмотрщик журналов с REPL в окне"
 				}
 			}
 		},
 		"botStarted": "Персонаж ${charname} вошел в ${platform} бот ${botusername}.",
+		"logViewer": {
+			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Даже после попыток автоматического ремонта фонтан не запускается в течение короткого периода времени. Пожалуйста, проверьте журналы на наличие ошибок.",
 				"initFailed": "Инициализация fount не удалась. Выход."
 			},
+			"terminalKeybindings": {
+				"registered": "Патч привязок клавиш терминала настроен.",
+				"wtPatchFailed": "Не удалось изменить настройки Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Конфигурация клавиш fount удалена из Windows Terminal: ${path}",
+				"editorRemoved": "Конфигурация fount удалена из привязок клавиш терминала редактора: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
 				"removingFount": "Удаление fount...",
 				"fountUninstallationComplete": "Удаление фонта завершено.",
 				"removingFountInstallationDir": "Удаление каталога установки fount...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Журналы",
+		"description": "Просматривайте журналы сервера fount в реальном времени и запускайте JavaScript REPL в браузере.",
+		"connectionError": "Не удалось подключиться к службе журналов. Повторите попытку после локального доступа или входа в систему.",
+		"logs": {
+			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
+			"toolbar": {
+				"clear": "Очистить",
+				"filter": {
+					"placeholder": "Фильтр…"
+				}
+			},
+			"levels": {
+				"all": "Все",
+				"log": "Лог",
+				"info": "Инфо",
+				"warn": "Предупреждение",
+				"error": "Ошибка",
+				"debug": "Отладка"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Введите код JavaScript…"
+			},
+			"hint": "Enter — выполнить · Shift+Enter — новая строка · ↑↓ история команд"
+		}
+	},
 	"debug_info": {
 		"title": "Отладка и системная информация",
 		"description": "Получите подробную информацию об отладке и системе для установки fount. Это очень полезно для устранения неполадок и запросов в службу поддержки.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Сервер перезагружается",
 		"updateFailed": "Запрос на обновление не выполнен",
 		"autoUpdateNotEnabled": "Автоматические обновления не включены",
-		"logs": {
-			"title": "Журнал",
-			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
-			"toolbar": {
-				"clear": "Очистить",
-				"filter": {
-					"placeholder": "Фильтр…"
-				}
-			},
-			"levels": {
-				"all": "Все",
-				"log": "Лог",
-				"info": "Инфо",
-				"warn": "Предупреждение",
-				"error": "Ошибка",
-				"debug": "Отладка"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

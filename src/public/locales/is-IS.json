@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Hreinsaðu flugstöðvarskjáinn",
 					"tooltip": "Hreinsaðu flugstöðvarskjáinn"
+				},
+				"openTerminal": {
+					"title": "Opna skel",
+					"tooltip": "Opna annálaskoða með REPL í glugga"
 				}
 			}
 		},
 		"botStarted": "Persónan ${charname} hefur skráð sig inn á ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "Enter til að keyra · Shift+Enter fyrir nýja línu"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount samskiptareglur",
@@ -182,7 +189,14 @@
 				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
 				"initFailed": "Uppsetning leturs mistókst. Hætta."
 			},
+			"terminalKeybindings": {
+				"registered": "Lagfæring lyklaborðsviðmóts skels stillt.",
+				"wtPatchFailed": "Ekki tókst að lagfæra stillingar Windows Terminal ${path}: ${message}",
+				"wtRemoved": "fount-lyklaborðsstillingum fjarlægt úr Windows Terminal: ${path}",
+				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Fjarlægir lagfæringu lyklaborðsviðmóts skels...",
 				"removingFount": "Fjarlægir leturgerð...",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
 				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Annáll",
+		"description": "Skoðaðu rauntímaskrár fount-þjónsins og keyrðu JavaScript REPL í vafranum.",
+		"connectionError": "Ekki tókst að tengjast annálaþjónustu. Reyndu aftur eftir að hafa opnað fount staðbundið eða skráð þig inn.",
+		"logs": {
+			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
+			"toolbar": {
+				"clear": "Hreinsa",
+				"filter": {
+					"placeholder": "Sía…"
+				}
+			},
+			"levels": {
+				"all": "Allt",
+				"log": "Log",
+				"info": "Upplýsingar",
+				"warn": "Viðvörun",
+				"error": "Villa",
+				"debug": "Villuleit"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Sláðu inn JavaScript-kóða…"
+			},
+			"hint": "Enter til að keyra · Shift+Enter fyrir nýja línu · ↑↓ fletta í gegnum sögu"
+		}
+	},
 	"debug_info": {
 		"title": "Villuleit og kerfisupplýsingar",
 		"description": "Fáðu nákvæmar villuleitar- og kerfisupplýsingar um uppsetningu fount. Þetta er mjög gagnlegt fyrir úrræðaleit og stuðningsbeiðnir.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Þjónninn er að endurræsa",
 		"updateFailed": "Uppfærslubeiðni mistókst",
 		"autoUpdateNotEnabled": "Sjálfvirkar uppfærslur eru ekki virkar",
-		"logs": {
-			"title": "Annáll",
-			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
-			"toolbar": {
-				"clear": "Hreinsa",
-				"filter": {
-					"placeholder": "Sía…"
-				}
-			},
-			"levels": {
-				"all": "Allt",
-				"log": "Log",
-				"info": "Upplýsingar",
-				"warn": "Viðvörun",
-				"error": "Villa",
-				"debug": "Villuleit"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Cancella lo schermo del terminale",
 					"tooltip": "Cancella lo schermo del terminale"
+				},
+				"openTerminal": {
+					"title": "Apri terminale",
+					"tooltip": "Apri il visualizzatore dei log con REPL in una finestra"
 				}
 			}
 		},
 		"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "Invio per eseguire · Maiusc+Invio per nuova riga"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: protocollo del fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Anche dopo i tentativi di riparazione automatica, fount non si avvia. Si prega di verificare la presenza di errori nei log.",
 				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
+			"terminalKeybindings": {
+				"registered": "Patch delle scorciatoie del terminale configurata.",
+				"wtPatchFailed": "Impossibile applicare la patch alle impostazioni di Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Configurazione scorciatoie fount rimossa da Windows Terminal: ${path}",
+				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Rimozione patch scorciatoie del terminale...",
 				"removingFount": "Rimozione di fount...",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Registro",
+		"description": "Visualizza i log del server fount in tempo reale ed esegui un REPL JavaScript nel browser.",
+		"connectionError": "Impossibile connettersi al servizio di log. Riprova dopo aver acceduto localmente o effettuato l'accesso.",
+		"logs": {
+			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
+			"toolbar": {
+				"clear": "Svuota",
+				"filter": {
+					"placeholder": "Filtra…"
+				}
+			},
+			"levels": {
+				"all": "Tutti",
+				"log": "Log",
+				"info": "Info",
+				"warn": "Avviso",
+				"error": "Errore",
+				"debug": "Debug"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Inserisci codice JavaScript…"
+			},
+			"hint": "Invio per eseguire · Maiusc+Invio per nuova riga · ↑↓ scorri cronologia"
+		}
+	},
 	"debug_info": {
 		"title": "Debug e informazioni di sistema",
 		"description": "Ottieni informazioni dettagliate sul debug e sul sistema sull'installazione di fount. Questo è molto utile per la risoluzione dei problemi e le richieste di supporto.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Il server si sta riavviando",
 		"updateFailed": "Richiesta di aggiornamento non riuscita",
 		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
-		"logs": {
-			"title": "Registro",
-			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
-			"toolbar": {
-				"clear": "Svuota",
-				"filter": {
-					"placeholder": "Filtra…"
-				}
-			},
-			"levels": {
-				"all": "Tutti",
-				"log": "Log",
-				"info": "Info",
-				"warn": "Avviso",
-				"error": "Errore",
-				"debug": "Debug"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

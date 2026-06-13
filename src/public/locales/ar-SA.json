@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "مسح الشاشة الطرفية",
 					"tooltip": "امسح الشاشة الطرفية"
+				},
+				"openTerminal": {
+					"title": "فتح الطرفية",
+					"tooltip": "افتح عارض السجلات مع REPL في نافذة"
 				}
 			}
 		},
 		"botStarted": "تم تسجيل دخول الشخصية ${charname} ${platform} على بوت ${botusername}",
+		"logViewer": {
+			"replHint": "Enter للتشغيل · Shift+Enter لسطر جديد"
+		},
 		"path": {
 			"protocol": {
 				"description": "عنوان URL:البروتوكول الموجود",
@@ -182,7 +189,14 @@
 				"failedToStart": "حتى بعد محاولات الإصلاح التلقائي، تفشل fount في العمل لفترة قصيرة من الزمن. يرجى التحقق من السجلات بحثًا عن الأخطاء.",
 				"initFailed": "فشلت تهيئة الخط. الخروج."
 			},
+			"terminalKeybindings": {
+				"registered": "تم تكوين ترقيع اختصارات الطرفية.",
+				"wtPatchFailed": "تعذّر ترقيع إعدادات Windows Terminal ${path}: ${message}",
+				"wtRemoved": "تمت إزالة إعدادات اختصارات fount من Windows Terminal: ${path}",
+				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
 				"removingFount": "جارٍ إزالة fount...",
 				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
 				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "السجلات",
+		"description": "اعرض سجلات خادم fount المباشرة وشغّل مفسّر JavaScript (REPL) في متصفحك.",
+		"connectionError": "تعذّر الاتصال بخدمة السجلات. يُرجى المحاولة مجددًا بعد الوصول إلى fount محليًا أو تسجيل الدخول.",
+		"logs": {
+			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
+			"toolbar": {
+				"clear": "مسح",
+				"filter": {
+					"placeholder": "تصفية…"
+				}
+			},
+			"levels": {
+				"all": "الكل",
+				"log": "سجل",
+				"info": "معلومات",
+				"warn": "تحذير",
+				"error": "خطأ",
+				"debug": "تصحيح"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "أدخل كود JavaScript…"
+			},
+			"hint": "Enter للتشغيل · Shift+Enter لسطر جديد · ↑↓ سجل الأوامر"
+		}
+	},
 	"debug_info": {
 		"title": "تصحيح الأخطاء ومعلومات النظام",
 		"description": "احصل على تصحيح الأخطاء ومعلومات النظام التفصيلية حول تثبيت fount لديك. يعد هذا مفيدًا جدًا لاستكشاف الأخطاء وإصلاحها وطلبات الدعم.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "يتم إعادة تشغيل الخادم",
 		"updateFailed": "فشل طلب التحديث",
 		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
-		"logs": {
-			"title": "السجلات",
-			"openSourceFailed": "تعذّر فتح ملف المصدر: ${message}",
-			"toolbar": {
-				"clear": "مسح",
-				"filter": {
-					"placeholder": "تصفية…"
-				}
-			},
-			"levels": {
-				"all": "الكل",
-				"log": "سجل",
-				"info": "معلومات",
-				"warn": "تحذير",
-				"error": "خطأ",
-				"debug": "تصحيح"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

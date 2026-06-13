@@ -19,238 +19,6 @@ function truncatedPlaceholderText(node) {
 	return label ? `[${label}]` : '{…}'
 }
 
-const STYLES = /* css */ `
-.log-container {
-	font-family: 'Cascadia Code', 'Fira Code', ui-monospace, 'Consolas', monospace;
-	font-size: 12.5px;
-}
-.log-row {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	padding: 1px 8px 1px 6px;
-	min-height: 20px;
-	border-bottom: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 7%, transparent);
-	gap: 8px;
-	line-height: 1.5;
-	position: relative;
-}
-.log-row:hover {
-	background-color: color-mix(in oklch, var(--color-base-content, currentColor) 5%, transparent);
-}
-.log-level-warn {
-	background-color: color-mix(in oklch, var(--color-warning, #f59e0b) 8%, transparent);
-	border-left: 3px solid var(--color-warning, #f59e0b);
-}
-.log-level-warn:hover {
-	background-color: color-mix(in oklch, var(--color-warning, #f59e0b) 14%, transparent);
-}
-.log-level-error {
-	background-color: color-mix(in oklch, var(--color-error, #ef4444) 8%, transparent);
-	border-left: 3px solid var(--color-error, #ef4444);
-}
-.log-level-error:hover {
-	background-color: color-mix(in oklch, var(--color-error, #ef4444) 14%, transparent);
-}
-.log-level-info {
-	border-left: 3px solid var(--color-info, #3b82f6);
-}
-.log-level-debug {
-	opacity: 0.6;
-}
-.log-row.log-level-log,
-.log-row.log-level-stdout {
-	border-left: 3px solid transparent;
-}
-.log-content {
-	flex: 1;
-	min-width: 0;
-	word-break: break-word;
-	overflow-wrap: anywhere;
-}
-.log-args {
-	display: inline;
-}
-.log-meta {
-	flex-shrink: 0;
-	display: flex;
-	align-items: center;
-}
-.log-source-btn {
-	font-size: 11px;
-	opacity: 0.5;
-	white-space: nowrap;
-	background: none;
-	border: none;
-	padding: 0;
-	font-family: inherit;
-	color: inherit;
-	cursor: default;
-}
-.log-source-btn.clickable {
-	cursor: pointer;
-}
-.log-source-btn.clickable:hover {
-	opacity: 0.9;
-	text-decoration: underline;
-}
-
-/* 值颜色 */
-.log-val-string { color: var(--color-success, #16a34a); }
-.log-val-number { color: var(--color-info, #2563eb); }
-.log-val-boolean { color: var(--color-warning, #d97706); }
-.log-val-null, .log-val-undefined { opacity: 0.45; font-style: italic; }
-.log-val-function { color: var(--color-secondary, #7c3aed); }
-.log-val-symbol { color: var(--color-secondary, #7c3aed); }
-.log-val-circular { opacity: 0.5; font-style: italic; }
-.log-expandable-truncated {
-	cursor: pointer;
-	text-decoration: underline dotted;
-	opacity: 0.9;
-}
-.log-expandable-truncated:hover { opacity: 1; }
-.log-val-date { color: var(--color-info, #2563eb); }
-.log-val-regexp { color: var(--color-error, #dc2626); }
-.log-val-error-text { color: var(--color-error, #dc2626); }
-
-/* 所有字符串参数统一走终端文本语义：换行、tab、ANSI/OSC 一致处理 */
-.log-str {
-	display: inline-block;
-	max-width: 100%;
-	vertical-align: top;
-	box-sizing: border-box;
-	word-break: break-word;
-}
-
-/* 可展开节点 */
-.log-node {
-	display: inline-flex;
-	flex-direction: column;
-	vertical-align: top;
-}
-.log-node-header {
-	display: inline-flex;
-	align-items: center;
-	gap: 1px;
-	cursor: default;
-}
-.log-node-header.expandable {
-	cursor: pointer;
-}
-.log-node-header.expandable:hover .log-toggle {
-	opacity: 1;
-}
-.log-toggle {
-	display: inline-block;
-	width: 14px;
-	text-align: center;
-	font-size: 9px;
-	opacity: 0.55;
-	user-select: none;
-	flex-shrink: 0;
-	transition: transform 0.1s;
-}
-.log-toggle.open {
-	transform: rotate(90deg);
-}
-.log-node-preview {
-	display: inline;
-}
-.log-node-children {
-	padding-left: 18px;
-	display: flex;
-	flex-direction: column;
-}
-.log-node-prop {
-	display: flex;
-	align-items: flex-start;
-	gap: 2px;
-	line-height: 1.5;
-}
-.log-node-key {
-	opacity: 0.65;
-	flex-shrink: 0;
-}
-.log-node-colon {
-	opacity: 0.4;
-	flex-shrink: 0;
-}
-.log-error-stack {
-	white-space: pre-wrap;
-	word-break: break-all;
-	font-size: 11px;
-	opacity: 0.65;
-	margin: 0;
-	padding: 0;
-	font-family: inherit;
-}
-
-/* 工具栏 */
-.log-toolbar {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	padding: 4px 6px;
-	border-bottom: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 10%, transparent);
-	flex-wrap: wrap;
-}
-.log-filter-input {
-	flex: 1;
-	min-width: 100px;
-	font-family: inherit;
-	font-size: 12px;
-	padding: 2px 6px;
-	border-radius: 4px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
-	background: transparent;
-	color: inherit;
-	outline: none;
-}
-.log-filter-input:focus {
-	border-color: var(--color-info, #3b82f6);
-}
-.log-level-btns {
-	display: flex;
-	gap: 2px;
-}
-.log-level-btn {
-	font-size: 11px;
-	padding: 1px 7px;
-	border-radius: 3px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
-	background: transparent;
-	cursor: pointer;
-	opacity: 0.65;
-	color: inherit;
-	font-family: inherit;
-}
-.log-level-btn:hover { opacity: 0.9; }
-.log-level-btn.active {
-	opacity: 1;
-	background: color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
-	font-weight: 600;
-}
-.log-level-btn[data-lvl="log"] { color: color-mix(in oklch, var(--color-base-content, currentColor) 88%, transparent); }
-.log-level-btn[data-lvl="info"] { color: var(--color-info, #3b82f6); }
-.log-level-btn[data-lvl="warn"] { color: var(--color-warning, #d97706); }
-.log-level-btn[data-lvl="error"] { color: var(--color-error, #dc2626); }
-.log-level-btn[data-lvl="debug"] { color: color-mix(in oklch, var(--color-base-content, currentColor) 55%, transparent); }
-.log-clear-btn {
-	font-size: 11px;
-	padding: 1px 7px;
-	border-radius: 3px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
-	background: transparent;
-	cursor: pointer;
-	opacity: 0.65;
-	color: inherit;
-	font-family: inherit;
-}
-.log-clear-btn:hover { opacity: 1; }
-`
-
-let stylesInjected = false
-
 /**
  * 将当前快照树中所有 `truncated` 节点并行拉取并就地替换（非递归，新产生的 truncated 留待下次点击）。
  * @param {object} node - 序列化树根节点。
@@ -325,18 +93,6 @@ function renderLogStringNode(text, { quoted = false, className = 'log-str' } = {
 	else
 		wrapper.innerHTML = html
 	return wrapper
-}
-
-/**
- * 注入日志面板样式（幂等，仅首次插入 `<style>`）。
- * @returns {void}
- */
-function injectStyles() {
-	if (stylesInjected) return
-	stylesInjected = true
-	const style = document.createElement('style')
-	style.textContent = STYLES
-	document.head.appendChild(style)
 }
 
 /**
@@ -739,8 +495,6 @@ const LEVEL_CLASS = {
  * @returns {HTMLElement} 日志行；空 stdout/stderr 可能返回隐藏的占位节点。
  */
 export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requestExpandRef } = {}) {
-	injectStyles()
-
 	const levelClass = LEVEL_CLASS[entry.level] || 'log-level-log'
 
 	const row = document.createElement('div')
@@ -798,28 +552,25 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 /**
  * 创建日志工具栏并绑定过滤逻辑。
  * @param {object} opts - 工具栏配置。
- * @param {HTMLElement} opts.container - 日志列表容器（当前实现未直接使用，保留接口）。
  * @param {() => void} opts.onClear - 用户点击清空时调用。
  * @param {(filterText: string, levelFilter: string) => void} opts.onFilter - 文本或级别变更时调用。
  * @returns {HTMLElement} 工具栏根元素。
  */
-export function createLogToolbar({ container: _container, onClear, onFilter }) {
-	injectStyles()
-
+export function createLogToolbar({ onClear, onFilter }) {
 	const toolbar = document.createElement('div')
 	toolbar.className = 'log-toolbar'
 
 	// 清空按钮
 	const clearBtn = document.createElement('button')
 	clearBtn.className = 'log-clear-btn'
-	clearBtn.dataset.i18n = 'debug_info.logs.toolbar.clear'
+	clearBtn.dataset.i18n = 'log_viewer.logs.toolbar.clear'
 	clearBtn.addEventListener('click', () => onClear?.())
 
 	// 过滤输入框
 	const filterInput = document.createElement('input')
 	filterInput.type = 'text'
 	filterInput.className = 'log-filter-input'
-	filterInput.dataset.i18n = 'debug_info.logs.toolbar.filter'
+	filterInput.dataset.i18n = 'log_viewer.logs.toolbar.filter'
 
 	// 级别过滤按钮
 	const levelBtns = document.createElement('div')
@@ -834,7 +585,7 @@ export function createLogToolbar({ container: _container, onClear, onFilter }) {
 		btn.type = 'button'
 		btn.className = `log-level-btn${id === 'all' ? ' active' : ''}`
 		btn.dataset.lvl = id
-		btn.dataset.i18n = `debug_info.logs.levels.${id}`
+		btn.dataset.i18n = `log_viewer.logs.levels.${id}`
 		btn.addEventListener('click', () => {
 			activeLevel = id
 			for (const [k, el] of Object.entries(btnEls))

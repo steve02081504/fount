@@ -4,7 +4,7 @@
 
 - **Part-Based Modular Architecture**: Everything (UI, AI, Features) is a self-contained "part" loaded dynamically.
 - **Evergreen Dependencies**: No lock files. Imports are directly from URLs via Deno.
-- **Single Process**: Monolithic process; no child processes allowed. Use `async/await`.
+- **Single Process**: Monolithic process; no child processes allowed. Use `async/await`. User-initiated OS launches (browser, editor, terminal) may detach a child only via `npm:open` or `@src/scripts/launch_external.mjs`; do not import `node:child_process` elsewhere for that purpose.
 
 ## 2. System Overview
 
