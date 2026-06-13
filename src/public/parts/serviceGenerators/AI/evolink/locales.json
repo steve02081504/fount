@@ -43,7 +43,10 @@
 				"LLM",
 				null
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"name": "إيفولينك",
+			"description": "إيفولينك",
+			"description_markdown": "قم بالوصول إلى واجهة LLM المتوافقة مع OpenAI من Evolink (والتي تدعم أيضًا واجهة برمجة تطبيقات الرسائل Anthropic) ومجموعة واسعة من النماذج المتاحة، بما في ذلك GPT-5.5 وClaude وGemini 3.x وDeepSeek V4 والمزيد."
 		},
 		"de-DE": {
 			"name": "Evolink",
@@ -103,7 +106,9 @@
 				"llm",
 				"fournisseur"
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"name": "Évolink",
+			"description": "Évolink"
 		},
 		"hi-IN": {
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
@@ -116,7 +121,10 @@
 				null,
 				null
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"name": "इवोलिंक",
+			"description": "इवोलिंक",
+			"description_markdown": "इवोलिंक के ओपनएआई-संगत एलएलएम इंटरफ़ेस (जो एंथ्रोपिक मैसेज एपीआई का भी समर्थन करता है) और उपलब्ध मॉडलों की एक विस्तृत श्रृंखला तक पहुंचें, जिसमें जीपीटी-5.5, क्लाउड, जेमिनी 3.x, डीपसीक वी4 और बहुत कुछ शामिल हैं।"
 		},
 		"is-IS": {
 			"name": "Evolink",
@@ -131,7 +139,8 @@
 				"llm",
 				"veitanda"
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"description_markdown": "Fáðu aðgang að OpenAI-samhæfu LLM viðmóti Evolink (sem styður einnig Anthropic Messages API) og fjölbreytt úrval af tiltækum gerðum, þar á meðal GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 og fleira."
 		},
 		"it-IT": {
 			"name": "Evolink",
@@ -178,7 +187,8 @@
 				null,
 				null
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"description_markdown": "Evolink의 OpenAI 호환 LLM 인터페이스(Anthropic Messages API도 지원)와 GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 등을 포함한 다양한 사용 가능한 모델에 액세스하세요."
 		},
 		"lzh": {
 			"name": "Evolink",
@@ -257,7 +267,8 @@
 				"llm",
 				"провайдер"
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"description_markdown": "Отримайте доступ до сумісного з OpenAI інтерфейсу LLM Evolink (який також підтримує API антропних повідомлень) і широкого спектру доступних моделей, включаючи GPT-5.5, Claude, Gemini 3.x, DeepSeek V4 тощо."
 		},
 		"vi-VN": {
 			"name": "Evolink",
@@ -272,7 +283,8 @@
 				null,
 				null
 			],
-			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount"
+			"home_page": "https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount",
+			"description_markdown": "Truy cập giao diện LLM tương thích OpenAI của Evolink (cũng hỗ trợ API Tin nhắn Anthropic) và nhiều mẫu có sẵn, bao gồm GPT-5.5, Claude, Gemini 3.x, DeepSeek V4, v.v."
 		},
 		"zh-TW": {
 			"name": "Evolink",

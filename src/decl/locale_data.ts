@@ -2485,6 +2485,7 @@ export type LocaleData = {
 	}
 	log_viewer: {
 		title: string
+		description: string
 		connectionError: string
 		logs: {
 			openSourceFailed: string

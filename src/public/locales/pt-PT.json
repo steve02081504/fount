@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Limpar o ecrã do terminal",
 					"tooltip": "Limpar o ecrã do terminal"
+				},
+				"openTerminal": {
+					"title": "Terminal aberto",
+					"tooltip": "Abra o visualizador de log na janela com REPL"
 				}
 			}
 		},
 		"botStarted": "O personagem ${charname} ligou-se ao bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "enter para executar · shift+enter para finalizar"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:protocolo de fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
 				"initFailed": "Falha na inicialização da fount. Saindo."
 			},
+			"terminalKeybindings": {
+				"registered": "Patch de mapa de teclado do terminal configurado.",
+				"wtPatchFailed": "Não foi possível corrigir a configuração do Terminal do Windows ${path}:${message}",
+				"wtRemoved": "Configuração do mapa de teclado da fonte removida das configurações do Terminal do Windows: ${path}",
+				"editorRemoved": "Configuração da fonte removida do mapa de teclas do terminal do editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Removendo patch de ligação de chave do terminal...",
 				"removingFount": "Removendo fount...",
 				"fountUninstallationComplete": "desinstalação da fount concluída.",
 				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registos",
+		"description": "Visualize os logs do servidor ativo da fonte e execute o JavaScript REPL em seu navegador.",
+		"connectionError": "Não foi possível conectar-se ao serviço de log. Por favor, tente novamente após acessar ou fazer login localmente.",
 		"logs": {
 			"openSourceFailed": "Não foi possível abrir o ficheiro de código-fonte: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Erro",
 				"debug": "Depuração"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Insira o código JavaScript…"
+			},
+			"hint": "Enter para executar · Shift+Enter para quebrar a linha · ↑↓ Histórico de navegação"
 		}
 	},
 	"debug_info": {

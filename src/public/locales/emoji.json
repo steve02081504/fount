@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "🧹🖥️",
 					"tooltip": "🧹🖥️"
+				},
+				"openTerminal": {
+					"title": "打开终端",
+					"tooltip": "在窗口中打开日志查看器与 REPL"
 				}
 			}
 		},
 		"botStarted": "🤖 ${charname} ✅ ${platform} ${botusername}",
+		"logViewer": {
+			"replHint": "enter 运行 · shift+enter 换行"
+		},
 		"path": {
 			"protocol": {
 				"description": "🔗⛲📜",
@@ -182,7 +189,14 @@
 				"failedToStart": "❌⏱️ ⛲ ➡️ 📜👀",
 				"initFailed": "❌✨ ⛲ ➡️ 🛑"
 			},
+			"terminalKeybindings": {
+				"registered": "已配置终端按键映射修补。",
+				"wtPatchFailed": "无法修补 Windows Terminal 设置 ${path}：${message}",
+				"wtRemoved": "已从 Windows Terminal 设置移除 fount 按键映射配置：${path}",
+				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正在移除终端按键绑定补丁...",
 				"removingFount": "👋 ⛲...",
 				"fountUninstallationComplete": "✅ ⛲ 👋💯",
 				"removingFountInstallationDir": "👋 ⛲ 📁...",
@@ -240,7 +254,7 @@
 		},
 		"feature4": {
 			"title": "🔗🤖🌐",
-			"description": "🔗 OpenAI, Claude,..."
+			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
 		"language_selector": {
 			"button": {
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "📜",
+		"description": "查看 fount 实时服务器日志，并在浏览器中运行 JavaScript REPL。",
+		"connectionError": "无法连接日志服务。请在本机访问或登录后重试。",
 		"logs": {
 			"openSourceFailed": "📂📜❌: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "⛔",
 				"debug": "🐛"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "输入 JavaScript 代码…"
+			},
+			"hint": "Enter 运行 · Shift+Enter 换行 · ↑↓ 浏览历史"
 		}
 	},
 	"debug_info": {

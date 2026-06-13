@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Effacer l'écran du terminal",
 					"tooltip": "Effacer l'écran du terminal"
+				},
+				"openTerminal": {
+					"title": "Terminal ouvert",
+					"tooltip": "Ouvrez la visionneuse de journaux dans la fenêtre avec REPL"
 				}
 			}
 		},
 		"botStarted": "Le personnage ${charname} s'est connecté au bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "entrez pour exécuter · maj+entrée pour terminer"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Même après des tentatives de réparation automatiques, fount ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
 				"initFailed": "L'initialisation de la fount a échoué. Sortir."
 			},
+			"terminalKeybindings": {
+				"registered": "Correction du mappage de clavier du terminal configurée.",
+				"wtPatchFailed": "Impossible de corriger le paramètre du terminal Windows ${path}:${message}",
+				"wtRemoved": "Configuration du mappage de clavier de police supprimée des paramètres du terminal Windows : ${path}",
+				"editorRemoved": "Configuration de la police supprimée du plan de clavier du terminal de l'éditeur : ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Suppression du correctif de liaison de clé de terminal...",
 				"removingFount": "Suppression de la fount...",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
 				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Journaux",
+		"description": "Consultez les journaux du serveur Font Live et exécutez JavaScript REPL dans votre navigateur.",
+		"connectionError": "Impossible de se connecter au service de journalisation. Veuillez réessayer après avoir accédé ou connecté localement.",
 		"logs": {
 			"openSourceFailed": "Impossible d’ouvrir le fichier source : ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Erreur",
 				"debug": "Débogage"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Entrez le code JavaScript…"
+			},
+			"hint": "Entrée pour exécuter · Maj+Entrée pour terminer la ligne · ↑↓ Historique de navigation"
 		}
 	},
 	"debug_info": {

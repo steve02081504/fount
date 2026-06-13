@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Cancella lo schermo del terminale",
 					"tooltip": "Cancella lo schermo del terminale"
+				},
+				"openTerminal": {
+					"title": "Terminale aperto",
+					"tooltip": "Apri il visualizzatore registro nella finestra con REPL"
 				}
 			}
 		},
 		"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": "invio per eseguire · MAIUSC+INVIO per andare a capo"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: protocollo del fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Anche dopo i tentativi di riparazione automatica, fount non si avvia. Si prega di verificare la presenza di errori nei log.",
 				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
+			"terminalKeybindings": {
+				"registered": "Patch mappa tastiera terminale configurata.",
+				"wtPatchFailed": "Impossibile applicare la patch all'impostazione del terminale Windows ${path}:${message}",
+				"wtRemoved": "Configurazione della mappa dei tasti di origine rimossa dalle impostazioni del terminale Windows: ${path}",
+				"editorRemoved": "Configurazione del font rimossa dalla mappatura dei tasti del terminale dell'editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Rimozione della patch di associazione della chiave del terminale in corso...",
 				"removingFount": "Rimozione di fount...",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registro",
+		"description": "Visualizza i log del server live dei font ed esegui JavaScript REPL nel tuo browser.",
+		"connectionError": "Impossibile connettersi al servizio di registro. Riprova dopo aver effettuato l'accesso o effettuato l'accesso in locale.",
 		"logs": {
 			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Errore",
 				"debug": "Debug"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Inserisci il codice JavaScript..."
+			},
+			"hint": "Invio per eseguire · Maiusc+Invio per mandare a capo la riga · ↑↓ Cronologia di navigazione"
 		}
 	},
 	"debug_info": {

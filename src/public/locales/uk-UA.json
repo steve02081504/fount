@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Очистити екран терміналу",
 					"tooltip": "Очистіть екран терміналу"
+				},
+				"openTerminal": {
+					"title": "Відкрити термінал",
+					"tooltip": "Відкрити засіб перегляду журналів у вікні за допомогою REPL"
 				}
 			}
 		},
 		"botStarted": "Персонаж ${charname} увійшов у систему на ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "enter для запуску · shift+enter для завершення"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:протокол fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Навіть після спроб автоматичного ремонту fountан не запускається протягом короткого періоду часу. Перевірте журнали на наявність помилок.",
 				"initFailed": "Помилка ініціалізації fountу. Вихід."
 			},
+			"terminalKeybindings": {
+				"registered": "Розкладку розкладок терміналу налаштовано.",
+				"wtPatchFailed": "Не вдається виправити налаштування Windows Terminal ${path}:${message}",
+				"wtRemoved": "Конфігурацію розкладки шрифту видалено з налаштувань терміналу Windows: ${path}",
+				"editorRemoved": "Конфігурацію шрифту видалено з розкладки терміналу редактора: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Видалення патча прив’язки клавіш терміналу...",
 				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
 				"removingFountInstallationDir": "Видалення каталогу встановлення fount...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Журнали",
+		"description": "Перегляньте журнали серверів Fount Live і запустіть JavaScript REPL у своєму браузері.",
+		"connectionError": "Неможливо підключитися до служби журналу. Будь ласка, спробуйте ще раз після доступу або входу локально.",
 		"logs": {
 			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Помилка",
 				"debug": "Налагодження"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Введіть код JavaScript…"
+			},
+			"hint": "Enter, щоб запустити · Shift+Enter, щоб перенести рядок · ↑↓ Історія перегляду"
 		}
 	},
 	"debug_info": {

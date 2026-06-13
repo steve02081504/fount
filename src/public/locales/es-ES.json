@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Limpiar la pantalla del terminal",
 					"tooltip": "Limpiar la pantalla del terminal"
+				},
+				"openTerminal": {
+					"title": "Terminal abierta",
+					"tooltip": "Abrir el visor de registros en la ventana con REPL"
 				}
 			}
 		},
 		"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de ${platform} ${botusername}.",
+		"logViewer": {
+			"replHint": null
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: protocolo de fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Incluso después de intentos de reparación automática, la fount no arranca durante un breve período de tiempo. Por favor revise los registros para ver si hay errores.",
 				"initFailed": "Error al inicializar la fount. Saliendo."
 			},
+			"terminalKeybindings": {
+				"registered": "Parcheo del mapa de teclas del terminal configurado.",
+				"wtPatchFailed": "No se puede parchear la configuración de la Terminal de Windows ${path}:${message}",
+				"wtRemoved": "Configuración del mapa de teclas fuente eliminada de la configuración de la Terminal de Windows: ${path}",
+				"editorRemoved": "Configuración de fuente eliminada del mapa de teclas del terminal del editor: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Eliminando el parche de enlace de clave del terminal...",
 				"removingFount": "Eliminando fount...",
 				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
 				"removingFountInstallationDir": "Eliminando el directorio de instalación de founts...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Registros",
+		"description": "Vea los registros del servidor fuente en vivo y ejecute JavaScript REPL en su navegador.",
+		"connectionError": "No se puede conectar al servicio de registro. Inténtelo de nuevo después de acceder o iniciar sesión localmente.",
 		"logs": {
 			"openSourceFailed": "No se pudo abrir el archivo de código fuente: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Error",
 				"debug": "Depuración"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Ingrese el código JavaScript…"
+			},
+			"hint": "Enter para ejecutar · Shift+Enter para ajustar la línea · ↑↓ Historial de navegación"
 		}
 	},
 	"debug_info": {

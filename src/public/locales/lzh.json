@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "滌除終端幕",
 					"tooltip": "滌除終端幕"
+				},
+				"openTerminal": {
+					"title": "打开终端",
+					"tooltip": "在窗口中打开日志查看器与 REPL"
 				}
 			}
 		},
 		"botStarted": "化身 ${charname} 已託 ${platform} 靈偶 ${botusername} 而現",
+		"logViewer": {
+			"replHint": "enter 运行 · shift+enter 换行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協議",
@@ -182,7 +189,14 @@
 				"failedToStart": "縱自動修復，fount 仍短時內啟動未果，請察日誌之誤",
 				"initFailed": "fount 初始化未果，退出"
 			},
+			"terminalKeybindings": {
+				"registered": "已配置终端按键映射修补。",
+				"wtPatchFailed": "无法修补 Windows Terminal 设置 ${path}：${message}",
+				"wtRemoved": "已从 Windows Terminal 设置移除 fount 按键映射配置：${path}",
+				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正在移除终端按键绑定补丁...",
 				"removingFount": "正移除 fount...",
 				"fountUninstallationComplete": "fount 卸載已畢",
 				"removingFountInstallationDir": "正移除 fount 安裝目錄...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "日誌",
+		"description": "查看 fount 实时服务器日志，并在浏览器中运行 JavaScript REPL。",
+		"connectionError": "无法连接日志服务。请在本机访问或登录后重试。",
 		"logs": {
 			"openSourceFailed": "啟閱原始碼卷未果：${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "錯誤",
 				"debug": "調試"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "输入 JavaScript 代码…"
+			},
+			"hint": "Enter 运行 · Shift+Enter 换行 · ↑↓ 浏览历史"
 		}
 	},
 	"debug_info": {

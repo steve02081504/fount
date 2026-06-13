@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "ターミナルをクリア",
 					"tooltip": "ターミナル画面のクリア"
+				},
+				"openTerminal": {
+					"title": "ターミナルを開く",
+					"tooltip": "REPL を使用してウィンドウでログ ビューアを開く"
 				}
 			}
 		},
 		"botStarted": "キャラクター「${charname}」が${platform}ボット「${botusername}」にログインしました。",
+		"logViewer": {
+			"replHint": "Enter で実行します。Shift+Enter でラップします。"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: fount プロトコル",
@@ -182,7 +189,14 @@
 				"failedToStart": "自動修復を試みた後でも、噴水は短期間起動しません。ログでエラーを確認してください。",
 				"initFailed": "フォントの初期化に失敗しました。退出中。"
 			},
+			"terminalKeybindings": {
+				"registered": "ターミナルキーマップのパッチ適用が設定されました。",
+				"wtPatchFailed": "Windows ターミナル設定 ${path}:${message} にパッチを適用できません",
+				"wtRemoved": "Windows ターミナル設定から削除されたキーマップ構成が見つかりました: ${path}",
+				"editorRemoved": "エディタターミナルのキーマップから削除されたフォント設定: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "ターミナルキーバインドパッチを削除しています...",
 				"removingFount": "フォントを削除しています...",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"removingFountInstallationDir": "fount インストール ディレクトリを削除しています...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "ログ",
+		"description": "見つかったライブサーバーログを表示し、ブラウザで JavaScript REPL を実行します。",
+		"connectionError": "ログサービスに接続できません。ローカルにアクセスまたはログインした後、再度お試しください。",
 		"logs": {
 			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "エラー",
 				"debug": "デバッグ"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript コードを入力してください…"
+			},
+			"hint": "Enterで実行・Shift+Enterで行を折り返す・↑↓閲覧履歴"
 		}
 	},
 	"debug_info": {

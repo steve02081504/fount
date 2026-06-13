@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Terminalbildschirm leeren",
 					"tooltip": "Terminalbildschirm leeren"
+				},
+				"openTerminal": {
+					"title": "Terminal öffnen",
+					"tooltip": "Öffnen Sie den Log Viewer im Fenster mit REPL"
 				}
 			}
 		},
 		"botStarted": "Char ${charname} hat sich beim ${platform}-Bot ${botusername} angemeldet.",
+		"logViewer": {
+			"replHint": "Eingabetaste zum Ausführen · Umschalt+Eingabetaste zum Umbrechen"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount-Protokoll",
@@ -182,7 +189,14 @@
 				"failedToStart": "Selbst nach automatischen Reparaturversuchen startet fount auch nach kurzer Zeit nicht. Bitte überprüfen Sie die Protokolle auf Fehler.",
 				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal-Keymap-Patching konfiguriert.",
+				"wtPatchFailed": "Die Windows-Terminal-Einstellung ${path}:${message} konnte nicht gepatcht werden.",
+				"wtRemoved": "Konfiguration der Quellen-Keymap aus den Windows-Terminal-Einstellungen entfernt: ${path}",
+				"editorRemoved": "Schriftartkonfiguration aus Editor-Terminal-Keymap entfernt: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Terminal-Tastenbindungspatch wird entfernt...",
 				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
 				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Protokoll",
+		"description": "Sehen Sie sich die Live-Serverprotokolle von Font an und führen Sie JavaScript REPL in Ihrem Browser aus.",
+		"connectionError": "Es konnte keine Verbindung zum Protokolldienst hergestellt werden. Bitte versuchen Sie es erneut, nachdem Sie lokal darauf zugegriffen oder sich angemeldet haben.",
 		"logs": {
 			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Fehler",
 				"debug": "Debug"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Geben Sie den JavaScript-Code ein…"
+			},
+			"hint": "Eingabetaste zum Ausführen · Umschalt+Eingabetaste zum Umbrechen der Zeile · ↑↓ Browserverlauf"
 		}
 	},
 	"debug_info": {

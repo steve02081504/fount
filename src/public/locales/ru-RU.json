@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Очистить экран терминала",
 					"tooltip": "Очистить экран терминала"
+				},
+				"openTerminal": {
+					"title": "Открыть терминал",
+					"tooltip": "Открыть просмотрщик журналов в окне с помощью REPL"
 				}
 			}
 		},
 		"botStarted": "Персонаж ${charname} вошел в ${platform} бот ${botusername}.",
+		"logViewer": {
+			"replHint": "Enter для запуска · Shift+Enter для переноса"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Даже после попыток автоматического ремонта фонтан не запускается в течение короткого периода времени. Пожалуйста, проверьте журналы на наличие ошибок.",
 				"initFailed": "Инициализация fount не удалась. Выход."
 			},
+			"terminalKeybindings": {
+				"registered": "Настроено исправление раскладки клавиатуры терминала.",
+				"wtPatchFailed": "Невозможно исправить настройку терминала Windows ${path}:${message}",
+				"wtRemoved": "Конфигурация раскладки клавиатуры удалена из настроек терминала Windows: ${path}",
+				"editorRemoved": "Конфигурация Fount удалена из раскладки клавиатуры терминала редактора: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
 				"removingFount": "Удаление fount...",
 				"fountUninstallationComplete": "Удаление фонта завершено.",
 				"removingFountInstallationDir": "Удаление каталога установки fount...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Журнал",
+		"description": "Просмотрите журналы живого сервера и запустите JavaScript REPL в своем браузере.",
+		"connectionError": "Невозможно подключиться к службе журналов. Пожалуйста, повторите попытку после доступа или входа в систему локально.",
 		"logs": {
 			"openSourceFailed": "Не удалось открыть файл исходного кода: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Ошибка",
 				"debug": "Отладка"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Введите код JavaScript…"
+			},
+			"hint": "Enter для запуска · Shift+Enter для переноса строки · ↑↓ История просмотра"
 		}
 	},
 	"debug_info": {

@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Hreinsaðu flugstöðvarskjáinn",
 					"tooltip": "Hreinsaðu flugstöðvarskjáinn"
+				},
+				"openTerminal": {
+					"title": "Opið flugstöð",
+					"tooltip": "Opnaðu annálaskoðara í glugganum með REPL"
 				}
 			}
 		},
 		"botStarted": "Persónan ${charname} hefur skráð sig inn á ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "enter til að keyra · shift+enter til að vefja"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount samskiptareglur",
@@ -182,7 +189,14 @@
 				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
 				"initFailed": "Uppsetning leturs mistókst. Hætta."
 			},
+			"terminalKeybindings": {
+				"registered": "Pjattun á lyklaborði flugstöðvar stillt.",
+				"wtPatchFailed": "Ekki tókst að laga Windows Terminal stillinguna ${path}:${message}",
+				"wtRemoved": "Uppsetning font lyklamynda fjarlægð úr stillingum Windows Terminal: ${path}",
+				"editorRemoved": "Uppsetning leturgerðar fjarlægð úr lyklamynd ritstjórastöðvar: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Fjarlægir tengilyklabindingaplástur...",
 				"removingFount": "Fjarlægir leturgerð...",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
 				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Annáll",
+		"description": "Skoðaðu lifandi netþjónaskrár og keyrðu JavaScript REPL í vafranum þínum.",
+		"connectionError": "Ekki er hægt að tengjast logþjónustu. Vinsamlegast reyndu aftur eftir að hafa opnað eða skráð þig inn á staðnum.",
 		"logs": {
 			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Villa",
 				"debug": "Villuleit"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Sláðu inn JavaScript kóða..."
+			},
+			"hint": "Enter til að keyra · Shift+Enter til að vefja línuna · ↑↓ Vafraferill"
 		}
 	},
 	"debug_info": {

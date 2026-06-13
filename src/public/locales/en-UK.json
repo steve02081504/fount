@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Clear the terminal screen",
 					"tooltip": "Clear the terminal screen"
+				},
+				"openTerminal": {
+					"title": "Open terminal",
+					"tooltip": "Open log viewer in window with REPL"
 				}
 			}
 		},
 		"botStarted": "Character ${charname} has logged in to the ${platform} Bot ${botusername}.",
+		"logViewer": {
+			"replHint": "enter to run · shift+enter to wrap"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -182,7 +189,14 @@
 				"failedToStart": "Even after automatic repair attempts, the fount fails to start for a short period of time. Please check the logs for errors.",
 				"initFailed": "fount initialization failed. Exiting."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal keymap patching configured.",
+				"wtPatchFailed": "Unable to patch Windows Terminal setting ${path}:${message}",
+				"wtRemoved": "Fount keymap configuration removed from Windows Terminal settings: ${path}",
+				"editorRemoved": "Fount configuration removed from editor terminal keymap: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Removing terminal key binding patch...",
 				"removingFount": "Removing fount...",
 				"fountUninstallationComplete": "fount uninstallation completed.",
 				"removingFountInstallationDir": "Removing fount installation directory...",
@@ -2483,6 +2497,7 @@
 	"log_viewer": {
 		"title": "Logs",
 		"description": "View live fount server logs and run a JavaScript REPL in the browser.",
+		"connectionError": "Unable to connect to log service. Please try again after accessing or logging in locally.",
 		"logs": {
 			"openSourceFailed": "Could not open source file: ${message}",
 			"toolbar": {
@@ -2499,6 +2514,12 @@
 				"error": "Error",
 				"debug": "Debug"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Enter JavaScript code…"
+			},
+			"hint": "Enter to run · Shift+Enter to wrap the line · ↑↓ Browsing history"
 		}
 	},
 	"debug_info": {

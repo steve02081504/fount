@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Wis het terminalscherm",
 					"tooltip": "Wis het terminalscherm"
+				},
+				"openTerminal": {
+					"title": "Terminal openen",
+					"tooltip": "Open logviewer in venster met REPL"
 				}
 			}
 		},
 		"botStarted": "Personage ${charname} is ingelogd op ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "enter om uit te voeren · shift+enter om terug te lopen"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
@@ -182,7 +189,14 @@
 				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
 				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
+			"terminalKeybindings": {
+				"registered": "Terminal-toetsenbordpatching geconfigureerd.",
+				"wtPatchFailed": "Kan de Windows Terminal-instelling ${path}:${message} niet patchen",
+				"wtRemoved": "Configuratie van font-toetsenbord verwijderd uit Windows Terminal-instellingen: ${path}",
+				"editorRemoved": "Fontconfiguratie verwijderd uit toetsenbordindeling van editorterminal: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Terminal-sleutelbindende patch verwijderen...",
 				"removingFount": "fount verwijderen...",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
@@ -2482,6 +2496,8 @@
 	},
 	"log_viewer": {
 		"title": "Logboek",
+		"description": "Bekijk de live serverlogboeken van de bron en voer de JavaScript REPL uit in uw browser.",
+		"connectionError": "Kan geen verbinding maken met de logservice. Probeer het opnieuw nadat u lokaal toegang heeft gekregen of ingelogd bent.",
 		"logs": {
 			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
 			"toolbar": {
@@ -2498,6 +2514,12 @@
 				"error": "Fout",
 				"debug": "Debug"
 			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript-code invoeren…"
+			},
+			"hint": "Enter om uit te voeren · Shift+Enter om de regel te laten doorlopen · ↑↓ Browsegeschiedenis"
 		}
 	},
 	"debug_info": {
