@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "清空终端屏幕",
 					"tooltip": "清空终端屏幕"
+				},
+				"openTerminal": {
+					"title": "打开终端",
+					"tooltip": "在窗口中打开日志查看器与 REPL"
 				}
 			}
 		},
 		"botStarted": "角色 ${charname} 已在 ${platform} Bot ${botusername} 上登录",
+		"logViewer": {
+			"replHint": "enter 运行 · shift+enter 换行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",
@@ -182,7 +189,14 @@
 				"failedToStart": "即使在自动修复尝试后，fount 仍在短时间内启动失败。请检查日志中的错误。",
 				"initFailed": "fount 初始化失败。正在退出。"
 			},
+			"terminalKeybindings": {
+				"registered": "已配置终端按键映射修补。",
+				"wtPatchFailed": "无法修补 Windows Terminal 设置 ${path}：${message}",
+				"wtRemoved": "已从 Windows Terminal 设置移除 fount 按键映射配置：${path}",
+				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正在移除终端按键绑定补丁...",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 卸载完成。",
 				"removingFountInstallationDir": "正在移除 fount 安装目录...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "日志终端",
+		"description": "查看 fount 实时服务器日志，并在浏览器中运行 JavaScript REPL。",
+		"connectionError": "无法连接日志服务。请在本机访问或登录后重试。",
+		"logs": {
+			"openSourceFailed": "无法在编辑器中打开源码：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "按内容筛选…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "普通",
+				"info": "信息",
+				"warn": "警告",
+				"error": "错误",
+				"debug": "调试"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "输入 JavaScript 代码…"
+			},
+			"hint": "Enter 运行 · Shift+Enter 换行 · ↑↓ 浏览历史"
+		}
+	},
 	"debug_info": {
 		"title": "调试与系统信息",
 		"description": "获取有关您的 fount 安装的详细调试和系统信息。这对于故障排除和支持请求非常有帮助。",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "正在重启服务器",
 		"updateFailed": "更新请求失败",
 		"autoUpdateNotEnabled": "未启用自动更新",
-		"logs": {
-			"title": "日志",
-			"openSourceFailed": "无法在编辑器中打开源码：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "按内容筛选…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "普通",
-				"info": "信息",
-				"warn": "警告",
-				"error": "错误",
-				"debug": "调试"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

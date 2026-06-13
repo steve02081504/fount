@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "滌除終端幕",
 					"tooltip": "滌除終端幕"
+				},
+				"openTerminal": {
+					"title": "啟終端",
+					"tooltip": "於窗中啟日誌檢視與 REPL"
 				}
 			}
 		},
 		"botStarted": "化身 ${charname} 已託 ${platform} 靈偶 ${botusername} 而現",
+		"logViewer": {
+			"replHint": "Enter 執行 · Shift+Enter 換行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協議",
@@ -182,7 +189,14 @@
 				"failedToStart": "縱自動修復，fount 仍短時內啟動未果，請察日誌之誤",
 				"initFailed": "fount 初始化未果，退出"
 			},
+			"terminalKeybindings": {
+				"registered": "已設終端按鍵對應之修補。",
+				"wtPatchFailed": "未能修補 Windows Terminal 設定 ${path}：${message}",
+				"wtRemoved": "已自 Windows Terminal 設定移除 fount 按鍵對應：${path}",
+				"editorRemoved": "已自編輯器終端按鍵對應移除 fount 設定：${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "正移除終端按鍵綁定之修補…",
 				"removingFount": "正移除 fount...",
 				"fountUninstallationComplete": "fount 卸載已畢",
 				"removingFountInstallationDir": "正移除 fount 安裝目錄...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "日誌",
+		"description": "覽 fount 之即時伺服器日誌，並於瀏覽器中執行 JavaScript REPL。",
+		"connectionError": "連接日誌服務未果。請於本機存取或登入後重試。",
+		"logs": {
+			"openSourceFailed": "啟閱原始碼卷未果：${message}",
+			"toolbar": {
+				"clear": "清空",
+				"filter": {
+					"placeholder": "依文篩之…"
+				}
+			},
+			"levels": {
+				"all": "全部",
+				"log": "常錄",
+				"info": "訊息",
+				"warn": "警示",
+				"error": "錯誤",
+				"debug": "調試"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "輸入 JavaScript 程式碼…"
+			},
+			"hint": "Enter 執行 · Shift+Enter 換行 · ↑↓ 瀏覽歷史"
+		}
+	},
 	"debug_info": {
 		"title": "糾錯與系統之情",
 		"description": "觀此 fount 系統之詳情，以備糾錯排難之用，甚爲有益。",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "伺服正重啟",
 		"updateFailed": "更新之請未果",
 		"autoUpdateNotEnabled": "自動更新未啟",
-		"logs": {
-			"title": "日誌",
-			"openSourceFailed": "啟閱原始碼卷未果：${message}",
-			"toolbar": {
-				"clear": "清空",
-				"filter": {
-					"placeholder": "依文篩之…"
-				}
-			},
-			"levels": {
-				"all": "全部",
-				"log": "常錄",
-				"info": "訊息",
-				"warn": "警示",
-				"error": "錯誤",
-				"debug": "調試"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

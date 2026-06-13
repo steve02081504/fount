@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "टर्मिनल स्क्रीन साफ़ करें",
 					"tooltip": "टर्मिनल स्क्रीन साफ़ करें"
+				},
+				"openTerminal": {
+					"title": "टर्मिनल खोलें",
+					"tooltip": "REPL के साथ विंडो में लॉग व्यूअर खोलें"
 				}
 			}
 		},
 		"botStarted": "कैरेक्टर ${charname} ने ${platform} बॉट ${botusername} पर लॉगिन किया है।",
+		"logViewer": {
+			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
+		},
 		"path": {
 			"protocol": {
 				"description": "यूआरएल:फाउंड प्रोटोकॉल",
@@ -182,7 +189,14 @@
 				"failedToStart": "स्वचालित मरम्मत के प्रयासों के बाद भी, फव्वारा थोड़े समय के लिए चालू नहीं हो पाता है। कृपया त्रुटियों के लिए लॉग की जाँच करें।",
 				"initFailed": "फव्वारा आरंभीकरण विफल रहा. बाहर निकलना."
 			},
+			"terminalKeybindings": {
+				"registered": "टर्मिनल की-बाइंडिंग पैच कॉन्फ़िगर किया गया।",
+				"wtPatchFailed": "Windows Terminal सेटिंग ${path} में पैच नहीं लगाया जा सका: ${message}",
+				"wtRemoved": "Windows Terminal सेटिंग से fount की-बाइंडिंग हटाई गई: ${path}",
+				"editorRemoved": "संपादक टर्मिनल की-बाइंडिंग से fount कॉन्फ़िगरेशन हटाया गया: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
 				"removingFount": "फव्वारा हटाया जा रहा है...",
 				"fountUninstallationComplete": "fount अनइंस्टॉलेशन पूरा हो गया।",
 				"removingFountInstallationDir": "फव्वारा स्थापना निर्देशिका हटाई जा रही है...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "लॉग",
+		"description": "fount के लाइव सर्वर लॉग देखें और ब्राउज़र में JavaScript REPL चलाएँ।",
+		"connectionError": "लॉग सेवा से कनेक्ट नहीं हो सका। कृपया स्थानीय रूप से पहुँचने या लॉग इन करने के बाद पुनः प्रयास करें।",
+		"logs": {
+			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
+			"toolbar": {
+				"clear": "खाली करें",
+				"filter": {
+					"placeholder": "फ़िल्टर…"
+				}
+			},
+			"levels": {
+				"all": "सभी",
+				"log": "लॉग",
+				"info": "जानकारी",
+				"warn": "चेतावनी",
+				"error": "त्रुटि",
+				"debug": "डीबग"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript कोड दर्ज करें…"
+			},
+			"hint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति · ↑↓ इतिहास ब्राउज़ करें"
+		}
+	},
 	"debug_info": {
 		"title": "डिबगिंग और सिस्टम सूचना",
 		"description": "अपने fount इंस्टॉलेशन के बारे में विस्तृत डिबगिंग और सिस्टम जानकारी प्राप्त करें। यह समस्या निवारण और समर्थन अनुरोधों के लिए बहुत उपयोगी है।",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "सर्वर पुनः प्रारंभ हो रहा है",
 		"updateFailed": "अद्यतन अनुरोध विफल रहा",
 		"autoUpdateNotEnabled": "स्वचालित अपडेट सक्षम नहीं हैं",
-		"logs": {
-			"title": "लॉग",
-			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
-			"toolbar": {
-				"clear": "खाली करें",
-				"filter": {
-					"placeholder": "फ़िल्टर…"
-				}
-			},
-			"levels": {
-				"all": "सभी",
-				"log": "लॉग",
-				"info": "जानकारी",
-				"warn": "चेतावनी",
-				"error": "त्रुटि",
-				"debug": "डीबग"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "ターミナルをクリア",
 					"tooltip": "ターミナル画面のクリア"
+				},
+				"openTerminal": {
+					"title": "ターミナルを開く",
+					"tooltip": "REPL 付きのログビューアを新しいウィンドウで開く"
 				}
 			}
 		},
 		"botStarted": "キャラクター「${charname}」が${platform}ボット「${botusername}」にログインしました。",
+		"logViewer": {
+			"replHint": "Enter で実行 · Shift+Enter で改行"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: fount プロトコル",
@@ -182,7 +189,14 @@
 				"failedToStart": "自動修復を試みた後でも、噴水は短期間起動しません。ログでエラーを確認してください。",
 				"initFailed": "フォントの初期化に失敗しました。退出中。"
 			},
+			"terminalKeybindings": {
+				"registered": "ターミナルのキーバインドパッチを設定しました。",
+				"wtPatchFailed": "Windows Terminal の設定 ${path} にパッチを適用できません: ${message}",
+				"wtRemoved": "Windows Terminal の設定から fount のキーバインドを削除しました: ${path}",
+				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
 				"removingFount": "フォントを削除しています...",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"removingFountInstallationDir": "fount インストール ディレクトリを削除しています...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "ログ",
+		"description": "fount のリアルタイムサーバーログを表示し、ブラウザで JavaScript REPL を実行します。",
+		"connectionError": "ログサービスに接続できません。ローカルでアクセスするかログインしてから再度お試しください。",
+		"logs": {
+			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
+			"toolbar": {
+				"clear": "クリア",
+				"filter": {
+					"placeholder": "絞り込み…"
+				}
+			},
+			"levels": {
+				"all": "すべて",
+				"log": "ログ",
+				"info": "情報",
+				"warn": "警告",
+				"error": "エラー",
+				"debug": "デバッグ"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "JavaScript コードを入力…"
+			},
+			"hint": "Enter で実行 · Shift+Enter で改行 · ↑↓ 履歴をたどる"
+		}
+	},
 	"debug_info": {
 		"title": "デバッグとシステム情報",
 		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得します。これは、トラブルシューティングやサポート リクエストに非常に役立ちます。",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "サーバーが再起動中です",
 		"updateFailed": "更新リクエストが失敗しました",
 		"autoUpdateNotEnabled": "自動更新が有効になっていません",
-		"logs": {
-			"title": "ログ",
-			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
-			"toolbar": {
-				"clear": "クリア",
-				"filter": {
-					"placeholder": "絞り込み…"
-				}
-			},
-			"levels": {
-				"all": "すべて",
-				"log": "ログ",
-				"info": "情報",
-				"warn": "警告",
-				"error": "エラー",
-				"debug": "デバッグ"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

@@ -105,10 +105,17 @@
 				"clearTerminalScreen": {
 					"title": "Очистити екран терміналу",
 					"tooltip": "Очистіть екран терміналу"
+				},
+				"openTerminal": {
+					"title": "Відкрити термінал",
+					"tooltip": "Відкрити переглядач журналів із REPL у новому вікні"
 				}
 			}
 		},
 		"botStarted": "Персонаж ${charname} увійшов у систему на ${platform} Bot ${botusername}",
+		"logViewer": {
+			"replHint": "Enter — виконати · Shift+Enter — новий рядок"
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:протокол fount",
@@ -182,7 +189,14 @@
 				"failedToStart": "Навіть після спроб автоматичного ремонту fountан не запускається протягом короткого періоду часу. Перевірте журнали на наявність помилок.",
 				"initFailed": "Помилка ініціалізації fountу. Вихід."
 			},
+			"terminalKeybindings": {
+				"registered": "Патч прив'язок клавіш термінала налаштовано.",
+				"wtPatchFailed": "Не вдалося змінити налаштування Windows Terminal ${path}: ${message}",
+				"wtRemoved": "Конфігурацію клавіш fount видалено з Windows Terminal: ${path}",
+				"editorRemoved": "Конфігурацію fount видалено з прив'язок клавіш термінала редактора: ${path}"
+			},
 			"remove": {
+				"removingTerminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
 				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
 				"removingFountInstallationDir": "Видалення каталогу встановлення fount...",
@@ -2480,6 +2494,34 @@
 			}
 		}
 	},
+	"log_viewer": {
+		"title": "Журнали",
+		"description": "Переглядайте журнали сервера fount у реальному часі та запускайте JavaScript REPL у браузері.",
+		"connectionError": "Не вдалося підключитися до служби журналів. Спробуйте ще раз після локального доступу або входу в систему.",
+		"logs": {
+			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
+			"toolbar": {
+				"clear": "Очистити",
+				"filter": {
+					"placeholder": "Фільтр…"
+				}
+			},
+			"levels": {
+				"all": "Усі",
+				"log": "Лог",
+				"info": "Інфо",
+				"warn": "Попередження",
+				"error": "Помилка",
+				"debug": "Налагодження"
+			}
+		},
+		"repl": {
+			"input": {
+				"placeholder": "Введіть код JavaScript…"
+			},
+			"hint": "Enter — виконати · Shift+Enter — новий рядок · ↑↓ історія команд"
+		}
+	},
 	"debug_info": {
 		"title": "Налагодження та інформація про систему",
 		"description": "Отримайте детальну інформацію про налагодження та системну інформацію про встановлення fount. Це дуже корисно для усунення несправностей і запитів на підтримку.",
@@ -2513,24 +2555,6 @@
 		"updateSuccess": "Сервер перезавантажується",
 		"updateFailed": "Помилка запиту на оновлення",
 		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
-		"logs": {
-			"title": "Журнали",
-			"openSourceFailed": "Не вдалося відкрити файл вихідного коду: ${message}",
-			"toolbar": {
-				"clear": "Очистити",
-				"filter": {
-					"placeholder": "Фільтр…"
-				}
-			},
-			"levels": {
-				"all": "Усі",
-				"log": "Лог",
-				"info": "Інфо",
-				"warn": "Попередження",
-				"error": "Помилка",
-				"debug": "Налагодження"
-			}
-		},
 		"home_function_buttons": {
 			"debug": {
 				"main": {

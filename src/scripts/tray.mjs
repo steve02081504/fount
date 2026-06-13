@@ -12,6 +12,7 @@ import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
 
 import { printTerminalImage } from './logo.mjs'
+import { openTerminal } from './open_terminal.mjs'
 
 /**
  * 获取图标的 base64 编码。
@@ -93,6 +94,12 @@ export async function createTray() {
 						tooltip: geti18n('fountConsole.tray.items.clearTerminalScreen.tooltip'),
 						checked: false,
 						enabled: true
+					},
+					{
+						title: geti18n('fountConsole.tray.items.openTerminal.title'),
+						tooltip: geti18n('fountConsole.tray.items.openTerminal.tooltip'),
+						checked: false,
+						enabled: true
 					}
 				].filter(Boolean)
 			},
@@ -120,6 +127,7 @@ export async function createTray() {
 					console.logI18n('tips.data')
 				}
 			}
+			else if (!action_id--) await openTerminal()
 		})
 
 		return systray

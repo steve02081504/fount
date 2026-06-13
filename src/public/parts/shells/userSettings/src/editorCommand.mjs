@@ -1,10 +1,10 @@
-import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { where_command } from 'npm:@steve02081504/exec'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
+import { launchDetachedProgram } from '../../../../../scripts/launch_external.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 
 const EDITOR_CONFIG_RELATIVE_PATH = path.join('settings', 'editor-command.json')
@@ -205,7 +205,7 @@ export function getAvailableEditorById(editorId) {
  * @param {string} filePath - 文件路径。
  * @param {number} [line=1] - 行号。
  * @param {number} [column=1] - 列号。
- * @returns {Promise<{command: string, args: Array<string>}>} - 执行信息。
+ * @returns {Promise<void>}
  */
 export async function openEditor(username, filePath, line = 1, column = 1) {
 	if (!filePath?.trim())
@@ -217,26 +217,16 @@ export async function openEditor(username, filePath, line = 1, column = 1) {
 		column: Number.isFinite(Number(column)) ? Math.max(1, Number(column)) : 1,
 	}
 	const args = parseArgsTemplate(formatArgs(config.argsTemplate, payload))
-	return await new Promise((resolve, reject) => {
-		const processRef = spawn(config.command, args, {
-			detached: true,
-			stdio: 'ignore',
-		})
-		processRef.once('spawn', () => {
-			processRef.unref()
-			resolve({
+	try {
+		await launchDetachedProgram({ command: config.command, args })
+	}
+	catch (err) {
+		throw httpError(400, err?.message || String(err), {
+			json: {
+				message: err?.message || String(err),
 				command: config.command,
 				args,
-			})
+			},
 		})
-		processRef.once('error', err => {
-			reject(httpError(400, err?.message || String(err), {
-				json: {
-					message: err?.message || String(err),
-					command: config.command,
-					args,
-				},
-			}))
-		})
-	})
+	}
 }
