@@ -3,6 +3,7 @@ import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../.
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { takeIncomingWantIdsSlot } from '../../../../../../../../scripts/p2p/want_ids.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { sanitizeFederatedEvent } from '../../events/wire.mjs'
 import { pickFederationTargetPeerIds } from '../../governance/peerPool.mjs'
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
@@ -36,6 +37,7 @@ export function registerSyncHandlers(roomContext) {
 		groupId,
 		nodeHash,
 		groupSettings,
+		room,
 		fedOut,
 		peerToNode,
 		isBlockedPeer,
@@ -57,6 +59,26 @@ export function registerSyncHandlers(roomContext) {
 					await bumpReputationOnRelay(username, remoteNodeHash, `dag:${eventId}`)
 			}
 		})().catch(console.error)
+	})
+
+	// 新 peer 接入时推送本地 DAG 叶 + 本机 member_join：member_join 自证（开放群无需 attestation），
+	// 打破“快照/gossip 均被 attestation 门控、而对端尚未知本机成员”的引导期死锁。
+	room.onPeerJoin(peerId => {
+		fedOut.enqueue(2, () => {
+			void (async () => {
+				const { readJsonl } = requireDagDeps()
+				const { events } = await loadLocalFederationArchive(username, groupId, readJsonl)
+				if (!events.length) return
+				const flushIds = new Set(computeDagTipIdsFromEvents(events))
+				for (const event of events)
+					if (event.type === 'member_join' && event.node_id === nodeHash)
+						flushIds.add(event.id)
+				for (const event of events)
+					if (flushIds.has(event.id))
+						try { dag.send(sanitizeFederatedEvent(event), peerId) }
+						catch (error) { console.error('federation: bootstrap flush failed', error) }
+			})().catch(console.error)
+		})
 	})
 
 	const gossipRequest = wireAction(roomContext, 'gossip_request')

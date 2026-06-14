@@ -24,13 +24,16 @@ export async function readLocalSignerSeed(username, groupId) {
 	return ensureLocalSignerSeed(username, groupId)
 }
 
+/** 进程内 per-group 种子创建锁，串行化首次创建，杜绝 TOCTOU 竞态导致的身份漂移。 */
+const seedCreationLocks = new Map()
+
 /**
- * 读取或创建本群本地签名种子（32 字节，不入 DAG）。
+ * 实际的读取/创建逻辑：文件已存在则读出；否则原子创建（`wx`），跨进程竞争时回读胜出者。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @returns {Promise<Uint8Array>} 私钥种子
  */
-async function ensureLocalSignerSeed(username, groupId) {
+async function loadOrCreateLocalSignerSeed(username, groupId) {
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const path = localSignerSeedPath(username, groupId)
 	try {
@@ -40,8 +43,35 @@ async function ensureLocalSignerSeed(username, groupId) {
 	}
 	catch { /* create below */ }
 	const { secretKey } = await randomKeyPair()
-	await writeFile(path, secretKey)
-	return secretKey
+	try {
+		await writeFile(path, secretKey, { flag: 'wx' })
+		return secretKey
+	}
+	catch {
+		const raw = await readFile(path)
+		if (raw.length >= 32) return new Uint8Array(raw.buffer, raw.byteOffset, 32)
+		return secretKey
+	}
+}
+
+/**
+ * 读取或创建本群本地签名种子（32 字节，不入 DAG）。
+ *
+ * 入群时多条异步路径会同时首次请求种子；用进程内 promise 锁串行化，确保它们拿到同一个种子，
+ * 避免 member_join 与后续 attestation 绑定到不同身份。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @returns {Promise<Uint8Array>} 私钥种子
+ */
+async function ensureLocalSignerSeed(username, groupId) {
+	const key = `${username}\u0000${groupId}`
+	let pending = seedCreationLocks.get(key)
+	if (!pending) {
+		pending = loadOrCreateLocalSignerSeed(username, groupId)
+			.finally(() => { seedCreationLocks.delete(key) })
+		seedCreationLocks.set(key, pending)
+	}
+	return pending
 }
 
 /**

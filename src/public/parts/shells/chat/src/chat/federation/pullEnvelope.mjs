@@ -4,9 +4,9 @@
 import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { mergeRemoteArchiveManifestHints } from '../archive/index.mjs'
-import { encryptSignedEventForWire } from '../channel_keys/content.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { mergeChannelHistories } from '../dag/queries.mjs'
+import { sanitizeFederatedEvent } from '../events/wire.mjs'
 import { applyFileKeyGrant, buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
 import { verifyRemoteCheckpoint } from '../lib/checkpointVerifier.mjs'
 import { snapshotPath } from '../lib/paths.mjs'
@@ -52,7 +52,7 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
 	if (archiveSummary) inner.archiveSummary = archiveSummary
 	if (archiveManifest) inner.archiveManifest = archiveManifest
 	if (events.length)
-		inner.events = await Promise.all(events.map(ev => encryptSignedEventForWire(username, groupId, ev)))
+		inner.events = events.map(ev => sanitizeFederatedEvent(ev))
 	if (channelHistories && isPlainObject(channelHistories)) {
 		/** @type {Record<string, object[]>} */
 		const wireHistories = {}
@@ -109,14 +109,18 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 			const shouldApply = !localCheckpoint?.checkpoint_event_id
 				|| remoteEpoch > localEpoch
 				|| (remoteEpoch === localEpoch && remoteTips && remoteTips !== localTips)
+			const { debugLog } = await import('../../../../../../../scripts/debug_log.mjs')
 			if (shouldApply) {
 				const checkpointResult = await verifyRemoteCheckpoint(inner.checkpoint)
-					.catch(() => ({ valid: false }))
+					.catch(error => ({ valid: false, reason: 'throw:' + error?.message }))
+				await debugLog('joinsnap', JSON.stringify({ t: Date.now(), side: 'apply', username, groupId, stage: 'ckpt', shouldApply, remoteEpoch, localEpoch, valid: checkpointResult.valid, reason: checkpointResult.reason }) + '\n').catch(() => {})
 				if (checkpointResult.valid) {
 					await writeJsonAtomicSynced(snapshotPath(username, groupId), inner.checkpoint)
 					await getState(username, groupId, { skipWalRepair: true })
 				}
 			}
+			else
+				await import('../../../../../../../scripts/debug_log.mjs').then(m => m.debugLog('joinsnap', JSON.stringify({ t: Date.now(), side: 'apply', username, groupId, stage: 'ckpt-skip', remoteEpoch, localEpoch }) + '\n')).catch(() => {})
 		}
 	}
 	let eventsApplied = 0

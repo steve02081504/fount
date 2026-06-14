@@ -10,7 +10,6 @@ import { readJsonlStream } from '../../../../../../../scripts/p2p/dag/storage.mj
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
-import { encryptSignedEventForWire } from '../channel_keys/content.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
 import { sanitizeFederatedEvent } from '../events/wire.mjs'
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../governance/peerPool.mjs'
@@ -91,9 +90,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 		return
 	}
 
-	const wireEvent = sanitizeFederatedEvent(
-		await encryptSignedEventForWire(username, groupId, signPayload),
-	)
+	const wireEvent = sanitizeFederatedEvent(signPayload)
 	const localInTarget = nodeHasPartition(groupSettings, channelId, targetPartition)
 	const outboundPartition = localInTarget
 		? targetPartition

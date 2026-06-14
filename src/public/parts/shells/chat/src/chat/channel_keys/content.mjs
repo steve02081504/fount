@@ -67,32 +67,6 @@ export async function encryptEventContent(username, groupId, channelId, plaintex
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {object} signPayload 待签名载荷
- * @returns {Promise<object>} wire 用加密后载荷
- */
-export async function encryptSignedEventForWire(username, groupId, signPayload) {
-	if (!signPayload || !CKG_ENCRYPT_EVENT_TYPES.has(signPayload.type)) return signPayload
-	const channelId = signPayload.channelId || 'default'
-	const content = await encryptEventContent(username, groupId, channelId, signPayload.content)
-	return { ...signPayload, content }
-}
-
-/**
- * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {object} line 消息行
- * @returns {Promise<object>} wire 加密行
- */
-export async function encryptMessageLineForWire(username, groupId, channelId, line) {
-	if (!line?.content) return line
-	const content = await encryptEventContent(username, groupId, channelId, line.content)
-	return { ...line, content }
-}
-
-/**
- * @param {string} username replica
- * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {unknown} content 事件 content
  * @returns {Promise<{ ok: boolean, content: object | null, generation?: number }>} 解密结果
