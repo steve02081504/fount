@@ -33,7 +33,8 @@ import { purgeGroupSession } from '../session/wsLifecycle.mjs'
 import { dropGroupReplicaRegistration } from '../stream/groupWsRooms.mjs'
 
 import { appendEvent } from './append.mjs'
-import { getLocalSignerForNewGroup } from './localSigner.mjs'
+import { checkEventPermission } from './authorizeEvent.mjs'
+import { getLocalSignerForNewGroup, resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 
 /** 建群创世事件：跳过逐条 checkpoint 重建与联邦出站。 */
@@ -63,6 +64,29 @@ export async function mergeDagTips(username, groupId, sender, secretKey) {
 		content: { mergedTipCount: tips.length },
 		prev_event_ids: sortedPrevEventIds(tips),
 	}, secretKey)
+}
+
+/**
+ * 远程 member_join 落盘后：若本机有权且存在多叶分叉，追加 dag_tip_merge 将新人支并入共识。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+export async function convergeDagTipsIfAuthorized(username, groupId) {
+	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const tips = computeDagTipIdsFromEvents(rows)
+	if (tips.length < 2) return
+
+	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
+	const { state } = await getState(username, groupId)
+	if (!checkEventPermission(state, { type: 'dag_tip_merge' }, sender).ok) return
+
+	try {
+		await mergeDagTips(username, groupId, sender, secretKey)
+	}
+	catch {
+		// 竞态：并发 ingest/merge 后 tips 可能已收敛
+	}
 }
 
 /**

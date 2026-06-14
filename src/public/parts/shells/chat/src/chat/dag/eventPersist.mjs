@@ -130,7 +130,11 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 				const channelId = String(signPayload.content?.channelId || '').trim()
 				if (channelId) await appendChannelKeyRotate(username, groupId, channelId)
 			}
-			else if (['member_join', 'member_kick', 'role_assign', 'role_revoke'].includes(signPayload.type))
+			else if (signPayload.type === 'member_join') {
+				const { convergeDagTipsIfAuthorized } = await import('./lifecycle.mjs')
+				await convergeDagTipsIfAuthorized(username, groupId)
+			}
+			else if (['member_kick', 'role_assign', 'role_revoke'].includes(signPayload.type))
 				await rotateAllChannelKeys(username, groupId)
 		
 		return
