@@ -11,7 +11,7 @@
 		"shutdown": "deno run -A path/fount.mjs shutdown",
 		"reboot": "deno run -A path/fount.mjs reboot",
 		"clean": "deno run -A path/fount.mjs clean",
-		"update": "git pull -f --rebase origin master",
+		"update": "git pull --rebase origin master",
 		"geneexe": "deno run -A path/fount.mjs geneexe",
 		"remove": "deno run -A path/fount.mjs remove",
 		"nop": "deno run -A path/fount.mjs nop",
