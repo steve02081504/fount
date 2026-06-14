@@ -69,7 +69,7 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
  * @param {Array<object>} candidates 各 peer 应答
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {{ pickScore?: (username: string, peerNodeHash: string, groupId: string) => number }} [opts] 测试可注入信誉分
+ * @param {{ pickScore?: (username: string, peerNodeHash: string, groupId: string) => number, allowSinglePeerBootstrap?: boolean }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
  * @returns {Promise<{ winner: object | null, bucketKey: string, reason: string }>} 仲裁结果
  */
 export async function pickJoinSnapshotByReputation(candidates, username, groupId, opts = {}) {
@@ -109,6 +109,8 @@ export async function pickJoinSnapshotByReputation(candidates, username, groupId
 	})
 
 	const best = ranked[0]
+	if (opts.allowSinglePeerBootstrap)
+		return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'bootstrap' }
 	if (!(best.score > 0 || best.bucket.peers.length >= ARCHIVE_QUORUM_PEER_MIN))
 		return { winner: null, bucketKey: '', reason: 'quorum_failed' }
 	return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'ok' }

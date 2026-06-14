@@ -18,7 +18,6 @@ import { getState } from '../../chat/dag/materialize.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { setFederationBootstrap } from '../../chat/federation/bootstrapStore.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
-import { catchUpGroupFromPeers } from '../../chat/federation/index.mjs'
 import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
 import { memberEntityHash } from '../../chat/lib/entityId.mjs'
 import { consumeGroupInviteTicket, mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
@@ -163,6 +162,9 @@ export function registerMembershipRoutes(router, authenticate) {
 		if (mqttRoomSecret)
 			setFederationBootstrap(username, groupId, { mqttAppId, mqttRoomSecret })
 
+		const { ensureFederationRoom } = await import('../../chat/federation/room.mjs')
+		const slot = await ensureFederationRoom(username, groupId)
+
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'member_join',
 			timestamp: Date.now(),
@@ -171,15 +173,15 @@ export function registerMembershipRoutes(router, authenticate) {
 		const { state: stateAfterJoin } = await getState(username, groupId)
 		const { maybeAssignEcdhDmAdmin } = await import('../../chat/dm/index.mjs')
 		await maybeAssignEcdhDmAdmin(username, groupId, stateAfterJoin)
-		void catchUpGroupFromPeers(username, groupId).then(async () => {
-			const { ensureFederationRoom } = await import('../../chat/federation/room.mjs')
-			const { requestJoinSnapshotFromPeers } = await import('../../chat/federation/joinSnapshot.mjs')
-			const { syncMissingArchiveMonths } = await import('../../chat/archive/syncMonths.mjs')
-			const slot = await ensureFederationRoom(username, groupId)
+		void (async () => {
 			if (!slot) return
+			const { requestJoinSnapshotFromPeers } = await import('../../chat/federation/joinSnapshot.mjs')
+			const { catchUpGroupFromPeers } = await import('../../chat/federation/index.mjs')
+			const { syncMissingArchiveMonths } = await import('../../chat/archive/syncMonths.mjs')
 			await requestJoinSnapshotFromPeers(username, groupId, slot)
+			void catchUpGroupFromPeers(username, groupId).catch(console.error)
 			void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
-		}).catch(console.error)
+		})().catch(console.error)
 		res.status(200).json({
 			groupId,
 			defaultChannelId: stateAfterJoin.groupSettings?.defaultChannelId ?? null,

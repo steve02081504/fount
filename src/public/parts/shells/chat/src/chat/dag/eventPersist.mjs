@@ -5,6 +5,7 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../stream/groupWsHub.mjs`、`../session/autoReply.mjs`。
  */
+import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import {
@@ -25,7 +26,8 @@ import { onMqttCredentialsSyncedFromDag, mqttCredentialsFromGroupSettings } from
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
-import { eventsPath, messagesPath } from '../lib/paths.mjs'
+import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
+import { safeReadJson } from '../lib/utils.mjs'
 import { broadcastEvent } from '../stream/groupWsHub.mjs'
 import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
 
@@ -118,7 +120,10 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			await applyChannelKeyRotateEvent(username, groupId, { content: rot }, sender)
 	}
 	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
-		if (!persistOpts.skipCheckpointRebuild)
+		const existingCheckpoint = await safeReadJson(snapshotPath(username, groupId))
+		const deferCheckpointForBootstrapJoin = signPayload.type === 'member_join'
+			&& !isSignedBaseCheckpoint(existingCheckpoint)
+		if (!persistOpts.skipCheckpointRebuild && !deferCheckpointForBootstrapJoin)
 			await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
 		if (!persistOpts.skipGenesisSideEffects) 
 			if (signPayload.type === 'channel_permissions_update') {

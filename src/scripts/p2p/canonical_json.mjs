@@ -10,9 +10,11 @@ export function canonicalStringify(value) {
 	if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string')
 		return JSON.stringify(value)
 	if (Array.isArray(value))
-		return `[${value.map(canonicalStringify).join(',')}]`
+		return `[${value.map(item => item === undefined ? 'null' : canonicalStringify(item)).join(',')}]`
 	if (typeof value === 'object') {
-		const keys = Object.keys(value).sort()
+		// 跳过值为 undefined 的键，与 JSON.stringify 语义一致：否则 canonical 串会写出字面量 `undefined`，
+		// 而事件经 JSON wire/落盘往返后这些键会消失，导致 computeEventId 两端不一致（id_mismatch）。
+		const keys = Object.keys(value).filter(k => value[k] !== undefined).sort()
 		return `{${keys.map(k => `${JSON.stringify(k)}:${canonicalStringify(value[k])}`).join(',')}}`
 	}
 	throw new TypeError(`Unsupported type: ${typeof value}`)

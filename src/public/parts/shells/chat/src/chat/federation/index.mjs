@@ -24,7 +24,6 @@ import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandsha
 import { maybeRequestBootstrapAfterCatchup } from './bootstrapRelay.mjs'
 import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { requestMissingEventsGossip } from './gossip.mjs'
-import { isGroupFederationActive } from './groupFederation.mjs'
 import { requestJoinSnapshotFromPeers } from './joinSnapshot.mjs'
 import { sendPartitionBridgeFromSlot } from './partitionBridge.mjs'
 import {
@@ -143,13 +142,11 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
  * @returns {Promise<{ tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean }>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
-	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	if (!isGroupFederationActive(groupSettings))
-		return { tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false }
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot) return { tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false }
 
 	const { readJsonl } = requireDagDeps()
+	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const nodeHash = federationNodeHash(username)
 	const waitMs = clampNumber(opts.waitMs, 400, 4000, 1600)
 	/** @type {object[]} */
@@ -228,9 +225,6 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
  */
 export async function listFederationPeersForGroup(username, groupId) {
 	const nodeHash = federationNodeHash(username)
-	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	if (!isGroupFederationActive(groupSettings))
-		return { selfNodeHash: nodeHash, federationEnabled: false, peers: [] }
 	const slot = await ensureFederationRoom(username, groupId)
 	if (!slot)
 		return { selfNodeHash: nodeHash, federationEnabled: false, peers: [] }
@@ -243,6 +237,7 @@ export async function listFederationPeersForGroup(username, groupId) {
 				peersByPeerId.set(peer.peerId, peer)
 	})
 	const peers = [...peersByPeerId.values()]
+	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	void reconcilePeerPoolFromRoster(username, groupId, peers, groupSettings)
 		.catch(error => console.error('network pool reconcile failed', error))
 	return { selfNodeHash: nodeHash, federationEnabled: true, peers }

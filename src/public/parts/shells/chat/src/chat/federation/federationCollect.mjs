@@ -69,7 +69,7 @@ export function createFederationCollect(waitMs, expectedCount, onSettled) {
 	let resolve
 	const promise = new Promise(res => { resolve = res })
 
-	timer = setTimeout(() => finish(candidates))
+	timer = setTimeout(() => finish(candidates), waitMs)
 
 	const pending = {
 		candidates,

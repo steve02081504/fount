@@ -4,6 +4,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
+import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
@@ -146,7 +147,9 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 			slot.send('fed_join_snapshot_request', request, null)
 		const candidates = await collectPromise
 		if (!candidates.length) return null
-		const picked = await pickJoinSnapshotByReputation(candidates, username, groupId)
+		const picked = await pickJoinSnapshotByReputation(candidates, username, groupId, {
+			allowSinglePeerBootstrap: !isSignedBaseCheckpoint(localArchive.checkpoint),
+		})
 		if (!picked.winner) return null
 		penalizeJoinSnapshotMismatches(username, groupId, candidates, picked.bucketKey)
 		return picked.winner

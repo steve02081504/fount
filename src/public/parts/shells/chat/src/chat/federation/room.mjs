@@ -13,7 +13,6 @@ import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
 import { attachFedEmojiHandlers } from './groupEmojiFederation.mjs'
-import { isGroupFederationActive } from './groupFederation.mjs'
 import { resolveGroupMqttCredentials } from './mqttCredentials.mjs'
 import { createFedOutQueue } from './outbound.mjs'
 import { LOGIC_SYNC_PARTITION, partitionForOutboundEvent, resolveNodePartitionIds } from './partitions.mjs'
@@ -56,7 +55,6 @@ export function invalidateFederationRoomCache(username, groupId) {
  */
 export async function ensureFederationRoom(username, groupId, opts = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	if (!isGroupFederationActive(groupSettings)) return null
 	const partitionIds = resolveNodePartitionIds(groupSettings, opts.channelId)
 	let primary = null
 	for (const partitionId of partitionIds) {
@@ -76,7 +74,6 @@ export async function ensureFederationRoom(username, groupId, opts = {}) {
  */
 export async function resolveFederationSlotForAction(username, groupId, opts = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	if (!isGroupFederationActive(groupSettings)) return null
 	const action = String(opts.actionName || '').trim().toLowerCase()
 	const eventType = String(opts.eventType || '').trim().toLowerCase()
 	const channelId = String(opts.channelId || '').trim() || undefined
@@ -101,8 +98,13 @@ export async function resolveFederationSlotForAction(username, groupId, opts = {
  */
 export async function ensureFederationPartitionRoom(username, groupId, partitionId = LOGIC_SYNC_PARTITION, opts = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	if (!isGroupFederationActive(groupSettings)) return null
-	const mqttCreds = await resolveGroupMqttCredentials(username, groupId, partitionId)
+	let mqttCreds
+	try {
+		mqttCreds = await resolveGroupMqttCredentials(username, groupId, partitionId)
+	}
+	catch {
+		return null
+	}
 	const rtcRoomKey = `${username}:${groupId}:${partitionId}`
 	const desiredRoomName = mqttCreds.roomId
 	const desiredPassword = mqttCreds.password
@@ -125,9 +127,11 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
 			const data = getFederationSettings(username)
-			const relayUrls = Array.isArray(data.relayUrls)
+			const customRelays = Array.isArray(data.relayUrls)
 				? data.relayUrls.map(url => String(url).trim()).filter(url => url.startsWith('wss://'))
-				: undefined
+				: []
+			// 空 = 用默认中继（传 undefined 触发 buildTrysteroMqttConfig 的默认回退）。
+			const relayUrls = customRelays.length ? customRelays : undefined
 			const { joinMqttRoomWithDefaults } = await import('../../../../../../../scripts/p2p/mqtt_room.mjs')
 			const { resolveIceServers } = await import('../../../../../../../scripts/p2p/ice_servers.mjs')
 			const room = await joinMqttRoomWithDefaults({

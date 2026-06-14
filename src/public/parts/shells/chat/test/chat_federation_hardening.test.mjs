@@ -28,14 +28,14 @@ import { PERMISSIONS } from '../../../../../scripts/p2p/permissions.mjs'
 import { findStaleUnreachableChannels } from '../src/chat/channel/gc.mjs'
 import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../src/chat/federation/archiveMonthWire.mjs'
 import {
+	partitionForOutboundEvent,
+	resolveNodePartitionIds,
+} from '../src/chat/federation/partitions.mjs'
+import {
 	parseJoinSnapshotRequest,
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
 } from '../src/chat/federation/pull/wire.mjs'
-import {
-	partitionForOutboundEvent,
-	resolveNodePartitionIds,
-} from '../src/chat/federation/partitions.mjs'
 import {
 	isActivePullMember,
 	isHistoricalPullMember,
@@ -316,12 +316,12 @@ Deno.test('consensus branch prefers higher governance count', () => {
 	assertEquals(scores[t1] > scores[t2], true)
 })
 
-Deno.test('partition mapping routes channel messages to ch-xx', () => {
+Deno.test('federation collapses to a single sync partition (one room per group)', () => {
 	const settings = { federationPartitionCount: 8 }
 	const partitions = resolveNodePartitionIds(settings, 'channel-alpha')
-	assertEquals(partitions.includes('sync'), true)
+	assertEquals(partitions, ['sync'])
 	const pid = partitionForOutboundEvent('message', 'channel-alpha', settings)
-	assertEquals(pid.startsWith('ch-'), true)
+	assertEquals(pid, 'sync')
 })
 
 Deno.test('mergeChannelMessagesForDisplay marks edited messages', async () => {

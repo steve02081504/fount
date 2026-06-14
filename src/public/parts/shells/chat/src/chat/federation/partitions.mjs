@@ -32,15 +32,20 @@ export function channelPartitionFor(channelId, count) {
 }
 
 /**
+ * 本节点应加入的分区 id 列表。
+ *
+ * 当前折叠为「单一 sync 分区」：@trystero-p2p 的 strategy 把 offerPool / didInit / SharedPeerManager
+ * 作为**进程级单例**跨所有 room 复用，同一进程加入第 2 个 room 时其 WebRTC 协商被破坏，导致两个 room
+ * 全都发现不了对端（实测单 room 正常、双 room 即失效，与 appId/STUN/动作数无关）。故每群只用一个联邦 room，
+ * 频道分流改在应用层（action 名 + 消息路由）完成。待 fork 支持多 room/进程后可恢复 ch-xx 分区。
  * @param {object} groupSettings 群设置
  * @param {string} [channelId] 频道 ID
- * @returns {string[]} 本节点应加入的分区 id 列表（sync + 至少一个 ch-xx）
+ * @returns {string[]} 本节点应加入的分区 id 列表
  */
 export function resolveNodePartitionIds(groupSettings = {}, channelId = null) {
-	const count = channelPartitionCount(groupSettings)
-	const partitionIds = new Set([LOGIC_SYNC_PARTITION])
-	partitionIds.add(channelPartitionFor(channelId || 'default', count))
-	return [...partitionIds]
+	void groupSettings
+	void channelId
+	return [LOGIC_SYNC_PARTITION]
 }
 
 /**
@@ -60,13 +65,10 @@ export function partitionRoomName(baseRoomId, partitionId) {
  * @returns {string} 目标分区 id
  */
 export function partitionForOutboundEvent(eventType, channelId, groupSettings = {}) {
-	const count = channelPartitionCount(groupSettings)
-	const slowTypes = new Set([
-		'gossip_request', 'part_invoke', 'discovery_announce',
-	])
-	if (slowTypes.has(eventType)) return LOGIC_SYNC_PARTITION
-	if (eventType === 'message' || eventType === 'message_edit' || eventType === 'message_delete')
-		return channelPartitionFor(channelId || 'default', count)
+	void eventType
+	void channelId
+	void groupSettings
+	// 单一 sync 分区（见 resolveNodePartitionIds 的说明）：所有出站事件走同一个联邦 room。
 	return LOGIC_SYNC_PARTITION
 }
 

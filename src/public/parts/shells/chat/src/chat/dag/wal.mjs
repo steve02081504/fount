@@ -5,6 +5,7 @@
  * 【数据结构】返回 `{ ok, reason?, forceFullReplay? }`；`checkpoint` 含 `checkpoint_event_id`、`dag_tip_ids`。
  * 【关联】`materialize.mjs`、`storage.mjs`、`../lib/paths.mjs`。
  */
+import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
@@ -29,6 +30,11 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 		return { ok: false, reason: 'checkpoint_event_id invalid', forceFullReplay: true }
 	if (!rows.length)
 		return { ok: false, reason: 'checkpoint without events', forceFullReplay: true }
+	// 采纳的 owner 签名基态 checkpoint：本机无 pre-checkpoint 历史，锚点事件本就不在 events.jsonl。
+	// 这不是损坏，物化会以 checkpoint 为基态叠加本地增量事件（见 materialize.mjs），不可全量重放。
+	if (isSignedBaseCheckpoint(checkpoint)
+		&& !rows.some(row => String(row.id || '').trim().toLowerCase() === tipId))
+		return { ok: true }
 	if (!rows.some(row => String(row.id || '').trim().toLowerCase() === tipId))
 		return {
 			ok: false,

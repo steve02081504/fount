@@ -121,6 +121,19 @@ export function buildCheckpointPayload({
 }
 
 /**
+ * 判断 checkpoint 是否为「owner 签名的权威基态」：含 members_record 且带合法 Ed25519 签名。
+ * 新节点入群时可把这种 checkpoint 当作权威基态采纳（无需 pre-checkpoint 历史事件），
+ * 之后仅在其上叠加增量事件。WAL / 物化 / checkpoint 重建据此放行「锚点不在本地 DAG」的情形。
+ * @param {object | null | undefined} checkpoint checkpoint 对象
+ * @returns {boolean} 是否为已签名的基态 checkpoint
+ */
+export function isSignedBaseCheckpoint(checkpoint) {
+	if (!checkpoint || typeof checkpoint !== 'object') return false
+	if (!checkpoint.members_record || typeof checkpoint.members_record !== 'object') return false
+	return /^[\da-f]{128}$/iu.test(String(checkpoint.checkpoint_signature || '').trim())
+}
+
+/**
  * 为 checkpoint 载荷附加签名（签名字段不包含 `checkpoint_signature` 自身）。
  * @param {object} payload `buildCheckpointPayload` 返回值
  * @param {Uint8Array} secretKey 32 字节种子私钥

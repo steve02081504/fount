@@ -344,12 +344,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
 		const { username } = membership
-		const { state } = await getState(username, groupId)
-		if (!isGroupFederationActive(state.groupSettings))
-			return res.status(200).json({ ok: true, skipped: true, reason: 'federation_inactive' })
 		const slot = await ensureFederationRoom(username, groupId)
 		if (!slot)
-			return res.status(503).json({ error: 'federation room unavailable' })
+			return res.status(200).json({ ok: true, skipped: true, reason: 'federation_inactive' })
 		res.status(200).json(await requestJoinSnapshotFromPeers(username, groupId, slot))
 	})
 
@@ -392,13 +389,10 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
 		const { username } = membership
-		const { state } = await getState(username, groupId)
 		const channelId = String(req.body?.channelId || '').trim() || null
-		if (!isGroupFederationActive(state.groupSettings))
-			return res.status(200).json({ ok: true, skipped: true, reason: 'federation_inactive', channelId })
 		const slot = await ensureFederationRoom(username, groupId, { channelId: channelId || undefined })
 		if (!slot)
-			return res.status(503).json({ error: 'federation room unavailable', reason: 'join_failed' })
+			return res.status(200).json({ ok: true, skipped: true, reason: 'federation_inactive', channelId })
 		res.status(200).json({ ok: true, channelId })
 	})
 }

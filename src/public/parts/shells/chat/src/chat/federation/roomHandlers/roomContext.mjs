@@ -22,6 +22,7 @@
  * @typedef {FederationRoomWireContext & {
  *   nodeHash: string,
  *   fedOut: object,
+ *   peerToNode: Map<string, string>,
  *   isBlockedPeer: (subject: string) => boolean,
  * }} FederationRelayContext
  */
@@ -110,6 +111,7 @@ export function pickRelayContext(relayContext) {
 		...pickWireContext(relayContext),
 		nodeHash: relayContext.nodeHash,
 		fedOut: relayContext.fedOut,
+		peerToNode: relayContext.peerToNode,
 		isBlockedPeer: relayContext.isBlockedPeer,
 	}
 }

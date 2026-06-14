@@ -9,6 +9,7 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import { broadcastAndPersist } from './eventPersist.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'
+import { getState } from './materialize.mjs'
 
 /**
  * @param {string} username replica
@@ -28,11 +29,13 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opts
 		})
 	})
 	recordMessageRate(username, groupId, wirePayload)
-	if (opts.publishFederation) 
+	if (opts.publishFederation) {
+		const { state } = await getState(username, groupId)
 		await publishSignedEventToFederation(username, groupId, wirePayload, {
-			state: opts.federationState,
+			state,
 			existingSlotOnly: opts.federationExistingSlotOnly,
 			joinTimeoutMs: opts.federationJoinTimeoutMs,
 		})
+	}
 	
 }

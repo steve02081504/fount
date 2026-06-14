@@ -1,9 +1,9 @@
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
-import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archiveMonthWire.mjs'
 import {
 	handleFedArchiveMonthWant,
 	noteFedArchiveMonthResponse,
 } from '../archiveMonthPull.mjs'
+import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archiveMonthWire.mjs'
 import {
 	applyFedBootstrapResponse,
 	handleFedBootstrapRequest,
