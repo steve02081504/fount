@@ -154,13 +154,13 @@ export function saveReputation(username, data) {
  * @param {string} username 用户
  * @param {string} peerNodeHash 对端节点
  * @param {string} [dedupeKey] 去重键
- * @returns {void}
+ * @returns {Promise<void>}
  */
 export function bumpReputationOnRelay(username, peerNodeHash, dedupeKey) {
 	const id = String(peerNodeHash || '').trim()
-	if (!id) return
+	if (!id) return Promise.resolve()
 	const key = String(dedupeKey || `conn:${id}`).trim()
-	void mutateReputation(username, data => {
+	return mutateReputation(username, data => {
 		const now = Date.now()
 		data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= RELAY_BUMP_DEDUPE_MS)
 		if (relayBumpIsDuplicate(data.relayBumpSeen, id, key, now)) return
@@ -174,10 +174,10 @@ export function bumpReputationOnRelay(username, peerNodeHash, dedupeKey) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID（want_ids backoff 仍按群）
  * @param {string} peerNodeHash 请求方
- * @returns {void}
+ * @returns {Promise<void>}
  */
 export function recordGossipAllUnknownWant(username, groupId, peerNodeHash) {
-	void mutateReputation(username, data => {
+	return mutateReputation(username, data => {
 		const now = Date.now()
 		data.wantUnknownHits = data.wantUnknownHits.filter(h => now - h.t <= WANT_UNKNOWN_WINDOW_MS)
 		data.wantUnknownHits.push({ peerNodeHash, t: now })

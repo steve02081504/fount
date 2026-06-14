@@ -37,7 +37,39 @@ export { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from './pull/wire
  */
 export const JOIN_SNAPSHOT_PER_CHANNEL = 500
 const SNAPSHOT_WAIT_MS = 8000
-const SNAPSHOT_RETRY_MAX = 1
+const SNAPSHOT_EMPTY_RETRY_MS = 2000
+const SNAPSHOT_POLL_MS = 500
+const SNAPSHOT_RETRY_MAX = 4
+
+/**
+ * @param {number} ms 毫秒
+ * @returns {Promise<void>} 定时
+ */
+const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms) })
+
+/**
+ * 自适应等待入群快照应答：分片轮询收集桶。
+ * - 完整收集窗口由 createFederationCollect 的 SNAPSHOT_WAIT_MS 定时器 / quorum 早停决定。
+ * - 仅当在 SNAPSHOT_EMPTY_RETRY_MS 宽限期内“一个响应都没收到”时主动提前结束（返回空），
+ *   以触发上层快速重发（应对对端尚未 ingest 到本节点 member_join 的冷启动 race）。
+ * - 一旦累积到至少一个响应，便不再提前结束，让收集窗口/quorum 自然跑完以保留多 peer 仲裁。
+ * @param {Promise<object[]>} collectPromise createFederationCollect 的 promise
+ * @param {{ candidates: object[], finish: (list: object[]) => void }} pending 等待桶
+ * @returns {Promise<object[]>} 收集到的候选列表（提前空响应结束时为空数组）
+ */
+async function collectJoinSnapshotCandidates(collectPromise, pending) {
+	const start = Date.now()
+	let settled = false
+	const settledResult = collectPromise.then(list => { settled = true; return list })
+	while (!settled) {
+		if (pending.candidates.length === 0 && Date.now() - start >= SNAPSHOT_EMPTY_RETRY_MS) {
+			pending.finish([])
+			break
+		}
+		await sleep(SNAPSHOT_POLL_MS)
+	}
+	return await settledResult
+}
 
 /**
  * @param {string} username 用户
@@ -146,7 +178,7 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 				slot.send('fed_join_snapshot_request', request, peerId)
 		else
 			slot.send('fed_join_snapshot_request', request, null)
-		const candidates = await collectPromise
+		const candidates = await collectJoinSnapshotCandidates(collectPromise, pending)
 		if (!candidates.length) return null
 		const picked = await pickJoinSnapshotByReputation(candidates, username, groupId, {
 			allowSinglePeerBootstrap: !isSignedBaseCheckpoint(localArchive.checkpoint),
