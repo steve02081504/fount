@@ -30,6 +30,7 @@ import { wrapPullResponseInner, unwrapPullResponseEnvelope } from './pullRespons
  * @param {object} [opts.archiveManifest] 冷归档 manifest 月份 hint
  * @param {boolean} [opts.includeFileKeyGrant] 是否附带群文件主密钥 grant
  * @param {boolean} [opts.includeChannelKeyWraps] 是否附带频道密钥 wrap
+ * @param {object} [opts.viewerState] 物化群状态，用于按接收方可见频道筛选密钥授予
  * @returns {Promise<object>} HPKE envelope
  */
 export async function buildPullResponseEnvelope(username, groupId, opts) {
@@ -45,6 +46,7 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
 		archiveManifest,
 		includeFileKeyGrant = false,
 		includeChannelKeyWraps = false,
+		viewerState = null,
 	} = opts
 	/** @type {Record<string, unknown>} */
 	const inner = {}
@@ -65,11 +67,15 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
 	}
 	if (includeFileKeyGrant)
 		inner.fileKeyWraps = await buildFileKeyGrant(username, groupId, recipientEdPubKeyHex)
-	if (includeChannelKeyWraps) {
-		const { collectChannelKeyWrapsForRecipient } = await import('../channel_keys/bootstrap.mjs')
-		const wraps = await collectChannelKeyWrapsForRecipient(username, groupId, recipientEdPubKeyHex)
-		if (Object.keys(wraps).length) inner.channelKeyWraps = wraps
-	}
+	if (includeChannelKeyWraps)
+		try {
+			const { collectChannelKeyWrapsForRecipient } = await import('../channel_keys/bootstrap.mjs')
+			const wraps = await collectChannelKeyWrapsForRecipient(username, groupId, recipientEdPubKeyHex, requesterPubKeyHash, viewerState)
+			if (Object.keys(wraps).length) inner.channelKeyWraps = wraps
+		}
+		catch (error) {
+			console.error('buildPullResponseEnvelope: channel key grant failed', error)
+		}
 	const wrapped = wrapPullResponseInner(recipientEdPubKeyHex, inner)
 	return {
 		requestId,
@@ -90,12 +96,6 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 	if (!isPlainObject(inner)) return { eventsApplied: 0, historiesMerged: 0 }
 	if (inner.fileKeyWraps)
 		await applyFileKeyGrant(username, groupId, inner.fileKeyWraps)
-	if (isPlainObject(inner.channelKeyWraps)) {
-		const { applyChannelKeyWrapsFromPull } = await import('../channel_keys/store.mjs')
-		const { resolveLocalEventSigner } = await import('../dag/localSigner.mjs')
-		const { sender } = await resolveLocalEventSigner(username, groupId)
-		await applyChannelKeyWrapsFromPull(username, groupId, inner.channelKeyWraps, sender)
-	}
 	if (isPlainObject(inner.archiveManifest))
 		await mergeRemoteArchiveManifestHints(username, groupId, inner.archiveManifest)
 	if (isPlainObject(inner.checkpoint) && opts.allowCheckpoint === true) {
@@ -109,18 +109,14 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 			const shouldApply = !localCheckpoint?.checkpoint_event_id
 				|| remoteEpoch > localEpoch
 				|| (remoteEpoch === localEpoch && remoteTips && remoteTips !== localTips)
-			const { debugLog } = await import('../../../../../../../scripts/debug_log.mjs')
 			if (shouldApply) {
 				const checkpointResult = await verifyRemoteCheckpoint(inner.checkpoint)
-					.catch(error => ({ valid: false, reason: 'throw:' + error?.message }))
-				await debugLog('joinsnap', JSON.stringify({ t: Date.now(), side: 'apply', username, groupId, stage: 'ckpt', shouldApply, remoteEpoch, localEpoch, valid: checkpointResult.valid, reason: checkpointResult.reason }) + '\n').catch(() => {})
+					.catch(error => ({ valid: false, reason: error?.message }))
 				if (checkpointResult.valid) {
 					await writeJsonAtomicSynced(snapshotPath(username, groupId), inner.checkpoint)
 					await getState(username, groupId, { skipWalRepair: true })
 				}
 			}
-			else
-				await import('../../../../../../../scripts/debug_log.mjs').then(m => m.debugLog('joinsnap', JSON.stringify({ t: Date.now(), side: 'apply', username, groupId, stage: 'ckpt-skip', remoteEpoch, localEpoch }) + '\n')).catch(() => {})
 		}
 	}
 	let eventsApplied = 0
@@ -131,6 +127,17 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 			if (!signedEvent) continue
 			if (await appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: false }) === 'ok')
 				eventsApplied++
+		}
+	// 频道密钥导入放在状态引导之后，且不得让密钥失败回滚已完成的 checkpoint/事件落盘。
+	if (isPlainObject(inner.channelKeyWraps))
+		try {
+			const { applyChannelKeyWrapsFromPull } = await import('../channel_keys/store.mjs')
+			const { resolveLocalEventSigner } = await import('../dag/localSigner.mjs')
+			const { sender } = await resolveLocalEventSigner(username, groupId)
+			await applyChannelKeyWrapsFromPull(username, groupId, inner.channelKeyWraps, sender)
+		}
+		catch (error) {
+			console.error('applyPullInner: channel key import failed', error)
 		}
 	let historiesMerged = 0
 	if (isPlainObject(inner.channelHistories))

@@ -47,8 +47,8 @@ export { parseFedBootstrapRequest, parseFedBootstrapResponse } from './bootstrap
  */
 export async function handleFedBootstrapRequest(username, groupId, nodeHash, request, peerId, sendResponse) {
 	if (request.groupId !== groupId) return
-	const { state } = await loadFederationMaterializedState(username, groupId)
-	if (state.members?.[request.requesterPubKeyHash]?.status !== 'active') return
+	const state = await loadFederationMaterializedState(username, groupId)
+	if (state?.members?.[request.requesterPubKeyHash]?.status !== 'active') return
 
 	const creds = mqttCredentialsFromGroupSettings(state.groupSettings)
 	if (!creds?.mqttRoomSecret) return

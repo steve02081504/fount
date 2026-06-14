@@ -101,6 +101,7 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 		channelHistories,
 		includeFileKeyGrant: true,
 		includeChannelKeyWraps: true,
+		viewerState: fedState,
 	})
 	sendResponse(envelope, peerId)
 }
