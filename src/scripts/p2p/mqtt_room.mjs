@@ -117,6 +117,21 @@ export async function joinMqttRoom(config, roomId) {
 }
 
 /**
+ * 离开 Trystero MQTT 房间，复用 join 的进程级串行队列。
+ *
+ * 与 join 同队列串行可保证「旧房间 leave 先于后续 join 落定」：trystero 的 offerPool 是进程级单例，
+ * 旧房间 teardown 若与新房间 warmup 并发会撞上同一 offerPool；串行化后新 join 必等本次 leave 完成再排队。
+ * @param {{ leave?: () => Promise<void> | void } | null | undefined} room 已加入的房间
+ * @returns {Promise<void>} leave 完成
+ */
+export function leaveMqttRoom(room) {
+	if (!room || typeof room.leave !== 'function') return Promise.resolve()
+	const result = Promise.resolve(globalThis[JOIN_QUEUE_KEY]).then(() => room.leave())
+	globalThis[JOIN_QUEUE_KEY] = result.then(() => { }, () => { })
+	return result
+}
+
+/**
  * 加入 MQTT 房间（加载 polyfill + 默认中继）。
  * @param {object} opts 参数
  * @param {string} opts.appId 应用 id

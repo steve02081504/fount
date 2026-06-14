@@ -243,6 +243,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {
 				unregisterChunkSwarm(username, groupId)
+				// 本次 join 已被更新的 rebind 作废：必须 leave 这个刚加入的房间，否则它成为孤儿持连。
+				void slot.leave().catch(error => console.error('federation: stale room teardown failed', error))
 				return null
 			}
 			setFederationPartitionSlot(username, groupId, partitionId, slot)

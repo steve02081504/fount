@@ -1,6 +1,7 @@
 /**
  * 联邦房间 FederationSlot：roomContext + 统一 send(action, payload, peerId)。
  */
+import { leaveMqttRoom } from '../../../../../../../scripts/p2p/mqtt_room.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 
 import { bindFedSender } from './outbound.mjs'
@@ -57,6 +58,8 @@ function requireRegistrySender(senderRegistry, actionName) {
  *   getPeerIdByNodeHash: (nodeHash: string) => string | null
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void
  *   send: (actionName: string, payload: unknown, peerId?: string | null) => void
+ *   leave: () => Promise<void>
+ *   isActive: () => boolean
  * }} FederationSlot
  */
 
@@ -82,6 +85,9 @@ export function buildFederationSlot(roomContext) {
 
 	/** @type {Map<string, (payload: unknown, peerId: string | null) => void>} */
 	const boundByAction = new Map()
+
+	// slot 生命周期：失活后 leave 幂等，且 roster 不再被孤儿 handler 读到。
+	let active = true
 
 	for (const [actionName, [priority, label]] of Object.entries(FED_ACTION_SPECS)) {
 		const guard = actionName === 'fed_partition_bridge'
@@ -137,6 +143,27 @@ export function buildFederationSlot(roomContext) {
 			if (!fn) throw new Error(`federation action not supported: ${actionName}`)
 			fn(payload, peerId)
 		},
+		/**
+		 * 离开底层 Trystero 房间并清空 roster/映射，使旧 slot 干净失活。
+		 *
+		 * 替换/失效 slot 时必须调用：否则旧 Trystero 房间仍在后台存活、peer 连在孤儿房间，
+		 * 而新 slot 的 roster 为空 → /peers 空、出站发布落在无 peer 的当前 slot（live push 丢失）。
+		 * @returns {Promise<void>} teardown 完成
+		 */
+		async leave() {
+			if (!active) return
+			active = false
+			try {
+				await leaveMqttRoom(room)
+			}
+			catch (error) {
+				console.error('federation: room leave failed', error)
+			}
+			peerToNode.clear()
+			nodeToPeer.clear()
+		},
+		/** @returns {boolean} slot 是否仍有效（未 leave） */
+		isActive() { return active },
 	}
 
 	return slot

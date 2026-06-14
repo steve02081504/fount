@@ -75,12 +75,24 @@ export function hasFederationPartitionSlot(username, groupId, partitionId) {
 }
 
 /**
+ * 替换/失效前对被丢弃的 slot 做底层 teardown：leave Trystero 房间并清空 roster。
+ * 没有它，旧 slot 的 Trystero 房间会成为持有 peer 连接的孤儿。
+ * @param {object | null | undefined} slot 联邦槽
+ * @returns {void}
+ */
+function teardownFederationSlot(slot) {
+	if (slot && typeof slot.leave === 'function')
+		void Promise.resolve(slot.leave()).catch(error => console.error('federation: slot teardown failed', error))
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} partitionId 分区 id
  * @returns {void}
  */
 export function deleteFederationPartitionSlot(username, groupId, partitionId) {
+	teardownFederationSlot(mapGet(federationPartitionSlots, username, groupId, partitionId))
 	mapDelete(federationPartitionSlots, username, groupId, partitionId)
 }
 
@@ -147,6 +159,7 @@ export function bumpFederationPartitionRebindGen(username, groupId, partitionId)
  * @returns {void}
  */
 export function invalidateFederationPartitionsForGroup(username, groupId) {
+	mapForEachUnder(federationPartitionSlots, username, groupId, (_tail, slot) => teardownFederationSlot(slot))
 	mapDeleteByPrefix(federationPartitionSlots, username, groupId)
 	mapDeleteByPrefix(federationPartitionInflight, username, groupId)
 	mapDeleteByPrefix(federationPartitionRebindGen, username, groupId)
@@ -158,6 +171,7 @@ export function invalidateFederationPartitionsForGroup(username, groupId) {
  * @returns {void}
  */
 export function invalidateAllFederationPartitionsForUser(username) {
+	mapForEachUnder(federationPartitionSlots, username, (_tail, slot) => teardownFederationSlot(slot))
 	mapDeleteByPrefix(federationPartitionSlots, username)
 	mapDeleteByPrefix(federationPartitionInflight, username)
 	mapDeleteByPrefix(federationPartitionRebindGen, username)
