@@ -32,6 +32,7 @@ import {
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'
 import { warmSeenFromLocalEvents } from './seen.mjs'
+import { startTipHeartbeat } from './tipHeartbeat.mjs'
 
 /** @typedef {import('./federationSlot.mjs').FederationSlot} FederationSlot */
 
@@ -249,6 +250,10 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			}
 			setFederationPartitionSlot(username, groupId, partitionId, slot)
 			groupFederationOwner.set(groupId, username)
+			// 方案3：tip 心跳仅在逻辑同步分区 slot 上启动——catch-up 本身也只走 sync 分区，
+			// 避免每个频道分区 slot 都读盘+广播全群 tips 的 N 倍冗余。入站补齐 hook（sync.mjs）仍对所有分区生效。
+			if (partitionId === LOGIC_SYNC_PARTITION)
+				slot.registerCleanup(startTipHeartbeat({ slot, username, groupId, nodeHash, groupSettings }))
 			void publishDiscoveryAnnounceForGroup(username, groupId, nodeHash, slot)
 				.catch(error => console.warn('federation: initial discovery announce failed', error))
 			void onFederationRoomReadyForMailbox(username, groupId)

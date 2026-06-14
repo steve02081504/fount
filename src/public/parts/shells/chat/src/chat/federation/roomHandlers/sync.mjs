@@ -1,4 +1,5 @@
 import { computeDagTipIdsFromEvents } from '../../../../../../../../scripts/p2p/governance_branch.mjs'
+import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation_user.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { takeIncomingWantIdsSlot } from '../../../../../../../../scripts/p2p/want_ids.mjs'
@@ -6,6 +7,7 @@ import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/w
 import { sanitizeFederatedEvent } from '../../events/wire.mjs'
 import { pickFederationTargetPeerIds } from '../../governance/peerPool.mjs'
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
+import { scheduleCatchUp } from '../catchUpScheduler.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
 import { loadFederationMaterializedState, requireDagDeps } from '../deps.mjs'
 import {
@@ -43,6 +45,46 @@ export function registerSyncHandlers(roomContext) {
 		isBlockedPeer,
 	} = roomContext
 
+	// 方案3（dag_event 高频路径）：远端引用的父 id 中存在本地从未见过的事件 ⇒ 本地落后，需调度补齐。
+	// 用进程级 seen LRU（已由本地 events 预热 + 入站 ingest 维护）做廉价对比，避免每条 live 帧读盘。
+	/**
+	 * @param {unknown} tips 远端 DAG 叶 / 父 id 列表
+	 * @returns {boolean} 是否暴露本地缺口
+	 */
+	const remoteTipsRevealLocalGap = tips => {
+		if (!Array.isArray(tips)) return false
+		for (const tipId of tips) {
+			const id = String(tipId).trim().toLowerCase()
+			if (isHex64(id) && !hasSeenFederationEvent(username, groupId, id)) return true
+		}
+		return false
+	}
+
+	// 方案3（ping/pong 低频路径）：远端 tips 集合与本地当前 tips 集合不一致 ⇒ 任何 DAG 分歧即调度补齐，
+	// 不再要求“tip 未 seen”。这能覆盖“本地已 seen 该 tip 但缺整条祖先链（有叶无链）”的死锁。
+	/**
+	 * @param {unknown} remoteTips 远端 DAG 叶 id 列表
+	 * @param {string[]} localTips 本地 DAG 叶 id 列表
+	 * @returns {boolean} 两侧 tip 集合是否存在差异
+	 */
+	const tipSetsDiverge = (remoteTips, localTips) => {
+		if (!Array.isArray(remoteTips)) return false
+		const local = new Set()
+		for (const id of localTips) {
+			const norm = String(id).trim().toLowerCase()
+			if (isHex64(norm)) local.add(norm)
+		}
+		const remote = new Set()
+		for (const id of remoteTips) {
+			const norm = String(id).trim().toLowerCase()
+			if (isHex64(norm)) remote.add(norm)
+		}
+		if (remote.size !== local.size) return true
+		for (const id of remote)
+			if (!local.has(id)) return true
+		return false
+	}
+
 	const dag = wireAction(roomContext, 'dag_event')
 	dag.on((data, peerId) => {
 		void (async () => {
@@ -58,6 +100,9 @@ export function registerSyncHandlers(roomContext) {
 				if (remoteNodeHash)
 					await bumpReputationOnRelay(username, remoteNodeHash, `dag:${eventId}`)
 			}
+			// live 漏帧快速补洞：该事件引用了本地缺失的父事件 ⇒ 调度有界补齐（scheduler 自带防抖/冷却/退避硬闸，dag_event 高频也不放大负载）。
+			if (remoteTipsRevealLocalGap(signedEvent.prev_event_ids))
+				scheduleCatchUp(username, groupId)
 		})().catch(console.error)
 	})
 
@@ -103,25 +148,38 @@ export function registerSyncHandlers(roomContext) {
 			ingestRemoteTipsForExchange(username, groupId, tipPing.tips)
 			const { readJsonl } = requireDagDeps()
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
+			const localTips = computeDagTipIdsFromEvents(localArchive.events)
+			// 心跳/补洞探测照常 pong 回去；同时若远端 tips 集合与本地不一致（任何 DAG 分歧）⇒ 调度补齐。
+			if (tipSetsDiverge(tipPing.tips, localTips))
+				scheduleCatchUp(username, groupId)
 			const pong = {
 				nodeHash,
-				tips: computeDagTipIdsFromEvents(localArchive.events),
+				tips: localTips,
 				archiveSummary: wireArchiveSummary(localArchive.summary),
 			}
 			fedOut.enqueue(3, () => {
-				try { fedTipPong.send(pong, peerId) }
+				try {
+					fedTipPong.send(pong, peerId)
+				}
 				catch (error) { console.error('federation: fed_tip_pong failed', error) }
 			})
 		})().catch(error => console.error('federation: fed_tip_ping failed', error))
 	})
 
-	fedTipPong.on(data => {
-		const tipPong = parseFedTipPong(data)
-		if (!tipPong) return
-		ingestRemoteTipsForExchange(username, groupId, tipPong.tips)
-		const pending = getPendingTipExchange(username, groupId)
-		if (pending && tipPong.archiveSummary)
-			pending.remoteSummaries.push(tipPong.archiveSummary)
+	fedTipPong.on((data, peerId) => {
+		void (async () => {
+			const tipPong = parseFedTipPong(data)
+			if (!tipPong) return
+			ingestRemoteTipsForExchange(username, groupId, tipPong.tips)
+			const pending = getPendingTipExchange(username, groupId)
+			if (pending && tipPong.archiveSummary)
+				pending.remoteSummaries.push(tipPong.archiveSummary)
+			// 远端 pong 的 tips 集合与本地不一致（任何 DAG 分歧）⇒ 调度补齐（心跳/被动 pong 也能驱动兜底）。
+			const { readJsonl } = requireDagDeps()
+			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
+			if (tipSetsDiverge(tipPong.tips, computeDagTipIdsFromEvents(localArchive.events)))
+				scheduleCatchUp(username, groupId)
+		})().catch(error => console.error('federation: fed_tip_pong failed', error))
 	})
 
 	gossipRequest.on((data, peerId) => {
@@ -133,7 +191,8 @@ export function registerSyncHandlers(roomContext) {
 			if (requesterNodeHash === nodeHash) return
 			if (isBlockedPeer(attestation.requesterPubKeyHash)) return
 			const fedState = await loadFederationMaterializedState(username, groupId)
-			if (!fedState || !await validatePullAttestationForGroup(fedState, groupId, attestation)) return
+			if (!fedState || !await validatePullAttestationForGroup(fedState, groupId, attestation))
+				return
 			const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)
 			if (!recipientEdPubKeyHex) return
 			const dedupeKey = `${username}:${groupId}:${requesterNodeHash}:${wantIds.slice().sort().join(',')}:${parsed.ttl}`
@@ -143,7 +202,8 @@ export function registerSyncHandlers(roomContext) {
 				groupId,
 				requesterNodeHash,
 				wantIdsLimitsFromSettings(groupSettings),
-			)) return
+			))
+				return
 
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 			const handshake = evaluateArchiveHandshake(
@@ -163,7 +223,7 @@ export function registerSyncHandlers(roomContext) {
 			const events = wantIds.map(id => byId.get(id)).filter(Boolean)
 			if (peerId && events.length) {
 				const envelope = await buildPullResponseEnvelope(username, groupId, {
-					requestId: '',
+					requestId: attestation.requestId,
 					requesterNodeHash,
 					requesterPubKeyHash: attestation.requesterPubKeyHash,
 					recipientEdPubKeyHex,
@@ -171,7 +231,9 @@ export function registerSyncHandlers(roomContext) {
 					checkpoint: localArchive.checkpoint,
 				})
 				fedOut.enqueue(2, () => {
-					try { gossipResponse.send(envelope, peerId) }
+					try {
+						gossipResponse.send(envelope, peerId)
+					}
 					catch (error) { console.error('federation: gossip_response failed', error) }
 				})
 				void bumpReputationOnRelay(username, requesterNodeHash, `gossip:${dedupeKey}`)

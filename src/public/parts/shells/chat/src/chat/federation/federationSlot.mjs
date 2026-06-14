@@ -58,6 +58,7 @@ function requireRegistrySender(senderRegistry, actionName) {
  *   getPeerIdByNodeHash: (nodeHash: string) => string | null
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void
  *   send: (actionName: string, payload: unknown, peerId?: string | null) => void
+ *   registerCleanup: (fn: () => void) => void
  *   leave: () => Promise<void>
  *   isActive: () => boolean
  * }} FederationSlot
@@ -88,6 +89,10 @@ export function buildFederationSlot(roomContext) {
 
 	// slot 生命周期：失活后 leave 幂等，且 roster 不再被孤儿 handler 读到。
 	let active = true
+
+	// slot 绑定的资源清理回调（如 tip 心跳 setInterval）：leave() 时统一执行，杜绝孤儿定时器。
+	/** @type {Set<() => void>} */
+	const cleanups = new Set()
 
 	for (const [actionName, [priority, label]] of Object.entries(FED_ACTION_SPECS)) {
 		const guard = actionName === 'fed_partition_bridge'
@@ -144,6 +149,17 @@ export function buildFederationSlot(roomContext) {
 			fn(payload, peerId)
 		},
 		/**
+		 * 注册 slot 绑定资源的清理回调（如定时器），leave() 时统一执行。
+		 * 失活后注册的回调会被立即执行，避免在 leave 之后启动的资源泄漏。
+		 * @param {() => void} fn 清理函数
+		 * @returns {void}
+		 */
+		registerCleanup(fn) {
+			if (typeof fn !== 'function') return
+			if (!active) { try { fn() } catch (error) { console.error('federation: slot cleanup failed', error) } return }
+			cleanups.add(fn)
+		},
+		/**
 		 * 离开底层 Trystero 房间并清空 roster/映射，使旧 slot 干净失活。
 		 *
 		 * 替换/失效 slot 时必须调用：否则旧 Trystero 房间仍在后台存活、peer 连在孤儿房间，
@@ -153,6 +169,11 @@ export function buildFederationSlot(roomContext) {
 		async leave() {
 			if (!active) return
 			active = false
+			// 先清理 slot 绑定资源（定时器等），再 leave 房间，杜绝孤儿定时器继续发心跳。
+			for (const fn of cleanups)
+				try { fn() }
+				catch (error) { console.error('federation: slot cleanup failed', error) }
+			cleanups.clear()
 			try {
 				await leaveMqttRoom(room)
 			}

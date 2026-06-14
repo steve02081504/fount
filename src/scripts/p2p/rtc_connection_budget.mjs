@@ -91,6 +91,7 @@ const NON_CRITICAL_FED_ACTIONS = new Set([
 	'discovery_query',
 	'char_rpc',
 	'fed_volatile',
+	'fed_tip_ping',
 ])
 
 /**

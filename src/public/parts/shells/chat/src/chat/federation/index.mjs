@@ -6,6 +6,7 @@
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、deps.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
+import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonlStream } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
@@ -17,6 +18,7 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import {
 	canRelayFederatedEvent,
+	hasMaterializedAclSnapshot,
 	shouldDeferFederatedRelay,
 } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
@@ -184,26 +186,68 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries })
 	void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
 
-	const wantSet = new Set()
-	for (const tipId of remoteTips)
-		if (!eventsById.has(tipId)) wantSet.add(tipId)
-	for (const eventId of opts.extraWantIds || [])
-		if (EVENT_ID_HEX.test(String(eventId)) && !eventsById.has(eventId))
-			wantSet.add(String(eventId).trim().toLowerCase())
+	// 死锁兜底：gated 事件入站需本地已物化 ACL 快照（≥1 名 active 成员）。若上面 join-snapshot 的触发条件
+	// （无 checkpoint / tips 错位）都没命中、但本地仍无 ACL 快照（如 checkpoint 存在却无 active 成员、或 remoteSummaries
+	// 在短窗口内未收齐），则强制一次 join-snapshot 重建（应用对端 checkpoint → 物化 active 成员）；否则后续祖先闭包
+	// 拉回的 gated 事件会被 federationIngestBlockedWithoutSnapshot 永久拒绝（gossip 用 allowCheckpoint:false 无法自建快照）。
+	// 每次 catch-up 至多触发一次；join-snapshot 自带 attestation/重试限速；失败保持原状，由下次 catch-up 再试，不崩。
+	if (!hasMaterializedAclSnapshot(await loadFederationMaterializedState(username, groupId)))
+		await requestJoinSnapshotFromPeers(username, groupId, slot)
+			.catch(error => {
+				console.error('federation: catch-up join-snapshot fallback failed', error)
+				return { applied: false }
+			})
 
-	const wantIds = [...wantSet]
+	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
+	/**
+	 * @param {Map<string, object>} byId 本地 id→事件
+	 * @param {boolean} includeExtra 是否并入显式 extraWantIds（仅首轮）
+	 * @returns {string[]} 去重后的待补 id（祖先闭包）
+	 */
+	const computeWantSet = (byId, includeExtra) => {
+		const wantSet = new Set()
+		for (const tipId of remoteTips)
+			if (!byId.has(tipId)) wantSet.add(tipId)
+		for (const event of byId.values())
+			for (const parentId of sortedPrevEventIds(event.prev_event_ids))
+				if (!byId.has(parentId)) wantSet.add(parentId)
+		if (includeExtra)
+			for (const eventId of opts.extraWantIds || [])
+				if (EVENT_ID_HEX.test(String(eventId)) && !byId.has(eventId))
+					wantSet.add(String(eventId).trim().toLowerCase())
+		return [...wantSet]
+	}
+	/** @returns {Promise<Map<string, object>>} 重新读盘构建 id→事件（每轮拉取落盘后调用） */
+	const reloadEventsById = async () => {
+		const byId = new Map()
+		for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent }))
+			byId.set(event.id, event)
+		return byId
+	}
+
+	// 迭代补洞：拉取→落盘→重扫新暴露的缺失父→再拉，直到 wantSet 空 / 达上限 / 无进展 / 命中退避。
+	const MAX_CATCHUP_ITERS = 8
+	const wantedEver = new Set()
+	let currentById = eventsById
 	let eventsFilled = 0
 	let wantIdsStillMissing = 0
 	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey(username, groupId))
-	if (wantIds.length) {
+	for (let iter = 0; iter < MAX_CATCHUP_ITERS; iter++) {
+		const wantIds = computeWantSet(currentById, iter === 0)
+		if (!wantIds.length) break
+		for (const id of wantIds) wantedEver.add(id)
 		const result = await requestMissingEventsGossip(username, groupId, { wantIds, awaitGossip: true })
-		wantIdsStillMissing = result.stillMissing.length
-		eventsFilled = wantIds.length - wantIdsStillMissing
 		if (result.rateLimited) wantIdsRateLimited = true
+		wantIdsStillMissing = result.stillMissing.length
+		currentById = await reloadEventsById()
+		const filledThisIter = wantIds.reduce((n, id) => currentById.has(id) ? n + 1 : n, 0)
+		eventsFilled += filledThisIter
+		// 无进展（本轮未补回任何已索要 id）或命中退避：停止迭代，余量交由调度器/心跳后续兜底。
+		if (wantIdsRateLimited || filledThisIter <= 0) break
 	}
 	const stats = {
 		tipsCollected: remoteTips.size,
-		wantIds: wantIds.length,
+		wantIds: wantedEver.size,
 		eventsFilled,
 		wantIdsStillMissing,
 		wantIdsRateLimited,

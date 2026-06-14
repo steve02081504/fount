@@ -125,8 +125,8 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 		for (const rawEvent of inner.events) {
 			const signedEvent = extractInboundSignedEvent(rawEvent, groupId)
 			if (!signedEvent) continue
-			if (await appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: false }) === 'ok')
-				eventsApplied++
+			const result = await appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: false })
+			if (result === 'ok') eventsApplied++
 		}
 	// 频道密钥导入放在状态引导之后，且不得让密钥失败回滚已完成的 checkpoint/事件落盘。
 	if (isPlainObject(inner.channelKeyWraps))

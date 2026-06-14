@@ -5,6 +5,8 @@
  * 【数据结构】请求 { wantIds, ttl, requesterNodeHash, archiveSummary, attestation }；响应 HPKE envelope；pendingGossipRequests 按排序后的 wantIds 键等待。
  * 【关联】room.mjs、archiveHandshake.mjs、registry.mjs、peerPool.mjs、checkpointVerifier.mjs、index catchUpGroupFromPeers。
  */
+import { randomUUID } from 'node:crypto'
+
 import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveFederationPoolLimits } from '../../../../../../../scripts/p2p/peer_pool.mjs'
@@ -166,7 +168,8 @@ export function notifyGossipWaiters(username, groupId, receivedIds) {
 export async function handleGossipResponse(username, groupId, data) {
 	const nodeHash = federationNodeHash(username)
 	const envelope = parsePullResponseEnvelope(data)
-	if (!envelope || envelope.requesterNodeHash !== nodeHash) return
+	if (!envelope) return
+	if (envelope.requesterNodeHash !== nodeHash) return
 
 	const inner = await unwrapPullEnvelopeForLocalMember(username, groupId, envelope)
 	if (!inner) return
@@ -232,8 +235,9 @@ export async function requestMissingEventsGossip(username, groupId, query = {}) 
 					nodeHash,
 				)
 				try {
+					const requestId = randomUUID()
 					const batchedWantIds = batchWantIds(stillMissing, wantIdsBudget)
-					const attestation = await signPullAttestation(username, groupId, { wantIds: batchedWantIds })
+					const attestation = await signPullAttestation(username, groupId, { requestId, wantIds: batchedWantIds })
 					const payload = {
 						wantIds: batchedWantIds,
 						ttl: gossipTtl,

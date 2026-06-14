@@ -46,8 +46,10 @@ export async function collectRemoteTipsFromPeers(username, groupId, opts) {
 				tips: opts.localTips,
 				archiveSummary: opts.archiveSummary,
 			}
-			if (!targets.length) opts.sendTipPing(ping, null)
-			else for (const peerId of targets) opts.sendTipPing(ping, peerId)
+			if (!targets.length)
+				opts.sendTipPing(ping, null)
+			else for (const peerId of targets)
+				opts.sendTipPing(ping, peerId)
 		})().catch(error => console.error('federation: tip ping failed', error))
 	})
 }
