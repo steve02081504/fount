@@ -10,17 +10,15 @@ import { randomUUID } from 'node:crypto'
 import { cp, mkdir, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { buildCheckpointPayload } from '../../../../../../../scripts/p2p/checkpoint.mjs'
+import { buildCheckpointPayload, signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { readJsonl, writeJsonAtomic } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
+import { writeJsonAtomic } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
-import { groupDir, eventsPath, fileMasterKeysPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
+import { groupDir, fileMasterKeysPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 
 import { saveGovernanceBranchTip } from './branchStore.mjs'
 
@@ -105,37 +103,34 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 		},
 	})
 
-	const newEvents = await readJsonl(eventsPath(username, forkGroupId), { sanitize: sanitizeFederatedEvent })
-	const last = newEvents[newEvents.length - 1]
-	const tips = computeDagTipIdsFromEvents(newEvents)
-	const forkState = {
-		...state,
-		groupId: forkGroupId,
-		dagTips: tips,
-		consensusBranchTip: branchTip,
-		governanceFork: false,
-	}
-	const pins = Object.fromEntries(forkState.messageOverlay?.pins ?? new Map())
-	const fileIdx = Object.fromEntries(forkState.messageOverlay?.fileIndex ?? new Map())
-	const checkpointPayload = buildCheckpointPayload({
+	// 基于 fork 自身 DAG 物化出的权威状态（forker 即 founder/owner）重建 checkpoint，
+	// 仅携带源群消息 overlay 与文件夹，使复制过来的频道消息保留置顶/表态/编辑/删除视图。
+	// 切勿用源群 members 覆盖 fork 状态——否则 forker 在新群里不被识别为成员。
+	const { state: forkState, events: newEvents, order: forkOrder } = await getState(username, forkGroupId)
+	const tips = forkState.dagTips
+	const checkpointEventId = forkState.consensusBranchTip && tips.includes(forkState.consensusBranchTip)
+		? forkState.consensusBranchTip
+		: forkOrder[forkOrder.length - 1] || newEvents[newEvents.length - 1]?.id || ''
+	const srcOverlay = state.messageOverlay
+	const checkpointPayload = await signCheckpoint(buildCheckpointPayload({
 		local_node_id: null,
 		materialized: forkState,
 		epoch_id: 1,
-		checkpoint_event_id: last?.id || '',
+		checkpoint_event_id: checkpointEventId,
 		eventIdsInEpoch: newEvents.map(event => event.id),
 		dag_tip_ids: tips,
 		local_tips_hash: computeLocalTipsHash(tips),
 		overlay: {
-			deletedIds: [...forkState.messageOverlay?.deletedIds ?? []],
-			editHistory: Object.fromEntries(forkState.messageOverlay?.editHistory ?? []),
+			deletedIds: [...srcOverlay?.deletedIds ?? []],
+			editHistory: Object.fromEntries(srcOverlay?.editHistory ?? new Map()),
 			reactions: Object.fromEntries(
-				[...forkState.messageOverlay?.reactions ?? new Map()].map(([key, voters]) => [key, [...voters]]),
+				[...srcOverlay?.reactions ?? new Map()].map(([key, voters]) => [key, [...voters]]),
 			),
-			pins,
-			fileIndex: fileIdx,
+			pins: Object.fromEntries(srcOverlay?.pins ?? new Map()),
+			fileIndex: Object.fromEntries(srcOverlay?.fileIndex ?? new Map()),
 		},
-		fileFolders: { ...forkState.fileFolders || {} },
-	})
+		fileFolders: { ...state.fileFolders || {} },
+	}), secretKey)
 	await writeJsonAtomic(snapshotPath(username, forkGroupId), checkpointPayload)
 	await saveGovernanceBranchTip(username, forkGroupId, branchTip)
 

@@ -5,12 +5,13 @@
  * 【数据结构】DAG tips/tipScores、events 数组、governance-branch tipId、applied/skipped 计数。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/*、chat/governance、localAuthz.mjs、access.mjs。
  */
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_user.mjs'
 import { isSignedDagEventRow } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_user.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { mergeDagTips } from '../../chat/dag/lifecycle.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
@@ -157,9 +158,9 @@ export function registerDagRoutes(router, authenticate) {
 			if (event.type === 'reputation_slash' && !content.verified && !content.proof) {
 				const { state: slashState } = await getState(username, groupId)
 				const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, slashState)
-				if (!memberKey) throw new Error('Not a member')
+				if (!memberKey) throw httpError(403, 'Not a member')
 				if (!canGovSlash(slashState, slashState.members[memberKey]))
-					throw new Error('ADMIN or MANAGE_ROLES required')
+					throw httpError(403, 'ADMIN or MANAGE_ROLES required')
 				const { sender } = await resolveLocalEventSigner(username, groupId)
 				const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
 				const { broadcastEvent } = await import('../../chat/stream/groupWsHub.mjs')

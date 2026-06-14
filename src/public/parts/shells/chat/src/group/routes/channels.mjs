@@ -33,6 +33,7 @@ import {
 	ensureCanInChannel,
 	ensureCanInChannelSend,
 	ensureChannel,
+	ensurePinPermission,
 	requireGroupChannel,
 	requireGroupMember,
 	resolveGroupMember,
@@ -90,18 +91,20 @@ export function registerChannelRoutes(router, authenticate) {
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/pins$/, authenticate, requireGroupChannel(), async (req, res) => {
-		const { username, groupId, channelId } = req.groupContext
+		const { username, groupId, channelId, state, member } = req.groupContext
 		const { targetEventId } = req.body || {}
 		if (!targetEventId)
 			return res.status(400).json({ error: 'targetEventId required' })
+		if (!ensurePinPermission(res, state, member, channelId)) return
 
 		await appendPinEvent(username, groupId, channelId, targetEventId)
 		res.status(200).json({})
 	})
 
 	router.delete(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/pins/(${EVENT_ID_ROUTE_SEGMENT})$`, 'i'), authenticate, requireGroupChannel(), async (req, res) => {
-		const { username, groupId, channelId } = req.groupContext
+		const { username, groupId, channelId, state, member } = req.groupContext
 		const targetEventId = String(req.params[2] || '').toLowerCase()
+		if (!ensurePinPermission(res, state, member, channelId)) return
 
 		await appendUnpinEvent(username, groupId, channelId, targetEventId)
 		res.status(200).json({})

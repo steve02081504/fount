@@ -15,8 +15,8 @@ import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
 import { events } from '../../../../../../../server/events.mjs'
 import { skip_report } from '../../../../../../../server/server.mjs'
 import { ensureGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'
-import { getDefaultChannelId } from '../dag/queries.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
+import { getDefaultChannelId } from '../dag/queries.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { addChatLogEntryImport } from './chatLogAppend.mjs'
@@ -167,19 +167,23 @@ export async function listGroupSessions(username) {
 		groupIds.add(groupId)
 
 	const rows = []
-	for (const groupId of groupIds) {
-		registerGroupRuntime(groupId, username)
-		const meta = await getActiveGroupRuntime(groupId)
-		if (!meta) continue
-		const session = await getMaterializedSession(username, groupId)
-		const summary = getSummaryFromMetadata(groupId, meta)
-		if (!summary) continue
-		rows.push({
-			...summary,
-			chars: Object.keys(session.chars || {}),
-			groupId,
-		})
-	}
+	for (const groupId of groupIds)
+		try {
+			registerGroupRuntime(groupId, username)
+			const meta = await getActiveGroupRuntime(groupId)
+			if (!meta) continue
+			const session = await getMaterializedSession(username, groupId)
+			const summary = getSummaryFromMetadata(groupId, meta)
+			if (!summary) continue
+			rows.push({
+				...summary,
+				chars: Object.keys(session.chars || {}),
+				groupId,
+			})
+		}
+		catch (error) {
+			console.warn(`listGroupSessions: skipping group ${groupId}: ${error?.message || error}`)
+		}
 
 	rows.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
 	return rows

@@ -8,6 +8,7 @@
 import { randomUUID } from 'node:crypto'
 import { access, mkdir, readFile } from 'node:fs/promises'
 
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
@@ -56,7 +57,7 @@ const GENESIS_APPEND_OPTS = {
 export async function mergeDagTips(username, groupId, sender, secretKey) {
 	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
 	const tips = computeDagTipIdsFromEvents(rows)
-	if (tips.length < 2) throw new Error('dag_tip_merge: fewer than 2 tips')
+	if (tips.length < 2) throw httpError(409, 'dag_tip_merge: fewer than 2 tips')
 	return appendEvent(username, groupId, {
 		type: 'dag_tip_merge',
 		sender,

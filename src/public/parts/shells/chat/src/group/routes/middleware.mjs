@@ -4,6 +4,7 @@
  * 【原理】resolveGroupMember 统一 getUser → getState → memberKey；ensure* 系列供路由早退。
  * 【关联】channels.mjs、governance.mjs、groupSync.mjs、dag.mjs、membership.mjs。
  */
+import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
@@ -118,5 +119,20 @@ export function ensureCanInChannelSend(res, state, member, permission, channelId
 	if (canInChannel(state, member, permission, channelId)) return true
 	res.status(403).send(error || `${permission} denied`)
 	return false
+}
+
+/**
+ * 置顶/取消置顶共用权限闸门：`PIN_MESSAGES` 或 `MANAGE_MESSAGES`（ADMIN 经 canInChannel 自动蕴含）。
+ * @param {import('npm:express').Response} res HTTP 响应
+ * @param {object} state 物化群状态
+ * @param {object} member 成员
+ * @param {string} channelId 频道 ID
+ * @returns {boolean} 有权限则为 true；否则写 403 并返回 false
+ */
+export function ensurePinPermission(res, state, member, channelId) {
+	if (canInChannel(state, member, PERMISSIONS.PIN_MESSAGES, channelId)
+		|| canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId))
+		return true
+	return denyJson(res, 403, 'PIN_MESSAGES or MANAGE_MESSAGES required')
 }
 

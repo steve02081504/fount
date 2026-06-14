@@ -157,16 +157,19 @@ async function buildChatLogEntryFromDagMessage(
 	groupId = null,
 	sourceChannelId = null,
 ) {
-	const { content } = line
+	// 解密失败且无其它字段的消息，messageMerge.attachDecryptView 会把 content 置为 null 并附带 decryptView，
+	// 这是合法的展示状态，水合侧必须容忍，否则单条坏消息会让整个 sessions/list 接口 500。
+	const content = line.content || {}
 	const entry = new chatLogEntry_t()
 	entry.id = content.chatLogEntryId || crypto.randomUUID()
 	if (line.eventId)
 		entry.extension = { ...entry.extension || {}, dagEventId: line.eventId }
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
+	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
 	entry.content = editOverride?.content != null
 		? editOverride.content
-		: channelMessageAgentText(content) || resolvedShow
-	if (isTextChannelContent(content)) {
+		: channelMessageAgentText(content) || resolvedShow || decryptUnavailableFallback
+	if (content.type === 'text') {
 		const show = editOverride?.content_for_show ?? channelMessageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show
 		const edit = editOverride?.content_for_edit ?? channelMessageEditText(content)

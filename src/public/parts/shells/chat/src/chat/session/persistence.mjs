@@ -23,7 +23,7 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  */
 export function getSummaryFromMetadata(groupId, chatMetadata) {
 	if (!isVividGroup(chatMetadata)) return null
-	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+	const lastEntry = chatMetadata.chatLog?.findLast?.(Boolean)
 	if (!lastEntry) return null
 	return {
 		groupId,
@@ -51,5 +51,5 @@ export async function getActiveGroupRuntime(groupId) {
  * @returns {number|undefined} 非问候消息条数
  */
 export function isVividGroup(chatMetadata) {
-	return chatMetadata?.chatLog?.filter?.(entry => !entry.timeSlice?.greeting_type)?.length
+	return chatMetadata?.chatLog?.filter?.(entry => entry && !entry.timeSlice?.greeting_type)?.length
 }
