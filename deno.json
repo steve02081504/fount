@@ -25,7 +25,7 @@
 	},
 	"imports": {
 		"npm:estree": "npm:nop",
-		"npm:@steve02081504/async-eval": "npm:nop",
+		"npm:@steve02081504/async-eval": "npm:@steve02081504/async-eval@^0.0.13",
 		"npm:express": "npm:express@^5.1.0",
 		"npm:express-fileupload": "npm:express-fileupload@^1.5.0",
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",

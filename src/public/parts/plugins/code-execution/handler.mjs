@@ -4,7 +4,7 @@ import path from 'node:path'
 import process from 'node:process'
 import util from 'node:util'
 
-import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs'
+import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/stream/markdown.mjs'

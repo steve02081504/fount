@@ -1,4 +1,4 @@
-import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs'
+import { async_eval } from 'npm:@steve02081504/async-eval'
 import {
 	createExpansionScope,
 	serializeArgSnapshot,
