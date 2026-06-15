@@ -259,7 +259,7 @@ async function handleRunCode(message, peerId) {
 
 	try {
 		// 导入 async_eval
-		const { async_eval } = await import('https://cdn.jsdelivr.net/gh/steve02081504/async-eval/main.mjs')
+		const { async_eval } = await import('npm:@steve02081504/async-eval')
 
 		// 为通过 Trystero 的远程调用创建回调函数
 		let callback = null
