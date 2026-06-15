@@ -123,6 +123,7 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 		overlay: {
 			deletedIds: [...srcOverlay?.deletedIds ?? []],
 			editHistory: Object.fromEntries(srcOverlay?.editHistory ?? new Map()),
+			feedbackHistory: Object.fromEntries(srcOverlay?.feedbackHistory ?? new Map()),
 			reactions: Object.fromEntries(
 				[...srcOverlay?.reactions ?? new Map()].map(([key, voters]) => [key, [...voters]]),
 			),

@@ -49,7 +49,16 @@ export function buildTrysteroMqttConfig({ appId, password, relayUrls }) {
 }
 
 /**
+ * 已挂过静默 `error` handler 的共享 relay socket 集合。
+ *
+ * relay socket 是 trystero 进程级单例，会被所有房间复用；每次 join 都调用本函数时
+ * 必须保证幂等，否则监听器会累积并触发 "AsyncEventEmitter memory leak" 警告。
+ */
+const relaySocketsWithErrorHandler = new WeakSet()
+
+/**
  * 静默 Trystero MQTT socket `error` 事件，避免 ECONNRESET 刷屏。
+ * 对每个 relay socket 仅注册一次 handler（幂等，避免监听器累积）。
  * @returns {Promise<void>}
  */
 export async function attachTrysteroMqttRelayErrorHandlers() {
@@ -58,8 +67,10 @@ export async function attachTrysteroMqttRelayErrorHandlers() {
 		if (typeof mqtt.getRelaySockets !== 'function') return
 		const sockets = mqtt.getRelaySockets()
 		for (const [, socket] of Object.entries(sockets))
-			if (socket && typeof socket.on === 'function')
+			if (socket && typeof socket.on === 'function' && !relaySocketsWithErrorHandler.has(socket)) {
 				socket.on('error', () => { })
+				relaySocketsWithErrorHandler.add(socket)
+			}
 	}
 	catch { /* optional */ }
 }

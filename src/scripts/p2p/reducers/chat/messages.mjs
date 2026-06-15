@@ -52,6 +52,24 @@ export const messageReducers = {
 	},
 
 	/**
+	 * 处理 `message_feedback` 事件：记录目标消息的最新赞/踩反馈。
+	 * @param {object} state 物化群状态
+	 * @param {object} event DAG 事件
+	 * @returns {object} 更新后的 state
+	 */
+	message_feedback(state, event) {
+		withGroupId(state, event)
+		const { targetId, feedbackType, feedbackContent, charOwner } = event.content
+		state.messageOverlay.feedbackHistory.set(targetId, {
+			feedbackType,
+			feedbackContent,
+			charOwner,
+			sender: event.sender,
+		})
+		return state
+	},
+
+	/**
 	 * 处理 `reaction_add` 事件：为消息 emoji 追加投票者。
 	 * @param {object} state 物化群状态
 	 * @param {object} event DAG 事件

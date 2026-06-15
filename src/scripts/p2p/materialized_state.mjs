@@ -115,6 +115,7 @@ function emptyMessageOverlay() {
 	return {
 		deletedIds: new Set(),
 		editHistory: new Map(),
+		feedbackHistory: new Map(),
 		reactions: new Map(),
 		pins: new Map(),
 		fileIndex: new Map(),
@@ -253,6 +254,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		messageOverlay: {
 			deletedIds: new Set(rawMo.deletedIds),
 			editHistory: new Map(Object.entries(rawMo.editHistory)),
+			feedbackHistory: new Map(Object.entries(rawMo.feedbackHistory || {})),
 			reactions: new Map(reactionsEntriesFromOverlay(rawMo)),
 			pins: new Map(Object.entries(rawMo.pins)),
 			fileIndex: new Map(Object.entries(rawMo.fileIndex)),

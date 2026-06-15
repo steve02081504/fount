@@ -41,13 +41,14 @@ export function registerWsRoutes(router) {
 		if (!ownerNodeHash || !groupId) return void ws.close()
 		runAuthenticatedWs(ws, req, async ({ username }) => {
 			const { getLocalNodeHash } = await import('../chat/lib/replica.mjs')
-			if (normalizeHex64(ownerNodeHash) !== getLocalNodeHash(username)) return void ws.close()
+			const localNodeHash = getLocalNodeHash(username)
+			if (normalizeHex64(ownerNodeHash) !== localNodeHash) return void ws.close()
 			const { getState } = await import('../chat/dag/materialize.mjs')
 			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
 			const { groupWsRoomKey } = await import('../chat/stream/groupWsRooms.mjs')
 			const { state } = await getState(username, groupId)
 			if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return void ws.close()
-			const roomKey = groupWsRoomKey(ownerNodeHash, groupId)
+			const roomKey = groupWsRoomKey(localNodeHash, groupId)
 			registerGroupUiSocket(username, groupId, ws)
 			ws.on('message', raw => {
 				const wireMessage = parseInboundJson(raw)
@@ -55,7 +56,7 @@ export function registerWsRoutes(router) {
 				if (handleClientWsControlFrame(wireMessage)) return
 				if (relayClientWebRtcSignal(roomKey, wireMessage)) return
 				if (handleGroupSocketIdentityMessage(ws, wireMessage)) return
-				void handleGroupSocketRpcMessage(roomKey, ws, wireMessage)
+				void handleGroupSocketRpcMessage(groupId, roomKey, ws, wireMessage)
 			})
 		})
 	})

@@ -154,12 +154,13 @@ export function relayOrConsumeRpcResponse(message) {
 
 /**
  * 处理客户端经群 WS 发来的 RPC 控制帧（应在其它业务 switch 之前调用）。
- * @param {string} groupId 群组 id
+ * @param {string} groupId 纯群组 id（本地 char/world runtime 查找键）
+ * @param {string} roomKey 群 WS 房间键（`ownerNodeHash:groupId`，多连接转发查找键）
  * @param {import('npm:websocket-express').WebSocket} ws 当前连接
  * @param {object} wireMessage 已解析 JSON
  * @returns {boolean} true 表示已处理，调用方应跳过后续 switch
  */
-export function handleGroupSocketRpcMessage(groupId, ws, wireMessage) {
+export function handleGroupSocketRpcMessage(groupId, roomKey, ws, wireMessage) {
 	if (['rpc_end', 'rpc_error', 'rpc_chunk'].includes(wireMessage?.type))
 		return relayOrConsumeRpcResponse(wireMessage)
 
@@ -168,17 +169,18 @@ export function handleGroupSocketRpcMessage(groupId, ws, wireMessage) {
 	const { requestId, memberId, method } = wireMessage
 	if (!requestId || !memberId || !method) return true
 
-	void handleRpcCall(ws, groupId, wireMessage)
+	void handleRpcCall(ws, groupId, roomKey, wireMessage)
 	return true
 }
 
 /**
  * @param {import('npm:websocket-express').WebSocket} senderWs 发起方
- * @param {string} groupId 群组 id
+ * @param {string} groupId 纯群组 id（本地 char/world runtime 查找键）
+ * @param {string} roomKey 群 WS 房间键（多连接转发查找键）
  * @param {object} wireMessage 原始 `rpc_call` 消息（保留 `targetNodeId` 等扩展字段）
  * @returns {Promise<void>}
  */
-async function handleRpcCall(senderWs, groupId, wireMessage) {
+async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 	const { requestId, memberId, method, args = [], ttl = 3 } = wireMessage
 	let list
 	try {
@@ -211,7 +213,7 @@ async function handleRpcCall(senderWs, groupId, wireMessage) {
 			}
 			const targetNodeId = String(wireMessage[GROUP_RPC_TARGET_NODE_ID_KEY] || '').trim()
 			if (targetNodeId) forwardPayload[GROUP_RPC_TARGET_NODE_ID_KEY] = targetNodeId.toLowerCase()
-			if (forwardRpcCall(senderWs, groupId, forwardPayload)) return
+			if (forwardRpcCall(senderWs, roomKey, forwardPayload)) return
 		}
 
 		sendRpcError(senderWs, requestId, 'remote peer unreachable', 'REMOTE_UNAVAILABLE')
@@ -224,12 +226,12 @@ async function handleRpcCall(senderWs, groupId, wireMessage) {
 /**
  * 向同群其它连接广播 rpc_call，并为发起者登记 relay 等待。
  * @param {import('npm:websocket-express').WebSocket} senderWs 发起连接
- * @param {string} groupId 群组 id
+ * @param {string} roomKey 群 WS 房间键（`ownerNodeHash:groupId`，与 groupSockets 注册键一致）
  * @param {object} payload rpc_call 负载
  * @returns {boolean} 是否已向至少一个对端发出
  */
-function forwardRpcCall(senderWs, groupId, payload) {
-	const set = groupSockets.get(groupId)
+function forwardRpcCall(senderWs, roomKey, payload) {
+	const set = groupSockets.get(roomKey)
 	if (!set) return false
 	const {requestId} = payload
 	if (!requestId) return false

@@ -12,12 +12,12 @@ import path from 'node:path'
 
 import { geti18nForUser } from '../../../../../../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
+import { userEntitiesRoot } from '../../../../../../scripts/p2p/user_paths.mjs'
 import { getAllUserNames } from '../../../../../../server/auth.mjs'
 import {
 	entityStickerPackDir,
 	entityStickerPackMediaDir,
 	entityStickersPacksRoot,
-	shellChatRoot,
 } from '../chat/lib/paths.mjs'
 
 import {
@@ -70,7 +70,7 @@ function packConfigPath(replicaUsername, authorEntityHash, packId) {
  */
 export function findStickerPackHost(packId) {
 	for (const replicaUsername of getAllUserNames()) {
-		const entitiesRoot = path.join(shellChatRoot(replicaUsername), 'entities')
+		const entitiesRoot = userEntitiesRoot(replicaUsername)
 		if (!fs.existsSync(entitiesRoot)) continue
 		for (const authorEntityHash of fs.readdirSync(entitiesRoot))
 			if (fs.existsSync(packConfigPath(replicaUsername, authorEntityHash, packId)))
@@ -91,7 +91,7 @@ export async function getStickerPacks(viewerEntityHash = null) {
 	const seen = new Set()
 
 	for (const replicaUsername of getAllUserNames()) {
-		const entitiesRoot = path.join(shellChatRoot(replicaUsername), 'entities')
+		const entitiesRoot = userEntitiesRoot(replicaUsername)
 		try {
 			await fsp.access(entitiesRoot)
 		}

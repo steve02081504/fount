@@ -14,7 +14,8 @@
 import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
 import { events } from '../../../../../../../server/events.mjs'
 import { skip_report } from '../../../../../../../server/server.mjs'
-import { ensureGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'
+import { createGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'
+import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
@@ -72,12 +73,17 @@ export function findEmptyGroupId() {
  */
 export async function newGroup(username, options = {}) {
 	const groupId = findEmptyGroupId()
-	await newMetadata(groupId, username)
-	await ensureGroup(username, groupId, {
+	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, groupId)
+	const result = await createGroup(username, {
+		groupId,
+		ownerPubKeyHash,
+		secretKey,
 		name: options.name || await geti18nForUser(username, 'chat.group.defaults.dmChatName'),
 		defaultChannelName: options.defaultChannelName,
 	})
-	return groupId
+	registerGroupRuntime(result.groupId, username)
+	await newMetadata(result.groupId, username)
+	return result.groupId
 }
 
 /**

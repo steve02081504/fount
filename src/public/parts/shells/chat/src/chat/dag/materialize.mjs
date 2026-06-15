@@ -190,6 +190,7 @@ function serializeMessageOverlayForCheckpoint(messageOverlay) {
 	return {
 		deletedIds: [...mo.deletedIds || []],
 		editHistory: Object.fromEntries(mo.editHistory || new Map()),
+		feedbackHistory: Object.fromEntries(mo.feedbackHistory || new Map()),
 		reactions: serializeReactionsOverlay(mo.reactions || new Map()),
 		pins: Object.fromEntries(mo.pins || new Map()),
 		fileIndex: Object.fromEntries(mo.fileIndex || new Map()),

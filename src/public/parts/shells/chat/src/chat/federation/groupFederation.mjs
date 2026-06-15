@@ -8,6 +8,15 @@ import { DEFAULT_MQTT_APP_ID, mintMqttRoomSecret, mqttCredentialsFromGroupSettin
 import { ensureFederationRoom, invalidateFederationRoomCache } from './room.mjs'
 
 /**
+ * 激活联邦时的联邦发布 join 上限（毫秒）。
+ *
+ * mqttRoomSecret 写入 DAG 后即可凭票邀请；relay 不可达时不应阻塞 HTTP 响应，
+ * 故 publish 最多等待该窗口，实际 relay 接入交由末尾的后台 ensureFederationRoom 兜底。
+ * 与 `leaveFast.mjs` 的 `LEAVE_FEDERATION_JOIN_TIMEOUT_MS` 保持一致语义。
+ */
+const ACTIVATE_FEDERATION_JOIN_TIMEOUT_MS = 4000
+
+/**
  * @param {object} [groupSettings] 物化群设置
  * @returns {boolean} 群是否已激活联邦同步（DAG 含 mqttRoomSecret）
  */
@@ -37,7 +46,7 @@ export async function activateGroupFederation(username, groupId) {
 			...gs.rtcConnectionBudgetMax == null ? { rtcConnectionBudgetMax: 32 } : {},
 			...gs.rtcJoinRatePerMin == null ? { rtcJoinRatePerMin: 12 } : {},
 		},
-	})
+	}, { federationJoinTimeoutMs: ACTIVATE_FEDERATION_JOIN_TIMEOUT_MS })
 	invalidateFederationRoomCache(username, groupId)
 	const { state: after } = await getState(username, groupId)
 	const creds = mqttCredentialsFromGroupSettings(after.groupSettings)

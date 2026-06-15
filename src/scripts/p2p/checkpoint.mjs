@@ -19,7 +19,7 @@ import { serializeReactionsOverlay, serializeVotesOverlay } from './materialized
  *   epoch_id: number,
  *   checkpoint_event_id: string,
  *   eventIdsInEpoch?: string[],
- *   overlay?: { deletedIds?: unknown, editHistory?: unknown, reactions?: unknown, pins?: unknown, fileIndex?: unknown },
+ *   overlay?: { deletedIds?: unknown, editHistory?: unknown, feedbackHistory?: unknown, reactions?: unknown, pins?: unknown, fileIndex?: unknown },
  *   fileFolders?: Record<string, unknown>,
  *   epoch_chain?: object[],
  *   dag_tip_ids?: string[],
@@ -46,6 +46,7 @@ export function buildCheckpointPayload({
 	const serialOverlay = {
 		deletedIds: overlay.deletedIds ?? [...messageOverlay.deletedIds || []],
 		editHistory: overlay.editHistory ?? Object.fromEntries(messageOverlay.editHistory || []),
+		feedbackHistory: overlay.feedbackHistory ?? Object.fromEntries(messageOverlay.feedbackHistory || []),
 		reactions: overlay.reactions ?? serializeReactionsOverlay(messageOverlay.reactions),
 		pins: overlay.pins ?? Object.fromEntries(messageOverlay.pins || []),
 		fileIndex: overlay.fileIndex ?? Object.fromEntries(messageOverlay.fileIndex || []),
