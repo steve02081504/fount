@@ -66,8 +66,9 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 	}
 
 	const path = eventsPath(username, groupId)
+	const idNorm = String(wirePayload.id).trim().toLowerCase()
 	const previous = await readJsonl(path, { sanitize: sanitizeFederatedEvent })
-	if (previous.some(existing => existing.id === wirePayload.id)) return 'dup'
+	if (previous.some(existing => String(existing.id).trim().toLowerCase() === idNorm)) return 'dup'
 
 	const bodyForId = unsignedEventFields(wirePayload)
 	if (computeEventId(bodyForId) !== wirePayload.id) {
@@ -159,7 +160,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 		return 'invalid'
 	}
 
-	await commitSignedChatEvent(username, groupId, wirePayload)
+	if (await commitSignedChatEvent(username, groupId, wirePayload) === 'dup') return 'dup'
 	if (!opts.skipQuarantineRelease)
 		await releaseQuarantinedEvents(username, groupId)
 	return 'ok'

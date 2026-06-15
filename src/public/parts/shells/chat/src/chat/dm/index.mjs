@@ -12,7 +12,7 @@ import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
-import { getState } from '../dag/materialize.mjs'
+import { getState, rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { setFederationBootstrap } from '../federation/bootstrapStore.mjs'
 import { getFederationSettings } from '../federation/config.mjs'
 import { catchUpGroupFromPeers } from '../federation/index.mjs'
@@ -78,6 +78,9 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 	})
 	const {groupId} = result
 	await initGroupFileMasterKey(username, groupId)
+	// 仿 session/crud.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，
+	// 末尾统一做一次 rebuildAndSaveCheckpoint，避免 DM 建群放大成多次 checkpoint 阻塞写路径。
+	const batchOpts = { skipCheckpointRebuild: true, skipReleaseQuarantined: true, publishFederation: false }
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_meta_update',
 		timestamp: Date.now(),
@@ -94,7 +97,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 				displayName: `DM · ${dmRoomLabelPrefix}`,
 			}),
 		},
-	})
+	}, batchOpts)
 
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
 	if (keyEntry?.fileMasterKey) {
@@ -107,8 +110,10 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 				to: peerPubKey,
 				fileKeyWraps,
 			},
-		})
+		}, batchOpts)
 	}
+
+	await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
 
 	invalidateFederationRoomCache(username, groupId)
 	void ensureFederationRoom(username, groupId).catch(error => console.error('DM federation bind:', error))

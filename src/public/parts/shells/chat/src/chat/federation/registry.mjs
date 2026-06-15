@@ -159,10 +159,18 @@ export function bumpFederationPartitionRebindGen(username, groupId, partitionId)
  * @returns {void}
  */
 export function invalidateFederationPartitionsForGroup(username, groupId) {
+	// 收集所有相关分区（slot / inflight / 已有 gen），逐个 bump（递增）rebind gen，而非删除回 0：
+	// 任何在本次 invalidate 之前读取 genAtJoin、之后才完成的 inflight join 都会因 gen 不匹配而放弃回填 slot，
+	// 杜绝删群/换房后孤儿 werift 持连泄漏。（若删 gen 回 0，则 genAtJoin===0 的进行中 join 会再次匹配而回填。）
+	const partitionIds = new Set()
+	mapForEachUnder(federationPartitionSlots, username, groupId, tail => partitionIds.add(tail[0]))
+	mapForEachUnder(federationPartitionInflight, username, groupId, tail => partitionIds.add(tail[0]))
+	mapForEachUnder(federationPartitionRebindGen, username, groupId, tail => partitionIds.add(tail[0]))
 	mapForEachUnder(federationPartitionSlots, username, groupId, (_tail, slot) => teardownFederationSlot(slot))
 	mapDeleteByPrefix(federationPartitionSlots, username, groupId)
 	mapDeleteByPrefix(federationPartitionInflight, username, groupId)
-	mapDeleteByPrefix(federationPartitionRebindGen, username, groupId)
+	for (const partitionId of partitionIds)
+		bumpFederationPartitionRebindGen(username, groupId, partitionId)
 	groupFederationOwner.delete(groupId)
 }
 

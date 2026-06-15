@@ -5,7 +5,7 @@ import {
 	USER_ROOM_SCOPE,
 } from './identity_announce.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
-import { joinMqttRoomWithDefaults } from './mqtt_room.mjs'
+import { joinMqttRoomWithDefaults, leaveMqttRoom } from './mqtt_room.mjs'
 import { recordExplorePeersFromRoster } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
 import { attachPartWire } from './part_wire.mjs'
@@ -143,6 +143,10 @@ export async function ensureUserRoom(username) {
  * @returns {void}
  */
 export function invalidateUserRoom(username) {
+	// 删 Map 前 best-effort leave 底层 Trystero 房间，否则旧 user room 成为孤儿持连泄漏。
+	const slot = userRooms.get(username)
+	if (slot?.room && typeof slot.room.leave === 'function')
+		void Promise.resolve(leaveMqttRoom(slot.room)).catch(error => console.error('p2p: user room leave failed', error))
 	userRooms.delete(username)
 	userRoomInflight.delete(username)
 }

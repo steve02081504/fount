@@ -21,6 +21,7 @@ import {
 	deleteFederationPartitionInflight,
 	deleteFederationPartitionSlot,
 	getFederationPartitionInflight,
+	forEachFederationRoomSlotInGroup,
 	getFederationPartitionRebindGen,
 	getFederationPartitionSlot,
 	groupFederationOwner,
@@ -36,14 +37,44 @@ import { startTipHeartbeat } from './tipHeartbeat.mjs'
 
 /** @typedef {import('./federationSlot.mjs').FederationSlot} FederationSlot */
 
+/** 删群/退群拆除时 await slot leave 的上限（毫秒），避免 relay 慢导致拆除卡住。 */
+const DEFAULT_ROOM_LEAVE_TIMEOUT_MS = 4000
+
 /**
- * 群联邦连接缓存失效（房间名或成员变更后调用）。
+ * 群联邦连接缓存失效（房间名或成员变更后调用；fire-and-forget leave）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @returns {void}
  */
 export function invalidateFederationRoomCache(username, groupId) {
 	unregisterChunkSwarm(username, groupId)
+	invalidateFederationPartitionsForGroup(username, groupId)
+}
+
+/**
+ * 拆除本群所有联邦 slot：先 await 其 leave（带短超时），再做注册表失效（bump rebind gen）。
+ *
+ * 删群/退群路径专用：删盘前 await leave 杜绝 werift 持连泄漏；注册表 bump gen 让 invalidate 之后才完成的
+ * inflight join 因 gen 不匹配而放弃回填 slot（room.mjs join 完成处据此 leave 迟到房间）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {{ leaveTimeoutMs?: number }} [opts] leave 等待上限
+ * @returns {Promise<void>}
+ */
+export async function teardownFederationRoomForGroup(username, groupId, opts = {}) {
+	unregisterChunkSwarm(username, groupId)
+	const leaveTimeoutMs = Number(opts.leaveTimeoutMs) > 0 ? Number(opts.leaveTimeoutMs) : DEFAULT_ROOM_LEAVE_TIMEOUT_MS
+	/** @type {Promise<void>[]} */
+	const leaves = []
+	forEachFederationRoomSlotInGroup(username, groupId, slot => {
+		if (slot && typeof slot.leave === 'function')
+			leaves.push(Promise.resolve(slot.leave()).catch(error => console.error('federation: slot leave failed', error)))
+	})
+	if (leaves.length)
+		await Promise.race([
+			Promise.allSettled(leaves),
+			new Promise(resolve => setTimeout(resolve, leaveTimeoutMs)),
+		])
 	invalidateFederationPartitionsForGroup(username, groupId)
 }
 
@@ -142,6 +173,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				relayUrls,
 				iceServers: resolveIceServers(groupSettings),
 			})
+			// join 命中硬超时（串行队列积压）：放弃本次，房间最终一致交由后续 ensureFederationRoom / catch-up 兜底。
+			if (!room) return null
 			const fedOut = createFedOutQueue()
 			const rtcLimits = {
 				maxActive: Number(groupSettings.rtcConnectionBudgetMax) || 32,
@@ -244,7 +277,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {
 				unregisterChunkSwarm(username, groupId)
-				// 本次 join 已被更新的 rebind 作废：必须 leave 这个刚加入的房间，否则它成为孤儿持连。
+				// 本次 join 已被更新的 rebind gen 作废（删群/退群 teardown 在删盘前 bump gen）：必须 leave 这个刚加入的房间，
+				// 否则删群后完成的 inflight join 会回填孤儿 slot，造成 werift 持连泄漏（NodeB OOM）。
 				void slot.leave().catch(error => console.error('federation: stale room teardown failed', error))
 				return null
 			}

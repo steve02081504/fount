@@ -84,11 +84,17 @@ export function mergeChannelMessagesForDisplay(messages) {
 		if (row.type === 'message_feedback') feedbackByTarget.set(targetId, row)
 	}
 	const merged = []
+	const seenMessageIds = new Set()
 	for (const row of messages) {
 		if (OVERLAY_EVENT_TYPES.has(row.type)) continue
 		if (row.type !== 'message') {
 			merged.push(row)
 			continue
+		}
+		const messageIdKey = String(row.eventId).trim().toLowerCase()
+		if (messageIdKey) {
+			if (seenMessageIds.has(messageIdKey)) continue
+			seenMessageIds.add(messageIdKey)
 		}
 		const targetId = overlayTargetId(row)
 		if (targetId && deleted.has(targetId)) continue

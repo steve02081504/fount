@@ -151,28 +151,33 @@ export async function listChannelMessages(username, groupId, channelId, q = {}) 
 export async function mergeChannelHistoryRows(username, groupId, channelId, incomingRows) {
 	if (!Array.isArray(incomingRows) || !incomingRows.length) return 0
 	const path = messagesPath(username, groupId, channelId)
-	const existing = await readJsonl(path, { sanitize: sanitizeFederatedEvent })
-	const known = new Set(
-		existing.map(row => String(row.eventId).trim()).filter(Boolean),
-	)
-	const toAdd = incomingRows.filter(row => {
-		const eventId = String(row.eventId).trim()
-		return eventId && !known.has(eventId)
+	return withGroupWriteLock(username, groupId, async () => {
+		const existing = await readJsonl(path, { sanitize: sanitizeFederatedEvent })
+		const known = new Set(
+			existing.map(row => String(row.eventId).trim().toLowerCase()).filter(Boolean),
+		)
+		const toAdd = []
+		for (const row of incomingRows) {
+			const eventId = String(row.eventId).trim().toLowerCase()
+			if (!eventId || known.has(eventId)) continue
+			known.add(eventId)
+			toAdd.push(row)
+		}
+		if (!toAdd.length) return 0
+		const merged = [...existing, ...toAdd].sort((a, b) => {
+			const ta = messageLineWallMs(a)
+			const tb = messageLineWallMs(b)
+			if (ta !== tb) return ta - tb
+			return String(a.eventId).localeCompare(String(b.eventId), 'und')
+		})
+		await mkdir(dirname(path), { recursive: true })
+		await writeFile(
+			path,
+			merged.map(JSON.stringify).join('\n') + (merged.length ? '\n' : ''),
+			'utf8',
+		)
+		return toAdd.length
 	})
-	if (!toAdd.length) return 0
-	const merged = [...existing, ...toAdd].sort((a, b) => {
-		const ta = messageLineWallMs(a)
-		const tb = messageLineWallMs(b)
-		if (ta !== tb) return ta - tb
-		return String(a.eventId).localeCompare(String(b.eventId), 'und')
-	})
-	await mkdir(dirname(path), { recursive: true })
-	await writeFile(
-		path,
-		merged.map(JSON.stringify).join('\n') + (merged.length ? '\n' : ''),
-		'utf8',
-	)
-	return toAdd.length
 }
 
 /**

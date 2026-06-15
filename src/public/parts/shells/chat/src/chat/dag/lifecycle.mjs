@@ -23,7 +23,7 @@ import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'
 import { sanitizeFederatedEvent } from '../events/wire.mjs'
 import { isGroupFederationActive } from '../federation/groupFederation.mjs'
 import { DEFAULT_MQTT_APP_ID, mintMqttRoomSecret } from '../federation/mqttCredentials.mjs'
-import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
+import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federation/room.mjs'
 import { initGroupFileMasterKey } from '../file_keys/store.mjs'
 import { releaseFileStorageRefs } from '../files/groupFiles.mjs'
 import { groupDir, eventsPath, localSignerSeedPath } from '../lib/paths.mjs'
@@ -297,7 +297,11 @@ export async function removeLocalGroupReplica(username, groupId, opts = {}) {
 	for (const meta of fileMetas)
 		if (meta && !meta.deleted) await releaseFileStorageRefs(username, meta)
 
-	invalidateFederationRoomCache(username, groupId)
+	// 删盘前 await 联邦 slot 的 leave（带短超时），杜绝删盘后 werift 持连泄漏。
+	await teardownFederationRoomForGroup(username, groupId)
+	// 清理兜底补齐调度器槽，防止 scheduleByKey 随删群无界增长。
+	const { cancelScheduledCatchUp } = await import('../federation/catchUpScheduler.mjs')
+	cancelScheduledCatchUp(username, groupId)
 	purgeGroupSession(groupId)
 	dropGroupReplicaRegistration(groupId)
 	await deleteGroupData(username, groupId)

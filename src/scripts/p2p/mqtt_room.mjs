@@ -85,6 +85,16 @@ export async function attachTrysteroMqttRelayErrorHandlers() {
  * 且每次加入后留出该窗口让 warmup 落定再放行下一个。
  */
 const JOIN_SETTLE_MS = 8000
+
+/**
+ * 单次 join 的硬超时（毫秒）。
+ *
+ * join 经进程级串行队列（每次落定窗口 JOIN_SETTLE_MS），队列积压时单次 join 的等待可被前序 join 无界拖长。
+ * 后台 join（联邦写路径触发）若永久挂起会堆积成 OOM。故对每次 join 设硬上限：超时即放弃本次（返回 null），
+ * 让上层走 catch-up 最终一致；底层 join 若在超时后才落定，则 leave 该孤儿房间，杜绝 werift 持连泄漏。
+ * 取值需 > JOIN_SETTLE_MS，且需覆盖「串行队列等待 + 实际 join + ICE」的背靠背叠加，避免多房间连续 join 时被误杀。
+ */
+const MQTT_JOIN_HARD_TIMEOUT_MS = 30_000
 /**
  * 串行队列尾挂在 globalThis 上：fount 的 parts 可能以不同 URL（file:// 与 http://）载入，
  * 导致本模块出现多个实例。trystero（`npm:` 解析）的 offerPool 单例却全进程唯一，因此串行必须跨模块实例
@@ -156,11 +166,23 @@ export async function joinMqttRoomWithDefaults({ appId, password, roomId, relayU
 	const rtcPolyfill = await loadRtcPeerConnectionPolyfill()
 	const base = buildTrysteroMqttConfig({ appId, password, relayUrls })
 	const rtcConfig = iceServers?.length ? { iceServers } : undefined
-	const room = await joinMqttRoom({
+	const joinPromise = joinMqttRoom({
 		...base,
 		rtcPolyfill,
 		...rtcConfig ? { rtcConfig } : {},
 	}, roomId)
+	let timeoutTimer
+	const timeoutPromise = new Promise(resolve => {
+		timeoutTimer = setTimeout(() => resolve(null), MQTT_JOIN_HARD_TIMEOUT_MS)
+	})
+	const room = await Promise.race([joinPromise, timeoutPromise])
+	clearTimeout(timeoutTimer)
+	if (!room) {
+		// 串行队列积压导致本次 join 超时：放弃本次（上层走 catch-up 兜底），避免后台 join 永久挂起堆积；
+		// 若底层 join 在超时后才落定，leave 这个无人引用的孤儿房间，杜绝 werift 持连泄漏。
+		void joinPromise.then(lateRoom => lateRoom ? leaveMqttRoom(lateRoom) : undefined).catch(() => { })
+		return null
+	}
 	await attachTrysteroMqttRelayErrorHandlers()
 	return room
 }

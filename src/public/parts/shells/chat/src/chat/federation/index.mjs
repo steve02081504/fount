@@ -98,15 +98,25 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 		: pickLocalRelayPartition(groupSettings, channelId)
 	let slot = null
 	if (opts.existingSlotOnly)
+		// leaveFast / 删群路径：只用已存在 slot，绝不创建新房间（正在离开，不应再 join）。
 		slot = getFederationPartitionSlot(username, groupId, outboundPartition) ?? null
 	else if (opts.joinTimeoutMs > 0) {
+		// activate / 邀请激活：允许有界等待一次 join（relay 慢/不可达时不超过该窗口）。
 		const joinMs = Math.min(Math.max(0, Number(opts.joinTimeoutMs) || 0), 30_000)
 		slot = await Promise.race([
 			ensureFederationPartitionRoom(username, groupId, outboundPartition, { channelId }),
 			new Promise(resolve => setTimeout(() => resolve(null), joinMs)),
 		])
 	}
-	else slot = await ensureFederationPartitionRoom(username, groupId, outboundPartition, { channelId })
+	else {
+		// 默认写路径：existingSlotOnly 语义——只用已存在 slot，绝不在写路径上阻塞 join。
+		// slot 不存在时跳过本次 live 发布（靠 catch-up 最终一致），并 fire-and-forget 触发一次后台
+		// 单飞 ensureFederationRoom 把房间建起来（按 (username,groupId,partitionId) 经 inflight 去重）。
+		slot = getFederationPartitionSlot(username, groupId, outboundPartition) ?? null
+		if (!slot)
+			void ensureFederationRoom(username, groupId, { channelId })
+				.catch(error => console.error('federation: background room ensure failed', error))
+	}
 	if (!slot) return
 
 	const targets = await pickFederationTargetPeerIds(

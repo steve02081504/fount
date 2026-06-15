@@ -168,7 +168,11 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		prev_event_ids: sortedPrevEventIds(signPayload.prev_event_ids),
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
 	}
-	await appendJsonlSynced(messagesPath(username, groupId, channelId), messageLine)
+	const channelMessagesPath = messagesPath(username, groupId, channelId)
+	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: sanitizeFederatedEvent })
+	const messageIdNorm = String(signPayload.id).trim().toLowerCase()
+	if (!existingMessageLines.some(row => String(row.eventId).trim().toLowerCase() === messageIdNorm))
+		await appendJsonlSynced(channelMessagesPath, messageLine)
 	broadcastEvent(roomKey, {
 		type: 'channel_message',
 		channelId,
