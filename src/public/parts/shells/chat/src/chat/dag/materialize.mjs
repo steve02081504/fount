@@ -7,7 +7,7 @@
  */
 import { mkdir, stat } from 'node:fs/promises'
 
-import { buildCheckpointPayload, isSignedBaseCheckpoint, signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
+import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint, signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
@@ -22,11 +22,11 @@ import {
 import {
 	authzFoldOrderIds,
 	computeDagTipIdsFromEvents,
+	hasDanglingParents,
 	hasGovernanceFork,
 	selectAuthzBranchTip,
 	selectConsensusBranchTip,
 } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import {
 	applyEvent,
 	checkpointSignerPubKeyHashes,
@@ -128,32 +128,33 @@ export async function getState(username, groupId, opts = {}) {
 
 	let state = emptyMaterializedState()
 	const tipId = checkpoint?.checkpoint_event_id
-	const canIncrement = !forceReplay
-		&& checkpoint
-		&& tipId
-		&& checkpoint.members_record
-	const tipIndex = canIncrement ? foldOrder.indexOf(tipId) : -1
-	// 采纳的远端基态 checkpoint：本机没有 checkpoint 锚点之前的历史事件（入群时只拿到了
-	// owner 签名的 checkpoint，未拿 pre-checkpoint 历史）。此时 checkpoint 即权威基态，
-	// 本地仅持有其之后的增量事件（如本机自己的 member_join）。判据：checkpoint 已签名且锚点不在本地 DAG。
-	const isAdoptedBaseCheckpoint = canIncrement
-		&& tipIndex < 0
-		&& isSignedBaseCheckpoint(checkpoint)
+	const hasBase = !!(checkpoint && tipId && checkpoint.members_record)
+	const anchorIdx = hasBase ? foldOrder.indexOf(tipId) : -1
+	// 采纳的 owner 签名基态 checkpoint：本机入群时仅拿到签名 checkpoint，未拿 pre-checkpoint 历史。
+	// 此时 checkpoint 即权威基态，本地仅持有其后的增量事件（member_join、gossip 拉回的消息等）。
+	// 与 forceReplay 解耦：只要基态仍权威（未被本地追平/更高 epoch 本地签名取代），即使 forceReplay===true
+	// 也必须以 checkpoint 为基态叠加本地增量，而非裸 authzFold 全量重放（后者会因缺治理链滤没基态成员）。
+	const baseAuthoritative = hasBase && isAdoptedBaseAuthoritative(checkpoint, dagTips)
+	const canIncrement = !forceReplay && hasBase
 
-	if (canIncrement && !events.length)
+	if (hasBase && !events.length)
 		state = materializeFromCheckpoint(checkpoint)
-	else if (canIncrement && tipIndex >= 0) {
+	else if (baseAuthoritative) {
 		state = materializeFromCheckpoint(checkpoint)
-		for (const eventId of foldOrder.slice(tipIndex + 1)) {
-			const event = byId.get(eventId)
+		// 锚点已在本地折叠序：基态覆盖至锚点（含），其后为增量；锚点不在折叠序：基态覆盖 eventIdsInEpoch。
+		const covered = anchorIdx < 0
+			? new Set(Array.isArray(checkpoint.eventIdsInEpoch) ? checkpoint.eventIdsInEpoch : [])
+			: null
+		for (let i = 0; i < foldOrder.length; i++) {
+			if (anchorIdx >= 0) { if (i <= anchorIdx) continue }
+			else if (covered.has(foldOrder[i])) continue
+			const event = byId.get(foldOrder[i])
 			if (event) state = applyEvent(state, event)
 		}
 	}
-	else if (isAdoptedBaseCheckpoint) {
+	else if (canIncrement && anchorIdx >= 0) {
 		state = materializeFromCheckpoint(checkpoint)
-		const covered = new Set(Array.isArray(checkpoint.eventIdsInEpoch) ? checkpoint.eventIdsInEpoch : [])
-		for (const eventId of foldOrder) {
-			if (covered.has(eventId)) continue
+		for (const eventId of foldOrder.slice(anchorIdx + 1)) {
 			const event = byId.get(eventId)
 			if (event) state = applyEvent(state, event)
 		}
@@ -221,20 +222,6 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
 }
 
 /**
- * 判断 checkpoint 锚点事件是否不在本地 events.jsonl（即本机无该 checkpoint 之前的历史）。
- * @param {string} username 用户名
- * @param {string} groupId 群组 ID
- * @param {string} anchorEventId checkpoint_event_id
- * @returns {Promise<boolean>} 锚点缺失为 true
- */
-async function checkpointAnchorAbsentFromEvents(username, groupId, anchorEventId) {
-	const anchor = String(anchorEventId || '').trim().toLowerCase()
-	if (!anchor) return false
-	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
-	return !rows.some(row => String(row.id || '').trim().toLowerCase() === anchor)
-}
-
-/**
  * 重放 DAG 并写入 `checkpoint.json`（不含后续维护副作用）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
@@ -243,14 +230,27 @@ async function checkpointAnchorAbsentFromEvents(username, groupId, anchorEventId
  */
 export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
 	const previousCheckpoint = await safeReadJson(snapshotPath(username, groupId))
-	// 仅当「owner 签名基态 checkpoint」且其锚点事件确实不在本地 DAG 时才走 base-aware（不全量重放）：
-	// 本机无 pre-checkpoint 历史，全量重放会丢弃基态。普通情形（锚点在本地、只是不再是 tip）必须
-	// 全量重放——否则 getState 会触发 WAL 修复并递归回 buildAndSaveCheckpoint 造成死循环。
-	const baseTipAbsent = isSignedBaseCheckpoint(previousCheckpoint)
-		&& isHex64(String(previousCheckpoint.checkpoint_event_id || '').trim().toLowerCase())
-		&& await checkpointAnchorAbsentFromEvents(username, groupId, previousCheckpoint.checkpoint_event_id)
-	const { events, state, order } = await getState(username, groupId, { forceFullReplay: !baseTipAbsent })
+	const eventsForReplay = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	// 采纳的 owner 签名基态在本地真正追平前保持权威（与 WAL / getState 同口径 isAdoptedBaseAuthoritative）：
+	// 锚点未拉回 / 悬挂父 / 锚点非当前叶 / dag_tip_ids 未对齐均属 catch-up 中间态，禁止 forceFullReplay
+	// （否则缺 pre-checkpoint 治理链 → 滤没基态成员）；物化以 checkpoint 为基态叠加本地增量。
+	const baseAuthoritative = isAdoptedBaseAuthoritative(previousCheckpoint, computeDagTipIdsFromEvents(eventsForReplay))
+		|| (isSignedBaseCheckpoint(previousCheckpoint) && hasDanglingParents(eventsForReplay))
+	const { events, state, order } = await getState(username, groupId, { forceFullReplay: !baseAuthoritative })
 	if (!events.length) return null
+
+	let signingKey = opts.checkpointOwnerSecretKey
+	if (!signingKey) {
+		const { readLocalSignerSeed } = await import('./localSigner.mjs')
+		signingKey = await readLocalSignerSeed(username, groupId).catch(() => null)
+	}
+	const canSign = !!(signingKey && await canUseSecretKeyForCheckpointSignature(state, signingKey))
+	// 非签名节点（普通成员）不得用未签名 checkpoint 覆盖仍权威的采纳签名基态：覆盖会令
+	// isSignedBaseCheckpoint 失真、基态保护失效，下一次重放即把基态成员滤没。保留既有签名基态，
+	// 本地增量在每次 getState 动态叠加；更高 epoch 的新基态由 owner 经联邦下发后替换 snapshot.json。
+	if (!canSign && baseAuthoritative && isSignedBaseCheckpoint(previousCheckpoint))
+		return previousCheckpoint
+
 	const dagTipIds = computeDagTipIdsFromEvents(events)
 	const checkpointEventId = resolveCheckpointEventId(state, dagTipIds, order)
 	if (!checkpointEventId) return null
@@ -314,15 +314,11 @@ export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
 		if (ts > lastActivityMs) lastActivityMs = ts
 	}
 	checkpointPayload.last_activity_ms = lastActivityMs
-	let signingKey = opts.checkpointOwnerSecretKey
-	if (!signingKey) {
-		const { readLocalSignerSeed } = await import('./localSigner.mjs')
-		signingKey = await readLocalSignerSeed(username, groupId).catch(() => null)
-	}
-	if (signingKey && await canUseSecretKeyForCheckpointSignature(state, signingKey))
+	if (canSign)
 		checkpointPayload = await signCheckpoint(checkpointPayload, signingKey)
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	await writeJsonAtomicSynced(snapshotPath(username, groupId), checkpointPayload)
+	invalidateTopologicalOrderMemo(`${username}:${groupId}`)
 	return checkpointPayload
 }
 

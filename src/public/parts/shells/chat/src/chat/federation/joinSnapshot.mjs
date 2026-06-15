@@ -11,6 +11,7 @@ import { listChannelMessages } from '../dag/queries.mjs'
 import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
 
 
+import { hasMaterializedAclSnapshot } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
 import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { createFederationCollect } from './federationCollect.mjs'
@@ -75,19 +76,21 @@ async function collectJoinSnapshotCandidates(collectPromise, pending) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} envelope 解析后的 HPKE envelope
- * @returns {Promise<{ applied: boolean, channels: number }>} 应用结果
+ * @returns {Promise<{ applied: boolean, channels: number }>} checkpoint 落盘且物化出 active 成员时为 applied:true
  */
 export async function applyJoinSnapshotResponse(username, groupId, envelope) {
 	const nodeHash = federationNodeHash(username)
 	if (envelope.requesterNodeHash !== nodeHash) return { applied: false, channels: 0 }
 	const inner = await unwrapPullEnvelopeForLocalMember(username, groupId, envelope)
 	if (!inner) return { applied: false, channels: 0 }
-	await applyPullInner(username, groupId, inner, {
+	const { checkpointApplied } = await applyPullInner(username, groupId, inner, {
 		allowCheckpoint: true,
 		pullRequestId: envelope.requestId,
 	})
+	const state = await loadFederationMaterializedState(username, groupId)
+	const applied = checkpointApplied && hasMaterializedAclSnapshot(state)
 	return {
-		applied: true,
+		applied,
 		channels: Object.keys(inner.channelHistories || {}).length,
 	}
 }

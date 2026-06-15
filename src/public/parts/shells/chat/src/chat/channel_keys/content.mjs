@@ -11,11 +11,65 @@ import { getChannelKeyHex, loadChannelKeysFile } from './store.mjs'
 export const CKG_ENCRYPT_EVENT_TYPES = new Set(['message', 'message_edit'])
 
 /**
+ * ckg 信封自身的保留键；信封内除这些键以外的顶层键一律视为「保持明文的结构字段」。
+ * @type {Set<string>}
+ */
+const CKG_ENVELOPE_KEYS = new Set(['scheme', 'channelId', 'generation', 'payload'])
+
+/**
+ * 各事件类型必须留在 content 顶层明文的结构/路由字段：联邦中继与入站鉴权依赖它们做权限判定，
+ * 它们不是机密（整个事件由作者 Ed25519 签名保护），因此可在仅加密用户正文的同时保持可见。
+ * @type {Record<string, string[]>}
+ */
+export const CKG_PLAINTEXT_CONTENT_FIELDS = {
+	message_edit: ['targetId'],
+}
+
+/**
+ * @param {string} type 事件类型
+ * @returns {string[]} 该类型保持明文的 content 字段名
+ */
+export function plaintextCkgContentFields(type) {
+	return CKG_PLAINTEXT_CONTENT_FIELDS[type] || []
+}
+
+/**
  * @param {unknown} content 事件 content
  * @returns {boolean} 是否为 ckg 密文
  */
 export function isCkgEncryptedContent(content) {
 	return content?.scheme === CKG_SCHEME
+}
+
+/**
+ * 将明文 content 拆为「保持明文的结构字段」与「待加密正文」两部分。
+ * @param {object} content 明文 content
+ * @param {string[]} plaintextFields 保持明文的字段名
+ * @returns {{ clear: Record<string, unknown>, secret: Record<string, unknown> }} 拆分结果
+ */
+export function partitionCkgContentFields(content, plaintextFields = []) {
+	const keep = new Set((plaintextFields || []).filter(field => !CKG_ENVELOPE_KEYS.has(field)))
+	/** @type {Record<string, unknown>} */
+	const clear = {}
+	/** @type {Record<string, unknown>} */
+	const secret = {}
+	for (const [key, value] of Object.entries(content))
+		if (keep.has(key)) clear[key] = value
+		else secret[key] = value
+	return { clear, secret }
+}
+
+/**
+ * 从 ckg 信封中提取被保留为明文的结构字段（信封保留键以外的顶层键）。
+ * @param {object} envelopeContent ckg 信封 content
+ * @returns {Record<string, unknown>} 明文结构字段
+ */
+export function clearFieldsFromCkgEnvelope(envelopeContent) {
+	/** @type {Record<string, unknown>} */
+	const clear = {}
+	for (const [key, value] of Object.entries(envelopeContent))
+		if (!CKG_ENVELOPE_KEYS.has(key)) clear[key] = value
+	return clear
 }
 
 /**
@@ -50,18 +104,21 @@ async function resolveChannelKey(username, groupId, channelId) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} plaintextContent 明文 content
- * @returns {Promise<object>} ckg 加密信封（展平为 content）
+ * @param {string[]} [plaintextFields] 保持明文的结构字段名（如 message_edit 的 targetId）
+ * @returns {Promise<object>} ckg 加密信封（仅正文加密，明文结构字段平铺在顶层）
  */
-export async function encryptEventContent(username, groupId, channelId, plaintextContent) {
+export async function encryptEventContent(username, groupId, channelId, plaintextContent, plaintextFields = []) {
 	if (!plaintextContent) return plaintextContent
 	const resolved = await resolveChannelKey(username, groupId, channelId)
 	if (!resolved) throw new Error(`no channel key for ${channelId}`)
-	return encryptWithChannelKey(
-		JSON.stringify(plaintextContent),
+	const { clear, secret } = partitionCkgContentFields(plaintextContent, plaintextFields)
+	const envelope = encryptWithChannelKey(
+		JSON.stringify(secret),
 		resolved.keyHex,
 		channelId,
 		resolved.generation,
 	)
+	return { ...envelope, ...clear }
 }
 
 /**
@@ -85,7 +142,8 @@ export async function decryptEventContent(username, groupId, channelId, content)
 		return { ok: false, generation: gen, content: null }
 	}
 	try {
-		return { ok: true, content: JSON.parse(decryptedText) }
+		// 明文结构字段（如 targetId）平铺在信封顶层，须与解密出的正文合并还原完整 content。
+		return { ok: true, content: { ...clearFieldsFromCkgEnvelope(content), ...JSON.parse(decryptedText) } }
 	}
 	catch {
 		recordPendingChannelDecrypt(username, groupId, gen)

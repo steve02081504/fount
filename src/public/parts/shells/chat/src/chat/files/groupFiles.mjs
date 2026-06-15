@@ -429,19 +429,40 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 	}
 	if (!meta?.storageLocator || !meta?.contentHash)
 		throw new Error('file metadata incomplete')
-	return await getDecryptedChunk(
-		username,
-		groupId,
-		meta.storageLocator,
-		meta.contentHash,
-		{
-			ceMode: meta.ceMode || 'convergent',
-			wrappedKey: meta.wrappedKey || null,
-			keyGeneration: meta.key_generation ?? null,
-			fileId: String(meta?.fileId || '').trim(),
-		},
-		blamePeerKey,
-	)
+	// 单块文件也维护下载任务，使 download-status 能反映真实完成状态（本地命中或经联邦拉取后标记 done）。
+	const fileId = String(meta?.fileId || '').trim()
+	const chunkHash = String(meta?.ciphertextHash || '').trim().toLowerCase()
+	const singleHash = isHex64(chunkHash) ? chunkHash : ciphertextHashFromLocator(meta.storageLocator)
+	if (fileId && singleHash)
+		await ensureDownloadTask(username, groupId, fileId, [singleHash], {
+			contentHash: String(meta?.contentHash || '').trim().toLowerCase(),
+			totalSize: Number(meta?.size) || 0,
+		}).catch(() => { })
+	try {
+		if (fileId && singleHash)
+			await updateDownloadChunkState(username, groupId, fileId, singleHash, 'inflight').catch(() => { })
+		const plain = await getDecryptedChunk(
+			username,
+			groupId,
+			meta.storageLocator,
+			meta.contentHash,
+			{
+				ceMode: meta.ceMode || 'convergent',
+				wrappedKey: meta.wrappedKey || null,
+				keyGeneration: meta.key_generation ?? null,
+				fileId,
+			},
+			blamePeerKey,
+		)
+		if (fileId && singleHash)
+			await updateDownloadChunkState(username, groupId, fileId, singleHash, 'done').catch(() => { })
+		return plain
+	}
+	catch (error) {
+		if (fileId && singleHash)
+			await updateDownloadChunkState(username, groupId, fileId, singleHash, 'failed').catch(() => { })
+		throw error
+	}
 }
 
 /**
@@ -876,9 +897,8 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const meta = fileMetaFromState(state, fileId)
 		if (!meta || meta.deleted)
 			return res.status(404).json({ error: 'File not found' })
-		const hasParts = Array.isArray(meta.parts) && meta.parts.length
-		if (!hasParts)
-			return res.status(200).json({ ok: true, fileId, status: { done: 0, total: 0, percent: 100, status: 'done' } })
+		// 单块与 multipart 统一走 getDecryptedFile：真正触发内容获取（本地 CAS 命中即完成，
+		// 本地缺失则经 resolveCiphertextRaw 的联邦 fetch 路径）并由侧车维护 download task。
 		try {
 			await getDecryptedFile(username, groupId, { ...meta, fileId }, undefined)
 		}

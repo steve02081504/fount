@@ -134,6 +134,40 @@ export function isSignedBaseCheckpoint(checkpoint) {
 }
 
 /**
+ * 判断「已签名基态 checkpoint」是否仍是本地权威基态（联邦 catch-up 期间未被本地 DAG 追平/取代）。
+ *
+ * 新节点入群采纳的 owner 签名 checkpoint 在整个补齐周期内都应被视为权威基态：本地 DAG 可能
+ * 尚未拉回锚点、存在悬挂父、锚点已拉回但仍非当前叶、或 `dag_tip_ids` 与本地叶集合未对齐——
+ * 这些都属正常中间态而非损坏。若此时强制全量重放，会因本地缺少 pre-checkpoint 治理链而把基态
+ * active 成员滤没（ACL 快照变空 → 所有 gated 远端事件被拒）。物化时应以 checkpoint 为基态叠加
+ * 本地增量事件（见 materialize.mjs），而非裸 authzFold 全量重放。
+ *
+ * 退出（supersede）条件：本地叶集合与 `checkpoint.dag_tip_ids` 完全对齐且锚点本身是当前叶之一
+ * （即本地 DAG 真正追平）。一旦对齐，常规增量/全量物化即可正确重建，无需基态保护，避免节点
+ * 永远停留在采纳基态。另一条 supersede 路径在联邦层：收到更高 epoch 的本地签名 checkpoint 时
+ * 直接替换 snapshot.json（见 federation/pullEnvelope.mjs 的 epoch 比较），此处读到的即新基态。
+ * @param {object | null | undefined} checkpoint 当前快照
+ * @param {string[]} localTipIds 本地 DAG 叶 id（computeDagTipIdsFromEvents 结果）
+ * @returns {boolean} 仍需作为采纳签名基态保护时为 true
+ */
+export function isAdoptedBaseAuthoritative(checkpoint, localTipIds) {
+	if (!isSignedBaseCheckpoint(checkpoint)) return false
+	const anchor = String(checkpoint.checkpoint_event_id || '').trim().toLowerCase()
+	const localTips = (Array.isArray(localTipIds) ? localTipIds : [])
+		.map(t => String(t).trim().toLowerCase())
+		.filter(isHex64)
+	const snapshotTips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
+		.map(t => String(t).trim().toLowerCase())
+		.filter(isHex64)
+	const localSet = new Set(localTips)
+	const aligned = localTips.length > 0
+		&& snapshotTips.length === localTips.length
+		&& snapshotTips.every(t => localSet.has(t))
+		&& localSet.has(anchor)
+	return !aligned
+}
+
+/**
  * 为 checkpoint 载荷附加签名（签名字段不包含 `checkpoint_signature` 自身）。
  * @param {object} payload `buildCheckpointPayload` 返回值
  * @param {Uint8Array} secretKey 32 字节种子私钥

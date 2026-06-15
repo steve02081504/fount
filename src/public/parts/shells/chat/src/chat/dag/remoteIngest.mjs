@@ -39,6 +39,7 @@ export async function releaseQuarantinedEvents(username, groupId) {
 		appendValidatedRemoteEvent(username, groupId, event, {
 			logFailures: false,
 			skipQuarantineRelease: true,
+			skipQuarantineAppend: true,
 		}),
 	)
 }
@@ -48,7 +49,7 @@ export async function releaseQuarantinedEvents(username, groupId) {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
- * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean }} [opts] 日志与隔离重放选项
+ * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean }} [opts] 日志、隔离重放与隔离写入选项
  * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined'>} 写入结果
  */
 export async function appendValidatedRemoteEvent(username, groupId, signPayload, opts = {}) {
@@ -116,6 +117,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 	}
 
 	if (hlcAction === 'quarantine') {
+		if (opts.skipQuarantineAppend) return 'quarantined'
 		await withGroupWriteLock(username, groupId, async () => {
 			await appendQuarantinedEvent(username, groupId, wirePayload, 'hlc_skew')
 		})
@@ -145,6 +147,14 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 		await validateIngestAuthz(username, groupId, wirePayload, { source: 'federation', state })
 	}
 	catch (error) {
+		// 暂时性失败（引用的 target/父事件尚未到达）：隔离待补齐后由 releaseQuarantinedEvents 重放，而非永久 drop。
+		if (error?.deferrable) {
+			if (opts.skipQuarantineAppend) return 'quarantined'
+			await withGroupWriteLock(username, groupId, async () => {
+				await appendQuarantinedEvent(username, groupId, wirePayload, 'missing_target')
+			})
+			return 'quarantined'
+		}
 		if (logFailures) console.error('federation: drop remote event (ingest authz)', error)
 		return 'invalid'
 	}

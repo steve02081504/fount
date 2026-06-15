@@ -2,6 +2,20 @@ import { sortedPrevEventIds } from './dag/index.mjs'
 import { GOVERNANCE_AUTHZ_TYPES } from './event_types.mjs'
 
 /**
+ * 事件是否存在指向本地缺失父的悬挂引用（DAG 不完整）。
+ * @param {Array<{ id: string, prev_event_ids?: unknown }>} events 事件列表
+ * @returns {boolean} 存在悬挂父则为 true
+ */
+export function hasDanglingParents(events) {
+	if (!events.length) return false
+	const byId = new Map(events.map(event => [event.id, event]))
+	for (const event of events)
+		for (const parentId of sortedPrevEventIds(event.prev_event_ids))
+			if (!byId.has(parentId)) return true
+	return false
+}
+
+/**
  * 计算 DAG 叶事件 id。
  * @param {Array<{ id: string, prev_event_ids?: unknown }>} events 事件列表
  * @returns {string[]} 叶 id 列表

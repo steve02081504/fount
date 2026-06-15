@@ -61,7 +61,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 	}
 
 	if (event.type === 'member_join')
-		validateJoinPolicy(state, event, replicaUsername)
+		await validateJoinPolicy(state, event, replicaUsername)
 
 	if (event.type === 'message' && event.content?.content_ref)
 		validateContentRefPayload(event.content.content_ref)

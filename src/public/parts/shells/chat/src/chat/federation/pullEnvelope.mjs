@@ -2,6 +2,7 @@
  * 联邦补拉 HPKE 响应构建与应用。
  */
 import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { invalidateTopologicalOrderMemo } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
 import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { mergeRemoteArchiveManifestHints } from '../archive/index.mjs'
 import { getState } from '../dag/materialize.mjs'
@@ -90,10 +91,11 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
  * @param {string} groupId 群 ID
  * @param {object} inner 解密后的 inner
  * @param {{ allowCheckpoint?: boolean, pullRequestId?: string }} [opts] checkpoint 应用选项
- * @returns {Promise<{ eventsApplied: number, historiesMerged: number }>} 应用统计
+ * @returns {Promise<{ checkpointApplied: boolean }>} checkpoint 是否成功落盘
  */
 export async function applyPullInner(username, groupId, inner, opts = {}) {
-	if (!isPlainObject(inner)) return { eventsApplied: 0, historiesMerged: 0 }
+	if (!isPlainObject(inner)) return { checkpointApplied: false }
+	let checkpointApplied = false
 	if (inner.fileKeyWraps)
 		await applyFileKeyGrant(username, groupId, inner.fileKeyWraps)
 	if (isPlainObject(inner.archiveManifest))
@@ -114,19 +116,19 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 					.catch(error => ({ valid: false, reason: error?.message }))
 				if (checkpointResult.valid) {
 					await writeJsonAtomicSynced(snapshotPath(username, groupId), inner.checkpoint)
+					invalidateTopologicalOrderMemo(`${username}:${groupId}`)
 					await getState(username, groupId, { skipWalRepair: true })
+					checkpointApplied = true
 				}
 			}
 		}
 	}
-	let eventsApplied = 0
 	const { appendValidatedRemoteEvent } = requireDagDeps()
 	if (Array.isArray(inner.events))
 		for (const rawEvent of inner.events) {
 			const signedEvent = extractInboundSignedEvent(rawEvent, groupId)
 			if (!signedEvent) continue
-			const result = await appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: false })
-			if (result === 'ok') eventsApplied++
+			await appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: false })
 		}
 	// 频道密钥导入放在状态引导之后，且不得让密钥失败回滚已完成的 checkpoint/事件落盘。
 	if (isPlainObject(inner.channelKeyWraps))
@@ -139,10 +141,9 @@ export async function applyPullInner(username, groupId, inner, opts = {}) {
 		catch (error) {
 			console.error('applyPullInner: channel key import failed', error)
 		}
-	let historiesMerged = 0
 	if (isPlainObject(inner.channelHistories))
-		historiesMerged = await mergeChannelHistories(username, groupId, inner.channelHistories)
-	return { eventsApplied, historiesMerged }
+		await mergeChannelHistories(username, groupId, inner.channelHistories)
+	return { checkpointApplied }
 }
 
 /**

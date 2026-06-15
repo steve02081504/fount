@@ -5,7 +5,7 @@ import { mkdir } from 'node:fs/promises'
 
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeAppendHlcAndPrev } from '../../../../../../../scripts/p2p/timeline/append_core.mjs'
-import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent } from '../channel_keys/content.mjs'
+import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
 import { sanitizeFederatedEvent } from '../events/wire.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
@@ -106,7 +106,7 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 		await ensureChannelKey(username, groupId, channelId)
 		eventBody = {
 			...eventBody,
-			content: await encryptEventContent(username, groupId, channelId, eventBody.content),
+			content: await encryptEventContent(username, groupId, channelId, eventBody.content, plaintextCkgContentFields(eventBody.type)),
 		}
 	}
 	return appendEvent(username, groupId, { ...eventBody, sender }, secretKey, {

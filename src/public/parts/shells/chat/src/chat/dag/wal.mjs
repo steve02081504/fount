@@ -5,9 +5,9 @@
  * 【数据结构】返回 `{ ok, reason?, forceFullReplay? }`；`checkpoint` 含 `checkpoint_event_id`、`dag_tip_ids`。
  * 【关联】`materialize.mjs`、`storage.mjs`、`../lib/paths.mjs`。
  */
-import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
+import { isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
+import { computeDagTipIdsFromEvents, hasDanglingParents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { sanitizeFederatedEvent } from '../events/wire.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
@@ -30,19 +30,25 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 		return { ok: false, reason: 'checkpoint_event_id invalid', forceFullReplay: true }
 	if (!rows.length)
 		return { ok: false, reason: 'checkpoint without events', forceFullReplay: true }
-	// 采纳的 owner 签名基态 checkpoint：本机无 pre-checkpoint 历史，锚点事件本就不在 events.jsonl。
-	// 这不是损坏，物化会以 checkpoint 为基态叠加本地增量事件（见 materialize.mjs），不可全量重放。
-	if (isSignedBaseCheckpoint(checkpoint)
-		&& !rows.some(row => String(row.id || '').trim().toLowerCase() === tipId))
+	const anchorInEvents = rows.some(row => String(row.id || '').trim().toLowerCase() === tipId)
+	const tips = computeDagTipIdsFromEvents(rows).map(t => String(t).trim().toLowerCase())
+	// 采纳的 owner 签名基态 checkpoint 在联邦 catch-up 全周期内保持权威，不得 forceFullReplay：
+	//   · 锚点尚未被 gossip 拉回 events
+	//   · DAG 仍有悬挂父（有叶无链）
+	//   · 锚点已拉回但仍非当前叶
+	//   · checkpoint.dag_tip_ids 与本地叶集合未对齐（catch-up 常态）
+	// 以上均为「未追平」中间态，全量重放会把基态 active 成员滤没。退出条件由
+	// isAdoptedBaseAuthoritative 给出：本地叶与 dag_tip_ids 完全对齐时返回 false，走下方常规校验。
+	if (isAdoptedBaseAuthoritative(checkpoint, tips)
+		|| (isSignedBaseCheckpoint(checkpoint) && hasDanglingParents(rows)))
 		return { ok: true }
-	if (!rows.some(row => String(row.id || '').trim().toLowerCase() === tipId))
+
+	if (!anchorInEvents)
 		return {
 			ok: false,
 			reason: 'checkpoint_event_id not found in events.jsonl',
 			forceFullReplay: true,
 		}
-
-	const tips = computeDagTipIdsFromEvents(rows).map(t => String(t).trim().toLowerCase())
 	if (!tips.includes(tipId))
 		return {
 			ok: false,

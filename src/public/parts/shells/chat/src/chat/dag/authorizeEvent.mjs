@@ -26,6 +26,17 @@ function resolveIndexedMessage(state, targetId) {
 }
 
 /**
+ * 目标消息是否已知被删除（区别于"目标尚未到达"）。
+ * @param {object} state 物化群状态
+ * @param {string} targetId 目标消息 eventId（小写）
+ * @returns {boolean} 已删除为 true
+ */
+function isMessageDeleted(state, targetId) {
+	const id = String(targetId || '').trim().toLowerCase()
+	return Boolean(id && state.messageOverlay?.deletedIds?.has?.(id))
+}
+
+/**
  * @param {{ channelId?: string }} event DAG 事件
  * @returns {string} 权限求值用的频道 ID
  */
@@ -38,7 +49,7 @@ export function eventChannelId(event) {
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} senderHash 发送方 pubKeyHash（小写）
- * @returns {{ ok: boolean, reason?: string }} 是否允许
+ * @returns {{ ok: boolean, reason?: string, deferrable?: boolean }} 是否允许；`deferrable` 表示因目标/父事件尚未到达的暂时性失败
  */
 export function checkEventPermission(state, event, senderHash) {
 	const { type } = event
@@ -190,7 +201,7 @@ export function checkEventPermission(state, event, senderHash) {
 		case 'message_edit': {
 			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
 			const entry = resolveIndexedMessage(state, targetId)
-			if (!entry) return { ok: false, reason: 'message not found' }
+			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
 			if (entry.charOwner && entry.charOwner === sender) return { ok: true }
 			return { ok: false, reason: 'message_edit denied' }
@@ -202,7 +213,7 @@ export function checkEventPermission(state, event, senderHash) {
 		case 'message_delete': {
 			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
 			const entry = resolveIndexedMessage(state, targetId)
-			if (!entry) return { ok: false, reason: 'message not found' }
+			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
 			if (entry.charOwner && entry.charOwner === sender) return { ok: true }
 			return channelPerms[PERMISSIONS.MANAGE_MESSAGES]
@@ -241,6 +252,10 @@ export function checkEventPermission(state, event, senderHash) {
  * @returns {void}
  */
 export function assertEventPermission(state, event, senderHash) {
-	const { ok, reason } = checkEventPermission(state, event, senderHash)
-	if (!ok) throw new Error(reason || 'permission denied')
+	const { ok, reason, deferrable } = checkEventPermission(state, event, senderHash)
+	if (ok) return
+	const error = new Error(reason || 'permission denied')
+	// 区分"确定性拒绝"与"目标/父事件尚未到达的暂时性失败"：后者供联邦入站走 quarantine/defer 重试。
+	if (deferrable) error.deferrable = true
+	throw error
 }

@@ -117,23 +117,53 @@ export async function enumerateJoinedFederatedGroups(username) {
 }
 
 /**
- * 频道内 `reaction_add` / `reaction_remove` 事件（供 Hub 重放计票；仅存 events.jsonl）。
+ * 从物化 state（真相源）合成本频道当前生效的 reaction 行。
+ *
+ * reaction_add / reaction_remove 是可折叠过程事件，fold 后即从 `events.jsonl` 删除，状态仅留存于
+ * checkpoint 的 `messageOverlay.reactions`（键 `targetId:emoji` → 当前仍生效的投票者集合；reaction_remove
+ * 已把取消者从集合中剔除）。因此读路径必须以 overlay 为准，否则 fold 后或联邦 B 节点 ingest 后读不到。
+ * 频道归属由 `messageSenderIndex[targetId].channelId` 决定（与原按事件 channelId 过滤等价）。
+ * @param {object} state 物化群状态
+ * @param {string} channelId 频道 ID
+ * @returns {object[]} 精简 reaction 行（每个当前投票者一条 `reaction_add`）
+ */
+export function synthesizeChannelReactionEvents(state, channelId) {
+	const reactions = state?.messageOverlay?.reactions
+	if (!(reactions instanceof Map) || !reactions.size) return []
+	const senderIndex = state.messageSenderIndex || {}
+	/** @type {object[]} */
+	const out = []
+	for (const [key, voters] of reactions) {
+		const sepIdx = key.indexOf(':')
+		if (sepIdx <= 0) continue
+		const targetId = key.slice(0, sepIdx)
+		const emoji = key.slice(sepIdx + 1)
+		if (!emoji || !voters?.size) continue
+		const indexed = senderIndex[targetId] || senderIndex[targetId.toLowerCase()]
+		if ((indexed?.channelId || 'default') !== channelId) continue
+		for (const voter of voters)
+			out.push({
+				type: 'reaction_add',
+				sender: voter,
+				content: { targetId, emoji },
+				eventId: `reaction:${targetId}:${emoji}:${voter}`,
+				timestamp: 0,
+			})
+	}
+	return out
+}
+
+/**
+ * 频道内当前生效的 reaction 行（供 Hub 重放计票）。以物化 state overlay 为真相源，
+ * 无论事件是否已 fold 出 `events.jsonl`、单节点还是联邦 B 节点都能正确读到。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<object[]>} 精简 reaction 行
  */
 export async function readChannelReactionEvents(username, groupId, channelId) {
-	const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
-	return events
-		.filter(event => ['reaction_add', 'reaction_remove'].includes(event.type) && (event.channelId || 'default') === channelId)
-		.map(event => ({
-			type: event.type,
-			sender: event.sender,
-			content: event.content,
-			eventId: event.id,
-			timestamp: event.hlc?.wall,
-		}))
+	const { state } = await getState(username, groupId)
+	return synthesizeChannelReactionEvents(state, channelId)
 }
 
 /**
