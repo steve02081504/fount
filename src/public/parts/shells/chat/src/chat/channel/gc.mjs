@@ -88,7 +88,9 @@ export function findStaleUnreachableChannels(state, events, nowMs = Date.now()) 
 	for (const channelId of Object.keys(channels)) {
 		if (channelId === defaultId) continue
 		if (reachable.has(channelId)) continue
-		const last = lastAct.get(channelId) ?? 0
+		// 频道自身创建时间作为活动下界：新建（无消息）频道的 lastAct 为 0，
+		// 若不计入 createdAt 会被立即判定为「沉寂 ≥30 天」而在下一次 checkpoint 重建即遭误删。
+		const last = Math.max(lastAct.get(channelId) ?? 0, Number(channels[channelId]?.createdAt) || 0)
 		if (nowMs - last < GC_IDLE_MS) continue
 		stale.push(channelId)
 	}
