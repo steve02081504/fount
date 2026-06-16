@@ -1,5 +1,18 @@
 /**
- * 权限系统（§8）：物化权限 + 频道 allow/deny；ADMIN 不受治理类 deny 锁死，SEND_* deny 仍生效。
+ * 权限系统（§8）：物化权限 + 频道 allow/deny 的「按特定度分层」求值（Discord 式覆写语义）。
+ *
+ * 求值优先级（由宽到具体，后者覆盖前者）：
+ *   1. 全局基线：成员所有角色的全局权限并集。
+ *   2. 频道内 @everyone 覆写（先去 deny 再叠 allow）。
+ *   3. 频道内具体角色覆写（合并成员所有角色的 allow/deny 后整体应用：先去 deny 再叠 allow）。
+ * 因此更具体层级的 allow 可重新授予更宽层级 deny 掉的能力（例如私密频道 @everyone deny SEND，
+ * 但某角色 allow SEND → 该角色可发帖），更具体层级的 deny 亦可覆盖更宽层级的 allow。
+ *
+ * ADMIN/owner 旁路：持有 ADMIN 的成员拥有全部能力且不受任何频道覆写限制（Discord ADMINISTRATOR 语义），
+ * 故私密频道里 owner/admin 始终可发帖。
+ *
+ * 不可翻案的硬禁言：由成员级 ban（`member_ban` → status≠active）实现，在 `memberChannelPermissions`
+ * 进入本函数之前即返回全 false，故对任何角色 / 频道 allow / ADMIN 旁路一律免疫——这是无法被翻案的硬 deny 维度。
  */
 
 /** 内置权限能力 */
@@ -46,34 +59,17 @@ export const PERMISSION_ORDER = [
 	PERMISSIONS.BYPASS_RATE_LIMIT,
 ]
 
-/** 频道 deny 对 ADMIN 仍生效的发送类能力（§8 第 2 步） */
-const SEND_CLASS_DENY_ALWAYS = new Set([
-	PERMISSIONS.SEND_MESSAGES,
-	PERMISSIONS.SEND_STICKERS,
-	PERMISSIONS.ADD_REACTIONS,
-])
-
-/** 频道 deny 对 ADMIN 无效或可自解的治理类能力（§8 第 3 步） */
-const GOVERNANCE_DENY_ADMIN_IMMUNE = new Set([
-	PERMISSIONS.MANAGE_ROLES,
-	PERMISSIONS.MANAGE_ADMINS,
-	PERMISSIONS.MANAGE_CHANNELS,
-	PERMISSIONS.KICK_MEMBERS,
-	PERMISSIONS.BAN_MEMBERS,
-	PERMISSIONS.MANAGE_FILES,
-	PERMISSIONS.MANAGE_MESSAGES,
-	PERMISSIONS.INVITE_MEMBERS,
-	PERMISSIONS.PIN_MESSAGES,
-	PERMISSIONS.UPLOAD_FILES,
-])
+/** ADMIN 在 PERMISSION_ORDER 中的位序（旁路判定用）。 */
+const ADMIN_BIT = 1n << BigInt(PERMISSION_ORDER.indexOf(PERMISSIONS.ADMIN))
 
 /**
- * 权限编码为 BigInt
- * @param {Record<string, boolean>} permissions 权限对象
+ * 权限编码为 BigInt（容忍 null/undefined：空覆写记为 0n）。
+ * @param {Record<string, boolean> | null | undefined} permissions 权限对象
  * @returns {bigint} 按位编码
  */
 export function encodePermissions(permissions) {
 	let bits = 0n
+	if (!permissions) return bits
 	for (let index = 0; index < PERMISSION_ORDER.length; index++)
 		if (permissions[PERMISSION_ORDER[index]])
 			bits |= 1n << BigInt(index)
@@ -94,26 +90,7 @@ export function decodePermissions(bits) {
 }
 
 /**
- * 收集频道覆写中对某成员生效的 deny 键（多角色合并）。
- * @param {string[]} roleIds 成员角色 id 列表
- * @param {Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>} channelOverride 频道覆写
- * @returns {Record<string, boolean>} 合并后的 deny 表
- */
-function mergedChannelDeny(roleIds, channelOverride) {
-	/** @type {Record<string, boolean>} */
-	const deny = {}
-	if (!channelOverride) return deny
-	for (const roleId of roleIds) {
-		const ov = channelOverride[roleId]
-		if (!ov?.deny) continue
-		for (const [k, v] of Object.entries(ov.deny))
-			if (v) deny[k] = true
-	}
-	return deny
-}
-
-/**
- * 计算成员在频道内的最终权限（§8 三步折叠）。
+ * 计算成员在频道内的最终权限（按特定度分层求值，见文件头说明）。
  * @param {object} member 成员对象
  * @param {object} roles 角色映射
  * @param {string} channelId 频道 ID
@@ -121,49 +98,47 @@ function mergedChannelDeny(roleIds, channelOverride) {
  * @returns {Record<string, boolean>} 最终权限 Record
  */
 export function calculateMemberPermissions(member, roles, channelId, channelPermissions) {
-	const roleIds = member.roles
-	let roleBits = 0n
+	const roleIds = member.roles || []
+
+	// 1. 全局基线：成员所有角色的全局权限并集。
+	let baseBits = 0n
 	for (const roleId of roleIds) {
 		const role = roles[roleId]
-		if (role)
-			roleBits |= encodePermissions(role.permissions)
+		if (role) baseBits |= encodePermissions(role.permissions)
 	}
 
+	// ADMIN/owner 旁路：拥有全部能力并无视任何频道覆写（Discord ADMINISTRATOR）。
+	// 硬禁言（ban）在 memberChannelPermissions 中先于本函数拦截，故不会经此旁路。
+	if (baseBits & ADMIN_BIT) {
+		/** @type {Record<string, boolean>} */
+		const perms = {}
+		for (const p of PERMISSION_ORDER) perms[p] = true
+		return perms
+	}
+
+	let bits = baseBits
 	const channelOverride = channelPermissions?.[channelId]
-	if (channelOverride)
+	if (channelOverride) {
+		// 2. 频道内 @everyone 覆写（最宽频道层）：先去 deny 再叠 allow。
+		const everyone = channelOverride['@everyone']
+		if (everyone)
+			bits = (bits & ~encodePermissions(everyone.deny)) | encodePermissions(everyone.allow)
+
+		// 3. 频道内具体角色覆写：合并成员所有非 @everyone 角色的 allow/deny 后整体应用
+		//    （避免角色遍历顺序敏感），再次先去 deny 再叠 allow，使更具体的 allow 可覆盖 @everyone deny。
+		let roleAllow = 0n
+		let roleDeny = 0n
 		for (const roleId of roleIds) {
+			if (roleId === '@everyone') continue
 			const override = channelOverride[roleId]
-			if (override) {
-				const allowBits = encodePermissions(override.allow)
-				const denyBits = encodePermissions(override.deny)
-				roleBits = (roleBits | allowBits) & ~denyBits
-			}
+			if (!override) continue
+			roleAllow |= encodePermissions(override.allow)
+			roleDeny |= encodePermissions(override.deny)
 		}
-
-	const perms = decodePermissions(roleBits)
-	const isAdmin = perms.ADMIN === true
-
-	const channelDeny = mergedChannelDeny(roleIds, channelOverride)
-	for (const [key, denied] of Object.entries(channelDeny)) {
-		if (!denied) continue
-		if (SEND_CLASS_DENY_ALWAYS.has(key)) {
-			perms[key] = false
-			continue
-		}
-		if (isAdmin && GOVERNANCE_DENY_ADMIN_IMMUNE.has(key))
-			continue
-		perms[key] = false
+		bits = (bits & ~roleDeny) | roleAllow
 	}
 
-	if (isAdmin) {
-		for (const p of PERMISSION_ORDER)
-			if (!SEND_CLASS_DENY_ALWAYS.has(p) || !channelDeny[p])
-				perms[p] = true
-		for (const p of SEND_CLASS_DENY_ALWAYS)
-			if (channelDeny[p]) perms[p] = false
-	}
-
-	return perms
+	return decodePermissions(bits)
 }
 
 /**
