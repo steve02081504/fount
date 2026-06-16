@@ -1,4 +1,4 @@
-import { ensureLocalEntityProfile, getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
+import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
 import { SOCIAL_RPC_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
@@ -25,7 +25,8 @@ export async function discoverAccounts(username, options = {}) {
 	for (const entityHash of slice) {
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (view.socialMeta?.isProtected) continue
-		await ensureLocalEntityProfile(username, entityHash)
+		// listLocalTimelineOwners 含已同步的远端时间线；getProfile 对其返回派生默认资料，
+		// 不可用 ensureLocalEntityProfile（远端会抛错使探索接口 500）。
 		const profile = await getProfile(entityHash, username)
 		accounts.push({
 			entityHash,

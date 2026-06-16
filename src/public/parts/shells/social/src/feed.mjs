@@ -1,5 +1,5 @@
 import { isEntityHashBlocked } from '../../../../../scripts/p2p/blocklist.mjs'
-import { ensureLocalEntityProfile, getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
+import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 
 import {
@@ -223,6 +223,7 @@ export async function listReplies(username, entityHash, postId) {
  */
 export async function getEntityProfile(username, entityHash) {
 	if (!isEntityHash128(entityHash)) return null
-	await ensureLocalEntityProfile(username, entityHash)
+	// getProfile 对本地实体会自动落盘创建，对远端实体返回派生默认资料；
+	// 不可用 ensureLocalEntityProfile（其对非本地实体抛错），否则查看远端账户会 500。
 	return getProfile(entityHash, username)
 }

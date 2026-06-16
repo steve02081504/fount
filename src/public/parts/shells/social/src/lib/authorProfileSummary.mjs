@@ -1,5 +1,5 @@
 import { memoizePromise } from '../../../../../../scripts/memo.mjs'
-import { ensureLocalEntityProfile, getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
+import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 
 /**
@@ -12,7 +12,7 @@ export function createAuthorProfileLoader(username) {
 		entityHash => entityHash,
 		async entityHash => {
 			if (!isEntityHash128(entityHash)) return null
-			await ensureLocalEntityProfile(username, entityHash)
+			// getProfile 对远端作者返回派生默认资料；不可用 ensureLocalEntityProfile（远端会抛错使整个 feed 失败）。
 			const profile = await getProfile(entityHash, username)
 			if (!profile) return null
 			return { name: profile.name, avatar: profile.avatar || null }

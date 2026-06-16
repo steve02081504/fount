@@ -3,7 +3,7 @@ import { computeEventId, eventBodyForSign } from '../../../../../../scripts/p2p/
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { collectSocialRpcMerged } from '../../../../../../scripts/p2p/part_wire.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
-import { SOCIAL_TIMELINE_EVENT_TYPES } from '../../../../../../scripts/p2p/social_namespace.mjs'
+import { SOCIAL_TIMELINE_EVENT_TYPES, timelineGroupId } from '../../../../../../scripts/p2p/social_namespace.mjs'
 import { verifyTimelineRemoteSignature } from '../../../../../../scripts/p2p/timeline/verify_remote.mjs'
 import { loadFollowing } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
@@ -29,6 +29,9 @@ const FEDERATED_TIMELINE_PULL_MAX_ROUNDS = 8
  */
 export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	if (!SOCIAL_TIMELINE_EVENT_TYPES.has(event.type)) return false
+	// groupId 必须与目标时间线一致：签名正文含 groupId，故合法事件天然匹配；
+	// 此处拒绝把为其它时间线签名的事件错误归档到本 owner（防跨时间线归档/重放）。
+	if (event.groupId !== timelineGroupId(entityHash)) return false
 	const sender = event.sender.trim().toLowerCase()
 	if (isPubKeyHashBlocked(username, sender)) return false
 	const body = eventBodyForSign(event)
