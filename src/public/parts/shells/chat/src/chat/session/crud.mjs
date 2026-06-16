@@ -143,7 +143,7 @@ export async function importMessages(groupId, channelId, messages, username) {
 				{
 					content: importedMessage.content ?? '',
 					files: importedMessage.files || [],
-					extension: { ...importedMessage.extension || {}, groupChannelId: channelId },
+					extension: { ...importedMessage.extension, groupChannelId: channelId },
 					groupChannelId: channelId,
 				},
 				timeSlice,

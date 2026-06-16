@@ -82,7 +82,7 @@ export async function buildChatLogEntryFromUserMessage(result, timeSlice, user, 
 	timeSlice.playername = timeSlice.player_id
 	const { info } = (personaname ? await getPartDetails(username, `personas/${personaname}`) : undefined) || {}
 	const entry = new chatLogEntry_t()
-	const extension = { ...result.extension || {} }
+	const extension = { ...result.extension }
 	const groupChannelId = resolveChannelId(result.groupChannelId, '')
 	if (groupChannelId) extension.groupChannelId = groupChannelId
 	Object.assign(entry, {

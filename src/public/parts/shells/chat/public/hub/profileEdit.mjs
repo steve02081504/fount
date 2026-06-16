@@ -154,7 +154,7 @@ function initEditState(entityHash, profile) {
 	editingEntityHash = entityHash
 	editingBaseProfile = profile
 	editingInfoDefaults = profile.infoDefaults || null
-	editingLocalized = { ...profile.localized || {} }
+	editingLocalized = { ...profile.localized }
 	const keys = Object.keys(editingLocalized)
 	if (!keys.length)
 		editingLocalized[navigator.language || 'zh-CN'] = {}

@@ -75,7 +75,7 @@ export function mergeArchiveMonthHintsFromRemote(local, remote) {
 	const merged = {
 		...local,
 		channels: { ...local.channels },
-		coverage: { ...local.coverage, ...remote.coverage || {} },
+		coverage: { ...local.coverage, ...remote.coverage },
 		archive_coverage_complete: remote.archive_coverage_complete === true
 			|| local.archive_coverage_complete === true,
 	}

@@ -130,7 +130,7 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 			pins: Object.fromEntries(srcOverlay?.pins ?? new Map()),
 			fileIndex: Object.fromEntries(srcOverlay?.fileIndex ?? new Map()),
 		},
-		fileFolders: { ...state.fileFolders || {} },
+		fileFolders: { ...state.fileFolders },
 	}), secretKey)
 	await writeJsonAtomic(snapshotPath(username, forkGroupId), checkpointPayload)
 	await saveGovernanceBranchTip(username, forkGroupId, branchTip)

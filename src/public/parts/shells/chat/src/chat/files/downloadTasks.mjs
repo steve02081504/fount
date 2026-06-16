@@ -88,7 +88,7 @@ export async function saveDownloadTask(username, groupId, task) {
 export async function ensureDownloadTask(username, groupId, fileId, chunkHashes, meta = {}) {
 	const existing = await loadDownloadTask(username, groupId, fileId)
 	/** @type {Record<string, string>} */
-	const chunks = { ...existing?.chunks || {} }
+	const chunks = { ...existing?.chunks }
 	for (const hash of chunkHashes) {
 		const h = String(hash).trim().toLowerCase()
 		if (!isHex64(h)) continue

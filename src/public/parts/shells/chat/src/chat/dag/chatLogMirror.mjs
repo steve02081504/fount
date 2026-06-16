@@ -81,7 +81,7 @@ async function resolveMirrorContext(entry, username, groupId) {
  * @param {string} eventId DAG 事件 id
  */
 function withDagEventId(entry, eventId) {
-	entry.extension = { ...entry.extension || {}, dagEventId: eventId }
+	entry.extension = { ...entry.extension, dagEventId: eventId }
 }
 
 /**

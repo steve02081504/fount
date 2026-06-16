@@ -90,7 +90,7 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			sourceChannelId,
 		)
 		const groupChannelId = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
-		entry.extension = { ...entry.extension || {}, groupChannelId }
+		entry.extension = { ...entry.extension, groupChannelId }
 		if (line.content?.streamGenerationFailed && streamFailedNote)
 			entry.content = `${entry.content}\n[${streamFailedNote}]`
 		dagEntries.push(entry)
@@ -163,7 +163,7 @@ async function buildChatLogEntryFromDagMessage(
 	const entry = new chatLogEntry_t()
 	entry.id = content.chatLogEntryId || crypto.randomUUID()
 	if (line.eventId)
-		entry.extension = { ...entry.extension || {}, dagEventId: line.eventId }
+		entry.extension = { ...entry.extension, dagEventId: line.eventId }
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
 	entry.content = editOverride?.content != null
