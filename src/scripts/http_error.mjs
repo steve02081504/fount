@@ -4,14 +4,14 @@
 export class HttpError extends Error {
 	/**
 	 * 构造预期内的 HTTP 错误实例。
-	 * @param {number} code HTTP 状态码（如 404）
+	 * @param {number} http_code HTTP 状态码（如 404）
 	 * @param {string} message Error 消息（日志）；未提供 `body.json` 时亦作为响应 `message`
 	 * @param {Record<string, unknown>} [body] 附加字段：`json` 为响应体；`skip_report` 覆写默认 Sentry 行为（默认 code 小于 500 时为 true）
 	 */
-	constructor(code, message, body = {}) {
+	constructor(http_code, message, body = {}) {
 		super(message)
-		this.code = code
-		if (code < 500) this.skip_report = true
+		this.http_code = http_code
+		if (http_code < 500) this.skip_report = true
 		Object.assign(this, body)
 	}
 }
