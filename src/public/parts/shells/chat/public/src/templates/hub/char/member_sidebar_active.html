@@ -1,0 +1,10 @@
+<div class="hub-member-item hub-member-item-char" data-char="${charName}" title="${charName}">
+	<div class="hub-member-avatar" style="background:${avatarBg};">${charAvatarHtml}</div>
+	<div class="hub-member-name">${charName}</div>
+</div>
+${viewerEntityHash ? /* html */`
+<div class="hub-member-item" title="${viewerDisplayName}">
+	<div class="hub-member-avatar" data-avatar-for="${viewerEntityHash}" style="background:${myAvatarBg};">${myAvatarInitial}</div>
+	<div class="hub-member-name">${viewerDisplayName}</div>
+</div>
+` : ''}

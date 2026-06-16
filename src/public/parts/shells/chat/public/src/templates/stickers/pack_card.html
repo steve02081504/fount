@@ -1,0 +1,14 @@
+<figure class="px-10 pt-10">
+	<div class="w-32 h-32 bg-base-300 rounded-lg flex items-center justify-center">
+		${hasThumbnail ? `<img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(name)}" class="w-full h-full object-cover rounded-lg" />` : '<img src="https://api.iconify.design/mdi/package-variant.svg" class="w-16 h-16 opacity-60" alt="" aria-hidden="true" />'}
+	</div>
+</figure>
+<div class="card-body items-center text-center">
+	<h2 class="card-title">${escapeHtml(name)}</h2>
+	<p class="text-sm opacity-70">${descriptionHtml}</p>
+	<div class="card-actions">
+		<div class="badge badge-outline" data-i18n="stickers.stickerCount" data-count="${stickerCount}"></div>
+		${isInstalled ? '<div class="badge badge-success" data-i18n="stickers.installed"></div>' : ''}
+		${isMine ? '<div class="badge badge-primary" data-i18n="stickers.badgeMine"></div>' : ''}
+	</div>
+</div>

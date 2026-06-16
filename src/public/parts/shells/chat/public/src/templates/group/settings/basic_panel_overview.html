@@ -1,0 +1,14 @@
+<div class="card bg-base-200 shadow-xl mb-6">
+	<div class="card-body">
+		<h2 class="card-title" data-i18n="chat.group.settingsPage.overviewTitle"></h2>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settingsPage.overviewHint"></p>
+		<div class="form-control mt-3">
+			<label class="label"><span class="label-text" data-i18n="chat.group.settingsPage.nameLabel"></span></label>
+			<input type="text" class="input input-bordered" readonly value="${escapeHtml(currentState.groupMeta?.name ?? '')}">
+		</div>
+		<div class="form-control">
+			<label class="label"><span class="label-text" data-i18n="chat.group.settingsPage.descriptionLabel"></span></label>
+			<textarea class="textarea textarea-bordered" rows="3" readonly>${escapeHtml(currentState.groupMeta?.description ?? '')}</textarea>
+		</div>
+	</div>
+</div>

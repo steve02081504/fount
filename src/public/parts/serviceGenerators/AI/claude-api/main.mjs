@@ -2,7 +2,7 @@
 import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 

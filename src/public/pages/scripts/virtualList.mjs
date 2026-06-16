@@ -30,6 +30,7 @@ function createSentinel(id) {
  * @param {function(): void} [options.onRenderComplete] - 每次队列渲染完成时调用的回调函数。
  * @param {function(HTMLElement, HTMLElement, object): (void|Promise<void>)} [options.replaceItemRenderer] - 一个可选的函数，用于自定义替换 DOM 元素的方式。接收 `oldElement`、`newElement` 和 `item`。默认为直接替换。
  * @param {boolean} [options.setInitialScroll=true] - 是否在初始加载时滚动到 `initialIndex` 指定的项目。默认为 true。
+ * @param {() => Promise<number>} [options.loadMoreTop] - 当 `startIndex` 为 0 时向上扩展数据源；返回新增加的条数。
  * @returns {{
  *   destroy: function(): void,
  *   refresh: function(): Promise<void>,
@@ -50,6 +51,7 @@ export function createVirtualList({
 	onRenderComplete = () => { },
 	replaceItemRenderer = (oldElement, newElement) => oldElement.replaceWith(newElement),
 	setInitialScroll = true,
+	loadMoreTop = null,
 }) {
 	const state = {
 		queue: [], // 当前加载的数据项队列
@@ -178,7 +180,50 @@ export function createVirtualList({
 	 * 向上加载更多项目，并使用增量 DOM 更新。
 	 */
 	async function prependItems() {
-		if (state.startIndex <= 0) return
+		if (state.startIndex <= 0) {
+			if (!loadMoreTop) return
+			await getMutex()
+			try {
+				const added = await loadMoreTop()
+				if (!added) return
+				const { total } = await fetchData(0, 0)
+				state.totalCount = total || 0
+				const { items: newItems } = await fetchData(0, Math.min(added, state.totalCount))
+				if (!newItems.length) return
+				const anchorElement = state.sentinelTop?.nextSibling
+				const anchorTop = anchorElement?.getBoundingClientRect().top || 0
+				state.startIndex = 0
+				state.queue.unshift(...newItems)
+				const newElementsFragment = document.createDocumentFragment()
+				const renderPromises = newItems.map((item, i) => Promise.resolve(renderItem(item, i)))
+				const newElements = await Promise.all(renderPromises)
+				if (!container.contains(state.sentinelTop)) return
+				const shift = newItems.length
+				const nextRendered = new Map()
+				for (const [idx, el] of state.renderedElements.entries())
+					nextRendered.set(idx + shift, el)
+				state.renderedElements = nextRendered
+				newElements.forEach((element, i) => {
+					if (element) {
+						state.renderedElements.set(i, element)
+						newElementsFragment.appendChild(element)
+					}
+				})
+				container.insertBefore(newElementsFragment, state.sentinelTop.nextSibling)
+				if (anchorElement) {
+					const newAnchorTop = anchorElement.getBoundingClientRect().top
+					container.scrollTop += newAnchorTop - anchorTop
+				}
+				pruneQueue()
+				updateDynamicBufferSize()
+				onRenderComplete()
+			}
+			finally {
+				state.isLoading = false
+				observeSentinels()
+			}
+			return
+		}
 		await getMutex()
 		try {
 			const itemsToFetch = Math.min(state.bufferSize, state.startIndex)
@@ -286,7 +331,7 @@ export function createVirtualList({
 			})
 
 		state.observer.disconnect()
-		if (state.sentinelTop && state.startIndex > 0)
+		if (state.sentinelTop && (state.startIndex > 0 || loadMoreTop))
 			state.observer.observe(state.sentinelTop)
 
 		if (state.sentinelBottom && (state.startIndex + state.queue.length) < state.totalCount)
@@ -352,7 +397,10 @@ export function createVirtualList({
 			const itemIndex = state.startIndex + state.queue.length
 			state.queue.push(item)
 			const newElement = await Promise.resolve(renderItem(item, itemIndex))
-			if (!container.contains(state.sentinelBottom)) return
+			if (!container.contains(state.sentinelBottom)) {
+				await refresh()
+				return
+			}
 			if (newElement) {
 				state.renderedElements.set(itemIndex, newElement)
 				container.insertBefore(newElement, state.sentinelBottom)
@@ -360,7 +408,8 @@ export function createVirtualList({
 			pruneQueue()
 			updateDynamicBufferSize()
 			if (scrollTo)
-				newElement?.scrollIntoView({ behavior: 'smooth', block: 'end' }) // 平滑滚动
+				newElement?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+			onRenderComplete()
 		} finally {
 			state.isLoading = false
 			observeSentinels()

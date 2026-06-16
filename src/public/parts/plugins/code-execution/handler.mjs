@@ -7,13 +7,8 @@ import util from 'node:util'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
-import {
-	defineInlineToolUses,
-	defineToolUseBlocks,
-	getChatI18n,
-	renderMarkdownCodeBlock,
-	renderMarkdownInlineCode
-} from '../../shells/chat/src/stream.mjs'
+import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/stream/markdown.mjs'
+import { defineInlineToolUses, defineToolUseBlocks } from '../../shells/chat/src/stream/toolBlocks.mjs'
 
 /**
  * 带语法高亮地将代码输出到控制台，失败时静默降级为普通输出。

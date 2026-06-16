@@ -26,11 +26,13 @@ import {
 	getPartBranches
 } from '../parts_loader.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
+import { loadTrustedAuthorHashes, saveTrustedAuthorHashes } from '../trustedAuthors.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
+import { registerP2pEndpoints } from './p2p_endpoints.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -62,6 +64,8 @@ async function ensurePowTokenOr401(req, res) {
  * @returns {void}
  */
 export function registerEndpoints(router) {
+	registerP2pEndpoints(router)
+
 	router.ws('/ws/test/echo', (ws, req) => {
 		console.log('WebSocket test connection established.')
 		ws.on('message', message => {
@@ -272,6 +276,16 @@ export function registerEndpoints(router) {
 		res.status(200).json({ valid: !!user })
 	})
 
+	router.get('/api/user/trusted-authors', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		res.status(200).json({ hashes: loadTrustedAuthorHashes(username) })
+	})
+	router.put('/api/user/trusted-authors', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const hashes = saveTrustedAuthorHashes(username, req.body.hashes)
+		res.status(200).json({ hashes })
+	})
+
 	router.get('/api/whoami', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.status(200).json({ username })
@@ -291,10 +305,9 @@ export function registerEndpoints(router) {
 	router.post('/api/loadpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { partpath } = req.body
-		const normalized = partpath?.replace?.(/:/g, '/')
-		if (!normalized) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
-		await loadPart(username, normalized)
-		res.status(200).json({ message: `Part ${normalized} loaded successfully.` })
+		if (!partpath) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
+		await loadPart(username, partpath)
+		res.status(200).json({ message: `Part ${partpath} loaded successfully.` })
 	})
 
 	// Generic path handlers

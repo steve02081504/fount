@@ -227,6 +227,9 @@ export async function logout() {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 	})
+	void import('../../parts/shells/chat/public/src/evfs.mjs')
+		.then(({ clearViewerEntityCache }) => clearViewerEntityCache())
+		.catch(() => {})
 	return finishAuthenticatedJsonMutation(response)
 }
 

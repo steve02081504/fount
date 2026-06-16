@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createMCPClient } from '../../../../../src/public/parts/ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream/toolBlocks.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../src/server/parts_loader.mjs'
 

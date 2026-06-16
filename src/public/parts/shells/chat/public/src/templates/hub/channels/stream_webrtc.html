@@ -1,0 +1,16 @@
+<div class="hub-stream-wrap">
+	<div class="hub-stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
+	<div class="hub-stream-toolbar hub-streaming-av-controls">
+		<select class="hub-streaming-av-preset-sel" id="hub-streaming-av-preset">
+			${presets.map(p => `<option value="${p.key}" data-i18n="${p.i18nKey}" ${p.selected ? ' selected' : '' }></option>`).join('')}
+		</select>
+		<span class="hub-streaming-av-peer-label" id="hub-streaming-av-peer-label"></span>
+	</div>
+	<div class="hub-stream-toolbar" id="hub-streaming-av-toolbar"></div>
+	<div class="hub-streaming-av-grid" id="hub-streaming-av-grid">
+		<div class="streaming-av-tile relative rounded-lg overflow-hidden bg-black min-h-0" data-peer-id="local">
+			<video id="hub-streaming-av-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+			<div class="absolute bottom-1 left-1 text-xs text-white bg-black/50 rounded px-1" data-i18n="chat.hub.streamAvYou"></div>
+		</div>
+	</div>
+</div>

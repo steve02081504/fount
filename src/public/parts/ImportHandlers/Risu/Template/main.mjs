@@ -5,7 +5,7 @@ import { regex_placement } from '../../../../../src/public/parts/ImportHandlers/
 import { evaluateMacros } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/marco.mjs'
 import { promptBuilder } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { runRegex } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
-import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'
 
@@ -368,15 +368,18 @@ const charAPI_definition = {
 				}
 			},
 			/**
-			 * 获取回复频率
-			 * @param {any} args 参数
-			 * @returns {Promise<number>} 回复频率
+			 * 新消息到达时，决定是否主动发言（onMessage 事件）
+			 * talkativeness 对应 SillyTavern 的健谈度（0.5 为正常，乘以 2 还原）
+			 * @param {{ onlineCount: number }} root0 事件参数对象
+			 * @param {number} root0.onlineCount 当前在线人数（含用户）
+			 * @returns {Promise<boolean>} 是否在本轮随机中主动发言
 			 */
-			GetReplyFrequency: async args => {
-				if (Object(chardata.extensions?.talkativeness) instanceof Number)
-					return Math.max(0.1, Number(chardata.extensions.talkativeness) * 2) // ST 逻辑
-
-				return 1 // 默认频率
+			onMessage: async ({ onlineCount }) => {
+				const rawTalkativeness = Number(chardata.extensions?.talkativeness)
+				const talkativeness = Number.isFinite(rawTalkativeness)
+					? Math.max(0.05, rawTalkativeness * 2)
+					: 1
+				return Math.random() < (1 / onlineCount) * talkativeness * 2
 			},
 			/**
 			 * 消息编辑

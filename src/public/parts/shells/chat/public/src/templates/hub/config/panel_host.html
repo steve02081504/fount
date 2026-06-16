@@ -1,0 +1,55 @@
+${phase === 'loading' ? `
+<div class="loading loading-spinner" style="margin:12px auto;"></div>
+` : phase === 'error' ? `
+<div class="hub-overlay-error alert alert-error">${escapeHtml(errorMessage)}</div>
+` : `
+<h4 data-i18n="chat.hub.configTitle"></h4>
+<div class="hub-character-chat-field">
+	<label data-i18n="chat.sidebar.persona.title"></label>
+	<select id="hub-character-chat-persona" class="select select-bordered select-sm w-full">${personaOptions}</select>
+</div>
+${canEditWorldPlugins ? `
+<div class="hub-character-chat-field">
+	<label data-i18n="chat.sidebar.world.title"></label>
+	<select id="hub-character-chat-world" class="select select-bordered select-sm w-full">${worldOptions}</select>
+</div>
+<div class="hub-character-chat-field">
+	<label data-i18n="chat.sidebar.pluginList.title"></label>
+	<div id="hub-character-chat-plugins-active" class="hub-character-chat-plugin-tags">${
+		pluginlist.length
+		? pluginlist.map(p => `
+		<span class="hub-character-chat-plugin-tag" data-plugin="${escapeHtml(p)}">
+			${escapeHtml(p)}
+			<button type="button" class="hub-character-chat-plugin-remove" data-plugin="${escapeHtml(p)}">×</button>
+		</span>`).join('')
+		: '<span class="text-sm opacity-60" data-i18n="chat.sidebar.noSelection"></span>'
+		}
+	</div>
+	<div class="flex gap-2 mt-2">
+		<select id="hub-character-chat-plugin-add" class="select select-bordered select-sm flex-1">
+			<option value="" data-i18n="chat.sidebar.noSelection"></option>
+			${availablePlugins.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('')}
+		</select>
+		<button type="button" id="hub-character-chat-plugin-add-button" class="btn btn-sm btn-primary" data-i18n="chat.sidebar.pluginList.buttons.addPlugin"></button>
+	</div>
+</div>
+` : ''}
+${charlist.length ? `
+<div class="hub-character-chat-field">
+	<label data-i18n="chat.charCard.frequencyLabel"></label>
+	<div class="hub-character-chat-freq-list">
+		${charlist.map(charname => {
+		const freq = freqMap[charname] ?? 0.5
+		const pct = Math.round(Number(freq) * 100)
+		return `
+		<div class="hub-character-chat-freq-row" data-char="${escapeHtml(charname)}">
+			<span class="hub-character-chat-freq-label">${escapeHtml(charname)}</span>
+			<input type="range" min="0" max="100" value="${pct}" class="hub-character-chat-freq-slider range range-xs" />
+			<button type="button" class="hub-character-chat-force-reply btn btn-xs btn-ghost" data-char="${escapeHtml(charname)}" data-i18n="chat.hub.forceReply"></button>
+			<button type="button" class="hub-character-chat-remove-char btn btn-xs btn-error" data-char="${escapeHtml(charname)}" data-i18n="chat.hub.removeChar">×</button>
+		</div>`
+		}).join('')}
+	</div>
+</div>
+` : ''}
+`}

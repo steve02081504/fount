@@ -98,13 +98,15 @@ export default {
 				catch (e) { console.error('timer: 活跃频道触发失败，尝试下一个', e) }
 
 				// ── Level 2：通过 chatid 加载 fount 网页聊天 ────────────────────
-				const { loadChat, triggerCharReply, newChat, addchar } = await import('../../shells/chat/src/chat.mjs')
+				const { loadChat, triggerCharReply, newChat, addchar } = await import('../../shells/chat/src/chat/session.mjs')
+				const { getDefaultChannelId } = await import('../../shells/chat/src/chat/dag/index.mjs')
 
 				if (chatid) try {
 					const chatMetadata = await loadChat(chatid)
 					if (chatMetadata?.LastTimeSlice.chars[char_id]) {
 						setPendingNotification(chatid, char_id, makeTimerSystemEntry(reason, chat_log_snip, char_id))
-						await triggerCharReply(chatid, char_id)
+						const ch = await getDefaultChannelId(chatMetadata.username, chatid)
+						await triggerCharReply(chatid, ch, char_id)
 						console.info(`timer: 定时器"${reason}"通过 chatid 触发成功`)
 						return
 					}
@@ -117,7 +119,9 @@ export default {
 					const newChatid = await newChat(username)
 					await addchar(newChatid, char_id)
 					setPendingNotification(newChatid, char_id, makeTimerSystemEntry(reason, chat_log_snip, char_id))
-					await triggerCharReply(newChatid, char_id)
+					const meta = await loadChat(newChatid)
+					const ch = meta ? await getDefaultChannelId(meta.username, newChatid) : 'default'
+					await triggerCharReply(newChatid, ch, char_id)
 					console.info(`timer: 定时器"${reason}"在新对话"${newChatid}"中触发`)
 
 					// 若为重复定时器，更新 callbackdata 中的 chatid 以便后续直接复用

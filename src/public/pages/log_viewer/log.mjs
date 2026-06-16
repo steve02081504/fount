@@ -166,11 +166,9 @@ function buildChildren(node, depth, renderOpts = {}) {
 			const prop = makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-
 	else if (node.kind === 'Set')
 		for (let i = 0; i < (node.items || []).length; i++)
 			container.appendChild(makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts)))
-
 	else if (node.kind === 'Map')
 		for (const item of node.items || []) {
 			const prop = document.createElement('div')
@@ -183,7 +181,6 @@ function buildChildren(node, depth, renderOpts = {}) {
 			prop.appendChild(buildArgNode(item.value, depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-
 	else {
 		// object / Error / custom class
 		for (const entry of node.entries || [])

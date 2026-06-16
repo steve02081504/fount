@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="social.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="/parts/shells:social/styles.css" />
+</head>
+
+<body>
+	<div id="app">
+		<header class="topbar">
+			<h1 data-i18n="social.title"></h1>
+			<nav>
+				<button data-view="feed" class="nav-btn active" data-i18n="social.nav.feed"></button>
+				<button data-view="explore" class="nav-btn" data-i18n="social.nav.explore"></button>
+				<button data-view="notifications" class="nav-btn" data-i18n="social.nav.notifications"><span id="notificationsBadge" class="nav-badge hidden"></span></button>
+				<button data-view="saved" class="nav-btn" data-i18n="social.nav.saved"></button>
+				<button data-view="profile" class="nav-btn" data-i18n="social.nav.profile"></button>
+			</nav>
+		</header>
+		<main>
+			<section id="composer" class="composer card">
+				<p class="hint" data-i18n="social.mentionHint"></p>
+				<div id="quotePreview" class="quote-preview hidden"></div>
+				<div id="groupRefPreview" class="group-ref-preview hidden"></div>
+				<textarea id="postText" rows="3" data-i18n="social.composer.placeholder"></textarea>
+				<div id="mediaPreview" class="media-preview hidden"></div>
+				<div class="composer-actions">
+					<label class="media-upload-btn link-btn">
+						<span data-i18n="social.composer.addMedia"></span>
+						<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
+					</label>
+					<select id="linkGroupSelect" class="hidden"></select>
+					<select id="postAsEntity" class="hidden"></select>
+					<select id="postVisibility">
+						<option value="public" data-i18n="social.composer.visibilityPublic"></option>
+						<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
+					</select>
+					<input id="postLang" value="zh-CN" />
+					<button id="postBtn" type="button" data-i18n="social.composer.publish"></button>
+				</div>
+			</section>
+			<section id="feedView" class="view">
+				<div class="feed-layout">
+					<aside id="feedTrending" class="feed-trending card hidden"></aside>
+					<div class="feed-main">
+						<div class="feed-toolbar">
+							<div class="feed-search-wrap">
+								<input type="search" id="feedSearchInput" class="feed-search-input" autocomplete="off" data-i18n="social.search.placeholder" />
+								<button type="button" id="feedSearchBtn" class="link-btn" data-i18n="social.search.submit"></button>
+								<button type="button" id="feedSearchClearBtn" class="link-btn hidden" data-i18n="social.search.clear"></button>
+							</div>
+							<button type="button" id="feedRefreshBtn" class="link-btn" data-i18n="social.feed.refresh"></button>
+						</div>
+						<div id="feedList"></div>
+						<button type="button" id="feedLoadMore" class="load-more hidden" data-i18n="social.feed.loadMore"></button>
+					</div>
+				</div>
+			</section>
+			<section id="exploreView" class="view hidden"></section>
+			<section id="notificationsView" class="view hidden">
+				<div class="notifications-toolbar hidden" id="notificationsToolbar">
+					<button type="button" id="notificationsMarkAllBtn" class="link-btn" data-i18n="social.notifications.markAllRead"></button>
+				</div>
+			</section>
+			<section id="savedView" class="view hidden"></section>
+			<section id="profileView" class="view hidden"></section>
+		</main>
+		<div id="saveModal" class="modal hidden" role="dialog" aria-modal="true">
+			<div class="modal-card card">
+				<h3 data-i18n="social.saved.pickFolderTitle"></h3>
+				<select id="saveFolderSelect"></select>
+				<div class="modal-actions">
+					<button type="button" id="saveConfirmBtn" data-i18n="social.saved.confirm"></button>
+					<button type="button" id="saveCancelBtn" class="link-btn" data-i18n="social.saved.cancel"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="module" src="/parts/shells:social/app.mjs"></script>
+</body>
+
+</html>

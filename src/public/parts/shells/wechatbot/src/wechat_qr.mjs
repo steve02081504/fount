@@ -38,8 +38,8 @@ const buildQrCodeUrl = qrcode => `https://liteapp.weixin.qq.com/q/7GiQu1?bot_typ
 const sessions = new Map()
 
 /**
- * 清理过期的二维码登录会话。
- * @returns {any} 返回值。
+ * 清理已过期的 QR 登录会话。
+ * @returns {any} 返回值
  */
 function purgeExpired() {
 	const now = Date.now()

@@ -88,9 +88,9 @@ async function renderBotDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
-		 * 选中机器人时加载其配置。
-		 * @param {any} selectedItem 下拉框选中项。
-		 * @returns {Promise<any>} 选中项处理结果。
+		 * 机器人下拉选中回调：切换配置前确认未保存变更。
+		 * @param {any} selectedItem 下拉框选中项
+		 * @returns {Promise<any>} 操作执行结果
 		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
@@ -117,9 +117,9 @@ async function renderCharDropdown() {
 		valueKey: 'value',
 		disabled,
 		/**
-		 * 选中角色时加载对应配置模板。
-		 * @param {any} selectedItem 下拉框选中项。
-		 * @returns {any} 无返回值。
+		 * 角色下拉选中回调。
+		 * @param {any} selectedItem 下拉框选中项
+		 * @returns {any} 操作执行结果
 		 */
 		onSelect: (selectedItem) => {
 			const charName = selectedItem ? selectedItem.value : null
@@ -163,12 +163,12 @@ async function loadBotConfig(botname) {
 			configEditor = createJsonEditor(configEditorContainer, {
 				label: geti18n('wechat_bots.configCard.labels.config'),
 				/**
-				 * 配置编辑器内容变更时标记为未保存。
-				 * @param {any} updatedContent 编辑器更新后的内容。
-				 * @param {any} previousContent 编辑器更新前的内容。
-				 * @param {any} root0 解构参数对象。
-				 * @param {any} root0.error 错误对象。
-				 * @returns {any} 变更回调返回值。
+				 * JSON 编辑器内容变更：无语法错误时标记为脏。
+				 * @param {any} updatedContent 编辑器更新后的内容
+				 * @param {any} previousContent 编辑器更新前的内容
+				 * @param {object} root0 解构参数对象
+				 * @param {any} root0.error 错误对象
+				 * @returns {any} 返回值
 				 */
 				onChange: (updatedContent, previousContent, { error }) => {
 					if (!error) isDirty = true
@@ -258,8 +258,8 @@ async function handleCharSelectChange(selectedChar) {
 }
 
 /**
- * 切换 Token 输入框的显示/隐藏。
- * @returns {any} 无返回值。
+ * 切换 Token 输入框明文/密文显示。
+ * @returns {any} 操作执行结果
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
@@ -409,8 +409,8 @@ async function initializeFromURLParams() {
 }
 
 /**
- * 停止二维码登录轮询循环。
- * @returns {any} 无返回值。
+ * 停止 QR 登录轮询。
+ * @returns {any} 返回值
  */
 function stopQrPoll() {
 	qrPollActive = false
@@ -499,8 +499,8 @@ async function handleQrStart() {
 }
 
 /**
- * 初始化页面：应用主题、翻译并绑定事件。
- * @returns {Promise<any>} 操作完成后的 Promise。
+ * 页面初始化：主题、i18n、URL 参数与事件绑定。
+ * @returns {Promise<any>} 操作执行结果
  */
 async function init() {
 	applyTheme()

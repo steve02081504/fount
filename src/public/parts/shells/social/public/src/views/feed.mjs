@@ -1,0 +1,148 @@
+import { mountTemplate, renderTemplate } from '../../../../../../pages/scripts/template.mjs'
+import { renderFeedItems } from '../feedRender.mjs'
+import { formatSocialSearchHref } from '../lib/runUri.mjs'
+
+/**
+ * 更新 feed 搜索栏与加载更多的 UI 状态。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function updateFeedSearchChrome(appContext) {
+	const clearBtn = document.getElementById('feedSearchClearBtn')
+	const loadMore = document.getElementById('feedLoadMore')
+	clearBtn?.classList.toggle('hidden', !appContext.state.activeFeedSearchQuery)
+	loadMore?.classList.toggle('hidden', !!appContext.state.activeFeedSearchQuery || !appContext.state.feedCursor)
+}
+
+/**
+ * 加载并渲染侧边栏热门话题标签。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+export async function loadTrendingHashtags(appContext) {
+	const aside = document.getElementById('feedTrending')
+	if (!aside) return
+	const data = await appContext.socialApi('/hashtags/trending?limit=12').catch(() => ({ tags: [] }))
+	const tags = data.tags || []
+	if (!tags.length) {
+		aside.classList.add('hidden')
+		aside.innerHTML = ''
+		return
+	}
+	aside.classList.remove('hidden')
+	aside.replaceChildren()
+	aside.appendChild(await renderTemplate('trending_header', {}))
+	const list = document.createElement('div')
+	list.className = 'trending-tags'
+	for (const row of tags) {
+		const link = document.createElement('a')
+		link.className = 'trending-tag link-btn'
+		link.href = formatSocialSearchHref(row.tag)
+		link.textContent = `#${row.tag}`
+		link.title = appContext.geti18n('social.trending.postCount', { n: row.count })
+		const count = document.createElement('span')
+		count.className = 'trending-count'
+		count.textContent = String(row.count)
+		link.appendChild(count)
+		list.appendChild(link)
+	}
+	aside.appendChild(list)
+}
+
+/**
+ * 加载首页 feed（分页，可选跳过联邦同步）。
+ * @param {object} appContext 应用上下文
+ * @param {boolean} [append=false] 追加
+ * @param {object} [options] 选项
+ * @param {boolean} [options.skipSync=false] 跳过同步
+ * @returns {Promise<void>}
+ */
+export async function loadFeed(appContext, append = false, options = {}) {
+	if (appContext.state.activeFeedSearchQuery) return
+	const syncParam = options.skipSync ? '&sync=false' : ''
+	const cursorQuery = append && appContext.state.feedCursor
+		? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
+		: ''
+	const data = await appContext.socialApi(`/feed?limit=30${syncParam}${cursorQuery}`)
+	appContext.state.feedCursor = data.nextCursor || null
+	const list = document.getElementById('feedList')
+	await renderFeedItems(appContext.geti18n, appContext.buildPostCard, list, data.items || [], append)
+	document.getElementById('feedLoadMore')?.classList.toggle('hidden', !appContext.state.feedCursor)
+	void loadTrendingHashtags(appContext)
+}
+
+/**
+ * 执行 feed 关键词/话题搜索并渲染结果。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+export async function runFeedSearch(appContext) {
+	const input = document.getElementById('feedSearchInput')
+	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
+	if (q.length < 2) {
+		const list = document.getElementById('feedList')
+		if (list) await mountTemplate(list, 'feed_empty', { emptyKey: 'social.search.tooShort' })
+		appContext.state.activeFeedSearchQuery = null
+		updateFeedSearchChrome(appContext)
+		return
+	}
+	appContext.state.activeFeedSearchQuery = q
+	appContext.state.feedCursor = null
+	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=40`)
+	const list = document.getElementById('feedList')
+	if (!(data.items || []).length) {
+		list.replaceChildren()
+		list.appendChild(await renderTemplate('feed_search_hint', {}))
+		list.appendChild(await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' }))
+		updateFeedSearchChrome(appContext)
+		return
+	}
+	list.replaceChildren()
+	list.appendChild(await renderTemplate('feed_search_hint', {}))
+	const container = document.createElement('div')
+	list.appendChild(container)
+	await renderFeedItems(
+		appContext.geti18n,
+		appContext.buildPostCard,
+		container,
+		data.items || [],
+		false,
+		'social.search.empty',
+	)
+	updateFeedSearchChrome(appContext)
+}
+
+/**
+ * 清除搜索状态并恢复默认 feed。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+export async function clearFeedSearch(appContext) {
+	appContext.state.activeFeedSearchQuery = null
+	const input = document.getElementById('feedSearchInput')
+	if (input instanceof HTMLInputElement) input.value = ''
+	appContext.state.feedCursor = null
+	await loadFeed(appContext, false)
+	updateFeedSearchChrome(appContext)
+}
+
+/**
+ * 切换到 feed 视图并执行指定搜索。
+ * @param {object} appContext 应用上下文
+ * @param {string} query 搜索词
+ * @returns {Promise<void>}
+ */
+export async function openSearchView(appContext, query) {
+	const q = String(query || '').trim()
+	if (!q) return
+	for (const button of document.querySelectorAll('.nav-btn'))
+		button.classList.toggle('active', button.dataset.view === 'feed')
+	for (const section of document.querySelectorAll('.view'))
+		section.classList.add('hidden')
+	document.getElementById('feedView')?.classList.remove('hidden')
+	document.getElementById('composer')?.classList.remove('hidden')
+	const input = document.getElementById('feedSearchInput')
+	if (input instanceof HTMLInputElement)
+		input.value = q
+	await runFeedSearch(appContext)
+}

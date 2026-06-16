@@ -5,8 +5,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream/toolBlocks.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
@@ -81,7 +81,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
  */
 
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
-import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 
 /**
  * AI源的实例

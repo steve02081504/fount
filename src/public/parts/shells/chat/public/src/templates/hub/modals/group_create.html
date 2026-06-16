@@ -1,0 +1,44 @@
+<div class="modal-box max-w-lg p-0 overflow-hidden">
+	<div class="p-6 bg-gradient-to-br from-primary to-primary/80 text-primary-content">
+		<div class="w-14 h-14 rounded-2xl bg-primary-content/15 flex items-center justify-center mb-3">
+			<img src="https://api.iconify.design/line-md/account.svg" width="28" height="28" alt="" aria-hidden="true" />
+		</div>
+		<h3 class="font-bold text-lg" data-i18n="chat.hub.createModal.title"></h3>
+		<p class="text-sm opacity-90" data-i18n="chat.hub.createModal.subtitle"></p>
+	</div>
+	<form id="create-group-form" class="flex flex-col max-h-[70vh]">
+		<div class="p-5 overflow-y-auto flex-1 space-y-4">
+			<div class="card card-border bg-base-200">
+				<div class="card-body p-4 gap-3">
+					<h4 class="text-xs font-bold uppercase opacity-60" data-i18n="chat.hub.createModal.basicSection"></h4>
+					<label class="form-control w-full">
+						<span class="label-text"><span data-i18n="chat.hub.createModal.nameLabel"></span> <span class="text-error">*</span></span>
+						<input type="text" name="name" class="input input-bordered w-full" required maxlength="50" data-i18n="chat.hub.createModal.name" />
+					</label>
+					<label class="form-control w-full">
+						<span class="label-text" data-i18n="chat.hub.createModal.descriptionLabel"></span>
+						<textarea name="description" class="textarea textarea-bordered w-full" maxlength="200" data-i18n="chat.hub.createModal.description"></textarea>
+					</label>
+				</div>
+			</div>
+			<div class="card card-border bg-base-200">
+				<div class="card-body p-4 gap-3">
+					<h4 class="text-xs font-bold uppercase opacity-60" data-i18n="chat.hub.createModal.joinSection"></h4>
+					<label class="form-control w-full">
+						<span class="label-text" data-i18n="chat.hub.createModal.joinInviteOnly"></span>
+						<select name="joinPolicy" class="select select-bordered w-full">
+							<option value="invite-only" data-i18n="chat.hub.createModal.joinInviteOnly"></option>
+							<option value="pow" data-i18n="chat.hub.createModal.joinPow"></option>
+						</select>
+						<span class="label-text-alt opacity-70" data-i18n="chat.hub.createModal.joinInviteOnlyDescription"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="p-4 border-t border-base-300 flex justify-end gap-2">
+			<button type="button" class="btn btn-ghost" data-action="cancel" data-i18n="chat.hub.createModal.cancel"></button>
+			<button type="submit" class="btn btn-primary" data-i18n="chat.hub.createModal.submit"></button>
+		</div>
+	</form>
+</div>
+<form method="dialog" class="modal-backdrop"><button data-i18n="chat.hub.modalClose"></button></form>

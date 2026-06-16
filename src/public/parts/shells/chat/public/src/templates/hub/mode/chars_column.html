@@ -1,0 +1,12 @@
+<div class="hub-char-list-header" data-i18n="${countI18nKey || 'chat.hub.charCount'}" data-count="${count}"></div>
+<div class="hub-char-list">
+	${items.map(item => `
+	<button type="button" class="hub-char-list-item hub-list-item-char${item.activeClass}" data-friend-kind="${escapeHtml(item.kind || 'char')}" data-char="${escapeHtml(item.name)}" data-group-id="${escapeHtml(item.groupId || '')}" title="${escapeHtml(item.displayName)}">
+		<div class="hub-char-list-avatar" style="background:${item.avatarBg};">${item.avatarInner}</div>
+		<div class="hub-char-list-meta">
+			<span class="hub-char-list-name">${escapeHtml(item.displayName)}</span>
+			${item.subtitle ? `<span class="hub-char-list-subtitle">${escapeHtml(item.subtitle)}</span>` : ''}
+		</div>
+	</button>
+	`).join('')}
+</div>

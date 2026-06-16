@@ -8,6 +8,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
+import { mapDelete, mapGet, mapSet } from '../scripts/p2p/composite_key.mjs'
 import { doProfile } from '../scripts/profiler.mjs'
 
 import { getAllUsers, getUserByUsername, getUserDictionary } from './auth.mjs'
@@ -191,7 +192,6 @@ function walkFountJsonFiles(rootPath) {
 			const fullPath = path.join(current, dirent.name)
 			if (dirent.isDirectory())
 				stack.push(fullPath)
-
 			else if (dirent.isFile() && dirent.name === 'fount.json')
 				files.push(fullPath)
 		}
@@ -284,7 +284,7 @@ export function getPartBranches(username, { nocache = false } = {}) {
  * 它首先检查用户特定的部件，然后回退到公共部件。
  *
  * @param {string} username - 用户的用户名。
- * @param {string} partpath - 部件的路径（例如，'shells:chat'）。
+ * @param {string} partpath - 部件路径（例如 `shells/chat`；斜杠分隔，非 URL 中的冒号形式）。
  * @returns {string} 部件目录的路径。
  */
 export function GetPartPath(username, partpath) {
@@ -292,6 +292,32 @@ export function GetPartPath(username, partpath) {
 	if (fs.existsSync(userPath + '/main.mjs'))
 		return userPath
 	return __dirname + '/src/public/parts/' + partpath
+}
+
+/** @type {Map<string, Map<string, boolean>>} */
+const partMainExistsCache = new Map()
+
+/**
+ * 缓存 part 目录是否存在 main.mjs（供 part_invoke 等高频路径使用）。
+ * @param {string} username 用户
+ * @param {string} partpath 部件路径
+ * @returns {boolean} 是否存在 main.mjs
+ */
+export function hasPartMain(username, partpath) {
+	const cached = mapGet(partMainExistsCache, username, partpath)
+	if (cached !== undefined) return cached
+	const exists = fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')
+	mapSet(partMainExistsCache, username, partpath, exists)
+	return exists
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} partpath 部件路径
+ * @returns {void}
+ */
+export function invalidatePartMainCache(username, partpath) {
+	mapDelete(partMainExistsCache, username, partpath)
 }
 
 /**
@@ -691,10 +717,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 		if (!parts_set[username][partpath]) {
 			const profile = await doProfile(`part:${partpath}:load`, async () => {
 				parts_set[username][partpath] = (async () => {
-					/**
-					 * 已加载的部件实例。
-					 * @type {T}
-					 */
+					/** @type {T} */
 					const part = await baseloadPart(username, partpath, {
 						pathGetter,
 						/**
@@ -784,10 +807,7 @@ export async function unloadPartBase(username, partpath, unLoadargs, {
 	unLoader = part => part.Unload?.(unLoadargs),
 	afterUnload = baseMjsPartUnloader
 } = {}) {
-	/**
-	 * 待卸载的部件实例。
-	 * @type {T}
-	 */
+	/** @type {T} */
 	const part = parts_set[username]?.[partpath]
 	if (!part) return
 	try {
@@ -840,10 +860,7 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	}
 } = {}) {
 	parts_set[username] ??= {}
-	/**
-	 * 当前或待重载的部件实例。
-	 * @type {T | undefined}
-	 */
+	/** @type {T | undefined} */
 	let part = parts_set[username][partpath]
 	const parent = path.dirname(partpath)
 	const partname = path.basename(partpath)
@@ -973,10 +990,7 @@ function getSfwInfo(info) {
  * @returns {Promise<PartDetails>} 一个解析为详细部件信息的承诺。
  */
 export async function getPartDetails(username, partpath, nocache = false) {
-	/**
-	 * 部件详情（缓存或新加载）。
-	 * @type {PartDetails | undefined}
-	 */
+	/** @type {PartDetails | undefined} */
 	let details = nocache ? undefined : loadData(username, 'parts_details_cache')?.[partpath]
 	const user = getUserByUsername(username)
 	if (!details) details = await nocacheGetPartBaseDetails(username, partpath)

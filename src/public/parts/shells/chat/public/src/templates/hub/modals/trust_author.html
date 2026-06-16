@@ -1,0 +1,22 @@
+<div data-trust-part="body">
+	<div class="alert alert-error shadow-lg mb-4">
+		<p class="font-semibold" data-i18n="chat.hub.trustAuthorDialog.warningTitle"></p>
+		<p class="text-sm mt-2" data-i18n="chat.hub.trustAuthorDialog.warningBody"></p>
+		<p class="text-sm mt-2 opacity-90">${authorLabel}</p>
+	</div>
+	<div class="form-control w-full">
+		<label class="label"><span class="label-text" data-i18n="chat.hub.trustAuthorDialog.durationLabel"></span></label>
+		<div class="flex flex-wrap gap-2" id="trust-author-duration-options">
+			${durationOptions.map(option => `
+			<label class="label cursor-pointer gap-2 border border-base-300 rounded-lg px-3 py-2">
+				<input type="radio" name="trust-duration" class="radio radio-sm" value="${option.value}" ${option.checked ? ' checked' : '' } />
+				<span data-i18n="${option.labelKey}"></span>
+			</label>
+			`).join('')}
+		</div>
+	</div>
+</div>
+<div data-trust-part="footer">
+	<button type="button" class="btn btn-ghost" id="trust-author-cancel-button" data-i18n="chat.hub.trustAuthorDialog.cancel"></button>
+	<button type="button" class="btn btn-error" id="trust-author-confirm-button" disabled></button>
+</div>

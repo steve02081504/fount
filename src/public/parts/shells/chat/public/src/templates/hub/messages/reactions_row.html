@@ -1,0 +1,6 @@
+<div class="hub-reactions flex flex-wrap gap-1 mt-1" data-message-id="${eventId}">
+	${reactionRows.map(row => `
+	<button type="button" class="badge badge-ghost badge-sm gap-1 cursor-pointer hover:badge-neutral${row.mineClass}" data-action="reaction" data-emoji="${row.emoji}" data-event-id="${eventId}">${row.emojiLabel} <span>${row.count}</span></button>
+	`).join('')}
+	${canAddReactions ? `<button type="button" class="btn btn-ghost btn-xs btn-circle" data-action="addReaction" data-event-id="${eventId}" title="+">+</button>` : ''}
+</div>
