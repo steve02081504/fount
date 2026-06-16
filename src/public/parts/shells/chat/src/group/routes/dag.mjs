@@ -110,10 +110,17 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/merge-tips$/, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-
-		const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
-		const event = await mergeDagTips(username, groupId, sender, secretKey)
-		res.status(200).json({ event })
+		try {
+			const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
+			const event = await mergeDagTips(username, groupId, sender, secretKey)
+			res.status(200).json({ event })
+		}
+		catch (error) {
+			if (Number.isInteger(error?.http_code))
+				return res.status(error.http_code).json(error.json || { error: error.message })
+			console.error('POST /dag/merge-tips failed:', error)
+			return res.status(500).json({ error: 'Failed to merge DAG tips' })
+		}
 	})
 
 	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/events$/, authenticate, requireGroupMember(), async (req, res) => {

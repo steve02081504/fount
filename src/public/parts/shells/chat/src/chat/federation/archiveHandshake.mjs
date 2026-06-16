@@ -81,7 +81,14 @@ export function wireArchiveSummary(summary) {
  * @returns {Promise<{ events: object[], checkpoint: object | null, summary: object }>} 本地事件、检查点与存档摘要
  */
 export async function loadLocalFederationArchive(username, groupId, readJsonl) {
-	const events = await readJsonl(eventsPath(username, groupId))
+	let events = []
+	try {
+		events = await readJsonl(eventsPath(username, groupId))
+	}
+	catch {
+		// 组被清理后联邦房间可能还有迟到帧；缺失 events 文件时降级为空，避免打崩 Node 进程。
+		events = []
+	}
 	let checkpoint = null
 	try {
 		checkpoint = JSON.parse(await readFile(snapshotPath(username, groupId), 'utf8'))

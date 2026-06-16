@@ -441,22 +441,6 @@ export function registerGovernanceRoutes(router, authenticate) {
 		// 选取转让角色：优先 'founder'，否则取第一个
 		const transferRoleId = manageAdminsRoleIds.includes('founder') ? 'founder' : manageAdminsRoleIds[0]
 
-		// 撤销当前所有 MANAGE_ADMINS 持有者的对应角色（新群主除外）
-		for (const [key, member] of Object.entries(state.members)) {
-			if (member.status !== 'active') continue
-			const hash = key
-			if (hash === targetHash) continue
-			for (const roleId of member.roles || [])
-				if (state.roles[roleId]?.permissions?.MANAGE_ADMINS)
-					await appendSignedLocalEvent(username, groupId, {
-						type: 'role_revoke',
-						timestamp: Date.now(),
-						content: { targetMemberKey: hash, roleId },
-					})
-
-
-		}
-
 		// 将转让角色赋给新群主（若其尚未持有）
 		const newOwnerMember = state.members[targetHash]
 		if (!(newOwnerMember?.roles || []).includes(transferRoleId))
@@ -471,6 +455,35 @@ export function registerGovernanceRoutes(router, authenticate) {
 			timestamp: Date.now(),
 			content: { delegatedOwnerPubKeyHash: targetHash },
 		})
+
+		// 撤销当前其他 MANAGE_ADMINS 持有者（新群主除外）。
+		// 关键顺序：先完成 owner 迁移，再撤销旧 owner；避免在中途丢失写权限导致 500。
+		const revocations = []
+		for (const [key, member] of Object.entries(state.members)) {
+			if (member?.status !== 'active') continue
+			const hash = String(key || '').trim().toLowerCase()
+			if (!hash || hash === targetHash) continue
+			for (const roleId of member.roles || [])
+				if (state.roles[roleId]?.permissions?.MANAGE_ADMINS)
+					revocations.push({ targetMemberKey: hash, roleId })
+		}
+		revocations.sort((a, b) => {
+			const aIsCaller = a.targetMemberKey === callerKey
+			const bIsCaller = b.targetMemberKey === callerKey
+			return Number(aIsCaller) - Number(bIsCaller)
+		})
+		for (const revoke of revocations) {
+			// 最后一笔通常是调用者自撤权；提交后会触发 role 侧效（含 rotateAllChannelKeys）。
+			// 若立刻按新权限执行该侧效，会在“事件已落盘后”抛 MANAGE_CHANNELS，导致误报 500。
+			const appendOpts = revoke.targetMemberKey === callerKey
+				? { skipReleaseQuarantined: true, skipGenesisSideEffects: true }
+				: undefined
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'role_revoke',
+				timestamp: Date.now(),
+				content: revoke,
+			}, appendOpts)
+		}
 
 		res.status(200).json({ newOwnerPubKeyHash: targetHash, transferRoleId })
 	})
