@@ -14,6 +14,7 @@ import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
 import { filterEventsForFederatedPull } from './federationExport.mjs'
 import { invalidateTimelineMaterializedCache } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
+import { isTimelineWriteAuthorized } from './writeAuth.mjs'
 
 /** 联邦 RPC 单次 pull 响应上限（客户端循环 afterEventId 直至空批）。 */
 export const FEDERATED_TIMELINE_PULL_BATCH = 200
@@ -37,6 +38,9 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	const body = eventBodyForSign(event)
 	if (computeEventId(body) !== event.id) return false
 	if (!await verifyTimelineRemoteSignature(event)) return false
+	// 授权边界：验签证明 sender 持有 senderPubKey，但不代表 sender 有权写入本时间线。
+	// 拒绝「攻击者用自有 key 签名 + 伪造 groupId 注入受害者时间线」——按 entity 类型解析合法写入者。
+	if (!isTimelineWriteAuthorized(entityHash, sender)) return false
 	const existing = await readJsonl(timelineEventsPath(username, entityHash))
 	if (existing.some(row => row.id === event.id)) return false
 	let row
