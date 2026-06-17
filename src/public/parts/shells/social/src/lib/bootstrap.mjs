@@ -2,7 +2,7 @@
  * Social 引导：账号即 Chat 联邦 P2P 实体，首次访问时自动准备 timeline + profile。
  */
 import { ensureLocalEntityProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { isWritableLocalEntity, resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from '../operatorEntity.mjs'
 import { ensureSocialMeta } from '../timeline/append.mjs'
 
 /**
@@ -12,7 +12,7 @@ import { ensureSocialMeta } from '../timeline/append.mjs'
  * @returns {Promise<void>}
  */
 export async function ensureEntitySocialReady(username, entityHash) {
-	if (!isWritableLocalEntity(username, entityHash)) return
+	if (!isWritableLocalEntity( entityHash)) return
 	await ensureLocalEntityProfile(username, entityHash)
 	await ensureSocialMeta(username, entityHash)
 }
@@ -23,7 +23,7 @@ export async function ensureEntitySocialReady(username, entityHash) {
  * @returns {Promise<string | null>} operator entityHash
  */
 export async function ensureOperatorSocialReady(username) {
-	const entityHash = resolveOperatorEntityHash(username)
+	const entityHash = await resolveOperatorEntityHash(username)
 	if (!entityHash) return null
 	await ensureEntitySocialReady(username, entityHash)
 	return entityHash

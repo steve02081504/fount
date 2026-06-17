@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
@@ -25,7 +25,7 @@ export function registerVaultRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/files', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		const entry = await registerVaultFile(username, self, req.body)
 		const event = await commitTimelineEvent(username, self, {
@@ -44,7 +44,7 @@ export function registerVaultRoutes(router) {
 
 	router.get('/api/parts/shells\\:social/files/:shareId', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		const owner = String(req.query.owner || self || '').toLowerCase()
 		if (!isEntityHash128(owner))
 			return res.status(400).json({ error: 'invalid owner' })

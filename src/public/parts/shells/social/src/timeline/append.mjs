@@ -2,13 +2,13 @@ import { Buffer } from 'node:buffer'
 
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { resolveAgentCharPartName } from '../../../../../../scripts/p2p/entity/agentResolve.mjs'
-import { getLocalNodeHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getFederationIdentitySecret } from '../../../../../../scripts/p2p/federation/identity.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
 import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
 import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
+import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'
+import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 
@@ -51,10 +51,10 @@ async function assertSocialMetaExists(username, entityHash) {
 
 /**
  * @param {string} username replica 登录名
- * @returns {Uint8Array | null} 联邦 identity 私钥
+ * @returns {Promise<Uint8Array | null>} 联邦 identity 私钥
  */
-function loadFederationIdentitySecretKey(username) {
-	const secretHex = getFederationIdentitySecret(username)
+async function loadFederationIdentitySecretKey(username) {
+	const secretHex = await getOperatorSecretKey(username)
 	if (!secretHex || secretHex.length !== 64) return null
 	return new Uint8Array(Buffer.from(secretHex, 'hex'))
 }
@@ -62,10 +62,10 @@ function loadFederationIdentitySecretKey(username) {
 /**
  * 解析本 replica 时间线事件的签名者身份与密钥。
  * @param {string} username replica 登录名
- * @returns {{ sender: string, secretKey: Uint8Array }} 时间线签名者
+ * @returns {Promise<{ sender: string, secretKey: Uint8Array }>} 时间线签名者
  */
-function resolveTimelineSigner(username) {
-	const secretKey = loadFederationIdentitySecretKey(username)
+async function resolveTimelineSigner(username) {
+	const secretKey = await loadFederationIdentitySecretKey(username)
 	if (!secretKey) throw new Error('configure federation identity before posting')
 	return { sender: pubKeyHash(publicKeyFromSeed(secretKey)), secretKey }
 }
@@ -75,12 +75,12 @@ function resolveTimelineSigner(username) {
  * Social 账号 = Chat P2P 实体：用户 identity 或本机托管的 agent（chars/）。
  * @param {string} username replica 登录名
  * @param {string} entityHash 128 位 entityHash
- * @returns {boolean} 是否可写
+ * @returns {Promise<boolean>} 是否可写
  */
-export function canWriteTimeline(username, entityHash) {
+export async function canWriteTimeline(username, entityHash) {
 	const parsed = parseEntityHash(entityHash)
-	if (!parsed || parsed.nodeHash !== getLocalNodeHash(username)) return false
-	const secretKey = loadFederationIdentitySecretKey(username)
+	if (!parsed || parsed.nodeHash !== getNodeHash()) return false
+	const secretKey = await loadFederationIdentitySecretKey(username)
 	if (!secretKey) return false
 	const sender = pubKeyHash(publicKeyFromSeed(secretKey))
 	if (parsed.subjectHash === sender) return true
@@ -94,7 +94,7 @@ export function canWriteTimeline(username, entityHash) {
  * @returns {Promise<void>}
  */
 export async function assertWritableTimeline(username, entityHash) {
-	if (!canWriteTimeline(username, entityHash))
+	if (!await canWriteTimeline(username, entityHash))
 		throw new Error('cannot write timeline for this entity on this replica')
 }
 
@@ -113,7 +113,7 @@ export async function appendTimelineEvent(username, entityHash, event) {
 	const previous = await readJsonl(timelineEventsPath(username, entityHash))
 	const { hlc, prev_event_ids } = computeAppendHlcAndPrev(previous, event)
 
-	const { sender, secretKey } = resolveTimelineSigner(username)
+	const { sender, secretKey } = await resolveTimelineSigner(username)
 	const base = {
 		type: event.type,
 		groupId,

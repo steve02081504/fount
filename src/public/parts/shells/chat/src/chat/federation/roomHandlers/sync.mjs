@@ -1,6 +1,6 @@
 import { computeDagTipIdsFromEvents } from '../../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation_user.mjs'
+import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { takeIncomingWantIdsSlot } from '../../../../../../../../scripts/p2p/want_ids.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
@@ -98,7 +98,7 @@ export function registerSyncHandlers(roomContext) {
 				markSeenFederationEvent(username, groupId, eventId)
 				const remoteNodeHash = peerToNode.get(peerId)
 				if (remoteNodeHash)
-					await bumpReputationOnRelay(username, remoteNodeHash, `dag:${eventId}`)
+					await bumpReputationOnRelay( remoteNodeHash, `dag:${eventId}`)
 			}
 			// live 漏帧快速补洞：该事件引用了本地缺失的父事件 ⇒ 调度有界补齐（scheduler 自带防抖/冷却/退避硬闸，dag_event 高频也不放大负载）。
 			if (remoteTipsRevealLocalGap(signedEvent.prev_event_ids))
@@ -198,7 +198,6 @@ export function registerSyncHandlers(roomContext) {
 			const dedupeKey = `${username}:${groupId}:${requesterNodeHash}:${wantIds.slice().sort().join(',')}:${parsed.ttl}`
 			if (!takeGossipRequestSlot(dedupeKey)) return
 			if (!takeIncomingWantIdsSlot(
-				username,
 				groupId,
 				requesterNodeHash,
 				wantIdsLimitsFromSettings(groupSettings),
@@ -218,7 +217,7 @@ export function registerSyncHandlers(roomContext) {
 			const byId = new Map(localEvents.map(event => [event.id, event]))
 			const allUnknown = wantIds.length > 0 && wantIds.every(id => !byId.has(id))
 			if (allUnknown && localEvents.length > 0 && handshake.strictAligned)
-				void recordGossipAllUnknownWant(username, groupId, requesterNodeHash).catch(console.error)
+				void recordGossipAllUnknownWant( groupId, requesterNodeHash).catch(console.error)
 
 			const events = wantIds.map(id => byId.get(id)).filter(Boolean)
 			if (peerId && events.length) {
@@ -236,7 +235,7 @@ export function registerSyncHandlers(roomContext) {
 					}
 					catch (error) { console.error('federation: gossip_response failed', error) }
 				})
-				void bumpReputationOnRelay(username, requesterNodeHash, `gossip:${dedupeKey}`)
+				void bumpReputationOnRelay( requesterNodeHash, `gossip:${dedupeKey}`)
 					.catch(error => console.warn('federation: gossip reputation update failed', error))
 			}
 

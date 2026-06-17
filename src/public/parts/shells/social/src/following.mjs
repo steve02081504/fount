@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { listReplicaUsernamesFollowing as listFollowersFromIndex } from '../../../../../scripts/p2p/social/follower_index.mjs'
 import { applyFollowNetworkHints } from '../../../../../scripts/p2p/social/network_hints.mjs'
 
@@ -11,7 +11,7 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @returns {Promise<{ following: string[] }>} 关注列表
  */
 export async function loadFollowing(username) {
-	const operator = resolveOperatorEntityHash(username)
+	const operator = await resolveOperatorEntityHash(username)
 	if (!operator) return { following: [] }
 	const view = await getTimelineMaterialized(username, operator)
 	return { following: view.following.map(id => id.toLowerCase()) }
@@ -26,7 +26,7 @@ export async function loadFollowing(username) {
  * @returns {Promise<string[]>} 规范化后的关注列表
  */
 export async function setFollow(username, entityHash, follow, options = {}) {
-	const self = resolveOperatorEntityHash(username)
+	const self = await resolveOperatorEntityHash(username)
 	if (!self) throw new Error('configure federation identity before following')
 	const id = entityHash.toLowerCase()
 	const { following } = await loadFollowing(username)

@@ -2,12 +2,11 @@ import { getNodeHash } from './node_context.mjs'
 import { ensureUserRoom } from './user_room.mjs'
 
 /**
- * 定向投递：经 User Room / 共享 scope 群房间直发，不使用 TrustGraph fanout。
- * @param {string} username replica
+ * @param {string} username replica（trust graph 上下文）
  * @param {string} toNodeHash 64 hex 目标节点
  * @param {string} actionName Trystero action
  * @param {unknown} payload 载荷
- * @returns {Promise<boolean>} 是否已发送
+ * @returns {Promise<boolean>} 是否成功发送到目标节点
  */
 export async function deliver(username, toNodeHash, actionName, payload) {
 	const target = toNodeHash.trim().toLowerCase()
@@ -22,12 +21,12 @@ export async function deliver(username, toNodeHash, actionName, payload) {
  * @param {unknown} payload 载荷
  * @param {string | null} [exceptPeerId] 跳过的 peer
  * @param {number} [limit=6] 最多转发 peer 数
- * @returns {Promise<number>} 发送次数
+ * @returns {Promise<number>} 实际转发的 peer 数
  */
 export async function deliverToUserRoomPeers(username, actionName, payload, exceptPeerId = null, limit = 6) {
-	const slot = await ensureUserRoom(username)
+	const slot = await ensureUserRoom({ replicaUsername: username })
 	if (!slot) return 0
-	const body = { ...payload, nodeHash: getNodeHash(username) }
+	const body = { ...payload, nodeHash: getNodeHash() }
 	let sent = 0
 	const peers = [...slot.getRoster()
 		.filter(({ peerId }) => peerId && peerId !== exceptPeerId)]
@@ -37,13 +36,13 @@ export async function deliverToUserRoomPeers(username, actionName, payload, exce
 		peers[swapIndex] = peers[pickIndex]
 		peers[pickIndex] = tmp
 	}
-	for (const { peerId } of peers) 
+	for (const { peerId } of peers)
 		try {
 			slot.sendToPeer(peerId, actionName, body)
 			sent++
 			if (sent >= limit) break
 		}
 		catch { /* disconnected */ }
-	
+
 	return sent
 }

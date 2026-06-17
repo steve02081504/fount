@@ -66,7 +66,7 @@ export async function buildHomeFeed(username, options = {}) {
 	const streams = []
 	for (const entityHash of feedSources) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked(username, entityHash)) continue
+		if (isEntityHashBlocked( entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (!view.posts?.length && !view.reposts?.length) continue
 		/** @type {object[]} */

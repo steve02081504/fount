@@ -40,7 +40,7 @@ function scheduleKey(username, groupId) {
 function runOrDefer(username, groupId, entry) {
 	entry.timer = null
 	// 硬闸：处于 wantIds 退避中直接跳过，避免补齐风暴（信号会被后续 tip 心跳重新触发）。
-	if (isWantIdsInBackoff(wantIdsGroupKey(username, groupId))) return
+	if (isWantIdsInBackoff(wantIdsGroupKey( groupId))) return
 	const now = Date.now()
 	const sinceLast = now - entry.lastRunAt
 	if (sinceLast < COOLDOWN_MS) {
@@ -61,7 +61,7 @@ function runOrDefer(username, groupId, entry) {
 export function scheduleCatchUp(username, groupId) {
 	if (!username || !groupId) return
 	// 硬闸前置：退避中连定时器都不必排（省内存/省 tick）。
-	if (isWantIdsInBackoff(wantIdsGroupKey(username, groupId))) return
+	if (isWantIdsInBackoff(wantIdsGroupKey( groupId))) return
 	const key = scheduleKey(username, groupId)
 	let entry = scheduleByKey.get(key)
 	if (!entry) {

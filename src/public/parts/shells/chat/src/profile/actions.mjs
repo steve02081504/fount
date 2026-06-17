@@ -1,13 +1,13 @@
 /**
  * Chat profile CLI actions（委托 scripts/p2p/entity）。
  */
-import { normalizeLocalizedMap } from '../../../../../../scripts/p2p/entity/localized.mjs'
+import { normalizeLocalizedMap } from '../../../../../../server/p2p_server/localized.mjs'
 import {
 	getProfile,
 	updateProfile,
 	updateStatus as setEntityStatus,
 } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { getOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { getOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 
 /**
  *
@@ -19,7 +19,7 @@ export const actions = {
 	 * @returns {Promise<string>} JSON 文本
 	 */
 	async get({ user }) {
-		const entityHash = getOperatorEntityHash(user)
+		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user)
 		return JSON.stringify(profile, null, 2)
 	},
@@ -32,7 +32,7 @@ export const actions = {
 	 * @returns {Promise<string>} 结果消息
 	 */
 	async updateDisplayName({ user, name, locale = 'zh-CN' }) {
-		const entityHash = getOperatorEntityHash(user)
+		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
 		localized[locale] = { ...localized[locale], name: String(name || '').trim() }
@@ -48,7 +48,7 @@ export const actions = {
 	 * @returns {Promise<string>} 结果消息
 	 */
 	async updateBio({ user, description, locale = 'zh-CN' }) {
-		const entityHash = getOperatorEntityHash(user)
+		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
 		localized[locale] = { ...localized[locale], description: String(description || '') }
@@ -64,7 +64,7 @@ export const actions = {
 	 * @returns {Promise<string>} 结果消息
 	 */
 	async updateStatus({ user, status, customStatus = '' }) {
-		const entityHash = getOperatorEntityHash(user)
+		const entityHash = await getOperatorEntityHash(user)
 		await setEntityStatus(user, entityHash, status, customStatus)
 		return `Status updated to: ${status}`
 	},

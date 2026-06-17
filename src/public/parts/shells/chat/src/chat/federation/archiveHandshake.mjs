@@ -96,7 +96,7 @@ export async function loadLocalFederationArchive(username, groupId, readJsonl) {
 	catch { /* absent */ }
 	let blockedPeers = []
 	try {
-		const peers = loadPeerPoolView(username, groupId)
+		const peers = loadPeerPoolView( groupId)
 		blockedPeers = peers.blockedPeers || []
 	}
 	catch { /* absent */ }

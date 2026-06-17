@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from '../operatorEntity.mjs'
 import { getEntityProfile } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'
 
@@ -33,7 +33,7 @@ export async function suggestMentions(username, query = '', limit = 20) {
 		suggestions.push(suggestion)
 	}
 
-	const selfEntityHash = resolveOperatorEntityHash(username)
+	const selfEntityHash = await resolveOperatorEntityHash(username)
 	if (selfEntityHash) {
 		const profile = await getEntityProfile(username, selfEntityHash)
 		pushSuggestion({

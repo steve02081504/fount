@@ -1,12 +1,11 @@
 /**
  * Social 实体解析：Social 账号 = Chat 账号 = fount P2P 实体（128 位 entityHash）。
- * 无需单独注册；用户身份来自 Chat 联邦 identity，agent 来自本机 chars/ part。
  */
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { resolveAgentCharPartName } from '../../../../../../scripts/p2p/entity/agentResolve.mjs'
-import { getLocalNodeHash, resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'
+import { getLocalNodeHash, resolveOperatorEntityHash } from '../../../../../../server/p2p_server/http_glue.mjs'
 import {
 	agentEntityHash,
 	isEntityHash128,
@@ -25,12 +24,11 @@ import { getAllUserNames, getUserDictionary } from '../../../../../../server/aut
  */
 
 /**
- * 列出本 replica 上托管的全部 agent 实体。
  * @param {string} replicaUsername replica 登录名
- * @returns {{ entityHash: string, charPartName: string }[]} 本机 agent 实体列表
+ * @returns {{ entityHash: string, charPartName: string }[]}
  */
 export function listLocalAgentEntities(replicaUsername) {
-	const nodeHash = getLocalNodeHash(replicaUsername)
+	const nodeHash = getLocalNodeHash()
 	const charsRoot = path.join(getUserDictionary(replicaUsername), 'chars')
 	if (!fs.existsSync(charsRoot)) return []
 	/** @type {{ entityHash: string, charPartName: string }[]} */
@@ -47,18 +45,17 @@ export function listLocalAgentEntities(replicaUsername) {
 }
 
 /**
- * 查找托管该 entityHash 的本机 replica（用户或 agent 资料目录）。
  * @param {string} entityHash 128 位 entityHash
- * @returns {string | null} replica 登录名
+ * @returns {Promise<string | null>} replica 登录名
  */
-export function findHostingReplicaUsername(entityHash) {
+export async function findHostingReplicaUsername(entityHash) {
 	if (!isEntityHash128(entityHash)) return null
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) return null
 
 	for (const username of getAllUserNames()) {
-		if (parsed.nodeHash !== getLocalNodeHash(username)) continue
-		const operator = resolveOperatorEntityHash(username)
+		if (parsed.nodeHash !== getLocalNodeHash()) continue
+		const operator = await resolveOperatorEntityHash(username)
 		if (operator?.toLowerCase() === parsed.entityHash) return username
 		if (resolveAgentCharPartName(username, parsed.entityHash)) return username
 	}
@@ -66,18 +63,17 @@ export function findHostingReplicaUsername(entityHash) {
 }
 
 /**
- * 解析 entityHash 对应的 Social 实体类型与托管信息。
  * @param {string} entityHash 128 位 entityHash
  * @param {string | null} [hintReplicaUsername] 已知 replica 时可省略全量扫描
- * @returns {ResolvedSocialEntity | null} 解析结果
+ * @returns {Promise<ResolvedSocialEntity | null>}
  */
-export function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
+export async function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
 	const raw = String(entityHash || '').trim().toLowerCase()
 	if (!isEntityHash128(raw)) return null
 	const parsed = parseEntityHash(raw)
 	if (!parsed) return null
 
-	const replicaUsername = hintReplicaUsername || findHostingReplicaUsername(parsed.entityHash)
+	const replicaUsername = hintReplicaUsername || await findHostingReplicaUsername(parsed.entityHash)
 	const local = !!replicaUsername
 	if (!local)
 		return {
@@ -88,8 +84,7 @@ export function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
 			charPartName: null,
 		}
 
-
-	const operator = resolveOperatorEntityHash(replicaUsername)
+	const operator = await resolveOperatorEntityHash(replicaUsername)
 	if (operator?.toLowerCase() === parsed.entityHash)
 		return {
 			entityHash: parsed.entityHash,
@@ -98,7 +93,6 @@ export function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
 			replicaUsername,
 			charPartName: null,
 		}
-
 
 	const charPartName = resolveAgentCharPartName(replicaUsername, parsed.entityHash)
 	if (charPartName)
@@ -109,7 +103,6 @@ export function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
 			replicaUsername,
 			charPartName,
 		}
-
 
 	return {
 		entityHash: parsed.entityHash,

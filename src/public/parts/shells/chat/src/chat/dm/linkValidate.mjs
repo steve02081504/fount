@@ -5,7 +5,7 @@
  * 【数据结构】validateDmIntroLinkProof 返回 { ok, error? }；state.members 按 pubKeyHex 索引。
  * 【关联】dm/linkVerify、dm/intro、lib/dmLinkSignature、dm/index；Trystero 房间 dm:{sessionTag}。
  */
-import { getFederationSettings } from '../../../../../../../scripts/p2p/federation/identity.mjs'
+import { getFederationViewForUser } from '../../../../../../../server/p2p_server/operator_identity.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 
 import { dmIntroNonceMatches } from './intro.mjs'
@@ -52,7 +52,7 @@ export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyH
 	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonce))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
-	const fed = getFederationSettings(nodeUsername)
+	const fed = await getFederationViewForUser(nodeUsername)
 	if (normalizePubKeyHex(fed.identityPubKeyHex) === introPk && !dmIntroNonceMatches(nodeUsername, nonce))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 

@@ -12,7 +12,7 @@ export function applyFollowNetworkHints(username, targetEntityHash, follow) {
 	if (!follow) return
 	const parsed = parseEntityHash(targetEntityHash)
 	if (!parsed) return
-	applyNetworkHint(username, {
+	applyNetworkHint( {
 		nodeHash: parsed.nodeHash,
 		source: 'social:follow',
 		kind: 'follow',
@@ -29,7 +29,7 @@ export function applyFollowNetworkHints(username, targetEntityHash, follow) {
 export function applyMentionNetworkHint(username, entityHash) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) return
-	applyNetworkHint(username, {
+	applyNetworkHint( {
 		nodeHash: parsed.nodeHash,
 		source: 'social:mention',
 		kind: 'mention',

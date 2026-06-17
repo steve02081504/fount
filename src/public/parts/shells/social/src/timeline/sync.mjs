@@ -34,7 +34,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	// 此处拒绝把为其它时间线签名的事件错误归档到本 owner（防跨时间线归档/重放）。
 	if (event.groupId !== timelineGroupId(entityHash)) return false
 	const sender = event.sender.trim().toLowerCase()
-	if (isPubKeyHashBlocked(username, sender)) return false
+	if (isPubKeyHashBlocked( sender)) return false
 	const body = eventBodyForSign(event)
 	if (computeEventId(body) !== event.id) return false
 	if (!await verifyTimelineRemoteSignature(event)) return false

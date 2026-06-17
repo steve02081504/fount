@@ -25,13 +25,13 @@ export async function fetchChunk(context) {
 	const username = context.username
 	if (!hash || !username) return null
 
-	if (await hasChunk(username, hash))
-		return new Uint8Array(await getChunk(username, hash))
+	if (await hasChunk( hash))
+		return new Uint8Array(await getChunk( hash))
 
 	if (context.groupId) {
 		const u8 = await fetchFederationChunk(username, context.groupId, hash)
 		if (u8?.byteLength) {
-			await putChunk(username, hash, u8)
+			await putChunk( hash, u8)
 			return u8
 		}
 	}
@@ -70,7 +70,7 @@ export async function fetchChunk(context) {
 	}, FEDERATION_CHUNK_FETCH_FANOUT_K)
 	await done
 	if (result) {
-		await putChunk(username, hash, result)
+		await putChunk( hash, result)
 		return result
 	}
 
@@ -114,8 +114,8 @@ export function resolvePendingChunkFetch(payload) {
 export async function handleIncomingChunkGet(username, payload, sendResponse, peerId) {
 	const hash = String(payload?.chunkHash || '').trim().toLowerCase()
 	if (!hash) return
-	if (!await hasChunk(username, hash)) return
-	const chunkBytes = await getChunk(username, hash)
+	if (!await hasChunk( hash)) return
+	const chunkBytes = await getChunk( hash)
 	if (!chunkBytes?.length) return
 	sendResponse({ requestId: payload.requestId, dataB64: u8ToB64(chunkBytes) }, peerId)
 }

@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
 
+import { dispatchInbound } from './inbound_registry.mjs'
+import { getNodeHash } from './node_context.mjs'
 import {
-	invokePartUserRoom,
 	isPartInvokeResponse,
 	normalizePartpath,
 	unwrapPartInvokeResult,
@@ -19,6 +20,10 @@ const pendingPartInvoke = new Map()
  *   send: (name: string, payload: unknown, peerId: string | null) => void
  *   on: (name: string, handler: (payload: unknown, peerId: string) => void) => void
  * }} PartWireAdapter
+ */
+
+/**
+ * @typedef {{ replicaUsername?: string }} PartWireContext
  */
 
 /**
@@ -42,25 +47,30 @@ export function buildPartInvokePayload({ partpath, invoke, nodeHash, requestId, 
 
 /**
  * 挂载 part_timeline_put / part_invoke / part_invoke_response。
- * @param {string} username replica 登录名
+ * @param {PartWireContext} ctx 入站上下文
  * @param {PartWireAdapter} wire Trystero 适配器
  * @param {{ allowPartInvoke?: (payload: object) => boolean }} [options] 入站过滤
  * @returns {void}
  */
-export function attachPartWire(username, wire, options = {}) {
+export function attachPartWire(ctx, wire, options = {}) {
 	wire.on('part_timeline_put', data => {
 		if (!isPlainObject(data)) return
 		const partpath = normalizePartpath(data.partpath)
 		if (!partpath) return
-		void invokePartUserRoom(username, partpath, { kind: 'timeline_put', ...data }, {
+		void dispatchInbound({
+			replicaUsername: ctx.replicaUsername,
 			requesterNodeHash: data.nodeHash ? String(data.nodeHash).trim() : null,
+		}, {
+			type: 'part_timeline_put',
+			partpath,
+			...data,
 		})
 	})
 
 	wire.on('part_invoke', (data, peerId) => {
 		if (!isPlainObject(data)) return
 		if (options.allowPartInvoke?.(data) === false) return
-		void handleIncomingPartInvoke(username, data, wire, peerId)
+		void handleIncomingPartInvoke(ctx, data, wire, peerId)
 	})
 
 	wire.on('part_invoke_response', (data, peerId) => {
@@ -70,19 +80,29 @@ export function attachPartWire(username, wire, options = {}) {
 }
 
 /**
- * @param {string} username 用户
+ * @param {PartWireContext} ctx 入站上下文
  * @param {object} payload part_invoke 请求
  * @param {PartWireAdapter} wire 发送适配器
  * @param {string} peerId 对端
  * @returns {Promise<void>}
  */
-export async function handleIncomingPartInvoke(username, payload, wire, peerId) {
+export async function handleIncomingPartInvoke(ctx, payload, wire, peerId) {
 	const partpath = normalizePartpath(payload?.partpath)
 	const invoke = payload?.invoke
 	if (!partpath || !isPlainObject(invoke)) return
 
-	const response = await invokePartUserRoom(username, partpath, invoke, {
+	const response = await dispatchInbound({
+		replicaUsername: ctx.replicaUsername,
 		requesterNodeHash: payload.nodeHash ? String(payload.nodeHash).trim() : null,
+		groupId: payload.groupId ? String(payload.groupId).trim() : undefined,
+		peerId,
+	}, {
+		type: 'part_invoke',
+		partpath,
+		invoke,
+		nodeHash: payload.nodeHash,
+		groupId: payload.groupId,
+		requestId: payload.requestId,
 	})
 	if (response == null) return
 
@@ -158,7 +178,7 @@ export function partInvokeErrorMessages(results) {
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户（trust graph fanout 上下文）
  * @param {string} partpath part 路径
  * @param {object} invoke 调用体
  * @param {number} [timeoutMs=2500] 超时
@@ -167,9 +187,8 @@ export function partInvokeErrorMessages(results) {
  */
 export async function collectPartInvokeResponses(username, partpath, invoke, timeoutMs = 2500, maxResponses = 6) {
 	const { fanoutToTopNodes } = await import('./trust_graph.mjs')
-	const { getNodeHash } = await import('./node_context.mjs')
 	const requestId = randomUUID()
-	const nodeHash = getNodeHash(username)
+	const nodeHash = getNodeHash()
 	/** @type {PartInvokeResponse[]} */
 	const responses = []
 
@@ -238,9 +257,8 @@ export function wrapSocialRpc(rpc) {
  */
 export async function publishTimelineEvent(username, entityHash, signedEvent) {
 	const { fanoutToTopNodes } = await import('./trust_graph.mjs')
-	const { getNodeHash } = await import('./node_context.mjs')
 	return fanoutToTopNodes(username, 'part_timeline_put', {
-		nodeHash: getNodeHash(username),
+		nodeHash: getNodeHash(),
 		partpath: getShellPartpath('social'),
 		timelineEntityHash: entityHash.toLowerCase(),
 		event: signedEvent,

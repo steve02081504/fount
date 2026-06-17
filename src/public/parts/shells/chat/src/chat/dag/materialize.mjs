@@ -35,7 +35,7 @@ import {
 	serializeReactionsOverlay,
 	serializeVotesOverlay,
 } from '../../../../../../../scripts/p2p/materialized_state.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import {
 	invalidateTopologicalOrderMemo,
 	resolveTopologicalOrderMemoCached,
@@ -112,7 +112,7 @@ export async function getState(username, groupId, opts = {}) {
 
 	const dagTips = computeDagTipIdsFromEvents(events)
 	const [reputationFile, preferredBranchTip] = await Promise.all([
-		loadReputation(username),
+		loadReputation(),
 		loadGovernanceBranchTip(username, groupId),
 	])
 	/** @type {Record<string, number>} */

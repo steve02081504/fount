@@ -3,10 +3,10 @@ import { Readable } from 'node:stream'
 import { canReadManifest, canWriteManifestPath } from '../../scripts/p2p/entity/files/acl.mjs'
 import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from '../../scripts/p2p/entity/files/evfs.mjs'
 import { entityFileUrl, profileAvatarFileUrl } from '../../scripts/p2p/entity/files/url.mjs'
-import { applyAvatarToAllLocales } from '../../scripts/p2p/entity/localized.mjs'
 import { getProfile, updateProfile } from '../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../scripts/p2p/entity_id.mjs'
-import { assertSafeEvfsLogicalPath } from '../../scripts/p2p/user_paths.mjs'
+import { assertSafeEvfsLogicalPath } from '../../scripts/p2p/evfs_logical_path.mjs'
+import { applyAvatarToAllLocales } from '../../server/p2p_server/localized.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../multipart_upload.mjs'
 
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024

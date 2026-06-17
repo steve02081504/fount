@@ -1,7 +1,6 @@
-import { loadData, saveData } from '../../server/setting_loader.mjs'
-
 import { loadBlocklist } from './blocklist.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
+import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 
 /**
@@ -19,23 +18,22 @@ const MAX_HINTS = 256
 const DEFAULT_EXPLORE_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const NETWORK_SAVE_DEBOUNCE_MS = 300
 
-/** @type {Map<string, ReturnType<typeof setTimeout>>} */
-const networkSaveTimers = new Map()
+/** @type {ReturnType<typeof setTimeout> | null} */
+let networkSaveTimer = null
 
 /**
  * 防抖落盘 network.json，避免 roster 高频变动阻塞主线程。
- * @param {string} username replica 登录名
  * @returns {void}
  */
-function scheduleNetworkSave(username) {
-	if (networkSaveTimers.has(username)) return
-	const timer = setTimeout(() => {
-		networkSaveTimers.delete(username)
-		saveData(username, DATA_NAME)
-		invalidateTrustGraphCache(username)
+function scheduleNetworkSave() {
+	if (networkSaveTimer) return
+	networkSaveTimer = setTimeout(() => {
+		networkSaveTimer = null
+		const data = readNodeJsonSync(DATA_NAME)
+		if (data) writeNodeJsonSync(DATA_NAME, data)
+		invalidateTrustGraphCache()
 	}, NETWORK_SAVE_DEBOUNCE_MS)
-	networkSaveTimers.set(username, timer)
-	if (typeof timer.unref === 'function') timer.unref()
+	if (typeof networkSaveTimer.unref === 'function') networkSaveTimer.unref()
 }
 
 /**
@@ -76,52 +74,47 @@ export function normalizeNetwork(raw) {
 }
 
 /**
- * @param {string} username replica 登录名
- * @returns {{ trustedPeers: string[], explorePeers: string[], hints: NetworkHint[], lastRosterAt: number }} 用户级 P2P 网络
+ * @returns {{ trustedPeers: string[], explorePeers: string[], hints: NetworkHint[], lastRosterAt: number }} 节点级 P2P 网络
  */
-export function loadNetwork(username) {
-	return normalizeNetwork(loadData(username, DATA_NAME))
+export function loadNetwork() {
+	return normalizeNetwork(readNodeJsonSync(DATA_NAME))
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {ReturnType<typeof normalizeNetwork>} data 网络表
  * @returns {void}
  */
-export function saveNetwork(username, data) {
+export function saveNetwork(data) {
 	const clean = normalizeNetwork(data)
 	const now = Date.now()
 	clean.hints = clean.hints.filter(h => !h.expiresAt || h.expiresAt > now).slice(-MAX_HINTS)
 	clean.explorePeers = clean.explorePeers.slice(-MAX_EXPLORE)
-	const store = loadData(username, DATA_NAME)
-	Object.assign(store, clean)
-	scheduleNetworkSave(username)
+	writeNodeJsonSync(DATA_NAME, clean)
+	scheduleNetworkSave()
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} nodeHash 64 hex
  * @param {'trusted' | 'explore'} tier 池档位
  * @returns {void}
  */
-export function addNetworkPeer(username, nodeHash, tier = 'explore') {
+export function addNetworkPeer(nodeHash, tier = 'explore') {
 	const id = normalizeHex64(nodeHash)
 	if (!isHex64(id)) return
-	const net = loadNetwork(username)
+	const net = loadNetwork()
 	const list = tier === 'trusted' ? net.trustedPeers : net.explorePeers
 	if (!list.includes(id)) list.push(id)
-	saveNetwork(username, net)
+	saveNetwork(net)
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {{ nodeHash: string, source: string, kind: string, weight?: number, expiresAt?: number, ttlMs?: number, groupId?: string }} hint 扩边 hint
  * @returns {void}
  */
-export function applyNetworkHint(username, hint) {
+export function applyNetworkHint(hint) {
 	const nodeHash = normalizeHex64(hint?.nodeHash)
 	if (!isHex64(nodeHash)) return
-	const net = loadNetwork(username)
+	const net = loadNetwork()
 	const now = Date.now()
 	const ttlMs = Number.isFinite(hint.ttlMs) ? hint.ttlMs : DEFAULT_EXPLORE_TTL_MS
 	const expiresAt = Number.isFinite(hint.expiresAt) ? hint.expiresAt : now + ttlMs
@@ -136,19 +129,18 @@ export function applyNetworkHint(username, hint) {
 		expiresAt,
 		...hint.groupId ? { groupId: String(hint.groupId).trim() } : {},
 	})
-	saveNetwork(username, net)
+	saveNetwork(net)
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {{ remoteNodeHash?: string }[]} roster Trystero roster
  * @param {string} [groupId] 来源群
  * @param {string} [source='roster'] hint 来源标签
  * @returns {void}
  */
-export function recordExplorePeersFromRoster(username, roster, groupId = '', source = 'roster') {
+export function recordExplorePeersFromRoster(roster, groupId = '', source = 'roster') {
 	if (!roster?.length) return
-	const net = loadNetwork(username)
+	const net = loadNetwork()
 	const now = Date.now()
 	for (const peer of roster) {
 		const nodeHash = normalizeHex64(peer?.remoteNodeHash)
@@ -166,17 +158,16 @@ export function recordExplorePeersFromRoster(username, roster, groupId = '', sou
 	}
 	net.hints = net.hints.slice(-MAX_HINTS)
 	net.lastRosterAt = now
-	saveNetwork(username, net)
+	saveNetwork(net)
 }
 
 /**
  * 增量合并 trusted/explore 池（不覆盖已有全局池）。
- * @param {string} username replica 登录名
  * @param {{ trustedPeers?: string[], explorePeers?: string[] }} patch 增量
  * @returns {void}
  */
-export function mergeNetworkPeerPools(username, patch = {}) {
-	const net = loadNetwork(username)
+export function mergeNetworkPeerPools(patch = {}) {
+	const net = loadNetwork()
 	for (const raw of patch.trustedPeers || []) {
 		const id = normalizeHex64(raw)
 		if (isHex64(id) && !net.trustedPeers.includes(id)) net.trustedPeers.push(id)
@@ -186,28 +177,26 @@ export function mergeNetworkPeerPools(username, patch = {}) {
 		if (isHex64(id) && !net.explorePeers.includes(id)) net.explorePeers.push(id)
 	}
 	net.lastRosterAt = Date.now()
-	saveNetwork(username, net)
+	saveNetwork(net)
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string[]} nodeHashes trusted 候选
  * @returns {void}
  */
-export function mergeTrustedPeers(username, nodeHashes) {
-	mergeNetworkPeerPools(username, { trustedPeers: nodeHashes })
+export function mergeTrustedPeers(nodeHashes) {
+	mergeNetworkPeerPools({ trustedPeers: nodeHashes })
 }
 
 /**
- * 用户级 network + 群 scope blocklist 视图（供 peer_pool 选取）。
- * @param {string} username replica 登录名
+ * 节点级 network + 群 scope blocklist 视图（供 peer_pool 选取）。
  * @param {string} [groupId] 群 scope；空则仅全局拉黑
  * @returns {PeerPoolView} 连接池视图
  */
-export function loadPeerPoolView(username, groupId = '') {
-	const net = loadNetwork(username)
+export function loadPeerPoolView(groupId = '') {
+	const net = loadNetwork()
 	const gid = String(groupId || '').trim()
-	const blockedPeers = loadBlocklist(username).blocked
+	const blockedPeers = loadBlocklist().blocked
 		.filter(entry => !entry.groupId || !gid || entry.groupId === gid)
 		.map(entry => entry.value)
 	return {

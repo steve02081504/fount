@@ -1,13 +1,10 @@
-import { loadData, saveData } from '../../server/setting_loader.mjs'
-import { createLruMap } from '../memo.mjs'
-
 import { compositeKey } from './composite_key.mjs'
 import { parseEntityHash } from './entity_id.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
+import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import { withAsyncMutex } from './utils/async_mutex.mjs'
 
 const DATA_NAME = 'blocklist'
-const INDEX_BY_USER_MAX = 256
 
 /** @typedef {'subject' | 'entity' | 'node'} BlockScope */
 
@@ -18,17 +15,16 @@ const INDEX_BY_USER_MAX = 256
  * }} BlocklistIndex
  */
 
-/** @type {ReturnType<typeof createLruMap<string, BlocklistIndex>>} */
-const indexByUser = createLruMap(INDEX_BY_USER_MAX)
+/** @type {BlocklistIndex | null} */
+let cachedIndex = null
 
 /**
  * 串行化拉黑表写路径，避免并发 load/save 覆写。
- * @param {string} username replica 登录名
  * @param {() => void | Promise<void>} mutator 突变
  * @returns {Promise<void>}
  */
-function mutateBlocklist(username, mutator) {
-	return withAsyncMutex(`blocklist:${username}`, mutator)
+function mutateBlocklist(mutator) {
+	return withAsyncMutex('blocklist', mutator)
 }
 
 /**
@@ -69,27 +65,21 @@ function buildBlocklistIndex(blocked) {
 }
 
 /**
- * @param {string} username replica 登录名
  * @returns {void}
  */
-function invalidateBlocklistIndex(username) {
-	indexByUser.delete(username)
+export function invalidateBlocklistIndex() {
+	cachedIndex = null
 }
 
 /**
- * @param {string} username replica 登录名
- * @returns {BlocklistIndex} LRU 缓存索引
+ * @returns {BlocklistIndex} 缓存索引
  */
-function getBlocklistIndex(username) {
-	let index = indexByUser.get(username)
-	if (index) {
-		indexByUser.touch(username, index)
-		return index
-	}
-	const blocked = normalizeBlocklist(loadData(username, DATA_NAME)).blocked
-	index = buildBlocklistIndex(blocked)
-	indexByUser.touch(username, index)
-	return index
+function getBlocklistIndex() {
+	if (cachedIndex) return cachedIndex
+	const raw = readNodeJsonSync(DATA_NAME)
+	const blocked = normalizeBlocklist(raw).blocked
+	cachedIndex = buildBlocklistIndex(blocked)
+	return cachedIndex
 }
 
 /**
@@ -115,24 +105,20 @@ export function normalizeBlocklist(raw) {
 }
 
 /**
- * @param {string} username replica 登录名
- * @returns {{ blocked: Array<{ scope: BlockScope, value: string, groupId?: string }> }} 用户级拉黑表
+ * @returns {{ blocked: Array<{ scope: BlockScope, value: string, groupId?: string }> }} 节点级拉黑表
  */
-export function loadBlocklist(username) {
-	return { blocked: getBlocklistIndex(username).blocked }
+export function loadBlocklist() {
+	return { blocked: getBlocklistIndex().blocked }
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {{ blocked: Array<{ scope: BlockScope, value: string, groupId?: string }> }} list 拉黑表
  * @returns {void}
  */
-export function saveBlocklist(username, list) {
+export function saveBlocklist(list) {
 	const blocked = normalizeBlocklist(list).blocked
-	const store = loadData(username, DATA_NAME)
-	store.blocked = blocked
-	saveData(username, DATA_NAME)
-	indexByUser.touch(username, buildBlocklistIndex(blocked))
+	writeNodeJsonSync(DATA_NAME, { blocked })
+	cachedIndex = buildBlocklistIndex(blocked)
 }
 
 /**
@@ -173,52 +159,47 @@ function matchesBlocklistIndex(index, subject, groupId = '') {
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {object} subject 待检主体
  * @param {string} [groupId] 可选群 scope
- * @returns {boolean} 是否在用户级 blocklist 中
+ * @returns {boolean} 是否在节点级 blocklist 中
  */
-export function isSubjectBlocked(username, subject, groupId = '') {
-	return matchesBlocklistIndex(getBlocklistIndex(username), subject, groupId)
+export function isSubjectBlocked(subject, groupId = '') {
+	return matchesBlocklistIndex(getBlocklistIndex(), subject, groupId)
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} groupId 群 ID
  * @param {string} peerKey nodeHash 或 pubKeyHash
  * @returns {boolean} 是否拉黑
  */
-export function isPeerKeyBlocked(username, groupId, peerKey) {
+export function isPeerKeyBlocked(groupId, peerKey) {
 	const key = normalizeHex64(peerKey) || String(peerKey || '').trim().toLowerCase()
 	if (!key || !isHex64(key)) return false
-	return isSubjectBlocked(username, { pubKeyHash: key, nodeHash: key }, groupId)
+	return isSubjectBlocked({ pubKeyHash: key, nodeHash: key }, groupId)
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} pubKeyHash 64 hex
  * @returns {boolean} 是否拉黑该 subject
  */
-export function isPubKeyHashBlocked(username, pubKeyHash) {
-	return isSubjectBlocked(username, { pubKeyHash })
+export function isPubKeyHashBlocked(pubKeyHash) {
+	return isSubjectBlocked({ pubKeyHash })
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} entityHash 128 hex
  * @returns {boolean} 是否拉黑该 entity
  */
-export function isEntityHashBlocked(username, entityHash) {
-	return isSubjectBlocked(username, { entityHash })
+export function isEntityHashBlocked(entityHash) {
+	return isSubjectBlocked({ entityHash })
 }
 
 /**
  * 追加拉黑并落盘。
- * @param {string} username replica 登录名
  * @param {{ scope: BlockScope, value: string, groupId?: string }} entry 拉黑项
  * @returns {void}
  */
-export function addBlocklistEntry(username, entry) {
+export function addBlocklistEntry(entry) {
 	const scope = String(entry?.scope || '').trim().toLowerCase()
 	const value = String(entry?.value || '').trim().toLowerCase()
 	if (!scope || !value)
@@ -232,97 +213,86 @@ export function addBlocklistEntry(username, entry) {
 
 	const normValue = scope === 'node' || scope === 'subject' ? normalizeHex64(value) : value
 	const groupId = entry.groupId ? String(entry.groupId).trim() : undefined
-	return mutateBlocklist(username, () => {
-		const list = loadBlocklist(username)
+	return mutateBlocklist(() => {
+		const list = loadBlocklist()
 		if (list.blocked.some(row => row.scope === scope && row.value === normValue && row.groupId === groupId))
 			return
 		list.blocked.push(groupId ? { scope, value: normValue, groupId } : { scope, value: normValue })
-		saveBlocklist(username, list)
+		saveBlocklist(list)
 	})
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {object} banContent member_ban content
  * @param {string} [groupId] 来源群
  * @returns {void}
  */
-export function addBlocklistFromBanContent(username, banContent, groupId) {
+export function addBlocklistFromBanContent(banContent, groupId) {
 	const scope = String(banContent?.banScope || 'entity').trim().toLowerCase()
 	const sourceGroupId = String(groupId || '').trim()
 	if (scope === 'entity' && banContent?.targetEntityHash)
-		addBlocklistEntry(username, { scope: 'entity', value: banContent.targetEntityHash })
+		addBlocklistEntry({ scope: 'entity', value: banContent.targetEntityHash })
 	if (scope === 'node' && banContent?.targetNodeHash)
-		addBlocklistEntry(username, { scope: 'node', value: banContent.targetNodeHash })
+		addBlocklistEntry({ scope: 'node', value: banContent.targetNodeHash })
 	const pk = normalizeHex64(banContent?.targetPubKeyHash)
 	if (isHex64(pk))
-		addBlocklistEntry(username, { scope: 'subject', value: pk, ...sourceGroupId ? { groupId: sourceGroupId } : {} })
+		addBlocklistEntry({ scope: 'subject', value: pk, ...sourceGroupId ? { groupId: sourceGroupId } : {} })
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} entityHash 128 hex
  * @param {boolean} block true=拉黑
  * @returns {boolean} 当前是否拉黑
  */
-export function setEntityBlocked(username, entityHash, block) {
+export function setEntityBlocked(entityHash, block) {
 	const id = String(entityHash || '').trim().toLowerCase()
 	if (!isEntityHash128(id)) throw new Error('invalid entityHash')
-	return mutateBlocklist(username, () => {
-		const list = loadBlocklist(username)
+	return mutateBlocklist(() => {
+		const list = loadBlocklist()
 		const without = list.blocked.filter(e => !(e.scope === 'entity' && e.value === id))
 		if (block) without.push({ scope: 'entity', value: id })
-		saveBlocklist(username, { blocked: without })
+		saveBlocklist({ blocked: without })
 	}).then(() => block)
 }
 
 /**
  * 追加群 scope 拉黑项。
- * @param {string} username replica 登录名
  * @param {string} groupId 群 ID
  * @param {BlockScope} scope subject | entity | node
  * @param {string} value 键值
  * @returns {void}
  */
-export function addGroupBlockedPeer(username, groupId, scope, value) {
-	addBlocklistEntry(username, { scope, value, groupId })
+export function addGroupBlockedPeer(groupId, scope, value) {
+	addBlocklistEntry({ scope, value, groupId })
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} groupId 群 ID
  * @param {BlockScope} scope subject | entity | node
  * @param {string} value 键值
  * @returns {void}
  */
-export function removeGroupBlockedPeer(username, groupId, scope, value) {
+export function removeGroupBlockedPeer(groupId, scope, value) {
 	const normScope = String(scope || '').trim().toLowerCase()
 	const id = String(value || '').trim().toLowerCase()
 	if (!normScope || !id) return Promise.resolve()
-	return mutateBlocklist(username, () => {
-		const list = loadBlocklist(username)
+	return mutateBlocklist(() => {
+		const list = loadBlocklist()
 		list.blocked = list.blocked.filter(entry =>
 			!(entry.scope === normScope && entry.value === id && entry.groupId === groupId),
 		)
-		saveBlocklist(username, list)
+		saveBlocklist(list)
 	})
 }
 
 /**
- * @param {string} username replica 登录名
  * @param {string} groupId 群 ID
  * @param {Array<{ scope: BlockScope, value: string }>} entries 拉黑条目
  * @returns {void}
  */
-export function addGroupBlockedPeers(username, groupId, entries) {
+export function addGroupBlockedPeers(groupId, entries) {
 	for (const entry of entries) {
 		if (!entry?.scope || !entry?.value) continue
-		addGroupBlockedPeer(username, groupId, entry.scope, entry.value)
+		addGroupBlockedPeer(groupId, entry.scope, entry.value)
 	}
 }
-
-/**
- * @param {string} username replica 登录名
- * @returns {void}
- */
-export { invalidateBlocklistIndex }

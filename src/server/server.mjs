@@ -160,7 +160,11 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
-	if (starts.Base) initAuth()
+	if (starts.Base) {
+		initAuth()
+		const { initP2PServer } = await import('./p2p_server/index.mjs')
+		await initP2PServer({ dataPath: data_path })
+	}
 	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null

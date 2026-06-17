@@ -35,12 +35,12 @@ export function invalidateStreamSignerCache(username) {
  * @param {string} username 用户
  * @returns {{ pubKeyHex: string, pubKeyHash: string, signChunk: (pendingStreamId: string, chunkSeq: number, text: string) => Promise<string> }} 签名器
  */
-export function resolveStreamSigner(username) {
+export async function resolveStreamSigner(username) {
 	const u = String(username || '').trim()
 	if (!u) throw new Error('stream signer: username required')
 	let cached = signerCache.get(u)
 	if (cached) return cached
-	const identitySecretKeyHex = getFederationIdentitySecret(u)
+	const identitySecretKeyHex = await getFederationIdentitySecret(u)
 	if (!isHex64(identitySecretKeyHex))
 		throw new Error('federation identitySecretKeyHex required for stream signing')
 	const kp = streamKeyPairFromUserSeed(u, identitySecretKeyHex)
@@ -71,7 +71,7 @@ export function resolveStreamSigner(username) {
  * @returns {Promise<object>} 带签名字段的载荷
  */
 export async function attachStreamVolatileSignature(username, payload) {
-	const signer = resolveStreamSigner(username)
+	const signer = await resolveStreamSigner(username)
 	const type = payload?.type
 	const pendingStreamId = String(payload?.pendingStreamId || '')
 	if (!pendingStreamId) return { ...payload, senderPubKey: signer.pubKeyHex }

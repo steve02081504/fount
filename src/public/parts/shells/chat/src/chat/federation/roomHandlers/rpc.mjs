@@ -45,7 +45,7 @@ export function registerRpcHandlers(roomContext) {
 	function onGroupPartAction(name, handler) {
 		getActionReceiver(name)(handler)
 	}
-	attachGroupPartWire(username, groupId, { send: sendGroupPartAction, on: onGroupPartAction }, {
+	attachGroupPartWire({ replicaUsername: username }, groupId, { send: sendGroupPartAction, on: onGroupPartAction }, {
 		/** @returns {boolean} 过载时是否仍接受 part_invoke */
 		allowPartInvoke: () => isFederationActionAllowedUnderLoad(key, 'part_invoke', rtcLimits),
 	})

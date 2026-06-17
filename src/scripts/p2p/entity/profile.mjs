@@ -1,47 +1,20 @@
-import fsp from 'node:fs/promises'
-
-import { getAllUserNames } from '../../../server/auth.mjs'
-import { loadJsonFile, saveJsonFile } from '../../json_loader.mjs'
 import { parseEntityHash } from '../entity_id.mjs'
-import {
-	entityDir,
-	entityProfilePath,
-	userEntitiesRoot,
-} from '../user_paths.mjs'
+import { getEntityStore } from '../node/instance.mjs'
 
 import { profileAvatarFileUrl } from './files/url.mjs'
 import {
 	applyAvatarToAllLocales,
-	getInfoDefaultsForEntity,
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
 } from './localized.mjs'
+import { resolveInfoDefaultsForEntity } from './presentation_registry.mjs'
 import { isWritableLocalEntity } from './replica.mjs'
-
-/**
- * @param {string} entityHash 128 位 entityHash
- * @returns {Promise<string | null>} 托管 replica
- */
-async function findReplicaHostingEntityAsync(entityHash) {
-	const parsed = parseEntityHash(entityHash)
-	if (!parsed) return null
-	for (const replica of getAllUserNames())
-		try {
-			await fsp.access(entityProfilePath(replica, parsed.entityHash))
-			return replica
-		}
-		catch (error) {
-			if (error?.code !== 'ENOENT') throw error
-		}
-
-	return null
-}
-
 
 /** 超过该毫秒未心跳则视为离线 */
 const HEARTBEAT_STALE_MS = 120_000
 
 const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', 'busy', 'offline'])
+const PROFILE_JSON = 'profile.json'
 
 /**
  * @param {string} entityHash 128 位 entityHash
@@ -112,36 +85,23 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
 
 /**
  * @param {string} entityHash 128 位 entityHash
- * @param {string | null} [replicaUsername] 写入 replica
- * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[] }} [options] 选项
+ * @param {string | null} [replicaUsername] 展示默认字段用
+ * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object }} [options] 选项
  * @returns {Promise<object>} 资料对象
  */
 export async function getProfile(entityHash, replicaUsername = null, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) throw new Error('invalid entityHash')
 
-	const hostReplica = replicaUsername || await findReplicaHostingEntityAsync(parsed.entityHash)
-	const profileFile = hostReplica ? entityProfilePath(hostReplica, parsed.entityHash) : null
-
+	const store = getEntityStore()
 	const defaultProfile = getDefaultProfile(parsed.entityHash, parsed)
 	let stored = defaultProfile
 
-	let profileFileExists = false
-	if (profileFile)
-		try {
-			await fsp.access(profileFile)
-			profileFileExists = true
-		}
-		catch (error) {
-			if (error?.code !== 'ENOENT') throw error
-		}
-
-	if (profileFile && profileFileExists)
-		stored = toStoredProfile({ ...defaultProfile, ...await loadJsonFile(profileFile) })
-	else if (hostReplica && isWritableLocalEntity(hostReplica, parsed.entityHash)) {
-		await fsp.mkdir(entityDir(hostReplica, parsed.entityHash), { recursive: true })
-		await saveJsonFile(entityProfilePath(hostReplica, parsed.entityHash), stored)
-	}
+	const onDisk = await store.readEntityJson(parsed.entityHash, PROFILE_JSON)
+	if (onDisk)
+		stored = toStoredProfile({ ...defaultProfile, ...onDisk })
+	else if (isWritableLocalEntity(parsed.entityHash))
+		await store.writeEntityJson(parsed.entityHash, PROFILE_JSON, stored)
 
 	const locales = options.locales || ['zh-CN', 'en-UK']
 	const merged = {
@@ -153,9 +113,12 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 
 	if (options.skipPresentation) return merged
 
-	const infoDefaults = hostReplica
-		? await getInfoDefaultsForEntity(hostReplica, parsed.entityHash, locales)
-		: { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
+	let infoDefaults = options.infoDefaults
+	if (!infoDefaults && replicaUsername)
+		infoDefaults = await resolveInfoDefaultsForEntity(replicaUsername, parsed.entityHash, locales)
+	if (!infoDefaults)
+		infoDefaults = { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
+
 	const resolved = resolveProfilePresentation(merged, locales, infoDefaults)
 	return {
 		...merged,
@@ -171,9 +134,10 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
  * @returns {Promise<void>}
  */
 export async function recordHeartbeat(replicaUsername, entityHash) {
-	const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
+	void replicaUsername
+	const profile = await getProfile(entityHash, null, { skipPresentation: true })
 	profile.lastSeenAt = Date.now()
-	await saveJsonFile(entityProfilePath(replicaUsername, entityHash), toStoredProfile(profile))
+	await getEntityStore().writeEntityJson(entityHash, PROFILE_JSON, toStoredProfile(profile))
 }
 
 /**
@@ -184,7 +148,7 @@ export async function recordHeartbeat(replicaUsername, entityHash) {
  * @returns {Promise<object>} 更新后的资料
  */
 export async function updateProfile(replicaUsername, entityHash, updates, options = {}) {
-	if (!isWritableLocalEntity(replicaUsername, entityHash))
+	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not writable on this replica')
 
 	const profile = await getProfile(entityHash, replicaUsername, {
@@ -209,10 +173,10 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		stats: updates.stats ? { ...profile.stats, ...updates.stats } : profile.stats,
 	})
 
-	await saveJsonFile(entityProfilePath(replicaUsername, entityHash), updatedProfile)
+	await getEntityStore().writeEntityJson(entityHash, PROFILE_JSON, updatedProfile)
 	if (options.skipPresentation) return updatedProfile
 	const locales = options.locales || ['zh-CN', 'en-UK']
-	const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
+	const infoDefaults = await resolveInfoDefaultsForEntity(replicaUsername, entityHash, locales)
 	const resolved = resolveProfilePresentation(updatedProfile, locales, infoDefaults)
 	return { ...updatedProfile, ...resolved, infoDefaults, localeKeys: Object.keys(updatedProfile.localized) }
 }
@@ -225,7 +189,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
  * @returns {Promise<string>} 头像 URL
  */
 export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, filename) {
-	if (!isWritableLocalEntity(replicaUsername, entityHash))
+	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not writable on this replica')
 
 	const { putFileManifest } = await import('./files/evfs.mjs')
@@ -280,8 +244,8 @@ export async function updateStatus(replicaUsername, entityHash, status, customSt
  * @returns {Promise<object>} 本节点实体资料
  */
 export async function ensureLocalEntityProfile(replicaUsername, entityHash) {
-	if (!isWritableLocalEntity(replicaUsername, entityHash))
+	void replicaUsername
+	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not on local node')
-	await fsp.mkdir(userEntitiesRoot(replicaUsername), { recursive: true })
 	return getProfile(entityHash, replicaUsername, { skipPresentation: true })
 }

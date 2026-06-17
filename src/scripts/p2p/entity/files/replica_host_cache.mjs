@@ -1,7 +1,4 @@
-import fsp from 'node:fs/promises'
-
-import { getAllUserNames } from '../../../../server/auth.mjs'
-import { entityDir } from '../../user_paths.mjs'
+import { getEntityStore } from '../../node/instance.mjs'
 
 /** @type {Map<string, { replica: string | null, at: number }>} */
 const replicaHostCache = new Map()
@@ -35,14 +32,15 @@ export async function findReplicaHostingEntityFiles(ownerEntityHash) {
 	if (cached && Date.now() - cached.at < REPLICA_HOST_CACHE_MS)
 		return cached.replica
 
-	for (const replica of getAllUserNames()) 
-		try {
-			await fsp.access(entityDir(replica, eh))
-			replicaHostCache.set(eh, { replica, at: Date.now() })
-			return replica
-		}
-		catch { /* next */ }
-	
-	replicaHostCache.set(eh, { replica: null, at: Date.now() })
-	return null
+	const store = getEntityStore()
+	if (typeof store.findHostingUser === 'function') {
+		const replica = await store.findHostingUser(eh)
+		replicaHostCache.set(eh, { replica, at: Date.now() })
+		return replica
+	}
+
+	const files = await store.listEntityFiles(eh)
+	const replica = files.length ? '__node__' : null
+	replicaHostCache.set(eh, { replica, at: Date.now() })
+	return replica
 }

@@ -5,11 +5,11 @@
  * 【数据结构】物化 state 子集、reputation 表、peers roster、snapshot/checkpoint、GSH buffer stats。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
-import { localesFromRequest } from '../../../../../../../scripts/p2p/entity/localized.mjs'
+import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
@@ -100,7 +100,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username, groupId } = req.groupContext
 		const { state } = await getState(username, groupId)
 
-		const reputation = loadReputation(username)
+		const reputation = loadReputation()
 		res.status(200).json({ reputation })
 	})
 
@@ -109,7 +109,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { state } = await getState(username, groupId)
 
 		const roster = await listFederationPeersForGroup(username, groupId)
-		const stored = loadPeerPoolView(username, groupId)
+		const stored = loadPeerPoolView( groupId)
 		res.status(200).json({
 			selfNodeHash: roster.selfNodeHash,
 			federationEnabled: roster.federationEnabled,

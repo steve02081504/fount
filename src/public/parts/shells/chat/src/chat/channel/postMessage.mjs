@@ -12,7 +12,7 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { putFileManifest } from '../../../../../../../scripts/p2p/entity/files/evfs.mjs'
 import { parseEvfsRef } from '../../../../../../../scripts/p2p/entity/files/evfs_ref.mjs'
 import { entityFileUrl } from '../../../../../../../scripts/p2p/entity/files/url.mjs'
-import { resolveOperatorEntityHash } from '../../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { appendFileUploadEvent } from '../dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
@@ -90,7 +90,7 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 
 	let inlineImageUrl = null
 	if (mimeType.startsWith('image/')) {
-		const operatorEntityHash = resolveOperatorEntityHash(username)
+		const operatorEntityHash = await resolveOperatorEntityHash(username)
 		if (operatorEntityHash) {
 			const attachId = randomUUID()
 			const logicalPath = `shells/chat/attachments/${attachId}`

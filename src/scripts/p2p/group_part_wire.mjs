@@ -29,14 +29,14 @@ function wrapWireOn(wire, groupId) {
 
 /**
  * 群联邦房间挂载 part_wire（要求线载荷带 `groupId`）。
- * @param {string} username replica 登录名
+ * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {string} groupId 群 ID
  * @param {import('./part_wire.mjs').PartWireAdapter} wire Trystero 适配器
  * @param {{ allowPartInvoke?: (payload: object) => boolean }} [options] 入站过滤
  * @returns {void}
  */
-export function attachGroupPartWire(username, groupId, wire, options = {}) {
-	attachPartWire(username, {
+export function attachGroupPartWire(ctx, groupId, wire, options = {}) {
+	attachPartWire(ctx, {
 		send: wire.send.bind(wire),
 		on: wrapWireOn(wire, groupId),
 	}, options)

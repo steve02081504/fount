@@ -1,8 +1,6 @@
 import { Buffer } from 'node:buffer'
-import fsp from 'node:fs/promises'
 import { Readable } from 'node:stream'
 
-import { loadJsonFile, saveJsonFile } from '../../../json_loader.mjs'
 import { FEDERATION_CHUNK_MAX_BYTES } from '../../constants.mjs'
 import { buildFileManifestFromEnc } from '../../files/assemble.mjs'
 import { encryptReadableToParts } from '../../files/assemble_stream.mjs'
@@ -11,7 +9,7 @@ import { getChunk, hasChunk, putChunk } from '../../files/chunk_store.mjs'
 import { normalizeFileManifest } from '../../files/manifest.mjs'
 import { assembleManifestPlaintext } from '../../files/transfer_key.mjs'
 import { readDagManifestPlaintext, resolveTransferKeyDeps } from '../../files/transfer_key_registry.mjs'
-import { entityFilesManifestPath } from '../../user_paths.mjs'
+import { getEntityStore } from '../../node/instance.mjs'
 
 import { findReplicaHostingEntityFiles } from './acl.mjs'
 
@@ -22,15 +20,9 @@ import { findReplicaHostingEntityFiles } from './acl.mjs'
  * @returns {Promise<import('../../files/manifest.mjs').FileManifest | null>} 归一化 manifest
  */
 export async function loadFileManifest(replicaUsername, ownerEntityHash, logicalPath) {
-	const host = await findReplicaHostingEntityFiles(ownerEntityHash) || replicaUsername
-	const filePath = entityFilesManifestPath(host, ownerEntityHash, logicalPath)
-	try {
-		await fsp.access(filePath)
-		return normalizeFileManifest(await loadJsonFile(filePath))
-	}
-	catch {
-		return null
-	}
+	void replicaUsername
+	const manifest = await getEntityStore().readManifest(ownerEntityHash, logicalPath)
+	return manifest ? normalizeFileManifest(manifest) : null
 }
 
 /**
@@ -39,9 +31,8 @@ export async function loadFileManifest(replicaUsername, ownerEntityHash, logical
  * @returns {Promise<void>}
  */
 export async function saveFileManifest(replicaUsername, manifest) {
-	const filePath = entityFilesManifestPath(replicaUsername, manifest.ownerEntityHash, manifest.logicalPath)
-	await fsp.mkdir(filePath.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await saveJsonFile(filePath, manifest)
+	void replicaUsername
+	await getEntityStore().writeManifest(manifest.ownerEntityHash, manifest.logicalPath, manifest)
 }
 
 /**
@@ -51,8 +42,9 @@ export async function saveFileManifest(replicaUsername, manifest) {
  * @returns {Promise<void>}
  */
 export async function storeManifestParts(replicaUsername, manifest, partBytes) {
+	void replicaUsername
 	for (let index = 0; index < manifest.parts.length; index++)
-		await putChunk(replicaUsername, manifest.parts[index].hash, partBytes[index])
+		await putChunk(manifest.parts[index].hash, partBytes[index])
 }
 
 /**
@@ -73,8 +65,8 @@ export async function readManifestPlaintext(replicaUsername, manifest, opts = {}
 	const partBytes = []
 	for (const part of manifest.parts) {
 		let ciphertextBytes = null
-		if (await hasChunk(replicaUsername, part.hash))
-			ciphertextBytes = await getChunk(replicaUsername, part.hash)
+		if (await hasChunk(part.hash))
+			ciphertextBytes = await getChunk(part.hash)
 		else {
 			const fetchedChunk = await (opts.fetchChunk || fetchChunk)({
 				username,
@@ -83,7 +75,7 @@ export async function readManifestPlaintext(replicaUsername, manifest, opts = {}
 				groupId: manifest.transferKeyDescriptor.groupId,
 			})
 			if (fetchedChunk) {
-				await putChunk(replicaUsername, part.hash, fetchedChunk)
+				await putChunk(part.hash, fetchedChunk)
 				ciphertextBytes = Buffer.from(fetchedChunk)
 			}
 		}
@@ -189,7 +181,7 @@ export async function putFileManifestFromStream(params) {
 		meta,
 	} = params
 	const enc = await encryptReadableToParts(readable, ceMode, async part =>
-		putChunk(replicaUsername, part.hash, part.raw), plainSize)
+		putChunk(part.hash, part.raw), plainSize)
 	const manifest = normalizeFileManifest({
 		ownerEntityHash: ownerEntityHash.toLowerCase(),
 		logicalPath: logicalPath.replace(/^\/+/, ''),
@@ -206,3 +198,8 @@ export async function putFileManifestFromStream(params) {
 	await saveFileManifest(replicaUsername, manifest)
 	return manifest
 }
+
+/**
+ *
+ */
+export { findReplicaHostingEntityFiles }

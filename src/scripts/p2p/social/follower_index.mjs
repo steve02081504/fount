@@ -1,13 +1,12 @@
 import path from 'node:path'
 
-import { data_path } from '../../../server/server.mjs'
-import { createLruMap } from '../../memo.mjs'
 import { writeJsonAtomic } from '../dag/storage.mjs'
-import { resolveOperatorEntityHash } from '../entity/replica.mjs'
 import { parseEntityHash } from '../entity_id.mjs'
+import { getNodeDir } from '../node/instance.mjs'
 import { withAsyncMutex } from '../utils/async_mutex.mjs'
+import { createLruMap } from '../utils/memo.mjs'
 
-import { getFollowingScanProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
+import { getFollowingScanProvider, getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
 
 const FOLLOWER_ENTRY_CACHE_MAX = 512
 const BUCKET_HEX_PREFIX_LEN = 2
@@ -30,7 +29,7 @@ function queueFollowerIndexMutation(target, task) {
  * @returns {string} follower 索引根目录
  */
 function followerIndexDir() {
-	return path.join(data_path, 'social', 'follower_index')
+	return path.join(getNodeDir(), 'social', 'follower_index')
 }
 
 /**
@@ -153,7 +152,10 @@ export async function updateFollowerIndex(username, targetEntityHash, follow) {
  */
 export async function projectFollowerIndexFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	if (!['follow', 'unfollow'].includes(event.type)) return
-	const operator = resolveOperatorEntityHash(replicaUsername)
+	const resolveOperator = getOperatorEntityHashProvider()
+	if (!resolveOperator) return
+	const operator = await resolveOperator(replicaUsername)
+	if (!operator) return
 	const owner = timelineOwnerEntityHash.toLowerCase()
 	if (owner !== operator.toLowerCase()) return
 	await updateFollowerIndex(
@@ -181,11 +183,12 @@ export async function listReplicaUsernamesFollowing(entityHash) {
 export async function rebuildFollowerIndex() {
 	const scanFollowing = getFollowingScanProvider()
 	const listUsers = getReplicaUsernamesProvider()
-	if (!scanFollowing || !listUsers) return
+	const resolveOperator = getOperatorEntityHashProvider()
+	if (!scanFollowing || !listUsers || !resolveOperator) return
 	/** @type {Record<string, Record<string, Set<string>>>} */
 	const scratch = {}
 	for (const username of listUsers()) {
-		const operator = resolveOperatorEntityHash(username)
+		const operator = await resolveOperator(username)
 		if (!operator) continue
 		for (const rawTarget of await scanFollowing(username)) {
 			const target = rawTarget.toLowerCase()

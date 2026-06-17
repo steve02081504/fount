@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
 
 import { setEntityBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
-import { resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from '../lib/operatorEntity.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { ensureFederationDefaults } from '../../../../../../scripts/p2p/federation/identity.mjs'
+import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { buildProfileFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
@@ -72,7 +72,7 @@ export function registerProfileRoutes(router) {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
 		const requested = String(req.body?.entityHash).toLowerCase()
-		const operator = resolveOperatorEntityHash(username)
+		const operator = await resolveOperatorEntityHash(username)
 		let entityHash = operator
 		let charId = req.body?.charId || null
 		if (requested) {
@@ -114,12 +114,12 @@ export function registerProfileRoutes(router) {
 			return res.status(400).json({ error: 'invalid entityHash' })
 		const follow = req.body?.follow !== false
 		await setFollow(username, target, follow, { rep_edge: req.body?.rep_edge ?? 1 })
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (self && follow) {
 			await dispatchFollowEvent(username, self, target)
 			const targetEntity = resolveSocialEntity(target)
 			if (targetEntity?.local && targetEntity.replicaUsername) {
-				const followerPubKeyHex = ensureFederationDefaults(username).identityPubKeyHex
+				const followerPubKeyHex = (await getFederationViewForUser(username)).identityPubKeyHex
 				if (followerPubKeyHex)
 					await autoApproveFollower(targetEntity.replicaUsername, target, followerPubKeyHex)
 			}
@@ -131,7 +131,7 @@ export function registerProfileRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/profile/like', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		const body = req.body
 		const like = body.like !== false
@@ -147,7 +147,7 @@ export function registerProfileRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/profile/repost', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		const body = req.body
 		const targetEntityHash = String(body.entityHash).toLowerCase()
@@ -163,7 +163,7 @@ export function registerProfileRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/profile/post-delete', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		const targetPostId = String(req.body?.postId)
 		if (!targetPostId) return res.status(400).json({ error: 'postId required' })
@@ -179,13 +179,13 @@ export function registerProfileRoutes(router) {
 		const target = String(req.body?.entityHash).toLowerCase()
 		if (!isEntityHash128(target))
 			return res.status(400).json({ error: 'invalid entityHash' })
-		const blocked = await setEntityBlocked(username, target, req.body?.block !== false)
+		const blocked = await setEntityBlocked( target, req.body?.block !== false)
 		res.status(200).json({ entityHash: target, blocked })
 	})
 
 	router.post('/api/parts/shells\\:social/profile/follow-approve', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		const followerPubKeyHex = String(req.body?.followerPubKeyHex)
 		if (!self || !followerPubKeyHex)
 			return res.status(400).json({ error: 'invalid request' })
@@ -199,7 +199,7 @@ export function registerProfileRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const self = resolveOperatorEntityHash(username)
+		const self = await resolveOperatorEntityHash(username)
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		await ensureEntitySocialReady(username, self)
 		const socialMeta = await updateSocialMeta(username, self, {

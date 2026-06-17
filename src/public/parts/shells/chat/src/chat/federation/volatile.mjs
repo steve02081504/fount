@@ -7,7 +7,7 @@
  */
 import { createHash } from 'node:crypto'
 
-import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
 import { federationNodeHash, loadFederationGroupSettings } from './deps.mjs'
@@ -121,7 +121,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	if (!await verifyStreamChunkVolatile(payload)) return
 
 	if (payload.type === 'reputation_slash_alert') {
-		applyVolatileSlashAlert(username, groupId, payload)
+		applyVolatileSlashAlert( groupId, payload)
 		return
 	}
 

@@ -8,7 +8,7 @@ import {
 	resolveFederationPoolLimits,
 	selectPeerIdsFromPool,
 } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 
 /**
  * 稀疏连接池：优先 trusted，再 explore，再其余在线节点。
@@ -21,8 +21,8 @@ import { loadReputation } from '../../../../../../../scripts/p2p/reputation_user
  */
 export async function pickFederationTargetPeerIds(username, groupId, roster, groupSettings, selfNodeHash) {
 	const limits = resolveFederationPoolLimits(groupSettings)
-	const peers = loadPeerPoolView(username, groupId)
-	const rep = loadReputation(username)
+	const peers = loadPeerPoolView( groupId)
+	const rep = loadReputation()
 	const inRoomNodeHashes = roster
 		.map(p => p.remoteNodeHash)
 		.map(id => String(id).trim())
@@ -40,10 +40,10 @@ export async function pickFederationTargetPeerIds(username, groupId, roster, gro
  */
 export async function mergePexNodeHints(username, groupId, hints, groupSettings) {
 	const limits = resolveFederationPoolLimits(groupSettings)
-	const peers = loadPeerPoolView(username, groupId)
-	const rep = loadReputation(username)
+	const peers = loadPeerPoolView( groupId)
+	const rep = loadReputation()
 	const { trustedPeers, explorePeers } = applyPexHints({ peers, rep, hints, limits })
-	mergeNetworkPeerPools(username, { trustedPeers, explorePeers })
+	mergeNetworkPeerPools( { trustedPeers, explorePeers })
 }
 
 /**
@@ -57,8 +57,8 @@ export async function mergePexNodeHints(username, groupId, hints, groupSettings)
 export async function reconcilePeerPoolFromRoster(username, groupId, roster, groupSettings) {
 	if (!roster.length) return
 	const limits = resolveFederationPoolLimits(groupSettings)
-	const peers = loadPeerPoolView(username, groupId)
-	const rep = loadReputation(username)
+	const peers = loadPeerPoolView( groupId)
+	const rep = loadReputation()
 	const { trustedPeers, explorePeers } = applyRosterToPeerPool({ peers, rep, roster, limits })
-	mergeNetworkPeerPools(username, { trustedPeers, explorePeers })
+	mergeNetworkPeerPools( { trustedPeers, explorePeers })
 }

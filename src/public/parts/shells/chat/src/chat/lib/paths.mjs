@@ -7,12 +7,6 @@
  */
 import { join } from 'node:path'
 
-import {
-	entityAvatarsDir as userEntityAvatarsDir,
-	entityDir as userEntityDir,
-	entityProfilePath as userEntityProfilePath,
-	entityStickerPacksDir as userEntityStickerPacksDir,
-} from '../../../../../../../scripts/p2p/user_paths.mjs'
 import { getUserDictionary } from '../../../../../../../server/auth.mjs'
 
 /**
@@ -227,12 +221,57 @@ export function pendingRelayPath(username, groupId) {
 
 /**
  * 实体数据目录：`{userDict}/entities/{entityHash}/`
+ * @param {string} replicaUsername replica 磁盘所有者
+ * @param {string} entityHash 128 位 entityHash
+ * @returns {string} 实体目录绝对路径
+ */
+function userEntityDir(replicaUsername, entityHash) {
+	return join(getUserDictionary(replicaUsername), 'entities', entityHash)
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} entityHash 128 位 entityHash
+ * @returns {string} profile.json 绝对路径
+ */
+function userEntityProfilePath(replicaUsername, entityHash) {
+	return join(userEntityDir(replicaUsername, entityHash), 'profile.json')
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} entityHash 128 位 entityHash
+ * @returns {string} avatars 目录绝对路径
+ */
+function userEntityAvatarsDir(replicaUsername, entityHash) {
+	return join(userEntityDir(replicaUsername, entityHash), 'avatars')
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} entityHash 作者 entityHash
+ * @returns {string} stickers/packs 目录绝对路径
+ */
+function userEntityStickerPacksDir(replicaUsername, entityHash) {
+	return join(userEntityDir(replicaUsername, entityHash), 'stickers', 'packs')
+}
+
+/**
+ * 实体数据目录：`{userDict}/entities/{entityHash}/`
  * @param {string} replicaUsername replica 磁盘所有者（fount 登录名）
  * @param {string} entityHash 128 位 entityHash
  * @returns {string} 实体目录绝对路径
  */
 export function entityDir(replicaUsername, entityHash) {
 	return userEntityDir(replicaUsername, entityHash)
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @returns {string} entities 根目录
+ */
+export function userEntitiesRoot(replicaUsername) {
+	return join(getUserDictionary(replicaUsername), 'entities')
 }
 
 /**

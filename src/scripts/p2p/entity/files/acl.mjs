@@ -34,5 +34,5 @@ export async function canReadManifest(replicaUsername, ownerEntityHash, manifest
 export async function canWriteManifestPath(replicaUsername, ownerEntityHash, logicalPath) {
 	if (isGroupEntityHash(ownerEntityHash))
 		return checkManifestAcl('file-master-key-wrap', { replicaUsername, ownerEntityHash, manifest: /** @type {any} */ {} }, logicalPath)
-	return isWritableLocalEntity(replicaUsername, ownerEntityHash)
+	return isWritableLocalEntity(ownerEntityHash)
 }

@@ -23,7 +23,8 @@ import {
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
 import { agentEntityHash } from '../lib/entityId.mjs'
-import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
+import { getNodeHash } from '../lib/replica.mjs'
+import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import { getMaterializedSession } from './dagSession.mjs'
 import {
@@ -150,8 +151,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			groupId,
 			channelId: effectiveChannelId,
 			memberId: charname
-				? agentEntityHash(getLocalNodeHash(replicaUsername), `chars/${charname}`)
-				: getOperatorEntityHash(replicaUsername),
+				? agentEntityHash(getNodeHash(), `chars/${charname}`)
+				: await getOperatorEntityHash(replicaUsername),
 			member_roles: [],
 			personaForOther: options.personaForOther || undefined,
 		},

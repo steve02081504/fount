@@ -48,7 +48,7 @@ export async function blockOpposingForkBranch(username, groupId, acceptedTipId) 
 	}
 
 	for (const pubKeyHash of targets)
-		await addBlocklistEntry(username, { scope: 'subject', value: pubKeyHash, groupId })
+		await addBlocklistEntry( { scope: 'subject', value: pubKeyHash, groupId })
 
 	return { blocked: [...targets] }
 }

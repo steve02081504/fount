@@ -31,7 +31,7 @@ export async function getMaterializedSession(replicaUsername, groupId) {
 export function sessionOwnerBinding(replicaUsername) {
 	return {
 		ownerUsername: replicaUsername,
-		homeNodeHash: getLocalNodeHash(replicaUsername),
+		homeNodeHash: getNodeHash(),
 	}
 }
 

@@ -15,7 +15,7 @@ const OWNER_ID = 'chat'
  */
 export function registerChatChunkProviders() {
 	registerFederationChunkFetcher(OWNER_ID, fetchCiphertextFromFederation)
-	registerNodeHashProvider(OWNER_ID, username => ({ nodeHash: getNodeHash(username) }))
+	registerNodeHashProvider(OWNER_ID, () => ({ nodeHash: getNodeHash() }))
 }
 
 /** @returns {void} */

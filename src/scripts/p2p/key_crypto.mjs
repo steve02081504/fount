@@ -7,7 +7,7 @@ import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes }
 
 import { x25519 } from 'npm:@noble/curves/ed25519.js'
 
-import { createLruMap } from '../memo.mjs'
+import { createLruMap } from './utils/memo.mjs'
 
 // ─── KDF ──────────────────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 
 import { loadFollowing } from './following.mjs'
 
@@ -12,7 +12,7 @@ import { loadFollowing } from './following.mjs'
 export async function canViewVaultFile(replicaUsername, ownerEntityHash, manifest) {
 	const visibility = manifest.meta?.visibility || 'followers'
 	if (visibility === 'public') return true
-	if (resolveOperatorEntityHash(replicaUsername) === ownerEntityHash.toLowerCase()) return true
+	if ((await resolveOperatorEntityHash(replicaUsername)) === ownerEntityHash.toLowerCase()) return true
 	if (visibility !== 'followers') return false
 	const { following } = await loadFollowing(replicaUsername)
 	return following.includes(ownerEntityHash.toLowerCase())

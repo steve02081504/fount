@@ -17,7 +17,9 @@ import {
 } from '../mailbox_prune.mjs'
 import { mailboxStorePath } from '../user_paths.mjs'
 
-/** 再导出 mailbox 修剪常量与工具。 */
+/**
+ *
+ */
 export { MAX_BUCKET_BYTES, MAX_BUCKET_ENTRIES, mailboxBucketKey, mailboxRecordBytes }
 
 const MAX_ENTRY_BYTES = 256 * 1024
@@ -55,24 +57,22 @@ export function mailboxTierFromHop(hop) {
 }
 
 /**
- * @param {string} username replica
  * @returns {Promise<MailboxRecord[]>} 全部有效记录
  */
-async function readAll(username) {
+async function readAll() {
 	try {
-		const text = await readFile(mailboxStorePath(username), 'utf8')
+		const text = await readFile(mailboxStorePath(), 'utf8')
 		return text.split('\n').filter(Boolean).map(line => JSON.parse(line))
 	}
 	catch { return [] }
 }
 
 /**
- * @param {string} username replica
  * @param {MailboxRecord[]} rows 待写入记录
- * @returns {Promise<void>} 无返回值
+ * @returns {Promise<void>}
  */
-async function writeAll(username, rows) {
-	const filePath = mailboxStorePath(username)
+async function writeAll(rows) {
+	const filePath = mailboxStorePath()
 	await mkdir(dirname(filePath), { recursive: true })
 	const now = Date.now()
 	const kept = pruneMailboxGlobalFair(
@@ -92,11 +92,10 @@ export function mailboxEnvelopeId(envelope) {
 }
 
 /**
- * @param {string} username replica
  * @param {object} record mailbox 记录字段
  * @returns {Promise<boolean>} 是否新写入
  */
-export async function storeMailboxRecord(username, record) {
+export async function storeMailboxRecord(record) {
 	if (JSON.stringify(record.envelope).length > MAX_ENTRY_BYTES) return false
 	const toPubKeyHash = normalizeHex64(record.toPubKeyHash)
 	if (!isHex64(toPubKeyHash)) return false
@@ -113,7 +112,7 @@ export async function storeMailboxRecord(username, record) {
 	catch {
 		return false
 	}
-	const rows = await readAll(username)
+	const rows = await readAll()
 	if (rows.some(row => row.id === id)) return false
 	const ttlMs = Number(record.ttlMs) || defaultTtlMsForTier(tier)
 	rows.push({
@@ -131,57 +130,52 @@ export async function storeMailboxRecord(username, record) {
 		tier,
 		importance: Number.isFinite(Number(record.importance)) ? Number(record.importance) : undefined,
 	})
-	await writeAll(username, rows)
+	await writeAll(rows)
 	return true
 }
 
 /**
- * @param {string} username replica
  * @param {string} toPubKeyHash 收件人
  * @returns {Promise<string[]>} record id 列表
  */
-export async function listMailboxIdsForRecipient(username, toPubKeyHash) {
+export async function listMailboxIdsForRecipient(toPubKeyHash) {
 	const recipient = normalizeHex64(toPubKeyHash)
-	return (await readAll(username))
+	return (await readAll())
 		.filter(record => record.toPubKeyHash === recipient)
 		.map(record => record.id)
 }
 
 /**
- * @param {string} username replica
  * @param {string[]} ids record id 列表
  * @returns {Promise<MailboxRecord[]>} 匹配记录
  */
-export async function getMailboxRecords(username, ids) {
+export async function getMailboxRecords(ids) {
 	const want = new Set(ids.map(id => String(id).trim().toLowerCase()))
-	return (await readAll(username)).filter(record => want.has(record.id))
+	return (await readAll()).filter(record => want.has(record.id))
 }
 
 /**
- * @param {string} username replica
  * @param {string[]} ids 待删除 id
- * @returns {Promise<void>} 无返回值
+ * @returns {Promise<void>}
  */
-export async function deleteMailboxRecords(username, ids) {
+export async function deleteMailboxRecords(ids) {
 	const drop = new Set(ids)
-	await writeAll(username, (await readAll(username)).filter(record => !drop.has(record.id)))
+	await writeAll((await readAll()).filter(record => !drop.has(record.id)))
 }
 
 /**
- * @param {string} username replica
  * @param {string} toPubKeyHash 收件人
  * @returns {Promise<MailboxRecord[]>} 待发记录（不删除）
  */
-export async function takeMailboxForRecipient(username, toPubKeyHash) {
+export async function takeMailboxForRecipient(toPubKeyHash) {
 	const recipient = normalizeHex64(toPubKeyHash)
-	return (await readAll(username)).filter(record => record.toPubKeyHash === recipient)
+	return (await readAll()).filter(record => record.toPubKeyHash === recipient)
 }
 
 /**
- * @param {string} username replica
  * @returns {Promise<number>} 未过期条数
  */
-export async function countMailboxPending(username) {
+export async function countMailboxPending() {
 	const now = Date.now()
-	return (await readAll(username)).filter(record => record.expiresAt > now).length
+	return (await readAll()).filter(record => record.expiresAt > now).length
 }

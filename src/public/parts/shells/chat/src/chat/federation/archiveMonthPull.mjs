@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, rename, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,
@@ -171,7 +171,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 		const tmpPath = await resolveArchiveMonthCandidateBody(username, groupId, slot, row)
 		if (tmpPath === null) {
 			if (row.peerNodeHash)
-				penalizeArchiveServeMismatch(username, groupId, row.peerNodeHash)
+				penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
 			continue
 		}
 		resolved.push({ ...row, tmpPath })
@@ -244,7 +244,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 	if (!picked.winner) {
 		for (const row of candidates)
 			if (row.peerNodeHash)
-				penalizeArchiveServeMismatch(username, groupId, row.peerNodeHash)
+				penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
 		await markArchiveMonthIncomplete(username, groupId, channelId, utcMonth, picked.reason)
 		return { applied: false, reason: picked.reason }
 	}
@@ -257,7 +257,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 			? await digestArchiveMonthFile(row.tmpPath)
 			: { digest: '' }
 		if (digest && digest !== winnerDigest)
-			penalizeArchiveServeMismatch(username, groupId, row.peerNodeHash)
+			penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
 	}
 
 	const applied = (await applyArchiveMonthWinner(username, groupId, picked.winner)).applied

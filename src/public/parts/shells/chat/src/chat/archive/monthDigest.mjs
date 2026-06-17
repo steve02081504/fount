@@ -345,8 +345,8 @@ export async function pickArchiveMonthByReputation(candidates, username, groupId
 	/** @type {(username: string, peer: string, groupId: string) => number} */
 	let scoreOf = opts.pickScore
 	if (!scoreOf) {
-		const { loadReputation } = await import('../../../../../../../scripts/p2p/reputation_user.mjs')
-		const rep = loadReputation(username)
+		const { loadReputation } = await import('../../../../../../../scripts/p2p/reputation.mjs')
+		const rep = loadReputation()
 		scoreOf = makeReputationScoreFn(rep)
 	}
 	/** @type {Map<string, { digest: string, snapshots: object[], peers: string[] }>} */

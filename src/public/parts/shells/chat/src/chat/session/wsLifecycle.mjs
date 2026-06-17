@@ -68,7 +68,7 @@ export function initializeGroupMetadatas() {
  */
 export function registerGroupUiSocket(replicaUsername, groupId, ws) {
 	registerGroupReplicaForUser(replicaUsername, groupId)
-	const roomKey = resolveGroupWsRoomKey(groupId, getLocalNodeHash(replicaUsername))
+	const roomKey = resolveGroupWsRoomKey(groupId, getNodeHash())
 	if (groupUnloadTimers.has(groupId)) {
 		clearTimeout(groupUnloadTimers.get(groupId))
 		groupUnloadTimers.delete(groupId)

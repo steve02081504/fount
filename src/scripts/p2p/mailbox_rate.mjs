@@ -1,5 +1,5 @@
 /**
- * Mailbox 入站 put 限速（按本机用户 + 来源节点）。
+ * Mailbox 入站 put 限速（按来源节点，节点级单例）。
  */
 
 const DEFAULT_WINDOW_MS = 60_000
@@ -22,12 +22,11 @@ export function resolveMailboxRateLimits(limits = {}) {
 }
 
 /**
- * @param {string} username 用户
  * @param {string} fromNodeHash 来源节点
  * @returns {string} 限速键
  */
-export function mailboxRateKey(username, fromNodeHash) {
-	return `${username}\0${String(fromNodeHash || '').trim()}`
+export function mailboxRateKey(fromNodeHash) {
+	return String(fromNodeHash || '').trim()
 }
 
 /**
@@ -64,14 +63,13 @@ function evictLruIfNeeded(key) {
 }
 
 /**
- * @param {string} username 用户
  * @param {string} fromNodeHash 来源节点
  * @param {object} [limits] 可选限额
  * @returns {boolean} 允许新 put 则为 true
  */
-export function takeIncomingMailboxPutSlot(username, fromNodeHash, limits) {
+export function takeIncomingMailboxPutSlot(fromNodeHash, limits) {
 	const { windowMs, maxPuts } = resolveMailboxRateLimits(limits)
-	const key = mailboxRateKey(username, fromNodeHash)
+	const key = mailboxRateKey(fromNodeHash)
 	const now = Date.now()
 	if (inboundByKey.size >= MAX_KEYS) sweepExpiredEntries(now)
 	evictLruIfNeeded(key)

@@ -4,11 +4,11 @@
 import {
 	getInfoDefaultsForEntity,
 	normalizeLocalizedMap,
-} from '../../../../../../scripts/p2p/entity/localized.mjs'
+} from '../../../../../../server/p2p_server/localized.mjs'
 import {
 	isPlaceholderDisplayName,
 	resolvePersonaPresentation,
-} from '../../../../../../scripts/p2p/entity/personaPresentation.mjs'
+} from '../../../../../../server/p2p_server/persona_presentation.mjs'
 import {
 	getProfile,
 	updateProfile,
@@ -22,7 +22,7 @@ import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/rep
  */
 export async function syncEntityProfileFromPersona(replicaUsername, groupId) {
 	const entityHash = await getGroupMemberEntityHash(replicaUsername, groupId)
-	if (!isWritableLocalEntity(replicaUsername, entityHash)) return
+	if (!isWritableLocalEntity(entityHash)) return
 	const locales = ['zh-CN', 'en-UK']
 	const presentation = await resolvePersonaPresentation(replicaUsername, groupId)
 	const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)

@@ -1,5 +1,5 @@
 import { loadBlocklist } from '../../../../../scripts/p2p/blocklist.mjs'
-import { resolveOperatorEntityHash } from '../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { socialPostKey } from '../../../../../scripts/p2p/social/post_key.mjs'
 
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
@@ -23,7 +23,7 @@ export async function listLocalTimelineOwners(username, options = {}) {
  * @returns {Promise<string[]>} 已知时间线 owner
  */
 export async function listKnownTimelineOwners(username) {
-	const operator = resolveOperatorEntityHash(username)
+	const operator = await resolveOperatorEntityHash(username)
 	if (!operator) return []
 	const view = await getTimelineMaterialized(username, operator)
 	const set = new Set(view.following.map(id => id.toLowerCase()))
@@ -106,7 +106,7 @@ export async function buildEngagementIndex(username, owners = null) {
  * @returns {Promise<Set<string>>} 观看者已点赞的 `entityHash:postId` 键集合
  */
 export async function buildViewerLikedSet(username) {
-	const self = resolveOperatorEntityHash(username)
+	const self = await resolveOperatorEntityHash(username)
 	if (!self) return new Set()
 	const view = await getTimelineMaterialized(username, self)
 	return new Set(view.likes.map(like =>
@@ -119,9 +119,9 @@ export async function buildViewerLikedSet(username) {
  * @returns {Promise<{ viewerEntityHash: string | null, blocked: Set<string>, following: Set<string> }>} 观看者上下文
  */
 export async function loadViewerContext(username) {
-	const viewerEntityHash = resolveOperatorEntityHash(username)
+	const viewerEntityHash = await resolveOperatorEntityHash(username)
 	const blocked = new Set(
-		loadBlocklist(username).blocked
+		loadBlocklist().blocked
 			.filter(entry => entry.scope === 'entity')
 			.map(entry => entry.value),
 	)

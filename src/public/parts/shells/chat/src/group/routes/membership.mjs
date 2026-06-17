@@ -151,7 +151,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			if (!accepted)
 				return res.status(400).json({ error: 'invalid or expired inviteCode' })
 		}
-		const content = { inviteCode, powSolution: pow, homeNodeHash: getLocalNodeHash(username) }
+		const content = { inviteCode, powSolution: pow, homeNodeHash: getNodeHash() }
 		if (introducerPubKeyHash) {
 			const normalizedIntroducer = normalizePubKeyHex(introducerPubKeyHash)
 			if (PUB_KEY_HEX_64.test(normalizedIntroducer)) content.introducerPubKeyHash = normalizedIntroducer

@@ -1,6 +1,6 @@
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'
 
 import { loadFederationGroupSettings } from './deps.mjs'
@@ -38,8 +38,8 @@ export function registerChatFederationRoomProvider() {
 				 * @returns {Promise<string[]>} fallback peer ids
 				 */
 				pickFallbackPeerIds: async selfNodeHash => {
-					const peers = loadPeerPoolView(username, groupId)
-					const reputation = loadReputation(username)
+					const peers = loadPeerPoolView( groupId)
+					const reputation = loadReputation()
 					const groupSettings = await loadFederationGroupSettings(username, groupId)
 					return selectPeerIdsFromPool({
 						roster: slot.getRoster(),

@@ -7,6 +7,10 @@ import {
 } from '../governance_branch.mjs'
 import { computeRetentionKeepIds, PERMISSION_ANCHOR_TYPES } from '../retention_policy.mjs'
 
+/**
+ *
+ * @param c
+ */
 const hex = c => c.repeat(64)
 
 Deno.test('descendantClosureFromTip keeps connected suffix not topo slice orphans', () => {

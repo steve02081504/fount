@@ -3,7 +3,7 @@
  */
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../../scripts/p2p/reputation_user.mjs'
+import { penalizeArchiveServeMismatch } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import { ARCHIVE_QUORUM_PEER_MIN } from '../../archive/monthDigest.mjs'
 import { verifyRemoteCheckpoint } from '../../lib/checkpointVerifier.mjs'
 import { federationNodeHash } from '../deps.mjs'
@@ -76,8 +76,8 @@ export async function pickJoinSnapshotByReputation(candidates, username, groupId
 	/** @type {object | undefined} */
 	let reputationFile
 	if (!opts.pickScore) {
-		const { loadReputation } = await import('../../../../../../../../scripts/p2p/reputation_user.mjs')
-		reputationFile = loadReputation(username)
+		const { loadReputation } = await import('../../../../../../../../scripts/p2p/reputation.mjs')
+		reputationFile = loadReputation()
 	}
 	/** @type {Map<string, { peers: string[], envelope: object }>} */
 	const byBucket = new Map()
@@ -126,6 +126,6 @@ export async function pickJoinSnapshotByReputation(candidates, username, groupId
 export function penalizeJoinSnapshotMismatches(username, groupId, candidates, winnerBucketKey) {
 	for (const row of candidates) {
 		if (!row.peerNodeHash || row.bucketKey === winnerBucketKey) continue
-		penalizeArchiveServeMismatch(username, groupId, row.peerNodeHash)
+		penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
 	}
 }

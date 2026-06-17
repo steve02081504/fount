@@ -220,7 +220,7 @@ export async function requestMissingEventsGossip(username, groupId, query = {}) 
 			forceResolveGossipWait(username, groupId, stillMissing)
 		else {
 			const groupSettings = await loadFederationGroupSettings(username, groupId)
-			if (!takeOutgoingWantIdsSlot(username, groupId, wantIdsLimitsFromSettings(groupSettings))) {
+			if (!takeOutgoingWantIdsSlot( groupId, wantIdsLimitsFromSettings(groupSettings))) {
 				rateLimited = true
 				forceResolveGossipWait(username, groupId, stillMissing)
 			}

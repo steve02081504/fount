@@ -9,7 +9,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isSignedDagEventRow } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
@@ -50,7 +50,7 @@ export function registerDagRoutes(router, authenticate) {
 		const eventsById = new Map()
 		for (const event of events)
 			if (event?.id) eventsById.set(String(event.id), event)
-		const reputation = loadReputation(username)
+		const reputation = loadReputation()
 		const reputationBySender = {}
 		for (const [nodeId, row] of Object.entries(reputation?.byNodeHash || {}))
 			reputationBySender[String(nodeId).toLowerCase()] = Number(row?.score ?? 0)

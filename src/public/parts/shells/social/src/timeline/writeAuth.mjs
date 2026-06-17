@@ -13,7 +13,7 @@
  *   当前架构仅在**本机**可解析该绑定（无跨节点身份公告，见 README 架构问题），故 agent 仅在
  *   本机托管时可放行；远端 agent 时间线事件无法被授权（保守拒绝，安全优先）。
  */
-import { resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveSocialEntity } from '../lib/entityResolve.mjs'
@@ -27,7 +27,7 @@ import { resolveSocialEntity } from '../lib/entityResolve.mjs'
 function isLocalAgentOperator(entityHash, sender) {
 	const resolved = resolveSocialEntity(entityHash)
 	if (resolved?.kind !== 'agent' || !resolved.replicaUsername) return false
-	const operator = resolveOperatorEntityHash(resolved.replicaUsername)
+	const operator = await resolveOperatorEntityHash(resolved.replicaUsername)
 	const operatorSubject = operator ? parseEntityHash(operator)?.subjectHash : null
 	return !!operatorSubject && operatorSubject === sender
 }

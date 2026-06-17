@@ -34,7 +34,7 @@ export async function signLocalChatEvent({ groupId, event, secretKey, state, hlc
 		groupId,
 		hlc,
 		prev_event_ids,
-		node_id: event.node_id || getNodeHash(username),
+		node_id: event.node_id || getNodeHash(),
 	}
 	const body = unsignedEventFields(base)
 	const id = computeEventId(body)

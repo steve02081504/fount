@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
 import { canViewPost } from '../feedHelpers.mjs'
 
@@ -17,7 +17,7 @@ const FEDERATION_PRIVATE_EVENT_TYPES = new Set(['follow', 'unfollow', 'follow_ap
  */
 async function resolveFederationRequesterContext(username, requesterNodeHash, ownerEntityHash) {
 	const owner = String(ownerEntityHash).toLowerCase()
-	const localNode = getNodeHash(username)
+	const localNode = getNodeHash()
 	const requesterNode = requesterNodeHash?.trim().toLowerCase() || null
 	const ownerView = await getTimelineMaterialized(username, owner)
 	const isProtected = Boolean(ownerView.socialMeta?.isProtected)
@@ -26,7 +26,7 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 		return { requesterEntityHash: null, followsOwner: false, isOwner: false, isProtected }
 
 	if (requesterNode === localNode) {
-		const operator = resolveOperatorEntityHash(username)
+		const operator = await resolveOperatorEntityHash(username)
 		const operatorView = operator ? await getTimelineMaterialized(username, operator) : null
 		return {
 			requesterEntityHash: operator,

@@ -23,7 +23,7 @@ import {
 	unwrapContentKey,
 	wrapContentKey,
 } from '../../../../../../../scripts/p2p/key_crypto.mjs'
-import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../dag/channelOps.mjs'
@@ -117,7 +117,7 @@ async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHa
 	const hash = String(ciphertextHash || '').trim().toLowerCase()
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	await local.putChunk(groupId, hash, raw).catch(() => { })
-	await putChunk(username, hash, raw).catch(() => { })
+	await putChunk( hash, raw).catch(() => { })
 
 	const storage = getStorageForGroup(username, groupSettings, { groupId })
 	const peerId = storage.storagePeerId
@@ -145,8 +145,8 @@ async function resolveCiphertextRaw(username, groupId, storageLocator) {
 	}
 	catch { /* fall through */ }
 
-	if (await hasChunk(username, hash))
-		return Buffer.from(await getChunk(username, hash))
+	if (await hasChunk( hash))
+		return Buffer.from(await getChunk( hash))
 
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	const localLoc = `local:${groupId}/chunks/${hash}.bin`
@@ -249,7 +249,7 @@ export async function putEncryptedChunk(username, groupId, opts) {
 	const storageLocator = have
 		? await bumpCiphertextBlobRef(username, ciphertextHash)
 		: await putCiphertextBlob(username, ciphertextHash, raw)
-	await putChunk(username, ciphertextHash, raw).catch(() => { })
+	await putChunk( ciphertextHash, raw).catch(() => { })
 
 	let groupSettings = {}
 	try {
@@ -489,7 +489,7 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 		raw = await resolveCiphertextRaw(username, groupId, storageLocator)
 	}
 	catch (e) {
-		if (blamePeerKey) void penalizeChunkStorageFailure(username, groupId, blamePeerKey).catch(() => { })
+		if (blamePeerKey) void penalizeChunkStorageFailure( groupId, blamePeerKey).catch(() => { })
 		throw e
 	}
 	let plain = null
@@ -511,7 +511,7 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 	else
 		plain = decryptConvergentCiphertext(raw, contentHash)
 	if (!plain) {
-		if (blamePeerKey) void penalizeChunkStorageFailure(username, groupId, blamePeerKey).catch(() => { })
+		if (blamePeerKey) void penalizeChunkStorageFailure( groupId, blamePeerKey).catch(() => { })
 		throw new Error('convergent blob decrypt failed')
 	}
 	void cachePlaintextFile(username, contentHash, plain).catch(() => { })
@@ -651,8 +651,8 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	/** @type {Buffer[]} */
 	const partBytes = []
 	for (const part of manifest.parts) {
-		if (await hasChunk(username, part.hash)) {
-			partBytes.push(await getChunk(username, part.hash))
+		if (await hasChunk( part.hash)) {
+			partBytes.push(await getChunk( part.hash))
 			continue
 		}
 		try {

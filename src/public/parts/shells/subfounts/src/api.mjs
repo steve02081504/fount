@@ -17,6 +17,7 @@ process.on('uncaughtException', (err) => {
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
+import { isNodeInitialized } from '../../../../../scripts/p2p/node/instance.mjs'
 
 /**
  * 设备信息类型
@@ -270,6 +271,8 @@ class UserSubfountManager {
 
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
 			const { joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs')
+			if (!isNodeInitialized())
+				throw new Error('P2P node not initialized — ensure initP2PServer ran before subfounts')
 			this.room = await joinMqttRoomWithDefaults({
 				appId: 'fount-subfounts',
 				password: codesData.password,

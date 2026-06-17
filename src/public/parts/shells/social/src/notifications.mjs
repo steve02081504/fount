@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHash } from '../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 
 import { getEntityProfile } from './feed.mjs'
 import { listKnownTimelineOwners } from './feedHelpers.mjs'
@@ -12,7 +12,7 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @returns {Promise<{ notifications: object[], viewerEntityHash: string | null }>} 通知列表
  */
 export async function buildNotifications(username, limit = 30) {
-	const viewerEntityHash = resolveOperatorEntityHash(username)?.toLowerCase() || null
+	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
 	if (!viewerEntityHash) return { notifications: [], viewerEntityHash: null }
 
 	/** @type {Map<string, string>} */

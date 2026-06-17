@@ -15,7 +15,7 @@ import crypto from 'node:crypto'
 
 import { putFileManifest } from '../../../../../../../scripts/p2p/entity/files/evfs.mjs'
 import { formatEvfsRef, parseEvfsRef } from '../../../../../../../scripts/p2p/entity/files/evfs_ref.mjs'
-import { resolveOperatorEntityHash } from '../../../../../../../scripts/p2p/entity/replica.mjs'
+import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**
  * @param {Buffer | string} buffer 文件内容或 evfs 引用
@@ -161,7 +161,7 @@ export class chatLogEntry_t {
 	 * @returns {Promise<object>} 数据对象
 	 */
 	async toData(username) {
-		const operatorEntityHash = resolveOperatorEntityHash(username)
+		const operatorEntityHash = await resolveOperatorEntityHash(username)
 		return {
 			...this,
 			timeSlice: await this.timeSlice.toData(),

@@ -48,7 +48,7 @@ export function invalidateGroupRuntime(groupId) {
  */
 export async function buildTimeSliceFromSession(session, replicaUsername, groupId, channelId) {
 	const slice = new timeSlice_t()
-	const localNode = getLocalNodeHash(replicaUsername)
+	const localNode = getNodeHash()
 
 	/**
 	 * @param {string} charname 角色名
@@ -145,7 +145,7 @@ export function getCharBind(session, charname) {
  * @returns {boolean} 是否为本机节点
  */
 export function isLocalNode(homeNodeHash, replicaUsername) {
-	return homeNodeHash === getLocalNodeHash(replicaUsername)
+	return homeNodeHash === getNodeHash()
 }
 
 /**

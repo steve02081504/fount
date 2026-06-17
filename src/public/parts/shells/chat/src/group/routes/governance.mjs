@@ -258,7 +258,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			if (cleared.entityHash) clearedEntries.push({ scope: 'entity', value: cleared.entityHash })
 			if (cleared.nodeHash) clearedEntries.push({ scope: 'node', value: cleared.nodeHash })
 			for (const entry of clearedEntries)
-				await removeGroupBlockedPeer(username, groupId, entry.scope, entry.value)
+				await removeGroupBlockedPeer( groupId, entry.scope, entry.value)
 			return res.status(200).json({})
 		}
 
@@ -293,8 +293,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 				timestamp: Date.now(),
 				content: banContent,
 			})
-			await addGroupBlockedPeers(username, groupId, blockEntriesFromBanContent(banContent))
-			await addBlocklistFromBanContent(username, banContent, groupId)
+			await addGroupBlockedPeers( groupId, blockEntriesFromBanContent(banContent))
+			await addBlocklistFromBanContent( banContent, groupId)
 			return res.status(200).json({})
 		}
 
@@ -316,7 +316,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				})
 				const newKey = deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce)
 				await appendFileMasterKey(username, groupId, newGen, newKey)
-				await addGroupBlockedPeers(username, groupId, [{ scope: 'subject', value: resolvedTargetKey }])
+				await addGroupBlockedPeers( groupId, [{ scope: 'subject', value: resolvedTargetKey }])
 				return res.status(200).json({})
 			}
 		}
@@ -329,7 +329,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const blockEntries = resolvedMember?.memberKind === 'agent'
 			? [{ scope: 'entity', value: resolvedMember.agentEntityHash }]
 			: [{ scope: 'subject', value: resolvedTargetKey }]
-		await addGroupBlockedPeers(username, groupId, blockEntries)
+		await addGroupBlockedPeers( groupId, blockEntries)
 		res.status(200).json({})
 	})
 

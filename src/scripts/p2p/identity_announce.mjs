@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer'
 import { selfId } from 'npm:@trystero-p2p/mqtt'
 
 import { keyPairFromSeed, pubKeyHash, sign, verify } from './crypto.mjs'
-import { ensureNodeSeed } from './federation/identity.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
+import { ensureNodeSeed } from './node/identity.mjs'
 import { getNodeHash } from './node_context.mjs'
 
 /** user room 在 trust graph / room provider 中的 scope id */
@@ -20,18 +20,15 @@ export function identityAnnounceMessage(peerId, nodeHash) {
 }
 
 /**
- * @param {string} username replica 登录名
- * @param {string} [_peerId] 兼容旧签名的目标 peer id（已忽略：签名必须绑定本机 selfId，见下）
+ * @param {string} [_peerId] 兼容旧签名（已忽略）
  * @returns {Promise<{ nodeHash: string, nodePubKey: string, signature: string }>} 可广播的身份载荷
  */
-export async function buildIdentityAnnounce(username, _peerId) {
-	const nodeHash = getNodeHash(username)
-	const seedHex = ensureNodeSeed(username)
+export async function buildIdentityAnnounce(_peerId) {
+	const nodeHash = getNodeHash()
+	const seedHex = ensureNodeSeed()
 	const { publicKey, secretKey } = keyPairFromSeed(Buffer.from(seedHex, 'hex'))
 	if (pubKeyHash(publicKey) !== nodeHash)
 		throw new Error('p2p: nodeHash does not match node seed')
-	// 签名绑定本机 selfId（对端入站时 context.peerId 即为本机 selfId），而非对方 peerId；
-	// 否则签名方用「对方 id」、验签方用「发送方 id」，两端消息不一致，verify 永远失败、roster 永远为空。
 	const message = identityAnnounceMessage(selfId, nodeHash)
 	const signature = await sign(message, secretKey)
 	return {

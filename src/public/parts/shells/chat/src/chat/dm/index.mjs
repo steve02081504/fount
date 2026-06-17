@@ -168,7 +168,7 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 	const dmCheck = await validateDmIntroLinkProof(username, { members: {} }, introPubKey, nonce, signatureHex)
 	if (!dmCheck.ok) throw new Error(dmCheck.error)
 
-	const { identityPubKeyHex: myPubKey } = getFederationSettings(username)
+	const { identityPubKeyHex: myPubKey } = await getFederationSettings(username)
 	if (!PUB_KEY_HEX_64.test(myPubKey))
 		throw new Error('configure identityPubKeyHex in federation settings before opening DM links')
 

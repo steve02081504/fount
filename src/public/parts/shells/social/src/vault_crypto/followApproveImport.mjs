@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { getFederationIdentitySecret } from '../../../../../../scripts/p2p/federation/identity.mjs'
+import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { normalizeHex64, isHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
 import { unwrapKeyEcies } from '../../../../../../scripts/p2p/key_crypto.mjs'
 import { isPlainObject } from '../../../../../../scripts/p2p/wire_ingress.mjs'
@@ -21,7 +21,7 @@ export async function tryImportFollowApproveVault(username, entityHash, event) {
 	const targetPubKeyHex = normalizeHex64(event.content?.targetPubKeyHex)
 	if (!isPlainObject(encrypted) || !targetPubKeyHex) return false
 
-	const secretHex = getFederationIdentitySecret(username)
+	const secretHex = await getOperatorSecretKey(username)
 	if (!secretHex || secretHex.length !== 64) return false
 	const secretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))
 

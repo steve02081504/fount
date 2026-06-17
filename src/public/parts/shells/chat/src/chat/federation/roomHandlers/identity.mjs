@@ -1,6 +1,6 @@
 import { buildIdentityAnnounce, verifyIdentityAnnounce } from '../../../../../../../../scripts/p2p/identity_announce.mjs'
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
-import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation_user.mjs'
+import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import {
 	isFederationActionAllowedUnderLoad,
 	releaseRtcPeer,
@@ -61,20 +61,20 @@ export function registerIdentityHandlers(roomContext) {
 			const settings = await loadFederationGroupSettings(username, groupId)
 			await mergePexNodeHints(username, groupId, hints, settings)
 			if (hints.length)
-				await bumpReputationOnRelay(username, remoteNode, `pex:${remoteNode}`)
+				await bumpReputationOnRelay( remoteNode, `pex:${remoteNode}`)
 		})().catch(error => console.error('federation: fed_pex ingest failed', error))
 	})
 
 	room.onPeerJoin(peerId => {
 		if (!takeRtcJoinSlot(key, peerId, rtcLimits)) return
 		fedOut.enqueue(3, () => {
-			void buildIdentityAnnounce(username, peerId)
+			void buildIdentityAnnounce( peerId)
 				.then(body => { identity.send(body, peerId) })
 				.catch(error => console.error('federation: identity_announce failed', error))
 		})
 		if (!isFederationActionAllowedUnderLoad(key, 'fed_pex', rtcLimits)) return
 		void (async () => {
-			const stored = loadPeerPoolView(username, groupId)
+			const stored = loadPeerPoolView( groupId)
 			const hints = [...stored.trustedPeers, ...stored.explorePeers].slice(0, 48)
 			if (hints.length)
 				fedOut.enqueue(3, () => {
@@ -84,7 +84,7 @@ export function registerIdentityHandlers(roomContext) {
 				})
 		})().catch(error => console.error('federation: onPeerJoin pex failed', error))
 		void import('../../../../../../../../scripts/p2p/trust_graph_cache.mjs').then(({ invalidateTrustGraphCache }) => {
-			invalidateTrustGraphCache(username)
+			invalidateTrustGraphCache()
 		}).catch(error => console.warn('federation: invalidateTrustGraphCache failed on join', error))
 	})
 
@@ -132,7 +132,7 @@ export function registerIdentityHandlers(roomContext) {
 		peerToNode.delete(peerId)
 		releaseRtcPeer(key, peerId)
 		void import('../../../../../../../../scripts/p2p/trust_graph_cache.mjs').then(({ invalidateTrustGraphCache }) => {
-			invalidateTrustGraphCache(username)
+			invalidateTrustGraphCache()
 		}).catch(error => console.warn('federation: invalidateTrustGraphCache failed on leave', error))
 	})
 

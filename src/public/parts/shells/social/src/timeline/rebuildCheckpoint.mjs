@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { signCheckpoint } from '../../../../../../scripts/p2p/checkpoint.mjs'
 import { writeJsonAtomicSynced } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { getFederationIdentitySecret } from '../../../../../../scripts/p2p/federation/identity.mjs'
+import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { timelineSnapshotPath } from '../paths.mjs'
 
 /**
@@ -13,7 +13,7 @@ import { timelineSnapshotPath } from '../paths.mjs'
  * @returns {Promise<object>} 落盘快照
  */
 export async function rebuildSignedTimelineSnapshot(username, entityHash, view) {
-	const secretHex = getFederationIdentitySecret(username)
+	const secretHex = await getOperatorSecretKey(username)
 	if (!secretHex || secretHex.length !== 64) {
 		await writeJsonAtomicSynced(timelineSnapshotPath(username, entityHash), view)
 		return view

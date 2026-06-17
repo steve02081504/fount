@@ -1,7 +1,5 @@
-import { loadData, saveData } from '../../server/setting_loader.mjs'
-import { createLruMap } from '../memo.mjs'
-
 import { assertHex64, isHex64, normalizeHex64 } from './hexIds.mjs'
+import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import {
 	clampReputationScore,
 	computeRepMaxEff,
@@ -58,7 +56,6 @@ function repRow(data, nodeId) {
 }
 
 /**
- * 按群 scope 调整信誉；无 groupId 时更新全局 score。
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
  * @param {string} groupId 群 ID
@@ -77,7 +74,6 @@ function adjustNodeReputation(data, nodeId, groupId, delta) {
 }
 
 /**
- * 新用户 `loadData` 返回 `{}` 时补齐信誉表字段。
  * @param {ReputationFile} data 磁盘 JSON（可信）
  * @returns {ReputationFile} 补齐字段后的同一对象
  */
@@ -89,7 +85,6 @@ function ensureReputationShape(data) {
 }
 
 /**
- * 保存前裁剪 TTL 窗口与 relay 去重表长度。
  * @param {ReputationFile} data 信誉表
  * @returns {ReputationFile} 裁剪后的同一对象
  */
@@ -102,65 +97,51 @@ function pruneReputationFile(data) {
 	return data
 }
 
-const REPUTATION_BY_USER_MAX = 256
-
-/** @type {ReturnType<typeof createLruMap<string, ReputationFile>>} */
-const reputationByUser = createLruMap(REPUTATION_BY_USER_MAX)
+/** @type {ReputationFile | null} */
+let reputationCache = null
 
 /**
- * 串行化信誉表突变，避免跨 await 的陈旧闭包覆盖。
- * @param {string} username 用户
  * @param {(data: ReputationFile) => void | Promise<void>} mutator 突变
  * @returns {Promise<void>}
  */
-function mutateReputation(username, mutator) {
-	return withAsyncMutex(`reputation:${username}`, async () => {
-		const data = loadReputation(username)
+function mutateReputation(mutator) {
+	return withAsyncMutex('reputation', async () => {
+		const data = loadReputation()
 		await mutator(data)
-		saveReputation(username, data)
+		saveReputation(data)
 	})
 }
 
 /**
- * @param {string} username 用户
- * @returns {ReputationFile} 用户级信誉表
+ * @returns {ReputationFile} 节点级信誉表
  */
-export function loadReputation(username) {
-	let cached = reputationByUser.get(username)
-	if (cached) {
-		reputationByUser.touch(username, cached)
-		return cached
-	}
-	cached = ensureReputationShape(loadData(username, DATA_NAME))
-	reputationByUser.touch(username, cached)
-	return cached
+export function loadReputation() {
+	if (reputationCache) return reputationCache
+	reputationCache = ensureReputationShape(readNodeJsonSync(DATA_NAME) || {})
+	return reputationCache
 }
 
 /**
- * @param {string} username 用户
  * @param {ReputationFile} data 信誉表
  * @returns {void}
  */
-export function saveReputation(username, data) {
+export function saveReputation(data) {
 	pruneReputationFile(data)
-	const store = loadData(username, DATA_NAME)
-	Object.assign(store, data)
-	saveData(username, DATA_NAME)
-	reputationByUser.touch(username, data)
-	invalidateTrustGraphCache(username)
+	writeNodeJsonSync(DATA_NAME, data)
+	reputationCache = data
+	invalidateTrustGraphCache()
 }
 
 /**
- * @param {string} username 用户
  * @param {string} peerNodeHash 对端节点
  * @param {string} [dedupeKey] 去重键
  * @returns {Promise<void>}
  */
-export function bumpReputationOnRelay(username, peerNodeHash, dedupeKey) {
+export function bumpReputationOnRelay(peerNodeHash, dedupeKey) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return Promise.resolve()
 	const key = String(dedupeKey || `conn:${id}`).trim()
-	return mutateReputation(username, data => {
+	return mutateReputation(data => {
 		const now = Date.now()
 		data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= RELAY_BUMP_DEDUPE_MS)
 		if (relayBumpIsDuplicate(data.relayBumpSeen, id, key, now)) return
@@ -171,13 +152,12 @@ export function bumpReputationOnRelay(username, peerNodeHash, dedupeKey) {
 }
 
 /**
- * @param {string} username 用户
- * @param {string} groupId 群 ID（want_ids backoff 仍按群）
+ * @param {string} groupId 群 ID
  * @param {string} peerNodeHash 请求方
  * @returns {Promise<void>}
  */
-export function recordGossipAllUnknownWant(username, groupId, peerNodeHash) {
-	return mutateReputation(username, data => {
+export function recordGossipAllUnknownWant(groupId, peerNodeHash) {
+	return mutateReputation(data => {
 		const now = Date.now()
 		data.wantUnknownHits = data.wantUnknownHits.filter(h => now - h.t <= WANT_UNKNOWN_WINDOW_MS)
 		data.wantUnknownHits.push({ peerNodeHash, t: now })
@@ -185,64 +165,59 @@ export function recordGossipAllUnknownWant(username, groupId, peerNodeHash) {
 		if (recent.length >= WANT_UNKNOWN_THRESHOLD) {
 			adjustNodeReputation(data, peerNodeHash, groupId, -PENALTY_UNKNOWN_WANT)
 			data.wantUnknownHits = data.wantUnknownHits.filter(h => h.peerNodeHash !== peerNodeHash)
-			recordWantIdsBackoff(wantIdsPeerKey(username, groupId, peerNodeHash))
+			recordWantIdsBackoff(wantIdsPeerKey(groupId, peerNodeHash))
 		}
 	})
 }
 
 /**
- * @param {string} username 用户
- * @param {string} groupId 群 scope（want_ids backoff / scope 分）
+ * @param {string} groupId 群 scope
  * @param {string} peerNodeHash 对端
  * @returns {void}
  */
-export function recordMessageRateViolation(username, groupId, peerNodeHash) {
+export function recordMessageRateViolation(groupId, peerNodeHash) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		adjustNodeReputation(data, id, groupId, -PENALTY_MESSAGE_RATE)
 	})
 }
 
 /**
- * @param {string} username 用户
  * @param {string} groupId 群 scope
  * @param {string} storagePeerKey 责任方
  * @returns {void}
  */
-export function bumpChunkStorageReputation(username, groupId, storagePeerKey) {
+export function bumpChunkStorageReputation(groupId, storagePeerKey) {
 	const id = String(storagePeerKey || '').trim()
 	if (!id) return
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		adjustNodeReputation(data, id, groupId, CHUNK_STORE_REP_BUMP)
 	})
 }
 
 /**
- * @param {string} username 用户
  * @param {string} groupId 群 scope
  * @param {string} blamePeerKey 责任方
  * @returns {void}
  */
-export function penalizeChunkStorageFailure(username, groupId, blamePeerKey) {
+export function penalizeChunkStorageFailure(groupId, blamePeerKey) {
 	const id = String(blamePeerKey || '').trim()
 	if (!id) return
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		adjustNodeReputation(data, id, groupId, -CHUNK_FETCH_FAIL_PENALTY)
 	})
 }
 
 /**
- * 冷归档联邦应答 digest 与仲裁赢家不一致时惩罚对端。
- * @param {string} username 用户
  * @param {string} groupId 群 scope
  * @param {string} peerNodeHash 对端 nodeHash
  * @returns {void}
  */
-export function penalizeArchiveServeMismatch(username, groupId, peerNodeHash) {
+export function penalizeArchiveServeMismatch(groupId, peerNodeHash) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		adjustNodeReputation(data, id, groupId, -ARCHIVE_SERVE_MISMATCH_PENALTY)
 	})
 }
@@ -257,19 +232,18 @@ export function resolveSlashAlertTtlMs(groupSettings) {
 }
 
 /**
- * @param {string} username 用户
  * @param {string} groupId 群 scope
  * @param {object} alert VOLATILE slash 载荷
  * @returns {boolean} 是否已应用
  */
-export function applyVolatileSlashAlert(username, groupId, alert) {
+export function applyVolatileSlashAlert(groupId, alert) {
 	const expiresAt = Number(alert?.expiresAt)
 	if (Number.isFinite(expiresAt) && Date.now() > expiresAt) return false
 	const target = normalizeHex64(alert?.targetPubKeyHash)
 	const sender = normalizeHex64(alert?.sender)
 	if (!isHex64(target) || !isHex64(sender)) return false
 	const claim = Number.isFinite(Number(alert?.claim)) ? Number(alert.claim) : 0.2
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		const repMaxEff = computeRepMaxEff(data)
 		const repSender = Number(data.byNodeHash[sender]?.score ?? 0)
 		const penalty = subjectiveSlashPenalty(claim, repSender, repMaxEff, false)
@@ -299,7 +273,7 @@ export function buildAndApplyUnverifiedSlashAlert(senderPubKeyHash, content, gro
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户（readEvents 回调用）
  * @param {string} groupId 群
  * @param {object} event reputation_slash 事件
  * @param {(username: string, groupId: string) => Promise<object[]>} readEvents 读 DAG 事件
@@ -311,7 +285,7 @@ export async function applySubjectiveSlashFromEvent(username, groupId, event, re
 	const target = content.targetPubKeyHash.trim().toLowerCase()
 	const sender = event.sender.trim().toLowerCase()
 
-	await mutateReputation(username, async data => {
+	await mutateReputation(async data => {
 		const repMaxEff = computeRepMaxEff(data)
 		const repSender = Number(data.byNodeHash[sender]?.score ?? 0)
 		const verified = content.verified && await verifySlashProof(username, groupId, content, readEvents)
@@ -336,22 +310,21 @@ async function verifySlashProof(username, groupId, content, readEvents) {
 }
 
 /**
- * @param {string} username 用户
  * @param {string} targetPubKeyHash 目标
  * @param {Array<{ from?: string, to?: string }>} inviteEdges 邀请边
  * @returns {void}
  */
-export function applyDecayCollusionAfterSlash(username, targetPubKeyHash, inviteEdges) {
+export function applyDecayCollusionAfterSlash(targetPubKeyHash, inviteEdges) {
 	const target = targetPubKeyHash.trim().toLowerCase()
 	const lambda = 0.07
 	const delta = 0.62
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		let frontier = new Set([target])
 		for (let hop = 1; hop <= 6; hop++) {
 			const upstream = new Set()
-			for (const edge of inviteEdges) 
+			for (const edge of inviteEdges)
 				if (frontier.has(edge.to)) upstream.add(edge.from)
-			
+
 			if (!upstream.size) break
 			const dRep = lambda * delta ** hop
 			for (const node of upstream) {
@@ -364,28 +337,26 @@ export function applyDecayCollusionAfterSlash(username, targetPubKeyHash, invite
 }
 
 /**
- * @param {string} username 用户
  * @param {string} targetPubKeyHash 目标
  * @returns {void}
  */
-export function applyReputationResetToScores(username, targetPubKeyHash) {
+export function applyReputationResetToScores(targetPubKeyHash) {
 	const t = targetPubKeyHash.trim().toLowerCase()
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		data.byNodeHash[t] = { score: 0 }
 	})
 }
 
 /**
- * @param {string} username 用户
  * @param {string} memberPubKeyHash 新成员
  * @param {string} [introducerPubKeyHash] 介绍者
  * @param {number} [repEdge] 边信任
  * @returns {void}
  */
-export function seedMemberReputationFromIntroducer(username, memberPubKeyHash, introducerPubKeyHash, repEdge) {
+export function seedMemberReputationFromIntroducer(memberPubKeyHash, introducerPubKeyHash, repEdge) {
 	const memberKey = memberPubKeyHash.trim().toLowerCase()
 	const introducerKey = introducerPubKeyHash?.trim().toLowerCase() || ''
-	void mutateReputation(username, data => {
+	void mutateReputation(data => {
 		if (data.byNodeHash[memberKey]) return
 		const introducerReputation = introducerKey
 			? Number(data.byNodeHash[introducerKey]?.score ?? 0)
@@ -395,11 +366,10 @@ export function seedMemberReputationFromIntroducer(username, memberPubKeyHash, i
 }
 
 /**
- * @param {string} username 用户
  * @param {string} nodeId 64 hex
- * @param {string} [groupId] 群 scope；有则返回该群 scope 分，否则全局
+ * @param {string} [groupId] 群 scope
  * @returns {number} 信誉分
  */
-export function pickNodeScore(username, nodeId, groupId = '') {
-	return pickNodeScoreFromReputation(loadReputation(username), nodeId, groupId)
+export function pickNodeScore(nodeId, groupId = '') {
+	return pickNodeScoreFromReputation(loadReputation(), nodeId, groupId)
 }

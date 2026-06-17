@@ -158,7 +158,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		try {
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
-			const data = getFederationSettings(username)
+			const data = await getFederationSettings(username)
 			const customRelays = Array.isArray(data.relayUrls)
 				? data.relayUrls.map(url => String(url).trim()).filter(url => url.startsWith('wss://'))
 				: []
@@ -207,7 +207,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			/** @type {FederationSlot | null} */
 			let slotRef = null
-			const peersSnap = loadPeerPoolView(username, groupId)
+			const peersSnap = loadPeerPoolView( groupId)
 			/**
 			 * @param {string} subject 节点 id 或 pubKeyHash
 			 * @returns {boolean} 是否已拉黑

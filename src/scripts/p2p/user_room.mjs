@@ -1,13 +1,12 @@
 import { createHash } from 'node:crypto'
 
-import { getFederationSettings } from './federation/identity.mjs'
 import {
 	USER_ROOM_SCOPE,
 } from './identity_announce.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
 import { joinMqttRoomWithDefaults, leaveMqttRoom } from './mqtt_room.mjs'
 import { recordExplorePeersFromRoster } from './network.mjs'
-import { getNodeHash } from './node_context.mjs'
+import { ensureNodeDefaults, getNodeHash, getNodeTransportSettings } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
 import {
@@ -17,14 +16,14 @@ import {
 	parseRelayUrls,
 } from './trystero_session.mjs'
 
-/** @type {Map<string, Promise<UserRoomSlot | null>>} */
-const userRoomInflight = new Map()
+/** @type {Promise<UserRoomSlot | null> | null} */
+let userRoomInflight = null
 
-/** @type {Map<string, UserRoomSlot | null>} */
-export const userRooms = new Map()
+/** @type {UserRoomSlot | null} */
+export let userRoomSlot = null
 
 /**
- * 用户级 Trystero 房间（`fount-node-{nodeHash}`）。
+ * 用户级 Trystero 房间（`fount-node-{nodeHash}`），单节点单实例。
  *
  * @typedef {{
  *   trysteroRoomName: string
@@ -36,34 +35,34 @@ export const userRooms = new Map()
  * }} UserRoomSlot
  */
 
-registerFederationRoomProvider('user-room', username => {
-	const slot = userRooms.get(username)
-	if (!slot) return []
+registerFederationRoomProvider('user-room', () => {
+	if (!userRoomSlot) return []
 	return [{
 		groupId: USER_ROOM_SCOPE,
-		/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} roster */
-		getRoster: () => slot.getRoster(),
 		/**
-		 * @param {string} nodeHash 64 hex
-		 * @returns {string | null} peer id
+		 *
 		 */
-		getPeerIdByNodeHash: nodeHash => slot.getPeerIdByNodeHash(nodeHash),
+		getRoster: () => userRoomSlot.getRoster(),
 		/**
-		 * @param {string} peerId Trystero peer
-		 * @param {string} actionName action
-		 * @param {unknown} payload 载荷
-		 * @returns {void}
+		 *
+		 * @param nodeHash
 		 */
-		sendToPeer: (peerId, actionName, payload) => slot.sendToPeer(peerId, actionName, payload),
+		getPeerIdByNodeHash: nodeHash => userRoomSlot.getPeerIdByNodeHash(nodeHash),
+		/**
+		 *
+		 * @param peerId
+		 * @param actionName
+		 * @param payload
+		 */
+		sendToPeer: (peerId, actionName, payload) => userRoomSlot.sendToPeer(peerId, actionName, payload),
 	}]
 })
 
 /**
- * @param {string} username replica 登录名
  * @returns {{ appId: string, password: string, roomId: string, nodeHash: string }} Trystero 参数
  */
-export function resolveUserMqttCredentials(username) {
-	const nodeHash = getNodeHash(username)
+export function resolveUserMqttCredentials() {
+	const nodeHash = getNodeHash()
 	const password = createHash('sha256').update(`fount-user-room:${nodeHash}`).digest('hex')
 	return {
 		appId: 'fount-user-fed',
@@ -74,26 +73,27 @@ export function resolveUserMqttCredentials(username) {
 }
 
 /**
- * @param {string} username replica 登录名
+ * @param {{ replicaUsername?: string }} [ctx] 入站上下文（part/mailbox 派发用）
  * @returns {Promise<UserRoomSlot | null>} 用户级联邦房间槽
  */
-export async function ensureUserRoom(username) {
-	if (userRooms.has(username)) return userRooms.get(username)
-	if (userRoomInflight.has(username)) return await userRoomInflight.get(username)
+export async function ensureUserRoom(ctx = {}) {
+	if (userRoomSlot) return userRoomSlot
+	if (userRoomInflight) return await userRoomInflight
 
-	const joinTask = (async () => {
-		const creds = resolveUserMqttCredentials(username)
+	userRoomInflight = (async () => {
+		ensureNodeDefaults()
+		const creds = resolveUserMqttCredentials()
 		try {
 			const room = await joinMqttRoomWithDefaults({
 				appId: creds.appId,
 				password: creds.password,
 				roomId: creds.roomId,
-				relayUrls: parseRelayUrls(getFederationSettings(username)),
+				relayUrls: parseRelayUrls(getNodeTransportSettings()),
 			})
 
 			const maps = createPeerIdentityMaps()
 			const actions = createTrysteroActionRegistry(room)
-			attachIdentityAnnounceHandlers(room, username, maps, actions)
+			attachIdentityAnnounceHandlers(room, maps, actions)
 
 			/** @type {UserRoomSlot} */
 			const slot = {
@@ -101,52 +101,53 @@ export async function ensureUserRoom(username) {
 				mqttPassword: creds.password,
 				room,
 				/**
-				 * @param {string} peerId Trystero peer
-				 * @param {string} actionName action
-				 * @param {unknown} payload 载荷
-				 * @returns {void}
+				 *
+				 * @param peerId
+				 * @param actionName
+				 * @param payload
 				 */
 				sendToPeer(peerId, actionName, payload) {
 					try { actions.send(actionName, payload, peerId) }
 					catch { /* disconnected */ }
 				},
-				/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} roster */
+				/**
+				 *
+				 */
 				getRoster: () => maps.getRoster(),
 				/**
-				 * @param {string} nodeHash 64 hex
-				 * @returns {string | null} peer id
+				 *
+				 * @param nodeHash
 				 */
 				getPeerIdByNodeHash: nodeHash => maps.getPeerIdByNodeHash(nodeHash),
 			}
 
-			attachPartWire(username, actions)
-			attachMailboxWire(username, actions)
-			userRooms.set(username, slot)
-			recordExplorePeersFromRoster(username, slot.getRoster(), '', 'user_room')
+			const wireCtx = { replicaUsername: ctx.replicaUsername }
+			attachPartWire(wireCtx, actions)
+			attachMailboxWire(wireCtx, actions)
+			userRoomSlot = slot
+			recordExplorePeersFromRoster(slot.getRoster(), '', 'user_room')
 			return slot
 		}
 		catch (error) {
 			console.error('p2p: user room join failed', error)
-			userRooms.set(username, null)
+			userRoomSlot = null
 			return null
 		}
 		finally {
-			userRoomInflight.delete(username)
+			userRoomInflight = null
 		}
 	})()
 
-	userRoomInflight.set(username, joinTask)
-	return await joinTask
+	return await userRoomInflight
 }
+
 /**
- * @param {string} username replica 登录名
  * @returns {void}
  */
-export function invalidateUserRoom(username) {
-	// 删 Map 前 best-effort leave 底层 Trystero 房间，否则旧 user room 成为孤儿持连泄漏。
-	const slot = userRooms.get(username)
+export function invalidateUserRoom() {
+	const slot = userRoomSlot
 	if (slot?.room && typeof slot.room.leave === 'function')
 		void Promise.resolve(leaveMqttRoom(slot.room)).catch(error => console.error('p2p: user room leave failed', error))
-	userRooms.delete(username)
-	userRoomInflight.delete(username)
+	userRoomSlot = null
+	userRoomInflight = null
 }

@@ -1,4 +1,4 @@
-import { getReplicaFromReq, resolveOperatorEntityHash } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { getReplicaFromReq, resolveOperatorEntityHash } from '../../../../../../server/p2p_server/http_glue.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { discoverWithNetwork } from '../discovery.mjs'
 import { getEntityProfile } from '../feed.mjs'
@@ -69,7 +69,7 @@ export function registerDiscoverRoutes(router) {
 
 	router.get('/api/parts/shells\\:social/posting-entities', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const selfEntityHash = resolveOperatorEntityHash(username)
+		const selfEntityHash = await resolveOperatorEntityHash(username)
 		/** @type {object[]} */
 		const entities = []
 		if (selfEntityHash) {

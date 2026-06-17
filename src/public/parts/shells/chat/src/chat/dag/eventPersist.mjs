@@ -13,7 +13,7 @@ import {
 	applyReputationResetToScores,
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
-} from '../../../../../../../scripts/p2p/reputation_user.mjs'
+} from '../../../../../../../scripts/p2p/reputation.mjs'
 import {
 	CKG_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,
@@ -64,7 +64,7 @@ async function applyReputationHooks(username, groupId, signPayload) {
 		const target = slashTargetPubKeyHash(signPayload)
 		if (!target) return
 		const { state } = await getState(username, groupId)
-		await applyDecayCollusionAfterSlash(username, target, state.inviteEdges)
+		await applyDecayCollusionAfterSlash( target, state.inviteEdges)
 	}
 
 	if (signPayload.type === 'reputation_slash') {
@@ -75,7 +75,7 @@ async function applyReputationHooks(username, groupId, signPayload) {
 		await decayAfterSlash()
 	else if (signPayload.type === 'reputation_reset') {
 		const target = slashTargetPubKeyHash(signPayload)
-		if (target) await applyReputationResetToScores(username, target)
+		if (target) await applyReputationResetToScores( target)
 	}
 	if (signPayload.type === 'member_join') {
 		const sender = signPayload.sender.trim().toLowerCase()
@@ -85,7 +85,7 @@ async function applyReputationHooks(username, groupId, signPayload) {
 		const introducer = signPayload.content?.introducerPubKeyHash?.trim().toLowerCase() || ''
 		const repEdge = Number.isFinite(inviteEdge?.reputationEdge) ? inviteEdge.reputationEdge : 1
 		const edgeFromJoin = state.members[sender]?.repEdgeFromIntroducer ?? repEdge
-		await seedMemberReputationFromIntroducer(username, sender, introducer, edgeFromJoin)
+		await seedMemberReputationFromIntroducer( sender, introducer, edgeFromJoin)
 	}
 }
 

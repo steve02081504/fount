@@ -50,7 +50,7 @@ export function unregisterChatMailboxConsumer() {
  * @returns {Promise<void>} 无返回值
  */
 export async function dispatchMailboxMessage(username, signedEvent, toPubKeyHash, meta = {}) {
-	const nodeHash = getNodeHash(username)
+	const nodeHash = getNodeHash()
 	await publishMailboxRecord(username, toPubKeyHash, {
 		app: MAILBOX_APP_CHAT,
 		groupId: meta.groupId ?? signedEvent.groupId,

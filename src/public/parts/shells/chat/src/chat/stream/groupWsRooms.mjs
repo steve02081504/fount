@@ -47,7 +47,7 @@ export function resolveGroupWsRoomKey(groupId, fallbackNodeHash) {
  * @returns {string} WS 房间键
  */
 export function groupWsRoomKeyForReplica(replicaUsername, groupId) {
-	return groupWsRoomKey(getLocalNodeHash(replicaUsername), groupId)
+	return groupWsRoomKey(getNodeHash(), groupId)
 }
 
 /**
@@ -56,7 +56,7 @@ export function groupWsRoomKeyForReplica(replicaUsername, groupId) {
  * @returns {void}
  */
 export function registerGroupReplicaForUser(replicaUsername, groupId) {
-	registerGroupReplicaNode(getLocalNodeHash(replicaUsername), groupId)
+	registerGroupReplicaNode(getNodeHash(), groupId)
 }
 
 /**

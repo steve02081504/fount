@@ -19,7 +19,7 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { handleIncomingChunkGet, resolvePendingChunkFetch } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { getChunk, hasChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { bumpChunkStorageReputation } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { bumpChunkStorageReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
@@ -391,7 +391,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			const { storageLocator } = await local.putChunk(groupId, hash, bytes)
 			await bumpChunkLocalRef(username, groupId, storageLocator)
 			if (remoteNode)
-				await bumpChunkStorageReputation(username, groupId, remoteNode)
+				await bumpChunkStorageReputation( groupId, remoteNode)
 			try {
 				sendChunkAck({ chunkHash: hash }, peerId)
 				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
@@ -424,8 +424,8 @@ export function attachFedChunkHandlers(fedRoom) {
 			}
 			const loc = `local:${groupId}/chunks/${hash}.bin`
 			let bytes
-			if (await hasChunk(username, hash))
-				bytes = await getChunk(username, hash)
+			if (await hasChunk( hash))
+				bytes = await getChunk( hash)
 			else 
 				try {
 					bytes = await local.getChunk(loc)
@@ -436,7 +436,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			
 			if (!bytes?.byteLength) return
 			if (remoteNode)
-				await bumpChunkStorageReputation(username, groupId, remoteNode)
+				await bumpChunkStorageReputation( groupId, remoteNode)
 			try {
 				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
 			}

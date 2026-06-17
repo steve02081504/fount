@@ -1,4 +1,4 @@
-import { createLruMap } from '../memo.mjs'
+import { createLruMap } from './utils/memo.mjs'
 
 /**
  * TTL 去重槽：partition bridge、gossip 等共用。

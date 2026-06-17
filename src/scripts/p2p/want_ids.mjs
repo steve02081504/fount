@@ -48,24 +48,21 @@ export function resolveWantIdsLimits(limits = {}) {
 }
 
 /**
- * 入站 want 限速键。
- * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} peerId 对端节点 id
  * @returns {string} 复合键
  */
-export function wantIdsPeerKey(username, groupId, peerId) {
-	return `${username}\0${groupId}\0${peerId}`
+export function wantIdsPeerKey(groupId, peerId) {
+	return `${groupId}\0${peerId}`
 }
 
 /**
  * 出站 want 限速键。
- * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @returns {string} 复合键
  */
-export function wantIdsGroupKey(username, groupId) {
-	return `${username}\0${groupId}`
+export function wantIdsGroupKey(groupId) {
+	return groupId
 }
 
 /**
@@ -108,9 +105,9 @@ export function recordWantIdsBackoff(key) {
  * @param {object} [limits] 可选限额
  * @returns {boolean} 允许处理则为 true
  */
-export function takeIncomingWantIdsSlot(username, groupId, requesterId, limits) {
+export function takeIncomingWantIdsSlot(groupId, requesterId, limits) {
 	const { inWindowMs, inMaxBatch } = resolveWantIdsLimits(limits)
-	const peerKey = wantIdsPeerKey(username, groupId, requesterId)
+	const peerKey = wantIdsPeerKey(groupId, requesterId)
 	if (isWantIdsInBackoff(peerKey)) return false
 	const now = Date.now()
 	let e = inboundByKey.get(peerKey)
@@ -132,9 +129,9 @@ export function takeIncomingWantIdsSlot(username, groupId, requesterId, limits) 
  * @param {object} [limits] 可选限额
  * @returns {boolean} 允许发起则为 true
  */
-export function takeOutgoingWantIdsSlot(username, groupId, limits) {
+export function takeOutgoingWantIdsSlot(groupId, limits) {
 	const { outWindowMs, outMaxBatch } = resolveWantIdsLimits(limits)
-	const key = wantIdsGroupKey(username, groupId)
+	const key = wantIdsGroupKey(groupId)
 	if (isWantIdsInBackoff(key)) return false
 	const now = Date.now()
 	let e = outboundByKey.get(key)

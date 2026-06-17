@@ -1,7 +1,4 @@
-/**
- * 用户级 federation.json 中的 Mailbox 路由参数。
- */
-import { loadData } from '../../../server/setting_loader.mjs'
+import { getNodeTransportSettings } from '../node/identity.mjs'
 
 const DEFAULT_MAILBOX = {
 	maxHop: 3,
@@ -11,7 +8,7 @@ const DEFAULT_MAILBOX = {
 }
 
 /**
- * @param {object} raw federation 设置片段
+ * @param {object} raw 节点 mailbox 配置片段
  * @returns {{ maxHop: number, relayFanoutTrusted: number, relayFanoutNormal: number, wantFanout: number }} 规范化 mailbox 配置
  */
 export function normalizeMailboxSettings(raw = {}) {
@@ -23,13 +20,11 @@ export function normalizeMailboxSettings(raw = {}) {
 }
 
 /**
- * @param {string} username replica
  * @returns {{ maxHop: number, relayFanoutTrusted: number, relayFanoutNormal: number, wantFanout: number, batterySaver: boolean }} mailbox 路由配置
  */
-export function getMailboxRoutingSettings(username) {
-	const data = loadData(username, 'federation') || {}
-	const batterySaver = !!data.batterySaver
-	const base = normalizeMailboxSettings(data.mailbox)
+export function getMailboxRoutingSettings() {
+	const { batterySaver, mailbox } = getNodeTransportSettings()
+	const base = normalizeMailboxSettings(mailbox)
 	if (!batterySaver) return { ...base, batterySaver: false }
 	return {
 		maxHop: base.maxHop,

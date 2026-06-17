@@ -78,7 +78,7 @@ async function encryptArchiveMonthFileToParts(username, filePath) {
 			pendingLength = leftover.length
 			const enc = encryptPlaintextToMultiParts(slice, 'plain')
 			for (const part of enc.parts) {
-				await putChunk(username, part.hash, part.raw)
+				await putChunk( part.hash, part.raw)
 				parts.push(part)
 			}
 		}
@@ -87,7 +87,7 @@ async function encryptArchiveMonthFileToParts(username, filePath) {
 		const pending = Buffer.concat(chunks)
 		const enc = encryptPlaintextToMultiParts(pending, 'plain')
 		for (const part of enc.parts) {
-			await putChunk(username, part.hash, part.raw)
+			await putChunk( part.hash, part.raw)
 			parts.push(part)
 		}
 	}
@@ -116,7 +116,7 @@ export async function prepareArchiveMonthChunkMeta(username, bodyUtf8) {
 	const { digest } = digestArchiveMonthBody(body)
 	const enc = encryptPlaintextToMultiParts(Buffer.from(body, 'utf8'), 'plain')
 	for (const part of enc.parts)
-		await putChunk(username, part.hash, part.raw)
+		await putChunk( part.hash, part.raw)
 	return { digest, parts: wirePartsFromEncParts(enc.parts) }
 }
 

@@ -38,7 +38,7 @@ export async function buildTrendingHashtags(username, options = {}) {
 
 	for (const entityHash of await listKnownTimelineOwners(username)) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked(username, entityHash)) continue
+		if (isEntityHashBlocked( entityHash)) continue
 		if (!await timelineExists(username, entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		for (const post of view.posts) {

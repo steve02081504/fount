@@ -41,7 +41,7 @@ export function registerWsRoutes(router) {
 		if (!ownerNodeHash || !groupId) return void ws.close()
 		runAuthenticatedWs(ws, req, async ({ username }) => {
 			const { getLocalNodeHash } = await import('../chat/lib/replica.mjs')
-			const localNodeHash = getLocalNodeHash(username)
+			const localNodeHash = getNodeHash()
 			if (normalizeHex64(ownerNodeHash) !== localNodeHash) return void ws.close()
 			const { getState } = await import('../chat/dag/materialize.mjs')
 			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')

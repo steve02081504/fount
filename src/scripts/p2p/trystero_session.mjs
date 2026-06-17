@@ -214,12 +214,11 @@ export function createPeerIdentityMaps() {
 
 /**
  * @param {object} room Trystero room
- * @param {string} username replica 登录名
  * @param {ReturnType<typeof createPeerIdentityMaps>} maps peer 映射
  * @param {TrysteroActionRegistry} actions action 表
  * @returns {void}
  */
-export function attachIdentityAnnounceHandlers(room, username, maps, actions) {
+export function attachIdentityAnnounceHandlers(room, maps, actions) {
 	actions.on('identity_announce', (payload, peerId) => {
 		void verifyIdentityAnnounce(payload, peerId).then(remoteNodeHash => {
 			if (!remoteNodeHash) return
@@ -231,7 +230,7 @@ export function attachIdentityAnnounceHandlers(room, username, maps, actions) {
 	})
 
 	room.onPeerJoin(peerId => {
-		void buildIdentityAnnounce(username, peerId)
+		void buildIdentityAnnounce(peerId)
 			.then(body => { actions.send('identity_announce', body, peerId) })
 			.catch(() => { /* ignore */ })
 	})

@@ -3,7 +3,7 @@ import { FEDERATION_FANOUT_TOP_K } from './constants.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { loadNetwork } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
-import { loadReputation, pickNodeScore } from './reputation_user.mjs'
+import { loadReputation, pickNodeScore } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
 import { getCachedTrustGraph } from './trust_graph_cache.mjs'
 import { registerTrustGraphProvider } from './trust_graph_registry.mjs'
@@ -14,12 +14,11 @@ import { ensureUserRoom } from './user_room.mjs'
  */
 
 /**
- * @param {string} username replica 登录名
  * @param {string} nodeHash 64 hex
  * @returns {boolean} 是否拉黑
  */
-function isNodeBlockedForUser(username, nodeHash) {
-	return isPeerKeyBlocked(username, '', nodeHash) || isSubjectBlocked(username, { nodeHash })
+function isNodeBlocked(nodeHash) {
+	return isPeerKeyBlocked('', nodeHash) || isSubjectBlocked({ nodeHash })
 }
 
 /**
@@ -42,25 +41,25 @@ function mergeTrustNode(byNode, scopeId, nodeHash, score) {
 }
 
 /**
- * @param {string} username replica 登录名
+ * @param {string} username replica 登录名（联邦房间枚举仍按用户）
  * @returns {Promise<Map<string, TrustNode>>} nodeHash → 节点
  */
 export async function buildMergedGraph(username) {
-	return getCachedTrustGraph(username, async () => {
+	return getCachedTrustGraph(async () => {
 		/** @type {Map<string, TrustNode>} */
 		const byNode = new Map()
-		const net = loadNetwork(username)
-		const rep = loadReputation(username)
+		const net = loadNetwork()
+		const rep = loadReputation()
 		const now = Date.now()
 
 		for (const nodeHash of [...net.trustedPeers, ...net.explorePeers]) {
-			if (isNodeBlockedForUser(username, nodeHash)) continue
+			if (isNodeBlocked(nodeHash)) continue
 			mergeTrustNode(byNode, 'network', nodeHash, Number(rep.byNodeHash?.[nodeHash]?.score ?? 0))
 		}
 
 		for (const hint of net.hints) {
 			if (hint.expiresAt && hint.expiresAt <= now) continue
-			if (isNodeBlockedForUser(username, hint.nodeHash)) continue
+			if (isNodeBlocked(hint.nodeHash)) continue
 			const base = Number(rep.byNodeHash?.[hint.nodeHash]?.score ?? 0)
 			mergeTrustNode(byNode, `hint:${hint.source}`, hint.nodeHash, base + (hint.weight || 0.1))
 		}
@@ -68,10 +67,10 @@ export async function buildMergedGraph(username) {
 		for (const room of await listFederationRoomSlots(username)) {
 			const scopeId = room.groupId
 			for (const { remoteNodeHash } of room.getRoster()) {
-				if (!remoteNodeHash || isNodeBlockedForUser(username, remoteNodeHash)) continue
+				if (!remoteNodeHash || isNodeBlocked(remoteNodeHash)) continue
 				const score = scopeId === USER_ROOM_SCOPE
 					? Number(rep.byNodeHash?.[remoteNodeHash]?.score ?? 0.1)
-					: pickNodeScore(username, remoteNodeHash, scopeId) || 0.1
+					: pickNodeScore(remoteNodeHash, scopeId) || 0.1
 				mergeTrustNode(byNode, scopeId, remoteNodeHash, score)
 			}
 		}
@@ -88,10 +87,10 @@ export async function buildMergedGraph(username) {
  * @returns {Promise<boolean>} 是否已发送
  */
 export async function sendToNode(username, targetNodeHash, actionName, payload) {
-	await ensureUserRoom(username)
+	await ensureUserRoom({ replicaUsername: username })
 	const targetNode = (await buildMergedGraph(username)).get(targetNodeHash)
 	if (!targetNode?.scopeIds.length) return false
-	const selfNodeHash = getNodeHash(username)
+	const selfNodeHash = getNodeHash()
 
 	const rooms = await listFederationRoomSlots(username)
 	const userRoom = rooms.find(room => room.groupId === USER_ROOM_SCOPE)
@@ -130,7 +129,7 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
  * @returns {Promise<TrustNode[]>} 按信誉降序
  */
 export async function pickTopNodes(username, limit = 12) {
-	await ensureUserRoom(username)
+	await ensureUserRoom({ replicaUsername: username })
 	return [...(await buildMergedGraph(username)).values()]
 		.sort((a, b) => b.score - a.score)
 		.slice(0, Math.max(1, limit))

@@ -42,7 +42,7 @@ export async function searchPosts(username, options = {}) {
 	const items = []
 	for (const entityHash of await listKnownTimelineOwners(username)) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked(username, entityHash)) continue
+		if (isEntityHashBlocked( entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (!view.posts?.length) continue
 		for (const post of view.posts) {

@@ -228,7 +228,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	let currentById = eventsById
 	let eventsFilled = 0
 	let wantIdsStillMissing = 0
-	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey(username, groupId))
+	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey( groupId))
 	for (let iter = 0; iter < MAX_CATCHUP_ITERS; iter++) {
 		const wantIds = computeWantSet(currentById, iter === 0)
 		if (!wantIds.length) break

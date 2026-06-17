@@ -7,7 +7,7 @@ import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation_user.mjs'
+import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {
@@ -105,11 +105,11 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : undefined,
 		entityHash: isHex64(homeNodeHash) ? `${homeNodeHash}${senderKey}` : undefined,
 	}
-	if (isSubjectBannedByState(state, subject) || isSubjectBlocked(username, subject)) {
+	if (isSubjectBannedByState(state, subject) || isSubjectBlocked( subject)) {
 		if (logFailures) console.error('federation: drop remote event (banned/blocked subject)')
 		return 'invalid'
 	}
-	const peers = loadPeerPoolView(username, groupId)
+	const peers = loadPeerPoolView( groupId)
 	if (isPeerPoolKeyBlocked(peers, senderKey)
 		|| (subject.nodeHash && isPeerPoolKeyBlocked(peers, subject.nodeHash))
 		|| (subject.entityHash && isPeerPoolKeyBlocked(peers, subject.entityHash))) {
@@ -138,7 +138,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 		if (!rateCheck.ok) {
 			const remoteNode = String(wirePayload.node_id || '').trim()
 			if (remoteNode)
-				recordMessageRateViolation(username, groupId, remoteNode)
+				recordMessageRateViolation( groupId, remoteNode)
 			if (logFailures) console.error('federation: drop remote event (rate limit)')
 			return 'invalid'
 		}

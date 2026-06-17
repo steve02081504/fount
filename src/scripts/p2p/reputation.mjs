@@ -58,3 +58,26 @@ export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = f
 export function seedReputationFromIntro(introRep, repEdge = 1) {
 	return clampReputationScore(introRep * (Number.isFinite(repEdge) ? clampReputationScore(repEdge) : 1))
 }
+
+/**
+ *
+ */
+export {
+	loadReputation,
+	saveReputation,
+	pickNodeScore,
+	bumpReputationOnRelay,
+	recordGossipAllUnknownWant,
+	recordMessageRateViolation,
+	bumpChunkStorageReputation,
+	penalizeChunkStorageFailure,
+	penalizeArchiveServeMismatch,
+	resolveSlashAlertTtlMs,
+	applyVolatileSlashAlert,
+	buildAndApplyUnverifiedSlashAlert,
+	applySubjectiveSlashFromEvent,
+	applyDecayCollusionAfterSlash,
+	applyReputationResetToScores,
+	seedMemberReputationFromIntroducer,
+	relayBumpIsDuplicate,
+} from './reputation_store.mjs'

@@ -5,8 +5,10 @@ import {
 } from '../../../../scripts/p2p/part_path_registry.mjs'
 import {
 	registerFollowingScanProvider,
+	registerOperatorEntityHashProvider,
 	registerReplicaUsernamesProvider,
 	unregisterFollowingScanProvider,
+	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
 } from '../../../../scripts/p2p/social/follower_index_registry.mjs'
 import { getAllUserNames } from '../../../../server/auth.mjs'
@@ -64,12 +66,15 @@ export default {
 	 * @param {import('npm:websocket-express').Router} root0.router Express 路由
 	 * @returns {void}
 	 */
-	Load: ({ router }) => {
+	Load: async ({ router }) => {
 		registerShellPartpath('social', 'shells/social')
 		registerReplicaUsernamesProvider(getAllUserNames)
+		registerOperatorEntityHashProvider(
+			(await import('../../../../server/p2p_server/operator_identity.mjs')).resolveOperatorEntityHashForUser,
+		)
 		registerFollowingScanProvider(async username => {
-			const { resolveOperatorEntityHash } = await import('../../../../scripts/p2p/entity/replica.mjs')
-			const operator = resolveOperatorEntityHash(username)
+			const { resolveOperatorEntityHashForUser } = await import('../../../../server/p2p_server/operator_identity.mjs')
+			const operator = await resolveOperatorEntityHashForUser(username)
 			if (!operator) return []
 			const view = await getTimelineMaterialized(username, operator)
 			return view.following
@@ -81,6 +86,7 @@ export default {
 	/** 卸载 Social shell。 */
 	Unload: () => {
 		unregisterShellPartpath('social')
+		unregisterOperatorEntityHashProvider()
 		unregisterReplicaUsernamesProvider()
 		unregisterFollowingScanProvider()
 		unregisterSocialManifestAcl()

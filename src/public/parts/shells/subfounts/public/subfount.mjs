@@ -61,6 +61,9 @@ try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
 	;({ on_shutdown } = await import('npm:on-shutdown'))
+	const { initNode, isNodeInitialized } = await import('../../../../../scripts/p2p/node/instance.mjs')
+	if (!isNodeInitialized())
+		initNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
 	;({ joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs'))
 }
 catch (error) {

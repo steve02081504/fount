@@ -40,7 +40,7 @@ export function requireDagDeps() {
  * @returns {string} 64 hex nodeHash
  */
 export function federationNodeHash(username) {
-	return getNodeHash(username)
+	return getNodeHash()
 }
 
 /**
