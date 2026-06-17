@@ -150,7 +150,11 @@ export function checkEventPermission(state, event, senderHash) {
 				const target = String(content.delegatedOwnerPubKeyHash || '').trim().toLowerCase()
 				if (isHex64(target) && manageAdminsPubKeyHashes(state).has(target))
 					return { ok: true }
-				return { ok: false, reason: 'delegatedOwnerPubKeyHash must name an active MANAGE_ADMINS holder' }
+				// owner-succession 经联邦/gossip 乱序抵达时，授予新主 MANAGE_ADMINS 的 role_assign 可能尚未
+				// 折叠到本地共识分支（断链 / 少数支）。此时目标若仍是活跃成员，视为"依赖未到达"的暂时性失败，
+				// 走 quarantine 待 role_assign 折叠后重放，而非永久丢弃（对齐 message_edit/message_delete 语义）。
+				const deferrable = isHex64(target) && state.members[target]?.status === 'active'
+				return { ok: false, reason: 'delegatedOwnerPubKeyHash must name an active MANAGE_ADMINS holder', deferrable }
 			}
 			const onlyDiscovery = changedKeys.every(key => ['discoveryPublic', 'discoveryTitle', 'discoveryBlurb'].includes(key))
 			if (onlyDiscovery)

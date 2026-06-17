@@ -2,22 +2,22 @@
 
 ## Trust model
 
-- **Local trust domain**: Social UI、`/api/parts/shells:social/...`、本机 timeline append 与 P2P deps 互信。
-- **External untrusted**: `part_timeline_put`、`part_invoke`（Social RPC / timeline pull）；入站在 `timeline/sync.mjs`（`ingestRemoteTimelineEvent`）与 `timeline/federationExport.mjs`（联邦 pull 出站过滤）。
-- **关注列表**: 无 sidecar JSON；从 operator 时间线物化 `following`；反向查询用 `data/social/follower_index/buckets/{hexPrefix}.json` 分桶投影（LRU 热缓存）。
-- **拉黑**: 用户级 `settings/blocklist.json`，HTTP `/api/p2p/blocklist`。
+- **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
+- **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Timeline ingress at `src/timeline/sync.mjs` (`ingestRemoteTimelineEvent`); social RPC ingress at `src/discovery.mjs` (`handleSocialRpc`); outbound filtering on federation pull in `src/timeline/federationExport.mjs`.
+- **Follow list**: no sidecar JSON; `following` is materialized from the operator timeline; reverse lookups use `{dataPath}/p2p/node/social/follower_index/buckets/{hexPrefix}.json` bucketed projection (LRU hot cache).
+- **Block**: node-level `{dataPath}/p2p/node/blocklist.json`, HTTP `/api/p2p/blocklist`.
 
 ## UI conventions
 
-- 禁止面向用户的硬编码文案；使用 `data-i18n` 与 `zh-CN.json`（`social.*` 键）。
-- 优先 `renderTemplate` / `mountTemplate`（`public/src/templates/`），避免大段 `` innerHTML ``。
-- 模态框：沿用 `@src/public/pages/scripts/dialog.mjs` 的 `openDialogFromTemplate`（若适用）。
+- No hardcoded user-visible strings; use `data-i18n` with `zh-CN.json` (`social.*` keys).
+- Prefer `renderTemplate` / `mountTemplate` (`public/src/templates/`) over large `innerHTML` blocks.
+- Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/dialog.mjs` where applicable.
 
-## 联邦 Social
+## Federated Social
 
-- 远端通知 **仅**经 `part_invoke`（如 `social_on_mention`），不走 `char_rpc`。
+- Remote notifications go **only** through `part_invoke` (e.g. `social_on_mention`), never `char_rpc`.
 
 ## Related
 
-- [Chat Hub AGENTS.md](../chat/public/hub/AGENTS.md)
-- [Shell AGENTS.md](../AGENTS.md)
+- [Chat Hub AGENTS.md](../../chat/public/hub/AGENTS.md)
+- [Shell AGENTS.md](../../AGENTS.md)

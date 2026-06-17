@@ -2,8 +2,10 @@
  * Social 引导：账号即 Chat 联邦 P2P 实体，首次访问时自动准备 timeline + profile。
  */
 import { ensureLocalEntityProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { resolveOperatorEntityHash } from '../operatorEntity.mjs'
+import { isWritableLocalEntity } from '../../../../../../scripts/p2p/entity/replica.mjs'
 import { ensureSocialMeta } from '../timeline/append.mjs'
+
+import { resolveOperatorEntityHash } from './operatorEntity.mjs'
 
 /**
  * 确保 entity 的 profile 与 social_meta 创世事件就绪。

@@ -24,7 +24,7 @@
 - **`markdown.mjs`**: Markdown to HTML with KaTeX, Mermaid, and Shiki support.
 - **`svgInliner.mjs`**: Inlines SVGs to allow CSS styling (`currentColor`).
 - **`i18n.mjs`**: Sole public entry point. Call `initTranslations()` early on each page. Use `data-i18n` attributes and APIs such as `geti18n`, `loadPreferredLangs`, and `savePreferredLangs`.
-- **`i18n_base.mjs`**: Internal implementation (imported only by `i18n.mjs`): loads locale bundles per environment and registers listeners such as `languagechange`. Uses `userPreferredLanguages` on the host app and `fountUserPreferredLanguages` on static Pages.
+- **`i18n_base.mjs`**: Internal implementation (imported only by `i18n.mjs`): loads locale bundles per environment. Host app uses `userPreferredLanguages`; static GitHub Pages use a separate `i18n_base.mjs` with `fountUserPreferredLanguages`.
 
 ## 4. Components & Utilities
 

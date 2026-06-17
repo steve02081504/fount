@@ -1,8 +1,8 @@
-import { resolveOperatorEntityHash } from '../operatorEntity.mjs'
 import { getEntityProfile } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'
 
 import { listLocalAgentEntities } from './entityResolve.mjs'
+import { resolveOperatorEntityHash } from './operatorEntity.mjs'
 
 /**
  * 返回发帖 @ 提及 autocomplete 候选列表。
