@@ -7,11 +7,11 @@ import { loadPart, hasPartMain } from '../parts_loader.mjs'
 import { createFountEntityStore } from './entity_store.mjs'
 
 /**
- * @param {string} username
- * @param {string} partpath
- * @param {object} data
- * @param {{ requesterNodeHash?: string | null }} ingress
- * @returns {Promise<import('../../scripts/p2p/part_invoke.mjs').PartInvokeResponse | null>}
+ * @param {string} username 目标用户
+ * @param {string} partpath part 路径
+ * @param {object} data 调用载荷
+ * @param {{ requesterNodeHash?: string | null }} ingress 入站元数据
+ * @returns {Promise<import('../../scripts/p2p/part_invoke.mjs').PartInvokeResponse | null>} 部件响应
  */
 async function invokePartForUser(username, partpath, data, ingress = {}) {
 	const path = normalizePartpath(partpath)
@@ -46,9 +46,9 @@ async function invokePartForUser(username, partpath, data, ingress = {}) {
 }
 
 /**
- * @param {string} [preferredUsername]
- * @param {string} partpath
- * @returns {Promise<string | null>}
+ * @param {string} [preferredUsername] 首选 replica
+ * @param {string} partpath part 路径
+ * @returns {Promise<string | null>} 拥有该 part 的用户名
  */
 async function resolveUsernameForPartpath(preferredUsername, partpath) {
 	if (preferredUsername && hasPartMain(preferredUsername, partpath)) return preferredUsername

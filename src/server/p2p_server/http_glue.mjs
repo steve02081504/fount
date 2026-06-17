@@ -23,7 +23,7 @@ export async function resolveOperatorEntityHash(replicaUsername) {
 
 /**
  * @param {import('npm:express').Request} req 已 authenticate 的请求
- * @returns {Promise<{ replicaUsername: string, nodeHash: string, operatorEntityHash: string | null }>}
+ * @returns {Promise<{ replicaUsername: string, nodeHash: string, operatorEntityHash: string | null }>} replica 上下文
  */
 export async function getReplicaFromReq(req) {
 	const { username: replicaUsername } = await getUserByReq(req)
@@ -33,13 +33,14 @@ export async function getReplicaFromReq(req) {
 }
 
 /**
- * @param {string} replicaUsername
- * @param {string} entityHash
- * @returns {Promise<boolean>}
+ * @param {string} replicaUsername fount 登录名
+ * @param {string} entityHash 目标 entityHash
+ * @returns {Promise<boolean>} 当前用户是否可写该实体
  */
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
 	const { isWritableLocalEntity } = await import('../../scripts/p2p/entity/replica.mjs')
 	if (!isWritableLocalEntity(entityHash)) return false
 	const pub = await ensureOperatorPubKey(replicaUsername)
 	const operatorHash = resolveLocalOperatorEntityHash(pub)
-	r
+	return entityHash === operatorHash
+}

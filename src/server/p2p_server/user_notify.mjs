@@ -8,7 +8,7 @@ export function getNotifyReplicas() {
 }
 
 /**
- * @param {string} [preferred]
+ * @param {string} [preferred] 首选 replica
  * @returns {string | null} 首选或第一个用户
  */
 export function pickPrimaryReplica(preferred) {

@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
 import { keyPairFromSeed } from '../../scripts/p2p/crypto.mjs'
+import { resolveLocalOperatorEntityHash } from '../../scripts/p2p/entity/replica.mjs'
 import { isHex64 } from '../../scripts/p2p/hexIds.mjs'
 import {
 	ensureNodeDefaults,
@@ -9,7 +10,6 @@ import {
 	getNodeTransportSettings,
 	saveNodeTransportSettings,
 } from '../../scripts/p2p/node/identity.mjs'
-import { resolveLocalOperatorEntityHash } from '../../scripts/p2p/entity/replica.mjs'
 import { events } from '../events.mjs'
 import { assignShellData } from '../setting_loader.mjs'
 
@@ -23,8 +23,8 @@ events.on('federation-settings-changed', ({ username }) => {
 })
 
 /**
- * @param {string} username
- * @returns {Promise<string>}
+ * @param {string} username fount 登录名
+ * @returns {Promise<string>} 64 hex operator 公钥
  */
 export async function ensureOperatorPubKey(username) {
 	const cached = operatorCache.get(username)
@@ -52,8 +52,8 @@ export async function ensureOperatorPubKey(username) {
 }
 
 /**
- * @param {string} username
- * @returns {Promise<string>}
+ * @param {string} username fount 登录名
+ * @returns {Promise<string>} 64 hex operator 私钥
  */
 export async function getOperatorSecretKey(username) {
 	await ensureOperatorPubKey(username)
@@ -61,8 +61,8 @@ export async function getOperatorSecretKey(username) {
 }
 
 /**
- * @param {string} username
- * @returns {string}
+ * @param {string} username fount 登录名
+ * @returns {string} 64 hex operator 私钥（须已 ensure）
  */
 export function getOperatorSecretKeySync(username) {
 	const secret = operatorCache.get(username)?.secret
@@ -71,8 +71,8 @@ export function getOperatorSecretKeySync(username) {
 }
 
 /**
- * @param {string} username
- * @returns {Promise<string | null>}
+ * @param {string} username fount 登录名
+ * @returns {Promise<string | null>} operator entityHash
  */
 export async function resolveOperatorEntityHashForUser(username) {
 	await ensureOperatorPubKey(username)
@@ -80,8 +80,8 @@ export async function resolveOperatorEntityHashForUser(username) {
 }
 
 /**
- * @param {string} username
- * @returns {Promise<string>}
+ * @param {string} username fount 登录名
+ * @returns {Promise<string>} operator entityHash
  */
 export async function getOperatorEntityHash(username) {
 	const hash = await resolveOperatorEntityHashForUser(username)
@@ -90,7 +90,7 @@ export async function getOperatorEntityHash(username) {
 }
 
 /**
- * @param {string} username
+ * @param {string} username fount 登录名
  * @returns {object} 节点传输 + operator 公钥（HTTP federation GET 体）
  */
 export async function getFederationViewForUser(username) {
@@ -108,9 +108,9 @@ export async function getFederationViewForUser(username) {
 }
 
 /**
- * @param {string} username
- * @param {object} patch
- * @returns {Promise<object>}
+ * @param {string} username fount 登录名
+ * @param {object} patch federation 部分字段
+ * @returns {Promise<object>} 保存后的 federation 视图
  */
 export async function saveFederationViewForUser(username, patch) {
 	if (patch.batterySaver != null || patch.relayUrls || patch.mailbox)
@@ -139,9 +139,9 @@ export async function saveFederationViewForUser(username, patch) {
 }
 
 /**
- * @param {string} username
- * @param {string} nonce
- * @returns {{ nonce: string, rotatedAt: number }}
+ * @param {string} username fount 登录名
+ * @param {string} nonce DM intro nonce
+ * @returns {{ nonce: string, rotatedAt: number }} 写入后的 nonce 行
  */
 export function setDmIntroNonce(username, nonce) {
 	const normalized = String(nonce || '').trim()

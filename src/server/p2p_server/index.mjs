@@ -14,7 +14,7 @@ import { getInfoDefaultsForEntity, localesFromRequest } from './presentation.mjs
 import { pickPrimaryReplica } from './user_notify.mjs'
 
 /**
- * @param {{ dataPath: string }} options
+ * @param {{ dataPath: string }} options fount 数据根目录
  * @returns {Promise<void>}
  */
 export async function initP2PServer({ dataPath }) {
