@@ -145,7 +145,7 @@ export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
-	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC']) starts[start] ??= true
+	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC', 'P2P']) starts[start] ??= true
 	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
@@ -160,11 +160,7 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
-	if (starts.Base) {
-		initAuth()
-		const { initP2PServer } = await import('./p2p_server/index.mjs')
-		await initP2PServer({ dataPath: data_path })
-	}
+	if (starts.Base) initAuth()
 	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
@@ -205,8 +201,8 @@ export async function init(start_config) {
 		})
 		/**
 		 * 处理 HTTP 请求。
-		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-		 * @param {import('http').ServerResponse} res - HTTP 响应对象。
+		 * @param {import("node:http").IncomingMessage} req - HTTP 请求对象。
+		 * @param {import("node:http").ServerResponse} res - HTTP 响应对象。
 		 * @returns {Promise<void>}
 		 */
 		const requestListener = async (req, res) => {
@@ -222,8 +218,8 @@ export async function init(start_config) {
 		}
 		/**
 		 * 处理 WebSocket 升级请求。
-		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-		 * @param {import('net').Socket} socket - 客户端和服务器之间的网络套接字。
+		 * @param {import("node:http").IncomingMessage} req - HTTP 请求对象。
+		 * @param {import("node:net").Socket} socket - 客户端和服务器之间的网络套接字。
 		 * @param {Buffer} head - 已升级流的第一个数据包。
 		 * @returns {Promise<void>}
 		 */
@@ -301,6 +297,10 @@ export async function init(start_config) {
 		tray = createTray()
 	})
 	SetTaskbarProgress(88)
+	if (starts.P2P) {
+		const { initP2PServer } = await import('./p2p_server/index.mjs')
+		initP2PServer({ dataPath: data_path })
+	}
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		on_shutdown(() => setWindowTitle(originalTitle))

@@ -6,7 +6,7 @@ import {
 	applyAvatarToAllLocales,
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
-} from './localized.mjs'
+} from './localized_core.mjs'
 import { resolveInfoDefaultsForEntity } from './presentation_registry.mjs'
 import { isWritableLocalEntity } from './replica.mjs'
 
@@ -194,7 +194,6 @@ export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, file
 
 	const { putFileManifest } = await import('./files/evfs.mjs')
 	await putFileManifest({
-		replicaUsername,
 		ownerEntityHash: entityHash,
 		logicalPath: 'profile/avatar',
 		plaintext: fileBuffer,

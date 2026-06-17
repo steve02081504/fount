@@ -14,35 +14,29 @@ import { getEntityStore } from '../../node/instance.mjs'
 import { findReplicaHostingEntityFiles } from './acl.mjs'
 
 /**
- * @param {string} replicaUsername replica
  * @param {string} ownerEntityHash owner
  * @param {string} logicalPath 路径
  * @returns {Promise<import('../../files/manifest.mjs').FileManifest | null>} 归一化 manifest
  */
-export async function loadFileManifest(replicaUsername, ownerEntityHash, logicalPath) {
-	void replicaUsername
+export async function loadFileManifest(ownerEntityHash, logicalPath) {
 	const manifest = await getEntityStore().readManifest(ownerEntityHash, logicalPath)
 	return manifest ? normalizeFileManifest(manifest) : null
 }
 
 /**
- * @param {string} replicaUsername 写入 replica
  * @param {import('../../files/manifest.mjs').FileManifest} manifest manifest
  * @returns {Promise<void>}
  */
-export async function saveFileManifest(replicaUsername, manifest) {
-	void replicaUsername
+export async function saveFileManifest(manifest) {
 	await getEntityStore().writeManifest(manifest.ownerEntityHash, manifest.logicalPath, manifest)
 }
 
 /**
- * @param {string} replicaUsername replica
  * @param {import('../../files/manifest.mjs').FileManifest} manifest manifest
  * @param {Array<Buffer | Uint8Array>} partBytes 密文块
  * @returns {Promise<void>}
  */
-export async function storeManifestParts(replicaUsername, manifest, partBytes) {
-	void replicaUsername
+export async function storeManifestParts(manifest, partBytes) {
 	for (let index = 0; index < manifest.parts.length; index++)
 		await putChunk(manifest.parts[index].hash, partBytes[index])
 }
@@ -109,7 +103,6 @@ export async function readManifestPlaintextStream(replicaUsername, manifest, opt
 
 /**
  * @param {object} params 参数
- * @param {string} params.replicaUsername replica
  * @param {string} params.ownerEntityHash owner
  * @param {string} params.logicalPath 路径
  * @param {Buffer | Uint8Array} params.plaintext 明文
@@ -123,7 +116,6 @@ export async function readManifestPlaintextStream(replicaUsername, manifest, opt
 export async function putFileManifest(params) {
 	const { encryptPlaintextToParts, encryptPlaintextToMultiPartsAsync } = await import('../../files/assemble.mjs')
 	const {
-		replicaUsername,
 		ownerEntityHash,
 		logicalPath,
 		plaintext,
@@ -147,15 +139,14 @@ export async function putFileManifest(params) {
 		transferKeyDescriptor,
 		meta,
 	}, enc)
-	await storeManifestParts(replicaUsername, manifest, enc.parts.map(part => part.raw))
-	await saveFileManifest(replicaUsername, manifest)
+	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
+	await saveFileManifest(manifest)
 	return manifest
 }
 
 /**
  * 流式写入文件（请求流 -> 加密分块 -> chunk store）。
  * @param {object} params 参数
- * @param {string} params.replicaUsername replica
  * @param {string} params.ownerEntityHash owner
  * @param {string} params.logicalPath 路径
  * @param {import('node:stream').Readable} params.readable 明文流
@@ -169,7 +160,6 @@ export async function putFileManifest(params) {
  */
 export async function putFileManifestFromStream(params) {
 	const {
-		replicaUsername,
 		ownerEntityHash,
 		logicalPath,
 		readable,
@@ -195,11 +185,9 @@ export async function putFileManifestFromStream(params) {
 		meta,
 	})
 	if (!manifest) throw new Error('invalid manifest')
-	await saveFileManifest(replicaUsername, manifest)
+	await saveFileManifest(manifest)
 	return manifest
 }
 
-/**
- *
- */
+/** 转出 ACL 侧的实体文件托管查询，便于按 evfs 入口统一引用。 */
 export { findReplicaHostingEntityFiles }

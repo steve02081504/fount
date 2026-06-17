@@ -68,8 +68,8 @@ export async function putVaultFileManifest(username, entityHash, opts) {
 		transferKeyDescriptor: descriptor,
 		meta: { fileId, visibility: opts.visibility || 'followers', vaultGroupId: vaultGroupId(entityHash) },
 	}, enc)
-	await storeManifestParts(username, manifest, enc.parts.map(part => part.raw))
-	await saveFileManifest(username, manifest)
+	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
+	await saveFileManifest(manifest)
 	return { fileId, logicalPath, manifest }
 }
 

@@ -5,7 +5,7 @@ import { userEntityHashFromPubKeyHex } from '../entity_id.mjs'
 import { isHex64 } from '../hexIds.mjs'
 import { normalizeMailboxSettings } from '../mailbox/settings.mjs'
 
-import { emitNodeChange, getNodeDir } from './instance.mjs'
+import { emitNodeChange } from './instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './storage.mjs'
 
 const NODE_SEED_HEX_RE = /^[0-9a-f]{64}$/iu
@@ -85,22 +85,6 @@ export function ensureNodeDefaults() {
 	const data = loadNodeFile()
 	if (!data.mailbox) saveNodeFile({ mailbox: normalizeMailboxSettings({}) })
 	return { ...getNodeTransportSettings(), nodeHash: getNodeHash() }
-}
-
-/**
- * @returns {string} 节点数据目录（便于外部工具）
- */
-export function getNodeDataDir() {
-	void getNodeDir()
-	return getNodeDir()
-}
-
-/**
- * @param {string} pubKeyHex 64 hex（仅校验格式，节点库不存 operator 密钥）
- * @returns {boolean} 是否为 64 hex 公钥
- */
-export function isValidOperatorPubKeyHex(pubKeyHex) {
-	return isHex64(String(pubKeyHex || '').trim().toLowerCase().replace(/^0x/iu, ''))
 }
 
 /**

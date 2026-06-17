@@ -1,10 +1,9 @@
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-
-import { dirname, join } from 'https://deno.land/std@0.224.0/path/mod.ts'
 
 import { isHex64 } from '../hexIds.mjs'
 import { getNodeDir } from '../node/instance.mjs'

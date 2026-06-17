@@ -12,7 +12,6 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { putFileManifest } from '../../../../../../../scripts/p2p/entity/files/evfs.mjs'
 import { parseEvfsRef } from '../../../../../../../scripts/p2p/entity/files/evfs_ref.mjs'
 import { entityFileUrl } from '../../../../../../../scripts/p2p/entity/files/url.mjs'
-import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { appendFileUploadEvent } from '../dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
@@ -23,6 +22,7 @@ import {
 	channelMessageShowText,
 	textChannelContent,
 } from '../lib/channelContent.mjs'
+import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**
  * 上传单个明文文件到群 DAG（`file_upload` + 可选 Hub 内联图附件 hash）。
@@ -95,7 +95,6 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 			const attachId = randomUUID()
 			const logicalPath = `shells/chat/attachments/${attachId}`
 			await putFileManifest({
-				replicaUsername: username,
 				ownerEntityHash: operatorEntityHash,
 				logicalPath,
 				plaintext: buffer,

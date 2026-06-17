@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { readJsonFile, readJsonFileSync, writeJsonFile, writeJsonFileSync } from '../utils/json_io.mjs'
+import { readJsonFileSync, writeJsonFileSync } from '../utils/json_io.mjs'
 
 import { getNodeDir } from './instance.mjs'
 
@@ -10,32 +10,6 @@ import { getNodeDir } from './instance.mjs'
  */
 export function nodeJsonPath(name) {
 	return path.join(getNodeDir(), `${name}.json`)
-}
-
-/**
- * @param {string} name 配置文件名
- * @returns {Promise<object | null>} 解析后的 JSON 或 null
- */
-export async function readNodeJson(name) {
-	return readJsonFile(nodeJsonPath(name))
-}
-
-/**
- * @param {string} name 配置文件名
- * @param {unknown} data 数据
- * @returns {Promise<void>}
- */
-export async function writeNodeJson(name, data) {
-	await writeNodeJsonFile(name, data)
-}
-
-/**
- * @param {string} name 配置文件名
- * @param {unknown} data 数据
- * @returns {Promise<void>}
- */
-export async function writeNodeJsonFile(name, data) {
-	await writeJsonFile(nodeJsonPath(name), data)
 }
 
 /**

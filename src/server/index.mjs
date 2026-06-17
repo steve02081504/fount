@@ -113,6 +113,7 @@ if (args.length) {
 			Web: false,
 			Tray: false,
 			DiscordRPC: false,
+			P2P: false,
 		}
 	}
 	else {

@@ -176,7 +176,6 @@ export class chatLogEntry_t {
 				const attachId = crypto.randomUUID()
 				const logicalPath = `shells/chat/attachments/${attachId}`
 				await putFileManifest({
-					replicaUsername: username,
 					ownerEntityHash: operatorEntityHash,
 					logicalPath,
 					plaintext: plain,

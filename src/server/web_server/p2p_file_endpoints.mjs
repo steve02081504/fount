@@ -48,7 +48,7 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 			return res.status(400).json({ error: 'invalid path' })
 
 		const { username } = getUserByReq(req)
-		const manifest = await loadFileManifest(username, entityHash, logicalPath)
+		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest)
 			return res.status(404).json({ error: 'not found' })
 		if (!await canReadManifest(username, entityHash, manifest))
@@ -70,7 +70,7 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 		if (!isEntityHash128(entityHash) || !logicalPath)
 			return res.status(400).end()
 		const { username } = getUserByReq(req)
-		const manifest = await loadFileManifest(username, entityHash, logicalPath)
+		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest || !await canReadManifest(username, entityHash, manifest))
 			return res.status(404).end()
 		res.setHeader('Content-Length', String(manifest.size || 0))
@@ -97,7 +97,6 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 			return res.status(413).json({ error: 'file too large' })
 
 		const manifest = await putFileManifestFromStream({
-			replicaUsername: username,
 			ownerEntityHash: entityHash,
 			logicalPath,
 			readable: req,
@@ -128,7 +127,6 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 			return res.status(413).json({ error: 'file too large' })
 
 		await putFileManifestFromStream({
-			replicaUsername: username,
 			ownerEntityHash: entityHash,
 			logicalPath: 'profile/avatar',
 			readable: Readable.from(file.buffer),

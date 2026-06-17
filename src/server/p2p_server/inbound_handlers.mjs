@@ -4,8 +4,6 @@ import { isPlainObject } from '../../scripts/p2p/wire_ingress.mjs'
 import { getAllUserNames } from '../auth.mjs'
 import { loadPart, hasPartMain } from '../parts_loader.mjs'
 
-import { createFountEntityStore } from './entity_store.mjs'
-
 /**
  * @param {string} username 目标用户
  * @param {string} partpath part 路径
@@ -61,8 +59,6 @@ async function resolveUsernameForPartpath(preferredUsername, partpath) {
  * @returns {void}
  */
 export function registerP2PInboundHandlers() {
-	const entityStore = createFountEntityStore()
-
 	registerInboundHandler('part_invoke', async (ctx, message) => {
 		const partpath = normalizePartpath(message.partpath)
 		if (!partpath || !isPlainObject(message.invoke)) return null
@@ -83,6 +79,4 @@ export function registerP2PInboundHandlers() {
 		})
 		return null
 	})
-
-	void entityStore
 }

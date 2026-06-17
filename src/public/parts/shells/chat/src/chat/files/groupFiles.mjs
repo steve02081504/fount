@@ -661,8 +661,8 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 		catch { /* skip */ }
 	}
 	if (partBytes.length === manifest.parts.length)
-		await storeManifestParts(username, manifest, partBytes)
-	await saveFileManifest(username, manifest)
+		await storeManifestParts(manifest, partBytes)
+	await saveFileManifest(manifest)
 	const { updateGroupEntityIndex } = await import('../groupEntityIndex.mjs')
 	await updateGroupEntityIndex(username, groupId)
 	return manifest
