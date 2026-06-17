@@ -11,7 +11,7 @@ import { parseMailboxGive, parseMailboxPut, parseMailboxWant } from './parse.mjs
 
 /**
  * @param {MailboxWireContext} ctx 入站上下文
- * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire
+ * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire Trystero 适配器
  * @returns {void}
  */
 export function attachMailboxWire(ctx, wire) {

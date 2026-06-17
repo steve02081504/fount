@@ -26,13 +26,21 @@ export function chunkStorePath(hash) {
 }
 
 /**
- * @param {string} hash 64 hex
- * @param hashOrVoid
- * @param hashMaybe
+ * @param {string} hashOrLegacy 64 hex 块哈希，或遗留 username（与 hashMaybe 联用）
+ * @param {string} [hashMaybe] 当第一参数为 username 时的块哈希
+ * @returns {string} 解析后的 64 hex
+ */
+function resolveChunkHash(hashOrLegacy, hashMaybe) {
+	return hashMaybe ?? hashOrLegacy
+}
+
+/**
+ * @param {string} hashOrLegacy 64 hex 或遗留 username
+ * @param {string} [hashMaybe] 块哈希
  * @returns {Promise<boolean>} 本地是否存在
  */
-export async function hasChunk(hashOrVoid, hashMaybe) {
-	const hash = hashMaybe ?? hashOrVoid
+export async function hasChunk(hashOrLegacy, hashMaybe) {
+	const hash = resolveChunkHash(hashOrLegacy, hashMaybe)
 	try {
 		await fsp.access(chunkStorePath(hash))
 		return true
@@ -43,13 +51,12 @@ export async function hasChunk(hashOrVoid, hashMaybe) {
 }
 
 /**
- * @param {string} hash 64 hex
- * @param hashOrVoid
- * @param hashMaybe
+ * @param {string} hashOrLegacy 64 hex 或遗留 username
+ * @param {string} [hashMaybe] 块哈希
  * @returns {Promise<Buffer>} 块字节
  */
-export async function getChunk(hashOrVoid, hashMaybe) {
-	const hash = hashMaybe ?? hashOrVoid
+export async function getChunk(hashOrLegacy, hashMaybe) {
+	const hash = resolveChunkHash(hashOrLegacy, hashMaybe)
 	return fsp.readFile(chunkStorePath(hash))
 }
 
@@ -62,15 +69,13 @@ export function createChunkReadStream(hash) {
 }
 
 /**
- * @param {string} hash 64 hex
- * @param {Buffer | Uint8Array} data 块字节
- * @param hashOrVoid
- * @param hashOrData
- * @param dataMaybe
+ * @param {string} hashOrLegacy 64 hex 或遗留 username
+ * @param {string | Buffer | Uint8Array} hashOrData 块哈希或（username 时）块数据
+ * @param {Buffer | Uint8Array} [dataMaybe] 块数据
  * @returns {Promise<void>}
  */
-export async function putChunk(hashOrVoid, hashOrData, dataMaybe) {
-	const hash = dataMaybe != null ? hashOrData : hashOrVoid
+export async function putChunk(hashOrLegacy, hashOrData, dataMaybe) {
+	const hash = dataMaybe != null ? hashOrData : hashOrLegacy
 	const data = dataMaybe ?? hashOrData
 	const filePath = chunkStorePath(hash)
 	await fsp.mkdir(path.dirname(filePath), { recursive: true })

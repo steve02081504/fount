@@ -8,8 +8,8 @@ import {
 import { computeRetentionKeepIds, PERMISSION_ANCHOR_TYPES } from '../retention_policy.mjs'
 
 /**
- *
- * @param c
+ * @param {string} c 重复字符
+ * @returns {string} 64 字符测试哈希
  */
 const hex = c => c.repeat(64)
 

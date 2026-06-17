@@ -39,20 +39,18 @@ registerFederationRoomProvider('user-room', () => {
 	if (!userRoomSlot) return []
 	return [{
 		groupId: USER_ROOM_SCOPE,
-		/**
-		 *
-		 */
+		/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} 房间 roster */
 		getRoster: () => userRoomSlot.getRoster(),
 		/**
-		 *
-		 * @param nodeHash
+		 * @param {string} nodeHash 64 hex
+		 * @returns {string | null} peer id
 		 */
 		getPeerIdByNodeHash: nodeHash => userRoomSlot.getPeerIdByNodeHash(nodeHash),
 		/**
-		 *
-		 * @param peerId
-		 * @param actionName
-		 * @param payload
+		 * @param {string} peerId 目标 peer
+		 * @param {string} actionName Trystero action
+		 * @param {unknown} payload 载荷
+		 * @returns {void}
 		 */
 		sendToPeer: (peerId, actionName, payload) => userRoomSlot.sendToPeer(peerId, actionName, payload),
 	}]
@@ -101,22 +99,20 @@ export async function ensureUserRoom(ctx = {}) {
 				mqttPassword: creds.password,
 				room,
 				/**
-				 *
-				 * @param peerId
-				 * @param actionName
-				 * @param payload
+				 * @param {string} peerId 目标 peer
+				 * @param {string} actionName Trystero action
+				 * @param {unknown} payload 载荷
+				 * @returns {void}
 				 */
 				sendToPeer(peerId, actionName, payload) {
 					try { actions.send(actionName, payload, peerId) }
 					catch { /* disconnected */ }
 				},
-				/**
-				 *
-				 */
+				/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} 房间 roster */
 				getRoster: () => maps.getRoster(),
 				/**
-				 *
-				 * @param nodeHash
+				 * @param {string} nodeHash 64 hex
+				 * @returns {string | null} peer id
 				 */
 				getPeerIdByNodeHash: nodeHash => maps.getPeerIdByNodeHash(nodeHash),
 			}

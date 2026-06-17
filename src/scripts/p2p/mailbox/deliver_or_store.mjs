@@ -10,7 +10,7 @@ import { mailboxTierFromHop, storeMailboxRecord } from './store.mjs'
 /**
  * @param {string} username replica（trust graph 投递上下文）
  * @param {object} opts 投递选项
- * @returns {Promise<{ stored: boolean, delivered: boolean, relayed: number }>}
+ * @returns {Promise<{ stored: boolean, delivered: boolean, relayed: number }>} 存转结果
  */
 export async function deliverOrStoreMailboxPut(username, opts) {
 	const routing = getMailboxRoutingSettings()
@@ -46,7 +46,7 @@ export async function deliverOrStoreMailboxPut(username, opts) {
  * @param {string} toPubKeyHash 收件人
  * @param {object} record 待发 record
  * @param {string} [toNodeHash] 已知在线节点时直投
- * @returns {Promise<{ stored: boolean, delivered: boolean, relayed: number }>}
+ * @returns {Promise<{ stored: boolean, delivered: boolean, relayed: number }>} 存转结果
  */
 export async function publishMailboxRecord(username, toPubKeyHash, record, toNodeHash = '') {
 	return deliverOrStoreMailboxPut(username, {
@@ -83,10 +83,10 @@ export async function ingestMailboxPut(ctx, put) {
 }
 
 /**
- * @param {{ replicaUsername?: string }} ctx
+ * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {object} want mailbox_want 载荷
- * @param {(payload: unknown, peerId: string) => void} sendGive
- * @param {string} peerId
+ * @param {(payload: unknown, peerId: string) => void} sendGive mailbox_give 发送回调
+ * @param {string} peerId 请求方 peer
  * @returns {Promise<void>}
  */
 export async function respondMailboxWant(ctx, want, sendGive, peerId) {
@@ -103,9 +103,9 @@ export async function respondMailboxWant(ctx, want, sendGive, peerId) {
 }
 
 /**
- * @param {{ replicaUsername?: string }} ctx
+ * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {object} give mailbox_give 载荷
- * @returns {Promise<number>}
+ * @returns {Promise<number>} 投递给消费者的记录数
  */
 export async function ingestMailboxGive(ctx, give) {
 	const records = give.records || []

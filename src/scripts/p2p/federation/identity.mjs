@@ -24,7 +24,8 @@ export {
 }
 
 /**
- * @param _username
+ * @param {string} _username 忽略（兼容旧 API）
+ * @returns {ReturnType<typeof ensureNodeDefaults>} 节点默认配置
  * @deprecated 使用 ensureNodeDefaults
  */
 export function ensureFederationDefaults(_username) {
@@ -33,7 +34,8 @@ export function ensureFederationDefaults(_username) {
 }
 
 /**
- * @param _username
+ * @param {string} _username 忽略（兼容旧 API）
+ * @returns {ReturnType<typeof getNodeTransportSettings>} 节点传输配置
  * @deprecated 使用 getNodeTransportSettings
  */
 export function getFederationSettings(_username) {
@@ -42,8 +44,9 @@ export function getFederationSettings(_username) {
 }
 
 /**
- * @param {string} _username 忽略
+ * @param {string} _username 忽略（兼容旧 API）
  * @param {object} patch 节点传输字段
+ * @returns {ReturnType<typeof saveNodeTransportSettings>} 保存后的配置
  */
 export function saveFederationSettings(_username, patch) {
 	void _username
@@ -51,7 +54,8 @@ export function saveFederationSettings(_username, patch) {
 }
 
 /**
- * @param _username
+ * @param {string} _username 忽略
+ * @returns {never} 始终抛错
  * @deprecated 用户域 — 请用 p2p_server/operator_identity
  */
 export function getFederationIdentitySecret(_username) {
@@ -60,9 +64,10 @@ export function getFederationIdentitySecret(_username) {
 }
 
 /**
- * @param _username
- * @param _nonce
- * @deprecated
+ * @param {string} _username 忽略
+ * @param {string} _nonce 忽略
+ * @returns {never} 始终抛错
+ * @deprecated 已迁至 p2p_server/operator_identity
  */
 export function setDmIntroNonce(_username, _nonce) {
 	void _username
