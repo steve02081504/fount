@@ -8,12 +8,23 @@
  */
 import './src/chat/dag/index.mjs'
 import './src/chat/federation/config.mjs'
+import fs from 'node:fs'
+import path from 'node:path'
+
+import { scanLocalAgentEntitiesFromChars } from '../../../../scripts/p2p/entity/hosting.mjs'
+import {
+	registerAgentCharResolver,
+	registerListLocalAgentsProvider,
+	unregisterAgentCharResolver,
+	unregisterListLocalAgentsProvider,
+} from '../../../../scripts/p2p/entity/hosting_registry.mjs'
 import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from '../../../../scripts/p2p/entity/session_snapshot_registry.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from '../../../../scripts/p2p/p2p_viewer_registry.mjs'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
 } from '../../../../scripts/p2p/part_path_registry.mjs'
+import { getUserDictionary } from '../../../../server/auth.mjs'
 
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
@@ -89,6 +100,12 @@ export default {
 		registerMaterializedSessionProvider('chat', getMaterializedSession)
 		registerChatFederationRoomProvider()
 		registerChatMailboxConsumer()
+		void import('../../../../server/p2p_server/agent_resolve.mjs').then(({ resolveAgentCharPartName }) => {
+			registerAgentCharResolver(resolveAgentCharPartName)
+		})
+		registerListLocalAgentsProvider(username =>
+			scanLocalAgentEntitiesFromChars(username, getUserDictionary, fs, path),
+		)
 		setGroupEndpoints(router)
 		setEndpoints(router)
 	},
@@ -107,6 +124,8 @@ export default {
 			unregisterMaterializedSessionProvider('chat')
 			unregisterChatFederationRoomProvider()
 			unregisterChatMailboxConsumer()
+			unregisterAgentCharResolver()
+			unregisterListLocalAgentsProvider()
 		}
 	},
 	interfaces: {

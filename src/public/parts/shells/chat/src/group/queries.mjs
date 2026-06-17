@@ -11,7 +11,7 @@ import { DEFAULT_STREAM_GENERATING_IDLE_MS } from '../../../../../../scripts/p2p
 import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { materializeFromCheckpoint } from '../../../../../../scripts/p2p/materialized_state.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
-import { sanitizeFederatedEvent } from '../chat/events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolve.mjs'
 import { mergeChannelMessagesForDisplay } from '../chat/lib/messageMerge.mjs'
 import { eventsPath, snapshotPath } from '../chat/lib/paths.mjs'
@@ -222,7 +222,7 @@ async function finalizeChannelMessagesForViewer(username, groupId, state, lines,
 		Number.isFinite(streamGeneratingIdleMs) && streamGeneratingIdleMs > 0 ? streamGeneratingIdleMs : undefined,
 	)
 	if (work.some(line => Array.isArray(line.content?.options))) {
-		const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 		const voteCastEvents = events
 			.filter(event => event.type === 'vote_cast' && (event.channelId || 'default') === channelId)
 			.map(event => ({

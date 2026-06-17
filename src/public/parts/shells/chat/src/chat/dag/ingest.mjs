@@ -10,7 +10,7 @@ import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.m
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { assertHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import {
 	federationIngestBlockedWithoutSnapshot,
 	shouldDeferFederatedRelay,
@@ -81,7 +81,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 	}
 
 	if (event.type === 'dag_tip_merge') {
-		const rows = await readJsonl(eventsPath(replicaUsername, groupId), { sanitize: sanitizeFederatedEvent })
+		const rows = await readJsonl(eventsPath(replicaUsername, groupId), { sanitize: stripDagEventLocalExtensions })
 		const tips = computeDagTipIdsFromEvents(rows)
 		if (tips.length < 2) throw new Error('dag_tip_merge: no fork')
 		const expected = sortedPrevEventIds(tips)

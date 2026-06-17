@@ -1,20 +1,15 @@
-import { isPubKeyHashBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
-import { computeEventId, eventBodyForSign } from '../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { collectSocialRpcMerged } from '../../../../../../scripts/p2p/part_wire.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
-import { SOCIAL_TIMELINE_EVENT_TYPES, timelineGroupId } from '../../../../../../scripts/p2p/social_namespace.mjs'
-import { verifyTimelineRemoteSignature } from '../../../../../../scripts/p2p/timeline/verify_remote.mjs'
+import { validateRemoteTimelineEvent } from '../../../../../../scripts/p2p/timeline/remote_ingest.mjs'
 import { loadFollowing } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
 import { tryImportFollowApproveVault } from '../vault_crypto/followApproveImport.mjs'
-
 
 import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
 import { filterEventsForFederatedPull } from './federationExport.mjs'
 import { invalidateTimelineMaterializedCache } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
-import { isTimelineWriteAuthorized } from './writeAuth.mjs'
 
 /** 联邦 RPC 单次 pull 响应上限（客户端循环 afterEventId 直至空批）。 */
 export const FEDERATED_TIMELINE_PULL_BATCH = 200
@@ -29,32 +24,17 @@ const FEDERATED_TIMELINE_PULL_MAX_ROUNDS = 8
  * @returns {Promise<boolean>} 是否新写入
  */
 export async function ingestRemoteTimelineEvent(username, entityHash, event) {
-	if (!SOCIAL_TIMELINE_EVENT_TYPES.has(event.type)) return false
-	// groupId 必须与目标时间线一致：签名正文含 groupId，故合法事件天然匹配；
-	// 此处拒绝把为其它时间线签名的事件错误归档到本 owner（防跨时间线归档/重放）。
-	if (event.groupId !== timelineGroupId(entityHash)) return false
-	const sender = event.sender.trim().toLowerCase()
-	if (isPubKeyHashBlocked( sender)) return false
-	const body = eventBodyForSign(event)
-	if (computeEventId(body) !== event.id) return false
-	if (!await verifyTimelineRemoteSignature(event)) return false
-	// 授权边界：验签证明 sender 持有 senderPubKey，但不代表 sender 有权写入本时间线。
-	// 拒绝「攻击者用自有 key 签名 + 伪造 groupId 注入受害者时间线」——按 entity 类型解析合法写入者。
-	if (!isTimelineWriteAuthorized(entityHash, sender)) return false
+	const validated = await validateRemoteTimelineEvent(event, entityHash, {
+		canonicalize: canonicalizeSignedTimelineEvent,
+	})
+	if (!validated.accepted) return false
 	const existing = await readJsonl(timelineEventsPath(username, entityHash))
-	if (existing.some(row => row.id === event.id)) return false
-	let row
-	try {
-		row = canonicalizeSignedTimelineEvent(event)
-	}
-	catch {
-		return false
-	}
-	await appendJsonlSynced(timelineEventsPath(username, entityHash), row)
+	if (existing.some(row => row.id === validated.row.id)) return false
+	await appendJsonlSynced(timelineEventsPath(username, entityHash), validated.row)
 	invalidateTimelineMaterializedCache(username, entityHash)
 	invalidateTimelineOwnerIndex(username)
 	await tryImportFollowApproveVault(username, entityHash, event)
-	await projectFollowerIndexFromTimelineEvent(username, entityHash, row)
+	await projectFollowerIndexFromTimelineEvent(username, entityHash, validated.row)
 	return true
 }
 

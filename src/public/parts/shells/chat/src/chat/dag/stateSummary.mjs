@@ -1,23 +1,12 @@
 import { createHash } from 'node:crypto'
 
 import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
+import { findLastEventOfType } from '../../../../../../../scripts/p2p/dag/event_query.mjs'
 import { computeLocalTipsHash, computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { appendSignedLocalEvent } from './append.mjs'
-
-/**
- * @param {object[]} events 全量 DAG 事件
- * @param {string} type 事件类型
- * @returns {{ event: object, index: number } | null} 自后向前最近一条
- */
-function findLastEventOfType(events, type) {
-	for (let index = events.length - 1; index >= 0; index--) 
-		if (events[index]?.type === type) return { event: events[index], index }
-	
-	return null
-}
 
 /**
  * @param {object} state 物化状态

@@ -6,7 +6,7 @@
  * 【关联】`events/hlcPolicy.mjs`、`remoteIngest.mjs`、`p2p/dag/storage.mjs`、`dag/groupLock.mjs`。
  */
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { quarantinePath } from '../lib/paths.mjs'
 
 /**
@@ -30,7 +30,7 @@ export async function appendQuarantinedEvent(username, groupId, signPayload, rea
  * @returns {Promise<object[]>} 隔离行
  */
 export async function readQuarantineRows(username, groupId) {
-	return readJsonl(quarantinePath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	return readJsonl(quarantinePath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 }
 
 /**

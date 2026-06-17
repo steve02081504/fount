@@ -1,6 +1,4 @@
-import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { pruneEventsJsonlAfterCheckpoint } from '../../../../../../scripts/p2p/timeline/prune.mjs'
-import { enforceTimelineEventRetention } from '../../../../../../scripts/p2p/timeline/retention.mjs'
+import { runTimelineMaintenance } from '../../../../../../scripts/p2p/timeline/retention_runner.mjs'
 import { timelineEventsPath } from '../paths.mjs'
 
 import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
@@ -39,12 +37,15 @@ export function socialRetentionPolicy(socialMeta = {}) {
 export async function runSocialTimelineMaintenance(username, entityHash, checkpoint, socialMeta) {
 	const path = timelineEventsPath(username, entityHash)
 	const policy = socialRetentionPolicy(socialMeta)
-	await enforceTimelineEventRetention(path, checkpoint, {
-		maxDepth: policy.maxDepth,
-		maxMs: policy.maxMs,
-		anchorTypes: SOCIAL_TIMELINE_ANCHOR_TYPES,
-	}, canonicalizeSignedTimelineEvent)
-	const count = (await readJsonl(path, { sanitize: canonicalizeSignedTimelineEvent })).length
-	if (count > policy.compactTrigger && checkpoint?.checkpoint_event_id)
-		await pruneEventsJsonlAfterCheckpoint(path, checkpoint, canonicalizeSignedTimelineEvent)
+	await runTimelineMaintenance({
+		eventsFilePath: path,
+		checkpoint,
+		policy: {
+			maxDepth: policy.maxDepth,
+			maxMs: policy.maxMs,
+			anchorTypes: SOCIAL_TIMELINE_ANCHOR_TYPES,
+		},
+		sanitize: canonicalizeSignedTimelineEvent,
+		compactTrigger: policy.compactTrigger,
+	})
 }

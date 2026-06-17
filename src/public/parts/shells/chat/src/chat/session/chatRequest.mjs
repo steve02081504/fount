@@ -22,7 +22,7 @@ import {
 } from '../dag/hydration.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { agentEntityHash } from '../lib/entityId.mjs'
+import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { getOperatorEntityHash } from '../lib/replica.mjs'
 

@@ -35,7 +35,7 @@ import {
 	parseJoinSnapshotRequest,
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
-} from '../src/chat/federation/pull/wire.mjs'
+} from '../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import {
 	isActivePullMember,
 	isHistoricalPullMember,

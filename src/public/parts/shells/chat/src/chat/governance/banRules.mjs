@@ -8,7 +8,7 @@
 import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveTargetMemberKey } from '../../../../../../../scripts/p2p/reducers/chat/helpers.mjs'
-import { memberEntityHash } from '../lib/entityId.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 
 /** @typedef {'entity' | 'node'} BanScope */
 

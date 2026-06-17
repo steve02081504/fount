@@ -4,8 +4,8 @@ import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../.
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { takeIncomingWantIdsSlot } from '../../../../../../../../scripts/p2p/want_ids.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { sanitizeFederatedEvent } from '../../events/wire.mjs'
-import { pickFederationTargetPeerIds } from '../../governance/peerPool.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
 import { scheduleCatchUp } from '../catchUpScheduler.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
@@ -120,7 +120,7 @@ export function registerSyncHandlers(roomContext) {
 						flushIds.add(event.id)
 				for (const event of events)
 					if (flushIds.has(event.id))
-						try { dag.send(sanitizeFederatedEvent(event), peerId) }
+						try { dag.send(stripDagEventLocalExtensions(event), peerId) }
 						catch (error) { console.error('federation: bootstrap flush failed', error) }
 			})().catch(console.error)
 		})
@@ -242,7 +242,7 @@ export function registerSyncHandlers(roomContext) {
 			const forwardPlan = buildGossipForwardPlan(parsed, groupSettings)
 			if (forwardPlan) {
 				const roster = [...peerToNode.entries()].map(([pid, remoteNodeHash]) => ({ peerId: pid, remoteNodeHash }))
-				const forwardPeers = await pickFederationTargetPeerIds(username, groupId, roster, groupSettings, nodeHash)
+				const forwardPeers = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
 				enqueueGossipForward(fedOut, gossipRequest, forwardPlan.forwardPayload, forwardPeers)
 			}
 		})().catch(console.error)

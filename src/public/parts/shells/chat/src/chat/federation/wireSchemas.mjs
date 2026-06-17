@@ -1,7 +1,7 @@
 /** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history_want。 */
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
-import { parsePullAttestation } from './pull/wire.mjs'
+import { parsePullAttestation } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { EVENT_ID_HEX } from './registry.mjs'
 
 /**
@@ -27,7 +27,7 @@ export function parseFedTipPong(payload) {
 
 /**
  * @param {unknown} payload gossip_request 载荷
- * @returns {{ wantIds: string[], ttl: number, requesterNodeHash: string, archiveSummary: unknown, attestation: import('./pull/wire.mjs').PullAttestation } | null} 解析结果
+ * @returns {{ wantIds: string[], ttl: number, requesterNodeHash: string, archiveSummary: unknown, attestation: import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation } | null} 解析结果
  */
 export function parseGossipRequest(payload) {
 	if (!isPlainObject(payload)) return null
@@ -50,7 +50,7 @@ export function parseGossipRequest(payload) {
  * @param {unknown} payload channel_history_want 载荷
  * @param {string} localNodeHash 本节点 hash
  * @param {string} groupId 群 ID（attestation 校验用）
- * @returns {{ requesterNodeHash: string, requestId: string, channelId: string, before?: string, limit: number, attestation: import('./pull/wire.mjs').PullAttestation } | null} 解析结果
+ * @returns {{ requesterNodeHash: string, requestId: string, channelId: string, before?: string, limit: number, attestation: import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation } | null} 解析结果
  */
 export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
 	if (!isPlainObject(payload)) return null

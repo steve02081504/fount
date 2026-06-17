@@ -9,7 +9,7 @@ import { mkdir } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { pendingRelayPath } from '../lib/paths.mjs'
 
 /**
@@ -23,7 +23,7 @@ export async function enqueuePendingRelay(username, groupId, signPayload) {
 	if (!signPayload?.id) return
 	const pendingRelayFilePath = pendingRelayPath(username, groupId)
 	await mkdir(dirname(pendingRelayFilePath), { recursive: true })
-	await appendJsonlSynced(pendingRelayFilePath, sanitizeFederatedEvent(signPayload))
+	await appendJsonlSynced(pendingRelayFilePath, stripDagEventLocalExtensions(signPayload))
 }
 
 /**
@@ -34,7 +34,7 @@ export async function enqueuePendingRelay(username, groupId, signPayload) {
  */
 export async function flushPendingRelay(username, groupId, publish) {
 	const pendingRelayFilePath = pendingRelayPath(username, groupId)
-	const pendingEvents = await readJsonl(pendingRelayFilePath, { sanitize: sanitizeFederatedEvent })
+	const pendingEvents = await readJsonl(pendingRelayFilePath, { sanitize: stripDagEventLocalExtensions })
 	if (!pendingEvents.length) return 0
 	const { writeFile, unlink } = await import('node:fs/promises')
 	await writeFile(pendingRelayFilePath, '', 'utf8')
@@ -50,7 +50,7 @@ export async function flushPendingRelay(username, groupId, publish) {
 		}
 
 	try {
-		const unflushedEvents = await readJsonl(pendingRelayFilePath, { sanitize: sanitizeFederatedEvent })
+		const unflushedEvents = await readJsonl(pendingRelayFilePath, { sanitize: stripDagEventLocalExtensions })
 		if (!unflushedEvents.length) await unlink(pendingRelayFilePath)
 	}
 	catch (error) {

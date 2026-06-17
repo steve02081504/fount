@@ -22,7 +22,7 @@ import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/
 import { markGroupOfflineStarted } from '../../chat/federation/syncState.mjs'
 import { getPendingDecryptBufferStats } from '../../chat/file_keys/buffer.mjs'
 import { listActiveFilesFromState } from '../../chat/files/groupFiles.mjs'
-import { memberEntityHash } from '../../chat/lib/entityId.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { userHasLocalGroupReplica } from '../../chat/lib/paths.mjs'
 import { getGroupMemberEntityHash } from '../../chat/lib/replica.mjs'
 import { getMaterializedSession } from '../../chat/session/dagSession.mjs'

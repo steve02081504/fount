@@ -6,7 +6,7 @@ import { mkdir } from 'node:fs/promises'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeAppendHlcAndPrev } from '../../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 
@@ -66,7 +66,7 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 	if (!opts.skipValidateIngestAuthz)
 		await validateIngestAuthz(username, groupId, event, { source: 'local', state })
 	await mkdir(groupDir(username, groupId), { recursive: true })
-	const previous = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const { hlc, prev_event_ids: prevFromCaller } = computeAppendHlcAndPrev(previous, event, { multiTip: true })
 
 	const { signPayload, wirePayload } = await signLocalChatEvent({

@@ -45,7 +45,7 @@ import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
 import { findStaleUnreachableChannels } from '../channel/gc.mjs'
 import { enforceEventRetention } from '../events/retention.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { flushPendingRelay } from '../federation/pendingRelay.mjs'
 import { loadGovernanceBranchTip } from '../governance/branchStore.mjs'
 import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
@@ -73,7 +73,7 @@ export async function getStateForFederation(username, groupId) {
  * @returns {Promise<{ events: object[], state: object, order: string[], checkpoint: object | null }>} 事件、物化状态与检查点
  */
 export async function getState(username, groupId, opts = {}) {
-	const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 
 	let wal = { ok: true }
@@ -231,7 +231,7 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
  */
 export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
 	const previousCheckpoint = await safeReadJson(snapshotPath(username, groupId))
-	const eventsForReplay = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const eventsForReplay = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	// 采纳的 owner 签名基态在本地真正追平前保持权威（与 WAL / getState 同口径 isAdoptedBaseAuthoritative）：
 	// 锚点未拉回 / 悬挂父 / 锚点非当前叶 / dag_tip_ids 未对齐均属 catch-up 中间态，禁止 forceFullReplay
 	// （否则缺 pre-checkpoint 治理链 → 滤没基态成员）；物化以 checkpoint 为基态叠加本地增量。
@@ -290,7 +290,7 @@ export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
 
 	state.channelMergedMessages = {}
 	for (const channelId of Object.keys(state.channels)) {
-		const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: sanitizeFederatedEvent })
+		const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
 		state.channelMergedMessages[channelId] = mergeChannelMessagesForDisplay(lines)
 	}
 

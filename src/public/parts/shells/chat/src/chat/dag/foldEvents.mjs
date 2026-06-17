@@ -6,7 +6,7 @@ import { invalidateTopologicalOrderMemo } from '../../../../../../../scripts/p2p
 import { allProtectedHotEventIds } from '../archive/hotPosts.mjs'
 import { archivedMessageIdSet, loadArchiveManifest } from '../archive/index.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 /**
@@ -30,7 +30,7 @@ export async function foldDagProcessEvents(username, groupId, hotPosts, groupSet
 	const path = eventsPath(username, groupId)
 	const { kept, dropped } = await rewriteJsonlKeeping(path, row =>
 		!shouldDrop(row, archivedIds, protectedHotIds, settings.dagFoldAfterArchive),
-	{ sanitize: sanitizeFederatedEvent },
+	{ sanitize: stripDagEventLocalExtensions },
 	)
 	invalidateTopologicalOrderMemo(`${username}:${groupId}`)
 	return { dropped, kept }

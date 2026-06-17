@@ -3,7 +3,7 @@
  * 【职责】记录本节点收到各 `eventId` 的 `receivedAt`（毫秒），供频道消息行与 UI 展示；不进入 DAG canonical。
  * 【原理】与联邦 wire 剥离字段一致：`receivedAt` 仅存 `event_meta.json` 侧车，避免污染跨节点复制的 events.jsonl。
  * 【数据结构】`EventMetaFile`: `{ receivedAt: Record<eventId, number> }`；超 5 万条时裁剪最旧条目。
- * 【关联】`append.mjs`、`remoteIngest.mjs`、`eventPersist.mjs`、`events/wire.mjs`、`../lib/paths.mjs`。
+ * 【关联】`append.mjs`、`remoteIngest.mjs`、`eventPersist.mjs`、`p2p/dag/strip_extensions.mjs`、`../lib/paths.mjs`。
  */
 import { mkdir, readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'

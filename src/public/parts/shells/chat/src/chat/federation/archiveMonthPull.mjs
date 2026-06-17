@@ -15,7 +15,7 @@ import {
 	pickArchiveMonthByReputation,
 	syncArchivedEventIdsFromMonthBody,
 } from '../archive/monthDigest.mjs'
-import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import { markArchiveMonthIncomplete } from './archiveMonthMark.mjs'
@@ -190,9 +190,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 export async function pullArchiveMonthQuorum(username, groupId, slot, channelId, utcMonth) {
 	const nodeHash = federationNodeHash(username)
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const targets = await pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),
 		groupSettings,
 		nodeHash,

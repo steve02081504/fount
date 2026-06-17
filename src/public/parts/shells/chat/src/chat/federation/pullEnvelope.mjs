@@ -7,9 +7,9 @@ import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../s
 import { mergeRemoteArchiveManifestHints } from '../archive/index.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { mergeChannelHistories } from '../dag/queries.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { applyFileKeyGrant, buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
-import { verifyRemoteCheckpoint } from '../lib/checkpointVerifier.mjs'
+import { verifyRemoteCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 
@@ -55,7 +55,7 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
 	if (archiveSummary) inner.archiveSummary = archiveSummary
 	if (archiveManifest) inner.archiveManifest = archiveManifest
 	if (events.length)
-		inner.events = events.map(ev => sanitizeFederatedEvent(ev))
+		inner.events = events.map(ev => stripDagEventLocalExtensions(ev))
 	if (channelHistories && isPlainObject(channelHistories)) {
 		/** @type {Record<string, object[]>} */
 		const wireHistories = {}

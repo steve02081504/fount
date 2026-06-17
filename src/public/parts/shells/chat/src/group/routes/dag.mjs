@@ -18,7 +18,7 @@ import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { syncEvents } from '../../chat/dag/queries.mjs'
 import { appendValidatedRemoteEvent } from '../../chat/dag/remoteIngest.mjs'
-import { sanitizeFederatedEvent } from '../../chat/events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { buildFileKeyGrant } from '../../chat/file_keys/historicalGrant.mjs'
@@ -42,7 +42,7 @@ export function registerDagRoutes(router, authenticate) {
 	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/tips$/, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
 
-		const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 		const tips = computeDagTipIdsFromEvents(events)
 		const { checkpoint } = await getState(username, groupId)
 		const { computeLocalTipsHash } = await import('../../../../../../../scripts/p2p/dag/index.mjs')
@@ -96,7 +96,7 @@ export function registerDagRoutes(router, authenticate) {
 		const tipId = req.body?.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
 		if (tipId && !isHex64(tipId))
 			return res.status(400).json({ error: 'invalid tipId' })
-		const tips = state.dagTips || computeDagTipIdsFromEvents(await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent }))
+		const tips = state.dagTips || computeDagTipIdsFromEvents(await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
 		if (tipId && !tips.includes(tipId))
 			return res.status(400).json({ error: 'tipId is not a current DAG tip' })
 		await saveGovernanceBranchTip(username, groupId, tipId)

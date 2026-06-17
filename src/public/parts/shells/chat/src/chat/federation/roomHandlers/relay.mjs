@@ -20,7 +20,7 @@ import {
 import { handleJoinSnapshotRequest } from '../joinSnapshot.mjs'
 import { bindFedSender } from '../outbound.mjs'
 import { noteJoinSnapshotResponse } from '../pull/joinSnapshotPick.mjs'
-import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../pull/wire.mjs'
+import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 
 /**
  * bootstrap / join snapshot / discovery 中继 handler。

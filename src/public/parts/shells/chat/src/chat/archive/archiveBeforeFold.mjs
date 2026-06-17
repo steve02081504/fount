@@ -2,7 +2,7 @@
  * 物化维护：在 DAG 折叠前将非热区帖写入冷归档。
  */
 import { readJsonl, rewriteJsonlKeeping } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { messagesPath } from '../lib/paths.mjs'
 
 import { allProtectedHotEventIds } from './hotPosts.mjs'
@@ -30,7 +30,7 @@ export async function archivePostsBeforeDagFold(username, groupId, state, events
 			.filter(id => !protectedIds.has(id) && !isEventArchivedInManifest(manifest, channelId, id))
 		if (!toArchiveIds.length) continue
 		const want = new Set(toArchiveIds)
-		const lines = (await readJsonl(messagesPath(username, groupId, channelId), { sanitize: sanitizeFederatedEvent }))
+		const lines = (await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions }))
 			.filter(row => want.has(String(row.eventId).trim()))
 		let added = 0
 		if (!lines.length) {
@@ -75,6 +75,6 @@ export async function trimMessagesJsonlToHotWindow(username, groupId, hotPosts) 
 		const path = messagesPath(username, groupId, channelId)
 		await rewriteJsonlKeeping(path, row =>
 			protectedIds.has(String(row.eventId).trim()) || hotTypes.has(row.type),
-		{ sanitize: sanitizeFederatedEvent })
+		{ sanitize: stripDagEventLocalExtensions })
 	}
 }

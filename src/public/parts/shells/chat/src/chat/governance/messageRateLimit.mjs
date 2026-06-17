@@ -8,7 +8,7 @@ import {
 	resolveMessageRateLimits,
 } from '../../../../../../../scripts/p2p/message_rate_limit.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {
@@ -56,7 +56,7 @@ export async function checkMessageRateLimit(username, groupId, state, event) {
 
 	const groupKey = `${username}:${groupId}`
 	if (!rebuiltGroups.has(groupKey)) {
-		const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 		rebuildRateLimitBucketFromTail(username, groupId, events.slice(-TAIL_SCAN_MAX))
 		rebuiltGroups.add(groupKey)
 	}

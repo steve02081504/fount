@@ -6,13 +6,13 @@ import {
 	buildSignedDiscoveryAdvertisement,
 	mergeDiscoveryAdvertisement,
 } from '../discovery/index.mjs'
-import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { loadFederationGroupSettings } from './deps.mjs'
 
 /** 重导出 discovery wire 解析函数。 */
-export { parseDiscoveryAnnounce, parseDiscoveryQuery, parseDiscoveryQueryResponse } from '../discovery/wire.mjs'
+export { parseDiscoveryAnnounce, parseDiscoveryQuery, parseDiscoveryQueryResponse } from '../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
 
 /**
  * @param {string} username 用户
@@ -25,9 +25,7 @@ export async function publishDiscoveryAnnounceForGroup(username, groupId, nodeHa
 	const advertisement = await buildSignedDiscoveryAdvertisement(username, groupId, nodeHash)
 	if (!advertisement) return
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const targets = await pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),
 		groupSettings,
 		nodeHash,

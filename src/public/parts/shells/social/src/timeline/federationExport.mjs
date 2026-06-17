@@ -1,13 +1,10 @@
-import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
+import { getOperatorEntityHashProvider } from '../../../../../../scripts/p2p/social/follower_index_registry.mjs'
+import { filterTimelineEventsForFederation } from '../../../../../../scripts/p2p/timeline/federation_visibility.mjs'
 import { canViewPost } from '../feedHelpers.mjs'
 
 import { getTimelineMaterialized } from './materialize.mjs'
 import { listLocalEntitiesForNode } from './ownerIndex.mjs'
-
-
-/** 联邦 pull 永不外泄的类型 */
-const FEDERATION_PRIVATE_EVENT_TYPES = new Set(['follow', 'unfollow', 'follow_approve', 'like', 'unlike', 'file_share'])
 
 /**
  * @param {string} username replica
@@ -26,7 +23,8 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 		return { requesterEntityHash: null, followsOwner: false, isOwner: false, isProtected }
 
 	if (requesterNode === localNode) {
-		const operator = await resolveOperatorEntityHash(username)
+		const resolveOperator = getOperatorEntityHashProvider()
+		const operator = resolveOperator ? await resolveOperator(username) : null
 		const operatorView = operator ? await getTimelineMaterialized(username, operator) : null
 		return {
 			requesterEntityHash: operator,
@@ -50,32 +48,6 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 }
 
 /**
- * @param {object} event 时间线事件
- * @param {string} ownerEntityHash owner
- * @param {object} requesterContext 请求者上下文
- * @returns {boolean} 是否可联邦导出
- */
-function isTimelineEventVisibleForFederation(event, ownerEntityHash, requesterContext) {
-	const type = event.type
-	if (FEDERATION_PRIVATE_EVENT_TYPES.has(type)) return false
-	if (requesterContext.isOwner) return true
-
-	if (type === 'social_meta') return !requesterContext.isProtected
-
-	if (type === 'post' || type === 'repost')
-		return canViewPost(
-			{ entityHash: ownerEntityHash, content: event.content },
-			requesterContext.requesterEntityHash,
-			new Set(),
-			new Set(requesterContext.followsOwner ? [ownerEntityHash] : []),
-		)
-
-	if (type === 'post_delete') return true
-
-	return false
-}
-
-/**
  * 联邦 RPC 出站：按可见性过滤时间线事件（外来 ingress 响应边界）。
  * @param {string} username 本地 replica
  * @param {string} ownerEntityHash 时间线 owner
@@ -86,5 +58,5 @@ function isTimelineEventVisibleForFederation(event, ownerEntityHash, requesterCo
 export async function filterEventsForFederatedPull(username, ownerEntityHash, events, requesterNodeHash) {
 	const owner = String(ownerEntityHash).toLowerCase()
 	const requesterContext = await resolveFederationRequesterContext(username, requesterNodeHash, owner)
-	return events.filter(event => isTimelineEventVisibleForFederation(event, owner, requesterContext))
+	return filterTimelineEventsForFederation(events, owner, requesterContext, canViewPost)
 }

@@ -8,7 +8,7 @@ import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpo
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
-import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 
 
 import { hasMaterializedAclSnapshot } from './acl.mjs'
@@ -31,7 +31,7 @@ import {
 /**
  *
  */
-export { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from './pull/wire.mjs'
+export { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 
 /**
  * 入群快照响应中每频道附带的历史消息条数上限。
@@ -169,7 +169,7 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 			attestation,
 		}
 		const waitKey = joinSnapshotWaitKey(username, groupId, requestId)
-		const targets = await pickFederationTargetPeerIds(username, groupId, roster, groupSettings, nodeHash)
+		const targets = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
 		const { promise: collectPromise, pending } = createFederationCollect(
 			SNAPSHOT_WAIT_MS,
 			targets.length,

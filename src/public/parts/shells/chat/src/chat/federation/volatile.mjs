@@ -69,10 +69,8 @@ export async function publishVolatileToFederation(groupId, payload) {
 	const nodeHash = federationNodeHash(username)
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 
-	const { pickFederationTargetPeerIds } = await import('../governance/peerPool.mjs')
-	const targets = await pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const { pickFederationTargetPeerIds } = await import('../../../../../../../scripts/p2p/peer_pool.mjs')
+	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster?.() || [],
 		groupSettings,
 		nodeHash,

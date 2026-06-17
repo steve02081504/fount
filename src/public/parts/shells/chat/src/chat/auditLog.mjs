@@ -12,7 +12,7 @@ import { GOVERNANCE_AUTHZ_TYPES } from '../../../../../../scripts/p2p/event_type
 import { authzFoldOrderIds } from '../../../../../../scripts/p2p/governance_branch.mjs'
 
 import { getState } from './dag/materialize.mjs'
-import { sanitizeFederatedEvent } from './events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from './lib/paths.mjs'
 
 /** 管理员审计日志包含的 DAG 类型（治理 + 常见 moderation）。 */
@@ -87,7 +87,7 @@ function toAuditEntry(event, state) {
  */
 async function buildAuditRows(username, groupId, types) {
 	const { state } = await getState(username, groupId)
-	const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const order = topologicalCanonicalOrder(events.map(event => ({
 		id: event.id,
 		prev_event_ids: event.prev_event_ids,

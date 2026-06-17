@@ -15,7 +15,7 @@ import {
 	resolveHlcMaxSkewMs,
 } from '../events/hlcPolicy.mjs'
 import { appendQuarantinedEvent, replayQuarantinedEvents } from '../events/quarantine.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { canRelayFederatedEvent } from '../federation/acl.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
@@ -67,7 +67,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 
 	const path = eventsPath(username, groupId)
 	const idNorm = String(wirePayload.id).trim().toLowerCase()
-	const previous = await readJsonl(path, { sanitize: sanitizeFederatedEvent })
+	const previous = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
 	if (previous.some(existing => String(existing.id).trim().toLowerCase() === idNorm)) return 'dup'
 
 	const bodyForId = unsignedEventFields(wirePayload)

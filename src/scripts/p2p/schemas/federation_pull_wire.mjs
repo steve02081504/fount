@@ -1,9 +1,9 @@
 /**
  * 联邦补拉 attestation / HPKE 响应 wire 解析（无 attestation/envelope 即丢弃）。
  */
-import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { EVENT_ID_HEX } from '../registry.mjs'
+import { EVENT_ID_HEX } from '../dag/index.mjs'
+import { isHex64, normalizeHex64 } from '../hexIds.mjs'
+import { isPlainObject } from '../wire_ingress.mjs'
 
 /** @typedef {{ requesterPubKeyHash: string, groupId: string, requestId: string, timestamp: number, wantIds?: string[], signature: string }} PullAttestation */
 

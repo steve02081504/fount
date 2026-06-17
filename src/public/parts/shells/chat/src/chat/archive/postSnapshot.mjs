@@ -5,7 +5,7 @@ import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { channelMessageContentObject } from '../../../public/src/lib/channelContent.mjs'
 import { decryptEventContent } from '../channel_keys/content.mjs'
-import { memberEntityHash } from '../lib/entityId.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
 
 import { overlayPinsForChannel } from './hotPostsIndex.mjs'

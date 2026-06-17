@@ -19,7 +19,7 @@ import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { setFederationBootstrap } from '../../chat/federation/bootstrapStore.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
-import { memberEntityHash } from '../../chat/lib/entityId.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { consumeGroupInviteTicket, mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
@@ -151,7 +151,11 @@ export function registerMembershipRoutes(router, authenticate) {
 			if (!accepted)
 				return res.status(400).json({ error: 'invalid or expired inviteCode' })
 		}
-		const content = { inviteCode, powSolution: pow, homeNodeHash: getNodeHash() }
+		const content = { inviteCode, powSolution: pow, homeNodeHash: getLocalNodeHash() }
+		if (dmNonce) {
+			content.dmIntroNonce = dmNonce
+			content.dmIntroSignatureHex = dmSignatureHex
+		}
 		if (introducerPubKeyHash) {
 			const normalizedIntroducer = normalizePubKeyHex(introducerPubKeyHash)
 			if (PUB_KEY_HEX_64.test(normalizedIntroducer)) content.introducerPubKeyHash = normalizedIntroducer

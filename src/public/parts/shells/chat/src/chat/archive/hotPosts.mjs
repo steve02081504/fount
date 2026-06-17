@@ -2,7 +2,7 @@
  * checkpoint `hot_posts` 索引：每频道最新 N + pin ±N。
  */
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { messagesPath } from '../lib/paths.mjs'
 
 /**
@@ -39,6 +39,6 @@ export async function computeHotPostsForCheckpoint(username, groupId, state, eve
  * @returns {Promise<object[]>} 待保留行
  */
 export async function filterHotMessageLines(username, groupId, channelId, protectedIds) {
-	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: sanitizeFederatedEvent })
+	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
 	return lines.filter(row => protectedIds.has(String(row.eventId).trim()))
 }

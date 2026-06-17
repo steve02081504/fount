@@ -20,7 +20,7 @@ import { createDefaultRoles } from '../../../../../../../scripts/p2p/permissions
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { isGroupFederationActive } from '../federation/groupFederation.mjs'
 import { DEFAULT_MQTT_APP_ID, mintMqttRoomSecret } from '../federation/mqttCredentials.mjs'
 import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federation/room.mjs'
@@ -55,7 +55,7 @@ const GENESIS_APPEND_OPTS = {
  * @returns {Promise<object>} 签名后事件
  */
 export async function mergeDagTips(username, groupId, sender, secretKey) {
-	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const tips = computeDagTipIdsFromEvents(rows)
 	if (tips.length < 2) throw httpError(409, 'dag_tip_merge: fewer than 2 tips')
 	return appendEvent(username, groupId, {
@@ -74,7 +74,7 @@ export async function mergeDagTips(username, groupId, sender, secretKey) {
  * @returns {Promise<void>}
  */
 export async function convergeDagTipsIfAuthorized(username, groupId) {
-	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const tips = computeDagTipIdsFromEvents(rows)
 	if (tips.length < 2) return
 

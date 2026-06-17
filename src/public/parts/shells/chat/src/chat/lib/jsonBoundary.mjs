@@ -3,7 +3,7 @@
  * 【职责】RPC/联邦/char_rpc 边界的 JSON 可序列化校验与归一化，防止跨节点（WS↔Trystero）静默丢字段。
  * 【原理】normalizeJsonBoundaryValue 经 JSON.stringify/parse 往返；失败抛带 code 的错误（RPC_INVALID_ARGUMENT 等）。room char_rpc 与 remoteProxy 入参/出参均经此处理。
  * 【数据结构】错误对象含 code、boundary 标签字符串。
- * 【关联】federation/charRpc、remoteProxy、remoteWorldProxy、events/wire.mjs。
+ * 【关联】federation/charRpc、remoteProxy、remoteWorldProxy、p2p/dag/strip_extensions.mjs。
  */
 /**
  * 检查并归一化 JSON 边界值：不可序列化时抛错，避免跨节点静默丢字段。

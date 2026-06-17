@@ -7,7 +7,7 @@ import { publicKeyFromSeed, sign, verify } from '../../../../../../../scripts/p2
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
-/** @typedef {import('./pull/wire.mjs').PullAttestation} PullAttestation */
+/** @typedef {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} PullAttestation */
 
 const ATTESTATION_MAX_SKEW_MS = 5 * 60 * 1000
 const PULL_MEMBER_STATUSES = new Set(['active', 'left', 'kicked'])
@@ -100,7 +100,7 @@ export function resolveMemberEdPubKeyHex(state, requesterPubKeyHash) {
 /**
  * @param {object | null | undefined} state 物化群状态
  * @param {string} groupId 群 ID
- * @param {import('./pull/wire.mjs').PullAttestation} attestation attestation
+ * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
  * @returns {Promise<boolean>} 是否通过成员资格与签名校验
  */
 export async function validatePullAttestationForGroup(state, groupId, attestation) {
@@ -125,7 +125,7 @@ export function isActivePullMember(state, requesterPubKeyHash) {
 /**
  * @param {object | null | undefined} state 物化群状态
  * @param {string} groupId 群 ID
- * @param {import('./pull/wire.mjs').PullAttestation} attestation attestation
+ * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
  * @returns {Promise<boolean>} active 成员 + 签名校验
  */
 export async function validateActivePullAttestationForGroup(state, groupId, attestation) {

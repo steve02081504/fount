@@ -4,7 +4,8 @@
  * 不含文件 I/O；I/O 层由调用方注入。
  */
 
-import { clampReputationScore } from './reputation.mjs'
+import { loadPeerPoolView, mergeNetworkPeerPools } from './network.mjs'
+import { clampReputationScore, loadReputation } from './reputation.mjs'
 
 /**
  * 解析联邦池槽位参数（从 groupSettings 读取，含低功耗缩减）。
@@ -188,4 +189,54 @@ export function applyRosterToPeerPool({ peers, rep, roster, limits }) {
 		trustedPeers: candidates.slice(0, limits.trustedSlots),
 		explorePeers: newExplorePeers,
 	}
+}
+
+/**
+ * 稀疏连接池：优先 trusted，再 explore，再其余在线节点。
+ * @param {string} groupId 群
+ * @param {{ peerId: string, remoteNodeHash?: string }[]} roster Trystero 在线表
+ * @param {object} groupSettings 物化群设置
+ * @param {string} selfNodeHash 本机 node_id
+ * @returns {string[]} 目标 Trystero peerId（去重）
+ */
+export function pickFederationTargetPeerIds(groupId, roster, groupSettings, selfNodeHash) {
+	const limits = resolveFederationPoolLimits(groupSettings)
+	const peers = loadPeerPoolView(groupId)
+	const rep = loadReputation()
+	const inRoomNodeHashes = roster
+		.map(p => p.remoteNodeHash)
+		.map(id => String(id).trim())
+		.filter(Boolean)
+	return selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash, inRoomNodeHashes })
+}
+
+/**
+ * 合并 PEX 提示并提升长期高信誉节点为 trusted。
+ * @param {string} groupId 群
+ * @param {string[]} hints 节点 id 列表
+ * @param {object} groupSettings 群设置
+ * @returns {void}
+ */
+export function mergePexNodeHints(groupId, hints, groupSettings) {
+	const limits = resolveFederationPoolLimits(groupSettings)
+	const peers = loadPeerPoolView(groupId)
+	const rep = loadReputation()
+	const { trustedPeers, explorePeers } = applyPexHints({ peers, rep, hints, limits })
+	mergeNetworkPeerPools({ trustedPeers, explorePeers })
+}
+
+/**
+ * roster 观测：将在线节点并入 explore，并按信誉填充 trusted 槽位。
+ * @param {string} groupId 群
+ * @param {{ remoteNodeHash?: string }[]} roster 在线表
+ * @param {object} groupSettings 群设置
+ * @returns {void}
+ */
+export function reconcilePeerPoolFromRoster(groupId, roster, groupSettings) {
+	if (!roster.length) return
+	const limits = resolveFederationPoolLimits(groupSettings)
+	const peers = loadPeerPoolView(groupId)
+	const rep = loadReputation()
+	const { trustedPeers, explorePeers } = applyRosterToPeerPool({ peers, rep, roster, limits })
+	mergeNetworkPeerPools({ trustedPeers, explorePeers })
 }

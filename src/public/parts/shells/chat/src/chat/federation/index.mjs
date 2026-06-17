@@ -12,8 +12,8 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/gov
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
-import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../governance/peerPool.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {
@@ -91,7 +91,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 		return
 	}
 
-	const wireEvent = sanitizeFederatedEvent(signPayload)
+	const wireEvent = stripDagEventLocalExtensions(signPayload)
 	const localInTarget = nodeHasPartition(groupSettings, channelId, targetPartition)
 	const outboundPartition = localInTarget
 		? targetPartition
@@ -119,9 +119,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	}
 	if (!slot) return
 
-	const targets = await pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),
 		groupSettings,
 		nodeHash,
@@ -160,7 +158,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	/** @type {object[]} */
 	const events = []
 	const eventsById = new Map()
-	for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent }))
+	for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
 		events.push(event), eventsById.set(event.id, event)
 	const localTips = computeDagTipIdsFromEvents(events)
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
@@ -170,9 +168,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries: [] })
 
 	/** @returns {Promise<string[]>} 目标 peer id 列表 */
-	const pickTargetPeerIds = () => pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const pickTargetPeerIds = () => pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),
 		groupSettings,
 		nodeHash,
@@ -217,7 +213,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	/** @returns {Promise<Map<string, object>>} 重新读盘构建 id→事件（每轮拉取落盘后调用） */
 	const reloadEventsById = async () => {
 		const byId = new Map()
-		for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent }))
+		for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
 			byId.set(event.id, event)
 		return byId
 	}
@@ -276,7 +272,7 @@ export async function listFederationPeersForGroup(username, groupId) {
 	})
 	const peers = [...peersByPeerId.values()]
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	void reconcilePeerPoolFromRoster(username, groupId, peers, groupSettings)
+	void reconcilePeerPoolFromRoster(groupId, peers, groupSettings)
 		.catch(error => console.error('network pool reconcile failed', error))
 	return { selfNodeHash: nodeHash, federationEnabled: true, peers }
 }

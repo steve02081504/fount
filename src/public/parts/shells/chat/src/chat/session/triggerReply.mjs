@@ -24,7 +24,7 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { agentEntityHash, isEntityHash128, parseEntityHash } from '../lib/entityId.mjs'
+import { agentEntityHash, isEntityHash128, parseEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { finishStreamBuffer } from '../stream/groupWsHub.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'

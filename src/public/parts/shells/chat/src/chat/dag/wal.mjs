@@ -9,7 +9,7 @@ import { isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from '../../../../
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { computeDagTipIdsFromEvents, hasDanglingParents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 
 
@@ -22,7 +22,7 @@ import { eventsPath, snapshotPath } from '../lib/paths.mjs'
  * @returns {Promise<{ ok: boolean, reason?: string, forceFullReplay?: boolean }>} WAL 校验结果
  */
 export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, events) {
-	const rows = events ?? await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const rows = events ?? await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	if (!checkpoint) return { ok: true }
 	const tipId = String(checkpoint.checkpoint_event_id || '').trim().toLowerCase()
 	if (!tipId) return { ok: true }

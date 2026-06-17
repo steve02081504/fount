@@ -13,7 +13,7 @@ import { readArchiveMonth } from '../archive/reader.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { messagesPath } from '../lib/paths.mjs'
 
 /**
@@ -51,7 +51,7 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
 			content: { charOwner: indexed.charOwner || null },
 		}
 
-	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: sanitizeFederatedEvent })
+	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
 	const hot = lines.find(row =>
 		row.type === 'message' && String(row.eventId).toLowerCase() === eventIdNorm,
 	)

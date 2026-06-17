@@ -8,7 +8,7 @@ import {
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { mergePexNodeHints } from '../../governance/peerPool.mjs'
+import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { loadFederationGroupSettings } from '../deps.mjs'
 import {
 	shouldDropPartitionBridgeUnderLoad,
@@ -59,7 +59,7 @@ export function registerIdentityHandlers(roomContext) {
 			const hints = Array.isArray(data.hints) ? data.hints : []
 			if (!remoteNode || remoteNode === nodeHash) return
 			const settings = await loadFederationGroupSettings(username, groupId)
-			await mergePexNodeHints(username, groupId, hints, settings)
+			await mergePexNodeHints(groupId, hints, settings)
 			if (hints.length)
 				await bumpReputationOnRelay( remoteNode, `pex:${remoteNode}`)
 		})().catch(error => console.error('federation: fed_pex ingest failed', error))

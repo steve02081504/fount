@@ -21,7 +21,7 @@ import {
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
 import { applyChannelKeyRotateEvent } from '../channel_keys/store.mjs'
 import { getEventReceivedAt } from '../events/meta.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { onMqttCredentialsSyncedFromDag, mqttCredentialsFromGroupSettings } from '../federation/mqttCredentials.mjs'
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
@@ -68,7 +68,7 @@ async function applyReputationHooks(username, groupId, signPayload) {
 	}
 
 	if (signPayload.type === 'reputation_slash') {
-		await applySubjectiveSlashFromEvent(username, groupId, signPayload, async (u, g) => readJsonl(eventsPath(u, g), { sanitize: sanitizeFederatedEvent }))
+		await applySubjectiveSlashFromEvent(username, groupId, signPayload, async (u, g) => readJsonl(eventsPath(u, g), { sanitize: stripDagEventLocalExtensions }))
 		await decayAfterSlash()
 	}
 	else if (['member_kick', 'member_ban'].includes(signPayload.type))
@@ -169,7 +169,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
 	}
 	const channelMessagesPath = messagesPath(username, groupId, channelId)
-	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: sanitizeFederatedEvent })
+	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })
 	const messageIdNorm = String(signPayload.id).trim().toLowerCase()
 	if (!existingMessageLines.some(row => String(row.eventId).trim().toLowerCase() === messageIdNorm))
 		await appendJsonlSynced(channelMessagesPath, messageLine)

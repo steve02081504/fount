@@ -12,7 +12,7 @@ import {
 	computeDagTipIdsFromEvents,
 } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 /**
@@ -26,7 +26,7 @@ export async function blockOpposingForkBranch(username, groupId, acceptedTipId) 
 	const tip = String(acceptedTipId || '').trim().toLowerCase()
 	if (!isHex64(tip)) throw new Error('acceptedTipId must be 64 hex chars')
 
-	const events = await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent })
+	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const byId = new Map(events.filter(event => event?.id).map(event => [String(event.id), event]))
 
 	const tips = computeDagTipIdsFromEvents(events)

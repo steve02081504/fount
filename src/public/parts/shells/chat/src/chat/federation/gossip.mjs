@@ -20,12 +20,12 @@ import {
 	notifyMultiWireWaitersByPrefix,
 	registerMultiWireWait,
 } from '../../../../../../../scripts/p2p/wire_wait.mjs'
-import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { loadFederationGroupSettings, federationNodeHash, requireDagDeps } from './deps.mjs'
-import { parsePullResponseEnvelope } from './pull/wire.mjs'
+import { parsePullResponseEnvelope } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import {
 	applyPullInner,
@@ -227,9 +227,7 @@ export async function requestMissingEventsGossip(username, groupId, query = {}) 
 			else {
 				const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 				const { gossipTtl, wantIdsBudget } = resolveFederationPoolLimits(groupSettings)
-				const targets = await pickFederationTargetPeerIds(
-					username,
-					groupId,
+				const targets = await pickFederationTargetPeerIds(groupId,
 					slot.getRoster(),
 					groupSettings,
 					nodeHash,

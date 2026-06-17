@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from '../../../../../../../scripts/p2p/key_crypto.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
-import { pickFederationTargetPeerIds } from '../governance/peerPool.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {
@@ -130,9 +130,7 @@ export async function broadcastFedBootstrapRequest(slot, username, groupId, node
 	}
 
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const targets = await pickFederationTargetPeerIds(
-		username,
-		groupId,
+	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),
 		groupSettings,
 		nodeHash,

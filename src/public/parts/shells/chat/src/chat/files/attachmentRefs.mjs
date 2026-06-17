@@ -11,7 +11,7 @@ import { join } from 'node:path'
 import { loadJsonFile } from '../../../../../../../scripts/json_loader.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { parseEvfsRef } from '../../../../../../../scripts/p2p/entity/files/evfs_ref.mjs'
-import { sanitizeFederatedEvent } from '../events/wire.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { groupDir, eventsPath, quarantinePath } from '../lib/paths.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 import { isEnoent, rethrowUnlessEnoentOrEnotdir } from '../lib/utils.mjs'
@@ -148,16 +148,16 @@ async function scanGroupDagStores(username, groupId, evfsPaths) {
 	}
 	for (const name of indexFilenames) {
 		if (!name.endsWith('.jsonl')) continue
-		const lines = await readJsonl(join(messagesDir, name), { sanitize: sanitizeFederatedEvent })
+		const lines = await readJsonl(join(messagesDir, name), { sanitize: stripDagEventLocalExtensions })
 		collectFromDagJsonlLines(lines, evfsPaths)
 	}
 
 	collectFromDagJsonlLines(
-		await readJsonl(eventsPath(username, groupId), { sanitize: sanitizeFederatedEvent }),
+		await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
 		evfsPaths,
 	)
 	collectFromDagJsonlLines(
-		await readJsonl(quarantinePath(username, groupId), { sanitize: sanitizeFederatedEvent }),
+		await readJsonl(quarantinePath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
 		evfsPaths,
 	)
 	await scanGroupContextCache(username, groupId, evfsPaths)
