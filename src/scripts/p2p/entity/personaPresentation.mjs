@@ -1,2 +1,2 @@
-/** @deprecated 使用 `localized_core` 或 `p2p_server/persona_presentation` */
+/** 保留最小导出，供旧调用侧读取占位展示名判断。 */
 export { isPlaceholderDisplayName } from './localized_core.mjs'

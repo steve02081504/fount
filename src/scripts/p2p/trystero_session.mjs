@@ -230,7 +230,7 @@ export function attachIdentityAnnounceHandlers(room, maps, actions) {
 	})
 
 	room.onPeerJoin(peerId => {
-		void buildIdentityAnnounce(peerId)
+		void buildIdentityAnnounce()
 			.then(body => { actions.send('identity_announce', body, peerId) })
 			.catch(() => { /* ignore */ })
 	})

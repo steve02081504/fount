@@ -20,10 +20,9 @@ export function identityAnnounceMessage(peerId, nodeHash) {
 }
 
 /**
- * @param {string} [_peerId] 兼容旧签名（已忽略）
  * @returns {Promise<{ nodeHash: string, nodePubKey: string, signature: string }>} 可广播的身份载荷
  */
-export async function buildIdentityAnnounce(_peerId) {
+export async function buildIdentityAnnounce() {
 	const nodeHash = getNodeHash()
 	const seedHex = ensureNodeSeed()
 	const { publicKey, secretKey } = keyPairFromSeed(Buffer.from(seedHex, 'hex'))

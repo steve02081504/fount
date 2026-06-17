@@ -1,9 +1,8 @@
-import { events } from '../../../../../../../server/events.mjs'
 import {
-	ensureNodeDefaults,
 	getNodeTransportSettings,
 	saveNodeTransportSettings,
 } from '../../../../../../../scripts/p2p/node/identity.mjs'
+import { events } from '../../../../../../../server/events.mjs'
 import {
 	ensureOperatorPubKey,
 	getFederationViewForUser,
@@ -27,12 +26,6 @@ events.on('federation-settings-changed', ({ username }) => {
 		.then(module => module.invalidateStreamSignerCache(username))
 		.catch(error => console.warn('federation: invalidateStreamSignerCache failed', error))
 })
-
-/** @deprecated 使用 ensureNodeDefaults */
-export function ensureFederationDefaults(_username) {
-	void _username
-	return ensureNodeDefaults()
-}
 
 /**
  * @param {string} username 用户
@@ -61,10 +54,10 @@ export async function ensureNodeIdentityPubKey(username) {
 /**
  * @param {string} username 用户
  * @param {object} patch 补丁
- * @returns {Promise<object>}
+ * @returns {Promise<object>} 保存后的联邦视图
  */
 export async function saveFederationSettings(username, patch) {
 	return saveFederationViewForUser(username, patch)
 }
-
+/** 节点级传输配置直接透传给上层调用方。 */
 export { getNodeTransportSettings, saveNodeTransportSettings }

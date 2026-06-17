@@ -68,7 +68,7 @@ export function registerIdentityHandlers(roomContext) {
 	room.onPeerJoin(peerId => {
 		if (!takeRtcJoinSlot(key, peerId, rtcLimits)) return
 		fedOut.enqueue(3, () => {
-			void buildIdentityAnnounce( peerId)
+			void buildIdentityAnnounce()
 				.then(body => { identity.send(body, peerId) })
 				.catch(error => console.error('federation: identity_announce failed', error))
 		})

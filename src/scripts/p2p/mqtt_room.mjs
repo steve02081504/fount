@@ -96,12 +96,13 @@ const JOIN_SETTLE_MS = 8000
  */
 const MQTT_JOIN_HARD_TIMEOUT_MS = 30_000
 /**
- * 串行队列尾挂在 globalThis 上：fount 的 parts 可能以不同 URL（file:// 与 http://）载入，
- * 导致本模块出现多个实例。trystero（`npm:` 解析）的 offerPool 单例却全进程唯一，因此串行必须跨模块实例
- * 共享同一条队列，否则 user room 与群联邦 room 经不同 mqtt_room 实例并发加入仍会撞上同一 offerPool warmup。
+ * 进程内 join/leave 串行队列尾。
+ *
+ * 不再通过 globalThis 注入，避免跨模块全局污染；同一模块实例内仍保持严格串行。
+ * 若未来需要跨载入域（file:// 与 http://）统一队列，改为专用 runtime 单例模块而非全局注入。
+ * @type {Promise<void>}
  */
-const JOIN_QUEUE_KEY = Symbol.for('fount.p2p.mqttJoinQueueTail')
-if (!globalThis[JOIN_QUEUE_KEY]) globalThis[JOIN_QUEUE_KEY] = Promise.resolve()
+let joinQueueTail = Promise.resolve()
 
 /**
  * 静默中继连接错误回调（避免 ECONNRESET 刷屏）。
@@ -116,13 +117,13 @@ function silentJoinError() { }
  * @returns {Promise<T>} 创建的 room
  */
 function enqueueRoomJoin(createRoom) {
-	const result = Promise.resolve(globalThis[JOIN_QUEUE_KEY]).then(createRoom)
+	const result = Promise.resolve(joinQueueTail).then(createRoom)
 	/**
 	 * 无论本次加入成功与否，都等待落定窗口再放行下一个（warmup 竞争窗口）。
 	 * @returns {Promise<void>} 落定后兑现
 	 */
 	const settle = () => new Promise(resolve => setTimeout(resolve, JOIN_SETTLE_MS))
-	globalThis[JOIN_QUEUE_KEY] = result.then(settle, settle)
+	joinQueueTail = result.then(settle, settle)
 	return result
 }
 
@@ -147,8 +148,8 @@ export async function joinMqttRoom(config, roomId) {
  */
 export function leaveMqttRoom(room) {
 	if (!room || typeof room.leave !== 'function') return Promise.resolve()
-	const result = Promise.resolve(globalThis[JOIN_QUEUE_KEY]).then(() => room.leave())
-	globalThis[JOIN_QUEUE_KEY] = result.then(() => { }, () => { })
+	const result = Promise.resolve(joinQueueTail).then(() => room.leave())
+	joinQueueTail = result.then(() => { }, () => { })
 	return result
 }
 
