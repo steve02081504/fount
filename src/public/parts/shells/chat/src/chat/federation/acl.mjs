@@ -30,12 +30,16 @@ export function hasMaterializedAclSnapshot(state) {
 
 /**
  * 无物化 ACL 时仅暂缓中继，仍允许本地落盘（§2.1）。
+ * `member_join` 例外：它承担冷启动“自证明”职责，延迟会导致 join-snapshot/catchup 死锁。
  * @param {object | null | undefined} state 物化群状态
  * @param {{ type?: string }} event DAG 事件
  * @returns {boolean} 应入 pending_relay 队列则为 true
  */
 export function shouldDeferFederatedRelay(state, event) {
-	return isAuthzGatedEventType(event?.type) && !hasMaterializedAclSnapshot(state)
+	const type = event?.type
+	return isAuthzGatedEventType(type)
+		&& type !== 'member_join'
+		&& !hasMaterializedAclSnapshot(state)
 }
 
 /**

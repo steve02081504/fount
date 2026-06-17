@@ -12,6 +12,7 @@ import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl, writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import {
 	buildOrderCachePayload,
 	deleteOrderCache,
@@ -45,7 +46,6 @@ import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
 import { findStaleUnreachableChannels } from '../channel/gc.mjs'
 import { enforceEventRetention } from '../events/retention.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { flushPendingRelay } from '../federation/pendingRelay.mjs'
 import { loadGovernanceBranchTip } from '../governance/branchStore.mjs'
 import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
@@ -63,6 +63,32 @@ import { verifyEventsSnapshotWAL } from './wal.mjs'
 export async function getStateForFederation(username, groupId) {
 	const { state } = await getState(username, groupId)
 	return { state }
+}
+
+/**
+ * 计算 checkpoint 锚点在当前事件集中的「因果覆盖闭包」：
+ * 仅锚点及其可达祖先视作已被基态折叠，避免用拓扑 index 切片误伤“排序在锚点之前但实际上晚到/断链”的事件。
+ * @param {Map<string, object>} byId 事件 id -> 事件映射
+ * @param {string} anchorId checkpoint 锚点事件 id
+ * @returns {Set<string>} 已覆盖事件 id 集
+ */
+function coveredIdsFromAnchor(byId, anchorId) {
+	const covered = new Set()
+	const start = String(anchorId || '').trim().toLowerCase()
+	if (!start || !byId.has(start)) return covered
+	const stack = [start]
+	while (stack.length) {
+		const id = stack.pop()
+		if (!id || covered.has(id)) continue
+		covered.add(id)
+		const event = byId.get(id)
+		const parents = Array.isArray(event?.prev_event_ids) ? event.prev_event_ids : []
+		for (const parentId of parents) {
+			const pid = String(parentId || '').trim().toLowerCase()
+			if (pid && byId.has(pid) && !covered.has(pid)) stack.push(pid)
+		}
+	}
+	return covered
 }
 
 /**
@@ -129,7 +155,7 @@ export async function getState(username, groupId, opts = {}) {
 	let state = emptyMaterializedState()
 	const tipId = checkpoint?.checkpoint_event_id
 	const hasBase = !!(checkpoint && tipId && checkpoint.members_record)
-	const anchorIdx = hasBase ? foldOrder.indexOf(tipId) : -1
+	const coveredByAnchor = hasBase ? coveredIdsFromAnchor(byId, tipId) : new Set()
 	// 采纳的 owner 签名基态 checkpoint：本机入群时仅拿到签名 checkpoint，未拿 pre-checkpoint 历史。
 	// 此时 checkpoint 即权威基态，本地仅持有其后的增量事件（member_join、gossip 拉回的消息等）。
 	// 与 forceReplay 解耦：只要基态仍权威（未被本地追平/更高 epoch 本地签名取代），即使 forceReplay===true
@@ -141,20 +167,20 @@ export async function getState(username, groupId, opts = {}) {
 		state = materializeFromCheckpoint(checkpoint)
 	else if (baseAuthoritative) {
 		state = materializeFromCheckpoint(checkpoint)
-		// 锚点已在本地折叠序：基态覆盖至锚点（含），其后为增量；锚点不在折叠序：基态覆盖 eventIdsInEpoch。
-		const covered = anchorIdx < 0
-			? new Set(Array.isArray(checkpoint.eventIdsInEpoch) ? checkpoint.eventIdsInEpoch : [])
-			: null
-		for (let i = 0; i < foldOrder.length; i++) {
-			if (anchorIdx >= 0) { if (i <= anchorIdx) continue }
-			else if (covered.has(foldOrder[i])) continue
-			const event = byId.get(foldOrder[i])
+		// 锚点已在本地事件集：按锚点因果祖先闭包判定“已覆盖”；锚点缺失时回退 eventIdsInEpoch。
+		const covered = coveredByAnchor.size > 0
+			? coveredByAnchor
+			: new Set(Array.isArray(checkpoint.eventIdsInEpoch) ? checkpoint.eventIdsInEpoch : [])
+		for (const eventId of foldOrder) {
+			if (covered.has(eventId)) continue
+			const event = byId.get(eventId)
 			if (event) state = applyEvent(state, event)
 		}
 	}
-	else if (canIncrement && anchorIdx >= 0) {
+	else if (canIncrement && coveredByAnchor.size > 0) {
 		state = materializeFromCheckpoint(checkpoint)
-		for (const eventId of foldOrder.slice(anchorIdx + 1)) {
+		for (const eventId of foldOrder) {
+			if (coveredByAnchor.has(eventId)) continue
 			const event = byId.get(eventId)
 			if (event) state = applyEvent(state, event)
 		}

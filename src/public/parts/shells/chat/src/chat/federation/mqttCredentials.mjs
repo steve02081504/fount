@@ -37,6 +37,9 @@ export async function resolveTrysteroFedRoomName(username, groupId) {
 	const { groupMeta } = state
 	if (groupMeta?.dmKind === 'ecdh' && groupMeta.dmSessionTag)
 		return `dm:${groupMeta.dmSessionTag.trim().toLowerCase()}`
+	const override = peekPreferredMqttOverride(username, groupId)
+	if (override?.dmSessionTag)
+		return `dm:${String(override.dmSessionTag).trim().toLowerCase()}`
 	return `fount-fed-${groupId}`
 }
 

@@ -8,6 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
@@ -15,11 +16,12 @@ import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
+import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { setFederationBootstrap } from '../../chat/federation/bootstrapStore.mjs'
+import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
-import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { consumeGroupInviteTicket, mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
@@ -123,13 +125,16 @@ export function registerMembershipRoutes(router, authenticate) {
 			mqttAppId: mqttCreds.mqttAppId,
 			mqttRoomSecret: mqttCreds.mqttRoomSecret,
 			introducerPubKeyHash,
+			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
+				? String(state.groupMeta.dmSessionTag || '').trim().toLowerCase() || null
+				: null,
 		})
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/join$/, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const groupId = req.params[0]
-		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId } = req.body
+		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId, dmSessionTag } = req.body
 		const dmNonce = dmIntroNonce?.trim()
 		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
 		if (!!dmNonce !== !!dmSignatureHex)
@@ -163,8 +168,22 @@ export function registerMembershipRoutes(router, authenticate) {
 		if (Number.isFinite(reputationEdge))
 			content.reputationEdge = Math.max(-1, Math.min(1, reputationEdge))
 
-		if (mqttRoomSecret)
-			setFederationBootstrap(username, groupId, { mqttAppId, mqttRoomSecret })
+		if (mqttRoomSecret) {
+			const bootstrap = { mqttAppId, mqttRoomSecret }
+			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()
+			if (PUB_KEY_HEX_64.test(hintedSessionTag))
+				bootstrap.dmSessionTag = hintedSessionTag
+			if (dmNonce) {
+				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
+				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).identityPubKeyHex)
+				if (!bootstrap.dmSessionTag
+					&& PUB_KEY_HEX_64.test(introPubKeyHex)
+					&& PUB_KEY_HEX_64.test(myPubKeyHex)
+					&& introPubKeyHex !== myPubKeyHex)
+					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
+			}
+			setFederationBootstrap(username, groupId, bootstrap)
+		}
 
 		const { ensureFederationRoom } = await import('../../chat/federation/room.mjs')
 		const slot = await ensureFederationRoom(username, groupId)

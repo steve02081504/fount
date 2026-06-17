@@ -211,9 +211,12 @@ export function checkEventPermission(state, event, senderHash) {
 			return { ok: false, reason: 'message_edit denied' }
 		}
 		case 'dag_tip_merge':
-			return govPerms[PERMISSIONS.MANAGE_CHANNELS]
-				? { ok: true }
-				: { ok: false, reason: 'MANAGE_CHANNELS required' }
+			// 纯拓扑合并：reducer 对物化状态无副作用，且 ingest 强制 prev_event_ids 覆盖全部当前 tips
+			// （只能"并入所有分支"，无法选择性偏袒某支来操纵共识选支）。若要求 MANAGE_CHANNELS，会与
+			// owner-succession 形成死锁——新主在 owner-succession 事件折入共识前拿不到管理权限，而这些事件
+			// 折入共识恰恰依赖本条合并。故放开为任意活跃成员可发起，保证分叉确定性收敛。sender 活跃成员
+			// 身份已在上方（第 60 行）校验。
+			return { ok: true }
 		case 'message_delete': {
 			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
 			const entry = resolveIndexedMessage(state, targetId)

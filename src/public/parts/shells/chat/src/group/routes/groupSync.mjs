@@ -5,12 +5,13 @@
  * 【数据结构】物化 state 子集、reputation 表、peers roster、snapshot/checkpoint、GSH buffer stats。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
-import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
@@ -22,7 +23,6 @@ import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/
 import { markGroupOfflineStarted } from '../../chat/federation/syncState.mjs'
 import { getPendingDecryptBufferStats } from '../../chat/file_keys/buffer.mjs'
 import { listActiveFilesFromState } from '../../chat/files/groupFiles.mjs'
-import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { userHasLocalGroupReplica } from '../../chat/lib/paths.mjs'
 import { getGroupMemberEntityHash } from '../../chat/lib/replica.mjs'
 import { getMaterializedSession } from '../../chat/session/dagSession.mjs'
@@ -198,6 +198,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			groupId: state.groupId,
 			hasLocalReplica,
 			groupMeta: state.groupMeta,
+			delegatedOwnerPubKeyHash: state.delegatedOwnerPubKeyHash ?? null,
 			groupSettings,
 			channels,
 			roles: state.roles,
