@@ -3,6 +3,9 @@ export {
 	localesFromRequest,
 	getInfoDefaultsForEntity,
 	isPlaceholderDisplayName,
+} from './presentation.mjs'
+
+export {
 	normalizeLocalizedMap,
 	applyAvatarToAllLocales,
-} from './presentation.mjs'
+} from '../../scripts/p2p/entity/localized_core.mjs'

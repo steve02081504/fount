@@ -69,7 +69,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 				content,
 				slashState.groupSettings || {},
 			)
-			broadcastEvent(groupWsRoomKeyForReplica(username, groupId), alert)
+			broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 			await publishVolatileToFederation(groupId, alert)
 			return res.status(200).json({ applied: 1 })
 		}

@@ -103,7 +103,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		await releaseFileChunksAfterDelete(username, groupId, String(signPayload.content.fileId), state)
 	}
 
-	const roomKey = groupWsRoomKeyForReplica(username, groupId)
+	const roomKey = groupWsRoomKeyForReplica(groupId)
 	broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
 	if (!persistOpts.skipGenesisSideEffects) {
 		await applyReputationHooks(username, groupId, signPayload)

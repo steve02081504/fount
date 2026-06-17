@@ -42,21 +42,19 @@ export function resolveGroupWsRoomKey(groupId, fallbackNodeHash) {
 }
 
 /**
- * @param {string} replicaUsername replica 磁盘所有者
  * @param {string} groupId 群 ID
  * @returns {string} WS 房间键
  */
-export function groupWsRoomKeyForReplica(replicaUsername, groupId) {
-	return groupWsRoomKey(getNodeHash(), groupId)
+export function groupWsRoomKeyForReplica(groupId) {
+	return groupWsRoomKey(getLocalNodeHash(), groupId)
 }
 
 /**
- * @param {string} replicaUsername replica 磁盘所有者
  * @param {string} groupId 群 ID
  * @returns {void}
  */
-export function registerGroupReplicaForUser(replicaUsername, groupId) {
-	registerGroupReplicaNode(getNodeHash(), groupId)
+export function registerGroupReplicaForUser(groupId) {
+	registerGroupReplicaNode(getLocalNodeHash(), groupId)
 }
 
 /**

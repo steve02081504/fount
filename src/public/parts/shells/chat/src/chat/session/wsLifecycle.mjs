@@ -53,7 +53,7 @@ export function initializeGroupMetadatas() {
 				if (!fs.statSync(full).isDirectory()) continue
 				if (!groupMetadatas.has(name)) {
 					groupMetadatas.set(name, { username: user, chatMetadata: null })
-					registerGroupReplicaForUser(user, name)
+					registerGroupReplicaForUser(name)
 				}
 			}
 		}
@@ -67,8 +67,8 @@ export function initializeGroupMetadatas() {
  * @param {import('npm:ws').WebSocket} ws WebSocket 实例
  */
 export function registerGroupUiSocket(replicaUsername, groupId, ws) {
-	registerGroupReplicaForUser(replicaUsername, groupId)
-	const roomKey = resolveGroupWsRoomKey(groupId, getNodeHash())
+	registerGroupReplicaForUser(groupId)
+	const roomKey = resolveGroupWsRoomKey(groupId, getLocalNodeHash())
 	if (groupUnloadTimers.has(groupId)) {
 		clearTimeout(groupUnloadTimers.get(groupId))
 		groupUnloadTimers.delete(groupId)

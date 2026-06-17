@@ -113,7 +113,7 @@ export async function buildPostSnapshotsFromLines(username, groupId, channelId, 
 		const result = await decryptEventContent(username, groupId, channelId, row.content)
 		const content = result.ok
 			? result.content
-			: { decryptFailed: true, pendingGeneration: result.generation ?? null }
+			: { type: 'text', content: '', decryptFailed: true, pendingGeneration: result.generation ?? null }
 		out.push(await buildPostSnapshotFromRow({ ...row, content }, state, username, groupId))
 	}
 	return out

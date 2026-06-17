@@ -14,11 +14,9 @@ import {
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
 
 /**
- * @param {string} [_replicaUsername] 忽略（节点级单例）
- * @returns {string} 本节点 nodeHash
+ * @returns {string} 本节点 nodeHash（节点级单例）
  */
-export function getLocalNodeHash(_replicaUsername) {
-	void _replicaUsername
+export function getLocalNodeHash() {
 	return getNodeHash()
 }
 
@@ -26,7 +24,7 @@ export function getLocalNodeHash(_replicaUsername) {
  * @param {string} replicaUsername replica 所有者
  * @returns {Promise<string | null>} operator entityHash
  */
-export async function resolveOperatorEntityHash(replicaUsername) {
+export function resolveOperatorEntityHash(replicaUsername) {
 	return resolveOperatorEntityHashForUser(replicaUsername)
 }
 

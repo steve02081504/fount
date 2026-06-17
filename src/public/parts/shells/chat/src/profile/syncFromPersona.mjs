@@ -23,25 +23,31 @@ import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/rep
 export async function syncEntityProfileFromPersona(replicaUsername, groupId) {
 	const entityHash = await getGroupMemberEntityHash(replicaUsername, groupId)
 	if (!isWritableLocalEntity(entityHash)) return
-	const locales = ['zh-CN', 'en-UK']
-	const presentation = await resolvePersonaPresentation(replicaUsername, groupId)
-	const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
-	const profile = await getProfile(entityHash, replicaUsername, { groupId, skipPresentation: true })
-	const localized = normalizeLocalizedMap(profile.localized)
-	const primary = locales[0]
-	const slice = localized[primary] || {}
-	let changed = false
-	const next = { ...slice }
-	if (!slice.name?.trim() || isPlaceholderDisplayName(slice.name.trim(), profile)) {
-		next.name = presentation.displayName || infoDefaults.name
-		changed = true
+	try {
+		const locales = ['zh-CN', 'en-UK']
+		const presentation = await resolvePersonaPresentation(replicaUsername, groupId)
+		const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
+		const profile = await getProfile(entityHash, replicaUsername, { groupId, skipPresentation: true })
+		const localized = normalizeLocalizedMap(profile.localized)
+		const primary = locales[0]
+		const slice = localized[primary] || {}
+		let changed = false
+		const next = { ...slice }
+		if (!slice.name?.trim() || isPlaceholderDisplayName(slice.name.trim(), profile)) {
+			next.name = presentation.displayName || infoDefaults.name
+			changed = true
+		}
+		if (!slice.avatar?.trim()) {
+			next.avatar = presentation.avatar || infoDefaults.avatar
+			changed = true
+		}
+		if (changed) {
+			localized[primary] = next
+			await updateProfile(replicaUsername, entityHash, { localized }, { groupId, skipPresentation: true })
+		}
 	}
-	if (!slice.avatar?.trim()) {
-		next.avatar = presentation.avatar || infoDefaults.avatar
-		changed = true
-	}
-	if (changed) {
-		localized[primary] = next
-		await updateProfile(replicaUsername, entityHash, { localized }, { groupId, skipPresentation: true })
+	catch (error) {
+		if (String(error?.message || '').includes('no users')) return
+		throw error
 	}
 }

@@ -177,7 +177,7 @@ export function registerDagRoutes(router, authenticate) {
 					content,
 					slashState.groupSettings || {},
 				)
-				broadcastEvent(groupWsRoomKeyForReplica(username, groupId), alert)
+				broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 				await publishVolatileToFederation(groupId, alert)
 				applied++
 				continue

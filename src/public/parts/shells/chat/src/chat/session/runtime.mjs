@@ -25,7 +25,7 @@ import { groupMetadatas } from './wsLifecycle.mjs'
 export function registerGroupRuntime(groupId, replicaUsername) {
 	if (!groupMetadatas.has(groupId))
 		groupMetadatas.set(groupId, { username: replicaUsername, chatMetadata: null })
-	registerGroupReplicaForUser(replicaUsername, groupId)
+	registerGroupReplicaForUser(groupId)
 }
 
 /**
@@ -48,7 +48,7 @@ export function invalidateGroupRuntime(groupId) {
  */
 export async function buildTimeSliceFromSession(session, replicaUsername, groupId, channelId) {
 	const slice = new timeSlice_t()
-	const localNode = getNodeHash()
+	const localNode = getLocalNodeHash()
 
 	/**
 	 * @param {string} charname 角色名
@@ -145,7 +145,7 @@ export function getCharBind(session, charname) {
  * @returns {boolean} 是否为本机节点
  */
 export function isLocalNode(homeNodeHash, replicaUsername) {
-	return homeNodeHash === getNodeHash()
+	return homeNodeHash === getLocalNodeHash()
 }
 
 /**

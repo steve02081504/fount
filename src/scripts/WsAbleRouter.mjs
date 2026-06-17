@@ -118,7 +118,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	}
 	/**
 	 * 将 WebSocket 升级处理器绑定到一个 HTTP 服务器。
-	 * @param {import('http').Server} server - 要绑定的 HTTP 服务器。
+	 * @param {import("node:http").Server} server - 要绑定的 HTTP 服务器。
 	 * @returns {import('npm:express').Router} 增强后的路由器。
 	 */
 	router.ws_bindServer = server => {

@@ -14,6 +14,8 @@ import { geti18nForUser } from '../../../../../../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { getAllUserNames } from '../../../../../../server/auth.mjs'
 import {
+	entityStickerPackDir,
+	entityStickerPackMediaDir,
 	entityStickersPacksRoot,
 	userEntitiesRoot,
 } from '../chat/lib/paths.mjs'

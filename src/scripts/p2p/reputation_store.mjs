@@ -5,7 +5,7 @@ import {
 	computeRepMaxEff,
 	seedReputationFromIntro,
 	subjectiveSlashPenalty,
-} from './reputation.mjs'
+} from './reputation_math.mjs'
 import { pickNodeScoreFromReputation } from './reputation_pick_score.mjs'
 import {
 	RELAY_BUMP_DEDUPE_MS,

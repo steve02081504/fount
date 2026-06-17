@@ -193,7 +193,7 @@ export async function createGroup(username, body) {
 		timestamp: Date.now(),
 		content: {
 			roles: ['founder'],
-			homeNodeHash: getNodeHash(),
+			homeNodeHash: getLocalNodeHash(),
 		},
 	})
 

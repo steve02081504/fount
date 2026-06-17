@@ -41,7 +41,7 @@ export function registerWsRoutes(router) {
 		if (!ownerNodeHash || !groupId) return void ws.close()
 		runAuthenticatedWs(ws, req, async ({ username }) => {
 			const { getLocalNodeHash } = await import('../chat/lib/replica.mjs')
-			const localNodeHash = getNodeHash()
+			const localNodeHash = getLocalNodeHash()
 			if (normalizeHex64(ownerNodeHash) !== localNodeHash) return void ws.close()
 			const { getState } = await import('../chat/dag/materialize.mjs')
 			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
@@ -54,7 +54,7 @@ export function registerWsRoutes(router) {
 				const wireMessage = parseInboundJson(raw)
 				if (!wireMessage) return
 				if (handleClientWsControlFrame(wireMessage)) return
-				if (relayClientWebRtcSignal(roomKey, wireMessage)) return
+				if (relayClientWebRtcSignal(groupId, wireMessage)) return
 				if (handleGroupSocketIdentityMessage(ws, wireMessage)) return
 				void handleGroupSocketRpcMessage(groupId, roomKey, ws, wireMessage)
 			})

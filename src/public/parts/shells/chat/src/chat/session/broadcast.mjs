@@ -26,7 +26,7 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  */
 export async function broadcastSignedGroupVolatile(username, groupId, payload) {
 	const signed = await attachStreamVolatileSignature(username, payload)
-	broadcastEvent(groupWsRoomKeyForReplica(username, groupId), signed)
+	broadcastEvent(groupWsRoomKeyForReplica(groupId), signed)
 }
 
 /**
