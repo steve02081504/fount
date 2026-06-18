@@ -1,4 +1,7 @@
-/* global Deno */
+import { mkdtemp, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
@@ -30,12 +33,13 @@ function positivePickScore() {
  * @returns {Promise<{ peerNodeHash: string, tmpPath: string, complete: boolean }>} 仲裁候选
  */
 async function archiveMonthCandidate(body, peerNodeHash) {
-	const dir = await Deno.makeTempDir({ prefix: 'fount-archive-' })
-	const tmpPath = `${dir}/month.jsonl`
-	await Deno.writeTextFile(tmpPath, body)
+	const dir = await mkdtemp(join(tmpdir(), 'fount-archive-'))
+	const tmpPath = join(dir, 'month.jsonl')
+	await writeFile(tmpPath, body)
 	return { peerNodeHash, tmpPath, complete: true }
 }
 
+/* global Deno */
 Deno.test('digest includes display snapshot fields', () => {
 	const base = {
 		eventId: A,

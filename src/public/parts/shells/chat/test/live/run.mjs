@@ -1,0 +1,142 @@
+/**
+ * Chat live 测试 driver：按 suite 自启 fount 节点并运行 scripts/ 下对应脚本。
+ *
+ *   node src/public/parts/shells/chat/test/live/run.mjs --suite e2e_single
+ *   node src/public/parts/shells/chat/test/live/run.mjs --suite fed_test
+ */
+import { dirname, join, resolve } from 'node:path'
+import process from 'node:process'
+import { fileURLToPath } from 'node:url'
+import { parseArgs } from 'node:util'
+
+import { execFile } from 'npm:@steve02081504/exec'
+
+import { launchNode, stopNode } from '../../../../../../../.github/workflows/test_lib/launch_node.mjs'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const SCRIPTS = join(__dirname, 'scripts')
+const REPO_ROOT = resolve(__dirname, '../../../../../../../')
+
+const NODE_A = {
+	port: 8931,
+	username: 'CI-user',
+	apiKey: 'fount-ci-test-key-8931',
+	fixtures: ['test_streamer'],
+}
+const NODE_B = {
+	port: 8932,
+	username: 'nodeb',
+	apiKey: 'nodeb-fed-test-key-20260614',
+	fixtures: [],
+}
+
+/** @type {Record<string, { fed?: boolean, run: string[] }>} */
+const SUITES = {
+	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')] },
+	e2e_single_ext: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single_ext.ps1')] },
+	smoke_chat: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'smoke_chat.ps1')] },
+	smoke_ai: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'smoke_ai.ps1')] },
+	ws_test: { run: ['node', join(SCRIPTS, 'ws_test.mjs')] },
+	ws_rpc_test: { run: ['node', join(SCRIPTS, 'ws_rpc_test.mjs')] },
+	ws_stream_test: { run: ['node', join(SCRIPTS, 'ws_stream_test.mjs')] },
+	av_relay_test: { run: ['node', join(SCRIPTS, 'av_relay_test.mjs')] },
+	fed_test: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_test.ps1')] },
+	fed_e2e_ext: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_e2e_ext.ps1')] },
+	fed_dm: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_dm.ps1')] },
+	fed_archive_month: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_archive_month.ps1')] },
+	fed_mailbox: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_mailbox.ps1')] },
+	fed_ban: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_ban.ps1')] },
+	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji.ps1')] },
+	fed_misc: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_misc.ps1')] },
+}
+
+/**
+ * 在仓库根目录执行子进程命令。
+ * @param {string[]} cmd 可执行文件 + 参数
+ * @param {Record<string, string>} env 额外环境变量
+ * @returns {Promise<{ code: number, output: string }>} 退出码与合并输出
+ */
+async function runCommand(cmd, env) {
+	const [exe, ...args] = cmd
+	const out = await execFile(exe, args, {
+		cwd: REPO_ROOT,
+		env: { ...process.env, ...env },
+	})
+	return { code: out.code, output: out.stdout + out.stderr }
+}
+
+/**
+ * 启动节点、运行指定 live suite 并 teardown。
+ * @param {string} suiteName manifest / SUITES 中的名称
+ * @returns {Promise<number>} 进程退出码（0 为通过）
+ */
+async function runSuite(suiteName) {
+	const spec = SUITES[suiteName]
+	if (!spec) {
+		console.error(`unknown suite: ${suiteName}`)
+		console.error('available:', Object.keys(SUITES).join(', '))
+		return 2
+	}
+
+	/** @type {Awaited<ReturnType<typeof launchNode>>[]} */
+	const nodes = []
+	try {
+		nodes.push(await launchNode(NODE_A))
+		if (spec.fed)
+			nodes.push(await launchNode(NODE_B))
+
+		const nodeA = nodes[0]
+		const env = {
+			FOUNT_API_KEY: nodeA.apiKey,
+			FOUNT_NODE_A_DATA: nodeA.dataPath,
+		}
+		if (nodes[1])
+			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
+
+		if (spec.fed) {
+			const pre = await runCommand(['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_cleanup.ps1')], env)
+			if (pre.code !== 0) console.warn('fed_cleanup pre:', pre.output)
+		}
+
+		console.log(`\n=== SUITE ${suiteName} ===`)
+		const result = await runCommand(spec.run, env)
+		if (result.output) console.log(result.output)
+
+		if (spec.fed) {
+			const post = await runCommand(['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_cleanup.ps1')], env)
+			if (post.code !== 0) console.warn('fed_cleanup post:', post.output)
+		}
+
+		if (result.code !== 0) return result.code
+		if (/\bFAIL:\s|FAIL=\d+/.test(result.output) && /FAIL=(\d+)/.test(result.output)) {
+			const m = result.output.match(/FAIL=(\d+)/)
+			if (m && Number(m[1]) > 0) return 1
+		}
+		if (/(?m)\bFAIL\s{2,}/.test(result.output)) return 1
+		return 0
+	}
+	finally {
+		for (const node of nodes.reverse())
+			await stopNode(node)
+	}
+}
+
+const { values } = parseArgs({
+	options: {
+		suite: { type: 'string' },
+		list: { type: 'boolean', default: false },
+	},
+})
+
+if (values.list) {
+	console.log(Object.keys(SUITES).join('\n'))
+	process.exit(0)
+}
+
+if (!values.suite) {
+	console.error('usage: --suite <name> | --list')
+	process.exit(2)
+}
+
+const code = await runSuite(values.suite)
+process.exit(code)

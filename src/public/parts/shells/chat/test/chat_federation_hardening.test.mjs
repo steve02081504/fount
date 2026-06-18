@@ -25,17 +25,17 @@ import {
 	resolveMessageRateLimits,
 } from '../../../../../scripts/p2p/message_rate_limit.mjs'
 import { PERMISSIONS } from '../../../../../scripts/p2p/permissions.mjs'
+import {
+	parseJoinSnapshotRequest,
+	parseJoinSnapshotResponse,
+	parsePullResponseEnvelope,
+} from '../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { findStaleUnreachableChannels } from '../src/chat/channel/gc.mjs'
 import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../src/chat/federation/archiveMonthWire.mjs'
 import {
 	partitionForOutboundEvent,
 	resolveNodePartitionIds,
 } from '../src/chat/federation/partitions.mjs'
-import {
-	parseJoinSnapshotRequest,
-	parseJoinSnapshotResponse,
-	parsePullResponseEnvelope,
-} from '../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import {
 	isActivePullMember,
 	isHistoricalPullMember,
