@@ -95,6 +95,7 @@ function ensureConfig(root, listenPort, name, key) {
 	fs.mkdirSync(root, { recursive: true })
 	fs.mkdirSync(`${root}/users/${name}/settings`, { recursive: true })
 	fs.mkdirSync(`${root}/users/${name}/shells/chat/groups`, { recursive: true })
+	fs.mkdirSync(`${root}/users/${name}/shells/social/timelines`, { recursive: true })
 	fs.mkdirSync(`${root}/users/${name}/entities`, { recursive: true })
 	fs.mkdirSync(`${root}/p2p/chunks`, { recursive: true })
 	fs.writeFileSync(configPath, JSON.stringify(config, null, '\t'))
@@ -127,6 +128,22 @@ const ok = await init({
 
 if (!ok) {
 	console.error('node_worker: init failed')
+	process.exit(1)
+}
+
+try {
+	const { initP2PServer } = await import('../../../src/server/p2p_server/index.mjs')
+	await initP2PServer({ dataPath })
+	const { ensureOperatorPubKey } = await import('../../../src/server/p2p_server/operator_identity.mjs')
+	const { ensureOperatorSocialReady } = await import('../../../src/public/parts/shells/social/src/lib/bootstrap.mjs')
+	const { loadPart } = await import('../../../src/server/parts_loader.mjs')
+	await ensureOperatorPubKey(username)
+	await ensureOperatorSocialReady(username)
+	await loadPart(username, 'shells/social')
+	await loadPart(username, 'shells/chat')
+}
+catch (bootstrapError) {
+	console.error('node_worker: shell bootstrap failed', bootstrapError)
 	process.exit(1)
 }
 

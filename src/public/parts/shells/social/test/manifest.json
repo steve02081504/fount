@@ -4,7 +4,28 @@
 			"name": "unit",
 			"run": [
 				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
+				"--ignore=src/public/parts/shells/social/test/live",
 				"./src/public/parts/shells/social/test/"
+			],
+			"triggers": [
+				"src/public/parts/shells/social/**"
+			]
+		},
+		{
+			"name": "e2e_single",
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"
+			],
+			"triggers": [
+				"src/public/parts/shells/social/**"
+			]
+		},
+		{
+			"name": "ws_test",
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws_test"
 			],
 			"triggers": [
 				"src/public/parts/shells/social/**"
