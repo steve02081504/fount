@@ -170,6 +170,11 @@ export function notifyPartInstall(username, partpath) {
 export const parts_set = {}
 
 const PARTS_BRANCH_CACHE_NAME = 'parts_branch_cache'
+const PARTS_REGISTRIES_CACHE_NAME = 'parts_registries_cache'
+
+/**
+ * @typedef {{ id: string, level: number, path: string, partpath: string }} RegistryEntryRaw
+ */
 
 /**
  * 遍历指定目录下的所有 fount.json。
@@ -233,6 +238,62 @@ function mergeFountJsonIntoBranches(branches, filePath) {
 }
 
 /**
+ * 从 fount.json 文件路径推导 partpath。
+ * @param {string} filePath - fount.json 完整路径。
+ * @param {string} rootPath - 扫描根目录（public 或用户目录）。
+ * @returns {string} partpath（斜杠分隔）。
+ */
+function partpathFromFountJsonFile(filePath, rootPath) {
+	return path.relative(rootPath, path.dirname(filePath)).replace(/\\/g, '/')
+}
+
+/**
+ * 校验并规范化单条 registry 条目。
+ * @param {unknown} entry - 原始条目。
+ * @param {string} partpath - 所属 partpath。
+ * @returns {RegistryEntryRaw | null}
+ */
+function normalizeRegistryEntry(entry, partpath) {
+	if (!entry || typeof entry !== 'object') return null
+	const { id, level, path: entryPath } = /** @type {Record<string, unknown>} */ entry
+	if (typeof id !== 'string' || !id.trim()) return null
+	if (typeof entryPath !== 'string' || !entryPath.trim()) return null
+	const levelNum = Number(level)
+	return {
+		id: id.trim(),
+		level: Number.isFinite(levelNum) ? levelNum : 0,
+		path: entryPath.trim().replace(/^\/+/, ''),
+		partpath,
+	}
+}
+
+/**
+ * 将 fount.json 的 registries 字段合并到聚合对象。
+ * @param {Record<string, RegistryEntryRaw[]>} registries - 聚合对象。
+ * @param {string} filePath - fount.json 路径。
+ * @param {string} rootPath - 扫描根目录。
+ */
+function mergeFountJsonIntoRegistries(registries, filePath, rootPath) {
+	try {
+		const info = loadJsonFile(filePath)
+		const reg = info.registries
+		if (!reg || typeof reg !== 'object') return
+		const partpath = partpathFromFountJsonFile(filePath, rootPath)
+		for (const [name, entries] of Object.entries(reg)) {
+			if (!Array.isArray(entries)) continue
+			registries[name] ??= []
+			for (const entry of entries) {
+				const normalized = normalizeRegistryEntry(entry, partpath)
+				if (normalized) registries[name].push(normalized)
+			}
+		}
+	}
+	catch (error) {
+		console.warn(`Failed to parse registries in fount.json at ${filePath}: ${error.message}`)
+	}
+}
+
+/**
  * 扫描公共与用户目录，构建部件分支对象。
  * @param {string} username - 用户名。
  * @returns {object} - 部件分支对象。
@@ -252,14 +313,38 @@ function buildPartBranches(username) {
 }
 
 /**
- * 使部件分支缓存失效。
+ * 扫描公共与用户目录，构建 registries 聚合对象。
+ * @param {string} username - 用户名。
+ * @returns {Record<string, RegistryEntryRaw[]>}
+ */
+function buildPartRegistries(username) {
+	/** @type {Record<string, RegistryEntryRaw[]>} */
+	const registries = {}
+	const roots = [
+		path.join(__dirname, 'src/public/parts'),
+		getUserDictionary(username),
+	]
+
+	for (const root of roots)
+		for (const filePath of walkFountJsonFiles(root))
+			mergeFountJsonIntoRegistries(registries, filePath, root)
+
+	return registries
+}
+
+/**
+ * 使部件分支与 registries 缓存失效。
  * @param {string} username - 用户名。
  */
 function invalidatePartBranchesCache(username) {
-	const cache = loadData(username, PARTS_BRANCH_CACHE_NAME)
-	delete cache.branches
-	delete cache.updatedAt
+	const branchCache = loadData(username, PARTS_BRANCH_CACHE_NAME)
+	delete branchCache.branches
+	delete branchCache.updatedAt
 	saveData(username, PARTS_BRANCH_CACHE_NAME)
+	const registryCache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
+	delete registryCache.registries
+	delete registryCache.updatedAt
+	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
 }
 
 /**
@@ -277,6 +362,23 @@ export function getPartBranches(username, { nocache = false } = {}) {
 	cache.updatedAt = Date.now()
 	saveData(username, PARTS_BRANCH_CACHE_NAME)
 	return branches
+}
+
+/**
+ * 获取（并在需要时刷新）用户的 registries 聚合（原始条目，含 partpath）。
+ * @param {string} username - 用户名。
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Record<string, RegistryEntryRaw[]>}
+ */
+export function getPartRegistriesRaw(username, { nocache = false } = {}) {
+	const cache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
+	if (!nocache && cache.registries) return cache.registries
+
+	const registries = buildPartRegistries(username)
+	cache.registries = registries
+	cache.updatedAt = Date.now()
+	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
+	return registries
 }
 
 /**

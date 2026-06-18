@@ -25,6 +25,7 @@ import {
 	getAllCachedPartDetails,
 	getPartBranches
 } from '../parts_loader.mjs'
+import { getRegistry } from '../registries.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
 import { loadTrustedAuthorHashes, saveTrustedAuthorHashes } from '../trustedAuthors.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
@@ -344,6 +345,14 @@ export function registerEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
 		res.status(200).json(getPartBranches(username, { nocache }))
+	})
+
+	router.get('/api/registries/:name', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		const name = String(req.params.name ?? '').trim()
+		if (!name) return res.status(400).json({ error: 'registry name required' })
+		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
 	})
 
 	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
