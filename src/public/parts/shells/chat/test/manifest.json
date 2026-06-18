@@ -5,7 +5,10 @@
 			"run": [
 				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
 				"--ignore=src/public/parts/shells/chat/test/live",
-				"./src/public/parts/shells/chat/test/"
+				"./src/public/parts/shells/chat/test/",
+				"./src/test/registries.test.mjs",
+				"./src/test/markdown_extensions.test.mjs",
+				"./src/test/pickers.test.mjs"
 			],
 			"triggers": [
 				"src/public/parts/shells/chat/**",
@@ -14,7 +17,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -30,7 +36,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -46,7 +55,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -62,7 +74,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -78,7 +93,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -94,7 +112,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -110,7 +131,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -126,7 +150,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -142,7 +169,10 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/markdownExtensions.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs"
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/test/markdown_extensions.test.mjs",
+				"src/test/pickers.test.mjs",
+				"src/test/registries.test.mjs"
 			]
 		},
 		{
@@ -228,6 +258,17 @@
 			"triggers": [
 				"src/public/parts/shells/chat/src/group/**",
 				"src/server/registries.mjs"
+			]
+		},
+		{
+			"name": "fed_emoji_nearcache",
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nearcache"
+			],
+			"triggers": [
+				"src/public/parts/shells/chat/src/group/**",
+				"src/scripts/p2p/files/**"
 			]
 		},
 		{

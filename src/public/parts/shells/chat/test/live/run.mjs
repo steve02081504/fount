@@ -51,6 +51,7 @@ const SUITES = {
 	fed_ban: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_ban.ps1')] },
 	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji.ps1')] },
 	fed_emoji_nonmember: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji_nonmember.ps1')] },
+	fed_emoji_nearcache: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji_nearcache.ps1')] },
 	fed_file_transfer: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_file_transfer.ps1')] },
 	fed_misc: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_misc.ps1')] },
 }

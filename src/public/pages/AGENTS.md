@@ -22,6 +22,9 @@
 ## 3. Rendering & Content
 
 - **`markdown.mjs`**: Markdown to HTML with KaTeX, Mermaid, and Shiki support.
+- **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry modules (remark/rehype plugins, CSS, init hooks).
+- **`registries.mjs`**: Frontend helper for `GET /api/registries/:name` and dynamic `import()` of registry modules.
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared docked/floating pickers consuming `emoji` / `sticker` registries; Chat Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`.
 - **`svgInliner.mjs`**: Inlines SVGs to allow CSS styling (`currentColor`).
 - **`i18n.mjs`**: Sole public entry point. Call `initTranslations()` early on each page. Use `data-i18n` attributes and APIs such as `geti18n`, `loadPreferredLangs`, and `savePreferredLangs`.
 - **`i18n_base.mjs`**: Internal implementation (imported only by `i18n.mjs`): loads locale bundles per environment. Host app uses `userPreferredLanguages`; static GitHub Pages use a separate `i18n_base.mjs` with `fountUserPreferredLanguages`.

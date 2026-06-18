@@ -6,12 +6,14 @@
  * 【关联】被 stickers/endpoints.mjs、actions.mjs 调用；依赖 collection/index、chat/lib/paths、chatAuxAPI 类型。
  */
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 
 import { geti18nForUser } from '../../../../../../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
+import { putChunk } from '../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { getAllUserNames } from '../../../../../../server/auth.mjs'
 import {
 	entityStickerPackDir,
@@ -30,6 +32,24 @@ import {
 /** @typedef {import('../../../../../../decl/chatAuxAPI.ts').UserStickerCollection} UserStickerCollection */
 
 const STICKER_API = '/api/parts/shells:chat/stickers'
+
+/**
+ * @param {Buffer} buffer 贴纸字节
+ * @returns {string} sha256 hex
+ */
+export function computeStickerContentHash(buffer) {
+	return createHash('sha256').update(buffer).digest('hex')
+}
+
+/**
+ * @param {Buffer} buffer 贴纸字节
+ * @returns {Promise<string>} contentHash
+ */
+export async function storeStickerInCas(buffer) {
+	const contentHash = computeStickerContentHash(buffer)
+	await putChunk(contentHash, buffer)
+	return contentHash
+}
 
 /**
  * 贴纸二进制文件的 API URL。
@@ -234,12 +254,14 @@ export async function uploadSticker(packId, fileBuffer, filename, metadata) {
 
 	await fsp.writeFile(stickerPath, fileBuffer)
 
+	const contentHash = await storeStickerInCas(fileBuffer)
 	const sticker = {
 		id: stickerId,
 		name: metadata.name || path.basename(filename, ext),
 		url: stickerMediaUrl(packId, uniqueFilename),
 		tags: metadata.tags || [],
 		animated: ext.toLowerCase() === '.gif',
+		contentHash,
 	}
 
 	pack.stickers.push(sticker)

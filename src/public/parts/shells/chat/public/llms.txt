@@ -109,7 +109,9 @@ PoW 入群挑战（若群启用）。
 | GET | `/groups/:groupId/emojis` | 群自定义表情 manifest |
 | POST | `/groups/:groupId/emojis` | 上传群表情（multipart `emoji`） |
 | DELETE | `/groups/:groupId/emojis/:emojiId` | 删除群表情 |
-| GET | `/groups/:groupId/emojis/:emojiId/data` | 表情二进制；缺失时 P2P 拉取；`?json=1` 返回 dataUrl |
+| GET | `/groups/:groupId/emojis/:emojiId/data` | 表情二进制；按 contentHash CAS 就近复用；`?json=1` 返回 dataUrl + contentHash |
+| GET | `/emoji-content/:groupId/:emojiId` | 非成员可读表情内容（同上解析路径） |
+| GET | `/groups/:groupId/preview` | 群卡片预览（公开信息；私密群隐藏加入入口） |
 | GET | `/discovery` | 本地群发现索引（`?limit=`）；条目含 `sources[]` 来源 node |
 | POST | `/discovery/refresh` | 向已加入群联邦邻居广播 `discovery_announce` |
 
