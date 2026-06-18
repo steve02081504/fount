@@ -5,7 +5,7 @@
  * 【数据结构】entries[] { groupId, emojiId, ... }；:[group/emoji]: token。
  * 【关联】chatMarkdown.mjs、groupEmojiApi.mjs。
  */
-import { putCachedEmojiDataUrl, resolveEmojiUrlBestEffort } from './chatMarkdown.mjs'
+import { putCachedEmojiDataUrl, resolveEmojiUrlBestEffort } from './emojiCache.mjs'
 
 /**
  * 读取用户级已保存自定义表情。

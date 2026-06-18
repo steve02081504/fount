@@ -1,29 +1,28 @@
 /**
  * 【文件】public/src/chatMarkdownConvertor.mjs
- * 【职责】按作者信任级别提供 unified Markdown 处理器（可信/不可信两套 pipeline）。
- * 【原理】委托 pages/scripts/fountMessageMarkdown；附加 remarkExpandChannelLinks。
+ * 【职责】按作者信任级别提供 unified Markdown 处理器（扩展经全局 registry 加载）。
  */
 import { getFountMessageMarkdownConvertor, processFountMessageMarkdown } from '/scripts/fountMessageMarkdown.mjs'
 
-import { remarkExpandChannelLinks } from './chatMarkdownPlugins.mjs'
-
-const CHAT_MARKDOWN_OPTIONS = { extraRemarkPlugins: [remarkExpandChannelLinks] }
-
 /**
- * 获取聊天消息 Markdown 转换器（可信 / 不可信各缓存一份）。
  * @param {boolean} isTrustedAuthorContent 是否来自已信任作者
- * @returns {Promise<import('npm:unified').Processor>} 缓存的 unified 处理器
+ * @returns {Promise<import('npm:unified').Processor>}
  */
 export async function getChatMarkdownConvertor(isTrustedAuthorContent) {
-	return getFountMessageMarkdownConvertor(isTrustedAuthorContent, CHAT_MARKDOWN_OPTIONS)
+	return getFountMessageMarkdownConvertor(isTrustedAuthorContent)
 }
 
 /**
- * Markdown → HTML（不可信作者 pipeline 禁用 allowDangerousHtml）。
- * @param {string} markdown 原文
+ * @param {string | { value?: string, data?: object }} markdown 原文或 vfile
  * @param {boolean} isTrustedAuthorContent 是否来自已信任作者
  * @returns {Promise<string>} HTML
  */
 export async function processChatMarkdown(markdown, isTrustedAuthorContent) {
-	return processFountMessageMarkdown(markdown, isTrustedAuthorContent, CHAT_MARKDOWN_OPTIONS)
+	const text = typeof markdown === 'string' ? markdown : markdown?.value ?? ''
+	if (typeof markdown === 'object' && markdown?.data) {
+		const processor = await getChatMarkdownConvertor(isTrustedAuthorContent)
+		const file = await processor.process(markdown)
+		return String(file)
+	}
+	return processFountMessageMarkdown(text, isTrustedAuthorContent)
 }

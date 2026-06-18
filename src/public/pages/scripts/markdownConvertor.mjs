@@ -17,6 +17,7 @@ import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
 import { geti18n } from './i18n.mjs'
+import { ensureMarkdownExtensionAssets, loadRegisteredMarkdownExtensions } from './markdownExtensions.mjs'
 import { onThemeChange } from './theme.mjs'
 
 // --- 辅助函数 ---
@@ -1015,12 +1016,17 @@ export async function GetMarkdownConvertor({
 	extraRemarkPlugins = [],
 	extraRehypePlugins = [],
 } = {}) {
+	await ensureMarkdownExtensionAssets()
+	const registered = await loadRegisteredMarkdownExtensions()
+	const mergedRemarkPlugins = [...registered.remarkPlugins, ...extraRemarkPlugins]
+	const mergedRehypePlugins = [...registered.rehypePlugins, ...extraRehypePlugins]
+
 	let processor = unified()
 		.use(remarkParse)
 		.use(remarkDisable, { disable: ['codeIndented'] })
 		.use(remarkBreaks)
 		.use(remarkMath)
-	for (const plugin of extraRemarkPlugins)
+	for (const plugin of mergedRemarkPlugins)
 		processor = processor.use(plugin)
 	processor = processor
 		.use(remarkRehype, { allowDangerousHtml })
@@ -1081,7 +1087,7 @@ export async function GetMarkdownConvertor({
 		.use(rehypeKatex)
 		.use(rehypeCacheWrite)
 		.use(rehypeAddDaisyuiClass)
-	for (const plugin of extraRehypePlugins)
+	for (const plugin of mergedRehypePlugins)
 		processor = processor.use(plugin)
 	return processor.use(rehypeStringify, {
 		allowDangerousCharacters: allowDangerousHtml,
