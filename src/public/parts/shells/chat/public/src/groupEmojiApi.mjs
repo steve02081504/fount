@@ -3,7 +3,7 @@
  * 【职责】群自定义表情 data URL 路径与 fetch（浏览器侧）。
  * 【原理】groupEmojiDataApiPath 拼 REST URL；fetchGroupEmojiDataUrl blob→object URL。
  * 【数据结构】groupId、emojiId。
- * 【关联】chatMarkdown、customEmojis；后端群 emoji 存储。
+ * 【关联】markdown_ext/index.mjs、customEmojis；后端群 emoji 存储。
  */
 /**
  * 群自定义表情 data API 路径（浏览器侧）。

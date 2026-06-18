@@ -1,5 +1,5 @@
 /**
- * 群自定义表情 IndexedDB 缓存与 URL 解析（从 chatMarkdown 拆出）。
+ * 群自定义表情 IndexedDB 缓存与 URL 解析。
  */
 import { fetchGroupEmojiDataUrl } from './groupEmojiApi.mjs'
 
@@ -13,12 +13,21 @@ const EMOJI_VER = 1
 function openEmojiDb() {
 	return new Promise((resolve, reject) => {
 		const request = indexedDB.open(EMOJI_DB, EMOJI_VER)
+		/**
+		 *
+		 */
 		request.onerror = () => reject(request.error)
+		/**
+		 *
+		 */
 		request.onupgradeneeded = () => {
 			const database = request.result
 			if (!database.objectStoreNames.contains(EMOJI_STORE))
 				database.createObjectStore(EMOJI_STORE, { keyPath: 'k' })
 		}
+		/**
+		 *
+		 */
 		request.onsuccess = () => resolve(request.result)
 	})
 }
@@ -35,7 +44,13 @@ export async function getCachedEmojiDataUrl(groupId, emojiId) {
 		return await new Promise((resolve, reject) => {
 			const transaction = database.transaction(EMOJI_STORE, 'readonly')
 			const query = transaction.objectStore(EMOJI_STORE).get(cacheKey)
+			/**
+			 *
+			 */
 			query.onsuccess = () => resolve(query.result?.v || null)
+			/**
+			 *
+			 */
 			query.onerror = () => reject(query.error)
 		})
 	}
@@ -87,7 +102,13 @@ export async function putCachedEmojiDataUrl(groupId, emojiId, dataUrlOrUrl) {
 	await new Promise((resolve, reject) => {
 		const transaction = database.transaction(EMOJI_STORE, 'readwrite')
 		transaction.objectStore(EMOJI_STORE).put({ k: cacheKey, v: dataUrlOrUrl })
+		/**
+		 *
+		 */
 		transaction.oncomplete = () => resolve()
+		/**
+		 *
+		 */
 		transaction.onerror = () => reject(transaction.error)
 	})
 }

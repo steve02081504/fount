@@ -14,6 +14,7 @@
 - **Data Structures**:
   - `prompt_struct_t`: Central prompt building (@src/decl/prompt_struct.ts).
   - `chatMetadata_t`: Chat session state (@src/public/parts/shells/chat/src/chat/session/models.mjs).
+- **Registries**: Parts declare `registries` in `fount.json` (entries `{ id, level, path }`, path is part-relative). Aggregated via `GET /api/registries/:name`; helpers at `@src/server/registries.mjs` (backend) and `@src/public/pages/scripts/registries.mjs` (frontend). Used for markdown extensions, emoji/sticker providers, home/achievements data, and part locales.
 
 ## 3. Development Guidelines
 
