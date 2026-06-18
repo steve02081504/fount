@@ -13,6 +13,7 @@ import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
 import { attachFedEmojiHandlers } from './groupEmojiFederation.mjs'
+import { attachFedGroupCardHandlers } from './groupCardFederation.mjs'
 import { resolveGroupMqttCredentials } from './mqttCredentials.mjs'
 import { createFedOutQueue } from './outbound.mjs'
 import { LOGIC_SYNC_PARTITION, partitionForOutboundEvent, resolveNodePartitionIds } from './partitions.mjs'
@@ -273,6 +274,16 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				slot,
 				senderRegistry,
 				wireActions,
+			})
+			attachFedGroupCardHandlers({
+				username,
+				groupId,
+				key: rtcRoomKey,
+				fedOut,
+				rtcLimits,
+				peerToNode,
+				isBlockedPeer,
+				slot,
 			})
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {

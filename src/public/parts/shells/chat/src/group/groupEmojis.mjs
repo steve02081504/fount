@@ -6,14 +6,35 @@
  * 【关联】被 group/routes/groupEmojis.mjs、chat 消息 emoji 用法记录调用；依赖 chat/lib/paths、json_loader。
  */
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
+import { putChunk } from '../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { prefixedRandomId } from '../../../../../../scripts/p2p/id.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
 
 const MAX_EMOJI_BYTES = 512 * 1024
+
+/**
+ * @param {Buffer} buffer 图片字节
+ * @returns {string} sha256 hex（64 字符）
+ */
+export function computeEmojiContentHash(buffer) {
+	return createHash('sha256').update(buffer).digest('hex')
+}
+
+/**
+ * 将表情二进制写入全局 CAS（明文 contentHash）。
+ * @param {Buffer} buffer 图片字节
+ * @returns {Promise<string>} contentHash
+ */
+export async function storeEmojiInCas(buffer) {
+	const contentHash = computeEmojiContentHash(buffer)
+	await putChunk(contentHash, buffer)
+	return contentHash
+}
 
 /**
  * @param {string} filePath 文件路径
@@ -167,6 +188,8 @@ export async function uploadGroupEmoji(username, groupId, buffer, originalname, 
 	const binDir = binariesDir(username, groupId)
 	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
 	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
+	const contentHash = await storeEmojiInCas(buffer)
+	entry.contentHash = contentHash
 	const entries = await loadGroupEmojiManifest(username, groupId)
 	entries.push(entry)
 	await saveGroupEmojiManifest(username, groupId, entries)
@@ -221,6 +244,8 @@ export async function persistGroupEmojiFromDataUrl(username, groupId, emojiId, d
 	const binDir = binariesDir(username, groupId)
 	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
 	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
+	const contentHash = await storeEmojiInCas(buffer)
+	entry.contentHash = contentHash
 	await saveGroupEmojiManifest(username, groupId, entries)
 	return entry
 }

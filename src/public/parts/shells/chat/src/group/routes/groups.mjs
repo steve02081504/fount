@@ -20,6 +20,7 @@ import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
 import { governanceChannelId } from '../access.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
+import { buildGroupPreview } from '../groupPreview.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 
@@ -106,6 +107,12 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			groupId: result.groupId,
 			defaultChannelId: result.defaultChannelId,
 		})
+	})
+
+	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/preview$/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const groupId = req.params[0]
+		res.status(200).json(await buildGroupPreview(username, groupId))
 	})
 
 	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/timeline$/, authenticate, requireGroupMember(), async (req, res) => {

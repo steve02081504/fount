@@ -1,0 +1,138 @@
+/**
+ * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
+ */
+import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
+import { wireAction } from '../../../../../../../scripts/p2p/trystero_wire_action.mjs'
+import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
+import { getState } from '../../chat/dag/materialize.mjs'
+
+import { bindFedSender } from './outbound.mjs'
+
+const FETCH_TIMEOUT_MS = 14_000
+const CARD_WANT_MAX_PER_MIN = 30
+
+/** @type {Map<string, { resolve: (v: object | null) => void, timer: ReturnType<typeof setTimeout> }>} */
+const pendingFetches = new Map()
+
+/**
+ * @param {string} username
+ * @param {string} groupId
+ * @returns {string}
+ */
+function waitKey(username, groupId) {
+	return `${username}\0${groupId}\0group_card`
+}
+
+/**
+ * @param {string} bucketKey
+ * @returns {boolean}
+ */
+function consumeCardWant(bucketKey) {
+	return consumeWireRateBucket(bucketKey, { maxCount: CARD_WANT_MAX_PER_MIN })
+}
+
+/**
+ * @param {string} username
+ * @param {string} groupId
+ * @param {unknown} data
+ * @param {string} peerId
+ * @param {(payload: unknown, peerId: string) => void} sendCardData
+ * @param {(id: string) => boolean} isBlockedPeer
+ * @param {Map<string, string>} peerToNode
+ * @returns {Promise<void>}
+ */
+export async function handleFedGroupCardWant(username, groupId, data, peerId, sendCardData, isBlockedPeer, peerToNode) {
+	if (!isPlainObject(data)) return
+	if (!consumeCardWant(waitKey(username, groupId))) return
+	const remoteNode = peerToNode.get(peerId)
+	if (remoteNode && isBlockedPeer(remoteNode)) return
+	let state
+	try {
+		({ state } = await getState(username, groupId))
+	}
+	catch {
+		return
+	}
+	const title = (state.groupMeta?.name || state.groupSettings?.discoveryTitle || groupId).slice(0, 200)
+	const blurb = (state.groupMeta?.description || state.groupSettings?.discoveryBlurb || '').slice(0, 500)
+	try {
+		sendCardData({ groupId, title, blurb }, peerId)
+	}
+	catch (error) {
+		console.warn('federation: fed_group_card_data send failed', error)
+	}
+}
+
+/**
+ * @param {string} username
+ * @param {string} groupId
+ * @param {unknown} data
+ * @returns {void}
+ */
+export function handleFedGroupCardData(username, groupId, data) {
+	if (!isPlainObject(data)) return
+	const key = waitKey(username, groupId)
+	const pending = pendingFetches.get(key)
+	if (!pending) return
+	clearTimeout(pending.timer)
+	pendingFetches.delete(key)
+	pending.resolve({
+		title: String(data.title || ''),
+		blurb: String(data.blurb || ''),
+	})
+}
+
+/**
+ * @param {string} username
+ * @param {string} groupId
+ * @param {object | null} slot
+ * @returns {Promise<{ title: string, blurb: string } | null>}
+ */
+export async function requestGroupCardFromPeers(username, groupId, slot) {
+	if (!slot?.sendGroupCardWant) return null
+	const roster = slot.getRoster?.() || []
+	if (!roster.length) return null
+	if (!consumeCardWant(waitKey(username, groupId))) return null
+	const key = waitKey(username, groupId)
+	return await new Promise(resolve => {
+		const timer = setTimeout(() => {
+			pendingFetches.delete(key)
+			resolve(null)
+		}, FETCH_TIMEOUT_MS)
+		pendingFetches.set(key, { resolve, timer })
+		for (const { peerId } of roster)
+			try {
+				slot.sendGroupCardWant({ groupId }, peerId)
+			}
+			catch { /* ignore */ }
+	})
+}
+
+/**
+ * @param {object} roomContext
+ * @returns {void}
+ */
+export function attachFedGroupCardHandlers(roomContext) {
+	const { username, groupId, key, fedOut, rtcLimits, peerToNode, isBlockedPeer, slot } = roomContext
+	const cardWant = wireAction(roomContext, 'fed_group_card_want')
+	const cardData = wireAction(roomContext, 'fed_group_card_data')
+	const sendCardData = bindFedSender(fedOut, 6, 'fed_group_card_data', cardData.send)
+
+	cardWant.on((data, peerId) => {
+		void handleFedGroupCardWant(username, groupId, data, peerId, sendCardData, isBlockedPeer, peerToNode)
+			.catch(error => console.warn('federation: fed_group_card_want handler failed', error))
+	})
+
+	cardData.on(data => {
+		handleFedGroupCardData(username, groupId, data)
+	})
+
+	slot.sendGroupCardWant = bindFedSender(
+		fedOut,
+		6,
+		'fed_group_card_want',
+		cardWant.send,
+		() => isFederationActionAllowedUnderLoad(key, 'fed_group_card_want', rtcLimits),
+	)
+}
