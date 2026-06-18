@@ -61,7 +61,7 @@ async function bootstrap() {
 		replica: await import('../src/chat/lib/replica.mjs'),
 		paths: await import('../src/chat/lib/paths.mjs'),
 		storage: await import('../../../../../scripts/p2p/dag/storage.mjs'),
-		wire: await import('../src/chat/events/wire.mjs'),
+		strip: await import('../../../../../scripts/p2p/dag/strip_extensions.mjs'),
 		dag: await import('../../../../../scripts/p2p/governance_branch.mjs'),
 	}
 }
@@ -71,7 +71,7 @@ async function bootstrap() {
  * @returns {Promise<object[]>} 事件
  */
 async function readEvents(node) {
-	return M.storage.readJsonl(M.paths.eventsPath(node, groupId), { sanitize: M.wire.sanitizeFederatedEvent })
+	return M.storage.readJsonl(M.paths.eventsPath(node, groupId), { sanitize: M.strip.stripDagEventLocalExtensions })
 }
 
 /**
