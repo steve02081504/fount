@@ -10,8 +10,9 @@ import { isAuthorFilteredByPersonalSets } from '../../../../../scripts/p2p/perso
 import { canViewPost } from '../src/feedVisibility.mjs'
 
 /**
+ * 按拓扑序物化 post 事件（过滤非 post 类型）。
  * @param {object[]} events 原始事件
- * @returns {object[]}
+ * @returns {object[]} 物化后的 post 事件列表
  */
 function materializePostsOnly(events) {
 	const order = topologicalCanonicalOrder(events.map(event => ({
