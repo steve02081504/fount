@@ -1,3 +1,4 @@
+import { wireEmojiPickerButton } from '../../../../../pages/scripts/emojiPicker.mjs'
 import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,
@@ -21,6 +22,15 @@ import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
  */
 export async function bootstrapSocialApp(appContext) {
 	document.getElementById('postBtn')?.addEventListener('click', () => { void afterPublishPost(appContext) })
+	const postText = document.getElementById('postText')
+	wireEmojiPickerButton(document.getElementById('emojiPickBtn'), token => {
+		if (!(postText instanceof HTMLTextAreaElement)) return
+		const start = postText.selectionStart ?? postText.value.length
+		const end = postText.selectionEnd ?? start
+		postText.value = postText.value.slice(0, start) + token + postText.value.slice(end)
+		postText.selectionStart = postText.selectionEnd = start + token.length
+		postText.focus()
+	})
 	attachMentionAutocomplete(document.getElementById('postText'))
 	document.getElementById('mediaInput')?.addEventListener('change', async event => {
 		const input = event.target

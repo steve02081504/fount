@@ -21,6 +21,7 @@ const NODE_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
 /** @type {Record<string, { run: string[] }>} */
 const SUITES = {
 	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')] },
+	cross_shell_emoji: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'cross_shell_emoji.ps1')] },
 	ws_test: { run: ['node', join(SCRIPTS, 'ws_test.mjs')] },
 }
 

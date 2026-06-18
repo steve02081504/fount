@@ -7,6 +7,7 @@ import { getFederationViewForUser } from '../../../../../../server/p2p_server/op
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { buildProfileFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
 import { setFollow, loadFollowing } from '../following.mjs'
+import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { resolveSocialEntity } from '../lib/entityResolve.mjs'
 import { resolveOperatorEntityHash } from '../lib/operatorEntity.mjs'
@@ -112,9 +113,14 @@ export function registerProfileRoutes(router) {
 		await ensureEntitySocialReady(username, entityHash)
 		const visibility = req.body?.visibility === 'followers' ? 'followers' : 'public'
 		const postKeyId = randomUUID()
+		const postText = String(req.body?.text)
+		const emojiMediaRefs = await buildEmojiMediaRefsForPost(username, postText).catch(() => [])
 		const draftContent = {
-			text: String(req.body?.text),
-			mediaRefs: Array.isArray(req.body?.mediaRefs) ? req.body.mediaRefs : [],
+			text: postText,
+			mediaRefs: [
+				...(Array.isArray(req.body?.mediaRefs) ? req.body.mediaRefs : []),
+				...emojiMediaRefs,
+			],
 			replyTo: req.body?.replyTo,
 			quoteRef: req.body?.quoteRef,
 			groupRef: req.body?.groupRef,

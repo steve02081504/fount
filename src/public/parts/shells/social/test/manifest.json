@@ -28,7 +28,20 @@
 				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws_test"
 			],
 			"triggers": [
-				"src/public/parts/shells/social/**"
+				"src/public/parts/shells/social/**",
+				"src/server/registries.mjs",
+				"src/public/pages/scripts/registries.mjs"
+			]
+		},
+		{
+			"name": "cross_shell_emoji",
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"
+			],
+			"triggers": [
+				"src/public/parts/shells/social/**",
+				"src/public/parts/shells/chat/public/markdown_ext/**"
 			]
 		}
 	]

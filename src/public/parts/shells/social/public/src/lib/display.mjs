@@ -1,6 +1,4 @@
 import { processFountMessageMarkdown } from '../../../../../pages/scripts/fountMessageMarkdown.mjs'
-import { remarkExpandSocialLinks } from '../remarkExpandSocialLinks.mjs'
-import { remarkHashtagLinks } from '../remarkHashtagLinks.mjs'
 
 import { formatSocialProfileHref } from './runUri.mjs'
 
@@ -58,9 +56,7 @@ export async function isTrusted(pubKeyHash) {
  */
 export async function renderMarkdown(markdown, pubKeyHash) {
 	const trusted = await isTrusted(pubKeyHash)
-	return processFountMessageMarkdown(markdown || '', trusted, {
-		extraRemarkPlugins: [remarkExpandSocialLinks, remarkHashtagLinks],
-	})
+	return processFountMessageMarkdown(markdown || '', trusted)
 }
 
 /**
