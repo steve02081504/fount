@@ -32,7 +32,7 @@ const MAX_RELAY_BUMP_SEEN = 2000
 
 /**
  * @typedef {{
- *   byNodeHash: Record<string, { score: number }>
+ *   byNodeHash: Record<string, { score: number, socialBlocks?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
  *   wantUnknownHits: Array<{ peerNodeHash: string, t: number }>
  *   relayBumpSeen: Array<{ peerNodeHash: string, key: string, t: number }>
  * }} ReputationFile
@@ -50,7 +50,10 @@ export { relayBumpIsDuplicate } from './reputation_relay_dedupe.mjs'
  */
 function repRow(data, nodeId) {
 	const row = data.byNodeHash[nodeId] || { score: 0 }
-	return { score: Number(row.score ?? 0) }
+	const out = { score: Number(row.score ?? 0) }
+	if (row.socialBlocks && typeof row.socialBlocks === 'object')
+		out.socialBlocks = row.socialBlocks
+	return out
 }
 
 /**
@@ -223,14 +226,14 @@ export function resolveSlashAlertTtlMs(groupSettings) {
  * @param {object} alert VOLATILE slash 载荷
  * @returns {boolean} 是否已应用
  */
-export function applyVolatileSlashAlert(alert) {
+export async function applyVolatileSlashAlert(alert) {
 	const expiresAt = Number(alert?.expiresAt)
 	if (Number.isFinite(expiresAt) && Date.now() > expiresAt) return false
 	const target = normalizeHex64(alert?.targetPubKeyHash)
 	const sender = normalizeHex64(alert?.sender)
 	if (!isHex64(target) || !isHex64(sender)) return false
 	const claim = Number.isFinite(Number(alert?.claim)) ? Number(alert.claim) : 0.2
-	void mutateReputation(data => {
+	await mutateReputation(data => {
 		const repMaxEff = computeRepMaxEff(data)
 		const repSender = Number(data.byNodeHash[sender]?.score ?? 0)
 		const penalty = subjectiveSlashPenalty(claim, repSender, repMaxEff, false)
@@ -371,4 +374,13 @@ export function seedMemberReputationFromIntroducer(memberPubKeyHash, introducerP
  */
 export function pickNodeScore(nodeId) {
 	return pickNodeScoreFromReputation(loadReputation(), nodeId)
+}
+
+/**
+ * @param {object} opts applyFollowedBlockSignal 参数
+ * @returns {Promise<boolean>} 是否已应用
+ */
+export async function applySocialBlockReputationSignal(opts) {
+	const { applyFollowedBlockSignal } = await import('./reputation_social.mjs')
+	return applyFollowedBlockSignal(opts, mutateReputation)
 }

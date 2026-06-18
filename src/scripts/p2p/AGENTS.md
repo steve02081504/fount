@@ -16,6 +16,8 @@
 ## 2. Subjective reputation (`reputation.json`)
 
 - **Single global score per peer** at `{dataPath}/p2p/node/reputation.json` (`byNodeHash[id].score` in `[-1, 1]`). No per-group scopes.
+- **Social public block → reputation**: when a followed entity (including implicit self-follow) emits `block`/`unblock` on their timeline, observers apply `applySocialBlockReputationSignal` — penalty targets the **blocked entity's nodeHash** (user/agent equal); `selfTrust` on local block uses full weight.
+- **Per-entity personal lists**: `personal_block.mjs` — public block index in entity store (`personal_block.json`, synced from timeline `blocked`); private hide (`personal_hide.json`, never federated). Chat Hub and Social share these APIs.
 - **Subjective slash**: `reputation_slash` / VOLATILE `reputation_slash_alert` adjust the target's **global** score via `subjectiveSlashPenalty(claim, repSender, rep_max_eff)` — influence scales with how much you trust the sender. Do not remove this weighting.
 - **Anti-Sybil lever**: `applyDecayCollusionAfterSlash` penalizes invite-chain upstream after slash/kick/ban (global score).
 - **Safe reputation penalties** (self-observed, attributable): relay bump, gossip unknown-want, message rate, chunk store/fetch, archive digest mismatch, chunk replication ACK timeout on registered targets.

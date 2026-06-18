@@ -47,6 +47,7 @@ import {
 import { showMemberContextMenu } from './memberContextMenu.mjs'
 import { collectActiveMemberHashes, computeMembersMerkleRoot } from './membersDigest.mjs'
 import { clearPinPreviewCache } from './messages/pinPreview.mjs'
+import { isHubMemberPersonallyFiltered, loadHubPersonalFilter } from './personalFilter.mjs'
 import { refreshPinsBookmarks } from './pinsBookmarks.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -385,7 +386,15 @@ export async function selectChannel(channelId) {
  */
 export async function renderMemberList(state) {
 	const container = document.getElementById('hub-member-list')
-	const members = state.members || []
+	await loadHubPersonalFilter()
+	const members = (state.members || []).filter(member => {
+		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
+		const entityHash = member.entityHash
+			|| (String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase() === memberKey.toLowerCase()
+				? hubStore.viewerEntityHash
+				: '')
+		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
+	})
 	if (!members.length) {
 		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noMembers' })
 		return

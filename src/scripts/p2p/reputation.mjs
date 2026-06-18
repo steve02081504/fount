@@ -1,5 +1,8 @@
-/** 主观信誉标量运算（§0.3、§0.1）；持久化由 chat shell 的 `reputation.mjs` 负责。 */
+/** 主观信誉标量运算（§0.3、§0.1）；持久化于节点目录 reputation.json。 */
 
+/**
+ *
+ */
 export {
 	REP_MIN,
 	REP_MAX,
@@ -29,4 +32,17 @@ export {
 	applyReputationResetToScores,
 	seedMemberReputationFromIntroducer,
 	relayBumpIsDuplicate,
+	applySocialBlockReputationSignal,
 } from './reputation_store.mjs'
+
+/**
+ *
+ */
+export {
+	SOCIAL_BLOCK_CLAIM,
+	SOCIAL_REP_HIDE_THRESHOLD,
+	SOCIAL_REP_DEMOTE_THRESHOLD,
+	applySocialBlockDecayAll,
+	shouldHideAuthorByReputation,
+	reputationSortPenalty,
+} from './reputation_social.mjs'

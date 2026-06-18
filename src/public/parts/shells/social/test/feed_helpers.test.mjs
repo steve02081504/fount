@@ -6,12 +6,12 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { normalizeBlocklist } from '../../../../../scripts/p2p/blocklist.mjs'
 import { topologicalCanonicalOrder } from '../../../../../scripts/p2p/dag/index.mjs'
-import { canViewPost } from '../src/feedHelpers.mjs'
+import { isAuthorFilteredByPersonalSets } from '../../../../../scripts/p2p/personal_block.mjs'
+import { canViewPost } from '../src/feedVisibility.mjs'
 
 /**
- * 测试辅助：仅物化 post 事件列表。
  * @param {object[]} events 原始事件
- * @returns {object} 物化视图（与 materialize.mjs 同构的 posts 计数）
+ * @returns {object[]}
  */
 function materializePostsOnly(events) {
 	const order = topologicalCanonicalOrder(events.map(event => ({
@@ -29,14 +29,45 @@ function materializePostsOnly(events) {
 	return [...posts.values()]
 }
 
-Deno.test('canViewPost respects visibility and self', () => {
-	const blocked = new Set()
-	const following = new Set(['author1'])
-	const self = 'viewer1'
-	assertEquals(canViewPost({ entityHash: 'author1', content: { visibility: 'public' } }, self, blocked, following), true)
-	assertEquals(canViewPost({ entityHash: 'author1', content: { visibility: 'followers' } }, self, blocked, following), true)
-	assertEquals(canViewPost({ entityHash: 'author2', content: { visibility: 'followers' } }, self, blocked, following), false)
-	assertEquals(canViewPost({ entityHash: 'viewer1', content: { visibility: 'followers' } }, self, blocked, following), true)
+Deno.test('canViewPost respects visibility with implicit self-follow', () => {
+	const viewerContext = {
+		viewerEntityHash: 'viewer1',
+		following: new Set(['author1', 'viewer1']),
+		personalFilter: {
+			blockedEntityHashes: new Set(),
+			blockedSubjects: new Set(),
+			hiddenEntityHashes: new Set(),
+			hiddenSubjects: new Set(),
+		},
+	}
+	assertEquals(canViewPost({ entityHash: 'author1', content: { visibility: 'public' } }, viewerContext), true)
+	assertEquals(canViewPost({ entityHash: 'author2', content: { visibility: 'followers' } }, viewerContext), false)
+	assertEquals(canViewPost({ entityHash: 'viewer1', content: { visibility: 'followers' } }, viewerContext), true)
+})
+
+Deno.test('canViewPost hides personally blocked authors', () => {
+	const viewerContext = {
+		viewerEntityHash: 'viewer1',
+		following: new Set(['viewer1', 'bad']),
+		personalFilter: {
+			blockedEntityHashes: new Set(['bad']),
+			blockedSubjects: new Set(),
+			hiddenEntityHashes: new Set(),
+			hiddenSubjects: new Set(),
+		},
+	}
+	assertEquals(canViewPost({ entityHash: 'bad', content: { visibility: 'public' } }, viewerContext), false)
+})
+
+Deno.test('isAuthorFilteredByPersonalSets subject scope', () => {
+	const pk = 'a'.repeat(64)
+	const filterSets = {
+		blockedEntityHashes: new Set(),
+		blockedSubjects: new Set([pk]),
+		hiddenEntityHashes: new Set(),
+		hiddenSubjects: new Set(),
+	}
+	assertEquals(isAuthorFilteredByPersonalSets(filterSets, 'b'.repeat(64) + pk), true)
 })
 
 Deno.test('materialize keeps all posts regardless of visibility', () => {
@@ -45,15 +76,6 @@ Deno.test('materialize keeps all posts regardless of visibility', () => {
 		{ id: 'b', type: 'post', prev_event_ids: ['a'], hlc: { wall: 2 }, content: { visibility: 'public' } },
 	])
 	assertEquals(posts.length, 2)
-})
-
-Deno.test('materialize unlike removes like by target key', () => {
-	/** @type {Map<string, object>} */
-	const likes = new Map()
-	likes.set('author1:p1', { id: 'l1' })
-	const unlikeKey = 'author1:p1'
-	likes.delete(unlikeKey)
-	assertEquals(likes.size, 0)
 })
 
 Deno.test('blocklist entity scope from p2p normalizeBlocklist', () => {

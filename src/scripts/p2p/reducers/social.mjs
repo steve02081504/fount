@@ -16,6 +16,7 @@ export function createSocialTimelineState() {
 		reposts: [],
 		followEvents: [],
 		following: new Set(),
+		blocked: new Set(),
 	}
 }
 
@@ -101,6 +102,26 @@ function reduceUnfollow(state, event) {
 }
 
 /**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceBlock(state, event) {
+	state.blocked.add(event.content.targetEntityHash.toLowerCase())
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceUnblock(state, event) {
+	state.blocked.delete(event.content.targetEntityHash.toLowerCase())
+	return state
+}
+
+/**
  * @param {object} state 物化状态
  * @returns {object} 原样返回
  */
@@ -118,6 +139,8 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	repost: reduceRepost,
 	follow: reduceFollow,
 	unfollow: reduceUnfollow,
+	block: reduceBlock,
+	unblock: reduceUnblock,
 	state_summary: reduceSocialMeta,
 	file_share: passthroughReducer,
 	follow_approve: passthroughReducer,
@@ -148,6 +171,7 @@ export function finalizeSocialTimelineView(state, order) {
 		reposts: state.reposts,
 		followEvents: state.followEvents,
 		following: [...state.following],
+		blocked: [...state.blocked],
 		tipIds: order.length ? [order[order.length - 1]] : [],
 	}
 }

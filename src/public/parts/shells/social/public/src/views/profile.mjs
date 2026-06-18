@@ -7,12 +7,8 @@ import { formatSocialProfileHref } from '../lib/runUri.mjs'
  * @returns {Promise<void>}
  */
 export async function renderBlocklist(appContext, container) {
-	const response = await fetch('/api/p2p/blocklist', { credentials: 'include' })
-	if (!response.ok) throw new Error(await response.text())
-	const data = await response.json()
-	const blocked = (data.blocked || [])
-		.filter(entry => entry.scope === 'entity')
-		.map(entry => entry.value)
+	const data = await appContext.socialApi('/profile/personal-lists')
+	const blocked = data.blockedEntityHashes || []
 	if (!blocked.length) {
 		container.innerHTML = `<p class="hint">${appContext.geti18n('social.blocklist.empty')}</p>`
 		return

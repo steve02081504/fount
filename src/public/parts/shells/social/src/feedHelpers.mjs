@@ -1,9 +1,14 @@
-import { loadBlocklist } from '../../../../../scripts/p2p/blocklist.mjs'
-import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
+import { loadPersonalFilterSets } from '../../../../../scripts/p2p/personal_block.mjs'
 import { socialPostKey } from '../../../../../scripts/p2p/social/post_key.mjs'
 
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { getTimelineOwnerIndex, listLocalEntitiesForNode } from './timeline/ownerIndex.mjs'
+
+/**
+ *
+ */
+export { canViewPost } from './feedVisibility.mjs'
 
 /**
  * 列出磁盘上全部时间线 owner（探索/热搜用）。
@@ -18,7 +23,7 @@ export async function listLocalTimelineOwners(username, options = {}) {
 }
 
 /**
- * 列出观看者已知的时间线 owner（关注 + 自身）。
+ * 列出观看者已知的时间线 owner（关注 + 自身；自身由隐式自关注保证）。
  * @param {string} username 用户
  * @returns {Promise<string[]>} 已知时间线 owner
  */
@@ -26,9 +31,7 @@ export async function listKnownTimelineOwners(username) {
 	const operator = await resolveOperatorEntityHash(username)
 	if (!operator) return []
 	const view = await getTimelineMaterialized(username, operator)
-	const set = new Set(view.following.map(id => id.toLowerCase()))
-	set.add(operator.toLowerCase())
-	return [...set]
+	return [...new Set([...view.following.map(id => id.toLowerCase()), operator.toLowerCase()])]
 }
 
 /**
@@ -40,24 +43,6 @@ export async function listTimelineOwners(username, scope = 'known') {
 	return scope === 'local'
 		? listLocalTimelineOwners(username)
 		: listKnownTimelineOwners(username)
-}
-
-/**
- * 根据可见性与拉黑/关注关系判断帖子是否对观看者可见。
- * @param {object} post 帖子
- * @param {string | null} viewerEntityHash 观看者 entityHash
- * @param {Set<string>} blocked 拉黑集合
- * @param {Set<string>} following 观看者关注列表
- * @returns {boolean} 是否可见
- */
-export function canViewPost(post, viewerEntityHash, blocked, following) {
-	const authorEntity = post.entityHash.toLowerCase()
-	if (blocked.has(authorEntity)) return false
-	if (viewerEntityHash && authorEntity === viewerEntityHash.toLowerCase()) return true
-	const visibility = post.content?.visibility || 'public'
-	if (visibility === 'public') return true
-	if (visibility === 'followers') return following.has(authorEntity)
-	return false
 }
 
 /**
@@ -75,7 +60,7 @@ function bumpEngagementCount(counts, entityHash, postId) {
  * 扫描时间线构建点赞/转发/回复计数索引。
  * @param {string} username 用户
  * @param {Iterable<string>} [owners] 仅扫描这些时间线 owner；缺省为全部已知 owner
- * @returns {Promise<{ likes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }>} 各帖子键的点赞/转发/回复计数
+ * @returns {Promise<{ likes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }>} 互动计数索引
  */
 export async function buildEngagementIndex(username, owners = null) {
 	/** @type {Map<string, number>} */
@@ -103,7 +88,7 @@ export async function buildEngagementIndex(username, owners = null) {
 /**
  * 收集观看者已点赞的帖子键集合。
  * @param {string} username 用户
- * @returns {Promise<Set<string>>} 观看者已点赞的 `entityHash:postId` 键集合
+ * @returns {Promise<Set<string>>} 已点赞帖子键集合
  */
 export async function buildViewerLikedSet(username) {
 	const self = await resolveOperatorEntityHash(username)
@@ -116,19 +101,24 @@ export async function buildViewerLikedSet(username) {
 
 /**
  * @param {string} username 用户
- * @returns {Promise<{ viewerEntityHash: string | null, blocked: Set<string>, following: Set<string> }>} 观看者上下文
+ * @param {string} [viewerEntityHash] 可选指定观看实体，默认 operator
+ * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>> }>} 观看者上下文
  */
-export async function loadViewerContext(username) {
-	const viewerEntityHash = await resolveOperatorEntityHash(username)
-	const blocked = new Set(
-		loadBlocklist().blocked
-			.filter(entry => entry.scope === 'entity')
-			.map(entry => entry.value),
-	)
+export async function loadViewerContext(username, viewerEntityHash = null) {
+	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
 	const following = new Set(
-		viewerEntityHash
-			? (await getTimelineMaterialized(username, viewerEntityHash)).following.map(id => id.toLowerCase())
+		viewer
+			? (await getTimelineMaterialized(username, viewer)).following.map(id => id.toLowerCase())
 			: [],
 	)
-	return { viewerEntityHash, blocked, following }
+	if (viewer) following.add(viewer.toLowerCase())
+	const personalFilter = viewer
+		? await loadPersonalFilterSets(viewer)
+		: {
+			blockedEntityHashes: new Set(),
+			blockedSubjects: new Set(),
+			hiddenEntityHashes: new Set(),
+			hiddenSubjects: new Set(),
+		}
+	return { viewerEntityHash: viewer, following, personalFilter }
 }

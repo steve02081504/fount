@@ -89,7 +89,16 @@ Body：`entityHash`、`postId`、`comment?`。
 Body：`postId`（仅自己的帖子）。
 
 ### `POST /api/parts/shells:social/profile/block`
-Body：`entityHash`、`block`。
+Body：`entityHash`、`block`、`actingEntityHash?`（默认 operator）。写入该实体的公开联邦 `block`/`unblock` 时间线事件，并更新个人拉黑索引 + 节点信誉。
+
+### `POST /api/parts/shells:social/profile/hide`
+Body：`entityHash`、`hide`、`actingEntityHash?`。纯本地 `personal_hide.json`，不联邦。
+
+### `GET /api/parts/shells:social/profile/personal-lists`
+Query：`actingEntityHash?`。返回 `{ blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects }`（Chat Hub 与 Social 共享）。
+
+### 时间线事件 `block` / `unblock`
+content：`{ targetEntityHash }`。物化到 owner 的 `blocked[]`；关注者入站时触发信誉传导。
 
 ### `POST /api/parts/shells:social/profile/follow-approve`
 Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（仅关注者可见帖）。

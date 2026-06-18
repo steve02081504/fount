@@ -4,6 +4,7 @@ import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts
 import { validateRemoteTimelineEvent } from '../../../../../../scripts/p2p/timeline/remote_ingest.mjs'
 import { loadFollowing } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
+import { handleInboundPersonalBlockEvent } from '../personalBlock.mjs'
 import { tryImportFollowApproveVault } from '../vault_crypto/followApproveImport.mjs'
 
 import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
@@ -35,6 +36,10 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	invalidateTimelineOwnerIndex(username)
 	await tryImportFollowApproveVault(username, entityHash, event)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, validated.row)
+	if (validated.row.type === 'block' || validated.row.type === 'unblock') {
+		const { following } = await loadFollowing(username)
+		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))
+	}
 	return true
 }
 

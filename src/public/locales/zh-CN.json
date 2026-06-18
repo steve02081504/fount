@@ -1014,6 +1014,7 @@
 			"translate": "翻译",
 			"dm": "发私信",
 			"block": "拉黑",
+			"hide": "隐藏",
 			"follow": "关注",
 			"following": "已关注",
 			"replies": "评论",
@@ -2181,6 +2182,9 @@
 				"kick": "踢出成员",
 				"kickSelfNodeWarning": "警告：该成员与你使用同一节点身份，踢出后你也将被移出群组。确定继续吗？",
 				"ban": "封禁…",
+				"personalBlock": "个人拉黑",
+				"personalBlockConfirm": "将 ${name} 加入你的拉黑列表？关注你的人会收到该信号并可能降低对其的信任值。",
+				"personalBlockSuccess": "已加入拉黑列表",
 				"banTitle": "选择封禁范围",
 				"banEntity": "封禁实体（128 位 entityHash）",
 				"banNode": "封禁节点（homeNodeHash）"

@@ -14,7 +14,9 @@ export async function loadFollowing(username) {
 	const operator = await resolveOperatorEntityHash(username)
 	if (!operator) return { following: [] }
 	const view = await getTimelineMaterialized(username, operator)
-	return { following: view.following.map(id => id.toLowerCase()) }
+	const following = new Set(view.following.map(id => id.toLowerCase()))
+	following.add(operator.toLowerCase())
+	return { following: [...following] }
 }
 
 /**

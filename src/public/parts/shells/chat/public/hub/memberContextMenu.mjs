@@ -48,12 +48,13 @@ export async function showMemberContextMenu(event, memberEl) {
 	const showKick = (perms.KICK_MEMBERS || isOwnerOwnAgent) && memberKey.toLowerCase() !== viewer
 	const showBan = !!perms.BAN_MEMBERS && memberKey.toLowerCase() !== viewer
 	const entityHash = memberEl.dataset.entityHash?.trim() || ''
+	const showPersonalBlock = memberKey.toLowerCase() !== viewer && !!entityHash
 	const showCopyEntity = !!entityHash
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
 	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
-	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity }))
+	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity, showPersonalBlock }))
 	document.body.appendChild(menu)
 	openMenuEl = menu
 
@@ -124,6 +125,20 @@ export async function showMemberContextMenu(event, memberEl) {
 		try {
 			await banMemberWithScope(hubStore.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settingsPage.banSuccess')
+			hubStore.currentState = await getGroupState(hubStore.currentGroupId)
+			void renderMemberList(hubStore.currentState)
+		}
+		catch (error) {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		}
+		closeOnce()
+	})
+	menu.querySelector('.hub-member-menu-personal-block')?.addEventListener('click', async () => {
+		if (!confirmI18n('chat.hub.memberCtx.personalBlockConfirm', { name: displayName })) return
+		const { postPersonalBlock } = await import('./personalFilter.mjs')
+		try {
+			await postPersonalBlock(entityHash, true)
+			showToastI18n('success', 'chat.hub.memberCtx.personalBlockSuccess')
 			hubStore.currentState = await getGroupState(hubStore.currentGroupId)
 			void renderMemberList(hubStore.currentState)
 		}

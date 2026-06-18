@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 
 import { isEntityHashBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { pickNodeScore, shouldHideAuthorByReputation } from '../../../../../../scripts/p2p/reputation.mjs'
 import { getUserDictionary } from '../../../../../../server/auth.mjs'
 import { canViewPost, listKnownTimelineOwners, loadViewerContext } from '../feedHelpers.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
@@ -38,12 +39,13 @@ export async function buildTrendingHashtags(username, options = {}) {
 
 	for (const entityHash of await listKnownTimelineOwners(username)) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked( entityHash)) continue
+		if (isEntityHashBlocked(entityHash)) continue
+		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue
 		if (!await timelineExists(username, entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		for (const post of view.posts) {
 			const enriched = { ...post, entityHash }
-			if (!canViewPost(enriched, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+			if (!canViewPost(enriched, viewerContext))
 				continue
 			if (post.content?.protected) continue
 			for (const tag of extractHashtagsFromText(post.content?.text))

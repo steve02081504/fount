@@ -1,6 +1,10 @@
 import { isEntityHashBlocked } from '../../../../../scripts/p2p/blocklist.mjs'
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
+import {
+	isAuthorFilteredByPersonalSets,
+} from '../../../../../scripts/p2p/personal_block.mjs'
+import { pickNodeScore, reputationSortPenalty, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation.mjs'
 
 import {
 	buildPostFeedItem,
@@ -21,6 +25,14 @@ import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
+ * @param {string} entityHash 作者实体
+ * @returns {boolean} 是否因信誉隐藏
+ */
+function isHiddenByAuthorReputation(entityHash) {
+	return shouldHideAuthorByReputation(entityHash, pickNodeScore)
+}
+
+/**
  * 解析并校验对观看者可见的帖子（含解密）。
  * @param {string} username 用户
  * @param {string} entityHash 作者
@@ -34,7 +46,7 @@ async function resolveVisiblePost(username, entityHash, postId, viewerContext) {
 	const post = view.postById?.[postId]
 	if (!post) return null
 	const enriched = { ...post, entityHash }
-	if (!canViewPost(enriched, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+	if (!canViewPost(enriched, viewerContext))
 		return null
 	return withDecryptedPostContent(username, entityHash, post)
 }
@@ -51,10 +63,7 @@ export async function buildHomeFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
 	const { following } = await loadFollowing(username)
 	const viewerContext = await loadViewerContext(username)
-	/** @type {Set<string>} */
 	const feedSources = new Set(following)
-	if (viewerContext.viewerEntityHash)
-		feedSources.add(viewerContext.viewerEntityHash.toLowerCase())
 
 	const engagement = await buildEngagementIndex(username, feedSources)
 	const viewerLiked = await buildViewerLikedSet(username)
@@ -66,14 +75,15 @@ export async function buildHomeFeed(username, options = {}) {
 	const streams = []
 	for (const entityHash of feedSources) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked( entityHash)) continue
+		if (isEntityHashBlocked(entityHash)) continue
+		if (isHiddenByAuthorReputation(entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (!view.posts?.length && !view.reposts?.length) continue
 		/** @type {object[]} */
 		const candidates = []
 		for (const post of view.posts) {
 			const enriched = { ...post, entityHash }
-			if (!canViewPost(enriched, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+			if (!canViewPost(enriched, viewerContext))
 				continue
 			candidates.push({
 				kind: 'post',
@@ -81,6 +91,7 @@ export async function buildHomeFeed(username, options = {}) {
 				postId: post.id,
 				post,
 				hlc: post.hlc,
+				repPenalty: reputationSortPenalty(entityHash, pickNodeScore),
 			})
 		}
 		for (const repost of view.reposts) {
@@ -95,6 +106,7 @@ export async function buildHomeFeed(username, options = {}) {
 				repost,
 				originalEntityHash,
 				originalPostId,
+				repPenalty: reputationSortPenalty(entityHash, pickNodeScore),
 			})
 		}
 		candidates.sort(compareFeedItems)
@@ -171,7 +183,7 @@ export async function buildProfileFeedItems(username, entityHash) {
 
 	for (const post of view.posts) {
 		const enriched = { ...post, entityHash }
-		if (!canViewPost(enriched, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+		if (!canViewPost(enriched, viewerContext))
 			continue
 		items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
 	}
@@ -193,7 +205,8 @@ export async function listReplies(username, entityHash, postId) {
 	const replies = []
 
 	for (const author of await listKnownTimelineOwners(username)) {
-		if (viewerContext.blocked.has(author)) continue
+		if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
+		if (isHiddenByAuthorReputation(author)) continue
 		const view = await getTimelineMaterialized(username, author)
 		if (!view.posts?.length) continue
 		for (const post of view.posts) {
@@ -201,7 +214,7 @@ export async function listReplies(username, entityHash, postId) {
 			if (!replyTo) continue
 			if (replyTo.entityHash?.toLowerCase() !== entityHash.toLowerCase()) continue
 			if (replyTo.postId !== postId) continue
-			if (!canViewPost({ ...post, entityHash: author }, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+			if (!canViewPost({ ...post, entityHash: author }, viewerContext))
 				continue
 			replies.push({ entityHash: author, post })
 		}

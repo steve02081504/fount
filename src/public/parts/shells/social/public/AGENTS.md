@@ -4,8 +4,9 @@
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Timeline ingress at `src/timeline/sync.mjs` (`ingestRemoteTimelineEvent`); social RPC ingress at `src/discovery.mjs` (`handleSocialRpc`); outbound filtering on federation pull in `src/timeline/federationExport.mjs`.
-- **Follow list**: no sidecar JSON; `following` is materialized from the operator timeline; reverse lookups use `{dataPath}/p2p/node/social/follower_index/buckets/{hexPrefix}.json` bucketed projection (LRU hot cache).
-- **Block**: node-level `{dataPath}/p2p/node/blocklist.json`, HTTP `/api/p2p/blocklist`.
+- **Follow list**: no sidecar JSON; `following` is materialized from the operator timeline (**implicit self-follow**); reverse lookups use `{dataPath}/p2p/node/social/follower_index/buckets/{hexPrefix}.json` bucketed projection (LRU hot cache).
+- **Personal block/hide** (per entity, Chat + Social shared): public `block`/`unblock` timeline events → `personal_block.json` index + reputation propagation; private `hide` → `personal_hide.json` only. **Group kick/ban** remains `blocklist.json` group scope + DAG governance (separate).
+- **Reputation consumption**: feed/search/trending filter or demote authors by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 
 ## UI conventions
 

@@ -5,10 +5,10 @@
  * @returns {number} 正数表示 left 更新
  */
 export function compareFeedItems(left, right) {
-	const leftWall = left.hlc.wall
-	const rightWall = right.hlc.wall
+	const leftWall = Number(left.hlc?.wall || 0) - Number(left.repPenalty || 0)
+	const rightWall = Number(right.hlc?.wall || 0) - Number(right.repPenalty || 0)
 	if (leftWall !== rightWall) return leftWall - rightWall
-	return left.postId.localeCompare(right.postId)
+	return String(left.postId).localeCompare(String(right.postId))
 }
 
 /**

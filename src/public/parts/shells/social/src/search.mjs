@@ -1,5 +1,6 @@
 import { isEntityHashBlocked } from '../../../../../scripts/p2p/blocklist.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
+import { pickNodeScore, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation.mjs'
 
 import {
 	buildPostFeedItem,
@@ -42,13 +43,14 @@ export async function searchPosts(username, options = {}) {
 	const items = []
 	for (const entityHash of await listKnownTimelineOwners(username)) {
 		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked( entityHash)) continue
+		if (isEntityHashBlocked(entityHash)) continue
+		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (!view.posts?.length) continue
 		for (const post of view.posts) {
 			if (!postMatchesQuery(post, query)) continue
 			const enriched = { ...post, entityHash }
-			if (!canViewPost(enriched, viewerContext.viewerEntityHash, viewerContext.blocked, viewerContext.following))
+			if (!canViewPost(enriched, viewerContext))
 				continue
 			items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
 		}

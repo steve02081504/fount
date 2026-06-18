@@ -3,6 +3,7 @@
  * 本地 agent 须实现 interfaces.social（见 lib/charSocial.mjs）。
  * Social 账号 = Chat 账号 = fount P2P 实体，无需单独注册。
  */
+import { pickNodeScore, SOCIAL_REP_HIDE_THRESHOLD } from '../../../../../scripts/p2p/reputation.mjs'
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
@@ -138,9 +139,11 @@ export async function dispatchPostMentions(posterUsername, authorEntityHash, pos
 	const authorLabel = await displayNameForEntity(authorEntityHash, posterUsername)
 	const replyTo = { entityHash: authorEntityHash, postId: post.id }
 	const lang = post.content?.lang || 'zh-CN'
+	const authorRep = pickNodeScore(authorEntityHash.slice(0, 64))
 
 	for (const targetHash of mentions) {
 		if (targetHash === authorEntityHash.toLowerCase()) continue
+		if (authorRep < SOCIAL_REP_HIDE_THRESHOLD) continue
 		applyMentionNetworkHint(posterUsername, targetHash)
 		const target = resolveSocialEntity(targetHash)
 		const local = await handleLocalAgentOnMention(target, {

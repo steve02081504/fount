@@ -9,6 +9,7 @@ import { mergeChannelMessagesForDisplay } from '../../src/lib/messageMerge.mjs'
 import { compareHex64Asc } from '../../src/lib/pubKeyHex.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
 import { hubStore } from '../core/state.mjs'
+import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'
 
 /**
  * @param {string | null} eventId 目标 eventId；null 清除
@@ -66,6 +67,7 @@ export function sortChannelRows(rows) {
  */
 export function refreshChannelMessagesView(messageTextFn = null) {
 	let work = applyChannelDisplayChain(hubStore.channelMessagesSource)
+	work = work.filter(row => !isHubMemberPersonallyFiltered('', row.authorPubKeyHash || row.sender))
 	const q = hubStore.channelSearchQuery
 	if (q && typeof messageTextFn === 'function')
 		work = work.filter(row => messageTextFn(row).toLowerCase().includes(q))
