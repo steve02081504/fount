@@ -42,20 +42,23 @@ T 'A state lists B in bannedMembers' {
 	[bool]$ok
 }
 
-Write-Host "`n=== 3. B cannot send; A roster on B ===" -ForegroundColor Cyan
-T 'B sends attempt event (local may accept)' {
-	Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 } | Out-Null
-	$r = Api $FedB POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'banned-attempt' } }
-	if ($r.status -ne 201) { return $false }
-	$script:bAttemptEventId = $r.json.event.id
-	[bool]$script:bAttemptEventId
+Write-Host "`n=== 3. B cannot send after ban; A roster clean ===" -ForegroundColor Cyan
+T 'B POST message rejected after ban sync (403 Not a member)' {
+	$ok = PollUntil 30 2 {
+		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
+		$r = Api $FedB POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'banned-attempt' } }
+		$r.status -eq 403
+	}
+	[bool]$ok
 }
-T 'A does not receive banned sender message' {
-	$ok = PollUntil 90 3 {
-		Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 6000 } | Out-Null
+T 'A channel has no banned-attempt message' {
+	$ok = PollUntil 30 3 {
+		Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
 		$m = Api $FedA GET "/groups/$gid/channels/$cid/messages?limit=80"
 		if ($m.status -ne 200) { return $false }
-		@($m.json.messages | Where-Object { $_.eventId -eq $script:bAttemptEventId }).Count -eq 0
+		@($m.json.messages | Where-Object {
+			$_.content.content -match 'banned-attempt'
+		}).Count -eq 0
 	}
 	[bool]$ok
 }

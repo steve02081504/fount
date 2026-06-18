@@ -57,8 +57,7 @@ Deno.test('encrypted followers post stays ciphertext in federation export', asyn
 	const cipherPost = all.find(e => e.type === 'post' && e.content?.scheme === 'gsh')
 	assert(cipherPost)
 	const exportedPost = exported.find(e => e.id === cipherPost.id)
-	if (exportedPost) {
-		assertEquals(exportedPost.content?.scheme, 'gsh')
-		assert(!exportedPost.content?.text, 'export must not leak plaintext')
-	}
+	assert(exportedPost, 'encrypted followers-only post is exported as ciphertext envelope')
+	assertEquals(exportedPost.content?.scheme, 'gsh')
+	assert(!exportedPost.content?.text, 'export must not leak plaintext')
 })

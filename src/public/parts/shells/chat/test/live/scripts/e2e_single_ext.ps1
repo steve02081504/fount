@@ -540,12 +540,13 @@ if ($agentChar) {
 		if (-not $ok) { throw 'agent member not visible after unban' }
 		$true
 	}
-	T 'POST members/:key/kick removes agent member' {
+	T 'POST members/:key/kick removes agent member (owner may kick own agent)' {
 		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
 		if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
 		$s = Api GET "/groups/$gid/state"
 		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
 	}
+	# 非管理员踢人（403）由 chat/test/authorize_governance.test.mjs 覆盖；单用户 live 无法构造无 ADMIN 且非 owner 的踢人场景。
 	# 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
 	T 'POST owner-succession (single admin → agent)' {
 		$og = Api POST '/groups/' @{ name = 'E2E-ext-os'; description = 'owner succession probe' }

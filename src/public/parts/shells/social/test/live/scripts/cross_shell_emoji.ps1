@@ -83,10 +83,8 @@ T 'B GET /emoji-content without group membership' {
 		$r = Api $FedB GET "/emoji-content/$gid/$emojiId"
 		$r.status -eq 200
 	}
-	if ($ok) { return $true }
-	# 私密群非成员联邦拉取偶发超时：回退校验 A 侧可读且 contentHash 已写入帖子
-	$a = Api $FedA GET "/emoji-content/$gid/$emojiId"
-	[bool]($a.status -eq 200 -and $script:postMediaRefs[0].contentHash)
+	if (-not $ok) { throw 'non-member B must resolve /emoji-content (not A-side fallback)' }
+	$true
 }
 T 'B GET /groups/:id/preview as non-member' {
 	$ok = PollUntil 90 4 {
