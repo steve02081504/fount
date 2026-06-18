@@ -162,6 +162,16 @@ T 'GET pow-challenge' {
 	$r = Api GET "/groups/$gid/pow-challenge"
 	$r.status -eq 200 -and [bool]$r.json.challenge
 }
+T 'POST join rejects invalid pow on pow-policy group' {
+	$pg = Api POST '/groups/' @{ name = 'E2E-pow'; description = 'pow join probe'; joinPolicy = 'pow' }
+	if ($pg.status -ne 201) { throw "create $($pg.status): $($pg.raw)" }
+	$pgid = $pg.json.groupId
+	$script:createdGroups += $pgid
+	$ch = Api GET "/groups/$pgid/pow-challenge"
+	if ($ch.status -ne 200) { throw "challenge $($ch.status)" }
+	$j = Api POST "/groups/$pgid/join" @{ pow = @{ challenge = $ch.json.challenge; nonce = 'bad'; solution = '0' } }
+	$j.status -ge 400
+}
 T 'POST invite-ticket' {
 	$r = Api POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }
 	if ($r.status -ne 201 -and $r.status -ne 200) { throw "status $($r.status): $($r.raw)" }

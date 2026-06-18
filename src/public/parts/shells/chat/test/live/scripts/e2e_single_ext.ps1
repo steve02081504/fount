@@ -540,6 +540,12 @@ if ($agentChar) {
 		if (-not $ok) { throw 'agent member not visible after unban' }
 		$true
 	}
+	T 'POST members/:key/kick removes agent member' {
+		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
+		if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
+		$s = Api GET "/groups/$gid/state"
+		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
+	}
 	# 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
 	T 'POST owner-succession (single admin → agent)' {
 		$og = Api POST '/groups/' @{ name = 'E2E-ext-os'; description = 'owner succession probe' }
@@ -569,8 +575,15 @@ if ($agentChar) {
 } else {
 	S 'agent member + ban/unban' 'no test char installed'
 }
-# fork/block-opposing 的纯逻辑（对立分支治理签发者识别、自身/共享祖先排除）由
-# chat/test/fork_block_opposing.test.mjs 覆盖；HTTP 层无法可靠构造带治理事件的多 tip 分叉。
+T 'POST fork/block-opposing with current tip (HTTP smoke)' {
+	$tips = Api GET "/groups/$gid/dag/tips"
+	if ($tips.status -ne 200) { throw "tips $($tips.status)" }
+	$tip = @($tips.json.tips)[0]
+	if (-not $tip) { throw 'no dag tip' }
+	$r = Api POST "/groups/$gid/fork/block-opposing" @{ acceptedTipId = $tip }
+	$r.status -eq 200 -and $null -ne $r.json
+}
+# fork/block-opposing 对立分支治理逻辑由 chat/test/fork_block_opposing.test.mjs 覆盖。
 
 # ---------------------------------------------------------------------------
 # Quarantine future-HLC 处置（message 类未来 HLC → quarantine）由
