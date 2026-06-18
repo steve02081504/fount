@@ -6,10 +6,15 @@
  * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道与管道上下文。
  * 【关联】hub 页面加载时调用；串联 messages、groupStream、hashNav、chat、presence、wireEvents。
  */
+import { mountDockedEmojiPicker } from '../../../../pages/scripts/emojiPicker.mjs'
+import { mountDockedStickerPicker } from '../../../../pages/scripts/stickerPicker.mjs'
 import { initTranslations } from '../../../../scripts/i18n.mjs'
 import { usingTemplates } from '../../../../scripts/template.mjs'
-import { setEmojiUrlResolver } from '../src/chatMarkdown.mjs'
+import { showToastI18n } from '../../../../scripts/toast.mjs'
+import { fetchStickerPayload } from '../providers/sticker.mjs'
+import { sendGroupMessage } from '../src/api/groupApi.mjs'
 import { applyChatRunUri, runUriFromPageLocation } from '../src/deepLinkConsume.mjs'
+import { setEmojiUrlResolver } from '../src/emojiCache.mjs'
 import { localeQueryString } from '../src/entityProfileApi.mjs'
 import { entityHashLabel } from '../src/lib/entityHash.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
@@ -21,7 +26,6 @@ import { wireHubBannerBindings } from './core/bindings.mjs'
 import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash, updateFriendsHash } from './core/urlHash.mjs'
-import { initEmojiStickerPickers } from './emojiSticker.mjs'
 import {
 	closeGroupWebSocket,
 	getActiveVolatileStreamIds,
@@ -45,7 +49,6 @@ import {
 	loadMessages,
 	scheduleChannelIncrementalRefresh,
 	scrollToBottom,
-	sendCurrentMessage,
 } from './messages/messages.mjs'
 import { setupMisc } from './misc.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
@@ -151,6 +154,123 @@ function emojiGetContext() {
 	return { groupId, channelId, privateGroupId }
 }
 
+/**
+ * @returns {typeof hubStore.groups} 已加入群列表
+ */
+function hubPickerGetGroups() {
+	return hubStore.groups
+}
+
+/**
+ * 构建表情选择器上下文（每次打开 picker 时刷新当前群）。
+ * @returns {{ groupId: string|null, getGroups: typeof hubPickerGetGroups }} 提供商上下文
+ */
+function hubEmojiPickerCtx() {
+	return {
+		groupId: emojiGetContext().groupId,
+		getGroups: hubPickerGetGroups,
+	}
+}
+
+/**
+ * 群表情长按：作为贴纸消息发送。
+ * @param {{ emojiRef?: string, emojiId?: string }} item - 选中的群表情。
+ * @returns {Promise<void>}
+ */
+async function sendPickedEmojiAsSticker(item) {
+	const { groupId, channelId } = emojiGetContext()
+	if (!groupId || !channelId) return
+	try {
+		await sendGroupMessage(groupId, channelId, {
+			type: 'sticker',
+			emojiRef: item.emojiRef,
+			stickerName: item.emojiId || 'emoji',
+		})
+		await loadMessages()
+	}
+	catch (err) {
+		showToastI18n('error', 'chat.hub.sendStickerFailed', { error: err.message })
+	}
+}
+
+/**
+ * 选中收藏贴纸并发送到当前频道。
+ * @param {{ stickerId?: string, stickerUrl?: string }} sticker - 贴纸条目。
+ * @returns {Promise<void>}
+ */
+async function sendPickedHubSticker(sticker) {
+	const { groupId, channelId } = emojiGetContext()
+	if (!groupId || !channelId) return
+	const { stickerId, stickerUrl } = sticker
+	try {
+		if (stickerUrl) {
+			const { stickerBase64, mimeType } = await fetchStickerPayload(stickerUrl)
+			await sendGroupMessage(groupId, channelId, {
+				type: 'sticker',
+				stickerId,
+				stickerName: stickerId,
+				mimeType,
+				stickerBase64,
+			})
+			const username = emojiGetUsername()
+			if (username)
+				void fetch(`/api/parts/shells:chat/stickers/recent/${encodeURIComponent(stickerId)}`, {
+					method: 'POST',
+					credentials: 'include',
+				})
+			await loadMessages()
+		}
+		else
+			showToastI18n('error', 'chat.hub.sendStickerFailed')
+	}
+	catch (err) {
+		showToastI18n('error', 'chat.hub.sendStickerFailed', { error: err.message })
+	}
+}
+
+/**
+ * 挂载 Hub 停靠式表情/贴纸选择器（共享 picker + Chat provider）。
+ * @returns {Promise<void>}
+ */
+async function wireHubPickers() {
+	const emojiPickerEl = document.getElementById('hub-emoji-picker')
+	const emojiTabsEl = document.getElementById('hub-emoji-tabs')
+	const emojiGridEl = document.getElementById('hub-emoji-grid')
+	const emojiButton = document.getElementById('hub-emoji-button')
+	const stickerPickerEl = document.getElementById('hub-sticker-picker')
+	const stickerGridEl = document.getElementById('hub-sticker-grid')
+	const stickerButton = document.getElementById('hub-sticker-button')
+	const messageInput = document.getElementById('hub-message-input')
+
+	if (emojiPickerEl && emojiTabsEl && emojiGridEl && emojiButton) 
+		await mountDockedEmojiPicker({
+			pickerEl: emojiPickerEl,
+			tabsEl: emojiTabsEl,
+			gridEl: emojiGridEl,
+			triggerBtn: emojiButton,
+			inputEl: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
+			closeWhenOpening: stickerPickerEl,
+			getCtx: hubEmojiPickerCtx,
+			/**
+			 *
+			 */
+			onInsert: () => {},
+			onSendAsSticker: sendPickedEmojiAsSticker,
+		})
+	
+
+	if (stickerPickerEl && stickerGridEl && stickerButton) 
+		await mountDockedStickerPicker({
+			pickerEl: stickerPickerEl,
+			gridEl: stickerGridEl,
+			triggerBtn: stickerButton,
+			closeWhenOpening: emojiPickerEl,
+			ctx: {},
+			onSelect: sendPickedHubSticker,
+		})
+	
+}
+
 /** @returns {Promise<void>} Hub 页面入口初始化 */
 export async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
@@ -214,14 +334,7 @@ export async function init() {
 
 	const messagesRoot = document.getElementById('hub-messages')
 	if (messagesRoot) bindChannelMessageActions(messagesRoot)
-	initEmojiStickerPickers({
-		getUsername: emojiGetUsername,
-		getContext: emojiGetContext,
-		/** @returns {typeof hubStore.groups} 已加入的群列表 */
-		getGroups: () => hubStore.groups,
-		sendMessage: sendCurrentMessage,
-		reloadMessages: loadMessages,
-	})
+	void wireHubPickers()
 	void syncTrustedAuthorsFromShell()
 	await wireCustomEmojiResolver()
 	await loadMe()

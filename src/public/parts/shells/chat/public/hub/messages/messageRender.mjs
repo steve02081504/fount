@@ -9,7 +9,6 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/template.mjs'
-import { preprocessChatMarkdown, resolveEmojiUrlBestEffort } from '../../src/chatMarkdown.mjs'
 import { processChatMarkdown } from '../../src/chatMarkdownConvertor.mjs'
 import { firstCustomEmojiRef } from '../../src/customEmojis.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../src/groupFileBlob.mjs'
@@ -703,11 +702,8 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	}
 
 	try {
-		const markdownWithEmojis = await preprocessChatMarkdown(raw, {
-			resolveEmojiUrl: resolveEmojiUrlBestEffort,
-		})
 		const html = await processChatMarkdown(
-			{ value: markdownWithEmojis, data: { cache: {} } },
+			{ value: raw, data: { cache: {} } },
 			trusted,
 		)
 		bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
