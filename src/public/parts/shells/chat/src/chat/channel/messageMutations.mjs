@@ -6,6 +6,7 @@
  * 【关联】dag/append、materialize、paths messagesPath；Hub messageActions。
  */
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { HEX_ID_64 as EVENT_ID_HEX } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'
@@ -13,7 +14,6 @@ import { readArchiveMonth } from '../archive/reader.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { messagesPath } from '../lib/paths.mjs'
 
 /**

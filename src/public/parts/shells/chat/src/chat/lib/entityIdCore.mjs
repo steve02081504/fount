@@ -2,7 +2,6 @@
  * entityHash 派生（Deno / 服务端）：与 `public/src/lib/entityId.mjs` 同源，使用相对路径引用 digest。
  */
 import { sha256Hex, sha256TextHex } from '../../../../../../pages/scripts/digest.mjs'
-
 import { isHex64, normalizeHex64 } from '../../../public/src/lib/pubKeyHex.mjs'
 
 const AGENT_SUBJECT_PREFIX = 'fount:chat:agent:'

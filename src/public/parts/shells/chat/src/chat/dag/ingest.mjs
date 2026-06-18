@@ -8,9 +8,9 @@
 import { isPubKeyHashBlocked } from '../../../../../../../scripts/p2p/blocklist.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { assertHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import {
 	federationIngestBlockedWithoutSnapshot,
 	shouldDeferFederatedRelay,

@@ -5,6 +5,9 @@ export {
 	isPlaceholderDisplayName,
 } from './presentation.mjs'
 
+/**
+ *
+ */
 export {
 	normalizeLocalizedMap,
 	applyAvatarToAllLocales,

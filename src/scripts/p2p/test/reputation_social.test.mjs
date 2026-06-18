@@ -7,12 +7,12 @@ import {
 	matchesPersonalListEntries,
 	normalizePersonalListEntries,
 } from '../personal_block.mjs'
-import { applyFollowedBlockSignal } from '../reputation_social.mjs'
 import {
 	createSocialTimelineState,
 	finalizeSocialTimelineView,
 	SOCIAL_TIMELINE_REDUCERS,
 } from '../reducers/social.mjs'
+import { applyFollowedBlockSignal } from '../reputation_social.mjs'
 
 const NODE_A = 'a'.repeat(64)
 const NODE_B = 'b'.repeat(64)
@@ -62,9 +62,9 @@ Deno.test('social reducer block and unblock materialize blocked list', () => {
 
 Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks symmetrically', async () => {
 	/** @type {import('../reputation_store.mjs').ReputationFile} */
-	let data = { byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] }
+	const data = { byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] }
 	/**
-	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn
+	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
 	 */
 	const mutate = async fn => {
 		await fn(data)
@@ -90,11 +90,14 @@ Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks
 
 Deno.test('applyFollowedBlockSignal dedupes repeated block from same follower', async () => {
 	/** @type {import('../reputation_store.mjs').ReputationFile} */
-	let data = {
+	const data = {
 		byNodeHash: { [NODE_A]: { score: 0.8 } },
 		wantUnknownHits: [],
 		relayBumpSeen: [],
 	}
+	/**
+	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
+	 */
 	const mutate = async fn => {
 		await fn(data)
 	}

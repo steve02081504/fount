@@ -14,10 +14,10 @@ process.on('uncaughtException', (err) => {
 	process.exit(1)
 })
 
+import { isNodeInitialized } from '../../../../../scripts/p2p/node/instance.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
-import { isNodeInitialized } from '../../../../../scripts/p2p/node/instance.mjs'
 
 /**
  * 设备信息类型

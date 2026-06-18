@@ -1,7 +1,7 @@
 /** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history_want。 */
+import { parsePullAttestation } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
-import { parsePullAttestation } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { EVENT_ID_HEX } from './registry.mjs'
 
 /**

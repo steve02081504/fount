@@ -1,3 +1,4 @@
+import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import {
 	handleFedArchiveMonthWant,
@@ -20,7 +21,6 @@ import {
 import { handleJoinSnapshotRequest } from '../joinSnapshot.mjs'
 import { bindFedSender } from '../outbound.mjs'
 import { noteJoinSnapshotResponse } from '../pull/joinSnapshotPick.mjs'
-import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 
 /**
  * bootstrap / join snapshot / discovery 中继 handler。

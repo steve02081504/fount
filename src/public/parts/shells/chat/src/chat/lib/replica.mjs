@@ -3,9 +3,9 @@
  * 【职责】replica 上下文与群成员 entityHash；用户 operator 见 server/p2p_server。
  */
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { isWritableLocalEntity } from '../../../../../../../scripts/p2p/entity/replica.mjs'
 import { encodeEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
-import { isWritableLocalEntity } from '../../../../../../../scripts/p2p/entity/replica.mjs'
 import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../../../../../../server/p2p_server/http_glue.mjs'
 import {
 	getOperatorEntityHash,

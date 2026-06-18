@@ -2,6 +2,7 @@ import {
 	addBlocklistEntry,
 	loadBlocklist,
 } from '../../scripts/p2p/blocklist.mjs'
+import { localesFromRequest } from '../../scripts/p2p/entity/presentation_registry.mjs'
 import {
 	computeEffectiveStatus,
 	ensureLocalEntityProfile,
@@ -18,7 +19,6 @@ import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_regis
 import '../../scripts/p2p/trust_graph.mjs'
 import { authenticate, getUserByReq } from '../auth.mjs'
 import { getReplicaFromReq, isWritableLocalEntityForUser } from '../p2p_server/http_glue.mjs'
-import { localesFromRequest } from '../../scripts/p2p/entity/presentation_registry.mjs'
 import {
 	getFederationViewForUser,
 	resolveOperatorEntityHashForUser,

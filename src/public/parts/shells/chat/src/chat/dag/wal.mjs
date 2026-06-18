@@ -7,9 +7,9 @@
  */
 import { isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents, hasDanglingParents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 
 

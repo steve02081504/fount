@@ -8,6 +8,7 @@
 import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import {
 	applyDecayCollusionAfterSlash,
 	applyReputationResetToScores,
@@ -21,7 +22,6 @@ import {
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
 import { applyChannelKeyRotateEvent } from '../channel_keys/store.mjs'
 import { getEventReceivedAt } from '../events/meta.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { onMqttCredentialsSyncedFromDag, mqttCredentialsFromGroupSettings } from '../federation/mqttCredentials.mjs'
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'

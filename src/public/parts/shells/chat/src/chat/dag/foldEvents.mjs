@@ -2,11 +2,11 @@
  * DAG 过程事件折叠：删除可折叠类型；已归档 message 可选删除。
  */
 import { rewriteJsonlKeeping } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { invalidateTopologicalOrderMemo } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
 import { allProtectedHotEventIds } from '../archive/hotPosts.mjs'
 import { archivedMessageIdSet, loadArchiveManifest } from '../archive/index.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 /**

@@ -5,8 +5,8 @@ import { randomUUID } from 'node:crypto'
 
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from '../../../../../../../scripts/p2p/key_crypto.mjs'
-import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
+import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {

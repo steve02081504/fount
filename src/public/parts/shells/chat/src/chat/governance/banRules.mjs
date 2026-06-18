@@ -5,10 +5,9 @@
  * 【数据结构】BanScope entity|node；content 含 targetMemberKey、targetEntityHash/targetNodeHash；state.bannedMembers/Entities/Nodes 为 Set。
  * 【关联】dag/authorizeEvent、peers.mjs、blocklist.mjs、entityId.mjs；scripts/p2p/event_types。
  */
-import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128, memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveTargetMemberKey } from '../../../../../../../scripts/p2p/reducers/chat/helpers.mjs'
-import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 
 /** @typedef {'entity' | 'node'} BanScope */
 

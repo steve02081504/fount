@@ -1,15 +1,15 @@
 /**
  * 联邦补拉 HPKE 响应构建与应用。
  */
+import { verifyRemoteCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { invalidateTopologicalOrderMemo } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
 import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { mergeRemoteArchiveManifestHints } from '../archive/index.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { mergeChannelHistories } from '../dag/queries.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { applyFileKeyGrant, buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
-import { verifyRemoteCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 

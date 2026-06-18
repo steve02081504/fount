@@ -2,8 +2,9 @@
  * 服务端好友绑定（与 `public/src/friendBinding.mjs` 同源，digest 走 entityIdCore）。
  */
 import { isEntityHash128 } from '../../../public/src/lib/entityHash.mjs'
-import { agentEntityHash, userEntityHashFromPubKeyHex } from './entityIdCore.mjs'
 import { isHex64, normalizeHex64 } from '../../../public/src/lib/pubKeyHex.mjs'
+
+import { agentEntityHash, userEntityHashFromPubKeyHex } from './entityIdCore.mjs'
 
 /**
  * @typedef {object} FriendBinding

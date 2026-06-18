@@ -4,9 +4,9 @@
 import { mkdir } from 'node:fs/promises'
 
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeAppendHlcAndPrev } from '../../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 

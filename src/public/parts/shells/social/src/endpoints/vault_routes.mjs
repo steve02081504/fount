@@ -1,9 +1,10 @@
-import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { cacheTranslation, getCachedTranslation, translatePostText } from '../translate.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../vault.mjs'
+
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 
 /**
  * 注册翻译与 vault 文件相关路由。

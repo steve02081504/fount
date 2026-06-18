@@ -1,8 +1,8 @@
-import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 
 import { getEntityProfile } from './feed.mjs'
 import { listKnownTimelineOwners } from './feedHelpers.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**

@@ -8,11 +8,11 @@
  */
 import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { GOVERNANCE_AUTHZ_TYPES } from '../../../../../../scripts/p2p/event_types.mjs'
 import { authzFoldOrderIds } from '../../../../../../scripts/p2p/governance_branch.mjs'
 
 import { getState } from './dag/materialize.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from './lib/paths.mjs'
 
 /** 管理员审计日志包含的 DAG 类型（治理 + 常见 moderation）。 */

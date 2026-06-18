@@ -1,4 +1,5 @@
 import dns from 'node:dns'
+import os from 'node:os'
 
 import { config } from '../server/server.mjs'
 
@@ -28,17 +29,18 @@ export function is_local_ip_from_req(req) {
 	return is_local_ip(req.ip)
 }
 
-/* global Deno */
 /**
  * 获取本地 IP 地址。
  * @returns {string|undefined} 本地 IP 地址，如果找不到则返回 undefined。
  */
 export function get_local_ip() {
-	const interfaces = Deno.networkInterfaces()
+	const interfaces = Object.entries(os.networkInterfaces()).flatMap(([name, addrs]) =>
+		(addrs ?? []).filter(a => !a.internal).map(a => ({ name, family: a.family, address: a.address })),
+	)
 	return (
-		interfaces.find(i => i.family == 'IPv4' && i.name == 'WLAN') ||
-		interfaces.find(i => i.family == 'IPv4' && i.name == 'eth0') ||
-		interfaces.find(i => i.family == 'IPv4') ||
+		interfaces.find(i => i.family === 'IPv4' && i.name === 'WLAN') ||
+		interfaces.find(i => i.family === 'IPv4' && i.name === 'eth0') ||
+		interfaces.find(i => i.family === 'IPv4') ||
 		0)?.address
 }
 

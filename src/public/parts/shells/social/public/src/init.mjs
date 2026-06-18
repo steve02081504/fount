@@ -1,4 +1,3 @@
-
 import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,

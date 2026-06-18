@@ -1,12 +1,12 @@
 /**
  * 联邦群发现 gossip：discovery_announce / discovery_query。
  */
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import {
 	buildDiscoveryQueryResponse,
 	buildSignedDiscoveryAdvertisement,
 	mergeDiscoveryAdvertisement,
 } from '../discovery/index.mjs'
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { loadFederationGroupSettings } from './deps.mjs'

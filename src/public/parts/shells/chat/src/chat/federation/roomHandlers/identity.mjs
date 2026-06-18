@@ -1,5 +1,6 @@
 import { buildIdentityAnnounce, verifyIdentityAnnounce } from '../../../../../../../../scripts/p2p/identity_announce.mjs'
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
+import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import {
 	isFederationActionAllowedUnderLoad,
@@ -8,7 +9,6 @@ import {
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { loadFederationGroupSettings } from '../deps.mjs'
 import {
 	shouldDropPartitionBridgeUnderLoad,

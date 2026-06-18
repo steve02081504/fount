@@ -13,6 +13,7 @@
 
 
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
+import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
@@ -22,9 +23,7 @@ import {
 } from '../dag/hydration.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { getLocalNodeHash } from '../lib/replica.mjs'
-import { getOperatorEntityHash } from '../lib/replica.mjs'
+import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
 
 import { getMaterializedSession } from './dagSession.mjs'
 import {

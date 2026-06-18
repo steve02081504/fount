@@ -2,6 +2,10 @@
  * 群 persona 变更后同步 entity profile（Chat 专用）。
  */
 import {
+	getProfile,
+	updateProfile,
+} from '../../../../../../scripts/p2p/entity/profile.mjs'
+import {
 	getInfoDefaultsForEntity,
 	normalizeLocalizedMap,
 } from '../../../../../../server/p2p_server/localized.mjs'
@@ -9,10 +13,6 @@ import {
 	isPlaceholderDisplayName,
 	resolvePersonaPresentation,
 } from '../../../../../../server/p2p_server/persona_presentation.mjs'
-import {
-	getProfile,
-	updateProfile,
-} from '../../../../../../scripts/p2p/entity/profile.mjs'
 import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/replica.mjs'
 
 /**
