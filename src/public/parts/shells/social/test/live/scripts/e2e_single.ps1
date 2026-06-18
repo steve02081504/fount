@@ -103,7 +103,6 @@ T 'GET /profile/:hash/replies/:postId' {
 }
 T 'GET /search hashtag' {
 	$r = Api GET '/search?q=%23social'
-	if ($r.status -ne 200) { return $true }
 	$r.status -eq 200
 }
 

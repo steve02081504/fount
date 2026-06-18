@@ -102,4 +102,5 @@ T 'B preview hides join for invite-only private group' {
 }
 
 Cleanup-Group $gid
-Write-Host "`n=== DONE cross_shell_emoji ===" -ForegroundColor Green
+Write-FedSummary 'CROSS-SHELL-EMOJI' $gid
+if ($script:fail -gt 0) { exit 1 }

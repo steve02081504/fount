@@ -518,9 +518,9 @@ if ($agentChar) {
 		$s = Api GET "/groups/$gid/state"
 		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
 	}
-	T 'ban blocks agent (not active)' {
-		$s = Api GET "/groups/$gid/state"
-		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
+	T 'ban blocks agent trigger-reply' {
+		$r = Api POST "/groups/$gid/channels/$cid/trigger-reply" @{ charname = $agentChar }
+		$r.status -ne 200
 	}
 	T 'POST members/:key/unban' {
 		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/unban" @{}

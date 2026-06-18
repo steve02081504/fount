@@ -24,15 +24,15 @@ T 'A POST members/:hash/ban entity' {
 	$true
 }
 T 'B catchup receives ban (block grace window)' {
-	$r = Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 }
-	if ($r.status -eq 200) {
-		if ([int]$r.json.eventsFilled -gt 0) { return $true }
+	$ok = PollUntil 60 3 {
+		$r = Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 }
+		if ($r.status -ne 200) { return $false }
+		$s = Api $FedB GET "/groups/$gid/state"
+		if ($s.status -ne 200) { return $false }
+		@($s.json.state.bannedMembers | Where-Object { $_.pubKeyHash -eq $script:bPub }).Count -ge 1
 	}
-	$ev = Api $FedA GET "/groups/$gid/events?limit=30"
-	$banEv = @($ev.json.events | Where-Object { $_.type -eq 'member_ban' })[0]
-	if (-not $banEv) { throw 'no member_ban on A' }
-	$ing = Api $FedB POST "/groups/$gid/events" @{ events = @($banEv) }
-	$ing.status -eq 200
+	if (-not $ok) { throw 'B must receive member_ban via federation catchup (no manual A-side inject)' }
+	$true
 }
 T 'A state lists B in bannedMembers' {
 	$ok = PollUntil 30 2 {
@@ -76,3 +76,4 @@ T 'A can still send after ban' {
 
 Cleanup-Group $gid
 Write-FedSummary 'FED-BAN' $gid
+if ($script:fail -gt 0) { exit 1 }

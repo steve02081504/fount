@@ -64,7 +64,13 @@ Deno.test('member_kick allowed when owner kicks own agent', () => {
 	assertEquals(checkEventPermission(state, event, OWNER).ok, true)
 })
 
-Deno.test('member_kick denied when non-owner kicks another member agent', () => {
+Deno.test('member_kick allowed when moderator with KICK_MEMBERS kicks another owner agent', () => {
+	const state = baseState()
+	const event = { type: 'member_kick', content: { targetMemberKey: AGENT_KEY } }
+	assertEquals(checkEventPermission(state, event, MODERATOR).ok, true)
+})
+
+Deno.test('member_kick denied when non-owner without KICK_MEMBERS kicks agent', () => {
 	const state = baseState({
 		members: {
 			...baseState().members,

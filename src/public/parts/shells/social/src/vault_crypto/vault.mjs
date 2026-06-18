@@ -101,6 +101,7 @@ export async function maybeEncryptPostContent(username, entityHash, postKeyId, c
 		scheme: GSH_SCHEME,
 		postKeyId,
 		generation: 0,
+		visibility: 'followers',
 		...encrypted,
 	}
 }

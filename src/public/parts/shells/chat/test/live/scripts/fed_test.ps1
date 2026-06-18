@@ -183,3 +183,4 @@ Write-Host ("catchup(A1->B): " + $(if ($gotA1) { 'PASS' } else { 'FAIL' }))
 Write-Host ("live(B1->A):    " + $(if ($gotB1) { 'PASS' } else { 'FAIL' }))
 
 Cleanup-FedTestGroups @($A, $B) $groupId
+if (-not $gotA1 -or -not $gotB1) { exit 1 }

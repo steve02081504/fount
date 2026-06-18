@@ -40,7 +40,7 @@ Deno.test('buildFollowApprovePayload + autoApproveFollower emits follow_approve'
 	assertEquals(ev.content.targetPubKeyHex, followerPubKeyHex)
 })
 
-Deno.test('encrypted followers post stays ciphertext in federation export', async () => {
+Deno.test('encrypted followers post hidden from anonymous federation pull', async () => {
 	const postKeyId = randomUUID()
 	const enc = await vault.maybeEncryptPostContent(
 		username, operator, postKeyId,
@@ -56,8 +56,31 @@ Deno.test('encrypted followers post stays ciphertext in federation export', asyn
 	const exported = await fedExport.filterEventsForFederatedPull(username, operator, all, null)
 	const cipherPost = all.find(e => e.type === 'post' && e.content?.scheme === 'gsh')
 	assert(cipherPost)
+	assertEquals(cipherPost.content?.visibility, 'followers')
 	const exportedPost = exported.find(e => e.id === cipherPost.id)
-	assert(exportedPost, 'encrypted followers-only post is exported as ciphertext envelope')
+	assert(!exportedPost, 'followers-only encrypted post must not export to anonymous requester')
+})
+
+Deno.test('encrypted followers post exports ciphertext to owner pull', async () => {
+	const postKeyId = randomUUID()
+	const enc = await vault.maybeEncryptPostContent(
+		username, operator, postKeyId,
+		{ text: 'owner pull cipher', visibility: 'followers' },
+		'followers',
+	)
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: enc,
+	}, { fanout: false })
+
+	const all = await append.readTimelineEvents(username, operator)
+	const { getNodeHash } = await import('../../../../../scripts/p2p/node/identity.mjs')
+	const exported = await fedExport.filterEventsForFederatedPull(username, operator, all, getNodeHash())
+	const cipherPost = all.find(e => e.type === 'post' && e.content?.postKeyId === postKeyId)
+	assert(cipherPost)
+	const exportedPost = exported.find(e => e.id === cipherPost.id)
+	assert(exportedPost, 'owner pull should receive followers ciphertext envelope')
 	assertEquals(exportedPost.content?.scheme, 'gsh')
+	assertEquals(exportedPost.content?.visibility, 'followers')
 	assert(!exportedPost.content?.text, 'export must not leak plaintext')
 })
