@@ -7,6 +7,27 @@ import { getTimelineMaterialized } from './materialize.mjs'
 import { listLocalEntitiesForNode } from './ownerIndex.mjs'
 
 /**
+ * federation_visibility 使用的 (post, requesterEntityHash, blocked, following) 形状适配。
+ * @param {object} post 帖子视图
+ * @param {string | null} requesterEntityHash 请求者 entityHash
+ * @param {Set<string>} blocked 个人拉黑集合
+ * @param {Set<string>} following 请求者关注集合
+ * @returns {boolean} 是否可见
+ */
+function canViewPostForFederationExport(post, requesterEntityHash, blocked, following) {
+	return canViewPost(post, {
+		viewerEntityHash: requesterEntityHash,
+		following,
+		personalFilter: {
+			blockedEntityHashes: blocked,
+			blockedSubjects: new Set(),
+			hiddenEntityHashes: new Set(),
+			hiddenSubjects: new Set(),
+		},
+	})
+}
+
+/**
  * @param {string} username replica
  * @param {string | null | undefined} requesterNodeHash 64 hex
  * @param {string} ownerEntityHash 时间线 owner
@@ -58,5 +79,5 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 export async function filterEventsForFederatedPull(username, ownerEntityHash, events, requesterNodeHash) {
 	const owner = String(ownerEntityHash).toLowerCase()
 	const requesterContext = await resolveFederationRequesterContext(username, requesterNodeHash, owner)
-	return filterTimelineEventsForFederation(events, owner, requesterContext, canViewPost)
+	return filterTimelineEventsForFederation(events, owner, requesterContext, canViewPostForFederationExport)
 }
