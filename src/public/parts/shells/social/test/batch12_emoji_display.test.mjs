@@ -4,10 +4,28 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { scanEmojiTokens } from '../src/lib/emojiPostEmbed.mjs'
+import { buildEmojiMediaRefsForPost, scanEmojiTokens } from '../src/lib/emojiPostEmbed.mjs'
 
 Deno.test('batch12: post with emoji token yields media ref candidates', () => {
 	const refs = scanEmojiTokens('see :[privateGroup/customEmoji]: here')
 	assertEquals(refs[0]?.groupId, 'privateGroup')
 	assertEquals(refs[0]?.emojiId, 'customEmoji')
+})
+
+Deno.test('batch12: buildEmojiMediaRefsForPost empty when no emoji tokens', async () => {
+	const mediaRefs = await buildEmojiMediaRefsForPost('user', 'plain text without tokens')
+	assertEquals(mediaRefs, [])
+})
+
+Deno.test('batch12: feed mediaRef shape for groupEmoji embed', () => {
+	const contentHash = 'a'.repeat(64)
+	const refs = scanEmojiTokens(':[g1/e1]:')
+	const mediaRefs = refs.map(({ groupId, emojiId }) => ({
+		kind: 'groupEmoji',
+		groupId,
+		emojiId,
+		contentHash,
+	}))
+	assertEquals(mediaRefs[0].kind, 'groupEmoji')
+	assertEquals(mediaRefs[0].contentHash.length, 64)
 })

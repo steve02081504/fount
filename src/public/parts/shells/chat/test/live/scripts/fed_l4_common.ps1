@@ -2,14 +2,15 @@
 # Dot-source from fed_dm.ps1, fed_archive_month.ps1, etc.
 
 $script:FedA = @{
-	base = 'http://localhost:8931'
+	base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { 'http://localhost:8931' })
 	key = $env:FOUNT_API_KEY
 	name = 'A'
 	dataPath = $(if ($env:FOUNT_NODE_A_DATA) { $env:FOUNT_NODE_A_DATA } else { Join-Path $PSScriptRoot '../data' })
 }
+$nodeBPort = $(if ($env:FOUNT_TEST_NODE_B_PORT) { $env:FOUNT_TEST_NODE_B_PORT } else { '8932' })
 $script:FedB = @{
-	base = 'http://localhost:8932'
-	key = 'nodeb-fed-test-key-20260614'
+	base = "http://localhost:$nodeBPort"
+	key = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY } else { "nodeb-fed-test-key-$nodeBPort" })
 	name = 'B'
 	dataPath = $(if ($env:FOUNT_NODE_B_DATA) { $env:FOUNT_NODE_B_DATA } else { Join-Path $PSScriptRoot 'node_b_data' })
 }

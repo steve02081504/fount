@@ -13,3 +13,9 @@ Deno.test('computeEmojiContentHash is deterministic for CAS keys', () => {
 	assertEquals(a, b)
 	assertEquals(a.length, 64)
 })
+
+Deno.test('computeEmojiContentHash differs for different payloads', () => {
+	const a = computeEmojiContentHash(Buffer.from('payload-a'))
+	const b = computeEmojiContentHash(Buffer.from('payload-b'))
+	assertEquals(a === b, false)
+})

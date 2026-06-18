@@ -1,16 +1,18 @@
 /**
  * 群表情内容解析：支持非成员按 contentHash 就近复用（CAS + 联邦）。
  */
-import { fetchChunk } from '../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { Buffer } from 'node:buffer'
-import { ensureFederationRoom } from '../../chat/federation/room.mjs'
+
+import { fetchChunk } from '../../../../../../scripts/p2p/files/chunk_fetch.mjs'
+import { ensureFederationRoom } from '../chat/federation/room.mjs'
+
 import {
 	computeEmojiContentHash,
 	getGroupEmojiEntry,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
 	storeEmojiInCas,
-} from '../groupEmojis.mjs'
+} from './groupEmojis.mjs'
 
 /**
  * @param {string} username 用户

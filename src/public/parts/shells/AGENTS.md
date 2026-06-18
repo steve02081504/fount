@@ -14,7 +14,7 @@
 - `src/`: Backend logic.
   - `endpoints.mjs`: Define routes using `router.get/post/ws`. Path format: `/api/parts/shells\\:<name>/...`.
   - **HTTP API**: Success = 2xx JSON body without a `success` wrapper; expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs` (global `errorHandler` uses `err.http_code` / `err.json`). Avoid route-level try/catch that only maps errors to 500.
-- `home_registry.json`: Registers the shell on the Home page.
+- **`fount.json` → `registries`**: Declare part-relative entries `{ id, level, path }` for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`, etc. Consumed via `GET /api/registries/:name` and `@src/public/pages/scripts/registries.mjs` (frontend) / `@src/server/registries.mjs` (backend). Legacy `home_registry.json` files remain valid as registry `path` targets until fully split.
 
 ## 3. Implementation Checklist
 

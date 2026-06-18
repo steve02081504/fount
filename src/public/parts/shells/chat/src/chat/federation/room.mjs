@@ -12,8 +12,8 @@ import { loadFederationGroupSettings, federationNodeHash, requireDagDeps } from 
 import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
-import { attachFedEmojiHandlers } from './groupEmojiFederation.mjs'
 import { attachFedGroupCardHandlers } from './groupCardFederation.mjs'
+import { attachFedEmojiHandlers } from './groupEmojiFederation.mjs'
 import { resolveGroupMqttCredentials } from './mqttCredentials.mjs'
 import { createFedOutQueue } from './outbound.mjs'
 import { LOGIC_SYNC_PARTITION, partitionForOutboundEvent, resolveNodePartitionIds } from './partitions.mjs'
@@ -284,6 +284,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				peerToNode,
 				isBlockedPeer,
 				slot,
+				senderRegistry,
+				wireActions,
 			})
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {

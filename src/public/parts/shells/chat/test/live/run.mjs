@@ -97,8 +97,11 @@ async function runSuite(suiteName) {
 			FOUNT_NODE_A_DATA: nodeA.dataPath,
 			FOUNT_TEST_BASE_URL: nodeA.baseUrl,
 		}
-		if (nodes[1])
+		if (nodes[1]) {
 			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
+			env.FOUNT_TEST_NODE_B_PORT = String(nodes[1].port)
+			env.FOUNT_TEST_NODE_B_KEY = nodes[1].apiKey
+		}
 
 		if (spec.fed) {
 			const pre = await runCommand(['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_cleanup.ps1')], env)

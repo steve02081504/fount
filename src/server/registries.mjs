@@ -48,7 +48,7 @@ export function resolveRegistryPathToFs(username, partpath, relativePath) {
  * @param {Array<{ id: string, level: number, path: string, partpath: string }>} rawEntries
  * @returns {Array<{ id: string, level: number, path: string, partpath: string }>}
  */
-function dedupeAndSortRegistryEntries(rawEntries) {
+export function dedupeAndSortRegistryEntries(rawEntries) {
 	/** @type {Map<string, { id: string, level: number, path: string, partpath: string }>} */
 	const byId = new Map()
 	for (const entry of rawEntries)

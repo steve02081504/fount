@@ -1,11 +1,13 @@
 /**
  * 非成员群预览：本地 state → discovery 索引 → 联邦 fed_group_card_want。
  */
-import { resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
 import { loadDiscoveryIndex } from '../chat/discovery/index.mjs'
 import { requestGroupCardFromPeers } from '../chat/federation/groupCardFederation.mjs'
 import { ensureFederationRoom } from '../chat/federation/room.mjs'
+
+import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
+import { assembleGroupPreviewCard } from './groupPreviewCard.mjs'
 
 /**
  * @param {string} username 用户
@@ -23,45 +25,23 @@ export async function buildGroupPreview(username, groupId) {
 	const memberKey = state
 		? await resolveActiveMemberKeyForLocalUser(username, groupId, state).catch(() => null)
 		: null
-	const isMember = Boolean(memberKey)
-	const joinPolicy = state?.groupSettings?.joinPolicy || 'invite-only'
-	const discoveryPublic = Boolean(state?.groupSettings?.discoveryPublic)
 
-	let title = state?.groupMeta?.name || state?.groupSettings?.discoveryTitle || ''
-	let blurb = state?.groupMeta?.description || state?.groupSettings?.discoveryBlurb || ''
-	let found = Boolean(title || blurb)
+	const hasLocalText = Boolean(
+		state?.groupMeta?.name || state?.groupSettings?.discoveryTitle
+		|| state?.groupMeta?.description || state?.groupSettings?.discoveryBlurb,
+	)
 
-	if (!found) {
+	let discoveryEntry = null
+	if (!hasLocalText) {
 		const index = await loadDiscoveryIndex(username)
-		const entry = index.entries.find(e => e.groupId === groupId)
-		if (entry) {
-			title = entry.title || title
-			blurb = entry.blurb || blurb
-			found = true
-		}
+		discoveryEntry = index.entries.find(e => e.groupId === groupId) || null
 	}
 
-	if (!found) {
+	let remote = null
+	if (!hasLocalText && !discoveryEntry) {
 		const slot = await ensureFederationRoom(username, groupId).catch(() => null)
-		const remote = slot ? await requestGroupCardFromPeers(username, groupId, slot) : null
-		if (remote) {
-			title = remote.title || title
-			blurb = remote.blurb || blurb
-			found = true
-		}
+		remote = slot ? await requestGroupCardFromPeers(username, groupId, slot) : null
 	}
 
-	const canJoin = !isMember && (discoveryPublic || joinPolicy === 'open' || joinPolicy === 'pow')
-
-	return {
-		groupId,
-		title: title || groupId,
-		blurb: blurb || '',
-		icon: null,
-		joinPolicy,
-		isMember,
-		canJoin,
-		hubUrl: `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:default`,
-		found,
-	}
+	return assembleGroupPreviewCard({ groupId, state, discoveryEntry, remote, memberKey })
 }

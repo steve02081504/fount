@@ -14,14 +14,27 @@ import { launchNode, stopNode } from '../../../../../../../.github/workflows/tes
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCRIPTS = join(__dirname, 'scripts')
+const CHAT_SCRIPTS = join(__dirname, '../../../chat/test/live/scripts')
 const REPO_ROOT = resolve(__dirname, '../../../../../../../')
 
-const NODE_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
+const NODE_A_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
+const NODE_B_PORT = Number(process.env.FOUNT_TEST_NODE_B_PORT) || NODE_A_PORT + 1
 
-/** @type {Record<string, { run: string[] }>} */
+const NODE_A = {
+	port: NODE_A_PORT,
+	username: 'CI-user',
+	apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-social-key-${NODE_A_PORT}`,
+}
+const NODE_B = {
+	port: NODE_B_PORT,
+	username: 'nodeb',
+	apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${NODE_B_PORT}`,
+}
+
+/** @type {Record<string, { fed?: boolean, run: string[] }>} */
 const SUITES = {
 	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')] },
-	cross_shell_emoji: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'cross_shell_emoji.ps1')] },
+	cross_shell_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'cross_shell_emoji.ps1')] },
 	ws_test: { run: ['node', join(SCRIPTS, 'ws_test.mjs')] },
 }
 
@@ -56,21 +69,35 @@ async function runSuite(suiteName) {
 	/** @type {Awaited<ReturnType<typeof launchNode>>[]} */
 	const nodes = []
 	try {
-		nodes.push(await launchNode({
-			port: NODE_PORT,
-			username: 'CI-user',
-			apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-social-key-${NODE_PORT}`,
-		}))
+		nodes.push(await launchNode(NODE_A))
+		if (spec.fed)
+			nodes.push(await launchNode(NODE_B))
 
-		const node = nodes[0]
+		const nodeA = nodes[0]
 		const env = {
-			FOUNT_API_KEY: node.apiKey,
-			FOUNT_TEST_BASE_URL: node.baseUrl,
+			FOUNT_API_KEY: nodeA.apiKey,
+			FOUNT_NODE_A_DATA: nodeA.dataPath,
+			FOUNT_TEST_BASE_URL: nodeA.baseUrl,
+		}
+		if (nodes[1]) {
+			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
+			env.FOUNT_TEST_NODE_B_PORT = String(nodes[1].port)
+			env.FOUNT_TEST_NODE_B_KEY = nodes[1].apiKey
+		}
+
+		if (spec.fed) {
+			const pre = await runCommand(['pwsh', '-NoProfile', '-File', join(CHAT_SCRIPTS, 'fed_cleanup.ps1')], env)
+			if (pre.code !== 0) console.warn('fed_cleanup pre:', pre.output)
 		}
 
 		console.log(`\n=== SUITE ${suiteName} ===`)
 		const result = await runCommand(spec.run, env)
 		if (result.output) console.log(result.output)
+
+		if (spec.fed) {
+			const post = await runCommand(['pwsh', '-NoProfile', '-File', join(CHAT_SCRIPTS, 'fed_cleanup.ps1')], env)
+			if (post.code !== 0) console.warn('fed_cleanup post:', post.output)
+		}
 
 		if (result.code !== 0) return result.code
 		if (/\bFAIL:\s|FAIL=(\d+)/.test(result.output)) {

@@ -5,10 +5,19 @@
 			"run": [
 				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
 				"--ignore=src/public/parts/shells/social/test/live",
-				"./src/public/parts/shells/social/test/"
+				"./src/public/parts/shells/social/test/",
+				"./src/test/registries.test.mjs",
+				"./src/test/pickers.test.mjs"
 			],
 			"triggers": [
-				"src/public/parts/shells/social/**"
+				"src/public/parts/shells/social/**",
+				"src/server/registries.mjs",
+				"src/public/pages/scripts/registries.mjs",
+				"src/public/pages/scripts/emojiPicker.mjs",
+				"src/public/pages/scripts/stickerPicker.mjs",
+				"src/public/pages/scripts/markdownExtensions.mjs",
+				"src/test/registries.test.mjs",
+				"src/test/pickers.test.mjs"
 			]
 		},
 		{
@@ -41,7 +50,12 @@
 			],
 			"triggers": [
 				"src/public/parts/shells/social/**",
-				"src/public/parts/shells/chat/public/markdown_ext/**"
+				"src/public/parts/shells/chat/public/markdown_ext/**",
+				"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+				"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
+				"src/server/registries.mjs",
+				"src/public/pages/scripts/registries.mjs",
+				"src/public/pages/scripts/emojiPicker.mjs"
 			]
 		}
 	]
