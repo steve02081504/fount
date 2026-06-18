@@ -25,6 +25,29 @@ import { pushFeedUpdate } from '../ws/feedHub.mjs'
  * @returns {void}
  */
 export function registerProfileRoutes(router) {
+	router.get('/api/parts/shells\\:social/profile/personal-lists', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const operator = await resolveOperatorEntityHash(username)
+		let actingEntity = operator
+		const requestedActor = String(req.query?.actingEntityHash || '').trim().toLowerCase()
+		if (requestedActor) {
+			const resolved = await resolveSocialEntity(requestedActor, username)
+			if (!resolved?.local || resolved.replicaUsername !== username)
+				return res.status(403).json({ error: 'invalid actingEntityHash' })
+			actingEntity = resolved.entityHash
+		}
+		if (!actingEntity)
+			return res.status(200).json({ blockedEntityHashes: [], blockedSubjects: [], hiddenEntityHashes: [], hiddenSubjects: [] })
+		const { loadPersonalFilterSets } = await import('../../../../../../scripts/p2p/personal_block.mjs')
+		const sets = await loadPersonalFilterSets(actingEntity)
+		res.status(200).json({
+			blockedEntityHashes: [...sets.blockedEntityHashes],
+			blockedSubjects: [...sets.blockedSubjects],
+			hiddenEntityHashes: [...sets.hiddenEntityHashes],
+			hiddenSubjects: [...sets.hiddenSubjects],
+		})
+	})
+
 	router.get('/api/parts/shells\\:social/profile/:entityHash', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const entityHash = String(req.params.entityHash).toLowerCase()
@@ -73,12 +96,12 @@ export function registerProfileRoutes(router) {
 	router.post('/api/parts/shells\\:social/profile/post', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
-		const requested = String(req.body?.entityHash).toLowerCase()
+		const requested = req.body?.entityHash ? String(req.body.entityHash).toLowerCase() : ''
 		const operator = await resolveOperatorEntityHash(username)
 		let entityHash = operator
 		let charId = req.body?.charId || null
 		if (requested) {
-			const resolved = resolveSocialEntity(requested, username)
+			const resolved = await resolveSocialEntity(requested, username)
 			if (!resolved?.local || resolved.replicaUsername !== username)
 				return res.status(403).json({ error: 'can only post as your operator or local agent entities' })
 			entityHash = resolved.entityHash
@@ -119,7 +142,7 @@ export function registerProfileRoutes(router) {
 		const self = await resolveOperatorEntityHash(username)
 		if (self && follow) {
 			await dispatchFollowEvent(username, self, target)
-			const targetEntity = resolveSocialEntity(target)
+			const targetEntity = await resolveSocialEntity(target)
 			if (targetEntity?.local && targetEntity.replicaUsername) {
 				const followerPubKeyHex = (await getFederationViewForUser(username)).identityPubKeyHex
 				if (followerPubKeyHex)
@@ -176,29 +199,6 @@ export function registerProfileRoutes(router) {
 		res.status(200).json({ event })
 	})
 
-	router.get('/api/parts/shells\\:social/profile/personal-lists', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const operator = await resolveOperatorEntityHash(username)
-		let actingEntity = operator
-		const requestedActor = String(req.query?.actingEntityHash || '').trim().toLowerCase()
-		if (requestedActor) {
-			const resolved = resolveSocialEntity(requestedActor, username)
-			if (!resolved?.local || resolved.replicaUsername !== username)
-				return res.status(403).json({ error: 'invalid actingEntityHash' })
-			actingEntity = resolved.entityHash
-		}
-		if (!actingEntity)
-			return res.status(200).json({ blockedEntityHashes: [], blockedSubjects: [], hiddenEntityHashes: [], hiddenSubjects: [] })
-		const { loadPersonalFilterSets } = await import('../../../../../../scripts/p2p/personal_block.mjs')
-		const sets = await loadPersonalFilterSets(actingEntity)
-		res.status(200).json({
-			blockedEntityHashes: [...sets.blockedEntityHashes],
-			blockedSubjects: [...sets.blockedSubjects],
-			hiddenEntityHashes: [...sets.hiddenEntityHashes],
-			hiddenSubjects: [...sets.hiddenSubjects],
-		})
-	})
-
 	router.post('/api/parts/shells\\:social/profile/block', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const target = String(req.body?.entityHash).toLowerCase()
@@ -209,7 +209,7 @@ export function registerProfileRoutes(router) {
 		let actingEntity = operator
 		const requestedActor = String(req.body?.actingEntityHash || '').trim().toLowerCase()
 		if (requestedActor) {
-			const resolved = resolveSocialEntity(requestedActor, username)
+			const resolved = await resolveSocialEntity(requestedActor, username)
 			if (!resolved?.local || resolved.replicaUsername !== username)
 				return res.status(403).json({ error: 'can only block as your operator or local agent entities' })
 			actingEntity = resolved.entityHash
@@ -231,7 +231,7 @@ export function registerProfileRoutes(router) {
 		let actingEntity = operator
 		const requestedActor = String(req.body?.actingEntityHash || '').trim().toLowerCase()
 		if (requestedActor) {
-			const resolved = resolveSocialEntity(requestedActor, username)
+			const resolved = await resolveSocialEntity(requestedActor, username)
 			if (!resolved?.local || resolved.replicaUsername !== username)
 				return res.status(403).json({ error: 'can only hide as your operator or local agent entities' })
 			actingEntity = resolved.entityHash

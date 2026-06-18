@@ -70,7 +70,7 @@ export async function discoverPosts(username, options = {}) {
 				entityHash,
 				postId: post.id,
 				textSnippet: (post.content?.text || '').slice(0, 280),
-				mediaThumbs: post.content?.mediaRefs.slice(0, 4) || [],
+				mediaThumbs: post.content?.mediaRefs?.slice(0, 4) || [],
 				hlc: post.hlc,
 			})
 		}
