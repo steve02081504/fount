@@ -1,7 +1,7 @@
 # Comprehensive single-node E2E for new chat backend.
 # Targets NodeA (8931) by default. Creates E2E groups and cleans them up.
 param(
-	[string]$Base = 'http://localhost:8931',
+	[string]$Base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { 'http://localhost:8931' }),
 	[string]$Key = $env:FOUNT_API_KEY
 )
 $ErrorActionPreference = 'Stop'

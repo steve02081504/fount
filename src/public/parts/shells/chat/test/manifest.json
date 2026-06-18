@@ -4,6 +4,7 @@
 			"name": "unit",
 			"run": [
 				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
+				"--ignore=src/public/parts/shells/chat/test/live",
 				"./src/public/parts/shells/chat/test/"
 			],
 			"triggers": [

@@ -60,7 +60,13 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000) {
 			})
 			if (res.ok) {
 				const data = await res.json()
-				if (data?.message === 'pong') return
+				if (data?.message === 'pong') {
+					const who = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`, {
+						method: 'GET',
+						cache: 'no-store',
+					})
+					if (who.ok) return
+				}
 			}
 		}
 		catch { /* retry */ }
@@ -107,7 +113,8 @@ export async function launchNode(opts = {}) {
 
 	await injectCharFixtures(dataPath, username, opts.fixtures ?? [])
 
-	const child = spawn('node', [
+	const child = spawn('deno', [
+		'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'),
 		WORKER,
 		'--data-path', dataPath,
 		'--port', String(port),

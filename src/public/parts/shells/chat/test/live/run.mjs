@@ -17,16 +17,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCRIPTS = join(__dirname, 'scripts')
 const REPO_ROOT = resolve(__dirname, '../../../../../../../')
 
+const NODE_A_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
+const NODE_B_PORT = Number(process.env.FOUNT_TEST_NODE_B_PORT) || NODE_A_PORT + 1
+
 const NODE_A = {
-	port: 8931,
+	port: NODE_A_PORT,
 	username: 'CI-user',
-	apiKey: 'fount-ci-test-key-8931',
+	apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-test-key-${NODE_A_PORT}`,
 	fixtures: ['test_streamer'],
 }
 const NODE_B = {
-	port: 8932,
+	port: NODE_B_PORT,
 	username: 'nodeb',
-	apiKey: 'nodeb-fed-test-key-20260614',
+	apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${NODE_B_PORT}`,
 	fixtures: [],
 }
 
@@ -89,6 +92,7 @@ async function runSuite(suiteName) {
 		const env = {
 			FOUNT_API_KEY: nodeA.apiKey,
 			FOUNT_NODE_A_DATA: nodeA.dataPath,
+			FOUNT_TEST_BASE_URL: nodeA.baseUrl,
 		}
 		if (nodes[1])
 			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
@@ -112,7 +116,7 @@ async function runSuite(suiteName) {
 			const m = result.output.match(/FAIL=(\d+)/)
 			if (m && Number(m[1]) > 0) return 1
 		}
-		if (/(?m)\bFAIL\s{2,}/.test(result.output)) return 1
+		if (/\bFAIL\s{2,}/m.test(result.output)) return 1
 		return 0
 	}
 	finally {
