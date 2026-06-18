@@ -1,21 +1,21 @@
 import { randomUUID } from 'node:crypto'
 
 import { setEntityBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
-import { resolveOperatorEntityHash } from '../lib/operatorEntity.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { buildProfileFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
 import { setFollow, loadFollowing } from '../following.mjs'
-import { autoApproveFollower } from '../vault_crypto/followApprove.mjs'
-import { buildFollowApprovePayload, maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { resolveSocialEntity } from '../lib/entityResolve.mjs'
+import { resolveOperatorEntityHash } from '../lib/operatorEntity.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { syncTimelineForEntity } from '../timeline/sync.mjs'
+import { autoApproveFollower } from '../vault_crypto/followApprove.mjs'
+import { buildFollowApprovePayload, maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
 import { pushFeedUpdate } from '../ws/feedHub.mjs'
 
 /**
@@ -113,7 +113,7 @@ export function registerProfileRoutes(router) {
 		if (!isEntityHash128(target))
 			return res.status(400).json({ error: 'invalid entityHash' })
 		const follow = req.body?.follow !== false
-		await setFollow(username, target, follow, { rep_edge: req.body?.rep_edge ?? 1 })
+		await setFollow(username, target, follow)
 		const self = await resolveOperatorEntityHash(username)
 		if (self && follow) {
 			await dispatchFollowEvent(username, self, target)

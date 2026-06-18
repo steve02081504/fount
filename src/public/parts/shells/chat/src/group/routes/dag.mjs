@@ -7,6 +7,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
@@ -18,7 +19,6 @@ import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { syncEvents } from '../../chat/dag/queries.mjs'
 import { appendValidatedRemoteEvent } from '../../chat/dag/remoteIngest.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { buildFileKeyGrant } from '../../chat/file_keys/historicalGrant.mjs'
@@ -75,7 +75,6 @@ export function registerDagRoutes(router, authenticate) {
 		const result = await forkGroupFromBranch(username, sourceGroupId, {
 			tipId: body.tipId ? String(body.tipId) : undefined,
 			name: body.name ? String(body.name) : undefined,
-			copyReputation: body.copyReputation !== false,
 		})
 		invalidateFederationRoomCache(username, result.groupId)
 		const { state: forkState } = await getState(username, result.groupId)
@@ -87,7 +86,8 @@ export function registerDagRoutes(router, authenticate) {
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/fork\/block-opposing$/, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		const acceptedTipId = String(req.body?.acceptedTipId || '')
-		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId)
+		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
+		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash)
 		res.status(200).json({ ...result })
 	})
 

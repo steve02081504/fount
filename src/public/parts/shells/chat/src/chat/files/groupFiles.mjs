@@ -489,7 +489,7 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 		raw = await resolveCiphertextRaw(username, groupId, storageLocator)
 	}
 	catch (e) {
-		if (blamePeerKey) void penalizeChunkStorageFailure( groupId, blamePeerKey).catch(() => { })
+		if (blamePeerKey) void penalizeChunkStorageFailure(blamePeerKey).catch(() => { })
 		throw e
 	}
 	let plain = null
@@ -511,7 +511,7 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 	else
 		plain = decryptConvergentCiphertext(raw, contentHash)
 	if (!plain) {
-		if (blamePeerKey) void penalizeChunkStorageFailure( groupId, blamePeerKey).catch(() => { })
+		if (blamePeerKey) void penalizeChunkStorageFailure(blamePeerKey).catch(() => { })
 		throw new Error('convergent blob decrypt failed')
 	}
 	void cachePlaintextFile(username, contentHash, plain).catch(() => { })

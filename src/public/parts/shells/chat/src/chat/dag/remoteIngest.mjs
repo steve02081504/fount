@@ -5,6 +5,7 @@ import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/blocklist.mjs'
 import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation.mjs'
@@ -15,7 +16,6 @@ import {
 	resolveHlcMaxSkewMs,
 } from '../events/hlcPolicy.mjs'
 import { appendQuarantinedEvent, replayQuarantinedEvents } from '../events/quarantine.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { canRelayFederatedEvent } from '../federation/acl.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
@@ -138,7 +138,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 		if (!rateCheck.ok) {
 			const remoteNode = String(wirePayload.node_id || '').trim()
 			if (remoteNode)
-				recordMessageRateViolation( groupId, remoteNode)
+				recordMessageRateViolation(remoteNode)
 			if (logFailures) console.error('federation: drop remote event (rate limit)')
 			return 'invalid'
 		}

@@ -10,7 +10,7 @@ import { registerTrustGraphProvider } from './trust_graph_registry.mjs'
 import { ensureUserRoom } from './user_room.mjs'
 
 /**
- * @typedef {{ nodeHash: string, score: number, scopeIds: string[], scopeScores?: Record<string, number> }} TrustNode
+ * @typedef {{ nodeHash: string, score: number, scopeIds: string[] }} TrustNode
  */
 
 /**
@@ -32,12 +32,10 @@ function mergeTrustNode(byNode, scopeId, nodeHash, score) {
 	if (previous) {
 		const seenCount = previous.scopeIds.length
 		previous.score = (previous.score * seenCount + score) / (seenCount + 1)
-		if (!previous.scopeScores) previous.scopeScores = {}
-		previous.scopeScores[scopeId] = score
 		if (!previous.scopeIds.includes(scopeId)) previous.scopeIds.push(scopeId)
 		return
 	}
-	byNode.set(nodeHash, { nodeHash, score, scopeIds: [scopeId], scopeScores: { [scopeId]: score } })
+	byNode.set(nodeHash, { nodeHash, score, scopeIds: [scopeId] })
 }
 
 /**
@@ -68,9 +66,7 @@ export async function buildMergedGraph(username) {
 			const scopeId = room.groupId
 			for (const { remoteNodeHash } of room.getRoster()) {
 				if (!remoteNodeHash || isNodeBlocked(remoteNodeHash)) continue
-				const score = scopeId === USER_ROOM_SCOPE
-					? Number(rep.byNodeHash?.[remoteNodeHash]?.score ?? 0.1)
-					: pickNodeScore(remoteNodeHash, scopeId) || 0.1
+				const score = pickNodeScore(remoteNodeHash) || 0.1
 				mergeTrustNode(byNode, scopeId, remoteNodeHash, score)
 			}
 		}

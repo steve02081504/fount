@@ -3,7 +3,7 @@
  * 【职责】§10.2 群文件密文块 P2P 复制：经 Trystero fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
  * 【原理】attachFedChunkHandlers 在 ensureFederationRoom 时挂载；本地 put 后 replicateChunkToRoster 广播，缺失时 fetchChunkFromRoster 广播 get 并等待 fed_chunk_data。replicateChunkToFederation 可等待 M_eff 个 ACK。createFederationSwarmStoragePlugin 在本地 miss 时回退联邦 fetch。
  * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pendingFetches 等待密文字节。
- * 【关联】files/chunkReplicationAck.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs、governance/reputation.mjs；scripts/p2p/storage_plugins.mjs。
+ * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；scripts/p2p/reputation.mjs；scripts/p2p/storage_plugins.mjs。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { b64ToU8, u8ToB64 } from '../../../../../../../scripts/p2p/bytes_codec.mjs'
@@ -19,13 +19,13 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { handleIncomingChunkGet, resolvePendingChunkFetch } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { getChunk, hasChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { bumpChunkStorageReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
 import { bumpChunkLocalRef } from '../files/chunkRefcount.mjs'
-import { beginChunkReplicationWait, recordChunkReplicationAck } from '../files/chunkReplicationAck.mjs'
+import { beginChunkReplicationWait, recordChunkReplicationAck, registerChunkReplicationTargets } from '../files/chunkReplicationAck.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 
 const FETCH_TIMEOUT_MS = 14_000
@@ -100,6 +100,7 @@ export function unregisterChunkSwarm(username, groupId) {
  */
 export async function replicateChunkToFederation(username, groupId, ciphertextHash, data, opts = {}) {
 	const requiredAcks = Math.max(0, Math.floor(Number(opts.requiredAcks) || 0))
+	const api = swarmApis.get(registryKey(username, groupId))
 	const waitPromise = beginChunkReplicationWait(
 		username,
 		groupId,
@@ -107,14 +108,20 @@ export async function replicateChunkToFederation(username, groupId, ciphertextHa
 		requiredAcks,
 		opts.timeoutMs ?? 5000,
 	)
-	const api = swarmApis.get(registryKey(username, groupId))
 	if (!api?.replicate) {
 		if (requiredAcks > 0)
 			return { acked: 0, required: requiredAcks, timedOut: true, unavailable: true }
 		return { acked: 0, required: 0, timedOut: false }
 	}
-	await api.replicate(ciphertextHash, data)
-	return await waitPromise
+	const sentPeerKeys = await api.replicate(ciphertextHash, data)
+	if (sentPeerKeys?.length)
+		registerChunkReplicationTargets(username, groupId, ciphertextHash, sentPeerKeys)
+	const result = await waitPromise
+	if (result.timedOut && result.missingPeerKeys?.length) 
+		for (const peerKey of result.missingPeerKeys)
+			penalizeChunkStorageFailure(peerKey)
+	
+	return result
 }
 
 /**
@@ -194,32 +201,38 @@ export function createFederationSwarmStoragePlugin(baseDir, username, groupId) {
  * @param {Uint8Array} data 密文
  * @param {string} bucketKey 限速键
  * @param {{ fedOut?: { enqueue: (prio: number, fn: () => void) => void } }} [opts] 出站队列
- * @returns {Promise<void>}
+ * @returns {Promise<string[]>} 已发送 fed_chunk_put 的对端 nodeHash（无则 peerId）
  */
 function replicateChunkToRoster(slot, chunkHash, data, bucketKey, opts = {}) {
-	if (data.byteLength > FEDERATION_CHUNK_MAX_BYTES) return
-	if (!consumeChunkRate(bucketKey, data.byteLength)) return
+	if (data.byteLength > FEDERATION_CHUNK_MAX_BYTES) return []
+	if (!consumeChunkRate(bucketKey, data.byteLength)) return []
 	const payload = { chunkHash, dataB64: u8ToB64(data) }
 	const roster = slot.getRoster()
 	const targets = roster.slice(0, 1)
+	/** @type {string[]} */
+	const sentPeerKeys = []
 	/**
 	 * 将 `fed_chunk_put` 发往单个对等端（吞掉网络层异常）。
 	 * @param {string} peerId 对等端 id
+	 * @param {string | undefined} remoteNodeHash 对端 nodeHash
 	 * @returns {void}
 	 */
-	const dispatch = peerId => {
+	const dispatch = (peerId, remoteNodeHash) => {
 		try { slot.sendToPeer(peerId, 'fed_chunk_put', payload) }
 		catch (err) {
 			console.error('federation: fed_chunk_put send failed', err)
 			void debugLog('federation', { scope: 'fed_chunk_put', peerId, message: err?.message })
 				.catch(error => console.warn('federation: fed_chunk_put debugLog failed', error))
 		}
+		const key = String(remoteNodeHash || peerId || '').trim()
+		if (key) sentPeerKeys.push(key)
 	}
-	for (const { peerId } of targets)
+	for (const { peerId, remoteNodeHash } of targets)
 		if (opts.fedOut)
-			opts.fedOut.enqueue(5, () => dispatch(peerId))
+			opts.fedOut.enqueue(5, () => dispatch(peerId, remoteNodeHash))
 		else
-			dispatch(peerId)
+			dispatch(peerId, remoteNodeHash)
+	return sentPeerKeys
 }
 
 /**
@@ -391,7 +404,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			const { storageLocator } = await local.putChunk(groupId, hash, bytes)
 			await bumpChunkLocalRef(username, groupId, storageLocator)
 			if (remoteNode)
-				await bumpChunkStorageReputation( groupId, remoteNode)
+				await bumpChunkStorageReputation(remoteNode)
 			try {
 				sendChunkAck({ chunkHash: hash }, peerId)
 				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
@@ -436,7 +449,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			
 			if (!bytes?.byteLength) return
 			if (remoteNode)
-				await bumpChunkStorageReputation( groupId, remoteNode)
+				await bumpChunkStorageReputation(remoteNode)
 			try {
 				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
 			}
@@ -468,10 +481,10 @@ export function attachFedChunkHandlers(fedRoom) {
 	/**
 	 * @param {string} chunkHash 块哈希
 	 * @param {Uint8Array} data 密文
-	 * @returns {Promise<void>}
+	 * @returns {Promise<string[]>} 已发送 fed_chunk_put 的对端键
 	 */
 	const replicate = (chunkHash, data) =>
-		replicateChunkToRoster(slot, chunkHash, data, chunkBucketKey, { fedOut })
+		Promise.resolve(replicateChunkToRoster(slot, chunkHash, data, chunkBucketKey, { fedOut }))
 	/**
 	 * @param {string} chunkHash 块哈希
 	 * @returns {Promise<Uint8Array>} 密文块

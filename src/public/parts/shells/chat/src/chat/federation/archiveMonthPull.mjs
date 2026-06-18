@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, rename, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
@@ -15,7 +16,6 @@ import {
 	pickArchiveMonthByReputation,
 	syncArchivedEventIdsFromMonthBody,
 } from '../archive/monthDigest.mjs'
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import { markArchiveMonthIncomplete } from './archiveMonthMark.mjs'
@@ -171,7 +171,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 		const tmpPath = await resolveArchiveMonthCandidateBody(username, groupId, slot, row)
 		if (tmpPath === null) {
 			if (row.peerNodeHash)
-				penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
+				penalizeArchiveServeMismatch(row.peerNodeHash)
 			continue
 		}
 		resolved.push({ ...row, tmpPath })
@@ -233,8 +233,6 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 	const manifest = await loadArchiveManifest(username, groupId)
 	const picked = await pickArchiveMonthByReputation(
 		candidates,
-		username,
-		groupId,
 		manifest,
 		channelId,
 		utcMonth,
@@ -242,7 +240,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 	if (!picked.winner) {
 		for (const row of candidates)
 			if (row.peerNodeHash)
-				penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
+				penalizeArchiveServeMismatch(row.peerNodeHash)
 		await markArchiveMonthIncomplete(username, groupId, channelId, utcMonth, picked.reason)
 		return { applied: false, reason: picked.reason }
 	}
@@ -255,7 +253,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 			? await digestArchiveMonthFile(row.tmpPath)
 			: { digest: '' }
 		if (digest && digest !== winnerDigest)
-			penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
+			penalizeArchiveServeMismatch(row.peerNodeHash)
 	}
 
 	const applied = (await applyArchiveMonthWinner(username, groupId, picked.winner)).applied

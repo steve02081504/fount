@@ -8,12 +8,12 @@
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonlStream } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
+import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {
@@ -259,7 +259,14 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
  */
 export async function listFederationPeersForGroup(username, groupId) {
 	const nodeHash = federationNodeHash(username)
-	const slot = await ensureFederationRoom(username, groupId)
+	// 只读列表端点：房间初始化是有网络副作用的尽力而为操作，瞬时失败不应让 GET /peers 抛 500。
+	let slot = null
+	try {
+		slot = await ensureFederationRoom(username, groupId)
+	}
+	catch (error) {
+		console.error('listFederationPeersForGroup: ensureFederationRoom failed', error)
+	}
 	if (!slot)
 		return { selfNodeHash: nodeHash, federationEnabled: false, peers: [] }
 	const peersByPeerId = new Map()
@@ -272,7 +279,13 @@ export async function listFederationPeersForGroup(username, groupId) {
 	})
 	const peers = [...peersByPeerId.values()]
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	void reconcilePeerPoolFromRoster(groupId, peers, groupSettings)
-		.catch(error => console.error('network pool reconcile failed', error))
+	// reconcilePeerPoolFromRoster 是同步函数（同步读写本地 peer 池），不可链 .catch，否则在有 slot
+	// 时会因对 undefined 取 catch 而抛 500。瞬时失败只记日志，不影响只读 peers 列表返回。
+	try {
+		reconcilePeerPoolFromRoster(groupId, peers, groupSettings)
+	}
+	catch (error) {
+		console.error('network pool reconcile failed', error)
+	}
 	return { selfNodeHash: nodeHash, federationEnabled: true, peers }
 }

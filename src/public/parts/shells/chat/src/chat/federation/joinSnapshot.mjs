@@ -5,10 +5,10 @@
 import { randomUUID } from 'node:crypto'
 
 import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 
 
 import { hasMaterializedAclSnapshot } from './acl.mjs'
@@ -183,11 +183,11 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 			slot.send('fed_join_snapshot_request', request, null)
 		const candidates = await collectJoinSnapshotCandidates(collectPromise, pending)
 		if (!candidates.length) return null
-		const picked = await pickJoinSnapshotByReputation(candidates, username, groupId, {
+		const picked = pickJoinSnapshotByReputation(candidates, {
 			allowSinglePeerBootstrap: !isSignedBaseCheckpoint(localArchive.checkpoint),
 		})
 		if (!picked.winner) return null
-		penalizeJoinSnapshotMismatches(username, groupId, candidates, picked.bucketKey)
+		penalizeJoinSnapshotMismatches(candidates, picked.bucketKey)
 		return picked.winner
 	}
 

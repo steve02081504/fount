@@ -94,16 +94,6 @@ export function snapshotPath(username, groupId) {
 }
 
 /**
- * 本地主观信誉表路径（§0.3；不进 DAG）。
- * @param {string} username 本地账户名
- * @param {string} groupId 群组 ID
- * @returns {string} `reputation.json` 绝对路径
- */
-export function reputationPath(username, groupId) {
-	return join(groupDir(username, groupId), 'reputation.json')
-}
-
-/**
  * 频道消息派生日志 JSONL 路径。
  * @param {string} username 本地账户名
  * @param {string} groupId 群组或会话 ID

@@ -119,7 +119,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	if (!await verifyStreamChunkVolatile(payload)) return
 
 	if (payload.type === 'reputation_slash_alert') {
-		applyVolatileSlashAlert( groupId, payload)
+		applyVolatileSlashAlert(payload)
 		return
 	}
 

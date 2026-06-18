@@ -1,7 +1,7 @@
-import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { listReplicaUsernamesFollowing as listFollowersFromIndex } from '../../../../../scripts/p2p/social/follower_index.mjs'
 import { applyFollowNetworkHints } from '../../../../../scripts/p2p/social/network_hints.mjs'
 
+import { resolveOperatorEntityHash } from './lib/operatorEntity.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
@@ -22,10 +22,9 @@ export async function loadFollowing(username) {
  * @param {string} username 用户
  * @param {string} entityHash 目标
  * @param {boolean} follow true=关注 false=取关
- * @param {{ rep_edge?: number }} [options] follow 事件可选 rep_edge
  * @returns {Promise<string[]>} 规范化后的关注列表
  */
-export async function setFollow(username, entityHash, follow, options = {}) {
+export async function setFollow(username, entityHash, follow) {
 	const self = await resolveOperatorEntityHash(username)
 	if (!self) throw new Error('configure federation identity before following')
 	const id = entityHash.toLowerCase()
@@ -37,7 +36,6 @@ export async function setFollow(username, entityHash, follow, options = {}) {
 		type: follow ? 'follow' : 'unfollow',
 		content: {
 			targetEntityHash: id,
-			...follow ? { rep_edge: Number(options.rep_edge) || 1 } : {},
 		},
 	})
 	applyFollowNetworkHints(username, id, follow)

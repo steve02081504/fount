@@ -13,7 +13,15 @@
 - **Chat post storage**: hot zone (`snapshot.json` checkpoint + `hot_posts.latestByChannel`, latest N per channel + pin ±N; group setting `hotLatestMessageCount`) + cold archive (`archive/{channelId}/{YYYY-MM}.jsonl`, plaintext `PostSnapshot`, month digest = rolling SHA-256 in eventId order) + DAG holding only foldable process events. Visible history is not auto-deleted by default; users with a local replica may delete **local** cold-archive copies per month in group settings (DAG untouched). Federation pulls per month: `digest` + `fed_chunk_*` chunked transfer + `monthDigests` multi-peer reputation arbitration (`ARCHIVE_QUORUM_PEER_MIN` may end collection early; `ARCHIVE_QUORUM_PEER_STRICT_MIN` gates writes when reputation is absent); join checkpoint follows the same model; remote manifest only unions month hints. Details in [Chat cold archive guide](../../public/parts/shells/chat/src/chat/archive/AGENTS.md).
 - **Social follow source of truth**: there is no `following.json`; follow/unfollow only writes to the operator timeline `events.jsonl` + federation fanout + `network.json` explore hints.
 
-## 2. Entity files (EVFS)
+## 2. Subjective reputation (`reputation.json`)
+
+- **Single global score per peer** at `{dataPath}/p2p/node/reputation.json` (`byNodeHash[id].score` in `[-1, 1]`). No per-group scopes.
+- **Subjective slash**: `reputation_slash` / VOLATILE `reputation_slash_alert` adjust the target's **global** score via `subjectiveSlashPenalty(claim, repSender, rep_max_eff)` — influence scales with how much you trust the sender. Do not remove this weighting.
+- **Anti-Sybil lever**: `applyDecayCollusionAfterSlash` penalizes invite-chain upstream after slash/kick/ban (global score).
+- **Safe reputation penalties** (self-observed, attributable): relay bump, gossip unknown-want, message rate, chunk store/fetch, archive digest mismatch, chunk replication ACK timeout on registered targets.
+- **Do not add**: penalizing peers who merely forwarded invalid events (frameable); penalizing RPC timeouts/empty responses (network noise + attacker-triggerable).
+
+## 3. Entity files (EVFS)
 
 - **Unified URL**: `GET|PUT|HEAD /api/p2p/entities/{entityHash}/files/{*path}`.
 - **Two-layer storage**: ciphertext chunks `{dataPath}/p2p/node/chunks/` (CAS); logical manifest `{userDict}/entities/{entityHash}/files/{path}.manifest.json`.

@@ -6,49 +6,67 @@
  */
 import { addBlocklistEntry } from '../../../../../../../scripts/p2p/blocklist.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { GOVERNANCE_AUTHZ_TYPES } from '../../../../../../../scripts/p2p/event_types.mjs'
 import {
 	ancestorClosureFromTip,
 	computeDagTipIdsFromEvents,
 } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { eventsPath } from '../lib/paths.mjs'
+
+/**
+ * 纯逻辑：从对立 DAG 分支收集治理事件签发者 / 目标 pubKeyHash（不含自身、不触 I/O）。
+ * @param {object[]} events 群全量事件
+ * @param {string} acceptedTipId 本节点采纳的叶 id（须为当前某个 tip）
+ * @param {string} selfPubKeyHash 本节点成员 pubKeyHash（从结果中排除自身）
+ * @returns {string[]} 应拉黑的 pubKeyHash 列表（去重、已排除自身）
+ */
+export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKeyHash) {
+	const tip = String(acceptedTipId || '').trim().toLowerCase()
+	if (!isHex64(tip)) throw new Error('acceptedTipId must be 64 hex chars')
+
+	const rows = Array.isArray(events) ? events : []
+	const byId = new Map(rows.filter(event => event?.id).map(event => [String(event.id), event]))
+
+	const tips = computeDagTipIdsFromEvents(rows)
+	if (!tips.includes(tip)) throw new Error('acceptedTipId is not a current DAG tip')
+
+	// 被采纳分支的因果闭包属于共享/已认可历史，不应拉黑（含创世治理事件、共同祖先）。
+	const acceptedClosure = ancestorClosureFromTip(tip, byId)
+	const self = String(selfPubKeyHash || '').trim().toLowerCase()
+	const targets = new Set()
+
+	for (const otherTip of tips) {
+		if (otherTip === tip) continue
+		for (const eventId of ancestorClosureFromTip(otherTip, byId)) {
+			if (acceptedClosure.has(eventId)) continue
+			const event = byId.get(eventId)
+			if (!event || !GOVERNANCE_AUTHZ_TYPES.has(event.type)) continue
+			const sender = String(event.sender || '').trim().toLowerCase()
+			if (isHex64(sender) && sender !== self) targets.add(sender)
+			const targetHash = String(event.content?.targetPubKeyHash || '').trim().toLowerCase()
+			if (isHex64(targetHash) && targetHash !== self) targets.add(targetHash)
+		}
+	}
+
+	return [...targets]
+}
 
 /**
  * 从对立 DAG 分支收集治理事件签发者并拉黑。
  * @param {string} username 本节点用户
  * @param {string} groupId 群 ID
  * @param {string} acceptedTipId 本节点采纳的叶 id
+ * @param {string} selfPubKeyHash 本节点成员 pubKeyHash（从拉黑列表中排除自身）
  * @returns {Promise<{ blocked: string[] }>} 已拉黑 pubKeyHash 列表
  */
-export async function blockOpposingForkBranch(username, groupId, acceptedTipId) {
-	const tip = String(acceptedTipId || '').trim().toLowerCase()
-	if (!isHex64(tip)) throw new Error('acceptedTipId must be 64 hex chars')
-
+export async function blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash) {
 	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-	const byId = new Map(events.filter(event => event?.id).map(event => [String(event.id), event]))
-
-	const tips = computeDagTipIdsFromEvents(events)
-	if (!tips.includes(tip)) throw new Error('acceptedTipId is not a current DAG tip')
-
-	const self = String(username || '').trim().toLowerCase()
-	const targets = new Set()
-
-	for (const otherTip of tips) {
-		if (otherTip === tip) continue
-		for (const eventId of ancestorClosureFromTip(otherTip, byId)) {
-			const event = byId.get(eventId)
-			if (!event || !GOVERNANCE_AUTHZ_TYPES.has(event.type)) continue
-			const sender = String(event.sender || '').trim().toLowerCase()
-			if (sender && sender !== self && isHex64(sender)) targets.add(sender)
-			const targetHash = String(event.content?.targetPubKeyHash || '').trim().toLowerCase()
-			if (isHex64(targetHash) && targetHash !== self) targets.add(targetHash)
-		}
-	}
+	const targets = computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKeyHash)
 
 	for (const pubKeyHash of targets)
-		await addBlocklistEntry( { scope: 'subject', value: pubKeyHash, groupId })
+		await addBlocklistEntry({ scope: 'subject', value: pubKeyHash, groupId })
 
-	return { blocked: [...targets] }
+	return { blocked: targets }
 }

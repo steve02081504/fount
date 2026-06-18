@@ -10,7 +10,7 @@ export {
 	seedReputationFromIntro,
 } from './reputation_math.mjs'
 
-/** 信誉持久化与具体更新算子（节点目录）；纯标量运算见上方。 */
+/** 信誉持久化与具体更新算子（节点目录，全局单分）；纯标量运算见上方。 */
 export {
 	loadReputation,
 	saveReputation,

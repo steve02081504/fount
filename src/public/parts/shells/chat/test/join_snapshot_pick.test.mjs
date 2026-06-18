@@ -30,8 +30,6 @@ function candidate(tipsHash, peerNodeHash) {
 Deno.test('pickJoinSnapshotByReputation accepts two-peer quorum on same tipsHash', async () => {
 	const picked = await pickJoinSnapshotByReputation(
 		[candidate(TIPS_A, PEER_C), candidate(TIPS_A, PEER_D)],
-		'user',
-		'g1',
 		{ pickScore: zeroPickScore },
 	)
 	assertEquals(picked.reason, 'ok')
@@ -39,12 +37,10 @@ Deno.test('pickJoinSnapshotByReputation accepts two-peer quorum on same tipsHash
 })
 
 Deno.test('pickJoinSnapshotByReputation prefers higher reputation tips bucket', async () => {
-	/** @type {(username: string, peerNodeHash: string, groupId: string) => number} */
-	const scoreOf = (_username, peerNodeHash) => peerNodeHash === PEER_E ? 10 : 0
+	/** @type {(peerNodeHash: string) => number} */
+	const scoreOf = peerNodeHash => peerNodeHash === PEER_E ? 10 : 0
 	const picked = await pickJoinSnapshotByReputation(
 		[candidate(TIPS_A, PEER_C), candidate(TIPS_B, PEER_E)],
-		'user',
-		'g1',
 		{ pickScore: scoreOf },
 	)
 	assertEquals(picked.reason, 'ok')

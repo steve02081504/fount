@@ -1,11 +1,11 @@
 /**
  * 入群 checkpoint 多 peer 信誉仲裁（与冷归档月拉同构）。
  */
-import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../../scripts/p2p/reputation.mjs'
-import { ARCHIVE_QUORUM_PEER_MIN } from '../../archive/monthDigest.mjs'
 import { verifyRemoteCheckpoint } from '../../../../../../../../scripts/p2p/checkpoint.mjs'
+import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
+import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation.mjs'
+import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
+import { ARCHIVE_QUORUM_PEER_MIN } from '../../archive/monthDigest.mjs'
 import { federationNodeHash } from '../deps.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
 import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'
@@ -67,17 +67,15 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 
 /**
  * @param {Array<object>} candidates 各 peer 应答
- * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {{ pickScore?: (username: string, peerNodeHash: string, groupId: string) => number, allowSinglePeerBootstrap?: boolean }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
- * @returns {Promise<{ winner: object | null, bucketKey: string, reason: string }>} 仲裁结果
+ * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
+ * @returns {{ winner: object | null, bucketKey: string, reason: string }} 仲裁结果
  */
-export async function pickJoinSnapshotByReputation(candidates, username, groupId, opts = {}) {
-	/** @type {object | undefined} */
-	let reputationFile
-	if (!opts.pickScore) {
-		const { loadReputation } = await import('../../../../../../../../scripts/p2p/reputation.mjs')
-		reputationFile = loadReputation()
+export function pickJoinSnapshotByReputation(candidates, opts = {}) {
+	/** @type {(peer: string) => number} */
+	let scorePeer = opts.pickScore
+	if (!scorePeer) {
+		const rep = loadReputation()
+		scorePeer = pickNodeScoreFromReputation.bind(null, rep)
 	}
 	/** @type {Map<string, { peers: string[], envelope: object }>} */
 	const byBucket = new Map()
@@ -93,12 +91,7 @@ export async function pickJoinSnapshotByReputation(candidates, username, groupId
 
 	const ranked = [...byBucket.entries()].map(([bucketKey, bucket]) => ({
 		bucketKey,
-		score: bucket.peers.reduce((best, peer) => Math.max(
-			best,
-			opts.pickScore
-				? opts.pickScore(username, peer, groupId)
-				: pickNodeScoreFromReputation(reputationFile, peer, groupId),
-		), 0),
+		score: bucket.peers.reduce((best, peer) => Math.max(best, scorePeer(peer)), 0),
 		bucket,
 	}))
 	ranked.sort((left, right) => {
@@ -117,15 +110,13 @@ export async function pickJoinSnapshotByReputation(candidates, username, groupId
 }
 
 /**
- * @param {string} username replica
- * @param {string} groupId 群 ID
  * @param {Array<object>} candidates 原始候选
  * @param {string} winnerBucketKey 赢家分桶键
  * @returns {void}
  */
-export function penalizeJoinSnapshotMismatches(username, groupId, candidates, winnerBucketKey) {
+export function penalizeJoinSnapshotMismatches(candidates, winnerBucketKey) {
 	for (const row of candidates) {
 		if (!row.peerNodeHash || row.bucketKey === winnerBucketKey) continue
-		penalizeArchiveServeMismatch( groupId, row.peerNodeHash)
+		penalizeArchiveServeMismatch(row.peerNodeHash)
 	}
 }

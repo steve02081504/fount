@@ -106,7 +106,6 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/peers$/, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const { state } = await getState(username, groupId)
 
 		const roster = await listFederationPeersForGroup(username, groupId)
 		const stored = loadPeerPoolView( groupId)

@@ -2,7 +2,7 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { recomputeHotPostIndex } from '../src/chat/archive/hotPostsIndex.mjs'
-import { archiveMonthKey, clampArchiveWallMs, isArchiveWallOutOfSkew } from '../src/chat/archive/settings.mjs'
+import { ARCHIVE_MONTH_WALL_MAX_SKEW_MS, archiveMonthKey, clampArchiveWallMs, isArchiveWallOutOfSkew } from '../src/chat/archive/settings.mjs'
 import {
 	FOLDABLE_PROCESS_EVENT_TYPES,
 	shouldDropDagEvent,
@@ -46,7 +46,8 @@ Deno.test('archiveMonthKey UTC bucket', () => {
 
 Deno.test('isArchiveWallOutOfSkew flags far-future wall', () => {
 	assertEquals(isArchiveWallOutOfSkew(Date.UTC(2099, 0, 1)), true)
-	const now = Date.now()
+	// clampArchiveWallMs 内部各自取 Date.now()，故在调用之后再取 now 作上界，避免两次 Date.now()
+	// 之间的微小漂移把 clamped 顶到 now+skew 之上造成偶发失败。
 	const clamped = clampArchiveWallMs(Date.UTC(2099, 0, 1))
-	assertEquals(clamped <= now + 32 * 24 * 60 * 60 * 1000, true)
+	assertEquals(clamped <= Date.now() + ARCHIVE_MONTH_WALL_MAX_SKEW_MS, true)
 })

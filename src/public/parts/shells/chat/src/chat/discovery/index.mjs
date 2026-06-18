@@ -9,8 +9,7 @@ import { dirname } from 'node:path'
 
 import { sign, verify } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickNodeScoreFromReputation } from '../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { pickNodeScore } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { ARCHIVE_QUORUM_PEER_MIN } from '../archive/monthDigest.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
@@ -124,10 +123,7 @@ export async function verifyDiscoveryAdvertisement(advertisement) {
 export async function mergeDiscoveryAdvertisement(username, advertisement, source) {
 	if (!await verifyDiscoveryAdvertisement(advertisement)) return
 	const fromNodeHash = String(source.fromNodeHash || '').trim()
-	const rep = loadReputation()
-	const nodeScore = fromNodeHash
-		? pickNodeScoreFromReputation(rep, fromNodeHash, advertisement.groupId)
-		: 0
+	const nodeScore = fromNodeHash ? pickNodeScore(fromNodeHash) : 0
 	const index = await loadDiscoveryIndex(username)
 	const key = entryKey({
 		groupId: advertisement.groupId,

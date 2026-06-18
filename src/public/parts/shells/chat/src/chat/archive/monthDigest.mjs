@@ -7,6 +7,7 @@ import { createInterface } from 'node:readline'
 
 import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../scripts/p2p/reputation_pick_score.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
 
@@ -20,14 +21,6 @@ export const ARCHIVE_QUORUM_PEER_MIN = 2
 
 /** 无正信誉时，同 digest 的独立 peer 数须达此值才接受（防 Sybil） */
 export const ARCHIVE_QUORUM_PEER_STRICT_MIN = 4
-
-/**
- * @param {object} repFile reputation.json
- * @returns {(username: string, peerNodeHash: string, groupId: string) => number} 评分函数
- */
-function makeReputationScoreFn(repFile) {
-	return (username, peerNodeHash, groupId) => pickNodeScoreFromReputation(repFile, peerNodeHash, groupId)
-}
 
 /**
  * @param {object} snap PostSnapshot
@@ -333,21 +326,18 @@ export function syncArchivedEventIdsFromMonthBody(manifest, channelId, month, sn
 
 /**
  * @param {Array<{ peerNodeHash: string, tmpPath?: string, complete?: boolean }>} candidates 各 peer 应答
- * @param {string} username replica
- * @param {string} groupId 群 ID
  * @param {object} manifest archive manifest
  * @param {string} channelId 频道
  * @param {string} month `YYYY-MM`
- * @param {{ pickScore?: (username: string, peerNodeHash: string, groupId: string) => number }} [opts] 测试可注入 pickScore
+ * @param {{ pickScore?: (peerNodeHash: string) => number }} [opts] 测试可注入 pickScore
  * @returns {Promise<{ winner: object | null, digest: string, reason: string }>} 仲裁结果
  */
-export async function pickArchiveMonthByReputation(candidates, username, groupId, manifest, channelId, month, opts = {}) {
-	/** @type {(username: string, peer: string, groupId: string) => number} */
+export async function pickArchiveMonthByReputation(candidates, manifest, channelId, month, opts = {}) {
+	/** @type {(peer: string) => number} */
 	let scoreOf = opts.pickScore
 	if (!scoreOf) {
-		const { loadReputation } = await import('../../../../../../../scripts/p2p/reputation.mjs')
 		const rep = loadReputation()
-		scoreOf = makeReputationScoreFn(rep)
+		scoreOf = pickNodeScoreFromReputation.bind(null, rep)
 	}
 	/** @type {Map<string, { digest: string, snapshots: object[], peers: string[] }>} */
 	const byDigest = new Map()
@@ -378,7 +368,7 @@ export async function pickArchiveMonthByReputation(candidates, username, groupId
 	for (const bucket of byDigest.values()) {
 		let score = 0
 		for (const peer of bucket.peers)
-			score = Math.max(score, scoreOf(username, peer, groupId))
+			score = Math.max(score, scoreOf(peer))
 		if (expectedDigest && bucket.digest === expectedDigest) score += 0.001
 		ranked.push({ digest: bucket.digest, score, bucket })
 	}
