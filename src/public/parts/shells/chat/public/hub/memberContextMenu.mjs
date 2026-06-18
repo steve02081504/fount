@@ -45,7 +45,9 @@ export async function showMemberContextMenu(event, memberEl) {
 	const perms = viewer && memberKey.toLowerCase() !== viewer
 		? await fetchViewerChannelPermissions(hubStore.currentState, hubStore.currentGroupId, defaultChannelId)
 		: {}
-	const showKick = (perms.KICK_MEMBERS || isOwnerOwnAgent) && memberKey.toLowerCase() !== viewer
+	const showKick = memberKey.toLowerCase() !== viewer && (
+		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true
+	)
 	const showBan = !!perms.BAN_MEMBERS && memberKey.toLowerCase() !== viewer
 	const entityHash = memberEl.dataset.entityHash?.trim() || ''
 	const showPersonalBlock = memberKey.toLowerCase() !== viewer && !!entityHash

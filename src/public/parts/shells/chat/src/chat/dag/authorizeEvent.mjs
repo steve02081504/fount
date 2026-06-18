@@ -91,8 +91,13 @@ export function checkEventPermission(state, event, senderHash) {
 		case 'member_kick': {
 			const targetKey = resolveTargetMemberKey(event.content)
 			const target = targetKey ? state.members[targetKey] : null
-			if (target?.memberKind === 'agent' && target.ownerPubKeyHash === sender)
-				return { ok: true }
+			if (target?.memberKind === 'agent') {
+				if (target.ownerPubKeyHash === sender)
+					return { ok: true }
+				if (govPerms[PERMISSIONS.ADMIN])
+					return { ok: true }
+				return { ok: false, reason: 'agent kick denied' }
+			}
 			return govPerms[PERMISSIONS.KICK_MEMBERS]
 				? { ok: true }
 				: { ok: false, reason: 'KICK_MEMBERS denied' }

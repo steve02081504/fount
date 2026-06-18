@@ -270,8 +270,12 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const isOwnerKickOwnAgent = action === 'kick'
 			&& resolvedMember?.memberKind === 'agent'
 			&& resolvedMember.ownerPubKeyHash === memberKey
-		const canModerate = hasPermission(member, requiredPermission, state.roles, governanceChannel, state.channelPermissions)
-			|| isOwnerKickOwnAgent
+		const isAdminKickAgent = action === 'kick'
+			&& resolvedMember?.memberKind === 'agent'
+			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, state.channelPermissions)
+		const canModerate = action === 'kick' && resolvedMember?.memberKind === 'agent'
+			? isOwnerKickOwnAgent || isAdminKickAgent
+			: hasPermission(member, requiredPermission, state.roles, governanceChannel, state.channelPermissions)
 		if (!canModerate)
 			return res.status(403).json({ error: 'No permission to moderate members' })
 		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')

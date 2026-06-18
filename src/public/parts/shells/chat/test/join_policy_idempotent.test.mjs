@@ -4,7 +4,7 @@
  * 而新成员（未 active）擅自携带 roles 提权仍被拒。
  */
 /* global Deno */
-import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { validateJoinPolicy } from '../src/chat/governance/joinPolicy.mjs'
 
@@ -52,5 +52,4 @@ Deno.test('replayed genesis member_join from an already-active member is idempot
 		type: 'member_join', sender: FOUNDER, timestamp: 1,
 		content: { roles: ['founder'] },
 	}, 'u')
-	assertEquals(true, true)
 })

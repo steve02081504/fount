@@ -1,5 +1,5 @@
 /**
- * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；owner 踢自己的 agent 例外。
+ * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；agent 仅 owner 或 ADMIN 可踢。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -64,10 +64,26 @@ Deno.test('member_kick allowed when owner kicks own agent', () => {
 	assertEquals(checkEventPermission(state, event, OWNER).ok, true)
 })
 
-Deno.test('member_kick allowed when moderator with KICK_MEMBERS kicks another owner agent', () => {
+Deno.test('member_kick denied when non-owner with KICK_MEMBERS kicks another member agent', () => {
 	const state = baseState()
 	const event = { type: 'member_kick', content: { targetMemberKey: AGENT_KEY } }
-	assertEquals(checkEventPermission(state, event, MODERATOR).ok, true)
+	const result = checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'agent kick denied')
+})
+
+Deno.test('member_kick allowed when ADMIN kicks another owner agent', () => {
+	const state = baseState({
+		members: {
+			...baseState().members,
+			[AGENT_KEY]: {
+				...baseState().members[AGENT_KEY],
+				ownerPubKeyHash: MODERATOR,
+			},
+		},
+	})
+	const event = { type: 'member_kick', content: { targetMemberKey: AGENT_KEY } }
+	assertEquals(checkEventPermission(state, event, OWNER).ok, true)
 })
 
 Deno.test('member_kick denied when non-owner without KICK_MEMBERS kicks agent', () => {
@@ -83,7 +99,7 @@ Deno.test('member_kick denied when non-owner without KICK_MEMBERS kicks agent', 
 	const event = { type: 'member_kick', content: { targetMemberKey: AGENT_KEY } }
 	const result = checkEventPermission(state, event, STRANGER)
 	assertEquals(result.ok, false)
-	assertEquals(result.reason, 'KICK_MEMBERS denied')
+	assertEquals(result.reason, 'agent kick denied')
 })
 
 Deno.test('member_ban denied without BAN_MEMBERS', () => {
