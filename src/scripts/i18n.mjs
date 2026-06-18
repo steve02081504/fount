@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 import process from 'node:process'
 import { setInterval } from 'node:timers'
 
@@ -9,7 +10,8 @@ import supportsAnsi from 'npm:supports-ansi'
 import { getUserByUsername } from '../server/auth.mjs'
 import { __dirname } from '../server/base.mjs'
 import { events } from '../server/events.mjs'
-import { loadData, loadTempData, saveData } from '../server/setting_loader.mjs'
+import { loadRegistryJsonEntries } from '../server/registries.mjs'
+import { loadData, saveData } from '../server/setting_loader.mjs'
 import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { loadJsonFile } from './json_loader.mjs'
@@ -98,13 +100,21 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 	const result = {
 		...getLocaleData(effectivePreferred)
 	}
-	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
-	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	for (const partpath in partsLocaleLists) {
-		const resultLocale = getbestlocale(effectivePreferred, partsLocaleLists[partpath])
+	const localeEntries = await loadRegistryJsonEntries(username, 'locales')
+	for (const { entry, data } of localeEntries.sort((a, b) => (a.entry.level ?? 0) - (b.entry.level ?? 0))) {
+		const partpath = entry.partpath || 'unknown'
+		const localesDir = typeof data === 'string' ? data : null
+		if (!localesDir) continue
+		let localeFiles = []
+		try {
+			localeFiles = fs.readdirSync(localesDir).filter(f => f.endsWith('.json'))
+		}
+		catch { continue }
+		const availableLocales = localeFiles.map(f => f.slice(0, -5))
+		const resultLocale = getbestlocale(effectivePreferred, availableLocales)
 		partsLocaleCache[partpath] ??= {}
-		const partdata = partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
+		const partdata = partsLocaleCache[partpath][resultLocale] ??= loadJsonFile(path.join(localesDir, `${resultLocale}.json`))
 		Object.assign(result, partdata)
 	}
 	saveData(username, 'parts_locales_cache')
@@ -116,9 +126,6 @@ events.on('part-loaded', ({ username, partpath }) => {
 events.on('part-uninstalled', ({ username, partpath }) => {
 	delete loadData(username, 'parts_locales_cache')?.[partpath]
 	saveData(username, 'parts_locales_cache')
-	delete loadData(username, 'parts_locale_lists_cache')?.[partpath]
-	saveData(username, 'parts_locale_lists_cache')
-	delete loadTempData(username, 'parts_locale_loaders')?.[partpath]
 })
 
 /**
@@ -159,23 +166,6 @@ if (localhostLocales[0] === 'zh-CN')
 		if (new Date().getDay() === 4)
 			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')
 	}, ms('5m')).unref()
-
-/**
- * 为部件添加区域设置数据。
- * @param {string} username - 用户的用户名。
- * @param {string} partpath - 部件的路径（例如 'chars/GentianAphrodite'）。
- * @param {string[]} localeList - 部件的可用区域设置列表。
- * @param {Function} loader - 加载部件区域设置数据的函数。
- * @returns {void}
- */
-export function addPartLocaleData(username, partpath, localeList, loader) {
-	const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
-	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
-	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	partsLocaleLists[normalizedPartpath] = localeList
-	partsLocaleLoaders[normalizedPartpath] = loader
-	saveData(username, 'parts_locale_lists_cache')
-}
 
 /**
  * 从对象中获取嵌套值。
