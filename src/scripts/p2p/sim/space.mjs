@@ -68,6 +68,17 @@ const DOMAIN_EPS = 1e-6
 
 /**
  * @param {number} x 任意实数
+ * @returns {number} softplus，恒 > 0
+ */
+function softplus(x) {
+	const z = Number.isFinite(x) ? x : 0
+	if (z > 20) return z
+	if (z < -20) return Math.exp(z)
+	return Math.log1p(Math.exp(z))
+}
+
+/**
+ * @param {number} x 任意实数
  * @returns {number} sigmoid，落在 (0,1)
  */
 function sigmoid(x) {
@@ -79,8 +90,8 @@ function sigmoid(x) {
  * @returns {number} logit
  */
 function logit(p) {
-	const c = Math.min(1 - EPS, Math.max(EPS, p))
-	return Math.log(c / (1 - c))
+	const safe = p > 0 && p < 1 ? p : sigmoid(p)
+	return Math.log(safe / (1 - safe))
 }
 
 /**
@@ -88,8 +99,8 @@ function logit(p) {
  * @returns {number} atanh
  */
 function atanhScore(s) {
-	const c = Math.min(1 - EPS, Math.max(-1 + EPS, s))
-	return Math.atanh(c)
+	const safe = s > -1 && s < 1 ? s : Math.tanh(s)
+	return Math.atanh(safe)
 }
 
 /**
@@ -123,13 +134,26 @@ export function normalizeParam(value, spec) {
 		return loadDefaultTunables()[spec.module][spec.key]
 	switch (spec.kind) {
 		case 'count':
-			return Math.max(1, Math.round(value))
+			if (Number.isInteger(value) && value >= 1) return value
+			return Math.round(1 + softplus(value - 1))
 		case 'pos':
-			return quantize(Math.max(DOMAIN_EPS, value), 6)
+			return quantize(value > 0 ? value : softplus(value) + DOMAIN_EPS, 6)
 		case 'unit':
-			return quantize(Math.min(1 - DOMAIN_EPS, Math.max(DOMAIN_EPS, value)), 6)
+			if (value > 0 && value < 1) return quantize(value, 6)
+			{
+				const repaired = quantize(sigmoid(value), 6)
+				if (repaired >= 1) return 1 - DOMAIN_EPS
+				if (repaired <= 0) return DOMAIN_EPS
+				return repaired
+			}
 		case 'score':
-			return quantize(Math.min(1 - DOMAIN_EPS, Math.max(-1 + DOMAIN_EPS, value)), 6)
+			if (value > -1 && value < 1) return quantize(value, 6)
+			{
+				const repaired = quantize(Math.tanh(value), 6)
+				if (repaired >= 1) return 1 - DOMAIN_EPS
+				if (repaired <= -1) return -1 + DOMAIN_EPS
+				return repaired
+			}
 		default:
 			return value
 	}
@@ -176,7 +200,7 @@ function toLatent(value, kind) {
 	switch (kind) {
 		case 'pos':
 		case 'count':
-			return Math.log(Math.max(EPS, value))
+			return Math.log(value > EPS ? value : softplus(value) + EPS)
 		case 'unit':
 			return logit(value)
 		case 'score':

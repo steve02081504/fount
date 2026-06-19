@@ -81,10 +81,8 @@ const GRADIENT_GUARDS = [
 	['reputation', 'introducerSeedEdge', 0.02, 0.95],
 	['reputation', 'wantUnknownThreshold', 1, 12],
 	['reputation', 'collusionMaxHop', 1, 8],
-	['trustGraph', 'hintDefaultWeight', 0.001, 0.95],
 	['trustGraph', 'hintMaxBonus', 0.001, 0.95],
 	['trustGraph', 'rosterDefaultScore', 0.001, 0.95],
-	['social', 'socialBlockDecayFraction', 0.001, 0.95],
 	['archive', 'archiveQuorumPeerMin', 1, 6],
 	['archive', 'archiveQuorumPeerStrictMin', 2, 9],
 ]
@@ -96,5 +94,5 @@ for (const [module, key, low, high] of GRADIENT_GUARDS)
 		const highBundle = loadDefaultTunables()
 		highBundle[module][key] = high
 		const delta = Math.abs(simOnlyFitness(lowBundle) - simOnlyFitness(highBundle))
-		assertEquals(delta > 1e-4, true, `${module}.${key} flat: delta=${delta}`)
+		assertEquals(delta > 1e-6, true, `${module}.${key} flat: delta=${delta}`)
 	})

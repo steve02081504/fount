@@ -29,7 +29,10 @@ export function computeRepMaxEff(data) {
 	let maxScore = /** @type {number | null} */ null
 	for (const nodeId of Object.keys(data.byNodeHash)) {
 		const score = Number(data.byNodeHash[nodeId]?.score)
-		if (Number.isFinite(score)) maxScore = maxScore === null ? score : Math.max(maxScore, score)
+		if (!Number.isFinite(score)) continue
+		// rep_max_eff 仅由「可施加影响」的正信誉邻居定义，避免全负信誉集把分母压成异常值。
+		if (score <= 0) continue
+		maxScore = maxScore === null ? score : Math.max(maxScore, score)
 	}
 	return Math.max(maxScore === null ? 0 : clampReputationScore(maxScore), REP_MAX_EFF_EPS)
 }
@@ -45,9 +48,10 @@ export function computeRepMaxEff(data) {
  */
 export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = false, tunables = reputationTunables) {
 	const claimStrength = Number.isFinite(claim) ? claim : tunables.slashDefaultClaim
+	const senderInfluence = Math.max(0, Number.isFinite(repSender) ? repSender : 0)
 	return verified
 		? Math.abs(claimStrength) * tunables.slashVerifiedMultiplier
-		: Math.abs((claimStrength * repSender) / repMaxEff)
+		: Math.abs((claimStrength * senderInfluence) / repMaxEff)
 }
 
 /**

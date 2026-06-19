@@ -45,8 +45,17 @@ export function mergeTrustNode(byNode, scopeId, nodeHash, score) {
  * @returns {Map<string, TrustNode>} nodeHash → 节点
  */
 export function mergeGraph(inputs, tunables = trustGraphTunables) {
-	/** @type {Map<string, TrustNode>} */
-	const byNode = new Map()
+	/**
+	 * @typedef {{
+	 *   scopeIds: Set<string>,
+	 *   networkScores: number[],
+	 *   rosterScores: number[],
+	 *   hintWeightSum: number,
+	 *   hintSources: Set<string>,
+	 * }} NodeEvidence
+	 */
+	/** @type {Map<string, NodeEvidence>} */
+	const evidenceByNode = new Map()
 	const blocked = inputs.blockedNodeHashes || new Set()
 	const now = inputs.now ?? Date.now()
 	/**
@@ -57,21 +66,42 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 		return blocked.has(nodeHash)
 	}
 
+	/**
+	 * @param {string} nodeHash 64 hex
+	 * @returns {NodeEvidence} 节点证据容器
+	 */
+	function nodeEvidence(nodeHash) {
+		let ev = evidenceByNode.get(nodeHash)
+		if (!ev) {
+			ev = {
+				scopeIds: new Set(),
+				networkScores: [],
+				rosterScores: [],
+				hintWeightSum: 0,
+				hintSources: new Set(),
+			}
+			evidenceByNode.set(nodeHash, ev)
+		}
+		return ev
+	}
+
 	for (const nodeHash of [...inputs.trustedPeers || [], ...inputs.explorePeers || []]) {
 		if (isBlocked(nodeHash)) continue
 		const score = inputs.scoreOf?.(nodeHash) ?? 0
-		mergeTrustNode(byNode, 'network', nodeHash, Number(score))
+		const ev = nodeEvidence(nodeHash)
+		ev.scopeIds.add('network')
+		ev.networkScores.push(Number(score))
 	}
 
 	for (const hint of inputs.hints || []) {
 		if (hint.expiresAt && hint.expiresAt <= now) continue
 		if (isBlocked(hint.nodeHash)) continue
-		const base = Number(inputs.scoreOf?.(hint.nodeHash) ?? 0)
-		// 提示是不可信入口：它只能让节点「被发现」，附带的权重至多抬升 hintMaxBonus，
-		// 不允许攻击者用一个提示把任意节点的有效信誉灌到顶（hint poisoning）。
+		const ev = nodeEvidence(hint.nodeHash)
+		ev.scopeIds.add(`hint:${hint.source ?? 'unknown'}`)
 		const rawWeight = Number(hint.weight ?? tunables.hintDefaultWeight)
-		const bonus = Math.min(tunables.hintMaxBonus, Math.max(0, Number.isFinite(rawWeight) ? rawWeight : 0))
-		mergeTrustNode(byNode, `hint:${hint.source}`, hint.nodeHash, base + bonus)
+		if (Number.isFinite(rawWeight) && rawWeight > 0)
+			ev.hintWeightSum += rawWeight
+		ev.hintSources.add(String(hint.source ?? 'unknown'))
 	}
 
 	for (const room of inputs.roomRosters || [])
@@ -81,10 +111,34 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 			// 仅当本地从未给它打过分（新人）时才退回 rosterDefaultScore。
 			const local = room.scoreOf?.(remoteNodeHash) ?? inputs.scoreOf?.(remoteNodeHash)
 			const score = Number.isFinite(Number(local)) ? Number(local) : tunables.rosterDefaultScore
-			mergeTrustNode(byNode, room.scopeId, remoteNodeHash, score)
+			const ev = nodeEvidence(remoteNodeHash)
+			ev.scopeIds.add(room.scopeId)
+			ev.rosterScores.push(score)
 		}
 
+	/** @type {Map<string, TrustNode>} */
+	const byNode = new Map()
+	for (const [nodeHash, ev] of evidenceByNode.entries()) {
+		const networkMean = ev.networkScores.length
+			? ev.networkScores.reduce((s, n) => s + n, 0) / ev.networkScores.length
+			: NaN
+		const rosterMean = ev.rosterScores.length
+			? ev.rosterScores.reduce((s, n) => s + n, 0) / ev.rosterScores.length
+			: NaN
+		const baseScores = [networkMean, rosterMean].filter(Number.isFinite)
+		const baseScore = baseScores.length
+			? baseScores.reduce((s, n) => s + n, 0) / baseScores.length
+			: 0
 
+		// Hint 只做“发现增益”：收益按总权重指数饱和，防止多源投毒线性抬分。
+		const hintScale = 0.1
+		const saturatedHintLift = tunables.hintMaxBonus * (1 - Math.exp(-ev.hintWeightSum / hintScale))
+		const hasHardEvidence = ev.networkScores.length + ev.rosterScores.length > 0
+		const hintReliability = hasHardEvidence ? 1 : 0.35
+		const score = baseScore + saturatedHintLift * hintReliability
+
+		byNode.set(nodeHash, { nodeHash, score, scopeIds: [...ev.scopeIds] })
+	}
 	return byNode
 }
 
