@@ -40,11 +40,52 @@ export const PARAM_SPACE = [
 ]
 
 /**
+ * @param {number} n 数值
+ * @returns {number} 小数位数
+ */
+function decimalPlaces(n) {
+	const text = String(n)
+	const dot = text.indexOf('.')
+	return dot === -1 ? 0 : text.length - dot - 1
+}
+
+/**
+ * @param {number} value 原始值
+ * @param {number} [step] 步长
+ * @param {number} [min] 下界（用于步长量化）
+ * @returns {number} 消除浮点尾差的值
+ */
+export function quantize(value, step, min = 0) {
+	if (!Number.isFinite(value)) return value
+	const decimals = Math.max(decimalPlaces(step ?? 0), decimalPlaces(min))
+	return Number(value.toFixed(decimals))
+}
+
+/**
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
+ * @returns {void}
+ */
+export function sanitizeArchiveQuorum(bundle) {
+	const peerMin = bundle.archive.archiveQuorumPeerMin
+	if (bundle.archive.archiveQuorumPeerStrictMin < peerMin)
+		bundle.archive.archiveQuorumPeerStrictMin = peerMin
+}
+
+/**
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
+ * @returns {import('./tunables_bundle.mjs').TunablesBundle} 约束后的 bundle
+ */
+export function sanitizeBundle(bundle) {
+	sanitizeArchiveQuorum(bundle)
+	return bundle
+}
+
+/**
  * @param {() => number} rng 随机源
  * @param {ParamSpec} spec 参数规格
  * @returns {number} 采样值
  */
-function sampleParam(rng, spec) {
+export function sampleParam(rng, spec) {
 	const span = spec.max - spec.min
 	let v = spec.min + rng() * span
 	if (spec.step) {
@@ -52,6 +93,7 @@ function sampleParam(rng, spec) {
 		v = spec.min + steps * spec.step
 	}
 	if (spec.kind === 'int') v = Math.round(v)
+	else v = quantize(v, spec.step, spec.min)
 	return Math.min(spec.max, Math.max(spec.min, v))
 }
 
@@ -64,7 +106,7 @@ export function randomCandidate(seed) {
 	const base = loadDefaultTunables()
 	for (const spec of PARAM_SPACE)
 		base[spec.module][spec.key] = sampleParam(rng, spec)
-	return base
+	return sanitizeBundle(base)
 }
 
 /**
@@ -80,7 +122,7 @@ export function mutateCandidate(parent, seed, mutationRate = 0.3) {
 		if (rng() > mutationRate) continue
 		child[spec.module][spec.key] = sampleParam(rng, spec)
 	}
-	return child
+	return sanitizeBundle(child)
 }
 
 /**
@@ -95,5 +137,5 @@ export function crossoverCandidates(a, b, seed) {
 	for (const spec of PARAM_SPACE)
 		if (rng() < 0.5)
 			out[spec.module][spec.key] = b[spec.module][spec.key]
-	return out
+	return sanitizeBundle(out)
 }

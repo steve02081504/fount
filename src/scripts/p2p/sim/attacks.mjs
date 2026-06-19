@@ -2,7 +2,7 @@
  * 恶意节点行为原型。
  */
 
-/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob'} AttackKind */
+/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator'} AttackKind */
 
 /**
  * @param {object} ctx 仿真上下文
@@ -35,6 +35,21 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			break
 		case 'social_mob':
 			runSocialMob(ctx, node, observer, rng, tunables)
+			break
+		case 'archive_forger':
+			runArchiveForger(ctx, node, observer, tunables)
+			break
+		case 'relay_farmer':
+			runRelayFarmer(ctx, node, observer, round, tunables)
+			break
+		case 'whitewasher':
+			runWhitewasher(ctx, node, observer, rng, round, tunables)
+			break
+		case 'report_flooder':
+			runReportFlooder(ctx, node, observer, rng, tunables)
+			break
+		case 'oscillator':
+			runOscillator(ctx, node, observer, round, tunables)
 			break
 		default:
 			break
@@ -168,6 +183,105 @@ function runSocialMob(ctx, node, observer, rng, tunables) {
 		ctx.now,
 		tunables.social,
 	)
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {void}
+ */
+function runArchiveForger(ctx, node, observer, tunables) {
+	const { penalizeArchiveServeMismatchPure } = ctx.engine
+	penalizeArchiveServeMismatchPure(observer.reputation, node.id, tunables.reputation)
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {number} round 当前回合
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {void}
+ */
+function runRelayFarmer(ctx, node, observer, round, tunables) {
+	const { bumpReputationOnRelayPure } = ctx.engine
+	for (let i = 0; i < 5; i++)
+		bumpReputationOnRelayPure(observer.reputation, node.id, `relay-farm:${round}:${i}`, ctx.now + i, tunables.reputation)
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {() => number} rng 随机源
+ * @param {number} round 当前回合
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {void}
+ */
+function runWhitewasher(ctx, node, observer, rng, round, tunables) {
+	const { applySubjectiveSlashPure, seedMemberReputationFromIntroducerPure } = ctx.engine
+	const stage = node.whitewashStage ?? 0
+	if (stage === 0 && round >= 6) {
+		applySubjectiveSlashPure(
+			observer.reputation,
+			node.id,
+			observer.id,
+			tunables.reputation.slashUnverifiedDefaultClaim,
+			false,
+			tunables.reputation,
+		)
+		node.whitewashStage = 1
+	}
+	else if (stage === 1 && round % 7 === 0) {
+		const intro = pickHonestTarget(ctx, observer, rng)
+		if (intro) {
+			seedMemberReputationFromIntroducerPure(observer.reputation, node.id, intro.id, 0.6)
+			node.whitewashStage = 2
+		}
+	}
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {() => number} rng 随机源
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {void}
+ */
+function runReportFlooder(ctx, node, observer, rng, tunables) {
+	const { applySubjectiveSlashPure } = ctx.engine
+	const targets = ctx.nodes.filter(n => n.kind === 'honest' && n.id !== observer.id)
+	for (let i = 0; i < Math.min(4, targets.length); i++) {
+		const target = targets[Math.floor(rng() * targets.length)]
+		if (!target) continue
+		applySubjectiveSlashPure(
+			observer.reputation,
+			target.id,
+			node.id,
+			tunables.reputation.slashUnverifiedDefaultClaim * 1.5,
+			false,
+			tunables.reputation,
+		)
+	}
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {number} round 当前回合
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {void}
+ */
+function runOscillator(ctx, node, observer, round, tunables) {
+	const { bumpChunkStorageReputationPure, penalizeChunkStorageFailurePure } = ctx.engine
+	if (round % 2 === 0)
+		bumpChunkStorageReputationPure(observer.reputation, node.id, tunables.reputation)
+	else
+		penalizeChunkStorageFailurePure(observer.reputation, node.id, tunables.reputation)
 }
 
 /**

@@ -10,6 +10,13 @@
  *   fanoutReachRate: number,
  *   fanoutCostRatio: number,
  *   collusionCollapseRate: number,
+ *   relayPreservationRate: number,
+ *   profilePreservationRate: number,
+ *   sybilContainmentRate: number,
+ *   archiveDefenseRate: number,
+ *   mailboxReachRate: number,
+ *   mailboxCostRatio: number,
+ *   archiveQuorumAccuracy: number,
  *   observerCount: number,
  *   maliciousCount: number,
  *   honestCount: number,
@@ -19,14 +26,38 @@
 
 /** @typedef {Partial<Record<keyof SimSnapshot, number>>} MetricWeights */
 
+/** 参与适应度加权的速率类指标 */
+export const RATE_METRIC_KEYS = Object.freeze([
+	'malSuppressionRate',
+	'honestPreservationRate',
+	'falsePositiveRate',
+	'fanoutReachRate',
+	'fanoutCostRatio',
+	'collusionCollapseRate',
+	'relayPreservationRate',
+	'profilePreservationRate',
+	'sybilContainmentRate',
+	'archiveDefenseRate',
+	'mailboxReachRate',
+	'mailboxCostRatio',
+	'archiveQuorumAccuracy',
+])
+
 /** 默认适应度加权系数 */
 export const DEFAULT_WEIGHTS = Object.freeze({
-	malSuppressionRate: 0.35,
-	honestPreservationRate: 0.30,
-	collusionCollapseRate: 0.15,
-	fanoutReachRate: 0.10,
-	falsePositiveRate: -0.25,
-	fanoutCostRatio: -0.05,
+	malSuppressionRate: 0.22,
+	honestPreservationRate: 0.18,
+	collusionCollapseRate: 0.10,
+	sybilContainmentRate: 0.08,
+	archiveDefenseRate: 0.08,
+	relayPreservationRate: 0.06,
+	profilePreservationRate: 0.06,
+	fanoutReachRate: 0.06,
+	mailboxReachRate: 0.06,
+	archiveQuorumAccuracy: 0.05,
+	falsePositiveRate: -0.18,
+	fanoutCostRatio: -0.04,
+	mailboxCostRatio: -0.03,
 })
 
 /**
@@ -102,4 +133,17 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 		std: totalStd / n,
 		byScenario,
 	}
+}
+
+/**
+ * @param {SimSnapshot} baseline 基线快照
+ * @param {SimSnapshot} best 最优快照
+ * @returns {Array<{ key: string, baseline: number, best: number }>} 各维度对比行
+ */
+export function snapshotMetricRows(baseline, best) {
+	return RATE_METRIC_KEYS.map(key => ({
+		key,
+		baseline: baseline[key],
+		best: best[key],
+	}))
 }

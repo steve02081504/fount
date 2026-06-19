@@ -5,8 +5,9 @@
  *
  * 用法:
  *   deno run -A src/scripts/p2p/sim/cli.mjs sim --scenario balanced
- *   deno run -A src/scripts/p2p/sim/cli.mjs mine --generations 20 --apply
- *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m --apply
+ *   deno run -A src/scripts/p2p/sim/cli.mjs mine --generations 20
+ *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m
+ *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m --no-apply
  */
 import { applyTunablesBundle } from './apply.mjs'
 import { parseDurationMs } from './duration.mjs'
@@ -60,6 +61,33 @@ function parseSeeds(raw) {
 }
 
 /**
+ * @param {number | null} durationMs 时长上限
+ * @param {number} generations 代数上限
+ * @returns {(info: import('./optimizer.mjs').OptimizerProgress) => void} 进度打印器
+ */
+function createProgressPrinter(durationMs, generations) {
+	const isTty = typeof Deno.stdout.isTerminal === 'function' && Deno.stdout.isTerminal()
+	let lastWrite = 0
+	const encoder = new TextEncoder()
+
+	return (info) => {
+		const now = Date.now()
+		if (now - lastWrite < 200 && info.generation > 0) return
+		lastWrite = now
+
+		const pct = info.percent.toFixed(1)
+		const elapsed = (info.elapsedMs / 1000).toFixed(1)
+		const limit = durationMs != null ? `${(durationMs / 1000).toFixed(1)}` : `${generations}`
+		const line = `mining ${pct}% | gen ${info.generationsRun} | best ${info.bestFitness.toFixed(4)} | mean ${info.meanFitness.toFixed(4)} | ${elapsed}s/${limit}${durationMs != null ? 's' : ' gen'}`
+
+		if (isTty)
+			Deno.stdout.writeSync(encoder.encode(`\r${line.padEnd(80)}`))
+		else if (info.generation === 0 || info.generationsRun % 10 === 0)
+			console.log(line)
+	}
+}
+
+/**
  * @param {Record<string, string | boolean> & { _: string[] }} args 已解析参数
  * @returns {Promise<void>}
  */
@@ -87,11 +115,13 @@ async function cmdMine(args) {
 	const seeds = parseSeeds(args.seeds)
 	const seedBase = num(args.seedBase, 42)
 	const durationMs = parseDurationMs(args.duration)
-	const doApply = !!args.apply
+	const doApply = !(args['no-apply'] || args['dry-run'])
 	const scenarios = resolveScenarios(scenarioId)
 
 	if (durationMs == null && args.duration != null && args.duration !== true)
 		console.warn(`warning: invalid --duration ${JSON.stringify(args.duration)}, using --generations instead`)
+
+	const onProgress = createProgressPrinter(durationMs, generations)
 
 	const result = await runOptimizer({
 		scenarios,
@@ -101,22 +131,24 @@ async function cmdMine(args) {
 		seedBase,
 		weights: DEFAULT_WEIGHTS,
 		durationMs,
+		onProgress,
 	})
+
+	if (typeof Deno.stdout.isTerminal === 'function' && Deno.stdout.isTerminal())
+		console.log('')
 
 	const { baseline, best, history, stoppedBy, generationsRun, elapsedMs } = result
 
 	/** @type {object} */
-	const applyInfo = { applied: false, reason: 'report-only' }
-	if (doApply) 
+	const applyInfo = { applied: false, reason: doApply ? 'below-margin' : 'dry-run' }
+	if (doApply)
 		if (shouldApply(baseline.result.fitness, best.result.fitness)) {
 			const written = await applyTunablesBundle(best.tunables)
 			applyInfo.applied = true
 			applyInfo.written = written
 		}
-		else 
+		else
 			applyInfo.reason = `fitness ${best.result.fitness.toFixed(4)} 未超过基线 ${baseline.result.fitness.toFixed(4)} + margin`
-		
-	
 
 	const payload = {
 		generatedAt: new Date().toISOString(),
@@ -134,7 +166,7 @@ async function cmdMine(args) {
 		apply: applyInfo,
 	}
 
-	const { jsonPath, mdPath } = await writeReport(payload, doApply ? 'mine-applied' : 'mine')
+	const { jsonPath, mdPath } = await writeReport(payload, applyInfo.applied ? 'mine-applied' : 'mine')
 	console.log(`fitness baseline=${baseline.result.fitness.toFixed(4)} best=${best.result.fitness.toFixed(4)}`)
 	if (durationMs != null)
 		console.log(`stopped by ${stoppedBy} after ${generationsRun} generation(s), elapsed ${(elapsedMs / 1000).toFixed(1)}s / ${(durationMs / 1000).toFixed(1)}s`)
@@ -142,15 +174,30 @@ async function cmdMine(args) {
 	console.log(`report: ${mdPath}`)
 	if (applyInfo.applied) console.log('applied best tunables to module JSON files')
 	else if (doApply) console.log(`not applied: ${applyInfo.reason}`)
+	else console.log('dry-run: tunables not written (use default apply; pass --no-apply to suppress)')
+}
+
+/**
+ *
+ */
+function printHelp() {
+	console.log(`usage:
+  cli.mjs sim [--scenario ID] [--seeds 1,2,3]
+  cli.mjs mine [--scenarios ID|all] [--generations N] [--duration 5m]
+               [--population N] [--seeds 1,2,3] [--no-apply|--dry-run]
+
+默认 mine 会将最优参数写回各模块 JSON（需超过基线 + margin）。
+加 --no-apply 或 --dry-run 仅生成报告。`)
 }
 
 const args = parseArgs(Deno.args)
 const cmd = args._[0] || 'mine'
 
-if (cmd === 'sim') await cmdSim(args)
+if (args.help || args.h) printHelp()
+else if (cmd === 'sim') await cmdSim(args)
 else if (cmd === 'mine') await cmdMine(args)
 else {
 	console.error(`unknown command: ${cmd}`)
-	console.error('usage: cli.mjs [sim|mine] [--scenario ID] [--generations N] [--duration 5m] [--seeds 1,2,3] [--apply]')
+	printHelp()
 	Deno.exit(1)
 }

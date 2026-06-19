@@ -5,6 +5,8 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { quantize } from './space.mjs'
+
 /** @type {Record<keyof import('./tunables_bundle.mjs').TunablesBundle, URL>} */
 const MODULE_URLS = {
 	reputation: new URL('../reputation.tunables.json', import.meta.url),
@@ -15,13 +17,35 @@ const MODULE_URLS = {
 }
 
 /**
+ * @param {unknown} value 任意值
+ * @returns {unknown} 递归清理后的值
+ */
+function sanitizeNumbers(value) {
+	if (typeof value === 'number') {
+		if (!Number.isFinite(value)) return value
+		if (Number.isInteger(value)) return value
+		return quantize(value)
+	}
+	if (Array.isArray(value)) return value.map(sanitizeNumbers)
+	if (value && typeof value === 'object') {
+		/** @type {Record<string, unknown>} */
+		const out = {}
+		for (const [k, v] of Object.entries(value))
+			out[k] = sanitizeNumbers(v)
+		return out
+	}
+	return value
+}
+
+/**
  * @param {keyof import('./tunables_bundle.mjs').TunablesBundle} module 模块键
  * @param {Record<string, unknown>} data JSON 内容
  * @returns {Promise<string>} 写入路径
  */
 export async function writeModuleTunables(module, data) {
 	const filePath = fileURLToPath(MODULE_URLS[module])
-	await writeFile(filePath, `${JSON.stringify(data, null, '\t')}\n`, 'utf8')
+	const clean = /** @type {Record<string, unknown>} */ sanitizeNumbers(data)
+	await writeFile(filePath, `${JSON.stringify(clean, null, '\t')}\n`, 'utf8')
 	return filePath
 }
 

@@ -17,6 +17,19 @@ import { loadDefaultTunables } from './tunables_bundle.mjs'
 
 /**
  * @typedef {{
+ *   generation: number,
+ *   generationsRun: number,
+ *   bestFitness: number,
+ *   meanFitness: number,
+ *   elapsedMs: number,
+ *   durationMs: number | null,
+ *   generations: number,
+ *   percent: number,
+ * }} OptimizerProgress
+ */
+
+/**
+ * @typedef {{
  *   baseline: CandidateRecord,
  *   best: CandidateRecord,
  *   history: Array<{ generation: number, bestFitness: number, meanFitness: number }>,
@@ -28,12 +41,28 @@ import { loadDefaultTunables } from './tunables_bundle.mjs'
  */
 
 /**
+ * @param {number | null} durationMs 时长上限
+ * @param {number} generations 代数上限
+ * @param {number} generation 当前代
+ * @param {number} elapsedMs 已用毫秒
+ * @param {boolean} timed 是否按时间停止
+ * @returns {number} 0..100 进度百分比
+ */
+export function computeProgressPercent(durationMs, generations, generation, elapsedMs, timed) {
+	let raw
+	if (timed && durationMs != null && durationMs > 0)
+		raw = (elapsedMs / durationMs) * 100
+	else
+		raw = generations > 0 ? (generation / generations) * 100 : 0
+	return Math.max(0, Math.min(100, raw))
+}
+
+/**
  * @param {CandidateRecord[]} pool 当前种群
  * @param {CandidateRecord} best 当前最优
- * @param {number} generation 代数
  * @returns {{ pool: CandidateRecord[], best: CandidateRecord, meanFitness: number }} 本代统计
  */
-function recordGeneration(pool, best, generation) {
+function recordGeneration(pool, best) {
 	const meanFitness = pool.reduce((s, c) => s + c.result.fitness, 0) / pool.length
 	return { pool, best, meanFitness }
 }
@@ -47,6 +76,7 @@ function recordGeneration(pool, best, generation) {
  * @param {number} [opts.seedBase=42] 搜索种子基
  * @param {import('./metrics.mjs').MetricWeights} [opts.weights] 权重
  * @param {number | null} [opts.durationMs] 墙钟时长上限（毫秒）；设则按时间停止
+ * @param {(info: OptimizerProgress) => void} [opts.onProgress] 进度回调
  * @returns {Promise<OptimizerResult>} 搜索结论
  */
 export async function runOptimizer(opts) {
@@ -58,11 +88,33 @@ export async function runOptimizer(opts) {
 		seedBase = 42,
 		weights,
 		durationMs = null,
+		onProgress,
 	} = opts
 
 	const startedAt = Date.now()
 	const deadline = durationMs != null && durationMs > 0 ? startedAt + durationMs : null
 	const timed = deadline != null
+
+	/**
+	 * @param {number} generation 代数
+	 * @param {number} generationsRun 已完成代数
+	 * @param {number} bestFitness 最优适应度
+	 * @param {number} meanFitness 平均适应度
+	 */
+	function emitProgress(generation, generationsRun, bestFitness, meanFitness) {
+		if (!onProgress) return
+		const elapsedMs = Date.now() - startedAt
+		onProgress({
+			generation,
+			generationsRun,
+			bestFitness,
+			meanFitness,
+			elapsedMs,
+			durationMs,
+			generations,
+			percent: computeProgressPercent(durationMs, generations, generation, elapsedMs, timed),
+		})
+	}
 
 	const baselineTunables = loadDefaultTunables()
 	const baselineResult = await evaluateTunables(scenarios, seeds, baselineTunables, runSimulation, weights)
@@ -84,19 +136,20 @@ export async function runOptimizer(opts) {
 	}
 
 	{
-		const snap = recordGeneration(pool, best, 0)
+		const snap = recordGeneration(pool, best)
 		history.push({
 			generation: 0,
 			bestFitness: best.result.fitness,
 			meanFitness: snap.meanFitness,
 		})
+		emitProgress(0, 0, best.result.fitness, snap.meanFitness)
 	}
 
 	/** @type {'generations' | 'duration'} */
 	let stoppedBy = timed ? 'duration' : 'generations'
 	let generationsRun = 0
 
-	if (timed && pastDeadline(deadline)) 
+	if (timed && pastDeadline(deadline))
 		return {
 			baseline,
 			best,
@@ -106,7 +159,6 @@ export async function runOptimizer(opts) {
 			durationMs,
 			elapsedMs: Date.now() - startedAt,
 		}
-	
 
 	let gen = 1
 	while (true) {
@@ -128,12 +180,13 @@ export async function runOptimizer(opts) {
 
 		pool = next
 		generationsRun = gen
-		const snap = recordGeneration(pool, best, gen)
+		const snap = recordGeneration(pool, best)
 		history.push({
 			generation: gen,
 			bestFitness: best.result.fitness,
 			meanFitness: snap.meanFitness,
 		})
+		emitProgress(gen, generationsRun, best.result.fitness, snap.meanFitness)
 
 		if (timed && pastDeadline(deadline)) {
 			stoppedBy = 'duration'
