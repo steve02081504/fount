@@ -3,6 +3,7 @@
 	"federationChunkFetchFanoutK": 6,
 	"federationChunkMaxBytes": 524288,
 	"hintDefaultWeight": 0.1,
+	"hintMaxBonus": 0.15,
 	"rosterDefaultScore": 0.1,
 	"sendFallbackPeerLimit": 4,
 	"pickTopNodesDefaultLimit": 12

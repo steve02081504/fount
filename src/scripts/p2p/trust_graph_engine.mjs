@@ -66,22 +66,24 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 	for (const hint of inputs.hints || []) {
 		if (hint.expiresAt && hint.expiresAt <= now) continue
 		if (isBlocked(hint.nodeHash)) continue
-		const base = inputs.scoreOf?.(hint.nodeHash) ?? 0
-		mergeTrustNode(
-			byNode,
-			`hint:${hint.source}`,
-			hint.nodeHash,
-			Number(base) + (hint.weight ?? tunables.hintDefaultWeight),
-		)
+		const base = Number(inputs.scoreOf?.(hint.nodeHash) ?? 0)
+		// 提示是不可信入口：它只能让节点「被发现」，附带的权重至多抬升 hintMaxBonus，
+		// 不允许攻击者用一个提示把任意节点的有效信誉灌到顶（hint poisoning）。
+		const rawWeight = Number(hint.weight ?? tunables.hintDefaultWeight)
+		const bonus = Math.min(tunables.hintMaxBonus, Math.max(0, Number.isFinite(rawWeight) ? rawWeight : 0))
+		mergeTrustNode(byNode, `hint:${hint.source}`, hint.nodeHash, base + bonus)
 	}
 
-	for (const room of inputs.roomRosters || []) 
+	for (const room of inputs.roomRosters || [])
 		for (const remoteNodeHash of room.nodeHashes) {
 			if (!remoteNodeHash || isBlocked(remoteNodeHash)) continue
-			const score = room.scoreOf?.(remoteNodeHash) ?? inputs.scoreOf?.(remoteNodeHash) ?? tunables.rosterDefaultScore
-			mergeTrustNode(byNode, room.scopeId, remoteNodeHash, Number(score) || tunables.rosterDefaultScore)
+			// 名册只能告诉你「这个节点存在于该 scope」；信任分一律取本地主观信誉，
+			// 仅当本地从未给它打过分（新人）时才退回 rosterDefaultScore。
+			const local = room.scoreOf?.(remoteNodeHash) ?? inputs.scoreOf?.(remoteNodeHash)
+			const score = Number.isFinite(Number(local)) ? Number(local) : tunables.rosterDefaultScore
+			mergeTrustNode(byNode, room.scopeId, remoteNodeHash, score)
 		}
-	
+
 
 	return byNode
 }

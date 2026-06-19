@@ -2,7 +2,10 @@
  * 恶意节点行为原型。
  */
 
-/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator'} AttackKind */
+/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator' | 'hint_poisoner'} AttackKind */
+
+/** eclipse 攻击者固定灌入的「全未知 want」数量，与防御阈值解耦（攻击强度不应随我方阈值水涨船高）。 */
+const ECLIPSE_WANT_BURST = 8
 
 /**
  * @param {object} ctx 仿真上下文
@@ -50,6 +53,9 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			break
 		case 'oscillator':
 			runOscillator(ctx, node, observer, round, tunables)
+			break
+		case 'hint_poisoner':
+			runHintPoisoner(node, observer)
 			break
 		default:
 			break
@@ -143,7 +149,7 @@ function runFalseAccuser(ctx, node, observer, rng, tunables) {
  */
 function runEclipse(ctx, node, observer, tunables) {
 	const { recordGossipAllUnknownWantPure } = ctx.engine
-	for (let i = 0; i < tunables.reputation.wantUnknownThreshold; i++)
+	for (let i = 0; i < ECLIPSE_WANT_BURST; i++)
 		recordGossipAllUnknownWantPure(observer.reputation, node.id, ctx.now + i, tunables.reputation)
 }
 
@@ -237,7 +243,10 @@ function runWhitewasher(ctx, node, observer, rng, round, tunables) {
 	else if (stage === 1 && round % 7 === 0) {
 		const intro = pickHonestTarget(ctx, observer, rng)
 		if (intro) {
-			seedMemberReputationFromIntroducerPure(observer.reputation, node.id, intro.id, 0.6)
+			// 用 tunable introducerSeedEdge（不再写死 0.6）：边权越低，洗白者重新入场时
+			// 从诚实介绍者继承的信誉越少，越难「洗白复活」。
+			delete observer.reputation.byNodeHash[node.id]
+			seedMemberReputationFromIntroducerPure(observer.reputation, node.id, intro.id, undefined, tunables.reputation)
 			node.whitewashStage = 2
 		}
 	}
@@ -282,6 +291,18 @@ function runOscillator(ctx, node, observer, round, tunables) {
 		bumpChunkStorageReputationPure(observer.reputation, node.id, tunables.reputation)
 	else
 		penalizeChunkStorageFailurePure(observer.reputation, node.id, tunables.reputation)
+}
+
+/**
+ * 提示投毒：向观察者注入指向自己（及同伙）的发现提示，企图借 hint 旁路抬升有效信誉。
+ * 引擎对 hint 贡献设有 hintMaxBonus 上限，故该攻击的收益由 hintDefaultWeight / hintMaxBonus 决定。
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @returns {void}
+ */
+function runHintPoisoner(node, observer) {
+	if (!observer.injectedHints.some(h => h.nodeHash === node.id))
+		observer.injectedHints.push({ nodeHash: node.id, source: 'poison' })
 }
 
 /**

@@ -52,10 +52,15 @@ export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = f
 
 /**
  * §0.3 初值：`clamp(rep_local(intro) * reputationEdge)`。
+ *
+ * `repEdge` 缺省时退回 tunable `introducerSeedEdge`（抗女巫杠杆：边信任越低，
+ * 新成员从介绍者继承的初始信誉越少，邀请链批量灌号的收益越小）。
  * @param {number} introRep 介绍者信誉
- * @param {number} [repEdge] 边信任
+ * @param {number} [repEdge] 边信任；省略则用 tunable 默认
+ * @param {typeof reputationTunables} [tunables] tunables
  * @returns {number} 新成员初值
  */
-export function seedReputationFromIntro(introRep, repEdge = 1) {
-	return clampReputationScore(introRep * (Number.isFinite(repEdge) ? clampReputationScore(repEdge) : 1))
+export function seedReputationFromIntro(introRep, repEdge, tunables = reputationTunables) {
+	const edge = Number.isFinite(repEdge) ? repEdge : tunables.introducerSeedEdge
+	return clampReputationScore(introRep * (Number.isFinite(edge) ? clampReputationScore(edge) : 1))
 }

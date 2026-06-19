@@ -16,5 +16,6 @@
 	"slashVerifiedMultiplier": 0.5,
 	"slashDefaultClaim": 0.2,
 	"slashVerifiedDefaultClaim": 0.35,
-	"slashUnverifiedDefaultClaim": 0.2
+	"slashUnverifiedDefaultClaim": 0.2,
+	"introducerSeedEdge": 0.5
 }

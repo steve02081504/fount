@@ -3,7 +3,7 @@ import { FEDERATION_FANOUT_TOP_K } from './constants.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { loadNetwork } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
-import { loadReputation, pickNodeScore } from './reputation_store.mjs'
+import { loadReputation } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
 import { getCachedTrustGraph } from './trust_graph_cache.mjs'
@@ -55,10 +55,13 @@ export async function buildMergedGraph(username) {
 			}
 			/**
 			 * @param {string} remoteNodeHash 64 hex
-			 * @returns {number} 信誉分
+			 * @returns {number} 本地主观信誉分；从未打分的新人退回 rosterDefaultScore
 			 */
 			function rosterScoreOf(remoteNodeHash) {
-				return pickNodeScore(remoteNodeHash) || trustGraphTunables.rosterDefaultScore
+				const row = rep.byNodeHash?.[remoteNodeHash]
+				return row && Number.isFinite(Number(row.score))
+					? Number(row.score)
+					: trustGraphTunables.rosterDefaultScore
 			}
 			roomRosters.push({
 				scopeId: room.groupId,

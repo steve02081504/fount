@@ -215,17 +215,18 @@ export function applyReputationResetToScoresPure(data, targetPubKeyHash) {
  * @param {ReputationFile} data 信誉表
  * @param {string} memberPubKeyHash 新成员
  * @param {string} [introducerPubKeyHash] 介绍者
- * @param {number} [repEdge] 边信任
+ * @param {number} [repEdge] 边信任；省略则用 tunable introducerSeedEdge
+ * @param {typeof reputationTunables} [tunables] tunables
  * @returns {void}
  */
-export function seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge) {
+export function seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge, tunables = reputationTunables) {
 	const memberKey = memberPubKeyHash.trim().toLowerCase()
 	const introducerKey = introducerPubKeyHash?.trim().toLowerCase() || ''
 	if (data.byNodeHash[memberKey]) return
 	const introducerReputation = introducerKey
 		? Number(data.byNodeHash[introducerKey]?.score ?? 0)
 		: 0
-	data.byNodeHash[memberKey] = { score: seedReputationFromIntro(introducerReputation, repEdge) }
+	data.byNodeHash[memberKey] = { score: seedReputationFromIntro(introducerReputation, repEdge, tunables) }
 }
 
 /**

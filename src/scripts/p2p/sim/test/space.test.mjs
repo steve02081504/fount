@@ -3,8 +3,7 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createRng } from '../rng.mjs'
 import {
-	domainRulePenalty,
-	driftPenalty,
+	bandwidthCost,
 	normalizeParam,
 	PARAM_SPACE,
 	quantize,
@@ -71,39 +70,45 @@ Deno.test('randomCandidate archive quorum ordering', () => {
 	}
 })
 
-Deno.test('softRulePenalty is zero at defaults', () => {
+Deno.test('defaults carry a bounded intrinsic cost (rules are NOT default-anchored)', () => {
 	const base = loadDefaultTunables()
-	assertEquals(softRulePenalty(base) < 1e-9, true)
-	assertEquals(driftPenalty(base) < 1e-9, true)
-	assertEquals(domainRulePenalty(base) < 1e-9, true)
+	// 关键反例：默认值不再是「零惩罚」中心；它也要为自身的带宽规模等内在成本付费。
+	const penaltyAtDefault = softRulePenalty(base)
+	assertEquals(penaltyAtDefault > 0, true)
+	assertEquals(penaltyAtDefault < 0.3, true)
 })
 
-Deno.test('driftPenalty grows as a param leaves its default', () => {
-	const near = loadDefaultTunables()
-	near.reputation.penaltyUnknownWant *= 1.5
-	const far = loadDefaultTunables()
-	far.reputation.penaltyUnknownWant *= 6
-	assertEquals(driftPenalty(far) > driftPenalty(near), true)
-	assertEquals(driftPenalty(near) > 0, true)
+Deno.test('intrinsic rules let a strictly-cheaper-bandwidth candidate beat the default', () => {
+	const base = loadDefaultTunables()
+	const lean = loadDefaultTunables()
+	lean.mailbox.relayFanoutTrusted = Math.max(1, base.mailbox.relayFanoutTrusted - 2)
+	lean.mailbox.wantFanout = Math.max(1, base.mailbox.wantFanout - 2)
+	// 带宽更省 → 内在惩罚更低（旧 drift 规则会因「偏离默认」反而惩罚它，这正是要消除的偏置）。
+	assertEquals(bandwidthCost(lean) < bandwidthCost(base), true)
+	assertEquals(softRulePenalty(lean) < softRulePenalty(base), true)
 })
 
-Deno.test('domain rules discourage gutting defenses and trigger-happy hiding', () => {
-	const weak = loadDefaultTunables()
-	weak.reputation.penaltyUnknownWant = 0.001
-	weak.reputation.penaltyMessageRate = 0.001
-	assertEquals(domainRulePenalty(weak) > 0.2, true)
+Deno.test('defense floor is absolute, not relative to current default', () => {
+	const gutted = loadDefaultTunables()
+	gutted.reputation.penaltyUnknownWant = 0.001
+	gutted.reputation.penaltyMessageRate = 0.001
+	assertEquals(softRulePenalty(gutted) > softRulePenalty(loadDefaultTunables()) + 0.2, true)
+
+	// 把默认值「下移」后再评估同一个 0.001：惩罚不应随默认值改变（绝对锚定）。
+	const strong = loadDefaultTunables()
+	strong.reputation.penaltyUnknownWant = 0.001
+	const weakAnchor = loadDefaultTunables()
+	weakAnchor.reputation.penaltyUnknownWant = 0.001
+	assertEquals(softRulePenalty(strong), softRulePenalty(weakAnchor))
+})
+
+Deno.test('quorum and hide rules are one-sided absolute knees', () => {
+	const base = loadDefaultTunables()
+	const bigQuorum = loadDefaultTunables()
+	bigQuorum.archive.archiveQuorumPeerStrictMin = 9
+	assertEquals(softRulePenalty(bigQuorum) > softRulePenalty(base), true)
 
 	const triggerHappy = loadDefaultTunables()
 	triggerHappy.social.socialRepHideThreshold = -0.05
-	assertEquals(domainRulePenalty(triggerHappy) > 0, true)
-})
-
-Deno.test('fanout soft band discourages both collapse and bloat', () => {
-	const base = loadDefaultTunables()
-	const tooLow = loadDefaultTunables()
-	tooLow.trustGraph.federationFanoutTopK = Math.max(1, Math.round(base.trustGraph.federationFanoutTopK / 4))
-	const tooHigh = loadDefaultTunables()
-	tooHigh.trustGraph.federationFanoutTopK = base.trustGraph.federationFanoutTopK * 4
-	assertEquals(domainRulePenalty(tooLow) > 0, true)
-	assertEquals(domainRulePenalty(tooHigh) > 0, true)
+	assertEquals(softRulePenalty(triggerHappy) > softRulePenalty(base), true)
 })
