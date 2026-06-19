@@ -5,12 +5,14 @@ import { loadNetwork } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
 import { loadReputation, pickNodeScore } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
+import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
 import { getCachedTrustGraph } from './trust_graph_cache.mjs'
+import { mergeGraph, pickTopFromGraph } from './trust_graph_engine.mjs'
 import { registerTrustGraphProvider } from './trust_graph_registry.mjs'
 import { ensureUserRoom } from './user_room.mjs'
 
 /**
- * @typedef {{ nodeHash: string, score: number, scopeIds: string[] }} TrustNode
+ * @typedef {import('./trust_graph_engine.mjs').TrustNode} TrustNode
  */
 
 /**
@@ -22,56 +24,57 @@ function isNodeBlocked(nodeHash) {
 }
 
 /**
- * @param {Map<string, TrustNode>} byNode 累积图
- * @param {string} scopeId scope 标识
- * @param {string} nodeHash 64 hex
- * @param {number} score 信誉分
- */
-function mergeTrustNode(byNode, scopeId, nodeHash, score) {
-	const previous = byNode.get(nodeHash)
-	if (previous) {
-		const seenCount = previous.scopeIds.length
-		previous.score = (previous.score * seenCount + score) / (seenCount + 1)
-		if (!previous.scopeIds.includes(scopeId)) previous.scopeIds.push(scopeId)
-		return
-	}
-	byNode.set(nodeHash, { nodeHash, score, scopeIds: [scopeId] })
-}
-
-/**
  * @param {string} username replica 登录名（联邦房间枚举仍按用户）
  * @returns {Promise<Map<string, TrustNode>>} nodeHash → 节点
  */
 export async function buildMergedGraph(username) {
 	return getCachedTrustGraph(async () => {
-		/** @type {Map<string, TrustNode>} */
-		const byNode = new Map()
 		const net = loadNetwork()
 		const rep = loadReputation()
-		const now = Date.now()
+		const blocked = new Set()
+		for (const nodeHash of [...net.trustedPeers, ...net.explorePeers, ...net.hints.map(h => h.nodeHash)])
+			if (isNodeBlocked(nodeHash)) blocked.add(nodeHash)
 
-		for (const nodeHash of [...net.trustedPeers, ...net.explorePeers]) {
-			if (isNodeBlocked(nodeHash)) continue
-			mergeTrustNode(byNode, 'network', nodeHash, Number(rep.byNodeHash?.[nodeHash]?.score ?? 0))
+		/**
+		 * @param {string} nodeHash 64 hex
+		 * @returns {number} 信誉分
+		 */
+		function scoreOf(nodeHash) {
+			return Number(rep.byNodeHash?.[nodeHash]?.score ?? 0)
 		}
 
-		for (const hint of net.hints) {
-			if (hint.expiresAt && hint.expiresAt <= now) continue
-			if (isNodeBlocked(hint.nodeHash)) continue
-			const base = Number(rep.byNodeHash?.[hint.nodeHash]?.score ?? 0)
-			mergeTrustNode(byNode, `hint:${hint.source}`, hint.nodeHash, base + (hint.weight || 0.1))
-		}
-
-		for (const room of await listFederationRoomSlots(username)) {
-			const scopeId = room.groupId
+		const rooms = await listFederationRoomSlots(username)
+		/** @type {import('./trust_graph_engine.mjs').TrustGraphInputs['roomRosters']} */
+		const roomRosters = []
+		for (const room of rooms) {
+			const nodeHashes = []
 			for (const { remoteNodeHash } of room.getRoster()) {
-				if (!remoteNodeHash || isNodeBlocked(remoteNodeHash)) continue
-				const score = pickNodeScore(remoteNodeHash) || 0.1
-				mergeTrustNode(byNode, scopeId, remoteNodeHash, score)
+				if (!remoteNodeHash) continue
+				if (isNodeBlocked(remoteNodeHash)) blocked.add(remoteNodeHash)
+				else nodeHashes.push(remoteNodeHash)
 			}
+			/**
+			 * @param {string} remoteNodeHash 64 hex
+			 * @returns {number} 信誉分
+			 */
+			function rosterScoreOf(remoteNodeHash) {
+				return pickNodeScore(remoteNodeHash) || trustGraphTunables.rosterDefaultScore
+			}
+			roomRosters.push({
+				scopeId: room.groupId,
+				nodeHashes,
+				scoreOf: rosterScoreOf,
+			})
 		}
 
-		return byNode
+		return mergeGraph({
+			trustedPeers: net.trustedPeers,
+			explorePeers: net.explorePeers,
+			hints: net.hints,
+			roomRosters,
+			blockedNodeHashes: blocked,
+			scoreOf,
+		})
 	})
 }
 
@@ -110,7 +113,7 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
 		if (room.pickFallbackPeerIds) {
 			const targets = await room.pickFallbackPeerIds(selfNodeHash)
 			if (targets.length) {
-				for (const targetPeerId of targets.slice(0, 4))
+				for (const targetPeerId of targets.slice(0, trustGraphTunables.sendFallbackPeerLimit))
 					room.sendToPeer(targetPeerId, actionName, payload)
 				return true
 			}
@@ -124,11 +127,9 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
  * @param {number} [limit=12] 最多返回节点数
  * @returns {Promise<TrustNode[]>} 按信誉降序
  */
-export async function pickTopNodes(username, limit = 12) {
+export async function pickTopNodes(username, limit = trustGraphTunables.pickTopNodesDefaultLimit) {
 	await ensureUserRoom({ replicaUsername: username })
-	return [...(await buildMergedGraph(username)).values()]
-		.sort((a, b) => b.score - a.score)
-		.slice(0, Math.max(1, limit))
+	return pickTopFromGraph(await buildMergedGraph(username), limit)
 }
 
 /**

@@ -1,3 +1,5 @@
+import reputationTunables from './reputation.tunables.json' with { type: 'json' }
+
 /**
  * 主观信誉标量下界（§0.3）。
  * @type {number}
@@ -38,12 +40,13 @@ export function computeRepMaxEff(data) {
  * @param {number} repSender 发送方信誉
  * @param {number} repMaxEff 分母
  * @param {boolean} [verified] 是否可验证
+ * @param {typeof reputationTunables} [tunables] tunables
  * @returns {number} 对目标的扣分幅度（正数）
  */
-export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = false) {
-	const claimStrength = Number.isFinite(claim) ? claim : 0.2
+export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = false, tunables = reputationTunables) {
+	const claimStrength = Number.isFinite(claim) ? claim : tunables.slashDefaultClaim
 	return verified
-		? Math.abs(claimStrength) * 0.5
+		? Math.abs(claimStrength) * tunables.slashVerifiedMultiplier
 		: Math.abs((claimStrength * repSender) / repMaxEff)
 }
 

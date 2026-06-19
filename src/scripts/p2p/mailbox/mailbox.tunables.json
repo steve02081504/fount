@@ -1,0 +1,6 @@
+{
+	"maxHop": 3,
+	"relayFanoutTrusted": 6,
+	"relayFanoutNormal": 3,
+	"wantFanout": 8
+}

@@ -1,21 +1,16 @@
 import { getNodeTransportSettings } from '../node/identity.mjs'
 
-const DEFAULT_MAILBOX = {
-	maxHop: 3,
-	relayFanoutTrusted: 6,
-	relayFanoutNormal: 3,
-	wantFanout: 8,
-}
+import mailboxTunables from './mailbox.tunables.json' with { type: 'json' }
 
 /**
  * @param {object} raw 节点 mailbox 配置片段
  * @returns {{ maxHop: number, relayFanoutTrusted: number, relayFanoutNormal: number, wantFanout: number }} 规范化 mailbox 配置
  */
 export function normalizeMailboxSettings(raw = {}) {
-	const maxHop = Math.max(1, Math.min(8, Number(raw.maxHop) || DEFAULT_MAILBOX.maxHop))
-	const relayFanoutTrusted = Math.max(1, Math.min(32, Number(raw.relayFanoutTrusted) || DEFAULT_MAILBOX.relayFanoutTrusted))
-	const relayFanoutNormal = Math.max(1, Math.min(32, Number(raw.relayFanoutNormal) || DEFAULT_MAILBOX.relayFanoutNormal))
-	const wantFanout = Math.max(1, Math.min(32, Number(raw.wantFanout) || DEFAULT_MAILBOX.wantFanout))
+	const maxHop = Math.max(1, Math.min(8, Number(raw.maxHop) || mailboxTunables.maxHop))
+	const relayFanoutTrusted = Math.max(1, Math.min(32, Number(raw.relayFanoutTrusted) || mailboxTunables.relayFanoutTrusted))
+	const relayFanoutNormal = Math.max(1, Math.min(32, Number(raw.relayFanoutNormal) || mailboxTunables.relayFanoutNormal))
+	const wantFanout = Math.max(1, Math.min(32, Number(raw.wantFanout) || mailboxTunables.wantFanout))
 	return { maxHop, relayFanoutTrusted, relayFanoutNormal, wantFanout }
 }
 

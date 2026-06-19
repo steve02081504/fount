@@ -34,3 +34,4 @@
 /src/runner/polyglot/stack/fount-stack-runner.cabal
 /stack.yaml.lock
 /project
+/src/scripts/p2p/sim/results/

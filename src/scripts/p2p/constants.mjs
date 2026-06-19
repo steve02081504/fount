@@ -1,3 +1,5 @@
+import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
+
 /** @type {readonly string[]} 权限键注册表顺序（运算期 BigInt 编码用） */
 export const PERMISSION_REGISTRY_ORDER = Object.freeze([
 	'VIEW_CHANNEL',
@@ -41,10 +43,10 @@ export const MEMBERS_PAGE_SIZE = 500
 export const EPOCH_CHAIN_MAX = 256
 
 /** 群文件经联邦复制的单块上限（字节，§10.2） */
-export const FEDERATION_CHUNK_MAX_BYTES = 512 * 1024
+export const FEDERATION_CHUNK_MAX_BYTES = trustGraphTunables.federationChunkMaxBytes
 
 /** TrustGraph fanout 默认 Top-K 邻居数 */
-export const FEDERATION_FANOUT_TOP_K = 8
+export const FEDERATION_FANOUT_TOP_K = trustGraphTunables.federationFanoutTopK
 
 /** 全局 fed_chunk_get miss 时 fanout 邻居数 */
-export const FEDERATION_CHUNK_FETCH_FANOUT_K = 6
+export const FEDERATION_CHUNK_FETCH_FANOUT_K = trustGraphTunables.federationChunkFetchFanoutK

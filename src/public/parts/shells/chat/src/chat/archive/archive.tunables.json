@@ -1,0 +1,4 @@
+{
+	"archiveQuorumPeerMin": 2,
+	"archiveQuorumPeerStrictMin": 4
+}

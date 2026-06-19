@@ -1,0 +1,55 @@
+/**
+ * 聚合各模块 tunables（运行时默认值 + 挖矿候选）。
+ */
+import archiveTunables from '../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json' with { type: 'json' }
+import mailboxTunables from '../mailbox/mailbox.tunables.json' with { type: 'json' }
+import reputationTunables from '../reputation.tunables.json' with { type: 'json' }
+import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }
+import trustGraphTunables from '../trust_graph.tunables.json' with { type: 'json' }
+
+/**
+ * @typedef {{
+ *   reputation: typeof reputationTunables,
+ *   trustGraph: typeof trustGraphTunables,
+ *   social: typeof socialTunables,
+ *   mailbox: typeof mailboxTunables,
+ *   archive: typeof archiveTunables,
+ * }} TunablesBundle
+ */
+
+/** @type {Readonly<Record<keyof TunablesBundle, string>>} */
+export const TUNABLES_PATHS = Object.freeze({
+	reputation: new URL('../reputation.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	trustGraph: new URL('../trust_graph.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	social: new URL('../reputation_social.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	mailbox: new URL('../mailbox/mailbox.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	archive: new URL('../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+})
+
+/**
+ * @returns {TunablesBundle} 当前默认 tunables 深拷贝
+ */
+export function loadDefaultTunables() {
+	return {
+		reputation: structuredClone(reputationTunables),
+		trustGraph: structuredClone(trustGraphTunables),
+		social: structuredClone(socialTunables),
+		mailbox: structuredClone(mailboxTunables),
+		archive: structuredClone(archiveTunables),
+	}
+}
+
+/**
+ * @param {Partial<TunablesBundle>} patch 局部覆盖
+ * @returns {TunablesBundle} 合并后的 tunables
+ */
+export function mergeTunables(patch = {}) {
+	const base = loadDefaultTunables()
+	return {
+		reputation: { ...base.reputation, ...patch.reputation },
+		trustGraph: { ...base.trustGraph, ...patch.trustGraph },
+		social: { ...base.social, ...patch.social },
+		mailbox: { ...base.mailbox, ...patch.mailbox },
+		archive: { ...base.archive, ...patch.archive },
+	}
+}

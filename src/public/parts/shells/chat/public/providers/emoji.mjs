@@ -1,7 +1,6 @@
 /**
  * Chat emoji 内容提供商（registries.emoji）：最近 / 群自定义 / Unicode 分组。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns-description, jsdoc/require-returns, jsdoc/require-param-type */
 import { fetchFrequentEmojis } from '../src/emojiUsageApi.mjs'
 import { groupEmojiDataApiPath } from '../src/groupEmojiApi.mjs'
 import {
@@ -22,16 +21,16 @@ import {
 const FREQUENT_EMOJI_LIMIT = 32
 
 /**
- * @param {string} s
- * @returns {string}
+ * @param {string} s 原始文本
+ * @returns {string} HTML 转义结果
  */
 function escapeHtml(s) {
 	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 }
 
 /**
- * @param {object} ctx
- * @returns {Promise<object[]>}
+ * @param {object} ctx picker 上下文
+ * @returns {Promise<object[]>} 最近使用 emoji 项
  */
 async function loadRecentItems(ctx) {
 	const entries = await fetchFrequentEmojis(FREQUENT_EMOJI_LIMIT)
@@ -57,8 +56,8 @@ async function loadRecentItems(ctx) {
 }
 
 /**
- * @param {string} targetGroupId
- * @returns {Promise<object[]>}
+ * @param {string} targetGroupId 群 ID
+ * @returns {Promise<object[]>} 群自定义 emoji 项
  */
 async function loadGroupItems(targetGroupId) {
 	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(targetGroupId)}/emojis`, {
@@ -80,8 +79,8 @@ async function loadGroupItems(targetGroupId) {
 }
 
 /**
- * @param {object} ctx
- * @returns {Promise<object[]>}
+ * @param {object} ctx picker 上下文
+ * @returns {Promise<object[]>} 标签页描述列表
  */
 async function listTabs(ctx) {
 	/** @type {object[]} */
@@ -131,9 +130,9 @@ async function listTabs(ctx) {
 }
 
 /**
- * @param {object} tab
- * @param {object} ctx
- * @returns {Promise<{ items: object[], emptyI18n?: string, errorI18n?: string }>}
+ * @param {object} tab 标签页
+ * @param {object} ctx picker 上下文
+ * @returns {Promise<{ items: object[], emptyI18n?: string, errorI18n?: string }>} 网格项与空态 i18n
  */
 async function loadTabItems(tab, ctx) {
 	if (tab.id === RECENT_EMOJI_TAB_KEY) {
@@ -165,8 +164,8 @@ async function loadTabItems(tab, ctx) {
 }
 
 /**
- * @param {object} item
- * @returns {string}
+ * @param {object} item emoji 项
+ * @returns {string} 插入编辑器的 token
  */
 function tokenForSelection(item) {
 	if (item.unicode) return item.unicode
@@ -177,9 +176,9 @@ function tokenForSelection(item) {
 }
 
 /**
- * @param {object} group
- * @param {boolean} isCurrent
- * @returns {string}
+ * @param {object} group 群摘要
+ * @param {boolean} isCurrent 是否当前群
+ * @returns {string} 标签按钮 innerHTML
  */
 function groupTabInnerHtml(group, isCurrent) {
 	if (isCurrent)
@@ -189,9 +188,7 @@ function groupTabInnerHtml(group, isCurrent) {
 	return `<span class="hub-emoji-tab-glyph" aria-hidden="true">${GROUP_EMOJI_TAB_GLYPH}</span>`
 }
 
-/**
- *
- */
+/** Chat emoji registry 提供商 */
 export default {
 	kind: 'emoji',
 	RECENT_EMOJI_TAB_KEY,
@@ -202,8 +199,8 @@ export default {
 	tokenForSelection,
 	groupTabInnerHtml,
 	/**
-	 *
-	 * @param item
+	 * @param {object} item emoji 项
+	 * @returns {boolean} 是否为群自定义 emoji
 	 */
 	isGroupEmojiItem: item => item?.kind === 'custom' && !!(item.groupId && item.emojiId),
 }

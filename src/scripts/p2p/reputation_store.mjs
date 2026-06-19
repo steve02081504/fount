@@ -1,34 +1,28 @@
 import { assertHex64, isHex64, normalizeHex64 } from './hexIds.mjs'
 import { getNodeLogger } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
+import reputationTunables from './reputation.tunables.json' with { type: 'json' }
 import {
-	clampReputationScore,
-	computeRepMaxEff,
-	seedReputationFromIntro,
-	subjectiveSlashPenalty,
-} from './reputation_math.mjs'
+	applyDecayCollusionAfterSlashPure,
+	applyReputationResetToScoresPure,
+	applySubjectiveSlashPure,
+	bumpChunkStorageReputationPure,
+	bumpReputationOnRelayPure,
+	ensureReputationShape,
+	penalizeArchiveServeMismatchPure,
+	penalizeChunkStorageFailurePure,
+	pruneReputationFile,
+	recordGossipAllUnknownWantPure,
+	recordMessageRateViolationPure,
+	resolveSlashAlertTtlMsPure,
+	seedMemberReputationFromIntroducerPure,
+} from './reputation_engine.mjs'
 import { pickNodeScoreFromReputation } from './reputation_pick_score.mjs'
-import {
-	RELAY_BUMP_DEDUPE_MS,
-	relayBumpIsDuplicate,
-} from './reputation_relay_dedupe.mjs'
 import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 import { withAsyncMutex } from './utils/async_mutex.mjs'
 import { recordWantIdsBackoff, wantIdsPeerKey } from './want_ids.mjs'
 
 const DATA_NAME = 'reputation'
-
-/** §9 默认：5 分钟内同一邻居「整批 want 本地全无」累计次数 */
-const WANT_UNKNOWN_WINDOW_MS = 5 * 60 * 1000
-const WANT_UNKNOWN_THRESHOLD = 3
-const PENALTY_UNKNOWN_WANT = 0.12
-const PENALTY_MESSAGE_RATE = 0.15
-const CHUNK_STORE_REP_BUMP = 0.03
-const CHUNK_FETCH_FAIL_PENALTY = 0.08
-const ARCHIVE_SERVE_MISMATCH_PENALTY = 0.08
-const RELAY_REP_BUMP = 0.02
-const DEFAULT_SLASH_ALERT_TTL_MS = 86_400_000
-const MAX_RELAY_BUMP_SEEN = 2000
 
 /**
  * @typedef {{
@@ -42,55 +36,6 @@ const MAX_RELAY_BUMP_SEEN = 2000
  *
  */
 export { relayBumpIsDuplicate } from './reputation_relay_dedupe.mjs'
-
-/**
- * @param {ReputationFile} data 信誉表
- * @param {string} nodeId 64 hex
- * @returns {{ score: number }} 节点行
- */
-function repRow(data, nodeId) {
-	const row = data.byNodeHash[nodeId] || { score: 0 }
-	const out = { score: Number(row.score ?? 0) }
-	if (row.socialBlocks && typeof row.socialBlocks === 'object')
-		out.socialBlocks = row.socialBlocks
-	return out
-}
-
-/**
- * @param {ReputationFile} data 信誉表
- * @param {string} nodeId 64 hex
- * @param {number} delta 增量
- * @returns {void}
- */
-function adjustNodeReputation(data, nodeId, delta) {
-	const row = repRow(data, nodeId)
-	row.score = clampReputationScore(row.score + delta)
-	data.byNodeHash[nodeId] = row
-}
-
-/**
- * @param {ReputationFile} data 磁盘 JSON（可信）
- * @returns {ReputationFile} 补齐字段后的同一对象
- */
-function ensureReputationShape(data) {
-	data.byNodeHash ??= {}
-	data.wantUnknownHits ??= []
-	data.relayBumpSeen ??= []
-	return data
-}
-
-/**
- * @param {ReputationFile} data 信誉表
- * @returns {ReputationFile} 裁剪后的同一对象
- */
-function pruneReputationFile(data) {
-	const now = Date.now()
-	data.wantUnknownHits = data.wantUnknownHits.filter(hit => now - hit.t <= WANT_UNKNOWN_WINDOW_MS)
-	data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= RELAY_BUMP_DEDUPE_MS)
-	if (data.relayBumpSeen.length > MAX_RELAY_BUMP_SEEN)
-		data.relayBumpSeen = data.relayBumpSeen.slice(-MAX_RELAY_BUMP_SEEN)
-	return data
-}
 
 /** @type {ReputationFile | null} */
 let reputationCache = null
@@ -133,16 +78,8 @@ export function saveReputation(data) {
  * @returns {Promise<void>}
  */
 export function bumpReputationOnRelay(peerNodeHash, dedupeKey) {
-	const id = String(peerNodeHash || '').trim()
-	if (!id) return Promise.resolve()
-	const key = String(dedupeKey || `conn:${id}`).trim()
 	return mutateReputation(data => {
-		const now = Date.now()
-		data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= RELAY_BUMP_DEDUPE_MS)
-		if (relayBumpIsDuplicate(data.relayBumpSeen, id, key, now)) return
-		data.relayBumpSeen.push({ peerNodeHash: id, key, t: now })
-		const prev = Number(data.byNodeHash[id]?.score ?? 0)
-		data.byNodeHash[id] = { score: clampReputationScore(prev + RELAY_REP_BUMP) }
+		bumpReputationOnRelayPure(data, peerNodeHash, dedupeKey)
 	})
 }
 
@@ -153,15 +90,8 @@ export function bumpReputationOnRelay(peerNodeHash, dedupeKey) {
  */
 export function recordGossipAllUnknownWant(groupId, peerNodeHash) {
 	return mutateReputation(data => {
-		const now = Date.now()
-		data.wantUnknownHits = data.wantUnknownHits.filter(h => now - h.t <= WANT_UNKNOWN_WINDOW_MS)
-		data.wantUnknownHits.push({ peerNodeHash, t: now })
-		const recent = data.wantUnknownHits.filter(h => h.peerNodeHash === peerNodeHash)
-		if (recent.length >= WANT_UNKNOWN_THRESHOLD) {
-			adjustNodeReputation(data, peerNodeHash, -PENALTY_UNKNOWN_WANT)
-			data.wantUnknownHits = data.wantUnknownHits.filter(h => h.peerNodeHash !== peerNodeHash)
+		if (recordGossipAllUnknownWantPure(data, peerNodeHash))
 			recordWantIdsBackoff(wantIdsPeerKey(groupId, peerNodeHash))
-		}
 	})
 }
 
@@ -173,7 +103,7 @@ export function recordMessageRateViolation(peerNodeHash) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
 	void mutateReputation(data => {
-		adjustNodeReputation(data, id, -PENALTY_MESSAGE_RATE)
+		recordMessageRateViolationPure(data, id)
 	})
 }
 
@@ -185,7 +115,7 @@ export function bumpChunkStorageReputation(storagePeerKey) {
 	const id = String(storagePeerKey || '').trim()
 	if (!id) return
 	void mutateReputation(data => {
-		adjustNodeReputation(data, id, CHUNK_STORE_REP_BUMP)
+		bumpChunkStorageReputationPure(data, id)
 	})
 }
 
@@ -197,7 +127,7 @@ export function penalizeChunkStorageFailure(blamePeerKey) {
 	const id = String(blamePeerKey || '').trim()
 	if (!id) return
 	void mutateReputation(data => {
-		adjustNodeReputation(data, id, -CHUNK_FETCH_FAIL_PENALTY)
+		penalizeChunkStorageFailurePure(data, id)
 	})
 }
 
@@ -209,7 +139,7 @@ export function penalizeArchiveServeMismatch(peerNodeHash) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
 	void mutateReputation(data => {
-		adjustNodeReputation(data, id, -ARCHIVE_SERVE_MISMATCH_PENALTY)
+		penalizeArchiveServeMismatchPure(data, id)
 	})
 }
 
@@ -218,8 +148,7 @@ export function penalizeArchiveServeMismatch(peerNodeHash) {
  * @returns {number} 毫秒
  */
 export function resolveSlashAlertTtlMs(groupSettings) {
-	const n = Number(groupSettings?.slashAlertTtl)
-	return Number.isFinite(n) && n > 0 ? Math.floor(n) : DEFAULT_SLASH_ALERT_TTL_MS
+	return resolveSlashAlertTtlMsPure(groupSettings)
 }
 
 /**
@@ -232,12 +161,9 @@ export async function applyVolatileSlashAlert(alert) {
 	const target = normalizeHex64(alert?.targetPubKeyHash)
 	const sender = normalizeHex64(alert?.sender)
 	if (!isHex64(target) || !isHex64(sender)) return false
-	const claim = Number.isFinite(Number(alert?.claim)) ? Number(alert.claim) : 0.2
+	const claim = Number.isFinite(Number(alert?.claim)) ? Number(alert.claim) : reputationTunables.slashDefaultClaim
 	await mutateReputation(data => {
-		const repMaxEff = computeRepMaxEff(data)
-		const repSender = Number(data.byNodeHash[sender]?.score ?? 0)
-		const penalty = subjectiveSlashPenalty(claim, repSender, repMaxEff, false)
-		adjustNodeReputation(data, target, -penalty)
+		applySubjectiveSlashPure(data, target, sender, claim, false)
 	})
 	return true
 }
@@ -250,7 +176,7 @@ export async function applyVolatileSlashAlert(alert) {
  */
 export function buildAndApplyUnverifiedSlashAlert(senderPubKeyHash, content, groupSettings = {}) {
 	const targetPubKeyHash = assertHex64(content.targetPubKeyHash, 'slash target')
-	const claim = Number.isFinite(Number(content.claim)) ? Number(content.claim) : 0.2
+	const claim = Number.isFinite(Number(content.claim)) ? Number(content.claim) : reputationTunables.slashDefaultClaim
 	const sender = assertHex64(senderPubKeyHash, 'slash sender')
 	const ttl = resolveSlashAlertTtlMs(groupSettings)
 	return {
@@ -276,12 +202,9 @@ export async function applySubjectiveSlashFromEvent(username, groupId, event, re
 	const sender = event.sender.trim().toLowerCase()
 
 	await mutateReputation(async data => {
-		const repMaxEff = computeRepMaxEff(data)
-		const repSender = Number(data.byNodeHash[sender]?.score ?? 0)
 		const verified = content.verified && await verifySlashProof(username, groupId, content, readEvents)
-		const claim = Number(content.claim ?? (verified ? 0.35 : 0.2))
-		const penalty = subjectiveSlashPenalty(claim, repSender, repMaxEff, verified)
-		adjustNodeReputation(data, target, -penalty)
+		const claim = Number(content.claim ?? (verified ? reputationTunables.slashVerifiedDefaultClaim : reputationTunables.slashUnverifiedDefaultClaim))
+		applySubjectiveSlashPure(data, target, sender, claim, verified)
 	})
 }
 
@@ -305,37 +228,17 @@ async function verifySlashProof(username, groupId, content, readEvents) {
  * @returns {void}
  */
 export function applyDecayCollusionAfterSlash(targetPubKeyHash, inviteEdges) {
-	const target = targetPubKeyHash.trim().toLowerCase()
-	const lambda = 0.07
-	const delta = 0.62
 	void mutateReputation(data => {
-		/** @type {Array<{ hop: number, node: string, dRep: number }>} */
-		const applied = []
-		let frontier = new Set([target])
-		for (let hop = 1; hop <= 6; hop++) {
-			const upstream = new Set()
-			for (const edge of inviteEdges)
-				if (frontier.has(edge.to)) upstream.add(edge.from)
-
-			if (!upstream.size) break
-			const dRep = lambda * delta ** hop
-			for (const node of upstream) {
-				const prev = Number(data.byNodeHash[node]?.score ?? 0)
-				data.byNodeHash[node] = { score: clampReputationScore(prev - dRep) }
-				applied.push({ hop, node, dRep })
-			}
-			frontier = upstream
-		}
-		if (applied.length) 
+		const applied = applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, inviteEdges)
+		if (applied.length)
 			try {
 				getNodeLogger().warn?.('reputation: collusion decay after slash', {
-					target,
+					target: targetPubKeyHash.trim().toLowerCase(),
 					upstreamCount: applied.length,
 					hops: applied.map(row => row.hop),
 				})
 			}
 			catch { /* node not initialized in tests */ }
-		
 	})
 }
 
@@ -344,9 +247,8 @@ export function applyDecayCollusionAfterSlash(targetPubKeyHash, inviteEdges) {
  * @returns {void}
  */
 export function applyReputationResetToScores(targetPubKeyHash) {
-	const t = targetPubKeyHash.trim().toLowerCase()
 	void mutateReputation(data => {
-		data.byNodeHash[t] = { score: 0 }
+		applyReputationResetToScoresPure(data, targetPubKeyHash)
 	})
 }
 
@@ -357,14 +259,8 @@ export function applyReputationResetToScores(targetPubKeyHash) {
  * @returns {void}
  */
 export function seedMemberReputationFromIntroducer(memberPubKeyHash, introducerPubKeyHash, repEdge) {
-	const memberKey = memberPubKeyHash.trim().toLowerCase()
-	const introducerKey = introducerPubKeyHash?.trim().toLowerCase() || ''
 	void mutateReputation(data => {
-		if (data.byNodeHash[memberKey]) return
-		const introducerReputation = introducerKey
-			? Number(data.byNodeHash[introducerKey]?.score ?? 0)
-			: 0
-		data.byNodeHash[memberKey] = { score: seedReputationFromIntro(introducerReputation, repEdge) }
+		seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge)
 	})
 }
 

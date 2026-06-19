@@ -1,0 +1,20 @@
+{
+	"wantUnknownWindowMs": 300000,
+	"wantUnknownThreshold": 3,
+	"penaltyUnknownWant": 0.12,
+	"penaltyMessageRate": 0.15,
+	"chunkStoreRepBump": 0.03,
+	"chunkFetchFailPenalty": 0.08,
+	"archiveServeMismatchPenalty": 0.08,
+	"relayRepBump": 0.02,
+	"defaultSlashAlertTtlMs": 86400000,
+	"maxRelayBumpSeen": 2000,
+	"relayBumpDedupeMs": 86400000,
+	"collusionLambda": 0.07,
+	"collusionDelta": 0.62,
+	"collusionMaxHop": 6,
+	"slashVerifiedMultiplier": 0.5,
+	"slashDefaultClaim": 0.2,
+	"slashVerifiedDefaultClaim": 0.35,
+	"slashUnverifiedDefaultClaim": 0.2
+}

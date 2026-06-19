@@ -1,22 +1,21 @@
 /**
  * 共享 emoji picker：消费 registries.emoji 提供商（停靠 / 浮动两种模式）。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns-description, jsdoc/require-returns, jsdoc/require-param-type */
 import { importRegistryModules } from './registries.mjs'
 
 const GROUP_EMOJI_LONG_PRESS_MS = 500
 
 /**
- * @param {string} s
- * @returns {string}
+ * @param {string} s 原始文本
+ * @returns {string} HTML 转义结果
  */
 function escapeHtml(s) {
 	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 }
 
 /**
- * @param {object} [ctx]
- * @returns {Promise<object | null>}
+ * @param {object} [ctx] picker 上下文
+ * @returns {Promise<object | null>} 首个可用 emoji 提供商
  */
 async function resolveEmojiProvider(ctx) {
 	const modules = await importRegistryModules('emoji')
@@ -29,10 +28,11 @@ async function resolveEmojiProvider(ctx) {
 }
 
 /**
- * @param {HTMLElement} tabsEl
- * @param {object} tab
- * @param {object} provider
- * @param {string | null} activeTabId
+ * @param {HTMLElement} tabsEl 标签容器（未直接使用，保留签名）
+ * @param {object} tab 标签页描述
+ * @param {object} provider emoji 提供商
+ * @param {string | null} activeTabId 当前激活标签 id
+ * @returns {HTMLButtonElement} 标签按钮元素
  */
 function renderTabButton(tabsEl, tab, provider, activeTabId) {
 	const tabButton = document.createElement('button')
@@ -55,8 +55,9 @@ function renderTabButton(tabsEl, tab, provider, activeTabId) {
 }
 
 /**
- * @param {HTMLElement} grid
- * @param {object} item
+ * @param {HTMLElement} grid 网格容器
+ * @param {object} item emoji 项
+ * @returns {void}
  */
 function appendEmojiGridItem(grid, item) {
 	if (item.kind === 'custom' || (item.groupId && item.emojiId)) {
@@ -88,8 +89,9 @@ function appendEmojiGridItem(grid, item) {
 }
 
 /**
- * @param {HTMLElement} grid
- * @param {string} i18nKey
+ * @param {HTMLElement} grid 网格容器
+ * @param {string} i18nKey 空态/错误文案 i18n 键
+ * @returns {void}
  */
 function renderGridMessage(grid, i18nKey) {
 	grid.replaceChildren()
@@ -100,10 +102,10 @@ function renderGridMessage(grid, i18nKey) {
 }
 
 /**
- * @param {object} provider
- * @param {object} tab
- * @param {HTMLElement} grid
- * @param {object} ctx
+ * @param {object} provider emoji 提供商
+ * @param {object} tab 标签页
+ * @param {HTMLElement} grid 网格容器
+ * @param {object} ctx picker 上下文
  * @returns {Promise<void>}
  */
 async function renderEmojiTabGrid(provider, tab, grid, ctx) {
@@ -137,8 +139,8 @@ async function renderEmojiTabGrid(provider, tab, grid, ctx) {
 
 /**
  * 挂载停靠式 emoji 选择器（Chat Hub 等已有 DOM 结构）。
- * @param {DockedEmojiPickerOptions} options
- * @returns {Promise<{ refresh: () => Promise<void> } | null>}
+ * @param {DockedEmojiPickerOptions} options 停靠式选择器选项
+ * @returns {Promise<{ refresh: () => Promise<void> } | null>} 刷新句柄或 null（无提供商）
  */
 export async function mountDockedEmojiPicker(options) {
 	const {
@@ -146,7 +148,9 @@ export async function mountDockedEmojiPicker(options) {
 		ctx = {}, getCtx, onInsert, onSendAsSticker, closeWhenOpening,
 	} = options
 
-	/** @returns {object} */
+	/**
+	 * @returns {object} 最新 picker 上下文
+	 */
 	const resolveCtx = () => getCtx?.() ?? ctx
 
 	const provider = await resolveEmojiProvider(ctx)
@@ -170,7 +174,7 @@ export async function mountDockedEmojiPicker(options) {
 	}
 
 	/**
-	 * @param {string} tabId
+	 * @param {string} tabId 标签 id
 	 * @returns {void}
 	 */
 	function setActiveTab(tabId) {
@@ -299,8 +303,8 @@ export async function mountDockedEmojiPicker(options) {
 
 /**
  * 聚合扁平 emoji 条目（浮动模式 fallback）。
- * @param {object} [ctx]
- * @returns {Promise<Array<{ label: string, previewUrl?: string, raw: object, provider: object }>>}
+ * @param {object} [ctx] picker 上下文
+ * @returns {Promise<Array<{ label: string, previewUrl?: string, raw: object, provider: object }>>} 扁平 emoji 条目
  */
 export async function loadEmojiPickItems(ctx = {}) {
 	const provider = await resolveEmojiProvider(ctx)
@@ -326,9 +330,9 @@ export async function loadEmojiPickItems(ctx = {}) {
 
 /**
  * 浮动 emoji 选择器（带 tab）。
- * @param {HTMLElement} anchor
- * @param {(text: string) => void} onInsert
- * @param {object} [ctx]
+ * @param {HTMLElement} anchor 定位锚点
+ * @param {(text: string) => void} onInsert 选中后插入回调
+ * @param {object} [ctx] picker 上下文
  * @returns {Promise<void>}
  */
 export async function mountEmojiPicker(anchor, onInsert, ctx = {}) {
@@ -362,7 +366,8 @@ export async function mountEmojiPicker(anchor, onInsert, ctx = {}) {
 		document.body.appendChild(panel)
 		setTimeout(() => {
 			/**
-			 * @param {Event} e
+			 * @param {Event} e 外部点击事件
+			 * @returns {void}
 			 */
 			const close = e => {
 				if (!panel.contains(e.target)) {
@@ -427,7 +432,8 @@ export async function mountEmojiPicker(anchor, onInsert, ctx = {}) {
 
 	setTimeout(() => {
 		/**
-		 * @param {Event} e
+		 * @param {Event} e 外部点击事件
+		 * @returns {void}
 		 */
 		const close = e => {
 			if (!panel.contains(e.target) && !anchor.contains(e.target)) {
@@ -440,9 +446,9 @@ export async function mountEmojiPicker(anchor, onInsert, ctx = {}) {
 }
 
 /**
- * @param {HTMLElement} button
- * @param {(text: string) => void} onInsert
- * @param {object} [ctx]
+ * @param {HTMLElement} button 触发按钮
+ * @param {(text: string) => void} onInsert 选中后插入回调
+ * @param {object} [ctx] picker 上下文
  * @returns {void}
  */
 export function wireEmojiPickerButton(button, onInsert, ctx = {}) {

@@ -1,20 +1,19 @@
 /**
  * 共享 sticker picker：消费 registries.sticker 提供商（停靠 / 浮动两种模式）。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns-description, jsdoc/require-returns, jsdoc/require-param-type */
 import { importRegistryModules } from './registries.mjs'
 
 /**
- * @param {string} s
- * @returns {string}
+ * @param {string} s 原始文本
+ * @returns {string} HTML 转义结果
  */
 function escapeHtml(s) {
 	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 }
 
 /**
- * @param {object} [ctx]
- * @returns {Promise<object | null>}
+ * @param {object} [ctx] picker 上下文
+ * @returns {Promise<object | null>} 首个可用 sticker 提供商
  */
 async function resolveStickerProvider(ctx) {
 	const modules = await importRegistryModules('sticker')
@@ -27,8 +26,9 @@ async function resolveStickerProvider(ctx) {
 }
 
 /**
- * @param {HTMLElement} grid
- * @param {object} sticker
+ * @param {HTMLElement} grid 网格容器
+ * @param {object} sticker 贴纸项
+ * @returns {void}
  */
 function appendStickerGridItem(grid, sticker) {
 	const btn = document.createElement('button')
@@ -58,8 +58,8 @@ function appendStickerGridItem(grid, sticker) {
  */
 
 /**
- * @param {DockedStickerPickerOptions} options
- * @returns {Promise<null | { reload: () => Promise<void> }>}
+ * @param {DockedStickerPickerOptions} options 停靠式选择器选项
+ * @returns {Promise<null | { reload: () => Promise<void> }>} 控制器或 null（无提供商）
  */
 export async function mountDockedStickerPicker(options) {
 	const { pickerEl, gridEl, triggerBtn, ctx = {}, onSelect, closeWhenOpening } = options
@@ -133,8 +133,8 @@ export async function mountDockedStickerPicker(options) {
 }
 
 /**
- * @param {object} [ctx]
- * @returns {Promise<Array<{ label: string, previewUrl?: string, raw: object, provider: object }>>}
+ * @param {object} [ctx] picker 上下文
+ * @returns {Promise<Array<{ label: string, previewUrl?: string, raw: object, provider: object }>>} 扁平贴纸条目
  */
 export async function loadStickerPickItems(ctx = {}) {
 	const provider = await resolveStickerProvider(ctx)
@@ -151,9 +151,9 @@ export async function loadStickerPickItems(ctx = {}) {
 }
 
 /**
- * @param {HTMLElement} anchor
- * @param {(text: string) => void} onInsert
- * @param {object} [ctx]
+ * @param {HTMLElement} anchor 定位锚点
+ * @param {(text: string) => void} onInsert 选中后插入回调
+ * @param {object} [ctx] picker 上下文
  * @returns {Promise<void>}
  */
 export async function mountStickerPicker(anchor, onInsert, ctx = {}) {
@@ -186,7 +186,8 @@ export async function mountStickerPicker(anchor, onInsert, ctx = {}) {
 	document.body.appendChild(panel)
 	setTimeout(() => {
 		/**
-		 * @param {Event} e
+		 * @param {Event} e 外部点击事件
+		 * @returns {void}
 		 */
 		const close = e => {
 			if (!panel.contains(e.target)) {
@@ -199,9 +200,9 @@ export async function mountStickerPicker(anchor, onInsert, ctx = {}) {
 }
 
 /**
- * @param {HTMLElement} button
- * @param {(text: string) => void} onInsert
- * @param {object} [ctx]
+ * @param {HTMLElement} button 触发按钮
+ * @param {(text: string) => void} onInsert 选中后插入回调
+ * @param {object} [ctx] picker 上下文
  * @returns {void}
  */
 export function wireStickerPickerButton(button, onInsert, ctx = {}) {
