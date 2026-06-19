@@ -5,7 +5,7 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { quantize } from './space.mjs'
+import { applyRuntimeFloors, clampBundleToSpace, sanitizeBundle } from './space.mjs'
 
 /** @type {Record<keyof import('./tunables_bundle.mjs').TunablesBundle, URL>} */
 const MODULE_URLS = {
@@ -17,24 +17,11 @@ const MODULE_URLS = {
 }
 
 /**
- * @param {unknown} value 任意值
- * @returns {unknown} 递归清理后的值
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle 完整 tunables
+ * @returns {import('./tunables_bundle.mjs').TunablesBundle} 写盘前约束后的 bundle
  */
-function sanitizeNumbers(value) {
-	if (typeof value === 'number') {
-		if (!Number.isFinite(value)) return value
-		if (Number.isInteger(value)) return value
-		return quantize(value)
-	}
-	if (Array.isArray(value)) return value.map(sanitizeNumbers)
-	if (value && typeof value === 'object') {
-		/** @type {Record<string, unknown>} */
-		const out = {}
-		for (const [k, v] of Object.entries(value))
-			out[k] = sanitizeNumbers(v)
-		return out
-	}
-	return value
+export function prepareBundleForApply(bundle) {
+	return sanitizeBundle(applyRuntimeFloors(clampBundleToSpace(bundle)))
 }
 
 /**
@@ -44,8 +31,7 @@ function sanitizeNumbers(value) {
  */
 export async function writeModuleTunables(module, data) {
 	const filePath = fileURLToPath(MODULE_URLS[module])
-	const clean = /** @type {Record<string, unknown>} */ sanitizeNumbers(data)
-	await writeFile(filePath, `${JSON.stringify(clean, null, '\t')}\n`, 'utf8')
+	await writeFile(filePath, `${JSON.stringify(data, null, '\t')}\n`, 'utf8')
 	return filePath
 }
 
@@ -54,12 +40,13 @@ export async function writeModuleTunables(module, data) {
  * @returns {Promise<string[]>} 各模块 JSON 写入路径
  */
 export async function applyTunablesBundle(bundle) {
+	const ready = prepareBundleForApply(bundle)
 	const written = []
-	written.push(await writeModuleTunables('reputation', bundle.reputation))
-	written.push(await writeModuleTunables('trustGraph', bundle.trustGraph))
-	written.push(await writeModuleTunables('social', bundle.social))
-	written.push(await writeModuleTunables('mailbox', bundle.mailbox))
-	written.push(await writeModuleTunables('archive', bundle.archive))
+	written.push(await writeModuleTunables('reputation', ready.reputation))
+	written.push(await writeModuleTunables('trustGraph', ready.trustGraph))
+	written.push(await writeModuleTunables('social', ready.social))
+	written.push(await writeModuleTunables('mailbox', ready.mailbox))
+	written.push(await writeModuleTunables('archive', ready.archive))
 	return written
 }
 

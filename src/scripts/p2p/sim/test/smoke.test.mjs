@@ -13,7 +13,10 @@ Deno.test('p2p sim smoke', () => {
 
 	for (const key of RATE_METRIC_KEYS) {
 		assertEquals(typeof snap[key], 'number', key)
-		assertEquals(snap[key] >= 0 && snap[key] <= 1, true, key)
+		if (key === 'fanoutCostRatio' || key === 'mailboxCostRatio')
+			assertEquals(snap[key] >= 0, true, key)
+		else
+			assertEquals(snap[key] >= 0 && snap[key] <= 1, true, key)
 	}
 
 	assertEquals(typeof snap.malSuppressionRate, 'number')

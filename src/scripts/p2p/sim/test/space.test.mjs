@@ -10,6 +10,13 @@ Deno.test('quantize removes float tails', () => {
 	assertEquals(String(quantize(0.034999999999999996, 0.005, 0.005)).includes('999'), false)
 })
 
+Deno.test('quantize without step preserves fractional values', () => {
+	assertEquals(quantize(0.22), 0.22)
+	assertEquals(quantize(-0.4), -0.4)
+	assertEquals(quantize(0.62), 0.62)
+	assertEquals(quantize(0.2), 0.2)
+})
+
 Deno.test('sampleParam respects int and float specs', () => {
 	const rng = createRng(99)
 	for (const spec of PARAM_SPACE) 

@@ -57,8 +57,59 @@ function decimalPlaces(n) {
  */
 export function quantize(value, step, min = 0) {
 	if (!Number.isFinite(value)) return value
-	const decimals = Math.max(decimalPlaces(step ?? 0), decimalPlaces(min))
+	const stepDec = decimalPlaces(step ?? 0)
+	const minDec = decimalPlaces(min)
+	const decimals = stepDec > 0 || minDec > 0
+		? Math.max(stepDec, minDec)
+		: 8
 	return Number(value.toFixed(decimals))
+}
+
+/**
+ * @param {number} value 原始值
+ * @param {ParamSpec} spec 参数规格
+ * @returns {number} 约束到搜索空间内的值
+ */
+export function clampParamToSpec(value, spec) {
+	let v = Math.min(spec.max, Math.max(spec.min, value))
+	if (spec.step) {
+		const steps = Math.round((v - spec.min) / spec.step)
+		v = spec.min + steps * spec.step
+	}
+	if (spec.kind === 'int') v = Math.round(v)
+	else v = quantize(v, spec.step, spec.min)
+	return Math.min(spec.max, Math.max(spec.min, v))
+}
+
+/**
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
+ * @returns {import('./tunables_bundle.mjs').TunablesBundle} 搜索空间内约束后的 bundle
+ */
+export function clampBundleToSpace(bundle) {
+	const out = structuredClone(bundle)
+	for (const spec of PARAM_SPACE)
+		out[spec.module][spec.key] = clampParamToSpec(out[spec.module][spec.key], spec)
+	return out
+}
+
+/** @type {Array<{ module: keyof import('./tunables_bundle.mjs').TunablesBundle, key: string, min: number }>} */
+export const RUNTIME_FLOORS = [
+	{ module: 'reputation', key: 'slashDefaultClaim', min: 0.1 },
+	{ module: 'reputation', key: 'slashVerifiedDefaultClaim', min: 0.1 },
+	{ module: 'reputation', key: 'slashUnverifiedDefaultClaim', min: 0.1 },
+	{ module: 'reputation', key: 'chunkStoreRepBump', min: 0.01 },
+	{ module: 'reputation', key: 'archiveServeMismatchPenalty', min: 0.04 },
+]
+
+/**
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
+ * @returns {import('./tunables_bundle.mjs').TunablesBundle} 运行时防御下限约束后的 bundle
+ */
+export function applyRuntimeFloors(bundle) {
+	for (const { module, key, min } of RUNTIME_FLOORS)
+		if (bundle[module][key] < min)
+			bundle[module][key] = min
+	return bundle
 }
 
 /**

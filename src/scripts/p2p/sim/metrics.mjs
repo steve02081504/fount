@@ -48,17 +48,34 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 	malSuppressionRate: 0.22,
 	honestPreservationRate: 0.18,
 	collusionCollapseRate: 0.10,
-	sybilContainmentRate: 0.08,
+	sybilContainmentRate: 0.10,
 	archiveDefenseRate: 0.08,
 	relayPreservationRate: 0.06,
 	profilePreservationRate: 0.06,
-	fanoutReachRate: 0.06,
-	mailboxReachRate: 0.06,
+	fanoutReachRate: 0.05,
+	mailboxReachRate: 0.05,
 	archiveQuorumAccuracy: 0.05,
 	falsePositiveRate: -0.18,
-	fanoutCostRatio: -0.04,
-	mailboxCostRatio: -0.03,
+	fanoutCostRatio: -0.08,
+	mailboxCostRatio: -0.06,
 })
+
+/**
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
+ * @returns {number} 关停防御时的适应度惩罚（越大越差）
+ */
+export function defenseViabilityPenalty(tunables) {
+	const r = tunables.reputation
+	const s = tunables.social
+	let penalty = 0
+	if (r.penaltyUnknownWant <= 0) penalty += 0.2
+	if (r.penaltyMessageRate <= 0) penalty += 0.2
+	if (r.chunkFetchFailPenalty <= 0) penalty += 0.1
+	if (r.slashUnverifiedDefaultClaim <= 0) penalty += 0.2
+	if (s.socialBlockClaim <= 0) penalty += 0.1
+	if (s.socialRepHideThreshold >= -0.15) penalty += 0.15
+	return penalty
+}
 
 /**
  * @param {SimSnapshot} snap 单次快照
@@ -125,8 +142,9 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 	}
 
 	const n = Math.max(1, scenarios.length)
+	const viabilityPenalty = defenseViabilityPenalty(tunables)
 	return {
-		fitness: totalFitness / n,
+		fitness: totalFitness / n - viabilityPenalty,
 		mean: totalMean / n,
 		min: worstMin,
 		max: bestMax,

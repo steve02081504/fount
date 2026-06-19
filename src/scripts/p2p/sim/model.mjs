@@ -286,7 +286,7 @@ function simulateMailbox(obs, nodes, tunables, scoreOf) {
 	const totalFriendly = Math.max(1, friendly.size - 1)
 	return {
 		reach: deliveries / totalFriendly,
-		cost: visited.size / (totalFriendly * Math.max(1, maxHop)),
+		cost: visited.size / totalFriendly,
 	}
 }
 
@@ -321,13 +321,23 @@ function simulateArchiveQuorum(nodes, tunables, scoreOf) {
 /**
  * @param {SimNode} node 节点
  * @param {(id: string) => number} scoreOf 信誉分
+ * @param {number} hideThreshold 隐藏阈值
+ * @returns {boolean} 信誉是否被保全（仅看分数，不看 fanout 名额）
+ */
+function isNodePreserved(node, scoreOf, hideThreshold) {
+	return scoreOf(node.id) >= hideThreshold
+}
+
+/**
+ * @param {SimNode} node 节点
+ * @param {(id: string) => number} scoreOf 信誉分
  * @param {Set<string>} topSet topK
  * @param {number} hideThreshold 隐藏阈值
- * @returns {boolean} 是否被安全保留（高分且在 topK）
+ * @returns {boolean} 是否被恶意抑制（低分或未获 fanout 放大）
  */
-function isNodeSafe(node, scoreOf, topSet, hideThreshold) {
+function isMaliciousSuppressed(node, scoreOf, topSet, hideThreshold) {
 	const score = scoreOf(node.id)
-	return score >= hideThreshold && topSet.has(node.id)
+	return score < hideThreshold || !topSet.has(node.id)
 }
 
 /**
@@ -434,18 +444,17 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 
 		const topSet = new Set(top.map(n => n.nodeHash))
 		fanoutReach += top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'honest').length / Math.max(1, top.length)
-		fanoutCost += top.length / tunables.trustGraph.federationFanoutTopK
+		fanoutCost += top.length / Math.max(1, honest.length)
 
 		for (const m of malicious) {
 			malTotal++
-			const score = scoreOf(m.id)
-			if (score < hideThreshold || !topSet.has(m.id))
+			if (isMaliciousSuppressed(m, scoreOf, topSet, hideThreshold))
 				malSuppressed++
 		}
 
 		for (const h of honest) {
 			honestTotal++
-			if (isNodeSafe(h, scoreOf, topSet, hideThreshold))
+			if (isNodePreserved(h, scoreOf, hideThreshold))
 				honestSafe++
 			if (scoreOf(h.id) < hideThreshold)
 				falsePositive++
@@ -453,15 +462,20 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 
 		for (const r of relays) {
 			relayTotal++
-			if (isNodeSafe(r, scoreOf, topSet, hideThreshold))
+			if (isNodePreserved(r, scoreOf, hideThreshold))
 				relaySafe++
 		}
 
 		for (const p of profiled) {
 			profileTotal++
-			if (isNodeSafe(p, scoreOf, topSet, hideThreshold))
+			if (isNodePreserved(p, scoreOf, hideThreshold))
 				profileSafe++
 		}
+
+		const honestScores = honest.map(h => scoreOf(h.id)).sort((a, b) => a - b)
+		const honestMedian = honestScores.length
+			? honestScores[Math.floor(honestScores.length / 2)]
+			: 0
 
 		const sybilClusters = new Map()
 		for (const s of sybilNodes) {
@@ -471,14 +485,14 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 		}
 		for (const cluster of sybilClusters.values()) {
 			sybilTotal++
-			const avg = cluster.reduce((sum, n) => sum + scoreOf(n.id), 0) / Math.max(1, cluster.length)
-			if (avg < 0) sybilContained++
+			const maxScore = Math.max(...cluster.map(n => scoreOf(n.id)))
+			const anyInTop = cluster.some(n => topSet.has(n.id))
+			if (maxScore < honestMedian && !anyInTop) sybilContained++
 		}
 
 		for (const f of forgers) {
 			archiveTotal++
-			const score = scoreOf(f.id)
-			if (score < hideThreshold || !topSet.has(f.id))
+			if (isMaliciousSuppressed(f, scoreOf, topSet, hideThreshold))
 				archiveDefended++
 		}
 
