@@ -11,9 +11,9 @@
  */
 import { applyTunablesBundle } from './apply.mjs'
 import { parseDurationMs } from './duration.mjs'
-import { DEFAULT_WEIGHTS } from './metrics.mjs'
+import { DEFAULT_WEIGHTS, evaluateTunables } from './metrics.mjs'
 import { runSimulation } from './model.mjs'
-import { runOptimizer, shouldApply } from './optimizer.mjs'
+import { runOptimizer, shouldApplyResult } from './optimizer.mjs'
 import { writeReport } from './report.mjs'
 import { resolveScenarios } from './scenarios.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
@@ -139,16 +139,23 @@ async function cmdMine(args) {
 
 	const { baseline, best, history, stoppedBy, generationsRun, elapsedMs } = result
 
+	// 写回前一律在**全场景**上复评，避免单场景挖矿过拟合后污染全局默认值。
+	const allScenarios = resolveScenarios('all')
+	const baselineFull = await evaluateTunables(allScenarios, seeds, baseline.tunables, runSimulation, DEFAULT_WEIGHTS)
+	const bestFull = await evaluateTunables(allScenarios, seeds, best.tunables, runSimulation, DEFAULT_WEIGHTS)
+	const gate = shouldApplyResult(baselineFull, bestFull)
+
 	/** @type {object} */
-	const applyInfo = { applied: false, reason: doApply ? 'below-margin' : 'dry-run' }
-	if (doApply)
-		if (shouldApply(baseline.result.fitness, best.result.fitness)) {
-			const written = await applyTunablesBundle(best.tunables)
-			applyInfo.applied = true
-			applyInfo.written = written
-		}
-		else
-			applyInfo.reason = `fitness ${best.result.fitness.toFixed(4)} 未超过基线 ${baseline.result.fitness.toFixed(4)} + margin`
+	const applyInfo = {
+		applied: false,
+		reason: doApply ? gate.reason : 'dry-run',
+		full: { baseline: baselineFull.fitness, best: bestFull.fitness },
+	}
+	if (doApply && gate.ok) {
+		const written = await applyTunablesBundle(best.tunables)
+		applyInfo.applied = true
+		applyInfo.written = written
+	}
 
 	const payload = {
 		generatedAt: new Date().toISOString(),
@@ -168,6 +175,7 @@ async function cmdMine(args) {
 
 	const { jsonPath, mdPath } = await writeReport(payload, applyInfo.applied ? 'mine-applied' : 'mine')
 	console.log(`fitness baseline=${baseline.result.fitness.toFixed(4)} best=${best.result.fitness.toFixed(4)}`)
+	console.log(`all-scenario fitness baseline=${baselineFull.fitness.toFixed(4)} best=${bestFull.fitness.toFixed(4)}`)
 	if (durationMs != null)
 		console.log(`stopped by ${stoppedBy} after ${generationsRun} generation(s), elapsed ${(elapsedMs / 1000).toFixed(1)}s / ${(durationMs / 1000).toFixed(1)}s`)
 	console.log(`report: ${jsonPath}`)

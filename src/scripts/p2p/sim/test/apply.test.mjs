@@ -2,17 +2,19 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { prepareBundleForApply } from '../apply.mjs'
-import { clampBundleToSpace, PARAM_SPACE, randomCandidate } from '../space.mjs'
+import { normalizeBundle, PARAM_SPACE, randomCandidate } from '../space.mjs'
 
-Deno.test('clampBundleToSpace keeps PARAM_SPACE values in bounds', () => {
+Deno.test('normalizeBundle keeps every PARAM_SPACE value in its semantic domain', () => {
 	for (let seed = 1; seed <= 40; seed++) {
-		const bundle = randomCandidate(seed)
-		const clamped = clampBundleToSpace(bundle)
+		const bundle = normalizeBundle(randomCandidate(seed))
 		for (const spec of PARAM_SPACE) {
-			const v = clamped[spec.module][spec.key]
-			assertEquals(v >= spec.min && v <= spec.max, true, `${spec.module}.${spec.key} seed ${seed}`)
-			if (spec.kind === 'int')
-				assertEquals(Number.isInteger(v), true, `${spec.module}.${spec.key} seed ${seed}`)
+			const v = bundle[spec.module][spec.key]
+			const label = `${spec.module}.${spec.key} seed ${seed}`
+			assertEquals(Number.isFinite(v), true, label)
+			if (spec.kind === 'count') assertEquals(Number.isInteger(v) && v >= 1, true, label)
+			if (spec.kind === 'pos') assertEquals(v > 0, true, label)
+			if (spec.kind === 'unit') assertEquals(v > 0 && v < 1, true, label)
+			if (spec.kind === 'score') assertEquals(v > -1 && v < 1, true, label)
 		}
 	}
 })
@@ -37,4 +39,12 @@ Deno.test('prepareBundleForApply does not zero non-space reputation keys', () =>
 	assertEquals(ready.reputation.slashDefaultClaim > 0, true)
 	assertEquals(ready.reputation.slashUnverifiedDefaultClaim > 0, true)
 	assertEquals(ready.reputation.chunkStoreRepBump > 0, true)
+})
+
+Deno.test('prepareBundleForApply enforces strict>=base quorum rule', () => {
+	const bundle = randomCandidate(3)
+	bundle.archive.archiveQuorumPeerMin = 5
+	bundle.archive.archiveQuorumPeerStrictMin = 2
+	const ready = prepareBundleForApply(bundle)
+	assertEquals(ready.archive.archiveQuorumPeerStrictMin >= ready.archive.archiveQuorumPeerMin, true)
 })

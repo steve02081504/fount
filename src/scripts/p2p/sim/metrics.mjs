@@ -1,6 +1,7 @@
 /**
  * 仿真指标与适应度。
  */
+import { softRulePenalty } from './space.mjs'
 
 /**
  * @typedef {{
@@ -59,23 +60,6 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 	fanoutCostRatio: -0.08,
 	mailboxCostRatio: -0.06,
 })
-
-/**
- * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
- * @returns {number} 关停防御时的适应度惩罚（越大越差）
- */
-export function defenseViabilityPenalty(tunables) {
-	const r = tunables.reputation
-	const s = tunables.social
-	let penalty = 0
-	if (r.penaltyUnknownWant <= 0) penalty += 0.2
-	if (r.penaltyMessageRate <= 0) penalty += 0.2
-	if (r.chunkFetchFailPenalty <= 0) penalty += 0.1
-	if (r.slashUnverifiedDefaultClaim <= 0) penalty += 0.2
-	if (s.socialBlockClaim <= 0) penalty += 0.1
-	if (s.socialRepHideThreshold >= -0.15) penalty += 0.15
-	return penalty
-}
 
 /**
  * @param {SimSnapshot} snap 单次快照
@@ -142,9 +126,9 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 	}
 
 	const n = Math.max(1, scenarios.length)
-	const viabilityPenalty = defenseViabilityPenalty(tunables)
+	const rulePenalty = softRulePenalty(tunables)
 	return {
-		fitness: totalFitness / n - viabilityPenalty,
+		fitness: totalFitness / n - rulePenalty,
 		mean: totalMean / n,
 		min: worstMin,
 		max: bestMax,

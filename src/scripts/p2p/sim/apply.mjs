@@ -5,7 +5,7 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { applyRuntimeFloors, clampBundleToSpace, sanitizeBundle } from './space.mjs'
+import { normalizeBundle, sanitizeBundle } from './space.mjs'
 
 /** @type {Record<keyof import('./tunables_bundle.mjs').TunablesBundle, URL>} */
 const MODULE_URLS = {
@@ -18,10 +18,10 @@ const MODULE_URLS = {
 
 /**
  * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle 完整 tunables
- * @returns {import('./tunables_bundle.mjs').TunablesBundle} 写盘前约束后的 bundle
+ * @returns {import('./tunables_bundle.mjs').TunablesBundle} 写盘前规整后的 bundle
  */
 export function prepareBundleForApply(bundle) {
-	return sanitizeBundle(applyRuntimeFloors(clampBundleToSpace(bundle)))
+	return sanitizeBundle(normalizeBundle(bundle))
 }
 
 /**

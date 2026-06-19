@@ -213,11 +213,29 @@ export async function runOptimizer(opts) {
 }
 
 /**
- * @param {number} baselineFitness 基线适应度
- * @param {number} candidateFitness 候选适应度
- * @param {number} [margin=0.02] 最小提升
- * @returns {boolean} 是否应写回 JSON
+ * 写回门槛（防单场景过拟合）：必须在**全场景**总适应度上超过基线 + margin，
+ * 且不得让任何单一场景相对基线明显回退。
+ * @param {Awaited<ReturnType<typeof evaluateTunables>>} baselineEval 全场景基线评估
+ * @param {Awaited<ReturnType<typeof evaluateTunables>>} candidateEval 全场景候选评估
+ * @param {object} [opts] 选项
+ * @param {number} [opts.margin=0.02] 全场景最小提升
+ * @param {number} [opts.regressTol=0.01] 单场景允许的最大回退
+ * @returns {{ ok: boolean, reason: string }} 是否应写回与原因
  */
-export function shouldApply(baselineFitness, candidateFitness, margin = 0.02) {
-	return candidateFitness >= baselineFitness + margin
+export function shouldApplyResult(baselineEval, candidateEval, opts = {}) {
+	const { margin = 0.02, regressTol = 0.01 } = opts
+	if (candidateEval.fitness < baselineEval.fitness + margin)
+		return {
+			ok: false,
+			reason: `全场景 fitness ${candidateEval.fitness.toFixed(4)} 未超过基线 ${baselineEval.fitness.toFixed(4)} + margin ${margin}`,
+		}
+	for (const [id, agg] of Object.entries(candidateEval.byScenario)) {
+		const base = baselineEval.byScenario[id]
+		if (base && agg.fitness < base.fitness - regressTol)
+			return {
+				ok: false,
+				reason: `场景 ${id} 回退（${agg.fitness.toFixed(4)} < 基线 ${base.fitness.toFixed(4)} - ${regressTol}）`,
+			}
+	}
+	return { ok: true, reason: 'ok' }
 }

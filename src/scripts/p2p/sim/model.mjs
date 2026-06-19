@@ -443,7 +443,10 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 		}, tunables.trustGraph.federationFanoutTopK, tunables.trustGraph)
 
 		const topSet = new Set(top.map(n => n.nodeHash))
-		fanoutReach += top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'honest').length / Math.max(1, top.length)
+		// 可达率 = 选中集覆盖的诚实节点 / 全部诚实节点（覆盖广度），与成本天然对立；
+		// 旧实现用「选中集纯度」，会让极小 fanout 虚高，掩盖冗余/韧性损失。
+		const honestInTop = top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'honest').length
+		fanoutReach += honestInTop / Math.max(1, honest.length)
 		fanoutCost += top.length / Math.max(1, honest.length)
 
 		for (const m of malicious) {
