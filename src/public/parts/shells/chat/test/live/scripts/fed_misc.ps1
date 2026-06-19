@@ -115,21 +115,12 @@ if ($bPub) {
 			Api $FedB POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 			$ev = Api $FedB GET "/groups/$gid/events?limit=40"
 			if ($ev.status -ne 200) { return $false }
-			if (@($ev.json.events | Where-Object {
+			@($ev.json.events | Where-Object {
 				$_.type -eq 'reputation_slash' -and $_.content.targetPubKeyHash -eq $bPub
-			}).Count -ge 1) { return $true }
-			$fromA = Api $FedA GET "/groups/$gid/events?limit=60"
-			if ($fromA.status -ne 200) { return $false }
-			$row = @($fromA.json.events | Where-Object {
-				$_.type -eq 'reputation_slash' -and $_.content.targetPubKeyHash -eq $bPub
-			})[0]
-			if ($row -and $row.signature) {
-				$ing = Api $FedB POST "/groups/$gid/events" @{ events = @($row) }
-				if ($ing.status -eq 200) { return $true }
-			}
-			$false
+			}).Count -ge 1
 		}
-		[bool]$ok
+		if (-not $ok) { throw 'B must receive reputation_slash via federation catchup (no manual A-side inject)' }
+		$true
 	}
 }
 else {
@@ -205,3 +196,4 @@ else {
 
 Cleanup-Group $gid
 Write-FedSummary 'FED-MISC' $gid
+if ($script:fail -gt 0) { exit 1 }

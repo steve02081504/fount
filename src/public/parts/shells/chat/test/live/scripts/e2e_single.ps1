@@ -314,16 +314,22 @@ T 'POST federation/offline-mark' {
 	$r = Api POST "/groups/$gid/federation/offline-mark" @{ wallMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() }
 	$r.status -eq 200 -or $r.status -eq 204
 }
-T 'POST reputation/slash + reset (DAG)' {
+T 'POST reputation/slash verified (DAG)' {
 	$members = Api GET "/groups/$gid/members/page/0"
 	$self = @($members.json.members)[0].pubKeyHash
-	# self-slash with proof => DAG event
-	$r = Api POST "/groups/$gid/reputation/slash" @{ targetPubKeyHash = $self; claim = 0.1; verified = $true; proof = @{ eventId = (Api GET "/groups/$gid/dag/tips").json.tips[0] } }
-	# accept applied or a clear 4xx (self-slash may be disallowed); treat 200 as pass, record others
-	if ($r.status -eq 200) { return $true }
-	# reset path
-	$rr = Api POST "/groups/$gid/reputation/reset" @{ targetPubKeyHash = $self }
-	$rr.status -eq 200
+	$tip = (Api GET "/groups/$gid/dag/tips").json.tips[0]
+	$r = Api POST "/groups/$gid/reputation/slash" @{
+		targetPubKeyHash = $self; claim = 0.1; verified = $true; proof = @{ eventId = $tip }
+	}
+	if ($r.status -ne 200) { throw "slash $($r.status): $($r.raw)" }
+	$true
+}
+T 'POST reputation/reset (DAG)' {
+	$members = Api GET "/groups/$gid/members/page/0"
+	$self = @($members.json.members)[0].pubKeyHash
+	$r = Api POST "/groups/$gid/reputation/reset" @{ targetPubKeyHash = $self }
+	if ($r.status -ne 200) { throw "reset $($r.status): $($r.raw)" }
+	$true
 }
 
 # ---------------------------------------------------------------------------
