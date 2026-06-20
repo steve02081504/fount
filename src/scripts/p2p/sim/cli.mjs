@@ -60,7 +60,7 @@ function num(raw, fallback) {
  * @returns {number[]} 种子列表
  */
 function parseSeeds(raw) {
-	if (typeof raw !== 'string') return [1, 2, 3]
+	if (typeof raw !== 'string') return [1, 2, 3, 4, 5, 6]
 	return raw.split(',').map(s => Number(s.trim())).filter(Number.isFinite)
 }
 
@@ -247,9 +247,9 @@ async function cmdMine(args) {
  */
 function printHelp() {
 	console.log(`usage:
-  cli.mjs sim [--scenario ID] [--seeds 1,2,3]
+  cli.mjs sim [--scenario ID] [--seeds 1,2,3,4,5,6]
   cli.mjs mine [--scenarios ID|all] [--generations N] [--duration 5m]
-               [--population N] [--seeds 1,2,3] [--jobs N] [--serial]
+               [--population N] [--seeds 1,2,3,4,5,6] [--jobs N] [--serial]
                [--no-apply|--dry-run] [--skip-full-eval]
 
 默认 mine 自动按 CPU 逻辑核心数并行仿真（无需额外参数）。

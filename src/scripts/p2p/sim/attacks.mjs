@@ -38,6 +38,49 @@ function queueSlash(ctx, observer, targetId, senderId, claim, verified, round, t
 }
 
 /**
+ * 第一人称：观察者仅因**直接观测到**该 peer 的中继行为而加分。
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 被观测 peer
+ * @param {import('./model.mjs').SimObserver} observer 观察者
+ * @param {() => number} rng 随机源
+ * @param {number} rate 触发概率
+ * @param {string} dedupeKey 去重键
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function observeSelfRelayBump(ctx, node, observer, rng, rate, dedupeKey, tunables) {
+	if (rng() >= rate) return
+	ctx.engine.bumpReputationOnRelayPure(
+		observer.reputation,
+		node.id,
+		dedupeKey,
+		ctx.now,
+		tunables.reputation,
+	)
+}
+
+/**
+ * 同伙互吹：经 hint 发现通道间接抬分，收益随 sender 主观信誉折扣（低信誉 sender 的 hint 几乎无效）。
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimObserver} observer 观察者
+ * @param {string} allyId 被抬分目标
+ * @param {string} senderId 声称来源
+ * @param {number} weightMul 相对 hintDefaultWeight 的倍数
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function injectAllyHint(ctx, observer, allyId, senderId, weightMul, tunables) {
+	const senderRep = observer.reputation.byNodeHash[senderId]?.score ?? 0
+	const senderTrust = Math.max(0.05, (senderRep + 1) / 2)
+	const weight = tunables.trustGraph.hintDefaultWeight * weightMul * senderTrust * 0.35
+	const existing = observer.injectedHints.find(h => h.nodeHash === allyId && h.source === `ally:${senderId}`)
+	if (existing)
+		existing.weight = (existing.weight ?? weight) + weight
+	else
+		observer.injectedHints.push({ nodeHash: allyId, source: `ally:${senderId}`, weight })
+}
+
+/**
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
@@ -119,14 +162,12 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
  * @returns {void}
  */
 function runSybil(ctx, node, observer, rng, tunables) {
-	const { bumpReputationOnRelayPure } = ctx.engine
 	if ((ctx.round ?? 0) < SYBIL_REP_EARN_COST_ROUNDS) return
 	const p = attackParams(ctx, node)
-	if (rng() < p.activationRate)
-		bumpReputationOnRelayPure(observer.reputation, node.id, `sybil:${node.id}`, ctx.now, tunables.reputation)
+	observeSelfRelayBump(ctx, node, observer, rng, p.activationRate, `sybil:${node.id}`, tunables)
 	for (const sybil of ctx.sybilCluster(node))
-		if (rng() < p.activationRate * 0.58)
-			bumpReputationOnRelayPure(observer.reputation, sybil.id, `sybil:${sybil.id}`, ctx.now, tunables.reputation)
+		if (sybil.id !== node.id && rng() < p.activationRate * p.collusionAllyRate)
+			injectAllyHint(ctx, observer, sybil.id, node.id, 0.58, tunables)
 }
 
 /**
@@ -139,14 +180,12 @@ function runSybil(ctx, node, observer, rng, tunables) {
  * @returns {void}
  */
 function runCollusion(ctx, node, observer, rng, round, tunables) {
-	const { bumpReputationOnRelayPure } = ctx.engine
 	const p = attackParams(ctx, node)
-	if (rng() < p.activationRate)
-		bumpReputationOnRelayPure(observer.reputation, node.id, `collusion:${round}`, ctx.now, tunables.reputation)
+	observeSelfRelayBump(ctx, node, observer, rng, p.activationRate, `collusion:${round}:${node.id}`, tunables)
 	const ring = ctx.collusionRing(node)
 	for (const ally of ring)
 		if (ally.id !== node.id && rng() < p.collusionAllyRate)
-			bumpReputationOnRelayPure(observer.reputation, ally.id, `collusion-ally:${round}`, ctx.now, tunables.reputation)
+			injectAllyHint(ctx, observer, ally.id, node.id, p.collusionAllyRate, tunables)
 	const victim = ring.find(n => n.id !== node.id)
 	if (victim && rng() < p.activationRate * 0.4)
 		queueSlash(ctx, observer, victim.id, node.id, tunables.reputation.slashUnverifiedDefaultClaim, false, round, tunables)
@@ -485,14 +524,14 @@ function runTargetedEclipse(ctx, node, observer, rng, round, tunables) {
  * @returns {void}
  */
 function runRepPump(ctx, node, observer, rng, round, tunables) {
-	const { bumpReputationOnRelayPure, penalizeArchiveServeMismatchPure } = ctx.engine
+	const { penalizeArchiveServeMismatchPure } = ctx.engine
 	const p = attackParams(ctx, node)
-	const cluster = ctx.sybilCluster(node)
 	const pumpRounds = Math.max(8, Math.round((ctx.scenario?.rounds ?? 40) * p.sleeperTurnFrac))
 	if (round < pumpRounds) {
-		for (const sybil of cluster)
-			if (rng() < p.activationRate)
-				bumpReputationOnRelayPure(observer.reputation, sybil.id, `pump:${round}:${sybil.id}`, ctx.now, tunables.reputation)
+		observeSelfRelayBump(ctx, node, observer, rng, p.activationRate, `pump:${round}:${node.id}`, tunables)
+		for (const sybil of ctx.sybilCluster(node))
+			if (sybil.id !== node.id && rng() < p.activationRate * p.collusionAllyRate)
+				injectAllyHint(ctx, observer, sybil.id, node.id, 0.5, tunables)
 		return
 	}
 	if (rng() < p.activationRate)

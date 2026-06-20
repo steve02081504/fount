@@ -2,7 +2,7 @@
  * 入群前 MQTT 凭证 bootstrap（物化 state 尚无 mqttRoomSecret 时，供 ensureFederationRoom 首次 catch-up）。
  */
 
-/** @type {Map<string, { mqttAppId: string, mqttRoomSecret: string, dmSessionTag?: string, setAt: number, settingsEventId?: string }>} */
+/** @type {Map<string, { mqttAppId: string, mqttRoomSecret: string, dmSessionTag?: string, setAt: number, settingsEventId?: string, powAnchorRef?: string, powAnchors?: string[] }>} */
 const bootstrapByKey = new Map()
 
 /** @type {Map<string, { mqttAppId: string, mqttRoomSecret: string, dmSessionTag?: string, fromNodeId: string, setAt: number, settingsEventId?: string }>} */
@@ -20,7 +20,7 @@ export function federationBootstrapKey(username, groupId) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ mqttAppId?: string, mqttRoomSecret: string, dmSessionTag?: string }} creds 邀请/bootstrap 凭证
+ * @param {{ mqttAppId?: string, mqttRoomSecret: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} creds 邀请/bootstrap 凭证
  * @returns {void}
  */
 export function setFederationBootstrap(username, groupId, creds) {
@@ -31,6 +31,8 @@ export function setFederationBootstrap(username, groupId, creds) {
 		dmSessionTag: String(creds.dmSessionTag || '').trim().toLowerCase() || undefined,
 		setAt: Date.now(),
 		settingsEventId: creds.settingsEventId?.trim() || undefined,
+		powAnchorRef: creds.powAnchorRef?.trim() || undefined,
+		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors.map(String) : undefined,
 	})
 	peerHintByKey.delete(federationBootstrapKey(username, groupId))
 }

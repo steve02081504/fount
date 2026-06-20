@@ -92,8 +92,9 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 ### `PUT /api/parts/shells:chat/groups/:groupId/governance-branch`
 选定本地治理分支 tip。
 
-### `GET /api/parts/shells:chat/groups/:groupId/pow-challenge`
-PoW 入群挑战（若群启用）。
+### 无状态入群 PoW（`joinPolicy=pow`）
+
+`member_join.content.powSolution` 为 `{ anchorRef, epoch, nonce, joinerNodeHash? }`：`anchorRef` 须为群近期 DAG tip 或 checkpoint root；`sha256(groupId:anchorRef:joinerNodeHash:epoch:nonce)` 前导零 bit ≥ `groupSettings.powDifficulty`。邀请票响应含 `powAnchors` / `powAnchorRef` 供新人离线求解；checkpoint 已收录的历史 join replay 豁免 PoW。
 
 ---
 

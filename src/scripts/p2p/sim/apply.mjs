@@ -14,6 +14,7 @@ const MODULE_URLS = {
 	social: new URL('../reputation_social.tunables.json', import.meta.url),
 	mailbox: new URL('../mailbox/mailbox.tunables.json', import.meta.url),
 	archive: new URL('../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json', import.meta.url),
+	admission: new URL('../admission.tunables.json', import.meta.url),
 }
 
 /**
@@ -47,6 +48,7 @@ export async function applyTunablesBundle(bundle) {
 	written.push(await writeModuleTunables('social', ready.social))
 	written.push(await writeModuleTunables('mailbox', ready.mailbox))
 	written.push(await writeModuleTunables('archive', ready.archive))
+	written.push(await writeModuleTunables('admission', ready.admission))
 	return written
 }
 

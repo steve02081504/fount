@@ -5,8 +5,8 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, rename, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
@@ -19,6 +19,10 @@ import {
 } from '../archive/monthDigest.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
 
+import {
+	fanoutDigestClaims,
+	mergeDigestObservation,
+} from './archiveDigestClaims.mjs'
 import { markArchiveMonthIncomplete } from './archiveMonthMark.mjs'
 import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
 import {
@@ -121,6 +125,10 @@ export function noteFedArchiveMonthResponse(username, groupId, response, peerNod
 		parts: response.parts,
 		complete: response.complete,
 		reason: response.reason,
+		verified: Boolean(
+			response.complete
+			&& isHex64(String(response.digest || '').trim().replace(/^0x/iu, '')),
+		),
 	})
 	tryFinishFederationCollect(pending, archiveMonthQuorumSatisfied)
 }
@@ -166,6 +174,7 @@ export async function applyArchiveMonthWinner(username, groupId, winner) {
  * @returns {Promise<object[]>} 含 tmpPath 或 body 的候选
  */
 async function resolveArchiveMonthCandidates(username, groupId, slot, candidates) {
+	const { digestArchiveMonthFile } = await import('../archive/monthDigest.mjs')
 	/** @type {object[]} */
 	const resolved = []
 	for (const row of candidates) {
@@ -175,7 +184,22 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 				penalizeArchiveServeMismatch(row.peerNodeHash)
 			continue
 		}
-		resolved.push({ ...row, tmpPath })
+		let verified = Boolean(row.verified)
+		try {
+			const parsed = await digestArchiveMonthFile(tmpPath)
+			const wireDigest = String(row.digest || '').trim().toLowerCase()
+			if (wireDigest && parsed.digest && wireDigest !== parsed.digest) {
+				verified = false
+				if (row.peerNodeHash)
+					penalizeArchiveServeMismatch(row.peerNodeHash)
+			}
+			else if (parsed.digest)
+				verified = true
+		}
+		catch {
+			verified = false
+		}
+		resolved.push({ ...row, tmpPath, verified })
 	}
 	return resolved
 }
@@ -187,7 +211,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
  * @param {object[]} candidates 已解析候选
  * @param {string} channelId 频道
  * @param {string} utcMonth `YYYY-MM`
- * @returns {Promise<void>}
+ * @returns {Promise<Array<{ peer: string, digest: string }>>} 有效观测
  */
 async function noteArchiveDigestObservations(username, groupId, candidates, channelId, utcMonth) {
 	const { digestArchiveMonthFile } = await import('../archive/monthDigest.mjs')
@@ -206,21 +230,19 @@ async function noteArchiveDigestObservations(username, groupId, candidates, chan
 		if (!isHex64(digest)) continue
 		observations.push({ peer, digest })
 	}
-	if (!observations.length) return
+	if (!observations.length) return []
 
 	const penalized = new Set()
 	await mutateArchiveManifest(username, groupId, manifest => {
 		if (!manifest.peerDigestObservations) manifest.peerDigestObservations = {}
-		for (const { peer, digest } of observations) {
-			const key = `${channelId}:${utcMonth}:${peer}`
-			const prev = manifest.peerDigestObservations[key]
-			if (prev && prev !== digest)
+		for (const { peer, digest } of observations) 
+			if (mergeDigestObservation(manifest, channelId, utcMonth, peer, digest))
 				penalized.add(peer)
-			manifest.peerDigestObservations[key] = digest
-		}
+		
 	})
 	for (const peer of penalized)
 		penalizeArchiveServeMismatch(peer)
+	return observations
 }
 
 /**
@@ -274,7 +296,13 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		return { applied: false, reason: 'chunk_fetch_failed' }
 	}
 
-	await noteArchiveDigestObservations(username, groupId, candidates, channelId, utcMonth)
+	const obsRows = await noteArchiveDigestObservations(username, groupId, candidates, channelId, utcMonth)
+	fanoutDigestClaims(slot, groupId, obsRows.map(row => ({
+		channelId,
+		utcMonth,
+		peerNodeHash: row.peer,
+		digest: row.digest,
+	})))
 
 	const manifest = await loadArchiveManifest(username, groupId)
 	const picked = await pickArchiveMonthByReputation(

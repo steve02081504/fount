@@ -24,6 +24,7 @@ import { runSimulationJobs, defaultConcurrency } from './sim_pool.mjs'
  *   compromiseContainmentRate: number,
  *   sleeperReactionRate: number,
  *   equivocationDefenseRate: number,
+ *   honestJoinDelayPenalty: number,
  *   observerCount: number,
  *   maliciousCount: number,
  *   honestCount: number,
@@ -59,6 +60,7 @@ export const RATE_METRIC_KEYS = Object.freeze([
 	'compromiseContainmentRate',
 	'sleeperReactionRate',
 	'equivocationDefenseRate',
+	'honestJoinDelayPenalty',
 ])
 
 /** 默认适应度加权系数 */
@@ -79,6 +81,7 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 	compromiseContainmentRate: 0.05,
 	sleeperReactionRate: 0.04,
 	equivocationDefenseRate: 0.04,
+	honestJoinDelayPenalty: -0.03,
 	falsePositiveRate: -0.16,
 	fanoutCostRatio: -0.04,
 	mailboxCostRatio: -0.045,

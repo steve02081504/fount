@@ -2,6 +2,7 @@
  * 聚合各模块 tunables（运行时默认值 + 挖矿候选）。
  */
 import archiveTunables from '../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json' with { type: 'json' }
+import admissionTunables from '../admission.tunables.json' with { type: 'json' }
 import mailboxTunables from '../mailbox/mailbox.tunables.json' with { type: 'json' }
 import reputationTunables from '../reputation.tunables.json' with { type: 'json' }
 import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }
@@ -14,6 +15,7 @@ import trustGraphTunables from '../trust_graph.tunables.json' with { type: 'json
  *   social: typeof socialTunables,
  *   mailbox: typeof mailboxTunables,
  *   archive: typeof archiveTunables,
+ *   admission: typeof admissionTunables,
  * }} TunablesBundle
  */
 
@@ -24,6 +26,7 @@ export const TUNABLES_PATHS = Object.freeze({
 	social: new URL('../reputation_social.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	mailbox: new URL('../mailbox/mailbox.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	archive: new URL('../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	admission: new URL('../admission.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 })
 
 /** 只读默认模板（模块加载时构建一次） */
@@ -33,6 +36,7 @@ const DEFAULT_TUNABLES_TEMPLATE = Object.freeze({
 	social: structuredClone(socialTunables),
 	mailbox: structuredClone(mailboxTunables),
 	archive: structuredClone(archiveTunables),
+	admission: structuredClone(admissionTunables),
 })
 
 /**
@@ -45,6 +49,7 @@ export function loadDefaultTunables() {
 		social: structuredClone(DEFAULT_TUNABLES_TEMPLATE.social),
 		mailbox: structuredClone(DEFAULT_TUNABLES_TEMPLATE.mailbox),
 		archive: structuredClone(DEFAULT_TUNABLES_TEMPLATE.archive),
+		admission: structuredClone(DEFAULT_TUNABLES_TEMPLATE.admission),
 	}
 }
 
@@ -60,5 +65,6 @@ export function mergeTunables(patch = {}) {
 		social: { ...base.social, ...patch.social },
 		mailbox: { ...base.mailbox, ...patch.mailbox },
 		archive: { ...base.archive, ...patch.archive },
+		admission: { ...base.admission, ...patch.admission },
 	}
 }

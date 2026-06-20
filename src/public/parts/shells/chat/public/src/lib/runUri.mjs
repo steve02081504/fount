@@ -42,12 +42,14 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  * @param {string} inviteCode 邀请码
  * @param {string} [mqttRoomSecret] 首次联邦 catch-up bootstrap 口令
  * @param {string} [introducerPubKeyHash] 邀请人 Ed25519 公钥 hex（64 字符）
+ * @param {string} [powAnchorRef] 入群 PoW 绑定的近期 DAG tip / checkpoint root
  * @returns {string} canonical join run URI
  */
-export function formatJoinRunUri(groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash) {
+export function formatJoinRunUri(groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash, powAnchorRef) {
 	const segments = [groupId.trim(), inviteCode.trim()]
 	if (mqttRoomSecret?.trim()) segments.push(mqttRoomSecret.trim())
 	if (introducerPubKeyHash?.trim()) segments.push(normalizePubKeyHex(introducerPubKeyHash))
+	if (powAnchorRef?.trim()) segments.push(String(powAnchorRef).trim())
 	return buildRunUri('join', segments)
 }
 
@@ -95,17 +97,18 @@ export function parseDmRunUri(raw) {
 
 /**
  * @param {string} raw URI
- * @returns {{ groupId: string, inviteCode: string, mqttRoomSecret?: string, introducerPubKeyHash?: string } | null} join 载荷或 null
+ * @returns {{ groupId: string, inviteCode: string, mqttRoomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string } | null} join 载荷或 null
  */
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'join') return null
-	const [groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash] = parsed.args
+	const [groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash, powAnchorRef] = parsed.args
 	if (!groupId) return null
 	return {
 		groupId,
 		inviteCode: inviteCode || '',
 		mqttRoomSecret: mqttRoomSecret?.trim() || undefined,
 		introducerPubKeyHash: introducerPubKeyHash?.trim() || undefined,
+		powAnchorRef: powAnchorRef?.trim() || undefined,
 	}
 }

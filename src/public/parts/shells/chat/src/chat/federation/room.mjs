@@ -177,9 +177,11 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			// join 命中硬超时（串行队列积压）：放弃本次，房间最终一致交由后续 ensureFederationRoom / catch-up 兜底。
 			if (!room) return null
 			const fedOut = createFedOutQueue()
+			const peersSnap = loadPeerPoolView(groupId)
 			const rtcLimits = {
 				maxActive: Number(groupSettings.rtcConnectionBudgetMax) || 32,
 				maxJoinsPerMin: Number(groupSettings.rtcJoinRatePerMin) || 12,
+				trustedPeers: peersSnap.trustedPeers,
 			}
 
 			/** @type {Map<string, string>} */
@@ -208,7 +210,6 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			/** @type {FederationSlot | null} */
 			let slotRef = null
-			const peersSnap = loadPeerPoolView( groupId)
 			/**
 			 * @param {string} subject 节点 id 或 pubKeyHash
 			 * @returns {boolean} 是否已拉黑

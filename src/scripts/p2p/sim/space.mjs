@@ -57,6 +57,7 @@ export const PARAM_SPACE = [
 	{ module: 'mailbox', key: 'wantFanout', kind: 'count' },
 	{ module: 'archive', key: 'archiveQuorumPeerMin', kind: 'count' },
 	{ module: 'archive', key: 'archiveQuorumPeerStrictMin', kind: 'count' },
+	{ module: 'admission', key: 'powDifficultyBits', kind: 'count' },
 ]
 
 const EPS = 1e-9

@@ -13,9 +13,9 @@ export {
 } from './groupWsRpc.mjs'
 
 /**
- * 群 WebSocket 连接速率限制与 PoW 挑战校验。
+ * 群 WebSocket 连接速率限制。
  */
-export { checkWsRateLimit, setPowChallenge, verifyPowSolution } from './groupWsRateLimit.mjs'
+export { checkWsRateLimit } from './groupWsRateLimit.mjs'
 
 /**
  * 群事件 WebSocket 广播与连接注册。

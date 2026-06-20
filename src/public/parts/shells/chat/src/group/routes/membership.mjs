@@ -1,12 +1,10 @@
 /**
  * 【文件】group/routes/membership.mjs
- * 【职责】成员分页、入群/退群、邀请票、PoW challenge 等成员关系 HTTP 路由。
+ * 【职责】成员分页、入群/退群、邀请票等成员关系 HTTP 路由。
  * 【原理】成员页从物化 state.members 切片；join 消费 inviteCode 或 DM intro 证明后 append member_join；leave 追加 member_leave 并 removeLocalGroupReplica；邀请票需 INVITE_MEMBERS。
- * 【数据结构】成员页 {members,membersPagesCount}、invite ticket、pow challenge、join content（introducerPubKeyHash/reputationEdge）。
+ * 【数据结构】成员页 {members,membersPagesCount}、invite ticket、powSolution、join content（introducerPubKeyHash/reputationEdge）。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
  */
-import { randomUUID } from 'node:crypto'
-
 import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
@@ -22,10 +20,10 @@ import { setFederationBootstrap } from '../../chat/federation/bootstrapStore.mjs
 import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
+import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { consumeGroupInviteTicket, mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
-import { setPowChallenge } from '../../chat/stream/groupWsHub.mjs'
 import { governanceChannelId } from '../access.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
@@ -39,10 +37,11 @@ const MEMBERS_PAGE_SIZE = 500
  * @param {string} code 邀请码
  * @param {string} mqttRoomSecret 群 MQTT 传输密钥（写入 join 深链）
  * @param {string} introducerPubKeyHash 邀请人成员 pubKeyHash
+ * @param {string | null} [powAnchorRef] PoW anchor 提示（写入 join 深链）
  * @returns {Promise<string>} 本地化剪贴板文本
  */
-async function buildInviteClipboardText(username, groupId, code, mqttRoomSecret, introducerPubKeyHash) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, mqttRoomSecret, introducerPubKeyHash))
+async function buildInviteClipboardText(username, groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef) {
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef))
 	return geti18nForUser(username, 'chat.group.settingsPage.inviteClipboard', {
 		groupId,
 		code,
@@ -51,7 +50,7 @@ async function buildInviteClipboardText(username, groupId, code, mqttRoomSecret,
 }
 
 /**
- * 注册成员分页、入群、邀请与 PoW 路由。
+ * 注册成员分页、入群、邀请路由。
  * @param {import('npm:websocket-express').Router} router Express 路由
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
  * @returns {void}
@@ -85,16 +84,6 @@ export function registerMembershipRoutes(router, authenticate) {
 		})
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/pow-challenge$/, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const { state } = await getState(username, groupId)
-		const difficulty = state.groupSettings?.powDifficulty || 4
-		const challenge = randomUUID()
-		setPowChallenge(username, groupId, challenge)
-		res.status(200).json({ challenge: { challenge, difficulty } })
-	})
-
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/invite-ticket$/, authenticate, async (req, res) => {
 		const groupId = req.params[0]
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -112,12 +101,15 @@ export function registerMembershipRoutes(router, authenticate) {
 			? mqttCredentialsFromGroupSettings(state.groupSettings)
 			: await activateGroupFederation(username, groupId)
 		const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(username, groupId)
+		const powAnchors = collectJoinPowAnchors(state)
+		const powAnchorRef = powAnchors[0] ?? null
 		const clipboardText = await buildInviteClipboardText(
 			username,
 			groupId,
 			ticket.code,
 			mqttCreds.mqttRoomSecret,
 			introducerPubKeyHash,
+			powAnchorRef,
 		)
 		res.status(201).json({
 			...ticket,
@@ -125,6 +117,8 @@ export function registerMembershipRoutes(router, authenticate) {
 			mqttAppId: mqttCreds.mqttAppId,
 			mqttRoomSecret: mqttCreds.mqttRoomSecret,
 			introducerPubKeyHash,
+			powAnchors,
+			powAnchorRef,
 			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
 				? String(state.groupMeta.dmSessionTag || '').trim().toLowerCase() || null
 				: null,
@@ -134,7 +128,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/join$/, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const groupId = req.params[0]
-		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId, dmSessionTag } = req.body
+		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
 		const dmNonce = dmIntroNonce?.trim()
 		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
 		if (!!dmNonce !== !!dmSignatureHex)
@@ -170,6 +164,8 @@ export function registerMembershipRoutes(router, authenticate) {
 
 		if (mqttRoomSecret) {
 			const bootstrap = { mqttAppId, mqttRoomSecret }
+			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
+			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
 			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()
 			if (PUB_KEY_HEX_64.test(hintedSessionTag))
 				bootstrap.dmSessionTag = hintedSessionTag

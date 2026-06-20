@@ -235,6 +235,33 @@ export const SCENARIOS = [
 		rounds: 35,
 		groupSize: 8,
 	},
+	{
+		id: 'large_balanced',
+		label: '大群均衡（30 诚实）',
+		honestCount: 30,
+		relayCount: 4,
+		lurkerCount: 4,
+		newcomerCount: 6,
+		behaviorDist: MIXED,
+		attacks: {
+			sybil: 8, collusion: 6, spammer: 4, false_accuser: 3, eclipse: 4,
+			lazy_chunk: 4, social_mob: 3, archive_forger: 3, relay_farmer: 3, hint_poisoner: 3,
+			rep_pump: 3, equivocator: 2,
+		},
+		rounds: 45,
+		groupSize: 12,
+	},
+	{
+		id: 'large_sybil_storm',
+		label: '大群 Sybil 风暴（40 诚实）',
+		honestCount: 40,
+		relayCount: 6,
+		newcomerCount: 8,
+		attacks: { sybil: 24, eclipse: 8, relay_farmer: 6, hint_poisoner: 6, rep_pump: 5, whitewasher: 4 },
+		rounds: 50,
+		groupSize: 14,
+		churnRate: 0.1,
+	},
 ]
 
 /**

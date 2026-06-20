@@ -19,6 +19,7 @@ import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure, applyFollow
 import { pickTop } from '../trust_graph_engine.mjs'
 
 import { attackReachesObserver, simIsPeerQuarantined, simObservePeerBehavior } from './anomaly.mjs'
+import { capMaliciousByPowBudget, honestJoinDelayPenalty } from './admission.mjs'
 import { normalizeAttackGenome } from './attack_space.mjs'
 import { runAttack } from './attacks.mjs'
 import { behaviorRoll, isQuietHonestBehavior, sampleBehavior } from './behavior.mjs'
@@ -33,7 +34,8 @@ import {
 	MAILBOX_REACH_MID_HOP_FACTOR,
 	MAILBOX_RELAY_COST_DIVISOR,
 } from './constants.mjs'
-import { createDiscoveryState, discoveryReach, initObserverDiscovery } from './discovery.mjs'
+import { createDiscoveryState, discoveryReach, initObserverDiscovery, recoverDiscoveryFromAnchors } from './discovery.mjs'
+import { blendArchiveQuorumAccuracy, integrityDefendsAgainst, observerHasLocalReplica } from './integrity.mjs'
 import { buildRankedNeighborAdj } from './graph_adj.mjs'
 import { createPropagationState, tickPropagation } from './propagation.mjs'
 import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
@@ -203,8 +205,12 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		scenario.eclipseTargetCount ?? 0,
 	)
 
-	for (const [attack, count] of Object.entries(scenario.attacks))
-		for (let i = 0; i < (count || 0); i++) {
+	for (const [attack, count] of Object.entries(scenario.attacks)) {
+		const rounds = scenario.rounds ?? 40
+		const powBits = tunables.admission?.powDifficultyBits ?? 18
+		const powCapped = attack === 'sybil' || attack === 'whitewasher' || attack === 'rep_pump'
+		const allowed = powCapped ? capMaliciousByPowBudget(count || 0, powBits, rounds) : (count || 0)
+		for (let i = 0; i < allowed; i++) {
 			const clusterId = `${attack}-${Math.floor(i / 4)}`
 			const chained = attack === 'collusion' || attack === 'whitewasher' || attack === 'rep_pump'
 
@@ -248,6 +254,7 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 			if (chained)
 				clusterLast.set(clusterId, id)
 		}
+	}
 
 	// 新人节点：诚实、无介绍人、不参与任何回合交互，因此观察者始终对其「没有打过分」，
 	// 用来检验 rosterDefaultScore（名册里对陌生人默认信任）这一旋钮的两面性。
@@ -679,8 +686,11 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			// 诚实节点的正常 churn 也会偶发「全未知 want」。wantUnknownThreshold 太低时
 			// 这些诚实请求会被误判为 eclipse 而扣分（falsePositive），构成阈值的下行压力。
 			if (round % 3 === 0)
-				for (const h of activeHonest.filter(n => n.id !== obs.id).slice(0, 2))
-					recordGossipAllUnknownWantPure(obs.reputation, h.id, ctx.now, tunables.reputation)
+				for (const h of activeHonest.filter(n => n.id !== obs.id).slice(0, 2)) {
+					const penalized = recordGossipAllUnknownWantPure(obs.reputation, h.id, ctx.now, tunables.reputation)
+					if (penalized && ctx.discovery?.poisonedByAttacker?.has(obs.id))
+						recoverDiscoveryFromAnchors(ctx.discovery, obs.id)
+				}
 
 			// 可验证审计：对有密码学证据的作恶（伪造归档、惰性分片）发起 verified slash，
 			// 让 slashVerifiedMultiplier 真正生效；偶发证据指错诚实节点，形成两面梯度。
@@ -940,7 +950,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const f of forgers) {
 			archiveTotal++
-			if (isMaliciousSuppressed(f, scoreOf, hideThreshold, honestMedian))
+			const cryptoOk = integrityDefendsAgainst(f, obs, ctx.scenario ?? {}, ctx)
+			if (cryptoOk || isMaliciousSuppressed(f, scoreOf, hideThreshold, honestMedian))
 				archiveDefended++
 		}
 
@@ -961,7 +972,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const eq of equivocators) {
 			equivocationTotal++
-			if (isMaliciousSuppressed(eq, scoreOf, hideThreshold, honestMedian))
+			const cryptoOk = integrityDefendsAgainst(eq, obs, ctx.scenario ?? {}, ctx)
+			if (cryptoOk || isMaliciousSuppressed(eq, scoreOf, hideThreshold, honestMedian))
 				equivocationDefended++
 		}
 
@@ -976,7 +988,11 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		mailboxReach += mail.reach
 		mailboxCost += mail.cost
 		idealReach += simulateMailbox(obs, nodes, idealTunables, scoreOf, new Set()).reach
-		archiveQuorum += simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
+		const scenarioMeta = ctx.scenario ?? {}
+		let quorumAcc = simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
+		if (observerHasLocalReplica(obs, scenarioMeta))
+			quorumAcc = blendArchiveQuorumAccuracy(quorumAcc, 1)
+		archiveQuorum += quorumAcc
 	}
 
 	const nObs = Math.max(1, observers.length)
@@ -1017,6 +1033,11 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 	const quietHonestPreservationRate = quietTotal ? quietSafe / quietTotal : 1
 
+	const joinDelay = honestJoinDelayPenalty(
+		tunables.admission?.powDifficultyBits ?? 18,
+		ctx.scenario?.rounds ?? 40,
+	)
+
 	return {
 		malSuppressionRate,
 		honestPreservationRate: honestTotal ? honestSafe / honestTotal : 1,
@@ -1039,6 +1060,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		equivocationDefenseRate: equivocationTotal
 			? equivocationDefended / equivocationTotal
 			: hasEquivocation ? archiveQuorum / nObs : 1,
+		honestJoinDelayPenalty: joinDelay,
 		observerCount: observers.length,
 		maliciousCount: malicious.length,
 		honestCount: honest.length,

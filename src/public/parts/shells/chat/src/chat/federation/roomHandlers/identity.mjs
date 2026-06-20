@@ -3,8 +3,10 @@ import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mj
 import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import {
+	annotateRtcPeerNodeHash,
 	isFederationActionAllowedUnderLoad,
 	releaseRtcPeer,
+	setRtcPeerSource,
 	takeRtcJoinSlot,
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
@@ -47,6 +49,8 @@ export function registerIdentityHandlers(roomContext) {
 			if (previousNodeId) nodeToPeer.delete(previousNodeId)
 			peerToNode.set(peerId, remoteNodeHash)
 			nodeToPeer.set(remoteNodeHash, peerId)
+			annotateRtcPeerNodeHash(key, peerId, remoteNodeHash, rtcLimits)
+			setRtcPeerSource(key, peerId, remoteNodeHash)
 		})
 	})
 
@@ -66,7 +70,7 @@ export function registerIdentityHandlers(roomContext) {
 	})
 
 	room.onPeerJoin(peerId => {
-		if (!takeRtcJoinSlot(key, peerId, rtcLimits)) return
+		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) return
 		fedOut.enqueue(3, () => {
 			void buildIdentityAnnounce()
 				.then(body => { identity.send(body, peerId) })

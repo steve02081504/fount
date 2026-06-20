@@ -4,6 +4,7 @@ import {
 	handleFedArchiveMonthWant,
 	noteFedArchiveMonthResponse,
 } from '../archiveMonthPull.mjs'
+import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archiveMonthWire.mjs'
 import {
 	applyFedBootstrapResponse,
@@ -85,6 +86,13 @@ export function registerRelayHandlers(roomContext) {
 		if (!response) return
 		const remoteNodeHash = roomContext.peerToNode?.get(peerId) || ''
 		noteFedArchiveMonthResponse(username, groupId, response, remoteNodeHash)
+	})
+
+	const archiveDigestObs = wireAction(roomContext, 'fed_archive_digest_obs')
+	archiveDigestObs.on(data => {
+		if (!data || data.groupId !== groupId) return
+		void applyRemoteDigestClaim(username, groupId, data)
+			.catch(error => console.error('federation: fed_archive_digest_obs failed', error))
 	})
 
 	const discoveryAnnounce = wireAction(roomContext, 'discovery_announce')

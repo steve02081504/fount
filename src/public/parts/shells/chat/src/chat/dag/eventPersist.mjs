@@ -9,6 +9,8 @@ import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpo
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { applyNetworkHint, mergeNetworkPeerPools } from '../../../../../../../scripts/p2p/network.mjs'
 import {
 	applyDecayCollusionAfterSlash,
 	applyReputationResetToScores,
@@ -86,6 +88,21 @@ async function applyReputationHooks(username, groupId, signPayload) {
 		const repEdge = Number.isFinite(inviteEdge?.reputationEdge) ? inviteEdge.reputationEdge : 1
 		const edgeFromJoin = state.members[sender]?.repEdgeFromIntroducer ?? repEdge
 		await seedMemberReputationFromIntroducer( sender, introducer, edgeFromJoin)
+		if (introducer) {
+			const introNodeHash = state.members[introducer]?.homeNodeHash
+				|| state.members[introducer]?.nodeHash
+			if (introNodeHash && isHex64(String(introNodeHash).trim())) {
+				mergeNetworkPeerPools({ explorePeers: [String(introNodeHash).trim()] })
+				applyNetworkHint({
+					nodeHash: String(introNodeHash).trim(),
+					source: `introducer:${introducer.slice(0, 8)}`,
+					kind: 'member_join_introducer',
+					weight: 0.35,
+					groupId,
+					ttlMs: 7 * 24 * 60 * 60 * 1000,
+				})
+			}
+		}
 	}
 }
 
