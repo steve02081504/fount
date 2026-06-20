@@ -26,16 +26,25 @@ export const TUNABLES_PATHS = Object.freeze({
 	archive: new URL('../../../public/parts/shells/chat/src/chat/archive/archive.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 })
 
+/** 只读默认模板（模块加载时构建一次） */
+const DEFAULT_TUNABLES_TEMPLATE = Object.freeze({
+	reputation: structuredClone(reputationTunables),
+	trustGraph: structuredClone(trustGraphTunables),
+	social: structuredClone(socialTunables),
+	mailbox: structuredClone(mailboxTunables),
+	archive: structuredClone(archiveTunables),
+})
+
 /**
  * @returns {TunablesBundle} 当前默认 tunables 深拷贝
  */
 export function loadDefaultTunables() {
 	return {
-		reputation: structuredClone(reputationTunables),
-		trustGraph: structuredClone(trustGraphTunables),
-		social: structuredClone(socialTunables),
-		mailbox: structuredClone(mailboxTunables),
-		archive: structuredClone(archiveTunables),
+		reputation: structuredClone(DEFAULT_TUNABLES_TEMPLATE.reputation),
+		trustGraph: structuredClone(DEFAULT_TUNABLES_TEMPLATE.trustGraph),
+		social: structuredClone(DEFAULT_TUNABLES_TEMPLATE.social),
+		mailbox: structuredClone(DEFAULT_TUNABLES_TEMPLATE.mailbox),
+		archive: structuredClone(DEFAULT_TUNABLES_TEMPLATE.archive),
 	}
 }
 

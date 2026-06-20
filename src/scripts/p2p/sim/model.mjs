@@ -34,6 +34,7 @@ import {
 	MAILBOX_RELAY_COST_DIVISOR,
 } from './constants.mjs'
 import { createDiscoveryState, discoveryReach, initObserverDiscovery } from './discovery.mjs'
+import { buildRankedNeighborAdj } from './graph_adj.mjs'
 import { createPropagationState, tickPropagation } from './propagation.mjs'
 import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
 
@@ -284,6 +285,15 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		return nodes.filter(n => n.attack === 'collusion' && n.clusterId === node.clusterId)
 	}
 
+	/** @type {Map<string, SimNode[]>} */
+	const collusionRingByCluster = new Map()
+	for (const n of nodes) {
+		if (n.attack !== 'collusion') continue
+		const key = n.clusterId ?? n.id
+		if (!collusionRingByCluster.has(key)) collusionRingByCluster.set(key, [])
+		collusionRingByCluster.get(key).push(n)
+	}
+
 	const ctx = {
 		nodes,
 		observers,
@@ -314,6 +324,7 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		socialEngine: { applyFollowedBlockSignalPure },
 		sybilCluster,
 		collusionRing,
+		collusionRingByCluster,
 	}
 
 	const roster = nodes.filter(n => !n.newcomer).map(n => n.id)
@@ -384,16 +395,9 @@ function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) 
 	const fanout = tunables.mailbox.relayFanoutTrusted
 	const wantFanout = tunables.mailbox.wantFanout
 	const online = nodes.filter(n => !offlineSet.has(n.id))
+	const onlineIds = online.map(n => n.id)
 	const friendly = new Set(online.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id))
-	const adj = new Map(online.map(n => [n.id, []]))
-	for (const n of online) {
-		const peers = online
-			.filter(x => x.id !== n.id)
-			.sort((a, b) => scoreOf(b.id) - scoreOf(a.id))
-			.slice(0, fanout)
-			.map(x => x.id)
-		adj.set(n.id, peers)
-	}
+	const adj = buildRankedNeighborAdj(onlineIds, id => scoreOf(id), fanout)
 
 	if (offlineSet.has(obs.id))
 		return { reach: 0, cost: 0 }
@@ -587,6 +591,9 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 		ctx.round = round
 		updateChurnOffline(ctx, nodes, rng, scenario)
 		const onlineNodes = nodes.filter(n => !ctx.offlineSet.has(n.id))
+		const onlineFriendlyIds = onlineNodes
+			.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker')
+			.map(n => n.id)
 
 		for (const obs of observers) {
 			for (const peer of obs.trustedPeers.slice(0, 2))
@@ -603,8 +610,13 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 
 			for (const mal of malicious) {
 				if (ctx.offlineSet.has(mal.id)) continue
-				const friendlyIds = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id)
-				const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, id => obs.reputation.byNodeHash[id]?.score ?? 0, tunables.mailbox.maxHop)
+				const discReach = discoveryReach(
+					ctx.discovery,
+					obs.id,
+					onlineFriendlyIds,
+					id => obs.reputation.byNodeHash[id]?.score ?? 0,
+					tunables.mailbox.maxHop,
+				)
 				if (!attackReachesObserver(discReach, rng)) continue
 				runAttack(ctx, mal, obs, rng, round, tunables)
 				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
@@ -764,6 +776,18 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const nodeKind = new Map(nodes.map(n => [n.id, n]))
 	const hideThreshold = tunables.social.socialRepHideThreshold
 	const onlineNodes = nodes.filter(n => !offlineSet.has(n.id))
+	/** @type {Map<string, SimNode[]>} */
+	const collusionByCluster = ctx.collusionRingByCluster ?? new Map()
+	if (!ctx.collusionRingByCluster) 
+		for (const m of malicious) {
+			if (m.attack !== 'collusion') continue
+			const key = m.clusterId ?? m.id
+			if (!collusionByCluster.has(key)) collusionByCluster.set(key, [])
+			collusionByCluster.get(key).push(m)
+		}
+	
+
+	let idealReach = 0
 
 	for (const obs of observers) {
 		/**
@@ -921,7 +945,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const m of malicious.filter(n => n.attack === 'collusion')) {
 			collusionTotal++
-			const ring = nodes.filter(n => n.attack === 'collusion' && n.clusterId === m.clusterId)
+			const ring = collusionByCluster.get(m.clusterId ?? m.id) ?? [m]
 			const avg = ring.reduce((s, n) => s + scoreOf(n.id), 0) / Math.max(1, ring.length)
 			if (avg < 0) collusionCollapsed++
 		}
@@ -929,6 +953,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const mail = simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet)
 		mailboxReach += mail.reach
 		mailboxCost += mail.cost
+		idealReach += simulateMailbox(obs, nodes, idealReachTunables(tunables), scoreOf, new Set()).reach
 		archiveQuorum += simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
 	}
 
@@ -939,18 +964,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		? ctx.churnReachAccum / ctx.churnReachRounds
 		: mailboxReach / nObs
 
-	// 理想可达（无 offline）对比，用于 churn 场景
-	let idealReach = 0
-	for (const obs of observers) {
-		/**
-		 * @param {string} id 64 hex nodeHash
-		 * @returns {number} 观察者主观信誉分
-		 */
-		function scoreOfIdeal(id) {
-			return obs.reputation.byNodeHash[id]?.score ?? 0
-		}
-		idealReach += simulateMailbox(obs, nodes, idealReachTunables(tunables), scoreOfIdeal, new Set()).reach
-	}
 	const idealReachRate = idealReach / nObs
 	const normalizedChurnReach = idealReachRate > 0
 		? Math.min(1, churnReachRate / idealReachRate)

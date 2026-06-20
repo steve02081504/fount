@@ -18,6 +18,7 @@ import { runSimulation } from './model.mjs'
 import { shouldApplyResult } from './optimizer.mjs'
 import { writeReport } from './report.mjs'
 import { resolveScenarios } from './scenarios.mjs'
+import { defaultConcurrency } from './sim_pool.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
 import { analyzeVulnerabilities, formatVulnerabilityConsole } from './vulnerability.mjs'
 
@@ -61,6 +62,27 @@ function num(raw, fallback) {
 function parseSeeds(raw) {
 	if (typeof raw !== 'string') return [1, 2, 3]
 	return raw.split(',').map(s => Number(s.trim())).filter(Number.isFinite)
+}
+
+/**
+ * @param {string | boolean | undefined} raw 原始 --jobs 参数
+ * @returns {number} 并发度
+ */
+function parseJobsLimit(raw) {
+	const n = Number(raw)
+	return Number.isFinite(n) && n >= 1 ? Math.floor(n) : defaultConcurrency()
+}
+
+/**
+ * @param {Record<string, string | boolean> & { _: string[] }} args 已解析 CLI 参数
+ * @returns {import('./metrics.mjs').EvalOpts} 评估并行选项（默认自动占满 CPU）
+ */
+function buildEvalOpts(args) {
+	if (args.serial || args.jobs === '1' || args.jobs === 1)
+		return { serial: true }
+	if (args.jobs != null && args.jobs !== true)
+		return { concurrency: parseJobsLimit(String(args.jobs)) }
+	return {}
 }
 
 /**
@@ -119,10 +141,15 @@ async function cmdMine(args) {
 	const seedBase = num(args.seedBase, 42)
 	const durationMs = parseDurationMs(args.duration)
 	const doApply = !(args['no-apply'] || args['dry-run'])
+	const skipFullEval = Boolean(args['skip-full-eval'])
 	const scenarios = resolveScenarios(scenarioId)
+	const evalOpts = buildEvalOpts(args)
+	const jobCount = evalOpts.serial ? 1 : evalOpts.concurrency ?? defaultConcurrency()
 
 	if (durationMs == null && args.duration != null && args.duration !== true)
 		console.warn(`warning: invalid --duration ${JSON.stringify(args.duration)}, using --generations instead`)
+
+	console.log(`parallel: ${evalOpts.serial ? 'off (serial)' : `${jobCount} workers (auto CPU)`}`)
 
 	const onProgress = createProgressPrinter(durationMs, generations)
 
@@ -134,6 +161,7 @@ async function cmdMine(args) {
 		seedBase,
 		weights: DEFAULT_WEIGHTS,
 		durationMs,
+		evalOpts,
 		onProgress,
 	})
 
@@ -148,21 +176,29 @@ async function cmdMine(args) {
 		normalizeAttackGenome(undefined),
 	]
 
-	// 写回前一律在**全场景**上复评（含红队名人堂面板），避免单场景过拟合后污染全局默认值。
-	const allScenarios = resolveScenarios('all')
-	const baselineFull = await evaluateTunablesAgainstAttacks(
-		allScenarios, seeds, baseline.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS,
-	)
-	const bestFull = await evaluateTunablesAgainstAttacks(
-		allScenarios, seeds, best.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS,
-	)
-	const vulnerability = analyzeVulnerabilities(allScenarios, bestFull)
-	const gate = shouldApplyResult(baselineFull, bestFull)
+	let baselineFull = best.result
+	let bestFull = best.result
+	let vulnerability = analyzeVulnerabilities(scenarios, bestFull)
+	/** @type {{ ok: boolean, reason: string }} */
+	let gate = { ok: false, reason: 'skip-full-eval' }
+
+	if (!skipFullEval) {
+		// 写回前一律在**全场景**上复评（含红队名人堂面板），避免单场景过拟合后污染全局默认值。
+		const allScenarios = resolveScenarios('all')
+		baselineFull = await evaluateTunablesAgainstAttacks(
+			allScenarios, seeds, baseline.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS, evalOpts,
+		)
+		bestFull = await evaluateTunablesAgainstAttacks(
+			allScenarios, seeds, best.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS, evalOpts,
+		)
+		vulnerability = analyzeVulnerabilities(allScenarios, bestFull)
+		gate = shouldApplyResult(baselineFull, bestFull)
+	}
 
 	/** @type {object} */
 	const applyInfo = {
 		applied: false,
-		reason: doApply ? gate.reason : 'dry-run',
+		reason: skipFullEval ? 'skip-full-eval' : doApply ? gate.reason : 'dry-run',
 		full: { baseline: baselineFull.fitness, best: bestFull.fitness },
 	}
 	if (doApply && gate.ok) {
@@ -213,10 +249,14 @@ function printHelp() {
 	console.log(`usage:
   cli.mjs sim [--scenario ID] [--seeds 1,2,3]
   cli.mjs mine [--scenarios ID|all] [--generations N] [--duration 5m]
-               [--population N] [--seeds 1,2,3] [--no-apply|--dry-run]
+               [--population N] [--seeds 1,2,3] [--jobs N] [--serial]
+               [--no-apply|--dry-run] [--skip-full-eval]
 
+默认 mine 自动按 CPU 逻辑核心数并行仿真（无需额外参数）。
+--jobs N 可手动限制并发；--serial 或 --jobs 1 强制串行。
 默认 mine 会将最优参数写回各模块 JSON（需超过基线 + margin）。
-加 --no-apply 或 --dry-run 仅生成报告。`)
+加 --no-apply 或 --dry-run 仅生成报告。
+快速迭代：--seeds 1 --population 8 --skip-full-eval`)
 }
 
 const args = parseArgs(Deno.args)

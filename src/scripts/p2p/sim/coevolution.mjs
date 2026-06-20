@@ -34,6 +34,7 @@ import { loadDefaultTunables } from './tunables_bundle.mjs'
  * @param {number} [opts.seedBase=42] 搜索种子基
  * @param {import('./metrics.mjs').MetricWeights} [opts.weights] 权重
  * @param {number | null} [opts.durationMs] 时长上限
+ * @param {import('./metrics.mjs').EvalOpts} [opts.evalOpts] 评估并行选项
  * @param {(info: import('./optimizer.mjs').OptimizerProgress) => void} [opts.onProgress] 进度
  * @returns {Promise<object>} 共演进结果
  */
@@ -47,6 +48,7 @@ export async function runCoevolution(opts) {
 		seedBase = 42,
 		weights,
 		durationMs = null,
+		evalOpts,
 		onProgress,
 	} = opts
 
@@ -57,7 +59,7 @@ export async function runCoevolution(opts) {
 	const baselineTunables = loadDefaultTunables()
 	const baselineAttack = normalizeAttackGenome(undefined)
 	const baselineEval = await evaluateTunablesAgainstAttacks(
-		scenarios, seeds, baselineTunables, [baselineAttack], runSimulation, weights,
+		scenarios, seeds, baselineTunables, [baselineAttack], runSimulation, weights, evalOpts,
 	)
 	const baseline = { tunables: baselineTunables, attackGenome: baselineAttack, result: baselineEval, generation: 0 }
 
@@ -76,7 +78,7 @@ export async function runCoevolution(opts) {
 	for (let i = 1; i < population; i++) {
 		const tunables = randomCandidate(seedBase + i)
 		const result = await evaluateTunablesAgainstAttacks(
-			scenarios, seeds, tunables, [baselineAttack, ...attackHof.map(h => h.genome)], runSimulation, weights,
+			scenarios, seeds, tunables, [baselineAttack, ...attackHof.map(h => h.genome)], runSimulation, weights, evalOpts,
 		)
 		bluePool.push({ tunables, attackGenome: baselineAttack, result, generation: 0 })
 		if (result.fitness > bestBlue.result.fitness) bestBlue = bluePool[bluePool.length - 1]
@@ -86,7 +88,7 @@ export async function runCoevolution(opts) {
 	let redPool = []
 	for (let i = 0; i < redPopulation; i++) {
 		const attackGenome = randomAttackGenome(createRng(seedBase + 500 + i))
-		const harm = await evaluateRedFitness(scenarios, seeds, bestBlue.tunables, attackGenome, weights)
+		const harm = await evaluateRedFitness(scenarios, seeds, bestBlue.tunables, attackGenome, weights, evalOpts)
 		redPool.push({ tunables: bestBlue.tunables, attackGenome, result: harm, generation: 0 })
 		attackHof = updateAttackHallOfFame(attackHof, attackGenome, -harm.fitness)
 		if (-harm.fitness > -bestRed.result.fitness) bestRed = redPool[redPool.length - 1]
@@ -116,7 +118,7 @@ export async function runCoevolution(opts) {
 			const parent = blueElites[nextBlue.length % blueElites.length]
 			const tunables = mutateCandidate(parent.tunables, seedBase + gen * 1000 + nextBlue.length)
 			const result = await evaluateTunablesAgainstAttacks(
-				scenarios, seeds, tunables, attackPanel, runSimulation, weights,
+				scenarios, seeds, tunables, attackPanel, runSimulation, weights, evalOpts,
 			)
 			const rec = { tunables, attackGenome: parent.attackGenome, result, generation: gen }
 			nextBlue.push(rec)
@@ -131,7 +133,7 @@ export async function runCoevolution(opts) {
 		while (nextRed.length < redPopulation) {
 			const parent = redElites[nextRed.length % redElites.length]
 			const attackGenome = mutateAttackGenome(parent.attackGenome, seedBase + gen * 2000 + nextRed.length)
-			const harm = await evaluateRedFitness(scenarios, seeds, bestBlue.tunables, attackGenome, weights)
+			const harm = await evaluateRedFitness(scenarios, seeds, bestBlue.tunables, attackGenome, weights, evalOpts)
 			const rec = { tunables: bestBlue.tunables, attackGenome, result: harm, generation: gen }
 			nextRed.push(rec)
 			attackHof = updateAttackHallOfFame(attackHof, attackGenome, -harm.fitness)
@@ -180,11 +182,12 @@ export async function runCoevolution(opts) {
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 蓝队
  * @param {import('./attack_space.mjs').AttackGenome} attackGenome 红队
  * @param {import('./metrics.mjs').MetricWeights} [weights] 权重
+ * @param {import('./metrics.mjs').EvalOpts} [evalOpts] 评估并行选项
  * @returns {Promise<Awaited<ReturnType<typeof evaluateTunablesAgainstAttacks>>>} 红队适应度（越低=伤害越大）
  */
-async function evaluateRedFitness(scenarios, seeds, tunables, attackGenome, weights) {
+async function evaluateRedFitness(scenarios, seeds, tunables, attackGenome, weights, evalOpts) {
 	const evalResult = await evaluateTunablesAgainstAttacks(
-		scenarios, seeds, tunables, [attackGenome], runSimulation, weights,
+		scenarios, seeds, tunables, [attackGenome], runSimulation, weights, evalOpts,
 	)
 	return { ...evalResult, fitness: 1 - evalResult.fitness }
 }

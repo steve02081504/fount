@@ -1,6 +1,7 @@
 /**
  * 发现拓扑子模型：trusted 锚点 + explore 集 + eclipse 竞争填充。
  */
+import { buildRankedNeighborAdj } from './graph_adj.mjs'
 
 /**
  * @typedef {{
@@ -79,14 +80,7 @@ export function eclipseFillExplore(state, victimObserverId, attackerId, sybilIds
 export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop = 4) {
 	const explore = state.exploreByObserver.get(observerId) ?? state.trustedAnchors
 	const anchors = [...state.trustedAnchors].filter(id => friendlyIds.includes(id))
-	const adj = new Map(friendlyIds.map(id => [id, []]))
-	for (const id of friendlyIds) {
-		const peers = friendlyIds
-			.filter(x => x !== id)
-			.sort((a, b) => scoreOf(b) - scoreOf(a))
-			.slice(0, 6)
-		adj.set(id, peers)
-	}
+	const adj = buildRankedNeighborAdj(friendlyIds, scoreOf, 6)
 	const start = new Set([...anchors, ...explore].filter(id => friendlyIds.includes(id)))
 	if (!start.size) return 0
 	const visited = new Set(start)

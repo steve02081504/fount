@@ -1,6 +1,8 @@
 /**
  * 仿真指标与适应度（全部内生，无外生规则惩罚）。
  */
+import { runSimulation } from './model.mjs'
+import { runSimulationJobs, defaultConcurrency } from './sim_pool.mjs'
 
 /**
  * @typedef {{
@@ -33,6 +35,8 @@
  */
 
 /** @typedef {Partial<Record<keyof SimSnapshot, number>>} MetricWeights */
+
+/** @typedef {{ concurrency?: number, serial?: boolean }} EvalOpts */
 
 /** 参与适应度加权的速率类指标 */
 export const RATE_METRIC_KEYS = Object.freeze([
@@ -122,11 +126,12 @@ export function aggregateSnapshots(snaps, weights = DEFAULT_WEIGHTS) {
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables tunables
  * @param {(scenario: import('./scenarios.mjs').SimScenario, seed: number, tunables: import('./tunables_bundle.mjs').TunablesBundle) => SimSnapshot} runSim 仿真函数
  * @param {MetricWeights} [weights] 权重
+ * @param {EvalOpts} [opts] 评估选项
  * @returns {Promise<{ fitness: number, mean: number, min: number, max: number, std: number, byScenario: Record<string, ReturnType<typeof aggregateSnapshots>> }>} 跨场景评估结果
  */
-export async function evaluateTunables(scenarios, seeds, tunables, runSim, weights = DEFAULT_WEIGHTS) {
+export async function evaluateTunables(scenarios, seeds, tunables, runSim, weights = DEFAULT_WEIGHTS, opts = {}) {
 	return evaluateTunablesAgainstAttacks(scenarios, seeds, tunables, [undefined], (scenario, seed, tunablesBundle, attackGenome) =>
-		runSim(scenario, seed, tunablesBundle, attackGenome), weights)
+		runSim(scenario, seed, tunablesBundle, attackGenome), weights, opts)
 }
 
 /**
@@ -137,10 +142,14 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
  * @param {Array<import('./attack_space.mjs').AttackGenome | undefined>} attackPanel 攻击者面板
  * @param {(scenario: import('./scenarios.mjs').SimScenario, seed: number, tunables: import('./tunables_bundle.mjs').TunablesBundle, attackGenome?: import('./attack_space.mjs').AttackGenome) => SimSnapshot} runSim 仿真
  * @param {MetricWeights} [weights] 权重
+ * @param {EvalOpts} [opts] 评估选项（concurrency / serial）
  * @returns {Promise<{ fitness: number, mean: number, min: number, max: number, std: number, byScenario: Record<string, ReturnType<typeof aggregateSnapshots>> }>} 跨场景面板最差评估
  */
-export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables, attackPanel, runSim, weights = DEFAULT_WEIGHTS) {
+export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables, attackPanel, runSim, weights = DEFAULT_WEIGHTS, opts = {}) {
 	const panel = attackPanel?.length ? attackPanel : [undefined]
+	const concurrency = opts.concurrency ?? defaultConcurrency()
+	const usePool = !opts.serial && concurrency > 1 && runSim === runSimulation
+
 	/** @type {Record<string, ReturnType<typeof aggregateSnapshots>>} */
 	const byScenario = {}
 	let totalFitness = 0
@@ -149,31 +158,102 @@ export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables,
 	let bestMax = -Infinity
 	let totalStd = 0
 
-	for (const scenario of scenarios) {
-		/** @type {SimSnapshot[]} */
-		const snaps = []
-		for (const seed of seeds) {
-			let worstFit = Infinity
-			/** @type {SimSnapshot | null} */
-			let worstSnap = null
-			for (const attackGenome of panel) {
-				const snap = runSim(scenario, seed, tunables, attackGenome ?? undefined)
-				const f = fitnessFromSnapshot(snap, weights)
-				if (f < worstFit) {
-					worstFit = f
-					worstSnap = snap
+	if (usePool) {
+		/** @type {Array<{ scenarioId: string, seed: number, attackIndex: number, attackGenome?: import('./attack_space.mjs').AttackGenome }>} */
+		const jobMeta = []
+		/** @type {import('./sim_pool.mjs').SimJob[]} */
+		const jobs = []
+		let jobId = 0
+		for (const scenario of scenarios) 
+			for (const seed of seeds) 
+				for (let ai = 0; ai < panel.length; ai++) {
+					const attackGenome = panel[ai] ?? undefined
+					jobMeta.push({ scenarioId: scenario.id, seed, attackIndex: ai, attackGenome })
+					jobs.push({
+						id: jobId++,
+						scenarioId: scenario.id,
+						seed,
+						tunables,
+						attackGenome,
+					})
 				}
-			}
-			if (worstSnap) snaps.push(worstSnap)
+			
+		
+
+		const poolResults = await runSimulationJobs(jobs, { concurrency })
+		for (const res of poolResults) 
+			if (res.error)
+				throw new Error(`sim job ${res.id} failed: ${res.error}`)
+		
+
+		/** @type {Map<string, Map<number, SimSnapshot[]>>} */
+		const snapsByScenarioSeed = new Map()
+		for (let i = 0; i < jobMeta.length; i++) {
+			const meta = jobMeta[i]
+			const snap = poolResults[i].snapshot
+			if (!snap) throw new Error(`sim job ${i} missing snapshot`)
+			if (!snapsByScenarioSeed.has(meta.scenarioId))
+				snapsByScenarioSeed.set(meta.scenarioId, new Map())
+			const bySeed = snapsByScenarioSeed.get(meta.scenarioId)
+			if (!bySeed.has(meta.seed))
+				bySeed.set(meta.seed, [])
+			bySeed.get(meta.seed).push({ attackIndex: meta.attackIndex, snap })
 		}
-		const agg = aggregateSnapshots(snaps, weights)
-		byScenario[scenario.id] = agg
-		totalFitness += agg.fitness
-		totalMean += agg.mean
-		worstMin = Math.min(worstMin, agg.min)
-		bestMax = Math.max(bestMax, agg.max)
-		totalStd += agg.std
+
+		for (const scenario of scenarios) {
+			const bySeed = snapsByScenarioSeed.get(scenario.id) ?? new Map()
+			/** @type {SimSnapshot[]} */
+			const snaps = []
+			for (const seed of seeds) {
+				const rows = bySeed.get(seed) ?? []
+				let worstFit = Infinity
+				/** @type {SimSnapshot | null} */
+				let worstSnap = null
+				for (const row of rows) {
+					const f = fitnessFromSnapshot(row.snap, weights)
+					if (f < worstFit) {
+						worstFit = f
+						worstSnap = row.snap
+					}
+				}
+				if (worstSnap) snaps.push(worstSnap)
+			}
+			const agg = aggregateSnapshots(snaps, weights)
+			byScenario[scenario.id] = agg
+			totalFitness += agg.fitness
+			totalMean += agg.mean
+			worstMin = Math.min(worstMin, agg.min)
+			bestMax = Math.max(bestMax, agg.max)
+			totalStd += agg.std
+		}
 	}
+	else 
+		for (const scenario of scenarios) {
+			/** @type {SimSnapshot[]} */
+			const snaps = []
+			for (const seed of seeds) {
+				let worstFit = Infinity
+				/** @type {SimSnapshot | null} */
+				let worstSnap = null
+				for (const attackGenome of panel) {
+					const snap = runSim(scenario, seed, tunables, attackGenome ?? undefined)
+					const f = fitnessFromSnapshot(snap, weights)
+					if (f < worstFit) {
+						worstFit = f
+						worstSnap = snap
+					}
+				}
+				if (worstSnap) snaps.push(worstSnap)
+			}
+			const agg = aggregateSnapshots(snaps, weights)
+			byScenario[scenario.id] = agg
+			totalFitness += agg.fitness
+			totalMean += agg.mean
+			worstMin = Math.min(worstMin, agg.min)
+			bestMax = Math.max(bestMax, agg.max)
+			totalStd += agg.std
+		}
+	
 
 	const n = Math.max(1, scenarios.length)
 	return {
