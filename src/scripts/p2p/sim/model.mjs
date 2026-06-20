@@ -703,6 +703,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let sleeperTotal = 0
 	let equivocationDefended = 0
 	let equivocationTotal = 0
+	/** @type {Map<string, { defended: number, total: number }>} */
+	const attackAccum = new Map()
 	const nodeKind = new Map(nodes.map(n => [n.id, n]))
 	const hideThreshold = tunables.social.socialRepHideThreshold
 	const onlineNodes = nodes.filter(n => !offlineSet.has(n.id))
@@ -771,8 +773,18 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const m of malicious) {
 			malTotal++
-			if (isMaliciousSuppressed(m, scoreOf, hideThreshold, honestMedian))
-				malSuppressed++
+			const suppressed = isMaliciousSuppressed(m, scoreOf, hideThreshold, honestMedian)
+			if (suppressed) malSuppressed++
+			const atk = m.attack
+			if (atk) {
+				let row = attackAccum.get(atk)
+				if (!row) {
+					row = { defended: 0, total: 0 }
+					attackAccum.set(atk, row)
+				}
+				row.total++
+				if (suppressed) row.defended++
+			}
 		}
 
 		for (const h of honest) {
@@ -881,6 +893,11 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		? ctx.churnMailboxCostAccum / ctx.churnReachRounds
 		: mailboxCost / nObs
 
+	/** @type {NonNullable<import('./metrics.mjs').SimSnapshot['byAttackDefense']>} */
+	const byAttackDefense = {}
+	for (const [atk, row] of attackAccum)
+		byAttackDefense[atk] = { ...row, rate: row.total ? row.defended / row.total : 1 }
+
 	return {
 		malSuppressionRate,
 		honestPreservationRate: honestTotal ? honestSafe / honestTotal : 1,
@@ -906,5 +923,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		maliciousCount: malicious.length,
 		honestCount: honest.length,
 		groupSize,
+		byAttackDefense,
 	}
 }

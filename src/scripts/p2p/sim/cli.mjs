@@ -17,6 +17,7 @@ import { runOptimizer, shouldApplyResult } from './optimizer.mjs'
 import { writeReport } from './report.mjs'
 import { resolveScenarios } from './scenarios.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
+import { analyzeVulnerabilities, formatVulnerabilityConsole } from './vulnerability.mjs'
 
 /**
  * @param {string[]} argv CLI 参数（不含 node/脚本路径）
@@ -143,6 +144,7 @@ async function cmdMine(args) {
 	const allScenarios = resolveScenarios('all')
 	const baselineFull = await evaluateTunables(allScenarios, seeds, baseline.tunables, runSimulation, DEFAULT_WEIGHTS)
 	const bestFull = await evaluateTunables(allScenarios, seeds, best.tunables, runSimulation, DEFAULT_WEIGHTS)
+	const vulnerability = analyzeVulnerabilities(allScenarios, bestFull)
 	const gate = shouldApplyResult(baselineFull, bestFull)
 
 	/** @type {object} */
@@ -171,6 +173,7 @@ async function cmdMine(args) {
 		best: { result: best.result, tunables: best.tunables },
 		history,
 		apply: applyInfo,
+		vulnerability,
 	}
 
 	const { jsonPath, mdPath } = await writeReport(payload, applyInfo.applied ? 'mine-applied' : 'mine')
@@ -183,6 +186,9 @@ async function cmdMine(args) {
 	if (applyInfo.applied) console.log('applied best tunables to module JSON files')
 	else if (doApply) console.log(`not applied: ${applyInfo.reason}`)
 	else console.log('dry-run: tunables not written (use default apply; pass --no-apply to suppress)')
+
+	for (const line of formatVulnerabilityConsole(vulnerability))
+		console.log(line)
 }
 
 /**

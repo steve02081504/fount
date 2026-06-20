@@ -26,6 +26,7 @@
  *   maliciousCount: number,
  *   honestCount: number,
  *   groupSize: number,
+ *   byAttackDefense?: Partial<Record<string, { defended: number, total: number, rate: number }>>,
  * }} SimSnapshot
  */
 

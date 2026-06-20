@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { snapshotMetricRows } from './metrics.mjs'
+import { formatVulnerabilityMarkdown } from './vulnerability.mjs'
 
 const SIM_DIR = path.dirname(fileURLToPath(import.meta.url))
 
@@ -147,6 +148,9 @@ function formatMarkdown(payload) {
 			lines.push(`- **${id}**: fitness=${fmt(agg.fitness)}, mean=${fmt(agg.mean)}, min=${fmt(agg.min)}`)
 		lines.push('')
 	}
+
+	if (payload.vulnerability)
+		lines.push(...formatVulnerabilityMarkdown(payload.vulnerability))
 
 	return `${lines.join('\n')}\n`
 }
