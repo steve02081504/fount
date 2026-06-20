@@ -2,7 +2,7 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { normalizeAttackGenome, randomAttackGenome } from '../attack_space.mjs'
-import { fitnessFromSnapshot, evaluateTunablesAgainstAttacks, DEFAULT_WEIGHTS } from '../metrics.mjs'
+import { fitnessFromSnapshot, evaluateTunablesAgainstAttacks, evaluateManyAgainstAttacks, DEFAULT_WEIGHTS } from '../metrics.mjs'
 import { runSimulation } from '../model.mjs'
 import { createRng } from '../rng.mjs'
 import { resolveScenarios } from '../scenarios.mjs'
@@ -77,6 +77,40 @@ Deno.test('parallel runSimulation jobs match direct runSimulation', async () => 
 		const viaEval = evalResult.byScenario[scenario.id].snapshots[0]
 		assertEquals(fitnessFromSnapshot(viaEval, DEFAULT_WEIGHTS), fitnessFromSnapshot(direct, DEFAULT_WEIGHTS))
 		assertEquals(JSON.stringify(viaEval), JSON.stringify(direct))
+	}
+})
+
+Deno.test('batched evaluateMany matches per-candidate evaluate', async () => {
+	const tunables = loadDefaultTunables()
+	const scenario = resolveScenarios('balanced')[0]
+	const seeds = [1, 2, 3]
+	const attackPanel = [normalizeAttackGenome(undefined), randomAttackGenome(createRng(11))]
+	const candidates = [
+		{ tunables, attackPanel },
+		{ tunables: loadDefaultTunables(), attackPanel: [attackPanel[1]] },
+	]
+
+	const serial = []
+	for (const cand of candidates) 
+		serial.push(await evaluateTunablesAgainstAttacks(
+			[scenario], seeds, cand.tunables, cand.attackPanel, runSimulation, DEFAULT_WEIGHTS, { serial: true },
+		))
+	
+	const batched = await evaluateManyAgainstAttacks(
+		[scenario], seeds, candidates, runSimulation, DEFAULT_WEIGHTS, { concurrency: 4 },
+	)
+
+	assertEquals(batched.length, serial.length)
+	for (let i = 0; i < serial.length; i++) {
+		assertEquals(batched[i].fitness, serial[i].fitness)
+		assertEquals(batched[i].mean, serial[i].mean)
+		assertEquals(batched[i].min, serial[i].min)
+		assertEquals(batched[i].max, serial[i].max)
+		const sAgg = serial[i].byScenario[scenario.id]
+		const bAgg = batched[i].byScenario[scenario.id]
+		assertEquals(bAgg.fitness, sAgg.fitness)
+		for (let j = 0; j < sAgg.snapshots.length; j++)
+			assertEquals(JSON.stringify(bAgg.snapshots[j]), JSON.stringify(sAgg.snapshots[j]))
 	}
 })
 

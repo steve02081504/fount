@@ -135,6 +135,154 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 }
 
 /**
+ * @typedef {{
+ *   fitness: number,
+ *   mean: number,
+ *   min: number,
+ *   max: number,
+ *   std: number,
+ *   byScenario: Record<string, ReturnType<typeof aggregateSnapshots>>,
+ * }} EvalResult
+ */
+
+/**
+ * @typedef {{
+ *   tunables: import('./tunables_bundle.mjs').TunablesBundle,
+ *   attackPanel?: Array<import('./attack_space.mjs').AttackGenome | undefined>,
+ * }} EvalCandidate
+ */
+
+/**
+ * @param {import('./scenarios.mjs').SimScenario[]} scenarios 场景
+ * @param {number[]} seeds 种子
+ * @param {Array<import('./attack_space.mjs').AttackGenome | undefined>} panel 攻击面板
+ * @param {Map<string, Map<number, { attackIndex: number, snap: SimSnapshot }[]>>} snapsByScenarioSeed 分组快照
+ * @param {MetricWeights} weights 权重
+ * @returns {EvalResult} 跨场景面板最差评估
+ */
+function buildEvalFromGroupedSnaps(scenarios, seeds, panel, snapsByScenarioSeed, weights) {
+	/** @type {Record<string, ReturnType<typeof aggregateSnapshots>>} */
+	const byScenario = {}
+	let totalFitness = 0
+	let totalMean = 0
+	let worstMin = Infinity
+	let bestMax = -Infinity
+	let totalStd = 0
+
+	for (const scenario of scenarios) {
+		const bySeed = snapsByScenarioSeed.get(scenario.id) ?? new Map()
+		/** @type {SimSnapshot[]} */
+		const snaps = []
+		for (const seed of seeds) {
+			const rows = bySeed.get(seed) ?? []
+			let worstFit = Infinity
+			/** @type {SimSnapshot | null} */
+			let worstSnap = null
+			for (const row of rows) {
+				const f = fitnessFromSnapshot(row.snap, weights)
+				if (f < worstFit) {
+					worstFit = f
+					worstSnap = row.snap
+				}
+			}
+			if (worstSnap) snaps.push(worstSnap)
+		}
+		const agg = aggregateSnapshots(snaps, weights)
+		byScenario[scenario.id] = agg
+		totalFitness += agg.fitness
+		totalMean += agg.mean
+		worstMin = Math.min(worstMin, agg.min)
+		bestMax = Math.max(bestMax, agg.max)
+		totalStd += agg.std
+	}
+
+	const n = Math.max(1, scenarios.length)
+	return {
+		fitness: totalFitness / n,
+		mean: totalMean / n,
+		min: worstMin,
+		max: bestMax,
+		std: totalStd / n,
+		byScenario,
+	}
+}
+
+/**
+ * 多候选批量评估：一次派发全部 job，按候选归并适应度。
+ * @param {import('./scenarios.mjs').SimScenario[]} scenarios 场景
+ * @param {number[]} seeds 种子
+ * @param {EvalCandidate[]} candidates 候选列表（各自 tunables + attackPanel）
+ * @param {(scenario: import('./scenarios.mjs').SimScenario, seed: number, tunables: import('./tunables_bundle.mjs').TunablesBundle, attackGenome?: import('./attack_space.mjs').AttackGenome) => SimSnapshot} runSim 仿真
+ * @param {MetricWeights} [weights] 权重
+ * @param {EvalOpts} [opts] 评估选项
+ * @returns {Promise<EvalResult[]>} 与 candidates 同序的评估结果
+ */
+export async function evaluateManyAgainstAttacks(scenarios, seeds, candidates, runSim, weights = DEFAULT_WEIGHTS, opts = {}) {
+	if (!candidates.length) return []
+
+	const concurrency = opts.concurrency ?? defaultConcurrency()
+	const usePool = !opts.serial && concurrency > 1 && runSim === runSimulation
+
+	if (!usePool) {
+		const out = []
+		for (const cand of candidates) {
+			const panel = cand.attackPanel?.length ? cand.attackPanel : [undefined]
+			out.push(await evaluateTunablesAgainstAttacks(scenarios, seeds, cand.tunables, panel, runSim, weights, opts))
+		}
+		return out
+	}
+
+	/** @type {Array<{ candidateIndex: number, scenarioId: string, seed: number }>} */
+	const jobMeta = []
+	/** @type {import('./sim_pool.mjs').SimJob[]} */
+	const jobs = []
+	let jobId = 0
+	for (let ci = 0; ci < candidates.length; ci++) {
+		const cand = candidates[ci]
+		const panel = cand.attackPanel?.length ? cand.attackPanel : [undefined]
+		for (const scenario of scenarios)
+			for (const seed of seeds)
+				for (let ai = 0; ai < panel.length; ai++) {
+					jobMeta.push({ candidateIndex: ci, scenarioId: scenario.id, seed })
+					jobs.push({
+						id: jobId++,
+						scenarioId: scenario.id,
+						seed,
+						tunables: cand.tunables,
+						attackGenome: panel[ai] ?? undefined,
+					})
+				}
+	}
+
+	const poolResults = await runSimulationJobs(jobs, { concurrency })
+	for (const res of poolResults)
+		if (res.error)
+			throw new Error(`sim job ${res.id} failed: ${res.error}`)
+
+	/** @type {Map<number, Map<string, Map<number, { attackIndex: number, snap: SimSnapshot }[]>>>} */
+	const byCandidate = new Map()
+	for (let i = 0; i < jobMeta.length; i++) {
+		const meta = jobMeta[i]
+		const snap = poolResults[i].snapshot
+		if (!snap) throw new Error(`sim job ${i} missing snapshot`)
+		if (!byCandidate.has(meta.candidateIndex))
+			byCandidate.set(meta.candidateIndex, new Map())
+		const byScenario = byCandidate.get(meta.candidateIndex)
+		if (!byScenario.has(meta.scenarioId))
+			byScenario.set(meta.scenarioId, new Map())
+		const bySeed = byScenario.get(meta.scenarioId)
+		if (!bySeed.has(meta.seed))
+			bySeed.set(meta.seed, [])
+		bySeed.get(meta.seed).push({ attackIndex: i, snap })
+	}
+
+	return candidates.map((cand, ci) => {
+		const panel = cand.attackPanel?.length ? cand.attackPanel : [undefined]
+		return buildEvalFromGroupedSnaps(scenarios, seeds, panel, byCandidate.get(ci) ?? new Map(), weights)
+	})
+}
+
+/**
  * 蓝队对攻击者面板的评估：每个 (scenario, seed) 取面板内最差适应度。
  * @param {import('./scenarios.mjs').SimScenario[]} scenarios 场景
  * @param {number[]} seeds 种子
@@ -164,8 +312,8 @@ export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables,
 		/** @type {import('./sim_pool.mjs').SimJob[]} */
 		const jobs = []
 		let jobId = 0
-		for (const scenario of scenarios) 
-			for (const seed of seeds) 
+		for (const scenario of scenarios)
+			for (const seed of seeds)
 				for (let ai = 0; ai < panel.length; ai++) {
 					const attackGenome = panel[ai] ?? undefined
 					jobMeta.push({ scenarioId: scenario.id, seed, attackIndex: ai, attackGenome })
@@ -177,16 +325,13 @@ export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables,
 						attackGenome,
 					})
 				}
-			
-		
 
 		const poolResults = await runSimulationJobs(jobs, { concurrency })
-		for (const res of poolResults) 
+		for (const res of poolResults)
 			if (res.error)
 				throw new Error(`sim job ${res.id} failed: ${res.error}`)
-		
 
-		/** @type {Map<string, Map<number, SimSnapshot[]>>} */
+		/** @type {Map<string, Map<number, { attackIndex: number, snap: SimSnapshot }[]>>} */
 		const snapsByScenarioSeed = new Map()
 		for (let i = 0; i < jobMeta.length; i++) {
 			const meta = jobMeta[i]
@@ -200,34 +345,9 @@ export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables,
 			bySeed.get(meta.seed).push({ attackIndex: meta.attackIndex, snap })
 		}
 
-		for (const scenario of scenarios) {
-			const bySeed = snapsByScenarioSeed.get(scenario.id) ?? new Map()
-			/** @type {SimSnapshot[]} */
-			const snaps = []
-			for (const seed of seeds) {
-				const rows = bySeed.get(seed) ?? []
-				let worstFit = Infinity
-				/** @type {SimSnapshot | null} */
-				let worstSnap = null
-				for (const row of rows) {
-					const f = fitnessFromSnapshot(row.snap, weights)
-					if (f < worstFit) {
-						worstFit = f
-						worstSnap = row.snap
-					}
-				}
-				if (worstSnap) snaps.push(worstSnap)
-			}
-			const agg = aggregateSnapshots(snaps, weights)
-			byScenario[scenario.id] = agg
-			totalFitness += agg.fitness
-			totalMean += agg.mean
-			worstMin = Math.min(worstMin, agg.min)
-			bestMax = Math.max(bestMax, agg.max)
-			totalStd += agg.std
-		}
+		return buildEvalFromGroupedSnaps(scenarios, seeds, panel, snapsByScenarioSeed, weights)
 	}
-	else 
+	else
 		for (const scenario of scenarios) {
 			/** @type {SimSnapshot[]} */
 			const snaps = []
@@ -253,7 +373,6 @@ export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables,
 			bestMax = Math.max(bestMax, agg.max)
 			totalStd += agg.std
 		}
-	
 
 	const n = Math.max(1, scenarios.length)
 	return {
