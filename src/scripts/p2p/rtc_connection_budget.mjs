@@ -6,11 +6,17 @@
 const budgets = new Map()
 
 /** 单来源最多占用的非 trusted 槽位比例 */
-const MAX_SOURCE_SLOT_FRACTION = 0.35
+const MAX_SOURCE_SLOT_FRACTION = 0.25
+
+/** 默认 trusted 保留比例 */
+const DEFAULT_TRUSTED_RESERVE_FRACTION = 0.25
+
+/** 默认 trusted 绝对保留槽位 */
+const DEFAULT_MIN_TRUSTED_RESERVED = 3
 
 /**
  * @param {object} [limits] 限额
- * @returns {{ maxActive: number, maxJoinsPerMin: number, overloadCooldownMs: number, trustedPeers?: string[] }} 生效限额
+ * @returns {{ maxActive: number, maxJoinsPerMin: number, overloadCooldownMs: number, trustedPeers?: string[], trustedReserveFraction: number, minTrustedReserved: number }} 生效限额
  */
 export function resolveRtcBudgetLimits(limits = {}) {
 	return {
@@ -18,6 +24,8 @@ export function resolveRtcBudgetLimits(limits = {}) {
 		maxJoinsPerMin: Math.max(1, Math.min(120, Number(limits.maxJoinsPerMin) || 12)),
 		overloadCooldownMs: Math.max(1000, Number(limits.overloadCooldownMs) || 15_000),
 		trustedPeers: Array.isArray(limits.trustedPeers) ? limits.trustedPeers.map(String) : [],
+		trustedReserveFraction: Math.max(0.1, Math.min(0.5, Number(limits.trustedReserveFraction) || DEFAULT_TRUSTED_RESERVE_FRACTION)),
+		minTrustedReserved: Math.max(1, Math.floor(Number(limits.minTrustedReserved) || DEFAULT_MIN_TRUSTED_RESERVED)),
 	}
 }
 
@@ -63,7 +71,7 @@ export function isRtcRoomOverloaded(roomKey, limits = {}) {
  * @returns {boolean} 是否允许新 join/握手
  */
 export function takeRtcJoinSlot(roomKey, peerId, limits = {}, sourceId = 'peer') {
-	const { maxActive, maxJoinsPerMin, overloadCooldownMs } = resolveRtcBudgetLimits(limits)
+	const { maxActive, maxJoinsPerMin, overloadCooldownMs, trustedReserveFraction, minTrustedReserved } = resolveRtcBudgetLimits(limits)
 	const bucket = bucketFor(roomKey, limits)
 	const now = Date.now()
 	if (now < bucket.overloadUntil) return false
@@ -75,7 +83,8 @@ export function takeRtcJoinSlot(roomKey, peerId, limits = {}, sourceId = 'peer')
 	if (peerId && bucket.active.has(peerId)) return true
 
 	const isTrusted = peerId && bucket.trustedPeers.has(peerId)
-	const maxNonTrusted = Math.max(1, Math.floor(maxActive * (1 - 0.15)))
+	const trustedReserved = Math.max(minTrustedReserved, Math.floor(maxActive * trustedReserveFraction))
+	const maxNonTrusted = Math.max(1, maxActive - trustedReserved)
 	const nonTrustedCount = [...bucket.active].filter(id => !bucket.trustedPeers.has(id)).length
 	if (!isTrusted) {
 		const source = String(sourceId || 'peer')

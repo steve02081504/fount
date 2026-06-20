@@ -11,7 +11,7 @@ const LIMITS = { maxActive: 8, maxJoinsPerMin: 120, trustedPeers: ['trusted-node
 
 Deno.test('single source cannot fill all rtc slots', () => {
 	const room = 'room-source-cap'
-	const sourceCap = Math.max(1, Math.floor(LIMITS.maxActive * 0.35))
+	const sourceCap = Math.max(1, Math.floor(LIMITS.maxActive * 0.25))
 	for (let i = 0; i < sourceCap; i++)
 		assertEquals(takeRtcJoinSlot(room, `p${i}`, LIMITS, 'sybil-source'), true)
 	assertEquals(takeRtcJoinSlot(room, 'p-extra', LIMITS, 'sybil-source'), false)

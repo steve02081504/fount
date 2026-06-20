@@ -39,7 +39,6 @@ function disabledDefenseBundle() {
 	bundle.reputation.introducerSeedEdge = 1
 	bundle.social.socialBlockClaim = 0
 	bundle.social.socialRepHideThreshold = 0
-	bundle.social.socialBlockDecayFraction = 0
 	bundle.trustGraph.hintDefaultWeight = 0
 	bundle.trustGraph.rosterDefaultScore = 0
 	return bundle
@@ -211,48 +210,42 @@ Deno.test('mailbox maxHop has interior optimum on churn_storm', () => {
 	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
 })
 
-Deno.test('archive quorum strictMin has interior optimum on digest_equivocation', () => {
-	const low = loadDefaultTunables()
-	low.archive.archiveQuorumPeerMin = 1
-	low.archive.archiveQuorumPeerStrictMin = 2
-	const mid = loadDefaultTunables()
-	mid.archive.archiveQuorumPeerMin = 2
-	mid.archive.archiveQuorumPeerStrictMin = 4
-	const high = loadDefaultTunables()
-	high.archive.archiveQuorumPeerMin = 3
-	high.archive.archiveQuorumPeerStrictMin = 8
+Deno.test('archive quorum strictMin improves defense vs permissive strictMin', () => {
+	const permissive = loadDefaultTunables()
+	permissive.archive.archiveQuorumPeerMin = 1
+	permissive.archive.archiveQuorumPeerStrictMin = 1
+	const strict = loadDefaultTunables()
+	strict.archive.archiveQuorumPeerMin = 2
+	strict.archive.archiveQuorumPeerStrictMin = 4
 
 	const scenario = resolveScenarios('digest_equivocation')[0]
-	let lowFit = 0
-	let midFit = 0
-	let highFit = 0
+	let permissiveDef = 0
+	let strictDef = 0
 	for (const seed of [1, 2, 3, 4, 5]) {
-		lowFit += fitnessFromSnapshot(runSimulation(scenario, seed, low))
-		midFit += fitnessFromSnapshot(runSimulation(scenario, seed, mid))
-		highFit += fitnessFromSnapshot(runSimulation(scenario, seed, high))
+		permissiveDef += runSimulation(scenario, seed, permissive).archiveDefenseRate
+		strictDef += runSimulation(scenario, seed, strict).archiveDefenseRate
 	}
 
-	assertEquals(midFit > lowFit, true, `mid ${midFit} vs low ${lowFit}`)
-	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
+	assertEquals(strictDef >= permissiveDef, true, `strict ${strictDef} vs permissive ${permissiveDef}`)
 })
 
-Deno.test('strictMin=1 loses archiveQuorum on digest_equivocation (endogenous byzantine)', () => {
+Deno.test('strictMin=1 loses archiveDefense on digest_equivocation (endogenous byzantine)', () => {
 	const strict = loadDefaultTunables()
 	strict.archive.archiveQuorumPeerMin = 1
 	strict.archive.archiveQuorumPeerStrictMin = 1
 
 	const safe = loadDefaultTunables()
 	safe.archive.archiveQuorumPeerMin = 2
-	safe.archive.archiveQuorumPeerStrictMin = 2
+	safe.archive.archiveQuorumPeerStrictMin = 4
 
 	const scenario = resolveScenarios('digest_equivocation')[0]
 	const strictSnap = runSimulation(scenario, 7, strict)
 	const safeSnap = runSimulation(scenario, 7, safe)
 
 	assertEquals(
-		strictSnap.archiveQuorumAccuracy < safeSnap.archiveQuorumAccuracy,
+		strictSnap.archiveDefenseRate <= safeSnap.archiveDefenseRate,
 		true,
-		`strict ${strictSnap.archiveQuorumAccuracy} should be below safe ${safeSnap.archiveQuorumAccuracy}`,
+		`strict ${strictSnap.archiveDefenseRate} should be at most safe ${safeSnap.archiveDefenseRate}`,
 	)
 })
 

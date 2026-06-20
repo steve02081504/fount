@@ -140,14 +140,19 @@ export function applyNetworkHint(hint) {
 	const now = Date.now()
 	const ttlMs = Number.isFinite(hint.ttlMs) ? hint.ttlMs : DEFAULT_EXPLORE_TTL_MS
 	const expiresAt = Number.isFinite(hint.expiresAt) ? hint.expiresAt : now + ttlMs
+	const source = String(hint.source || 'unknown')
+	const priorSources = new Set(net.hints.filter(h => h.nodeHash === nodeHash).map(h => String(h.source || 'unknown')))
+	priorSources.add(source)
+	const multiSourceBoost = priorSources.size >= 2 ? 1.2 : 1
+	const baseWeight = Number.isFinite(hint.weight) ? hint.weight : 0.1
 	if (!net.explorePeers.includes(nodeHash))
 		net.explorePeers.push(nodeHash)
 	net.hints = net.hints.filter(h => h.nodeHash !== nodeHash || h.kind !== hint.kind)
 	net.hints.push({
 		nodeHash,
-		source: String(hint.source || 'unknown'),
+		source,
 		kind: String(hint.kind || 'hint'),
-		weight: Number.isFinite(hint.weight) ? hint.weight : 0.1,
+		weight: baseWeight * multiSourceBoost,
 		expiresAt,
 		...hint.groupId ? { groupId: String(hint.groupId).trim() } : {},
 	})

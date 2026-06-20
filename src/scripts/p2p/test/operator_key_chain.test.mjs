@@ -1,6 +1,10 @@
 /* global Deno */
+import { Buffer } from 'node:buffer'
+import { randomBytes } from 'node:crypto'
+
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { keyPairFromSeed } from '../crypto.mjs'
 import {
 	activeSenderHashFromPubKeyHex,
 	createGenesisKeyHistory,
@@ -10,9 +14,6 @@ import {
 	isValidActiveSender,
 	recoverySubjectHashFromPubKeyHex,
 } from '../operator_key_chain.mjs'
-import { keyPairFromSeed } from '../crypto.mjs'
-import { randomBytes } from 'node:crypto'
-import { Buffer } from 'node:buffer'
 
 Deno.test('recovery subject anchors entity identity', () => {
 	const recovery = keyPairFromSeed(randomBytes(32))

@@ -7,10 +7,14 @@ import {
 	computeRecidivismMultiplier,
 	defaultReputationTunables,
 	ensureReputationShape,
-	penalizeArchiveServeMismatchPure,
+	incrementBadInviteeCount,
 	pruneReputationFile,
-	recordMessageRateViolationPure,
 } from '../reputation_engine.mjs'
+import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }
+import {
+	applyFollowedBlockSignalPure,
+	applySocialBlockDecayAllPure,
+} from '../reputation_social_engine.mjs'
 
 const tunables = defaultReputationTunables()
 const PEER = 'a'.repeat(64)
@@ -21,27 +25,29 @@ Deno.test('computeRecidivismMultiplier escalates with streak', () => {
 	assertEquals(computeRecidivismMultiplier(100, tunables), tunables.recidivismMax)
 })
 
-Deno.test('repeat penalties escalate within window', () => {
+Deno.test('repeat penalties escalate without time window reset', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
 	const t0 = 1_000_000
 	adjustNodeReputation(data, PEER, -0.1, t0, tunables)
 	const first = data.byNodeHash[PEER].score
-	adjustNodeReputation(data, PEER, -0.1, t0 + 1000, tunables)
+	adjustNodeReputation(data, PEER, -0.1, t0 + 86_400_000, tunables)
 	const second = data.byNodeHash[PEER].score
 	assertEquals(first, -0.125)
 	assertEquals(second, first - 0.1 * 1.5)
 	assertEquals(data.byNodeHash[PEER].offenseStreak, 2)
 })
 
-Deno.test('offense streak resets after window expires', () => {
+Deno.test('positive contribution redeems offense streak', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
-	const t0 = 1_000_000
-	adjustNodeReputation(data, PEER, -0.1, t0, tunables)
-	adjustNodeReputation(data, PEER, -0.1, t0 + tunables.recidivismWindowMs + 1, tunables)
+	adjustNodeReputation(data, PEER, -0.2, 1000, tunables)
 	assertEquals(data.byNodeHash[PEER].offenseStreak, 1)
+	const bumpsNeeded = Math.ceil(tunables.redemptionCreditPerStreakLevel / tunables.relayRepBump)
+	for (let i = 0; i < bumpsNeeded; i++)
+		bumpReputationOnRelayPure(data, PEER, `k${i}`, 2000 + i, tunables)
+	assertEquals(data.byNodeHash[PEER].offenseStreak ?? 0, 0)
 })
 
-Deno.test('pruneReputationFile clears expired offense streak', () => {
+Deno.test('pruneReputationFile does not clear offense streak by time', () => {
 	const data = ensureReputationShape({
 		byNodeHash: {
 			[PEER]: { score: -0.5, offenseStreak: 3, lastOffenseAt: 1000 },
@@ -49,40 +55,31 @@ Deno.test('pruneReputationFile clears expired offense streak', () => {
 		wantUnknownHits: [],
 		relayBumpSeen: [],
 	})
-	pruneReputationFile(data, tunables, 1000 + tunables.recidivismWindowMs + 1)
-	assertEquals(data.byNodeHash[PEER].offenseStreak, undefined)
-	assertEquals(data.byNodeHash[PEER].lastOffenseAt, undefined)
+	pruneReputationFile(data, tunables, 1000 + 86_400_000_000)
+	assertEquals(data.byNodeHash[PEER].offenseStreak, 3)
 })
 
-Deno.test('bumpReputationOnRelay preserves socialBlocks and offense fields', () => {
-	const data = ensureReputationShape({
-		byNodeHash: {
-			[PEER]: {
-				score: 0.2,
-				offenseStreak: 2,
-				lastOffenseAt: 5000,
-				socialBlocks: { voter: { penalty: 0.1, appliedAt: 4000 } },
-			},
-		},
-		wantUnknownHits: [],
-		relayBumpSeen: [],
-	})
-	bumpReputationOnRelayPure(data, PEER, 'k1', 6000, tunables)
-	const row = data.byNodeHash[PEER]
-	assertEquals(row.score > 0.2, true)
-	assertEquals(row.offenseStreak, 2)
-	assertEquals(row.lastOffenseAt, 5000)
-	assertEquals(row.socialBlocks?.voter?.penalty, 0.1)
-})
-
-Deno.test('penalize and message rate use recidivism via adjustNodeReputation', () => {
+Deno.test('social block does not auto-decay', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
-	const t0 = 2_000_000
-	recordMessageRateViolationPure(data, PEER, tunables)
-	const afterFirst = data.byNodeHash[PEER].score
-	data.byNodeHash[PEER].lastOffenseAt = t0
-	data.byNodeHash[PEER].offenseStreak = 1
-	penalizeArchiveServeMismatchPure(data, PEER, tunables)
-	const afterSecond = data.byNodeHash[PEER].score
-	assertEquals(afterSecond < afterFirst - tunables.archiveServeMismatchPenalty, true)
+	const t0 = 1_000_000
+	applyFollowedBlockSignalPure(data, {
+		followerNodeHash: 'b'.repeat(64),
+		targetNodeHash: PEER,
+		voterKey: 'voter1',
+		action: 'block',
+		selfTrust: true,
+	}, t0, socialTunables)
+	const scoreAfterBlock = data.byNodeHash[PEER].score
+	applySocialBlockDecayAllPure(data, t0 + 86_400_000_000, socialTunables)
+	assertEquals(data.byNodeHash[PEER].score, scoreAfterBlock)
+})
+
+Deno.test('badInviteeCount increments and redeems via contribution', () => {
+	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
+	incrementBadInviteeCount(data, PEER, 2, tunables)
+	assertEquals(data.byNodeHash[PEER].badInviteeCount, 2)
+	const perBad = tunables.inviteRedemptionCreditPerBad
+	for (let i = 0; i < Math.ceil(perBad * 2 / tunables.relayRepBump) + 1; i++)
+		bumpReputationOnRelayPure(data, PEER, `redeem:${i}`, 5000 + i, tunables)
+	assertEquals(data.byNodeHash[PEER].badInviteeCount ?? 0, 0)
 })

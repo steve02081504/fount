@@ -5,10 +5,40 @@
  * 【数据结构】join 事件 content 含 inviteCode、powSolution { anchorRef, epoch, nonce, joinerNodeHash? }；state.groupSettings.joinPolicy 字符串枚举。
  * 【关联】scripts/p2p/join_pow.mjs、joinPowAnchors.mjs、inviteTickets.mjs、dag/append、room ingest。
  */
-import { JOIN_POW_DEFAULT_EPOCH_MS, verifyJoinPow } from '../../../../../../../scripts/p2p/join_pow.mjs'
+import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from '../../../../../../../scripts/p2p/join_pow.mjs'
 import { normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 
 import { collectJoinPowAnchors, joinPowExemptAsHistoricalReplay } from './joinPowAnchors.mjs'
+
+/**
+ * 从 member_join 推导 PoW 自愿信誉加成（非 pow 群或无 solution 则 0）。
+ * @param {object} state 物化群状态
+ * @param {{ sender?: string, content?: object }} event DAG 事件
+ * @returns {number} 加成
+ */
+export function joinPowBonusFromMemberJoin(state, event) {
+	if (event?.type !== 'member_join') return 0
+	if ((state.groupSettings?.joinPolicy || '') !== 'pow') return 0
+	const content = event.content || {}
+	const powSolution = content.powSolution ?? content.pow
+	if (!powSolution) return 0
+	const floorBits = Number(state.groupSettings?.powFloorBits)
+		|| Number(state.groupSettings?.powDifficulty)
+		|| Number(state.groupSettings?.powDifficultyBits)
+		|| 0
+	if (floorBits <= 0) return 0
+	const senderNodeHash = String(event.sender || '').trim().toLowerCase()
+	const { ok, achievedBits } = verifyJoinPow(powSolution, {
+		groupId: state.groupId,
+		senderNodeHash,
+		knownAnchors: collectJoinPowAnchors(state),
+		now: Date.now(),
+		difficultyBits: floorBits,
+		epochMs: Number(state.groupSettings?.powEpochMs) || JOIN_POW_DEFAULT_EPOCH_MS,
+	})
+	if (!ok) return 0
+	return powVoluntaryBonus(achievedBits, floorBits)
+}
 
 /**
  * 统一校验 member_join 入群策略（本地 append 与联邦入站共用）。
@@ -49,16 +79,19 @@ export async function validateJoinPolicy(state, event, replicaUsername) {
 		throw new Error('member_join requires inviteCode')
 	if (joinPolicy === 'pow') {
 		if (joinPowExemptAsHistoricalReplay(state, event)) return
-		const difficultyBits = Number(state.groupSettings?.powDifficulty) || Number(state.groupSettings?.powDifficultyBits) || 0
-		if (difficultyBits <= 0) throw new Error('pow joinPolicy requires powDifficulty >= 1')
+		const floorBits = Number(state.groupSettings?.powFloorBits)
+			|| Number(state.groupSettings?.powDifficulty)
+			|| Number(state.groupSettings?.powDifficultyBits)
+			|| 0
+		if (floorBits <= 0) throw new Error('pow joinPolicy requires powFloorBits >= 1')
 		const senderNodeHash = String(event.sender || '').trim().toLowerCase()
 		const powSolution = content.powSolution ?? content.pow
-		const ok = verifyJoinPow(powSolution, {
+		const { ok } = verifyJoinPow(powSolution, {
 			groupId: state.groupId,
 			senderNodeHash,
 			knownAnchors: collectJoinPowAnchors(state),
 			now: Date.now(),
-			difficultyBits,
+			difficultyBits: floorBits,
 			epochMs: Number(state.groupSettings?.powEpochMs) || JOIN_POW_DEFAULT_EPOCH_MS,
 		})
 		if (!ok)

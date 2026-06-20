@@ -5,8 +5,9 @@ import { resolveAttackParams } from './attack_space.mjs'
 import { SYBIL_REP_EARN_COST_ROUNDS } from './constants.mjs'
 import { eclipseFillExplore } from './discovery.mjs'
 import { enqueueSlash } from './propagation.mjs'
+import { takeTransportJoinSlot, transportHintWeight } from './transport.mjs'
 
-/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator' | 'hint_poisoner' | 'key_thief' | 'sleeper' | 'equivocator' | 'targeted_eclipse' | 'rep_pump' | 'slow_drip_spammer'} AttackKind */
+/** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator' | 'hint_poisoner' | 'key_thief' | 'sleeper' | 'equivocator' | 'targeted_eclipse' | 'rep_pump' | 'slow_drip_spammer' | 'signaling_flood' | 'signaling_eclipse'} AttackKind */
 
 /**
  * @param {object} ctx 仿真上下文
@@ -147,6 +148,12 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			break
 		case 'slow_drip_spammer':
 			runSlowDripSpammer(ctx, node, observer, tunables)
+			break
+		case 'signaling_flood':
+			runSignalingFlood(ctx, node, observer, round, tunables)
+			break
+		case 'signaling_eclipse':
+			runSignalingEclipse(ctx, node, observer, tunables)
 			break
 		default:
 			break
@@ -548,9 +555,43 @@ function runRepPump(ctx, node, observer, rng, round, tunables) {
  */
 function runSlowDripSpammer(ctx, node, observer, tunables) {
 	const { recordMessageRateViolationPure } = ctx.engine
-	// 每 3 回合才触发一次，模拟慢滴
 	if (ctx.now % 180_000 !== 0) return
 	recordMessageRateViolationPure(observer.reputation, node.id, tunables.reputation)
+}
+
+/**
+ * 信令 join 洪水：占满 RTC 槽位触发过载冷却。
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {number} round 当前回合
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function runSignalingFlood(ctx, node, observer, round, tunables) {
+	const burst = attackParams(ctx, node).burstSize
+	const transport = ctx.transport
+	if (!transport) return
+	for (let i = 0; i < burst; i++)
+		takeTransportJoinSlot(transport, `${node.id}:flood:${round}:${i}`, `flood:${node.id}`, ctx.now + i)
+	void observer
+	void tunables
+}
+
+/**
+ * 信令 eclipse：单源占槽 + 低权重 hint（单源仍可连，多源有软加成）。
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function runSignalingEclipse(ctx, node, observer, tunables) {
+	const transport = ctx.transport
+	if (!transport) return
+	takeTransportJoinSlot(transport, node.id, `sig:${node.id}`, ctx.now)
+	transportHintWeight(transport, observer.id, node.id, `sig:${node.id}`, tunables.trustGraph.hintDefaultWeight * 0.5)
+	void tunables
 }
 
 /**

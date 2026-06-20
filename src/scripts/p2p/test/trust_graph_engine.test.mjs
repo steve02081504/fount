@@ -12,6 +12,9 @@ Deno.test('hint-only node gets attenuated lift', () => {
 			source: `s${i}`,
 			weight: 1,
 		})),
+		/**
+		 *
+		 */
 		scoreOf: () => 0,
 	})
 	const score = graph.get(node)?.score ?? 0
@@ -28,6 +31,9 @@ Deno.test('hints cannot inflate beyond bounded bonus over hard evidence', () => 
 			source: `poison-${i}`,
 			weight: 2,
 		})),
+		/**
+		 *
+		 */
 		scoreOf: () => 0.2,
 	})
 	const score = graph.get(node)?.score ?? 0

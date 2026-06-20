@@ -15,11 +15,11 @@ import {
 	seedMemberReputationFromIntroducerPure,
 } from '../reputation_engine.mjs'
 import { REP_MAX } from '../reputation_math.mjs'
-import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure, applyFollowedSuspectSignalPure } from '../reputation_social_engine.mjs'
+import { applyFollowedBlockSignalPure, applyFollowedSuspectSignalPure, applySocialSuspectDecayAllPure } from '../reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
 
+import { capMaliciousByPowBudget, honestJoinDelayPenalty, resolvePowFloorBits } from './admission.mjs'
 import { attackReachesObserver, simIsPeerQuarantined, simObservePeerBehavior } from './anomaly.mjs'
-import { capMaliciousByPowBudget, honestJoinDelayPenalty } from './admission.mjs'
 import { normalizeAttackGenome } from './attack_space.mjs'
 import { runAttack } from './attacks.mjs'
 import { behaviorRoll, isQuietHonestBehavior, sampleBehavior } from './behavior.mjs'
@@ -35,15 +35,34 @@ import {
 	MAILBOX_RELAY_COST_DIVISOR,
 } from './constants.mjs'
 import { createDiscoveryState, discoveryReach, initObserverDiscovery, recoverDiscoveryFromAnchors } from './discovery.mjs'
-import { blendArchiveQuorumAccuracy, integrityDefendsAgainst, observerHasLocalReplica } from './integrity.mjs'
 import { buildRankedNeighborAdj } from './graph_adj.mjs'
+import { blendArchiveQuorumAccuracy, integrityDefendsAgainst, observerHasLocalReplica } from './integrity.mjs'
 import { createPropagationState, tickPropagation } from './propagation.mjs'
 import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
+import { createTransportState, transportMetrics } from './transport.mjs'
 
 /** @typedef {import('./attacks.mjs').AttackKind} AttackKind */
 /** @typedef {import('./tunables_bundle.mjs').TunablesBundle} TunablesBundle */
 
 /** @typedef {import('./behavior.mjs').NodeBehavior} NodeBehavior */
+
+/** reach 型攻击：仅此三类写入 reachCollapse 伤害 */
+const REACH_ATTACK_KINDS = new Set(['eclipse', 'targeted_eclipse', 'hint_poisoner'])
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimObserver} obs 观察者
+ * @param {import('./model.mjs').SimNode} m 恶意节点
+ * @param {number} reachHarm cleanReach - discReach
+ * @returns {number} 归因 reach 伤害
+ */
+function attackReachHarmForNode(ctx, obs, m, reachHarm) {
+	if (!REACH_ATTACK_KINDS.has(m.attack ?? '') || reachHarm <= 0) return 0
+	if (m.attack === 'hint_poisoner')
+		return obs.injectedHints.some(h => h.nodeHash === m.id && h.source === 'poison') ? reachHarm : 0
+	const poisonSet = ctx.discovery?.poisonedByAttacker?.get(obs.id)
+	return poisonSet?.has(m.id) ? reachHarm : 0
+}
 
 /**
  * @typedef {{
@@ -207,9 +226,9 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 
 	for (const [attack, count] of Object.entries(scenario.attacks)) {
 		const rounds = scenario.rounds ?? 40
-		const powBits = tunables.admission?.powDifficultyBits ?? 18
+		const powBits = resolvePowFloorBits(tunables.admission)
 		const powCapped = attack === 'sybil' || attack === 'whitewasher' || attack === 'rep_pump'
-		const allowed = powCapped ? capMaliciousByPowBudget(count || 0, powBits, rounds) : (count || 0)
+		const allowed = powCapped ? capMaliciousByPowBudget(count || 0, powBits, rounds) : count || 0
 		for (let i = 0; i < allowed; i++) {
 			const clusterId = `${attack}-${Math.floor(i / 4)}`
 			const chained = attack === 'collusion' || attack === 'whitewasher' || attack === 'rep_pump'
@@ -330,6 +349,7 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		scenario,
 		attackGenome: normalizeAttackGenome(attackGenome),
 		discovery: createDiscoveryState(),
+		transport: createTransportState(),
 		propagationByObserver: new Map(),
 		engine: {
 			bumpReputationOnRelayPure,
@@ -695,8 +715,11 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			// 可验证审计：对有密码学证据的作恶（伪造归档、惰性分片）发起 verified slash，
 			// 让 slashVerifiedMultiplier 真正生效；偶发证据指错诚实节点，形成两面梯度。
 			if (round % 4 === 0) {
-				for (const bad of verifiableBad)
+				for (const bad of verifiableBad) {
 					applySubjectiveSlashPure(obs.reputation, bad.id, obs.id, tunables.reputation.slashVerifiedDefaultClaim, true, tunables.reputation)
+					ctx.verifiedForgery = ctx.verifiedForgery ?? new Set()
+					ctx.verifiedForgery.add(bad.id)
+				}
 				if (rng() < 0.05) {
 					const victim = pickOne(rng, activeHonest.filter(n => n.id !== obs.id))
 					if (victim)
@@ -741,12 +764,11 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 		}
 	}
 
-	// 衰减恢复相：快进若干个 socialBlockDecayMs 窗口并结算 social-block 衰减，
-	// 让 socialBlockDecayFraction 对「被误封诚实节点的恢复」与「已确认作恶者的复活」同时生效。
+	// 衰减恢复相：仅 suspect 软信号衰减；社交 block 不再自动退款
 	const decayWindows = scenario.decayWindows ?? 4
-	ctx.now += tunables.social.socialBlockDecayMs * decayWindows + 1
+	ctx.now += tunables.social.socialSuspectDecayMs * decayWindows + 1
 	for (const obs of observers)
-		applySocialBlockDecayAllPure(obs.reputation, ctx.now, tunables.social)
+		applySocialSuspectDecayAllPure(obs.reputation, ctx.now, tunables.social)
 
 	return collectSnapshot(observers, nodes, tunables, groupSize, ctx)
 }
@@ -800,6 +822,9 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let sleeperTotal = 0
 	let equivocationDefended = 0
 	let equivocationTotal = 0
+	let transportReach = 0
+	let signalingDiversity = 0
+	let joinThrottle = 0
 	/** @type {Map<string, { defended: number, total: number }>} */
 	const attackAccum = new Map()
 	/** @type {Map<string, { topKSum: number, reachSum: number, count: number }>} */
@@ -883,7 +908,10 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		fanoutCost += top.length / Math.max(1, honest.length)
 
 		const friendlyIds = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id)
-		const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, tunables.mailbox.maxHop)
+		const maxHop = tunables.mailbox.maxHop
+		const cleanReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, maxHop, true)
+		const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, maxHop, false)
+		const observerReachHarm = Math.max(0, cleanReach - discReach)
 
 		const highRepMalInTop = topMal.filter(n => scoreOf(n.nodeHash) >= honestMedian).length
 		if (top.length > 0)
@@ -911,7 +939,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				impact.count++
 				if (topSet.has(m.id) && scoreOf(m.id) >= honestMedian)
 					impact.topKSum++
-				impact.reachSum += discReach
+				const attributed = attackReachHarmForNode(ctx, obs, m, observerReachHarm)
+				impact.reachSum += attributed
 			}
 		}
 
@@ -993,6 +1022,11 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		if (observerHasLocalReplica(obs, scenarioMeta))
 			quorumAcc = blendArchiveQuorumAccuracy(quorumAcc, 1)
 		archiveQuorum += quorumAcc
+
+		const tMetrics = transportMetrics(ctx.transport ?? createTransportState(), obs.id, friendlyIds, scoreOf)
+		transportReach += tMetrics.reach
+		signalingDiversity += tMetrics.diversity
+		joinThrottle += tMetrics.throttleOk
 	}
 
 	const nObs = Math.max(1, observers.length)
@@ -1025,16 +1059,19 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const byAttackImpact = {}
 	for (const [atk, row] of attackImpact) {
 		const n = Math.max(1, row.count)
+		const reachDenom = Math.max(1, row.count * nObs)
 		byAttackImpact[atk] = {
 			topKCapture: row.topKSum / n,
-			reachCollapse: 1 - row.reachSum / n,
+			reachCollapse: REACH_ATTACK_KINDS.has(atk)
+				? Math.min(1, row.reachSum / reachDenom)
+				: 0,
 		}
 	}
 
 	const quietHonestPreservationRate = quietTotal ? quietSafe / quietTotal : 1
 
 	const joinDelay = honestJoinDelayPenalty(
-		tunables.admission?.powDifficultyBits ?? 18,
+		resolvePowFloorBits(tunables.admission),
 		ctx.scenario?.rounds ?? 40,
 	)
 
@@ -1060,6 +1097,9 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		equivocationDefenseRate: equivocationTotal
 			? equivocationDefended / equivocationTotal
 			: hasEquivocation ? archiveQuorum / nObs : 1,
+		transportReachRate: transportReach / nObs,
+		signalingDiversityRate: signalingDiversity / nObs,
+		joinThrottleEffectiveness: joinThrottle / nObs,
 		honestJoinDelayPenalty: joinDelay,
 		observerCount: observers.length,
 		maliciousCount: malicious.length,

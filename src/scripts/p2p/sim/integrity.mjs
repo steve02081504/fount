@@ -10,7 +10,9 @@
 export function observerHasLocalReplica(observer, scenario) {
 	const groupSize = scenario.groupSize ?? 8
 	const honestShare = (scenario.honestCount ?? 0) / Math.max(1, groupSize)
-	return honestShare >= 0.5 || observer.trustedPeers.length >= 2
+	const archiveHeavy = observer.trustedPeers.length >= 2
+		&& (scenario.behaviorDist?.archiveSubmitRate?.mean ?? 0) >= 0.15
+	return (honestShare >= 0.75 && observer.trustedPeers.length >= 1) || archiveHeavy
 }
 
 /**
@@ -27,7 +29,7 @@ export function integrityDefendsAgainst(attacker, observer, scenario, ctx) {
 		return (ctx.equivocationByObserver?.get(key) ?? 0) > 0
 	}
 	if (attacker.attack === 'archive_forger' || attacker.attack === 'lazy_chunk')
-		return true
+		return ctx.verifiedForgery?.has(attacker.id) === true
 	return false
 }
 
@@ -51,6 +53,6 @@ export function replicaObserverFraction(observers, scenario) {
  * @returns {number} 综合准确率
  */
 export function blendArchiveQuorumAccuracy(quorumAccuracy, replicaFraction) {
-	const cryptoFloor = replicaFraction * 0.95
+	const cryptoFloor = replicaFraction * 0.75
 	return Math.max(quorumAccuracy, cryptoFloor)
 }

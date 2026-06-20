@@ -103,9 +103,9 @@ export function takeRoomSlot(state, observerId, peerId, sourceId, trustedIds = [
 	const nonTrustedActive = [...bucket.active].filter(id => !bucket.trustedReserved.has(id)).length
 	const maxNonTrusted = Math.max(0, maxActive - trustedCount)
 
-	if (!isTrusted && nonTrustedActive >= maxNonTrusted) {
+	if (!isTrusted && nonTrustedActive >= maxNonTrusted) 
 		if (bucket.active.size >= maxActive) return false
-	}
+	
 
 	if (bucket.active.size >= maxActive && !isTrusted) return false
 
@@ -149,9 +149,10 @@ export function eclipseFillExplore(state, victimObserverId, attackerId, sybilIds
  * @param {string[]} friendlyIds 友善节点
  * @param {(id: string) => number} scoreOf 信誉分
  * @param {number} maxHop 最大跳
+ * @param {boolean} [ignorePoison=false] 反事实：忽略 poison/sybil 槽位污染
  * @returns {number} 可达友善节点比例 0..1
  */
-export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop = 4) {
+export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop = 4, ignorePoison = false) {
 	const bucket = roomBucket(state, observerId)
 	const roomPeers = [...bucket.active].filter(id => friendlyIds.includes(id))
 	const explore = state.exploreByObserver.get(observerId) ?? state.trustedAnchors
@@ -173,6 +174,7 @@ export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop =
 	}
 	const target = friendlyIds.filter(id => id !== observerId)
 	const rawReach = target.length ? [...visited].filter(id => target.includes(id)).length / target.length : 0
+	if (ignorePoison) return rawReach
 	const slotFill = bucket.active.size / Math.max(1, state.rtcMaxActive)
 	const sybilDominated = [...bucket.sourceByPeer.values()].filter(s => String(s).startsWith('eclipse:')).length
 	const sybilRatio = sybilDominated / Math.max(1, bucket.active.size)

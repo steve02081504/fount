@@ -262,6 +262,34 @@ export const SCENARIOS = [
 		groupSize: 14,
 		churnRate: 0.1,
 	},
+	{
+		id: 'slow_drip_spam',
+		label: '慢速 drip 刷屏',
+		honestCount: 10,
+		behaviorDist: CHAT_HEAVY,
+		attacks: { slow_drip_spammer: 6, spammer: 2 },
+		rounds: 40,
+		groupSize: 8,
+	},
+	{
+		id: 'transport_siege',
+		label: '信令 join 洪水',
+		honestCount: 10,
+		relayCount: 2,
+		behaviorDist: CHAT_HEAVY,
+		attacks: { signaling_flood: 8, eclipse: 3 },
+		rounds: 40,
+		groupSize: 8,
+	},
+	{
+		id: 'fresh_join_eclipse',
+		label: '新节点信令 eclipse',
+		honestCount: 8,
+		newcomerCount: 4,
+		attacks: { signaling_eclipse: 6, targeted_eclipse: 3 },
+		rounds: 35,
+		groupSize: 6,
+	},
 ]
 
 /**

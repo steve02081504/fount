@@ -62,9 +62,12 @@ export function subjectiveSlashPenalty(claim, repSender, repMaxEff, verified = f
  * @param {number} introRep 介绍者信誉
  * @param {number} [repEdge] 边信任；省略则用 tunable 默认
  * @param {typeof reputationTunables} [tunables] tunables
+ * @param {number} [powBonus=0] 入群 PoW 自愿封顶加成
  * @returns {number} 新成员初值
  */
-export function seedReputationFromIntro(introRep, repEdge, tunables = reputationTunables) {
+export function seedReputationFromIntro(introRep, repEdge, tunables = reputationTunables, powBonus = 0) {
 	const edge = Number.isFinite(repEdge) ? repEdge : tunables.introducerSeedEdge
-	return clampReputationScore(introRep * (Number.isFinite(edge) ? clampReputationScore(edge) : 1))
+	const base = introRep * (Number.isFinite(edge) ? clampReputationScore(edge) : 1)
+	const bonus = Number.isFinite(powBonus) && powBonus > 0 ? powBonus : 0
+	return clampReputationScore(base + bonus)
 }

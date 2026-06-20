@@ -45,3 +45,12 @@ Deno.test('eclipse scenario produces byAttackImpact reach data', () => {
 	const snap = runSimulation(resolveScenarios('spam_eclipse')[0], 5, loadDefaultTunables())
 	assert(typeof snap.byAttackImpact?.eclipse?.reachCollapse === 'number')
 })
+
+Deno.test('reachCollapse attributed only to reach-type attacks', () => {
+	const snap = runSimulation(resolveScenarios('spam_eclipse')[0], 5, loadDefaultTunables())
+	const eclipseReach = snap.byAttackImpact?.eclipse?.reachCollapse ?? 0
+	const sybilReach = snap.byAttackImpact?.sybil?.reachCollapse ?? 0
+	assertEquals(sybilReach, 0)
+	if (eclipseReach > 0)
+		assertEquals(eclipseReach > sybilReach, true)
+})

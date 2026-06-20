@@ -19,31 +19,14 @@ export function defaultSocialTunables() {
 }
 
 /**
- * @param {object} row byNodeHash 行
- * @param {number} [now] 当前时间
- * @param {typeof socialTunables} [tunables] tunables
+ * 社交 block 记账衰减（已禁用：拉黑不衰减）。
+ * @param {object} _row byNodeHash 行
+ * @param {number} [_now] 当前时间
+ * @param {typeof socialTunables} [_tunables] tunables
  * @returns {void}
  */
-export function applyRowSocialBlockDecay(row, now = Date.now(), tunables = socialTunables) {
-	if (!row?.socialBlocks) return
-	let refund = 0
-	for (const [voter, record] of Object.entries(row.socialBlocks)) {
-		const appliedAt = Number(record?.appliedAt)
-		const penalty = Number(record?.penalty)
-		if (!Number.isFinite(penalty) || penalty <= 0) continue
-		if (!Number.isFinite(appliedAt) || now - appliedAt < tunables.socialBlockDecayMs) continue
-		const windows = Math.floor((now - appliedAt) / tunables.socialBlockDecayMs)
-		if (windows <= 0) continue
-		const decayed = penalty * (1 - (1 - tunables.socialBlockDecayFraction) ** windows)
-		const delta = decayed - Number(record.decayedRefund || 0)
-		if (delta > 0) {
-			refund += delta
-			record.decayedRefund = decayed
-		}
-		void voter
-	}
-	if (refund > 0)
-		row.score = clampReputationScore(Number(row.score ?? 0) + refund)
+export function applyRowSocialBlockDecay(_row, _now = Date.now(), _tunables = socialTunables) {
+	// 社交拉黑不衰减：老死不相往来，直至显式 unblock
 }
 
 /**
@@ -53,8 +36,9 @@ export function applyRowSocialBlockDecay(row, now = Date.now(), tunables = socia
  * @returns {void}
  */
 export function applySocialBlockDecayAllPure(data, now = Date.now(), tunables = socialTunables) {
-	for (const nodeId of Object.keys(data.byNodeHash || {}))
-		applyRowSocialBlockDecay(data.byNodeHash[nodeId], now, tunables)
+	void data
+	void now
+	void tunables
 }
 
 /**
@@ -74,7 +58,6 @@ export function applyFollowedBlockSignalPure(data, opts, now = Date.now(), tunab
 	const isBlock = action === 'block'
 	const selfTrust = !!opts.selfTrust
 
-	applySocialBlockDecayAllPure(data, now, tunables)
 	const row = data.byNodeHash[targetNodeHash] || { score: 0 }
 	row.socialBlocks ??= {}
 

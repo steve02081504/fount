@@ -35,6 +35,7 @@ import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
 
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from './materialize.mjs'
+import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 
 /** 写入频道消息流 JSONL 的事件类型。 */
 const PERSIST_MESSAGE_TYPES = new Set([
@@ -87,7 +88,8 @@ async function applyReputationHooks(username, groupId, signPayload) {
 		const introducer = signPayload.content?.introducerPubKeyHash?.trim().toLowerCase() || ''
 		const repEdge = Number.isFinite(inviteEdge?.reputationEdge) ? inviteEdge.reputationEdge : 1
 		const edgeFromJoin = state.members[sender]?.repEdgeFromIntroducer ?? repEdge
-		await seedMemberReputationFromIntroducer( sender, introducer, edgeFromJoin)
+		const powBonus = joinPowBonusFromMemberJoin(state, signPayload)
+		await seedMemberReputationFromIntroducer(sender, introducer, edgeFromJoin, powBonus)
 		if (introducer) {
 			const introNodeHash = state.members[introducer]?.homeNodeHash
 				|| state.members[introducer]?.nodeHash

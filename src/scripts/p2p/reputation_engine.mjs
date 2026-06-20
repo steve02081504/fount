@@ -58,25 +58,94 @@ export function computeRecidivismMultiplier(streak, tunables = reputationTunable
 /**
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
+ * @returns {NonNullable<ReputationFile['byNodeHash'][string]>} 节点行（可变引用）
+ */
+function ensureRow(data, nodeId) {
+	if (!data.byNodeHash[nodeId]) data.byNodeHash[nodeId] = { score: 0 }
+	return data.byNodeHash[nodeId]
+}
+
+/**
+ * @param {number} badCount 坏邀请计数
+ * @param {typeof reputationTunables} tunables tunables
+ * @returns {number} 惩罚乘子 ≥ 1
+ */
+export function computeInviteEscalation(badCount, tunables = reputationTunables) {
+	const step = Number(tunables.inviteBadEscalationStep ?? 0)
+	const maxMult = Number(tunables.inviteBadEscalationMax ?? 1)
+	if (!Number.isFinite(badCount) || badCount <= 0 || step <= 0 || maxMult <= 1)
+		return 1
+	return Math.min(maxMult, 1 + step * badCount)
+}
+
+/**
+ * @param {object} row byNodeHash 行
+ * @param {number} gain 正向收益
+ * @param {typeof reputationTunables} tunables tunables
+ * @returns {void}
+ */
+function applyRedemptionFromGain(row, gain, tunables = reputationTunables) {
+	if (!Number.isFinite(gain) || gain <= 0) return
+	const perStreak = Number(tunables.redemptionCreditPerStreakLevel ?? 0)
+	const perBad = Number(tunables.inviteRedemptionCreditPerBad ?? 0)
+	row.redemptionCredit = Number(row.redemptionCredit ?? 0) + gain
+	if (perStreak > 0) {
+		while ((row.offenseStreak ?? 0) > 0 && row.redemptionCredit >= perStreak) {
+			row.redemptionCredit -= perStreak
+			row.offenseStreak = Math.max(0, (row.offenseStreak ?? 0) - 1)
+		}
+		if ((row.offenseStreak ?? 0) <= 0) {
+			delete row.offenseStreak
+			delete row.lastOffenseAt
+		}
+	}
+	if (perBad > 0) {
+		while ((row.badInviteeCount ?? 0) > 0 && row.redemptionCredit >= perBad) {
+			row.redemptionCredit -= perBad
+			row.badInviteeCount = Math.max(0, (row.badInviteeCount ?? 0) - 1)
+		}
+		if ((row.badInviteeCount ?? 0) <= 0)
+			delete row.badInviteeCount
+	}
+	if (!Number.isFinite(row.redemptionCredit) || row.redemptionCredit <= 1e-9)
+		delete row.redemptionCredit
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} nodeId 64 hex
  * @param {number} delta 增量
  * @param {number} [now] 当前时间
  * @param {typeof reputationTunables} [tunables] tunables
  * @returns {void}
  */
 export function adjustNodeReputation(data, nodeId, delta, now = Date.now(), tunables = reputationTunables) {
-	const row = repRow(data, nodeId)
+	const row = ensureRow(data, nodeId)
 	let effectiveDelta = delta
 	if (delta < 0) {
-		const windowMs = Number(tunables.recidivismWindowMs ?? 0)
-		const lastAt = Number(row.lastOffenseAt ?? 0)
-		const inWindow = windowMs > 0 && lastAt > 0 && now - lastAt <= windowMs
-		const streak = inWindow ? (row.offenseStreak ?? 0) + 1 : 1
+		const streak = (row.offenseStreak ?? 0) + 1
 		row.offenseStreak = streak
 		row.lastOffenseAt = now
 		effectiveDelta = delta * computeRecidivismMultiplier(streak, tunables)
 	}
-	row.score = clampReputationScore(row.score + effectiveDelta)
-	data.byNodeHash[nodeId] = row
+	else if (delta > 0)
+		applyRedemptionFromGain(row, delta, tunables)
+
+	row.score = clampReputationScore(Number(row.score ?? 0) + effectiveDelta)
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} nodeId 64 hex
+ * @param {number} badDelta 坏邀请计数增量
+ * @param {typeof reputationTunables} [tunables] tunables
+ * @returns {void}
+ */
+export function incrementBadInviteeCount(data, nodeId, badDelta = 1, tunables = reputationTunables) {
+	if (badDelta <= 0) return
+	const row = ensureRow(data, nodeId)
+	row.badInviteeCount = Math.max(0, Math.floor(Number(row.badInviteeCount ?? 0) + badDelta))
+	void tunables
 }
 
 /**
@@ -101,16 +170,6 @@ export function pruneReputationFile(data, tunables = reputationTunables, now = D
 	data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= tunables.relayBumpDedupeMs)
 	if (data.relayBumpSeen.length > tunables.maxRelayBumpSeen)
 		data.relayBumpSeen = data.relayBumpSeen.slice(-tunables.maxRelayBumpSeen)
-	const windowMs = Number(tunables.recidivismWindowMs ?? 0)
-	if (windowMs > 0) 
-		for (const row of Object.values(data.byNodeHash)) {
-			const lastAt = Number(row?.lastOffenseAt ?? 0)
-			if (lastAt > 0 && now - lastAt > windowMs) {
-				delete row.offenseStreak
-				delete row.lastOffenseAt
-			}
-		}
-	
 	return data
 }
 
@@ -129,9 +188,7 @@ export function bumpReputationOnRelayPure(data, peerNodeHash, dedupeKey, now = D
 	data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= tunables.relayBumpDedupeMs)
 	if (relayBumpIsDuplicate(data.relayBumpSeen, id, key, now, tunables.relayBumpDedupeMs)) return false
 	data.relayBumpSeen.push({ peerNodeHash: id, key, t: now })
-	const row = repRow(data, id)
-	row.score = clampReputationScore(row.score + tunables.relayRepBump)
-	data.byNodeHash[id] = row
+	adjustNodeReputation(data, id, tunables.relayRepBump, now, tunables)
 	return true
 }
 
@@ -230,15 +287,38 @@ export function applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, invite
 	/** @type {Array<{ hop: number, node: string, dRep: number }>} */
 	const applied = []
 	let frontier = new Set([target])
-	for (let hop = 1; hop <= tunables.collusionMaxHop; hop++) {
-		const upstream = new Set()
-		for (const edge of inviteEdges)
-			if (frontier.has(edge.to)) upstream.add(edge.from)
+	let maxBadSeen = 0
+	const baseMaxHop = Number(tunables.collusionMaxHop ?? 6)
+	const hopBonusEvery = Math.max(1, Number(tunables.inviteHopBonusEvery ?? 2))
+	const hopBonusMax = Number(tunables.inviteHopBonusMax ?? 0)
+	const deltaBoostPerBad = Number(tunables.inviteDeltaBoostPerBad ?? 0)
+	const deltaBoostMax = Number(tunables.inviteDeltaBoostMax ?? 0)
 
+	/**
+	 * @returns {number} 当前有效最大跳数
+	 */
+	function effectiveMaxHop() {
+		return baseMaxHop + Math.min(hopBonusMax, Math.floor(maxBadSeen / hopBonusEvery))
+	}
+
+	for (let hop = 1; hop <= effectiveMaxHop(); hop++) {
+		const upstream = new Set()
+		for (const edge of inviteEdges) {
+			const to = String(edge.to ?? '').trim().toLowerCase()
+			const from = String(edge.from ?? '').trim().toLowerCase()
+			if (frontier.has(to) && from) upstream.add(from)
+		}
 		if (!upstream.size) break
-		const dRep = tunables.collusionLambda * tunables.collusionDelta ** hop
+
 		for (const node of upstream) {
-			const before = Number(data.byNodeHash[node]?.score ?? 0)
+			incrementBadInviteeCount(data, node, 1, tunables)
+			const row = ensureRow(data, node)
+			const badCount = Number(row.badInviteeCount ?? 0)
+			maxBadSeen = Math.max(maxBadSeen, badCount)
+			const boostedDelta = Math.min(1, Number(tunables.collusionDelta ?? 0.62) + Math.min(deltaBoostMax, deltaBoostPerBad * badCount))
+			const baseDRep = Number(tunables.collusionLambda ?? 0.07) * boostedDelta ** hop
+			const dRep = baseDRep * computeInviteEscalation(badCount, tunables)
+			const before = Number(row.score ?? 0)
 			adjustNodeReputation(data, node, -dRep, Date.now(), tunables)
 			const after = Number(data.byNodeHash[node]?.score ?? 0)
 			applied.push({ hop, node, dRep: before - after })
@@ -259,6 +339,8 @@ export function applyReputationResetToScoresPure(data, targetPubKeyHash) {
 	row.score = 0
 	delete row.offenseStreak
 	delete row.lastOffenseAt
+	delete row.badInviteeCount
+	delete row.redemptionCredit
 	data.byNodeHash[t] = row
 }
 
@@ -268,16 +350,17 @@ export function applyReputationResetToScoresPure(data, targetPubKeyHash) {
  * @param {string} [introducerPubKeyHash] 介绍者
  * @param {number} [repEdge] 边信任；省略则用 tunable introducerSeedEdge
  * @param {typeof reputationTunables} [tunables] tunables
+ * @param {number} [powBonus=0] 入群 PoW 自愿封顶加成
  * @returns {void}
  */
-export function seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge, tunables = reputationTunables) {
+export function seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge, tunables = reputationTunables, powBonus = 0) {
 	const memberKey = memberPubKeyHash.trim().toLowerCase()
 	const introducerKey = introducerPubKeyHash?.trim().toLowerCase() || ''
 	if (data.byNodeHash[memberKey]) return
 	const introducerReputation = introducerKey
 		? Number(data.byNodeHash[introducerKey]?.score ?? 0)
 		: 0
-	data.byNodeHash[memberKey] = { score: seedReputationFromIntro(introducerReputation, repEdge, tunables) }
+	data.byNodeHash[memberKey] = { score: seedReputationFromIntro(introducerReputation, repEdge, tunables, powBonus) }
 }
 
 /**

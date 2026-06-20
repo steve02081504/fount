@@ -1,8 +1,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { ensureReputationShape, isQuarantinedPure, observeBehaviorSamplePure } from '../reputation_engine.mjs'
 import reputationTunables from '../reputation.tunables.json' with { type: 'json' }
+import { ensureReputationShape, isQuarantinedPure, observeBehaviorSamplePure } from '../reputation_engine.mjs'
 
 Deno.test('observeBehaviorSamplePure triggers quarantine after baseline drift', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })

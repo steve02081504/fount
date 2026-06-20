@@ -17,12 +17,6 @@ export const SOCIAL_REP_HIDE_THRESHOLD = socialTunables.socialRepHideThreshold
 /** feed：低于此分降权排序 */
 export const SOCIAL_REP_DEMOTE_THRESHOLD = socialTunables.socialRepDemoteThreshold
 
-/** 单条 social block 记账温和衰减窗口（毫秒） */
-export const SOCIAL_BLOCK_DECAY_MS = socialTunables.socialBlockDecayMs
-
-/** 每个衰减窗口回补比例（对已记账 penalty 的一部分） */
-export const SOCIAL_BLOCK_DECAY_FRACTION = socialTunables.socialBlockDecayFraction
-
 /**
  * @param {import('./reputation_store.mjs').ReputationFile} data 信誉表
  * @returns {void}

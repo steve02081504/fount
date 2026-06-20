@@ -2,8 +2,6 @@
 	"socialBlockClaim": 0.5,
 	"socialRepHideThreshold": -0.5,
 	"socialRepDemoteThreshold": 0,
-	"socialBlockDecayMs": 7776000000,
-	"socialBlockDecayFraction": 0.02,
 	"socialSuspectClaim": 0.18,
 	"socialSuspectDecayMs": 2592000000,
 	"socialSuspectDecayFraction": 0.04

@@ -283,11 +283,12 @@ export function applyReputationResetToScores(targetPubKeyHash) {
  * @param {string} memberPubKeyHash 新成员
  * @param {string} [introducerPubKeyHash] 介绍者
  * @param {number} [repEdge] 边信任
+ * @param {number} [powBonus=0] 入群 PoW 自愿封顶加成
  * @returns {void}
  */
-export function seedMemberReputationFromIntroducer(memberPubKeyHash, introducerPubKeyHash, repEdge) {
+export function seedMemberReputationFromIntroducer(memberPubKeyHash, introducerPubKeyHash, repEdge, powBonus = 0) {
 	void mutateReputation(data => {
-		seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge)
+		seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, introducerPubKeyHash, repEdge, undefined, powBonus)
 	})
 }
 
