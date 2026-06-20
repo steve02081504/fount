@@ -33,6 +33,7 @@ export {
 	seedMemberReputationFromIntroducer,
 	relayBumpIsDuplicate,
 	applySocialBlockReputationSignal,
+	applySocialSuspectReputationSignal,
 } from './reputation_store.mjs'
 
 /**

@@ -4,7 +4,7 @@ import {
 import { getNodeHash } from '../../scripts/p2p/node_context.mjs'
 import { getUserByReq } from '../auth.mjs'
 
-import { ensureOperatorPubKey, resolveOperatorEntityHashForUser } from './operator_identity.mjs'
+import { getRecoveryPubKeyHex, resolveOperatorEntityHashForUser } from './operator_identity.mjs'
 
 /**
  * @returns {string} 本节点 nodeHash
@@ -40,7 +40,7 @@ export async function getReplicaFromReq(req) {
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
 	const { isWritableLocalEntity } = await import('../../scripts/p2p/entity/replica.mjs')
 	if (!isWritableLocalEntity(entityHash)) return false
-	const pub = await ensureOperatorPubKey(replicaUsername)
-	const operatorHash = resolveLocalOperatorEntityHash(pub)
+	const recoveryPub = await getRecoveryPubKeyHex(replicaUsername)
+	const operatorHash = resolveLocalOperatorEntityHash(recoveryPub)
 	return entityHash === operatorHash
 }

@@ -33,6 +33,12 @@ function repRow(data, nodeId) {
 		out.lastOffenseAt = row.lastOffenseAt
 	if (row.socialBlocks && typeof row.socialBlocks === 'object')
 		out.socialBlocks = row.socialBlocks
+	if (row.socialSuspects && typeof row.socialSuspects === 'object')
+		out.socialSuspects = row.socialSuspects
+	if (row.baseline && typeof row.baseline === 'object')
+		out.baseline = row.baseline
+	if (Number.isFinite(row.quarantinedUntil))
+		out.quarantinedUntil = row.quarantinedUntil
 	return out
 }
 
@@ -282,4 +288,91 @@ export function seedMemberReputationFromIntroducerPure(data, memberPubKeyHash, i
 export function resolveSlashAlertTtlMsPure(groupSettings, tunables = reputationTunables) {
 	const n = Number(groupSettings?.slashAlertTtl)
 	return Number.isFinite(n) && n > 0 ? Math.floor(n) : tunables.defaultSlashAlertTtlMs
+}
+
+/**
+ * @param {object} row byNodeHash 行
+ * @returns {{ mean: number, m2: number, count: number }} 行为基线
+ */
+function baselineRow(row) {
+	const baseline = row.baseline || { mean: 0, m2: 0, count: 0 }
+	return {
+		mean: Number(baseline.mean ?? 0),
+		m2: Number(baseline.m2 ?? 0),
+		count: Number(baseline.count ?? 0),
+	}
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} peerNodeHash 对端
+ * @param {number} sample 观测值
+ * @param {number} [now] 当前时间
+ * @param {typeof reputationTunables} [tunables] tunables
+ * @returns {{ z: number, anomaly: boolean }} 偏离度
+ */
+export function observeBehaviorSamplePure(data, peerNodeHash, sample, now = Date.now(), tunables = reputationTunables) {
+	const id = String(peerNodeHash || '').trim()
+	if (!id) return { z: 0, anomaly: false }
+	const row = repRow(data, id)
+	const baseline = baselineRow(row)
+	const alpha = Number(tunables.baselineAlpha ?? 0.08)
+	const value = Number(sample)
+	if (!Number.isFinite(value)) return { z: 0, anomaly: false }
+
+	const prevMean = baseline.mean
+	const prevCount = baseline.count
+	const newCount = prevCount + 1
+	const newMean = prevCount === 0 ? value : prevMean + alpha * (value - prevMean)
+	const diff = value - newMean
+	const newM2 = prevCount === 0 ? 0 : (1 - alpha) * (baseline.m2 + alpha * (value - prevMean) ** 2)
+	row.baseline = { mean: newMean, m2: newM2, count: newCount }
+	data.byNodeHash[id] = row
+
+	const variance = newCount > 1 ? Math.max(newM2, 1e-6) : 0
+	const std = Math.sqrt(variance)
+	const z = std > 0 ? Math.abs(value - newMean) / std : 0
+	const minSamples = Number(tunables.baselineMinSamples ?? 6)
+	const anomaly = newCount >= minSamples && z >= Number(tunables.anomalyZThreshold ?? 2.8)
+	if (anomaly)
+		applyQuarantinePure(data, id, now, tunables)
+	return { z, anomaly }
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} peerNodeHash 对端
+ * @param {number} [now] 当前时间
+ * @param {typeof reputationTunables} [tunables] tunables
+ * @returns {void}
+ */
+export function applyQuarantinePure(data, peerNodeHash, now = Date.now(), tunables = reputationTunables) {
+	const id = String(peerNodeHash || '').trim()
+	if (!id) return
+	const row = repRow(data, id)
+	row.quarantinedUntil = now + Number(tunables.quarantineTtlMs ?? 900_000)
+	data.byNodeHash[id] = row
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} peerNodeHash 对端
+ * @param {number} [now] 当前时间
+ * @returns {boolean} 是否处于本地隔离
+ */
+export function isQuarantinedPure(data, peerNodeHash, now = Date.now()) {
+	const id = String(peerNodeHash || '').trim()
+	const until = Number(data.byNodeHash?.[id]?.quarantinedUntil ?? 0)
+	return Number.isFinite(until) && until > now
+}
+
+/**
+ * @param {ReputationFile} data 信誉表
+ * @param {string} peerNodeHash 对端
+ * @param {number} [now] 当前时间
+ * @param {typeof reputationTunables} [tunables] tunables
+ * @returns {boolean} 是否检测到异常并触发隔离
+ */
+export function detectAnomalyPure(data, peerNodeHash, now = Date.now(), tunables = reputationTunables) {
+	return isQuarantinedPure(data, peerNodeHash, now)
 }

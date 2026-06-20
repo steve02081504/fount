@@ -11,6 +11,7 @@ import {
 	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
 } from '../../../../scripts/p2p/social/follower_index_registry.mjs'
+import { registerOperatorKeyChainProvider } from '../../../../scripts/p2p/timeline/write_auth.mjs'
 import { getAllUserNames } from '../../../../server/auth.mjs'
 
 import { handleSocialRpc } from './src/discovery.mjs'
@@ -72,6 +73,16 @@ export default {
 		registerOperatorEntityHashProvider(
 			(await import('../../../../server/p2p_server/operator_identity.mjs')).resolveOperatorEntityHashForUser,
 		)
+		registerOperatorKeyChainProvider(async username => {
+			const { readOperatorIdentity } = await import('../../../../server/p2p_server/entity_store.mjs')
+			const row = await readOperatorIdentity(username)
+			if (!row?.recoveryPubKeyHex) return null
+			return {
+				recoveryPubKeyHex: String(row.recoveryPubKeyHex).trim().toLowerCase(),
+				activePubKeyHex: String(row.activePubKeyHex || '').trim().toLowerCase(),
+				operatorKeyHistory: Array.isArray(row.keyHistory) ? row.keyHistory : [],
+			}
+		})
 		registerFollowingScanProvider(async username => {
 			const { resolveOperatorEntityHashForUser } = await import('../../../../server/p2p_server/operator_identity.mjs')
 			const operator = await resolveOperatorEntityHashForUser(username)

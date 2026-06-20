@@ -3,12 +3,17 @@ import { Buffer } from 'node:buffer'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { activeSenderHashFromPubKeyHex, recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
 import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
 import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'
-import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import {
+	consumePendingRecoverySecret,
+	getOperatorSecretKey,
+	getRecoveryPubKeyHex,
+} from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 
@@ -19,60 +24,44 @@ import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
 const NODE_ID = 'social-local'
 
 /**
- * 创建 social_meta 创世事件（仅 bootstrap 路径调用）。
- * @param {string} username 用户
- * @param {string} entityHash 时间线 owner
- * @returns {Promise<void>}
- */
-export async function ensureSocialMeta(username, entityHash) {
-	const previous = await readJsonl(timelineEventsPath(username, entityHash))
-	if (previous.some(event => event.type === 'social_meta')) return
-	await appendTimelineEvent(username, entityHash, {
-		type: 'social_meta',
-		content: {
-			isProtected: false,
-			exploreBlurb: '',
-			createdAt: Date.now(),
-		},
-	})
-}
-
-/**
- * 校验时间线已有 social_meta 创世事件。
- * @param {string} username 用户
- * @param {string} entityHash 时间线 owner
- * @returns {Promise<void>}
- */
-async function assertSocialMetaExists(username, entityHash) {
-	const previous = await readJsonl(timelineEventsPath(username, entityHash))
-	if (!previous.some(event => event.type === 'social_meta'))
-		throw new Error('timeline missing social_meta; call ensureEntitySocialReady first')
-}
-
-/**
  * @param {string} username replica 登录名
- * @returns {Promise<Uint8Array | null>} 联邦 identity 私钥
+ * @returns {Promise<Uint8Array | null>} 活跃 operator 私钥
  */
-async function loadFederationIdentitySecretKey(username) {
+async function loadActiveSecretKey(username) {
 	const secretHex = await getOperatorSecretKey(username)
 	if (!secretHex || secretHex.length !== 64) return null
 	return new Uint8Array(Buffer.from(secretHex, 'hex'))
 }
 
 /**
- * 解析本 replica 时间线事件的签名者身份与密钥。
  * @param {string} username replica 登录名
- * @returns {Promise<{ sender: string, secretKey: Uint8Array }>} 时间线签名者
+ * @param {Uint8Array} secretKey 签名私钥
+ * @returns {{ sender: string, secretKey: Uint8Array }} 时间线签名者
  */
-async function resolveTimelineSigner(username) {
-	const secretKey = await loadFederationIdentitySecretKey(username)
-	if (!secretKey) throw new Error('configure federation identity before posting')
+function timelineSignerFromSecret(secretKey) {
 	return { sender: pubKeyHash(publicKeyFromSeed(secretKey)), secretKey }
 }
 
 /**
+ * @param {string} username replica 登录名
+ * @returns {Promise<{ sender: string, secretKey: Uint8Array }>} 活跃钥签名者
+ */
+async function resolveActiveTimelineSigner(username) {
+	const secretKey = await loadActiveSecretKey(username)
+	if (!secretKey) throw new Error('configure federation identity before posting')
+	return timelineSignerFromSecret(secretKey)
+}
+
+/**
+ * @param {Uint8Array} recoverySecretKey recovery 私钥
+ * @returns {{ sender: string, secretKey: Uint8Array }} recovery 签名者
+ */
+function resolveRecoveryTimelineSigner(recoverySecretKey) {
+	return timelineSignerFromSecret(recoverySecretKey)
+}
+
+/**
  * 本 replica 是否可代写该 entity 的时间线。
- * Social 账号 = Chat P2P 实体：用户 identity 或本机托管的 agent（chars/）。
  * @param {string} username replica 登录名
  * @param {string} entityHash 128 位 entityHash
  * @returns {Promise<boolean>} 是否可写
@@ -80,15 +69,16 @@ async function resolveTimelineSigner(username) {
 export async function canWriteTimeline(username, entityHash) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || parsed.nodeHash !== getNodeHash()) return false
-	const secretKey = await loadFederationIdentitySecretKey(username)
+	const secretKey = await loadActiveSecretKey(username)
 	if (!secretKey) return false
-	const sender = pubKeyHash(publicKeyFromSeed(secretKey))
-	if (parsed.subjectHash === sender) return true
+	const activeSender = pubKeyHash(publicKeyFromSeed(secretKey))
+	const recoveryPub = await getRecoveryPubKeyHex(username)
+	if (parsed.subjectHash === recoverySubjectHashFromPubKeyHex(recoveryPub)) return true
+	if (parsed.subjectHash === activeSender) return true
 	return resolveAgentCharPartName(username, parsed.entityHash) !== null
 }
 
 /**
- * 校验当前 replica 是否可写入指定 entity 时间线。
  * @param {string} username replica 登录名
  * @param {string} entityHash 128 hex
  * @returns {Promise<void>}
@@ -99,27 +89,26 @@ export async function assertWritableTimeline(username, entityHash) {
 }
 
 /**
- * 向时间线追加一条签名事件并 canonicalize 入库。
  * @param {string} username 用户
  * @param {string} entityHash 时间线 owner
- * @param {object} event 未签名事件（type/content/timestamp）
+ * @param {object} event 未签名事件
+ * @param {Uint8Array} secretKey 签名私钥
  * @returns {Promise<object>} 签名事件
  */
-export async function appendTimelineEvent(username, entityHash, event) {
+async function appendSignedTimelineEvent(username, entityHash, event, secretKey) {
 	await assertWritableTimeline(username, entityHash)
-	if (event.type !== 'social_meta')
+	if (event.type !== 'social_meta' && event.type !== 'operator_key_rotate')
 		await assertSocialMetaExists(username, entityHash)
 	const groupId = groupIdForTimeline(entityHash)
 	const previous = await readJsonl(timelineEventsPath(username, entityHash))
 	const { hlc, prev_event_ids } = computeAppendHlcAndPrev(previous, event)
-
-	const { sender, secretKey } = await resolveTimelineSigner(username)
+	const { sender } = timelineSignerFromSecret(secretKey)
 	const base = {
 		type: event.type,
 		groupId,
 		sender,
 		charId: event.charId ?? null,
-		timestamp: event.timestamp,
+		timestamp: event.timestamp ?? Date.now(),
 		hlc,
 		prev_event_ids,
 		content: event.content ?? {},
@@ -132,6 +121,70 @@ export async function appendTimelineEvent(username, entityHash, event) {
 	invalidateTimelineOwnerIndex(username)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, row)
 	return row
+}
+
+/**
+ * 向时间线追加一条签名事件（默认活跃钥签名）。
+ * @param {string} username 用户
+ * @param {string} entityHash 时间线 owner
+ * @param {object} event 未签名事件（type/content/timestamp）
+ * @returns {Promise<object>} 签名事件
+ */
+export async function appendTimelineEvent(username, entityHash, event) {
+	const { secretKey } = await resolveActiveTimelineSigner(username)
+	return appendSignedTimelineEvent(username, entityHash, event, secretKey)
+}
+
+/**
+ * 创建 social_meta + operator_key_rotate 创世事件。
+ * @param {string} username 用户
+ * @param {string} entityHash 时间线 owner
+ * @returns {Promise<void>}
+ */
+export async function ensureSocialMeta(username, entityHash) {
+	const previous = await readJsonl(timelineEventsPath(username, entityHash))
+	if (previous.some(event => event.type === 'social_meta')) return
+
+	const recoveryPubKeyHex = await getRecoveryPubKeyHex(username)
+	const { secretKey: activeSecret } = await resolveActiveTimelineSigner(username)
+	const activePubKeyHex = Buffer.from(publicKeyFromSeed(activeSecret)).toString('hex')
+
+	await appendSignedTimelineEvent(username, entityHash, {
+		type: 'social_meta',
+		content: {
+			isProtected: false,
+			exploreBlurb: '',
+			createdAt: Date.now(),
+			recoveryPubKeyHex,
+		},
+	}, activeSecret)
+
+	if (!previous.some(event => event.type === 'operator_key_rotate')) {
+		const recoverySecretHex = consumePendingRecoverySecret(username)
+		if (recoverySecretHex) {
+			const recoverySecret = new Uint8Array(Buffer.from(recoverySecretHex, 'hex'))
+			await appendSignedTimelineEvent(username, entityHash, {
+				type: 'operator_key_rotate',
+				content: {
+					generation: 0,
+					activePubKeyHex,
+					prevGeneration: null,
+				},
+			}, recoverySecret)
+		}
+	}
+}
+
+/**
+ * 校验时间线已有 social_meta 创世事件。
+ * @param {string} username 用户
+ * @param {string} entityHash 时间线 owner
+ * @returns {Promise<void>}
+ */
+async function assertSocialMetaExists(username, entityHash) {
+	const previous = await readJsonl(timelineEventsPath(username, entityHash))
+	if (!previous.some(event => event.type === 'social_meta'))
+		throw new Error('timeline missing social_meta; call ensureEntitySocialReady first')
 }
 
 /**
@@ -158,3 +211,43 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 		await publishTimelineEvent(username, entityHash, signed)
 	return signed
 }
+
+/**
+ * 主动轮换活跃 operator 钥：上一代活跃钥签名 rotate 事件。
+ * @param {string} username replica
+ * @param {string} entityHash operator entityHash
+ * @param {object} rotation 新钥与代际
+ * @returns {Promise<object>} rotate 事件
+ */
+export async function commitOperatorKeyRotate(username, entityHash, rotation) {
+	const { secretKey } = await resolveActiveTimelineSigner(username)
+	const signed = await appendSignedTimelineEvent(username, entityHash, {
+		type: 'operator_key_rotate',
+		content: {
+			generation: rotation.keyGeneration,
+			activePubKeyHex: rotation.activePubKeyHex,
+			prevGeneration: rotation.prevGeneration,
+		},
+	}, secretKey)
+	await publishTimelineEvent(username, entityHash, signed)
+	return signed
+}
+
+/**
+ * recovery 钥签发 revoke + 新活跃钥。
+ * @param {string} username replica
+ * @param {string} entityHash operator entityHash
+ * @param {object} revokeBody 吊销正文
+ * @param {Uint8Array} recoverySecretKey recovery 私钥
+ * @returns {Promise<object>} revoke 事件
+ */
+export async function commitOperatorKeyRevoke(username, entityHash, revokeBody, recoverySecretKey) {
+	const signed = await appendSignedTimelineEvent(username, entityHash, {
+		type: 'operator_key_revoke',
+		content: revokeBody,
+	}, recoverySecretKey)
+	await publishTimelineEvent(username, entityHash, signed)
+	return signed
+}
+
+void activeSenderHashFromPubKeyHex

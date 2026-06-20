@@ -11,6 +11,7 @@ import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json'
  *   hints?: Array<{ nodeHash: string, source?: string, weight?: number, expiresAt?: number }>,
  *   roomRosters?: Array<{ scopeId: string, nodeHashes: string[], scoreOf?: (nodeHash: string) => number }>,
  *   blockedNodeHashes?: Set<string>,
+ *   quarantinedNodeHashes?: Set<string>,
  *   now?: number,
  * }} TrustGraphInputs
  */
@@ -57,6 +58,8 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 	/** @type {Map<string, NodeEvidence>} */
 	const evidenceByNode = new Map()
 	const blocked = inputs.blockedNodeHashes || new Set()
+	const quarantined = inputs.quarantinedNodeHashes || new Set()
+	const damp = Number(tunables.quarantineTrustDamp ?? 0.35)
 	const now = inputs.now ?? Date.now()
 	/**
 	 * @param {string} nodeHash 64 hex
@@ -64,6 +67,14 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 	 */
 	function isBlocked(nodeHash) {
 		return blocked.has(nodeHash)
+	}
+
+	/**
+	 * @param {string} nodeHash 64 hex
+	 * @returns {boolean} 是否本地隔离
+	 */
+	function isQuarantined(nodeHash) {
+		return quarantined.has(nodeHash)
 	}
 
 	/**
@@ -135,7 +146,9 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
 		const saturatedHintLift = tunables.hintMaxBonus * (1 - Math.exp(-ev.hintWeightSum / hintScale))
 		const hasHardEvidence = ev.networkScores.length + ev.rosterScores.length > 0
 		const hintReliability = hasHardEvidence ? 1 : 0.35
-		const score = baseScore + saturatedHintLift * hintReliability
+		let score = baseScore + saturatedHintLift * hintReliability
+		if (isQuarantined(nodeHash))
+			score *= damp
 
 		byNode.set(nodeHash, { nodeHash, score, scopeIds: [...ev.scopeIds] })
 	}
@@ -146,11 +159,13 @@ export function mergeGraph(inputs, tunables = trustGraphTunables) {
  * @param {Map<string, TrustNode>} graph 合并图
  * @param {number} [limit] 最多返回节点数
  * @param {typeof trustGraphTunables} [tunables] tunables
+ * @param {Set<string>} [quarantinedNodeHashes] 本地隔离节点（踢出 topK）
  * @returns {TrustNode[]} 按信誉降序
  */
-export function pickTopFromGraph(graph, limit = trustGraphTunables.pickTopNodesDefaultLimit, tunables = trustGraphTunables) {
+export function pickTopFromGraph(graph, limit = trustGraphTunables.pickTopNodesDefaultLimit, tunables = trustGraphTunables, quarantinedNodeHashes = new Set()) {
 	const k = limit ?? tunables.pickTopNodesDefaultLimit
 	return [...graph.values()]
+		.filter(node => !quarantinedNodeHashes.has(node.nodeHash))
 		.sort((a, b) => b.score - a.score)
 		.slice(0, Math.max(1, k))
 }
@@ -163,5 +178,6 @@ export function pickTopFromGraph(graph, limit = trustGraphTunables.pickTopNodesD
  */
 export function pickTop(inputs, limit = trustGraphTunables.federationFanoutTopK, tunables = trustGraphTunables) {
 	const k = limit ?? tunables.federationFanoutTopK
-	return pickTopFromGraph(mergeGraph(inputs, tunables), k, tunables)
+	const quarantined = inputs.quarantinedNodeHashes || new Set()
+	return pickTopFromGraph(mergeGraph(inputs, tunables), k, tunables, quarantined)
 }

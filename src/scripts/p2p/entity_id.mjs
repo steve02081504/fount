@@ -74,11 +74,20 @@ export function agentEntityHash(nodeHash, charPartPath) {
 
 /**
  * @param {string} nodeHash 成员所属节点 hash
- * @param {string} pubKeyHex 32 字节公钥 hex（如 identityPubKeyHex）
+ * @param {string} pubKeyHex 32 字节公钥 hex（legacy：活跃钥；新部署请用 recovery）
  * @returns {string} user entityHash
  */
 export function userEntityHashFromPubKeyHex(nodeHash, pubKeyHex) {
 	return encodeEntityHash(nodeHash, hashFromPubKeyHex(pubKeyHex))
+}
+
+/**
+ * @param {string} nodeHash 成员所属节点 hash
+ * @param {string} recoveryPubKeyHex 32 字节 recovery 公钥 hex（稳定身份锚）
+ * @returns {string} user entityHash
+ */
+export function userEntityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex) {
+	return encodeEntityHash(nodeHash, hashFromPubKeyHex(recoveryPubKeyHex))
 }
 
 /**

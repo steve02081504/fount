@@ -9,6 +9,8 @@ import {
 	bumpChunkStorageReputationPure,
 	bumpReputationOnRelayPure,
 	ensureReputationShape,
+	isQuarantinedPure,
+	observeBehaviorSamplePure,
 	penalizeArchiveServeMismatchPure,
 	penalizeChunkStorageFailurePure,
 	pruneReputationFile,
@@ -104,7 +106,32 @@ export function recordMessageRateViolation(peerNodeHash) {
 	if (!id) return
 	void mutateReputation(data => {
 		recordMessageRateViolationPure(data, id)
+		observeBehaviorSamplePure(data, id, 1)
 	})
+}
+
+/**
+ * @param {string} peerNodeHash 对端
+ * @param {number} sample 行为样本强度
+ * @returns {boolean} 是否触发异常隔离
+ */
+export function observePeerBehavior(peerNodeHash, sample) {
+	const id = String(peerNodeHash || '').trim()
+	if (!id) return false
+	let anomaly = false
+	void mutateReputation(data => {
+		const result = observeBehaviorSamplePure(data, id, sample)
+		anomaly = result.anomaly
+	})
+	return anomaly
+}
+
+/**
+ * @param {string} peerNodeHash 对端
+ * @returns {boolean} 是否处于本地隔离
+ */
+export function isPeerQuarantined(peerNodeHash) {
+	return isQuarantinedPure(loadReputation(), peerNodeHash)
 }
 
 /**
@@ -279,4 +306,13 @@ export function pickNodeScore(nodeId) {
 export async function applySocialBlockReputationSignal(opts) {
 	const { applyFollowedBlockSignal } = await import('./reputation_social.mjs')
 	return applyFollowedBlockSignal(opts, mutateReputation)
+}
+
+/**
+ * @param {object} opts applyFollowedSuspectSignal 参数
+ * @returns {Promise<boolean>} 是否已应用
+ */
+export async function applySocialSuspectReputationSignal(opts) {
+	const { applyFollowedSuspectSignal } = await import('./reputation_social.mjs')
+	return applyFollowedSuspectSignal(opts, mutateReputation)
 }

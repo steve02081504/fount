@@ -3,11 +3,11 @@ import { operatorEntityHashFromKeys } from '../node/identity.mjs'
 import { getNodeHash } from '../node_context.mjs'
 
 /**
- * @param {string} operatorPubKeyHex 64 hex
+ * @param {string} recoveryPubKeyHex 64 hex recovery 公钥
  * @returns {string | null} 本节点操作者 entityHash
  */
-export function resolveLocalOperatorEntityHash(operatorPubKeyHex) {
-	return operatorEntityHashFromKeys(getNodeHash(), operatorPubKeyHex)
+export function resolveLocalOperatorEntityHash(recoveryPubKeyHex) {
+	return operatorEntityHashFromKeys(getNodeHash(), recoveryPubKeyHex)
 }
 
 /**

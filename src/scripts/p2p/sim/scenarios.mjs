@@ -22,6 +22,7 @@
  *   offlineRate?: number,
  *   eclipseTargetCount?: number,
  *   sleeperTurnRound?: number,
+ *   keyRecoveryRound?: number,
  * }} SimScenario
  */
 
@@ -204,6 +205,35 @@ export const SCENARIOS = [
 		eclipseTargetCount: 3,
 		churnRate: 0.12,
 		offlineRate: 0.08,
+	},
+	{
+		id: 'key_recovery',
+		label: 'recovery 钥吊销被盗活跃钥',
+		honestCount: 10,
+		relayCount: 2,
+		attacks: { key_thief: 4, spammer: 2 },
+		rounds: 40,
+		groupSize: 8,
+		keyRecoveryRound: 18,
+	},
+	{
+		id: 'sleeper_anomaly',
+		label: '肉鸡突变 + 异常隔离',
+		honestCount: 10,
+		relayCount: 2,
+		attacks: { sleeper: 5, collusion: 2 },
+		rounds: 45,
+		groupSize: 8,
+		sleeperTurnRound: 10,
+	},
+	{
+		id: 'suspect_cascade',
+		label: '怀疑声明级联',
+		honestCount: 12,
+		behaviorDist: SOCIAL_HEAVY,
+		attacks: { social_mob: 6, false_accuser: 3, hint_poisoner: 2 },
+		rounds: 35,
+		groupSize: 8,
 	},
 ]
 

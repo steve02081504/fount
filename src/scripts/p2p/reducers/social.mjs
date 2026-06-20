@@ -1,3 +1,4 @@
+import { reduceOperatorKeyRevoke, reduceOperatorKeyRotate, reduceSuspect } from '../operator_key_chain.mjs'
 import { socialPostKey } from '../social/post_key.mjs'
 
 /**
@@ -17,6 +18,9 @@ export function createSocialTimelineState() {
 		followEvents: [],
 		following: new Set(),
 		blocked: new Set(),
+		suspected: new Set(),
+		operatorKeyHistory: [],
+		recoveryPubKeyHex: null,
 	}
 }
 
@@ -27,6 +31,8 @@ export function createSocialTimelineState() {
  */
 function reduceSocialMeta(state, event) {
 	Object.assign(state.socialMeta, event.content)
+	if (event.content?.recoveryPubKeyHex)
+		state.recoveryPubKeyHex = String(event.content.recoveryPubKeyHex).trim().toLowerCase()
 	return state
 }
 
@@ -141,6 +147,10 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	unfollow: reduceUnfollow,
 	block: reduceBlock,
 	unblock: reduceUnblock,
+	suspect: reduceSuspect,
+	unsuspect: reduceSuspect,
+	operator_key_rotate: reduceOperatorKeyRotate,
+	operator_key_revoke: reduceOperatorKeyRevoke,
 	state_summary: reduceSocialMeta,
 	file_share: passthroughReducer,
 	follow_approve: passthroughReducer,
@@ -172,6 +182,9 @@ export function finalizeSocialTimelineView(state, order) {
 		followEvents: state.followEvents,
 		following: [...state.following],
 		blocked: [...state.blocked],
+		suspected: [...state.suspected || []],
+		operatorKeyHistory: state.operatorKeyHistory || [],
+		recoveryPubKeyHex: state.recoveryPubKeyHex || null,
 		tipIds: order.length ? [order[order.length - 1]] : [],
 	}
 }

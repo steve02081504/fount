@@ -2,6 +2,7 @@ import { parseEntityHash } from './entity_id.mjs'
 import socialTunables from './reputation_social.tunables.json' with { type: 'json' }
 import {
 	applyFollowedBlockSignalPure,
+	applyFollowedSuspectSignalPure,
 	applySocialBlockDecayAllPure,
 	reputationSortPenaltyFromScore,
 	shouldHideByScore,
@@ -46,6 +47,32 @@ export async function applyFollowedBlockSignal(opts, mutateReputation) {
 
 	await mutateReputation(data => {
 		applyFollowedBlockSignalPure(data, {
+			followerNodeHash: follower.nodeHash,
+			targetNodeHash: target.nodeHash,
+			voterKey: follower.entityHash,
+			action: opts.action,
+			selfTrust: !!opts.selfTrust,
+		})
+	})
+	return true
+}
+
+/**
+ * @param {object} opts 参数
+ * @param {string} opts.followerEntityHash 关注者（怀疑发起方）实体
+ * @param {string} opts.targetEntityHash 被怀疑实体
+ * @param {'suspect' | 'unsuspect'} opts.action 动作
+ * @param {boolean} [opts.selfTrust] 自己声明时满信任权重
+ * @param {(mutator: (data: import('./reputation_store.mjs').ReputationFile) => void | Promise<void>) => Promise<void>} mutateReputation 突变器
+ * @returns {Promise<boolean>} 是否已应用
+ */
+export async function applyFollowedSuspectSignal(opts, mutateReputation) {
+	const follower = parseEntityHash(opts.followerEntityHash)
+	const target = parseEntityHash(opts.targetEntityHash)
+	if (!follower || !target) return false
+
+	await mutateReputation(data => {
+		applyFollowedSuspectSignalPure(data, {
 			followerNodeHash: follower.nodeHash,
 			targetNodeHash: target.nodeHash,
 			voterKey: follower.entityHash,

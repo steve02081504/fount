@@ -50,8 +50,12 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'unfollow',
 	'block',
 	'unblock',
+	'suspect',
+	'unsuspect',
 	'file_share',
 	'follow_approve',
+	'operator_key_rotate',
+	'operator_key_revoke',
 	'state_summary',
 ])
 

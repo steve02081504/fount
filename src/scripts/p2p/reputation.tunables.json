@@ -20,5 +20,10 @@
 	"introducerSeedEdge": 0.5,
 	"recidivismWindowMs": 3600000,
 	"recidivismMultiplierStep": 0.25,
-	"recidivismMax": 3
+	"recidivismMax": 3,
+	"baselineAlpha": 0.08,
+	"anomalyZThreshold": 2.8,
+	"quarantineTtlMs": 900000,
+	"quarantineTrustDamp": 0.35,
+	"baselineMinSamples": 6
 }

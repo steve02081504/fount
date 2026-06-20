@@ -25,11 +25,12 @@ const FEDERATED_TIMELINE_PULL_MAX_ROUNDS = 8
  * @returns {Promise<boolean>} 是否新写入
  */
 export async function ingestRemoteTimelineEvent(username, entityHash, event) {
+	const existing = await readJsonl(timelineEventsPath(username, entityHash))
 	const validated = await validateRemoteTimelineEvent(event, entityHash, {
 		canonicalize: canonicalizeSignedTimelineEvent,
+		priorEvents: existing,
 	})
 	if (!validated.accepted) return false
-	const existing = await readJsonl(timelineEventsPath(username, entityHash))
 	if (existing.some(row => row.id === validated.row.id)) return false
 	await appendJsonlSynced(timelineEventsPath(username, entityHash), validated.row)
 	invalidateTimelineMaterializedCache(username, entityHash)
@@ -39,6 +40,11 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	if (validated.row.type === 'block' || validated.row.type === 'unblock') {
 		const { following } = await loadFollowing(username)
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))
+	}
+	if (validated.row.type === 'suspect' || validated.row.type === 'unsuspect') {
+		const { following } = await loadFollowing(username)
+		const { handleInboundPersonalSuspectEvent } = await import('../personalSuspect.mjs')
+		await handleInboundPersonalSuspectEvent(username, entityHash, validated.row, new Set(following))
 	}
 	return true
 }

@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
 
 import { nodeHashFromSeed } from '../entity/node_hash.mjs'
-import { userEntityHashFromPubKeyHex } from '../entity_id.mjs'
+import { userEntityHashFromRecoveryPubKeyHex } from '../entity_id.mjs'
 import { isHex64 } from '../hexIds.mjs'
 import { normalizeMailboxSettings } from '../mailbox/settings.mjs'
 
@@ -89,11 +89,11 @@ export function ensureNodeDefaults() {
 
 /**
  * @param {string} nodeHash 64 hex
- * @param {string} operatorPubKeyHex 64 hex
+ * @param {string} recoveryPubKeyHex 64 hex recovery 公钥（稳定身份锚）
  * @returns {string | null} operator entityHash
  */
-export function operatorEntityHashFromKeys(nodeHash, operatorPubKeyHex) {
-	const pub = String(operatorPubKeyHex || '').trim().toLowerCase().replace(/^0x/iu, '')
+export function operatorEntityHashFromKeys(nodeHash, recoveryPubKeyHex) {
+	const pub = String(recoveryPubKeyHex || '').trim().toLowerCase().replace(/^0x/iu, '')
 	if (!isHex64(nodeHash) || !isHex64(pub)) return null
-	return userEntityHashFromPubKeyHex(nodeHash, pub)
+	return userEntityHashFromRecoveryPubKeyHex(nodeHash, pub)
 }

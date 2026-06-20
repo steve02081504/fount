@@ -6,5 +6,6 @@
 	"hintMaxBonus": 0.15,
 	"rosterDefaultScore": 0.1,
 	"sendFallbackPeerLimit": 4,
-	"pickTopNodesDefaultLimit": 12
+	"pickTopNodesDefaultLimit": 12,
+	"quarantineTrustDamp": 0.35
 }

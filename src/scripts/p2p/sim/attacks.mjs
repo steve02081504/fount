@@ -2,6 +2,7 @@
  * 恶意节点行为原型。
  */
 import { resolveAttackParams } from './attack_space.mjs'
+import { SYBIL_REP_EARN_COST_ROUNDS } from './constants.mjs'
 import { eclipseFillExplore } from './discovery.mjs'
 import { enqueueSlash } from './propagation.mjs'
 
@@ -119,6 +120,7 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
  */
 function runSybil(ctx, node, observer, rng, tunables) {
 	const { bumpReputationOnRelayPure } = ctx.engine
+	if ((ctx.round ?? 0) < SYBIL_REP_EARN_COST_ROUNDS) return
 	const p = attackParams(ctx, node)
 	if (rng() < p.activationRate)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `sybil:${node.id}`, ctx.now, tunables.reputation)

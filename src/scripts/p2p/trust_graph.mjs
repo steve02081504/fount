@@ -3,6 +3,7 @@ import { FEDERATION_FANOUT_TOP_K } from './constants.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { loadNetwork } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
+import { isQuarantinedPure } from './reputation_engine.mjs'
 import { loadReputation } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
@@ -32,8 +33,11 @@ export async function buildMergedGraph(username) {
 		const net = loadNetwork()
 		const rep = loadReputation()
 		const blocked = new Set()
-		for (const nodeHash of [...net.trustedPeers, ...net.explorePeers, ...net.hints.map(h => h.nodeHash)])
+		const quarantined = new Set()
+		for (const nodeHash of [...net.trustedPeers, ...net.explorePeers, ...net.hints.map(h => h.nodeHash)]) {
 			if (isNodeBlocked(nodeHash)) blocked.add(nodeHash)
+			if (isQuarantinedPure(rep, nodeHash)) quarantined.add(nodeHash)
+		}
 
 		/**
 		 * @param {string} nodeHash 64 hex
@@ -51,6 +55,7 @@ export async function buildMergedGraph(username) {
 			for (const { remoteNodeHash } of room.getRoster()) {
 				if (!remoteNodeHash) continue
 				if (isNodeBlocked(remoteNodeHash)) blocked.add(remoteNodeHash)
+				else if (isQuarantinedPure(rep, remoteNodeHash)) quarantined.add(remoteNodeHash)
 				else nodeHashes.push(remoteNodeHash)
 			}
 			/**
@@ -76,6 +81,7 @@ export async function buildMergedGraph(username) {
 			hints: net.hints,
 			roomRosters,
 			blockedNodeHashes: blocked,
+			quarantinedNodeHashes: quarantined,
 			scoreOf,
 		})
 	})
@@ -132,7 +138,11 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
  */
 export async function pickTopNodes(username, limit = trustGraphTunables.pickTopNodesDefaultLimit) {
 	await ensureUserRoom({ replicaUsername: username })
-	return pickTopFromGraph(await buildMergedGraph(username), limit)
+	const rep = loadReputation()
+	const quarantined = new Set(
+		Object.keys(rep.byNodeHash || {}).filter(id => isQuarantinedPure(rep, id)),
+	)
+	return pickTopFromGraph(await buildMergedGraph(username), limit, trustGraphTunables, quarantined)
 }
 
 /**

@@ -24,6 +24,7 @@ import {
 	resolveOperatorEntityHashForUser,
 	saveFederationViewForUser,
 } from '../p2p_server/operator_identity.mjs'
+import { revokeOperatorActiveKey, rotateOperatorActiveKey } from '../p2p_server/operator_key_admin.mjs'
 
 import { registerP2pFileEndpoints } from './p2p_file_endpoints.mjs'
 
@@ -59,6 +60,16 @@ export function registerP2pEndpoints(router) {
 		const dmIntroNonce = String(body.dmIntroNonce || '').trim()
 		if (dmIntroNonce.length >= 16) patch.dmIntroNonce = dmIntroNonce
 		res.status(200).json(await saveFederationViewForUser(username, patch))
+	})
+
+	router.post('/api/p2p/federation/rotate', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await rotateOperatorActiveKey(username))
+	})
+
+	router.post('/api/p2p/federation/revoke', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await revokeOperatorActiveKey(username, req.body || {}))
 	})
 
 	router.get('/api/p2p/network', authenticate, async (req, res) => {

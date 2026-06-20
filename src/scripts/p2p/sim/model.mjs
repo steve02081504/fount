@@ -3,6 +3,7 @@
  */
 import {
 	applyDecayCollusionAfterSlashPure,
+	applyReputationResetToScoresPure,
 	applySubjectiveSlashPure,
 	bumpChunkStorageReputationPure,
 	bumpReputationOnRelayPure,
@@ -14,12 +15,24 @@ import {
 	seedMemberReputationFromIntroducerPure,
 } from '../reputation_engine.mjs'
 import { REP_MAX } from '../reputation_math.mjs'
-import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure } from '../reputation_social_engine.mjs'
+import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure, applyFollowedSuspectSignalPure } from '../reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
 
+import { attackReachesObserver, simIsPeerQuarantined, simObservePeerBehavior } from './anomaly.mjs'
 import { normalizeAttackGenome } from './attack_space.mjs'
 import { runAttack } from './attacks.mjs'
 import { behaviorRoll, isQuietHonestBehavior, sampleBehavior } from './behavior.mjs'
+import {
+	FEDERATION_SINGLE_PEER_CAP,
+	FEDERATION_SINGLE_PEER_SCALE,
+	MAILBOX_EXCESS_HOP_PENALTY,
+	MAILBOX_FANOUT_COST_SCALE,
+	MAILBOX_HOP_COST_EXPONENT,
+	MAILBOX_HOP_COST_SCALE,
+	MAILBOX_REACH_LOW_HOP_FACTOR,
+	MAILBOX_REACH_MID_HOP_FACTOR,
+	MAILBOX_RELAY_COST_DIVISOR,
+} from './constants.mjs'
 import { createDiscoveryState, discoveryReach, initObserverDiscovery } from './discovery.mjs'
 import { createPropagationState, tickPropagation } from './propagation.mjs'
 import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
@@ -419,13 +432,13 @@ function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) 
 			reach *= maxHop / minHopsNeeded
 	}
 	if (maxHop <= 1)
-		reach *= 0.45
+		reach *= MAILBOX_REACH_LOW_HOP_FACTOR
 	else if (maxHop === 2)
-		reach *= 0.72
-	const hopFactor = hops > 0 ? 1 + 0.28 * Math.pow(hops / Math.max(1, maxHop), 1.5) * maxHop : 1
-	const fanoutFactor = 1 + 0.05 * Math.max(0, wantFanout - 3)
-	const excessHopPenalty = 1 + 0.24 * Math.max(0, maxHop - minHopsNeeded - 1)
-	const cost = Math.min(3, (visited.size / totalFriendly) * hopFactor * fanoutFactor * excessHopPenalty * (1 + relaySteps / (totalFriendly * 6)))
+		reach *= MAILBOX_REACH_MID_HOP_FACTOR
+	const hopFactor = hops > 0 ? 1 + MAILBOX_HOP_COST_SCALE * Math.pow(hops / Math.max(1, maxHop), MAILBOX_HOP_COST_EXPONENT) * maxHop : 1
+	const fanoutFactor = 1 + MAILBOX_FANOUT_COST_SCALE * Math.max(0, wantFanout - 3)
+	const excessHopPenalty = 1 + MAILBOX_EXCESS_HOP_PENALTY * Math.max(0, maxHop - minHopsNeeded - 1)
+	const cost = Math.min(3, (visited.size / totalFriendly) * hopFactor * fanoutFactor * excessHopPenalty * (1 + relaySteps / (totalFriendly * MAILBOX_RELAY_COST_DIVISOR)))
 	return { reach, cost }
 }
 
@@ -541,7 +554,7 @@ function idealReachTunables(tunables) {
  */
 function federationSaturatingReach(topLiveCount, honestRelayOnline, churnStress = 0) {
 	if (topLiveCount <= 0) return 0
-	const pSingle = Math.min(0.55, 1.4 / Math.max(1, honestRelayOnline))
+	const pSingle = Math.min(FEDERATION_SINGLE_PEER_CAP, FEDERATION_SINGLE_PEER_SCALE / Math.max(1, honestRelayOnline))
 	let reach = 1 - (1 - pSingle) ** topLiveCount
 	const minSlots = Math.max(2, Math.ceil(1 + churnStress * 10))
 	if (topLiveCount < minSlots)
@@ -571,7 +584,9 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 
 	for (let round = 0; round < rounds; round++) {
 		ctx.now += 60_000
+		ctx.round = round
 		updateChurnOffline(ctx, nodes, rng, scenario)
+		const onlineNodes = nodes.filter(n => !ctx.offlineSet.has(n.id))
 
 		for (const obs of observers) {
 			for (const peer of obs.trustedPeers.slice(0, 2))
@@ -586,9 +601,38 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 				runFriendlyBehavior(ctx, node, obs, side, round, tunables, rng)
 			}
 
-			for (const mal of malicious)
-				if (!ctx.offlineSet.has(mal.id))
-					runAttack(ctx, mal, obs, rng, round, tunables)
+			for (const mal of malicious) {
+				if (ctx.offlineSet.has(mal.id)) continue
+				const friendlyIds = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id)
+				const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, id => obs.reputation.byNodeHash[id]?.score ?? 0, tunables.mailbox.maxHop)
+				if (!attackReachesObserver(discReach, rng)) continue
+				runAttack(ctx, mal, obs, rng, round, tunables)
+				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
+				if ((mal.attack === 'sleeper' || mal.attack === 'key_thief') && round >= turnRound)
+					simObservePeerBehavior(obs.reputation, mal.id, 1.25, ctx.now, tunables.reputation)
+				if (mal.attack === 'social_mob' && round % 5 === 0) {
+					const honest = activeHonest.find(n => n.id !== obs.id)
+					if (honest)
+						applyFollowedSuspectSignalPure(
+							obs.reputation,
+							{
+								followerNodeHash: mal.id,
+								targetNodeHash: honest.id,
+								voterKey: `${mal.id}entity`,
+								action: 'suspect',
+								selfTrust: false,
+							},
+							ctx.now,
+							tunables.social,
+						)
+				}
+			}
+
+			if (scenario.keyRecoveryRound != null && round === scenario.keyRecoveryRound) {
+				for (const kt of malicious.filter(n => n.attack === 'key_thief'))
+					applyReputationResetToScoresPure(obs.reputation, kt.id)
+				ctx.keyRecoveryApplied = true
+			}
 
 			const propState = ctx.propagationByObserver.get(obs.id)
 			if (propState) 
@@ -747,8 +791,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const hints = [...discoveryHints, ...obs.injectedHints]
 
 		const top = pickTop({
-			trustedPeers: obs.trustedPeers.filter(id => !offlineSet.has(id)),
-			explorePeers: obs.explorePeers.filter(id => !offlineSet.has(id)),
+			trustedPeers: obs.trustedPeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
+			explorePeers: obs.explorePeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
 			hints,
 			roomRosters: [{
 				scopeId: 'sim-group',
@@ -756,6 +800,9 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				scoreOf: rawScoreOf,
 			}],
 			scoreOf: rawScoreOf,
+			quarantinedNodeHashes: new Set(
+				Object.keys(obs.reputation.byNodeHash || {}).filter(id => simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
+			),
 		}, tunables.trustGraph.federationFanoutTopK, tunables.trustGraph)
 
 		const topSet = new Set(top.map(n => n.nodeHash))
