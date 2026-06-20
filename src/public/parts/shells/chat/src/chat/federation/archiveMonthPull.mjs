@@ -6,6 +6,7 @@ import { mkdir, rename, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
+import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
@@ -180,6 +181,49 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 }
 
 /**
+ * 记录 peer 在同一 channel/month 上的 digest 观测；与历史不一致则扣分（含累犯升级）。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {object[]} candidates 已解析候选
+ * @param {string} channelId 频道
+ * @param {string} utcMonth `YYYY-MM`
+ * @returns {Promise<void>}
+ */
+async function noteArchiveDigestObservations(username, groupId, candidates, channelId, utcMonth) {
+	const { digestArchiveMonthFile } = await import('../archive/monthDigest.mjs')
+	/** @type {Array<{ peer: string, digest: string }>} */
+	const observations = []
+	for (const row of candidates) {
+		const peer = String(row.peerNodeHash || '').trim()
+		if (!peer) continue
+		let digest = ''
+		if (row.tmpPath) {
+			const parsed = await digestArchiveMonthFile(row.tmpPath)
+			digest = String(parsed.digest || '').trim().toLowerCase()
+		}
+		else
+			digest = String(row.digest || '').trim().toLowerCase()
+		if (!isHex64(digest)) continue
+		observations.push({ peer, digest })
+	}
+	if (!observations.length) return
+
+	const penalized = new Set()
+	await mutateArchiveManifest(username, groupId, manifest => {
+		if (!manifest.peerDigestObservations) manifest.peerDigestObservations = {}
+		for (const { peer, digest } of observations) {
+			const key = `${channelId}:${utcMonth}:${peer}`
+			const prev = manifest.peerDigestObservations[key]
+			if (prev && prev !== digest)
+				penalized.add(peer)
+			manifest.peerDigestObservations[key] = digest
+		}
+	})
+	for (const peer of penalized)
+		penalizeArchiveServeMismatch(peer)
+}
+
+/**
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object} slot 联邦槽
@@ -229,6 +273,8 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		await markArchiveMonthIncomplete(username, groupId, channelId, utcMonth, 'chunk_fetch_failed')
 		return { applied: false, reason: 'chunk_fetch_failed' }
 	}
+
+	await noteArchiveDigestObservations(username, groupId, candidates, channelId, utcMonth)
 
 	const manifest = await loadArchiveManifest(username, groupId)
 	const picked = await pickArchiveMonthByReputation(

@@ -170,3 +170,21 @@ Deno.test('pickArchiveMonthByReputation prefers manifest monthDigests on tie', a
 	assertEquals(picked.reason, 'ok')
 	assertEquals(picked.digest, digest)
 })
+
+Deno.test('pickArchiveMonthByReputation rejects sole high-rep dictator', async () => {
+	const body = canonicalArchiveMonthLine({
+		eventId: A,
+		channelId: 'general',
+		timestamp: 1,
+		content: { type: 'text', content: 'a' },
+	}) + '\n'
+	const manifest = { archivedEventIds: {}, monthDigests: {} }
+	const sole = await pickArchiveMonthByReputation(
+		[await archiveMonthCandidate(body, 'c'.repeat(64))],
+		manifest,
+		'general',
+		'2024-01',
+		{ pickScore: positivePickScore },
+	)
+	assertEquals(sole.reason, 'quorum_failed')
+})

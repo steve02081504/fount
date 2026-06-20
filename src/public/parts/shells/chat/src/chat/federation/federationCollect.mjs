@@ -12,7 +12,7 @@ export function archiveMonthQuorumSatisfied(candidates) {
 	/** @type {Map<string, number>} */
 	const byDigest = new Map()
 	for (const row of candidates) {
-		if (!row.complete) continue
+		if (!row.complete || row.verified !== true) continue
 		const digest = String(row.digest || '').trim().toLowerCase()
 		if (!isHex64(digest)) continue
 		byDigest.set(digest, (byDigest.get(digest) || 0) + 1)

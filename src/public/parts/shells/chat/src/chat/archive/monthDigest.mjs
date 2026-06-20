@@ -381,8 +381,11 @@ export async function pickArchiveMonthByReputation(candidates, manifest, channel
 	})
 
 	const best = ranked[0]
-	const quorumOk = best.score > 0
+	const soleHighRepDictator = best.bucket.peers.length === 1 && best.score > 0
+	const quorumOk = !soleHighRepDictator && (
+		best.score > 0
 		|| best.bucket.peers.length >= ARCHIVE_QUORUM_PEER_STRICT_MIN
+	)
 	if (!quorumOk) return { winner: null, digest: '', reason: 'quorum_failed' }
 
 	return {
