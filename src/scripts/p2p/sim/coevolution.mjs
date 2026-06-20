@@ -156,11 +156,12 @@ export async function runCoevolution(opts) {
 		const nextBlue = [...blueElites]
 		/** @type {Array<{ parent: CoevoCandidate, tunables: import('./tunables_bundle.mjs').TunablesBundle }>} */
 		const blueMutations = []
-		while (nextBlue.length < population) {
-			const parent = blueElites[nextBlue.length % blueElites.length]
+		const blueOffspring = population - nextBlue.length
+		while (blueMutations.length < blueOffspring) {
+			const parent = blueElites[blueMutations.length % blueElites.length]
 			blueMutations.push({
 				parent,
-				tunables: mutateCandidate(parent.tunables, seedBase + gen * 1000 + nextBlue.length),
+				tunables: mutateCandidate(parent.tunables, seedBase + gen * 1000 + nextBlue.length + blueMutations.length),
 			})
 		}
 		if (blueMutations.length) {
@@ -187,9 +188,10 @@ export async function runCoevolution(opts) {
 		const nextRed = [...redElites]
 		/** @type {import('./attack_space.mjs').AttackGenome[]} */
 		const redMutations = []
-		while (nextRed.length < redPopulation) {
-			const parent = redElites[nextRed.length % redElites.length]
-			redMutations.push(mutateAttackGenome(parent.attackGenome, seedBase + gen * 2000 + nextRed.length))
+		const redOffspring = redPopulation - nextRed.length
+		while (redMutations.length < redOffspring) {
+			const parent = redElites[redMutations.length % redElites.length]
+			redMutations.push(mutateAttackGenome(parent.attackGenome, seedBase + gen * 2000 + nextRed.length + redMutations.length))
 		}
 		if (redMutations.length) {
 			const redResults = toRedHarmResults(await evaluateManyAgainstAttacks(

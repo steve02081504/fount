@@ -4,6 +4,7 @@ import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.t
 import { runCoevolution } from '../coevolution.mjs'
 import { minPanelFitness } from '../metrics.mjs'
 import { resolveScenarios } from '../scenarios.mjs'
+import { shutdownSimPool } from '../sim_pool.mjs'
 
 Deno.test('runCoevolution returns blue and red champions', async () => {
 	const scenarios = resolveScenarios('balanced').slice(0, 1)
@@ -19,6 +20,7 @@ Deno.test('runCoevolution returns blue and red champions', async () => {
 	assert(result.bestRed.attackGenome?.global?.burstSize >= 1)
 	assert(Array.isArray(result.attackHof))
 	assert(result.history.length >= 2)
+	shutdownSimPool()
 })
 
 Deno.test('minPanelFitness tracks worst scenario min', () => {
