@@ -1,6 +1,7 @@
 import { stripDagEventLocalExtensions } from '../../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
+import { widenExploreFromTrustedAnchors } from '../../../../../../../../scripts/p2p/network.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
@@ -216,8 +217,10 @@ export function registerSyncHandlers(roomContext) {
 			const localEvents = localArchive.events
 			const byId = new Map(localEvents.map(event => [event.id, event]))
 			const allUnknown = wantIds.length > 0 && wantIds.every(id => !byId.has(id))
-			if (allUnknown && localEvents.length > 0 && handshake.strictAligned)
-				void recordGossipAllUnknownWant( groupId, requesterNodeHash).catch(console.error)
+			if (allUnknown && localEvents.length > 0 && handshake.strictAligned) {
+				void recordGossipAllUnknownWant(groupId, requesterNodeHash).catch(console.error)
+				try { widenExploreFromTrustedAnchors() } catch { /* node dir unavailable in tests */ }
+			}
 
 			const events = wantIds.map(id => byId.get(id)).filter(Boolean)
 			if (peerId && events.length) {

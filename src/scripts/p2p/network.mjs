@@ -9,12 +9,14 @@ import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
  *   explorePeers: string[]
  *   blockedPeers: string[]
  *   lastRosterAt: number
+ *   hintSources?: Map<string, string>
  * }} PeerPoolView
  */
 
 const DATA_NAME = 'network'
 const MAX_EXPLORE = 500
 const MAX_HINTS = 256
+const MAX_HINTS_PER_SOURCE = 12
 const DEFAULT_EXPLORE_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const NETWORK_SAVE_DEBOUNCE_MS = 300
 
@@ -81,13 +83,33 @@ export function loadNetwork() {
 }
 
 /**
+ * 限制同一 source 的 hint 数量，防止 PEX/单源灌满 explore。
+ * @param {NetworkHint[]} hints hint 列表
+ * @param {number} [maxPerSource=MAX_HINTS_PER_SOURCE] 每源上限
+ * @returns {NetworkHint[]} 裁剪后列表（保留较新条目）
+ */
+export function capHintsBySource(hints, maxPerSource = MAX_HINTS_PER_SOURCE) {
+	/** @type {Map<string, number>} */
+	const counts = new Map()
+	const out = []
+	for (const hint of [...hints].reverse()) {
+		const src = String(hint.source || 'unknown')
+		const n = counts.get(src) ?? 0
+		if (n >= maxPerSource) continue
+		counts.set(src, n + 1)
+		out.unshift(hint)
+	}
+	return out
+}
+
+/**
  * @param {ReturnType<typeof normalizeNetwork>} data 网络表
  * @returns {void}
  */
 export function saveNetwork(data) {
 	const clean = normalizeNetwork(data)
 	const now = Date.now()
-	clean.hints = clean.hints.filter(h => !h.expiresAt || h.expiresAt > now).slice(-MAX_HINTS)
+	clean.hints = capHintsBySource(clean.hints.filter(h => !h.expiresAt || h.expiresAt > now)).slice(-MAX_HINTS)
 	clean.explorePeers = clean.explorePeers.slice(-MAX_EXPLORE)
 	writeNodeJsonSync(DATA_NAME, clean)
 	scheduleNetworkSave()
@@ -156,8 +178,33 @@ export function recordExplorePeersFromRoster(roster, groupId = '', source = 'ros
 			...groupId ? { groupId: String(groupId).trim() } : {},
 		})
 	}
-	net.hints = net.hints.slice(-MAX_HINTS)
+	net.hints = capHintsBySource(net.hints).slice(-MAX_HINTS)
 	net.lastRosterAt = now
+	saveNetwork(net)
+}
+
+/**
+ * 疑似分区/eclipse 后：用 trusted 锚点加宽 explore，便于恢复联邦可达。
+ * @returns {void}
+ */
+export function widenExploreFromTrustedAnchors() {
+	const net = loadNetwork()
+	const now = Date.now()
+	for (const raw of net.trustedPeers.slice(0, 12)) {
+		const nodeHash = normalizeHex64(raw)
+		if (!isHex64(nodeHash)) continue
+		if (!net.explorePeers.includes(nodeHash))
+			net.explorePeers.push(nodeHash)
+		net.hints.push({
+			nodeHash,
+			source: 'recovery:trusted',
+			kind: 'partition_recovery',
+			weight: 0.35,
+			expiresAt: now + 6 * 60 * 60 * 1000,
+		})
+	}
+	net.hints = capHintsBySource(net.hints).slice(-MAX_HINTS)
+	net.explorePeers = net.explorePeers.slice(-MAX_EXPLORE)
 	saveNetwork(net)
 }
 
@@ -199,11 +246,18 @@ export function loadPeerPoolView(groupId = '') {
 	const blockedPeers = loadBlocklist().blocked
 		.filter(entry => !entry.groupId || !gid || entry.groupId === gid)
 		.map(entry => entry.value)
+	/** @type {Map<string, string>} */
+	const hintSources = new Map()
+	for (const hint of net.hints) 
+		if (!hintSources.has(hint.nodeHash))
+			hintSources.set(hint.nodeHash, hint.source)
+	
 	return {
 		trustedPeers: net.trustedPeers,
 		explorePeers: net.explorePeers,
 		blockedPeers: [...new Set(blockedPeers)],
 		lastRosterAt: net.lastRosterAt,
+		hintSources,
 	}
 }
 

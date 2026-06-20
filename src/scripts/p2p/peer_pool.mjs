@@ -59,6 +59,74 @@ function repScore(nodeId, rep) {
 	return clampReputationScore(Number.isFinite(score) ? score : 0)
 }
 
+/** explore 选取时单 source 上限 */
+export const EXPLORE_MAX_PER_SOURCE = 3
+
+/**
+ * trusted 锚点优先保留，再按信誉填充剩余槽位。
+ * @param {string[]} existingTrusted 既有 trusted
+ * @param {string[]} rankedCandidates 信誉排序候选
+ * @param {ReturnType<typeof resolveFederationPoolLimits>} limits 槽位
+ * @param {string[]} [blockedPeers] 拉黑列表
+ * @returns {string[]} 新 trusted 列表
+ */
+export function mergeTrustedWithAnchors(existingTrusted, rankedCandidates, limits, blockedPeers = []) {
+	const blocked = new Set(blockedPeers)
+	const candidateSet = new Set(rankedCandidates.filter(id => id && !blocked.has(id)))
+	const anchored = existingTrusted.filter(id => id && !blocked.has(id) && candidateSet.has(id))
+	const anchoredSet = new Set(anchored)
+	const fill = rankedCandidates.filter(id => id && !blocked.has(id) && !anchoredSet.has(id))
+	return [...anchored, ...fill].slice(0, limits.trustedSlots)
+}
+
+/**
+ * 按 source 轮询选取 explore，限制单源占比。
+ * @param {string[]} exploreIds 候选 nodeHash
+ * @param {Map<string, string> | undefined} exploreSources nodeHash → source
+ * @param {number} k 选取数量
+ * @param {number} [maxPerSource=EXPLORE_MAX_PER_SOURCE] 每源上限
+ * @returns {string[]} 选取结果
+ */
+export function selectExploreWithSourceQuota(exploreIds, exploreSources, k, maxPerSource = EXPLORE_MAX_PER_SOURCE) {
+	if (k <= 0 || !exploreIds.length) return []
+	if (!exploreSources?.size) {
+		const copy = [...exploreIds]
+		for (let i = copy.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1))
+				;[copy[i], copy[j]] = [copy[j], copy[i]]
+		}
+		return copy.slice(0, k)
+	}
+	/** @type {Map<string, string[]>} */
+	const bySource = new Map()
+	for (const id of exploreIds) {
+		const src = exploreSources.get(id) || 'unknown'
+		if (!bySource.has(src)) bySource.set(src, [])
+		bySource.get(src).push(id)
+	}
+	for (const ids of bySource.values())
+		for (let i = ids.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1))
+				;[ids[i], ids[j]] = [ids[j], ids[i]]
+		}
+	const out = []
+	/** @type {Map<string, number>} */
+	const picked = new Map()
+	while (out.length < k) {
+		let progressed = false
+		for (const [src, ids] of bySource) {
+			if (out.length >= k) break
+			const idx = picked.get(src) ?? 0
+			if (idx >= maxPerSource || idx >= ids.length) continue
+			out.push(ids[idx])
+			picked.set(src, idx + 1)
+			progressed = true
+		}
+		if (!progressed) break
+	}
+	return out
+}
+
 /**
  * 稀疏连接池纯选取：给定在线列表、已持久化 peers 状态与信誉表，
  * 输出按 Top-K trusted + M random explore + 剩余按信誉补至 maxPeers 的 peerId 列表。
@@ -70,10 +138,11 @@ function repScore(nodeId, rep) {
  *   limits: ReturnType<typeof resolveFederationPoolLimits>,
  *   selfNodeHash: string,
  *   inRoomNodeHashes?: Set<string> | string[] 群内在线 node_id；有则优先，仅全不可达时用 explore 中非房内节点
+ *   hintSources?: Map<string, string> explore 节点来源（用于配额）
  * }} opts 选取参数（roster、peers、rep、limits、selfNodeHash）
  * @returns {string[]} 目标 Trystero peerId 列表（去重，长度 ≤ maxPeers）
  */
-export function selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash, inRoomNodeHashes }) {
+export function selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash, inRoomNodeHashes, hintSources }) {
 	const blocked = new Set(peers.blockedPeers)
 	const roomSet = inRoomNodeHashes instanceof Set
 		? inRoomNodeHashes
@@ -103,19 +172,17 @@ export function selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash
 		if (peerId) outPeerIds.add(peerId)
 	}
 
-	const trustedSorted = [...trustedSet].sort((a, b) => repScore(b, rep) - repScore(a, rep))
-	for (const nodeId of trustedSorted.slice(0, limits.trustedSlots)) {
+	const anchoredTrusted = peers.trustedPeers.filter(nodeHash => trustedSet.has(nodeHash))
+	const extraTrusted = [...trustedSet]
+		.filter(nodeHash => !anchoredTrusted.includes(nodeHash))
+		.sort((a, b) => repScore(b, rep) - repScore(a, rep))
+	for (const nodeId of [...anchoredTrusted, ...extraTrusted].slice(0, limits.trustedSlots)) {
 		if (outPeerIds.size >= limits.maxPeers) break
 		pushNode(nodeId)
 	}
 
-	// Fisher-Yates shuffle for uniform random explore selection
 	const exploreArray = [...exploreSet]
-	for (let index = exploreArray.length - 1; index > 0; index--) {
-		const randomIndex = Math.floor(Math.random() * (index + 1))
-			;[exploreArray[index], exploreArray[randomIndex]] = [exploreArray[randomIndex], exploreArray[index]]
-	}
-	for (const nodeId of exploreArray.slice(0, limits.exploreSlots)) {
+	for (const nodeId of selectExploreWithSourceQuota(exploreArray, hintSources, limits.exploreSlots)) {
 		if (outPeerIds.size >= limits.maxPeers) break
 		pushNode(nodeId)
 	}
@@ -157,7 +224,7 @@ export function applyPexHints({ peers, rep, hints, limits }) {
 		.filter(id => !peers.blockedPeers.includes(id))
 		.sort((a, b) => repScore(b, rep) - repScore(a, rep))
 	return {
-		trustedPeers: ranked.slice(0, limits.trustedSlots),
+		trustedPeers: mergeTrustedWithAnchors(peers.trustedPeers, ranked, limits, peers.blockedPeers),
 		explorePeers: newExplorePeers,
 	}
 }
@@ -186,7 +253,7 @@ export function applyRosterToPeerPool({ peers, rep, roster, limits }) {
 		.filter(id => !peers.blockedPeers.includes(id))
 		.sort((a, b) => repScore(b, rep) - repScore(a, rep))
 	return {
-		trustedPeers: candidates.slice(0, limits.trustedSlots),
+		trustedPeers: mergeTrustedWithAnchors(peers.trustedPeers, candidates, limits, peers.blockedPeers),
 		explorePeers: newExplorePeers,
 	}
 }
@@ -207,7 +274,15 @@ export function pickFederationTargetPeerIds(groupId, roster, groupSettings, self
 		.map(p => p.remoteNodeHash)
 		.map(id => String(id).trim())
 		.filter(Boolean)
-	return selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash, inRoomNodeHashes })
+	return selectPeerIdsFromPool({
+		roster,
+		peers,
+		rep,
+		limits,
+		selfNodeHash,
+		inRoomNodeHashes,
+		hintSources: peers.hintSources,
+	})
 }
 
 /**
