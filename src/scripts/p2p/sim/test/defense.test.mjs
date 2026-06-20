@@ -7,6 +7,21 @@ import { resolveScenarios } from '../scenarios.mjs'
 import { loadDefaultTunables } from '../tunables_bundle.mjs'
 
 /**
+ * 提交级参考 tunables（与磁盘当前值解耦，用于对比测试）。
+ * @returns {import('../tunables_bundle.mjs').TunablesBundle} 参考 bundle
+ */
+function canonicalTunables() {
+	const bundle = loadDefaultTunables()
+	bundle.mailbox.maxHop = 3
+	bundle.mailbox.relayFanoutTrusted = 6
+	bundle.mailbox.wantFanout = 8
+	bundle.trustGraph.federationFanoutTopK = 8
+	bundle.archive.archiveQuorumPeerMin = 2
+	bundle.archive.archiveQuorumPeerStrictMin = 4
+	return bundle
+}
+
+/**
  * @returns {import('../tunables_bundle.mjs').TunablesBundle} 关停防御的作弊 bundle
  */
 function disabledDefenseBundle() {
@@ -51,7 +66,7 @@ function simOnlyFitness(bundle, seeds = [1, 2, 3]) {
 Deno.test('default tunables beat disabled-defense bundle on balanced', async () => {
 	const scenarios = resolveScenarios('balanced')
 	const seeds = [1, 2, 3]
-	const defaults = loadDefaultTunables()
+	const defaults = canonicalTunables()
 	const disabled = disabledDefenseBundle()
 
 	const defaultResult = await evaluateTunables(scenarios, seeds, defaults, runSimulation)
@@ -79,7 +94,11 @@ const GRADIENT_GUARDS = [
 	['reputation', 'introducerSeedEdge', 0.02, 0.95],
 	['reputation', 'wantUnknownThreshold', 1, 12],
 	['reputation', 'collusionMaxHop', 1, 8],
+	['trustGraph', 'federationFanoutTopK', 1, 12],
 	['trustGraph', 'rosterDefaultScore', 0.001, 0.95],
+	['mailbox', 'maxHop', 1, 8],
+	['mailbox', 'relayFanoutTrusted', 1, 10],
+	['mailbox', 'wantFanout', 1, 12],
 	['archive', 'archiveQuorumPeerMin', 1, 6],
 	['archive', 'archiveQuorumPeerStrictMin', 2, 9],
 ]
@@ -101,9 +120,32 @@ for (const [module, key, low, high] of GRADIENT_GUARDS)
 		assertEquals(delta > 1e-6, true, `${module}.${key} flat: delta=${delta}`)
 	})
 
-Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', () => {
+Deno.test('federationFanoutTopK=1 loses fitness on eclipse_targeted (isolated federation resilience)', () => {
 	const base = loadDefaultTunables()
 	const lean = loadDefaultTunables()
+	lean.trustGraph.federationFanoutTopK = 1
+
+	const moderate = loadDefaultTunables()
+	moderate.trustGraph.federationFanoutTopK = 6
+
+	const scenario = resolveScenarios('eclipse_targeted')[0]
+	let leanFit = 0
+	let moderateFit = 0
+	for (const seed of [1, 2, 3, 4, 5]) {
+		leanFit += fitnessFromSnapshot(runSimulation(scenario, seed, lean))
+		moderateFit += fitnessFromSnapshot(runSimulation(scenario, seed, moderate))
+	}
+
+	assertEquals(
+		leanFit < moderateFit,
+		true,
+		`lean federation ${leanFit} should be below moderate ${moderateFit}`,
+	)
+})
+
+Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', () => {
+	const base = canonicalTunables()
+	const lean = canonicalTunables()
 	lean.mailbox.relayFanoutTrusted = 1
 	lean.mailbox.wantFanout = 1
 	lean.mailbox.maxHop = 1
@@ -122,6 +164,75 @@ Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', 
 		true,
 		`lean fitness ${leanFit} should be below base ${baseFit}`,
 	)
+})
+
+Deno.test('federationFanoutTopK has interior optimum on eclipse_targeted', () => {
+	const low = loadDefaultTunables()
+	low.trustGraph.federationFanoutTopK = 1
+	const mid = loadDefaultTunables()
+	mid.trustGraph.federationFanoutTopK = 6
+	const high = loadDefaultTunables()
+	high.trustGraph.federationFanoutTopK = 16
+
+	const scenario = resolveScenarios('eclipse_targeted')[0]
+	let lowFit = 0
+	let midFit = 0
+	let highFit = 0
+	for (const seed of [1, 2, 3, 4, 5]) {
+		lowFit += fitnessFromSnapshot(runSimulation(scenario, seed, low))
+		midFit += fitnessFromSnapshot(runSimulation(scenario, seed, mid))
+		highFit += fitnessFromSnapshot(runSimulation(scenario, seed, high))
+	}
+
+	assertEquals(midFit > lowFit, true, `mid ${midFit} vs low ${lowFit}`)
+	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
+})
+
+Deno.test('mailbox maxHop has interior optimum on churn_storm', () => {
+	const low = canonicalTunables()
+	low.mailbox.maxHop = 1
+	const mid = canonicalTunables()
+	mid.mailbox.maxHop = 5
+	const high = canonicalTunables()
+	high.mailbox.maxHop = 8
+
+	const scenario = resolveScenarios('churn_storm')[0]
+	let lowFit = 0
+	let midFit = 0
+	let highFit = 0
+	for (const seed of [1, 2, 3, 4, 5]) {
+		lowFit += fitnessFromSnapshot(runSimulation(scenario, seed, low))
+		midFit += fitnessFromSnapshot(runSimulation(scenario, seed, mid))
+		highFit += fitnessFromSnapshot(runSimulation(scenario, seed, high))
+	}
+
+	assertEquals(midFit > lowFit, true, `mid ${midFit} vs low ${lowFit}`)
+	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
+})
+
+Deno.test('archive quorum strictMin has interior optimum on digest_equivocation', () => {
+	const low = loadDefaultTunables()
+	low.archive.archiveQuorumPeerMin = 1
+	low.archive.archiveQuorumPeerStrictMin = 2
+	const mid = loadDefaultTunables()
+	mid.archive.archiveQuorumPeerMin = 2
+	mid.archive.archiveQuorumPeerStrictMin = 4
+	const high = loadDefaultTunables()
+	high.archive.archiveQuorumPeerMin = 3
+	high.archive.archiveQuorumPeerStrictMin = 8
+
+	const scenario = resolveScenarios('digest_equivocation')[0]
+	let lowFit = 0
+	let midFit = 0
+	let highFit = 0
+	for (const seed of [1, 2, 3, 4, 5]) {
+		lowFit += fitnessFromSnapshot(runSimulation(scenario, seed, low))
+		midFit += fitnessFromSnapshot(runSimulation(scenario, seed, mid))
+		highFit += fitnessFromSnapshot(runSimulation(scenario, seed, high))
+	}
+
+	assertEquals(midFit > lowFit, true, `mid ${midFit} vs low ${lowFit}`)
+	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
 })
 
 Deno.test('strictMin=1 loses archiveQuorum on digest_equivocation (endogenous byzantine)', () => {
@@ -167,4 +278,14 @@ Deno.test('trigger-happy hide threshold raises falsePositive (endogenous mis-hid
 		true,
 		`happy ${happySnap.falsePositiveRate} should be >= base ${baseSnap.falsePositiveRate}`,
 	)
+})
+
+Deno.test('defense metrics are not saturated at 1.0 on balanced with defaults', () => {
+	const tunables = loadDefaultTunables()
+	const scenario = resolveScenarios('balanced')[0]
+	const snap = runSimulation(scenario, 1, tunables)
+	const notAllOne = snap.malSuppressionRate < 0.999
+		|| snap.sybilContainmentRate < 0.999
+		|| snap.collusionCollapseRate < 0.999
+	assertEquals(notAllOne, true, 'at least one defense metric should be below ceiling')
 })

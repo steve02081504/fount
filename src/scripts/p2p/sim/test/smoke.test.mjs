@@ -19,6 +19,9 @@ Deno.test('p2p sim smoke', () => {
 			assertEquals(snap[key] >= 0 && snap[key] <= 1, true, key)
 	}
 
+	assertEquals(typeof snap.federationReachRate, 'number')
+	assertEquals(snap.federationReachRate >= 0 && snap.federationReachRate <= 1, true)
+
 	assertEquals(typeof snap.malSuppressionRate, 'number')
 	assertEquals(typeof snap.honestPreservationRate, 'number')
 	assertEquals(snap.malSuppressionRate >= 0 && snap.malSuppressionRate <= 1, true)

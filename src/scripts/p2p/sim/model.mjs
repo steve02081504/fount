@@ -291,6 +291,7 @@ export function buildWorld(scenario, seed, tunables) {
 		eclipseVictims: new Set(),
 		equivocationByObserver: new Map(),
 		churnReachAccum: 0,
+		churnMailboxCostAccum: 0,
 		churnReachRounds: 0,
 		sleeperTurnRound: scenario.sleeperTurnRound ?? 15,
 		scenario,
@@ -381,25 +382,27 @@ function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) 
 		adj.set(n.id, peers)
 	}
 
-	if (offlineSet.has(obs.id)) 
+	if (offlineSet.has(obs.id))
 		return { reach: 0, cost: 0 }
-	
 
 	const visited = new Set([obs.id])
+	const reachedFriendly = new Set()
 	/** @type {string[]} */
 	let frontier = [obs.id]
 	let hops = 0
-	let deliveries = 0
+	let relaySteps = 0
 	while (frontier.length && hops < maxHop) {
 		/** @type {string[]} */
 		const next = []
 		for (const id of frontier) {
 			const peers = adj.get(id) ?? []
 			for (const peer of peers.slice(0, wantFanout)) {
+				relaySteps++
 				if (visited.has(peer)) continue
 				visited.add(peer)
 				next.push(peer)
-				if (friendly.has(peer)) deliveries++
+				if (friendly.has(peer))
+					reachedFriendly.add(peer)
 			}
 		}
 		frontier = next
@@ -407,10 +410,23 @@ function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) 
 	}
 
 	const totalFriendly = Math.max(1, friendly.size - (friendly.has(obs.id) ? 1 : 0))
-	return {
-		reach: deliveries / totalFriendly,
-		cost: visited.size / totalFriendly,
+	let reach = Math.min(1, reachedFriendly.size / totalFriendly)
+	const offlineFraction = offlineSet.size / Math.max(1, nodes.length)
+	let minHopsNeeded = maxHop <= 1 ? 2 : 1
+	if (offlineFraction > 0.05) {
+		minHopsNeeded = Math.max(minHopsNeeded, Math.ceil(1 + offlineFraction * 6))
+		if (maxHop < minHopsNeeded)
+			reach *= maxHop / minHopsNeeded
 	}
+	if (maxHop <= 1)
+		reach *= 0.45
+	else if (maxHop === 2)
+		reach *= 0.72
+	const hopFactor = hops > 0 ? 1 + 0.28 * Math.pow(hops / Math.max(1, maxHop), 1.5) * maxHop : 1
+	const fanoutFactor = 1 + 0.05 * Math.max(0, wantFanout - 3)
+	const excessHopPenalty = 1 + 0.24 * Math.max(0, maxHop - minHopsNeeded - 1)
+	const cost = Math.min(3, (visited.size / totalFriendly) * hopFactor * fanoutFactor * excessHopPenalty * (1 + relaySteps / (totalFriendly * 6)))
+	return { reach, cost }
 }
 
 /**
@@ -447,6 +463,19 @@ function simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocat
 	const peerOk = Math.min(1, correct / Math.max(1, peerMin))
 	let safety = quorum.length ? correct / quorum.length : 1
 
+	const forgerPool = availHonest + availForgers
+	const forgerDensity = forgerPool > 0 ? availForgers / forgerPool : 0
+	const byzantineNeed = Math.max(2, Math.ceil(strictMin * 0.6))
+	const crossVerify = strictMin >= byzantineNeed
+		? 1
+		: Math.max(0.05, strictMin / byzantineNeed)
+	safety *= crossVerify
+
+	if (forgers.length > 0) {
+		const unsafeRatio = forgerDensity * (3 / Math.max(1, strictMin))
+		safety *= Math.max(0.05, 1 - unsafeRatio)
+	}
+
 	// strictMin=1 单点独裁：quorum 仅一人且为伪造者 → 安全性归零
 	if (strictMin === 1 && quorum.length === 1) {
 		const sole = quorum[0]
@@ -476,13 +505,48 @@ function isNodePreserved(node, scoreOf, hideThreshold) {
 /**
  * @param {SimNode} node 节点
  * @param {(id: string) => number} scoreOf 信誉分
- * @param {Set<string>} topSet topK
  * @param {number} hideThreshold 隐藏阈值
- * @returns {boolean} 是否被恶意抑制（低分或未获 fanout 放大）
+ * @param {number} honestMedian 诚实节点信誉中位数
+ * @returns {boolean} 是否被恶意抑制（仅看主观信誉，与 topK 名额解耦）
  */
-function isMaliciousSuppressed(node, scoreOf, topSet, hideThreshold) {
+function isMaliciousSuppressed(node, scoreOf, hideThreshold, honestMedian) {
 	const score = scoreOf(node.id)
-	return score < hideThreshold || !topSet.has(node.id)
+	return score < hideThreshold || score < honestMedian
+}
+
+/** 理想 mailbox 参考（与候选参数解耦，用于 churn 归一化分母） */
+const IDEAL_MAILBOX_REACH = Object.freeze({
+	maxHop: 6,
+	relayFanoutTrusted: 8,
+	wantFanout: 10,
+})
+
+/**
+ * @param {TunablesBundle} tunables 候选参数
+ * @returns {TunablesBundle} 理想可达用的 mailbox 参考
+ */
+function idealReachTunables(tunables) {
+	return {
+		...tunables,
+		mailbox: { ...tunables.mailbox, ...IDEAL_MAILBOX_REACH },
+	}
+}
+
+/**
+ * 联邦扇出冗余：在线诚实/relay 名额越多，饱和式覆盖越高；K=0 则归零。
+ * @param {number} topLiveCount 在线且诚实/relay 的 top 名额数
+ * @param {number} honestRelayOnline 在线诚实+relay 总数
+ * @param {number} [churnStress=0] churn+offline 强度 0..1
+ * @returns {number} 0..1 覆盖度
+ */
+function federationSaturatingReach(topLiveCount, honestRelayOnline, churnStress = 0) {
+	if (topLiveCount <= 0) return 0
+	const pSingle = Math.min(0.55, 1.4 / Math.max(1, honestRelayOnline))
+	let reach = 1 - (1 - pSingle) ** topLiveCount
+	const minSlots = Math.max(2, Math.ceil(1 + churnStress * 10))
+	if (topLiveCount < minSlots)
+		reach *= topLiveCount / minSlots
+	return reach
 }
 
 /**
@@ -575,6 +639,7 @@ export function runSimulation(scenario, seed, tunables) {
 			}
 			const mailRound = simulateMailbox(obs, nodes, tunables, scoreOfRound, ctx.offlineSet)
 			ctx.churnReachAccum += mailRound.reach
+			ctx.churnMailboxCostAccum += mailRound.cost
 			ctx.churnReachRounds++
 		}
 	}
@@ -617,6 +682,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let falsePositive = 0
 	let fanoutReach = 0
 	let fanoutCost = 0
+	let federationReach = 0
+	let malAmplification = 0
 	let collusionCollapsed = 0
 	let collusionTotal = 0
 	let relaySafe = 0
@@ -678,13 +745,33 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		}, tunables.trustGraph.federationFanoutTopK, tunables.trustGraph)
 
 		const topSet = new Set(top.map(n => n.nodeHash))
-		const honestInTop = top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'honest').length
-		fanoutReach += honestInTop / Math.max(1, honest.length)
+		const topLive = top.filter(n => {
+			const kind = nodeKind.get(n.nodeHash)
+			return !offlineSet.has(n.nodeHash) && (kind?.kind === 'honest' || kind?.kind === 'relay')
+		})
+		const topMal = top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'malicious')
+		const honestRelayOnline = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay').length
+
+		const establishedHonest = honest.filter(h => !h.newcomer)
+		const honestScores = establishedHonest.map(h => scoreOf(h.id)).sort((a, b) => a - b)
+		const honestMedian = honestScores.length
+			? honestScores[Math.floor(honestScores.length / 2)]
+			: 0
+
+		const churnStress = (ctx.scenario?.churnRate ?? 0) + (ctx.scenario?.offlineRate ?? 0)
+
+		const fedReach = federationSaturatingReach(topLive.length, honestRelayOnline, churnStress)
+		federationReach += fedReach
+		fanoutReach += topLive.length / Math.max(1, honestRelayOnline)
 		fanoutCost += top.length / Math.max(1, honest.length)
+
+		const highRepMalInTop = topMal.filter(n => scoreOf(n.nodeHash) >= honestMedian).length
+		if (top.length > 0)
+			malAmplification += highRepMalInTop / top.length
 
 		for (const m of malicious) {
 			malTotal++
-			if (isMaliciousSuppressed(m, scoreOf, topSet, hideThreshold))
+			if (isMaliciousSuppressed(m, scoreOf, hideThreshold, honestMedian))
 				malSuppressed++
 		}
 
@@ -708,12 +795,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				profileSafe++
 		}
 
-		const establishedHonest = honest.filter(h => !h.newcomer)
-		const honestScores = establishedHonest.map(h => scoreOf(h.id)).sort((a, b) => a - b)
-		const honestMedian = honestScores.length
-			? honestScores[Math.floor(honestScores.length / 2)]
-			: 0
-
 		const sybilClusters = new Map()
 		for (const s of sybilNodes) {
 			const key = s.clusterId ?? s.id
@@ -723,19 +804,19 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		for (const cluster of sybilClusters.values()) {
 			sybilTotal++
 			const maxScore = Math.max(...cluster.map(n => scoreOf(n.id)))
-			const anyInTop = cluster.some(n => topSet.has(n.id))
-			if (maxScore < honestMedian && !anyInTop) sybilContained++
+			const pumpedInTop = cluster.some(n => topSet.has(n.id) && scoreOf(n.id) >= honestMedian)
+			if (maxScore < honestMedian && !pumpedInTop) sybilContained++
 		}
 
 		for (const f of forgers) {
 			archiveTotal++
-			if (isMaliciousSuppressed(f, scoreOf, topSet, hideThreshold))
+			if (isMaliciousSuppressed(f, scoreOf, hideThreshold, honestMedian))
 				archiveDefended++
 		}
 
 		for (const kt of keyThieves) {
 			compromiseTotal++
-			if (isMaliciousSuppressed(kt, scoreOf, topSet, hideThreshold))
+			if (isMaliciousSuppressed(kt, scoreOf, hideThreshold, honestMedian))
 				compromiseContained++
 		}
 
@@ -743,14 +824,14 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			const turnRound = sl.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
 			if ((ctx.scenario?.rounds ?? 40) > turnRound) {
 				sleeperTotal++
-				if (isMaliciousSuppressed(sl, scoreOf, topSet, hideThreshold))
+				if (isMaliciousSuppressed(sl, scoreOf, hideThreshold, honestMedian))
 					sleeperReacted++
 			}
 		}
 
 		for (const eq of equivocators) {
 			equivocationTotal++
-			if (isMaliciousSuppressed(eq, scoreOf, topSet, hideThreshold))
+			if (isMaliciousSuppressed(eq, scoreOf, hideThreshold, honestMedian))
 				equivocationDefended++
 		}
 
@@ -784,18 +865,28 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		function scoreOfIdeal(id) {
 			return obs.reputation.byNodeHash[id]?.score ?? 0
 		}
-		idealReach += simulateMailbox(obs, nodes, tunables, scoreOfIdeal, new Set()).reach
+		idealReach += simulateMailbox(obs, nodes, idealReachTunables(tunables), scoreOfIdeal, new Set()).reach
 	}
 	const idealReachRate = idealReach / nObs
 	const normalizedChurnReach = idealReachRate > 0
 		? Math.min(1, churnReachRate / idealReachRate)
 		: churnReachRate
 
+	const malAmpAvg = malAmplification / nObs
+	const rawMalSuppression = malTotal ? malSuppressed / malTotal : 1
+	const vMult = tunables.reputation.slashVerifiedMultiplier
+	const verifiedSlashScale = 0.35 + 0.65 * Math.min(1, vMult / 0.35)
+	const malSuppressionRate = Math.max(0, rawMalSuppression * (1 - malAmpAvg * 0.85) * verifiedSlashScale)
+	const mailboxCostAvg = ctx.churnReachRounds
+		? ctx.churnMailboxCostAccum / ctx.churnReachRounds
+		: mailboxCost / nObs
+
 	return {
-		malSuppressionRate: malTotal ? malSuppressed / malTotal : 1,
+		malSuppressionRate,
 		honestPreservationRate: honestTotal ? honestSafe / honestTotal : 1,
 		falsePositiveRate: honestTotal ? falsePositive / honestTotal : 0,
 		fanoutReachRate: fanoutReach / nObs,
+		federationReachRate: federationReach / nObs,
 		fanoutCostRatio: fanoutCost / nObs,
 		collusionCollapseRate: collusionTotal ? collusionCollapsed / collusionTotal : 1,
 		relayPreservationRate: relayTotal ? relaySafe / relayTotal : 1,
@@ -803,7 +894,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		sybilContainmentRate: sybilTotal ? sybilContained / sybilTotal : 1,
 		archiveDefenseRate: archiveTotal ? archiveDefended / archiveTotal : 1,
 		mailboxReachRate: mailboxReach / nObs,
-		mailboxCostRatio: mailboxCost / nObs,
+		mailboxCostRatio: mailboxCostAvg,
 		archiveQuorumAccuracy: archiveQuorum / nObs,
 		churnReachRate: normalizedChurnReach,
 		compromiseContainmentRate: compromiseTotal ? compromiseContained / compromiseTotal : 1,

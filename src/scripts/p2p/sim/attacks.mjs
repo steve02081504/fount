@@ -5,7 +5,7 @@
 /** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator' | 'hint_poisoner' | 'key_thief' | 'sleeper' | 'equivocator' | 'targeted_eclipse' | 'rep_pump' | 'slow_drip_spammer'} AttackKind */
 
 /** eclipse 攻击者固定灌入的「全未知 want」数量，与防御阈值解耦（攻击强度不应随我方阈值水涨船高）。 */
-const ECLIPSE_WANT_BURST = 8
+const ECLIPSE_WANT_BURST = 10
 
 /**
  * @param {object} ctx 仿真上下文
@@ -90,10 +90,10 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
  */
 function runSybil(ctx, node, observer, rng, tunables) {
 	const { bumpReputationOnRelayPure } = ctx.engine
-	if (rng() < 0.6)
+	if (rng() < 0.72)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `sybil:${node.id}`, ctx.now, tunables.reputation)
 	for (const sybil of ctx.sybilCluster(node))
-		if (rng() < 0.3)
+		if (rng() < 0.42)
 			bumpReputationOnRelayPure(observer.reputation, sybil.id, `sybil:${sybil.id}`, ctx.now, tunables.reputation)
 }
 
@@ -108,11 +108,14 @@ function runSybil(ctx, node, observer, rng, tunables) {
  */
 function runCollusion(ctx, node, observer, rng, round, tunables) {
 	const { bumpReputationOnRelayPure, applySubjectiveSlashPure } = ctx.engine
-	if (rng() < 0.4)
+	if (rng() < 0.52)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `collusion:${round}`, ctx.now, tunables.reputation)
 	const ring = ctx.collusionRing(node)
+	for (const ally of ring)
+		if (ally.id !== node.id && rng() < 0.25)
+			bumpReputationOnRelayPure(observer.reputation, ally.id, `collusion-ally:${round}`, ctx.now, tunables.reputation)
 	const victim = ring.find(n => n.id !== node.id)
-	if (victim && rng() < 0.15)
+	if (victim && rng() < 0.22)
 		applySubjectiveSlashPure(
 			observer.reputation,
 			victim.id,
@@ -132,7 +135,7 @@ function runCollusion(ctx, node, observer, rng, round, tunables) {
  */
 function runSpammer(ctx, node, observer, tunables) {
 	const { recordMessageRateViolationPure } = ctx.engine
-	for (let i = 0; i < 3; i++)
+	for (let i = 0; i < 4; i++)
 		recordMessageRateViolationPure(observer.reputation, node.id, tunables.reputation)
 }
 
@@ -247,7 +250,7 @@ function runRelayFarmer(ctx, node, observer, round, tunables) {
 function runWhitewasher(ctx, node, observer, rng, round, tunables) {
 	const { applySubjectiveSlashPure, seedMemberReputationFromIntroducerPure } = ctx.engine
 	const stage = node.whitewashStage ?? 0
-	if (stage === 0 && round >= 6) {
+	if (stage === 0 && round >= 4) {
 		applySubjectiveSlashPure(
 			observer.reputation,
 			node.id,
@@ -446,13 +449,13 @@ function runTargetedEclipse(ctx, node, observer, tunables) {
 function runRepPump(ctx, node, observer, rng, round, tunables) {
 	const { bumpReputationOnRelayPure, penalizeArchiveServeMismatchPure } = ctx.engine
 	const cluster = ctx.sybilCluster(node)
-	if (round < 10) {
+	if (round < 12) {
 		for (const sybil of cluster)
-			if (rng() < 0.5)
+			if (rng() < 0.62)
 				bumpReputationOnRelayPure(observer.reputation, sybil.id, `pump:${round}:${sybil.id}`, ctx.now, tunables.reputation)
 		return
 	}
-	if (rng() < 0.6)
+	if (rng() < 0.75)
 		penalizeArchiveServeMismatchPure(observer.reputation, node.id, tunables.reputation)
 }
 
