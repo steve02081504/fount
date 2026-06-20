@@ -9,7 +9,9 @@
  * @returns {Map<string, string[]>} id → 邻居 id 列表（按 scoreOf 降序取前 maxPeers）
  */
 export function buildRankedNeighborAdj(ids, scoreOf, maxPeers) {
-	const sorted = [...ids].sort((a, b) => scoreOf(b) - scoreOf(a))
+	const scored = ids.map(id => ({ id, score: scoreOf(id) }))
+	scored.sort((a, b) => b.score - a.score)
+	const sorted = scored.map(s => s.id)
 	/** @type {Map<string, string[]>} */
 	const adj = new Map()
 	for (const id of ids) {

@@ -153,24 +153,27 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 	/** @type {Array<{ from: string, to: string }>} */
 	const inviteEdges = []
 	let idx = 1
+	/** @type {SimNode[]} */
+	const honestSoFar = []
 
 	for (let i = 0; i < scenario.honestCount; i++) {
 		const id = fakeNodeHash(idx++)
-		const honestSoFar = nodes.filter(n => n.kind === 'honest')
 		const introducer = honestSoFar[randInt(rng, 0, Math.max(1, honestSoFar.length))]?.id
-		nodes.push({
+		const node = {
 			id,
 			kind: 'honest',
 			behavior: sampleBehavior(rng, behaviorDist),
 			introducerId: introducer,
-		})
+		}
+		nodes.push(node)
+		honestSoFar.push(node)
 		if (introducer)
 			inviteEdges.push({ from: introducer, to: id })
 	}
 
 	for (let i = 0; i < (scenario.relayCount ?? 0); i++) {
 		const id = fakeNodeHash(idx++)
-		const introducer = pickOne(rng, nodes.filter(n => n.kind === 'honest'))?.id
+		const introducer = pickOne(rng, honestSoFar)?.id
 		nodes.push({ id, kind: 'relay', introducerId: introducer })
 		if (introducer)
 			inviteEdges.push({ from: introducer, to: id })
@@ -178,7 +181,7 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 
 	for (let i = 0; i < (scenario.lurkerCount ?? 0); i++) {
 		const id = fakeNodeHash(idx++)
-		const introducer = pickOne(rng, nodes.filter(n => n.kind === 'honest'))?.id
+		const introducer = pickOne(rng, honestSoFar)?.id
 		nodes.push({
 			id,
 			kind: 'lurker',
@@ -609,6 +612,9 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			.map(n => n.id)
 
 		for (const obs of observers) {
+			/** @type {number | null} */
+			let discReachCache = null
+
 			for (const peer of obs.trustedPeers.slice(0, 2))
 				if (!ctx.offlineSet.has(peer))
 					bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, ctx.now, tunables.reputation)
@@ -623,14 +629,16 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 
 			for (const mal of malicious) {
 				if (ctx.offlineSet.has(mal.id)) continue
-				const discReach = discoveryReach(
-					ctx.discovery,
-					obs.id,
-					onlineFriendlyIds,
-					id => obs.reputation.byNodeHash[id]?.score ?? 0,
-					tunables.mailbox.maxHop,
-				)
-				if (!attackReachesObserver(discReach, rng)) continue
+				if (discReachCache == null) 
+					discReachCache = discoveryReach(
+						ctx.discovery,
+						obs.id,
+						onlineFriendlyIds,
+						id => obs.reputation.byNodeHash[id]?.score ?? 0,
+						tunables.mailbox.maxHop,
+					)
+				
+				if (!attackReachesObserver(discReachCache, rng)) continue
 				runAttack(ctx, mal, obs, rng, round, tunables)
 				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
 				if ((mal.attack === 'sleeper' || mal.attack === 'key_thief') && round >= turnRound)
@@ -801,6 +809,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	
 
 	let idealReach = 0
+	const idealTunables = idealReachTunables(tunables)
+	const establishedHonest = honest.filter(h => !h.newcomer)
 
 	for (const obs of observers) {
 		/**
@@ -850,7 +860,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const topMal = top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'malicious')
 		const honestRelayOnline = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay').length
 
-		const establishedHonest = honest.filter(h => !h.newcomer)
 		const honestScores = establishedHonest.map(h => scoreOf(h.id)).sort((a, b) => a - b)
 		const honestMedian = honestScores.length
 			? honestScores[Math.floor(honestScores.length / 2)]
@@ -966,7 +975,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const mail = simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet)
 		mailboxReach += mail.reach
 		mailboxCost += mail.cost
-		idealReach += simulateMailbox(obs, nodes, idealReachTunables(tunables), scoreOf, new Set()).reach
+		idealReach += simulateMailbox(obs, nodes, idealTunables, scoreOf, new Set()).reach
 		archiveQuorum += simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
 	}
 
