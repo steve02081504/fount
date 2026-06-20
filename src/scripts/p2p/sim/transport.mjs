@@ -90,9 +90,10 @@ export function takeTransportJoinSlot(state, peerId, sourceId, now = Date.now())
  * @param {string} observerId 观察者
  * @param {string[]} friendlyIds 友善节点
  * @param {(id: string) => number} scoreOf 信誉分
+ * @param {number} [now=Date.now()] 当前时间（仿真须传 ctx.now，与 takeTransportJoinSlot 同一时钟）
  * @returns {{ reach: number, diversity: number, throttleOk: number }} 传输指标
  */
-export function transportMetrics(state, observerId, friendlyIds, scoreOf) {
+export function transportMetrics(state, observerId, friendlyIds, scoreOf, now = Date.now()) {
 	const bucket = state.hintsByObserver.get(observerId) ?? new Map()
 	const adj = buildRankedNeighborAdj(friendlyIds, scoreOf, 6)
 	const visited = new Set([observerId])
@@ -117,6 +118,6 @@ export function transportMetrics(state, observerId, friendlyIds, scoreOf) {
 		diversityN++
 	}
 	const diversity = diversityN ? diversitySum / diversityN : 1
-	const throttleOk = state.overloadUntil > Date.now() ? 0 : 1
+	const throttleOk = state.overloadUntil > now ? 0 : 1
 	return { reach, diversity, throttleOk }
 }

@@ -1023,7 +1023,13 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			quorumAcc = blendArchiveQuorumAccuracy(quorumAcc, 1)
 		archiveQuorum += quorumAcc
 
-		const tMetrics = transportMetrics(ctx.transport ?? createTransportState(), obs.id, friendlyIds, scoreOf)
+		const tMetrics = transportMetrics(
+			ctx.transport ?? createTransportState(),
+			obs.id,
+			friendlyIds,
+			scoreOf,
+			ctx.now ?? Date.now(),
+		)
 		transportReach += tMetrics.reach
 		signalingDiversity += tMetrics.diversity
 		joinThrottle += tMetrics.throttleOk

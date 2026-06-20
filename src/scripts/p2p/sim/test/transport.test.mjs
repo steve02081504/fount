@@ -36,3 +36,19 @@ Deno.test('transportMetrics tracks signaling diversity', () => {
 	assertEquals(m.reach >= 0 && m.reach <= 1, true)
 	assertEquals(m.diversity > 0, true)
 })
+
+Deno.test('transportMetrics throttle uses simulation clock not wall clock', () => {
+	const state = createTransportState()
+	const simStart = Date.now()
+	// 40 回合后 ctx.now 比墙钟超前约 2.4M ms，overloadUntil 落在虚拟时间轴上
+	state.overloadUntil = simStart + 2_400_000
+	const atWall = transportMetrics(state, 'obs', ['obs'], () => 0.5)
+	assertEquals(atWall.throttleOk, 0)
+	const atSim = transportMetrics(state, 'obs', ['obs'], () => 0.5, simStart + 2_500_000)
+	assertEquals(atSim.throttleOk, 1)
+})
+
+Deno.test('transport_siege join throttle effective after sim decay', () => {
+	const snap = runSimulation(resolveScenarios('transport_siege')[0], 3, loadDefaultTunables())
+	assertEquals(snap.joinThrottleEffectiveness, 1)
+})
