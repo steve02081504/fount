@@ -128,6 +128,18 @@ function formatMarkdown(payload) {
 	else if (payload.apply)
 		lines.push('## 未应用', '', String(payload.apply.reason || '未达提升门槛'), '')
 
+	if (payload.bestRed?.attackGenome) 
+		lines.push(
+			'## 红队（攻击基因）',
+			'',
+			'| 指标 | 值 |',
+			'| --- | --- |',
+			`| 最大伤害 | ${fmt(-(payload.bestRed.result?.fitness ?? 0))} |`,
+			`| 名人堂规模 | ${payload.attackHof?.length ?? 0} |`,
+			'',
+		)
+	
+
 	const history = payload.history ?? []
 	const historyFull = payload.historyFull ?? history
 	if (history.length) {

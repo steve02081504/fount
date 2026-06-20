@@ -26,7 +26,9 @@
  *   maliciousCount: number,
  *   honestCount: number,
  *   groupSize: number,
+ *   quietHonestPreservationRate: number,
  *   byAttackDefense?: Partial<Record<string, { defended: number, total: number, rate: number }>>,
+ *   byAttackImpact?: Partial<Record<string, { topKCapture: number, reachCollapse: number }>>,
  * }} SimSnapshot
  */
 
@@ -43,6 +45,7 @@ export const RATE_METRIC_KEYS = Object.freeze([
 	'collusionCollapseRate',
 	'relayPreservationRate',
 	'profilePreservationRate',
+	'quietHonestPreservationRate',
 	'sybilContainmentRate',
 	'archiveDefenseRate',
 	'mailboxReachRate',
@@ -62,7 +65,8 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 	sybilContainmentRate: 0.08,
 	archiveDefenseRate: 0.07,
 	relayPreservationRate: 0.05,
-	profilePreservationRate: 0.05,
+	profilePreservationRate: 0.03,
+	quietHonestPreservationRate: 0.05,
 	federationReachRate: 0.24,
 	fanoutReachRate: 0.02,
 	mailboxReachRate: 0.07,
@@ -121,6 +125,22 @@ export function aggregateSnapshots(snaps, weights = DEFAULT_WEIGHTS) {
  * @returns {Promise<{ fitness: number, mean: number, min: number, max: number, std: number, byScenario: Record<string, ReturnType<typeof aggregateSnapshots>> }>} 跨场景评估结果
  */
 export async function evaluateTunables(scenarios, seeds, tunables, runSim, weights = DEFAULT_WEIGHTS) {
+	return evaluateTunablesAgainstAttacks(scenarios, seeds, tunables, [undefined], (scenario, seed, tunablesBundle, attackGenome) =>
+		runSim(scenario, seed, tunablesBundle, attackGenome), weights)
+}
+
+/**
+ * 蓝队对攻击者面板的评估：每个 (scenario, seed) 取面板内最差适应度。
+ * @param {import('./scenarios.mjs').SimScenario[]} scenarios 场景
+ * @param {number[]} seeds 种子
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables tunables
+ * @param {Array<import('./attack_space.mjs').AttackGenome | undefined>} attackPanel 攻击者面板
+ * @param {(scenario: import('./scenarios.mjs').SimScenario, seed: number, tunables: import('./tunables_bundle.mjs').TunablesBundle, attackGenome?: import('./attack_space.mjs').AttackGenome) => SimSnapshot} runSim 仿真
+ * @param {MetricWeights} [weights] 权重
+ * @returns {Promise<{ fitness: number, mean: number, min: number, max: number, std: number, byScenario: Record<string, ReturnType<typeof aggregateSnapshots>> }>} 跨场景面板最差评估
+ */
+export async function evaluateTunablesAgainstAttacks(scenarios, seeds, tunables, attackPanel, runSim, weights = DEFAULT_WEIGHTS) {
+	const panel = attackPanel?.length ? attackPanel : [undefined]
 	/** @type {Record<string, ReturnType<typeof aggregateSnapshots>>} */
 	const byScenario = {}
 	let totalFitness = 0
@@ -130,7 +150,22 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 	let totalStd = 0
 
 	for (const scenario of scenarios) {
-		const snaps = seeds.map(seed => runSim(scenario, seed, tunables))
+		/** @type {SimSnapshot[]} */
+		const snaps = []
+		for (const seed of seeds) {
+			let worstFit = Infinity
+			/** @type {SimSnapshot | null} */
+			let worstSnap = null
+			for (const attackGenome of panel) {
+				const snap = runSim(scenario, seed, tunables, attackGenome ?? undefined)
+				const f = fitnessFromSnapshot(snap, weights)
+				if (f < worstFit) {
+					worstFit = f
+					worstSnap = snap
+				}
+			}
+			if (worstSnap) snaps.push(worstSnap)
+		}
 		const agg = aggregateSnapshots(snaps, weights)
 		byScenario[scenario.id] = agg
 		totalFitness += agg.fitness
@@ -149,6 +184,15 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 		std: totalStd / n,
 		byScenario,
 	}
+}
+
+/**
+ * @param {Record<string, ReturnType<typeof aggregateSnapshots>>} byScenario 分场景结果
+ * @returns {number} 面板最差 min 适应度
+ */
+export function minPanelFitness(byScenario) {
+	const mins = Object.values(byScenario).map(a => a.min)
+	return mins.length ? Math.min(...mins) : 0
 }
 
 /**

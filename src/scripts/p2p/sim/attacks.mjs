@@ -1,11 +1,40 @@
 /**
  * 恶意节点行为原型。
  */
+import { resolveAttackParams } from './attack_space.mjs'
+import { eclipseFillExplore } from './discovery.mjs'
+import { enqueueSlash } from './propagation.mjs'
 
 /** @typedef {'sybil' | 'collusion' | 'spammer' | 'false_accuser' | 'eclipse' | 'lazy_chunk' | 'social_mob' | 'archive_forger' | 'relay_farmer' | 'whitewasher' | 'report_flooder' | 'oscillator' | 'hint_poisoner' | 'key_thief' | 'sleeper' | 'equivocator' | 'targeted_eclipse' | 'rep_pump' | 'slow_drip_spammer'} AttackKind */
 
-/** eclipse 攻击者固定灌入的「全未知 want」数量，与防御阈值解耦（攻击强度不应随我方阈值水涨船高）。 */
-const ECLIPSE_WANT_BURST = 10
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimNode} node 恶意节点
+ * @returns {ReturnType<typeof resolveAttackParams>} 有效攻击参数
+ */
+function attackParams(ctx, node) {
+	return resolveAttackParams(node.attack ?? 'sybil', ctx.attackGenome)
+}
+
+/**
+ * @param {object} ctx 仿真上下文
+ * @param {import('./model.mjs').SimObserver} observer 观察者
+ * @param {string} targetId 目标
+ * @param {string} senderId 发送者
+ * @param {number} claim 索赔
+ * @param {boolean} verified 是否已验证
+ * @param {number} round 回合
+ * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function queueSlash(ctx, observer, targetId, senderId, claim, verified, round, tunables) {
+	const state = ctx.propagationByObserver?.get(observer.id)
+	if (state) {
+		enqueueSlash(state, { targetId, senderId, claim, verified, birthRound: round, spread: 0 })
+		return
+	}
+	ctx.engine.applySubjectiveSlashPure(observer.reputation, targetId, senderId, claim, verified, tunables.reputation)
+}
 
 /**
  * @param {object} ctx 仿真上下文
@@ -28,10 +57,10 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			runSpammer(ctx, node, observer, tunables)
 			break
 		case 'false_accuser':
-			runFalseAccuser(ctx, node, observer, rng, tunables)
+			runFalseAccuser(ctx, node, observer, rng, round, tunables)
 			break
 		case 'eclipse':
-			runEclipse(ctx, node, observer, tunables)
+			runEclipse(ctx, node, observer, rng, round, tunables)
 			break
 		case 'lazy_chunk':
 			runLazyChunk(ctx, node, observer, tunables)
@@ -49,13 +78,13 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			runWhitewasher(ctx, node, observer, rng, round, tunables)
 			break
 		case 'report_flooder':
-			runReportFlooder(ctx, node, observer, rng, tunables)
+			runReportFlooder(ctx, node, observer, rng, round, tunables)
 			break
 		case 'oscillator':
 			runOscillator(ctx, node, observer, round, tunables)
 			break
 		case 'hint_poisoner':
-			runHintPoisoner(node, observer, tunables)
+			runHintPoisoner(ctx, node, observer, tunables)
 			break
 		case 'key_thief':
 			runKeyThief(ctx, node, observer, rng, round, tunables)
@@ -67,7 +96,7 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			runEquivocator(ctx, node, observer, tunables)
 			break
 		case 'targeted_eclipse':
-			runTargetedEclipse(ctx, node, observer, tunables)
+			runTargetedEclipse(ctx, node, observer, rng, round, tunables)
 			break
 		case 'rep_pump':
 			runRepPump(ctx, node, observer, rng, round, tunables)
@@ -90,10 +119,11 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
  */
 function runSybil(ctx, node, observer, rng, tunables) {
 	const { bumpReputationOnRelayPure } = ctx.engine
-	if (rng() < 0.72)
+	const p = attackParams(ctx, node)
+	if (rng() < p.activationRate)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `sybil:${node.id}`, ctx.now, tunables.reputation)
 	for (const sybil of ctx.sybilCluster(node))
-		if (rng() < 0.42)
+		if (rng() < p.activationRate * 0.58)
 			bumpReputationOnRelayPure(observer.reputation, sybil.id, `sybil:${sybil.id}`, ctx.now, tunables.reputation)
 }
 
@@ -107,23 +137,17 @@ function runSybil(ctx, node, observer, rng, tunables) {
  * @returns {void}
  */
 function runCollusion(ctx, node, observer, rng, round, tunables) {
-	const { bumpReputationOnRelayPure, applySubjectiveSlashPure } = ctx.engine
-	if (rng() < 0.52)
+	const { bumpReputationOnRelayPure } = ctx.engine
+	const p = attackParams(ctx, node)
+	if (rng() < p.activationRate)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `collusion:${round}`, ctx.now, tunables.reputation)
 	const ring = ctx.collusionRing(node)
 	for (const ally of ring)
-		if (ally.id !== node.id && rng() < 0.25)
+		if (ally.id !== node.id && rng() < p.collusionAllyRate)
 			bumpReputationOnRelayPure(observer.reputation, ally.id, `collusion-ally:${round}`, ctx.now, tunables.reputation)
 	const victim = ring.find(n => n.id !== node.id)
-	if (victim && rng() < 0.22)
-		applySubjectiveSlashPure(
-			observer.reputation,
-			victim.id,
-			node.id,
-			tunables.reputation.slashUnverifiedDefaultClaim,
-			false,
-			tunables.reputation,
-		)
+	if (victim && rng() < p.activationRate * 0.4)
+		queueSlash(ctx, observer, victim.id, node.id, tunables.reputation.slashUnverifiedDefaultClaim, false, round, tunables)
 }
 
 /**
@@ -135,7 +159,8 @@ function runCollusion(ctx, node, observer, rng, round, tunables) {
  */
 function runSpammer(ctx, node, observer, tunables) {
 	const { recordMessageRateViolationPure } = ctx.engine
-	for (let i = 0; i < 4; i++)
+	const burst = attackParams(ctx, node).burstSize
+	for (let i = 0; i < burst; i++)
 		recordMessageRateViolationPure(observer.reputation, node.id, tunables.reputation)
 }
 
@@ -144,20 +169,22 @@ function runSpammer(ctx, node, observer, tunables) {
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
  * @param {() => number} rng 随机源
+ * @param {number} round 当前回合
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runFalseAccuser(ctx, node, observer, rng, tunables) {
-	const { applySubjectiveSlashPure } = ctx.engine
-	const honest = pickHonestTarget(ctx, observer, rng)
+function runFalseAccuser(ctx, node, observer, rng, round, tunables) {
+	const honest = pickHonestTarget(ctx, observer, rng, attackParams(ctx, node).targetBiasHighRep)
 	if (!honest) return
-	applySubjectiveSlashPure(
-		observer.reputation,
+	queueSlash(
+		ctx,
+		observer,
 		honest.id,
 		node.id,
 		tunables.reputation.slashUnverifiedDefaultClaim * 2,
 		false,
-		tunables.reputation,
+		round,
+		tunables,
 	)
 }
 
@@ -165,13 +192,18 @@ function runFalseAccuser(ctx, node, observer, rng, tunables) {
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {() => number} rng 随机源
+ * @param {number} round 当前回合
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runEclipse(ctx, node, observer, tunables) {
+function runEclipse(ctx, node, observer, rng, round, tunables) {
 	const { recordGossipAllUnknownWantPure } = ctx.engine
-	for (let i = 0; i < ECLIPSE_WANT_BURST; i++)
+	const p = attackParams(ctx, node)
+	for (let i = 0; i < p.burstSize; i++)
 		recordGossipAllUnknownWantPure(observer.reputation, node.id, ctx.now + i, tunables.reputation)
+	const sybilIds = ctx.sybilCluster(node).map(n => n.id)
+	eclipseFillExplore(ctx.discovery, observer.id, node.id, sybilIds, p.eclipseFocus)
 }
 
 /**
@@ -234,7 +266,8 @@ function runArchiveForger(ctx, node, observer, tunables) {
  */
 function runRelayFarmer(ctx, node, observer, round, tunables) {
 	const { bumpReputationOnRelayPure } = ctx.engine
-	for (let i = 0; i < 5; i++)
+	const burst = attackParams(ctx, node).burstSize
+	for (let i = 0; i < burst; i++)
 		bumpReputationOnRelayPure(observer.reputation, node.id, `relay-farm:${round}:${i}`, ctx.now + i, tunables.reputation)
 }
 
@@ -278,22 +311,25 @@ function runWhitewasher(ctx, node, observer, rng, round, tunables) {
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
  * @param {() => number} rng 随机源
+ * @param {number} round 当前回合
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runReportFlooder(ctx, node, observer, rng, tunables) {
-	const { applySubjectiveSlashPure } = ctx.engine
+function runReportFlooder(ctx, node, observer, rng, round, tunables) {
 	const targets = ctx.nodes.filter(n => n.kind === 'honest' && n.id !== observer.id)
-	for (let i = 0; i < Math.min(4, targets.length); i++) {
+	const burst = Math.min(attackParams(ctx, node).burstSize, targets.length)
+	for (let i = 0; i < burst; i++) {
 		const target = targets[Math.floor(rng() * targets.length)]
 		if (!target) continue
-		applySubjectiveSlashPure(
-			observer.reputation,
+		queueSlash(
+			ctx,
+			observer,
 			target.id,
 			node.id,
 			tunables.reputation.slashUnverifiedDefaultClaim * 1.5,
 			false,
-			tunables.reputation,
+			round,
+			tunables,
 		)
 	}
 }
@@ -316,13 +352,15 @@ function runOscillator(ctx, node, observer, round, tunables) {
 
 /**
  * 提示投毒：向观察者注入指向自己的发现提示，权重随 hintDefaultWeight 缩放。
+ * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runHintPoisoner(node, observer, tunables) {
-	const weight = tunables.trustGraph.hintDefaultWeight * 3
+function runHintPoisoner(ctx, node, observer, tunables) {
+	const mul = attackParams(ctx, node).hintWeightMul
+	const weight = tunables.trustGraph.hintDefaultWeight * mul
 	const existing = observer.injectedHints.find(h => h.nodeHash === node.id)
 	if (existing)
 		existing.weight = (existing.weight ?? weight) + weight
@@ -375,30 +413,23 @@ function runKeyThief(ctx, node, observer, rng, round, tunables) {
  * @returns {void}
  */
 function runSleeper(ctx, node, observer, rng, round, tunables) {
-	const { bumpReputationOnRelayPure, bumpChunkStorageReputationPure, recordMessageRateViolationPure, applySubjectiveSlashPure } = ctx.engine
+	const { bumpReputationOnRelayPure, bumpChunkStorageReputationPure, recordMessageRateViolationPure } = ctx.engine
+	const p = attackParams(ctx, node)
 	const turnRound = node.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
 
 	if (round < turnRound) {
-		if (rng() < 0.7)
+		if (rng() < p.activationRate)
 			bumpReputationOnRelayPure(observer.reputation, node.id, `sleeper-good:${round}`, ctx.now, tunables.reputation)
-		if (round % 4 === 0)
+		if (rng() < 0.4)
 			bumpChunkStorageReputationPure(observer.reputation, node.id, tunables.reputation)
 		return
 	}
 
-	// 突变后作恶
-	for (let i = 0; i < 2; i++)
+	for (let i = 0; i < Math.max(1, Math.floor(p.burstSize / 2)); i++)
 		recordMessageRateViolationPure(observer.reputation, node.id, tunables.reputation)
-	const honest = pickHonestTarget(ctx, observer, rng)
-	if (honest && rng() < 0.3)
-		applySubjectiveSlashPure(
-			observer.reputation,
-			honest.id,
-			node.id,
-			tunables.reputation.slashUnverifiedDefaultClaim,
-			false,
-			tunables.reputation,
-		)
+	const honest = pickHonestTarget(ctx, observer, rng, p.targetBiasHighRep)
+	if (honest && rng() < p.activationRate * 0.5)
+		queueSlash(ctx, observer, honest.id, node.id, tunables.reputation.slashUnverifiedDefaultClaim, false, round, tunables)
 }
 
 /**
@@ -422,18 +453,23 @@ function runEquivocator(ctx, node, observer, tunables) {
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {() => number} rng 随机源
+ * @param {number} round 当前回合
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runTargetedEclipse(ctx, node, observer, tunables) {
+function runTargetedEclipse(ctx, node, observer, rng, round, tunables) {
 	const { recordGossipAllUnknownWantPure } = ctx.engine
+	const p = attackParams(ctx, node)
 	const targetId = node.eclipseTargetId ?? ctx.eclipseTargetId
 	if (targetId)
 		ctx.eclipseVictims = ctx.eclipseVictims ?? new Set()
-	for (let i = 0; i < ECLIPSE_WANT_BURST; i++)
+	for (let i = 0; i < p.burstSize; i++)
 		recordGossipAllUnknownWantPure(observer.reputation, node.id, ctx.now + i, tunables.reputation)
-	if (targetId)
+	if (targetId) {
 		ctx.eclipseVictims.add(targetId)
+		eclipseFillExplore(ctx.discovery, observer.id, node.id, [node.id], p.eclipseFocus)
+	}
 }
 
 /**
@@ -448,14 +484,16 @@ function runTargetedEclipse(ctx, node, observer, tunables) {
  */
 function runRepPump(ctx, node, observer, rng, round, tunables) {
 	const { bumpReputationOnRelayPure, penalizeArchiveServeMismatchPure } = ctx.engine
+	const p = attackParams(ctx, node)
 	const cluster = ctx.sybilCluster(node)
-	if (round < 12) {
+	const pumpRounds = Math.max(8, Math.round((ctx.scenario?.rounds ?? 40) * p.sleeperTurnFrac))
+	if (round < pumpRounds) {
 		for (const sybil of cluster)
-			if (rng() < 0.62)
+			if (rng() < p.activationRate)
 				bumpReputationOnRelayPure(observer.reputation, sybil.id, `pump:${round}:${sybil.id}`, ctx.now, tunables.reputation)
 		return
 	}
-	if (rng() < 0.75)
+	if (rng() < p.activationRate)
 		penalizeArchiveServeMismatchPure(observer.reputation, node.id, tunables.reputation)
 }
 
@@ -478,10 +516,18 @@ function runSlowDripSpammer(ctx, node, observer, tunables) {
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
  * @param {() => number} rng 随机源
+ * @param {number} [highRepBias=0] 高信誉目标偏好 0..1
  * @returns {import('./model.mjs').SimNode | null} 随机诚实目标，无则 null
  */
-function pickHonestTarget(ctx, observer, rng) {
+function pickHonestTarget(ctx, observer, rng, highRepBias = 0) {
 	const honest = ctx.nodes.filter(n => n.kind === 'honest' && n.id !== observer.id)
 	if (!honest.length) return null
+	if (highRepBias > 0 && rng() < highRepBias) {
+		const scored = honest
+			.map(n => ({ n, s: observer.reputation.byNodeHash[n.id]?.score ?? 0 }))
+			.sort((a, b) => b.s - a.s)
+		const top = scored.slice(0, Math.max(1, Math.ceil(honest.length * 0.25)))
+		return top[Math.floor(rng() * top.length)]?.n ?? honest[Math.floor(rng() * honest.length)]
+	}
 	return honest[Math.floor(rng() * honest.length)]
 }

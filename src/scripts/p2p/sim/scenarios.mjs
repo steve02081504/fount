@@ -3,11 +3,7 @@
  */
 
 /** @typedef {import('./attacks.mjs').AttackKind} AttackKind */
-/** @typedef {import('./model.mjs').NodeProfile} NodeProfile */
-
-/**
- * @typedef {Partial<Record<NodeProfile, number>>} ProfileMix
- */
+/** @typedef {import('./behavior.mjs').BehaviorDist} BehaviorDist */
 
 /**
  * @typedef {{
@@ -18,7 +14,7 @@
  *   relayCount?: number,
  *   lurkerCount?: number,
  *   newcomerCount?: number,
- *   profileMix?: ProfileMix,
+ *   behaviorDist?: BehaviorDist,
  *   rounds?: number,
  *   groupSize?: number,
  *   decayWindows?: number,
@@ -29,6 +25,40 @@
  * }} SimScenario
  */
 
+/** 社交侧偏重 */
+const SOCIAL_HEAVY = Object.freeze({
+	postRate: { mean: 0.55, min: 0.25, max: 0.85 },
+	likeRate: { mean: 0.45, min: 0.15, max: 0.9 },
+	replyRate: { mean: 0.35, min: 0.1, max: 0.7 },
+	relayRate: { mean: 0.12, min: 0, max: 0.3 },
+	chunkServeRate: { mean: 0.1, min: 0, max: 0.25 },
+})
+
+/** 聊天侧偏重 */
+const CHAT_HEAVY = Object.freeze({
+	postRate: { mean: 0.12, min: 0, max: 0.25 },
+	likeRate: { mean: 0.15, min: 0, max: 0.35 },
+	replyRate: { mean: 0.2, min: 0, max: 0.4 },
+	relayRate: { mean: 0.55, min: 0.25, max: 0.85 },
+	chunkServeRate: { mean: 0.45, min: 0.15, max: 0.75 },
+})
+
+/** 静默点赞型 */
+const QUIET_LIKER = Object.freeze({
+	postRate: { mean: 0.08, min: 0, max: 0.15 },
+	likeRate: { mean: 0.58, min: 0.4, max: 0.85 },
+	replyRate: { mean: 0.12, min: 0, max: 0.22 },
+	relayRate: { mean: 0.15, min: 0.05, max: 0.3 },
+})
+
+/** 均衡混合 */
+const MIXED = Object.freeze({
+	postRate: { mean: 0.35, min: 0.1, max: 0.7 },
+	likeRate: { mean: 0.3, min: 0.05, max: 0.75 },
+	replyRate: { mean: 0.28, min: 0.05, max: 0.6 },
+	relayRate: { mean: 0.35, min: 0.1, max: 0.65 },
+})
+
 /** @type {SimScenario[]} */
 export const SCENARIOS = [
 	{
@@ -38,7 +68,7 @@ export const SCENARIOS = [
 		relayCount: 2,
 		lurkerCount: 2,
 		newcomerCount: 3,
-		profileMix: { both: 0.5, social_only: 0.15, chat_only: 0.15, wanderer: 0.2 },
+		behaviorDist: MIXED,
 		attacks: {
 			sybil: 6, collusion: 5, spammer: 3, false_accuser: 3, eclipse: 3,
 			lazy_chunk: 3, social_mob: 3, archive_forger: 3, relay_farmer: 3, hint_poisoner: 3,
@@ -71,7 +101,7 @@ export const SCENARIOS = [
 		id: 'social_war',
 		label: 'Social 群体拉黑',
 		honestCount: 10,
-		profileMix: { social_only: 0.4, both: 0.3, wanderer: 0.3 },
+		behaviorDist: SOCIAL_HEAVY,
 		attacks: { social_mob: 8, false_accuser: 4, report_flooder: 3 },
 		rounds: 35,
 		groupSize: 8,
@@ -82,7 +112,7 @@ export const SCENARIOS = [
 		label: '刷消息 + eclipse',
 		honestCount: 10,
 		lurkerCount: 2,
-		profileMix: { chat_only: 0.5, both: 0.3, wanderer: 0.2 },
+		behaviorDist: CHAT_HEAVY,
 		attacks: { spammer: 8, eclipse: 8, lazy_chunk: 5, oscillator: 4, rep_pump: 2 },
 		rounds: 40,
 		groupSize: 6,
@@ -93,7 +123,7 @@ export const SCENARIOS = [
 		honestCount: 6,
 		relayCount: 8,
 		lurkerCount: 2,
-		profileMix: { chat_only: 0.6, both: 0.4 },
+		behaviorDist: CHAT_HEAVY,
 		attacks: { relay_farmer: 4, sybil: 3, eclipse: 2 },
 		rounds: 45,
 		groupSize: 10,
@@ -105,9 +135,22 @@ export const SCENARIOS = [
 		relayCount: 2,
 		lurkerCount: 2,
 		newcomerCount: 3,
-		profileMix: { social_only: 0.25, chat_only: 0.25, both: 0.25, wanderer: 0.25 },
+		behaviorDist: {
+			...MIXED,
+			postRate: { mean: 0.25, min: 0.05, max: 0.55 },
+			likeRate: { mean: 0.4, min: 0.15, max: 0.75 },
+		},
 		attacks: { social_mob: 3, lazy_chunk: 4, archive_forger: 3, false_accuser: 3, hint_poisoner: 3, equivocator: 2 },
 		rounds: 40,
+		groupSize: 8,
+	},
+	{
+		id: 'quiet_honest',
+		label: '静默点赞用户',
+		honestCount: 12,
+		behaviorDist: QUIET_LIKER,
+		attacks: { false_accuser: 4, social_mob: 3, spammer: 2 },
+		rounds: 35,
 		groupSize: 8,
 	},
 	{

@@ -17,19 +17,23 @@ import { REP_MAX } from '../reputation_math.mjs'
 import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure } from '../reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
 
+import { normalizeAttackGenome } from './attack_space.mjs'
 import { runAttack } from './attacks.mjs'
+import { behaviorRoll, isQuietHonestBehavior, sampleBehavior } from './behavior.mjs'
+import { createDiscoveryState, discoveryReach, initObserverDiscovery } from './discovery.mjs'
+import { createPropagationState, tickPropagation } from './propagation.mjs'
 import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
 
 /** @typedef {import('./attacks.mjs').AttackKind} AttackKind */
 /** @typedef {import('./tunables_bundle.mjs').TunablesBundle} TunablesBundle */
 
-/** @typedef {'social_only' | 'chat_only' | 'both' | 'wanderer'} NodeProfile */
+/** @typedef {import('./behavior.mjs').NodeBehavior} NodeBehavior */
 
 /**
  * @typedef {{
  *   id: string,
  *   kind: 'honest' | 'relay' | 'lurker' | 'malicious',
- *   profile?: NodeProfile,
+ *   behavior?: NodeBehavior,
  *   attack?: AttackKind,
  *   clusterId?: string,
  *   introducerId?: string,
@@ -52,42 +56,20 @@ import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
  * }} SimObserver
  */
 
-/** @type {NodeProfile[]} */
-const PROFILE_ORDER = ['both', 'social_only', 'chat_only', 'wanderer']
+/** @type {import('./behavior.mjs').BehaviorDist} */
+const DEFAULT_SCENARIO_BEHAVIOR = {}
 
 /**
- * @param {import('./scenarios.mjs').ProfileMix | undefined} mix 画像占比
+ * @param {NodeBehavior} behavior 行为向量
  * @param {() => number} rng 随机源
- * @returns {NodeProfile} 采样画像
- */
-function pickProfile(mix, rng) {
-	if (!mix || !Object.keys(mix).length) return 'both'
-	const entries = PROFILE_ORDER
-		.filter(p => (mix[p] ?? 0) > 0)
-		.map(p => [p, mix[p] ?? 0])
-	if (!entries.length) return 'both'
-	const total = entries.reduce((s, [, w]) => s + w, 0)
-	let roll = rng() * total
-	for (const [profile, weight] of entries) {
-		roll -= weight
-		if (roll <= 0) return /** @type {NodeProfile} */ profile
-	}
-	return /** @type {NodeProfile} */ entries[entries.length - 1][0]
-}
-
-/**
- * @param {NodeProfile} profile 节点画像
- * @param {() => number} rng 随机源
- * @param {number} round 回合
  * @returns {'social' | 'chat'} 本回合活跃侧
  */
-function activeSide(profile, rng, round) {
-	switch (profile) {
-		case 'social_only': return 'social'
-		case 'chat_only': return 'chat'
-		case 'wanderer': return rng() < 0.5 ? 'social' : 'chat'
-		default: return round % 2 === 0 ? 'social' : 'chat'
-	}
+function activeSideFromBehavior(behavior, rng) {
+	const socialWeight = behavior.postRate + behavior.likeRate + behavior.replyRate + behavior.mentionRate
+	const chatWeight = behavior.relayRate + behavior.chunkServeRate + behavior.archiveSubmitRate
+	const total = socialWeight + chatWeight
+	if (total <= 0) return rng() < 0.5 ? 'social' : 'chat'
+	return rng() < socialWeight / total ? 'social' : 'chat'
 }
 
 /**
@@ -146,10 +128,12 @@ function injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables) {
  * @param {import('./scenarios.mjs').SimScenario} scenario 场景
  * @param {number} seed 种子
  * @param {TunablesBundle} tunables 候选参数
+ * @param {import('./attack_space.mjs').AttackGenome} [attackGenome] 攻击基因
  * @returns {{ nodes: SimNode[], observers: SimObserver[], inviteEdges: Array<{ from: string, to: string }>, ctx: object }} 初始世界状态
  */
-export function buildWorld(scenario, seed, tunables) {
+export function buildWorld(scenario, seed, tunables, attackGenome) {
 	const rng = createRng(seed)
+	const behaviorDist = scenario.behaviorDist ?? DEFAULT_SCENARIO_BEHAVIOR
 	/** @type {SimNode[]} */
 	const nodes = []
 	/** @type {Array<{ from: string, to: string }>} */
@@ -163,7 +147,7 @@ export function buildWorld(scenario, seed, tunables) {
 		nodes.push({
 			id,
 			kind: 'honest',
-			profile: pickProfile(scenario.profileMix, rng),
+			behavior: sampleBehavior(rng, behaviorDist),
 			introducerId: introducer,
 		})
 		if (introducer)
@@ -181,7 +165,12 @@ export function buildWorld(scenario, seed, tunables) {
 	for (let i = 0; i < (scenario.lurkerCount ?? 0); i++) {
 		const id = fakeNodeHash(idx++)
 		const introducer = pickOne(rng, nodes.filter(n => n.kind === 'honest'))?.id
-		nodes.push({ id, kind: 'lurker', introducerId: introducer })
+		nodes.push({
+			id,
+			kind: 'lurker',
+			behavior: sampleBehavior(rng, { postRate: { mean: 0.05, max: 0.12 }, chunkServeRate: { mean: 0.45, min: 0.2 } }),
+			introducerId: introducer,
+		})
 		if (introducer)
 			inviteEdges.push({ from: introducer, to: id })
 	}
@@ -246,7 +235,7 @@ export function buildWorld(scenario, seed, tunables) {
 	// 新人节点：诚实、无介绍人、不参与任何回合交互，因此观察者始终对其「没有打过分」，
 	// 用来检验 rosterDefaultScore（名册里对陌生人默认信任）这一旋钮的两面性。
 	for (let i = 0; i < (scenario.newcomerCount ?? 0); i++)
-		nodes.push({ id: fakeNodeHash(idx++), kind: 'honest', profile: 'both', newcomer: true })
+		nodes.push({ id: fakeNodeHash(idx++), kind: 'honest', behavior: sampleBehavior(rng, behaviorDist), newcomer: true })
 
 	const observers = nodes
 		.filter(n => n.kind === 'honest' && !n.newcomer)
@@ -295,6 +284,9 @@ export function buildWorld(scenario, seed, tunables) {
 		churnReachRounds: 0,
 		sleeperTurnRound: scenario.sleeperTurnRound ?? 15,
 		scenario,
+		attackGenome: normalizeAttackGenome(attackGenome),
+		discovery: createDiscoveryState(),
+		propagationByObserver: new Map(),
 		engine: {
 			bumpReputationOnRelayPure,
 			bumpChunkStorageReputationPure,
@@ -311,6 +303,12 @@ export function buildWorld(scenario, seed, tunables) {
 		collusionRing,
 	}
 
+	const roster = nodes.filter(n => !n.newcomer).map(n => n.id)
+	for (const obs of observers) {
+		ctx.propagationByObserver.set(obs.id, createPropagationState())
+		initObserverDiscovery(ctx.discovery, obs.id, obs.trustedPeers, roster, rng)
+	}
+
 	return { nodes, observers, inviteEdges, ctx }
 }
 
@@ -321,23 +319,24 @@ export function buildWorld(scenario, seed, tunables) {
  * @param {'social' | 'chat'} side 活跃侧
  * @param {number} round 回合
  * @param {TunablesBundle} tunables 参数
+ * @param {() => number} rng 随机源
  * @returns {void}
  */
-function runFriendlyBehavior(ctx, peer, observer, side, round, tunables) {
+function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
 	if (peer.kind === 'relay') {
 		bumpReputationOnRelayPure(observer.reputation, peer.id, `relay:${round}:${peer.id}`, ctx.now, tunables.reputation)
 		return
 	}
 	if (peer.kind === 'lurker') {
-		if (round % 4 === 0)
+		if (peer.behavior && behaviorRoll(rng, peer.behavior, 'chunkServeRate'))
 			bumpChunkStorageReputationPure(observer.reputation, peer.id, tunables.reputation)
 		return
 	}
-	if (peer.kind !== 'honest' || !peer.profile) return
+	if (peer.kind !== 'honest' || !peer.behavior) return
 
 	if (side === 'social') {
 		const other = ctx.nodes.find(n => n.kind === 'honest' && n.id !== peer.id && n.id !== observer.id)
-		if (other && round % 6 === 0)
+		if (other && behaviorRoll(rng, peer.behavior, 'blockProneness'))
 			applyFollowedBlockSignalPure(
 				observer.reputation,
 				{
@@ -352,8 +351,9 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables) {
 			)
 	}
 	else {
-		bumpReputationOnRelayPure(observer.reputation, peer.id, `chat:${round}:${peer.id}`, ctx.now, tunables.reputation)
-		if (round % 3 === 0)
+		if (behaviorRoll(rng, peer.behavior, 'relayRate'))
+			bumpReputationOnRelayPure(observer.reputation, peer.id, `chat:${round}:${peer.id}`, ctx.now, tunables.reputation)
+		if (behaviorRoll(rng, peer.behavior, 'chunkServeRate'))
 			bumpChunkStorageReputationPure(observer.reputation, peer.id, tunables.reputation)
 	}
 }
@@ -553,11 +553,12 @@ function federationSaturatingReach(topLiveCount, honestRelayOnline, churnStress 
  * @param {import('./scenarios.mjs').SimScenario} scenario 场景
  * @param {number} seed 种子
  * @param {TunablesBundle} tunables 候选参数
+ * @param {import('./attack_space.mjs').AttackGenome} [attackGenome] 攻击基因
  * @returns {import('./metrics.mjs').SimSnapshot} 仿真结束快照
  */
-export function runSimulation(scenario, seed, tunables) {
+export function runSimulation(scenario, seed, tunables, attackGenome) {
 	const rng = createRng(seed)
-	const { nodes, observers, inviteEdges, ctx } = buildWorld(scenario, seed, tunables)
+	const { nodes, observers, inviteEdges, ctx } = buildWorld(scenario, seed, tunables, attackGenome)
 	const rounds = scenario.rounds ?? 40
 	const groupSize = scenario.groupSize ?? 8
 	const malicious = nodes.filter(n => n.kind === 'malicious')
@@ -578,14 +579,23 @@ export function runSimulation(scenario, seed, tunables) {
 					bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, ctx.now, tunables.reputation)
 
 			for (const node of friendly.filter(n => n.id !== obs.id && !ctx.offlineSet.has(n.id))) {
-				const profile = node.kind === 'honest' ? node.profile ?? 'both' : 'both'
-				const side = activeSide(profile, rng, round)
-				runFriendlyBehavior(ctx, node, obs, side, round, tunables)
+				if (node.behavior && !behaviorRoll(rng, node.behavior, 'onlineStability')) continue
+				const side = node.kind === 'honest' && node.behavior
+					? activeSideFromBehavior(node.behavior, rng)
+					: 'chat'
+				runFriendlyBehavior(ctx, node, obs, side, round, tunables, rng)
 			}
 
 			for (const mal of malicious)
 				if (!ctx.offlineSet.has(mal.id))
 					runAttack(ctx, mal, obs, rng, round, tunables)
+
+			const propState = ctx.propagationByObserver.get(obs.id)
+			if (propState) 
+				tickPropagation(propState, round, (target, sender, claim, verified) => {
+					applySubjectiveSlashPure(obs.reputation, target, sender, claim, verified, tunables.reputation)
+				}, (senderId) => (obs.reputation.byNodeHash[senderId]?.score ?? 0) / REP_MAX, 0.35, rng)
+			
 
 			injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables)
 
@@ -625,8 +635,8 @@ export function runSimulation(scenario, seed, tunables) {
 				applyDecayCollusionAfterSlashPure(obs.reputation, target.id, inviteEdges, tunables.reputation)
 			}
 
-			for (const h of activeHonest.filter(n => activeSide(n.profile ?? 'both', rng, round) === 'chat').slice(0, 2))
-				if (!ctx.offlineSet.has(h.id))
+			for (const h of activeHonest.filter(n => n.behavior && activeSideFromBehavior(n.behavior, rng) === 'chat').slice(0, 2))
+				if (!ctx.offlineSet.has(h.id) && behaviorRoll(rng, h.behavior, 'archiveSubmitRate'))
 					bumpChunkStorageReputationPure(obs.reputation, h.id, tunables.reputation)
 
 			// 累积 churn 下 mailbox 可达率
@@ -666,7 +676,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const malicious = nodes.filter(n => n.kind === 'malicious')
 	const honest = nodes.filter(n => n.kind === 'honest' && !n.compromised)
 	const relays = nodes.filter(n => n.kind === 'relay' || n.kind === 'lurker')
-	const profiled = honest.filter(n => n.profile && n.profile !== 'both')
+	const quietHonest = honest.filter(n => n.behavior && isQuietHonestBehavior(n.behavior))
 	const sybilNodes = malicious.filter(n => n.attack === 'sybil' || n.attack === 'rep_pump')
 	const forgers = malicious.filter(n => n.attack === 'archive_forger')
 	const keyThieves = malicious.filter(n => n.attack === 'key_thief')
@@ -688,8 +698,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let collusionTotal = 0
 	let relaySafe = 0
 	let relayTotal = 0
-	let profileSafe = 0
-	let profileTotal = 0
+	let quietSafe = 0
+	let quietTotal = 0
 	let sybilContained = 0
 	let sybilTotal = 0
 	let archiveDefended = 0
@@ -705,6 +715,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let equivocationTotal = 0
 	/** @type {Map<string, { defended: number, total: number }>} */
 	const attackAccum = new Map()
+	/** @type {Map<string, { topKSum: number, reachSum: number, count: number }>} */
+	const attackImpact = new Map()
 	const nodeKind = new Map(nodes.map(n => [n.id, n]))
 	const hideThreshold = tunables.social.socialRepHideThreshold
 	const onlineNodes = nodes.filter(n => !offlineSet.has(n.id))
@@ -767,6 +779,9 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		fanoutReach += topLive.length / Math.max(1, honestRelayOnline)
 		fanoutCost += top.length / Math.max(1, honest.length)
 
+		const friendlyIds = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id)
+		const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, tunables.mailbox.maxHop)
+
 		const highRepMalInTop = topMal.filter(n => scoreOf(n.nodeHash) >= honestMedian).length
 		if (top.length > 0)
 			malAmplification += highRepMalInTop / top.length
@@ -784,6 +799,16 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				}
 				row.total++
 				if (suppressed) row.defended++
+
+				let impact = attackImpact.get(atk)
+				if (!impact) {
+					impact = { topKSum: 0, reachSum: 0, count: 0 }
+					attackImpact.set(atk, impact)
+				}
+				impact.count++
+				if (topSet.has(m.id) && scoreOf(m.id) >= honestMedian)
+					impact.topKSum++
+				impact.reachSum += discReach
 			}
 		}
 
@@ -801,10 +826,10 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				relaySafe++
 		}
 
-		for (const p of profiled) {
-			profileTotal++
-			if (isNodePreserved(p, scoreOf, hideThreshold))
-				profileSafe++
+		for (const q of quietHonest) {
+			quietTotal++
+			if (isNodePreserved(q, scoreOf, hideThreshold))
+				quietSafe++
 		}
 
 		const sybilClusters = new Map()
@@ -898,6 +923,18 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	for (const [atk, row] of attackAccum)
 		byAttackDefense[atk] = { ...row, rate: row.total ? row.defended / row.total : 1 }
 
+	/** @type {NonNullable<import('./metrics.mjs').SimSnapshot['byAttackImpact']>} */
+	const byAttackImpact = {}
+	for (const [atk, row] of attackImpact) {
+		const n = Math.max(1, row.count)
+		byAttackImpact[atk] = {
+			topKCapture: row.topKSum / n,
+			reachCollapse: 1 - row.reachSum / n,
+		}
+	}
+
+	const quietHonestPreservationRate = quietTotal ? quietSafe / quietTotal : 1
+
 	return {
 		malSuppressionRate,
 		honestPreservationRate: honestTotal ? honestSafe / honestTotal : 1,
@@ -907,7 +944,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		fanoutCostRatio: fanoutCost / nObs,
 		collusionCollapseRate: collusionTotal ? collusionCollapsed / collusionTotal : 1,
 		relayPreservationRate: relayTotal ? relaySafe / relayTotal : 1,
-		profilePreservationRate: profileTotal ? profileSafe / profileTotal : 1,
+		profilePreservationRate: quietHonestPreservationRate,
+		quietHonestPreservationRate,
 		sybilContainmentRate: sybilTotal ? sybilContained / sybilTotal : 1,
 		archiveDefenseRate: archiveTotal ? archiveDefended / archiveTotal : 1,
 		mailboxReachRate: mailboxReach / nObs,
@@ -924,5 +962,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		honestCount: honest.length,
 		groupSize,
 		byAttackDefense,
+		byAttackImpact,
 	}
 }

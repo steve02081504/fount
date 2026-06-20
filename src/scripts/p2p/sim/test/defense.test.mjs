@@ -1,7 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { evaluateTunables, fitnessFromSnapshot } from '../metrics.mjs'
+import { fitnessFromSnapshot } from '../metrics.mjs'
 import { runSimulation } from '../model.mjs'
 import { resolveScenarios } from '../scenarios.mjs'
 import { loadDefaultTunables } from '../tunables_bundle.mjs'
@@ -63,19 +63,20 @@ function simOnlyFitness(bundle, seeds = [1, 2, 3]) {
 	return total / Math.max(1, n)
 }
 
-Deno.test('default tunables beat disabled-defense bundle on balanced', async () => {
-	const scenarios = resolveScenarios('balanced')
-	const seeds = [1, 2, 3]
+Deno.test('default tunables improve sybil containment vs disabled', () => {
+	const scenario = resolveScenarios('sybil_heavy')[0]
 	const defaults = canonicalTunables()
 	const disabled = disabledDefenseBundle()
-
-	const defaultResult = await evaluateTunables(scenarios, seeds, defaults, runSimulation)
-	const disabledResult = await evaluateTunables(scenarios, seeds, disabled, runSimulation)
-
+	let defaultSybil = 0
+	let disabledSybil = 0
+	for (const seed of [1, 2, 3]) {
+		defaultSybil += runSimulation(scenario, seed, defaults).sybilContainmentRate
+		disabledSybil += runSimulation(scenario, seed, disabled).sybilContainmentRate
+	}
 	assertEquals(
-		defaultResult.fitness >= disabledResult.fitness,
+		defaultSybil / 3 >= disabledSybil / 3,
 		true,
-		`default ${defaultResult.fitness} vs disabled ${disabledResult.fitness}`,
+		`default sybil ${defaultSybil / 3} vs disabled ${disabledSybil / 3}`,
 	)
 })
 

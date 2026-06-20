@@ -10,10 +10,12 @@
  *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m --no-apply
  */
 import { applyTunablesBundle } from './apply.mjs'
+import { normalizeAttackGenome } from './attack_space.mjs'
+import { runCoevolution } from './coevolution.mjs'
 import { parseDurationMs } from './duration.mjs'
-import { DEFAULT_WEIGHTS, evaluateTunables } from './metrics.mjs'
+import { DEFAULT_WEIGHTS, evaluateTunablesAgainstAttacks } from './metrics.mjs'
 import { runSimulation } from './model.mjs'
-import { runOptimizer, shouldApplyResult } from './optimizer.mjs'
+import { shouldApplyResult } from './optimizer.mjs'
 import { writeReport } from './report.mjs'
 import { resolveScenarios } from './scenarios.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
@@ -79,7 +81,7 @@ function createProgressPrinter(durationMs, generations) {
 		const pct = info.percent.toFixed(1)
 		const elapsed = (info.elapsedMs / 1000).toFixed(1)
 		const limit = durationMs != null ? `${(durationMs / 1000).toFixed(1)}` : `${generations}`
-		const line = `mining ${pct}% | gen ${info.generationsRun} | best ${info.bestFitness.toFixed(4)} | mean ${info.meanFitness.toFixed(4)} | ${elapsed}s/${limit}${durationMs != null ? 's' : ' gen'}`
+		const line = `coevo ${pct}% | gen ${info.generationsRun} | blue ${info.bestFitness.toFixed(4)} | mean ${info.meanFitness.toFixed(4)} | ${elapsed}s/${limit}${durationMs != null ? 's' : ' gen'}`
 
 		if (isTty)
 			Deno.stdout.writeSync(encoder.encode(`\r${line.padEnd(80)}`))
@@ -124,7 +126,7 @@ async function cmdMine(args) {
 
 	const onProgress = createProgressPrinter(durationMs, generations)
 
-	const result = await runOptimizer({
+	const result = await runCoevolution({
 		scenarios,
 		generations,
 		population,
@@ -138,12 +140,22 @@ async function cmdMine(args) {
 	if (typeof Deno.stdout.isTerminal === 'function' && Deno.stdout.isTerminal())
 		console.log('')
 
-	const { baseline, best, history, stoppedBy, generationsRun, elapsedMs } = result
+	const { baseline, best, bestRed, attackHof, history, stoppedBy, generationsRun, elapsedMs } = result
 
-	// 写回前一律在**全场景**上复评，避免单场景挖矿过拟合后污染全局默认值。
+	const attackPanel = [
+		...attackHof.map(h => h.genome),
+		bestRed.attackGenome,
+		normalizeAttackGenome(undefined),
+	]
+
+	// 写回前一律在**全场景**上复评（含红队名人堂面板），避免单场景过拟合后污染全局默认值。
 	const allScenarios = resolveScenarios('all')
-	const baselineFull = await evaluateTunables(allScenarios, seeds, baseline.tunables, runSimulation, DEFAULT_WEIGHTS)
-	const bestFull = await evaluateTunables(allScenarios, seeds, best.tunables, runSimulation, DEFAULT_WEIGHTS)
+	const baselineFull = await evaluateTunablesAgainstAttacks(
+		allScenarios, seeds, baseline.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS,
+	)
+	const bestFull = await evaluateTunablesAgainstAttacks(
+		allScenarios, seeds, best.tunables, attackPanel, runSimulation, DEFAULT_WEIGHTS,
+	)
 	const vulnerability = analyzeVulnerabilities(allScenarios, bestFull)
 	const gate = shouldApplyResult(baselineFull, bestFull)
 
@@ -171,6 +183,8 @@ async function cmdMine(args) {
 		generationsRun,
 		baseline: { result: baseline.result, tunables: baseline.tunables },
 		best: { result: best.result, tunables: best.tunables },
+		bestRed: { result: bestRed.result, attackGenome: bestRed.attackGenome },
+		attackHof,
 		history,
 		apply: applyInfo,
 		vulnerability,
@@ -178,6 +192,7 @@ async function cmdMine(args) {
 
 	const { jsonPath, mdPath } = await writeReport(payload, applyInfo.applied ? 'mine-applied' : 'mine')
 	console.log(`fitness baseline=${baseline.result.fitness.toFixed(4)} best=${best.result.fitness.toFixed(4)}`)
+	console.log(`red harm best=${(-bestRed.result.fitness).toFixed(4)} hof=${attackHof.length}`)
 	console.log(`all-scenario fitness baseline=${baselineFull.fitness.toFixed(4)} best=${bestFull.fitness.toFixed(4)}`)
 	if (durationMs != null)
 		console.log(`stopped by ${stoppedBy} after ${generationsRun} generation(s), elapsed ${(elapsedMs / 1000).toFixed(1)}s / ${(durationMs / 1000).toFixed(1)}s`)

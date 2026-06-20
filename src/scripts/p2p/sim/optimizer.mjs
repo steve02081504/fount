@@ -2,7 +2,7 @@
  * 参数搜索（随机 + 进化）。
  */
 import { pastDeadline } from './duration.mjs'
-import { evaluateTunables } from './metrics.mjs'
+import { evaluateTunables, minPanelFitness } from './metrics.mjs'
 import { runSimulation } from './model.mjs'
 import { mutateCandidate, randomCandidate } from './space.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
@@ -237,5 +237,12 @@ export function shouldApplyResult(baselineEval, candidateEval, opts = {}) {
 				reason: `场景 ${id} 回退（${agg.fitness.toFixed(4)} < 基线 ${base.fitness.toFixed(4)} - ${regressTol}）`,
 			}
 	}
+	const baseMin = minPanelFitness(baselineEval.byScenario)
+	const candMin = minPanelFitness(candidateEval.byScenario)
+	if (candMin < baseMin - regressTol)
+		return {
+			ok: false,
+			reason: `面板最差 min ${candMin.toFixed(4)} 低于基线 ${baseMin.toFixed(4)} - ${regressTol}`,
+		}
 	return { ok: true, reason: 'ok' }
 }
