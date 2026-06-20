@@ -318,7 +318,7 @@ function runWhitewasher(ctx, node, observer, rng, round, tunables) {
  * @returns {void}
  */
 function runReportFlooder(ctx, node, observer, rng, round, tunables) {
-	const targets = ctx.nodes.filter(n => n.kind === 'honest' && n.id !== observer.id)
+	const targets = ctx.honestNodes.filter(n => n.id !== observer.id)
 	const burst = Math.min(attackParams(ctx, node).burstSize, targets.length)
 	for (let i = 0; i < burst; i++) {
 		const target = targets[Math.floor(rng() * targets.length)]
@@ -522,7 +522,7 @@ function runSlowDripSpammer(ctx, node, observer, tunables) {
  * @returns {import('./model.mjs').SimNode | null} 随机诚实目标，无则 null
  */
 function pickHonestTarget(ctx, observer, rng, highRepBias = 0) {
-	const honest = ctx.nodes.filter(n => n.kind === 'honest' && n.id !== observer.id)
+	const honest = ctx.honestNodes.filter(n => n.id !== observer.id)
 	if (!honest.length) return null
 	if (highRepBias > 0 && rng() < highRepBias) {
 		const scored = honest

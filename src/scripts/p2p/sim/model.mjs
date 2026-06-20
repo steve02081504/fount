@@ -269,22 +269,6 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 			seedMemberReputationFromIntroducerPure(obs.reputation, peer, obs.id, undefined, tunables.reputation)
 	}
 
-	/**
-	 * @param {SimNode} node Sybil 节点
-	 * @returns {SimNode[]} 同簇 Sybil 节点
-	 */
-	function sybilCluster(node) {
-		return nodes.filter(n => (n.attack === 'sybil' || n.attack === 'rep_pump') && n.clusterId === node.clusterId)
-	}
-
-	/**
-	 * @param {SimNode} node 共谋节点
-	 * @returns {SimNode[]} 同环共谋节点
-	 */
-	function collusionRing(node) {
-		return nodes.filter(n => n.attack === 'collusion' && n.clusterId === node.clusterId)
-	}
-
 	/** @type {Map<string, SimNode[]>} */
 	const collusionRingByCluster = new Map()
 	for (const n of nodes) {
@@ -292,6 +276,33 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		const key = n.clusterId ?? n.id
 		if (!collusionRingByCluster.has(key)) collusionRingByCluster.set(key, [])
 		collusionRingByCluster.get(key).push(n)
+	}
+
+	/** @type {Map<string, SimNode[]>} */
+	const sybilClusterByCluster = new Map()
+	for (const n of nodes) {
+		if (n.attack !== 'sybil' && n.attack !== 'rep_pump') continue
+		const key = n.clusterId ?? n.id
+		if (!sybilClusterByCluster.has(key)) sybilClusterByCluster.set(key, [])
+		sybilClusterByCluster.get(key).push(n)
+	}
+
+	const honestNodes = nodes.filter(n => n.kind === 'honest')
+
+	/**
+	 * @param {SimNode} node Sybil 节点
+	 * @returns {SimNode[]} 同簇 Sybil 节点
+	 */
+	function sybilCluster(node) {
+		return sybilClusterByCluster.get(node.clusterId ?? node.id) ?? []
+	}
+
+	/**
+	 * @param {SimNode} node 共谋节点
+	 * @returns {SimNode[]} 同环共谋节点
+	 */
+	function collusionRing(node) {
+		return collusionRingByCluster.get(node.clusterId ?? node.id) ?? []
 	}
 
 	const ctx = {
@@ -322,8 +333,10 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 			seedMemberReputationFromIntroducerPure,
 		},
 		socialEngine: { applyFollowedBlockSignalPure },
+		honestNodes,
 		sybilCluster,
 		collusionRing,
+		sybilClusterByCluster,
 		collusionRingByCluster,
 	}
 
