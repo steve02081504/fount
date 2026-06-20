@@ -17,5 +17,8 @@
 	"slashDefaultClaim": 0.2,
 	"slashVerifiedDefaultClaim": 0.35,
 	"slashUnverifiedDefaultClaim": 0.2,
-	"introducerSeedEdge": 0.5
+	"introducerSeedEdge": 0.5,
+	"recidivismWindowMs": 3600000,
+	"recidivismMultiplierStep": 0.25,
+	"recidivismMax": 3
 }

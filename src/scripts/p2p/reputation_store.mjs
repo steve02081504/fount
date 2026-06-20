@@ -26,7 +26,7 @@ const DATA_NAME = 'reputation'
 
 /**
  * @typedef {{
- *   byNodeHash: Record<string, { score: number, socialBlocks?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
+ *   byNodeHash: Record<string, { score: number, offenseStreak?: number, lastOffenseAt?: number, socialBlocks?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
  *   wantUnknownHits: Array<{ peerNodeHash: string, t: number }>
  *   relayBumpSeen: Array<{ peerNodeHash: string, key: string, t: number }>
  * }} ReputationFile

@@ -22,25 +22,54 @@ export function defaultReputationTunables() {
 /**
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
- * @returns {{ score: number, socialBlocks?: Record<string, object> }} 节点行
+ * @returns {{ score: number, offenseStreak?: number, lastOffenseAt?: number, socialBlocks?: Record<string, object> }} 节点行
  */
 function repRow(data, nodeId) {
 	const row = data.byNodeHash[nodeId] || { score: 0 }
 	const out = { score: Number(row.score ?? 0) }
+	if (Number.isFinite(row.offenseStreak))
+		out.offenseStreak = row.offenseStreak
+	if (Number.isFinite(row.lastOffenseAt))
+		out.lastOffenseAt = row.lastOffenseAt
 	if (row.socialBlocks && typeof row.socialBlocks === 'object')
 		out.socialBlocks = row.socialBlocks
 	return out
 }
 
 /**
+ * @param {number} streak 连续作恶次数
+ * @param {typeof reputationTunables} tunables tunables
+ * @returns {number} 惩罚乘子 ≥ 1
+ */
+export function computeRecidivismMultiplier(streak, tunables = reputationTunables) {
+	const step = Number(tunables.recidivismMultiplierStep ?? 0)
+	const maxMult = Number(tunables.recidivismMax ?? 1)
+	if (!Number.isFinite(streak) || streak <= 0 || step <= 0 || maxMult <= 1)
+		return 1
+	return Math.min(maxMult, 1 + step * streak)
+}
+
+/**
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
  * @param {number} delta 增量
+ * @param {number} [now] 当前时间
+ * @param {typeof reputationTunables} [tunables] tunables
  * @returns {void}
  */
-export function adjustNodeReputation(data, nodeId, delta) {
+export function adjustNodeReputation(data, nodeId, delta, now = Date.now(), tunables = reputationTunables) {
 	const row = repRow(data, nodeId)
-	row.score = clampReputationScore(row.score + delta)
+	let effectiveDelta = delta
+	if (delta < 0) {
+		const windowMs = Number(tunables.recidivismWindowMs ?? 0)
+		const lastAt = Number(row.lastOffenseAt ?? 0)
+		const inWindow = windowMs > 0 && lastAt > 0 && now - lastAt <= windowMs
+		const streak = inWindow ? (row.offenseStreak ?? 0) + 1 : 1
+		row.offenseStreak = streak
+		row.lastOffenseAt = now
+		effectiveDelta = delta * computeRecidivismMultiplier(streak, tunables)
+	}
+	row.score = clampReputationScore(row.score + effectiveDelta)
 	data.byNodeHash[nodeId] = row
 }
 
@@ -58,14 +87,24 @@ export function ensureReputationShape(data) {
 /**
  * @param {ReputationFile} data 信誉表
  * @param {typeof reputationTunables} [tunables] tunables
+ * @param {number} [now] 当前时间
  * @returns {ReputationFile} 裁剪后的同一对象
  */
-export function pruneReputationFile(data, tunables = reputationTunables) {
-	const now = Date.now()
+export function pruneReputationFile(data, tunables = reputationTunables, now = Date.now()) {
 	data.wantUnknownHits = data.wantUnknownHits.filter(hit => now - hit.t <= tunables.wantUnknownWindowMs)
 	data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= tunables.relayBumpDedupeMs)
 	if (data.relayBumpSeen.length > tunables.maxRelayBumpSeen)
 		data.relayBumpSeen = data.relayBumpSeen.slice(-tunables.maxRelayBumpSeen)
+	const windowMs = Number(tunables.recidivismWindowMs ?? 0)
+	if (windowMs > 0) 
+		for (const row of Object.values(data.byNodeHash)) {
+			const lastAt = Number(row?.lastOffenseAt ?? 0)
+			if (lastAt > 0 && now - lastAt > windowMs) {
+				delete row.offenseStreak
+				delete row.lastOffenseAt
+			}
+		}
+	
 	return data
 }
 
@@ -84,8 +123,9 @@ export function bumpReputationOnRelayPure(data, peerNodeHash, dedupeKey, now = D
 	data.relayBumpSeen = data.relayBumpSeen.filter(hit => now - hit.t <= tunables.relayBumpDedupeMs)
 	if (relayBumpIsDuplicate(data.relayBumpSeen, id, key, now, tunables.relayBumpDedupeMs)) return false
 	data.relayBumpSeen.push({ peerNodeHash: id, key, t: now })
-	const prev = Number(data.byNodeHash[id]?.score ?? 0)
-	data.byNodeHash[id] = { score: clampReputationScore(prev + tunables.relayRepBump) }
+	const row = repRow(data, id)
+	row.score = clampReputationScore(row.score + tunables.relayRepBump)
+	data.byNodeHash[id] = row
 	return true
 }
 
@@ -192,9 +232,10 @@ export function applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, invite
 		if (!upstream.size) break
 		const dRep = tunables.collusionLambda * tunables.collusionDelta ** hop
 		for (const node of upstream) {
-			const prev = Number(data.byNodeHash[node]?.score ?? 0)
-			data.byNodeHash[node] = { score: clampReputationScore(prev - dRep) }
-			applied.push({ hop, node, dRep })
+			const before = Number(data.byNodeHash[node]?.score ?? 0)
+			adjustNodeReputation(data, node, -dRep, Date.now(), tunables)
+			const after = Number(data.byNodeHash[node]?.score ?? 0)
+			applied.push({ hop, node, dRep: before - after })
 		}
 		frontier = upstream
 	}
@@ -208,7 +249,11 @@ export function applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, invite
  */
 export function applyReputationResetToScoresPure(data, targetPubKeyHash) {
 	const t = targetPubKeyHash.trim().toLowerCase()
-	data.byNodeHash[t] = { score: 0 }
+	const row = repRow(data, t)
+	row.score = 0
+	delete row.offenseStreak
+	delete row.lastOffenseAt
+	data.byNodeHash[t] = row
 }
 
 /**
