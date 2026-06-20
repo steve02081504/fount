@@ -18,7 +18,7 @@ import { runSimulation } from './model.mjs'
 import { shouldApplyResult } from './optimizer.mjs'
 import { writeReport } from './report.mjs'
 import { resolveScenarios } from './scenarios.mjs'
-import { defaultConcurrency } from './sim_pool.mjs'
+import { defaultConcurrency, shutdownSimPool } from './sim_pool.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
 import { analyzeVulnerabilities, formatVulnerabilityConsole } from './vulnerability.mjs'
 
@@ -262,11 +262,16 @@ function printHelp() {
 const args = parseArgs(Deno.args)
 const cmd = args._[0] || 'mine'
 
-if (args.help || args.h) printHelp()
-else if (cmd === 'sim') await cmdSim(args)
-else if (cmd === 'mine') await cmdMine(args)
-else {
-	console.error(`unknown command: ${cmd}`)
-	printHelp()
-	Deno.exit(1)
+try {
+	if (args.help || args.h) printHelp()
+	else if (cmd === 'sim') await cmdSim(args)
+	else if (cmd === 'mine') await cmdMine(args)
+	else {
+		console.error(`unknown command: ${cmd}`)
+		printHelp()
+		Deno.exit(1)
+	}
+}
+finally {
+	shutdownSimPool()
 }
