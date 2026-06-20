@@ -20,8 +20,8 @@ const ARCHIVE_LINE_EVENT_ID_RE = /"eventId"\s*:\s*"([\da-f]{64})"/u
 /** 联邦收集阶段：同 digest 的 peer 数达此值可提前结束等待（最终落盘仍须信誉仲裁） */
 export const ARCHIVE_QUORUM_PEER_MIN = archiveTunables.archiveQuorumPeerMin
 
-/** 无正信誉时，同 digest 的独立 peer 数须达此值才接受（防 Sybil） */
-export const ARCHIVE_QUORUM_PEER_STRICT_MIN = archiveTunables.archiveQuorumPeerStrictMin
+/** 无正信誉时，同 digest 的独立 peer 数须达此值才接受（防 Sybil；运行时硬钳 ≥2） */
+export const ARCHIVE_QUORUM_PEER_STRICT_MIN = Math.max(2, archiveTunables.archiveQuorumPeerStrictMin)
 
 /**
  * @param {object} snap PostSnapshot

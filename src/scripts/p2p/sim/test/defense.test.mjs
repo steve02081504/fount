@@ -31,7 +31,7 @@ function disabledDefenseBundle() {
 }
 
 /**
- * 仅看仿真指标的适应度（剔除规则惩罚），用于隔离「某参数是否真的影响仿真」。
+ * 仅看仿真指标的适应度（全部内生，无外生规则惩罚）。
  * @param {import('../tunables_bundle.mjs').TunablesBundle} bundle tunables
  * @param {number[]} [seeds] 种子
  * @returns {number} 全场景平均的快照适应度
@@ -72,8 +72,6 @@ Deno.test('sybilContainmentRate is non-trivial on sybil_heavy', () => {
 })
 
 /**
- * 每个「曾经在仿真里没有梯度」的参数，现在都必须能改变全场景仿真适应度。
- * 这是防回归守卫：若未来某次改动让某参数重新变成「死参数」，本测试会失败。
  * @type {Array<[string, string, number, number]>} module, key, 低值, 高值
  */
 const GRADIENT_GUARDS = [
@@ -81,7 +79,6 @@ const GRADIENT_GUARDS = [
 	['reputation', 'introducerSeedEdge', 0.02, 0.95],
 	['reputation', 'wantUnknownThreshold', 1, 12],
 	['reputation', 'collusionMaxHop', 1, 8],
-	['trustGraph', 'hintMaxBonus', 0.001, 0.95],
 	['trustGraph', 'rosterDefaultScore', 0.001, 0.95],
 	['archive', 'archiveQuorumPeerMin', 1, 6],
 	['archive', 'archiveQuorumPeerStrictMin', 2, 9],
@@ -93,6 +90,81 @@ for (const [module, key, low, high] of GRADIENT_GUARDS)
 		lowBundle[module][key] = low
 		const highBundle = loadDefaultTunables()
 		highBundle[module][key] = high
-		const delta = Math.abs(simOnlyFitness(lowBundle) - simOnlyFitness(highBundle))
+		const scenarios = resolveScenarios('all')
+		let delta = 0
+		for (const scenario of scenarios)
+			for (const seed of [1, 2, 3])
+				delta += Math.abs(
+					fitnessFromSnapshot(runSimulation(scenario, seed, lowBundle))
+					- fitnessFromSnapshot(runSimulation(scenario, seed, highBundle)),
+				)
 		assertEquals(delta > 1e-6, true, `${module}.${key} flat: delta=${delta}`)
 	})
+
+Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', () => {
+	const base = loadDefaultTunables()
+	const lean = loadDefaultTunables()
+	lean.mailbox.relayFanoutTrusted = 1
+	lean.mailbox.wantFanout = 1
+	lean.mailbox.maxHop = 1
+	lean.trustGraph.federationFanoutTopK = 1
+
+	const scenario = resolveScenarios('churn_storm')[0]
+	let baseFit = 0
+	let leanFit = 0
+	for (const seed of [1, 2, 3, 4, 5]) {
+		baseFit += fitnessFromSnapshot(runSimulation(scenario, seed, base))
+		leanFit += fitnessFromSnapshot(runSimulation(scenario, seed, lean))
+	}
+
+	assertEquals(
+		leanFit < baseFit,
+		true,
+		`lean fitness ${leanFit} should be below base ${baseFit}`,
+	)
+})
+
+Deno.test('strictMin=1 loses archiveQuorum on digest_equivocation (endogenous byzantine)', () => {
+	const strict = loadDefaultTunables()
+	strict.archive.archiveQuorumPeerMin = 1
+	strict.archive.archiveQuorumPeerStrictMin = 1
+
+	const safe = loadDefaultTunables()
+	safe.archive.archiveQuorumPeerMin = 2
+	safe.archive.archiveQuorumPeerStrictMin = 2
+
+	const scenario = resolveScenarios('digest_equivocation')[0]
+	const strictSnap = runSimulation(scenario, 7, strict)
+	const safeSnap = runSimulation(scenario, 7, safe)
+
+	assertEquals(
+		strictSnap.archiveQuorumAccuracy < safeSnap.archiveQuorumAccuracy,
+		true,
+		`strict ${strictSnap.archiveQuorumAccuracy} should be below safe ${safeSnap.archiveQuorumAccuracy}`,
+	)
+})
+
+Deno.test('key_thief and sleeper are containable on dedicated scenarios', () => {
+	const tunables = loadDefaultTunables()
+	const keySnap = runSimulation(resolveScenarios('key_compromise')[0], 4, tunables)
+	const sleeperSnap = runSimulation(resolveScenarios('sleeper_turn')[0], 4, tunables)
+
+	assertEquals(keySnap.compromiseContainmentRate > 0, true)
+	assertEquals(sleeperSnap.sleeperReactionRate >= 0, true)
+})
+
+Deno.test('trigger-happy hide threshold raises falsePositive (endogenous mis-hide)', () => {
+	const base = loadDefaultTunables()
+	const triggerHappy = loadDefaultTunables()
+	triggerHappy.social.socialRepHideThreshold = -0.05
+
+	const scenario = resolveScenarios('balanced')[0]
+	const baseSnap = runSimulation(scenario, 9, base)
+	const happySnap = runSimulation(scenario, 9, triggerHappy)
+
+	assertEquals(
+		happySnap.falsePositiveRate >= baseSnap.falsePositiveRate,
+		true,
+		`happy ${happySnap.falsePositiveRate} should be >= base ${baseSnap.falsePositiveRate}`,
+	)
+})

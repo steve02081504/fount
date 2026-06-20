@@ -18,7 +18,7 @@ import { applyFollowedBlockSignalPure, applySocialBlockDecayAllPure } from '../r
 import { pickTop } from '../trust_graph_engine.mjs'
 
 import { runAttack } from './attacks.mjs'
-import { createRng, fakeNodeHash, pickOne, randInt } from './rng.mjs'
+import { createRng, fakeNodeHash, pickMany, pickOne, randInt } from './rng.mjs'
 
 /** @typedef {import('./attacks.mjs').AttackKind} AttackKind */
 /** @typedef {import('./tunables_bundle.mjs').TunablesBundle} TunablesBundle */
@@ -35,6 +35,10 @@ import { createRng, fakeNodeHash, pickOne, randInt } from './rng.mjs'
  *   introducerId?: string,
  *   whitewashStage?: number,
  *   newcomer?: boolean,
+ *   stolenFromId?: string,
+ *   sleeperTurnRound?: number,
+ *   eclipseTargetId?: string,
+ *   compromised?: boolean,
  * }} SimNode
  */
 
@@ -87,6 +91,58 @@ function activeSide(profile, rng, round) {
 }
 
 /**
+ * 每回合更新 churn/掉线集合。
+ * @param {object} ctx 仿真上下文
+ * @param {SimNode[]} nodes 全部节点
+ * @param {() => number} rng 随机源
+ * @param {import('./scenarios.mjs').SimScenario} scenario 场景
+ * @returns {void}
+ */
+function updateChurnOffline(ctx, nodes, rng, scenario) {
+	const churnRate = scenario.churnRate ?? 0
+	const offlineRate = scenario.offlineRate ?? 0
+	if (!churnRate && !offlineRate) return
+
+	for (const id of [...ctx.offlineSet])
+		if (rng() < churnRate * 0.6)
+			ctx.offlineSet.delete(id)
+
+	for (const n of nodes) {
+		if (n.kind === 'malicious' || n.newcomer) continue
+		if (rng() < offlineRate)
+			ctx.offlineSet.add(n.id)
+	}
+
+	// 定向 eclipse 分区：受害节点强制离线
+	if (ctx.eclipseVictims)
+		for (const id of ctx.eclipseVictims)
+			ctx.offlineSet.add(id)
+}
+
+/**
+ * 给诚实节点注入瞬时误伤信号（hide 阈值接近 0 时 falsePositive 自然升高）。
+ * @param {object} ctx 仿真上下文
+ * @param {SimObserver} obs 观察者
+ * @param {SimNode[]} activeHonest 活跃诚实节点
+ * @param {() => number} rng 随机源
+ * @param {TunablesBundle} tunables 参数
+ * @returns {void}
+ */
+function injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables) {
+	if (rng() > 0.12) return
+	const victim = pickOne(rng, activeHonest.filter(n => n.id !== obs.id))
+	if (!victim) return
+	applySubjectiveSlashPure(
+		obs.reputation,
+		victim.id,
+		obs.id,
+		tunables.reputation.slashUnverifiedDefaultClaim * 0.25,
+		false,
+		tunables.reputation,
+	)
+}
+
+/**
  * @param {import('./scenarios.mjs').SimScenario} scenario 场景
  * @param {number} seed 种子
  * @param {TunablesBundle} tunables 候选参数
@@ -134,21 +190,53 @@ export function buildWorld(scenario, seed, tunables) {
 	// 形成深度 ≥3 的邀请链，这样 applyDecayCollusionAfterSlash 的多跳衰减才有意义。
 	/** @type {Map<string, string>} */
 	const clusterLast = new Map()
+	/** @type {SimNode[]} */
+	const eclipseTargets = pickMany(
+		rng,
+		nodes.filter(n => n.kind === 'honest' && !n.compromised),
+		scenario.eclipseTargetCount ?? 0,
+	)
+
 	for (const [attack, count] of Object.entries(scenario.attacks))
 		for (let i = 0; i < (count || 0); i++) {
-			const id = fakeNodeHash(idx++)
 			const clusterId = `${attack}-${Math.floor(i / 4)}`
-			const chained = attack === 'collusion' || attack === 'whitewasher'
+			const chained = attack === 'collusion' || attack === 'whitewasher' || attack === 'rep_pump'
+
+			// key_thief：盗用高信誉诚实节点的 nodeHash（同 id 身份）
+			if (attack === 'key_thief') {
+				const victim = pickOne(rng, nodes.filter(n => n.kind === 'honest' && !n.compromised && !n.newcomer))
+				if (!victim) continue
+				victim.compromised = true
+				nodes.push({
+					id: victim.id,
+					kind: 'malicious',
+					attack: 'key_thief',
+					stolenFromId: victim.id,
+					introducerId: victim.introducerId,
+				})
+				continue
+			}
+
+			const id = fakeNodeHash(idx++)
 			const introducer = chained && clusterLast.has(clusterId)
 				? clusterLast.get(clusterId)
-				: pickOne(rng, nodes.filter(n => n.kind === 'honest'))?.id || pickOne(rng, nodes)?.id
-			nodes.push({
+				: pickOne(rng, nodes.filter(n => n.kind === 'honest' && !n.compromised))?.id || pickOne(rng, nodes)?.id
+
+			/** @type {SimNode} */
+			const malNode = {
 				id,
 				kind: 'malicious',
 				attack: /** @type {AttackKind} */ attack,
 				clusterId,
 				introducerId: introducer,
-			})
+			}
+
+			if (attack === 'sleeper')
+				malNode.sleeperTurnRound = scenario.sleeperTurnRound ?? 15
+			if (attack === 'targeted_eclipse')
+				malNode.eclipseTargetId = eclipseTargets[i % Math.max(1, eclipseTargets.length)]?.id
+
+			nodes.push(malNode)
 			if (introducer)
 				inviteEdges.push({ from: introducer, to: id })
 			if (chained)
@@ -183,7 +271,7 @@ export function buildWorld(scenario, seed, tunables) {
 	 * @returns {SimNode[]} 同簇 Sybil 节点
 	 */
 	function sybilCluster(node) {
-		return nodes.filter(n => n.attack === 'sybil' && n.clusterId === node.clusterId)
+		return nodes.filter(n => (n.attack === 'sybil' || n.attack === 'rep_pump') && n.clusterId === node.clusterId)
 	}
 
 	/**
@@ -199,6 +287,13 @@ export function buildWorld(scenario, seed, tunables) {
 		observers,
 		inviteEdges,
 		now: Date.now(),
+		offlineSet: new Set(),
+		eclipseVictims: new Set(),
+		equivocationByObserver: new Map(),
+		churnReachAccum: 0,
+		churnReachRounds: 0,
+		sleeperTurnRound: scenario.sleeperTurnRound ?? 15,
+		scenario,
 		engine: {
 			bumpReputationOnRelayPure,
 			bumpChunkStorageReputationPure,
@@ -267,22 +362,28 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables) {
  * @param {SimNode[]} nodes 全部节点
  * @param {TunablesBundle} tunables 参数
  * @param {(id: string) => number} scoreOf 信誉分
+ * @param {Set<string>} [offlineSet] 当前离线节点
  * @returns {{ reach: number, cost: number }} 可达率与成本比
  */
-function simulateMailbox(obs, nodes, tunables, scoreOf) {
+function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) {
 	const maxHop = tunables.mailbox.maxHop
 	const fanout = tunables.mailbox.relayFanoutTrusted
 	const wantFanout = tunables.mailbox.wantFanout
-	const friendly = new Set(nodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id))
-	const adj = new Map(nodes.map(n => [n.id, []]))
-	for (const n of nodes) {
-		const peers = nodes
+	const online = nodes.filter(n => !offlineSet.has(n.id))
+	const friendly = new Set(online.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id))
+	const adj = new Map(online.map(n => [n.id, []]))
+	for (const n of online) {
+		const peers = online
 			.filter(x => x.id !== n.id)
 			.sort((a, b) => scoreOf(b.id) - scoreOf(a.id))
 			.slice(0, fanout)
 			.map(x => x.id)
 		adj.set(n.id, peers)
 	}
+
+	if (offlineSet.has(obs.id)) 
+		return { reach: 0, cost: 0 }
+	
 
 	const visited = new Set([obs.id])
 	/** @type {string[]} */
@@ -305,7 +406,7 @@ function simulateMailbox(obs, nodes, tunables, scoreOf) {
 		hops++
 	}
 
-	const totalFriendly = Math.max(1, friendly.size - 1)
+	const totalFriendly = Math.max(1, friendly.size - (friendly.has(obs.id) ? 1 : 0))
 	return {
 		reach: deliveries / totalFriendly,
 		cost: visited.size / totalFriendly,
@@ -317,38 +418,48 @@ function simulateMailbox(obs, nodes, tunables, scoreOf) {
  *   - **安全性**：防御弱时伪造者未被扣分 → 排进 quorum top → 正确票不足 → 准确率下降。
  *   - **活性**：小群里能提交摘要的诚实节点有限（≤ groupSize），strictMin 定得过高就永远
  *     凑不齐 quorum → 准确率随缺口线性下降。
- * 因此 archiveQuorumPeerMin / StrictMin 同时受「太高伤活性」「太低放过伪造」双向牵引。
+ *   - **单点独裁**：strictMin=1 时高信誉伪造者/等价欺骗者可独断 digest。
  * @param {SimNode[]} nodes 全部节点
  * @param {TunablesBundle} tunables 参数
  * @param {(id: string) => number} scoreOf 信誉分
  * @param {number} groupSize 群规模
+ * @param {boolean} [hasEquivocation] 是否存在 digest 等价欺骗
  * @returns {number} 仲裁正确率 0..1
  */
-function simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize) {
-	const honestSubmitters = nodes.filter(n => (n.kind === 'honest' && !n.newcomer) || n.kind === 'relay')
-	const forgers = nodes.filter(n => n.attack === 'archive_forger')
+function simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation = false) {
+	const honestSubmitters = nodes.filter(n => (n.kind === 'honest' && !n.newcomer && !n.compromised) || n.kind === 'relay')
+	const forgers = nodes.filter(n => n.attack === 'archive_forger' || n.attack === 'equivocator')
 	if (!honestSubmitters.length && !forgers.length) return 1
 
 	const peerMin = tunables.archive.archiveQuorumPeerMin
 	const strictMin = Math.max(peerMin, tunables.archive.archiveQuorumPeerStrictMin)
 
-	// 一次摘要仲裁只能从有限的「在线/可达」成员里收集（小群约半数）。
 	const reachable = Math.max(2, Math.round(groupSize / 2))
 	const availHonest = Math.min(honestSubmitters.length, reachable)
 	const availForgers = Math.min(forgers.length, reachable)
 
-	// 按主观信誉排序取前 strictMin 个组成 quorum；防御弱时高信誉伪造者会挤进来。
 	const quorum = [...honestSubmitters.slice(0, availHonest), ...forgers.slice(0, availForgers)]
 		.sort((a, b) => scoreOf(b.id) - scoreOf(a.id))
 		.slice(0, strictMin)
-	const correct = quorum.filter(n => n.attack !== 'archive_forger').length
+	const correct = quorum.filter(n => n.attack !== 'archive_forger' && n.attack !== 'equivocator').length
 
-	// 活性：strictMin 太高，小群里连足够的提交者都凑不齐（quorum.length < strictMin）。
 	const liveness = Math.min(1, quorum.length / strictMin)
-	// 写回门槛：正确票必须达到 peerMin 才认定摘要（peerMin 太高同样难以满足）。
 	const peerOk = Math.min(1, correct / Math.max(1, peerMin))
-	// 安全性：quorum 内正确票占比（伪造者挤入会拉低）。
-	const safety = quorum.length ? correct / quorum.length : 1
+	let safety = quorum.length ? correct / quorum.length : 1
+
+	// strictMin=1 单点独裁：quorum 仅一人且为伪造者 → 安全性归零
+	if (strictMin === 1 && quorum.length === 1) {
+		const sole = quorum[0]
+		if (sole.attack === 'archive_forger' || sole.attack === 'equivocator')
+			safety = 0
+	}
+
+	// digest 等价欺骗：strictMin 过低时无法交叉验证
+	if (hasEquivocation && strictMin < 2)
+		safety *= 0.15
+	else if (hasEquivocation && quorum.some(n => n.attack === 'equivocator'))
+		safety *= Math.max(0.2, correct / Math.max(1, quorum.length))
+
 	return liveness * peerOk * safety
 }
 
@@ -395,18 +506,24 @@ export function runSimulation(scenario, seed, tunables) {
 
 	for (let round = 0; round < rounds; round++) {
 		ctx.now += 60_000
+		updateChurnOffline(ctx, nodes, rng, scenario)
+
 		for (const obs of observers) {
 			for (const peer of obs.trustedPeers.slice(0, 2))
-				bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, ctx.now, tunables.reputation)
+				if (!ctx.offlineSet.has(peer))
+					bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, ctx.now, tunables.reputation)
 
-			for (const node of friendly.filter(n => n.id !== obs.id)) {
+			for (const node of friendly.filter(n => n.id !== obs.id && !ctx.offlineSet.has(n.id))) {
 				const profile = node.kind === 'honest' ? node.profile ?? 'both' : 'both'
 				const side = activeSide(profile, rng, round)
 				runFriendlyBehavior(ctx, node, obs, side, round, tunables)
 			}
 
 			for (const mal of malicious)
-				runAttack(ctx, mal, obs, rng, round, tunables)
+				if (!ctx.offlineSet.has(mal.id))
+					runAttack(ctx, mal, obs, rng, round, tunables)
+
+			injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables)
 
 			// 诚实节点的正常 churn 也会偶发「全未知 want」。wantUnknownThreshold 太低时
 			// 这些诚实请求会被误判为 eclipse 而扣分（falsePositive），构成阈值的下行压力。
@@ -445,7 +562,20 @@ export function runSimulation(scenario, seed, tunables) {
 			}
 
 			for (const h of activeHonest.filter(n => activeSide(n.profile ?? 'both', rng, round) === 'chat').slice(0, 2))
-				bumpChunkStorageReputationPure(obs.reputation, h.id, tunables.reputation)
+				if (!ctx.offlineSet.has(h.id))
+					bumpChunkStorageReputationPure(obs.reputation, h.id, tunables.reputation)
+
+			// 累积 churn 下 mailbox 可达率
+			/**
+			 * @param {string} id 64 hex nodeHash
+			 * @returns {number} 观察者主观信誉分
+			 */
+			function scoreOfRound(id) {
+				return obs.reputation.byNodeHash[id]?.score ?? 0
+			}
+			const mailRound = simulateMailbox(obs, nodes, tunables, scoreOfRound, ctx.offlineSet)
+			ctx.churnReachAccum += mailRound.reach
+			ctx.churnReachRounds++
 		}
 	}
 
@@ -456,7 +586,7 @@ export function runSimulation(scenario, seed, tunables) {
 	for (const obs of observers)
 		applySocialBlockDecayAllPure(obs.reputation, ctx.now, tunables.social)
 
-	return collectSnapshot(observers, nodes, tunables, groupSize)
+	return collectSnapshot(observers, nodes, tunables, groupSize, ctx)
 }
 
 /**
@@ -464,15 +594,21 @@ export function runSimulation(scenario, seed, tunables) {
  * @param {SimNode[]} nodes 全部节点
  * @param {TunablesBundle} tunables 候选参数
  * @param {number} groupSize 群规模
+ * @param {object} [ctx] 仿真上下文（churn 累积、等价欺骗记录）
  * @returns {import('./metrics.mjs').SimSnapshot} 指标快照
  */
-function collectSnapshot(observers, nodes, tunables, groupSize) {
+function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const malicious = nodes.filter(n => n.kind === 'malicious')
-	const honest = nodes.filter(n => n.kind === 'honest')
+	const honest = nodes.filter(n => n.kind === 'honest' && !n.compromised)
 	const relays = nodes.filter(n => n.kind === 'relay' || n.kind === 'lurker')
 	const profiled = honest.filter(n => n.profile && n.profile !== 'both')
-	const sybilNodes = malicious.filter(n => n.attack === 'sybil')
+	const sybilNodes = malicious.filter(n => n.attack === 'sybil' || n.attack === 'rep_pump')
 	const forgers = malicious.filter(n => n.attack === 'archive_forger')
+	const keyThieves = malicious.filter(n => n.attack === 'key_thief')
+	const sleepers = malicious.filter(n => n.attack === 'sleeper')
+	const equivocators = malicious.filter(n => n.attack === 'equivocator')
+	const offlineSet = ctx.offlineSet ?? new Set()
+	const hasEquivocation = equivocators.length > 0 || (ctx.equivocationByObserver?.size ?? 0) > 0
 
 	let malSuppressed = 0
 	let malTotal = 0
@@ -494,8 +630,15 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 	let mailboxReach = 0
 	let mailboxCost = 0
 	let archiveQuorum = 0
+	let compromiseContained = 0
+	let compromiseTotal = 0
+	let sleeperReacted = 0
+	let sleeperTotal = 0
+	let equivocationDefended = 0
+	let equivocationTotal = 0
 	const nodeKind = new Map(nodes.map(n => [n.id, n]))
 	const hideThreshold = tunables.social.socialRepHideThreshold
+	const onlineNodes = nodes.filter(n => !offlineSet.has(n.id))
 
 	for (const obs of observers) {
 		/**
@@ -511,35 +654,30 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 		 * @returns {number | undefined} 已打分则返回分数，从未打分（新人）返回 undefined
 		 */
 		function rawScoreOf(id) {
+			if (offlineSet.has(id)) return undefined
 			const s = obs.reputation.byNodeHash[id]?.score
 			return Number.isFinite(s) ? s : undefined
 		}
 
-		// 合法发现提示（指向自己尚未直信的诚实节点） + hint_poisoner 注入的恶意提示，
-		// 两者都受 hintDefaultWeight / hintMaxBonus 调控：权重越高发现越快，但中毒风险也越大。
 		const discoveryHints = honest
-			.filter(n => !n.newcomer && n.id !== obs.id && !obs.trustedPeers.includes(n.id))
+			.filter(n => !n.newcomer && n.id !== obs.id && !obs.trustedPeers.includes(n.id) && !offlineSet.has(n.id))
 			.slice(0, 2)
 			.map(n => ({ nodeHash: n.id, source: 'explore' }))
 		const hints = [...discoveryHints, ...obs.injectedHints]
 
 		const top = pickTop({
-			trustedPeers: obs.trustedPeers,
-			explorePeers: obs.explorePeers,
+			trustedPeers: obs.trustedPeers.filter(id => !offlineSet.has(id)),
+			explorePeers: obs.explorePeers.filter(id => !offlineSet.has(id)),
 			hints,
-			// 名册用 rawScoreOf：从未打分的新人在图里退回 rosterDefaultScore，
-			// 让该旋钮（对陌生人默认信任）得到真实梯度。
 			roomRosters: [{
 				scopeId: 'sim-group',
-				nodeHashes: nodes.map(n => n.id),
+				nodeHashes: onlineNodes.map(n => n.id),
 				scoreOf: rawScoreOf,
 			}],
 			scoreOf: rawScoreOf,
 		}, tunables.trustGraph.federationFanoutTopK, tunables.trustGraph)
 
 		const topSet = new Set(top.map(n => n.nodeHash))
-		// 可达率 = 选中集覆盖的诚实节点 / 全部诚实节点（覆盖广度），与成本天然对立；
-		// 旧实现用「选中集纯度」，会让极小 fanout 虚高，掩盖冗余/韧性损失。
 		const honestInTop = top.filter(n => nodeKind.get(n.nodeHash)?.kind === 'honest').length
 		fanoutReach += honestInTop / Math.max(1, honest.length)
 		fanoutCost += top.length / Math.max(1, honest.length)
@@ -570,8 +708,6 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 				profileSafe++
 		}
 
-		// 中位数只取已建立的诚实节点（排除从未交互的新人），否则新人的 0 分会压低基准、
-		// 让 sybil 看起来「不低于诚实中位数」而虚假地判为未containment。
 		const establishedHonest = honest.filter(h => !h.newcomer)
 		const honestScores = establishedHonest.map(h => scoreOf(h.id)).sort((a, b) => a - b)
 		const honestMedian = honestScores.length
@@ -597,6 +733,27 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 				archiveDefended++
 		}
 
+		for (const kt of keyThieves) {
+			compromiseTotal++
+			if (isMaliciousSuppressed(kt, scoreOf, topSet, hideThreshold))
+				compromiseContained++
+		}
+
+		for (const sl of sleepers) {
+			const turnRound = sl.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
+			if ((ctx.scenario?.rounds ?? 40) > turnRound) {
+				sleeperTotal++
+				if (isMaliciousSuppressed(sl, scoreOf, topSet, hideThreshold))
+					sleeperReacted++
+			}
+		}
+
+		for (const eq of equivocators) {
+			equivocationTotal++
+			if (isMaliciousSuppressed(eq, scoreOf, topSet, hideThreshold))
+				equivocationDefended++
+		}
+
 		for (const m of malicious.filter(n => n.attack === 'collusion')) {
 			collusionTotal++
 			const ring = nodes.filter(n => n.attack === 'collusion' && n.clusterId === m.clusterId)
@@ -604,13 +761,35 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 			if (avg < 0) collusionCollapsed++
 		}
 
-		const mail = simulateMailbox(obs, nodes, tunables, scoreOf)
+		const mail = simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet)
 		mailboxReach += mail.reach
 		mailboxCost += mail.cost
-		archiveQuorum += simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize)
+		archiveQuorum += simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
 	}
 
 	const nObs = Math.max(1, observers.length)
+
+	// churn 可达率：回合内累积的 mailbox reach 均值；无 churn 时退化为 mailboxReachRate
+	const churnReachRate = ctx.churnReachRounds
+		? ctx.churnReachAccum / ctx.churnReachRounds
+		: mailboxReach / nObs
+
+	// 理想可达（无 offline）对比，用于 churn 场景
+	let idealReach = 0
+	for (const obs of observers) {
+		/**
+		 * @param {string} id 64 hex nodeHash
+		 * @returns {number} 观察者主观信誉分
+		 */
+		function scoreOfIdeal(id) {
+			return obs.reputation.byNodeHash[id]?.score ?? 0
+		}
+		idealReach += simulateMailbox(obs, nodes, tunables, scoreOfIdeal, new Set()).reach
+	}
+	const idealReachRate = idealReach / nObs
+	const normalizedChurnReach = idealReachRate > 0
+		? Math.min(1, churnReachRate / idealReachRate)
+		: churnReachRate
 
 	return {
 		malSuppressionRate: malTotal ? malSuppressed / malTotal : 1,
@@ -626,6 +805,12 @@ function collectSnapshot(observers, nodes, tunables, groupSize) {
 		mailboxReachRate: mailboxReach / nObs,
 		mailboxCostRatio: mailboxCost / nObs,
 		archiveQuorumAccuracy: archiveQuorum / nObs,
+		churnReachRate: normalizedChurnReach,
+		compromiseContainmentRate: compromiseTotal ? compromiseContained / compromiseTotal : 1,
+		sleeperReactionRate: sleeperTotal ? sleeperReacted / sleeperTotal : 1,
+		equivocationDefenseRate: equivocationTotal
+			? equivocationDefended / equivocationTotal
+			: hasEquivocation ? archiveQuorum / nObs : 1,
 		observerCount: observers.length,
 		maliciousCount: malicious.length,
 		honestCount: honest.length,

@@ -35,3 +35,15 @@ Deno.test('usage_mix scenario profiles', () => {
 	assertEquals(snap.profilePreservationRate >= 0, true)
 	assertEquals(snap.relayPreservationRate >= 0, true)
 })
+
+Deno.test('new endogenous scenarios produce metrics', () => {
+	const tunables = loadDefaultTunables()
+	for (const id of ['churn_storm', 'key_compromise', 'sleeper_turn', 'digest_equivocation', 'eclipse_targeted']) {
+		const scenario = resolveScenarios(id)[0]
+		const snap = runSimulation(scenario, 3, tunables)
+		assertEquals(typeof snap.churnReachRate, 'number', id)
+		assertEquals(typeof snap.compromiseContainmentRate, 'number', id)
+		assertEquals(typeof snap.sleeperReactionRate, 'number', id)
+		assertEquals(typeof snap.equivocationDefenseRate, 'number', id)
+	}
+})

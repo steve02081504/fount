@@ -4,13 +4,8 @@
  * 设计原则：不再用硬性的 min/max 盒子约束搜索，而是
  *   1. 让每个参数在其**语义域**内自由采样（正数 / (0,1) 比例 / 正整数 / [-1,1] 信誉分），
  *      语义域是结构性的（负惩罚、>1 的比例本就无意义），不是人为调参上下限；
- *   2. 用 {@link softRulePenalty} 这一组**内在原则规则**去鼓励/抑制参数。
- *
- * 关键：规则锚定的是**绝对工程原则**（带宽放大成本、防御有效性下限、小群活性、误伤风险），
- * **不是「离当前默认值的距离」**。旧实现用 driftPenalty 把一切往现有默认值拉回，等价于一个
- * 「以默认值为中心的软 min/max 盒子」，会让优化器结构性地无法离开今天的默认值
- * （softRulePenalty(default) 恒为 0）。现在默认值本身也带有真实的内在成本，
- * 优化器只要在仿真上把这些成本赚回来，就能自由地远离默认值。
+ *   2. 适应度压力**全部来自仿真内生指标**（churn 可达、误伤、quorum 安全等），
+ *      不再在此模块追加外生手写常数惩罚。
  */
 import { createRng } from './rng.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
@@ -299,105 +294,4 @@ export function crossoverCandidates(a, b, seed) {
 		if (rng() < 0.5)
 			out[spec.module][spec.key] = b[spec.module][spec.key]
 	return sanitizeBundle(out)
-}
-
-// ── 内在原则规则（绝对锚定，取代「离默认值距离」式软盒子）────────────────────
-
-/**
- * 防御有效性下限（绝对）：信誉分定义域是 [-1,1]，一次惩罚若远小于约 0.05，
- * 就几乎无法把作恶者推过任何隐藏/降权阈值——这是与「当前默认值」无关的物理下限。
- * 低于该下限按二次惩罚，越接近 0 越痛；高出下限不惩罚（过度激进交由仿真的 falsePositive 反制）。
- */
-const DEFENSE_FLOOR = 0.05
-const DEFENSE_WEIGHT = 0.6
-const DEFENSE_KEYS = Object.freeze([
-	['reputation', 'penaltyUnknownWant'],
-	['reputation', 'penaltyMessageRate'],
-	['reputation', 'chunkFetchFailPenalty'],
-	['social', 'socialBlockClaim'],
-])
-
-/**
- * 带宽/放大成本（绝对）：每多一跳、每多一个 fanout 名额，都是真实注入网络的报文。
- * 仿真只数「被访问节点数」，系统性低估真实带宽与放大攻击面，故在此追加一份**绝对**成本，
- * 与仿真里的可达率/韧性指标天然对立——把 fanout 压低能省下这份成本，但会牺牲覆盖与冗余。
- * 成本随规模线性增长，不以任何默认值为中心。
- */
-const BANDWIDTH_WEIGHT = 0.0016
-
-/**
- * 韧性下限（绝对）：fanout / 跳数低于这些**绝对**冗余阈值，节点在 churn / eclipse 下就会
- * 失联——仿真的可达率权重偏低、低估了这一风险，故用一组绝对软下限托住。
- * 这不是「以默认值为中心的盒子」，而是「为了在动荡网络里存活所需的最小复制度」这一工程原则；
- * 仿真收益足够大时优化器仍可越过它，但不会再把 fanout 塌缩到 1。
- */
-const RESILIENCE_FLOORS = Object.freeze([
-	['trustGraph', 'federationFanoutTopK', 4],
-	['mailbox', 'relayFanoutTrusted', 3],
-	['mailbox', 'wantFanout', 3],
-	['mailbox', 'maxHop', 2],
-])
-const RESILIENCE_WEIGHT = 0.25
-
-/** 小群典型成员规模（绝对）：quorum 高于它，小群就难以凑齐而损失活性。 */
-const TYPICAL_SMALL_GROUP = 5
-/** Byzantine 安全下限（绝对）：strictMin 低于 2 等于没有多方仲裁，单点即可定论。 */
-const QUORUM_SAFETY_FLOOR = 2
-const QUORUM_WEIGHT = 0.03
-
-/** 隐藏阈值越接近 0 越「易误伤」诚实节点（仿真未完全建模的真实风险），绝对上限拐点 -0.3。 */
-const HIDE_CEIL = -0.3
-const HIDE_WEIGHT = 0.6
-
-/**
- * @param {number} x 实数
- * @returns {number} max(0, x)
- */
-function relu(x) {
-	return x > 0 ? x : 0
-}
-
-/**
- * 带宽/放大的绝对成本模型：mailbox 扩散 ≈ (relayFanout + wantFanout) × maxHop，
- * 叠加 TrustGraph 联邦 fanout 的一跳成本。纯绝对量，不参照默认值。
- * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
- * @returns {number} 估算的注入报文规模
- */
-export function bandwidthCost(bundle) {
-	const { maxHop, relayFanoutTrusted, wantFanout } = bundle.mailbox
-	return (relayFanoutTrusted + wantFanout) * maxHop + bundle.trustGraph.federationFanoutTopK
-}
-
-/**
- * 内在原则规则总惩罚（从适应度中扣除）。
- * **默认 tunables 处通常 > 0**（默认值也承担真实的带宽/活性等内在成本），
- * 这正是与旧 driftPenalty 的本质区别：不再把默认值钉成无成本的零点。
- * @param {import('./tunables_bundle.mjs').TunablesBundle} bundle tunables
- * @returns {number} 规则惩罚（≥ 0）
- */
-export function softRulePenalty(bundle) {
-	let penalty = 0
-
-	// 防御有效性下限（绝对）
-	for (const [module, key] of DEFENSE_KEYS)
-		penalty += DEFENSE_WEIGHT * relu(1 - bundle[module][key] / DEFENSE_FLOOR) ** 2
-
-	// 带宽/放大成本（绝对、线性）
-	penalty += BANDWIDTH_WEIGHT * bandwidthCost(bundle)
-
-	// 韧性下限（绝对）：低于最小冗余度按二次惩罚，阻止优化器把 fanout 塌缩到 1
-	for (const [module, key, floor] of RESILIENCE_FLOORS)
-		penalty += RESILIENCE_WEIGHT * relu(1 - bundle[module][key] / floor) ** 2
-
-	// 小群活性：quorum 高于典型小群规模才开始惩罚（绝对拐点）
-	penalty += QUORUM_WEIGHT * relu(bundle.archive.archiveQuorumPeerStrictMin - TYPICAL_SMALL_GROUP)
-	penalty += QUORUM_WEIGHT * relu(bundle.archive.archiveQuorumPeerMin - TYPICAL_SMALL_GROUP)
-	// Byzantine 安全下限：strictMin 低于 2 时二次惩罚（绝对，与默认值无关）
-	penalty += QUORUM_WEIGHT * relu(QUORUM_SAFETY_FLOOR - bundle.archive.archiveQuorumPeerStrictMin) ** 2
-
-	// 误伤风险：隐藏阈值过于接近 0（绝对上限）
-	const hideOver = relu(bundle.social.socialRepHideThreshold - HIDE_CEIL)
-	penalty += HIDE_WEIGHT * (hideOver + 4 * hideOver ** 2)
-
-	return penalty
 }

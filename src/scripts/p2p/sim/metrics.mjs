@@ -1,7 +1,6 @@
 /**
- * 仿真指标与适应度。
+ * 仿真指标与适应度（全部内生，无外生规则惩罚）。
  */
-import { softRulePenalty } from './space.mjs'
 
 /**
  * @typedef {{
@@ -18,6 +17,10 @@ import { softRulePenalty } from './space.mjs'
  *   mailboxReachRate: number,
  *   mailboxCostRatio: number,
  *   archiveQuorumAccuracy: number,
+ *   churnReachRate: number,
+ *   compromiseContainmentRate: number,
+ *   sleeperReactionRate: number,
+ *   equivocationDefenseRate: number,
  *   observerCount: number,
  *   maliciousCount: number,
  *   honestCount: number,
@@ -42,23 +45,31 @@ export const RATE_METRIC_KEYS = Object.freeze([
 	'mailboxReachRate',
 	'mailboxCostRatio',
 	'archiveQuorumAccuracy',
+	'churnReachRate',
+	'compromiseContainmentRate',
+	'sleeperReactionRate',
+	'equivocationDefenseRate',
 ])
 
 /** 默认适应度加权系数 */
 export const DEFAULT_WEIGHTS = Object.freeze({
-	malSuppressionRate: 0.22,
-	honestPreservationRate: 0.18,
-	collusionCollapseRate: 0.10,
-	sybilContainmentRate: 0.10,
-	archiveDefenseRate: 0.08,
-	relayPreservationRate: 0.06,
-	profilePreservationRate: 0.06,
-	fanoutReachRate: 0.05,
-	mailboxReachRate: 0.05,
+	malSuppressionRate: 0.18,
+	honestPreservationRate: 0.15,
+	collusionCollapseRate: 0.08,
+	sybilContainmentRate: 0.08,
+	archiveDefenseRate: 0.07,
+	relayPreservationRate: 0.05,
+	profilePreservationRate: 0.05,
+	fanoutReachRate: 0.04,
+	mailboxReachRate: 0.04,
 	archiveQuorumAccuracy: 0.05,
-	falsePositiveRate: -0.18,
-	fanoutCostRatio: -0.08,
-	mailboxCostRatio: -0.06,
+	churnReachRate: 0.06,
+	compromiseContainmentRate: 0.05,
+	sleeperReactionRate: 0.04,
+	equivocationDefenseRate: 0.04,
+	falsePositiveRate: -0.16,
+	fanoutCostRatio: -0.07,
+	mailboxCostRatio: -0.05,
 })
 
 /**
@@ -126,9 +137,8 @@ export async function evaluateTunables(scenarios, seeds, tunables, runSim, weigh
 	}
 
 	const n = Math.max(1, scenarios.length)
-	const rulePenalty = softRulePenalty(tunables)
 	return {
-		fitness: totalFitness / n - rulePenalty,
+		fitness: totalFitness / n,
 		mean: totalMean / n,
 		min: worstMin,
 		max: bestMax,
