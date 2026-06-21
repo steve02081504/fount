@@ -11,7 +11,7 @@ export const DEFAULT_RTC_MAX_ACTIVE = 32
 
 /**
  * @typedef {{
- *   trustedAnchors: Set<string>,
+ *   trustedAnchorsByObserver: Map<string, Set<string>>,
  *   exploreByObserver: Map<string, Set<string>>,
  *   poisonedByAttacker: Map<string, Set<string>>,
  *   roomSlotsByObserver: Map<string, { active: Set<string>, sourceByPeer: Map<string, string>, trustedReserved: Set<string> }>,
@@ -20,11 +20,20 @@ export const DEFAULT_RTC_MAX_ACTIVE = 32
  */
 
 /**
+ * @param {DiscoveryState} state 发现状态
+ * @param {string} observerId 观察者
+ * @returns {Set<string>} 该观察者的 trusted 锚点
+ */
+function observerTrustedAnchors(state, observerId) {
+	return state.trustedAnchorsByObserver.get(observerId) ?? new Set()
+}
+
+/**
  * @returns {DiscoveryState} 空发现状态
  */
 export function createDiscoveryState() {
 	return {
-		trustedAnchors: new Set(),
+		trustedAnchorsByObserver: new Map(),
 		exploreByObserver: new Map(),
 		poisonedByAttacker: new Map(),
 		roomSlotsByObserver: new Map(),
@@ -56,7 +65,7 @@ function roomBucket(state, observerId) {
  * @returns {Set<string>} 观察者可见 peer 集
  */
 export function initObserverDiscovery(state, observerId, trusted, roster, rng, exploreCap = 8) {
-	state.trustedAnchors = new Set(trusted)
+	state.trustedAnchorsByObserver.set(observerId, new Set(trusted))
 	const explore = new Set(trusted)
 	const pool = roster.filter(id => id !== observerId && !explore.has(id))
 	while (explore.size < exploreCap + trusted.length && pool.length) {
@@ -135,7 +144,7 @@ export function eclipseFillExplore(state, victimObserverId, attackerId, sybilIds
 			explore.add(id)
 			added++
 		}
-		takeRoomSlot(state, victimObserverId, id, sybilSource, [...state.trustedAnchors])
+		takeRoomSlot(state, victimObserverId, id, sybilSource, [...observerTrustedAnchors(state, victimObserverId)])
 	}
 	const poison = state.poisonedByAttacker.get(victimObserverId) ?? new Set()
 	poison.add(attackerId)
@@ -155,8 +164,9 @@ export function eclipseFillExplore(state, victimObserverId, attackerId, sybilIds
 export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop = 4, ignorePoison = false) {
 	const bucket = roomBucket(state, observerId)
 	const roomPeers = [...bucket.active].filter(id => friendlyIds.includes(id))
-	const explore = state.exploreByObserver.get(observerId) ?? state.trustedAnchors
-	const anchors = [...state.trustedAnchors].filter(id => friendlyIds.includes(id))
+	const anchorsSet = observerTrustedAnchors(state, observerId)
+	const explore = state.exploreByObserver.get(observerId) ?? anchorsSet
+	const anchors = [...anchorsSet].filter(id => friendlyIds.includes(id))
 	const adj = buildRankedNeighborAdj(friendlyIds, scoreOf, 6)
 	const start = new Set([...anchors, ...roomPeers, ...explore].filter(id => friendlyIds.includes(id)))
 	if (!start.size) return 0
@@ -189,10 +199,10 @@ export function discoveryReach(state, observerId, friendlyIds, scoreOf, maxHop =
  */
 export function recoverDiscoveryFromAnchors(state, observerId) {
 	state.poisonedByAttacker.delete(observerId)
-	const explore = new Set(state.trustedAnchors)
+	const keep = observerTrustedAnchors(state, observerId)
+	const explore = new Set(keep)
 	state.exploreByObserver.set(observerId, explore)
 	const bucket = roomBucket(state, observerId)
-	const keep = new Set(state.trustedAnchors)
 	bucket.active = new Set(keep)
 	bucket.sourceByPeer = new Map([...keep].map(id => [id, 'trusted']))
 	bucket.trustedReserved = new Set(keep)

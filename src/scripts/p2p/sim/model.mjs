@@ -55,6 +55,9 @@ import { createTransportState, transportMetrics } from './transport.mjs'
 /** reach 型攻击：仅此三类写入 reachCollapse 伤害 */
 const REACH_ATTACK_KINDS = new Set(['eclipse', 'targeted_eclipse', 'hint_poisoner'])
 
+/** 会修改 discovery 拓扑的攻击（同回合内需刷新 reach 缓存） */
+const DISCOVERY_MUTATING_ATTACKS = new Set(['eclipse', 'targeted_eclipse'])
+
 /**
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimObserver} obs 观察者
@@ -244,13 +247,9 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 				const victim = pickOne(rng, nodes.filter(n => n.kind === 'honest' && !n.compromised && !n.newcomer))
 				if (!victim) continue
 				victim.compromised = true
-				nodes.push({
-					id: victim.id,
-					kind: 'malicious',
-					attack: 'key_thief',
-					stolenFromId: victim.id,
-					introducerId: victim.introducerId,
-				})
+				victim.kind = 'malicious'
+				victim.attack = 'key_thief'
+				victim.stolenFromId = victim.id
 				continue
 			}
 
@@ -631,8 +630,8 @@ function federationSaturatingReach(topLiveCount, honestRelayOnline, churnStress 
  * @returns {import('./metrics.mjs').SimSnapshot} 仿真结束快照
  */
 export function runSimulation(scenario, seed, tunables, attackGenome) {
-	const rng = createRng(seed)
 	const { nodes, observers, inviteEdges, ctx } = buildWorld(scenario, seed, tunables, attackGenome)
+	const rng = createRng((seed + 0x9E3779B9) >>> 0)
 	const rounds = scenario.rounds ?? 40
 	const groupSize = scenario.groupSize ?? 8
 	const malicious = nodes.filter(n => n.kind === 'malicious')
@@ -681,6 +680,8 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 				
 				if (!attackReachesObserver(discReachCache, rng)) continue
 				runAttack(ctx, mal, obs, rng, round, tunables)
+				if (DISCOVERY_MUTATING_ATTACKS.has(mal.attack ?? ''))
+					discReachCache = null
 				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
 				if ((mal.attack === 'sleeper' || mal.attack === 'key_thief') && round >= turnRound)
 					simObservePeerBehavior(obs.reputation, mal.id, 1.25, ctx.now, tunables.reputation)
@@ -776,6 +777,18 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			ctx.churnMailboxCostAccum += mailRound.cost
 			ctx.churnReachRounds++
 		}
+
+		if (ctx.transport && observers.length) {
+			const throttleOk = transportMetrics(
+				ctx.transport,
+				observers[0].id,
+				onlineFriendlyIds,
+				id => observers[0].reputation.byNodeHash[id]?.score ?? 0,
+				ctx.now,
+			).throttleOk
+			ctx.throttleOkAccum = (ctx.throttleOkAccum ?? 0) + throttleOk
+			ctx.throttleRounds = (ctx.throttleRounds ?? 0) + 1
+		}
 	}
 
 	// 衰减恢复相：仅 suspect 软信号衰减；社交 block 不再自动退款
@@ -840,6 +853,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let transportReach = 0
 	let signalingDiversity = 0
 	let joinThrottle = 0
+	/** @type {Set<string>} */
+	const collusionClustersSeen = new Set()
 	/** @type {Map<string, { defended: number, total: number }>} */
 	const attackAccum = new Map()
 	/** @type {Map<string, { topKSum: number, reachSum: number, count: number }>} */
@@ -1022,8 +1037,11 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		}
 
 		for (const m of malicious.filter(n => n.attack === 'collusion')) {
+			const clusterKey = m.clusterId ?? m.id
+			if (collusionClustersSeen.has(clusterKey)) continue
+			collusionClustersSeen.add(clusterKey)
 			collusionTotal++
-			const ring = collusionByCluster.get(m.clusterId ?? m.id) ?? [m]
+			const ring = collusionByCluster.get(clusterKey) ?? [m]
 			const avg = ring.reduce((s, n) => s + scoreOf(n.id), 0) / Math.max(1, ring.length)
 			if (avg < 0) collusionCollapsed++
 		}
@@ -1052,6 +1070,9 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	}
 
 	const nObs = Math.max(1, observers.length)
+	const joinThrottleRate = ctx.throttleRounds
+		? (ctx.throttleOkAccum ?? 0) / ctx.throttleRounds
+		: joinThrottle / nObs
 
 	// churn 可达率：回合内累积的 mailbox reach 均值；无 churn 时退化为 mailboxReachRate
 	const churnReachRate = ctx.churnReachRounds
@@ -1122,7 +1143,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			: hasEquivocation ? archiveQuorum / nObs : 1,
 		transportReachRate: transportReach / nObs,
 		signalingDiversityRate: signalingDiversity / nObs,
-		joinThrottleEffectiveness: joinThrottle / nObs,
+		joinThrottleEffectiveness: joinThrottleRate,
 		honestJoinDelayPenalty: joinDelay,
 		observerCount: observers.length,
 		maliciousCount: malicious.length,

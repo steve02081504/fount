@@ -35,10 +35,22 @@ Deno.test('eclipseFillExplore poisons explore set', () => {
 
 Deno.test('recoverDiscoveryFromAnchors clears poison', () => {
 	const state = createDiscoveryState()
-	state.trustedAnchors = new Set(['h1'])
+	state.trustedAnchorsByObserver.set('obs', new Set(['h1']))
 	state.poisonedByAttacker.set('obs', new Set(['mal1']))
 	recoverDiscoveryFromAnchors(state, 'obs')
 	assertEquals(state.poisonedByAttacker.has('obs'), false)
+})
+
+Deno.test('trustedAnchors are per-observer not shared', () => {
+	const state = createDiscoveryState()
+	const rng = createRng(99)
+	const roster = ['obs1', 'obs2', 'a', 'b', 'c', 'd']
+	initObserverDiscovery(state, 'obs1', ['a', 'b'], roster, rng, 2)
+	initObserverDiscovery(state, 'obs2', ['c', 'd'], roster, createRng(100), 2)
+	assertEquals(state.trustedAnchorsByObserver.get('obs1')?.has('a'), true)
+	assertEquals(state.trustedAnchorsByObserver.get('obs1')?.has('c'), false)
+	assertEquals(state.trustedAnchorsByObserver.get('obs2')?.has('c'), true)
+	assertEquals(state.trustedAnchorsByObserver.get('obs2')?.has('a'), false)
 })
 
 Deno.test('eclipse scenario produces byAttackImpact reach data', () => {

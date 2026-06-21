@@ -147,7 +147,7 @@ export function runAttack(ctx, node, observer, rng, round, tunables) {
 			runRepPump(ctx, node, observer, rng, round, tunables)
 			break
 		case 'slow_drip_spammer':
-			runSlowDripSpammer(ctx, node, observer, tunables)
+			runSlowDripSpammer(ctx, node, observer, round, tunables)
 			break
 		case 'signaling_flood':
 			runSignalingFlood(ctx, node, observer, round, tunables)
@@ -550,12 +550,13 @@ function runRepPump(ctx, node, observer, rng, round, tunables) {
  * @param {object} ctx 仿真上下文
  * @param {import('./model.mjs').SimNode} node 恶意节点
  * @param {import('./model.mjs').SimObserver} observer 诚实观察者
+ * @param {number} round 当前回合
  * @param {import('./tunables_bundle.mjs').TunablesBundle} tunables 候选参数
  * @returns {void}
  */
-function runSlowDripSpammer(ctx, node, observer, tunables) {
+function runSlowDripSpammer(ctx, node, observer, round, tunables) {
 	const { recordMessageRateViolationPure } = ctx.engine
-	if (ctx.now % 180_000 !== 0) return
+	if (round % 3 !== 0) return
 	recordMessageRateViolationPure(observer.reputation, node.id, tunables.reputation)
 }
 
