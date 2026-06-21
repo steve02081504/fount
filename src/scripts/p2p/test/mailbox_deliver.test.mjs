@@ -6,6 +6,9 @@ import {
 	registerMailboxConsumer,
 	unregisterMailboxConsumer,
 } from '../mailbox/consumer_registry.mjs'
+import { parseMailboxGive } from '../mailbox/parse.mjs'
+
+const RECIPIENT = 'a'.repeat(64)
 
 Deno.test('dispatchMailboxRecordsToConsumers routes records by app', async () => {
 	const username = 'test-user'
@@ -44,4 +47,15 @@ Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids across apps', a
 		unregisterMailboxConsumer('test/chat')
 		unregisterMailboxConsumer('test/social')
 	}
+})
+
+Deno.test('parseMailboxGive rejects records without envelope or app', () => {
+	assertEquals(parseMailboxGive({ records: [{ toPubKeyHash: RECIPIENT }] }), null)
+	assertEquals(parseMailboxGive({
+		records: [{
+			toPubKeyHash: RECIPIENT,
+			app: 'chat',
+			envelope: { id: 'e1' },
+		}],
+	})?.records.length, 1)
 })

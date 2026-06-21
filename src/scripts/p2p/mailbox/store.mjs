@@ -1,7 +1,7 @@
 import { mkdir, readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { writeJsonlSynced } from '../dag/storage.mjs'
+import { jsonlMutexKey, writeJsonl } from '../dag/storage.mjs'
 import { isHex64, normalizeHex64 } from '../hexIds.mjs'
 import {
 	defaultTtlMsForTier,
@@ -16,6 +16,7 @@ import {
 	pruneMailboxGlobalFair,
 } from '../mailbox_prune.mjs'
 import { mailboxStorePath } from '../user_paths.mjs'
+import { withAsyncMutex } from '../utils/async_mutex.mjs'
 
 /**
  *
@@ -45,6 +46,23 @@ const MAX_ENTRY_BYTES = 256 * 1024
  *   importance?: number,
  * }} MailboxRecord
  */
+
+/**
+ * @param {unknown} value 入站 hop
+ * @returns {number} 非负整数 hop
+ */
+export function normalizeMailboxHop(value) {
+	const n = Number(value)
+	if (!Number.isFinite(n)) return 0
+	return Math.max(0, Math.floor(n))
+}
+
+/**
+ * @returns {string} mailbox store 进程内互斥键
+ */
+function mailboxStoreMutexKey() {
+	return jsonlMutexKey(mailboxStorePath())
+}
 
 /**
  * @param {number} hop 转发跳数
@@ -78,7 +96,7 @@ async function writeAll(rows) {
 	const kept = pruneMailboxGlobalFair(
 		pruneMailboxBuckets(sortMailboxForRetention(rows.filter(record => record.expiresAt > now))),
 	)
-	await writeJsonlSynced(filePath, kept)
+	await writeJsonl(filePath, kept)
 }
 
 /**
@@ -99,10 +117,9 @@ export async function storeMailboxRecord(record) {
 	if (JSON.stringify(record.envelope).length > MAX_ENTRY_BYTES) return false
 	const toPubKeyHash = normalizeHex64(record.toPubKeyHash)
 	if (!isHex64(toPubKeyHash)) return false
-	const hop = Math.min(3, Math.max(0, Number(record.hop) || 0))
+	const hop = normalizeMailboxHop(record.hop)
 	const tier = record.tier
 	if (!['trusted', 'normal', 'quarantine'].includes(tier)) return false
-	if (tier === 'quarantine' && hop > 0) return false
 	const app = String(record.app || '').trim()
 	if (!app) return false
 	let id
@@ -112,26 +129,28 @@ export async function storeMailboxRecord(record) {
 	catch {
 		return false
 	}
-	const rows = await readAll()
-	if (rows.some(row => row.id === id)) return false
-	const ttlMs = Number(record.ttlMs) || defaultTtlMsForTier(tier)
-	rows.push({
-		id,
-		app,
-		toPubKeyHash,
-		dmSessionTag: record.dmSessionTag?.trim().toLowerCase() || undefined,
-		groupId: record.groupId || undefined,
-		channelId: record.channelId || undefined,
-		envelope: record.envelope,
-		storedAt: Date.now(),
-		expiresAt: Date.now() + ttlMs,
-		fromNodeHash: String(record.fromNodeHash || '').trim(),
-		hop,
-		tier,
-		importance: Number.isFinite(Number(record.importance)) ? Number(record.importance) : undefined,
+	return withAsyncMutex(mailboxStoreMutexKey(), async () => {
+		const rows = await readAll()
+		if (rows.some(row => row.id === id)) return false
+		const ttlMs = Number(record.ttlMs) || defaultTtlMsForTier(tier)
+		rows.push({
+			id,
+			app,
+			toPubKeyHash,
+			dmSessionTag: record.dmSessionTag?.trim().toLowerCase() || undefined,
+			groupId: record.groupId || undefined,
+			channelId: record.channelId || undefined,
+			envelope: record.envelope,
+			storedAt: Date.now(),
+			expiresAt: Date.now() + ttlMs,
+			fromNodeHash: String(record.fromNodeHash || '').trim(),
+			hop,
+			tier,
+			importance: Number.isFinite(Number(record.importance)) ? Number(record.importance) : undefined,
+		})
+		await writeAll(rows)
+		return true
 	})
-	await writeAll(rows)
-	return true
 }
 
 /**
@@ -159,8 +178,10 @@ export async function getMailboxRecords(ids) {
  * @returns {Promise<void>}
  */
 export async function deleteMailboxRecords(ids) {
-	const drop = new Set(ids)
-	await writeAll((await readAll()).filter(record => !drop.has(record.id)))
+	const drop = new Set(ids.map(id => String(id).trim().toLowerCase()))
+	return withAsyncMutex(mailboxStoreMutexKey(), async () => {
+		await writeAll((await readAll()).filter(record => !drop.has(record.id)))
+	})
 }
 
 /**

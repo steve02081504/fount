@@ -114,13 +114,13 @@ export function recordMessageRateViolation(peerNodeHash, excessRatio = 1) {
 /**
  * @param {string} peerNodeHash 对端
  * @param {number} sample 行为样本强度
- * @returns {boolean} 是否触发异常隔离
+ * @returns {Promise<boolean>} 是否触发异常隔离
  */
-export function observePeerBehavior(peerNodeHash, sample) {
+export async function observePeerBehavior(peerNodeHash, sample) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return false
 	let anomaly = false
-	void mutateReputation(data => {
+	await mutateReputation(data => {
 		const result = observeBehaviorSamplePure(data, id, sample)
 		anomaly = result.anomaly
 	})

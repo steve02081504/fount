@@ -2,10 +2,33 @@ import { randomUUID } from 'node:crypto'
 
 import { b64ToU8, u8ToB64 } from '../bytes_codec.mjs'
 import { FEDERATION_CHUNK_FETCH_FANOUT_K } from '../constants.mjs'
+import { sha256Hex } from '../crypto.mjs'
+import { isHex64 } from '../hexIds.mjs'
 import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from '../trust_graph_registry.mjs'
 
 import { fetchFederationChunk, resolveNodeHash } from './chunk_provider_registry.mjs'
 import { getChunk, hasChunk, putChunk } from './chunk_store.mjs'
+
+/**
+ * @param {string} chunkHash 期望的 64 hex 密文哈希
+ * @param {Uint8Array | Buffer | null | undefined} data 块字节
+ * @returns {boolean} 是否与 hash 一致
+ */
+export function chunkBytesMatchHash(chunkHash, data) {
+	const hash = String(chunkHash || '').trim().toLowerCase()
+	if (!isHex64(hash) || !data?.byteLength) return false
+	return sha256Hex(data) === hash
+}
+
+/**
+ * @param {string} chunkHash 期望哈希
+ * @param {Uint8Array | Buffer} data 块字节
+ * @returns {Uint8Array | null} 校验通过的数据；否则 null
+ */
+export function verifiedChunkBytes(chunkHash, data) {
+	if (!chunkBytesMatchHash(chunkHash, data)) return null
+	return data instanceof Uint8Array ? data : new Uint8Array(data)
+}
 
 /**
  * @typedef {{
@@ -30,9 +53,10 @@ export async function fetchChunk(context) {
 
 	if (context.groupId) {
 		const u8 = await fetchFederationChunk(username, context.groupId, hash)
-		if (u8?.byteLength) {
-			await putChunk( hash, u8)
-			return u8
+		const verified = verifiedChunkBytes(hash, u8)
+		if (verified) {
+			await putChunk( hash, verified)
+			return verified
 		}
 	}
 
@@ -50,6 +74,7 @@ export async function fetchChunk(context) {
 			return
 		}
 		pendingChunkFetches.set(requestId, {
+			expectedHash: hash,
 			/**
 			 * @param {Uint8Array | null} data 块数据
 			 * @returns {void}
@@ -69,15 +94,16 @@ export async function fetchChunk(context) {
 		ownerEntityHash: context.ownerEntityHash,
 	}, FEDERATION_CHUNK_FETCH_FANOUT_K)
 	await done
-	if (result) {
-		await putChunk( hash, result)
-		return result
+	const verified = verifiedChunkBytes(hash, result)
+	if (verified) {
+		await putChunk( hash, verified)
+		return verified
 	}
 
 	return null
 }
 
-/** @type {Map<string, { resolve: (v: Uint8Array | null) => void }>} */
+/** @type {Map<string, { expectedHash: string, resolve: (v: Uint8Array | null) => void }>} */
 export const pendingChunkFetches = new Map()
 const MAX_PENDING_CHUNK_FETCHES = 2048
 
@@ -93,7 +119,8 @@ export function resolvePendingChunkFetch(payload) {
 	pendingChunkFetches.delete(requestId)
 	if (payload?.dataB64) {
 		try {
-			entry.resolve(b64ToU8(String(payload.dataB64)))
+			const bytes = b64ToU8(String(payload.dataB64))
+			entry.resolve(verifiedChunkBytes(entry.expectedHash, bytes))
 		}
 		catch {
 			entry.resolve(null)

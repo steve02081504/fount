@@ -68,9 +68,9 @@ export async function dispatchMailboxMessage(username, signedEvent, toPubKeyHash
  */
 export async function pullMailboxForLocalMember(username, groupId) {
 	const { sender } = await resolveLocalEventSigner(username, groupId)
-	const rows = await takeMailboxForRecipient(username, sender)
+	const rows = await takeMailboxForRecipient(sender)
 	const ids = await consumeChatDagMailbox(username, rows)
-	if (ids.length) await deleteMailboxRecords(username, ids)
+	if (ids.length) await deleteMailboxRecords(ids)
 	return ids.length
 }
 

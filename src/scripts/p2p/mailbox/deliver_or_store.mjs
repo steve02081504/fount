@@ -7,7 +7,7 @@ import { getNodeHash } from '../node_context.mjs'
 import { ensureUserRoom } from '../user_room.mjs'
 
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
-import { mailboxTierFromHop, storeMailboxRecord } from './store.mjs'
+import { mailboxTierFromHop, normalizeMailboxHop, storeMailboxRecord } from './store.mjs'
 
 /**
  * @param {string} username replica
@@ -29,7 +29,7 @@ export async function deliverOrStoreMailboxPut(username, opts) {
 	const routing = await resolveRouting(username)
 	const toPubKeyHash = normalizeHex64(opts.toPubKeyHash)
 	if (!toPubKeyHash) return { stored: false, delivered: false, relayed: 0 }
-	const hop = Math.max(0, Number(opts.hop) || 0)
+	const hop = normalizeMailboxHop(opts.hop)
 	if (hop >= routing.maxHop) return { stored: false, delivered: false, relayed: 0 }
 	const tier = mailboxTierFromHop(hop)
 	const nodeHash = getNodeHash()
@@ -83,7 +83,7 @@ export async function ingestMailboxPut(ctx, put) {
 	const username = String(ctx?.replicaUsername || '').trim()
 	if (!username) return
 	const routing = await resolveRouting(username)
-	const hop = Number(record.hop) || 0
+	const hop = normalizeMailboxHop(record.hop)
 	if (hop >= routing.maxHop) return
 	await deliverOrStoreMailboxPut(username, {
 		toPubKeyHash: record.toPubKeyHash,

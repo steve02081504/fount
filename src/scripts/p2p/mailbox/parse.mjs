@@ -45,5 +45,18 @@ export function parseMailboxWant(payload) {
  */
 export function parseMailboxGive(payload) {
 	if (!isPlainObject(payload) || !Array.isArray(payload.records)) return null
-	return payload
+	try {
+		const records = payload.records.map(record => {
+			assertMailboxRecordShape(record)
+			if (!record.envelope || typeof record.envelope !== 'object')
+				throw new Error('mailbox.record.envelope required')
+			const app = String(record.app || '').trim()
+			if (!app) throw new Error('mailbox.record.app required')
+			return record
+		})
+		return { ...payload, records }
+	}
+	catch {
+		return null
+	}
 }
