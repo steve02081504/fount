@@ -7,7 +7,7 @@ import {
 	unregisterMailboxConsumer,
 } from '../mailbox/consumer_registry.mjs'
 
-Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids', async () => {
+Deno.test('dispatchMailboxRecordsToConsumers routes records by app', async () => {
 	const username = 'test-user'
 	/** @type {string[]} */
 	let seen = []
@@ -16,11 +16,32 @@ Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids', async () => {
 		return ['a1']
 	})
 	registerMailboxConsumer('test/b', 'social', async () => ['b1'])
-	const delivered = await dispatchMailboxRecordsToConsumers(username, [
-		{ id: 'r1', app: 'chat', envelope: { type: 'message' } },
-	])
-	assertEquals(seen, ['r1'])
-	assertEquals(new Set(delivered), new Set(['a1']))
-	unregisterMailboxConsumer('test/a')
-	unregisterMailboxConsumer('test/b')
+	try {
+		const delivered = await dispatchMailboxRecordsToConsumers(username, [
+			{ id: 'r1', app: 'chat', envelope: { type: 'message' } },
+		])
+		assertEquals(seen, ['r1'])
+		assertEquals(new Set(delivered), new Set(['a1']))
+	}
+	finally {
+		unregisterMailboxConsumer('test/a')
+		unregisterMailboxConsumer('test/b')
+	}
+})
+
+Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids across apps', async () => {
+	const username = 'test-user'
+	registerMailboxConsumer('test/chat', 'chat', async (_username, records) => records.map(r => r.id))
+	registerMailboxConsumer('test/social', 'social', async (_username, records) => records.map(r => `social:${r.id}`))
+	try {
+		const delivered = await dispatchMailboxRecordsToConsumers(username, [
+			{ id: 'c1', app: 'chat', envelope: { type: 'message' } },
+			{ id: 's1', app: 'social', envelope: { type: 'notify' } },
+		])
+		assertEquals(new Set(delivered), new Set(['c1', 'social:s1']))
+	}
+	finally {
+		unregisterMailboxConsumer('test/chat')
+		unregisterMailboxConsumer('test/social')
+	}
 })

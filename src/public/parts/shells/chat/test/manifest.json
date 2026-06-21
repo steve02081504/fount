@@ -12,6 +12,8 @@
 			],
 			"triggers": [
 				"src/public/parts/shells/chat/**",
+				"src/scripts/p2p/**",
+				"src/server/p2p_server/**",
 				"src/server/registries.mjs",
 				"src/server/parts_loader.mjs",
 				"src/public/pages/scripts/registries.mjs",

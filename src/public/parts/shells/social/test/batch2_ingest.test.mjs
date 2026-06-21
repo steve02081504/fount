@@ -17,7 +17,7 @@ const { username } = await bootstrap()
 const sync = await import('../src/timeline/sync.mjs')
 const append = await import('../src/timeline/append.mjs')
 const canon = await import('../src/timeline/canonicalizeEvent.mjs')
-const { addBlocklistEntry } = await import('../../../../../scripts/p2p/blocklist.mjs')
+const { addBlocklistEntry, loadBlocklist, saveBlocklist } = await import('../../../../../scripts/p2p/blocklist.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('../../../../../scripts/p2p/crypto.mjs')
 const { agentEntityHash, encodeEntityHash } = await import('../../../../../scripts/p2p/entity_id.mjs')
 const { getNodeHash } = await import('../../../../../scripts/p2p/node/identity.mjs')
@@ -102,11 +102,17 @@ Deno.test('blocked sender (pubKeyHash) is rejected', async () => {
 	const seed = randomSeed()
 	const owner = ownerForSeed(seed)
 	const sender = pubKeyHash(publicKeyFromSeed(seed))
+	const blocklistBefore = loadBlocklist()
 	await addBlocklistEntry({ scope: 'subject', value: sender })
-	const event = await makeRemoteSignedEvent(seed, owner, {
-		type: 'post', content: { text: 'blocked', visibility: 'public' },
-	})
-	assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), false)
+	try {
+		const event = await makeRemoteSignedEvent(seed, owner, {
+			type: 'post', content: { text: 'blocked', visibility: 'public' },
+		})
+		assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), false)
+	}
+	finally {
+		saveBlocklist(blocklistBefore)
+	}
 })
 
 Deno.test('validateRemoteEventShape rejects malformed events', () => {

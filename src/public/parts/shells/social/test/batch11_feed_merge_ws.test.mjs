@@ -58,6 +58,8 @@ Deno.test('buildEngagementIndex counts likes and reposts', async () => {
 Deno.test('pushFeedUpdate sends to registered mock socket', () => {
 	/** @type {string[]} */
 	const sent = []
+	/** @type {Map<string, Set<() => void>>} */
+	const handlers = new Map()
 	const mockSocket = {
 		readyState: 1,
 		/** 记录推送载荷。
@@ -65,13 +67,28 @@ Deno.test('pushFeedUpdate sends to registered mock socket', () => {
 		 */
 		send(text) { sent.push(text) },
 		/**
-		 *
+		 * @param {string} event 事件名
+		 * @param {() => void} fn 回调
 		 */
-		on: () => {},
+		on(event, fn) {
+			const set = handlers.get(event) ?? new Set()
+			set.add(fn)
+			handlers.set(event, set)
+		},
+		/** 触发 close 以走 feedHub 注销路径。 */
+		close() {
+			for (const fn of handlers.get('close') ?? [])
+				fn()
+		},
 	}
 	feedHub.registerFeedSocket(username, mockSocket)
-	feedHub.pushFeedUpdate(username, { type: 'feed_refresh', at: 1 })
-	assertEquals(sent.length, 1)
-	const payload = JSON.parse(sent[0])
-	assertEquals(payload.type, 'feed_refresh')
+	try {
+		feedHub.pushFeedUpdate(username, { type: 'feed_refresh', at: 1 })
+		assertEquals(sent.length, 1)
+		const payload = JSON.parse(sent[0])
+		assertEquals(payload.type, 'feed_refresh')
+	}
+	finally {
+		mockSocket.close()
+	}
 })

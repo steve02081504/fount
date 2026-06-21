@@ -103,10 +103,7 @@ Deno.test('pickArchiveMonthByReputation requires reputation or strict peer count
 		content: { type: 'text', content: 'a' },
 	}) + '\n'
 	const weak = await pickArchiveMonthByReputation(
-		[
-			await archiveMonthCandidate(body, 'c'.repeat(64)),
-			await archiveMonthCandidate(body, 'd'.repeat(64)),
-		],
+		[await archiveMonthCandidate(body, 'c'.repeat(64))],
 		manifest,
 		'general',
 		'2024-01',

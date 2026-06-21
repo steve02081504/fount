@@ -40,8 +40,14 @@ async function bootstrap() {
 		/** @returns {never} 测试态不应触发重启 */
 		restartor: () => process.exit(131),
 		data_path: DATA_PATH,
-		starts: { Base: false, IPC: false, Web: false, Tray: false, DiscordRPC: false },
+		starts: { Base: false, IPC: false, Web: false, Tray: false, DiscordRPC: false, P2P: false },
 	})
+	const { initNode, isNodeInitialized } = await import('../../../../../scripts/p2p/node/instance.mjs')
+	const { createFountEntityStore } = await import('../../../../../server/p2p_server/entity_store.mjs')
+	if (!isNodeInitialized()) {
+		await mkdir(join(DATA_PATH, 'p2p', 'node'), { recursive: true })
+		initNode({ nodeDir: join(DATA_PATH, 'p2p', 'node'), entityStore: createFountEntityStore() })
+	}
 	M = {
 		lifecycle: await import('../src/chat/dag/lifecycle.mjs'),
 		materialize: await import('../src/chat/dag/materialize.mjs'),

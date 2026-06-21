@@ -70,31 +70,39 @@ async function getChangedFiles() {
 }
 
 /**
- * 读取所有 shell 的 test/manifest.json。
+ * 读取 shell 与 p2p 的 test/manifest.json。
  * @returns {Promise<Array<{ shell: string, name: string, run: string[], triggers: string[] }>>} 全部 suite 定义
  */
 async function loadAllSuites() {
-	const shellsDir = join(REPO_ROOT, 'src/public/parts/shells')
-	const shells = await readdir(shellsDir, { withFileTypes: true })
 	/** @type {Array<{ shell: string, name: string, run: string[], triggers: string[] }>} */
 	const suites = []
-	for (const dirent of shells) {
-		if (!dirent.isDirectory()) continue
-		const manifestPath = join(shellsDir, dirent.name, 'test', 'manifest.json')
+
+	/**
+	 * @param {string} shell 显示名
+	 * @param {string} manifestPath manifest 绝对路径
+	 */
+	async function loadManifest(shell, manifestPath) {
 		try {
 			const raw = await readFile(manifestPath, 'utf8')
 			const manifest = JSON.parse(raw)
-			for (const suite of manifest.suites || []) 
+			for (const suite of manifest.suites || [])
 				suites.push({
-					shell: dirent.name,
+					shell,
 					name: suite.name,
 					run: suite.run,
 					triggers: suite.triggers || [],
 				})
-			
 		}
 		catch { /* no manifest */ }
 	}
+
+	const shellsDir = join(REPO_ROOT, 'src/public/parts/shells')
+	const shells = await readdir(shellsDir, { withFileTypes: true })
+	for (const dirent of shells) {
+		if (!dirent.isDirectory()) continue
+		await loadManifest(dirent.name, join(shellsDir, dirent.name, 'test', 'manifest.json'))
+	}
+	await loadManifest('p2p', join(REPO_ROOT, 'src/scripts/p2p/test/manifest.json'))
 	return suites
 }
 

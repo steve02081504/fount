@@ -80,6 +80,8 @@ export function bootstrap() {
 		const { createFountEntityStore } = await import('../../../../../server/p2p_server/entity_store.mjs')
 		const { registerOperatorEntityHashProvider, registerReplicaUsernamesProvider, registerFollowingScanProvider } =
 			await import('../../../../../scripts/p2p/social/follower_index_registry.mjs')
+		const { registerOperatorKeyChainProvider } =
+			await import('../../../../../scripts/p2p/timeline/write_auth.mjs')
 		const { registerAgentCharResolver, registerListLocalAgentsProvider } =
 			await import('../../../../../scripts/p2p/entity/hosting_registry.mjs')
 		const { scanLocalAgentEntitiesFromChars } = await import('../../../../../scripts/p2p/entity/hosting.mjs')
@@ -103,6 +105,16 @@ export function bootstrap() {
 		registerShellPartpath('social', 'shells/social')
 		registerReplicaUsernamesProvider(getAllUserNames)
 		registerOperatorEntityHashProvider(resolveOperatorEntityHashForUser)
+		registerOperatorKeyChainProvider(async username => {
+			const { readOperatorIdentity } = await import('../../../../../server/p2p_server/entity_store.mjs')
+			const row = await readOperatorIdentity(username)
+			if (!row?.recoveryPubKeyHex) return null
+			return {
+				recoveryPubKeyHex: String(row.recoveryPubKeyHex).trim().toLowerCase(),
+				activePubKeyHex: String(row.activePubKeyHex || '').trim().toLowerCase(),
+				operatorKeyHistory: Array.isArray(row.keyHistory) ? row.keyHistory : [],
+			}
+		})
 		registerFollowingScanProvider(async username => {
 			const operator = await resolveOperatorEntityHashForUser(username)
 			if (!operator) return []

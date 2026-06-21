@@ -56,13 +56,14 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 })
 
 Deno.test('dispatchPostMentions no-op when post has no mentions', async () => {
+	const beforeCount = (await append.readTimelineEvents(username, operator)).length
 	const post = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
 		content: { text: 'no mentions here', visibility: 'public' },
 	}, { fanout: false })
 	await dispatch.dispatchPostMentions(username, operator, post)
-	const view = await append.readTimelineEvents(username, operator)
-	assertEquals(view.filter(e => e.type === 'post' && e.content?.replyTo).length, 0)
+	const after = await append.readTimelineEvents(username, operator)
+	assertEquals(after.length, beforeCount + 1, 'dispatch must not append mention side-effects')
 })
 
 Deno.test('processSocialOnMentionRpc returns ok false for unknown entity', async () => {

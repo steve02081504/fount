@@ -12,6 +12,7 @@ import { bootstrap, randomSeed } from './harness.mjs'
 const { username } = await bootstrap()
 
 const { isTimelineWriteAuthorized } = await import('../src/timeline/writeAuth.mjs')
+const append = await import('../src/timeline/append.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('../../../../../scripts/p2p/crypto.mjs')
 const { agentEntityHash, encodeEntityHash } = await import('../../../../../scripts/p2p/entity_id.mjs')
 const { getNodeHash } = await import('../../../../../scripts/p2p/node/identity.mjs')
@@ -22,9 +23,10 @@ const { getUserDictionary } = await import('../../../../../server/auth.mjs')
 Deno.test('batch13: operator may write own user timeline', async () => {
 	const operator = await resolveOperatorEntityHashForUser(username)
 	assert(operator)
+	const priorEvents = await append.readTimelineEvents(username, operator)
 	const secret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
 	const sender = pubKeyHash(publicKeyFromSeed(secret))
-	assertEquals(await isTimelineWriteAuthorized(operator, sender), true)
+	assertEquals(await isTimelineWriteAuthorized(operator, sender, { priorEvents }), true)
 })
 
 Deno.test('batch13: foreign sender cannot write operator timeline', async () => {

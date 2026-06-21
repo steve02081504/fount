@@ -3,14 +3,13 @@
 		{
 			"name": "unit",
 			"run": [
-				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
-				"--ignore=src/public/parts/shells/social/test/live",
-				"./src/public/parts/shells/social/test/",
-				"./src/test/registries.test.mjs",
-				"./src/test/pickers.test.mjs"
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/public/parts/shells/social/test/run_unit.mjs"
 			],
 			"triggers": [
 				"src/public/parts/shells/social/**",
+				"src/scripts/p2p/**",
+				"src/server/p2p_server/**",
 				"src/server/registries.mjs",
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs",
