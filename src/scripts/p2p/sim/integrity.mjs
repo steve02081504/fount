@@ -53,6 +53,5 @@ export function replicaObserverFraction(observers, scenario) {
  * @returns {number} 综合准确率
  */
 export function blendArchiveQuorumAccuracy(quorumAccuracy, replicaFraction) {
-	const cryptoFloor = replicaFraction * 0.75
-	return Math.max(quorumAccuracy, cryptoFloor)
+	return Math.max(quorumAccuracy, replicaFraction * 0.75 * quorumAccuracy)
 }

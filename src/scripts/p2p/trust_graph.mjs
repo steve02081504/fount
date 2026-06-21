@@ -1,5 +1,4 @@
 import { isPeerKeyBlocked, isSubjectBlocked } from './blocklist.mjs'
-import { FEDERATION_FANOUT_TOP_K } from './constants.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { loadNetwork } from './network.mjs'
 import { getNodeHash } from './node_context.mjs'
@@ -10,6 +9,7 @@ import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json'
 import { getCachedTrustGraph } from './trust_graph_cache.mjs'
 import { mergeGraph, pickTopFromGraph } from './trust_graph_engine.mjs'
 import { registerTrustGraphProvider } from './trust_graph_registry.mjs'
+import { resolveFederationFanoutTopK } from './tunables_resolve.mjs'
 import { ensureUserRoom } from './user_room.mjs'
 
 /**
@@ -149,12 +149,14 @@ export async function pickTopNodes(username, limit = trustGraphTunables.pickTopN
  * @param {string} username replica 登录名
  * @param {string} actionName action 名
  * @param {unknown} payload 载荷
- * @param {number} [limit=8] K
+ * @param {number} [limit] K（省略时按 roster 规模缩放）
  * @returns {Promise<number>} 发送次数
  */
-export async function fanoutToTopNodes(username, actionName, payload, limit = FEDERATION_FANOUT_TOP_K) {
+export async function fanoutToTopNodes(username, actionName, payload, limit) {
+	const graph = await buildMergedGraph(username)
+	const k = limit ?? resolveFederationFanoutTopK(graph.size, trustGraphTunables)
 	let sent = 0
-	for (const { nodeHash } of await pickTopNodes(username, limit))
+	for (const { nodeHash } of await pickTopNodes(username, k))
 		if (await sendToNode(username, nodeHash, actionName, payload)) sent++
 	return sent
 }

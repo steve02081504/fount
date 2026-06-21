@@ -37,9 +37,8 @@ Deno.test('integrityDefendsAgainst archive_forger with verified forgery', () => 
 
 Deno.test('blendArchiveQuorumAccuracy weights replica observers', () => {
 	const blended = blendArchiveQuorumAccuracy(0.4, 0.6)
-	assertEquals(blended > 0.4, true)
-	assertEquals(blended <= 1, true)
-	assertEquals(Math.abs(blended - 0.45) < 1e-9, true)
+	assertEquals(blended, 0.4)
+	assertEquals(blendArchiveQuorumAccuracy(0.2, 1), 0.2)
 })
 
 Deno.test('replicaObserverFraction counts observers with replicas', () => {

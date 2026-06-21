@@ -8,7 +8,9 @@ import {
 	quantize,
 	randomCandidate,
 	sampleParam,
+	sanitizeArchiveQuorum,
 } from '../space.mjs'
+import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 import { loadDefaultTunables } from '../tunables_bundle.mjs'
 
 Deno.test('quantize removes float tails', () => {
@@ -60,8 +62,11 @@ Deno.test('normalizeParam repairs out-of-domain values without a tuning box', ()
 Deno.test('randomCandidate archive quorum ordering', () => {
 	for (let seed = 1; seed <= 30; seed++) {
 		const bundle = randomCandidate(seed)
+		sanitizeArchiveQuorum(bundle)
+		const refN = 8
 		assertEquals(
-			bundle.archive.archiveQuorumPeerStrictMin >= bundle.archive.archiveQuorumPeerMin,
+			resolveArchiveQuorumPeerStrictMin(refN, bundle.archive)
+				>= resolveArchiveQuorumPeerMin(refN, bundle.archive),
 			true,
 			`seed ${seed}`,
 		)

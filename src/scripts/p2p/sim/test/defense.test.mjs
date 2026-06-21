@@ -11,14 +11,7 @@ import { loadDefaultTunables } from '../tunables_bundle.mjs'
  * @returns {import('../tunables_bundle.mjs').TunablesBundle} 参考 bundle
  */
 function canonicalTunables() {
-	const bundle = loadDefaultTunables()
-	bundle.mailbox.maxHop = 3
-	bundle.mailbox.relayFanoutTrusted = 6
-	bundle.mailbox.wantFanout = 8
-	bundle.trustGraph.federationFanoutTopK = 8
-	bundle.archive.archiveQuorumPeerMin = 2
-	bundle.archive.archiveQuorumPeerStrictMin = 4
-	return bundle
+	return loadDefaultTunables()
 }
 
 /**
@@ -93,14 +86,13 @@ const GRADIENT_GUARDS = [
 	['reputation', 'slashVerifiedMultiplier', 0.02, 0.95],
 	['reputation', 'introducerSeedEdge', 0.02, 0.95],
 	['reputation', 'wantUnknownThreshold', 1, 12],
-	['reputation', 'collusionMaxHop', 1, 8],
-	['trustGraph', 'federationFanoutTopK', 1, 12],
+	['trustGraph', 'federationFanoutTopKRatio', 0.05, 0.8],
 	['trustGraph', 'rosterDefaultScore', 0.001, 0.95],
 	['mailbox', 'maxHop', 1, 8],
-	['mailbox', 'relayFanoutTrusted', 1, 10],
-	['mailbox', 'wantFanout', 1, 12],
-	['archive', 'archiveQuorumPeerMin', 1, 6],
-	['archive', 'archiveQuorumPeerStrictMin', 2, 9],
+	['mailbox', 'relayFanoutTrustedRatio', 0.05, 0.9],
+	['mailbox', 'wantFanoutRatio', 0.05, 0.9],
+	['archive', 'archiveQuorumPeerMinRatio', 0.1, 0.8],
+	['archive', 'archiveQuorumPeerStrictMinRatio', 0.2, 0.95],
 ]
 
 for (const [module, key, low, high] of GRADIENT_GUARDS)
@@ -123,10 +115,14 @@ for (const [module, key, low, high] of GRADIENT_GUARDS)
 Deno.test('federationFanoutTopK=1 loses fitness on eclipse_targeted (isolated federation resilience)', () => {
 	const base = loadDefaultTunables()
 	const lean = loadDefaultTunables()
-	lean.trustGraph.federationFanoutTopK = 1
+	lean.trustGraph.federationFanoutTopKFloor = 1
+	lean.trustGraph.federationFanoutTopKRatio = 0.01
+	lean.trustGraph.federationFanoutTopKCap = 1
 
 	const moderate = loadDefaultTunables()
-	moderate.trustGraph.federationFanoutTopK = 6
+	moderate.trustGraph.federationFanoutTopKFloor = 3
+	moderate.trustGraph.federationFanoutTopKRatio = 0.35
+	moderate.trustGraph.federationFanoutTopKCap = 12
 
 	const scenario = resolveScenarios('eclipse_targeted')[0]
 	let leanFit = 0
@@ -146,10 +142,16 @@ Deno.test('federationFanoutTopK=1 loses fitness on eclipse_targeted (isolated fe
 Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', () => {
 	const base = canonicalTunables()
 	const lean = canonicalTunables()
-	lean.mailbox.relayFanoutTrusted = 1
-	lean.mailbox.wantFanout = 1
+	lean.mailbox.relayFanoutTrustedFloor = 1
+	lean.mailbox.relayFanoutTrustedRatio = 0.01
+	lean.mailbox.relayFanoutTrustedCap = 1
+	lean.mailbox.wantFanoutFloor = 1
+	lean.mailbox.wantFanoutRatio = 0.01
+	lean.mailbox.wantFanoutCap = 1
 	lean.mailbox.maxHop = 1
-	lean.trustGraph.federationFanoutTopK = 1
+	lean.trustGraph.federationFanoutTopKFloor = 1
+	lean.trustGraph.federationFanoutTopKRatio = 0.01
+	lean.trustGraph.federationFanoutTopKCap = 1
 
 	const scenario = resolveScenarios('churn_storm')[0]
 	let baseFit = 0
@@ -168,11 +170,17 @@ Deno.test('gutted fanout loses fitness on churn_storm (endogenous resilience)', 
 
 Deno.test('federationFanoutTopK has interior optimum on eclipse_targeted', () => {
 	const low = loadDefaultTunables()
-	low.trustGraph.federationFanoutTopK = 1
+	low.trustGraph.federationFanoutTopKFloor = 1
+	low.trustGraph.federationFanoutTopKRatio = 0.01
+	low.trustGraph.federationFanoutTopKCap = 1
 	const mid = loadDefaultTunables()
-	mid.trustGraph.federationFanoutTopK = 6
+	mid.trustGraph.federationFanoutTopKFloor = 3
+	mid.trustGraph.federationFanoutTopKRatio = 0.35
+	mid.trustGraph.federationFanoutTopKCap = 12
 	const high = loadDefaultTunables()
-	high.trustGraph.federationFanoutTopK = 16
+	high.trustGraph.federationFanoutTopKFloor = 8
+	high.trustGraph.federationFanoutTopKRatio = 0.9
+	high.trustGraph.federationFanoutTopKCap = 32
 
 	const scenario = resolveScenarios('eclipse_targeted')[0]
 	let lowFit = 0
@@ -212,11 +220,15 @@ Deno.test('mailbox maxHop has interior optimum on churn_storm', () => {
 
 Deno.test('archive quorum strictMin improves defense vs permissive strictMin', () => {
 	const permissive = loadDefaultTunables()
-	permissive.archive.archiveQuorumPeerMin = 1
-	permissive.archive.archiveQuorumPeerStrictMin = 1
+	permissive.archive.archiveQuorumPeerMinFloor = 1
+	permissive.archive.archiveQuorumPeerMinRatio = 0.01
+	permissive.archive.archiveQuorumPeerStrictMinFloor = 1
+	permissive.archive.archiveQuorumPeerStrictMinRatio = 0.01
 	const strict = loadDefaultTunables()
-	strict.archive.archiveQuorumPeerMin = 2
-	strict.archive.archiveQuorumPeerStrictMin = 4
+	strict.archive.archiveQuorumPeerMinFloor = 2
+	strict.archive.archiveQuorumPeerMinRatio = 0.25
+	strict.archive.archiveQuorumPeerStrictMinFloor = 2
+	strict.archive.archiveQuorumPeerStrictMinRatio = 0.5
 
 	const scenario = resolveScenarios('digest_equivocation')[0]
 	let permissiveDef = 0
@@ -231,12 +243,16 @@ Deno.test('archive quorum strictMin improves defense vs permissive strictMin', (
 
 Deno.test('strictMin=1 loses archiveDefense on digest_equivocation (endogenous byzantine)', () => {
 	const strict = loadDefaultTunables()
-	strict.archive.archiveQuorumPeerMin = 1
-	strict.archive.archiveQuorumPeerStrictMin = 1
+	strict.archive.archiveQuorumPeerMinFloor = 1
+	strict.archive.archiveQuorumPeerMinRatio = 0.01
+	strict.archive.archiveQuorumPeerStrictMinFloor = 1
+	strict.archive.archiveQuorumPeerStrictMinRatio = 0.01
 
 	const safe = loadDefaultTunables()
-	safe.archive.archiveQuorumPeerMin = 2
-	safe.archive.archiveQuorumPeerStrictMin = 4
+	safe.archive.archiveQuorumPeerMinFloor = 2
+	safe.archive.archiveQuorumPeerMinRatio = 0.25
+	safe.archive.archiveQuorumPeerStrictMinFloor = 2
+	safe.archive.archiveQuorumPeerStrictMinRatio = 0.5
 
 	const scenario = resolveScenarios('digest_equivocation')[0]
 	const strictSnap = runSimulation(scenario, 7, strict)
@@ -272,6 +288,14 @@ Deno.test('trigger-happy hide threshold raises falsePositive (endogenous mis-hid
 		true,
 		`happy ${happySnap.falsePositiveRate} should be >= base ${baseSnap.falsePositiveRate}`,
 	)
+})
+
+Deno.test('tiny_group archive quorum stays live at groupSize 3', () => {
+	const tunables = loadDefaultTunables()
+	const scenario = resolveScenarios('tiny_group')[0]
+	const snap = runSimulation(scenario, 3, tunables)
+	assertEquals(snap.archiveQuorumAccuracy > 0, true)
+	assertEquals(snap.groupSize, 3)
 })
 
 Deno.test('defense metrics are not saturated at 1.0 on balanced with defaults', () => {

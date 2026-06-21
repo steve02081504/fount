@@ -2,10 +2,23 @@ import { deliver, deliverToUserRoomPeers } from '../deliver.mjs'
 import { normalizeHex64 } from '../hexIds.mjs'
 import { allowMailboxRelayForTier } from '../mailbox_importance.mjs'
 import { takeIncomingMailboxPutSlot } from '../mailbox_rate.mjs'
+import { getNodeTransportSettings } from '../node/identity.mjs'
 import { getNodeHash } from '../node_context.mjs'
+import { ensureUserRoom } from '../user_room.mjs'
 
-import { getMailboxRoutingSettings } from './settings.mjs'
+import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
 import { mailboxTierFromHop, storeMailboxRecord } from './store.mjs'
+
+/**
+ * @param {string} username replica
+ * @returns {Promise<{ maxHop: number, relayFanoutTrusted: number, relayFanoutNormal: number, wantFanout: number, batterySaver: boolean }>} 按在线 peer 数缩放的路由
+ */
+async function resolveRouting(username) {
+	const { batterySaver, mailbox } = getNodeTransportSettings()
+	const slot = await ensureUserRoom({ replicaUsername: username })
+	const peerCount = slot?.getRoster()?.length ?? 0
+	return resolveMailboxRoutingForPeerCount(peerCount, mailbox, batterySaver)
+}
 
 /**
  * @param {string} username replica（trust graph 投递上下文）
@@ -13,7 +26,7 @@ import { mailboxTierFromHop, storeMailboxRecord } from './store.mjs'
  * @returns {Promise<{ stored: boolean, delivered: boolean, relayed: number }>} 存转结果
  */
 export async function deliverOrStoreMailboxPut(username, opts) {
-	const routing = getMailboxRoutingSettings()
+	const routing = await resolveRouting(username)
 	const toPubKeyHash = normalizeHex64(opts.toPubKeyHash)
 	if (!toPubKeyHash) return { stored: false, delivered: false, relayed: 0 }
 	const hop = Math.max(0, Number(opts.hop) || 0)
@@ -63,15 +76,15 @@ export async function publishMailboxRecord(username, toPubKeyHash, record, toNod
  * @returns {Promise<void>}
  */
 export async function ingestMailboxPut(ctx, put) {
-	const routing = getMailboxRoutingSettings()
 	const { record } = put
 	if (!record?.envelope || !record?.toPubKeyHash) return
 	const fromNode = String(put.nodeHash || '').trim()
 	if (!fromNode || !takeIncomingMailboxPutSlot(fromNode)) return
-	const hop = Number(record.hop) || 0
-	if (hop >= routing.maxHop) return
 	const username = String(ctx?.replicaUsername || '').trim()
 	if (!username) return
+	const routing = await resolveRouting(username)
+	const hop = Number(record.hop) || 0
+	if (hop >= routing.maxHop) return
 	await deliverOrStoreMailboxPut(username, {
 		toPubKeyHash: record.toPubKeyHash,
 		record: {
@@ -125,7 +138,7 @@ export async function ingestMailboxGive(ctx, give) {
  * @returns {Promise<void>}
  */
 export async function requestMailboxFromNetwork(username, toPubKeyHash) {
-	const routing = getMailboxRoutingSettings()
+	const routing = await resolveRouting(username)
 	const { listMailboxIdsForRecipient } = await import('./store.mjs')
 	const recipient = normalizeHex64(toPubKeyHash)
 	if (!recipient) return

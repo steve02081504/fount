@@ -2,7 +2,8 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { prepareBundleForApply } from '../apply.mjs'
-import { normalizeBundle, PARAM_SPACE, randomCandidate } from '../space.mjs'
+import { normalizeBundle, PARAM_SPACE, randomCandidate, sanitizeArchiveQuorum } from '../space.mjs'
+import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 
 Deno.test('normalizeBundle keeps every PARAM_SPACE value in its semantic domain', () => {
 	for (let seed = 1; seed <= 40; seed++) {
@@ -43,8 +44,13 @@ Deno.test('prepareBundleForApply does not zero non-space reputation keys', () =>
 
 Deno.test('prepareBundleForApply enforces strict>=base quorum rule', () => {
 	const bundle = randomCandidate(3)
-	bundle.archive.archiveQuorumPeerMin = 5
-	bundle.archive.archiveQuorumPeerStrictMin = 2
-	const ready = prepareBundleForApply(bundle)
-	assertEquals(ready.archive.archiveQuorumPeerStrictMin >= ready.archive.archiveQuorumPeerMin, true)
+	bundle.archive.archiveQuorumPeerMinRatio = 0.8
+	bundle.archive.archiveQuorumPeerStrictMinRatio = 0.1
+	sanitizeArchiveQuorum(bundle)
+	const refN = 8
+	assertEquals(
+		resolveArchiveQuorumPeerStrictMin(refN, bundle.archive)
+			>= resolveArchiveQuorumPeerMin(refN, bundle.archive),
+		true,
+	)
 })

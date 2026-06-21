@@ -99,13 +99,14 @@ export function recordGossipAllUnknownWant(groupId, peerNodeHash) {
 
 /**
  * @param {string} peerNodeHash 对端
+ * @param {number} [excessRatio=1] 超速超额比例 0..1
  * @returns {void}
  */
-export function recordMessageRateViolation(peerNodeHash) {
+export function recordMessageRateViolation(peerNodeHash, excessRatio = 1) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
 	void mutateReputation(data => {
-		recordMessageRateViolationPure(data, id)
+		recordMessageRateViolationPure(data, id, undefined, excessRatio)
 		observeBehaviorSamplePure(data, id, 1)
 	})
 }

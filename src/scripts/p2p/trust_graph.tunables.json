@@ -1,5 +1,7 @@
 {
-	"federationFanoutTopK": 8,
+	"federationFanoutTopKFloor": 3,
+	"federationFanoutTopKRatio": 0.35,
+	"federationFanoutTopKCap": 16,
 	"federationChunkFetchFanoutK": 6,
 	"federationChunkMaxBytes": 524288,
 	"hintDefaultWeight": 0.1,

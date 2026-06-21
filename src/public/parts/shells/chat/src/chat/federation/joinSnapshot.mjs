@@ -6,6 +6,8 @@ import { randomUUID } from 'node:crypto'
 
 import { isSignedBaseCheckpoint } from '../../../../../../../scripts/p2p/checkpoint.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
+import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import archiveTunables from '../archive/archive.tunables.json' with { type: 'json' }
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
@@ -170,11 +172,17 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 		}
 		const waitKey = joinSnapshotWaitKey(username, groupId, requestId)
 		const targets = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
+		const fedState = await loadFederationMaterializedState(username, groupId)
+		const activeMemberCount = fedState
+			? Object.values(fedState.members || {}).filter(m => m?.status === 'active').length
+			: 0
+		const quorumN = Math.max(targets.length, activeMemberCount)
 		const { promise: collectPromise, pending } = createFederationCollect(
 			SNAPSHOT_WAIT_MS,
 			targets.length,
 			() => pendingSnapshotPulls.delete(waitKey),
 		)
+		pending.quorumPeerMin = resolveArchiveQuorumPeerMin(quorumN, archiveTunables)
 		pendingSnapshotPulls.set(waitKey, pending)
 		if (targets.length)
 			for (const peerId of targets)
@@ -185,6 +193,7 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 		if (!candidates.length) return null
 		const picked = pickJoinSnapshotByReputation(candidates, {
 			allowSinglePeerBootstrap: !isSignedBaseCheckpoint(localArchive.checkpoint),
+			activeMemberCount,
 		})
 		if (!picked.winner) return null
 		penalizeJoinSnapshotMismatches(candidates, picked.bucketKey)

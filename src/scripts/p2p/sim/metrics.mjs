@@ -19,6 +19,7 @@ import { runSimulationJobs, defaultConcurrency } from './sim_pool.mjs'
  *   archiveDefenseRate: number,
  *   mailboxReachRate: number,
  *   mailboxCostRatio: number,
+ *   nodeOverloadRate: number,
  *   archiveQuorumAccuracy: number,
  *   churnReachRate: number,
  *   compromiseContainmentRate: number,
@@ -58,6 +59,7 @@ export const RATE_METRIC_KEYS = Object.freeze([
 	'archiveDefenseRate',
 	'mailboxReachRate',
 	'mailboxCostRatio',
+	'nodeOverloadRate',
 	'archiveQuorumAccuracy',
 	'churnReachRate',
 	'compromiseContainmentRate',
@@ -94,6 +96,7 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 	falsePositiveRate: -0.16,
 	fanoutCostRatio: -0.04,
 	mailboxCostRatio: -0.045,
+	nodeOverloadRate: -0.08,
 })
 
 /**

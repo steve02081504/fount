@@ -17,6 +17,12 @@ import {
 import { REP_MAX } from '../reputation_math.mjs'
 import { applyFollowedBlockSignalPure, applyFollowedSuspectSignalPure, applySocialSuspectDecayAllPure } from '../reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
+import {
+	resolveArchiveQuorumPeerMin,
+	resolveArchiveQuorumPeerStrictMin,
+	resolveMailboxRelayFanout,
+	resolveMailboxWantFanout,
+} from '../tunables_resolve.mjs'
 
 import { capMaliciousByPowBudget, honestJoinDelayPenalty, resolvePowFloorBits } from './admission.mjs'
 import { attackReachesObserver, simIsPeerQuarantined, simObservePeerBehavior } from './anomaly.mjs'
@@ -402,6 +408,8 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
 	if (peer.kind !== 'honest' || !peer.behavior) return
 
 	if (side === 'social') {
+		if (behaviorRoll(rng, peer.behavior, 'burstPostRate'))
+			recordMessageRateViolationPure(observer.reputation, peer.id, tunables.reputation, 0.35)
 		const other = ctx.nodes.find(n => n.kind === 'honest' && n.id !== peer.id && n.id !== observer.id)
 		if (other && behaviorRoll(rng, peer.behavior, 'blockProneness'))
 			applyFollowedBlockSignalPure(
@@ -431,19 +439,19 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
  * @param {TunablesBundle} tunables 参数
  * @param {(id: string) => number} scoreOf 信誉分
  * @param {Set<string>} [offlineSet] 当前离线节点
- * @returns {{ reach: number, cost: number }} 可达率与成本比
+ * @returns {{ reach: number, cost: number, overload: number }} 可达率、成本比、带宽超载率
  */
 function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) {
 	const maxHop = tunables.mailbox.maxHop
-	const fanout = tunables.mailbox.relayFanoutTrusted
-	const wantFanout = tunables.mailbox.wantFanout
 	const online = nodes.filter(n => !offlineSet.has(n.id))
+	const fanout = resolveMailboxRelayFanout(online.length, tunables.mailbox)
+	const wantFanout = resolveMailboxWantFanout(online.length, tunables.mailbox)
 	const onlineIds = online.map(n => n.id)
 	const friendly = new Set(online.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id))
 	const adj = buildRankedNeighborAdj(onlineIds, id => scoreOf(id), fanout)
 
 	if (offlineSet.has(obs.id))
-		return { reach: 0, cost: 0 }
+		return { reach: 0, cost: 0, overload: 0 }
 
 	const visited = new Set([obs.id])
 	const reachedFriendly = new Set()
@@ -486,7 +494,12 @@ function simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet = new Set()) 
 	const fanoutFactor = 1 + MAILBOX_FANOUT_COST_SCALE * Math.max(0, wantFanout - 3)
 	const excessHopPenalty = 1 + MAILBOX_EXCESS_HOP_PENALTY * Math.max(0, maxHop - minHopsNeeded - 1)
 	const cost = Math.min(3, (visited.size / totalFriendly) * hopFactor * fanoutFactor * excessHopPenalty * (1 + relaySteps / (totalFriendly * MAILBOX_RELAY_COST_DIVISOR)))
-	return { reach, cost }
+	const budget = Math.max(1, Number(tunables.mailbox.networkBudgetPerRound ?? 64)
+		+ Math.ceil(online.length * Number(tunables.mailbox.networkBudgetPerPeerRatio ?? 2)))
+	const overload = relaySteps > budget ? Math.min(1, (relaySteps - budget) / budget) : 0
+	if (overload > 0)
+		reach *= Math.max(0, 1 - overload)
+	return { reach, cost, overload }
 }
 
 /**
@@ -507,8 +520,8 @@ function simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocat
 	const forgers = nodes.filter(n => n.attack === 'archive_forger' || n.attack === 'equivocator')
 	if (!honestSubmitters.length && !forgers.length) return 1
 
-	const peerMin = tunables.archive.archiveQuorumPeerMin
-	const strictMin = Math.max(peerMin, tunables.archive.archiveQuorumPeerStrictMin)
+	const peerMin = resolveArchiveQuorumPeerMin(groupSize, tunables.archive)
+	const strictMin = resolveArchiveQuorumPeerStrictMin(groupSize, tunables.archive)
 
 	const reachable = Math.max(2, Math.round(groupSize / 2))
 	const availHonest = Math.min(honestSubmitters.length, reachable)
@@ -571,15 +584,11 @@ function isNodePreserved(node, scoreOf, hideThreshold) {
  */
 function isMaliciousSuppressed(node, scoreOf, hideThreshold, honestMedian) {
 	const score = scoreOf(node.id)
-	return score < hideThreshold || score < honestMedian
+	return score < hideThreshold && score < honestMedian
 }
 
 /** 理想 mailbox 参考（与候选参数解耦，用于 churn 归一化分母） */
-const IDEAL_MAILBOX_REACH = Object.freeze({
-	maxHop: 6,
-	relayFanoutTrusted: 8,
-	wantFanout: 10,
-})
+const IDEAL_MAILBOX_ONLINE_REF = 20
 
 /**
  * @param {TunablesBundle} tunables 候选参数
@@ -588,7 +597,12 @@ const IDEAL_MAILBOX_REACH = Object.freeze({
 function idealReachTunables(tunables) {
 	return {
 		...tunables,
-		mailbox: { ...tunables.mailbox, ...IDEAL_MAILBOX_REACH },
+		mailbox: {
+			...tunables.mailbox,
+			maxHop: 6,
+			relayFanoutTrusted: resolveMailboxRelayFanout(IDEAL_MAILBOX_ONLINE_REF, tunables.mailbox),
+			wantFanout: resolveMailboxWantFanout(IDEAL_MAILBOX_ONLINE_REF, tunables.mailbox),
+		},
 	}
 }
 
@@ -815,6 +829,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	let archiveTotal = 0
 	let mailboxReach = 0
 	let mailboxCost = 0
+	let nodeOverload = 0
 	let archiveQuorum = 0
 	let compromiseContained = 0
 	let compromiseTotal = 0
@@ -885,7 +900,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			quarantinedNodeHashes: new Set(
 				Object.keys(obs.reputation.byNodeHash || {}).filter(id => simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
 			),
-		}, tunables.trustGraph.federationFanoutTopK, tunables.trustGraph)
+		}, undefined, tunables.trustGraph)
 
 		const topSet = new Set(top.map(n => n.nodeHash))
 		const topLive = top.filter(n => {
@@ -1016,6 +1031,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const mail = simulateMailbox(obs, nodes, tunables, scoreOf, offlineSet)
 		mailboxReach += mail.reach
 		mailboxCost += mail.cost
+		nodeOverload += mail.overload
 		idealReach += simulateMailbox(obs, nodes, idealTunables, scoreOf, new Set()).reach
 		const scenarioMeta = ctx.scenario ?? {}
 		let quorumAcc = simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
@@ -1096,6 +1112,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		archiveDefenseRate: archiveTotal ? archiveDefended / archiveTotal : 1,
 		mailboxReachRate: mailboxReach / nObs,
 		mailboxCostRatio: mailboxCostAvg,
+		nodeOverloadRate: nodeOverload / nObs,
 		archiveQuorumAccuracy: archiveQuorum / nObs,
 		churnReachRate: normalizedChurnReach,
 		compromiseContainmentRate: compromiseTotal ? compromiseContained / compromiseTotal : 1,

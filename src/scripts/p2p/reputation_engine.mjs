@@ -215,12 +215,15 @@ export function recordGossipAllUnknownWantPure(data, peerNodeHash, now = Date.no
  * @param {ReputationFile} data 信誉表
  * @param {string} peerNodeHash 对端
  * @param {typeof reputationTunables} [tunables] tunables
+ * @param {number} [excessRatio=1] 超速超额比例 0..1
  * @returns {void}
  */
-export function recordMessageRateViolationPure(data, peerNodeHash, tunables = reputationTunables) {
+export function recordMessageRateViolationPure(data, peerNodeHash, tunables = reputationTunables, excessRatio = 1) {
 	const id = String(peerNodeHash || '').trim()
 	if (!id) return
-	adjustNodeReputation(data, id, -tunables.penaltyMessageRate)
+	const ratio = Math.max(0, Math.min(1, Number(excessRatio) || 0))
+	if (ratio <= 0) return
+	adjustNodeReputation(data, id, -tunables.penaltyMessageRate * ratio)
 }
 
 /**

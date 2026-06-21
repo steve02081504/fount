@@ -5,7 +5,8 @@ import { verifyRemoteCheckpoint } from '../../../../../../../../scripts/p2p/chec
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { ARCHIVE_QUORUM_PEER_MIN } from '../../archive/monthDigest.mjs'
+import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import archiveTunables from '../../archive/archive.tunables.json' with { type: 'json' }
 import { federationNodeHash } from '../deps.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
 import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'
@@ -67,7 +68,7 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 
 /**
  * @param {Array<object>} candidates 各 peer 应答
- * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
+ * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean, activeMemberCount?: number }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
  * @returns {{ winner: object | null, bucketKey: string, reason: string }} 仲裁结果
  */
 export function pickJoinSnapshotByReputation(candidates, opts = {}) {
@@ -104,7 +105,13 @@ export function pickJoinSnapshotByReputation(candidates, opts = {}) {
 	const best = ranked[0]
 	if (opts.allowSinglePeerBootstrap)
 		return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'bootstrap' }
-	if (!(best.score > 0 || best.bucket.peers.length >= ARCHIVE_QUORUM_PEER_MIN))
+	const quorumN = Math.max(
+		Number(opts.activeMemberCount) || 0,
+		best.bucket.peers.length,
+		candidates.length,
+	)
+	const peerMin = resolveArchiveQuorumPeerMin(quorumN, archiveTunables)
+	if (!(best.score > 0 || best.bucket.peers.length >= peerMin))
 		return { winner: null, bucketKey: '', reason: 'quorum_failed' }
 	return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'ok' }
 }

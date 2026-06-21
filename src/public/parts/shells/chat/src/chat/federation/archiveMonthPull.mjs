@@ -9,12 +9,14 @@ import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
+import archiveTunables from '../archive/archive.tunables.json' with { type: 'json' }
 import {
 	prepareArchiveMonthChunkMetaForServe,
 	resolveArchiveMonthCandidateBody,
 } from '../archive/monthChunks.mjs'
 import {
 	pickArchiveMonthByReputation,
+	resolveArchiveQuorumPeerMin,
 	syncArchivedEventIdsFromMonthBody,
 } from '../archive/monthDigest.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
@@ -272,11 +274,17 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		attestation,
 	}
 	const waitKey = monthPullWaitKey(username, groupId, requestId)
+	const fedState = await loadFederationMaterializedState(username, groupId)
+	const activeMemberCount = fedState
+		? Object.values(fedState.members || {}).filter(m => m?.status === 'active').length
+		: 0
+	const quorumN = Math.max(targets.length, activeMemberCount)
 	const { promise: collectPromise, pending } = createFederationCollect(
 		WAIT_MS,
 		targets.length,
 		() => pendingMonthPulls.delete(waitKey),
 	)
+	pending.quorumPeerMin = resolveArchiveQuorumPeerMin(quorumN, archiveTunables)
 	pendingMonthPulls.set(waitKey, pending)
 	if (targets.length)
 		for (const peerId of targets)
@@ -310,6 +318,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		manifest,
 		channelId,
 		utcMonth,
+		{ activeMemberCount },
 	)
 	if (!picked.winner) {
 		for (const row of candidates)

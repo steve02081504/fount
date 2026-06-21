@@ -9,6 +9,11 @@ import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_j
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../scripts/p2p/reputation_pick_score.mjs'
+import {
+	resolveArchiveQuorumPeerMin,
+	resolveArchiveQuorumPeerStrictMin,
+	resolveArchiveQuorumThresholds,
+} from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import archiveTunables from './archive.tunables.json' with { type: 'json' }
@@ -17,11 +22,13 @@ import { archiveMonthKey } from './settings.mjs'
 /** canonical JSONL 行内 eventId 提取（digest 排序用，避免 sort 中重复 JSON.parse） */
 const ARCHIVE_LINE_EVENT_ID_RE = /"eventId"\s*:\s*"([\da-f]{64})"/u
 
-/** 联邦收集阶段：同 digest 的 peer 数达此值可提前结束等待（最终落盘仍须信誉仲裁） */
-export const ARCHIVE_QUORUM_PEER_MIN = archiveTunables.archiveQuorumPeerMin
+/** @deprecated 使用 {@link resolveArchiveQuorumPeerMin}；N=8 参考值 */
+export const ARCHIVE_QUORUM_PEER_MIN = resolveArchiveQuorumPeerMin(8, archiveTunables)
 
-/** 无正信誉时，同 digest 的独立 peer 数须达此值才接受（防 Sybil；运行时硬钳 ≥2） */
-export const ARCHIVE_QUORUM_PEER_STRICT_MIN = Math.max(2, archiveTunables.archiveQuorumPeerStrictMin)
+/** @deprecated 使用 {@link resolveArchiveQuorumPeerStrictMin}；N=8 参考值 */
+export const ARCHIVE_QUORUM_PEER_STRICT_MIN = resolveArchiveQuorumPeerStrictMin(8, archiveTunables)
+
+export { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin, resolveArchiveQuorumThresholds }
 
 /**
  * @param {object} snap PostSnapshot
@@ -330,7 +337,7 @@ export function syncArchivedEventIdsFromMonthBody(manifest, channelId, month, sn
  * @param {object} manifest archive manifest
  * @param {string} channelId 频道
  * @param {string} month `YYYY-MM`
- * @param {{ pickScore?: (peerNodeHash: string) => number }} [opts] 测试可注入 pickScore
+ * @param {{ pickScore?: (peerNodeHash: string) => number, activeMemberCount?: number }} [opts] 测试可注入 pickScore；activeMemberCount 用于缩放 strictMin
  * @returns {Promise<{ winner: object | null, digest: string, reason: string }>} 仲裁结果
  */
 export async function pickArchiveMonthByReputation(candidates, manifest, channelId, month, opts = {}) {
@@ -381,10 +388,13 @@ export async function pickArchiveMonthByReputation(candidates, manifest, channel
 	})
 
 	const best = ranked[0]
+	const candidatePeerCount = Math.max(...[...byDigest.values()].map(b => b.peers.length), 0)
+	const quorumN = Math.max(Number(opts.activeMemberCount) || 0, candidatePeerCount)
+	const strictMin = resolveArchiveQuorumPeerStrictMin(quorumN, archiveTunables)
 	const soleHighRepDictator = best.bucket.peers.length === 1 && best.score > 0
 	const quorumOk = !soleHighRepDictator && (
 		best.score > 0
-		|| best.bucket.peers.length >= ARCHIVE_QUORUM_PEER_STRICT_MIN
+		|| best.bucket.peers.length >= strictMin
 	)
 	if (!quorumOk) return { winner: null, digest: '', reason: 'quorum_failed' }
 

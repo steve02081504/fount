@@ -20,20 +20,23 @@ const tunables = defaultReputationTunables()
 const PEER = 'a'.repeat(64)
 
 Deno.test('computeRecidivismMultiplier escalates with streak', () => {
-	assertEquals(computeRecidivismMultiplier(1, tunables), 1.25)
-	assertEquals(computeRecidivismMultiplier(4, tunables), 2)
+	const step = tunables.recidivismMultiplierStep
+	assertEquals(computeRecidivismMultiplier(1, tunables), 1 + step)
+	assertEquals(computeRecidivismMultiplier(4, tunables), Math.min(tunables.recidivismMax, 1 + step * 4))
 	assertEquals(computeRecidivismMultiplier(100, tunables), tunables.recidivismMax)
 })
 
 Deno.test('repeat penalties escalate without time window reset', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
 	const t0 = 1_000_000
-	adjustNodeReputation(data, PEER, -0.1, t0, tunables)
+	const delta = 0.1
+	adjustNodeReputation(data, PEER, -delta, t0, tunables)
 	const first = data.byNodeHash[PEER].score
-	adjustNodeReputation(data, PEER, -0.1, t0 + 86_400_000, tunables)
+	const secondMult = computeRecidivismMultiplier(2, tunables)
+	adjustNodeReputation(data, PEER, -delta, t0 + 86_400_000, tunables)
 	const second = data.byNodeHash[PEER].score
-	assertEquals(first, -0.125)
-	assertEquals(second, first - 0.1 * 1.5)
+	assertEquals(first, -delta * computeRecidivismMultiplier(1, tunables))
+	assertEquals(second, first - delta * secondMult)
 	assertEquals(data.byNodeHash[PEER].offenseStreak, 2)
 })
 

@@ -63,7 +63,7 @@ export function recordMessageRate(username, groupId, event) {
  * @param {string} groupId 群 ID
  * @param {object} state 物化状态
  * @param {object} event 待校验 message
- * @returns {{ ok: boolean, reason?: string }} 是否允许发送
+ * @returns {{ ok: boolean, reason?: string, excessRatio?: number }} 是否允许发送
  */
 export function checkMessageRateLimitMemory(username, groupId, state, event) {
 	if (event?.type !== 'message') return { ok: true }
@@ -76,7 +76,14 @@ export function checkMessageRateLimitMemory(username, groupId, state, event) {
 	const times = (bucket.get(entityKey) || []).filter(t => now - t <= windowMs)
 	if (!times.length) bucket.delete(entityKey)
 	else bucket.set(entityKey, times)
-	if (times.length >= perMin) return { ok: false, reason: 'message rate limit exceeded' }
+	if (times.length >= perMin) {
+		const excess = times.length - perMin + 1
+		return {
+			ok: false,
+			reason: 'message rate limit exceeded',
+			excessRatio: Math.min(1, excess / Math.max(1, perMin)),
+		}
+	}
 	pruneBucket(bucket, windowMs, now)
 	return { ok: true }
 }

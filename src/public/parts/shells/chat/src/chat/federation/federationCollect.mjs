@@ -2,13 +2,13 @@
  * 联邦多 peer 应答收集：超时、全量收齐、quorum 提前结束。
  */
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { ARCHIVE_QUORUM_PEER_MIN } from '../archive/monthDigest.mjs'
 
 /**
- * @param {Array<{ complete?: boolean, digest?: string }>} candidates 月拉候选
+ * @param {Array<{ complete?: boolean, digest?: string, verified?: boolean }>} candidates 月拉候选
+ * @param {number} [peerMin=2] 同 digest 所需 peer 数（由 resolveArchiveQuorumPeerMin 缩放）
  * @returns {boolean} 是否已有 digest quorum
  */
-export function archiveMonthQuorumSatisfied(candidates) {
+export function archiveMonthQuorumSatisfied(candidates, peerMin = 2) {
 	/** @type {Map<string, number>} */
 	const byDigest = new Map()
 	for (const row of candidates) {
@@ -17,16 +17,18 @@ export function archiveMonthQuorumSatisfied(candidates) {
 		if (!isHex64(digest)) continue
 		byDigest.set(digest, (byDigest.get(digest) || 0) + 1)
 	}
+	const min = Math.max(1, Math.floor(Number(peerMin) || 2))
 	for (const count of byDigest.values())
-		if (count >= ARCHIVE_QUORUM_PEER_MIN) return true
+		if (count >= min) return true
 	return false
 }
 
 /**
  * @param {Array<{ bucketKey?: string }>} candidates 入群快照候选
+ * @param {number} [peerMin=2] 同 bucket 所需 peer 数
  * @returns {boolean} 是否已有 checkpoint 分桶 quorum
  */
-export function joinSnapshotQuorumSatisfied(candidates) {
+export function joinSnapshotQuorumSatisfied(candidates, peerMin = 2) {
 	/** @type {Map<string, number>} */
 	const byBucket = new Map()
 	for (const row of candidates) {
@@ -34,8 +36,9 @@ export function joinSnapshotQuorumSatisfied(candidates) {
 		if (!key) continue
 		byBucket.set(key, (byBucket.get(key) || 0) + 1)
 	}
+	const min = Math.max(1, Math.floor(Number(peerMin) || 2))
 	for (const count of byBucket.values())
-		if (count >= ARCHIVE_QUORUM_PEER_MIN) return true
+		if (count >= min) return true
 	return false
 }
 
@@ -43,7 +46,7 @@ export function joinSnapshotQuorumSatisfied(candidates) {
  * @param {number} waitMs 超时毫秒
  * @param {number} expectedCount 目标 peer 数（0 表示仅超时结束）
  * @param {() => void} [onSettled] 结束回调（如从 Map 删除等待键）
- * @returns {{ finish: (list: object[]) => void, promise: Promise<object[]>, pending: { candidates: object[], expectedCount: number, finish: (list: object[]) => void } }} 收集句柄
+ * @returns {{ finish: (list: object[]) => void, promise: Promise<object[]>, pending: { candidates: object[], expectedCount: number, quorumPeerMin?: number, finish: (list: object[]) => void } }} 收集句柄
  */
 export function createFederationCollect(waitMs, expectedCount, onSettled) {
 	/** @type {boolean} */
@@ -74,6 +77,7 @@ export function createFederationCollect(waitMs, expectedCount, onSettled) {
 	const pending = {
 		candidates,
 		expectedCount,
+		quorumPeerMin: 2,
 		finish,
 	}
 
@@ -81,8 +85,8 @@ export function createFederationCollect(waitMs, expectedCount, onSettled) {
 }
 
 /**
- * @param {{ candidates: object[], expectedCount: number, finish: (list: object[]) => void }} pending 等待桶
- * @param {(list: object[]) => boolean} quorumSatisfied 仲裁谓词
+ * @param {{ candidates: object[], expectedCount: number, quorumPeerMin?: number, finish: (list: object[]) => void }} pending 等待桶
+ * @param {(list: object[], peerMin?: number) => boolean} quorumSatisfied 仲裁谓词
  * @returns {void}
  */
 export function tryFinishFederationCollect(pending, quorumSatisfied) {
@@ -90,6 +94,6 @@ export function tryFinishFederationCollect(pending, quorumSatisfied) {
 		pending.finish(pending.candidates)
 		return
 	}
-	if (quorumSatisfied(pending.candidates))
+	if (quorumSatisfied(pending.candidates, pending.quorumPeerMin))
 		pending.finish(pending.candidates)
 }

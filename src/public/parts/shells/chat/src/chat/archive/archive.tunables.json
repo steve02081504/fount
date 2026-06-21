@@ -1,4 +1,6 @@
 {
-	"archiveQuorumPeerMin": 2,
-	"archiveQuorumPeerStrictMin": 4
+	"archiveQuorumPeerMinFloor": 2,
+	"archiveQuorumPeerMinRatio": 0.25,
+	"archiveQuorumPeerStrictMinFloor": 2,
+	"archiveQuorumPeerStrictMinRatio": 0.5
 }

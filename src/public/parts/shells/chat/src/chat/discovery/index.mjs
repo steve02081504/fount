@@ -10,7 +10,8 @@ import { dirname } from 'node:path'
 import { sign, verify } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickNodeScore } from '../../../../../../../scripts/p2p/reputation.mjs'
-import { ARCHIVE_QUORUM_PEER_MIN } from '../archive/monthDigest.mjs'
+import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import archiveTunables from '../archive/archive.tunables.json' with { type: 'json' }
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { discoveryIndexPath } from '../lib/paths.mjs'
@@ -134,7 +135,12 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 		...(entry?.sources || []).map(s => s.fromNodeHash).filter(Boolean),
 		fromNodeHash,
 	].filter(Boolean))
-	if (nodeScore <= 0 && distinctSources.size < ARCHIVE_QUORUM_PEER_MIN) return
+	const sourceMinN = Math.max(
+		Number(advertisement.memberCount) || 0,
+		distinctSources.size + 1,
+	)
+	const sourceMin = resolveArchiveQuorumPeerMin(sourceMinN, archiveTunables)
+	if (nodeScore <= 0 && distinctSources.size < sourceMin) return
 	if (!entry) {
 		entry = {
 			groupId: advertisement.groupId,

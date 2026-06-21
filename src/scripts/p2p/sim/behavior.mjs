@@ -2,7 +2,7 @@
  * 诚实节点浮点行为向量（每维 [0,1]）。
  */
 
-/** @typedef {'postRate' | 'likeRate' | 'replyRate' | 'relayRate' | 'chunkServeRate' | 'onlineStability' | 'blockProneness' | 'archiveSubmitRate' | 'mentionRate'} BehaviorKey */
+/** @typedef {'postRate' | 'likeRate' | 'replyRate' | 'relayRate' | 'chunkServeRate' | 'onlineStability' | 'blockProneness' | 'archiveSubmitRate' | 'mentionRate' | 'burstPostRate'} BehaviorKey */
 
 /**
  * @typedef {Record<BehaviorKey, number>} NodeBehavior
@@ -23,6 +23,7 @@ export const BEHAVIOR_KEYS = Object.freeze([
 	'blockProneness',
 	'archiveSubmitRate',
 	'mentionRate',
+	'burstPostRate',
 ])
 
 /** 均衡默认分布 */
@@ -36,6 +37,7 @@ export const DEFAULT_BEHAVIOR_DIST = Object.freeze({
 	blockProneness: { mean: 0.08, min: 0, max: 0.4 },
 	archiveSubmitRate: { mean: 0.25, min: 0, max: 0.7 },
 	mentionRate: { mean: 0.15, min: 0, max: 0.6 },
+	burstPostRate: { mean: 0, min: 0, max: 0.5 },
 })
 
 /**

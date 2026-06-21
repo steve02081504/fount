@@ -7,6 +7,11 @@
  *   2. 适应度压力**全部来自仿真内生指标**（churn 可达、误伤、quorum 安全等），
  *      不再在此模块追加外生手写常数惩罚。
  */
+import {
+	resolveArchiveQuorumPeerMin,
+	resolveArchiveQuorumPeerStrictMin,
+} from '../tunables_resolve.mjs'
+
 import { createRng } from './rng.mjs'
 import { loadDefaultTunables } from './tunables_bundle.mjs'
 
@@ -37,33 +42,34 @@ export const PARAM_SPACE = [
 	{ module: 'reputation', key: 'chunkFetchFailPenalty', kind: 'pos' },
 	{ module: 'reputation', key: 'relayRepBump', kind: 'pos' },
 	{ module: 'reputation', key: 'wantUnknownThreshold', kind: 'count' },
-	{ module: 'reputation', key: 'collusionLambda', kind: 'pos' },
-	{ module: 'reputation', key: 'collusionDelta', kind: 'unit' },
-	{ module: 'reputation', key: 'collusionMaxHop', kind: 'count' },
 	{ module: 'reputation', key: 'slashVerifiedMultiplier', kind: 'unit' },
 	{ module: 'reputation', key: 'introducerSeedEdge', kind: 'unit' },
 	{ module: 'reputation', key: 'recidivismMultiplierStep', kind: 'unit' },
 	{ module: 'reputation', key: 'recidivismMax', kind: 'pos' },
 	{ module: 'reputation', key: 'redemptionCreditPerStreakLevel', kind: 'pos' },
 	{ module: 'reputation', key: 'inviteRedemptionCreditPerBad', kind: 'pos' },
-	{ module: 'reputation', key: 'inviteBadEscalationStep', kind: 'unit' },
-	{ module: 'reputation', key: 'inviteBadEscalationMax', kind: 'pos' },
-	{ module: 'reputation', key: 'inviteHopBonusEvery', kind: 'count' },
-	{ module: 'reputation', key: 'inviteHopBonusMax', kind: 'count' },
 	{ module: 'reputation', key: 'inviteDeltaBoostPerBad', kind: 'unit' },
 	{ module: 'reputation', key: 'inviteDeltaBoostMax', kind: 'unit' },
-	{ module: 'trustGraph', key: 'federationFanoutTopK', kind: 'count' },
+	{ module: 'trustGraph', key: 'federationFanoutTopKRatio', kind: 'unit' },
+	{ module: 'trustGraph', key: 'federationFanoutTopKFloor', kind: 'count' },
+	{ module: 'trustGraph', key: 'federationFanoutTopKCap', kind: 'count' },
 	{ module: 'trustGraph', key: 'hintDefaultWeight', kind: 'unit' },
 	{ module: 'trustGraph', key: 'hintMaxBonus', kind: 'unit' },
 	{ module: 'trustGraph', key: 'rosterDefaultScore', kind: 'unit' },
 	{ module: 'social', key: 'socialBlockClaim', kind: 'unit' },
 	{ module: 'social', key: 'socialRepHideThreshold', kind: 'score' },
 	{ module: 'mailbox', key: 'maxHop', kind: 'count' },
-	{ module: 'mailbox', key: 'relayFanoutTrusted', kind: 'count' },
-	{ module: 'mailbox', key: 'wantFanout', kind: 'count' },
-	{ module: 'archive', key: 'archiveQuorumPeerMin', kind: 'count' },
-	{ module: 'archive', key: 'archiveQuorumPeerStrictMin', kind: 'count' },
-	{ module: 'admission', key: 'powFloorBits', kind: 'count' },
+	{ module: 'mailbox', key: 'relayFanoutTrustedRatio', kind: 'unit' },
+	{ module: 'mailbox', key: 'relayFanoutTrustedFloor', kind: 'count' },
+	{ module: 'mailbox', key: 'relayFanoutTrustedCap', kind: 'count' },
+	{ module: 'mailbox', key: 'wantFanoutRatio', kind: 'unit' },
+	{ module: 'mailbox', key: 'wantFanoutFloor', kind: 'count' },
+	{ module: 'mailbox', key: 'wantFanoutCap', kind: 'count' },
+	{ module: 'mailbox', key: 'networkBudgetPerRound', kind: 'count' },
+	{ module: 'archive', key: 'archiveQuorumPeerMinRatio', kind: 'unit' },
+	{ module: 'archive', key: 'archiveQuorumPeerMinFloor', kind: 'count' },
+	{ module: 'archive', key: 'archiveQuorumPeerStrictMinRatio', kind: 'unit' },
+	{ module: 'archive', key: 'archiveQuorumPeerStrictMinFloor', kind: 'count' },
 	{ module: 'admission', key: 'powVoluntaryBonusCap', kind: 'unit' },
 	{ module: 'admission', key: 'powVoluntaryBonusScaleBits', kind: 'count' },
 ]
@@ -108,16 +114,6 @@ function logit(p) {
 function atanhScore(s) {
 	const safe = s > -1 && s < 1 ? s : Math.tanh(s)
 	return Math.atanh(safe)
-}
-
-/**
- * @param {number} n 数值
- * @returns {number} 小数位数
- */
-function decimalPlaces(n) {
-	const text = String(n)
-	const dot = text.indexOf('.')
-	return dot === -1 ? 0 : text.length - dot - 1
 }
 
 /**
@@ -183,9 +179,14 @@ export function normalizeBundle(bundle) {
  * @returns {void}
  */
 export function sanitizeArchiveQuorum(bundle) {
-	const peerMin = bundle.archive.archiveQuorumPeerMin
-	if (bundle.archive.archiveQuorumPeerStrictMin < peerMin)
-		bundle.archive.archiveQuorumPeerStrictMin = peerMin
+	const refN = 8
+	const peerMin = resolveArchiveQuorumPeerMin(refN, bundle.archive)
+	const strictMin = resolveArchiveQuorumPeerStrictMin(refN, bundle.archive)
+	if (strictMin < peerMin)
+		bundle.archive.archiveQuorumPeerStrictMinRatio = Math.max(
+			Number(bundle.archive.archiveQuorumPeerMinRatio) || 0.25,
+			Number(bundle.archive.archiveQuorumPeerStrictMinRatio) || 0.5,
+		)
 }
 
 /**

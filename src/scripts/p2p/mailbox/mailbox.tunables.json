@@ -1,6 +1,12 @@
 {
 	"maxHop": 3,
-	"relayFanoutTrusted": 6,
+	"relayFanoutTrustedFloor": 3,
+	"relayFanoutTrustedRatio": 0.3,
+	"relayFanoutTrustedCap": 32,
 	"relayFanoutNormal": 3,
-	"wantFanout": 8
+	"wantFanoutFloor": 3,
+	"wantFanoutRatio": 0.4,
+	"wantFanoutCap": 32,
+	"networkBudgetPerRound": 64,
+	"networkBudgetPerPeerRatio": 2
 }

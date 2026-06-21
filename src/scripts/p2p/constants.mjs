@@ -1,4 +1,5 @@
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
+import { resolveFederationFanoutTopK } from './tunables_resolve.mjs'
 
 /** @type {readonly string[]} 权限键注册表顺序（运算期 BigInt 编码用） */
 export const PERMISSION_REGISTRY_ORDER = Object.freeze([
@@ -45,8 +46,8 @@ export const EPOCH_CHAIN_MAX = 256
 /** 群文件经联邦复制的单块上限（字节，§10.2） */
 export const FEDERATION_CHUNK_MAX_BYTES = trustGraphTunables.federationChunkMaxBytes
 
-/** TrustGraph fanout 默认 Top-K 邻居数 */
-export const FEDERATION_FANOUT_TOP_K = trustGraphTunables.federationFanoutTopK
+/** TrustGraph fanout 参考 Top-K（N=8 roster 时的缩放值；运行时请用 resolveFederationFanoutTopK） */
+export const FEDERATION_FANOUT_TOP_K = resolveFederationFanoutTopK(8, trustGraphTunables)
 
 /** 全局 fed_chunk_get miss 时 fanout 邻居数 */
 export const FEDERATION_CHUNK_FETCH_FANOUT_K = trustGraphTunables.federationChunkFetchFanoutK

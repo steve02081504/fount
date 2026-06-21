@@ -2,6 +2,7 @@
  * TrustGraph 纯图合并/选择（模拟器与 trust_graph.mjs 共用）。
  */
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
+import { resolveFederationFanoutTopK } from './tunables_resolve.mjs'
 
 /**
  * @typedef {{ nodeHash: string, score: number, scopeIds: string[] }} TrustNode
@@ -176,8 +177,8 @@ export function pickTopFromGraph(graph, limit = trustGraphTunables.pickTopNodesD
  * @param {typeof trustGraphTunables} [tunables] tunables
  * @returns {TrustNode[]} Top-K 节点
  */
-export function pickTop(inputs, limit = trustGraphTunables.federationFanoutTopK, tunables = trustGraphTunables) {
-	const k = limit ?? tunables.federationFanoutTopK
-	const quarantined = inputs.quarantinedNodeHashes || new Set()
-	return pickTopFromGraph(mergeGraph(inputs, tunables), k, tunables, quarantined)
+export function pickTop(inputs, limit, tunables = trustGraphTunables) {
+	const graph = mergeGraph(inputs, tunables)
+	const k = limit ?? resolveFederationFanoutTopK(graph.size, tunables)
+	return pickTopFromGraph(graph, k, tunables, inputs.quarantinedNodeHashes || new Set())
 }
