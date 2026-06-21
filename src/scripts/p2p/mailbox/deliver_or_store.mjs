@@ -9,10 +9,43 @@ import { ensureUserRoom } from '../user_room.mjs'
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
 import {
 	isDeliverableMailboxRecord,
+	isMailboxRecordWithinSizeLimit,
+	mailboxEnvelopeId,
 	mailboxTierFromHop,
 	normalizeMailboxHop,
+	relayHopAfterWireIngress,
 	storeMailboxRecord,
+	getMailboxRecords,
 } from './store.mjs'
+
+/**
+ * @param {string} username replica
+ * @param {string} peerId Trystero peer id
+ * @returns {Promise<string | null>} 已验证的 remote nodeHash
+ */
+async function resolveRemoteNodeHashForPeer(username, peerId) {
+	if (!peerId) return null
+	const slot = await ensureUserRoom({ replicaUsername: username })
+	const entry = slot?.getRoster()?.find(row => row.peerId === peerId)
+	const remote = entry?.remoteNodeHash?.trim().toLowerCase()
+	return remote || null
+}
+
+/**
+ * @param {object} record 入站 record
+ * @returns {Promise<number>} 本节点应存储的 hop
+ */
+async function resolveRelayHopForIngress(record) {
+	let id
+	try {
+		id = mailboxEnvelopeId(record.envelope)
+	}
+	catch {
+		return relayHopAfterWireIngress(record.hop)
+	}
+	const existing = (await getMailboxRecords([id]))[0]
+	return relayHopAfterWireIngress(record.hop, existing?.hop)
+}
 
 /**
  * @param {string} username replica
@@ -47,7 +80,7 @@ export async function deliverOrStoreMailboxPut(username, opts) {
 	}
 	const stored = await storeMailboxRecord(record)
 	const toNodeHash = opts.toNodeHash?.trim().toLowerCase()
-	const delivered = toNodeHash
+	const delivered = toNodeHash && isMailboxRecordWithinSizeLimit(record)
 		? await deliver(username, toNodeHash, 'mailbox_put', { nodeHash, record })
 		: false
 
@@ -78,25 +111,30 @@ export async function publishMailboxRecord(username, toPubKeyHash, record, toNod
 /**
  * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {object} put 入站 mailbox_put
+ * @param {string} [peerId] Trystero 对端 id（有则校验 nodeHash 绑定）
  * @returns {Promise<void>}
  */
-export async function ingestMailboxPut(ctx, put) {
+export async function ingestMailboxPut(ctx, put, peerId = '') {
 	const { record } = put
 	if (!record?.envelope || !record?.toPubKeyHash) return
-	const fromNode = String(put.nodeHash || '').trim()
+	const fromNode = normalizeHex64(put.nodeHash)
 	if (!fromNode || !takeIncomingMailboxPutSlot(fromNode)) return
 	const username = String(ctx?.replicaUsername || '').trim()
 	if (!username) return
+	if (peerId) {
+		const remote = await resolveRemoteNodeHashForPeer(username, peerId)
+		if (!remote || remote !== fromNode) return
+	}
 	const routing = await resolveRouting(username)
-	const hop = normalizeMailboxHop(record.hop)
-	if (hop >= routing.maxHop) return
+	const relayHop = await resolveRelayHopForIngress(record)
+	if (relayHop >= routing.maxHop) return
 	await deliverOrStoreMailboxPut(username, {
 		toPubKeyHash: record.toPubKeyHash,
 		record: {
 			...record,
 			fromNodeHash: fromNode,
 		},
-		hop: hop + 1,
+		hop: relayHop,
 	})
 }
 

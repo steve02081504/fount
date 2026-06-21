@@ -16,7 +16,7 @@ import {
 } from '../../../../../../../scripts/p2p/chunk_fetch_scheduler.mjs'
 import { compositeKey } from '../../../../../../../scripts/p2p/composite_key.mjs'
 import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/constants.mjs'
-import { handleIncomingChunkGet, resolvePendingChunkFetch } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
+import { handleIncomingChunkGet, resolvePendingChunkFetch, verifiedChunkBytes } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { getChunk, hasChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
@@ -400,14 +400,16 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (!b64) return
 			const bytes = b64ToU8(b64)
 			if (bytes.byteLength > FEDERATION_CHUNK_MAX_BYTES) return
-			if (!consumeChunkRate(chunkBucketKey, bytes.byteLength)) return
-			const { storageLocator } = await local.putChunk(groupId, hash, bytes)
+			const verified = verifiedChunkBytes(hash, bytes)
+			if (!verified) return
+			if (!consumeChunkRate(chunkBucketKey, verified.byteLength)) return
+			const { storageLocator } = await local.putChunk(groupId, hash, verified)
 			await bumpChunkLocalRef(username, groupId, storageLocator)
 			if (remoteNode)
 				await bumpChunkStorageReputation(remoteNode)
 			try {
 				sendChunkAck({ chunkHash: hash }, peerId)
-				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
+				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(verified) }, peerId)
 			}
 			catch (error) {
 				console.warn('federation: fed_chunk_put response failed', error)
@@ -468,14 +470,17 @@ export function attachFedChunkHandlers(fedRoom) {
 		const waitKey = compositeKey(username, groupId, hash)
 		const pending = pendingFetches.get(waitKey)
 		if (!pending) return
+		let verified
+		try {
+			verified = verifiedChunkBytes(hash, b64ToU8(b64))
+		}
+		catch {
+			return
+		}
+		if (!verified) return
 		clearTimeout(pending.timer)
 		pendingFetches.delete(waitKey)
-		try {
-			pending.resolve(b64ToU8(b64))
-		}
-		catch (error) {
-			pending.reject(error instanceof Error ? error : new Error(String(error)))
-		}
+		pending.resolve(verified)
 	})
 
 	/**

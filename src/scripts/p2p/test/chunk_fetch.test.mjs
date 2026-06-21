@@ -17,10 +17,9 @@ const BAD_BYTES = new TextEncoder().encode('wrong-payload')
 
 /**
  * @param {string} requestId 请求 id
- * @param {Uint8Array} bytes 响应字节
- * @returns {Uint8Array | null | undefined} 解析结果
+ * @returns {{ resolve: (data: Uint8Array | null) => void, resolved: () => Uint8Array | null | undefined }} 测试槽
  */
-function resolveChunkFetchTest(requestId, bytes) {
+function installChunkFetchWaiter(requestId) {
 	/** @type {Uint8Array | null | undefined} */
 	let resolved
 	/**
@@ -29,13 +28,17 @@ function resolveChunkFetchTest(requestId, bytes) {
 	function captureChunk(data) {
 		resolved = data
 	}
+	const timer = setTimeout(() => pendingChunkFetches.delete(requestId), 60_000)
 	pendingChunkFetches.set(requestId, {
 		expectedHash: HASH,
+		timer,
 		resolve: captureChunk,
 	})
-	resolvePendingChunkFetch({ requestId, dataB64: u8ToB64(bytes) })
-	pendingChunkFetches.delete(requestId)
-	return resolved
+	return {
+		resolve: captureChunk,
+		/** @returns {Uint8Array | null | undefined} 已解析块 */
+		resolved: () => resolved,
+	}
 }
 
 Deno.test('chunkBytesMatchHash accepts matching digest', () => {
@@ -48,10 +51,20 @@ Deno.test('chunkBytesMatchHash rejects mismatched digest', () => {
 	assertEquals(verifiedChunkBytes(HASH, BAD_BYTES), null)
 })
 
-Deno.test('resolvePendingChunkFetch rejects hash mismatch', () => {
-	assertEquals(resolveChunkFetchTest('req-mismatch', BAD_BYTES), null)
+Deno.test('resolvePendingChunkFetch ignores hash mismatch until valid response', () => {
+	const requestId = 'req-mismatch-then-match'
+	const waiter = installChunkFetchWaiter(requestId)
+	resolvePendingChunkFetch({ requestId, dataB64: u8ToB64(BAD_BYTES) })
+	assertEquals(waiter.resolved(), undefined)
+	assertEquals(pendingChunkFetches.has(requestId), true)
+	resolvePendingChunkFetch({ requestId, dataB64: u8ToB64(GOOD_BYTES) })
+	assertEquals(waiter.resolved()?.byteLength, GOOD_BYTES.byteLength)
+	assertEquals(pendingChunkFetches.has(requestId), false)
 })
 
 Deno.test('resolvePendingChunkFetch accepts matching hash', () => {
-	assertEquals(resolveChunkFetchTest('req-match', GOOD_BYTES)?.byteLength, GOOD_BYTES.byteLength)
+	const requestId = 'req-match'
+	const waiter = installChunkFetchWaiter(requestId)
+	resolvePendingChunkFetch({ requestId, dataB64: u8ToB64(GOOD_BYTES) })
+	assertEquals(waiter.resolved()?.byteLength, GOOD_BYTES.byteLength)
 })

@@ -85,6 +85,40 @@ Deno.test('publishMailboxRecord stores trusted hop-0 record', async () => {
 	})
 })
 
+Deno.test('ingestMailboxPut rejects spoofed nodeHash when peerId is not bound', async () => {
+	await withTempNodeDir(async () => {
+		await ingestMailboxPut({ replicaUsername: USER }, {
+			nodeHash: FROM_NODE,
+			record: {
+				toPubKeyHash: RECIPIENT,
+				app: 'chat',
+				envelope: { id: 'spoof-1' },
+				hop: 0,
+			},
+		}, 'peer-not-in-roster')
+		assertEquals((await getMailboxRecords(['spoof-1'])).length, 0)
+	})
+})
+
+Deno.test('ingestMailboxPut ignores forged low hop on wire (minimum relay hop 1)', async () => {
+	await withTempNodeDir(async () => {
+		await ingestMailboxPut({ replicaUsername: USER }, {
+			nodeHash: FROM_NODE,
+			record: {
+				toPubKeyHash: RECIPIENT,
+				app: 'chat',
+				envelope: { id: 'hop-forge-1' },
+				hop: -5,
+				tier: 'trusted',
+			},
+		})
+		const rows = await getMailboxRecords(['hop-forge-1'])
+		assertEquals(rows.length, 1)
+		assertEquals(rows[0].hop, 1)
+		assertEquals(rows[0].tier, 'normal')
+	})
+})
+
 Deno.test('ingestMailboxPut increments hop and stores relayed record', async () => {
 	await withTempNodeDir(async () => {
 		await ingestMailboxPut({ replicaUsername: USER }, {

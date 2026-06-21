@@ -18,7 +18,7 @@ export function attachMailboxWire(ctx, wire) {
 	wire.on('mailbox_put', (payload, peerId) => {
 		const put = parseMailboxPut(payload)
 		if (!put) return
-		void ingestMailboxPut(ctx, put).catch(err => console.error('mailbox: put ingest failed', err))
+		void ingestMailboxPut(ctx, put, peerId).catch(err => console.error('mailbox: put ingest failed', err))
 	})
 
 	wire.on('mailbox_want', (payload, peerId) => {

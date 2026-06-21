@@ -60,6 +60,8 @@ export async function fetchChunk(context) {
 		}
 	}
 
+	if (pendingChunkFetches.size >= MAX_PENDING_CHUNK_FETCHES) return null
+
 	const requestId = randomUUID()
 	/** @type {Uint8Array | null} */
 	let result = null
@@ -68,19 +70,16 @@ export async function fetchChunk(context) {
 			pendingChunkFetches.delete(requestId)
 			resolve(null)
 		}, 8000)
-		if (pendingChunkFetches.size >= MAX_PENDING_CHUNK_FETCHES) {
-			clearTimeout(timer)
-			resolve(null)
-			return
-		}
 		pendingChunkFetches.set(requestId, {
 			expectedHash: hash,
+			timer,
 			/**
 			 * @param {Uint8Array | null} data 块数据
 			 * @returns {void}
 			 */
 			resolve: (data) => {
 				clearTimeout(timer)
+				pendingChunkFetches.delete(requestId)
 				result = data
 				resolve(data)
 			},
@@ -103,7 +102,7 @@ export async function fetchChunk(context) {
 	return null
 }
 
-/** @type {Map<string, { expectedHash: string, resolve: (v: Uint8Array | null) => void }>} */
+/** @type {Map<string, { expectedHash: string, timer: ReturnType<typeof setTimeout>, resolve: (v: Uint8Array | null) => void }>} */
 export const pendingChunkFetches = new Map()
 const MAX_PENDING_CHUNK_FETCHES = 2048
 
@@ -116,17 +115,20 @@ export function resolvePendingChunkFetch(payload) {
 	const requestId = String(payload?.requestId || '')
 	const entry = pendingChunkFetches.get(requestId)
 	if (!entry) return
-	pendingChunkFetches.delete(requestId)
 	if (payload?.dataB64) {
 		try {
 			const bytes = b64ToU8(String(payload.dataB64))
-			entry.resolve(verifiedChunkBytes(entry.expectedHash, bytes))
+			const verified = verifiedChunkBytes(entry.expectedHash, bytes)
+			if (!verified) return
+			clearTimeout(entry.timer)
+			pendingChunkFetches.delete(requestId)
+			entry.resolve(verified)
 		}
-		catch {
-			entry.resolve(null)
-		}
+		catch { /* keep waiting */ }
 		return
 	}
+	clearTimeout(entry.timer)
+	pendingChunkFetches.delete(requestId)
 	entry.resolve(null)
 }
 

@@ -23,7 +23,8 @@ import { withAsyncMutex } from '../utils/async_mutex.mjs'
  */
 export { MAX_BUCKET_BYTES, MAX_BUCKET_ENTRIES, mailboxBucketKey, mailboxRecordBytes }
 
-const MAX_ENTRY_BYTES = 256 * 1024
+/** 单条 mailbox envelope JSON 字节上限 */
+export const MAX_ENTRY_BYTES = 256 * 1024
 
 /**
  * @typedef {'trusted' | 'normal' | 'quarantine'} MailboxTier
@@ -85,12 +86,44 @@ export function isDeliverableMailboxRecord(row) {
 }
 
 /**
+ * @param {object | null | undefined} record mailbox 记录
+ * @returns {boolean} envelope 是否在存储限额内
+ */
+export function isMailboxRecordWithinSizeLimit(record) {
+	if (!record?.envelope || typeof record.envelope !== 'object') return false
+	return JSON.stringify(record.envelope).length <= MAX_ENTRY_BYTES
+}
+
+/**
+ * 入站 wire 转发：不信任自报 hop，至少为 1；若本地已有同 id 则单调递增。
+ * @param {unknown} wireHop 线载荷 hop
+ * @param {unknown} [existingStoredHop] 本地已存 hop
+ * @returns {number} 本节点存储 hop
+ */
+export function relayHopAfterWireIngress(wireHop, existingStoredHop) {
+	const fromWire = Math.max(normalizeMailboxHop(wireHop) + 1, 1)
+	if (existingStoredHop == null || !Number.isFinite(Number(existingStoredHop)))
+		return fromWire
+	return Math.max(fromWire, normalizeMailboxHop(existingStoredHop) + 1)
+}
+
+/**
  * @returns {Promise<MailboxRecord[]>} 全部有效记录
  */
 async function readAll() {
 	try {
 		const text = await readFile(mailboxStorePath(), 'utf8')
-		return text.split('\n').filter(Boolean).map(line => JSON.parse(line))
+		/** @type {MailboxRecord[]} */
+		const rows = []
+		for (const line of text.split('\n')) {
+			const trimmed = line.trim()
+			if (!trimmed) continue
+			try {
+				rows.push(JSON.parse(trimmed))
+			}
+			catch { /* skip corrupt line */ }
+		}
+		return rows
 	}
 	catch { return [] }
 }
@@ -124,7 +157,7 @@ export function mailboxEnvelopeId(envelope) {
  * @returns {Promise<boolean>} 是否新写入
  */
 export async function storeMailboxRecord(record) {
-	if (JSON.stringify(record.envelope).length > MAX_ENTRY_BYTES) return false
+	if (!isMailboxRecordWithinSizeLimit(record)) return false
 	const toPubKeyHash = normalizeHex64(record.toPubKeyHash)
 	if (!isHex64(toPubKeyHash)) return false
 	const hop = normalizeMailboxHop(record.hop)
