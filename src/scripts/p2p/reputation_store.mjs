@@ -1,5 +1,5 @@
 import { assertHex64, isHex64, normalizeHex64 } from './hexIds.mjs'
-import { getNodeLogger } from './node/instance.mjs'
+import { getNodeDir, getNodeLogger, isNodeInitialized } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import reputationTunables from './reputation.tunables.json' with { type: 'json' }
 import {
@@ -42,6 +42,9 @@ export { relayBumpIsDuplicate } from './reputation_relay_dedupe.mjs'
 /** @type {ReputationFile | null} */
 let reputationCache = null
 
+/** @type {string | null} */
+let reputationCacheNodeDir = null
+
 /**
  * @param {(data: ReputationFile) => void | Promise<void>} mutator 突变
  * @returns {Promise<void>}
@@ -58,7 +61,9 @@ function mutateReputation(mutator) {
  * @returns {ReputationFile} 节点级信誉表
  */
 export function loadReputation() {
-	if (reputationCache) return reputationCache
+	const nodeDir = isNodeInitialized() ? getNodeDir() : ''
+	if (reputationCache && reputationCacheNodeDir === nodeDir) return reputationCache
+	reputationCacheNodeDir = nodeDir
 	reputationCache = ensureReputationShape(readNodeJsonSync(DATA_NAME) || {})
 	return reputationCache
 }
@@ -100,12 +105,12 @@ export function recordGossipAllUnknownWant(groupId, peerNodeHash) {
 /**
  * @param {string} peerNodeHash 对端
  * @param {number} [excessRatio=1] 超速超额比例 0..1
- * @returns {void}
+ * @returns {Promise<void>}
  */
 export function recordMessageRateViolation(peerNodeHash, excessRatio = 1) {
 	const id = String(peerNodeHash || '').trim()
-	if (!id) return
-	void mutateReputation(data => {
+	if (!id) return Promise.resolve()
+	return mutateReputation(data => {
 		recordMessageRateViolationPure(data, id, undefined, excessRatio)
 		observeBehaviorSamplePure(data, id, 1)
 	})

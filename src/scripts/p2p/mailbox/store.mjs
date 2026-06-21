@@ -75,6 +75,16 @@ export function mailboxTierFromHop(hop) {
 }
 
 /**
+ * @param {object | null | undefined} row mailbox 记录
+ * @returns {boolean} 是否可交给 Part 消费者（排除 quarantine 与缺字段）
+ */
+export function isDeliverableMailboxRecord(row) {
+	if (!row?.envelope || typeof row.envelope !== 'object') return false
+	if (!String(row.app || '').trim()) return false
+	return row.tier === 'trusted' || row.tier === 'normal'
+}
+
+/**
  * @returns {Promise<MailboxRecord[]>} 全部有效记录
  */
 async function readAll() {

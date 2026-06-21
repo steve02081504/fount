@@ -12,7 +12,7 @@ import {
 	finalizeSocialTimelineView,
 	SOCIAL_TIMELINE_REDUCERS,
 } from '../reducers/social.mjs'
-import { applyFollowedBlockSignal } from '../reputation_social.mjs'
+import { applyFollowedBlockSignal, applyFollowedSuspectSignal } from '../reputation_social.mjs'
 
 const NODE_A = 'a'.repeat(64)
 const NODE_B = 'b'.repeat(64)
@@ -115,4 +115,30 @@ Deno.test('applyFollowedBlockSignal dedupes repeated block from same follower', 
 		selfTrust: false,
 	}, mutate)
 	assertEquals(data.byNodeHash[NODE_B].score, first)
+})
+
+Deno.test('applyFollowedSuspectSignal selfTrust penalizes target and unsuspect restores', async () => {
+	/** @type {import('../reputation_store.mjs').ReputationFile} */
+	const data = { byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] }
+	/**
+	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
+	 */
+	const mutate = async fn => {
+		await fn(data)
+	}
+	await applyFollowedSuspectSignal({
+		followerEntityHash: USER_ENTITY,
+		targetEntityHash: AGENT_ENTITY,
+		action: 'suspect',
+		selfTrust: true,
+	}, mutate)
+	assertEquals(Number(data.byNodeHash[NODE_B]?.score ?? 0) < 0, true)
+	await applyFollowedSuspectSignal({
+		followerEntityHash: USER_ENTITY,
+		targetEntityHash: AGENT_ENTITY,
+		action: 'unsuspect',
+		selfTrust: true,
+	}, mutate)
+	assertEquals(data.byNodeHash[NODE_B]?.score ?? 0, 0)
+	assertEquals(data.byNodeHash[NODE_B]?.socialSuspects?.[USER_ENTITY], undefined)
 })

@@ -7,7 +7,12 @@ import { getNodeHash } from '../node_context.mjs'
 import { ensureUserRoom } from '../user_room.mjs'
 
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
-import { mailboxTierFromHop, normalizeMailboxHop, storeMailboxRecord } from './store.mjs'
+import {
+	isDeliverableMailboxRecord,
+	mailboxTierFromHop,
+	normalizeMailboxHop,
+	storeMailboxRecord,
+} from './store.mjs'
 
 /**
  * @param {string} username replica
@@ -110,7 +115,7 @@ export async function respondMailboxWant(ctx, want, sendGive, peerId) {
 	const rows = (ids.length
 		? await getMailboxRecords(ids)
 		: await takeMailboxForRecipient(recipient)
-	).filter(row => row.toPubKeyHash === recipient && row.tier !== 'quarantine')
+	).filter(row => row.toPubKeyHash === recipient && isDeliverableMailboxRecord(row))
 	if (!rows.length) return
 	sendGive({ toPubKeyHash: recipient, records: rows.slice(0, 32) }, peerId)
 }
@@ -121,7 +126,7 @@ export async function respondMailboxWant(ctx, want, sendGive, peerId) {
  * @returns {Promise<number>} 投递给消费者的记录数
  */
 export async function ingestMailboxGive(ctx, give) {
-	const records = give.records || []
+	const records = (give.records || []).filter(isDeliverableMailboxRecord)
 	if (!records.length) return 0
 	const username = String(ctx?.replicaUsername || '').trim()
 	if (!username) return 0

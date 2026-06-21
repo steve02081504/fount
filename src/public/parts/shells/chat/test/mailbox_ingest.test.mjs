@@ -79,3 +79,36 @@ Deno.test('chat mailbox consumer skips records without envelope', async () => {
 	assertEquals(delivered.length, 0)
 	unregisterChatMailboxConsumer()
 })
+
+Deno.test('chat mailbox consumer skips records without groupId', async () => {
+	await ensureServer()
+	const { dispatchMailboxRecordsToConsumers } = await import('../../../../../scripts/p2p/mailbox/consumer_registry.mjs')
+	const {
+		registerChatMailboxConsumer,
+		unregisterChatMailboxConsumer,
+	} = await import('../src/chat/mailbox/ingest.mjs')
+	registerChatMailboxConsumer()
+	const delivered = await dispatchMailboxRecordsToConsumers(USER, [{
+		id: 'rec-2',
+		app: 'chat',
+		envelope: { id: 'ev-2', type: 'message', groupId: 'g1' },
+	}])
+	assertEquals(delivered.length, 0)
+	unregisterChatMailboxConsumer()
+})
+
+Deno.test('chat mailbox ingestMailboxGive drops quarantine tier records', async () => {
+	await ensureServer()
+	const { ingestMailboxGive } = await import('../../../../../scripts/p2p/mailbox/deliver_or_store.mjs')
+	const count = await ingestMailboxGive({ replicaUsername: USER }, {
+		records: [{
+			id: 'rec-q',
+			app: 'chat',
+			groupId: 'g1',
+			toPubKeyHash: 'a'.repeat(64),
+			envelope: { id: 'ev-q', type: 'message', groupId: 'g1' },
+			tier: 'quarantine',
+		}],
+	})
+	assertEquals(count, 0)
+})
