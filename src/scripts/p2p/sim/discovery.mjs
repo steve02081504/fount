@@ -112,9 +112,7 @@ export function takeRoomSlot(state, observerId, peerId, sourceId, trustedIds = [
 	const nonTrustedActive = [...bucket.active].filter(id => !bucket.trustedReserved.has(id)).length
 	const maxNonTrusted = Math.max(0, maxActive - trustedCount)
 
-	if (!isTrusted && nonTrustedActive >= maxNonTrusted) 
-		if (bucket.active.size >= maxActive) return false
-	
+	if (!isTrusted && nonTrustedActive >= maxNonTrusted) return false
 
 	if (bucket.active.size >= maxActive && !isTrusted) return false
 

@@ -29,7 +29,7 @@ export function integrityDefendsAgainst(attacker, observer, scenario, ctx) {
 		return (ctx.equivocationByObserver?.get(key) ?? 0) > 0
 	}
 	if (attacker.attack === 'archive_forger' || attacker.attack === 'lazy_chunk')
-		return ctx.verifiedForgery?.has(attacker.id) === true
+		return ctx.verifiedForgeryByObserver?.get(observer.id)?.has(attacker.id) === true
 	return false
 }
 

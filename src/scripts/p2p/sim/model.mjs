@@ -321,6 +321,15 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		sybilClusterByCluster.get(key).push(n)
 	}
 
+	/** @type {Map<string, SimNode[]>} */
+	const eclipseClusterByCluster = new Map()
+	for (const n of nodes) {
+		if (n.attack !== 'eclipse' && n.attack !== 'targeted_eclipse') continue
+		const key = n.clusterId ?? n.id
+		if (!eclipseClusterByCluster.has(key)) eclipseClusterByCluster.set(key, [])
+		eclipseClusterByCluster.get(key).push(n)
+	}
+
 	const honestNodes = nodes.filter(n => n.kind === 'honest')
 
 	/**
@@ -329,6 +338,14 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 	 */
 	function sybilCluster(node) {
 		return sybilClusterByCluster.get(node.clusterId ?? node.id) ?? []
+	}
+
+	/**
+	 * @param {SimNode} node eclipse 节点
+	 * @returns {SimNode[]} 同簇 eclipse 节点
+	 */
+	function eclipseCluster(node) {
+		return eclipseClusterByCluster.get(node.clusterId ?? node.id) ?? [node]
 	}
 
 	/**
@@ -354,7 +371,8 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		scenario,
 		attackGenome: normalizeAttackGenome(attackGenome),
 		discovery: createDiscoveryState(),
-		transport: createTransportState(),
+		transportByObserver: new Map(),
+		verifiedForgeryByObserver: new Map(),
 		propagationByObserver: new Map(),
 		engine: {
 			bumpReputationOnRelayPure,
@@ -370,8 +388,10 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		socialEngine: { applyFollowedBlockSignalPure },
 		honestNodes,
 		sybilCluster,
+		eclipseCluster,
 		collusionRing,
 		sybilClusterByCluster,
+		eclipseClusterByCluster,
 		collusionRingByCluster,
 	}
 
@@ -379,6 +399,10 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 	for (const obs of observers) {
 		ctx.propagationByObserver.set(obs.id, createPropagationState())
 		initObserverDiscovery(ctx.discovery, obs.id, obs.trustedPeers, roster, rng)
+		const transport = createTransportState()
+		for (const peerId of obs.trustedPeers)
+			transport.trustedPeers.add(peerId)
+		ctx.transportByObserver.set(obs.id, transport)
 	}
 
 	return { nodes, observers, inviteEdges, ctx }
@@ -732,8 +756,12 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			if (round % 4 === 0) {
 				for (const bad of verifiableBad) {
 					applySubjectiveSlashPure(obs.reputation, bad.id, obs.id, tunables.reputation.slashVerifiedDefaultClaim, true, tunables.reputation)
-					ctx.verifiedForgery = ctx.verifiedForgery ?? new Set()
-					ctx.verifiedForgery.add(bad.id)
+					let verified = ctx.verifiedForgeryByObserver.get(obs.id)
+					if (!verified) {
+						verified = new Set()
+						ctx.verifiedForgeryByObserver.set(obs.id, verified)
+					}
+					verified.add(bad.id)
 				}
 				if (rng() < 0.05) {
 					const victim = pickOne(rng, activeHonest.filter(n => n.id !== obs.id))
@@ -778,12 +806,14 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			ctx.churnReachRounds++
 		}
 
-		if (ctx.transport && observers.length) {
+		for (const obs of observers) {
+			const transport = ctx.transportByObserver?.get(obs.id)
+			if (!transport) continue
 			const throttleOk = transportMetrics(
-				ctx.transport,
-				observers[0].id,
+				transport,
+				obs.id,
 				onlineFriendlyIds,
-				id => observers[0].reputation.byNodeHash[id]?.score ?? 0,
+				id => obs.reputation.byNodeHash[id]?.score ?? 0,
 				ctx.now,
 			).throttleOk
 			ctx.throttleOkAccum = (ctx.throttleOkAccum ?? 0) + throttleOk
@@ -974,7 +1004,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			}
 		}
 
-		for (const h of honest) {
+		for (const h of establishedHonest) {
 			honestTotal++
 			if (isNodePreserved(h, scoreOf, hideThreshold))
 				honestSafe++
@@ -1058,7 +1088,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		archiveQuorum += quorumAcc
 
 		const tMetrics = transportMetrics(
-			ctx.transport ?? createTransportState(),
+			ctx.transportByObserver?.get(obs.id) ?? createTransportState(),
 			obs.id,
 			friendlyIds,
 			scoreOf,
@@ -1102,11 +1132,10 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const byAttackImpact = {}
 	for (const [atk, row] of attackImpact) {
 		const n = Math.max(1, row.count)
-		const reachDenom = Math.max(1, row.count * nObs)
 		byAttackImpact[atk] = {
 			topKCapture: row.topKSum / n,
 			reachCollapse: REACH_ATTACK_KINDS.has(atk)
-				? Math.min(1, row.reachSum / reachDenom)
+				? Math.min(1, row.reachSum / n)
 				: 0,
 		}
 	}

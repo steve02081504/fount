@@ -250,8 +250,8 @@ function runEclipse(ctx, node, observer, rng, round, tunables) {
 	const p = attackParams(ctx, node)
 	for (let i = 0; i < p.burstSize; i++)
 		recordGossipAllUnknownWantPure(observer.reputation, node.id, ctx.now + i, tunables.reputation)
-	const sybilIds = ctx.sybilCluster(node).map(n => n.id)
-	eclipseFillExplore(ctx.discovery, observer.id, node.id, sybilIds, p.eclipseFocus)
+	const clusterIds = ctx.eclipseCluster(node).map(n => n.id).filter(id => id !== node.id)
+	eclipseFillExplore(ctx.discovery, observer.id, node.id, clusterIds, p.eclipseFocus)
 }
 
 /**
@@ -571,11 +571,10 @@ function runSlowDripSpammer(ctx, node, observer, round, tunables) {
  */
 function runSignalingFlood(ctx, node, observer, round, tunables) {
 	const burst = attackParams(ctx, node).burstSize
-	const transport = ctx.transport
+	const transport = ctx.transportByObserver?.get(observer.id)
 	if (!transport) return
 	for (let i = 0; i < burst; i++)
 		takeTransportJoinSlot(transport, `${node.id}:flood:${round}:${i}`, `flood:${node.id}`, ctx.now + i)
-	void observer
 	void tunables
 }
 
@@ -588,11 +587,10 @@ function runSignalingFlood(ctx, node, observer, round, tunables) {
  * @returns {void}
  */
 function runSignalingEclipse(ctx, node, observer, tunables) {
-	const transport = ctx.transport
+	const transport = ctx.transportByObserver?.get(observer.id)
 	if (!transport) return
 	takeTransportJoinSlot(transport, node.id, `sig:${node.id}`, ctx.now)
 	transportHintWeight(transport, observer.id, node.id, `sig:${node.id}`, tunables.trustGraph.hintDefaultWeight * 0.5)
-	void tunables
 }
 
 /**

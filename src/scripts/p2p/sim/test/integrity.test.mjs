@@ -31,7 +31,7 @@ Deno.test('integrityDefendsAgainst archive_forger with verified forgery', () => 
 	const attacker = { id: 'm1', attack: 'archive_forger' }
 	const observer = { id: 'o1', trustedPeers: ['t1', 't2'] }
 	const scenario = { honestCount: 10, groupSize: 12, behaviorDist: { archiveSubmitRate: { mean: 0.2 } } }
-	const ctx = { verifiedForgery: new Set(['m1']) }
+	const ctx = { verifiedForgeryByObserver: new Map([['o1', new Set(['m1'])]]) }
 	assertEquals(integrityDefendsAgainst(attacker, observer, scenario, ctx), true)
 })
 
