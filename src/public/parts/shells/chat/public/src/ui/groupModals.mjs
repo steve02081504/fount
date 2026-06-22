@@ -12,8 +12,8 @@ import {
 } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { escapeHtml } from '../../hub/core/domUtils.mjs'
-import { createGroup, getGroupList } from '../api/groupApi.mjs'
-import { PENDING_INVITE_STORAGE_KEY } from '../deepLinkConsume.mjs'
+import { createGroup, getGroupList } from '../api/groupCore.mjs'
+import { PENDING_INVITE_STORAGE_KEY } from '../pendingInviteStorage.mjs'
 
 /** 按需注入群组 UI 样式表（幂等）。 */
 function ensureGroupUiCssLink() {

@@ -2,7 +2,7 @@
  * 【文件】public/hub/core/urlHash.mjs
  * 【职责】Hub 地址栏 hash 与邀请码工具：`#group:…` / `#friends` 的解析、写入及入群邀请消费。
  */
-import { PENDING_INVITE_STORAGE_KEY } from '../../src/deepLinkConsume.mjs'
+import { PENDING_INVITE_STORAGE_KEY } from '../../src/pendingInviteStorage.mjs'
 
 /** 好友列表模式的 hash 片段（`#friends`）。 */
 export const FRIENDS_HASH = 'friends'

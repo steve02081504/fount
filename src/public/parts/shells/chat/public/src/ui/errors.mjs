@@ -5,9 +5,17 @@
  * 【数据结构】error、i18nKey、toastParams。
  * 【关联】@sentry/browser、toast.mjs；Hub、groupFileUpload、reactionHandlers。
  */
-import * as Sentry from 'https://esm.sh/@sentry/browser'
-
 import { showToastI18n } from '../../../../scripts/toast.mjs'
+
+/**
+ * @param {Error} err 上报目标
+ * @returns {void}
+ */
+function reportToSentry(err) {
+	import('https://esm.sh/@sentry/browser')
+		.then(Sentry => Sentry.captureException(err))
+		.catch(() => { })
+}
 
 /**
  * @param {unknown} error 异常或字符串
@@ -29,7 +37,7 @@ export function toError(error) {
  */
 export function handleUIError(error, i18nKey, toastParams = {}) {
 	const err = toError(error)
-	Sentry.captureException(err)
+	reportToSentry(err)
 	console.error(`[fount-ui] ${i18nKey}`, err)
 	showToastI18n('error', i18nKey, { ...toastParams, error: err.message })
 	return err

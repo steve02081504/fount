@@ -6,8 +6,6 @@
  * 【数据结构】依赖 hubStore.currentGroupId/channelId/currentState；频道树来自 buildChannelTree。
  * 【关联】hashNav、messages、groupStream、serverBar、banners、channels、chat。
  */
-import * as Sentry from 'https://esm.sh/@sentry/browser'
-
 import { openDialogFromTemplate } from '../../../../scripts/dialog.mjs'
 import { i18nElement } from '../../../../scripts/i18n.mjs'
 import {
@@ -67,7 +65,9 @@ async function rebindFederationRoomQuiet(groupId, opts = {}) {
 	}
 	catch (error) {
 		const err = toError(error)
-		Sentry.captureException(err)
+		import('https://esm.sh/@sentry/browser')
+			.then(Sentry => Sentry.captureException(err))
+			.catch(() => { })
 		console.error('hub_federation_rebind', {
 			groupId,
 			channelId: opts.channelId ?? null,

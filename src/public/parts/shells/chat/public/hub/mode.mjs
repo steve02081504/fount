@@ -19,10 +19,12 @@ import {
 	renderMemberList,
 } from './groupNav.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
-import { cancelScheduledChannelRefresh, disableComposer, refreshHubHeaderButtons } from './messages/messages.mjs'
 import {
 	clearPrivateGroupState,
 } from './privateGroup.mjs'
+
+/** @returns {Promise<typeof import('./messages/messages.mjs')>} 按需加载的重型 messages 模块图 */
+const messagesApi = () => import('./messages/messages.mjs')
 
 /**
  * 高亮左侧「群组 / 好友」模式切换按钮。
@@ -54,6 +56,7 @@ export async function setMode(mode) {
 	const keepPrivateGroupSession = mode === 'friends'
 		&& (hubStore.privateGroup.groupId || hubStore.friendChatEntering)
 	if (!keepPrivateGroupSession) {
+		const { cancelScheduledChannelRefresh } = await messagesApi()
 		cancelScheduledChannelRefresh()
 		closeGroupWebSocket()
 		clearPrivateGroupState()
@@ -61,6 +64,7 @@ export async function setMode(mode) {
 
 	if (mode === 'friends' && !keepPrivateGroupSession) {
 		updateFriendsHash()
+		const { disableComposer } = await messagesApi()
 		disableComposer('chat.hub.composerDisabled')
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
 			iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
@@ -69,6 +73,7 @@ export async function setMode(mode) {
 		channelTitle.dataset.i18n = 'chat.hub.friendsHeader'
 	}
 
+	const { refreshHubHeaderButtons } = await messagesApi()
 	refreshHubHeaderButtons()
 	if (mode === 'friends') 
 		if (isPrivateChatActive() && hubStore.currentState)

@@ -5,13 +5,12 @@
 
 import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social/src/lib/runUri.mjs'
 
+import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
+
 import { createDirectMessageByPubKeys, getFederationSettings, getGroupState, joinGroup } from './api/groupApi.mjs'
 import { isHex64 } from './lib/pubKeyHex.mjs'
 import { parseDmRunUri, parseJoinRunUri } from './lib/runUri.mjs'
 import { resolvePowForJoin } from './powJoin.mjs'
-
-/** sessionStorage 键：Hub 落地页暂存 `?invite=` 入群参数，供 `applyChatRunUri` 消费后清除。 */
-export const PENDING_INVITE_STORAGE_KEY = 'fount_chat_pending_invite'
 
 /**
  * 从当前页 query 解析 `fount://run/…` 深链（`run` 参数）。

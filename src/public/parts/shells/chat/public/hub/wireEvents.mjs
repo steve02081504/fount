@@ -5,7 +5,6 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】hashNav、groupNav、messages、mode；依赖 i18n、template、groupApi、composerFiles 等。
  */
-import { openDialogFromTemplate } from '../../../../scripts/dialog.mjs'
 import { confirmI18n } from '../../../../scripts/i18n.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import {
@@ -14,12 +13,10 @@ import {
 	getGroupState,
 } from '../src/api/groupApi.mjs'
 import { saveCustomEmojiFromRef } from '../src/customEmojis.mjs'
-import { iconifyImg } from '../src/lib/emojiSvg.mjs'
 import { saveStickerFromMessage } from '../src/saveStickerFromMessage.mjs'
 import { showTrustAuthorDialog } from '../src/trustAuthorDialog.mjs'
 import { bindComposerSubmit } from '../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
-import { joinGroupById, showCreateGroupModal } from '../src/ui/groupModals.mjs'
 
 import {
 	addFilesFromEvent,
@@ -40,30 +37,6 @@ import {
 } from './messages/messages.mjs'
 import { setMode, wireModeTabs } from './mode.mjs'
 import { openGroupSettingsModal } from './privateGroup.mjs'
-
-/** 弹出「创建 / 加入群组」选择对话框。 @returns {Promise<void>} */
-async function showServerActionPicker() {
-	await openDialogFromTemplate('hub/modals/server_action_picker', {
-		createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
-		joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
-	}, {
-		/**
-		 * @param {HTMLDialogElement} dialog 对话框
-		 * @returns {void}
-		 */
-		onReady: dialog => {
-			dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
-				dialog.close()
-				showCreateGroupModal()
-			})
-			dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
-				dialog.close()
-				joinGroupById()
-			})
-			dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
-		},
-	})
-}
 
 /**
  * 按内容高度调整主输入框（上限见 CSS `max-h-40`）。
@@ -162,14 +135,8 @@ export function wireEvents() {
 		}
 	})
 
-	document.getElementById('hub-add-server-button').addEventListener('click', showServerActionPicker)
-
 	document.getElementById('hub-federation-settings-button')?.addEventListener('click', () => {
 		void openFederationSettingsModal(() => hubStore.currentGroupId)
-	})
-
-	document.getElementById('hub-toggle-members-button').addEventListener('click', () => {
-		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')
 	})
 
 	document.getElementById('hub-header-search').addEventListener('input', (event) => {
