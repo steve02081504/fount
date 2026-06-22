@@ -1,4 +1,5 @@
 import { wireEmojiPickerButton } from '../../../../scripts/emojiPicker.mjs'
+
 import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,
@@ -54,6 +55,9 @@ export async function bootstrapSocialApp(appContext) {
 	await loadPostingEntities(appContext)
 	await loadGroupPickerOptions(appContext)
 	await updateNotificationBadge(appContext)
+
+	const viewer = await appContext.socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
+	appContext.state.viewerEntityHash = viewer.viewerEntityHash ?? null
 
 	for (const [id, key] of Object.entries({
 		linkGroupSelect: 'social.a11y.linkGroupSelect',
