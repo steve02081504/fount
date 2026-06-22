@@ -16,26 +16,41 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCRIPTS = join(__dirname, 'scripts')
 const CHAT_SCRIPTS = join(__dirname, '../../../chat/test/live/scripts')
 const REPO_ROOT = resolve(__dirname, '../../../../../../../')
+const SOCIAL_BOOTSTRAP = join(__dirname, '../node_bootstrap.mjs')
 
 const NODE_A_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
 const NODE_B_PORT = Number(process.env.FOUNT_TEST_NODE_B_PORT) || NODE_A_PORT + 1
 
-const NODE_A = {
+const NODE_A_BASE = {
 	port: NODE_A_PORT,
 	username: 'CI-user',
 	apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-social-key-${NODE_A_PORT}`,
+	p2p: true,
+	bootstrap: SOCIAL_BOOTSTRAP,
 }
-const NODE_B = {
+const NODE_B_BASE = {
 	port: NODE_B_PORT,
 	username: 'nodeb',
 	apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${NODE_B_PORT}`,
+	p2p: true,
+	bootstrap: SOCIAL_BOOTSTRAP,
 }
 
-/** @type {Record<string, { fed?: boolean, run: string[] }>} */
+/** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
 const SUITES = {
-	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')] },
-	cross_shell_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'cross_shell_emoji.ps1')] },
-	ws_test: { run: ['node', join(SCRIPTS, 'ws_test.mjs')] },
+	e2e_single: {
+		run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')],
+		node: { loadParts: ['shells/social'] },
+	},
+	cross_shell_emoji: {
+		fed: true,
+		run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'cross_shell_emoji.ps1')],
+		node: { loadParts: ['shells/social', 'shells/chat'] },
+	},
+	ws_test: {
+		run: ['node', join(SCRIPTS, 'ws_test.mjs')],
+		node: { loadParts: ['shells/social'] },
+	},
 }
 
 /**
@@ -69,9 +84,9 @@ async function runSuite(suiteName) {
 	/** @type {Awaited<ReturnType<typeof launchNode>>[]} */
 	const nodes = []
 	try {
-		nodes.push(await launchNode(NODE_A))
+		nodes.push(await launchNode({ ...NODE_A_BASE, ...spec.node }))
 		if (spec.fed)
-			nodes.push(await launchNode(NODE_B))
+			nodes.push(await launchNode({ ...NODE_B_BASE, ...spec.node }))
 
 		const nodeA = nodes[0]
 		const env = {

@@ -5,6 +5,7 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import process from 'node:process'
+import { pathToFileURL } from 'node:url'
 import { parseArgs } from 'node:util'
 
 import { set_start } from '../../../src/server/base.mjs'
@@ -16,6 +17,9 @@ const { values } = parseArgs({
 		port: { type: 'string' },
 		user: { type: 'string' },
 		key: { type: 'string' },
+		p2p: { type: 'boolean', default: false },
+		'load-part': { type: 'string', multiple: true },
+		bootstrap: { type: 'string' },
 	},
 })
 
@@ -23,6 +27,7 @@ const dataPath = values['data-path']
 const port = Number(values.port || '8931')
 const username = values.user || 'test-user'
 const apiKey = values.key || 'test-api-key'
+const loadParts = values['load-part'] ?? []
 
 if (!dataPath) {
 	console.error('node_worker: --data-path required')
@@ -81,7 +86,7 @@ function ensureConfig(root, listenPort, name, key) {
 	}
 	config.data.users[name].auth ??= {}
 	config.data.users[name].auth.apiKeys ??= []
-	if (!config.data.users[name].auth.apiKeys.some(row => row?.jti === apiJti)) 
+	if (!config.data.users[name].auth.apiKeys.some(row => row?.jti === apiJti))
 		config.data.users[name].auth.apiKeys.push({
 			jti: apiJti,
 			description: `${name} test key`,
@@ -89,13 +94,11 @@ function ensureConfig(root, listenPort, name, key) {
 			lastUsed: null,
 			prefix: key.slice(0, 7),
 		})
-	
+
 	config.data.apiKeys[apiKeyHash] = { username: name, jti: apiJti }
 
 	fs.mkdirSync(root, { recursive: true })
 	fs.mkdirSync(`${root}/users/${name}/settings`, { recursive: true })
-	fs.mkdirSync(`${root}/users/${name}/shells/chat/groups`, { recursive: true })
-	fs.mkdirSync(`${root}/users/${name}/shells/social/timelines`, { recursive: true })
 	fs.mkdirSync(`${root}/users/${name}/entities`, { recursive: true })
 	fs.mkdirSync(`${root}/p2p/chunks`, { recursive: true })
 	fs.writeFileSync(configPath, JSON.stringify(config, null, '\t'))
@@ -117,6 +120,7 @@ const ok = await init({
 		Tray: false,
 		DiscordRPC: false,
 		Web: true,
+		P2P: values.p2p,
 		Base: {
 			Jobs: false,
 			Timers: false,
@@ -132,18 +136,20 @@ if (!ok) {
 }
 
 try {
-	const { initP2PServer } = await import('../../../src/server/p2p_server/index.mjs')
-	await initP2PServer({ dataPath })
-	const { ensureOperatorPubKey } = await import('../../../src/server/p2p_server/operator_identity.mjs')
-	const { ensureOperatorSocialReady } = await import('../../../src/public/parts/shells/social/src/lib/bootstrap.mjs')
 	const { loadPart } = await import('../../../src/server/parts_loader.mjs')
-	await ensureOperatorPubKey(username)
-	await ensureOperatorSocialReady(username)
-	await loadPart(username, 'shells/social')
-	await loadPart(username, 'shells/chat')
+	for (const partpath of loadParts)
+		await loadPart(username, partpath)
+
+	if (values.bootstrap) {
+		const mod = await import(pathToFileURL(values.bootstrap).href)
+		const fn = mod.default ?? mod.bootstrap
+		if (typeof fn !== 'function')
+			throw new Error(`bootstrap module must export default or bootstrap function: ${values.bootstrap}`)
+		await fn(username)
+	}
 }
 catch (bootstrapError) {
-	console.error('node_worker: shell bootstrap failed', bootstrapError)
+	console.error('node_worker: bootstrap failed', bootstrapError)
 	process.exit(1)
 }
 

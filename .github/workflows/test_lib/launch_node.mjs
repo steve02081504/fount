@@ -6,7 +6,8 @@
  *
  * 编程:
  *   import { launchNode, stopNode } from './launch_node.mjs'
- *   const node = await launchNode({ port: 8931, fixtures: ['test_streamer'] })
+ *   import { runPlaywrightWithNode } from './playwright_run.mjs'
+ *   const node = await launchNode({ port: 8931, loadParts: ['shells/social'], p2p: true })
  *   try { ... } finally { await stopNode(node) }
  */
 import { spawn } from 'node:child_process'
@@ -21,7 +22,8 @@ import { parseArgs } from 'node:util'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '../../..')
 const WORKER = join(__dirname, 'node_worker.mjs')
-const CHAT_FIXTURES = join(REPO_ROOT, 'src/public/parts/shells/chat/test/live/fixtures/chars')
+
+/** @typedef {{ from: string, to: string }} FixtureCopy 复制到 users/<user>/<to> */
 
 /** @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number }} LaunchedNode */
 
@@ -76,20 +78,18 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000) {
 }
 
 /**
- * 将 chat 测试 fixture 角色复制到节点用户目录。
+ * 将 fixture 目录复制到节点用户目录。
  * @param {string} dataPath 节点 data 根目录
  * @param {string} username 目标用户名
- * @param {string[]} fixtureNames char 目录名（来自 chat/test/live/fixtures/chars/）
+ * @param {FixtureCopy[]} copies `to` 相对 users/<username>/
  * @returns {Promise<void>} 复制完成
  */
-async function injectCharFixtures(dataPath, username, fixtureNames) {
-	if (!fixtureNames?.length) return
-	const destRoot = join(dataPath, 'users', username, 'chars')
-	await mkdir(destRoot, { recursive: true })
-	for (const name of fixtureNames) {
-		const src = join(CHAT_FIXTURES, name)
-		const dest = join(destRoot, name)
-		await cp(src, dest, { recursive: true })
+async function injectFixtures(dataPath, username, copies) {
+	if (!copies?.length) return
+	for (const { from, to } of copies) {
+		const dest = join(dataPath, 'users', username, to)
+		await mkdir(dirname(dest), { recursive: true })
+		await cp(from, dest, { recursive: true })
 	}
 }
 
@@ -100,7 +100,10 @@ async function injectCharFixtures(dataPath, username, fixtureNames) {
  * @param {string} [opts.dataPath] 数据目录；省略则 mkdtemp
  * @param {string} [opts.username='CI-user'] 用户名
  * @param {string} [opts.apiKey] API key；省略则按 port 生成
- * @param {string[]} [opts.fixtures] 要注入的 char fixture 名
+ * @param {FixtureCopy[]} [opts.fixtureCopies] 启动前复制到用户目录的 fixture
+ * @param {string[]} [opts.loadParts] 启动后要 load 的 partpath
+ * @param {boolean} [opts.p2p=false] 是否启用 P2P 子系统
+ * @param {string} [opts.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [opts.keepData=false] stop 时是否保留 data 目录
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
@@ -111,16 +114,23 @@ export async function launchNode(opts = {}) {
 	const keepData = opts.keepData ?? false
 	const dataPath = opts.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
 
-	await injectCharFixtures(dataPath, username, opts.fixtures ?? [])
+	await injectFixtures(dataPath, username, opts.fixtureCopies ?? [])
 
-	const child = spawn('deno', [
+	const workerArgs = [
 		'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'),
 		WORKER,
 		'--data-path', dataPath,
 		'--port', String(port),
 		'--user', username,
 		'--key', apiKey,
-	], {
+	]
+	if (opts.p2p) workerArgs.push('--p2p')
+	for (const part of opts.loadParts ?? [])
+		workerArgs.push('--load-part', part)
+	if (opts.bootstrap)
+		workerArgs.push('--bootstrap', resolve(opts.bootstrap))
+
+	const child = spawn('deno', workerArgs, {
 		cwd: REPO_ROOT,
 		stdio: ['ignore', 'pipe', 'inherit'],
 	})
@@ -180,7 +190,9 @@ if (import.meta.main) {
 			data: { type: 'string' },
 			user: { type: 'string', default: 'CI-user' },
 			key: { type: 'string' },
-			fixtures: { type: 'string', default: '' },
+			p2p: { type: 'boolean', default: false },
+			bootstrap: { type: 'string' },
+			'load-part': { type: 'string', multiple: true },
 		},
 	})
 
@@ -189,7 +201,9 @@ if (import.meta.main) {
 		dataPath: values.data,
 		username: values.user,
 		apiKey: values.key,
-		fixtures: values.fixtures ? values.fixtures.split(',').map(s => s.trim()).filter(Boolean) : [],
+		p2p: values.p2p,
+		bootstrap: values.bootstrap,
+		loadParts: values['load-part'] ?? [],
 		keepData: true,
 	})
 

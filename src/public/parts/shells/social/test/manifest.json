@@ -56,6 +56,21 @@
 				"src/public/pages/scripts/registries.mjs",
 				"src/public/pages/scripts/emojiPicker.mjs"
 			]
+		},
+		{
+			"name": "frontend",
+			"run": [
+				"deno", "run", "-A", "-c", "./deno.json",
+				"./src/public/parts/shells/social/test/frontend/run.mjs"
+			],
+			"triggers": [
+				"src/public/parts/shells/social/public/**",
+				"src/public/parts/shells/social/public/src/**",
+				"src/public/parts/shells/social/test/frontend/**",
+				".github/workflows/test_lib/playwright_*.mjs",
+				"src/server/auth.mjs",
+				"src/server/web_server/endpoints.mjs"
+			]
 		}
 	]
 }

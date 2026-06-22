@@ -16,21 +16,31 @@ import { launchNode, stopNode } from '../../../../../../../.github/workflows/tes
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCRIPTS = join(__dirname, 'scripts')
 const REPO_ROOT = resolve(__dirname, '../../../../../../../')
+const CHAT_FIXTURES = join(__dirname, 'fixtures/chars')
+const CHAT_BOOTSTRAP = join(__dirname, 'node_bootstrap.mjs')
 
 const NODE_A_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
 const NODE_B_PORT = Number(process.env.FOUNT_TEST_NODE_B_PORT) || NODE_A_PORT + 1
 
-const NODE_A = {
+const NODE_A_BASE = {
 	port: NODE_A_PORT,
 	username: 'CI-user',
 	apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-test-key-${NODE_A_PORT}`,
-	fixtures: ['test_streamer'],
+	loadParts: ['shells/chat'],
+	p2p: true,
+	bootstrap: CHAT_BOOTSTRAP,
+	fixtureCopies: [{
+		from: join(CHAT_FIXTURES, 'test_streamer'),
+		to: 'chars/test_streamer',
+	}],
 }
-const NODE_B = {
+const NODE_B_BASE = {
 	port: NODE_B_PORT,
 	username: 'nodeb',
 	apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${NODE_B_PORT}`,
-	fixtures: [],
+	loadParts: ['shells/chat'],
+	p2p: true,
+	bootstrap: CHAT_BOOTSTRAP,
 }
 
 /** @type {Record<string, { fed?: boolean, run: string[] }>} */
@@ -87,9 +97,9 @@ async function runSuite(suiteName) {
 	/** @type {Awaited<ReturnType<typeof launchNode>>[]} */
 	const nodes = []
 	try {
-		nodes.push(await launchNode(NODE_A))
+		nodes.push(await launchNode(NODE_A_BASE))
 		if (spec.fed)
-			nodes.push(await launchNode(NODE_B))
+			nodes.push(await launchNode(NODE_B_BASE))
 
 		const nodeA = nodes[0]
 		const env = {
