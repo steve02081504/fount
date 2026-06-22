@@ -21,10 +21,11 @@ const REPO_ROOT = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
  * @param {string} opts.configPath playwright.config.mjs 路径
  * @param {string} [opts.cwd=REPO_ROOT] 工作目录
  * @param {Record<string, string>} [opts.env] 额外环境变量
+ * @param {string} [opts.playwrightArgs=''] 传给 playwright test 的额外参数
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
-export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {} }) {
-	const out = await exec(`npx playwright test -c ${JSON.stringify(configPath)}`, {
+export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = '' }) {
+	const out = await exec(`npx playwright test -c ${JSON.stringify(configPath)} ${playwrightArgs}`.trim(), {
 		cwd,
 		env: { ...process.env, ...env },
 	})
@@ -40,9 +41,10 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {} }) {
  * @param {object} [opts.node] launchNode 选项（port、username、apiKey 等）
  * @param {Record<string, string>} [opts.env] 额外环境变量
  * @param {string} [opts.cwd] 工作目录
+ * @param {string} [opts.playwrightArgs=''] 传给 playwright test 的额外参数
  * @returns {Promise<number>} 进程退出码
  */
-export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd }) {
+export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd, playwrightArgs = '' }) {
 	/** @type {Awaited<ReturnType<typeof launchNode>> | null} */
 	let launched = null
 	try {
@@ -52,7 +54,7 @@ export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = 
 			env.FOUNT_TEST_BASE_URL = launched.baseUrl
 			env.FOUNT_API_KEY = launched.apiKey
 		}
-		return await runPlaywright({ configPath, cwd, env })
+		return await runPlaywright({ configPath, cwd, env, playwrightArgs })
 	}
 	finally {
 		if (launched) await stopNode(launched)
