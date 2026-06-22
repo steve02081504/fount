@@ -7,7 +7,7 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -176,9 +176,11 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!await ensurePowTokenOr401(req, res)) return
-		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid, req)
+		const { username, password, deviceid, apiKey } = req.body
+		if (!apiKey && !await ensurePowTokenOr401(req, res)) return
+		const result = apiKey
+			? await loginWithApiKey(apiKey, deviceid, req)
+			: await login(username, password, deviceid, req)
 		const { status, accessToken, refreshToken, ...json } = result
 		if (status === 200 && accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)

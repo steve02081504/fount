@@ -925,6 +925,23 @@ export function bumpUserFailedLoginAttempts(user) {
 }
 
 /**
+ * 使用 API Key 登录并签发会话 Cookie（供自动化 / 前端 E2E 测试使用）。
+ * @param {string} apiKey - API Key 明文。
+ * @param {string} [deviceId='unknown'] - 设备标识符。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
+ */
+export async function loginWithApiKey(apiKey, deviceId = 'unknown', req) {
+	const key = String(apiKey ?? '').trim()
+	if (!key) return { status: 400, i18nKey: 'userSettings.apiKeys.verifyMissingApiKey' }
+
+	const user = await verifyApiKey(key)
+	if (!user) return { status: 401, i18nKey: 'auth.error.invalidCredentials' }
+
+	return await completeSuccessfulLogin(user, deviceId, req)
+}
+
+/**
  * 用户登录。
  * @param {string} username - 用户名。
  * @param {string} password - 密码。
