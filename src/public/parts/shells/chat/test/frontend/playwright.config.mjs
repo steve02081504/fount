@@ -1,0 +1,14 @@
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { createPlaywrightConfig } from '../../../../../../../.github/workflows/test_lib/playwright_config.mjs'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+/**
+ *
+ */
+export default await createPlaywrightConfig({
+	testDir: __dirname,
+	overrides: { timeout: 240_000 },
+})
