@@ -13,11 +13,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const CONFIG = join(__dirname, 'playwright.config.mjs')
 const PORT = Number(process.env.FOUNT_TEST_FRONTEND_PORT) || 8941
 
+const TEST_USERNAME = 'social-fe-user'
+
 const code = await runPlaywrightWithNode({
 	configPath: CONFIG,
+	env: {
+		FOUNT_TEST_ISOLATED: '1',
+		FOUNT_TEST_USERNAME: TEST_USERNAME,
+	},
 	node: {
 		port: PORT,
-		username: 'social-fe-user',
+		username: TEST_USERNAME,
 		apiKey: process.env.FOUNT_TEST_FRONTEND_KEY || `fount-social-fe-key-${PORT}`,
 		loadParts: ['shells/social'],
 		p2p: true,
