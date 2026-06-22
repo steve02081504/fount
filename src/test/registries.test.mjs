@@ -31,3 +31,11 @@ Deno.test('dedupeAndSortRegistryEntries keeps later id and sorts by level', () =
 	assertEquals(sorted[0].id, 'other')
 	assertEquals(sorted[1].path, 'providers/emoji.mjs')
 })
+
+Deno.test('dedupeAndSortRegistryEntries keeps same id from different parts', () => {
+	const sorted = dedupeAndSortRegistryEntries([
+		{ id: 'function_buttons', level: 0, path: 'home_registry.json', partpath: 'shells/chat' },
+		{ id: 'function_buttons', level: 0, path: 'home_registry.json', partpath: 'shells/access' },
+	])
+	assertEquals(sorted.length, 2)
+})

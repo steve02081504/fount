@@ -44,16 +44,17 @@ export function resolveRegistryPathToFs(username, partpath, relativePath) {
 }
 
 /**
- * 对原始条目按 id 去重（后者覆盖）并按 level 升序排序。
+ * 对原始条目按 partpath+id 去重（后者覆盖）并按 level 升序排序。
+ * 不同 part 可共用相同 id（如各 shell 的 home_registry 条目均为 `function_buttons`）。
  * @param {Array<{ id: string, level: number, path: string, partpath: string }>} rawEntries
  * @returns {Array<{ id: string, level: number, path: string, partpath: string }>}
  */
 export function dedupeAndSortRegistryEntries(rawEntries) {
 	/** @type {Map<string, { id: string, level: number, path: string, partpath: string }>} */
-	const byId = new Map()
+	const byKey = new Map()
 	for (const entry of rawEntries)
-		byId.set(entry.id, entry)
-	return [...byId.values()].sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
+		byKey.set(`${entry.partpath}\0${entry.id}`, entry)
+	return [...byKey.values()].sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
 }
 
 /**
@@ -121,7 +122,9 @@ export async function loadRegistryJsonEntries(username, registryName, { nocache 
 			if (raw && typeof raw === 'object' && !Array.isArray(raw)) 
 				if (registryName in raw) data = raw[registryName]
 				else if (registryName === 'achievements' && raw.achievements) data = raw.achievements
+				else continue
 			
+
 			results.push({ entry, data })
 		}
 		catch { /* skip */ }
