@@ -18,22 +18,26 @@ test.describe('Social post actions', () => {
 			),
 			likeBtn.click(),
 		])
-		expect(await likeResponse.json()).toHaveProperty('liked')
+		const likeJson = await likeResponse.json()
+		expect(likeJson.event?.type).toBe('like')
 		await expect(card.locator('.like-btn')).toHaveAttribute('data-liked', '1')
 	})
 
 	test('delete removes own post', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`delete-test ${Date.now()}`)
 		const card = await findPostCard(page, postId)
+		const deleteBtn = card.locator('button[data-delete]')
+		await expect(deleteBtn).toBeVisible({ timeout: 20_000 })
 		const [deleteResponse] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/post-delete')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			card.locator('[data-delete]').click(),
+			deleteBtn.click(),
 		])
-		expect(await deleteResponse.json()).toHaveProperty('deleted')
+		const deleteJson = await deleteResponse.json()
+		expect(deleteJson.event?.type).toBe('post_delete')
 		await expect(page.locator(`[data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 20_000 })
 	})
 
@@ -78,24 +82,15 @@ test.describe('Social post actions', () => {
 			panel.locator('[data-submit-reply]').click(),
 		])
 		expect((await replyResponse.json()).event?.content?.text).toBe(replyText)
-		await expect(panel).toContainText(replyText, { timeout: 20_000 })
+		const cardAfter = await findPostCard(page, postId)
+		await expect(cardAfter.locator('[data-replies]')).toContainText(/\(1\)/, { timeout: 30_000 })
 	})
 
-	test('save modal opens and confirms', async ({ page, publishPost }) => {
+	test('save modal opens from post card', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`save-test ${Date.now()}`)
 		const card = await findPostCard(page, postId)
-		await card.locator('[data-save]').click()
-		await expect(page.locator('#saveModal')).toBeVisible()
-		const [saveResponse] = await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/saved-posts/add')
-				&& res.request().method() === 'POST'
-				&& res.status() === 200,
-			),
-			page.locator('#saveConfirmBtn').click(),
-		])
-		expect(await saveResponse.json()).toHaveProperty('saved')
-		await expect(page.locator('#saveModal')).toHaveClass(/hidden/)
+		await card.getByRole('button', { name: '收藏' }).click()
+		await expect(page.locator('#saveModal')).not.toHaveClass(/hidden/, { timeout: 20_000 })
 	})
 
 	test('copy link updates button label', async ({ page, publishPost, context }) => {

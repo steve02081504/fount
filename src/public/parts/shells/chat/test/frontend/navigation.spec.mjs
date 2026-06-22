@@ -3,7 +3,9 @@ import {
 	expect,
 	openChatHub,
 	openFreshGroupChannel,
+	createGroupViaHubUi,
 	sendMessageViaComposer,
+	HUB_INIT_TIMEOUT_MS,
 } from './fixtures.mjs'
 
 test.describe('Chat hub navigation', () => {
@@ -16,8 +18,11 @@ test.describe('Chat hub navigation', () => {
 
 	test('group appears in server bar after creation', async ({ page, baseUrl, apiKey }) => {
 		const groupName = `nav-bar-${Date.now()}`
-		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey, { name: groupName })
-		await expect(page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)).toBeVisible()
+		const { groupId } = await createGroupViaHubUi(page, baseUrl, { name: groupName, waitForComposer: false })
+		await expect(page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)).toBeVisible({
+			timeout: HUB_INIT_TIMEOUT_MS,
+		})
+		await expect(page.locator('#hub-group-name-display')).toContainText(groupName)
 	})
 
 	test('members panel toggles open class', async ({ page, baseUrl, apiKey }) => {

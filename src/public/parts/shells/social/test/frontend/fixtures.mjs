@@ -20,6 +20,7 @@ export const test = baseTest.extend({
 })
 
 test.beforeEach(async ({ baseUrl, apiKey }) => {
+	test.setTimeout(300_000)
 	if (process.env.FOUNT_TEST_ISOLATED !== '1')
 		throw new Error(
 			'Social 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），'
@@ -144,32 +145,51 @@ export async function findPostCard(page, postId, opts = {}) {
 	const preferFeed = opts.preferFeed === true
 	const sel = `[data-post-id="${postId}"]`
 
-	if (preferFeed) {
+	/** @param {string} viewId */
+	const cardInView = async viewId => {
+		const view = page.locator(`#${viewId}`)
+		if (await view.evaluate(el => el.classList.contains('hidden'))) return null
+		const card = view.locator(sel)
+		return await card.count() > 0 ? card.first() : null
+	}
+
+	if (!preferFeed) {
+		const onFeed = await cardInView('feedView')
+		if (onFeed) return onFeed
+	}
+
+	if (preferFeed) 
 		for (let attempt = 0; attempt < 4; attempt++) {
-			const feedCard = page.locator(`#feedList ${sel}`)
-			if (await feedCard.count() > 0)
-				return feedCard.first()
+			const feedCard = await cardInView('feedView')
+			if (feedCard) return feedCard
 			await Promise.all([
 				waitForFeedLoad(page),
 				page.locator('#feedRefreshBtn').click(),
 			]).catch(() => { })
-			if (await feedCard.count() > 0)
-				return feedCard.first()
+			const refreshed = await cardInView('feedView')
+			if (refreshed) return refreshed
 			await page.waitForTimeout(300)
 		}
-	}
+	
 
 	for (let attempt = 0; attempt < 4; attempt++) {
+		const feedCard = await cardInView('feedView')
+		if (feedCard) return feedCard
 		await page.locator('.nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 20_000 })
-		const profileCard = page.locator(`#profileView ${sel}`)
-		if (await profileCard.count() > 0)
-			return profileCard.first()
+		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
+		const profileCard = await cardInView('profileView')
+		if (profileCard) return profileCard
+		await page.locator('.nav-btn[data-view="feed"]').click()
+		await Promise.all([
+			waitForFeedLoad(page),
+			page.locator('#feedRefreshBtn').click(),
+		]).catch(() => { })
 		await page.waitForTimeout(300)
 	}
 
-	await expect(page.locator(sel).first()).toBeVisible({ timeout: 5_000 })
-	return page.locator(sel).first()
+	const fallback = page.locator(`.view:not(.hidden) ${sel}`)
+	await expect(fallback.first()).toBeVisible({ timeout: 5_000 })
+	return fallback.first()
 }
 
 /**

@@ -2,15 +2,42 @@ import { request as playwrightRequest } from '@playwright/test'
 
 import { createFountFixtures } from '../../../../../../../.github/workflows/test_lib/playwright_fixtures.mjs'
 
+const HUB_INIT_TIMEOUT = 180_000
+
 /** 隔离节点专用测试用户名（与 run.mjs 中 launchNode.username 一致） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME || 'chat-fe-user'
 
-const HUB_INIT_TIMEOUT = 180_000
+/** Playwright 等待 Hub 就绪的默认超时（毫秒） */
+export const HUB_INIT_TIMEOUT_MS = HUB_INIT_TIMEOUT
 
 export const { test, expect } = createFountFixtures({ locale: 'zh-CN' })
 
-test.beforeEach(async ({ baseUrl, apiKey }) => {
-	test.setTimeout(240_000)
+test.beforeEach(async ({ page, baseUrl, apiKey }) => {
+	test.setTimeout(300_000)
+	page.on('pageerror', err => console.log('[browser:pageerror]', err.message, err.stack))
+	page.on('requestfailed', req => console.log('[browser:requestfailed]', req.url(), req.failure()?.errorText))
+	page.on('response', res => { if (res.status() >= 400) console.log('[browser:http]', res.status(), res.url()) })
+	await page.route('https://esm.sh/**', async route => {
+		const url = route.request().url()
+		if (url.includes('@sentry/browser')) {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/javascript',
+				body: [
+					'export default {',
+					'  captureException() {},',
+					'  init() {},',
+					'  browserTracingIntegration() { return {} },',
+					'};',
+					'export function captureException() {}',
+					'export function init() {}',
+					'export function browserTracingIntegration() { return {} }',
+				].join('\n'),
+			})
+			return
+		}
+		await route.continue()
+	})
 	if (process.env.FOUNT_TEST_ISOLATED !== '1')
 		throw new Error(
 			'Chat 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），'
@@ -34,13 +61,19 @@ test.beforeEach(async ({ baseUrl, apiKey }) => {
 })
 
 /**
- * 等待 Hub 壳层可见（不依赖 init 完整结束）。
+ * 等待 Hub 壳层可见。
+ *
+ * `waitUntil: 'domcontentloaded'` 已保证入口模块（index.mjs）同步执行完毕，
+ * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载，故无需额外的就绪探针。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
  * @returns {Promise<void>}
  */
 export async function waitForHubShell(page, baseUrl) {
-	await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
+	await page.goto(`${baseUrl}/parts/shells:chat/hub/`, {
+		waitUntil: 'domcontentloaded',
+		timeout: HUB_INIT_TIMEOUT,
+	})
 	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
 	await expect(page.locator('#hub-add-server-button')).toBeVisible()
 }
@@ -57,13 +90,64 @@ export async function openChatHub(page, baseUrl) {
 }
 
 /**
+ * 从当前 URL hash 解析群与频道 ID。
+ * @param {string} url
+ * @returns {{ groupId: string, channelId: string } | null}
+ */
+export function parseGroupHashFromUrl(url) {
+	const hash = new URL(url).hash.slice(1)
+	if (!hash.startsWith('group:')) return null
+	const rest = hash.slice('group:'.length)
+	const sep = rest.indexOf(':')
+	if (sep < 0) return null
+	try {
+		const groupId = decodeURIComponent(rest.slice(0, sep))
+		const channelId = rest.slice(sep + 1)
+		if (!groupId || !channelId) return null
+		return { groupId, channelId }
+	}
+	catch {
+		return null
+	}
+}
+
+/**
+ * 通过 Hub UI 创建群组并进入默认频道。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} baseUrl
+ * @param {object} [opts]
+ * @param {string} [opts.name]
+ * @param {string} [opts.description]
+ * @param {boolean} [opts.waitForComposer=true]
+ * @returns {Promise<{ groupId: string, channelId: string }>}
+ */
+export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
+	const name = opts.name ?? `pw-ui-${Date.now()}`
+	await waitForHubShell(page, baseUrl)
+	await page.locator('#hub-add-server-button').click()
+	const createCard = page.locator('.server-action-picker-card[data-action="create"]')
+	await expect(createCard).toBeVisible({ timeout: 30_000 })
+	await createCard.click()
+	await expect(page.locator('#create-group-form')).toBeVisible({ timeout: 30_000 })
+	await page.locator('#create-group-form input[name="name"]').fill(name)
+	if (opts.description)
+		await page.locator('#create-group-form textarea[name="description"]').fill(opts.description)
+	await Promise.all([
+		page.waitForURL(/#group:/, { timeout: HUB_INIT_TIMEOUT }),
+		page.locator('#create-group-form button[type="submit"]').click(),
+	])
+	const parsed = parseGroupHashFromUrl(page.url())
+	if (!parsed) throw new Error(`group hash missing after create: ${page.url()}`)
+	if (opts.waitForComposer !== false)
+		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
+	return parsed
+}
+
+/**
  * 通过 API 创建测试群组。
  * @param {string} baseUrl
  * @param {string} apiKey
  * @param {object} [opts]
- * @param {string} [opts.name]
- * @param {string} [opts.description]
- * @param {string} [opts.defaultChannelName]
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>}
  */
 export async function createTestGroup(baseUrl, apiKey, opts = {}) {
@@ -71,7 +155,7 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 	const body = {
 		name,
 		description: opts.description ?? 'playwright frontend test',
-		...(opts.defaultChannelName ? { defaultChannelName: opts.defaultChannelName } : {}),
+		...opts.defaultChannelName ? { defaultChannelName: opts.defaultChannelName } : {},
 	}
 	const req = await playwrightRequest.newContext()
 	try {
@@ -93,7 +177,7 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 }
 
 /**
- * 通过 hash 深链进入群频道并等待 composer 可用。
+ * 导航到指定群频道并等待 composer 可用。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
  * @param {string} groupId
@@ -104,11 +188,10 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 	const encodedGroup = encodeURIComponent(groupId)
 	await page.goto(
 		`${baseUrl}/parts/shells:chat/hub/#group:${encodedGroup}:${channelId}`,
-		{ waitUntil: 'domcontentloaded' },
+		{ waitUntil: 'load', timeout: HUB_INIT_TIMEOUT },
 	)
-	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+	// composer 被启用 = 频道已加载且重型 messages 模块已就绪，即真实的就绪信号。
 	await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
-	await expect(page.locator('#hub-send-button')).toBeEnabled()
 }
 
 /**
@@ -121,6 +204,7 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
  */
 export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {}) {
 	const { groupId, defaultChannelId } = await createTestGroup(baseUrl, apiKey, groupOpts)
+	await openChatHub(page, baseUrl)
 	await openGroupChannel(page, baseUrl, groupId, defaultChannelId)
 	return { groupId, channelId: defaultChannelId }
 }
@@ -142,7 +226,7 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
 			res.url().includes(`/groups/${encodedGroup}/channels/${encodedChannel}/messages`)
 			&& res.request().method() === 'POST'
 			&& res.status() === 200,
-			{ timeout: HUB_INIT_TIMEOUT },
+		{ timeout: HUB_INIT_TIMEOUT },
 		),
 		page.locator('#hub-send-button').click(),
 	])

@@ -32,7 +32,7 @@ test.describe('Social profile', () => {
 			),
 			page.locator('#saveMetaBtn').click(),
 		])
-		expect(await metaResponse.json()).toHaveProperty('saved')
+		expect(await metaResponse.json()).toHaveProperty('socialMeta')
 		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 
@@ -40,9 +40,10 @@ test.describe('Social profile', () => {
 		const { postJson, postId } = await publishPost(`deeplink ${Date.now()}`)
 		expect(postIdFromResponse(postJson)).toBe(postId)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		await page.goto(`${baseUrl}/parts/shells:social/#profile/${entityHash}/${postId}`)
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash};${postId}`)
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator(`[data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`[data-post-id="${postId}"]`)).toHaveClass(/highlight-post/)
+		const highlighted = page.locator(`#profileView [data-post-id="${postId}"].highlight-post`)
+		await expect(highlighted).toBeVisible({ timeout: 20_000 })
+		await expect(highlighted).toHaveClass(/highlight-post/)
 	})
 })

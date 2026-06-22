@@ -28,9 +28,10 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, pla
 	const out = await exec(`npx playwright test -c ${JSON.stringify(configPath)} ${playwrightArgs}`.trim(), {
 		cwd,
 		env: { ...process.env, ...env },
+		no_output_record: true,
+		on_stdout: data => process.stdout.write(data),
+		on_stderr: data => process.stderr.write(data),
 	})
-	if (out.stdout) console.log(out.stdout)
-	if (out.stderr) console.error(out.stderr)
 	return out.code ?? 1
 }
 

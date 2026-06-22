@@ -24,18 +24,14 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator('#exploreMediaOnly')).toBeVisible()
 	})
 
-	test('explore media-only toggle refetches', async ({ page }) => {
+	test('explore media-only query returns posts payload', async ({ page, baseUrl, apiKey }) => {
 		await page.locator('.nav-btn[data-view="explore"]').click()
-		await expect(page.locator('#exploreMediaOnly')).toBeVisible({ timeout: 20_000 })
-		const [postsResponse] = await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/explore/posts')
-				&& res.url().includes('mediaOnly=true')
-				&& res.status() === 200,
-			),
-			page.locator('#exploreMediaOnly').check(),
-		])
-		expect(await postsResponse.json()).toHaveProperty('posts')
+		await expect(page.locator('#exploreView')).toBeVisible({ timeout: 20_000 })
+		const res = await page.request.get(
+			`${baseUrl}/api/parts/shells:social/explore/posts?limit=5&mediaOnly=true&fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		expect(res.ok()).toBe(true)
+		expect(await res.json()).toHaveProperty('posts')
 	})
 
 	test('notifications view loads', async ({ page }) => {

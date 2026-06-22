@@ -1,11 +1,11 @@
 import {
 	test,
 	expect,
-	openChatHub,
 	openFreshGroupChannel,
 	sendMessageViaComposer,
 	expectMessageInChat,
 	waitForHubShell,
+	openGroupChannel,
 } from './fixtures.mjs'
 
 test.describe('Chat deep links', () => {
@@ -15,14 +15,13 @@ test.describe('Chat deep links', () => {
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		await waitForHubShell(page, baseUrl)
 		await expect(page.locator('#hub-message-input')).toBeDisabled()
-		const encodedGroup = encodeURIComponent(groupId)
-		await page.goto(`${baseUrl}/parts/shells:chat/hub/#group:${encodedGroup}:${channelId}`)
-		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: 180_000 })
+		await openGroupChannel(page, baseUrl, groupId, channelId)
 		await expectMessageInChat(page, text)
 	})
 
 	test('friends hash opens friends view', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:chat/hub/#friends`)
+		await waitForHubShell(page, baseUrl)
+		await page.goto(`${baseUrl}/parts/shells:chat/hub/#friends`, { waitUntil: 'load' })
 		await expect(page).toHaveURL(/#friends/)
 		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 180_000 })
 	})

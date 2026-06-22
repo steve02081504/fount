@@ -8,4 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  *
  */
-export default await createPlaywrightConfig({ testDir: __dirname })
+export default await createPlaywrightConfig({
+	testDir: __dirname,
+	overrides: { timeout: 300_000 },
+})

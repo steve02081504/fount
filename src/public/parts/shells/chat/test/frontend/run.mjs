@@ -15,8 +15,11 @@ const PORT = Number(process.env.FOUNT_TEST_FRONTEND_PORT) || 8942
 
 const TEST_USERNAME = 'chat-fe-user'
 
+const playwrightArgs = process.argv.slice(2).join(' ')
+
 const code = await runPlaywrightWithNode({
 	configPath: CONFIG,
+	playwrightArgs,
 	env: {
 		FOUNT_TEST_ISOLATED: '1',
 		FOUNT_TEST_USERNAME: TEST_USERNAME,

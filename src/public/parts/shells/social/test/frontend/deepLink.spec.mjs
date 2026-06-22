@@ -11,7 +11,7 @@ test.describe('Social deep links', () => {
 		await openSocialHome(page, baseUrl)
 		const tag = `hashsearch${Date.now()}`
 		const { postId } = await publishPost(`hash link #${tag}`)
-		await page.goto(`${baseUrl}/parts/shells:social/#search/${tag}`)
+		await page.goto(`${baseUrl}/parts/shells:social/#search;${encodeURIComponent(tag)}`)
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 		await searchAndExpectPost(page, `#${tag}`, postId)
@@ -28,7 +28,7 @@ test.describe('Social deep links', () => {
 	test('profile hash without post id', async ({ page, baseUrl, apiKey }) => {
 		await openSocialHome(page, baseUrl)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		await page.goto(`${baseUrl}/parts/shells:social/#profile/${entityHash}`)
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash}`)
 		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 30_000 })
 	})
 })
