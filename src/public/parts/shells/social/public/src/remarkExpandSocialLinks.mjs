@@ -1,6 +1,6 @@
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { expandChannelLinksInText } from '../../../../chat/public/src/lib/expandChannelLinks.mjs'
+import { expandChannelLinksInText } from '/parts/shells:chat/src/lib/expandChannelLinks.mjs'
 
 /**
  * 展开 @entityHash、social 帖子深链与 Chat #[group/channel] 标记（remark 阶段）。

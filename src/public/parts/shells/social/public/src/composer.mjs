@@ -1,5 +1,5 @@
-import { i18nElement } from '../../../../../pages/scripts/i18n.mjs'
-import { mountTemplate } from '../../../../../pages/scripts/template.mjs'
+import { i18nElement } from '../../../../scripts/i18n.mjs'
+import { mountTemplate } from '../../../../scripts/template.mjs'
 
 import {
 	formatGroupRefMarkdownToken,

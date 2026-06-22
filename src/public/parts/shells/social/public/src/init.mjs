@@ -1,4 +1,4 @@
-import { wireEmojiPickerButton } from '../../../../../pages/scripts/emojiPicker.mjs'
+import { wireEmojiPickerButton } from '../../../../scripts/emojiPicker.mjs'
 import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,

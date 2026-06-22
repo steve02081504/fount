@@ -1,4 +1,4 @@
-import { renderTemplate } from '../../../../../pages/scripts/template.mjs'
+import { renderTemplate } from '../../../../scripts/template.mjs'
 
 import { renderGroupRefBlockHtml } from './lib/groupRef.mjs'
 import { formatSocialProfileHref } from './lib/runUri.mjs'

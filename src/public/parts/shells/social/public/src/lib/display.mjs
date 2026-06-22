@@ -1,4 +1,4 @@
-import { processFountMessageMarkdown } from '../../../../../pages/scripts/fountMessageMarkdown.mjs'
+import { processFountMessageMarkdown } from '../../../../scripts/fountMessageMarkdown.mjs'
 
 import { formatSocialProfileHref } from './runUri.mjs'
 

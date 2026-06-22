@@ -1,4 +1,4 @@
-import { mountTemplate } from '../../../../../pages/scripts/template.mjs'
+import { mountTemplate } from '../../../../scripts/template.mjs'
 
 /**
  * 将 feed 条目渲染为帖子卡片列表（支持追加与空状态）。

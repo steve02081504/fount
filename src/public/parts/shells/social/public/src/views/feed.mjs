@@ -1,4 +1,4 @@
-import { mountTemplate, renderTemplate } from '../../../../../../pages/scripts/template.mjs'
+import { mountTemplate, renderTemplate } from '../../../../../scripts/template.mjs'
 import { renderFeedItems } from '../feedRender.mjs'
 import { formatSocialSearchHref } from '../lib/runUri.mjs'
 

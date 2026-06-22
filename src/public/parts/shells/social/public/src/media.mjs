@@ -1,7 +1,7 @@
 /**
  * Social 媒体附件：EVFS 存储。
  */
-import { uploadChatAttachment, mediaRefUrl } from '../../../chat/public/src/files.mjs'
+import { uploadChatAttachment, mediaRefUrl } from '/parts/shells:chat/src/files.mjs'
 
 /**
  * 上传本地媒体文件并返回 mediaRefs 条目。
