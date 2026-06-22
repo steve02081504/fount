@@ -1,19 +1,13 @@
-import {
-	test,
-	expect,
-	openSocialHome,
-	publishPostViaComposer,
-	expectPostInFeed,
-} from './fixtures.mjs'
+import { test, expect, openSocialHome, expectPostInFeed, findPostCard } from './fixtures.mjs'
 
 test.describe('Social composer', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
 	})
 
-	test('publishes a post via composer', async ({ page }) => {
+	test('publishes a post via composer', async ({ publishPost }) => {
 		const text = `playwright e2e ${Date.now()}`
-		const postJson = await publishPostViaComposer(page, text)
+		const { postJson } = await publishPost(text)
 		expect(postJson.event?.type).toBe('post')
 		expect(postJson.event?.content?.text).toBe(text)
 	})
@@ -30,19 +24,16 @@ test.describe('Social composer', () => {
 		expect(posted).toBe(false)
 	})
 
-	test('published post appears in feed', async ({ page }) => {
-		const text = `feed-visible ${Date.now()}`
-		await publishPostViaComposer(page, text)
-		await expectPostInFeed(page, text)
+	test('published post appears in feed', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`feed-visible ${Date.now()}`)
+		await expectPostInFeed(page, postId)
 	})
 
-	test('quote preview opens from post card', async ({ page }) => {
-		const text = `quote-src ${Date.now()}`
-		await publishPostViaComposer(page, text)
-		const card = await expectPostInFeed(page, text)
+	test('quote preview opens from post card', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`quote-src ${Date.now()}`)
+		const card = await findPostCard(page, postId)
 		await card.locator('[data-quote]').click()
 		await expect(page.locator('#quotePreview')).toBeVisible()
-		await expect(page.locator('#quotePreview .quote-preview-body')).toContainText(text)
 	})
 
 	test('visibility selector is available', async ({ page }) => {

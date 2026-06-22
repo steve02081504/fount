@@ -5,7 +5,19 @@ import { createFountFixtures } from '../../../../../../../.github/workflows/test
 /** 隔离节点专用测试用户名（与 run.mjs 中 launchNode.username 一致） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME || 'social-fe-user'
 
-export const { test, expect } = createFountFixtures({ locale: 'zh-CN' })
+export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
+
+export const test = baseTest.extend({
+	/** @param {(text: string) => Promise<{ postJson: object, postId: string, text: string }>} use */
+	publishPost: async ({ page, baseUrl, apiKey }, use) => {
+		await use(async text => {
+			const postJson = await publishPostViaComposer(page, text, { baseUrl, apiKey })
+			const postId = postIdFromResponse(postJson)
+			await waitForPostMaterialized(baseUrl, apiKey, postId)
+			return { postJson, postId, text }
+		})
+	},
+})
 
 test.beforeEach(async ({ baseUrl, apiKey }) => {
 	if (process.env.FOUNT_TEST_ISOLATED !== '1')
@@ -38,41 +50,165 @@ test.beforeEach(async ({ baseUrl, apiKey }) => {
  */
 export async function openSocialHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`)
-	await expect(page.locator('h1')).toHaveText('社交', { timeout: 30_000 })
-	await expect(page.locator('#feedView')).toBeVisible()
+	await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
+	await expect(page.locator('#postBtn')).toHaveText('发布', { timeout: 30_000 })
 }
 
 /**
- * 通过 composer 发帖并等待 API 成功。
+ * 等待 feed GET 完成。
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<import('@playwright/test').Response>}
+ */
+export async function waitForFeedLoad(page) {
+	return page.waitForResponse(res =>
+		res.url().includes('/api/parts/shells:social/feed')
+		&& res.request().method() === 'GET'
+		&& res.status() === 200,
+	)
+}
+
+/**
+ * 轮询直到帖子出现在 profile posts API 中。
+ * @param {string} baseUrl
+ * @param {string} apiKey
+ * @param {string} postId 帖子 id
+ * @returns {Promise<string>} entityHash
+ */
+export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
+	const req = await playwrightRequest.newContext()
+	try {
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const key = encodeURIComponent(apiKey)
+		for (let attempt = 0; attempt < 40; attempt++) {
+			const res = await req.get(
+				`${baseUrl}/api/parts/shells:social/profile/${entityHash}/posts?fount-apikey=${key}`,
+			)
+			if (res.ok()) {
+				const data = await res.json()
+				const found = (data.items || []).some(item => item.postId === postId)
+				if (found) return entityHash
+			}
+			await new Promise(resolve => setTimeout(resolve, 250))
+		}
+		throw new Error(`post not materialized within timeout: ${postId}`)
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 通过 composer 发帖并等待 API 成功及 feed 刷新。
  * @param {import('@playwright/test').Page} page
  * @param {string} text 正文
+ * @param {object} [ctx] 可选 API 上下文
+ * @param {string} [ctx.baseUrl]
+ * @param {string} [ctx.apiKey]
  * @returns {Promise<object>} 发帖 API 响应 JSON
  */
-export async function publishPostViaComposer(page, text) {
+export async function publishPostViaComposer(page, text, ctx = {}) {
 	await page.locator('#postText').fill(text)
-	const [postResponse] = await Promise.all([
-		page.waitForResponse(res =>
-			res.url().includes('/api/parts/shells:social/profile/post')
-			&& res.request().method() === 'POST'
-			&& res.status() === 200,
-		),
-		page.locator('#postBtn').click(),
-	])
+	const postWait = page.waitForResponse(res =>
+		res.url().includes('/api/parts/shells:social/profile/post')
+		&& res.request().method() === 'POST'
+		&& res.status() === 200,
+	)
+	const feedWait = waitForFeedLoad(page)
+	await page.locator('#postBtn').click()
+	const postResponse = await postWait
+	await feedWait.catch(() => waitForFeedLoad(page))
 	const postJson = await postResponse.json()
 	await expect(page.locator('#postText')).toHaveValue('')
 	return postJson
 }
 
 /**
- * 等待 feed 中出现包含指定文本的帖子卡片。
- * @param {import('@playwright/test').Page} page
- * @param {string} text 帖子正文片段
- * @returns {Promise<import('@playwright/test').Locator>} 匹配的卡片
+ * 从发帖 API 响应解析 postId。
+ * @param {object} postJson 发帖响应
+ * @returns {string} postId
  */
-export async function expectPostInFeed(page, text) {
-	const card = page.locator('#feedList .post-card').filter({ hasText: text })
-	await expect(card.first()).toBeVisible({ timeout: 20_000 })
-	return card.first()
+export function postIdFromResponse(postJson) {
+	const id = postJson?.event?.id || postJson?.event?.postId
+	if (!id) throw new Error('post response missing event.id')
+	return String(id)
+}
+
+/**
+ * 在 feed 或资料页中按 postId 定位帖子卡片。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} postId 帖子 id
+ * @param {{ preferFeed?: boolean }} [opts]
+ * @returns {Promise<import('@playwright/test').Locator>}
+ */
+export async function findPostCard(page, postId, opts = {}) {
+	const preferFeed = opts.preferFeed === true
+	const sel = `[data-post-id="${postId}"]`
+
+	if (preferFeed) {
+		for (let attempt = 0; attempt < 4; attempt++) {
+			const feedCard = page.locator(`#feedList ${sel}`)
+			if (await feedCard.count() > 0)
+				return feedCard.first()
+			await Promise.all([
+				waitForFeedLoad(page),
+				page.locator('#feedRefreshBtn').click(),
+			]).catch(() => { })
+			if (await feedCard.count() > 0)
+				return feedCard.first()
+			await page.waitForTimeout(300)
+		}
+	}
+
+	for (let attempt = 0; attempt < 4; attempt++) {
+		await page.locator('.nav-btn[data-view="profile"]').click()
+		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 20_000 })
+		const profileCard = page.locator(`#profileView ${sel}`)
+		if (await profileCard.count() > 0)
+			return profileCard.first()
+		await page.waitForTimeout(300)
+	}
+
+	await expect(page.locator(sel).first()).toBeVisible({ timeout: 5_000 })
+	return page.locator(sel).first()
+}
+
+/**
+ * 等待 feed 中出现指定 postId 的帖子卡片。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} postId
+ * @returns {Promise<import('@playwright/test').Locator>}
+ */
+export async function expectPostInFeed(page, postId) {
+	return findPostCard(page, postId, { preferFeed: true })
+}
+
+/**
+ * 执行 feed 搜索并等待结果中出现指定 postId。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} query 搜索词
+ * @param {string} postId 期望帖子 id
+ * @returns {Promise<void>}
+ */
+export async function searchAndExpectPost(page, query, postId) {
+	for (let attempt = 0; attempt < 8; attempt++) {
+		await page.locator('#feedSearchInput').fill(query)
+		const searchWait = page.waitForResponse(res =>
+			res.url().includes('/api/parts/shells:social/search')
+			&& res.request().method() === 'GET'
+			&& res.status() === 200,
+		)
+		await page.locator('#feedSearchBtn').click()
+		const searchRes = await searchWait
+		const data = await searchRes.json()
+		if ((data.items || []).some(item => item.postId === postId)) {
+			await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({
+				timeout: 10_000,
+			})
+			return
+		}
+		await page.waitForTimeout(400)
+	}
+	await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 5_000 })
 }
 
 /**

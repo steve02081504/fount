@@ -2,25 +2,25 @@ import {
 	test,
 	expect,
 	openSocialHome,
-	publishPostViaComposer,
+	searchAndExpectPost,
 	fetchViewerEntityHash,
 } from './fixtures.mjs'
 
 test.describe('Social deep links', () => {
-	test('hash search opens feed search', async ({ page, baseUrl }) => {
+	test('hash search opens feed search', async ({ page, baseUrl, publishPost }) => {
 		await openSocialHome(page, baseUrl)
 		const tag = `hashsearch${Date.now()}`
-		await publishPostViaComposer(page, `hash link #${tag}`)
+		const { postId } = await publishPost(`hash link #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/#search/${tag}`)
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#feedSearchInput')).toHaveValue(`#${tag}`)
+		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
-	test('query param q opens search', async ({ page, baseUrl }) => {
+	test('query param q opens search', async ({ page, baseUrl, publishPost }) => {
 		await openSocialHome(page, baseUrl)
 		const tag = `qparam${Date.now()}`
-		await publishPostViaComposer(page, `query search #${tag}`)
+		await publishPost(`query search #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/?q=${encodeURIComponent(`#${tag}`)}`)
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 	})

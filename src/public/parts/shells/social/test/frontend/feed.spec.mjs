@@ -1,20 +1,13 @@
-import {
-	test,
-	expect,
-	openSocialHome,
-	publishPostViaComposer,
-	expectPostInFeed,
-} from './fixtures.mjs'
+import { test, expect, openSocialHome, expectPostInFeed, searchAndExpectPost } from './fixtures.mjs'
 
 test.describe('Social feed', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
 	})
 
-	test('feed refresh reloads posts', async ({ page }) => {
-		const text = `refresh-test ${Date.now()}`
-		await publishPostViaComposer(page, text)
-		await expectPostInFeed(page, text)
+	test('feed refresh reloads posts', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`refresh-test ${Date.now()}`)
+		await expectPostInFeed(page, postId)
 		const [feedResponse] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/feed')
@@ -24,24 +17,18 @@ test.describe('Social feed', () => {
 			page.locator('#feedRefreshBtn').click(),
 		])
 		expect(await feedResponse.json()).toHaveProperty('items')
-		await expectPostInFeed(page, text)
+		await expectPostInFeed(page, postId)
 	})
 
-	test('hashtag search finds published post', async ({ page }) => {
+	test('hashtag search finds published post', async ({ page, publishPost }) => {
 		const tag = `pw${Date.now()}`
-		const text = `search-me #${tag}`
-		await publishPostViaComposer(page, text)
-		await page.locator('#feedSearchInput').fill(`#${tag}`)
-		await page.locator('#feedSearchBtn').click()
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#feedList .post-card').filter({ hasText: text })).toBeVisible({
-			timeout: 20_000,
-		})
+		const { postId } = await publishPost(`search-me #${tag}`)
+		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
-	test('search via Enter key', async ({ page }) => {
+	test('search via Enter key', async ({ page, publishPost }) => {
 		const tag = `enter${Date.now()}`
-		await publishPostViaComposer(page, `enter-search #${tag}`)
+		await publishPost(`enter-search #${tag}`)
 		await page.locator('#feedSearchInput').fill(`#${tag}`)
 		await page.locator('#feedSearchInput').press('Enter')
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })

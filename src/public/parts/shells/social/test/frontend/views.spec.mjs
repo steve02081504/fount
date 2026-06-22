@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, publishPostViaComposer } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard } from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -45,10 +45,9 @@ test.describe('Social secondary views', () => {
 			.toBeVisible({ timeout: 20_000 })
 	})
 
-	test('reply generates notification', async ({ page }) => {
-		const parentText = `notif-parent ${Date.now()}`
-		await publishPostViaComposer(page, parentText)
-		const card = page.locator('#feedList .post-card').filter({ hasText: parentText }).first()
+	test('reply generates notification', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`notif-parent ${Date.now()}`)
+		const card = await findPostCard(page, postId)
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)

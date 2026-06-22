@@ -2,8 +2,7 @@ import {
 	test,
 	expect,
 	openSocialHome,
-	publishPostViaComposer,
-	expectPostInFeed,
+	postIdFromResponse,
 	fetchViewerEntityHash,
 } from './fixtures.mjs'
 
@@ -12,14 +11,12 @@ test.describe('Social profile', () => {
 		await openSocialHome(page, baseUrl)
 	})
 
-	test('profile view shows own posts', async ({ page }) => {
-		const text = `profile-post ${Date.now()}`
-		await publishPostViaComposer(page, text)
+	test('profile view shows own posts', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`profile-post ${Date.now()}`)
 		await page.locator('.nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView')).toBeVisible()
 		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileView .profile-posts .post-card').filter({ hasText: text }))
-			.toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('profile explore settings save', async ({ page }) => {
@@ -39,11 +36,9 @@ test.describe('Social profile', () => {
 		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 
-	test('deep link opens profile with highlighted post', async ({ page, baseUrl, apiKey }) => {
-		const text = `deeplink ${Date.now()}`
-		const postJson = await publishPostViaComposer(page, text)
-		const postId = postJson.event?.postId
-		expect(postId).toBeTruthy()
+	test('deep link opens profile with highlighted post', async ({ page, baseUrl, apiKey, publishPost }) => {
+		const { postJson, postId } = await publishPost(`deeplink ${Date.now()}`)
+		expect(postIdFromResponse(postJson)).toBe(postId)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await page.goto(`${baseUrl}/parts/shells:social/#profile/${entityHash}/${postId}`)
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 30_000 })
