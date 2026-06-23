@@ -11,7 +11,7 @@ const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)]:/g
 
 /**
  * remark：展开 `:[group/emoji]:` 与 `#[group/channel]`。
- * @returns {(tree: import('npm:@types/mdast').Root) => void}
+ * @returns {(tree: import('npm:@types/mdast').Root) => void} remark 插件。
  */
 function remarkChatDialect() {
 	return tree => {
@@ -20,12 +20,12 @@ function remarkChatDialect() {
 			let value = node.value
 			if (value.includes('#['))
 				value = expandChannelLinksInText(value)
-			if (EMOJI_TOKEN.test(value)) {
+			if (value.includes(':[',))
 				value = value.replace(EMOJI_TOKEN, (_match, groupId, emojiId) => {
 					const src = `${EMOJI_CONTENT_API}/${encodeURIComponent(groupId)}/${encodeURIComponent(emojiId)}`
 					return `![emoji](${src})`
 				})
-			}
+			
 			node.value = value
 		})
 	}
@@ -54,6 +54,11 @@ function initEmojiHydration() {
 		}
 	}, { rootMargin: '64px' })
 
+	/**
+	 * 扫描 DOM 中的 emoji 图片并注册懒加载观察。
+	 * @param {ParentNode} [root=document] - 扫描根节点。
+	 * @returns {void}
+	 */
 	const scan = (root = document) => {
 		for (const img of root.querySelectorAll('img.fount-emoji'))
 			observer.observe(img)
@@ -72,6 +77,9 @@ function initEmojiHydration() {
 /** @type {import('npm:unified').Plugin[]} */
 const remarkPlugins = [remarkChatDialect]
 
+/**
+ *
+ */
 export default {
 	remarkPlugins,
 	rehypePlugins: [],

@@ -16,7 +16,7 @@ wireBootstrap()
  * Hub 重型初始化：导航就绪后再绑全量事件与 WS/消息图。
  * @returns {Promise<void>}
  */
-async function bootstrapHubHeavy() {
+export async function bootHub() {
 	const { initCore } = await import('./initCore.mjs')
 	await initCore()
 	const { wireEvents } = await import('./wireEvents.mjs')
@@ -25,4 +25,4 @@ async function bootstrapHubHeavy() {
 	await init()
 }
 
-void bootstrapHubHeavy()
+await bootHub()

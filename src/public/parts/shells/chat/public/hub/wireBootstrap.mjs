@@ -26,10 +26,11 @@ function resizeMessageInput(textarea) {
 
 /** 注册 composer 发送与快捷键（同步，供 E2E 与首屏导航使用）。 @returns {void} */
 function wireComposerControls() {
-	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-message-input')
+	const messageInput = /** @type {HTMLTextAreaElement | null} */ document.getElementById('hub-message-input')
+	if (!messageInput) return
 	bindComposerSubmit(messageInput, () => { void submitComposerLazy() })
 	messageInput.addEventListener('input', () => { resizeMessageInput(messageInput) })
-	document.getElementById('hub-send-button').addEventListener('click', () => {
+	document.getElementById('hub-send-button')?.addEventListener('click', () => {
 		void submitComposerLazy()
 		messageInput.focus()
 	})
@@ -82,8 +83,8 @@ export function wireBootstrap() {
 	wireComposerControls()
 	wireModeTabsEarly()
 	wireHashNavigation()
-	document.getElementById('hub-add-server-button').addEventListener('click', showServerActionPicker)
-	document.getElementById('hub-toggle-members-button').addEventListener('click', () => {
-		document.getElementById('hub-member-bar').classList.toggle('hub-member-bar--open')
+	document.getElementById('hub-add-server-button')?.addEventListener('click', showServerActionPicker)
+	document.getElementById('hub-toggle-members-button')?.addEventListener('click', () => {
+		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')
 	})
 }

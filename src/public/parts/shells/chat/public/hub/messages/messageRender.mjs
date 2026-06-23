@@ -5,12 +5,13 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../../src/chatMarkdown、../../src/chatMarkdownConvertor、../../src/customEmojis、../../src/groupFileBlob、../../src/groupMode、../../src/inviteQr、../../src/lib/channelContent。
  */
+import { getFountMessageMarkdownConvertor } from '../../../../../scripts/fountMessageMarkdown.mjs'
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/template.mjs'
-import { processChatMarkdown } from '../../src/chatMarkdownConvertor.mjs'
 import { firstCustomEmojiRef } from '../../src/customEmojis.mjs'
+import { resolveEmojiUrlBestEffort } from '../../src/emojiCache.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../src/groupFileBlob.mjs'
 import {
 	attachOffscreenEmbedGuard,
@@ -702,10 +703,8 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	}
 
 	try {
-		const html = await processChatMarkdown(
-			{ value: raw, data: { cache: {} } },
-			trusted,
-		)
+		const processor = await getFountMessageMarkdownConvertor(trusted)
+		const html = String(await processor.process({ value: raw, data: { cache: {} } }))
 		bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 		delete bubble.dataset.mdRaw
 		bubble.dataset.mdHydrated = '1'

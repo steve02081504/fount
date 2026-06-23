@@ -35,10 +35,10 @@ export function whenHubCoreReady() {
 /** @returns {void} */
 function flushHubCoreWaiters() {
 	const waiters = hubCoreWaiters.splice(0)
-	for (const waiter of waiters) 
+	for (const waiter of waiters)
 		if (hubCoreState === 'ready') waiter.resolve()
 		else waiter.reject(hubCoreError ?? new Error('Hub initCore failed'))
-	
+
 }
 
 /** @returns {void} */
