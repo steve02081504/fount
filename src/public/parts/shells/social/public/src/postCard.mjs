@@ -48,7 +48,8 @@ export function createPostCardBuilder(deps) {
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
 		const label = authorLabel(item.entityHash, item.authorProfile)
-		const visibility = item.post?.content?.visibility === 'followers'
+		const visibilityCode = item.post?.content?.visibility === 'followers' ? 'followers' : 'public'
+		const visibility = visibilityCode === 'followers'
 			? geti18n('social.composer.visibilityFollowers')
 			: geti18n('social.composer.visibilityPublic')
 		const mediaHtml = item.post?.content?.protected ? '' : renderMediaHtml(item.post?.content?.mediaRefs)
@@ -91,6 +92,7 @@ export function createPostCardBuilder(deps) {
 		const card = await renderTemplate('post_card', {
 			postId: item.postId,
 			postTextEncoded: encodeURIComponent(text),
+			visibilityCode,
 			repostBanner,
 			repostCommentHtml,
 			embeddedWrapStart,
