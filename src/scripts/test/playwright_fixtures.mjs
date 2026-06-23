@@ -1,26 +1,41 @@
 import { test as base, expect, request } from '@playwright/test'
 
 import { loginWithApiKey } from './playwright_auth.mjs'
+import { requireTestBaseUrl } from './playwright_env.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
- * @param {object} [opts]
+ * @param {object} [opts] - fixture 选项。
  * @param {string} [opts.locale='zh-CN'] 浏览器与 localStorage 首选语言
- * @returns {{ test: typeof base, expect: typeof expect }}
+ * @returns {{ test: typeof base, expect: typeof expect }} 扩展后的 test 与 expect。
  */
 export function createFountFixtures(opts = {}) {
 	const locale = opts.locale ?? 'zh-CN'
 
 	const test = base.extend({
+		/**
+		 * @param {object} _fixtures - 无额外依赖。
+		 * @param {(url: string) => Promise<void>} use - Playwright fixture use 回调。
+		 */
 		baseUrl: async ({}, use) => {
-			const url = process.env.FOUNT_TEST_BASE_URL || 'http://localhost:8931'
-			await use(url.replace(/\/$/, ''))
+			await use(requireTestBaseUrl())
 		},
+		/**
+		 * @param {object} _fixtures - 无额外依赖。
+		 * @param {(key: string) => Promise<void>} use - Playwright fixture use 回调。
+		 */
 		apiKey: async ({}, use) => {
 			const key = process.env.FOUNT_API_KEY
 			if (!key) throw new Error('FOUNT_API_KEY is required for fount frontend tests')
 			await use(key)
 		},
+		/**
+		 * @param {object} root0 - Playwright fixture 依赖。
+		 * @param {import('npm:@playwright/test').Browser} root0.browser - 浏览器实例。
+		 * @param {string} root0.baseUrl - 测试根 URL。
+		 * @param {string} root0.apiKey - API 密钥。
+		 * @param {(context: import('npm:@playwright/test').BrowserContext) => Promise<void>} use - Playwright fixture use 回调。
+		 */
 		context: async ({ browser, baseUrl, apiKey }, use) => {
 			const req = await request.newContext()
 			await loginWithApiKey(req, baseUrl, apiKey)
@@ -33,6 +48,11 @@ export function createFountFixtures(opts = {}) {
 			await use(context)
 			await context.close()
 		},
+		/**
+		 * @param {object} root0 - Playwright fixture 依赖。
+		 * @param {import('npm:@playwright/test').BrowserContext} root0.context - 已登录浏览器上下文。
+		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use - Playwright fixture use 回调。
+		 */
 		page: async ({ context }, use) => {
 			await use(await context.newPage())
 		},

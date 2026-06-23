@@ -8,7 +8,7 @@ on:
       - 'src/server/p2p_server/**'
       - '.github/workflows/verify_shells.yaml'
       - '.github/workflows/verify_shells.mjs'
-      - '.github/workflows/test_lib/**'
+      - 'src/scripts/test/**'
     tags-ignore:
       - '*'
     branches:

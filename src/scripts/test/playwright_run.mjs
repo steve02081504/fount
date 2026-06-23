@@ -29,7 +29,15 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, pla
 		cwd,
 		env: { ...process.env, ...env },
 		no_output_record: true,
+		/**
+		 * @param {string | Uint8Array} data - 标准输出片段。
+		 * @returns {void}
+		 */
 		on_stdout: data => process.stdout.write(data),
+		/**
+		 * @param {string | Uint8Array} data - 标准错误片段。
+		 * @returns {void}
+		 */
 		on_stderr: data => process.stderr.write(data),
 	})
 	return out.code ?? 1

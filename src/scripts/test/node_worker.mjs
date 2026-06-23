@@ -8,8 +8,8 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { parseArgs } from 'node:util'
 
-import { set_start } from '../../../src/server/base.mjs'
-import { hosturl, init } from '../../../src/server/server.mjs'
+import { set_start } from '../../server/base.mjs'
+import { hosturl, init } from '../../server/server.mjs'
 
 const { values } = parseArgs({
 	options: {
@@ -136,7 +136,7 @@ if (!ok) {
 }
 
 try {
-	const { loadPart } = await import('../../../src/server/parts_loader.mjs')
+	const { loadPart } = await import('../../server/parts_loader.mjs')
 	for (const partpath of loadParts)
 		await loadPart(username, partpath)
 

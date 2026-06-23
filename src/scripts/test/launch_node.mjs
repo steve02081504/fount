@@ -2,7 +2,7 @@
  * 测试用 fount 节点启动工具（编程 API + CLI）。
  *
  * CLI:
- *   node .github/workflows/test_lib/launch_node.mjs --port 8931 --data /tmp/fount-a --user CI-user --key my-key
+ *   deno run -A src/scripts/test/launch_node.mjs --port 8931 --data /tmp/fount-a --user CI-user --key my-key
  *
  * 编程:
  *   import { launchNode, stopNode } from './launch_node.mjs'

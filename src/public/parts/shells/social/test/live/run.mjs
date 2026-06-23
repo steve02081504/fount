@@ -10,7 +10,7 @@ import { parseArgs } from 'node:util'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { launchNode, stopNode } from '../../../../../../../.github/workflows/test_lib/launch_node.mjs'
+import { launchNode, stopNode } from '../../../../../../scripts/test/launch_node.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCRIPTS = join(__dirname, 'scripts')

@@ -6,11 +6,10 @@ import { fileURLToPath } from 'node:url'
 
 import { exec } from 'npm:@steve02081504/exec'
 
+import { matchGlob } from '../../src/scripts/test/launch_node.mjs'
 import { __dirname, set_start } from '../../src/server/base.mjs'
 import { getPartList, loadPart } from '../../src/server/parts_loader.mjs'
 import { init } from '../../src/server/server.mjs'
-
-import { matchGlob } from './test_lib/launch_node.mjs'
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -37,9 +36,9 @@ const fount_config = {
  * @returns {Promise<string[]>} 相对仓库根的路径（正斜杠）；含 `__run_all__` 表示全跑
  */
 async function getChangedFiles() {
-	if (process.env.FOUNT_TEST_CHANGED_FILES) 
+	if (process.env.FOUNT_TEST_CHANGED_FILES)
 		return process.env.FOUNT_TEST_CHANGED_FILES.split('\n').map(s => s.trim()).filter(Boolean)
-	
+
 
 	if (process.env.FOUNT_TEST_RUN_ALL === '1')
 		return ['__run_all__']
@@ -119,7 +118,7 @@ function selectSuites(changed, allSuites) {
 	const infraPaths = [
 		'.github/workflows/verify_shells.mjs',
 		'.github/workflows/verify_shells.yaml',
-		'.github/workflows/test_lib/',
+		'src/scripts/test/',
 	]
 	const infraHit = changed.some(f => infraPaths.some(p => f.startsWith(p.replace(/\\/g, '/'))))
 	if (infraHit) return allSuites
@@ -185,9 +184,9 @@ async function runSuite(cmd) {
 			console.error(`FAILED: ${suite.shell}/${suite.name} (exit ${code})`)
 			exitCode = 1
 		}
-		else 
+		else
 			console.log(`PASSED: ${suite.shell}/${suite.name}`)
-		
+
 	}
 
 	process.exit(exitCode)

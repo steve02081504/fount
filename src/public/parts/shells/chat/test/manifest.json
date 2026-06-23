@@ -303,7 +303,7 @@
 			"triggers": [
 				"src/public/parts/shells/chat/public/**",
 				"src/public/parts/shells/chat/test/frontend/**",
-				".github/workflows/test_lib/playwright_*.mjs",
+				"src/scripts/test/playwright_*.mjs",
 				"src/server/auth.mjs",
 				"src/server/web_server/endpoints.mjs"
 			]

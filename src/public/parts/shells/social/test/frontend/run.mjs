@@ -7,13 +7,17 @@ import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { pickAvailablePortBlock } from '../../../../../../../.github/workflows/test_lib/launch_node.mjs'
-import { runPlaywrightWithNode } from '../../../../../../../.github/workflows/test_lib/playwright_run.mjs'
+import { pickAvailablePortBlock } from '../../../../../../scripts/test/launch_node.mjs'
+import { resolveFrontendPort } from '../../../../../../scripts/test/playwright_env.mjs'
+import { runPlaywrightWithNode } from '../../../../../../scripts/test/playwright_run.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const CONFIG = join(__dirname, 'playwright.config.mjs')
 /** 三阶段各需一口（步长 2）；未指定 env 时从 8941 起找连续空闲块。 */
-const PORT = Number(process.env.FOUNT_TEST_FRONTEND_PORT) || await pickAvailablePortBlock(8941, 3, 2)
+const PORT = await resolveFrontendPort(
+	process.env.FOUNT_TEST_FRONTEND_PORT,
+	() => pickAvailablePortBlock(8941, 3, 2),
+)
 
 const TEST_USERNAME = 'social-fe-user'
 
