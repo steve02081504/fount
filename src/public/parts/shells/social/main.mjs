@@ -1,3 +1,7 @@
+import {
+	registerDefaultAgentHosting,
+	unregisterDefaultAgentHosting,
+} from '../../../../scripts/p2p/entity/hosting.mjs'
 import { parseEntityHash } from '../../../../scripts/p2p/entity_id.mjs'
 import {
 	registerShellPartpath,
@@ -92,6 +96,7 @@ export default {
 		})
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
+		await registerDefaultAgentHosting()
 		setEndpoints(router)
 	},
 	/** 卸载 Social shell。 */
@@ -102,6 +107,7 @@ export default {
 		unregisterFollowingScanProvider()
 		unregisterSocialManifestAcl()
 		unregisterSocialManifestTransfer()
+		unregisterDefaultAgentHosting()
 	},
 	interfaces: {
 		web: {},

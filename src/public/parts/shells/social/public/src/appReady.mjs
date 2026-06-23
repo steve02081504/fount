@@ -1,5 +1,5 @@
 /**
- * Social bootstrap 就绪信号（模块级 Promise，供入口与 E2E 等待）。
+ * Social bootstrap 就绪信号（模块级 Promise，供入口等待初始化完成）。
  */
 
 /** @typedef {'pending' | 'ready' | 'error'} SocialAppState */
@@ -42,14 +42,21 @@ function flushSocialAppWaiters() {
 }
 
 /** @returns {void} */
+function syncDatasetState() {
+	document.documentElement.dataset.socialAppState = socialAppState
+}
+
+/** @returns {void} */
 export function markSocialAppPending() {
 	socialAppState = 'pending'
 	socialAppError = null
+	syncDatasetState()
 }
 
 /** @returns {void} */
 export function markSocialAppReady() {
 	socialAppState = 'ready'
+	syncDatasetState()
 	document.dispatchEvent(new CustomEvent('fount:social-app-ready'))
 	flushSocialAppWaiters()
 }
@@ -61,6 +68,7 @@ export function markSocialAppReady() {
 export function markSocialAppFailed(error) {
 	socialAppState = 'error'
 	socialAppError = error instanceof Error ? error : new Error(String(error))
+	syncDatasetState()
 	document.dispatchEvent(new CustomEvent('fount:social-app-error', {
 		detail: { message: socialAppError.message },
 	}))

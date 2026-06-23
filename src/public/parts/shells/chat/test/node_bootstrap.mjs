@@ -4,6 +4,6 @@
  * @returns {Promise<void>}
  */
 export default async function bootstrap(username) {
-	const { ensureOperatorPubKey } = await import('../../../../../server/p2p_server/operator_identity.mjs')
+	const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 	await ensureOperatorPubKey(username)
 }

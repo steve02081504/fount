@@ -1,162 +1,65 @@
 /**
  * Chat live 测试 driver：按 suite 自启 fount 节点并运行 scripts/ 下对应脚本。
- *
- *   node src/public/parts/shells/chat/test/live/run.mjs --suite e2e_single
- *   node src/public/parts/shells/chat/test/live/run.mjs --suite fed_test
  */
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { parseArgs } from 'node:util'
 
-import { execFile } from 'npm:@steve02081504/exec'
+import { runLiveSuiteCli } from 'fount/scripts/test/live_suite_runner.mjs'
 
-import { launchNode, stopNode } from '../../../../../../scripts/test/launch_node.mjs'
+const scriptsDir = dirname(fileURLToPath(import.meta.url))
+const repoRoot = resolve(scriptsDir, '../../../../../../../')
+const chatBootstrap = join(scriptsDir, '../node_bootstrap.mjs')
+const chatFixtures = join(scriptsDir, 'fixtures/chars')
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const SCRIPTS = join(__dirname, 'scripts')
-const REPO_ROOT = resolve(__dirname, '../../../../../../../')
-const CHAT_FIXTURES = join(__dirname, 'fixtures/chars')
-const CHAT_BOOTSTRAP = join(__dirname, 'node_bootstrap.mjs')
-
-const NODE_A_PORT = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
-const NODE_B_PORT = Number(process.env.FOUNT_TEST_NODE_B_PORT) || NODE_A_PORT + 1
-
-const NODE_A_BASE = {
-	port: NODE_A_PORT,
-	username: 'CI-user',
-	apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-test-key-${NODE_A_PORT}`,
-	loadParts: ['shells/chat'],
-	p2p: true,
-	bootstrap: CHAT_BOOTSTRAP,
-	fixtureCopies: [{
-		from: join(CHAT_FIXTURES, 'test_streamer'),
-		to: 'chars/test_streamer',
-	}],
-}
-const NODE_B_BASE = {
-	port: NODE_B_PORT,
-	username: 'nodeb',
-	apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${NODE_B_PORT}`,
-	loadParts: ['shells/chat'],
-	p2p: true,
-	bootstrap: CHAT_BOOTSTRAP,
-}
+const nodeAPort = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
+const nodeBPort = Number(process.env.FOUNT_TEST_NODE_B_PORT) || nodeAPort + 1
 
 /** @type {Record<string, { fed?: boolean, run: string[] }>} */
-const SUITES = {
-	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single.ps1')] },
-	e2e_single_ext: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'e2e_single_ext.ps1')] },
-	smoke_chat: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'smoke_chat.ps1')] },
-	smoke_ai: { run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'smoke_ai.ps1')] },
-	ws_test: { run: ['node', join(SCRIPTS, 'ws_test.mjs')] },
-	ws_rpc_test: { run: ['node', join(SCRIPTS, 'ws_rpc_test.mjs')] },
-	ws_stream_test: { run: ['node', join(SCRIPTS, 'ws_stream_test.mjs')] },
-	av_relay_test: { run: ['node', join(SCRIPTS, 'av_relay_test.mjs')] },
-	fed_test: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_test.ps1')] },
-	fed_e2e_ext: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_e2e_ext.ps1')] },
-	fed_dm: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_dm.ps1')] },
-	fed_archive_month: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_archive_month.ps1')] },
-	fed_mailbox: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_mailbox.ps1')] },
-	fed_ban: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_ban.ps1')] },
-	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji.ps1')] },
-	fed_emoji_nonmember: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji_nonmember.ps1')] },
-	fed_emoji_nearcache: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_emoji_nearcache.ps1')] },
-	fed_file_transfer: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_file_transfer.ps1')] },
-	fed_misc: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_misc.ps1')] },
+const suites = {
+	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/e2e_single.ps1')] },
+	e2e_single_ext: { run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/e2e_single_ext.ps1')] },
+	smoke_chat: { run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/smoke_chat.ps1')] },
+	smoke_ai: { run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/smoke_ai.ps1')] },
+	ws_test: { run: ['node', join(scriptsDir, 'scripts/ws_test.mjs')] },
+	ws_rpc_test: { run: ['node', join(scriptsDir, 'scripts/ws_rpc_test.mjs')] },
+	ws_stream_test: { run: ['node', join(scriptsDir, 'scripts/ws_stream_test.mjs')] },
+	av_relay_test: { run: ['node', join(scriptsDir, 'scripts/av_relay_test.mjs')] },
+	fed_test: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_test.ps1')] },
+	fed_e2e_ext: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_e2e_ext.ps1')] },
+	fed_dm: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_dm.ps1')] },
+	fed_archive_month: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_archive_month.ps1')] },
+	fed_mailbox: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_mailbox.ps1')] },
+	fed_ban: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_ban.ps1')] },
+	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_emoji.ps1')] },
+	fed_emoji_nonmember: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_emoji_nonmember.ps1')] },
+	fed_emoji_nearcache: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_emoji_nearcache.ps1')] },
+	fed_file_transfer: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_file_transfer.ps1')] },
+	fed_misc: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/fed_misc.ps1')] },
 }
 
-/**
- * 在仓库根目录执行子进程命令。
- * @param {string[]} cmd 可执行文件 + 参数
- * @param {Record<string, string>} env 额外环境变量
- * @returns {Promise<{ code: number, output: string }>} 退出码与合并输出
- */
-async function runCommand(cmd, env) {
-	const [exe, ...args] = cmd
-	const out = await execFile(exe, args, {
-		cwd: REPO_ROOT,
-		env: { ...process.env, ...env },
-	})
-	return { code: out.code, output: out.stdout + out.stderr }
-}
-
-/**
- * 启动节点、运行指定 live suite 并 teardown。
- * @param {string} suiteName manifest / SUITES 中的名称
- * @returns {Promise<number>} 进程退出码（0 为通过）
- */
-async function runSuite(suiteName) {
-	const spec = SUITES[suiteName]
-	if (!spec) {
-		console.error(`unknown suite: ${suiteName}`)
-		console.error('available:', Object.keys(SUITES).join(', '))
-		return 2
-	}
-
-	/** @type {Awaited<ReturnType<typeof launchNode>>[]} */
-	const nodes = []
-	try {
-		nodes.push(await launchNode(NODE_A_BASE))
-		if (spec.fed)
-			nodes.push(await launchNode(NODE_B_BASE))
-
-		const nodeA = nodes[0]
-		const env = {
-			FOUNT_API_KEY: nodeA.apiKey,
-			FOUNT_NODE_A_DATA: nodeA.dataPath,
-			FOUNT_TEST_BASE_URL: nodeA.baseUrl,
-		}
-		if (nodes[1]) {
-			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
-			env.FOUNT_TEST_NODE_B_PORT = String(nodes[1].port)
-			env.FOUNT_TEST_NODE_B_KEY = nodes[1].apiKey
-		}
-
-		if (spec.fed) {
-			const pre = await runCommand(['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_cleanup.ps1')], env)
-			if (pre.code !== 0) console.warn('fed_cleanup pre:', pre.output)
-		}
-
-		console.log(`\n=== SUITE ${suiteName} ===`)
-		const result = await runCommand(spec.run, env)
-		if (result.output) console.log(result.output)
-
-		if (spec.fed) {
-			const post = await runCommand(['pwsh', '-NoProfile', '-File', join(SCRIPTS, 'fed_cleanup.ps1')], env)
-			if (post.code !== 0) console.warn('fed_cleanup post:', post.output)
-		}
-
-		if (result.code !== 0) return result.code
-		if (/\bFAIL:\s|FAIL=\d+/.test(result.output) && /FAIL=(\d+)/.test(result.output)) {
-			const m = result.output.match(/FAIL=(\d+)/)
-			if (m && Number(m[1]) > 0) return 1
-		}
-		if (/\bFAIL\s{2,}/m.test(result.output)) return 1
-		return 0
-	}
-	finally {
-		for (const node of nodes.reverse())
-			await stopNode(node)
-	}
-}
-
-const { values } = parseArgs({
-	options: {
-		suite: { type: 'string' },
-		list: { type: 'boolean', default: false },
+await runLiveSuiteCli({
+	suites,
+	scriptsDir,
+	repoRoot,
+	nodeA: {
+		port: nodeAPort,
+		username: 'CI-user',
+		apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-test-key-${nodeAPort}`,
+		loadParts: ['shells/chat'],
+		p2p: true,
+		bootstrap: chatBootstrap,
+		fixtureCopies: [{
+			from: join(chatFixtures, 'test_streamer'),
+			to: 'chars/test_streamer',
+		}],
+	},
+	nodeB: {
+		port: nodeBPort,
+		username: 'nodeb',
+		apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${nodeBPort}`,
+		loadParts: ['shells/chat'],
+		p2p: true,
+		bootstrap: chatBootstrap,
 	},
 })
-
-if (values.list) {
-	console.log(Object.keys(SUITES).join('\n'))
-	process.exit(0)
-}
-
-if (!values.suite) {
-	console.error('usage: --suite <name> | --list')
-	process.exit(2)
-}
-
-const code = await runSuite(values.suite)
-process.exit(code)

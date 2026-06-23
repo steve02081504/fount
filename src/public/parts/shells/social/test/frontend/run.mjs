@@ -7,9 +7,9 @@ import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { pickAvailablePortBlock } from '../../../../../../scripts/test/launch_node.mjs'
-import { resolveFrontendPort } from '../../../../../../scripts/test/playwright_env.mjs'
-import { runPlaywrightWithNode } from '../../../../../../scripts/test/playwright_run.mjs'
+import { pickAvailablePortBlock } from 'fount/scripts/test/launch_node.mjs'
+import { resolveFrontendPort } from 'fount/scripts/test/playwright_env.mjs'
+import { runPlaywrightWithNode } from 'fount/scripts/test/playwright_run.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const CONFIG = join(__dirname, 'playwright.config.mjs')

@@ -1,3 +1,5 @@
+import { waitForHubCoreReady } from 'fount/scripts/test/playwright_ready.mjs'
+
 import {
 	test,
 	expect,
@@ -5,7 +7,6 @@ import {
 	sendMessageViaComposer,
 	expectMessageInChat,
 	navigateGroupChannelHash,
-	waitForHubCoreReady,
 } from './fixtures.mjs'
 
 test.describe('Chat deep links', () => {

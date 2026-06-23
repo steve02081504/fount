@@ -14,14 +14,14 @@ export function createFountFixtures(opts = {}) {
 
 	const test = base.extend({
 		/**
-		 * @param {object} _fixtures - 无额外依赖。
+		 * @param {object} fixtures - Playwright fixture 依赖（未使用）。
 		 * @param {(url: string) => Promise<void>} use - Playwright fixture use 回调。
 		 */
 		baseUrl: async ({}, use) => {
 			await use(requireTestBaseUrl())
 		},
 		/**
-		 * @param {object} _fixtures - 无额外依赖。
+		 * @param {object} fixtures - Playwright fixture 依赖（未使用）。
 		 * @param {(key: string) => Promise<void>} use - Playwright fixture use 回调。
 		 */
 		apiKey: async ({}, use) => {
@@ -30,10 +30,10 @@ export function createFountFixtures(opts = {}) {
 			await use(key)
 		},
 		/**
-		 * @param {object} root0 - Playwright fixture 依赖。
-		 * @param {import('npm:@playwright/test').Browser} root0.browser - 浏览器实例。
-		 * @param {string} root0.baseUrl - 测试根 URL。
-		 * @param {string} root0.apiKey - API 密钥。
+		 * @param {object} dependencies - Playwright fixture 依赖。
+		 * @param {import('npm:@playwright/test').Browser} dependencies.browser - 浏览器实例。
+		 * @param {string} dependencies.baseUrl - 测试根 URL。
+		 * @param {string} dependencies.apiKey - API 密钥。
 		 * @param {(context: import('npm:@playwright/test').BrowserContext) => Promise<void>} use - Playwright fixture use 回调。
 		 */
 		context: async ({ browser, baseUrl, apiKey }, use) => {
@@ -49,8 +49,8 @@ export function createFountFixtures(opts = {}) {
 			await context.close()
 		},
 		/**
-		 * @param {object} root0 - Playwright fixture 依赖。
-		 * @param {import('npm:@playwright/test').BrowserContext} root0.context - 已登录浏览器上下文。
+		 * @param {object} dependencies - Playwright fixture 依赖。
+		 * @param {import('npm:@playwright/test').BrowserContext} dependencies.context - 已登录浏览器上下文。
 		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use - Playwright fixture use 回调。
 		 */
 		page: async ({ context }, use) => {

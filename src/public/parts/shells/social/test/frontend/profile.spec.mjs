@@ -1,3 +1,5 @@
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright_ready.mjs'
+
 import {
 	test,
 	expect,
@@ -5,7 +7,6 @@ import {
 	postIdFromResponse,
 	fetchViewerEntityHash,
 	waitForPostMaterialized,
-	waitForSocialReady,
 	DUMMY_ENTITY_HASH,
 } from './fixtures.mjs'
 
@@ -57,7 +58,7 @@ test.describe('Social profile', () => {
 				&& res.status() === 200,
 			),
 		])
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 30_000 })
 		const highlighted = page.locator(`#profileView [data-post-id="${postId}"].highlight-post`)
 		await expect(highlighted).toBeVisible({ timeout: 30_000 })
@@ -67,7 +68,7 @@ test.describe('Social profile', () => {
 	test('follow and unfollow other profile', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		const followBtn = page.locator(`[data-follow="${dummy}"]`)
 		await expect(followBtn).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
@@ -93,7 +94,7 @@ test.describe('Social profile', () => {
 	test('dm button navigates to chat contact link', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		await page.locator(`[data-dm="${dummy}"]`).click()
 		await expect(page).toHaveURL(
 			new RegExp(`/parts/shells:chat/hub/\\?contact=${dummy}`),

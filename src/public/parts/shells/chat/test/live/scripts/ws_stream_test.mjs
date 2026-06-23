@@ -1,8 +1,8 @@
 // Group WebSocket stream: trigger-reply → stream_chunk and/or message_replaced finish
-import process from 'node:process'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
 
-const BASE = 'http://localhost:8931'
-const KEY = process.env.FOUNT_API_KEY || '45450721'
+const BASE = requireLiveBaseUrl()
+const KEY = requireLiveApiKey()
 const PREFERRED_CHARS = ['test_streamer', 'TestStreamer']
 const TIMEOUT_MS = 120_000
 
@@ -107,7 +107,7 @@ if (!nodeHash) {
 	finish(false, 'missing selfNodeHash')
 }
 
-const wsUrl = `ws://localhost:8931/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
+const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
 const ws = new WebSocket(wsUrl)
 
 const received = []

@@ -3,9 +3,9 @@
  * @param {string} username 测试用户名
  * @returns {Promise<void>}
  */
+import { ensureSocialTestReady } from './after_init.mjs'
+
+/** @param {string} username */
 export default async function bootstrap(username) {
-	const { ensureOperatorPubKey } = await import('../../../../../server/p2p_server/operator_identity.mjs')
-	const { ensureOperatorSocialReady } = await import('../src/lib/bootstrap.mjs')
-	await ensureOperatorPubKey(username)
-	await ensureOperatorSocialReady(username)
+	await ensureSocialTestReady(username)
 }

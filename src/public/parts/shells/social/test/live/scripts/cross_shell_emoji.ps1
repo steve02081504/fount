@@ -1,6 +1,6 @@
 # Cross-shell: private group emoji in Social post; non-member B resolves content + preview.
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot '..\..\..\..\chat\test\live\scripts\fed_l4_common.ps1')
+. (Join-Path $PSScriptRoot '../../../../../../scripts/test/fed_l4_common.ps1')
 
 $gid = $null
 $cid = $null
@@ -8,17 +8,6 @@ $emojiId = $null
 $groupTitle = 'FedCrossShell'
 $postId = $null
 $emojiToken = $null
-
-function SocialApi($node, $method, $path, $body) {
-	$uri = "$($node.base)/api/parts/shells:social$path"
-	if ($uri -match '\?') { $uri += "&fount-apikey=$($node.key)" } else { $uri += "?fount-apikey=$($node.key)" }
-	$p = @{ Method = $method; Uri = $uri; UseBasicParsing = $true; TimeoutSec = 120; SkipHttpErrorCheck = $true }
-	if ($null -ne $body) { $p.ContentType = 'application/json'; $p.Body = ($body | ConvertTo-Json -Depth 16 -Compress) }
-	$r = Invoke-WebRequest @p
-	$json = $null
-	if ($r.Content) { try { $json = $r.Content | ConvertFrom-Json } catch { $json = $r.Content } }
-	[pscustomobject]@{ status = [int]$r.StatusCode; json = $json; raw = $r.Content }
-}
 
 Write-Host "=== cross_shell_emoji: registry smoke ===" -ForegroundColor Cyan
 T 'Chat emoji registry reachable' {
@@ -52,10 +41,10 @@ T 'A seeds channel (federation metadata)' {
 
 Write-Host "`n=== A posts Social feed with emoji token ===" -ForegroundColor Cyan
 T 'A POST /profile/post with group emoji token' {
-	$viewer = (SocialApi $FedA GET '/viewer').json.viewerEntityHash
+	$viewer = (ShellApi $FedA 'social' GET '/viewer').json.viewerEntityHash
 	if (-not $viewer) { throw 'no viewerEntityHash' }
 	$text = "cross-shell feed $emojiToken"
-	$r = SocialApi $FedA POST '/profile/post' @{
+	$r = ShellApi $FedA 'social' POST '/profile/post' @{
 		entityHash = $viewer
 		text = $text
 		visibility = 'public'

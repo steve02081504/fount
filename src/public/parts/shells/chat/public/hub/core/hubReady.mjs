@@ -1,5 +1,5 @@
 /**
- * Hub initCore 就绪信号（模块级 Promise，供入口与 E2E 等待）。
+ * Hub initCore 就绪信号（模块级 Promise，供入口等待初始化完成）。
  */
 
 /** @typedef {'pending' | 'ready' | 'error'} HubCoreState */
@@ -42,14 +42,21 @@ function flushHubCoreWaiters() {
 }
 
 /** @returns {void} */
+function syncDatasetState() {
+	document.documentElement.dataset.hubCoreState = hubCoreState
+}
+
+/** @returns {void} */
 export function markHubCorePending() {
 	hubCoreState = 'pending'
 	hubCoreError = null
+	syncDatasetState()
 }
 
 /** @returns {void} */
 export function markHubCoreReady() {
 	hubCoreState = 'ready'
+	syncDatasetState()
 	document.dispatchEvent(new CustomEvent('fount:hub-core-ready'))
 	flushHubCoreWaiters()
 }
@@ -61,6 +68,7 @@ export function markHubCoreReady() {
 export function markHubCoreFailed(error) {
 	hubCoreState = 'error'
 	hubCoreError = error instanceof Error ? error : new Error(String(error))
+	syncDatasetState()
 	document.dispatchEvent(new CustomEvent('fount:hub-core-error', {
 		detail: { message: hubCoreError.message },
 	}))

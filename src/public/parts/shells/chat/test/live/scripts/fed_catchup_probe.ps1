@@ -1,8 +1,14 @@
 # Isolation: does explicit catch-up fill a POST-JOIN gap (event created after join settled)?
 # Distinguishes "heartbeat didn't trigger" from "P2P connection is down so catch-up also fails".
 $ErrorActionPreference = 'Stop'
-$A = @{ base = 'http://localhost:8931'; key = $env:FOUNT_API_KEY }
-$B = @{ base = 'http://localhost:8932'; key = 'nodeb-fed-test-key-20260614' }
+$nodeBPort = $(if ($env:FOUNT_TEST_NODE_B_PORT) { $env:FOUNT_TEST_NODE_B_PORT } else { '8932' })
+$nodeBKey = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY } else { "nodeb-fed-test-key-$nodeBPort" })
+$A = @{
+	base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { throw 'FOUNT_TEST_BASE_URL required' })
+	key = $env:FOUNT_API_KEY
+}
+$B = @{ base = "http://localhost:$nodeBPort"; key = $nodeBKey }
+if (-not $A.key) { throw 'FOUNT_API_KEY required' }
 function Api($node, $method, $path, $body) {
 	$uri = "$($node.base)/api/parts/shells:chat$path"
 	if ($uri -match '\?') { $uri += "&fount-apikey=$($node.key)" } else { $uri += "?fount-apikey=$($node.key)" }

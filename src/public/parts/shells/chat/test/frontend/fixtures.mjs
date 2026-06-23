@@ -1,7 +1,7 @@
 import { request as playwrightRequest } from '@playwright/test'
-
-import { createFountFixtures } from '../../../../../../scripts/test/playwright_fixtures.mjs'
-import { assertIsolatedFrontendTest, stubSentryOnPage } from '../../../../../../scripts/test/playwright_guards.mjs'
+import { createFountFixtures } from 'fount/scripts/test/playwright_fixtures.mjs'
+import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright_guards.mjs'
+import { waitForHubCoreReady } from 'fount/scripts/test/playwright_ready.mjs'
 
 const HUB_INIT_TIMEOUT = 180_000
 
@@ -156,22 +156,6 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 }
 
 /**
- * 等待 initCore 完成 hash 导航。
- * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @returns {Promise<void>} 无返回值。
- */
-export async function waitForHubCoreReady(page) {
-	await page.waitForFunction(async () => {
-		const { getHubCoreState, whenHubCoreReady } = await import('/parts/shells:chat/hub/core/hubReady.mjs')
-		const state = getHubCoreState()
-		if (state === 'error') throw new Error('Hub initCore failed')
-		if (state === 'ready') return true
-		await whenHubCoreReady()
-		return true
-	}, { timeout: 90_000 })
-}
-
-/**
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} hash - 不含 `#` 的 hash 片段。
  * @returns {string} 完整 Hub URL。
@@ -229,21 +213,6 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 	await waitForGroupComposerReady(page, groupId)
 }
 
-/** @type {Promise<{ groupId: string, defaultChannelId: string }> | null} */
-let sharedTestGroupPromise = null
-
-/**
- * 套件级复用测试群（仅 `openFreshGroupChannel(..., { shared: true })` 使用）。
- * @param {string} baseUrl - 测试根 URL。
- * @param {string} apiKey - API 密钥。
- * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新建群信息。
- */
-export async function ensureSharedTestGroup(baseUrl, apiKey) {
-	if (!sharedTestGroupPromise)
-		sharedTestGroupPromise = createTestGroup(baseUrl, apiKey, { name: `pw-shared-${Date.now()}` })
-	return sharedTestGroupPromise
-}
-
 /**
  * 在同页内通过 hash 进入群频道（避免全页 reload 时 initCore 与 hashchange 竞态）。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
@@ -262,38 +231,29 @@ export async function navigateGroupChannelHash(page, groupId, channelId) {
 
 /**
  * 匹配频道发消息 POST 响应。
- * @param {import('npm:@playwright/test').Response} res - HTTP 响应。
+ * @param {import('npm:@playwright/test').Response} response - HTTP 响应。
  * @param {string} groupId - 群 ID。
  * @param {string} channelId - 频道 ID。
  * @returns {boolean} 是否为频道发消息 POST。
  */
-export function isChannelMessagePost(res, groupId, channelId) {
-	if (res.request().method() !== 'POST' || res.status() < 200 || res.status() >= 300) return false
-	let pathname
-	try {
-		pathname = new URL(res.url()).pathname
-	}
-	catch {
-		return false
-	}
-	const groupSeg = encodeURIComponent(groupId)
-	const channelSeg = encodeURIComponent(channelId)
-	return pathname.includes(`/groups/${groupSeg}/channels/${channelSeg}/messages`)
-		|| pathname.endsWith(`/groups/${groupSeg}/channels/${channelSeg}/messages`)
+export function isChannelMessagePost(response, groupId, channelId) {
+	if (response.request().method() !== 'POST' || response.status() < 200 || response.status() >= 300) return false
+	const pathname = new URL(response.url()).pathname
+	const groupSegment = encodeURIComponent(groupId)
+	const channelSegment = encodeURIComponent(channelId)
+	return pathname.includes(`/groups/${groupSegment}/channels/${channelSegment}/messages`)
 }
 
 /**
- * 打开 Hub 并进入测试群默认频道（默认每用例新建群；`groupOpts.shared: true` 复用套件级群）。
+ * 打开 Hub 并进入测试群默认频道（每用例新建群）。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {object} [groupOpts] - createTestGroup 选项；`shared: true` 时复用套件级共享群。
+ * @param {object} [groupOpts] - createTestGroup 选项。
  * @returns {Promise<{ groupId: string, channelId: string }>} 群与频道 ID。
  */
 export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {}) {
-	const { groupId, defaultChannelId } = groupOpts.shared === true
-		? await ensureSharedTestGroup(baseUrl, apiKey)
-		: await createTestGroup(baseUrl, apiKey, groupOpts)
+	const { groupId, defaultChannelId } = await createTestGroup(baseUrl, apiKey, groupOpts)
 	const hashFrag = `group:${encodeURIComponent(groupId)}:${defaultChannelId}`
 	if (page.url().includes('/parts/shells:chat/hub/')) {
 		if (page.url().includes(`#${hashFrag}`)) {
@@ -353,8 +313,7 @@ export async function expectMessageInChat(page, text) {
  */
 export function messageTextFromPostResponse(postJson) {
 	const content = postJson.event?.content ?? postJson.content
-	if (typeof content === 'string') return content
-	return content?.content
+	return content?.text || content?.content || content || ''
 }
 
 /**
@@ -407,19 +366,6 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
 	)
 	await expect(page.locator('#group-settings-container')).toBeVisible({ timeout: 60_000 })
 }
-
-/**
- * 刷新 Hub 侧栏置顶/书签列表（bookmark 操作后不会自动刷新侧栏）。
- * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @returns {Promise<void>} 无返回值。
- */
-export async function refreshHubPinsBookmarks(page) {
-	await page.evaluate(async () => {
-		const { refreshPinsBookmarks } = await import('/parts/shells:chat/hub/pinsBookmarks.mjs')
-		await refreshPinsBookmarks()
-	})
-}
-
 /**
  * 通过 emoji-picker 浮层选取 Unicode 表情（避免穿透 shadow DOM）。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
@@ -435,7 +381,7 @@ export async function pickEmojiFromPicker(page, emoji = '👍') {
 }
 
 /**
- * 扩展 groupChannel：打开 Hub 并进入共享测试群默认频道。
+ * 扩展 groupChannel：打开 Hub 并进入新建测试群默认频道。
  */
 export const test = baseTest.extend({
 	/**

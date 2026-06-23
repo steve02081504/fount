@@ -4,7 +4,6 @@ import {
 	sendMessageViaComposer,
 	expectMessageInChat,
 	messageRowByText,
-	refreshHubPinsBookmarks,
 	pickEmojiFromPicker,
 } from './fixtures.mjs'
 
@@ -71,7 +70,6 @@ test.describe('Chat message actions', () => {
 		const row = await expectMessageInChat(page, text)
 		await row.hover()
 		await row.locator('.hub-message-action[data-action="bookmark"]').click()
-		await refreshHubPinsBookmarks(page)
 		await expect(page.locator('#hub-pins-bookmarks-wrap:not([hidden])')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.hub-bookmark-row').filter({ hasText: text.slice(0, 20) }))
 			.toBeVisible({ timeout: 30_000 })

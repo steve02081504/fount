@@ -1,10 +1,11 @@
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright_ready.mjs'
+
 import {
 	test,
 	expect,
 	openSocialHome,
 	searchAndExpectPost,
 	fetchViewerEntityHash,
-	waitForSocialReady,
 } from './fixtures.mjs'
 
 test.describe('Social deep links', () => {
@@ -13,7 +14,7 @@ test.describe('Social deep links', () => {
 		const tag = `hashsearch${Date.now()}`
 		const { postId } = await publishPost(`hash link #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/#search;${encodeURIComponent(tag)}`)
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 		await searchAndExpectPost(page, `#${tag}`, postId)
@@ -24,7 +25,7 @@ test.describe('Social deep links', () => {
 		const tag = `qparam${Date.now()}`
 		await publishPost(`query search #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/?q=${encodeURIComponent(`#${tag}`)}`)
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 	})
 
@@ -39,7 +40,7 @@ test.describe('Social deep links', () => {
 			),
 		])
 		expect(profileResponse.ok()).toBe(true)
-		await waitForSocialReady(page)
+		await waitForSocialAppReady(page)
 		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 30_000 })
 	})
 

@@ -1,7 +1,14 @@
 $ErrorActionPreference = 'Stop'
 
-$A = @{ base = 'http://localhost:8931'; key = $env:FOUNT_API_KEY; name = 'NodeA' }
-$B = @{ base = 'http://localhost:8932'; key = 'nodeb-fed-test-key-20260614'; name = 'NodeB' }
+$nodeBPort = $(if ($env:FOUNT_TEST_NODE_B_PORT) { $env:FOUNT_TEST_NODE_B_PORT } else { '8932' })
+$nodeBKey = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY } else { "nodeb-fed-test-key-$nodeBPort" })
+$A = @{
+	base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { throw 'FOUNT_TEST_BASE_URL required' })
+	key = $env:FOUNT_API_KEY
+	name = 'NodeA'
+}
+$B = @{ base = "http://localhost:$nodeBPort"; key = $nodeBKey; name = 'NodeB' }
+if (-not $A.key) { throw 'FOUNT_API_KEY required' }
 
 function PollUntil($timeoutSec, $intervalSec, $probe) {
 	$deadline = (Get-Date).AddSeconds($timeoutSec)

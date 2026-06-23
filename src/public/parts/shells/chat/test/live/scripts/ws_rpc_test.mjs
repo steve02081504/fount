@@ -1,8 +1,8 @@
 // Group WebSocket RPC: rpc_call → rpc_end / rpc_error (wire 见 groupWsRpc.mjs)
-import process from 'node:process'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
 
-const BASE = 'http://localhost:8931'
-const KEY = process.env.FOUNT_API_KEY || '45450721'
+const BASE = requireLiveBaseUrl()
+const KEY = requireLiveApiKey()
 const PREFERRED_CHARS = ['test_streamer', 'TestStreamer']
 
 /**
@@ -103,7 +103,7 @@ if (!nodeHash) {
 
 const requestId = crypto.randomUUID()
 const memberId = `${username}:${charname}`
-const wsUrl = `ws://localhost:8931/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
+const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
 const ws = new WebSocket(wsUrl)
 
 const received = []

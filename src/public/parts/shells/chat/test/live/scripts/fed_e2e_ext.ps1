@@ -1,8 +1,15 @@
 # Extended 2-node federation E2E: event propagation, file transfer, kick.
-# Requires NodeA(8931, $env:FOUNT_API_KEY) + NodeB(8932) both up on latest code.
+# Requires NodeA + NodeB both up (started by test/live/run.mjs).
 $ErrorActionPreference = 'Stop'
-$A = @{ base = 'http://localhost:8931'; key = $env:FOUNT_API_KEY; name = 'A' }
-$B = @{ base = 'http://localhost:8932'; key = 'nodeb-fed-test-key-20260614'; name = 'B' }
+$nodeBPort = $(if ($env:FOUNT_TEST_NODE_B_PORT) { $env:FOUNT_TEST_NODE_B_PORT } else { '8932' })
+$nodeBKey = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY } else { "nodeb-fed-test-key-$nodeBPort" })
+$A = @{
+	base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { throw 'FOUNT_TEST_BASE_URL required' })
+	key = $env:FOUNT_API_KEY
+	name = 'A'
+}
+$B = @{ base = "http://localhost:$nodeBPort"; key = $nodeBKey; name = 'B' }
+if (-not $A.key) { throw 'FOUNT_API_KEY required' }
 $script:pass = 0; $script:fail = 0; $script:failures = @()
 
 function Api($node, $method, $path, $body) {

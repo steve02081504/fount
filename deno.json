@@ -24,6 +24,7 @@
 		"uninstall": "deno run -A path/fount.mjs remove"
 	},
 	"imports": {
+		"fount/": "./src/",
 		"npm:estree": "npm:nop",
 		"npm:@steve02081504/async-eval": "npm:@steve02081504/async-eval@^0.0.13",
 		"npm:express": "npm:express@^5.1.0",

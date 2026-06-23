@@ -1,8 +1,8 @@
 // AV relay WebSocket: two clients in same room, 26-byte header + payload relay (avRelay.mjs)
-import process from 'node:process'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
 
-const BASE = 'http://localhost:8931'
-const KEY = process.env.FOUNT_API_KEY || '45450721'
+const BASE = requireLiveBaseUrl()
+const KEY = requireLiveApiKey()
 const HEADER_SIZE = 26
 const TIMEOUT_MS = 20_000
 
@@ -77,7 +77,7 @@ function buildAvFrame(payload, opts = {}) {
  * @returns {Promise<WebSocket>} 已 open 的 WebSocket
  */
 function connectAv(roomId) {
-	const url = `ws://localhost:8931/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}?fount-apikey=${KEY}`
+	const url = `${liveWsBaseUrl()}/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}?fount-apikey=${KEY}`
 	return new Promise((resolve, reject) => {
 		const ws = new WebSocket(url)
 		const timer = setTimeout(() => {

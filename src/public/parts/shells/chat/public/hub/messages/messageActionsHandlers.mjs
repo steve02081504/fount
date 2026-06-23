@@ -19,6 +19,7 @@ import {
 	triggerChannelReply,
 } from '../../src/api/groupApi.mjs'
 import { createShareLink } from '../../src/share.mjs'
+import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
 import {
@@ -130,6 +131,7 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 					title: preview || eventId.slice(0, 12),
 					href: `#group:${groupId}:${channelId}`,
 				})
+				void refreshPinsBookmarks()
 			}
 			catch (error) {
 				showToastI18n('error', 'chat.hub.messageActionFailed', { error: error?.message || String(error) })

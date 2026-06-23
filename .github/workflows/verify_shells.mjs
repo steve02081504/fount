@@ -102,6 +102,7 @@ async function loadAllSuites() {
 		await loadManifest(dirent.name, join(shellsDir, dirent.name, 'test', 'manifest.json'))
 	}
 	await loadManifest('p2p', join(REPO_ROOT, 'src/scripts/p2p/test/manifest.json'))
+	await loadManifest('shared', join(REPO_ROOT, 'src/test/manifest.json'))
 	return suites
 }
 

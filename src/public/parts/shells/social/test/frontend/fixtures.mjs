@@ -1,7 +1,7 @@
 import { request as playwrightRequest } from '@playwright/test'
-
-import { createFountFixtures } from '../../../../../../scripts/test/playwright_fixtures.mjs'
-import { assertIsolatedFrontendTest } from '../../../../../../scripts/test/playwright_guards.mjs'
+import { createFountFixtures } from 'fount/scripts/test/playwright_fixtures.mjs'
+import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright_guards.mjs'
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright_ready.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
@@ -36,6 +36,8 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
 	baseTest.setTimeout(300_000)
+	page.on('pageerror', err => console.log('[browser:pageerror]', err.message, err.stack))
+	await stubSentryOnPage(page)
 	await page.addInitScript(() => {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
@@ -57,22 +59,6 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 })
 
 /**
- * 等待 Social bootstrap 完成。
- * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @returns {Promise<void>}
- */
-export async function waitForSocialReady(page) {
-	await page.waitForFunction(async () => {
-		const { getSocialAppState, whenSocialAppReady } = await import('/parts/shells:social/src/appReady.mjs')
-		const state = getSocialAppState()
-		if (state === 'error') throw new Error('Social bootstrap failed')
-		if (state === 'ready') return true
-		await whenSocialAppReady()
-		return true
-	}, { timeout: 60_000 })
-}
-
-/**
  * 打开 Social 首页并等待 i18n 与 feed 就绪。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} baseUrl - 测试根 URL。
@@ -80,7 +66,7 @@ export async function waitForSocialReady(page) {
  */
 export async function openSocialHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
-	await waitForSocialReady(page)
+	await waitForSocialAppReady(page)
 	await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 	await expect(page.locator('#postBtn[data-i18n="social.composer.publish"]')).toBeVisible()
 	await expect(page.locator('#postBtn')).not.toHaveText('', { timeout: 30_000 })
@@ -132,13 +118,11 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 /**
  * 通过 composer 发帖并等待 API 成功及 feed 刷新。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @param {string} text - 正文。
- * @param {object} [ctx] - 可选 API 上下文。
- * @param {string} [ctx.baseUrl] - 测试根 URL。
- * @param {string} [ctx.apiKey] - API 密钥。
- * @returns {Promise<object>} 发帖 API 响应 JSON。
+ * @param {string} text - 帖子正文。
+ * @param {{ baseUrl?: string, apiKey?: string }} [api] - 可选 API 上下文（当前未使用，预留扩展）。
+ * @returns {Promise<object>} 发帖 API 响应 JSON（含 event.id）。
  */
-export async function publishPostViaComposer(page, text, ctx = {}) {
+export async function publishPostViaComposer(page, text, api = {}) {
 	await page.locator('#postText').fill(text)
 	const postWait = page.waitForResponse(res =>
 		res.url().includes('/api/parts/shells:social/profile/post')
@@ -291,10 +275,10 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
 	const req = await playwrightRequest.newContext()
 	try {
 		const key = encodeURIComponent(apiKey)
-		for (let i = 0; i < count; i++) {
+		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/profile/post?fount-apikey=${key}`,
-				{ data: { text: `${textPrefix}-${i}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
+				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
 			)
 			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
 		}
