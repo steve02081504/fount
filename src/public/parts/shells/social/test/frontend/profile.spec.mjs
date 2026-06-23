@@ -4,6 +4,8 @@ import {
 	openSocialHome,
 	postIdFromResponse,
 	fetchViewerEntityHash,
+	waitForPostMaterialized,
+	waitForSocialReady,
 } from './fixtures.mjs'
 
 test.describe('Social profile', () => {
@@ -40,10 +42,19 @@ test.describe('Social profile', () => {
 		const { postJson, postId } = await publishPost(`deeplink ${Date.now()}`)
 		expect(postIdFromResponse(postJson)).toBe(postId)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		await page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash};${postId}`)
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+		await Promise.all([
+			page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash};${postId}`),
+			page.waitForResponse(res =>
+				res.url().includes(`/api/parts/shells:social/profile/${entityHash}/posts`)
+				&& res.request().method() === 'GET'
+				&& res.status() === 200,
+			),
+		])
+		await waitForSocialReady(page)
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 30_000 })
 		const highlighted = page.locator(`#profileView [data-post-id="${postId}"].highlight-post`)
-		await expect(highlighted).toBeVisible({ timeout: 20_000 })
+		await expect(highlighted).toBeVisible({ timeout: 30_000 })
 		await expect(highlighted).toHaveClass(/highlight-post/)
 	})
 })

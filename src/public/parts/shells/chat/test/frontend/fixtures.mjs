@@ -4,12 +4,18 @@ import { createFountFixtures } from '../../../../../../../.github/workflows/test
 
 const HUB_INIT_TIMEOUT = 180_000
 
+/** Hub 导航 cache-bust 序号（避免同一 URL 命中 bfcache）。 */
+let hubNavSeq = 0
+
 /** 隔离节点专用测试用户名（与 run.mjs 中 launchNode.username 一致） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME || 'chat-fe-user'
 
 /** Playwright 等待 Hub 就绪的默认超时（毫秒） */
 export const HUB_INIT_TIMEOUT_MS = HUB_INIT_TIMEOUT
 
+/**
+ *
+ */
 export const { test, expect } = createFountFixtures({ locale: 'zh-CN' })
 
 test.beforeEach(async ({ page, baseUrl, apiKey }) => {
@@ -61,21 +67,28 @@ test.beforeEach(async ({ page, baseUrl, apiKey }) => {
 })
 
 /**
- * 等待 Hub 壳层可见。
+ * 等待 Hub 壳层可见并完成 initCore 导航。
  *
  * `waitUntil: 'domcontentloaded'` 已保证入口模块（index.mjs）同步执行完毕，
- * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载，故无需额外的就绪探针。
+ * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
+ * @param {{ waitUntil?: 'domcontentloaded' | 'load', friendsMode?: boolean }} [opts]
  * @returns {Promise<void>}
  */
-export async function waitForHubShell(page, baseUrl) {
-	await page.goto(`${baseUrl}/parts/shells:chat/hub/`, {
-		waitUntil: 'domcontentloaded',
+export async function waitForHubShell(page, baseUrl, opts = {}) {
+	const waitUntil = opts.waitUntil ?? 'domcontentloaded'
+	const friendsMode = opts.friendsMode !== false
+	hubNavSeq += 1
+	await page.goto(`${baseUrl}/parts/shells:chat/hub/?_hub=${hubNavSeq}`, {
+		waitUntil,
 		timeout: HUB_INIT_TIMEOUT,
 	})
 	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
 	await expect(page.locator('#hub-add-server-button')).toBeVisible()
+	await waitForHubCoreReady(page)
+	if (friendsMode && !page.url().includes('#group:'))
+		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 90_000 })
 }
 
 /**
@@ -123,7 +136,12 @@ export function parseGroupHashFromUrl(url) {
  */
 export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
 	const name = opts.name ?? `pw-ui-${Date.now()}`
-	await waitForHubShell(page, baseUrl)
+	if (!page.url().includes('/parts/shells:chat/hub/'))
+		await waitForHubShell(page, baseUrl)
+	else {
+		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('#hub-add-server-button')).toBeVisible()
+	}
 	await page.locator('#hub-add-server-button').click()
 	const createCard = page.locator('.server-action-picker-card[data-action="create"]')
 	await expect(createCard).toBeVisible({ timeout: 30_000 })
@@ -177,6 +195,62 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 }
 
 /**
+ * 等待 initCore 完成 hash 导航。
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<void>}
+ */
+export async function waitForHubCoreReady(page) {
+	await page.waitForFunction(async () => {
+		const { getHubCoreState, whenHubCoreReady } = await import('/parts/shells:chat/hub/core/hubReady.mjs')
+		const state = getHubCoreState()
+		if (state === 'error') throw new Error('Hub initCore failed')
+		if (state === 'ready') return true
+		await whenHubCoreReady()
+		return true
+	}, { timeout: 90_000 })
+}
+
+/**
+ * @param {string} baseUrl
+ * @param {string} hash 不含 `#`
+ * @returns {string}
+ */
+function hubUrlWithHash(baseUrl, hash) {
+	hubNavSeq += 1
+	return `${baseUrl}/parts/shells:chat/hub/?_hub=${hubNavSeq}#${hash}`
+}
+
+/**
+ * 等待指定群频道 composer 可用（含侧栏点击回退）。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} groupId
+ * @returns {Promise<void>}
+ */
+async function waitForGroupComposerReady(page, groupId) {
+	const input = page.locator('#hub-message-input')
+	for (let attempt = 0; attempt < 2; attempt++) 
+		try {
+			await expect(input).toBeEnabled({ timeout: 30_000 })
+			return
+		}
+		catch {
+			if (attempt === 0) {
+				const serverItem = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)
+				if (await serverItem.isVisible().catch(() => false)) {
+					await serverItem.click()
+					continue
+				}
+				await page.reload({ waitUntil: 'domcontentloaded' })
+			}
+		}
+	
+	const serverItem = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)
+	await expect(serverItem).toBeVisible({ timeout: 60_000 })
+	await serverItem.click()
+	await expect(input).toBeEnabled({ timeout: 60_000 })
+}
+
+/**
  * 导航到指定群频道并等待 composer 可用。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
@@ -187,27 +261,98 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 	const encodedGroup = encodeURIComponent(groupId)
 	await page.goto(
-		`${baseUrl}/parts/shells:chat/hub/#group:${encodedGroup}:${channelId}`,
-		{ waitUntil: 'load', timeout: HUB_INIT_TIMEOUT },
+		hubUrlWithHash(baseUrl, `group:${encodedGroup}:${channelId}`),
+		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
-	// composer 被启用 = 频道已加载且重型 messages 模块已就绪，即真实的就绪信号。
-	await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
+	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+	await waitForHubCoreReady(page)
+	await waitForGroupComposerReady(page, groupId)
+}
+
+/** @type {Promise<{ groupId: string, defaultChannelId: string }> | null} */
+let sharedTestGroupPromise = null
+
+/**
+ * 全套件复用的测试群（避免每用例 API 建群拖垮隔离节点）。
+ * @param {string} baseUrl
+ * @param {string} apiKey
+ * @returns {Promise<{ groupId: string, defaultChannelId: string }>}
+ */
+export async function ensureSharedTestGroup(baseUrl, apiKey) {
+	if (!sharedTestGroupPromise)
+		sharedTestGroupPromise = createTestGroup(baseUrl, apiKey, { name: `pw-shared-${Date.now()}` })
+	return sharedTestGroupPromise
 }
 
 /**
- * 打开 Hub 并进入新建测试群默认频道。
+ * 在同页内通过 hash 进入群频道（避免 friends→group 全页 reload 的 bfcache / init 竞态）。
+ * @param {import('@playwright/test').Page} page
+ * @param {string} groupId
+ * @param {string} channelId
+ * @returns {Promise<void>}
+ */
+export async function navigateGroupChannelHash(page, groupId, channelId) {
+	await page.evaluate(
+		({ gid, cid }) => { location.hash = `group:${encodeURIComponent(gid)}:${cid}` },
+		{ gid: groupId, cid: channelId },
+	)
+	await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`))
+	await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: 60_000 })
+}
+
+/**
+ * 匹配频道发消息 POST 响应。
+ * @param {import('@playwright/test').Response} res
+ * @param {string} groupId
+ * @param {string} channelId
+ * @returns {boolean}
+ */
+export function isChannelMessagePost(res, groupId, channelId) {
+	if (res.request().method() !== 'POST' || res.status() !== 200) return false
+	let pathname
+	try {
+		pathname = new URL(res.url()).pathname
+	}
+	catch {
+		return false
+	}
+	const groupSeg = encodeURIComponent(groupId)
+	const channelSeg = encodeURIComponent(channelId)
+	return pathname.includes(`/groups/${groupSeg}/channels/${channelSeg}/messages`)
+		|| pathname.endsWith(`/groups/${groupSeg}/channels/${channelSeg}/messages`)
+}
+
+/**
+ * 打开 Hub 并进入测试群默认频道（默认复用套件级共享群；`groupOpts.fresh: true` 强制新建）。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
  * @param {string} apiKey
- * @param {object} [groupOpts] createTestGroup 选项
+ * @param {object} [groupOpts] createTestGroup 选项；`fresh: true` 时每次新建群
  * @returns {Promise<{ groupId: string, channelId: string }>}
  */
 export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {}) {
-	const { groupId, defaultChannelId } = await createTestGroup(baseUrl, apiKey, groupOpts)
-	await openChatHub(page, baseUrl)
+	const { groupId, defaultChannelId } = groupOpts.fresh === true
+		? await createTestGroup(baseUrl, apiKey, groupOpts)
+		: await ensureSharedTestGroup(baseUrl, apiKey)
+	const hashFrag = `group:${encodeURIComponent(groupId)}:${defaultChannelId}`
+	if (page.url().includes('/parts/shells:chat/hub/')) {
+		if (page.url().includes(`#${hashFrag}`)) {
+			const input = page.locator('#hub-message-input')
+			try {
+				await expect(input).toBeEnabled({ timeout: 15_000 })
+				return { groupId, channelId: defaultChannelId }
+			}
+			catch { /* fall through to hash nav */ }
+		}
+		await navigateGroupChannelHash(page, groupId, defaultChannelId)
+		return { groupId, channelId: defaultChannelId }
+	}
 	await openGroupChannel(page, baseUrl, groupId, defaultChannelId)
 	return { groupId, channelId: defaultChannelId }
 }
+
+/** POST 响应等待上限（毫秒）；超时后改以 UI 消息行确认。 */
+const MESSAGE_POST_TIMEOUT = 20_000
 
 /**
  * 通过 composer 发送消息并等待 API 成功。
@@ -218,19 +363,20 @@ export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {
  * @returns {Promise<object>} 发消息 API 响应 JSON
  */
 export async function sendMessageViaComposer(page, groupId, channelId, text) {
+	const postPromise = page.waitForResponse(
+		res => isChannelMessagePost(res, groupId, channelId),
+		{ timeout: MESSAGE_POST_TIMEOUT },
+	)
 	await page.locator('#hub-message-input').fill(text)
-	const encodedGroup = encodeURIComponent(groupId)
-	const encodedChannel = encodeURIComponent(channelId)
-	const [postResponse] = await Promise.all([
-		page.waitForResponse(res =>
-			res.url().includes(`/groups/${encodedGroup}/channels/${encodedChannel}/messages`)
-			&& res.request().method() === 'POST'
-			&& res.status() === 200,
-		{ timeout: HUB_INIT_TIMEOUT },
-		),
-		page.locator('#hub-send-button').click(),
-	])
-	const postJson = await postResponse.json()
+	await page.locator('#hub-send-button').click()
+	let postJson
+	try {
+		postJson = await (await postPromise).json()
+	}
+	catch {
+		await expectMessageInChat(page, text)
+		throw new Error(`channel message POST timed out after ${MESSAGE_POST_TIMEOUT}ms (message visible in UI)`)
+	}
 	await expect(page.locator('#hub-message-input')).toHaveValue('')
 	return postJson
 }

@@ -4,6 +4,7 @@ import {
 	openSocialHome,
 	searchAndExpectPost,
 	fetchViewerEntityHash,
+	waitForSocialReady,
 } from './fixtures.mjs'
 
 test.describe('Social deep links', () => {
@@ -12,6 +13,7 @@ test.describe('Social deep links', () => {
 		const tag = `hashsearch${Date.now()}`
 		const { postId } = await publishPost(`hash link #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/#search;${encodeURIComponent(tag)}`)
+		await waitForSocialReady(page)
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 		await searchAndExpectPost(page, `#${tag}`, postId)
@@ -22,13 +24,22 @@ test.describe('Social deep links', () => {
 		const tag = `qparam${Date.now()}`
 		await publishPost(`query search #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/?q=${encodeURIComponent(`#${tag}`)}`)
+		await waitForSocialReady(page)
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('profile hash without post id', async ({ page, baseUrl, apiKey }) => {
-		await openSocialHome(page, baseUrl)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		await page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash}`)
+		const [, profileResponse] = await Promise.all([
+			page.goto(`${baseUrl}/parts/shells:social/#profile;${entityHash}`),
+			page.waitForResponse(res =>
+				res.url().includes(`/api/parts/shells:social/profile/${entityHash}`)
+				&& res.request().method() === 'GET'
+				&& res.status() === 200,
+			),
+		])
+		expect(profileResponse.ok()).toBe(true)
+		await waitForSocialReady(page)
 		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 30_000 })
 	})
 })

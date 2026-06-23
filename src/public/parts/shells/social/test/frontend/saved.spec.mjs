@@ -45,7 +45,16 @@ test.describe('Social saved posts', () => {
 			{ data: { entityHash, postId, folderId } },
 		)
 		expect(saveRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.nav-btn[data-view="feed"]').click()
+		const [savedLoad] = await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/saved-posts')
+				&& res.request().method() === 'GET'
+				&& res.status() === 200,
+			),
+			page.locator('.nav-btn[data-view="saved"]').click(),
+		])
+		expect(savedLoad.ok()).toBe(true)
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 })

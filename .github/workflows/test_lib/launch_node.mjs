@@ -12,6 +12,7 @@
  */
 import { spawn } from 'node:child_process'
 import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
+import net from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -26,6 +27,50 @@ const WORKER = join(__dirname, 'node_worker.mjs')
 /** @typedef {{ from: string, to: string }} FixtureCopy 复制到 users/<user>/<to> */
 
 /** @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number }} LaunchedNode */
+
+/**
+ * @param {number} port 待检测端口
+ * @returns {Promise<boolean>} 127.0.0.1 上是否可监听
+ */
+function isPortFree(port) {
+	return new Promise(resolve => {
+		const server = net.createServer()
+		server.unref()
+		server.on('error', () => resolve(false))
+		server.listen(port, '127.0.0.1', () => {
+			server.close(() => resolve(true))
+		})
+	})
+}
+
+/**
+ * 从首选端口起向上扫描，返回第一个空闲口。
+ * @param {number} preferred 首选端口
+ * @param {number} [scan=50] 扫描宽度
+ * @returns {Promise<number>} 可用端口
+ */
+export async function pickAvailablePort(preferred, scan = 50) {
+	for (let offset = 0; offset < scan; offset++) {
+		const port = preferred + offset
+		if (await isPortFree(port)) return port
+	}
+	throw new Error(`no free TCP port from ${preferred} (+${scan})`)
+}
+
+/**
+ * 选取连续 `count` 个按 `step` 间隔的空闲口，返回首端口。
+ * @param {number} preferred 首端口候选
+ * @param {number} count 需要的口数
+ * @param {number} [step=1] 步长
+ * @returns {Promise<number>} 连续块的首端口
+ */
+export async function pickAvailablePortBlock(preferred, count, step = 1) {
+	for (let base = preferred; base < preferred + 200; base++) {
+		const ports = Array.from({ length: count }, (_, i) => base + i * step)
+		if ((await Promise.all(ports.map(isPortFree))).every(Boolean)) return base
+	}
+	throw new Error(`no free ${count}-port block from ${preferred} step ${step}`)
+}
 
 /**
  * @param {string} pattern glob（* 与 **）
@@ -45,14 +90,34 @@ export function matchGlob(pattern, path) {
 	return re.test(norm)
 }
 
+/** 端口被其它 fount 实例占用（whoami 用户名不符）。 */
+export class PortCollisionError extends Error {
+	/**
+	 * @param {string} baseUrl 节点根 URL
+	 * @param {string} expectedUsername 预期用户名
+	 * @param {string} actualUsername 实际用户名
+	 */
+	constructor(baseUrl, expectedUsername, actualUsername) {
+		super(
+			`port collision on ${baseUrl}: expected user "${expectedUsername}", `
+			+ `got "${actualUsername}"`,
+		)
+		this.name = 'PortCollisionError'
+		this.baseUrl = baseUrl
+		this.expectedUsername = expectedUsername
+		this.actualUsername = actualUsername
+	}
+}
+
 /**
- * 等待节点 api/ping 返回 pong。
+ * 等待节点 api/ping 返回 pong，且 whoami 用户名与预期一致。
  * @param {string} baseUrl 节点根 URL
  * @param {string} apiKey API key
  * @param {number} [timeoutMs=120000] 超时毫秒
+ * @param {string} [expectedUsername] 预期用户名（防端口被其它 fount 实例占用）
  * @returns {Promise<void>} 就绪后 resolve
  */
-async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000) {
+async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000, expectedUsername = null) {
 	const deadline = Date.now() + timeoutMs
 	while (Date.now() < deadline) {
 		try {
@@ -67,11 +132,24 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000) {
 						method: 'GET',
 						cache: 'no-store',
 					})
-					if (who.ok) return
+					if (who.ok) {
+						if (expectedUsername != null) {
+							const whoData = await who.json()
+							if (whoData?.username !== expectedUsername)
+								throw new PortCollisionError(
+									baseUrl,
+									expectedUsername,
+									whoData?.username ?? '(missing)',
+								)
+						}
+						return
+					}
 				}
 			}
 		}
-		catch { /* retry */ }
+		catch (err) {
+			if (err instanceof PortCollisionError) throw err
+		}
 		await new Promise(r => setTimeout(r, 500))
 	}
 	throw new Error(`node not ready within ${timeoutMs}ms: ${baseUrl}`)
@@ -96,7 +174,7 @@ async function injectFixtures(dataPath, username, copies) {
 /**
  * 启动一个 headless fount 测试节点子进程。
  * @param {object} [opts={}] 启动选项
- * @param {number} [opts.port=8931] 监听端口
+ * @param {number} [opts.port] 监听端口；省略则从 8931 起扫描空闲口
  * @param {string} [opts.dataPath] 数据目录；省略则 mkdtemp
  * @param {string} [opts.username='CI-user'] 用户名
  * @param {string} [opts.apiKey] API key；省略则按 port 生成
@@ -108,7 +186,7 @@ async function injectFixtures(dataPath, username, copies) {
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(opts = {}) {
-	const port = opts.port ?? 8931
+	const port = opts.port ?? await pickAvailablePort(8931)
 	const username = opts.username ?? 'CI-user'
 	const apiKey = opts.apiKey ?? `fount-test-key-${port}`
 	const keepData = opts.keepData ?? false
@@ -153,7 +231,7 @@ export async function launchNode(opts = {}) {
 	if (!readyInfo?.baseUrl)
 		throw new Error(`node_worker did not emit ready JSON (port ${port})`)
 
-	await waitForPing(readyInfo.baseUrl, apiKey)
+	await waitForPing(readyInfo.baseUrl, apiKey, 120_000, username)
 
 	return {
 		baseUrl: readyInfo.baseUrl,
@@ -174,9 +252,19 @@ export async function launchNode(opts = {}) {
  */
 export async function stopNode(node) {
 	if (!node?.process) return
+	const proc = node.process
 	try {
-		node.process.kill('SIGTERM')
-		await new Promise(resolve => node.process.once('close', resolve))
+		proc.kill('SIGTERM')
+		await Promise.race([
+			new Promise(resolve => proc.once('close', resolve)),
+			new Promise(resolve => setTimeout(resolve, 10_000)),
+		])
+		if (proc.exitCode == null)
+			proc.kill('SIGKILL')
+		await Promise.race([
+			new Promise(resolve => proc.once('close', resolve)),
+			new Promise(resolve => setTimeout(resolve, 5_000)),
+		])
 	}
 	catch { /* already dead */ }
 	if (!node.keepData && node.dataPath)
@@ -186,7 +274,7 @@ export async function stopNode(node) {
 if (import.meta.main) {
 	const { values } = parseArgs({
 		options: {
-			port: { type: 'string', default: '8931' },
+			port: { type: 'string' },
 			data: { type: 'string' },
 			user: { type: 'string', default: 'CI-user' },
 			key: { type: 'string' },
@@ -197,7 +285,7 @@ if (import.meta.main) {
 	})
 
 	const node = await launchNode({
-		port: Number(values.port),
+		...values.port ? { port: Number(values.port) } : {},
 		dataPath: values.data,
 		username: values.user,
 		apiKey: values.key,

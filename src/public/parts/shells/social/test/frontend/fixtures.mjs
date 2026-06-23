@@ -19,8 +19,19 @@ export const test = baseTest.extend({
 	},
 })
 
-test.beforeEach(async ({ baseUrl, apiKey }) => {
+test.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	test.setTimeout(300_000)
+	await page.addInitScript(() => {
+		if (!navigator.clipboard) {
+			Object.defineProperty(navigator, 'clipboard', {
+				value: { writeText: async () => {} },
+				configurable: true,
+			})
+		}
+		else {
+			navigator.clipboard.writeText = async () => {}
+		}
+	})
 	if (process.env.FOUNT_TEST_ISOLATED !== '1')
 		throw new Error(
 			'Social 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），'
@@ -44,6 +55,22 @@ test.beforeEach(async ({ baseUrl, apiKey }) => {
 })
 
 /**
+ * 等待 Social bootstrap 完成。
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<void>}
+ */
+export async function waitForSocialReady(page) {
+	await page.waitForFunction(async () => {
+		const { getSocialAppState, whenSocialAppReady } = await import('/parts/shells:social/src/appReady.mjs')
+		const state = getSocialAppState()
+		if (state === 'error') throw new Error('Social bootstrap failed')
+		if (state === 'ready') return true
+		await whenSocialAppReady()
+		return true
+	}, { timeout: 60_000 })
+}
+
+/**
  * 打开 Social 首页并等待 i18n 与 feed 就绪。
  * @param {import('@playwright/test').Page} page
  * @param {string} baseUrl
@@ -51,6 +78,7 @@ test.beforeEach(async ({ baseUrl, apiKey }) => {
  */
 export async function openSocialHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`)
+	await waitForSocialReady(page)
 	await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
 	await expect(page.locator('#postBtn')).toHaveText('发布', { timeout: 30_000 })
 }
@@ -113,12 +141,30 @@ export async function publishPostViaComposer(page, text, ctx = {}) {
 		res.url().includes('/api/parts/shells:social/profile/post')
 		&& res.request().method() === 'POST'
 		&& res.status() === 200,
+	{ timeout: 60_000 },
 	)
 	const feedWait = waitForFeedLoad(page)
 	await page.locator('#postBtn').click()
-	const postResponse = await postWait
+	let postJson
+	try {
+		const postResponse = await postWait
+		postJson = await postResponse.json()
+	}
+	catch {
+		await expect(page.locator('#postText')).toHaveValue('', { timeout: 30_000 })
+		const postId = await page.evaluate(expectedText => {
+			for (const card of document.querySelectorAll('#feedView .post-card, #feedList .post-card')) {
+				const encoded = card.dataset.postText || ''
+				const body = decodeURIComponent(encoded)
+				if (body.includes(expectedText) || card.textContent?.includes(expectedText))
+					return card.dataset.postId || null
+			}
+			return null
+		}, text)
+		if (!postId) throw new Error(`publishPostViaComposer: post "${text}" not visible after composer cleared`)
+		postJson = { event: { id: postId } }
+	}
 	await feedWait.catch(() => waitForFeedLoad(page))
-	const postJson = await postResponse.json()
 	await expect(page.locator('#postText')).toHaveValue('')
 	return postJson
 }

@@ -7,11 +7,13 @@ import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
+import { pickAvailablePort } from '../../../../../../../.github/workflows/test_lib/launch_node.mjs'
 import { runPlaywrightWithNode } from '../../../../../../../.github/workflows/test_lib/playwright_run.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const CONFIG = join(__dirname, 'playwright.config.mjs')
-const PORT = Number(process.env.FOUNT_TEST_FRONTEND_PORT) || 8942
+/** 默认从 8950 起扫描空闲口，避开 social 套件常用段。 */
+const PORT = Number(process.env.FOUNT_TEST_FRONTEND_PORT) || await pickAvailablePort(8950)
 
 const TEST_USERNAME = 'chat-fe-user'
 
