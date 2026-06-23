@@ -7,20 +7,16 @@ import { initTranslations } from '../../../../scripts/i18n.mjs'
 import { usingTemplates } from '../../../../scripts/template.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { markHubCoreFailed, markHubCorePending, markHubCoreReady } from './core/hubReady.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 
 /** @returns {Promise<void>} 拉取 viewer 到 hubStore（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
-	try {
-		const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
-		if (!resp.ok) return
-		const data = await resp.json()
-		hubStore.nodeHash = data.nodeHash || null
-		hubStore.viewerEntityHash = data.viewerEntityHash || null
-	}
-	catch { /* ignore */ }
+	const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
+	if (!resp.ok) return
+	const data = await resp.json()
+	hubStore.nodeHash = data.nodeHash || null
+	hubStore.viewerEntityHash = data.viewerEntityHash || null
 }
 
 /** @returns {Promise<void>} 按 URL 进入好友/群频道视图 */
@@ -28,8 +24,9 @@ async function navigateHubFromLocation() {
 	const urlParams = new URLSearchParams(window.location.search)
 	const charParam = urlParams.get('char')
 	const contactParam = urlParams.get('contact')
-	const hashRaw = window.location.hash.slice(1)
-	let { groupId, channelId } = parseHash()
+	const parsed = parseHash()
+	let { groupId, channelId } = parsed
+	const inGroupHash = parsed.groupId != null
 
 	const { applyChatRunUri, runUriFromPageLocation } = await import('../src/deepLinkConsume.mjs')
 	const runUri = runUriFromPageLocation()
@@ -51,7 +48,7 @@ async function navigateHubFromLocation() {
 		}
 	}
 
-	if (contactParam && !hashRaw.startsWith('group:')) {
+	if (contactParam && !inGroupHash) {
 		const { applyHubContactQuery } = await import('./hubContact.mjs')
 		const handled = await applyHubContactQuery(contactParam)
 		if (handled) {
@@ -63,7 +60,7 @@ async function navigateHubFromLocation() {
 	}
 
 	const { navigateFromHash } = await import('./hashNav.mjs')
-	if (charParam && !hashRaw.startsWith('group:')) {
+	if (charParam && !inGroupHash) {
 		const { setMode } = await import('./mode.mjs')
 		await setMode('friends')
 		const { enterFriendChat } = await import('./friendChat.mjs')
@@ -78,24 +75,16 @@ async function navigateHubFromLocation() {
 
 /** @returns {Promise<void>} Hub 壳层就绪：翻译、群列表与 hash 导航 */
 export async function initCore() {
-	markHubCorePending()
+	usingTemplates('/parts/shells:chat/src/templates')
+	await initTranslations('chat')
+	await loadViewerIdentity()
 	try {
-		usingTemplates('/parts/shells:chat/src/templates')
-		await initTranslations('chat')
-		await loadViewerIdentity()
-		try {
-			const { loadGroups } = await import('./serverBar.mjs')
-			await loadGroups()
-		}
-		catch (error) {
-			hubStore.groups = []
-			handleUIError(error, 'chat.hub.loadGroupFailed')
-		}
-		await navigateHubFromLocation()
-		markHubCoreReady()
+		const { loadGroups } = await import('./serverBar.mjs')
+		await loadGroups()
 	}
 	catch (error) {
-		markHubCoreFailed(error)
+		hubStore.groups = []
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 	}
+	await navigateHubFromLocation()
 }

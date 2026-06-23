@@ -17,17 +17,24 @@ import {
 const A = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 const B = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
 
-/** @returns {number} 测试用零分 */
+/**
+ * 返回测试用零分。
+ * @returns {number} 测试用零分
+ */
 function zeroPickScore() {
 	return 0
 }
 
-/** @returns {number} 测试用正信誉 */
+/**
+ * 返回测试用正信誉。
+ * @returns {number} 测试用正信誉
+ */
 function positivePickScore() {
 	return 1
 }
 
 /**
+ * 构造归档月仲裁候选文件。
  * @param {string} body 月 JSONL 正文
  * @param {string} peerNodeHash peer
  * @returns {Promise<{ peerNodeHash: string, tmpPath: string, complete: boolean }>} 仲裁候选

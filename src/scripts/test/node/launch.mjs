@@ -1,14 +1,5 @@
 /**
  * 测试用 fount 节点启动工具（编程 API + CLI）。
- *
- * CLI:
- *   deno run -A src/scripts/test/launch_node.mjs --port 8931 --data /tmp/fount-a --user CI-user --key my-key
- *
- * 编程:
- *   import { launchNode, stopNode } from './launch_node.mjs'
- *   import { runPlaywrightWithNode } from './playwright_run.mjs'
- *   const node = await launchNode({ port: 8931, loadParts: ['shells/social'], p2p: true })
- *   try { ... } finally { await stopNode(node) }
  */
 import { spawn } from 'node:child_process'
 import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
@@ -20,15 +11,23 @@ import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const REPO_ROOT = resolve(__dirname, '../../..')
-const WORKER = join(__dirname, 'node_worker.mjs')
+import { TEST_PORT_BASE } from '../core/ports.mjs'
+import { REPO_ROOT } from '../core/repo_root.mjs'
 
-/** @typedef {{ from: string, to: string }} FixtureCopy 复制到 users/<user>/<to> */
-
-/** @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number }} LaunchedNode */
+const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
 /**
+ * fixture 目录复制条目。
+ * @typedef {{ from: string, to: string }} FixtureCopy
+ */
+
+/**
+ * launchNode 返回的已就绪节点句柄。
+ * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number }} LaunchedNode
+ */
+
+/**
+ * 检测本机端口是否可监听。
  * @param {number} port 待检测端口
  * @returns {Promise<boolean>} 127.0.0.1 上是否可监听
  */
@@ -58,41 +57,54 @@ export async function pickAvailablePort(preferred, scan = 50) {
 }
 
 /**
- * 选取连续 `count` 个按 `step` 间隔的空闲口，返回首端口。
- * @param {number} preferred 首端口候选
- * @param {number} count 需要的口数
- * @param {number} [step=1] 步长
- * @returns {Promise<number>} 连续块的首端口
+ * 分配连续空闲端口块的首端口。
+ * @param {object} options 选项
+ * @param {number} options.count 需要的端口数
+ * @param {number} [options.step=2] 步长
+ * @param {number} [options.preferred=TEST_PORT_BASE] 首选起始端口
+ * @returns {Promise<number>} 首端口
  */
-export async function pickAvailablePortBlock(preferred, count, step = 1) {
+export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_PORT_BASE }) {
 	for (let base = preferred; base < preferred + 200; base++) {
-		const ports = Array.from({ length: count }, (_, i) => base + i * step)
+		const ports = Array.from({ length: count }, (_, index) => base + index * step)
 		if ((await Promise.all(ports.map(isPortFree))).every(Boolean)) return base
 	}
 	throw new Error(`no free ${count}-port block from ${preferred} step ${step}`)
 }
 
 /**
- * @param {string} pattern glob（* 与 **）
- * @param {string} path 待匹配路径（正斜杠）
- * @returns {boolean} 路径是否匹配 pattern
+ * 为 live 双节点分配 A/B 端口。
+ * @param {object} [options] 选项
+ * @param {number} [options.preferred=TEST_PORT_BASE] 节点 A 首选端口
+ * @returns {Promise<{ nodeAPort: number, nodeBPort: number }>} 节点 A/B 端口
  */
-export function matchGlob(pattern, path) {
-	const norm = path.replace(/\\/g, '/')
-	const pat = pattern.replace(/\\/g, '/')
-	if (pat === norm) return true
-	const re = new RegExp('^' + pat
-		.replace(/\./g, '\\.')
-		.replace(/\*\*/g, '{{GLOBSTAR}}')
-		.replace(/\*/g, '[^/]*')
-		.replace(/\{\{GLOBSTAR\}\}/g, '.*')
-		+ '$')
-	return re.test(norm)
+export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {}) {
+	const nodeAPort = await allocateTestPortBlock({ count: 2, step: 1, preferred })
+	return { nodeAPort, nodeBPort: nodeAPort + 1 }
+}
+
+/**
+ * 解析 live 双节点端口：优先读 env，否则分配连续空闲口。
+ * @param {NodeJS.ProcessEnv} [env=process.env] 环境变量
+ * @returns {Promise<{ nodeAPort: number, nodeBPort: number }>} 节点 A/B 端口
+ */
+export async function resolveLiveNodePorts(env = process.env) {
+	const rawA = env.FOUNT_TEST_NODE_A_PORT?.trim()
+	if (rawA) {
+		const nodeAPort = Number(rawA)
+		const rawB = env.FOUNT_TEST_NODE_B_PORT?.trim()
+		const nodeBPort = rawB
+			? Number(rawB)
+			: await pickAvailablePort(nodeAPort + 1)
+		return { nodeAPort, nodeBPort }
+	}
+	return allocateLiveNodePorts()
 }
 
 /** 端口被其它 fount 实例占用（whoami 用户名不符）。 */
 export class PortCollisionError extends Error {
 	/**
+	 * 构造端口占用冲突错误。
 	 * @param {string} baseUrl 节点根 URL
 	 * @param {string} expectedUsername 预期用户名
 	 * @param {string} actualUsername 实际用户名
@@ -121,36 +133,33 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000, expectedUsernam
 	const deadline = Date.now() + timeoutMs
 	while (Date.now() < deadline) {
 		try {
-			const res = await fetch(`${baseUrl}/api/ping?fount-apikey=${encodeURIComponent(apiKey)}`, {
+			const ping = await fetch(`${baseUrl}/api/ping?fount-apikey=${encodeURIComponent(apiKey)}`, {
 				method: 'GET',
 				cache: 'no-store',
 			})
-			if (res.ok) {
-				const data = await res.json()
-				if (data?.message === 'pong') {
-					const who = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`, {
-						method: 'GET',
-						cache: 'no-store',
-					})
-					if (who.ok) {
-						if (expectedUsername != null) {
-							const whoData = await who.json()
-							if (whoData?.username !== expectedUsername)
-								throw new PortCollisionError(
-									baseUrl,
-									expectedUsername,
-									whoData?.username ?? '(missing)',
-								)
-						}
-						return
-					}
-				}
+			if (!ping.ok || (await ping.json())?.message !== 'pong') {
+				await new Promise(resolve => setTimeout(resolve, 500))
+				continue
 			}
+			const whoami = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`, {
+				method: 'GET',
+				cache: 'no-store',
+			})
+			if (!whoami.ok) {
+				await new Promise(resolve => setTimeout(resolve, 500))
+				continue
+			}
+			if (expectedUsername != null) {
+				const username = (await whoami.json())?.username
+				if (username !== expectedUsername)
+					throw new PortCollisionError(baseUrl, expectedUsername, username ?? '(missing)')
+			}
+			return
 		}
-		catch (err) {
-			if (err instanceof PortCollisionError) throw err
+		catch (error) {
+			if (error instanceof PortCollisionError) throw error
 		}
-		await new Promise(r => setTimeout(r, 500))
+		await new Promise(resolve => setTimeout(resolve, 500))
 	}
 	throw new Error(`node not ready within ${timeoutMs}ms: ${baseUrl}`)
 }
@@ -173,40 +182,40 @@ async function injectFixtures(dataPath, username, copies) {
 
 /**
  * 启动一个 headless fount 测试节点子进程。
- * @param {object} [opts={}] 启动选项
- * @param {number} [opts.port] 监听端口；省略则从 8931 起扫描空闲口
- * @param {string} [opts.dataPath] 数据目录；省略则 mkdtemp
- * @param {string} [opts.username='CI-user'] 用户名
- * @param {string} [opts.apiKey] API key；省略则按 port 生成
- * @param {FixtureCopy[]} [opts.fixtureCopies] 启动前复制到用户目录的 fixture
- * @param {string[]} [opts.loadParts] 启动后要 load 的 partpath
- * @param {boolean} [opts.p2p=false] 是否启用 P2P 子系统
- * @param {string} [opts.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
- * @param {boolean} [opts.keepData=false] stop 时是否保留 data 目录
+ * @param {object} [options={}] 启动选项
+ * @param {number} [options.port] 监听端口；省略则从 8931 起扫描空闲口
+ * @param {string} [options.dataPath] 数据目录；省略则 mkdtemp
+ * @param {string} [options.username='CI-user'] 用户名
+ * @param {string} [options.apiKey] API key；省略则按 port 生成
+ * @param {FixtureCopy[]} [options.fixtureCopies] 启动前复制到用户目录的 fixture
+ * @param {string[]} [options.loadParts] 启动后要 load 的 partpath
+ * @param {boolean} [options.p2p=false] 是否启用 P2P 子系统
+ * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
+ * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
-export async function launchNode(opts = {}) {
-	const port = opts.port ?? await pickAvailablePort(8931)
-	const username = opts.username ?? 'CI-user'
-	const apiKey = opts.apiKey ?? `fount-test-key-${port}`
-	const keepData = opts.keepData ?? false
-	const dataPath = opts.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+export async function launchNode(options = {}) {
+	const port = options.port ?? await pickAvailablePort(TEST_PORT_BASE)
+	const username = options.username ?? 'CI-user'
+	const apiKey = options.apiKey ?? `fount-test-key-${port}`
+	const keepData = options.keepData ?? false
+	const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
 
-	await injectFixtures(dataPath, username, opts.fixtureCopies ?? [])
+	await injectFixtures(dataPath, username, options.fixtureCopies ?? [])
 
 	const workerArgs = [
 		'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'),
-		WORKER,
+		workerPath,
 		'--data-path', dataPath,
 		'--port', String(port),
 		'--user', username,
 		'--key', apiKey,
 	]
-	if (opts.p2p) workerArgs.push('--p2p')
-	for (const part of opts.loadParts ?? [])
+	if (options.p2p) workerArgs.push('--p2p')
+	for (const part of options.loadParts ?? [])
 		workerArgs.push('--load-part', part)
-	if (opts.bootstrap)
-		workerArgs.push('--bootstrap', resolve(opts.bootstrap))
+	if (options.bootstrap)
+		workerArgs.push('--bootstrap', resolve(options.bootstrap))
 
 	const child = spawn('deno', workerArgs, {
 		cwd: REPO_ROOT,
@@ -214,8 +223,8 @@ export async function launchNode(opts = {}) {
 	})
 
 	let readyInfo = null
-	const rl = createInterface({ input: child.stdout })
-	for await (const line of rl) {
+	const readline = createInterface({ input: child.stdout })
+	for await (const line of readline) {
 		if (!line.trim()) continue
 		try {
 			const parsed = JSON.parse(line)
@@ -226,10 +235,10 @@ export async function launchNode(opts = {}) {
 		}
 		catch { /* not json yet */ }
 	}
-	rl.close()
+	readline.close()
 
 	if (!readyInfo?.baseUrl)
-		throw new Error(`node_worker did not emit ready JSON (port ${port})`)
+		throw new Error(`node worker did not emit ready JSON (port ${port})`)
 
 	await waitForPing(readyInfo.baseUrl, apiKey, 120_000, username)
 
@@ -253,22 +262,19 @@ export async function launchNode(opts = {}) {
 export async function stopNode(node) {
 	if (!node?.process) return
 	const proc = node.process
-	try {
-		proc.kill('SIGTERM')
-		await Promise.race([
-			new Promise(resolve => proc.once('close', resolve)),
-			new Promise(resolve => setTimeout(resolve, 10_000)),
-		])
-		if (proc.exitCode == null)
-			proc.kill('SIGKILL')
-		await Promise.race([
-			new Promise(resolve => proc.once('close', resolve)),
-			new Promise(resolve => setTimeout(resolve, 5_000)),
-		])
-	}
-	catch { /* already dead */ }
+	proc.kill('SIGTERM')
+	await Promise.race([
+		new Promise(resolve => proc.once('close', resolve)),
+		new Promise(resolve => setTimeout(resolve, 10_000)),
+	])
+	if (proc.exitCode == null)
+		proc.kill('SIGKILL')
+	await Promise.race([
+		new Promise(resolve => proc.once('close', resolve)),
+		new Promise(resolve => setTimeout(resolve, 5_000)),
+	])
 	if (!node.keepData && node.dataPath)
-		await rm(node.dataPath, { recursive: true, force: true }).catch(() => { })
+		await rm(node.dataPath, { recursive: true, force: true })
 }
 
 if (import.meta.main) {
@@ -305,8 +311,7 @@ if (import.meta.main) {
 	}))
 
 	/**
-	 * CLI 收到退出信号时停止节点。
-	 * @returns {Promise<void>} 停止完成后 process.exit
+	 * CLI 模式下清理节点并退出。
 	 */
 	const onExit = async () => {
 		await stopNode({ ...node, keepData: true })

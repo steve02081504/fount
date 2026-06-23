@@ -12,7 +12,10 @@ const RECIPIENT = 'a'.repeat(64)
 
 Deno.test('dispatchMailboxRecordsToConsumers routes records by app', async () => {
 	const username = 'test-user'
-	/** @type {string[]} */
+	/**
+	 * 记录已处理记录。
+	 * @type {string[]}
+	 */
 	let seen = []
 	registerMailboxConsumer('test/a', 'chat', async (username, records) => {
 		seen = records.map(r => r.id)

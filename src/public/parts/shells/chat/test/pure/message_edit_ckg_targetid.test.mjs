@@ -45,6 +45,7 @@ function decryptLikeRead(envelope) {
 }
 
 /**
+ * 构造最小可判权的物化状态桩。
  * @param {object} [overrides] state 覆盖项
  * @returns {object} 最小可判权的物化状态桩
  */

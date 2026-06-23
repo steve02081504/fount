@@ -1,7 +1,7 @@
 # L4 federation: DM identity + intro link + join + bidirectional messages.
-# Requires NodeA@8931 ($env:FOUNT_API_KEY) + NodeB@8932 (nodeb-fed-test-key-20260614).
+# Requires dual nodes via test/live/run.mjs (FOUNT_TEST_BASE_URL + FOUNT_TEST_NODE_B_BASE_URL).
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'fed_l4_common.ps1')
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 $gid = $null; $cid = $null
 
@@ -73,7 +73,7 @@ Start-Sleep 2
 $intro = Build-DmIntro $creator
 
 Write-Host "`n=== 1. Creator opens DM group ===" -ForegroundColor Cyan
-T 'lower-pubkey node POST template=dm' {
+Test-Case 'lower-pubkey node POST template=dm' {
 	$r = Api $creator POST '/groups/' @{
 		template = 'dm'
 		myPubKeyHex = $creatorPub
@@ -85,13 +85,13 @@ T 'lower-pubkey node POST template=dm' {
 }
 
 Write-Host "`n=== 2. Peer joins DM (intro + mqtt) ===" -ForegroundColor Cyan
-T 'invite-ticket mqtt creds on creator' {
+Test-Case 'invite-ticket mqtt creds on creator' {
 	$inv = Api $creator POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }
 	if ($inv.status -ne 201 -and $inv.status -ne 200) { throw "invite $($inv.status)" }
 	$script:dmInv = $inv.json
 	[bool]$script:dmInv.mqttRoomSecret
 }
-T 'peer join with dmIntro proof' {
+Test-Case 'peer join with dmIntro proof' {
 	$joined = PollUntil 120 4 {
 		$jr = Api $joiner POST "/groups/$gid/join" @{
 			mqttRoomSecret = $script:dmInv.mqttRoomSecret
@@ -124,12 +124,12 @@ T 'peer join with dmIntro proof' {
 }
 
 Write-Host "`n=== 3. Federation health gate ===" -ForegroundColor Cyan
-T 'joiner join-snapshot + catchup' {
+Test-Case 'joiner join-snapshot + catchup' {
 	Api $joiner POST "/groups/$gid/federation/join-snapshot" @{} | Out-Null
 	$r = Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 25000 }
 	$r.status -eq 200
 }
-T 'creator join-snapshot + catchup sees joiner' {
+Test-Case 'creator join-snapshot + catchup sees joiner' {
 	Api $creator POST "/groups/$gid/federation/join-snapshot" @{} | Out-Null
 	$r = Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 25000 }
 	if ($r.status -ne 200) { throw "catchup $($r.status)" }
@@ -138,10 +138,10 @@ T 'creator join-snapshot + catchup sees joiner' {
 	Api $joiner POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 	$true
 }
-T 'creator members>=2 after DM join' {
+Test-Case 'creator members>=2 after DM join' {
 	[bool](Wait-FedMembers $creator $gid 2 120)
 }
-T 'joiner state has default channel' {
+Test-Case 'joiner state has default channel' {
 	[bool](PollUntil 90 3 {
 		Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
 		$s = Api $joiner GET "/groups/$gid/state"
@@ -158,7 +158,7 @@ T 'joiner state has default channel' {
 
 Write-Host "`n=== 4. Bidirectional messages ===" -ForegroundColor Cyan
 $aMsg = $null; $bMsg = $null
-T 'creator sends DM-A' {
+Test-Case 'creator sends DM-A' {
 	$script:cid = Resolve-UsableChannelId $creator $gid $script:cid
 	if (-not $script:cid) { throw 'creator channel not materialized' }
 	$r = Api $creator POST "/groups/$gid/channels/$script:cid/messages" @{ content = @{ type = 'text'; content = 'dm-A-to-B' } }
@@ -166,14 +166,14 @@ T 'creator sends DM-A' {
 	$script:aMsg = $r.json.event.id
 	[bool]$script:aMsg
 }
-T 'joiner sees dm-A (catchup/live)' {
+Test-Case 'joiner sees dm-A (catchup/live)' {
 	[bool](PollUntil 90 3 {
 		Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 3000 } | Out-Null
 		$m = Api $joiner GET "/groups/$gid/channels/$script:cid/messages"
 		$m.status -eq 200 -and @($m.json.messages | Where-Object { $_.eventId -eq $script:aMsg }).Count -ge 1
 	})
 }
-T 'joiner sends DM-B' {
+Test-Case 'joiner sends DM-B' {
 	$ready = PollUntil 90 3 {
 		Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
 		$s = Api $joiner GET "/groups/$gid/state"
@@ -192,7 +192,7 @@ T 'joiner sends DM-B' {
 	$script:bMsg = $r.json.event.id
 	[bool]$script:bMsg
 }
-T 'creator sees dm-B' {
+Test-Case 'creator sees dm-B' {
 	[bool](PollUntil 90 3 {
 		Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 3000 } | Out-Null
 		$m = Api $creator GET "/groups/$gid/channels/$script:cid/messages"
@@ -200,5 +200,6 @@ T 'creator sees dm-B' {
 	})
 }
 
-Cleanup-Group $gid
+Clear-FedGroup $gid
 Write-FedSummary 'FED-DM' $gid
+Complete-LiveScript

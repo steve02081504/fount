@@ -12,29 +12,30 @@
  */
 import { assert, assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createChatFedSim } from '../fed_sim.mjs'
+import { createChatFederationSim } from '../simulation/federation.mjs'
 
 const PRIVATE_CHANNEL = 'secret'
 
 /* global Deno */
 Deno.test('chat 3-node E2E', async t => {
-	const sim = await createChatFedSim()
+	const sim = await createChatFederationSim()
 	const {
-		M, groupId, nodeName, federate, gossipAll, converge, joinGroup, postMsg, channelMessage,
+		modules, groupId, nodeName, federate, gossipAll, converge, joinGroup, postMessage, channelMessage,
 		stateOf, activeMembers, adoptSnapshot,
 	} = sim
 	const NODE_A = nodeName('A')
 	const NODE_B = nodeName('B')
 	const NODE_C = nodeName('C')
-	/** @type {Record<string, string>} */
+	/** 各节点 sender 公钥哈希表。
+	 * @type {Record<string, string>} */
 	const hash = {}
 	let publicChannelId = ''
 
-	const ownerSigner = await M.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
+	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
 	hash.A = ownerSigner.sender
 
 	await t.step('step1: 节点A 建群 (owner=A)', async () => {
-		await M.lifecycle.createGroup(NODE_A, {
+		await modules.lifecycle.createGroup(NODE_A, {
 			groupId,
 			name: 'E2E Group',
 			ownerPubKeyHash: hash.A,
@@ -42,7 +43,7 @@ Deno.test('chat 3-node E2E', async t => {
 			defaultChannelId: 'default',
 			enableGroupFederation: false,
 		})
-		await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 		const state = await stateOf(NODE_A, groupId)
 		assertEquals(state.members[hash.A]?.status, 'active')
 		assert(state.members[hash.A]?.roles.includes('founder'), 'owner has founder role')
@@ -51,10 +52,10 @@ Deno.test('chat 3-node E2E', async t => {
 	})
 
 	await t.step('step2: 建频道 (公共频道 general + 私密频道 secret)', async () => {
-		await M.channelOps.createChannel(NODE_A, groupId, {
+		await modules.channelOps.createChannel(NODE_A, groupId, {
 			channelId: 'general', type: 'text', name: 'General', isPrivate: false,
 		})
-		await M.channelOps.createChannel(NODE_A, groupId, {
+		await modules.channelOps.createChannel(NODE_A, groupId, {
 			channelId: PRIVATE_CHANNEL, type: 'text', name: 'Secret', isPrivate: true,
 		})
 		const state = await stateOf(NODE_A, groupId)
@@ -66,11 +67,11 @@ Deno.test('chat 3-node E2E', async t => {
 		// B 加入并同步回 A，A 重建签名 checkpoint（tip 推进到 B_join，保持 DAG 线性）。
 		hash.B = await joinGroup(NODE_B, NODE_A, groupId, 'invite-e2e')
 		await federate(NODE_B, [NODE_A], groupId)
-		await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 		// C 从 A 的最新快照（已含 B）加入，C_join 链在 B_join 之后。
 		hash.C = await joinGroup(NODE_C, NODE_A, groupId, 'invite-e2e')
 		await federate(NODE_C, [NODE_A], groupId)
-		await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
 
 		for (const node of [NODE_A, NODE_B, NODE_C]) {
@@ -87,7 +88,7 @@ Deno.test('chat 3-node E2E', async t => {
 
 	await t.step('step4: 修改身份组/角色设置并验证生效', async () => {
 		// 新建 moderator 角色（含 KICK_MEMBERS），授予 B，验证 B 物化权限随之变更。
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'role_create',
 			timestamp: Date.now(),
 			content: {
@@ -97,10 +98,10 @@ Deno.test('chat 3-node E2E', async t => {
 			},
 		}, { publishFederation: false })
 
-		const beforeKick = M.state.memberChannelPermissions(await stateOf(NODE_A, groupId), hash.B, publicChannelId)
-		assertEquals(beforeKick[M.perms.PERMISSIONS.KICK_MEMBERS], false)
+		const beforeKick = modules.state.memberChannelPermissions(await stateOf(NODE_A, groupId), hash.B, publicChannelId)
+		assertEquals(beforeKick[modules.perms.PERMISSIONS.KICK_MEMBERS], false)
 
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'role_assign',
 			timestamp: Date.now(),
 			content: { targetMemberKey: hash.B, roleId: 'moderator' },
@@ -108,21 +109,21 @@ Deno.test('chat 3-node E2E', async t => {
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
 
 		for (const node of [NODE_A, NODE_B, NODE_C]) {
-			const perms = M.state.memberChannelPermissions(await stateOf(node, groupId), hash.B, publicChannelId)
-			assertEquals(perms[M.perms.PERMISSIONS.KICK_MEMBERS], true, `${node}: B gained KICK_MEMBERS`)
+			const perms = modules.state.memberChannelPermissions(await stateOf(node, groupId), hash.B, publicChannelId)
+			assertEquals(perms[modules.perms.PERMISSIONS.KICK_MEMBERS], true, `${node}: B gained KICK_MEMBERS`)
 		}
 	})
 
 	await t.step('step5: 多频道发帖并验证联邦同步到 B/C', async () => {
 		// B/C 加入后旋转所有频道密钥，使其拿到 K_ch wrap（VIEW_CHANNEL 成员）。
-		await M.schedule.rotateAllChannelKeys(NODE_A, groupId)
+		await modules.schedule.rotateAllChannelKeys(NODE_A, groupId)
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
 
 		// 串行发帖 + 实时推送：每条帖即时下发给对端，保持 DAG 线性（避免并发分叉污染后续治理收敛）。
-		const m1 = await postMsg(NODE_A, groupId, publicChannelId, 'hello default from A', [NODE_B, NODE_C])
-		const m2 = await postMsg(NODE_A, groupId, 'general', 'hello general from A', [NODE_B, NODE_C])
+		const m1 = await postMessage(NODE_A, groupId, publicChannelId, 'hello default from A', [NODE_B, NODE_C])
+		const m2 = await postMessage(NODE_A, groupId, 'general', 'hello general from A', [NODE_B, NODE_C])
 		// B 在公共频道发帖（验证非 owner 节点亦可发帖并反向同步到 A/C）。
-		const m3 = await postMsg(NODE_B, groupId, publicChannelId, 'hi default from B', [NODE_A, NODE_C])
+		const m3 = await postMessage(NODE_B, groupId, publicChannelId, 'hi default from B', [NODE_A, NODE_C])
 
 		// B/C 收到 A 两条多频道消息且可解密（真正可读）。
 		for (const node of [NODE_B, NODE_C]) {
@@ -144,8 +145,8 @@ Deno.test('chat 3-node E2E', async t => {
 		//   （B 在 step4 已获 moderator）。求值优先级：全局基线 < 频道 @everyone 覆写 < 频道角色覆写。
 		// 期望：owner A（admin）旁路一切 → 可见可发；B（moderator allow 覆盖 @everyone deny）→ 可见可发；
 		//       C（仅 @everyone）→ 不可见不可发。
-		const P = M.perms.PERMISSIONS
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		const P = modules.perms.PERMISSIONS
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'channel_permissions_update',
 			timestamp: Date.now(),
 			content: {
@@ -155,7 +156,7 @@ Deno.test('chat 3-node E2E', async t => {
 				deny: { VIEW_CHANNEL: true, SEND_MESSAGES: true },
 			},
 		}, { publishFederation: false })
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'channel_permissions_update',
 			timestamp: Date.now(),
 			content: {
@@ -168,15 +169,15 @@ Deno.test('chat 3-node E2E', async t => {
 		// 轮换私密频道密钥（最新一代 wrap 覆盖授权 viewer：A、B），并把该 rotate 帧以「实时推送」灌入 B/C：
 		// 仅授权 viewer B 的 wrap 在帧内 → B 经真实入站路径导入新一代 K_ch；C 无 wrap → 无法导入。
 		// （converge 的 adopt 是文件拷贝，不触发 wrap 导入；故须在 adopt 前用真实入站把密钥下发给 B。）
-		const rot = await M.schedule.appendChannelKeyRotate(NODE_A, groupId, PRIVATE_CHANNEL)
+		const rot = await modules.schedule.appendChannelKeyRotate(NODE_A, groupId, PRIVATE_CHANNEL)
 		for (const to of [NODE_B, NODE_C])
-			await M.remoteIngest.appendValidatedRemoteEvent(to, groupId, rot, { logFailures: false })
+			await modules.remoteIngest.appendValidatedRemoteEvent(to, groupId, rot, { logFailures: false })
 		await converge([NODE_A, NODE_B, NODE_C], NODE_A, groupId)
 
 		// 权限矩阵：A（admin 旁路）、B（moderator allow 覆盖 @everyone deny）可见可发；C 皆否。
-		const aPerms = M.state.memberChannelPermissions(await stateOf(NODE_A, groupId), hash.A, PRIVATE_CHANNEL)
-		const bPerms = M.state.memberChannelPermissions(await stateOf(NODE_B, groupId), hash.B, PRIVATE_CHANNEL)
-		const cPerms = M.state.memberChannelPermissions(await stateOf(NODE_C, groupId), hash.C, PRIVATE_CHANNEL)
+		const aPerms = modules.state.memberChannelPermissions(await stateOf(NODE_A, groupId), hash.A, PRIVATE_CHANNEL)
+		const bPerms = modules.state.memberChannelPermissions(await stateOf(NODE_B, groupId), hash.B, PRIVATE_CHANNEL)
+		const cPerms = modules.state.memberChannelPermissions(await stateOf(NODE_C, groupId), hash.C, PRIVATE_CHANNEL)
 		assertEquals(aPerms[P.VIEW_CHANNEL], true, 'A(owner/admin) can view private channel')
 		assertEquals(aPerms[P.SEND_MESSAGES], true, 'A(owner/admin) can send to private channel')
 		assertEquals(bPerms[P.VIEW_CHANNEL], true, 'B(moderator allow) can view private channel')
@@ -185,7 +186,7 @@ Deno.test('chat 3-node E2E', async t => {
 		assertEquals(cPerms[P.SEND_MESSAGES], false, 'C(@everyone) cannot send to private channel')
 
 		// owner A 发帖：授权读者 A、B 解密成功；未授权 C 收到帧但无 live K_ch → 解密失败。
-		const secretA = await postMsg(NODE_A, groupId, PRIVATE_CHANNEL, 'top secret from owner', [NODE_B, NODE_C])
+		const secretA = await postMessage(NODE_A, groupId, PRIVATE_CHANNEL, 'top secret from owner', [NODE_B, NODE_C])
 		const aReadA = await channelMessage(NODE_A, groupId, PRIVATE_CHANNEL, secretA.id)
 		const bReadA = await channelMessage(NODE_B, groupId, PRIVATE_CHANNEL, secretA.id)
 		assert(aReadA?.content?.content?.includes('top secret from owner'), 'A reads own private message')
@@ -195,7 +196,7 @@ Deno.test('chat 3-node E2E', async t => {
 		assertEquals(cReadA.content?.decryptFailed, true, 'C(unauthorized) cannot decrypt private message')
 
 		// 授权非 owner（B）发帖：A 解密成功，C 不可——证明「仅授权角色」可发帖，而非仅 owner。
-		const secretB = await postMsg(NODE_B, groupId, PRIVATE_CHANNEL, 'secret reply from moderator', [NODE_A, NODE_C])
+		const secretB = await postMessage(NODE_B, groupId, PRIVATE_CHANNEL, 'secret reply from moderator', [NODE_A, NODE_C])
 		const aReadB = await channelMessage(NODE_A, groupId, PRIVATE_CHANNEL, secretB.id)
 		assert(aReadB?.content?.content?.includes('secret reply from moderator'), 'A decrypts B(authorized) private message')
 		const cReadB = await channelMessage(NODE_C, groupId, PRIVATE_CHANNEL, secretB.id)
@@ -203,7 +204,7 @@ Deno.test('chat 3-node E2E', async t => {
 
 		// 未授权写门控（DAG authz 层真断）：C 向私密频道发帖被 SEND_MESSAGES 拒绝。
 		await assertRejects(
-			() => M.postMessage.postChannelMessage(NODE_C, groupId, PRIVATE_CHANNEL, { text: 'C must not send' }),
+			() => modules.postMessage.postChannelMessage(NODE_C, groupId, PRIVATE_CHANNEL, { text: 'C must not send' }),
 			Error,
 		)
 
@@ -211,7 +212,7 @@ Deno.test('chat 3-node E2E', async t => {
 		// 基于真实 memberChannelPermissions / checkEventPermission 求值（status≠active 先于一切覆写返回全 false）。
 		const liveState = await stateOf(NODE_A, groupId)
 		assertEquals(
-			M.state.memberChannelPermissions(liveState, hash.B, 'general')[P.SEND_MESSAGES], true,
+			modules.state.memberChannelPermissions(liveState, hash.B, 'general')[P.SEND_MESSAGES], true,
 			'B with moderator role can send before mute',
 		)
 		const mutedState = structuredClone(liveState)
@@ -220,22 +221,22 @@ Deno.test('chat 3-node E2E', async t => {
 		mutedState.channelPermissions.general = {
 			moderator: { allow: { SEND_MESSAGES: true, VIEW_CHANNEL: true }, deny: {} },
 		}
-		const mutedPerms = M.state.memberChannelPermissions(mutedState, hash.B, 'general')
+		const mutedPerms = modules.state.memberChannelPermissions(mutedState, hash.B, 'general')
 		assertEquals(mutedPerms[P.SEND_MESSAGES], false, 'hard-muted member cannot send despite SEND-granting role + channel allow')
 		assertEquals(mutedPerms[P.VIEW_CHANNEL], false, 'hard-muted member retains no channel permission')
-		const mutedAuthz = M.authorize.checkEventPermission(mutedState, { type: 'message', channelId: 'general' }, hash.B)
+		const mutedAuthz = modules.authorize.checkEventPermission(mutedState, { type: 'message', channelId: 'general' }, hash.B)
 		assertEquals(mutedAuthz.ok, false, 'DAG authz rejects message from hard-muted member')
 	})
 
 	await t.step('step7: 群主退群 + owner 交接', async () => {
 		// 交接前先把 B 提升为 founder（具备 MANAGE_ADMINS，方可成为委托 owner）。
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'role_assign',
 			timestamp: Date.now(),
 			content: { targetMemberKey: hash.B, roleId: 'founder' },
 		}, { publishFederation: false })
 		// owner 设置委托交接给 B。
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
 			content: { delegatedOwnerPubKeyHash: hash.B },
@@ -246,14 +247,14 @@ Deno.test('chat 3-node E2E', async t => {
 		// A 退群（member_leave）。appendEvent 会在 checkpoint 重建时触发 A 本地副本自毁
 		// （maybePurgeLocalReplicaIfLeft），故必须 skipCheckpointRebuild 拿到已签名帧后「实时推送」给 B、C，
 		// 不能依赖事后扫描 A 的 events.jsonl（彼时可能已被清空）。
-		const leaveA = await M.append.appendEvent(NODE_A, groupId, {
+		const leaveA = await modules.append.appendEvent(NODE_A, groupId, {
 			type: 'member_leave', sender: hash.A, timestamp: Date.now(), content: {},
 		}, ownerSigner.secretKey, { publishFederation: false, skipReleaseQuarantined: true, skipCheckpointRebuild: true })
 		for (const to of [NODE_B, NODE_C])
-			await M.remoteIngest.appendValidatedRemoteEvent(to, groupId, leaveA, { logFailures: false })
+			await modules.remoteIngest.appendValidatedRemoteEvent(to, groupId, leaveA, { logFailures: false })
 
 		// 交接后 B 应能行使治理权（创建角色），证明治理可用。
-		await M.append.appendSignedLocalEvent(NODE_B, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_B, groupId, {
 			type: 'role_create',
 			timestamp: Date.now(),
 			content: {
@@ -273,14 +274,14 @@ Deno.test('chat 3-node E2E', async t => {
 
 	await t.step('step8: 群员退群 + 成员/权限收敛', async () => {
 		// C 主动退群：同样 skipCheckpointRebuild 捕获已签名帧后实时推送给仍在群内的 B。
-		const leaveC = await M.append.appendEvent(NODE_C, groupId, {
+		const leaveC = await modules.append.appendEvent(NODE_C, groupId, {
 			type: 'member_leave', sender: hash.C, timestamp: Date.now(), content: {},
-		}, (await M.localSigner.resolveLocalEventSigner(NODE_C, groupId)).secretKey,
+		}, (await modules.localSigner.resolveLocalEventSigner(NODE_C, groupId)).secretKey,
 		{ publishFederation: false, skipReleaseQuarantined: true, skipCheckpointRebuild: true })
-		await M.remoteIngest.appendValidatedRemoteEvent(NODE_B, groupId, leaveC, { logFailures: false })
+		await modules.remoteIngest.appendValidatedRemoteEvent(NODE_B, groupId, leaveC, { logFailures: false })
 		// B 收敛自身分叉（C 已离开，不可再向其灌入事件）。
-		await M.lifecycle.convergeDagTipsIfAuthorized(NODE_B, groupId)
-		await M.materialize.rebuildAndSaveCheckpoint(NODE_B, groupId)
+		await modules.lifecycle.convergeDagTipsIfAuthorized(NODE_B, groupId)
+		await modules.materialize.rebuildAndSaveCheckpoint(NODE_B, groupId)
 
 		// 在仍留存的节点 B 上验证成员收敛：仅 B 活跃，A/C 均已离开。
 		const state = await stateOf(NODE_B, groupId)

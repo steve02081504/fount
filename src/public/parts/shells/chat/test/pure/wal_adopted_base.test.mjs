@@ -12,6 +12,7 @@ const C = 'c'.repeat(64)
 const SIG = 'f'.repeat(128)
 
 /**
+ * 构造最小 signed base checkpoint 桩。
  * @param {string} anchorId checkpoint 锚点事件 id
  * @returns {object} 最小 signed base checkpoint 桩
  */

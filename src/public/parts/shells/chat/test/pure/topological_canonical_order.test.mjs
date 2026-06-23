@@ -7,6 +7,7 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
 
 /**
+ * 构造测试用事件元数据。
  * @param {string} id 事件 id
  * @param {string[]} prev 父 id
  * @param {number} wall HLC wall

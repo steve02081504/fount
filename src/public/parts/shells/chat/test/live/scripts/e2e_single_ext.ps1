@@ -7,8 +7,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if (-not $Key) { throw 'No API key. Set $env:FOUNT_API_KEY or pass -Key.' }
 
-$script:pass = 0; $script:fail = 0; $script:skip = 0
-$script:failures = @()
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/singleNode/helpers.ps1')
 $script:createdGroups = @()
 
 # Minimal 1x1 PNG for multipart / dataUrl uploads
@@ -57,21 +56,6 @@ function ApiMultipart($method, $path, $fields, $fileField, $fileName, $fileBytes
 	}
 }
 
-function T($name, $block) {
-	try {
-		$ok = & $block
-		if ($ok -eq $false) { $script:fail++; $script:failures += $name; Write-Host "  FAIL  $name" -ForegroundColor Red }
-		else { $script:pass++; Write-Host "  ok    $name" -ForegroundColor Green }
-	} catch {
-		$script:fail++; $script:failures += "$name :: $($_.Exception.Message)"
-		Write-Host "  FAIL  $name :: $($_.Exception.Message)" -ForegroundColor Red
-	}
-}
-
-function S($name, $why) { $script:skip++; Write-Host "  skip  $name ($why)" -ForegroundColor DarkGray }
-
-function Section($t) { Write-Host "`n=== $t ===" -ForegroundColor Cyan }
-
 function PollUntil($predicate, $timeoutSec = 30, $intervalSec = 0.4) {
 	$deadline = (Get-Date).AddSeconds($timeoutSec)
 	while ((Get-Date) -lt $deadline) {
@@ -119,22 +103,22 @@ function WaitForCharMessageId($groupId, $channelId, $charname, $timeoutSec = 90)
 }
 
 # ---------------------------------------------------------------------------
-Section 'Setup — shared E2E-ext group'
+Write-LiveSection 'Setup — shared E2E-ext group'
 $gid = $null; $cid = $null; $fbMsgId = $null
-T 'POST /groups create (ext)' {
+Test-Case 'POST /groups create (ext)' {
 	$r = Api POST '/groups/' @{ name = 'E2E-ext'; description = 'ext coverage' }
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:gid = $r.json.groupId; $script:cid = $r.json.defaultChannelId
 	$script:createdGroups += $script:gid
 	[bool]($script:gid -and $script:cid)
 }
-T 'warm runtime (initial-data)' {
+Test-Case 'warm runtime (initial-data)' {
 	$r = Api GET "/groups/$gid/initial-data"
 	$r.status -eq 200
 }
 
 # ---------------------------------------------------------------------------
-Section 'A. Channels & messages (gaps)'
+Write-LiveSection 'A. Channels & messages (gaps)'
 $delChId = $null
 $fbChar = EnsureTestChar $gid
 $fbMsgId = $null
@@ -142,29 +126,29 @@ if ($fbChar) {
 	$script:fbMsgId = WaitForCharMessageId $gid $cid $fbChar 90
 }
 if ($fbMsgId) {
-	T 'PUT messages/:id/feedback up' {
+	Test-Case 'PUT messages/:id/feedback up' {
 		$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'up'; content = 'helpful' }
 		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 		[bool]$r.json.event
 	}
-	T 'PUT messages/:id/feedback down' {
+	Test-Case 'PUT messages/:id/feedback down' {
 		$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'down' }
 		$r.status -eq 200 -and [bool]$r.json.event
 	}
 } else {
-	S 'PUT messages/:id/feedback up' 'no char message for feedback'
-	S 'PUT messages/:id/feedback down' 'no char message for feedback'
+	Skip-Case 'PUT messages/:id/feedback up' 'no char message for feedback'
+	Skip-Case 'PUT messages/:id/feedback down' 'no char message for feedback'
 }
-T 'POST message (user)' {
+Test-Case 'POST message (user)' {
 	$r = Api POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'ext user msg' } }
 	OkStatus $r.status
 }
-T 'POST /compact' {
+Test-Case 'POST /compact' {
 	$r = Api POST "/groups/$gid/compact" @{}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$null -ne $r.json.eventsPruned
 }
-T 'POST /events (local batch peer_invite)' {
+Test-Case 'POST /events (local batch peer_invite)' {
 	$st = Api GET "/groups/$gid/state"
 	$selfHash = $st.json.state.viewerMemberPubKeyHash
 	if (-not $selfHash) { throw 'viewerMemberPubKeyHash missing' }
@@ -179,7 +163,7 @@ T 'POST /events (local batch peer_invite)' {
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	[int]$r.json.applied -ge 1
 }
-T 'GET /timeline baseline' {
+Test-Case 'GET /timeline baseline' {
 	$r = Api GET "/groups/$gid/timeline"
 	if ($r.status -ne 200) { throw "status $($r.status)" }
 	$script:tlBefore = @{ current = [int]$r.json.current; total = [int]$r.json.total }
@@ -189,13 +173,13 @@ if (-not $fbChar) { $script:fbChar = EnsureTestChar $gid }
 if ($fbChar) {
 	$null = WaitForCharMessageId $gid $cid $fbChar 90
 }
-T 'PUT /timeline delta +1' {
+Test-Case 'PUT /timeline delta +1' {
 	$r = Api PUT "/groups/$gid/timeline" @{ delta = 1; channelId = $cid }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$script:tlDeltaPlus = $r
 	[bool]$r.json.entry
 }
-T 'GET /timeline after +1' {
+Test-Case 'GET /timeline after +1' {
 	if ($script:tlDeltaPlus.json.entry) {
 		$g = Api GET "/groups/$gid/timeline"
 		return $g.status -eq 200
@@ -211,21 +195,21 @@ T 'GET /timeline after +1' {
 	$script:tlAfterPlus = Api GET "/groups/$gid/timeline"
 	$true
 }
-T 'PUT /timeline delta -1' {
+Test-Case 'PUT /timeline delta -1' {
 	$r = Api PUT "/groups/$gid/timeline" @{ delta = -1; channelId = $cid }
 	$r.status -eq 200 -and [bool]$r.json.entry
 }
-T 'GET /timeline restored index' {
+Test-Case 'GET /timeline restored index' {
 	$g = Api GET "/groups/$gid/timeline"
 	$g.status -eq 200 -and [int]$g.json.current -eq $script:tlBefore.current
 }
-T 'POST channel (to delete)' {
+Test-Case 'POST channel (to delete)' {
 	$r = Api POST "/groups/$gid/channels" @{ name = 'ext-del'; type = 'text'; description = 'tmp' }
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:delChId = $r.json.channelId
 	[bool]$script:delChId
 }
-T 'DELETE /channels/:id (non-default)' {
+Test-Case 'DELETE /channels/:id (non-default)' {
 	$r = Api DELETE "/groups/$gid/channels/$delChId"
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$s = Api GET "/groups/$gid/state"
@@ -233,32 +217,32 @@ T 'DELETE /channels/:id (non-default)' {
 }
 
 # ---------------------------------------------------------------------------
-Section 'C. Files — file-system / download-resume / archive delete'
+Write-LiveSection 'C. Files — file-system / download-resume / archive delete'
 $fsFolderA = 'folder_' + [guid]::NewGuid().ToString('N')
 $fsFolderB = 'folder_' + [guid]::NewGuid().ToString('N')
 $dlFileId = [guid]::NewGuid().ToString()
 $dlChunk = $null
-T 'POST file-system create folder A' {
+Test-Case 'POST file-system create folder A' {
 	$r = Api POST "/groups/$gid/file-system" @{ operation = 'create'; folderId = $fsFolderA; name = 'ext-fs-a' }
 	$r.status -eq 200 -or $r.status -eq 201
 }
-T 'POST file-system create folder B' {
+Test-Case 'POST file-system create folder B' {
 	$r = Api POST "/groups/$gid/file-system" @{ operation = 'create'; folderId = $fsFolderB; name = 'ext-fs-b' }
 	$r.status -eq 200 -or $r.status -eq 201
 }
-T 'POST file-system rename A' {
+Test-Case 'POST file-system rename A' {
 	$r = Api POST "/groups/$gid/file-system" @{ operation = 'rename'; folderId = $fsFolderA; name = 'ext-fs-a-renamed' }
 	$r.status -eq 200 -or $r.status -eq 201
 }
-T 'POST file-system move B under A' {
+Test-Case 'POST file-system move B under A' {
 	$r = Api POST "/groups/$gid/file-system" @{ operation = 'move'; folderId = $fsFolderB; parentFolderId = $fsFolderA }
 	$r.status -eq 200 -or $r.status -eq 201
 }
-T 'POST file-system delete B' {
+Test-Case 'POST file-system delete B' {
 	$r = Api POST "/groups/$gid/file-system" @{ operation = 'delete'; folderId = $fsFolderB }
 	$r.status -eq 200 -or $r.status -eq 201
 }
-T 'POST chunks + register file (download-resume)' {
+Test-Case 'POST chunks + register file (download-resume)' {
 	$data = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('ext-download-resume-payload'))
 	$up = Api POST "/groups/$gid/chunks" @{ fileId = $dlFileId; data = $data; channelId = $cid; ceMode = 'convergent' }
 	if ($up.status -ne 200 -and $up.status -ne 201) { throw "chunk $($up.status): $($up.raw)" }
@@ -274,7 +258,7 @@ T 'POST chunks + register file (download-resume)' {
 	if ($reg.status -ne 201) { throw "register $($reg.status): $($reg.raw)" }
 	[bool]$reg.json.event
 }
-T 'POST files/:id/download-resume local complete' {
+Test-Case 'POST files/:id/download-resume local complete' {
 	$r = Api POST "/groups/$gid/files/$dlFileId/download-resume" @{}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$ok = PollUntil {
@@ -290,38 +274,38 @@ T 'POST files/:id/download-resume local complete' {
 	}
 	$r.json.ok -eq $true
 }
-T 'GET files/:id/download-status after resume' {
+Test-Case 'GET files/:id/download-status after resume' {
 	$r = Api GET "/groups/$gid/files/$dlFileId/download-status"
 	$r.status -eq 200 -and (
 		$r.json.status.status -eq 'done' -or
 		($r.json.status.total -gt 0 -and $r.json.status.done -ge $r.json.status.total)
 	)
 }
-T 'DELETE /archive?before= (local prune)' {
+Test-Case 'DELETE /archive?before= (local prune)' {
 	$r = Api DELETE "/groups/$gid/archive?before=2099-01"
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$null -ne $r.json
 }
 
 # ---------------------------------------------------------------------------
-Section 'D. Stickers — full write path'
+Write-LiveSection 'D. Stickers — full write path'
 $packId = $null; $stickerId = $null; $stickerFile = $null; $importStickerId = $null
-T 'POST /stickers/packs create' {
+Test-Case 'POST /stickers/packs create' {
 	$r = Api POST '/stickers/packs' @{ name = 'E2E-ext-pack'; description = 'ext'; isPublic = $true }
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:packId = $r.json.pack.packId
 	if (-not $script:packId) { $script:packId = $r.json.pack.id }
 	[bool]$script:packId
 }
-T 'GET /stickers/packs/:id' {
+Test-Case 'GET /stickers/packs/:id' {
 	$r = Api GET "/stickers/packs/$packId"
 	$r.status -eq 200 -and $r.json.pack.packId -eq $packId
 }
-T 'PUT /stickers/packs/:id' {
+Test-Case 'PUT /stickers/packs/:id' {
 	$r = Api PUT "/stickers/packs/$packId" @{ name = 'E2E-ext-pack-2'; description = 'updated' }
 	$r.status -eq 200 -and $r.json.pack.name -eq 'E2E-ext-pack-2'
 }
-T 'POST /stickers/packs/:id/stickers upload' {
+Test-Case 'POST /stickers/packs/:id/stickers upload' {
 	$r = ApiMultipart POST "/stickers/packs/$packId/stickers" @{ name = 'e2e-sticker' } 'sticker' 'e2e.png' $script:pngBytes
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:stickerId = $r.json.sticker.id
@@ -331,88 +315,88 @@ T 'POST /stickers/packs/:id/stickers upload' {
 	else { $script:stickerFile = $r.json.sticker.file }
 	[bool]$script:stickerId
 }
-T 'GET /stickers/packs/:id/file/:name' {
+Test-Case 'GET /stickers/packs/:id/file/:name' {
 	if (-not $stickerFile) { throw 'sticker file name missing' }
 	$r = Api GET "/stickers/packs/$packId/file/$stickerFile"
 	$r.status -eq 200 -and $r.raw.Length -gt 0
 }
-T 'POST /stickers/install/:packId' {
+Test-Case 'POST /stickers/install/:packId' {
 	$r = Api POST "/stickers/install/$packId" @{}
 	$r.status -eq 200
 }
-T 'GET /stickers/collection installed' {
+Test-Case 'GET /stickers/collection installed' {
 	$r = Api GET '/stickers/collection'
 	$r.status -eq 200 -and ($r.json.collection.installedPacks -contains $packId)
 }
-T 'POST /stickers/favorites/:stickerId' {
+Test-Case 'POST /stickers/favorites/:stickerId' {
 	$r = Api POST "/stickers/favorites/$stickerId" @{}
 	$r.status -eq 200
 }
-T 'DELETE /stickers/favorites/:stickerId' {
+Test-Case 'DELETE /stickers/favorites/:stickerId' {
 	$r = Api DELETE "/stickers/favorites/$stickerId"
 	$r.status -eq 200
 }
-T 'POST /stickers/import' {
+Test-Case 'POST /stickers/import' {
 	$r = Api POST '/stickers/import' @{ dataUrl = $script:pngDataUrl; name = 'imported-ext' }
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:importStickerId = $r.json.sticker.id
 	if (-not $script:importStickerId) { $script:importStickerId = $r.json.sticker.stickerId }
 	[bool]$script:importStickerId
 }
-T 'POST /stickers/recent/:stickerId' {
+Test-Case 'POST /stickers/recent/:stickerId' {
 	$sid = if ($importStickerId) { $importStickerId } else { $stickerId }
 	$r = Api POST "/stickers/recent/$sid" @{}
 	$r.status -eq 200
 }
-T 'DELETE /stickers/packs/:id/stickers/:stickerId' {
+Test-Case 'DELETE /stickers/packs/:id/stickers/:stickerId' {
 	$r = Api DELETE "/stickers/packs/$packId/stickers/$stickerId"
 	$r.status -eq 200
 }
-T 'POST /stickers/uninstall/:packId' {
+Test-Case 'POST /stickers/uninstall/:packId' {
 	$r = Api POST "/stickers/uninstall/$packId" @{}
 	$r.status -eq 200
 }
-T 'DELETE /stickers/packs/:id' {
+Test-Case 'DELETE /stickers/packs/:id' {
 	$r = Api DELETE "/stickers/packs/$packId"
 	$r.status -eq 200
 }
 
 # ---------------------------------------------------------------------------
-Section 'E. Group emojis — write'
+Write-LiveSection 'E. Group emojis — write'
 $gEmojiId = $null
-T 'POST /groups/:id/emojis' {
+Test-Case 'POST /groups/:id/emojis' {
 	$r = ApiMultipart POST "/groups/$gid/emojis" @{ name = 'ext-emoji' } 'emoji' 'emoji.png' $script:pngBytes
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:gEmojiId = $r.json.entry.emojiId
 	[bool]$script:gEmojiId
 }
-T 'GET /groups/:id/emojis/:id/data (json)' {
+Test-Case 'GET /groups/:id/emojis/:id/data (json)' {
 	$r = Api GET "/groups/$gid/emojis/$gEmojiId/data?json=1"
 	$r.status -eq 200 -and $r.json.dataUrl -like 'data:*'
 }
-T 'POST /custom-emojis/save (from group emoji)' {
+Test-Case 'POST /custom-emojis/save (from group emoji)' {
 	$r = Api POST '/custom-emojis/save' @{
 		groupId = $gid; emojiId = $gEmojiId; dataUrl = $script:pngDataUrl
 	}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	[bool]$r.json.entry.id
 }
-T 'DELETE /groups/:id/emojis/:id' {
+Test-Case 'DELETE /groups/:id/emojis/:id' {
 	$r = Api DELETE "/groups/$gid/emojis/$gEmojiId"
 	$r.status -eq 200
 }
 
 # ---------------------------------------------------------------------------
-Section 'F. Sessions & misc writes'
+Write-LiveSection 'F. Sessions & misc writes'
 $init = Api GET "/groups/$gid/initial-data"
 $personaName = $init.json.personaname
 $worldName = $init.json.worldname
 $importedGid = $null; $copyGid = $null
-T 'GET /custom-emojis contains saved entry' {
+Test-Case 'GET /custom-emojis contains saved entry' {
 	$r = Api GET '/custom-emojis'
 	$r.status -eq 200 -and @($r.json.entries | Where-Object { $_.groupId -eq $gid }).Count -ge 1
 }
-T 'POST /groups/import' {
+Test-Case 'POST /groups/import' {
 	$exp = Api GET "/groups/$gid/export"
 	if ($exp.status -ne 200) { throw "export $($exp.status): $($exp.raw)" }
 	if (-not $exp.json.messages -or @($exp.json.messages).Count -lt 1) {
@@ -434,24 +418,24 @@ T 'POST /groups/import' {
 	if ($script:importedGid) { $script:createdGroups += $script:importedGid }
 	[bool]$script:importedGid
 }
-T 'POST /groups/:id/copy' {
+Test-Case 'POST /groups/:id/copy' {
 	$r = Api POST "/groups/$gid/copy" @{}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$script:copyGid = $r.json.newGroupId
 	if ($script:copyGid) { $script:createdGroups += $script:copyGid }
 	[bool]$script:copyGid
 }
-T 'DELETE /sessions/:groupId' {
+Test-Case 'DELETE /sessions/:groupId' {
 	if (-not $script:importedGid) { throw 'import group missing' }
 	$r = Api DELETE "/sessions/$($script:importedGid)"
 	$r.status -eq 200
 }
-T 'PUT /groups/:id/world' {
+Test-Case 'PUT /groups/:id/world' {
 	if (-not $worldName) { throw 'no default world from initial-data' }
 	$r = Api PUT "/groups/$gid/world" @{ worldname = $worldName; channelId = $cid }
 	$r.status -eq 200
 }
-T 'PUT /groups/:id/persona' {
+Test-Case 'PUT /groups/:id/persona' {
 	if (-not $personaName) { throw 'no default persona from initial-data' }
 	$r = Api PUT "/groups/$gid/persona" @{ personaname = $personaName }
 	$r.status -eq 200
@@ -463,14 +447,14 @@ foreach ($pn in @('timer', 'file-operations', 'fount-api')) {
 }
 if ($pluginName) {
 	T "POST /groups/:id/plugin ($pluginName)" { $true }
-	T 'DELETE /groups/:id/plugin/:name' {
+	Test-Case 'DELETE /groups/:id/plugin/:name' {
 		$r = Api DELETE "/groups/$gid/plugin/$pluginName"
 		$r.status -eq 200
 	}
 } else {
-	S 'POST/DELETE plugin' 'no installable test plugin found'
+	Skip-Case 'POST/DELETE plugin' 'no installable test plugin found'
 }
-T 'POST /groups/leave (copy group)' {
+Test-Case 'POST /groups/leave (copy group)' {
 	if (-not $script:copyGid) { throw 'copy group missing' }
 	$r = Api POST '/groups/leave' @{ groupIds = @($script:copyGid) }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
@@ -479,20 +463,20 @@ T 'POST /groups/leave (copy group)' {
 }
 
 # ---------------------------------------------------------------------------
-Section 'G. Streaming'
+Write-LiveSection 'G. Streaming'
 $streamChId = $null
-T 'POST streaming channel' {
+Test-Case 'POST streaming channel' {
 	$r = Api POST "/groups/$gid/channels" @{ name = 'ext-stream'; type = 'streaming'; description = 'sfu/webrtc' }
 	if ($r.status -ne 201) { throw "status $($r.status): $($r.raw)" }
 	$script:streamChId = $r.json.channelId
 	[bool]$script:streamChId
 }
-T 'POST /channels/:id/streaming-auth' {
+Test-Case 'POST /channels/:id/streaming-auth' {
 	$r = Api POST "/groups/$gid/channels/$streamChId/streaming-auth" @{}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$r.json.mode -in @('webrtc', 'sfu')
 }
-T 'GET /channels/:id/streaming-view' {
+Test-Case 'GET /channels/:id/streaming-view' {
 	$r = Api GET "/groups/$gid/channels/$streamChId/streaming-view"
 	# Without streamingSfuWss configured, handler returns 404 — assert expected branch
 	if ($r.status -eq 404) { return $r.raw -match 'SFU|not configured' }
@@ -500,7 +484,7 @@ T 'GET /channels/:id/streaming-view' {
 }
 
 # ---------------------------------------------------------------------------
-Section 'B. Governance — ban / unban / owner-succession / fork'
+Write-LiveSection 'B. Governance — ban / unban / owner-succession / fork'
 $agentChar = $fbChar
 $agentKey = $null
 if (-not $agentChar) { $agentChar = EnsureTestChar $gid }
@@ -512,17 +496,17 @@ if ($agentChar) {
 		$script:agentKey = $row.memberKey
 		[bool]$script:agentKey
 	}
-	T 'POST members/:key/ban (entity scope)' {
+	Test-Case 'POST members/:key/ban (entity scope)' {
 		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/ban" @{ banScope = 'entity' }
 		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 		$s = Api GET "/groups/$gid/state"
 		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
 	}
-	T 'ban blocks agent trigger-reply' {
+	Test-Case 'ban blocks agent trigger-reply' {
 		$r = Api POST "/groups/$gid/channels/$cid/trigger-reply" @{ charname = $agentChar }
 		$r.status -ne 200
 	}
-	T 'POST members/:key/unban' {
+	Test-Case 'POST members/:key/unban' {
 		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/unban" @{}
 		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 		$ok = PollUntil {
@@ -532,7 +516,7 @@ if ($agentChar) {
 		if (-not $ok) { throw 'agent not visible after unban' }
 		$true
 	}
-	T 'unban restores agent active' {
+	Test-Case 'unban restores agent active' {
 		$ok = PollUntil {
 			$s = Api GET "/groups/$gid/state"
 			@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -ge 1
@@ -540,7 +524,7 @@ if ($agentChar) {
 		if (-not $ok) { throw 'agent member not visible after unban' }
 		$true
 	}
-	T 'POST members/:key/kick removes agent member (owner may kick own agent)' {
+	Test-Case 'POST members/:key/kick removes agent member (owner may kick own agent)' {
 		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
 		if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
 		$s = Api GET "/groups/$gid/state"
@@ -548,7 +532,7 @@ if ($agentChar) {
 	}
 	# 非管理员踢人（403）由 chat/test/authorize_governance.test.mjs 覆盖；单用户 live 无法构造无 ADMIN 且非 owner 的踢人场景。
 	# 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
-	T 'POST owner-succession (single admin → agent)' {
+	Test-Case 'POST owner-succession (single admin → agent)' {
 		$og = Api POST '/groups/' @{ name = 'E2E-ext-os'; description = 'owner succession probe' }
 		if ($og.status -ne 201) { throw "create $($og.status): $($og.raw)" }
 		$ogid = $og.json.groupId
@@ -574,9 +558,9 @@ if ($agentChar) {
 		}
 	}
 } else {
-	S 'agent member + ban/unban' 'no test char installed'
+	Skip-Case 'agent member + ban/unban' 'no test char installed'
 }
-T 'POST fork/block-opposing with current tip (HTTP smoke)' {
+Test-Case 'POST fork/block-opposing with current tip (HTTP smoke)' {
 	$tips = Api GET "/groups/$gid/dag/tips"
 	if ($tips.status -ne 200) { throw "tips $($tips.status)" }
 	$tip = @($tips.json.tips)[0]
@@ -591,7 +575,7 @@ T 'POST fork/block-opposing with current tip (HTTP smoke)' {
 # chat/test/hlc_policy.test.mjs 覆盖；HTTP 层无注入 future-HLC 签名事件的简便路径。
 
 # ---------------------------------------------------------------------------
-Section 'Cleanup'
+Write-LiveSection 'Cleanup'
 foreach ($g in ($script:createdGroups | Select-Object -Unique)) {
 	$r = Api DELETE "/groups/$g"
 	# 403/404：已离开 / 导入副本非属主 / 已被前序用例删除 —— 均视作已清理，回退一次 leave 兜底。
@@ -603,11 +587,5 @@ foreach ($g in ($script:createdGroups | Select-Object -Unique)) {
 	else { Write-Host "  cleanup WARN $g status $($r.status)" -ForegroundColor Yellow }
 }
 
-# ---------------------------------------------------------------------------
-Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host "PASS=$script:pass  FAIL=$script:fail  SKIP=$script:skip" -ForegroundColor Cyan
-if ($script:failures.Count) {
-	Write-Host "FAILURES:" -ForegroundColor Red
-	$script:failures | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
-}
-Write-Host "========================================" -ForegroundColor Cyan
+Write-LiveSummary 'chat e2e_single_ext'
+Complete-LiveScript

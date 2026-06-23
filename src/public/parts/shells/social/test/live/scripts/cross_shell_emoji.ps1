@@ -1,6 +1,6 @@
 # Cross-shell: private group emoji in Social post; non-member B resolves content + preview.
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot '../../../../../../scripts/test/fed_l4_common.ps1')
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 $gid = $null
 $cid = $null
@@ -10,37 +10,37 @@ $postId = $null
 $emojiToken = $null
 
 Write-Host "=== cross_shell_emoji: registry smoke ===" -ForegroundColor Cyan
-T 'Chat emoji registry reachable' {
+Test-Case 'Chat emoji registry reachable' {
 	$r = RootApi $FedA GET '/api/registries/emoji'
 	$r.status -eq 200 -and @($r.json | Where-Object { $_.path -like '*providers/emoji*' }).Count -ge 1
 }
-T 'markdown_extensions registry reachable' {
+Test-Case 'markdown_extensions registry reachable' {
 	$r = RootApi $FedA GET '/api/registries/markdown_extensions'
 	$r.status -eq 200 -and $r.json.Count -ge 1
 }
 
 Write-Host "`n=== Setup: A private group + emoji (B stays non-member) ===" -ForegroundColor Cyan
-T 'A creates invite-only group' {
+Test-Case 'A creates invite-only group' {
 	$g = (Api $FedA POST '/groups/' @{ name = $groupTitle; description = 'L4 fed probe' }).json
 	$script:gid = $g.groupId
 	$script:cid = $g.defaultChannelId
 	Api $FedA PUT "/groups/$($script:gid)/settings" @{ joinPolicy = 'invite-only'; discoveryPublic = $false } | Out-Null
 	[bool]$script:gid
 }
-T 'A uploads group emoji' {
+Test-Case 'A uploads group emoji' {
 	$r = ApiMultipart $FedA POST "/groups/$gid/emojis" @{ name = 'cross-emoji' } 'emoji' 'fed.png' $FedPngBytes
 	if ($r.status -ne 201) { throw "upload $($r.status): $($r.raw)" }
 	$script:emojiId = $r.json.entry.emojiId
 	[bool]$script:emojiId
 }
-T 'A seeds channel (federation metadata)' {
+Test-Case 'A seeds channel (federation metadata)' {
 	$script:emojiToken = ":[$gid/$emojiId]:"
 	$r = Api $FedA POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = "seed $emojiToken" } }
 	$r.status -in 200, 201
 }
 
 Write-Host "`n=== A posts Social feed with emoji token ===" -ForegroundColor Cyan
-T 'A POST /profile/post with group emoji token' {
+Test-Case 'A POST /profile/post with group emoji token' {
 	$viewer = (ShellApi $FedA 'social' GET '/viewer').json.viewerEntityHash
 	if (-not $viewer) { throw 'no viewerEntityHash' }
 	$text = "cross-shell feed $emojiToken"
@@ -56,16 +56,16 @@ T 'A POST /profile/post with group emoji token' {
 	$script:postText = $r.json.event.content.text
 	[bool]$script:postId
 }
-T 'post event embeds groupEmoji mediaRef with contentHash' {
+Test-Case 'post event embeds groupEmoji mediaRef with contentHash' {
 	$script:postMediaRefs.Count -ge 1 -and [bool]$script:postMediaRefs[0].contentHash
 }
-T 'post event text retains emoji token' {
+Test-Case 'post event text retains emoji token' {
 	$script:postText.Contains($emojiToken)
 }
 
 Write-Host "`n=== B (non-member) emoji-content + private preview ===" -ForegroundColor Cyan
 Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
-T 'B GET /emoji-content without group membership' {
+Test-Case 'B GET /emoji-content without group membership' {
 	$ok = PollUntil 90 5 {
 		Api $FedB GET "/groups/$gid/preview" | Out-Null
 		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
@@ -75,14 +75,14 @@ T 'B GET /emoji-content without group membership' {
 	if (-not $ok) { throw 'non-member B must resolve /emoji-content (not A-side fallback)' }
 	$true
 }
-T 'B GET /groups/:id/preview as non-member' {
+Test-Case 'B GET /groups/:id/preview as non-member' {
 	$ok = PollUntil 90 4 {
 		$r = Api $FedB GET "/groups/$gid/preview"
 		$r.status -eq 200 -and $r.json.isMember -eq $false
 	}
 	[bool]$ok
 }
-T 'B preview hides join for invite-only private group' {
+Test-Case 'B preview hides join for invite-only private group' {
 	$ok = PollUntil 30 3 {
 		$r = Api $FedB GET "/groups/$gid/preview"
 		$r.status -eq 200 -and $r.json.canJoin -eq $false
@@ -90,6 +90,6 @@ T 'B preview hides join for invite-only private group' {
 	[bool]$ok
 }
 
-Cleanup-Group $gid
+Clear-FedGroup $gid
 Write-FedSummary 'CROSS-SHELL-EMOJI' $gid
-if ($script:fail -gt 0) { exit 1 }
+Complete-LiveScript

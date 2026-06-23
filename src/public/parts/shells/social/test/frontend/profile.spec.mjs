@@ -1,4 +1,4 @@
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright_ready.mjs'
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	test,

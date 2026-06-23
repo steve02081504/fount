@@ -8,6 +8,7 @@ import { assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert
 import { computeOpposingForkBlockTargets } from '../../src/chat/governance/forkBlockOpposing.mjs'
 
 /**
+ * 构造稳定的 64 位十六进制标识。
  * @param {string} label 短标签
  * @returns {string} 稳定的 64 位 hex id
  */

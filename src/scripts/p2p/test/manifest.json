@@ -1,4 +1,5 @@
 {
+	"id": "p2p",
 	"suites": [
 		{
 			"name": "unit",

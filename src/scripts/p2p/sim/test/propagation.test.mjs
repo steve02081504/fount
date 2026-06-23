@@ -10,7 +10,10 @@ import { loadDefaultTunables } from '../tunables_bundle.mjs'
 Deno.test('tickPropagation delays delivery by spread rounds', () => {
 	const state = createPropagationState()
 	const rng = createRng(42)
-	/** @type {Array<[string, string, number, boolean]>} */
+	/**
+	 * 收集传播应用参数。
+	 * @type {Array<[string, string, number, boolean]>}
+	 */
 	const applied = []
 	enqueueSlash(state, { targetId: 't', senderId: 's', claim: 1, verified: false, birthRound: 0, spread: 1 })
 	assertEquals(tickPropagation(state, 0, (...args) => applied.push(args), () => 1, 1, rng), 0)

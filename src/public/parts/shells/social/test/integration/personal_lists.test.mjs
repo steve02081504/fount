@@ -2,9 +2,9 @@
  * 个人 block / hide 写路径。
  */
 /* global Deno */
+import { setPersonalHidden } from 'fount/scripts/p2p/personal_block.mjs'
 import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { setPersonalHidden } from 'fount/scripts/p2p/personal_block.mjs'
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { createTestSession } from '../harness.mjs'
 

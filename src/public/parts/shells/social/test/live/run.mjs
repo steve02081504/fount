@@ -1,40 +1,40 @@
 /**
  * Social live 测试 driver：自启 fount 节点并运行 scripts/ 下对应脚本。
  */
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { runLiveSuiteCli } from 'fount/scripts/test/live_suite_runner.mjs'
+import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
+import { runLiveSuiteCli } from 'fount/scripts/test/live/runner.mjs'
+import { resolveLiveNodePorts } from 'fount/scripts/test/node/launch.mjs'
 
-const scriptsDir = dirname(fileURLToPath(import.meta.url))
-const repoRoot = resolve(scriptsDir, '../../../../../../../')
-const socialBootstrap = join(scriptsDir, '../node_bootstrap.mjs')
+const liveDir = dirname(fileURLToPath(import.meta.url))
+const socialBootstrap = join(liveDir, '../node_bootstrap.mjs')
 
-const nodeAPort = Number(process.env.FOUNT_TEST_NODE_A_PORT) || 8931
-const nodeBPort = Number(process.env.FOUNT_TEST_NODE_B_PORT) || nodeAPort + 1
+const { nodeAPort, nodeBPort } = await resolveLiveNodePorts()
 
+/** Social live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
 const suites = {
 	e2e_single: {
-		run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/e2e_single.ps1')],
+		run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/e2e_single.ps1')],
 		node: { loadParts: ['shells/social'] },
 	},
 	cross_shell_emoji: {
 		fed: true,
-		run: ['pwsh', '-NoProfile', '-File', join(scriptsDir, 'scripts/cross_shell_emoji.ps1')],
+		run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/cross_shell_emoji.ps1')],
 		node: { loadParts: ['shells/social', 'shells/chat'] },
 	},
 	ws_test: {
-		run: ['node', join(scriptsDir, 'scripts/ws_test.mjs')],
+		run: ['node', join(liveDir, 'scripts/ws_test.mjs')],
 		node: { loadParts: ['shells/social'] },
 	},
 }
 
 await runLiveSuiteCli({
 	suites,
-	scriptsDir,
-	repoRoot,
+	repoRoot: REPO_ROOT,
 	defaultSuite: 'e2e_single',
 	nodeA: {
 		port: nodeAPort,

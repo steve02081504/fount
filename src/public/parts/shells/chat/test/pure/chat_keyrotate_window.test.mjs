@@ -3,57 +3,58 @@
  */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createChatFedSim } from '../fed_sim.mjs'
+import { createChatFederationSim } from '../simulation/federation.mjs'
 
 /* global Deno */
 Deno.test('channel_key_rotate fold window does not block message interaction', async t => {
-	const sim = await createChatFedSim({ withGovernance: true })
+	const sim = await createChatFederationSim({ withGovernance: true })
 	const {
-		M, groupId, nodeName, gossipAll, joinGroup, postMsg, adoptSnapshot, tipsOf,
+		modules, groupId, nodeName, gossipAll, joinGroup, postMessage, adoptSnapshot, tipsOf,
 	} = sim
 	const NODE_A = nodeName('A')
 	const NODE_B = nodeName('B')
 	const NODE_C = nodeName('C')
-	/** @type {Record<string, string>} */
+	/** 各节点 sender 公钥哈希表。
+	 * @type {Record<string, string>} */
 	const hash = {}
 	let channelId = ''
 
-	const ownerSigner = await M.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
+	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
 	hash.A = ownerSigner.sender
 
-	await M.lifecycle.createGroup(NODE_A, {
+	await modules.lifecycle.createGroup(NODE_A, {
 		groupId, name: 'KRW', ownerPubKeyHash: hash.A,
 		secretKey: ownerSigner.secretKey, defaultChannelId: 'default', enableGroupFederation: false,
 	})
-	await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
-	channelId = (await M.materialize.getState(NODE_A, groupId)).state.groupSettings.defaultChannelId
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	channelId = (await modules.materialize.getState(NODE_A, groupId)).state.groupSettings.defaultChannelId
 
 	hash.B = await joinGroup(NODE_B, NODE_A, groupId, 'invite-krw')
 	await sim.federate(NODE_B, [NODE_A], groupId)
-	await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 	hash.C = await joinGroup(NODE_C, NODE_A, groupId, 'invite-krw')
 	await sim.federate(NODE_C, [NODE_A], groupId)
-	await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 	await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
 
 	await t.step('准备：授予 B founder，全员持有初始 K_ch', async () => {
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'role_assign', timestamp: Date.now(),
 			content: { targetMemberKey: hash.B, roleId: 'founder' },
 		}, { publishFederation: false })
-		await M.schedule.rotateAllChannelKeys(NODE_A, groupId)
+		await modules.schedule.rotateAllChannelKeys(NODE_A, groupId)
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
 	})
 
 	let mergedTipA = ''
 	await t.step('并发 governance 分叉 + owner 折叠；成员未 adopt → tip 分叉', async () => {
-		await M.schedule.appendChannelKeyRotate(NODE_A, groupId, channelId)
+		await modules.schedule.appendChannelKeyRotate(NODE_A, groupId, channelId)
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
-		await M.append.appendSignedLocalEvent(NODE_A, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
 			type: 'role_create', timestamp: Date.now(),
 			content: { roleId: 'fork_a', name: 'ForkA', color: '#111111', position: 5, permissions: { VIEW_CHANNEL: true }, isDefault: false, isHoisted: false },
 		}, { publishFederation: false })
-		await M.append.appendSignedLocalEvent(NODE_B, groupId, {
+		await modules.append.appendSignedLocalEvent(NODE_B, groupId, {
 			type: 'role_create', timestamp: Date.now(),
 			content: { roleId: 'fork_b', name: 'ForkB', color: '#222222', position: 6, permissions: { VIEW_CHANNEL: true }, isDefault: false, isHoisted: false },
 		}, { publishFederation: false })
@@ -61,8 +62,8 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 		for (const node of [NODE_A, NODE_B, NODE_C])
 			assert((await tipsOf(node, groupId)).length >= 2, `${node} sees the concurrent governance fork (>=2 tips)`)
 
-		await M.lifecycle.convergeDagTipsIfAuthorized(NODE_A, groupId)
-		await M.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+		await modules.lifecycle.convergeDagTipsIfAuthorized(NODE_A, groupId)
+		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
 
 		const tipsA = await tipsOf(NODE_A, groupId)
 		const tipsB = await tipsOf(NODE_B, groupId)
@@ -75,12 +76,13 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 		assert(!bIds.has(mergedTipA), 'B has not adopted owner merge before window')
 	})
 
-	/** @type {string[]} */
+	/** 窗口期内互发消息的 event id 列表。
+	 * @type {string[]} */
 	const windowMsgIds = []
 	await t.step('窗口期：A/B/C 互发消息均可解密', async () => {
-		const mA = await postMsg(NODE_A, groupId, channelId, 'owner msg in window', [NODE_B, NODE_C])
-		const mB = await postMsg(NODE_B, groupId, channelId, 'member-B msg in window', [NODE_A, NODE_C])
-		const mC = await postMsg(NODE_C, groupId, channelId, 'member-C msg in window', [NODE_A, NODE_B])
+		const mA = await postMessage(NODE_A, groupId, channelId, 'owner msg in window', [NODE_B, NODE_C])
+		const mB = await postMessage(NODE_B, groupId, channelId, 'member-B msg in window', [NODE_A, NODE_C])
+		const mC = await postMessage(NODE_C, groupId, channelId, 'member-C msg in window', [NODE_A, NODE_B])
 		windowMsgIds.push(mA.id, mB.id, mC.id)
 
 		for (const [author, m] of [['A', mA], ['B', mB], ['C', mC]])

@@ -8,7 +8,6 @@ test.describe('Chat shell smoke', () => {
 		await expect(page.locator('#hub-messages')).toBeVisible()
 		await expect(page.locator('#hub-add-server-button')).toBeVisible()
 
-		expect(process.env.FOUNT_TEST_ISOLATED).toBe('1')
 		const res = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
 		expect(res.ok).toBe(true)
 		expect((await res.json()).username).toBe(TEST_USERNAME)

@@ -1,7 +1,8 @@
 import { wireEmojiPickerButton } from '../../../../scripts/emojiPicker.mjs'
+import { createReadyGateFor, SOCIAL_APP_GATE } from '../../../../scripts/readyGate.mjs'
+import { showToastI18n } from '../../../../scripts/toast.mjs'
 
 import { handleMainClick } from './actions.mjs'
-import { markSocialAppFailed, markSocialAppPending, markSocialAppReady } from './appReady.mjs'
 import {
 	addComposerMedia,
 	loadGroupPickerOptions,
@@ -17,13 +18,49 @@ import { loadFeed, runFeedSearch } from './views/feed.mjs'
 import { updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 
+const socialGate = createReadyGateFor(SOCIAL_APP_GATE, 'Social')
+
+const FEED_WS_TIMEOUT_MS = 30_000
+
+/**
+ * 建立 feed WebSocket 并等待 open。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<WebSocket>} 已 open 的 feed WebSocket
+ */
+function connectFeedWebSocket(appContext) {
+	const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/parts/shells:social/feed`
+	return new Promise((resolve, reject) => {
+		const ws = new WebSocket(url)
+		const timer = setTimeout(() => {
+			ws.close()
+			reject(new Error('feed WebSocket open timeout'))
+		}, FEED_WS_TIMEOUT_MS)
+		ws.addEventListener('open', () => {
+			clearTimeout(timer)
+			resolve(ws)
+		}, { once: true })
+		ws.addEventListener('error', () => {
+			clearTimeout(timer)
+			reject(new Error('feed WebSocket failed'))
+		}, { once: true })
+		ws.addEventListener('message', () => {
+			const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
+			if (feedVisible && !appContext.state.activeFeedSearchQuery)
+				void loadFeed(appContext, false, { skipSync: true })
+			else if (feedVisible && appContext.state.activeFeedSearchQuery)
+				void runFeedSearch(appContext)
+			void updateNotificationBadge(appContext)
+		})
+	})
+}
+
 /**
  * 初始化 Social 前端：绑定事件、加载选项并建立 WebSocket feed 连接。
  * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
 export async function bootstrapSocialApp(appContext) {
-	markSocialAppPending()
+	socialGate.markPending()
 	try {
 		document.getElementById('postBtn')?.addEventListener('click', () => { void afterPublishPost(appContext) })
 		const postText = document.getElementById('postText')
@@ -59,7 +96,7 @@ export async function bootstrapSocialApp(appContext) {
 		await loadGroupPickerOptions(appContext)
 		await updateNotificationBadge(appContext)
 
-		const viewer = await appContext.socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
+		const viewer = await appContext.socialApi('/viewer')
 		appContext.state.viewerEntityHash = viewer.viewerEntityHash ?? null
 
 		for (const [id, key] of Object.entries({
@@ -103,19 +140,16 @@ export async function bootstrapSocialApp(appContext) {
 			}
 		})
 
-		const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/parts/shells:social/feed`)
-		ws.addEventListener('message', () => {
-			const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
-			if (feedVisible && !appContext.state.activeFeedSearchQuery)
-				void loadFeed(appContext, false, { skipSync: true })
-			else if (feedVisible && appContext.state.activeFeedSearchQuery)
-				void runFeedSearch(appContext)
-			void updateNotificationBadge(appContext)
+		socialGate.markReady()
+		void connectFeedWebSocket(appContext).catch(err => {
+			console.error(err)
 		})
-		markSocialAppReady()
 	}
 	catch (error) {
-		markSocialAppFailed(error)
+		socialGate.markFailed(error)
+		const err = error instanceof Error ? error : new Error(String(error))
+		console.error(err)
+		showToastI18n('social.bootstrapFailed', { error: err.message })
 		throw error
 	}
 }

@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'fed_l4_common.ps1')
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 function Get-Identity($node) {
 	$r = P2pApi $node GET '/federation'

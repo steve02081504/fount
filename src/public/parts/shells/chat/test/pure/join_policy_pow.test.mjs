@@ -11,6 +11,7 @@ const ANCHOR = 'f'.repeat(64)
 const JOINER = 'e'.repeat(64)
 
 /**
+ * 构造 PoW 入群策略测试状态。
  * @param {object} [overrides] 覆盖项
  * @returns {object} 物化群状态桩
  */

@@ -12,6 +12,7 @@ const OTHER = 'b'.repeat(64)
 const TARGET = 'd'.repeat(64)
 
 /**
+ * 构造最小可判权的物化状态桩。
  * @param {object} [overrides] state 覆盖项
  * @returns {object} 最小可判权的物化状态桩
  */

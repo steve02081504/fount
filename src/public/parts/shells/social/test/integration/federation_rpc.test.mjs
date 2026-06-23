@@ -23,10 +23,12 @@ const socialMeta = await import('../../src/socialMeta.mjs')
 const TARGET = 'a'.repeat(128)
 
 /**
- * @param {string} username
- * @param {string} operator
- * @param {string} text
- * @param {string} [visibility]
+ * 发布一条 operator 帖子（不 fanout）。
+ * @param {string} username - 测试用户名
+ * @param {string} operator - operator 实体哈希
+ * @param {string} text - 帖子正文
+ * @param {string} [visibility='public'] - 可见性
+ * @returns {Promise<object>} 已提交事件
  */
 async function postAs(username, operator, text, visibility = 'public') {
 	return append.commitTimelineEvent(username, operator, {

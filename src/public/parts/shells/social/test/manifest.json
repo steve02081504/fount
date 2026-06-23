@@ -1,76 +1,115 @@
 {
+	"id": "shells/social",
 	"suites": [
 		{
 			"name": "unit",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
-				"./src/scripts/test/serial_deno_test.mjs",
+				"deno",
+				"run",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
 				"--ignore=src/public/parts/shells/social/test/live",
 				"./src/public/parts/shells/social/test/"
 			],
-			"triggers": [
-				"src/public/parts/shells/social/**",
-				"src/scripts/p2p/**",
-				"src/server/p2p_server/**",
-				"src/server/registries.mjs",
-				"src/public/pages/scripts/registries.mjs",
-				"src/public/pages/scripts/emojiPicker.mjs",
-				"src/public/pages/scripts/stickerPicker.mjs",
-				"src/public/pages/scripts/markdownExtensions.mjs"
-			]
+			"smokeLoad": true,
+			"trigger": "shellUnit"
 		},
 		{
 			"name": "e2e_single",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
-				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"
+				"deno",
+				"run",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs",
+				"--suite",
+				"e2e_single"
 			],
-			"triggers": [
-				"src/public/parts/shells/social/**"
-			]
+			"smokeLoad": true,
+			"trigger": "shellLive"
 		},
 		{
 			"name": "ws_test",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
-				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws_test"
+				"deno",
+				"run",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs",
+				"--suite",
+				"ws_test"
 			],
-			"triggers": [
-				"src/public/parts/shells/social/**",
-				"src/server/registries.mjs",
-				"src/public/pages/scripts/registries.mjs"
-			]
+			"smokeLoad": true,
+			"trigger": "wsTest"
 		},
 		{
 			"name": "cross_shell_emoji",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
-				"./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"
+				"deno",
+				"run",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/social/test/live/run.mjs",
+				"--suite",
+				"cross_shell_emoji"
 			],
-			"triggers": [
-				"src/public/parts/shells/social/**",
-				"src/public/parts/shells/chat/public/markdown_ext/**",
-				"src/public/parts/shells/chat/src/group/groupPreview.mjs",
-				"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
-				"src/server/registries.mjs",
-				"src/public/pages/scripts/registries.mjs",
-				"src/public/pages/scripts/emojiPicker.mjs"
-			]
+			"smokeLoad": true,
+			"trigger": "crossShellEmoji"
 		},
 		{
 			"name": "frontend",
 			"run": [
-				"deno", "run", "-A", "-c", "./deno.json",
+				"deno",
+				"run",
+				"-A",
+				"-c",
+				"./deno.json",
 				"./src/public/parts/shells/social/test/frontend/run.mjs"
 			],
-			"triggers": [
-				"src/public/parts/shells/social/public/**",
-				"src/public/parts/shells/social/public/src/**",
-				"src/public/parts/shells/social/test/frontend/**",
-				"src/scripts/test/playwright_*.mjs",
-				"src/server/auth.mjs",
-				"src/server/web_server/endpoints.mjs"
-			]
+			"smokeLoad": false,
+			"trigger": "frontend"
 		}
-	]
+	],
+	"triggerSets": {
+		"shellUnit": [
+			"src/public/parts/shells/social/**",
+			"src/scripts/p2p/**",
+			"src/server/p2p_server/**",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/registries.mjs",
+			"src/public/pages/scripts/emojiPicker.mjs",
+			"src/public/pages/scripts/stickerPicker.mjs",
+			"src/public/pages/scripts/markdownExtensions.mjs"
+		],
+		"shellLive": [
+			"src/public/parts/shells/social/**"
+		],
+		"wsTest": [
+			"src/public/parts/shells/social/**",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/registries.mjs"
+		],
+		"crossShellEmoji": [
+			"src/public/parts/shells/social/**",
+			"src/public/parts/shells/chat/public/markdown_ext/**",
+			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/registries.mjs",
+			"src/public/pages/scripts/emojiPicker.mjs"
+		],
+		"frontend": [
+			"src/public/parts/shells/social/public/**",
+			"src/public/parts/shells/social/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/readyGate.mjs",
+			"src/server/auth.mjs",
+			"src/server/web_server/endpoints.mjs"
+		]
+	}
 }

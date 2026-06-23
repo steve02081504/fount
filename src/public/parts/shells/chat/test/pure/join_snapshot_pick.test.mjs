@@ -9,12 +9,16 @@ const PEER_C = 'c'.repeat(64)
 const PEER_D = 'd'.repeat(64)
 const PEER_E = 'e'.repeat(64)
 
-/** @returns {number} 测试用零信誉分 */
+/**
+ * 返回测试用零信誉分。
+ * @returns {number} 测试用零信誉分
+ */
 function zeroPickScore() {
 	return 0
 }
 
 /**
+ * 构造 join snapshot 候选。
  * @param {string} tipsHash tips 摘要
  * @param {string} peerNodeHash peer
  * @returns {object} 候选
@@ -37,7 +41,8 @@ Deno.test('pickJoinSnapshotByReputation accepts two-peer quorum on same tipsHash
 })
 
 Deno.test('pickJoinSnapshotByReputation prefers higher reputation tips bucket', async () => {
-	/** @type {(peerNodeHash: string) => number} */
+	/** 按 peer 声誉打分的选取函数。
+	 * @type {(peerNodeHash: string) => number} */
 	const scoreOf = peerNodeHash => peerNodeHash === PEER_E ? 10 : 0
 	const picked = await pickJoinSnapshotByReputation(
 		[candidate(TIPS_A, PEER_C), candidate(TIPS_B, PEER_E)],

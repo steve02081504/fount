@@ -5,9 +5,12 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../../../scripts/theme、init、initCore、wireEvents、wireBootstrap
  */
+import { createReadyGateFor, HUB_SHELL_GATE } from '../../../../scripts/readyGate.mjs'
 import { applyTheme } from '../../../../scripts/theme.mjs'
 
 import { wireBootstrap } from './wireBootstrap.mjs'
+
+const hubShellGate = createReadyGateFor(HUB_SHELL_GATE, 'Hub')
 
 applyTheme()
 wireBootstrap()
@@ -17,12 +20,22 @@ wireBootstrap()
  * @returns {Promise<void>}
  */
 export async function bootHub() {
-	const { initCore } = await import('./initCore.mjs')
-	await initCore()
-	const { wireEvents } = await import('./wireEvents.mjs')
-	wireEvents()
-	const { init } = await import('./init.mjs')
-	await init()
+	hubShellGate.markPending()
+	try {
+		const { initCore } = await import('./initCore.mjs')
+		await initCore()
+		const { wireEvents } = await import('./wireEvents.mjs')
+		wireEvents()
+		const { init } = await import('./init.mjs')
+		await init()
+		hubShellGate.markReady()
+	}
+	catch (error) {
+		hubShellGate.markFailed(error)
+		const { handleUIError } = await import('../src/ui/errors.mjs')
+		handleUIError(error, 'chat.hub.loadGroupFailed')
+		throw error
+	}
 }
 
 await bootHub()

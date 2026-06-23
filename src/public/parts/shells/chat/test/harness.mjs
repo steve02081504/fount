@@ -5,9 +5,10 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { createTestServerBoot } from 'fount/scripts/test/server_harness.mjs'
+import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 
 /**
+ * 创建 Chat 集成测试 boot 句柄。
  * @param {object} [options] harness 选项
  * @param {string} [options.username] 测试用户名
  * @param {string} [options.tempDirPrefix] 临时目录前缀
@@ -40,6 +41,7 @@ export function createIntegrationBoot(options = {}) {
 }
 
 /**
+ * 启动 server 并返回测试会话。
  * @param {{ ensureServer: () => Promise<{ dataDir: string, username: string }>, username: string }} boot 集成 boot 对象
  * @returns {Promise<{ username: string, dataDir: string }>} 已启动的会话
  */
@@ -49,10 +51,12 @@ export async function resolveTestSession(boot) {
 }
 
 /**
+ * 创建惰性测试会话启动器。
  * @param {object} [options] createIntegrationBoot 选项
  * @returns {() => Promise<{ username: string, dataDir: string }>} 惰性会话启动器
  */
 export function createTestSession(options = {}) {
 	const boot = createIntegrationBoot(options)
-	return () => boot.session ??= resolveTestSession(boot)
+	let session = null
+	return () => session ??= resolveTestSession(boot)
 }

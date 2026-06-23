@@ -23,7 +23,6 @@
 /path/deno.exe
 
 *.cpuprofile
-/test-results
 
 /target
 /.gradle

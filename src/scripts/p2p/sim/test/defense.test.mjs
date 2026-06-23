@@ -15,6 +15,7 @@ function canonicalTunables() {
 }
 
 /**
+ * 构造关闭防御的参数集。
  * @returns {import('../tunables_bundle.mjs').TunablesBundle} 关停防御的作弊 bundle
  */
 function disabledDefenseBundle() {
@@ -80,6 +81,7 @@ Deno.test('sybilContainmentRate is non-trivial on sybil_heavy', () => {
 })
 
 /**
+ * 定义梯度守卫参数。
  * @type {Array<[string, string, number, number]>} module, key, 低值, 高值
  */
 const GRADIENT_GUARDS = [

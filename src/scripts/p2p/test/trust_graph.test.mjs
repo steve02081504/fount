@@ -13,22 +13,34 @@ import {
 
 const TEST_USER = '__p2p_trust_graph_test__'
 
-/** @returns {Promise<Map<string, never>>} empty trust graph */
+/**
+ * 返回空信任图。
+ * @returns {Promise<Map<string, never>>} empty trust graph
+ */
 async function buildMergedGraph() {
 	return new Map()
 }
 
-/** @returns {Promise<never[]>} no nodes */
+/**
+ * 返回空节点列表。
+ * @returns {Promise<never[]>} no nodes
+ */
 async function pickTopNodes() {
 	return []
 }
 
-/** @returns {Promise<boolean>} send result */
+/**
+ * 返回发送结果。
+ * @returns {Promise<boolean>} send result
+ */
 async function sendToNode() {
 	return false
 }
 
-/** @returns {Promise<number>} fanout count */
+/**
+ * 返回扇出数量。
+ * @returns {Promise<number>} fanout count
+ */
 async function fanoutToTopNodes() {
 	return 0
 }

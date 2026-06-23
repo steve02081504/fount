@@ -1,4 +1,4 @@
-import { waitForHubCoreReady } from 'fount/scripts/test/playwright_ready.mjs'
+import { waitForHubShellReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	test,
@@ -15,7 +15,7 @@ test.describe('Chat deep links', () => {
 		const text = `deeplink ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/#friends`, { waitUntil: 'domcontentloaded' })
-		await waitForHubCoreReady(page)
+		await waitForHubShellReady(page)
 		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 60_000 })
 		await navigateGroupChannelHash(page, groupId, channelId)
 		await expectMessageInChat(page, text)
@@ -23,7 +23,7 @@ test.describe('Chat deep links', () => {
 
 	test('friends hash opens friends view', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/#friends`, { waitUntil: 'domcontentloaded' })
-		await waitForHubCoreReady(page)
+		await waitForHubShellReady(page)
 		await expect(page).toHaveURL(/#friends/)
 		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
 		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 60_000 })

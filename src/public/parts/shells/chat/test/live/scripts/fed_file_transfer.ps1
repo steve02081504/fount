@@ -1,17 +1,17 @@
 # Cross-node file transfer: A uploads chunk + registers file; B downloads via federation.
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'fed_l4_common.ps1')
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 $gid = $null; $cid = $null; $fileId = [guid]::NewGuid().ToString()
 
 Write-Host "=== Setup: open group + join ===" -ForegroundColor Cyan
-$setup = Setup-OpenGroupJoin 'FedFileXfer' 'file-xfer-seed'
+$setup = Initialize-OpenGroupJoin 'FedFileXfer' 'file-xfer-seed'
 $gid = $setup.groupId
 $cid = $setup.defaultChannelId
 
 Write-Host "`n=== A uploads chunk + registers file ===" -ForegroundColor Cyan
 $ci = $null
-T 'A uploads + registers file' {
+Test-Case 'A uploads + registers file' {
 	$data = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('fed-file-payload-1234567890'))
 	$up = Api $FedA POST "/groups/$gid/chunks" @{ fileId = $fileId; data = $data; channelId = $cid; ceMode = 'convergent' }
 	if ($up.status -ne 200 -and $up.status -ne 201) { throw "chunk $($up.status): $($up.raw)" }
@@ -26,13 +26,13 @@ T 'A uploads + registers file' {
 }
 
 Write-Host "`n=== B federation file sync ===" -ForegroundColor Cyan
-T 'B sees file meta (DAG sync)' {
+Test-Case 'B sees file meta (DAG sync)' {
 	[bool](PollUntil 60 3 {
 		$m = Api $FedB GET "/groups/$gid/files/$fileId/meta"
 		$m.status -eq 200 -and $m.json.fileId -eq $fileId
 	})
 }
-T 'B downloads file content via federation' {
+Test-Case 'B downloads file content via federation' {
 	$rs = Api $FedB POST "/groups/$gid/files/$fileId/download-resume" @{}
 	if ($rs.status -ne 200) { throw "resume $($rs.status): $($rs.raw)" }
 	$done = PollUntil 150 4 {
@@ -45,5 +45,5 @@ T 'B downloads file content via federation' {
 	[bool]$done
 }
 
-Cleanup-Group $gid
+Clear-FedGroup $gid
 Write-Host "`n=== DONE fed_file_transfer ===" -ForegroundColor Green

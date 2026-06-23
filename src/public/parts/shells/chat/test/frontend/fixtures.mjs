@@ -1,7 +1,7 @@
 import { request as playwrightRequest } from '@playwright/test'
-import { createFountFixtures } from 'fount/scripts/test/playwright_fixtures.mjs'
-import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright_guards.mjs'
-import { waitForHubCoreReady } from 'fount/scripts/test/playwright_ready.mjs'
+import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
+import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright/guards.mjs'
+import { waitForHubShellReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 const HUB_INIT_TIMEOUT = 180_000
 
@@ -9,7 +9,7 @@ const HUB_INIT_TIMEOUT = 180_000
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
 /**
- *
+ * Chat 前端 E2E 通用 fixture（扩展 groupChannel）。
  */
 export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
 
@@ -29,7 +29,7 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 })
 
 /**
- * 等待 Hub 壳层可见并完成 initCore 导航。
+ * 等待 Hub 壳层可见并完成 bootHub（`data-fount-hub-shell-ready`）。
  *
  * `waitUntil: 'domcontentloaded'` 已保证入口模块（index.mjs）同步执行完毕，
  * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载。
@@ -47,7 +47,7 @@ export async function waitForHubShell(page, baseUrl, opts = {}) {
 	})
 	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
 	await expect(page.locator('#hub-add-server-button')).toBeVisible()
-	await waitForHubCoreReady(page)
+	await waitForHubShellReady(page)
 	if (friendsMode && !page.url().includes('#group:'))
 		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 90_000 })
 }
@@ -156,6 +156,7 @@ export async function createTestGroup(baseUrl, apiKey, opts = {}) {
 }
 
 /**
+ * 拼接带 hash 的 Hub URL。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} hash - 不含 `#` 的 hash 片段。
  * @returns {string} 完整 Hub URL。
@@ -209,7 +210,7 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
 	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
-	await waitForHubCoreReady(page)
+	await waitForHubShellReady(page)
 	await waitForGroupComposerReady(page, groupId)
 }
 
@@ -239,9 +240,8 @@ export async function navigateGroupChannelHash(page, groupId, channelId) {
 export function isChannelMessagePost(response, groupId, channelId) {
 	if (response.request().method() !== 'POST' || response.status() < 200 || response.status() >= 300) return false
 	const pathname = new URL(response.url()).pathname
-	const groupSegment = encodeURIComponent(groupId)
-	const channelSegment = encodeURIComponent(channelId)
-	return pathname.includes(`/groups/${groupSegment}/channels/${channelSegment}/messages`)
+	const expected = `/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages`
+	return pathname === expected
 }
 
 /**
@@ -312,8 +312,9 @@ export async function expectMessageInChat(page, text) {
  * @returns {string | undefined} 消息正文。
  */
 export function messageTextFromPostResponse(postJson) {
-	const content = postJson.event?.content ?? postJson.content
-	return content?.text || content?.content || content || ''
+	const text = postJson?.event?.content?.text
+	if (typeof text !== 'string') throw new Error('message POST response missing event.content.text')
+	return text
 }
 
 /**
@@ -385,6 +386,7 @@ export async function pickEmojiFromPicker(page, emoji = '👍') {
  */
 export const test = baseTest.extend({
 	/**
+	 * 打开 Hub 并进入新建测试群默认频道。
 	 * @param {(channel: { groupId: string, channelId: string }) => Promise<void>} use - Playwright fixture use 回调。
 	 */
 	groupChannel: async ({ page, baseUrl, apiKey }, use) => {

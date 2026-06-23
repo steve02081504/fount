@@ -16,13 +16,18 @@ const HASH = createHash('sha256').update(GOOD_BYTES).digest('hex')
 const BAD_BYTES = new TextEncoder().encode('wrong-payload')
 
 /**
+ * 安装测试等待槽。
  * @param {string} requestId 请求 id
  * @returns {{ resolve: (data: Uint8Array | null) => void, resolved: () => Uint8Array | null | undefined }} 测试槽
  */
 function installChunkFetchWaiter(requestId) {
-	/** @type {Uint8Array | null | undefined} */
+	/**
+	 * 保存已解析块。
+	 * @type {Uint8Array | null | undefined}
+	 */
 	let resolved
 	/**
+	 * 记录解析结果。
 	 * @param {Uint8Array | null} data 块数据
 	 */
 	function captureChunk(data) {
@@ -36,7 +41,10 @@ function installChunkFetchWaiter(requestId) {
 	})
 	return {
 		resolve: captureChunk,
-		/** @returns {Uint8Array | null | undefined} 已解析块 */
+		/**
+		 * 读取当前解析值。
+		 * @returns {Uint8Array | null | undefined} 已解析块
+		 */
 		resolved: () => resolved,
 	}
 }

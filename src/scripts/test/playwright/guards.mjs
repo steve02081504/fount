@@ -2,11 +2,11 @@ import { request as playwrightRequest } from '@playwright/test'
 
 /**
  * 断言当前 Playwright 跑在 run.mjs 自启的隔离节点上。
- * @param {object} opts - 选项。
- * @param {string} opts.baseUrl - 测试根 URL。
- * @param {string} opts.apiKey - API 密钥。
- * @param {string} opts.expectedUsername - 预期隔离用户名。
- * @param {string} opts.shellLabel - 用于错误提示的 shell 名称（如 Chat、Social）。
+ * @param {object} options 选项
+ * @param {string} options.baseUrl 测试根 URL
+ * @param {string} options.apiKey API 密钥
+ * @param {string} options.expectedUsername 预期隔离用户名
+ * @param {string} options.shellLabel 用于错误提示的 shell 名称（如 Chat、Social）
  * @returns {Promise<void>}
  */
 export async function assertIsolatedFrontendTest({ baseUrl, apiKey, expectedUsername, shellLabel }) {
@@ -15,9 +15,9 @@ export async function assertIsolatedFrontendTest({ baseUrl, apiKey, expectedUser
 			`${shellLabel} 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），`
 			+ '勿对本地开发实例或真实用户数据运行。',
 		)
-	const req = await playwrightRequest.newContext()
+	const api = await playwrightRequest.newContext()
 	try {
-		const whoami = await req.get(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
+		const whoami = await api.get(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
 		if (!whoami.ok())
 			throw new Error(`whoami failed: ${whoami.status()}`)
 		const data = await whoami.json()
@@ -28,13 +28,13 @@ export async function assertIsolatedFrontendTest({ baseUrl, apiKey, expectedUser
 			)
 	}
 	finally {
-		await req.dispose()
+		await api.dispose()
 	}
 }
 
 /**
  * 拦截 esm.sh 上的 Sentry，避免 E2E 拉外网失败。
- * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @returns {Promise<void>}
  */
 export async function stubSentryOnPage(page) {

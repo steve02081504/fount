@@ -21,6 +21,7 @@ const RECIPIENT = 'a'.repeat(64)
 const FROM_NODE = 'b'.repeat(64)
 
 /**
+ * 在临时节点目录执行测试。
  * @param {(dir: string) => Promise<void>} testFn 测试函数
  * @returns {Promise<void>}
  */

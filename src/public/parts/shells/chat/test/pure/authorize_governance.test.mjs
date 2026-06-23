@@ -14,6 +14,7 @@ const VICTIM = 'd'.repeat(64)
 const AGENT_KEY = agentEntityHash('e'.repeat(64), 'chars/test_agent')
 
 /**
+ * 构造最小可判权物化状态。
  * @param {object} [overrides] state 覆盖项
  * @returns {object} 最小可判权物化状态
  */

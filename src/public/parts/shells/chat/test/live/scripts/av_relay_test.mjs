@@ -1,5 +1,5 @@
 // AV relay WebSocket: two clients in same room, 26-byte header + payload relay (avRelay.mjs)
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
@@ -7,6 +7,7 @@ const HEADER_SIZE = 26
 const TIMEOUT_MS = 20_000
 
 /**
+ * 调用 Chat shell HTTP API。
  * @param {string} method HTTP 方法
  * @param {string} path chat API 路径
  * @param {object} [body] JSON 请求体
@@ -25,6 +26,7 @@ async function chatApi(method, path, body) {
 }
 
 /**
+ * 调用根 API。
  * @param {string} method HTTP 方法
  * @param {string} path 根 API 路径
  * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
@@ -38,6 +40,7 @@ async function rootApi(method, path) {
 }
 
 /**
+ * 判断 HTTP 状态是否为成功。
  * @param {number} status HTTP 状态码
  * @returns {boolean} 是否为 2xx 成功
  */
@@ -46,6 +49,7 @@ function okStatus(status) {
 }
 
 /**
+ * 以通过/失败状态结束进程。
  * @param {boolean} ok 是否通过
  * @param {string} detail 结果说明
  * @returns {never} 以 0/1 退出
@@ -56,6 +60,7 @@ function finish(ok, detail) {
 }
 
 /**
+ * 构造 AV relay 二进制帧（26 字节头 + 载荷）。
  * @param {Uint8Array|ArrayBuffer} payload 帧载荷
  * @param {object} [opts={}] frameType / seq 等
  * @returns {ArrayBuffer} 26 字节头 + payload
@@ -73,6 +78,7 @@ function buildAvFrame(payload, opts = {}) {
 }
 
 /**
+ * 连接 AV relay WebSocket 并等待 open。
  * @param {string} roomId AV relay 房间 ID
  * @returns {Promise<WebSocket>} 已 open 的 WebSocket
  */
@@ -84,16 +90,12 @@ function connectAv(roomId) {
 			try { ws.close() } catch { /* ignore */ }
 			reject(new Error('connect timeout'))
 		}, TIMEOUT_MS)
-		/**
-		 *
-		 */
+		/** AV socket 连接成功回调。 */
 		ws.onopen = () => {
 			clearTimeout(timer)
 			resolve(ws)
 		}
-		/**
-		 *
-		 */
+		/** AV socket 连接失败回调。 */
 		ws.onerror = () => {
 			clearTimeout(timer)
 			reject(new Error('ws error'))
@@ -102,6 +104,7 @@ function connectAv(roomId) {
 }
 
 /**
+ * 等待 AV relay peer_count 达到 2。
  * @param {WebSocket} ws 已连接的 AV socket
  * @returns {Promise<number>} peer_count 达到 2 时 resolve
  */
@@ -109,6 +112,7 @@ function waitPeerCount(ws) {
 	return new Promise((resolve, reject) => {
 		const timer = setTimeout(() => reject(new Error('peer_count timeout')), TIMEOUT_MS)
 		/**
+		 * 处理 peer_count 广播消息。
 		 * @param {MessageEvent} ev WebSocket 消息事件
 		 * @returns {void}
 		 */
@@ -128,6 +132,7 @@ function waitPeerCount(ws) {
 }
 
 /**
+ * 等待接收端收到匹配的二进制 relay 帧。
  * @param {WebSocket} ws 接收端 socket
  * @param {Uint8Array} expectPayload 期望载荷
  * @returns {Promise<void>} 收到匹配二进制帧后 resolve
@@ -136,6 +141,7 @@ function waitBinaryPayload(ws, expectPayload) {
 	return new Promise((resolve, reject) => {
 		const timer = setTimeout(() => reject(new Error('relay timeout')), TIMEOUT_MS)
 		/**
+		 * 校验 relay 二进制帧载荷。
 		 * @param {MessageEvent} ev WebSocket 二进制消息事件
 		 * @returns {Promise<void>}
 		 */

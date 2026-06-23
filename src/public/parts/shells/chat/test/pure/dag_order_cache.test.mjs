@@ -11,6 +11,7 @@ import {
 } from '../../../../../../scripts/p2p/dag_order_cache.mjs'
 
 /**
+ * 构造用于拓扑序测试的事件对象。
  * @param {string} id 事件 id
  * @param {string[]} prev 父 id
  * @param {number} wall HLC wall

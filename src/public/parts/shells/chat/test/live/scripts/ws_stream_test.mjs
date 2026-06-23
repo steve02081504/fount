@@ -1,5 +1,5 @@
 // Group WebSocket stream: trigger-reply → stream_chunk and/or message_replaced finish
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
@@ -7,6 +7,7 @@ const PREFERRED_CHARS = ['test_streamer', 'TestStreamer']
 const TIMEOUT_MS = 120_000
 
 /**
+ * 调用 Chat shell HTTP API。
  * @param {string} method HTTP 方法
  * @param {string} path chat API 路径
  * @param {object} [body] JSON 请求体
@@ -25,6 +26,7 @@ async function chatApi(method, path, body) {
 }
 
 /**
+ * 调用根 API。
  * @param {string} method HTTP 方法
  * @param {string} path 根 API 路径
  * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
@@ -38,6 +40,7 @@ async function rootApi(method, path) {
 }
 
 /**
+ * 从角色列表选取测试用角色。
  * @param {string[]} list 可用角色名列表
  * @returns {string|null} 优先 test_streamer，否则首个
  */
@@ -49,6 +52,7 @@ function pickChar(list) {
 }
 
 /**
+ * 判断 HTTP 状态是否为成功。
  * @param {number} status HTTP 状态码
  * @returns {boolean} 是否为 2xx 成功
  */
@@ -57,6 +61,7 @@ function okStatus(status) {
 }
 
 /**
+ * 以跳过状态结束进程。
  * @param {string} reason 跳过原因
  * @returns {never} 以退出码 0 结束
  */
@@ -66,6 +71,7 @@ function skip(reason) {
 }
 
 /**
+ * 以通过/失败状态结束进程。
  * @param {boolean} ok 是否通过
  * @param {string} detail 结果说明
  * @returns {never} 以 0/1 退出
@@ -130,7 +136,7 @@ function maybeResolve() {
 }
 
 /**
- *
+ * WebSocket 连接建立后触发角色流式回复。
  */
 ws.onopen = () => {
 	console.log(`WS open; trigger-reply char=${charname}`)
@@ -144,6 +150,7 @@ ws.onopen = () => {
 	}, 750)
 }
 /**
+ * 处理 WebSocket 流式回复与完成事件。
  * @param {MessageEvent} ev WebSocket 消息事件
  * @returns {void}
  */
@@ -181,7 +188,7 @@ function onWsMessage(ev) {
 }
 ws.onmessage = onWsMessage
 /**
- *
+ * WebSocket 错误时结束等待。
  */
 ws.onerror = () => {
 	clearTimeout(timeout)

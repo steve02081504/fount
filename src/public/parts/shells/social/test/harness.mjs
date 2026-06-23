@@ -7,11 +7,12 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { createTestServerBoot } from 'fount/scripts/test/server_harness.mjs'
+import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 
-import { ensureSocialTestReady } from './after_init.mjs'
+import { ensureSocialTestReady } from './afterInit.mjs'
 
 /**
+ * 创建 Social 集成测试 boot 句柄。
  * @param {object} [options] harness 选项
  * @param {string} [options.username] 测试用户名
  * @param {string} [options.tempDirPrefix] 临时目录前缀
@@ -33,6 +34,7 @@ export function createIntegrationBoot(options = {}) {
 }
 
 /**
+ * 启动 server 并解析 operator 会话。
  * @param {{ ensureServer: () => Promise<unknown>, username: string }} boot 集成 boot 对象
  * @returns {Promise<{ username: string, operator: string }>} operator 会话
  */
@@ -45,10 +47,12 @@ export async function resolveTestOperator(boot) {
 }
 
 /**
+ * 创建惰性 operator 会话启动器。
  * @param {object} [options] createIntegrationBoot 选项
  * @returns {() => Promise<{ username: string, operator: string }>} 惰性 operator 会话启动器
  */
 export function createTestSession(options = {}) {
 	const boot = createIntegrationBoot(options)
-	return () => boot.session ??= resolveTestOperator(boot)
+	let session = null
+	return () => session ??= resolveTestOperator(boot)
 }

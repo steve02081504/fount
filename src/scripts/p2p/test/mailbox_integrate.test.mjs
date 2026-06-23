@@ -28,6 +28,7 @@ const FROM_NODE = 'b'.repeat(64)
 const USER = 'mailbox-integrate-user'
 
 /**
+ * 在临时节点目录执行测试。
  * @param {(dir: string) => Promise<void>} testFn 测试函数
  * @returns {Promise<void>}
  */
@@ -172,7 +173,10 @@ Deno.test('respondMailboxWant omits quarantine records', async () => {
 			tier: 'quarantine',
 			fromNodeHash: FROM_NODE,
 		})
-		/** @type {string[]} */
+		/**
+		 * 收集已发送记录 id。
+		 * @type {string[]}
+		 */
 		const sentIds = []
 		await respondMailboxWant({ replicaUsername: USER }, { toPubKeyHash: RECIPIENT }, (give) => {
 			for (const row of give.records || [])
@@ -185,7 +189,10 @@ Deno.test('respondMailboxWant omits quarantine records', async () => {
 Deno.test('ingestMailboxGive ignores quarantine wire records', async () => {
 	await withTempNodeDir(async () => {
 		const { ingestMailboxGive } = await import('../mailbox/deliver_or_store.mjs')
-		/** @type {string[]} */
+		/**
+		 * 收集分发结果。
+		 * @type {string[]}
+		 */
 		let seen = []
 		registerMailboxConsumer('test/give', 'chat', async (_username, records) => {
 			seen = records.map(r => r.id)

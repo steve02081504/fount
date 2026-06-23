@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 
 import { request as playwrightRequest } from '@playwright/test'
-import { createFountFixtures } from 'fount/scripts/test/playwright_fixtures.mjs'
-import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright_guards.mjs'
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright_ready.mjs'
+import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
+import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright/guards.mjs'
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
@@ -80,11 +80,10 @@ export async function openSocialHome(page, baseUrl) {
  * @returns {Promise<import('npm:@playwright/test').Response>} feed GET 响应。
  */
 export async function waitForFeedLoad(page) {
-	return page.waitForResponse(res =>
-		res.url().includes('/api/parts/shells:social/feed')
-		&& res.request().method() === 'GET'
-		&& res.status() === 200,
-	)
+	return page.waitForResponse(res => {
+		if (res.request().method() !== 'GET' || res.status() !== 200) return false
+		return new URL(res.url()).pathname === '/api/parts/shells:social/feed'
+	})
 }
 
 /**
@@ -126,29 +125,15 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
  */
 export async function publishPostViaComposer(page, text, api = {}) {
 	await page.locator('#postText').fill(text)
-	const postWait = page.waitForResponse(res =>
-		res.url().includes('/api/parts/shells:social/profile/post')
-		&& res.request().method() === 'POST'
-		&& res.status() === 200,
-	{ timeout: 60_000 },
-	)
+	const postWait = page.waitForResponse(res => {
+		if (res.request().method() !== 'POST' || res.status() !== 200) return false
+		return new URL(res.url()).pathname === '/api/parts/shells:social/profile/post'
+	}, { timeout: 60_000 })
 	const feedWait = waitForFeedLoad(page)
 	await page.locator('#postBtn').click()
-	let postJson
-	try {
-		const postResponse = await postWait
-		postJson = await postResponse.json()
-	}
-	catch {
-		await expect(page.locator('#postText')).toHaveValue('', { timeout: 30_000 })
-		const postId = await page.evaluate(() => {
-			const card = document.querySelector('#feedView .post-card[data-post-id], #feedList .post-card[data-post-id]')
-			return card?.dataset.postId || null
-		})
-		if (!postId) throw new Error('publishPostViaComposer: POST response missing and no post card in feed')
-		postJson = { event: { id: postId } }
-	}
-	await feedWait.catch(() => waitForFeedLoad(page))
+	const postResponse = await postWait
+	const postJson = await postResponse.json()
+	await feedWait
 	await expect(page.locator('#postText')).toHaveValue('')
 	return postJson
 }
@@ -246,11 +231,10 @@ export async function expectPostInFeed(page, postId) {
 export async function searchAndExpectPost(page, query, postId) {
 	for (let attempt = 0; attempt < 8; attempt++) {
 		await page.locator('#feedSearchInput').fill(query)
-		const searchWait = page.waitForResponse(res =>
-			res.url().includes('/api/parts/shells:social/search')
-			&& res.request().method() === 'GET'
-			&& res.status() === 200,
-		)
+		const searchWait = page.waitForResponse(res => {
+			if (res.request().method() !== 'GET' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
+		})
 		await page.locator('#feedSearchBtn').click()
 		const searchRes = await searchWait
 		const data = await searchRes.json()

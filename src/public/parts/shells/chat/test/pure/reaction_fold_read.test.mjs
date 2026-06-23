@@ -16,6 +16,7 @@ const MSG = 'd'.repeat(64)
 const CHANNEL = 'channel_x'
 
 /**
+ * 构造最小物化状态。
  * @returns {object} 含 message 索引与空 reactions overlay 的最小物化状态
  */
 function freshState() {
@@ -27,6 +28,7 @@ function freshState() {
 }
 
 /**
+ * 应用一条 reaction 事件到物化状态。
  * @param {object} state 物化状态
  * @param {string} type reaction_add / reaction_remove
  * @param {string} sender 投票者

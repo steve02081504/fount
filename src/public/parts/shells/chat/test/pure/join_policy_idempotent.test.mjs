@@ -12,6 +12,7 @@ const FOUNDER = 'a'.repeat(64)
 const NEWCOMER = 'b'.repeat(64)
 
 /**
+ * 构造最小群状态桩。
  * @param {object} [overrides] state 覆盖项
  * @returns {object} 物化群状态桩
  */

@@ -1,7 +1,6 @@
 /**
  * Social 集成 / live 测试共用的 init 后引导（与 node_bootstrap 一致）。
  * @param {string} username replica 登录名
- * @returns {Promise<void>}
  */
 export async function ensureSocialTestReady(username) {
 	const { ensureOperatorPubKey, resolveOperatorEntityHashForUser } =

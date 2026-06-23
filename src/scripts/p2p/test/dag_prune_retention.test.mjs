@@ -8,6 +8,7 @@ import {
 import { computeRetentionKeepIds, PERMISSION_ANCHOR_TYPES } from '../retention_policy.mjs'
 
 /**
+ * 构造固定长度十六进制串。
  * @param {string} c 重复字符
  * @returns {string} 64 字符测试哈希
  */

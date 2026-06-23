@@ -61,9 +61,13 @@ Deno.test('social reducer block and unblock materialize blocked list', () => {
 })
 
 Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks symmetrically', async () => {
-	/** @type {import('../reputation_store.mjs').ReputationFile} */
+	/**
+	 * 构造测试信誉数据。
+	 * @type {import('../reputation_store.mjs').ReputationFile}
+	 */
 	const data = { byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] }
 	/**
+	 * 运行信誉变更回调。
 	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
 	 */
 	const mutate = async fn => {
@@ -89,13 +93,17 @@ Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks
 })
 
 Deno.test('applyFollowedBlockSignal dedupes repeated block from same follower', async () => {
-	/** @type {import('../reputation_store.mjs').ReputationFile} */
+	/**
+	 * 构造测试信誉数据。
+	 * @type {import('../reputation_store.mjs').ReputationFile}
+	 */
 	const data = {
 		byNodeHash: { [NODE_A]: { score: 0.8 } },
 		wantUnknownHits: [],
 		relayBumpSeen: [],
 	}
 	/**
+	 * 运行信誉变更回调。
 	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
 	 */
 	const mutate = async fn => {
@@ -118,9 +126,13 @@ Deno.test('applyFollowedBlockSignal dedupes repeated block from same follower', 
 })
 
 Deno.test('applyFollowedSuspectSignal selfTrust penalizes target and unsuspect restores', async () => {
-	/** @type {import('../reputation_store.mjs').ReputationFile} */
+	/**
+	 * 构造测试信誉数据。
+	 * @type {import('../reputation_store.mjs').ReputationFile}
+	 */
 	const data = { byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] }
 	/**
+	 * 运行信誉变更回调。
 	 * @param {(d: import('../reputation_store.mjs').ReputationFile) => void | Promise<void>} fn 变更回调
 	 */
 	const mutate = async fn => {

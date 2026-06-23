@@ -1,7 +1,7 @@
 // Single-node WebSocket E2E: invalid apikey rejected; valid key receives live push.
 import process from 'node:process'
 
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live_env.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const baseUrl = requireLiveBaseUrl()
 const apiKey = requireLiveApiKey()
@@ -55,7 +55,7 @@ let finish
 const done = new Promise(resolve => { finish = resolve })
 const timeout = setTimeout(() => finish('timeout'), 20_000)
 
-/** @returns {Promise<void>} */
+/** WebSocket 连接建立后发送测试消息。 */
 websocket.onopen = async () => {
 	console.log('WS open; posting message...')
 	const post = await chatApi('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
@@ -64,6 +64,7 @@ websocket.onopen = async () => {
 	console.log(`post -> ${post.status}`)
 }
 /**
+ * 处理群 WebSocket 推送消息。
  * @param {MessageEvent} event - WebSocket 消息事件。
  * @returns {void}
  */
@@ -77,11 +78,13 @@ websocket.onmessage = event => {
 	}
 }
 /**
+ * 记录 WebSocket 错误。
  * @param {Event} error - WebSocket 错误事件。
  * @returns {void}
  */
 websocket.onerror = error => console.log(`WS error: ${error.message || error.type}`)
 /**
+ * 记录 WebSocket 关闭信息。
  * @param {CloseEvent} closeEvent - WebSocket 关闭事件。
  * @returns {void}
  */

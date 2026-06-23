@@ -18,6 +18,7 @@ const RECIPIENT_B = 'b'.repeat(64)
 const SENDER_ATTACK = 'c'.repeat(64)
 
 /**
+ * 构造测试用 mailbox 记录。
  * @param {string} to 收件人
  * @param {string} from 发送方
  * @param {number} i 序号

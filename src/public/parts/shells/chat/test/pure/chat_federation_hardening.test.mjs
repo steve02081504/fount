@@ -49,6 +49,7 @@ import { parseGossipRequest } from '../../src/chat/federation/wireSchemas.mjs'
 const GC_IDLE_MS = 30 * 24 * 3600 * 1000
 
 /**
+ * 将字节序列编码为十六进制字符串。
  * @param {Uint8Array} bytes 字节序列
  * @returns {string} hex
  */

@@ -32,6 +32,7 @@ if (!dataPath || !user) {
 }
 
 /**
+ * 解析用户数据目录（支持自定义 UserDictionary）。
  * @param {string} root data 根目录
  * @param {string} username 用户名
  * @returns {string} 用户数据目录
@@ -45,6 +46,7 @@ function resolveUserDictionary(root, username) {
 }
 
 /**
+ * 从磁盘读取联邦 identity 密钥对。
  * @param {string} userDir 用户目录
  * @returns {{ identityPubKeyHex: string, secretHex: string }} 联邦 identity
  */
@@ -57,6 +59,7 @@ function loadFederationIdentity(userDir) {
 }
 
 /**
+ * 读取或生成 dmIntro nonce。
  * @param {string} userDir 用户目录
  * @returns {string} base64url dmIntro nonce
  */

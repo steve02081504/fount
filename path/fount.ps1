@@ -1531,7 +1531,13 @@ public class ExplorerRefresher {
 	}
 }
 
-if ($args[0] -eq 'clean') {
+if ($args[0] -eq 'test') {
+	$testArgs = @()
+	if ($args.Count -gt 1) { $testArgs = $args[1..($args.Count - 1)] }
+	deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @testArgs
+	exit $LASTEXITCODE
+}
+elseif ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		if ($args[1] -eq 'force') {
@@ -1539,6 +1545,7 @@ if ($args[0] -eq 'clean') {
 			Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
 		}
 	}
+	Remove-Item -Path "$FOUNT_DIR/data/test" -Recurse -Force -ErrorAction Ignore
 	Write-Host (Get-I18n -key 'clean.cleaningDenoCaches')
 	deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host (Get-I18n -key 'clean.cleaningOldPwshModules')

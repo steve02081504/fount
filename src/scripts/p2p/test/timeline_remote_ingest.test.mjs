@@ -7,6 +7,7 @@ import { validateRemoteTimelineEvent } from '../timeline/remote_ingest.mjs'
 const owner = 'a'.repeat(64) + 'b'.repeat(64)
 
 /**
+ * 返回恒等规范化函数。
  * @param {object} e 事件
  * @returns {object} 规范化后的事件（测试用恒等）
  */

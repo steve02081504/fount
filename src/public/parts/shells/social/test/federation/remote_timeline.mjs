@@ -3,7 +3,10 @@
  */
 import { Buffer } from 'node:buffer'
 
-/** @returns {Uint8Array} 32 字节随机种子。 */
+/**
+ * 生成随机 32 字节种子。
+ * @returns {Uint8Array} 32 字节随机种子。
+ */
 export function randomSeed() {
 	return new Uint8Array(Buffer.from(globalThis.crypto.getRandomValues(new Uint8Array(32))))
 }

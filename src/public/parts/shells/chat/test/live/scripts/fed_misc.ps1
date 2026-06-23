@@ -1,12 +1,12 @@
 # L4 federation misc: rebind, rotate-room-secret, join-snapshot, history-want,
 # discovery, POST events remote verify, reputation slash fanout, owner-succession.
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'fed_l4_common.ps1')
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 $gid = $null; $cid = $null; $bPub = $null
 
 Write-Host "=== Setup: open group + join ===" -ForegroundColor Cyan
-$setup = Setup-OpenGroupJoin 'FedMisc' 'misc-seed'
+$setup = Initialize-OpenGroupJoin 'FedMisc' 'misc-seed'
 $gid = $setup.groupId; $cid = $setup.channelId
 
 # 先在 A 侧稳定解析“活跃且非 founder”的对端成员，避免后续 slash / owner-succession 目标漂移。
@@ -34,55 +34,55 @@ else {
 }
 
 Write-Host "`n=== 1. Federation control plane ===" -ForegroundColor Cyan
-T 'A POST federation/rebind' {
+Test-Case 'A POST federation/rebind' {
 	$r = Api $FedA POST "/groups/$gid/federation/rebind" @{ channelId = $cid }
 	$r.status -eq 200 -and ($r.json.ok -eq $true -or $r.json.skipped -eq $true)
 }
-T 'A POST federation/rotate-room-secret' {
+Test-Case 'A POST federation/rotate-room-secret' {
 	$r = Api $FedA POST "/groups/$gid/federation/rotate-room-secret" @{}
 	$r.status -eq 200 -and [bool]$r.json.mqttRoomSecret
 }
-T 'B POST federation/join-snapshot' {
+Test-Case 'B POST federation/join-snapshot' {
 	$r = Api $FedB POST "/groups/$gid/federation/join-snapshot" @{}
 	$r.status -eq 200
 }
-T 'B POST federation/catchup after rotate' {
+Test-Case 'B POST federation/catchup after rotate' {
 	$r = Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 5000 }
 	$r.status -eq 200
 }
-T 'members still>=2 after rotate' {
+Test-Case 'members still>=2 after rotate' {
 	[bool](Wait-FedMembers $FedB $gid)
 }
 
 Write-Host "`n=== 2. history-want ===" -ForegroundColor Cyan
 $histMsg = $null
-T 'A posts history-want target' {
+Test-Case 'A posts history-want target' {
 	$r = Api $FedA POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'history-want-target' } }
 	if ($r.status -ne 201) { throw "send $($r.status)" }
 	$script:histMsg = $r.json.event.id
 	[bool]$script:histMsg
 }
-T 'B POST channels/:id/history-want' {
+Test-Case 'B POST channels/:id/history-want' {
 	$r = Api $FedB POST "/groups/$gid/channels/$cid/history-want" @{ limit = 50 }
 	$r.status -eq 200 -and @($r.json.messages).Count -ge 1
 }
 
 Write-Host "`n=== 3. Discovery ===" -ForegroundColor Cyan
-T 'A GET /discovery' {
+Test-Case 'A GET /discovery' {
 	$r = Api $FedA GET '/discovery?limit=20'
 	$r.status -eq 200
 }
-T 'A POST /discovery/refresh' {
+Test-Case 'A POST /discovery/refresh' {
 	$r = Api $FedA POST '/discovery/refresh' @{}
 	$r.status -eq 200
 }
-T 'B GET /discovery sees index' {
+Test-Case 'B GET /discovery sees index' {
 	$r = Api $FedB GET '/discovery?limit=20'
 	$r.status -eq 200
 }
 
 Write-Host "`n=== 4. POST events remote verify (B ingests A-signed row) ===" -ForegroundColor Cyan
-T 'B applies signed event from A via POST /events' {
+Test-Case 'B applies signed event from A via POST /events' {
 	$ev = Api $FedA GET "/groups/$gid/events?limit=5"
 	if ($ev.status -ne 200) { throw "events $($ev.status)" }
 	$row = @($ev.json.events | Where-Object { $_.signature -and $_.id })[0]
@@ -94,7 +94,7 @@ T 'B applies signed event from A via POST /events' {
 
 Write-Host "`n=== 5. Reputation slash fanout ===" -ForegroundColor Cyan
 if ($bPub) {
-	T 'A verified reputation/slash on B' {
+	Test-Case 'A verified reputation/slash on B' {
 		$tips = Api $FedA GET "/groups/$gid/dag/tips"
 		$tip = @($tips.json.tips)[0]
 		$r = Api $FedA POST "/groups/$gid/reputation/slash" @{
@@ -109,7 +109,7 @@ if ($bPub) {
 		$ev = Api $FedA GET "/groups/$gid/events?limit=20"
 		@($ev.json.events | Where-Object { $_.type -eq 'reputation_slash' }).Count -ge 1
 	}
-	T 'B GET reputation reflects slash (fanout/catchup)' {
+	Test-Case 'B GET reputation reflects slash (fanout/catchup)' {
 		$ok = PollUntil 300 4 {
 			Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 } | Out-Null
 			Api $FedB POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
@@ -124,12 +124,12 @@ if ($bPub) {
 	}
 }
 else {
-	S 'reputation slash fanout' 'B member pubkey not resolved'
+	Skip-Case 'reputation slash fanout' 'B member pubkey not resolved'
 }
 
 Write-Host "`n=== 6. Owner-succession cross-node ===" -ForegroundColor Cyan
 if ($ownerSuccessionTarget) {
-	T 'A POST owner-succession → B' {
+	Test-Case 'A POST owner-succession → B' {
 		$st = Api $FedA GET "/groups/$gid/state"
 		if ($st.status -ne 200) { throw "state $($st.status)" }
 		$activeOnA = @($st.json.state.members | Where-Object { $_.pubKeyHash -eq $ownerSuccessionTarget }).Count -ge 1
@@ -143,7 +143,7 @@ if ($ownerSuccessionTarget) {
 		Api $FedA POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 		$r.json.newOwnerPubKeyHash -eq $ownerSuccessionTarget
 	}
-	T 'B state sees new owner (federation)' {
+	Test-Case 'B state sees new owner (federation)' {
 		$hasTransferredFounder = {
 			param($state)
 			if ($state.groupMeta.ownerPubKeyHash -eq $ownerSuccessionTarget) { return $true }
@@ -188,12 +188,12 @@ if ($ownerSuccessionTarget) {
 	}
 }
 else {
-	S 'owner-succession cross-node' 'B member pubkey not resolved'
+	Skip-Case 'owner-succession cross-node' 'B member pubkey not resolved'
 }
 
 # fork/block-opposing 纯逻辑由 chat/test/fork_block_opposing.test.mjs 覆盖；
 # 双节点 HTTP 难以可靠构造带治理事件的对立 DAG 分叉。
 
-Cleanup-Group $gid
+Clear-FedGroup $gid
 Write-FedSummary 'FED-MISC' $gid
-if ($script:fail -gt 0) { exit 1 }
+Complete-LiveScript
