@@ -684,7 +684,7 @@ main {
 	line-height: 1;
 }
 
-.modal {
+.save-modal {
 	position: fixed;
 	inset: 0;
 	background: rgb(0 0 0 / 55%);
@@ -695,11 +695,11 @@ main {
 	padding: 1rem;
 }
 
-.modal-card {
+.save-modal-card {
 	width: min(100%, 360px);
 }
 
-.modal-card select {
+.save-modal-card select {
 	width: 100%;
 	box-sizing: border-box;
 	margin: 0.75rem 0;
@@ -711,12 +711,12 @@ main {
 	font: inherit;
 }
 
-.modal-actions {
+.save-modal-actions {
 	display: flex;
 	gap: 0.5rem;
 }
 
-.modal-actions button {
+.save-modal-actions button {
 	background: #3b82f6;
 	border: none;
 	color: white;

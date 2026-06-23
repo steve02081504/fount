@@ -3,6 +3,7 @@ import {
 	refreshQuotePreview,
 	syncGroupRefInComposer,
 } from './composer.mjs'
+import { parseActionKey, queryByActionKey } from './lib/actionKey.mjs'
 import {
 	formatChatDmFromSocial,
 	formatSocialProfileHref,
@@ -91,12 +92,15 @@ export async function handleMainClick(appContext, event) {
 	}
 	const copyLinkBtn = target.closest('[data-copy-link]')
 	if (copyLinkBtn instanceof HTMLElement && copyLinkBtn.dataset.copyLink) {
-		const [entityHash, postId] = copyLinkBtn.dataset.copyLink.split(':')
-		const runUri = formatSocialProfileRunUri(entityHash, postId)
-		const pageUrl = `${window.location.origin}${formatSocialProfileHref(entityHash, postId)}`
-		await copyTextToClipboard(`${runUri}\n${pageUrl}`)
-		copyLinkBtn.textContent = appContext.geti18n('social.actions.copied')
-		setTimeout(() => { copyLinkBtn.textContent = appContext.geti18n('social.actions.copyLink') }, 1500)
+		const parsed = parseActionKey(copyLinkBtn.dataset.copyLink)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const runUri = formatSocialProfileRunUri(entityHash, postId)
+			const pageUrl = `${window.location.origin}${formatSocialProfileHref(entityHash, postId)}`
+			await copyTextToClipboard(`${runUri}\n${pageUrl}`)
+			copyLinkBtn.textContent = appContext.geti18n('social.actions.copied')
+			setTimeout(() => { copyLinkBtn.textContent = appContext.geti18n('social.actions.copyLink') }, 1500)
+		}
 	}
 	if (target.id === 'saveMetaBtn') {
 		await appContext.socialApi('/profile/meta', {
@@ -130,44 +134,52 @@ export async function handleMainClick(appContext, event) {
 	}
 	const likeBtn = target.closest('[data-like]')
 	if (likeBtn instanceof HTMLElement && likeBtn.dataset.like) {
-		const [entityHash, postId] = likeBtn.dataset.like.split(':')
-		const liked = likeBtn.dataset.liked === '1'
-		await appContext.socialApi('/profile/like', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, postId, like: !liked }),
-		})
-		await refreshVisiblePosts(appContext)
+		const parsed = parseActionKey(likeBtn.dataset.like)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const liked = likeBtn.dataset.liked === '1'
+			await appContext.socialApi('/profile/like', {
+				method: 'POST',
+				body: JSON.stringify({ entityHash, postId, like: !liked }),
+			})
+			await refreshVisiblePosts(appContext)
+		}
 	}
 	const repostBtn = target.closest('[data-repost]')
-	if (repostBtn instanceof HTMLElement && repostBtn.dataset.repost) {
-		const [entityHash, postId] = repostBtn.dataset.repost.split(':')
-		document.querySelector(`[data-repost-for="${entityHash}:${postId}"]`)?.classList.toggle('hidden')
-	}
+	if (repostBtn instanceof HTMLElement && repostBtn.dataset.repost)
+		queryByActionKey('data-repost-for', repostBtn.dataset.repost)?.classList.toggle('hidden')
 	const submitRepostBtn = target.closest('[data-submit-repost]')
 	if (submitRepostBtn instanceof HTMLElement && submitRepostBtn.dataset.submitRepost) {
-		const [entityHash, postId] = submitRepostBtn.dataset.submitRepost.split(':')
-		const panel = document.querySelector(`[data-repost-for="${entityHash}:${postId}"]`)
+		const actionKey = submitRepostBtn.dataset.submitRepost
+		const panel = queryByActionKey('data-repost-for', actionKey)
 		const textarea = panel?.querySelector('textarea')
 		const comment = textarea?.value.trim() || ''
-		await appContext.socialApi('/profile/repost', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, postId, comment }),
-		})
-		if (textarea) textarea.value = ''
-		panel?.classList.add('hidden')
-		await refreshVisiblePosts(appContext)
+		const parsed = parseActionKey(actionKey)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			await appContext.socialApi('/profile/repost', {
+				method: 'POST',
+				body: JSON.stringify({ entityHash, postId, comment }),
+			})
+			if (textarea) textarea.value = ''
+			panel?.classList.add('hidden')
+			await refreshVisiblePosts(appContext)
+		}
 	}
 	const quoteBtn = target.closest('[data-quote]')
 	if (quoteBtn instanceof HTMLElement && quoteBtn.dataset.quote) {
-		const [entityHash, postId] = quoteBtn.dataset.quote.split(':')
-		const card = quoteBtn.closest('.post-card')
-		const text = decodeURIComponent(card?.dataset.postText || '')
-		appContext.state.pendingQuoteRef = { entityHash, postId, text }
-		await refreshQuotePreview(appContext)
-		if (document.getElementById('composer')?.classList.contains('hidden'))
-			await switchView(appContext, 'feed')
-		document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
-		document.getElementById('postText')?.focus()
+		const parsed = parseActionKey(quoteBtn.dataset.quote)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const card = quoteBtn.closest('.post-card')
+			const text = decodeURIComponent(card?.dataset.postText || '')
+			appContext.state.pendingQuoteRef = { entityHash, postId, text }
+			await refreshQuotePreview(appContext)
+			if (document.getElementById('composer')?.classList.contains('hidden'))
+				await switchView(appContext, 'feed')
+			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
+			document.getElementById('postText')?.focus()
+		}
 	}
 	const deleteBtn = target.closest('button[data-delete]')
 	if (deleteBtn instanceof HTMLElement && deleteBtn.dataset.delete) {
@@ -179,52 +191,59 @@ export async function handleMainClick(appContext, event) {
 	}
 	const repliesBtn = target.closest('[data-replies]')
 	if (repliesBtn instanceof HTMLElement && repliesBtn.dataset.replies) {
-		const [entityHash, postId] = repliesBtn.dataset.replies.split(':')
-		const panel = document.querySelector(`[data-replies-for="${entityHash}:${postId}"]`)
-		if (!panel) return
-		panel.classList.toggle('hidden')
-		panel.dataset.repliesFor = `${entityHash}:${postId}`
-		if (panel.dataset.loaded) return
-		const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
-		await renderRepliesPanel(appContext, panel, data.replies || [])
-		panel.dataset.loaded = '1'
+		const actionKey = repliesBtn.dataset.replies
+		const parsed = parseActionKey(actionKey)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const panel = queryByActionKey('data-replies-for', actionKey)
+			if (!panel) return
+			panel.classList.toggle('hidden')
+			if (panel.dataset.loaded) return
+			const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
+			await renderRepliesPanel(appContext, panel, data.replies || [])
+			panel.dataset.loaded = '1'
+		}
 	}
 	const submitReplyBtn = target.closest('[data-submit-reply]')
 	if (submitReplyBtn instanceof HTMLElement && submitReplyBtn.dataset.submitReply) {
-		const [entityHash, postId] = submitReplyBtn.dataset.submitReply.split(':')
-		const panel = document.querySelector(`[data-replies-for="${entityHash}:${postId}"]`)
-		const textarea = panel?.querySelector('textarea')
-		const text = textarea?.value.trim()
-		if (!text) return
-		await submitReply(appContext, entityHash, postId, text)
-		textarea.value = ''
-		const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
-		await renderRepliesPanel(appContext, panel, data.replies || [])
-		panel.dataset.loaded = '1'
-		panel.classList.remove('hidden')
-		await refreshVisiblePosts(appContext)
+		const actionKey = submitReplyBtn.dataset.submitReply
+		const parsed = parseActionKey(actionKey)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const panel = queryByActionKey('data-replies-for', actionKey)
+			const textarea = panel?.querySelector('textarea')
+			const text = textarea?.value.trim()
+			if (!text) return
+			await submitReply(appContext, entityHash, postId, text)
+			textarea.value = ''
+			const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
+			await renderRepliesPanel(appContext, panel, data.replies || [])
+			panel.dataset.loaded = '1'
+			panel.classList.remove('hidden')
+			await refreshVisiblePosts(appContext)
+		}
 	}
 	const saveBtn = target.closest('[data-save]')
 	if (saveBtn instanceof HTMLElement && saveBtn.dataset.save) {
-		const actionKey = saveBtn.dataset.save
-		const sep = actionKey.lastIndexOf(':')
-		if (sep < 0) return
-		const entityHash = actionKey.slice(0, sep)
-		const postId = actionKey.slice(sep + 1)
-		await openSaveModal(appContext, entityHash, postId, saveBtn)
+		const parsed = parseActionKey(saveBtn.dataset.save)
+		if (parsed)
+			await openSaveModal(appContext, parsed.entityHash, parsed.postId, saveBtn)
 	}
 	if (target.dataset.removeSaved) {
-		const [entityHash, postId] = target.dataset.removeSaved.split(':')
-		const folderId = target.dataset.savedFolder || undefined
-		await appContext.socialApi('/saved-posts/remove', {
-			method: 'POST',
-			body: JSON.stringify({
-				entityHash,
-				postId,
-				...folderId ? { folderId } : {},
-			}),
-		})
-		await loadSaved(appContext)
+		const parsed = parseActionKey(target.dataset.removeSaved)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const folderId = target.dataset.savedFolder || undefined
+			await appContext.socialApi('/saved-posts/remove', {
+				method: 'POST',
+				body: JSON.stringify({
+					entityHash,
+					postId,
+					...folderId ? { folderId } : {},
+				}),
+			})
+			await loadSaved(appContext)
+		}
 	}
 	if (target.dataset.translate) {
 		const cardBody = target.closest('.post-card')?.querySelector('.body')

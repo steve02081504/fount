@@ -1,4 +1,3 @@
-import { i18nElement } from '../../../../scripts/i18n.mjs'
 import { mountTemplate } from '../../../../scripts/template.mjs'
 
 import {
@@ -31,7 +30,6 @@ export async function refreshQuotePreview(appContext) {
 	if (generation !== quotePreviewGeneration) return
 	const body = panel.querySelector('.quote-preview-body')
 	if (body) body.innerHTML = appContext.renderQuoteBlockHtml(appContext.state.pendingQuoteRef)
-	i18nElement(panel)
 	panel.querySelector('.clear-quote-btn')?.addEventListener('click', () => {
 		appContext.state.pendingQuoteRef = null
 		void refreshQuotePreview(appContext)
@@ -55,7 +53,6 @@ export async function refreshGroupRefPreview(appContext) {
 	await mountTemplate(panel, 'templates/group_ref_preview', {})
 	const body = panel.querySelector('.group-ref-preview-body')
 	if (body) body.innerHTML = renderGroupRefBlockHtml(appContext.state.pendingGroupRef)
-	i18nElement(panel)
 	panel.querySelector('.clear-group-ref-btn')?.addEventListener('click', () => {
 		appContext.state.pendingGroupRef = null
 		syncGroupRefInComposer(appContext, null)

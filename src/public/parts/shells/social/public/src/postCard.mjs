@@ -1,5 +1,6 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 
+import { formatActionKey } from './lib/actionKey.mjs'
 import { renderGroupRefBlockHtml } from './lib/groupRef.mjs'
 import { formatSocialProfileHref } from './lib/runUri.mjs'
 import { renderMediaHtml } from './media.mjs'
@@ -36,7 +37,7 @@ export function createPostCardBuilder(deps) {
 		const isRepost = item.kind === 'repost'
 		const actionEntity = item.targetEntityHash || item.entityHash
 		const actionPostId = item.targetPostId || item.postId
-		const actionKey = `${actionEntity}:${actionPostId}`
+		const actionKey = formatActionKey(actionEntity, actionPostId)
 		const originalAuthor = isRepost ? item.targetEntityHash : item.entityHash
 		const protectedLabel = geti18n('social.profile.protectedPost')
 		const text = item.post?.content?.text || (item.post?.content?.protected ? protectedLabel : '')
