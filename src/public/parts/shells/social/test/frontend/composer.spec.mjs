@@ -1,4 +1,12 @@
-import { test, expect, openSocialHome, expectPostInFeed, findPostCard } from './fixtures.mjs'
+import {
+	test,
+	expect,
+	openSocialHome,
+	expectPostInFeed,
+	findPostCard,
+	createTestGroup,
+	TINY_PNG_BUFFER,
+} from './fixtures.mjs'
 
 test.describe('Social composer', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -63,6 +71,14 @@ test.describe('Social composer', () => {
 		await expect(page.locator('.mention-option').first()).toBeVisible()
 	})
 
+	test('mention autocomplete inserts selected entity', async ({ page }) => {
+		await page.locator('#postText').fill('@')
+		await expect(page.locator('.mention-panel .mention-option').first()).toBeVisible({ timeout: 20_000 })
+		await page.locator('.mention-panel .mention-option').first().click()
+		const value = await page.locator('#postText').inputValue()
+		expect(value).toMatch(/^@[\da-f]{8,128}$/iu)
+	})
+
 	test('visibility selector is available', async ({ page }) => {
 		const select = page.locator('#postVisibility')
 		await expect(select).toBeVisible()
@@ -81,5 +97,42 @@ test.describe('Social composer', () => {
 	test('emoji picker opens from composer', async ({ page }) => {
 		await page.locator('#emojiPickBtn').click()
 		await expect(page.locator('#fount-shared-emoji-picker')).toBeVisible({ timeout: 20_000 })
+	})
+
+	test('emoji picker inserts token into composer', async ({ page }) => {
+		await page.locator('#postText').fill('hello ')
+		await page.locator('#emojiPickBtn').click()
+		const picker = page.locator('#fount-shared-emoji-picker')
+		await expect(picker).toBeVisible({ timeout: 20_000 })
+		await picker.locator('button').first().click()
+		await expect(page.locator('#postText')).not.toHaveValue('hello ')
+	})
+
+	test('media upload shows preview and publishes image post', async ({ page, publishPost }) => {
+		await page.locator('#mediaInput').setInputFiles({
+			name: 'pw-test.png',
+			mimeType: 'image/png',
+			buffer: TINY_PNG_BUFFER,
+		})
+		await expect(page.locator('#mediaPreview:not(.hidden) .media-chip img'))
+			.toBeVisible({ timeout: 30_000 })
+		const text = `media-post ${Date.now()}`
+		const { postId } = await publishPost(text)
+		const card = await findPostCard(page, postId)
+		await expect(card.locator('.post-media img.post-media-item')).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('group ref picker links chat group in post', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await createTestGroup(baseUrl, apiKey)
+		await openSocialHome(page, baseUrl)
+		const groupSelect = page.locator('#linkGroupSelect')
+		await expect(groupSelect).toBeVisible({ timeout: 30_000 })
+		await groupSelect.selectOption(`${groupId}\t${channelId}`)
+		await expect(page.locator('#groupRefPreview')).toBeVisible({ timeout: 20_000 })
+		const text = `group-ref ${Date.now()}`
+		await page.locator('#postText').fill(text)
+		await page.locator('#postBtn').click()
+		await expect(page.locator('#postText')).toHaveValue('')
+		await expect(page.locator('#feedList .group-ref-block').first()).toBeVisible({ timeout: 30_000 })
 	})
 })

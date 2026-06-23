@@ -57,4 +57,29 @@ test.describe('Chat secondary pages', () => {
 		await page.locator('#filter-input').fill(name.slice(0, 12))
 		await expect(item).toBeVisible({ timeout: 30_000 })
 	})
+
+	test('history list sort select toggles order mode', async ({ page, baseUrl, apiKey }) => {
+		await openFreshGroupChannel(page, baseUrl, apiKey)
+		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
+		const sortSelect = page.locator('#sort-select')
+		await expect(sortSelect).toHaveValue('time_desc')
+		await sortSelect.selectOption('time_asc')
+		await expect(sortSelect).toHaveValue('time_asc')
+		await expect(page.locator('.chat-list-item').first()).toBeVisible({ timeout: 60_000 })
+	})
+
+	test('settings general tab shows group name field', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		await expect(page.locator('#save-group-settings')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#group-name, input[name="name"]').first()).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('stickers page switches tabs', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
+		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
+		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/)
+		await expect(page.locator('#packs-container')).toBeVisible()
+	})
 })

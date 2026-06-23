@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import { request as playwrightRequest } from '@playwright/test'
 import { createFountFixtures } from 'fount/scripts/test/playwright_fixtures.mjs'
 import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright_guards.mjs'
@@ -287,6 +289,37 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
 		await req.dispose()
 	}
 }
+
+/**
+ * 通过 Chat API 创建测试群（供 Social 群关联 composer 烟测）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {{ name?: string }} [opts] - 可选项。
+ * @returns {Promise<{ groupId: string, channelId: string }>} 群与默认频道 id。
+ */
+export async function createTestGroup(baseUrl, apiKey, opts = {}) {
+	const name = opts.name ?? `social-fe-group-${Date.now()}`
+	const req = await playwrightRequest.newContext()
+	try {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:chat/groups/?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { name, description: 'social frontend test' } },
+		)
+		if (!res.ok()) throw new Error(`createTestGroup failed: ${res.status()}`)
+		const data = await res.json()
+		if (!data.groupId) throw new Error('groupId missing')
+		return { groupId: data.groupId, channelId: data.defaultChannelId || 'default' }
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/** 1×1 PNG，供 composer 媒体上传烟测。 */
+export const TINY_PNG_BUFFER = Buffer.from(
+	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+	'base64',
+)
 
 /**
  * 读取当前测试用户的 viewer entityHash。

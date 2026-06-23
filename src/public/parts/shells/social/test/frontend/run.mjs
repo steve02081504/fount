@@ -36,7 +36,7 @@ function nodeOpts(port) {
 		port,
 		username: TEST_USERNAME,
 		apiKey: process.env.FOUNT_TEST_FRONTEND_KEY || `fount-social-fe-key-${port}`,
-		loadParts: ['shells/social'],
+		loadParts: ['shells/social', 'shells/chat'],
 		p2p: true,
 		bootstrap: join(__dirname, '../node_bootstrap.mjs'),
 	}

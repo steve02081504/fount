@@ -62,4 +62,33 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('#hub-overlay-body #federation-relay-urls')).toBeVisible({ timeout: 30_000 })
 		await page.locator('#federation-close').click()
 	})
+
+	test('group header menu opens and manage navigates to settings', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await page.locator('#hub-group-header').click()
+		await expect(page.locator('.hub-group-menu-manage')).toBeVisible({ timeout: 10_000 })
+		await page.locator('.hub-group-menu-manage').click()
+		await expect(page).toHaveURL(
+			new RegExp(`/parts/shells:chat/settings/#settings:${encodeURIComponent(groupId)}`),
+			{ timeout: 30_000 },
+		)
+		await expect(page.locator('#group-settings-container')).toBeVisible({ timeout: 60_000 })
+	})
+
+	test('files drawer opens from header button', async ({ page, groupChannel: _ }) => {
+		await expect(page.locator('#hub-header-files-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#hub-header-files-button').click()
+		await expect(page.locator('#hub-files-title')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#hub-files-list')).toBeVisible()
+	})
+
+	test('discovery panel opens from federation settings', async ({ page, baseUrl, apiKey }) => {
+		await openFreshGroupChannel(page, baseUrl, apiKey)
+		await page.locator('#hub-federation-settings-button').click()
+		await expect(page.locator('#federation-open-discovery')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#federation-open-discovery').click()
+		await expect(page.locator('dialog [data-discovery-list]')).toBeVisible({ timeout: 30_000 })
+		await page.locator('dialog [data-discovery-close]').click()
+		await expect(page.locator('dialog [data-discovery-list]')).toHaveCount(0, { timeout: 10_000 })
+	})
 })

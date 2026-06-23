@@ -68,6 +68,23 @@ test.describe('Social secondary views', () => {
 			.toBeVisible({ timeout: 20_000 })
 	})
 
+	test('notification view link opens profile', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`notif-link ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
+		await card.locator('[data-replies]').click()
+		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
+		await panel.locator('textarea').fill(`notif-link-reply ${Date.now()}`)
+		await panel.locator('[data-submit-reply]').click()
+		await page.locator('.nav-btn[data-view="feed"]').click()
+		await page.locator('.nav-btn[data-view="notifications"]').click()
+		const notifCard = page.locator('#notificationsView .notification-card').first()
+		await expect(notifCard).toBeVisible({ timeout: 30_000 })
+		await notifCard.locator('a.link-btn').click()
+		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+	})
+
 	test('notifications mark all read button is available', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`markall-parent ${Date.now()}`)
 		const card = await findPostCard(page, postId)

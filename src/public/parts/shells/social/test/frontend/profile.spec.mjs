@@ -80,15 +80,20 @@ test.describe('Social profile', () => {
 			followBtn.click(),
 		])
 		await expect(followBtn).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
+		await page.locator('.nav-btn[data-view="profile"]').click()
+		await expect(page.locator('#profileView .profile-following')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#profileView .following-link')).toContainText(dummy.slice(0, 8))
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
+		await waitForSocialAppReady(page)
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			followBtn.click(),
+			page.locator(`[data-follow="${dummy}"]`).click(),
 		])
-		await expect(followBtn).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
+		await expect(page.locator(`[data-follow="${dummy}"]`)).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
 	})
 
 	test('dm button navigates to chat contact link', async ({ page, baseUrl }) => {

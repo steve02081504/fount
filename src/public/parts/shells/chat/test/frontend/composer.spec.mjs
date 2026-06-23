@@ -48,4 +48,23 @@ test.describe('Chat composer', () => {
 		expect(postJson.event?.type).toBe('message')
 		await expectMessageInChat(page, text)
 	})
+
+	test('emoji picker opens from composer', async ({ page, groupChannel: _ }) => {
+		await page.locator('#hub-emoji-button').click()
+		await expect(page.locator('#hub-emoji-picker')).toHaveClass(/show/)
+		await expect(page.locator('#hub-emoji-tabs .hub-emoji-tab').first()).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('sticker picker opens from composer', async ({ page, groupChannel: _ }) => {
+		await page.locator('#hub-sticker-button').click()
+		await expect(page.locator('#hub-sticker-picker')).toHaveClass(/show/)
+		await expect(page.locator('#hub-sticker-grid')).toBeVisible()
+	})
+
+	test('vote modal opens and cancels', async ({ page, groupChannel: _ }) => {
+		await page.locator('#hub-vote-button').click()
+		await expect(page.locator('#hub-vote-modal')).toBeVisible({ timeout: 10_000 })
+		await page.locator('#hub-vote-cancel-button').click()
+		await expect(page.locator('#hub-vote-modal')).toBeHidden({ timeout: 10_000 })
+	})
 })

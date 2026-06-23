@@ -110,4 +110,29 @@ test.describe('Chat message actions', () => {
 		await expect(page.locator('[data-message-context-menu]')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('[data-message-context-menu] [data-action="copy"]')).toBeVisible()
 	})
+
+	test('copy from context menu writes message text', async ({ page, groupChannel, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+		const { groupId, channelId } = groupChannel
+		const text = `copy-me ${Date.now()}`
+		await sendMessageViaComposer(page, groupId, channelId, text)
+		const row = await expectMessageInChat(page, text)
+		await row.click({ button: 'right' })
+		await page.locator('[data-message-context-menu] [data-action="copy"]').click()
+		await expect.poll(async () => page.evaluate(() => navigator.clipboard.readText()))
+			.toBe(text)
+	})
+
+	test('bookmark row click highlights target message', async ({ page, groupChannel }) => {
+		const { groupId, channelId } = groupChannel
+		const anchor = `bookmark-scroll ${Date.now()}`
+		await sendMessageViaComposer(page, groupId, channelId, anchor)
+		const row = await expectMessageInChat(page, anchor)
+		await row.hover()
+		await row.locator('.hub-message-action[data-action="bookmark"]').click()
+		const bookmarkRow = page.locator('.hub-bookmark-row').filter({ hasText: anchor.slice(0, 20) })
+		await expect(bookmarkRow).toBeVisible({ timeout: 30_000 })
+		await bookmarkRow.click()
+		await expect(row).toHaveClass(/ring-primary/, { timeout: 30_000 })
+	})
 })

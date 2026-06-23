@@ -1,10 +1,21 @@
-import { test, expect, openSocialHome, findPostCard } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
 
 test.describe('Social post actions', () => {
 	test.setTimeout(600_000)
 
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
+	})
+
+	test('dm from post card navigates to chat', async ({ page, baseUrl, apiKey, publishPost }) => {
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const { postId } = await publishPost(`dm-card ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		await card.locator(`[data-dm="${entityHash}"]`).click()
+		await expect(page).toHaveURL(
+			new RegExp(`/parts/shells:chat/hub/\\?contact=${entityHash}`),
+			{ timeout: 20_000 },
+		)
 	})
 
 	test('like and unlike toggle', async ({ page, publishPost }) => {

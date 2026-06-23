@@ -58,6 +58,20 @@ test.describe('Social saved posts', () => {
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
+	test('saved link opens profile with post', async ({ page, baseUrl, apiKey, publishPost }) => {
+		const { postId } = await publishPost(`saved-link ${Date.now()}`)
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const saveRes = await page.request.post(
+			`${baseUrl}/api/parts/shells:social/saved-posts/add?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { entityHash, postId } },
+		)
+		expect(saveRes.ok()).toBe(true)
+		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator(`#savedView a[href*="${postId}"]`).click()
+		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+	})
+
 	test('remove saved post from unfiled list', async ({ page, baseUrl, apiKey, publishPost }) => {
 		const { postId } = await publishPost(`remove-saved ${Date.now()}`)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)

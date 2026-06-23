@@ -74,6 +74,19 @@ test.describe('Social feed', () => {
 		await expectPostInFeed(page, postId)
 	})
 
+	test('feed refresh clears active search', async ({ page, publishPost }) => {
+		const tag = `refreshclr${Date.now()}`
+		const { postId } = await publishPost(`refresh-clear #${tag}`)
+		await searchAndExpectPost(page, `#${tag}`, postId)
+		await Promise.all([
+			waitForFeedLoad(page),
+			page.locator('#feedRefreshBtn').click(),
+		])
+		await expect(page.locator('#feedSearchInput')).toHaveValue('')
+		await expect(page.locator('#feedSearchClearBtn')).toBeHidden()
+		await expectPostInFeed(page, postId)
+	})
+
 	test('hashtag link in post body opens search', async ({ page, publishPost }) => {
 		const tag = `bodytag${Date.now()}`
 		const { postId } = await publishPost(`see #${tag} here`)
