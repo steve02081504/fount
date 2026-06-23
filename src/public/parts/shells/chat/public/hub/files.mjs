@@ -5,7 +5,7 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、core/domUtils
  */
-import { confirmI18n, i18nElement, promptI18n } from '../../../../scripts/i18n.mjs'
+import { confirmI18n, promptI18n } from '../../../../scripts/i18n.mjs'
 import { mountTemplate, renderTemplate } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupApi.mjs'
@@ -210,10 +210,9 @@ export async function openFilesDrawer(drawer, handlers) {
 	}
 	setFilesDrawerOpen(true)
 	const host = document.getElementById('hub-files-list')
-	if (host) {
+	if (host) 
 		host.innerHTML = '<div class="text-sm opacity-60 py-8 text-center" data-i18n="chat.hub.filesLoading"></div>'
-		i18nElement(host)
-	}
+	
 	try {
 		await refreshFilesDrawer(drawer, handlers)
 		wireFilesDrawer(drawer, handlers)

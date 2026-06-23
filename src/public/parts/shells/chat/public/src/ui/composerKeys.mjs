@@ -20,6 +20,8 @@ export function isComposerSubmitKey(event) {
  * @returns {void}
  */
 export function bindComposerSubmit(textarea, onSubmit) {
+	if (textarea.dataset.composerSubmitBound) return
+	textarea.dataset.composerSubmitBound = '1'
 	textarea.addEventListener('keydown', (event) => {
 		if (!isComposerSubmitKey(event)) return
 		event.preventDefault()

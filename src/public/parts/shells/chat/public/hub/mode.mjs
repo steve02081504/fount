@@ -8,7 +8,7 @@
 import { mountTemplate } from '../../../../scripts/template.mjs'
 
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
-import { hubStore } from './core/state.mjs'
+import { hubStore, setHubState } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
 import {
@@ -19,12 +19,10 @@ import {
 	renderMemberList,
 } from './groupNav.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import {
 	clearPrivateGroupState,
 } from './privateGroup.mjs'
-
-/** @returns {Promise<typeof import('./messages/messages.mjs')>} 按需加载的重型 messages 模块图 */
-const messagesApi = () => import('./messages/messages.mjs')
 
 /**
  * 高亮左侧「群组 / 好友」模式切换按钮。
@@ -56,7 +54,6 @@ export async function setMode(mode) {
 	const keepPrivateGroupSession = mode === 'friends'
 		&& (hubStore.privateGroup.groupId || hubStore.friendChatEntering)
 	if (!keepPrivateGroupSession) {
-		const { cancelScheduledChannelRefresh } = await messagesApi()
 		cancelScheduledChannelRefresh()
 		closeGroupWebSocket()
 		clearPrivateGroupState()
@@ -64,23 +61,25 @@ export async function setMode(mode) {
 
 	if (mode === 'friends' && !keepPrivateGroupSession) {
 		updateFriendsHash()
-		const { disableComposer } = await messagesApi()
+		setHubState('currentGroupId', null)
+		setHubState('currentChannelId', null)
+		setHubState('currentState', null)
+		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer('chat.hub.composerDisabled')
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
 			iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
 		})
-		const channelTitle = document.getElementById('hub-channel-name-display')
-		channelTitle.dataset.i18n = 'chat.hub.friendsHeader'
+		document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
 	}
 
-	const { refreshHubHeaderButtons } = await messagesApi()
+	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
-	if (mode === 'friends') 
+	if (mode === 'friends')
 		if (isPrivateChatActive() && hubStore.currentState)
 			await renderHubChannelSidebar(hubStore.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
-	
+
 	else if (mode === 'groups')
 		if (!hubStore.currentGroupId || !hubStore.currentState) {
 			setPinsBookmarksWrapVisible(false)
@@ -92,11 +91,4 @@ export async function setMode(mode) {
 			await renderMemberList(hubStore.currentState)
 			await renderGroupInfoCard(hubStore.currentState)
 		}
-}
-
-/** 绑定模式切换 Tab 点击。 @returns {void} */
-export function wireModeTabs() {
-	document.querySelectorAll('.hub-server-item[data-mode]').forEach((el) => {
-		el.addEventListener('click', () => setMode(el.dataset.mode))
-	})
 }

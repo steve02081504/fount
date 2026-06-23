@@ -43,6 +43,10 @@ import {
 	refreshChannelMessagesView,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
+import {
+	cancelScheduledChannelRefresh,
+	scheduleDebouncedChannelRefresh,
+} from './channelRefreshScheduler.mjs'
 import { loadNonTextChannel } from './channelTypeRouter.mjs'
 import { bindChannelMessageActions } from './messageActionsHandlers.mjs'
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
@@ -55,8 +59,10 @@ import {
 } from './messageRender.mjs'
 import { wireMessageReactions } from './reactions.mjs'
 
-/** @type {ReturnType<typeof setTimeout> | null} */
-let channelIncrementalDebounceTimer = null
+/**
+ *
+ */
+export { cancelScheduledChannelRefresh }
 
 /** @type {HTMLElement | null} */
 let cachedMessagesContainer = null
@@ -396,14 +402,6 @@ export function scrollToBottom() {
 	container.scrollTop = container.scrollHeight
 }
 
-/** @returns {void} */
-export function cancelScheduledChannelRefresh() {
-	if (channelIncrementalDebounceTimer) {
-		clearTimeout(channelIncrementalDebounceTimer)
-		channelIncrementalDebounceTimer = null
-	}
-}
-
 /**
  * @param {string} eventId 消息 event id
  * @returns {boolean} 是否为乐观 pending 行
@@ -740,19 +738,11 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
  * @returns {void}
  */
 export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
-	if (immediate) {
-		if (channelIncrementalDebounceTimer) {
-			clearTimeout(channelIncrementalDebounceTimer)
-			channelIncrementalDebounceTimer = null
-		}
-		void refreshChannelMessagesIncremental()
-		return
-	}
-	if (channelIncrementalDebounceTimer) clearTimeout(channelIncrementalDebounceTimer)
-	channelIncrementalDebounceTimer = setTimeout(() => {
-		channelIncrementalDebounceTimer = null
-		void refreshChannelMessagesIncremental()
-	}, 200)
+	scheduleDebouncedChannelRefresh(
+		() => refreshChannelMessagesIncremental(),
+		200,
+		{ immediate },
+	)
 }
 
 /**

@@ -15,7 +15,6 @@ import {
 import { saveCustomEmojiFromRef } from '../src/customEmojis.mjs'
 import { saveStickerFromMessage } from '../src/saveStickerFromMessage.mjs'
 import { showTrustAuthorDialog } from '../src/trustAuthorDialog.mjs'
-import { bindComposerSubmit } from '../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
 
 import {
@@ -25,51 +24,23 @@ import {
 	toggleVoiceRecording,
 } from './composerFiles.mjs'
 import { hubStore } from './core/state.mjs'
-import { parseHash } from './core/urlHash.mjs'
 import { openFederationSettingsModal } from './federation/federationModal.mjs'
 import { wireForkActions } from './federation/forkActions.mjs'
 import { openFilesDrawer, wireFilesDrawerToggle } from './files.mjs'
 import { showGroupHeaderMenu } from './groupContextMenu.mjs'
-import { selectChannel } from './groupNav.mjs'
-import {
-	loadMessages,
-	submitComposer,
-} from './messages/messages.mjs'
-import { setMode, wireModeTabs } from './mode.mjs'
+import { loadMessages } from './messages/messages.mjs'
 import { openGroupSettingsModal } from './privateGroup.mjs'
-
-/**
- * 按内容高度调整主输入框（上限见 CSS `max-h-40`）。
- * @param {HTMLTextAreaElement} textarea 消息输入框
- * @returns {void}
- */
-function resizeMessageInput(textarea) {
-	textarea.style.height = 'auto'
-	textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`
-}
 
 /** 注册 Hub 页面 DOM 事件委托。 @returns {void} */
 export function wireEvents() {
-	const messageInput = document.getElementById('hub-message-input')
-	if (messageInput instanceof HTMLTextAreaElement) {
-		bindComposerSubmit(messageInput, () => { submitComposer() })
-		messageInput.addEventListener('input', () => {
-			resizeMessageInput(messageInput)
-		})
-		const attachPreview = document.getElementById('hub-attachment-preview')
-		addDragAndDropSupport(messageInput, selectedFiles, attachPreview)
-	}
+	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-message-input')
+	addDragAndDropSupport(messageInput, selectedFiles, document.getElementById('hub-attachment-preview'))
 
-	document.getElementById('hub-send-button').addEventListener('click', () => {
-		submitComposer()
-		messageInput?.focus()
-	})
-
-	document.getElementById('hub-voice-button')?.addEventListener('click', () => {
+	document.getElementById('hub-voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()
 	})
 
-	document.getElementById('hub-photo-button')?.addEventListener('click', () => {
+	document.getElementById('hub-photo-button').addEventListener('click', () => {
 		pickPhoto()
 	})
 
@@ -94,32 +65,30 @@ export function wireEvents() {
 		}
 	})
 
-	const voteModal = document.getElementById('hub-vote-modal')
-	const voteQuestion = document.getElementById('hub-vote-question')
-	const voteOptions = document.getElementById('hub-vote-options')
-	const voteHours = document.getElementById('hub-vote-hours')
-	document.getElementById('hub-vote-button')?.addEventListener('click', () => {
-		if (!hubStore.currentGroupId || !hubStore.currentChannelId || !(voteModal instanceof HTMLDialogElement)) return
-		if (voteQuestion instanceof HTMLInputElement) voteQuestion.value = ''
-		if (voteOptions instanceof HTMLTextAreaElement) {
-			voteOptions.value = ''
-			voteOptions.dataset.i18n = 'chat.hub.voteOptionDefault'
-		}
-		if (voteHours instanceof HTMLInputElement) voteHours.value = '24'
+	const voteModal = /** @type {HTMLDialogElement} */ document.getElementById('hub-vote-modal')
+	const voteQuestion = /** @type {HTMLInputElement} */ document.getElementById('hub-vote-question')
+	const voteOptions = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-vote-options')
+	const voteHours = /** @type {HTMLInputElement} */ document.getElementById('hub-vote-hours')
+	document.getElementById('hub-vote-button').addEventListener('click', () => {
+		if (!hubStore.currentGroupId || !hubStore.currentChannelId) return
+		voteQuestion.value = ''
+		voteOptions.value = ''
+		voteOptions.dataset.i18n = 'chat.hub.voteOptionDefault'
+		voteHours.value = '24'
 		voteModal.showModal()
 	})
-	document.getElementById('hub-vote-cancel-button')?.addEventListener('click', () => voteModal?.close())
-	document.getElementById('hub-vote-submit-button')?.addEventListener('click', async () => {
+	document.getElementById('hub-vote-cancel-button').addEventListener('click', () => voteModal.close())
+	document.getElementById('hub-vote-submit-button').addEventListener('click', async () => {
 		if (!hubStore.currentGroupId || !hubStore.currentChannelId) return
-		const question = voteQuestion instanceof HTMLInputElement ? voteQuestion.value.trim() : ''
+		const question = voteQuestion.value.trim()
 		if (!question) return
-		const optsRaw = voteOptions instanceof HTMLTextAreaElement ? voteOptions.value : ''
+		const optsRaw = voteOptions.value
 		const options = optsRaw.split(/[\n,，]/u).map(s => s.trim()).filter(Boolean)
 		if (options.length < 2) {
 			showToastI18n('error', 'chat.hub.voteMinOptions')
 			return
 		}
-		const hoursVal = voteHours instanceof HTMLInputElement ? Number(voteHours.value) : 0
+		const hoursVal = Number(voteHours.value)
 		const deadlineMs = Number.isFinite(hoursVal) && hoursVal > 0 ? hoursVal * 3600 * 1000 : 0
 		try {
 			await createChannelVote(hubStore.currentGroupId, hubStore.currentChannelId, {
@@ -127,7 +96,7 @@ export function wireEvents() {
 				options,
 				deadlineMs: deadlineMs > 0 ? deadlineMs : undefined,
 			})
-			voteModal?.close()
+			voteModal.close()
 			await loadMessages()
 		}
 		catch (err) {
@@ -135,7 +104,7 @@ export function wireEvents() {
 		}
 	})
 
-	document.getElementById('hub-federation-settings-button')?.addEventListener('click', () => {
+	document.getElementById('hub-federation-settings-button').addEventListener('click', () => {
 		void openFederationSettingsModal(() => hubStore.currentGroupId)
 	})
 
@@ -147,7 +116,7 @@ export function wireEvents() {
 			void (async () => {
 				const { refreshChannelViewDom } = await import('./messages/messages.mjs')
 				const container = document.getElementById('hub-messages')
-				if (container) await refreshChannelViewDom(container, false)
+				await refreshChannelViewDom(container, false)
 			})()
 			return
 		}
@@ -167,7 +136,7 @@ export function wireEvents() {
 		else window.open('/parts/shells:chat/profile', '_blank', 'noopener')
 	})
 
-	document.getElementById('hub-header-files-button')?.addEventListener('click', async () => {
+	document.getElementById('hub-header-files-button').addEventListener('click', async () => {
 		if (!hubStore.currentGroupId) {
 			showToastI18n('warning', 'chat.hub.filesNoGroup')
 			return
@@ -206,13 +175,14 @@ export function wireEvents() {
 		void showGroupHeaderMenu(event.currentTarget instanceof HTMLElement ? event.currentTarget : document.getElementById('hub-group-header'))
 	})
 
-	document.getElementById('hub-user-bar')?.addEventListener('click', (event) => {
+	document.getElementById('hub-user-bar').addEventListener('click', (event) => {
 		if (event.target.closest('a[href]')) return
-		const bar = document.getElementById('hub-user-bar')
-		if (bar) void import('./hubStatus.mjs').then(({ showStatusMenu }) => showStatusMenu(bar))
+		void import('./hubStatus.mjs').then(({ showStatusMenu }) =>
+			showStatusMenu(document.getElementById('hub-user-bar')),
+		)
 	})
 
-	document.getElementById('hub-messages')?.addEventListener('click', async (event) => {
+	document.getElementById('hub-messages').addEventListener('click', async (event) => {
 		const trustAuthorButton = event.target.closest('.hub-trust-author-button')
 		if (trustAuthorButton?.dataset?.authorPubKeyHash) {
 			const authorDisplayName = trustAuthorButton.closest('.hub-message')
@@ -226,7 +196,7 @@ export function wireEvents() {
 				const messageRow = trustAuthorButton.closest('.hub-message[data-message-id]')
 				const messageId = messageRow?.getAttribute('data-message-id')
 				const container = document.getElementById('hub-messages')
-				if (messageId && container) {
+				if (messageId) {
 					const { hydrateMessageMarkdown } = await import('./messages/messageRender.mjs')
 					await hydrateMessageMarkdown(container, messageId)
 				}
@@ -289,7 +259,7 @@ export function wireEvents() {
 		}
 	})
 
-	document.getElementById('hub-messages')?.addEventListener('contextmenu', (event) => {
+	document.getElementById('hub-messages').addEventListener('contextmenu', (event) => {
 		const row = event.target.closest('.hub-message[data-message-id]')
 		if (!row) return
 		void import('./messages/messageContextMenu.mjs').then(({ showMessageContextMenu }) =>
@@ -297,38 +267,8 @@ export function wireEvents() {
 		)
 	})
 
-	wireModeTabs()
 	wireForkActions()
 	wireFilesDrawerToggle()
-
-	window.addEventListener('hashchange', () => {
-		void import('./hashNav.mjs').then(({ navigateFromHash, hashIsFriendsList }) => {
-			if (hashIsFriendsList()) {
-				if (hubStore.currentMode !== 'friends' || hubStore.privateGroup.groupId)
-					void setMode('friends')
-				return
-			}
-			const { groupId, channelId } = parseHash()
-			if (!groupId) {
-				void setMode('friends')
-				return
-			}
-			if (hubStore.privateGroup.groupId === groupId) {
-				if (channelId && channelId !== hubStore.privateGroup.channelId) {
-					hubStore.privateGroup.channelId = channelId
-					if (hubStore.currentChannelId !== channelId) {
-						hubStore.currentChannelId = channelId
-						void import('./messages/messages.mjs').then(({ loadMessages }) => loadMessages())
-					}
-				}
-				return
-			}
-			if (groupId && groupId !== hubStore.currentGroupId)
-				void navigateFromHash()
-			else if (channelId && channelId !== hubStore.currentChannelId && hubStore.currentState?.channels?.[channelId])
-				selectChannel(channelId)
-		})
-	})
 
 	let shiftActive = false
 	document.addEventListener('keydown', event => {

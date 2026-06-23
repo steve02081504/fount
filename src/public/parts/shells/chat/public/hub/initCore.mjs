@@ -7,6 +7,7 @@ import { initTranslations } from '../../../../scripts/i18n.mjs'
 import { usingTemplates } from '../../../../scripts/template.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
+import { markHubCoreFailed, markHubCorePending, markHubCoreReady } from './core/hubReady.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 
@@ -77,6 +78,7 @@ async function navigateHubFromLocation() {
 
 /** @returns {Promise<void>} Hub 壳层就绪：翻译、群列表与 hash 导航 */
 export async function initCore() {
+	markHubCorePending()
 	try {
 		usingTemplates('/parts/shells:chat/src/templates')
 		await initTranslations('chat')
@@ -90,8 +92,10 @@ export async function initCore() {
 			handleUIError(error, 'chat.hub.loadGroupFailed')
 		}
 		await navigateHubFromLocation()
+		markHubCoreReady()
 	}
 	catch (error) {
+		markHubCoreFailed(error)
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 	}
 }

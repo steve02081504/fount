@@ -52,7 +52,9 @@ export async function applyChatRunUri(raw) {
 	const join = parseJoinRunUri(raw)
 	if (join) {
 		const groupState = await getGroupState(join.groupId).catch(() => null)
-		const pow = await resolvePowForJoin(join.groupId, groupState)
+		const viewerResp = await fetch('/api/p2p/viewer', { credentials: 'include' }).catch(() => null)
+		const viewer = viewerResp?.ok ? await viewerResp.json() : {}
+		const pow = await resolvePowForJoin(join.groupId, groupState, viewer.nodeHash || '')
 		await joinGroup(join.groupId, join.inviteCode, null, pow,
 			join.mqttRoomSecret || join.introducerPubKeyHash
 				? {

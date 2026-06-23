@@ -7,7 +7,6 @@
  * 【关联】hashNav、messages、groupStream、serverBar、banners、channels、chat。
  */
 import { openDialogFromTemplate } from '../../../../scripts/dialog.mjs'
-import { i18nElement } from '../../../../scripts/i18n.mjs'
 import {
 	mountTemplate,
 	renderTemplate,
@@ -44,6 +43,7 @@ import {
 } from './groupStream.mjs'
 import { showMemberContextMenu } from './memberContextMenu.mjs'
 import { collectActiveMemberHashes, computeMembersMerkleRoot } from './membersDigest.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { clearPinPreviewCache } from './messages/pinPreview.mjs'
 import { isHubMemberPersonallyFiltered, loadHubPersonalFilter } from './personalFilter.mjs'
 import { refreshPinsBookmarks } from './pinsBookmarks.mjs'
@@ -106,7 +106,6 @@ export async function renderHubChannelSidebar(state) {
 		root.querySelector('#hub-private-chat-back')?.addEventListener('click', () => {
 			void backToFriendsList()
 		})
-		i18nElement(root)
 	}
 	await renderChannelList(state)
 }
@@ -116,9 +115,9 @@ export async function renderHubChannelSidebar(state) {
  * @returns {Promise<void>}
  */
 export async function backToFriendsList() {
-	const { cancelScheduledChannelRefresh, disableComposer, refreshHubHeaderButtons } = await import('./messages/messages.mjs')
-	const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
 	cancelScheduledChannelRefresh()
+	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
+	const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
 	closeGroupWebSocket()
 	clearPrivateGroupState()
 	setHubState('currentGroupId', null)
@@ -129,18 +128,7 @@ export async function backToFriendsList() {
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
 		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
 	})
-	const groupNameEl = document.getElementById('hub-group-name-display')
-	if (groupNameEl) {
-		groupNameEl.textContent = ''
-		groupNameEl.dataset.i18n = 'chat.hub.friendsTag'
-		i18nElement(groupNameEl)
-	}
-	const channelTitle = document.getElementById('hub-channel-name-display')
-	if (channelTitle) {
-		channelTitle.textContent = ''
-		channelTitle.dataset.i18n = 'chat.hub.friendsHeader'
-		i18nElement(channelTitle)
-	}
+	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
 	document.getElementById('hub-info-card-host').innerHTML = ''
 	await renderFriendsColumn(await loadFriendsList())
 	refreshHubHeaderButtons()
@@ -342,7 +330,7 @@ async function syncGroupFromNetwork(groupId) {
  * @returns {Promise<void>}
  */
 export async function selectChannel(channelId) {
-	const { disableComposer, enableComposer, loadMessages } = await import('./messages/messages.mjs')
+	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
 	setHubState('currentChannelId', channelId)
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
@@ -355,13 +343,13 @@ export async function selectChannel(channelId) {
 	const channelType = channel?.type || 'text'
 	document.getElementById('hub-channel-name-display').textContent = channel?.name || channelId
 	const headerIcon = document.querySelector('.hub-main-header-icon')
-	if (headerIcon)
-		headerIcon.innerHTML = await channelTypeIconHtml(channelType)
+	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
 
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
 	else
 		enableComposer()
+	const { loadMessages } = await import('./messages/messages.mjs')
 	hubStore.fileHandlers = createFileHandlers({
 		groupId: hubStore.currentGroupId,
 		showToastI18n,
@@ -464,7 +452,7 @@ export async function renderMemberList(state) {
  */
 async function refreshMemberDigestBar(state) {
 	const el = document.getElementById('hub-member-digest')
-	if (!el || !hubStore.currentGroupId) return
+	if (!hubStore.currentGroupId) return
 	const expected = state?.membersRoot ?? null
 	if (!expected) {
 		el.innerHTML = ''
@@ -477,7 +465,6 @@ async function refreshMemberDigestBar(state) {
 	const pending = document.createElement('span')
 	pending.dataset.i18n = 'chat.hub.membersDigestPending'
 	el.appendChild(pending)
-	i18nElement(el)
 	const keys = collectActiveMemberHashes(state)
 	const local = keys.length ? await computeMembersMerkleRoot(keys) : null
 	const ok = local === expected
@@ -515,7 +502,6 @@ async function refreshMemberDigestBar(state) {
 		: 'chat.hub.membersDigestMismatch'
 	row.appendChild(label)
 	el.appendChild(row)
-	i18nElement(el)
 }
 
 /**
@@ -531,7 +517,6 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	clearPrivateGroupState()
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
-	const { cancelScheduledChannelRefresh } = await import('./messages/messages.mjs')
 	cancelScheduledChannelRefresh()
 	setHubState('currentGroupId', groupId)
 	updateHash(groupId, presetChannelId)
@@ -541,7 +526,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		if (!state.isMember) {
 			const pendingJoin = consumePendingJoin(groupId)
 			const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
-			const pow = await resolvePowForJoin(groupId, state)
+			const pow = await resolvePowForJoin(groupId, state, hubStore.nodeHash || '')
 			await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 			state = await getGroupState(groupId)
 			await loadGroups()
@@ -561,15 +546,14 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		}
 		void syncGroupFromNetwork(groupId)
 		const groupNameEl = document.getElementById('hub-group-name-display')
-		if (groupNameEl)
-			if (state.groupMeta.name) {
-				delete groupNameEl.dataset.i18n
-				groupNameEl.textContent = state.groupMeta.name
-			}
-			else {
-				groupNameEl.textContent = ''
-				groupNameEl.dataset.i18n = 'chat.hub.groupTag'
-			}
+		if (state.groupMeta.name) {
+			delete groupNameEl.dataset.i18n
+			groupNameEl.textContent = state.groupMeta.name
+		}
+		else {
+			groupNameEl.textContent = ''
+			groupNameEl.dataset.i18n = 'chat.hub.groupTag'
+		}
 
 		await renderChannelList(state)
 		await renderMemberList(state)
@@ -588,7 +572,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		else {
 			setHubState('currentChannelId', null)
 			updateHash(hubStore.currentGroupId, null)
-			const { disableComposer } = await import('./messages/messages.mjs')
+			const { disableComposer } = await import('./messages/composerController.mjs')
 			disableComposer('chat.hub.noChannel')
 			updateStatusBanners()
 			void refreshPinsBookmarks()
@@ -598,16 +582,12 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
 		const err = handleUIError(error, 'chat.hub.loadGroupFailed')
-		const host = document.getElementById('hub-messages')
-		if (host) {
-			const { mountTemplate } = await import('../../../../scripts/template.mjs')
-			const { escapeHtml } = await import('./core/domUtils.mjs')
-			await mountTemplate(host, 'hub/empty/error', {
-				i18nKey: 'chat.hub.loadGroupFailed',
-				errorMessage: err.message,
-				escapeHtml,
-			})
-		}
+		const { mountTemplate } = await import('../../../../scripts/template.mjs')
+		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
+			i18nKey: 'chat.hub.loadGroupFailed',
+			errorMessage: err.message,
+			escapeHtml,
+		})
 	}
 }
 

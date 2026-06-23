@@ -7,6 +7,7 @@
  */
 import { entityHashLabel, isEntityHash128 } from '../../src/lib/entityHash.mjs'
 import { agentEntityHash } from '../../src/lib/entityId.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 import { isHex64, normalizeHex64 } from '../../src/lib/pubKeyHex.mjs'
 
 import { hubStore } from './state.mjs'
@@ -127,16 +128,8 @@ export function authorPresentationKeys(authorKey) {
 	return { displayName, profileKey }
 }
 
-/**
- * 将文本转为可安全插入 HTML 的字符串。
- * @param {string|null|undefined} text 原始文本
- * @returns {string} 转义后的 HTML 片段
- */
-export function escapeHtml(text) {
-	const div = document.createElement('div')
-	div.textContent = text == null ? '' : String(text)
-	return div.innerHTML
-}
+/** @deprecated 请从 `../../src/lib/escapeHtml.mjs` 导入；此处保留兼容重导出。 */
+export { escapeHtml }
 
 /** 头像调色板（daisyUI 语义色 CSS 变量名） */
 const AVATAR_COLOR_VARS = [

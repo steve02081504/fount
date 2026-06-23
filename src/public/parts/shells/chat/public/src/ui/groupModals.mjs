@@ -11,8 +11,8 @@ import {
 	usingTemplates,
 } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
-import { escapeHtml } from '../../hub/core/domUtils.mjs'
 import { createGroup, getGroupList } from '../api/groupCore.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from '../pendingInviteStorage.mjs'
 
 /** 按需注入群组 UI 样式表（幂等）。 */
@@ -40,15 +40,18 @@ export async function renderGroupList(container) {
 			? { view: 'list', groups, escapeHtml }
 			: { view: 'empty' })
 
-		container.addEventListener('click', event => {
-			const target = event.target.closest('[data-action]')
-			if (!target) return
-			switch (target.dataset.action) {
-				case 'join': window.joinGroupById(); break
-				case 'create': window.showCreateGroupModal(); break
-				case 'open': window.openGroup(target.dataset.groupId); break
-			}
-		})
+		if (!container.dataset.groupListWired) {
+			container.dataset.groupListWired = '1'
+			container.addEventListener('click', event => {
+				const target = event.target.closest('[data-action]')
+				if (!target) return
+				switch (target.dataset.action) {
+					case 'join': void joinGroupById(); break
+					case 'create': void showCreateGroupModal(); break
+					case 'open': openGroup(target.dataset.groupId); break
+				}
+			})
+		}
 	}
 	catch (error) {
 		await mountTemplate(container, 'group/list_view', {
@@ -107,7 +110,7 @@ export async function showCreateGroupModal() {
  * @returns {void}
  */
 export function openGroup(groupId) {
-	window.location.href = `/parts/shells:chat/hub/#group:${groupId}:default`
+	window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:default`
 }
 
 /**
@@ -134,14 +137,18 @@ export async function joinGroupById() {
 					sessionStorage.setItem(PENDING_INVITE_STORAGE_KEY, JSON.stringify({ groupId, inviteCode }))
 
 				dialog.close()
-				const hash = groupId.startsWith('group:') ? groupId : `group:${groupId}:default`
+				let gid = groupId.trim()
+				if (gid.startsWith('group:')) {
+					const rest = gid.slice('group:'.length)
+					const sep = rest.indexOf(':')
+					gid = sep >= 0 ? rest.slice(0, sep) : rest
+					try { gid = decodeURIComponent(gid) }
+					catch { /* use raw */ }
+				}
+				const hash = `group:${encodeURIComponent(gid)}:default`
 				const query = inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ''
 				window.location.href = `/parts/shells:chat/hub/${query}#${hash}`
 			})
 		},
 	})
 }
-
-window.showCreateGroupModal = showCreateGroupModal
-window.openGroup = openGroup
-window.joinGroupById = joinGroupById

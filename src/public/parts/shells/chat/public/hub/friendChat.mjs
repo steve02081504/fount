@@ -204,10 +204,8 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	})
 
 	const groupNameEl = document.getElementById('hub-group-name-display')
-	if (groupNameEl) {
-		delete groupNameEl.dataset.i18n
-		groupNameEl.textContent = displayName
-	}
+	delete groupNameEl.dataset.i18n
+	groupNameEl.textContent = displayName
 	if (binding.charname) {
 		const details = await getCharDetails(binding.charname)
 		throwIfAborted(signal)
@@ -223,15 +221,14 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	await loadGroups()
 
 	const input = document.getElementById('hub-message-input')
-	if (input)
-		if (binding.charname) {
-			input.dataset.name = binding.charname
-			input.setAttribute('data-i18n', 'chat.hub.charChatComposer')
-		}
-		else {
-			delete input.dataset.name
-			input.setAttribute('data-i18n', 'chat.hub.friendChatComposer')
-		}
+	if (binding.charname) {
+		input.dataset.name = binding.charname
+		input.setAttribute('data-i18n', 'chat.hub.charChatComposer')
+	}
+	else {
+		delete input.dataset.name
+		input.setAttribute('data-i18n', 'chat.hub.friendChatComposer')
+	}
 
 	throwIfAborted(signal)
 	await selectChannel(resolvedChannelId)

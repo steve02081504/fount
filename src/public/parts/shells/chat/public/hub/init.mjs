@@ -1,7 +1,7 @@
 ﻿/**
  * 【文件】public/hub/init.mjs
  * 【职责】Hub 主入口 bootstrap：i18n/模板/可信作者/deep link、挂载消息与 WS 回调、hash 导航、顶栏 persona 展示。
- * 【原理】注册 setGroupChannelRefreshHandler 等联邦流回调 → bindChannelMessageActions → navigateFromHash；
+ * 【原理】注册 setGroupChannelRefreshHandler 等联邦流回调 → bindChannelMessageActions；导航由 initCore 完成。
  *   refreshViewerHubPresentation 按 viewerEntityHash 拉 profile 更新顶栏头像；stopGeneration 绑定生成中止按钮。
  * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道与管道上下文。
  * 【关联】hub 页面加载时调用；串联 messages、groupStream、hashNav、chat、presence、wireEvents。
@@ -34,6 +34,7 @@ import {
 	setGroupThreadChannelRefreshHandler,
 } from './groupStream.mjs'
 import { setupHubNotifications } from './hubNotifications.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setupMisc } from './misc.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
 import { applyAvatarsTo, fetchUserProfile } from './presence.mjs'
@@ -61,7 +62,6 @@ export async function refreshViewerHubPresentation() {
 	hubStore.viewerDisplayName = label
 	const myAvatar = document.getElementById('hub-my-avatar')
 	const myName = document.getElementById('hub-my-name')
-	if (!myAvatar || !myName) return
 	myAvatar.replaceChildren()
 	myAvatar.textContent = avatarInitial(label)
 	myAvatar.style.background = avatarColor(label)
@@ -113,7 +113,7 @@ async function wireCustomEmojiResolver() {
  * @returns {void}
  */
 function onEnterFriendChat(peer) {
-	void messagesApi().then(({ cancelScheduledChannelRefresh }) => cancelScheduledChannelRefresh())
+	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	if (!peer?.entityHash) {
 		hubStore.currentGroupId = null
@@ -224,7 +224,6 @@ async function wireHubHeavyFeatures() {
 	const {
 		applyChannelMessageDelete,
 		applyChannelMessageEdit,
-		cancelScheduledChannelRefresh,
 		disableComposer,
 		enableComposer,
 		scheduleChannelIncrementalRefresh,
@@ -240,8 +239,8 @@ async function wireHubHeavyFeatures() {
 		const stopBtn = document.getElementById('hub-stop-generation-button')
 		const sendBtn = document.getElementById('hub-send-button')
 		const active = getActiveVolatileStreamIds().length > 0
-		if (stopBtn) stopBtn.toggleAttribute('hidden', !active)
-		if (sendBtn) sendBtn.removeAttribute('hidden')
+		stopBtn.toggleAttribute('hidden', !active)
+		sendBtn.removeAttribute('hidden')
 	}
 
 	setRefreshStopGenerationButton(refreshStopBtn)
@@ -285,8 +284,7 @@ async function wireHubHeavyFeatures() {
 		await refreshActiveThreadIfOpen()
 	})
 
-	const messagesRoot = document.getElementById('hub-messages')
-	if (messagesRoot) bindChannelMessageActions(messagesRoot)
+	bindChannelMessageActions(document.getElementById('hub-messages'))
 	void wireHubPickers()
 	void syncTrustedAuthorsFromShell()
 	await wireCustomEmojiResolver()
@@ -344,5 +342,5 @@ export async function init() {
 	void loadMe()
 	const { refreshMailboxBanner } = await import('./banners.mjs')
 	void refreshMailboxBanner()
-	void wireHubHeavyFeatures()
+	await wireHubHeavyFeatures()
 }
