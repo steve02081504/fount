@@ -16,30 +16,31 @@ const CARD_WANT_MAX_PER_MIN = 30
 const pendingFetches = new Map()
 
 /**
- * @param {string} username
- * @param {string} groupId
- * @returns {string}
+ * @param {string} username - 用户名。
+ * @param {string} groupId - 群 ID。
+ * @returns {string} 等待键。
  */
 function waitKey(username, groupId) {
 	return `${username}\0${groupId}\0group_card`
 }
 
 /**
- * @param {string} bucketKey
- * @returns {boolean}
+ * @param {string} bucketKey - 限流桶键。
+ * @returns {boolean} 是否允许发送 want。
  */
 function consumeCardWant(bucketKey) {
 	return consumeWireRateBucket(bucketKey, { maxCount: CARD_WANT_MAX_PER_MIN })
 }
 
 /**
- * @param {string} username
- * @param {string} groupId
- * @param {unknown} data
- * @param {string} peerId
- * @param {(payload: unknown, peerId: string) => void} sendCardData
- * @param {(id: string) => boolean} isBlockedPeer
- * @param {Map<string, string>} peerToNode
+ * 处理对端发来的群卡片 want 请求。
+ * @param {string} username - 用户名。
+ * @param {string} groupId - 群 ID。
+ * @param {unknown} data - 入站载荷。
+ * @param {string} peerId - 对端 peer ID。
+ * @param {(payload: unknown, peerId: string) => void} sendCardData - 发送卡片数据回调。
+ * @param {(id: string) => boolean} isBlockedPeer - 是否已屏蔽对端。
+ * @param {Map<string, string>} peerToNode - peer 到 nodeHash 映射。
  * @returns {Promise<void>}
  */
 export async function handleFedGroupCardWant(username, groupId, data, peerId, sendCardData, isBlockedPeer, peerToNode) {
@@ -65,9 +66,10 @@ export async function handleFedGroupCardWant(username, groupId, data, peerId, se
 }
 
 /**
- * @param {string} username
- * @param {string} groupId
- * @param {unknown} data
+ * 处理对端返回的群卡片数据。
+ * @param {string} username - 用户名。
+ * @param {string} groupId - 群 ID。
+ * @param {unknown} data - 入站载荷。
  * @returns {void}
  */
 export function handleFedGroupCardData(username, groupId, data) {
@@ -84,10 +86,11 @@ export function handleFedGroupCardData(username, groupId, data) {
 }
 
 /**
- * @param {string} username
- * @param {string} groupId
- * @param {object | null} slot
- * @returns {Promise<{ title: string, blurb: string } | null>}
+ * 向联邦 peer 请求群卡片摘要。
+ * @param {string} username - 用户名。
+ * @param {string} groupId - 群 ID。
+ * @param {object | null} slot - 联邦出站槽位。
+ * @returns {Promise<{ title: string, blurb: string } | null>} 卡片摘要或 null。
  */
 export async function requestGroupCardFromPeers(username, groupId, slot) {
 	if (!slot?.sendGroupCardWant) return null
@@ -110,7 +113,8 @@ export async function requestGroupCardFromPeers(username, groupId, slot) {
 }
 
 /**
- * @param {object} roomContext
+ * 为群房间注册联邦群卡片处理器。
+ * @param {object} roomContext - 群房间上下文。
  * @returns {void}
  */
 export function attachFedGroupCardHandlers(roomContext) {

@@ -20,11 +20,11 @@ import { ensureCanInChannel, requireGroupMember } from './middleware.mjs'
 
 /**
  * 发送表情二进制响应（JSON dataUrl 或文件流）。
- * @param {import('npm:express').Request} req
- * @param {import('npm:express').Response} res
- * @param {string} username
- * @param {string} groupId
- * @param {string} emojiId
+ * @param {import('npm:express').Request} req - HTTP 请求。
+ * @param {import('npm:express').Response} res - HTTP 响应。
+ * @param {string} username - 用户名。
+ * @param {string} groupId - 群 ID。
+ * @param {string} emojiId - 表情 ID。
  * @returns {Promise<void>}
  */
 async function sendEmojiContentResponse(req, res, username, groupId, emojiId) {

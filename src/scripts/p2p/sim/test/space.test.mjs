@@ -1,6 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 import { createRng } from '../rng.mjs'
 import {
 	normalizeParam,
@@ -10,7 +11,6 @@ import {
 	sampleParam,
 	sanitizeArchiveQuorum,
 } from '../space.mjs'
-import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 import { loadDefaultTunables } from '../tunables_bundle.mjs'
 
 Deno.test('quantize removes float tails', () => {

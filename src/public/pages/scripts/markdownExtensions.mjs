@@ -7,7 +7,7 @@ let initsRan = false
 
 /**
  * 加载并合并所有已注册的 markdown 扩展。
- * @returns {Promise<{ remarkPlugins: unknown[], rehypePlugins: unknown[], css: string, inits: Array<() => void>, version: string }>}
+ * @returns {Promise<{ remarkPlugins: unknown[], rehypePlugins: unknown[], css: string, inits: Array<() => void>, version: string }>} 合并后的扩展配置。
  */
 export async function loadRegisteredMarkdownExtensions() {
 	if (!loadPromise) 
@@ -80,7 +80,7 @@ export function invalidateMarkdownExtensionsCache() {
 
 /**
  * 已注册扩展的版本指纹（用于 processor 缓存键）。
- * @returns {Promise<string>}
+ * @returns {Promise<string>} 扩展版本指纹。
  */
 export async function getMarkdownExtensionsVersion() {
 	const { version } = await loadRegisteredMarkdownExtensions()

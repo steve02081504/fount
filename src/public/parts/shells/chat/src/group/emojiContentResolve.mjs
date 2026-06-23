@@ -18,7 +18,7 @@ import {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object } | null>}
+ * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object } | null>} 表情二进制或 null。
  */
 export async function resolveGroupEmojiContent(username, groupId, emojiId) {
 	let local = await readGroupEmojiBinary(username, groupId, emojiId)

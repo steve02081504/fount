@@ -12,7 +12,7 @@ import { GetPartPath, getPartRegistriesRaw } from './parts_loader.mjs'
 /**
  * 将 partpath 转为前端 URL 前缀（`/parts/shells:chat`）。
  * @param {string} partpath - 部件路径。
- * @returns {string}
+ * @returns {string} 前端 URL 前缀。
  */
 export function partpathToUrlPrefix(partpath) {
 	const segments = partpath.split('/').filter(Boolean)
@@ -25,7 +25,7 @@ export function partpathToUrlPrefix(partpath) {
  * 将 registry 相对 path 解析为前端 URL。
  * @param {string} partpath - 部件路径。
  * @param {string} relativePath - part 相对路径。
- * @returns {string}
+ * @returns {string} 完整前端 URL。
  */
 export function resolveRegistryPathToUrl(partpath, relativePath) {
 	const normalized = relativePath.replace(/^\/+/, '')
@@ -37,7 +37,7 @@ export function resolveRegistryPathToUrl(partpath, relativePath) {
  * @param {string} username - 用户名。
  * @param {string} partpath - 部件路径。
  * @param {string} relativePath - part 相对路径。
- * @returns {string}
+ * @returns {string} 文件系统绝对路径。
  */
 export function resolveRegistryPathToFs(username, partpath, relativePath) {
 	return path.join(GetPartPath(username, partpath), relativePath.replace(/^\/+/, ''))
@@ -46,8 +46,8 @@ export function resolveRegistryPathToFs(username, partpath, relativePath) {
 /**
  * 对原始条目按 partpath+id 去重（后者覆盖）并按 level 升序排序。
  * 不同 part 可共用相同 id（如各 shell 的 home_registry 条目均为 `function_buttons`）。
- * @param {Array<{ id: string, level: number, path: string, partpath: string }>} rawEntries
- * @returns {Array<{ id: string, level: number, path: string, partpath: string }>}
+ * @param {Array<{ id: string, level: number, path: string, partpath: string }>} rawEntries - 原始条目列表。
+ * @returns {Array<{ id: string, level: number, path: string, partpath: string }>} 去重排序后的条目。
  */
 export function dedupeAndSortRegistryEntries(rawEntries) {
 	/** @type {Map<string, { id: string, level: number, path: string, partpath: string }>} */
@@ -61,8 +61,8 @@ export function dedupeAndSortRegistryEntries(rawEntries) {
  * 获取指定 name 的 registry 条目（已去重排序）。
  * @param {string} username - 用户名。
  * @param {string} name - registry 名称。
- * @param {{ nocache?: boolean, resolve?: 'fs' | 'url' | 'raw' }} [options]
- * @returns {RegistryEntry[]}
+ * @param {{ nocache?: boolean, resolve?: 'fs' | 'url' | 'raw' }} [options] - 可选项。
+ * @returns {RegistryEntry[]} registry 条目列表。
  */
 export function getRegistry(username, name, { nocache = false, resolve = 'raw' } = {}) {
 	const all = getPartRegistriesRaw(username, { nocache })
@@ -89,8 +89,8 @@ export function getRegistry(username, name, { nocache = false, resolve = 'raw' }
 /**
  * 列出当前用户聚合到的全部 registry 名称。
  * @param {string} username - 用户名。
- * @param {{ nocache?: boolean }} [options]
- * @returns {string[]}
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {string[]} registry 名称列表。
  */
 export function listRegistryNames(username, { nocache = false } = {}) {
 	const all = getPartRegistriesRaw(username, { nocache })
@@ -99,10 +99,10 @@ export function listRegistryNames(username, { nocache = false } = {}) {
 
 /**
  * 从 registry 条目加载 JSON 数据（按 registry name 取对应字段）。
- * @param {string} username
- * @param {string} registryName
- * @param {{ nocache?: boolean }} [options]
- * @returns {Promise<Array<{ entry: RegistryEntry & { partpath?: string }, data: unknown }>>}
+ * @param {string} username - 用户名。
+ * @param {string} registryName - registry 名称。
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Promise<Array<{ entry: RegistryEntry & { partpath?: string }, data: unknown }>>} 已加载的 JSON 条目。
  */
 export async function loadRegistryJsonEntries(username, registryName, { nocache = false } = {}) {
 	const entries = getRegistry(username, registryName, { nocache, resolve: 'fs' })

@@ -19,8 +19,8 @@ import { modifyTimeLine } from '../../chat/session/generation.mjs'
 import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
 import { governanceChannelId } from '../access.mjs'
-import { enumerateJoinedFederatedGroups } from '../queries.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
+import { enumerateJoinedFederatedGroups } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 

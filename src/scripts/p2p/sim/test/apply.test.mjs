@@ -1,9 +1,9 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 import { prepareBundleForApply } from '../apply.mjs'
 import { normalizeBundle, PARAM_SPACE, randomCandidate, sanitizeArchiveQuorum } from '../space.mjs'
-import { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin } from '../../tunables_resolve.mjs'
 
 Deno.test('normalizeBundle keeps every PARAM_SPACE value in its semantic domain', () => {
 	for (let seed = 1; seed <= 40; seed++) {

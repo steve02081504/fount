@@ -67,9 +67,9 @@ async function renderRunningPets() {
 	runningPetsList.innerHTML = ''
 	if (runningPetItems.length)
 		runningPetItems.forEach(item => runningPetsList.appendChild(item))
-	else {
+	else 
 		runningPetsList.innerHTML = /* html */ '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'
-	}
+	
 }
 
 /**

@@ -8,8 +8,8 @@ import { dirname } from 'node:path'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
-import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import archiveTunables from '../archive/archive.tunables.json' with { type: 'json' }
+import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,
 	resolveArchiveMonthCandidateBody,

@@ -28,6 +28,9 @@ export const ARCHIVE_QUORUM_PEER_MIN = resolveArchiveQuorumPeerMin(8, archiveTun
 /** @deprecated 使用 {@link resolveArchiveQuorumPeerStrictMin}；N=8 参考值 */
 export const ARCHIVE_QUORUM_PEER_STRICT_MIN = resolveArchiveQuorumPeerStrictMin(8, archiveTunables)
 
+/**
+ *
+ */
 export { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin, resolveArchiveQuorumThresholds }
 
 /**

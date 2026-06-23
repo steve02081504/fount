@@ -5,11 +5,11 @@
 
 import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social/src/lib/runUri.mjs'
 
-import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
 
 import { createDirectMessageByPubKeys, getFederationSettings, getGroupState, joinGroup } from './api/groupApi.mjs'
 import { isHex64 } from './lib/pubKeyHex.mjs'
 import { parseDmRunUri, parseJoinRunUri } from './lib/runUri.mjs'
+import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
 import { resolvePowForJoin } from './powJoin.mjs'
 
 /**

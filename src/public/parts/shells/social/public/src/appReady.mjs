@@ -35,10 +35,10 @@ export function whenSocialAppReady() {
 /** @returns {void} */
 function flushSocialAppWaiters() {
 	const waiters = socialAppWaiters.splice(0)
-	for (const waiter of waiters) 
+	for (const waiter of waiters)
 		if (socialAppState === 'ready') waiter.resolve()
 		else waiter.reject(socialAppError ?? new Error('Social bootstrap failed'))
-	
+
 }
 
 /** @returns {void} */

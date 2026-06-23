@@ -16,8 +16,9 @@ const buttonTypes = [
 ]
 
 /**
- * @param {string} username
- * @returns {string[]}
+ * 列出用户可见的顶层 part 类型目录名。
+ * @param {string} username - 用户名。
+ * @returns {string[]} part 类型名列表。
  */
 function getRootPartTypes(username) {
 	const rootTypes = new Set()
@@ -38,7 +39,8 @@ function getRootPartTypes(username) {
 }
 
 /**
- * @param {string} username
+ * 从磁盘重建 Home registry 到内存。
+ * @param {string} username - 用户名。
  * @returns {Promise<void>}
  */
 export async function loadHomeRegistry(username) {
@@ -57,25 +59,27 @@ export async function loadHomeRegistry(username) {
 	}
 
 	const interfaceEntries = await loadRegistryJsonEntries(username, 'home_interfaces')
-	for (const { data } of interfaceEntries) {
+	for (const { data } of interfaceEntries) 
 		for (const [key, list] of Object.entries(data || {})) {
 			if (!Array.isArray(list)) continue
 			((user_home_registry.home_interfaces ??= {})[key] ??= []).push(...list)
 		}
-	}
+	
 }
 
 /**
- * @param {string} username
- * @returns {Promise<object>}
+ * 展开 Home registry 为前端可用结构。
+ * @param {string} username - 用户名。
+ * @returns {Promise<object>} 展开后的 registry 对象。
  */
 export async function expandHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	await loadHomeRegistry(username)
 
 	/**
-	 * @param {object} entries
- * @returns {object}
+	 * 处理 home_interfaces 条目。
+	 * @param {object} entries - 接口名到按钮列表的映射。
+	 * @returns {object} 处理后的接口映射。
 	 */
 	const processInterfaces = entries => {
 		const result = {}
@@ -96,7 +100,9 @@ export async function expandHomeRegistry(username) {
 }
 
 /**
- * @param {object} params
+ * 部件安装后通知 Home 前端刷新 registry。
+ * @param {object} params - 参数对象。
+ * @param {string} params.username - 用户名。
  * @returns {void}
  */
 export function onPartInstalled({ username }) {
@@ -104,7 +110,9 @@ export function onPartInstalled({ username }) {
 }
 
 /**
- * @param {object} params
+ * 部件卸载后通知 Home 前端刷新 registry。
+ * @param {object} params - 参数对象。
+ * @param {string} params.username - 用户名。
  * @returns {void}
  */
 export function onPartUninstalled({ username }) {

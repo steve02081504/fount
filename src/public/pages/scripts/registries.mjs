@@ -8,8 +8,8 @@ const registryFetchCache = new Map()
 /**
  * 获取指定 name 的 registry 条目（path 已为前端 URL）。
  * @param {string} name - registry 名称。
- * @param {{ nocache?: boolean }} [options]
- * @returns {Promise<RegistryEntry[]>}
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Promise<RegistryEntry[]>} registry 条目列表。
  */
 export async function getRegistry(name, { nocache = false } = {}) {
 	const key = nocache ? `${name}:nocache` : name
@@ -50,8 +50,8 @@ export function invalidateRegistryCache(name) {
 /**
  * 动态 import registry 条目指向的模块。
  * @param {string} name - registry 名称。
- * @param {{ nocache?: boolean }} [options]
- * @returns {Promise<Array<{ entry: RegistryEntry, module: unknown }>>}
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Promise<Array<{ entry: RegistryEntry, module: unknown }>>} 已加载的模块列表。
  */
 export async function importRegistryModules(name, { nocache = false } = {}) {
 	const entries = await getRegistry(name, { nocache })
@@ -70,8 +70,8 @@ export async function importRegistryModules(name, { nocache = false } = {}) {
 /**
  * fetch registry 条目指向的 JSON 数据文件。
  * @param {string} name - registry 名称。
- * @param {{ nocache?: boolean }} [options]
- * @returns {Promise<Array<{ entry: RegistryEntry, data: unknown }>>}
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Promise<Array<{ entry: RegistryEntry, data: unknown }>>} JSON 数据列表。
  */
 export async function fetchRegistryJson(name, { nocache = false } = {}) {
 	const entries = await getRegistry(name, { nocache })

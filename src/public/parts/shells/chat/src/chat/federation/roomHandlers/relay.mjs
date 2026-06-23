@@ -1,10 +1,10 @@
 import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
+import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {
 	handleFedArchiveMonthWant,
 	noteFedArchiveMonthResponse,
 } from '../archiveMonthPull.mjs'
-import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archiveMonthWire.mjs'
 import {
 	applyFedBootstrapResponse,

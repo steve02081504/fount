@@ -28,6 +28,7 @@ import { onMqttCredentialsSyncedFromDag, mqttCredentialsFromGroupSettings } from
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
+import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 import { broadcastEvent } from '../stream/groupWsHub.mjs'
@@ -35,7 +36,6 @@ import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
 
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from './materialize.mjs'
-import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 
 /** 写入频道消息流 JSONL 的事件类型。 */
 const PERSIST_MESSAGE_TYPES = new Set([

@@ -11,7 +11,7 @@ const HASHTAG_RE = /#([\p{L}\p{N}_-]{2,32})/gu
 
 /**
  * remark：展开 Social 方言链接。
- * @returns {(tree: import('npm:@types/mdast').Root) => void}
+ * @returns {(tree: import('npm:@types/mdast').Root) => void} remark 插件。
  */
 function remarkSocialDialect() {
 	return tree => {
@@ -42,6 +42,9 @@ function remarkSocialDialect() {
 	}
 }
 
+/**
+ *
+ */
 export default {
 	remarkPlugins: [remarkSocialDialect],
 	rehypePlugins: [],

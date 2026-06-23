@@ -7,8 +7,8 @@ import { getFederationViewForUser } from '../../../../../../server/p2p_server/op
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { buildProfileFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
 import { setFollow, loadFollowing } from '../following.mjs'
-import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
+import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { resolveSocialEntity } from '../lib/entityResolve.mjs'
 import { resolveOperatorEntityHash } from '../lib/operatorEntity.mjs'
 import { setPersonalBlock } from '../personalBlock.mjs'
@@ -118,7 +118,7 @@ export function registerProfileRoutes(router) {
 		const draftContent = {
 			text: postText,
 			mediaRefs: [
-				...(Array.isArray(req.body?.mediaRefs) ? req.body.mediaRefs : []),
+				...Array.isArray(req.body?.mediaRefs) ? req.body.mediaRefs : [],
 				...emojiMediaRefs,
 			],
 			replyTo: req.body?.replyTo,

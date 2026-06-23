@@ -10,7 +10,7 @@ const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)]:/g
 
 /**
  * @param {string} text 帖子正文
- * @returns {Array<{ groupId: string, emojiId: string }>}
+ * @returns {Array<{ groupId: string, emojiId: string }>} 表情引用列表。
  */
 export function scanEmojiTokens(text) {
 	const refs = []
@@ -28,7 +28,7 @@ export function scanEmojiTokens(text) {
  * best-effort 将帖子中引用的表情写入 CAS 并返回 mediaRefs。
  * @param {string} username 发帖用户
  * @param {string} text 帖子正文
- * @returns {Promise<object[]>}
+ * @returns {Promise<object[]>} mediaRefs 数组。
  */
 export async function buildEmojiMediaRefsForPost(username, text) {
 	const refs = scanEmojiTokens(text)

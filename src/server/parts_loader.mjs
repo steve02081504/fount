@@ -251,7 +251,7 @@ function partpathFromFountJsonFile(filePath, rootPath) {
  * 校验并规范化单条 registry 条目。
  * @param {unknown} entry - 原始条目。
  * @param {string} partpath - 所属 partpath。
- * @returns {RegistryEntryRaw | null}
+ * @returns {RegistryEntryRaw | null} 规范化条目，无效时返回 null。
  */
 function normalizeRegistryEntry(entry, partpath) {
 	if (!entry || typeof entry !== 'object') return null
@@ -315,7 +315,7 @@ function buildPartBranches(username) {
 /**
  * 扫描公共与用户目录，构建 registries 聚合对象。
  * @param {string} username - 用户名。
- * @returns {Record<string, RegistryEntryRaw[]>}
+ * @returns {Record<string, RegistryEntryRaw[]>} registries 聚合对象。
  */
 function buildPartRegistries(username) {
 	/** @type {Record<string, RegistryEntryRaw[]>} */
@@ -368,7 +368,7 @@ export function getPartBranches(username, { nocache = false } = {}) {
  * 获取（并在需要时刷新）用户的 registries 聚合（原始条目，含 partpath）。
  * @param {string} username - 用户名。
  * @param {{ nocache?: boolean }} [options] - 可选项。
- * @returns {Record<string, RegistryEntryRaw[]>}
+ * @returns {Record<string, RegistryEntryRaw[]>} registries 聚合对象。
  */
 export function getPartRegistriesRaw(username, { nocache = false } = {}) {
 	const cache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
