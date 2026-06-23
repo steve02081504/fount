@@ -125,7 +125,6 @@ function showFriendContextMenu(event, friend) {
 	menu.style.cssText = `position:fixed;left:${Math.max(8, left)}px;top:${Math.max(8, top)}px;min-width:9rem;`
 	menu.innerHTML = '<li><button type="button" class="w-full text-left" data-action="new-chat" data-i18n="chat.hub.friendsContextNewChat"></button></li>'
 	document.body.appendChild(menu)
-	void import('../../../../scripts/i18n.mjs').then(({ i18nElement }) => i18nElement(menu))
 
 	/** @returns {void} */
 	const dismiss = () => {

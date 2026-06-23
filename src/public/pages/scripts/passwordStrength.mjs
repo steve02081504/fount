@@ -1,7 +1,7 @@
 import { ZxcvbnFactory } from 'https://esm.sh/@zxcvbn-ts/core'
 import * as zxcvbnCommonPackage from 'https://esm.sh/@zxcvbn-ts/language-common'
 
-import { geti18n, i18nElement, setLocalizeLogic } from './i18n.mjs'
+import { geti18n, setLocalizeLogic } from './i18n.mjs'
 
 const zxcvbnInstance = new ZxcvbnFactory({
 	graphs: zxcvbnCommonPackage.adjacencyGraphs,
@@ -79,7 +79,6 @@ function updatePasswordStrengthUI(password, passwordInput, passwordStrengthFeedb
 
 	// Update password strength feedback text
 	passwordStrengthFeedback.innerHTML = fullFeedback
-	i18nElement(passwordStrengthFeedback)
 	passwordStrengthFeedback.classList.remove('text-red-500', 'text-orange-500', 'text-yellow-500', 'text-lime-500', 'text-green-500')
 	passwordStrengthFeedback.classList.add(borderColorClass.replace('border-', 'text-'))
 }

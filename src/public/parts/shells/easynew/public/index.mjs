@@ -1,7 +1,7 @@
 /**
  * “轻松新建” shell 的客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
 import { getTemplates, getTemplateHtml, createPart } from './src/endpoints.mjs'
@@ -48,7 +48,6 @@ async function loadTemplateUI() {
 	try {
 		const html = await getTemplateHtml(selectedTemplate)
 		templateFormContainer.innerHTML = html
-		i18nElement(templateFormContainer)
 	}
 	catch (error) {
 		console.error(`Failed to load UI for template ${selectedTemplate}:`, error)

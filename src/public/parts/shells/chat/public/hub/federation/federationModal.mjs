@@ -4,7 +4,6 @@
  * 【原理】`openFederationSettingsModal` 渲染 `hub/federation/modal` 模板并绑定 `#hub-settings-modal` 控件。
  * 【关联】wireEvents.mjs、discoveryPanel.mjs、core/overlayModal.mjs、src/api/groupApi.mjs、src/dmLink.mjs。
  */
-import { i18nElement } from '../../../../../scripts/i18n.mjs'
 import { renderTemplate } from '../../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../../scripts/toast.mjs'
 import {
@@ -74,7 +73,6 @@ async function refreshReputationDump(groupId) {
 		else {
 			dump.textContent = ''
 			dump.dataset.i18n = 'chat.hub.fedRepEmpty'
-			i18nElement(dump)
 		}
 	}
 	catch (error) {

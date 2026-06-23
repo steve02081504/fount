@@ -1,7 +1,7 @@
 /**
  * Telegram 机器人 shell 的客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
+import { initTranslations, geti18n, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
@@ -78,7 +78,6 @@ async function renderBotDropdown() {
  * @returns {Promise<void>}
  */
 async function renderCharDropdown() {
-	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
@@ -219,7 +218,6 @@ function handleToggleToken() {
 	// @fetch-resource https://api.iconify.design/line-md/watch.svg
 	// @fetch-resource https://api.iconify.design/line-md/watch-off.svg
 	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="telegram_bots.configCard.toggleBotTokenIcon" />`
-	i18nElement(toggleTokenButton)
 }
 
 /**

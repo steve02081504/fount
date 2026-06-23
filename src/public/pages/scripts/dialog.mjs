@@ -1,7 +1,6 @@
 /**
  * 通用 `<dialog class="modal">` 生命周期：创建、模板渲染、showModal、关闭销毁。
  */
-import { i18nElement } from './i18n.mjs'
 import { renderTemplate, renderTemplateNoScriptActivation } from './template.mjs'
 
 /**
@@ -59,7 +58,6 @@ export function pickFromDialog(templateName, data = {}, options = {}) {
 			/** @param {HTMLDialogElement} dialogEl 对话框 */
 			onReady: async dialogEl => {
 				dialog = dialogEl
-				i18nElement(dialog)
 				dialog.addEventListener('cancel', () => finish(null), { once: true })
 				for (const sel of cancelSelectors)
 					dialog.querySelector(sel)?.addEventListener('click', () => finish(null))

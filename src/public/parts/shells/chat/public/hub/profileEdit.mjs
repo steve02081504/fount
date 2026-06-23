@@ -5,7 +5,6 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../profile/src/endpoints、../src/entityProfileApi、../src/profileLocaleEditor、core/state、presence。
  */
-import { i18nElement } from '../../../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { uploadAvatar } from '../profile/src/endpoints.mjs'
@@ -52,7 +51,6 @@ async function ensureEditDialog() {
 	if (!(editDialog instanceof HTMLDialogElement))
 		throw new Error('hub profile edit modal missing')
 	document.body.appendChild(node)
-	void i18nElement(node)
 
 	editDialog.querySelector('#hub-profile-edit-cancel')?.addEventListener('click', () => editDialog?.close())
 	editDialog.querySelector('#hub-profile-edit-save')?.addEventListener('click', () => { void handleSaveProfile() })

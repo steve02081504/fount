@@ -1,7 +1,7 @@
 /**
  * 桌面宠物 shell 的客户端逻辑。
  */
-import { initTranslations, i18nElement } from '/scripts/i18n.mjs'
+import { initTranslations } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
@@ -28,7 +28,6 @@ let runningPets = []
  * @returns {Promise<void>}
  */
 async function renderCharDropdown() {
-	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
@@ -70,7 +69,6 @@ async function renderRunningPets() {
 		runningPetItems.forEach(item => runningPetsList.appendChild(item))
 	else {
 		runningPetsList.innerHTML = /* html */ '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'
-		i18nElement(runningPetsList)
 	}
 }
 

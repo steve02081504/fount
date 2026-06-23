@@ -1,7 +1,7 @@
 /** 微信机器人 shell 的客户端逻辑。 */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
-import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
+import { initTranslations, geti18n, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
@@ -106,7 +106,6 @@ async function renderBotDropdown() {
  * @returns {Promise<void>}
  */
 async function renderCharDropdown() {
-	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
@@ -264,7 +263,6 @@ async function handleCharSelectChange(selectedChar) {
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
 	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="wechat_bots.configCard.toggleBotTokenIcon" />`
-	i18nElement(toggleTokenButton)
 }
 
 /**
@@ -329,7 +327,6 @@ function setStartStopButtonUI(isRunning) {
 		: 'wechat_bots.configCard.buttons.startBot'
 	startStopBotButton.classList.toggle('btn-error', isRunning)
 	startStopBotButton.classList.toggle('btn-success', !isRunning)
-	i18nElement(startStopBotButton)
 }
 
 /**

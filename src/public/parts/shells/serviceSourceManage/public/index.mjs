@@ -166,7 +166,6 @@ function renderSubtypeSelect(selectedSubtype = currentSubtype) {
 
 	if (!generatorSubtypeSelect.value && subtypes.length)
 		generatorSubtypeSelect.value = resolveSubtype(selectedSubtype)
-	i18nElement(generatorSubtypeSelect, { skip_report: true })
 }
 
 /**
