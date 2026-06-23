@@ -6,13 +6,12 @@ import {
 	expectMessageInChat,
 	messageTextFromPostResponse,
 	navigateGroupChannelHash,
-	TEST_USERNAME,
 } from './fixtures.mjs'
 
 test.describe('Chat hub integration', () => {
-	test.setTimeout(600_000)
+	test.describe.configure({ timeout: 600_000 })
 
-	test('composer, navigation, profile, and smoke checks', async ({ page, baseUrl, apiKey, browser }) => {
+	test('composer, navigation, profile, and smoke checks', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 
 		const text = `playwright e2e ${Date.now()}`
@@ -33,15 +32,5 @@ test.describe('Chat hub integration', () => {
 
 		await page.goto(`${baseUrl}/parts/shells:chat/profile`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
-
-		expect(process.env.FOUNT_TEST_ISOLATED).toBe('1')
-		const whoami = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
-		expect((await whoami.json()).username).toBe(TEST_USERNAME)
-
-		const guest = await browser.newContext()
-		const guestPage = await guest.newPage()
-		await guestPage.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
-		await expect(guestPage).toHaveURL(/\/login/)
-		await guest.close()
 	})
 })

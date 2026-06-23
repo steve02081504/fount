@@ -12,4 +12,13 @@ test.describe('Chat profile page', () => {
 		await expect(page).toHaveURL(/\/parts\/shells:chat\/profile/, { timeout: 30_000 })
 		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
 	})
+
+	test('profile edit opens modal', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/profile`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#profile-edit-button').click()
+		await expect(page.locator('#hub-profile-edit-modal')).toBeVisible({ timeout: 20_000 })
+		await page.locator('#hub-profile-edit-cancel').click()
+		await expect(page.locator('#hub-profile-edit-modal')).toBeHidden({ timeout: 10_000 })
+	})
 })

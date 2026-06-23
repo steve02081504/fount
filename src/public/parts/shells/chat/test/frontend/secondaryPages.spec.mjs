@@ -1,0 +1,60 @@
+import {
+	test,
+	expect,
+	openFreshGroupChannel,
+	sendMessageViaComposer,
+	openGroupSettingsPage,
+	createTestGroup,
+} from './fixtures.mjs'
+
+test.describe('Chat secondary pages', () => {
+	test('history list page loads sessions', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await sendMessageViaComposer(page, groupId, channelId, `list-row ${Date.now()}`)
+		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#sort-select')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#filter-input')).toBeVisible()
+		const item = page.locator(`.chat-list-item[data-group-id="${groupId}"]`)
+		await expect(item).toBeVisible({ timeout: 60_000 })
+	})
+
+	test('stickers store page loads', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#sticker-create-pack-button')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#packs-container')).toBeVisible()
+		await expect(page.locator('#search-input')).toBeVisible()
+	})
+
+	test('settings page switches tabs', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		await page.locator('.tabs .tab[data-tab="members"]').click()
+		await expect(page.locator('#tab-members')).toBeVisible()
+		await expect(page.locator('#tab-members')).not.toHaveClass(/hidden/)
+		await expect(page.locator('#members-list > div').first()).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('settings permissions and emojis tabs load', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		await page.locator('.tabs .tab[data-tab="permissions"]').click()
+		await expect(page.locator('#permission-settings-container .overflow-x-auto')).toBeVisible({ timeout: 30_000 })
+		await page.locator('.tabs .tab[data-tab="channel-perms"]').click()
+		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
+			.toBeVisible({ timeout: 30_000 })
+		await page.locator('.tabs .tab[data-tab="emojis"]').click()
+		await expect(page.locator('#group-emojis-container')).not.toBeEmpty({ timeout: 30_000 })
+	})
+
+	test('history list filter narrows visible sessions', async ({ page, baseUrl, apiKey }) => {
+		const name = `pw-filter-${Date.now()}`
+		const { groupId } = await createTestGroup(baseUrl, apiKey, { name })
+		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
+		const item = page.locator(`.chat-list-item[data-group-id="${groupId}"]`)
+		await expect(item).toBeVisible({ timeout: 60_000 })
+		await page.locator('#filter-input').fill('__no-such-group-name__')
+		await expect(item).toBeHidden({ timeout: 30_000 })
+		await page.locator('#filter-input').fill(name.slice(0, 12))
+		await expect(item).toBeVisible({ timeout: 30_000 })
+	})
+})

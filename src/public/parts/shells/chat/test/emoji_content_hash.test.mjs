@@ -2,11 +2,12 @@
  * 群预览与 emoji contentHash 单元测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { Buffer } from 'node:buffer'
 
-import { computeEmojiContentHash } from '../src/group/groupEmojis.mjs'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
 import { scanEmojiTokens } from '../../social/src/lib/emojiPostEmbed.mjs'
+import { computeEmojiContentHash } from '../src/group/groupEmojis.mjs'
 
 Deno.test('computeEmojiContentHash is stable sha256 hex', () => {
 	const hash = computeEmojiContentHash(Buffer.from('test'))

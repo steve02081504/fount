@@ -2,8 +2,9 @@
  * 非成员 emoji 内容访问单元测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { Buffer } from 'node:buffer'
+
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { computeEmojiContentHash } from '../src/group/groupEmojis.mjs'
 

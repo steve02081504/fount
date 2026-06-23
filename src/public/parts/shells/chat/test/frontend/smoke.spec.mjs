@@ -14,10 +14,14 @@ test.describe('Chat shell smoke', () => {
 		expect((await res.json()).username).toBe(TEST_USERNAME)
 
 		const guest = await browser.newContext()
-		const guestPage = await guest.newPage()
-		await guestPage.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
-		await expect(guestPage).toHaveURL(/\/login/)
-		await guest.close()
+		try {
+			const guestPage = await guest.newPage()
+			await guestPage.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
+			await expect(guestPage).toHaveURL(/\/login/)
+		}
+		finally {
+			await guest.close()
+		}
 
 		await page.goto(`${baseUrl}/parts/shells:chat/`, { waitUntil: 'domcontentloaded' })
 		await expect(page).toHaveURL(/\/parts\/shells:chat\/hub\//, { timeout: 30_000 })
