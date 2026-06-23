@@ -29,7 +29,7 @@ test.describe('Social saved posts', () => {
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/saved-posts/folders')
 				&& res.request().method() === 'POST',
-				{ timeout: 60_000 },
+			{ timeout: 60_000 },
 			),
 			page.locator('#createFolderBtn').click(),
 		])
@@ -56,5 +56,59 @@ test.describe('Social saved posts', () => {
 		])
 		expect(savedLoad.ok()).toBe(true)
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+	})
+
+	test('remove saved post from unfiled list', async ({ page, baseUrl, apiKey, publishPost }) => {
+		const { postId } = await publishPost(`remove-saved ${Date.now()}`)
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const saveRes = await page.request.post(
+			`${baseUrl}/api/parts/shells:social/saved-posts/add?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { entityHash, postId } },
+		)
+		expect(saveRes.ok()).toBe(true)
+		await page.locator('.nav-btn[data-view="saved"]').click()
+		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+		await page.locator(`#savedView .saved-row:has(a[href*="${postId}"]) [data-remove-saved]`).click()
+		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toHaveCount(0, { timeout: 20_000 })
+	})
+
+	test('rename and delete saved folder', async ({ page }) => {
+		await page.locator('.nav-btn[data-view="saved"]').click()
+		const folderName = `rename-folder-${Date.now()}`
+		await page.locator('#newFolderName').fill(folderName)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/saved-posts/folders')
+				&& res.request().method() === 'POST',
+			),
+			page.locator('#createFolderBtn').click(),
+		])
+		const renamed = `renamed-${Date.now()}`
+		page.once('dialog', async dialog => {
+			expect(dialog.type()).toBe('prompt')
+			await dialog.accept(renamed)
+		})
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/saved-posts/folders/rename')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			page.locator('[data-rename-folder]').first().click(),
+		])
+		await expect(page.locator('#savedView').filter({ hasText: renamed })).toBeVisible({ timeout: 20_000 })
+		page.once('dialog', async dialog => {
+			expect(dialog.type()).toBe('confirm')
+			await dialog.accept()
+		})
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/saved-posts/folders/delete')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			page.locator('[data-delete-folder]').first().click(),
+		])
+		await expect(page.locator('#savedView').filter({ hasText: renamed })).toHaveCount(0, { timeout: 20_000 })
 	})
 })

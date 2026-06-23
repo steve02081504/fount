@@ -19,4 +19,16 @@ test.describe('Social replies', () => {
 		await panel.locator('[data-submit-reply]').click()
 		await expect(card.locator('[data-replies]')).toContainText(/\(1\)/, { timeout: 30_000 })
 	})
+
+	test('replies panel toggles closed', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`reply-toggle ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		const repliesBtn = card.locator('[data-replies]')
+		const actionKey = await repliesBtn.getAttribute('data-replies')
+		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
+		await repliesBtn.click()
+		await expect(panel).not.toHaveClass(/hidden/)
+		await repliesBtn.click()
+		await expect(panel).toHaveClass(/hidden/)
+	})
 })

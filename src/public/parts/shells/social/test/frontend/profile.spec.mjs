@@ -6,6 +6,7 @@ import {
 	fetchViewerEntityHash,
 	waitForPostMaterialized,
 	waitForSocialReady,
+	DUMMY_ENTITY_HASH,
 } from './fixtures.mjs'
 
 test.describe('Social profile', () => {
@@ -26,6 +27,9 @@ test.describe('Social profile', () => {
 		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
 		const blurb = `explore-blurb ${Date.now()}`
 		await page.locator('#exploreBlurbInput').fill(blurb)
+		const protectedInput = page.locator('#exploreProtectedInput')
+		const wasProtected = await protectedInput.isChecked()
+		await protectedInput.setChecked(!wasProtected)
 		const [metaResponse] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/meta')
@@ -34,7 +38,9 @@ test.describe('Social profile', () => {
 			),
 			page.locator('#saveMetaBtn').click(),
 		])
-		expect(await metaResponse.json()).toHaveProperty('socialMeta')
+		const metaJson = await metaResponse.json()
+		expect(metaJson).toHaveProperty('socialMeta')
+		expect(metaJson.socialMeta?.isProtected).toBe(!wasProtected)
 		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 
@@ -56,5 +62,65 @@ test.describe('Social profile', () => {
 		const highlighted = page.locator(`#profileView [data-post-id="${postId}"].highlight-post`)
 		await expect(highlighted).toBeVisible({ timeout: 30_000 })
 		await expect(highlighted).toHaveClass(/highlight-post/)
+	})
+
+	test('follow and unfollow other profile', async ({ page, baseUrl }) => {
+		const dummy = DUMMY_ENTITY_HASH
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
+		await waitForSocialReady(page)
+		const followBtn = page.locator(`[data-follow="${dummy}"]`)
+		await expect(followBtn).toBeVisible({ timeout: 20_000 })
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/profile/follow')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			followBtn.click(),
+		])
+		await expect(followBtn).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/profile/follow')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			followBtn.click(),
+		])
+		await expect(followBtn).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
+	})
+
+	test('dm button navigates to chat contact link', async ({ page, baseUrl }) => {
+		const dummy = DUMMY_ENTITY_HASH
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
+		await waitForSocialReady(page)
+		await page.locator(`[data-dm="${dummy}"]`).click()
+		await expect(page).toHaveURL(
+			new RegExp(`/parts/shells:chat/hub/\\?contact=${dummy}`),
+			{ timeout: 20_000 },
+		)
+	})
+
+	test('blocklist shows blocked entity and unblocks', async ({ page, baseUrl, apiKey }) => {
+		const dummy = DUMMY_ENTITY_HASH
+		const blockRes = await page.request.post(
+			`${baseUrl}/api/parts/shells:social/profile/block?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { entityHash: dummy, block: true } },
+		)
+		expect(blockRes.ok()).toBe(true)
+		await page.locator('.nav-btn[data-view="profile"]').click()
+		await expect(page.locator('#blocklistSection code.entity-hash')).toContainText(
+			dummy.slice(0, 16),
+			{ timeout: 20_000 },
+		)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/profile/block')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			page.locator(`[data-unblock="${dummy}"]`).click(),
+		])
+		await expect(page.locator(`[data-unblock="${dummy}"]`)).toHaveCount(0, { timeout: 20_000 })
 	})
 })

@@ -36,11 +36,50 @@ test.describe('Social composer', () => {
 		await expect(page.locator('#quotePreview')).toBeVisible()
 	})
 
+	test('clears quote preview', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`clear-quote ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		await card.locator('[data-quote]').click()
+		await expect(page.locator('#quotePreview')).toBeVisible()
+		await page.locator('.clear-quote-btn').click()
+		await expect(page.locator('#quotePreview')).toBeHidden()
+	})
+
+	test('publishes post with quote reference', async ({ page, publishPost }) => {
+		const { postId: srcId } = await publishPost(`quote-parent ${Date.now()}`)
+		const srcCard = await findPostCard(page, srcId)
+		await srcCard.locator('[data-quote]').click()
+		await expect(page.locator('#quotePreview')).toBeVisible()
+		const text = `quote-child ${Date.now()}`
+		await page.locator('#postText').fill(text)
+		await page.locator('#postBtn').click()
+		await expect(page.locator('#postText')).toHaveValue('')
+		await expect(page.locator('#feedList .quote-block').first()).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('mention autocomplete suggests on @', async ({ page }) => {
+		await page.locator('#postText').fill('@')
+		await expect(page.locator('.mention-panel')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('.mention-option').first()).toBeVisible()
+	})
+
 	test('visibility selector is available', async ({ page }) => {
 		const select = page.locator('#postVisibility')
 		await expect(select).toBeVisible()
 		await select.selectOption('followers')
 		await expect(select).toHaveValue('followers')
 		await select.selectOption('public')
+	})
+
+	test('publishes followers-only post with visibility label', async ({ page, publishPost }) => {
+		await page.locator('#postVisibility').selectOption('followers')
+		const { postId } = await publishPost(`followers-only ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		await expect(card).toHaveAttribute('data-visibility', 'followers')
+	})
+
+	test('emoji picker opens from composer', async ({ page }) => {
+		await page.locator('#emojiPickBtn').click()
+		await expect(page.locator('#fount-shared-emoji-picker')).toBeVisible({ timeout: 20_000 })
 	})
 })

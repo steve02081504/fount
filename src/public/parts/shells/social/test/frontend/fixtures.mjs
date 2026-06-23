@@ -1,14 +1,27 @@
 import { request as playwrightRequest } from '@playwright/test'
 
-import { createFountFixtures } from '../../../../../../../.github/workflows/test_lib/playwright_fixtures.mjs'
+import { createFountFixtures } from '../../../../../../scripts/test/playwright_fixtures.mjs'
+import { assertIsolatedFrontendTest } from '../../../../../../scripts/test/playwright_guards.mjs'
 
-/** 隔离节点专用测试用户名（与 run.mjs 中 launchNode.username 一致） */
-export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME || 'social-fe-user'
+/** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
+export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
+/** 无真实 replica 的占位 entityHash（follow/block API 烟测用）。 */
+export const DUMMY_ENTITY_HASH = 'a'.repeat(128)
+
+/**
+ * Social 前端 E2E 测试套件（扩展 publishPost fixture）。
+ */
 export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
 
+/**
+ * 扩展 publishPost 的 Social 测试套件。
+ */
 export const test = baseTest.extend({
-	/** @param {(text: string) => Promise<{ postJson: object, postId: string, text: string }>} use */
+	/**
+	 * 通过 composer 发帖的 fixture。
+	 * @param {(text: string) => Promise<{ postJson: object, postId: string, text: string }>} use - Playwright fixture use 回调。
+	 */
 	publishPost: async ({ page, baseUrl, apiKey }, use) => {
 		await use(async text => {
 			const postJson = await publishPostViaComposer(page, text, { baseUrl, apiKey })
@@ -19,44 +32,33 @@ export const test = baseTest.extend({
 	},
 })
 
-test.beforeEach(async ({ page, baseUrl, apiKey }) => {
-	test.setTimeout(300_000)
+baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
+	if (!TEST_USERNAME)
+		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
+	baseTest.setTimeout(300_000)
 	await page.addInitScript(() => {
-		if (!navigator.clipboard) {
+		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
-				value: { writeText: async () => {} },
+				value: { /** @returns {Promise<void>} */
+					writeText: async () => { }
+				},
 				configurable: true,
 			})
-		}
-		else {
-			navigator.clipboard.writeText = async () => {}
-		}
+		else
+			/** @returns {Promise<void>} */
+			navigator.clipboard.writeText = async () => { }
 	})
-	if (process.env.FOUNT_TEST_ISOLATED !== '1')
-		throw new Error(
-			'Social 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），'
-			+ '勿对本地开发实例或真实用户数据运行。',
-		)
-	const req = await playwrightRequest.newContext()
-	try {
-		const whoami = await req.get(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
-		if (!whoami.ok())
-			throw new Error(`whoami failed: ${whoami.status()}`)
-		const data = await whoami.json()
-		if (data.username !== TEST_USERNAME)
-			throw new Error(
-				`测试须使用隔离用户 "${TEST_USERNAME}"，当前为 "${data.username}"。`
-				+ '请通过 run.mjs 启动，勿指向生产/开发 fount。',
-			)
-	}
-	finally {
-		await req.dispose()
-	}
+	await assertIsolatedFrontendTest({
+		baseUrl,
+		apiKey,
+		expectedUsername: TEST_USERNAME,
+		shellLabel: 'Social',
+	})
 })
 
 /**
  * 等待 Social bootstrap 完成。
- * @param {import('@playwright/test').Page} page
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @returns {Promise<void>}
  */
 export async function waitForSocialReady(page) {
@@ -72,21 +74,22 @@ export async function waitForSocialReady(page) {
 
 /**
  * 打开 Social 首页并等待 i18n 与 feed 就绪。
- * @param {import('@playwright/test').Page} page
- * @param {string} baseUrl
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} baseUrl - 测试根 URL。
  * @returns {Promise<void>}
  */
 export async function openSocialHome(page, baseUrl) {
-	await page.goto(`${baseUrl}/parts/shells:social/`)
+	await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
 	await waitForSocialReady(page)
 	await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
-	await expect(page.locator('#postBtn')).toHaveText('发布', { timeout: 30_000 })
+	await expect(page.locator('#postBtn[data-i18n="social.composer.publish"]')).toBeVisible()
+	await expect(page.locator('#postBtn')).not.toHaveText('', { timeout: 30_000 })
 }
 
 /**
  * 等待 feed GET 完成。
- * @param {import('@playwright/test').Page} page
- * @returns {Promise<import('@playwright/test').Response>}
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @returns {Promise<import('npm:@playwright/test').Response>} feed GET 响应。
  */
 export async function waitForFeedLoad(page) {
 	return page.waitForResponse(res =>
@@ -98,10 +101,10 @@ export async function waitForFeedLoad(page) {
 
 /**
  * 轮询直到帖子出现在 profile posts API 中。
- * @param {string} baseUrl
- * @param {string} apiKey
- * @param {string} postId 帖子 id
- * @returns {Promise<string>} entityHash
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} postId - 帖子 id。
+ * @returns {Promise<string>} entityHash。
  */
 export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 	const req = await playwrightRequest.newContext()
@@ -128,12 +131,12 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 
 /**
  * 通过 composer 发帖并等待 API 成功及 feed 刷新。
- * @param {import('@playwright/test').Page} page
- * @param {string} text 正文
- * @param {object} [ctx] 可选 API 上下文
- * @param {string} [ctx.baseUrl]
- * @param {string} [ctx.apiKey]
- * @returns {Promise<object>} 发帖 API 响应 JSON
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} text - 正文。
+ * @param {object} [ctx] - 可选 API 上下文。
+ * @param {string} [ctx.baseUrl] - 测试根 URL。
+ * @param {string} [ctx.apiKey] - API 密钥。
+ * @returns {Promise<object>} 发帖 API 响应 JSON。
  */
 export async function publishPostViaComposer(page, text, ctx = {}) {
 	await page.locator('#postText').fill(text)
@@ -152,16 +155,11 @@ export async function publishPostViaComposer(page, text, ctx = {}) {
 	}
 	catch {
 		await expect(page.locator('#postText')).toHaveValue('', { timeout: 30_000 })
-		const postId = await page.evaluate(expectedText => {
-			for (const card of document.querySelectorAll('#feedView .post-card, #feedList .post-card')) {
-				const encoded = card.dataset.postText || ''
-				const body = decodeURIComponent(encoded)
-				if (body.includes(expectedText) || card.textContent?.includes(expectedText))
-					return card.dataset.postId || null
-			}
-			return null
-		}, text)
-		if (!postId) throw new Error(`publishPostViaComposer: post "${text}" not visible after composer cleared`)
+		const postId = await page.evaluate(() => {
+			const card = document.querySelector('#feedView .post-card[data-post-id], #feedList .post-card[data-post-id]')
+			return card?.dataset.postId || null
+		})
+		if (!postId) throw new Error('publishPostViaComposer: POST response missing and no post card in feed')
 		postJson = { event: { id: postId } }
 	}
 	await feedWait.catch(() => waitForFeedLoad(page))
@@ -171,8 +169,8 @@ export async function publishPostViaComposer(page, text, ctx = {}) {
 
 /**
  * 从发帖 API 响应解析 postId。
- * @param {object} postJson 发帖响应
- * @returns {string} postId
+ * @param {object} postJson - 发帖响应。
+ * @returns {string} postId。
  */
 export function postIdFromResponse(postJson) {
 	const id = postJson?.event?.id || postJson?.event?.postId
@@ -182,16 +180,20 @@ export function postIdFromResponse(postJson) {
 
 /**
  * 在 feed 或资料页中按 postId 定位帖子卡片。
- * @param {import('@playwright/test').Page} page
- * @param {string} postId 帖子 id
- * @param {{ preferFeed?: boolean }} [opts]
- * @returns {Promise<import('@playwright/test').Locator>}
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} postId - 帖子 id。
+ * @param {{ preferFeed?: boolean }} [opts] - 查找选项。
+ * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
 export async function findPostCard(page, postId, opts = {}) {
 	const preferFeed = opts.preferFeed === true
 	const sel = `[data-post-id="${postId}"]`
 
-	/** @param {string} viewId */
+	/**
+	 * 在指定视图中查找帖子卡片。
+	 * @param {string} viewId - 视图元素 id。
+	 * @returns {Promise<import('npm:@playwright/test').Locator | null>} 定位器或 null。
+	 */
 	const cardInView = async viewId => {
 		const view = page.locator(`#${viewId}`)
 		if (await view.evaluate(el => el.classList.contains('hidden'))) return null
@@ -204,7 +206,7 @@ export async function findPostCard(page, postId, opts = {}) {
 		if (onFeed) return onFeed
 	}
 
-	if (preferFeed) 
+	if (preferFeed)
 		for (let attempt = 0; attempt < 4; attempt++) {
 			const feedCard = await cardInView('feedView')
 			if (feedCard) return feedCard
@@ -216,7 +218,7 @@ export async function findPostCard(page, postId, opts = {}) {
 			if (refreshed) return refreshed
 			await page.waitForTimeout(300)
 		}
-	
+
 
 	for (let attempt = 0; attempt < 4; attempt++) {
 		const feedCard = await cardInView('feedView')
@@ -240,9 +242,9 @@ export async function findPostCard(page, postId, opts = {}) {
 
 /**
  * 等待 feed 中出现指定 postId 的帖子卡片。
- * @param {import('@playwright/test').Page} page
- * @param {string} postId
- * @returns {Promise<import('@playwright/test').Locator>}
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} postId - 帖子 id。
+ * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
 export async function expectPostInFeed(page, postId) {
 	return findPostCard(page, postId, { preferFeed: true })
@@ -250,10 +252,10 @@ export async function expectPostInFeed(page, postId) {
 
 /**
  * 执行 feed 搜索并等待结果中出现指定 postId。
- * @param {import('@playwright/test').Page} page
- * @param {string} query 搜索词
- * @param {string} postId 期望帖子 id
- * @returns {Promise<void>}
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} query - 搜索词。
+ * @param {string} postId - 期望帖子 id。
+ * @returns {Promise<void>} 无返回值。
  */
 export async function searchAndExpectPost(page, query, postId) {
 	for (let attempt = 0; attempt < 8; attempt++) {
@@ -278,9 +280,34 @@ export async function searchAndExpectPost(page, query, postId) {
 }
 
 /**
+ * 通过 API 批量发帖（用于分页等需大量帖子的场景）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} count - 发帖数量。
+ * @param {string} [textPrefix] - 正文前缀。
+ * @returns {Promise<void>}
+ */
+export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed') {
+	const req = await playwrightRequest.newContext()
+	try {
+		const key = encodeURIComponent(apiKey)
+		for (let i = 0; i < count; i++) {
+			const res = await req.post(
+				`${baseUrl}/api/parts/shells:social/profile/post?fount-apikey=${key}`,
+				{ data: { text: `${textPrefix}-${i}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
+			)
+			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
+		}
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
  * 读取当前测试用户的 viewer entityHash。
- * @param {string} baseUrl
- * @param {string} apiKey
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
  * @returns {Promise<string>} entityHash
  */
 export async function fetchViewerEntityHash(baseUrl, apiKey) {

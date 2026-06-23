@@ -42,4 +42,14 @@ test.describe('Social deep links', () => {
 		await waitForSocialReady(page)
 		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 30_000 })
 	})
+
+	test('hashchange navigates to search', async ({ page, baseUrl, publishPost }) => {
+		await openSocialHome(page, baseUrl)
+		const tag = `hashchg${Date.now()}`
+		await publishPost(`hash change #${tag}`)
+		await page.evaluate(query => {
+			location.hash = `search;${encodeURIComponent(query)}`
+		}, tag)
+		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+	})
 })
