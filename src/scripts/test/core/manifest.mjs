@@ -14,7 +14,6 @@ import { matchGlob } from './glob.mjs'
  * @property {string[]} run 执行命令
  * @property {string[]} triggers 触发 glob
  * @property {string} manifestPath 相对仓库根的 manifest 路径
- * @property {boolean} smokeLoad 是否触发 loadPart 冒烟
  */
 
 /**
@@ -114,7 +113,6 @@ export async function loadAllSuites(repoRoot) {
 				run: suite.run,
 				triggers: resolveSuiteTriggers(suite, triggerSets),
 				manifestPath: relManifest,
-				smokeLoad: suite.smokeLoad === true,
 			})
 		}
 	}

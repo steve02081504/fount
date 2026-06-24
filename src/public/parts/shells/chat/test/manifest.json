@@ -71,8 +71,7 @@
 				"./src/scripts/test/deno/serial.mjs",
 				"--ignore=src/public/parts/shells/chat/test/live",
 				"./src/public/parts/shells/chat/test/"
-			],
-			"smokeLoad": false
+			]
 		},
 		{
 			"name": "e2e_single",
@@ -86,8 +85,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"e2e_single"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "e2e_single_ext",
@@ -101,8 +99,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"e2e_single_ext"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "smoke_chat",
@@ -116,8 +113,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"smoke_chat"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "smoke_ai",
@@ -131,8 +127,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"smoke_ai"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "ws_test",
@@ -146,8 +141,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"ws_test"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "ws_rpc_test",
@@ -161,8 +155,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"ws_rpc_test"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "ws_stream_test",
@@ -176,8 +169,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"ws_stream_test"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "av_relay_test",
@@ -191,8 +183,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"av_relay_test"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_test",
@@ -206,8 +197,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_test"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_e2e_ext",
@@ -221,8 +211,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_e2e_ext"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_dm",
@@ -236,8 +225,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_dm"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_archive_month",
@@ -251,8 +239,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_archive_month"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_mailbox",
@@ -266,8 +253,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_mailbox"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_ban",
@@ -281,8 +267,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_ban"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_emoji",
@@ -296,8 +281,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_emoji"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_emoji_nonmember",
@@ -311,8 +295,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_emoji_nonmember"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_emoji_nearcache",
@@ -326,8 +309,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_emoji_nearcache"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_file_transfer",
@@ -341,8 +323,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_file_transfer"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "fed_misc",
@@ -356,8 +337,7 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_misc"
-			],
-			"smokeLoad": true
+			]
 		},
 		{
 			"name": "frontend",
@@ -369,8 +349,7 @@
 				"-c",
 				"./deno.json",
 				"./src/public/parts/shells/chat/test/frontend/run.mjs"
-			],
-			"smokeLoad": false
+			]
 		}
 	]
 }

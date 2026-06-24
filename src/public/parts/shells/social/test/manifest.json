@@ -13,7 +13,6 @@
 				"--ignore=src/public/parts/shells/social/test/live",
 				"./src/public/parts/shells/social/test/"
 			],
-			"smokeLoad": false,
 			"trigger": "shellUnit"
 		},
 		{
@@ -28,7 +27,6 @@
 				"--suite",
 				"e2e_single"
 			],
-			"smokeLoad": true,
 			"trigger": "shellLive"
 		},
 		{
@@ -43,7 +41,6 @@
 				"--suite",
 				"ws_test"
 			],
-			"smokeLoad": true,
 			"trigger": "wsTest"
 		},
 		{
@@ -58,7 +55,6 @@
 				"--suite",
 				"cross_shell_emoji"
 			],
-			"smokeLoad": true,
 			"trigger": "crossShellEmoji"
 		},
 		{
@@ -71,7 +67,6 @@
 				"./deno.json",
 				"./src/public/parts/shells/social/test/frontend/run.mjs"
 			],
-			"smokeLoad": false,
 			"trigger": "frontend"
 		}
 	],

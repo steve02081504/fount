@@ -20,7 +20,7 @@ import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
-import { needsSmokeLoad, selectSuites, shouldTrackFailures } from './selection.mjs'
+import { selectSuites, shouldTrackFailures } from './selection.mjs'
 
 /**
  * runTests 入口选项。
@@ -29,20 +29,7 @@ import { needsSmokeLoad, selectSuites, shouldTrackFailures } from './selection.m
  * @property {string} [since] diff 基准 commit
  * @property {string[]} [manifestSelectors] manifest 指名
  * @property {string[]} [suiteSelectors] suite id 或 name
- * @property {boolean} [smokeLoadParts] 是否 loadPart 冒烟（CI）
  */
-
-/**
- * 子进程内执行 loadPart 冒烟。
- * @returns {Promise<number>} 退出码
- */
-async function smokeLoadShells() {
-	console.log('starting fount server (loadPart smoke subprocess)')
-	return runCommand([
-		'deno', 'run', '--allow-all', '-c', './deno.json',
-		'./src/scripts/test/node/smoke.mjs',
-	])
-}
 
 /**
  * 执行子进程命令。
@@ -166,11 +153,6 @@ export async function runTests(options = {}) {
 	if (!selected.length) {
 		console.log('没有匹配的测试 suite。')
 		return 0
-	}
-
-	if (needsSmokeLoad(selected, options.smokeLoadParts === true)) {
-		const smokeCode = await smokeLoadShells()
-		if (smokeCode !== 0) return smokeCode
 	}
 
 	const manifestFailures = new Map()

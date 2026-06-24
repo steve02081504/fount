@@ -1,13 +1,7 @@
-name: Verify Shells
+name: Run Tests
 
 on:
   push:
-    paths:
-      - 'src/public/parts/shells/**'
-      - 'src/scripts/p2p/**'
-      - 'src/server/p2p_server/**'
-      - '.github/workflows/verify_shells.yaml'
-      - '.github/workflows/verify_shells.mjs'
     tags-ignore:
       - '*'
     branches:
@@ -15,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  verify-shells:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,10 +31,13 @@ jobs:
             deno install --prod --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
             echo "Attempt $i/13 failed, retrying..."
           done
-      - name: Load all shells
+      - name: Run tests
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          deno run --allow-scripts --allow-all -c "./deno.json" ./.github/workflows/verify_shells.mjs
-      - name: Delete Previous Cache # 删除之前的缓存确保缓存随着项目运行而更新
+          deno run --allow-scripts --allow-all -c "./deno.json" ./src/scripts/test/cli.mjs
+      - name: Delete Previous Cache
         continue-on-error: true
         shell: bash
         run: |
@@ -56,7 +53,7 @@ jobs:
           ENTRYPOINTS=()
           add_entry() { [ -f "$1" ] && ENTRYPOINTS+=("$1"); }
           add_entry "./src/server/index.mjs"
-          add_entry "./.github/workflows/verify_shells.mjs"
+          add_entry "./src/scripts/test/cli.mjs"
           [ ${#ENTRYPOINTS[@]} -eq 0 ] && exit 0
           deno clean --except "${ENTRYPOINTS[@]}"
       - name: Save node_modules Cache

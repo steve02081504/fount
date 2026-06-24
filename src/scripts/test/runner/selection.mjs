@@ -134,13 +134,3 @@ export async function selectSuites({
 export function shouldTrackFailures(manifestIds, suiteSelectors) {
 	return manifestIds?.length === 1 && !suiteSelectors?.length
 }
-
-/**
- * 选中 suite 是否需要 loadPart 冒烟（排除 frontend）。
- * @param {import('../core/manifest.mjs').SuiteDef[]} selected 选中 suite
- * @param {boolean} force 强制冒烟
- * @returns {boolean} 是否需要冒烟
- */
-export function needsSmokeLoad(selected, force) {
-	return force || selected.some(suite => suite.smokeLoad)
-}
