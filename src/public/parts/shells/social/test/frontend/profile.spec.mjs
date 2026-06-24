@@ -83,17 +83,23 @@ test.describe('Social profile', () => {
 		await page.locator('.nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView .profile-following')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('#profileView .following-link')).toContainText(dummy.slice(0, 8))
-		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
+		// page.goto 到相同 URL hash 时浏览器不会重新加载，无法触发 applyIncomingNavigation
+		// 先导航到无 hash 的社交首页（触发完整重载），再设置 hash（触发 hashchange）
+		await page.goto(`${baseUrl}/parts/shells:social/`)
 		await waitForSocialAppReady(page)
+		await page.evaluate(eh => { window.location.hash = `profile;${eh}` }, dummy)
+		const unfollowBtn = page.locator(`[data-follow="${dummy}"]`)
+		await expect(unfollowBtn).toBeVisible({ timeout: 30_000 })
+		await expect(unfollowBtn).toHaveAttribute('data-is-following', '1', { timeout: 10_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
-			),
-			page.locator(`[data-follow="${dummy}"]`).click(),
+			{ timeout: 60_000 }),
+			unfollowBtn.click(),
 		])
-		await expect(page.locator(`[data-follow="${dummy}"]`)).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
+		await expect(unfollowBtn).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
 	})
 
 	test('dm button navigates to chat contact link', async ({ page, baseUrl }) => {

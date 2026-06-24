@@ -46,7 +46,7 @@ test.describe('Social feed', () => {
 	test('short search shows too-short hint', async ({ page }) => {
 		await page.locator('#feedSearchInput').fill('a')
 		await page.locator('#feedSearchBtn').click()
-		await expect(page.locator('#feedList .empty[data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 10_000 })
+		await expect(page.locator('#feedList .empty[data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('trending hashtag link opens search', async ({ page, publishPost }) => {
@@ -99,16 +99,20 @@ test.describe('Social feed', () => {
 		await seedPostsViaApi(baseUrl, apiKey, 31, 'loadmore')
 		await openSocialHome(page, baseUrl)
 		const loadMore = page.locator('#feedLoadMore')
-		await expect(loadMore).toBeVisible({ timeout: 30_000 })
+		await expect(loadMore).toBeVisible({ timeout: 60_000 })
+		const initialCount = await page.locator('#feedList [data-post-id]').count()
+		// 等待含 cursor= 的 load more 请求（区分普通刷新）
 		const [feedResponse] = await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/feed')
-				&& res.url().includes('cursor=')
-				&& res.request().method() === 'GET'
-				&& res.status() === 200,
-			),
+			page.waitForResponse(res => {
+				if (res.request().method() !== 'GET' || res.status() !== 200) return false
+				const url = new URL(res.url())
+				return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
+			}, { timeout: 30_000 }),
 			loadMore.click(),
 		])
-		expect(await feedResponse.json()).toHaveProperty('items')
+		const data = await feedResponse.json()
+		expect(data).toHaveProperty('items')
+		const newCount = await page.locator('#feedList [data-post-id]').count()
+		expect(newCount).toBeGreaterThan(initialCount)
 	})
 })

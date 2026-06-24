@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, expectPostInFeed, fetchViewerEntityHash } from './fixtures.mjs'
 
 test.describe('Social saved posts', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -21,7 +21,7 @@ test.describe('Social saved posts', () => {
 	test('create folder and save into it', async ({ page, baseUrl, apiKey, publishPost }) => {
 		const { postId } = await publishPost(`folder-save ${Date.now()}`)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		await findPostCard(page, postId)
+		await expectPostInFeed(page, postId)
 		await page.locator('.nav-btn[data-view="saved"]').click()
 		const folderName = `folder-${Date.now()}`
 		await page.locator('#newFolderName').fill(folderName)

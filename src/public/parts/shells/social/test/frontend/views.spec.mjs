@@ -1,3 +1,5 @@
+import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+
 import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
@@ -98,15 +100,27 @@ test.describe('Social secondary views', () => {
 		await page.locator('#notificationsMarkAllBtn').click()
 	})
 
-	test('notification badge shows unread count before opening view', async ({ page, publishPost }) => {
+	test('notification badge shows unread count before opening view', async ({ page, baseUrl, publishPost }) => {
 		const { postId } = await publishPost(`badge-parent ${Date.now()}`)
 		const card = await findPostCard(page, postId)
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
 		await panel.locator('textarea').fill(`badge-reply ${Date.now()}`)
-		await panel.locator('[data-submit-reply]').click()
-		await expect(page.locator('#notificationsBadge:not(.hidden)')).toBeVisible({ timeout: 30_000 })
+		// 等待回复 POST 响应，确保服务端已创建帖子
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/profile/post')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			{ timeout: 30_000 }),
+			panel.locator('[data-submit-reply]').click(),
+		])
+		// 重载页面：init 阶段会调用 updateNotificationBadge，此时 seenAt=0
+		// 且回复通知已存在，徽章应在打开通知视图之前就显示
+		await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
+		await waitForSocialAppReady(page)
+		await expect(page.locator('#notificationsBadge:not(.hidden)')).toBeVisible({ timeout: 10_000 })
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

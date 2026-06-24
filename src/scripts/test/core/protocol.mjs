@@ -8,9 +8,20 @@
  *   FOUNT_TEST_KEEP_GOING    — `1` 时失败后继续并汇总
  *   FOUNT_TEST_SCOPE         — Playwright 产物 scope（manifest id）
  */
+import { realpathSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import process from 'node:process'
+
+/**
+ * 安全解析 symlink（路径不存在时原样返回）。
+ * @param {string} p 待解析路径
+ * @returns {string} 真实路径
+ */
+function tryRealpath(p) {
+	try { return realpathSync(p) }
+	catch { return p }
+}
 
 /**
  * 将路径规范为仓库相对路径（正斜杠）。
@@ -19,8 +30,8 @@ import process from 'node:process'
  * @returns {string} 仓库相对路径
  */
 export function toRepoRelative(repoRoot, file) {
-	const root = resolve(repoRoot)
-	const abs = resolve(root, file)
+	const root = tryRealpath(resolve(repoRoot))
+	const abs = tryRealpath(resolve(root, file))
 	const rel = relative(root, abs).replace(/\\/g, '/')
 	if (rel.startsWith('..'))
 		throw new Error(`path outside repo: ${file}`)

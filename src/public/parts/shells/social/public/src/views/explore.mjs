@@ -40,7 +40,10 @@ export async function loadExplore(appContext) {
 		`
 		container.appendChild(row)
 	}
-	container.innerHTML += `<h2 class="section-title">${appContext.geti18n('social.explore.posts')}</h2>`
+	const postsTitle = document.createElement('h2')
+	postsTitle.className = 'section-title'
+	postsTitle.textContent = appContext.geti18n('social.explore.posts')
+	container.appendChild(postsTitle)
 	const postList = document.createElement('div')
 	postList.className = 'explore-post-list'
 	container.appendChild(postList)

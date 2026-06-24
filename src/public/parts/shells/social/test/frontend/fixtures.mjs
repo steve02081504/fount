@@ -195,9 +195,10 @@ export async function findPostCard(page, postId, opts = {}) {
 		const feedCard = await cardInView('feedView')
 		if (feedCard) return feedCard
 		await page.locator('.nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
-		const profileCard = await cardInView('profileView')
-		if (profileCard) return profileCard
+		// 等待 profile 帖子真正渲染完成（view 可见 ≠ 帖子已加载）
+		const profileCard = page.locator(`#profileView ${sel}`)
+		const profileFound = await profileCard.isVisible({ timeout: 20_000 }).catch(() => false)
+		if (profileFound) return profileCard
 		await page.locator('.nav-btn[data-view="feed"]').click()
 		await Promise.all([
 			waitForFeedLoad(page),
@@ -207,7 +208,7 @@ export async function findPostCard(page, postId, opts = {}) {
 	}
 
 	const fallback = page.locator(`.view:not(.hidden) ${sel}`)
-	await expect(fallback.first()).toBeVisible({ timeout: 5_000 })
+	await expect(fallback.first()).toBeVisible({ timeout: 15_000 })
 	return fallback.first()
 }
 

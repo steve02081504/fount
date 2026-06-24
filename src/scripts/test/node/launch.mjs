@@ -238,6 +238,8 @@ export async function launchNode(options = {}) {
 		catch { /* not json yet */ }
 	}
 	readline.close()
+	// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。
+	child.stdout.resume()
 
 	if (!readyInfo?.baseUrl)
 		throw new Error(`node worker did not emit ready JSON (port ${port})`)
