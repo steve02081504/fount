@@ -22,6 +22,9 @@ const playwrightCli = require.resolve('@playwright/test/cli')
  */
 export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = '', jsonReportPath }) {
 	const mergedEnv = { ...process.env, ...env }
+	// FORCE_COLOR（由 Deno 注入）与 NO_COLOR 并存时 Node 会产生 Warning；
+	// Playwright 子进程自行检测终端色彩能力，无需外部强制。
+	delete mergedEnv.FORCE_COLOR
 	let args = playwrightArgs
 	if (jsonReportPath) {
 		mergedEnv.PLAYWRIGHT_JSON_OUTPUT_FILE = jsonReportPath

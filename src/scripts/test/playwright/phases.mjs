@@ -27,25 +27,26 @@ import { runPlaywrightWithNode } from './run.mjs'
  */
 
 /**
- * 从 playwright.config.mjs 派生多阶段定义。
- * @param {string} configPath playwright.config.mjs 绝对路径
+ * 从与 playwright.config.mjs 同目录的 phases.mjs 读取多阶段定义。
+ *
+ * phases.mjs 是纯数据文件（无 npm 依赖），可在 Deno 和 Node 下双重导入。
+ * playwright.config.mjs 本身只在 Node/Playwright 进程中运行，Deno 不应直接导入它。
+ * @param {string} configPath playwright.config.mjs 绝对路径（用于定位同目录的 phases.mjs）
  * @param {string} repoRoot 仓库根
  * @param {{ portStep?: number }} [options] 端口步长选项
  * @returns {Promise<FrontendPhase[]>} 阶段列表
  */
 export async function phasesFromPlaywrightConfig(configPath, repoRoot, { portStep = 2 } = {}) {
-	const config = (await import(pathToFileURL(resolve(configPath)).href)).default
-	const testDir = resolve(dirname(configPath), config.testDir ?? '.')
-	const projects = config.projects ?? [{ name: 'default' }]
+	const phasesPath = join(dirname(configPath), 'phases.mjs')
+	const { phases } = await import(pathToFileURL(resolve(phasesPath)).href)
+	const testDir = dirname(configPath)
 
-	return projects.map((project, index) => {
-		const patterns = project.testMatch
-			? Array.isArray(project.testMatch) ? project.testMatch : [project.testMatch]
-			: ['*.spec.mjs']
+	return phases.map((phase, index) => {
+		const patterns = Array.isArray(phase.testMatch) ? phase.testMatch : [phase.testMatch]
 		const specBasenames = patterns.map(pattern => pattern.replace(/^\*\//, ''))
 		const specPaths = specBasenames.map(name => toRepoRelative(repoRoot, join(testDir, name)))
 		return {
-			project: project.name,
+			project: phase.name,
 			portOffset: index * portStep,
 			specPaths,
 			specBasenames,

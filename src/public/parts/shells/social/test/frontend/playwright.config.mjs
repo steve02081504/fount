@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url'
 
 import { createPlaywrightConfig } from 'fount/scripts/test/playwright/config.mjs'
 
+import { phases } from './phases.mjs'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
@@ -12,24 +14,6 @@ export default await createPlaywrightConfig({
 	testDir: __dirname,
 	overrides: {
 		timeout: 300_000,
-		projects: [
-			{
-				name: 'actions',
-				testMatch: ['postActions.spec.mjs', 'replies.spec.mjs'],
-			},
-			{
-				// composer 含 Chat 群关联，单独阶段避免拖垮后续 deepLink/feed 节点
-				name: 'composer',
-				testMatch: ['composer.spec.mjs'],
-			},
-			{
-				name: 'core',
-				testMatch: ['deepLink.spec.mjs', 'feed.spec.mjs', 'navigation.spec.mjs', 'profile.spec.mjs', 'saved.spec.mjs'],
-			},
-			{
-				name: 'tail',
-				testMatch: ['smoke.spec.mjs', 'views.spec.mjs'],
-			},
-		],
+		projects: phases.map(p => ({ name: p.name, testMatch: p.testMatch })),
 	},
 })

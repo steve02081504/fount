@@ -16,6 +16,27 @@ import {
 	parseRelayUrls,
 } from './trystero_session.mjs'
 
+/**
+ * 在 TrysteroActionRegistry 上注册 fed_chunk_get / fed_chunk_data handler，
+ * 供用户房间（本地 + 远端）双向 chunk 传输使用。
+ * @param {string} username replica 用户名
+ * @param {import('./trystero_session.mjs').TrysteroActionRegistry} actions action 表
+ * @returns {void}
+ */
+function attachUserRoomChunkHandlers(username, actions) {
+	import('./files/chunk_fetch.mjs').then(({ handleIncomingChunkGet, resolvePendingChunkFetch }) => {
+		actions.on('fed_chunk_get', (data, peerId) => {
+			void handleIncomingChunkGet(username, data, (resp) => {
+				try { actions.send('fed_chunk_data', resp, peerId) }
+				catch { /* peer disconnected */ }
+			}, peerId)
+		})
+		actions.on('fed_chunk_data', (data) => {
+			resolvePendingChunkFetch(data)
+		})
+	}).catch(error => console.error('p2p: failed to attach chunk handlers to user room', error))
+}
+
 /** @type {Promise<UserRoomSlot | null> | null} */
 let userRoomInflight = null
 
@@ -120,6 +141,7 @@ export async function ensureUserRoom(ctx = {}) {
 			const wireCtx = { replicaUsername: ctx.replicaUsername }
 			attachPartWire(wireCtx, actions)
 			attachMailboxWire(wireCtx, actions)
+			attachUserRoomChunkHandlers(ctx.replicaUsername || '', actions)
 			userRoomSlot = slot
 			recordExplorePeersFromRoster(slot.getRoster(), '', 'user_room')
 			return slot

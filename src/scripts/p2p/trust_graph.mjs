@@ -101,10 +101,10 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
 	const selfNodeHash = getNodeHash()
 
 	const rooms = await listFederationRoomSlots(username)
-	const userRoom = rooms.find(room => room.groupId === USER_ROOM_SCOPE)
+	const userRooms = rooms.filter(room => room.groupId === USER_ROOM_SCOPE)
 	const groupRooms = rooms.filter(room => room.groupId !== USER_ROOM_SCOPE)
 
-	if (userRoom) {
+	for (const userRoom of userRooms) {
 		const peerId = userRoom.getPeerIdByNodeHash(targetNodeHash)
 		if (peerId) {
 			userRoom.sendToPeer(peerId, actionName, payload)

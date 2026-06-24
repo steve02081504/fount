@@ -83,7 +83,7 @@ Deno.test('followers-only post hidden when viewer does not follow author', async
 	assert(canViewPost({ ...secret, entityHash: foreignOwner }, viewerContext))
 })
 
-Deno.test('profile feed includes public posts only for viewer', async () => {
+Deno.test('owner sees own followers-only post on profile feed (decrypted or protected)', async () => {
 	const { username, operator } = await getSession()
 	const postKeyId = randomUUID()
 	const encrypted = await import('../../src/vault_crypto/vault.mjs')
@@ -98,6 +98,12 @@ Deno.test('profile feed includes public posts only for viewer', async () => {
 	}, { fanout: false })
 
 	const { items } = await feed.buildProfileFeedItems(username, operator)
-	const protectedItem = items.find(row => row.post?.content?.protected || row.post?.content?.scheme === 'gsh')
-	assert(protectedItem, 'owner should see decrypted or protected marker on profile feed')
+	// owner can decrypt their own vault posts → decrypted content has text + visibility;
+	// if decryption somehow failed the item would carry { protected: true } or raw scheme marker
+	const followersItem = items.find(row =>
+		row.post?.content?.text === 'followers encrypted' ||
+		row.post?.content?.protected ||
+		row.post?.content?.scheme === 'gsh',
+	)
+	assert(followersItem, 'owner should see decrypted or protected marker on profile feed')
 })
