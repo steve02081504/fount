@@ -4,7 +4,15 @@ $ErrorActionPreference = 'Stop'
 
 $gid = $null; $cid = $null; $emojiId = $null
 
-Write-Host "=== Setup: A creates group + emoji (B does not join) ===" -ForegroundColor Cyan
+Write-Host "`n=== P2P warmup (user-room for fed_chunk_get fanout) ===" -ForegroundColor Cyan
+Test-Case 'federation identity ready on A/B' {
+	$fa = P2pApi $FedA GET '/federation'
+	$fb = P2pApi $FedB GET '/federation'
+	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.identityPubKeyHex -and $fb.json.identityPubKeyHex
+}
+Start-Sleep 5
+
+Write-Host "`n=== Setup: A creates group + emoji (B does not join) ===" -ForegroundColor Cyan
 Test-Case 'A creates group (B stays non-member)' {
 	$g = (Api $FedA POST '/groups/' @{ name = 'FedEmojiNM'; description = 'L4 fed probe' }).json
 	$script:gid = $g.groupId
@@ -31,7 +39,8 @@ Write-Host "`n=== B (non-member) emoji-content ===" -ForegroundColor Cyan
 Start-Sleep 3
 Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
 Test-Case 'B GET /emoji-content without membership' {
-	$hashQ = if ($emojiContentHash) { "?json=1&contentHash=$emojiContentHash" } else { '?json=1' }
+	if (-not $emojiContentHash) { throw 'upload must yield contentHash for non-member CAS path' }
+	$hashQ = "?json=1&contentHash=$emojiContentHash"
 	$ok = PollUntil 120 5 {
 		Api $FedB GET "/groups/$gid/preview" | Out-Null
 		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null

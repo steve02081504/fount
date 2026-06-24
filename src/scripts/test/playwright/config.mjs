@@ -1,3 +1,5 @@
+import { defineConfig } from '@playwright/test'
+
 import { playwrightOutputDir } from '../core/paths.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
@@ -5,24 +7,13 @@ import { resolveBrowserUseOptions } from './browser.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 
 /**
- * Playwright 在 Deno driver 与 Node CLI 下解析方式不同。
- * @returns {Promise<typeof import('npm:@playwright/test')>} Playwright 测试模块
- */
-async function loadPlaywrightTest() {
-	return globalThis.Deno ?
-		import('npm:@playwright/test') :
-		import('@playwright/test')
-}
-
-/**
  * 创建 fount E2E 通用 Playwright 配置。
  * @param {object} options 配置选项
  * @param {string} options.testDir 用例目录（绝对或相对 repo 根）
- * @param {Partial<import('npm:@playwright/test').PlaywrightTestConfig>} [options.overrides] 覆盖项
- * @returns {Promise<import('npm:@playwright/test').PlaywrightTestConfig>} Playwright 配置对象
+ * @param {Partial<import('@playwright/test').PlaywrightTestConfig>} [options.overrides] 覆盖项
+ * @returns {Promise<import('@playwright/test').PlaywrightTestConfig>} Playwright 配置对象
  */
 export async function createPlaywrightConfig({ testDir, overrides = {} }) {
-	const { defineConfig } = await loadPlaywrightTest()
 	const browserUse = await resolveBrowserUseOptions()
 	// phasesFromPlaywrightConfig 会在自启节点前 import 本配置；此时尚无 FOUNT_TEST_BASE_URL。
 	const baseURL = process.env.FOUNT_TEST_BASE_URL?.trim()

@@ -1,13 +1,11 @@
+import { where_command } from '@steve02081504/exec'
+
 /**
  * 解析本机 Chrome/Edge，供 Playwright 复用（不下载 bundled Chromium）。
- * @returns {Promise<Partial<import('npm:@playwright/test').PlaywrightTestConfig['use']>>} Playwright `use` 选项
+ * @returns {Promise<Partial<import('@playwright/test').PlaywrightTestConfig['use']>>} Playwright `use` 选项
  * @throws {Error} PATH 上找不到 chrome/msedge 时
  */
 export async function resolveBrowserUseOptions() {
-	const { where_command } = await (globalThis.Deno ?
-		import('npm:@steve02081504/exec') :
-		import('@steve02081504/exec')
-	)
 	for (const command of ['chrome', 'msedge'])
 		try {
 			const executablePath = await where_command(command)

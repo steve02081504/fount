@@ -89,7 +89,8 @@ Test-Case 'B GET /emoji-content without group membership' {
 	# 纯非成员经 discovery + contentHash 拉取；查询参数对齐 Social mediaRef 渲染路径。
 	$hash = $script:postMediaRefs[0].contentHash
 	if (-not $hash) { $hash = $script:emojiContentHash }
-	$hashQ = if ($hash) { "?json=1&contentHash=$hash" } else { '?json=1' }
+	if (-not $hash) { throw 'post or upload must yield contentHash for non-member CAS path' }
+	$hashQ = "?json=1&contentHash=$hash"
 	$ok = PollUntil 120 5 {
 		Api $FedB GET "/groups/$gid/preview" | Out-Null
 		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 3000 } | Out-Null
