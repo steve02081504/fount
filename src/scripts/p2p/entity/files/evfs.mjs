@@ -6,7 +6,7 @@ import { buildFileManifestFromEnc } from '../../files/assemble.mjs'
 import { encryptReadableToParts } from '../../files/assemble_stream.mjs'
 import { fetchChunk } from '../../files/chunk_fetch.mjs'
 import { getChunk, hasChunk, putChunk } from '../../files/chunk_store.mjs'
-import { normalizeFileManifest } from '../../files/manifest.mjs'
+import { normalizeFileManifest, publicTransferKeyDescriptor } from '../../files/manifest.mjs'
 import { assembleManifestPlaintext } from '../../files/transfer_key.mjs'
 import { readDagManifestPlaintext, resolveTransferKeyDeps } from '../../files/transfer_key_registry.mjs'
 import { getEntityStore } from '../../node/instance.mjs'
@@ -136,7 +136,7 @@ export async function putFileManifest(params) {
 		name,
 		mimeType,
 		ceMode,
-		transferKeyDescriptor,
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
 		meta,
 	}, enc)
 	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
@@ -181,7 +181,7 @@ export async function putFileManifestFromStream(params) {
 		contentHash: enc.contentHash,
 		ceMode,
 		parts: enc.parts,
-		transferKeyDescriptor,
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
 		meta,
 	})
 	if (!manifest) throw new Error('invalid manifest')

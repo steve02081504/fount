@@ -38,16 +38,15 @@ export function entityFileUrl(entityHash, logicalPath) {
  * @param {string} entityHash owner
  * @param {string} logicalPath 路径
  * @param {File | Blob} file 文件
- * @param {string} [fieldName] 表单字段
  * @returns {Promise<{ entityHash: string, path: string, url: string }>} 上传结果
  */
-export async function uploadEvfsFile(entityHash, logicalPath, file, fieldName = 'file') {
-	const body = new FormData()
-	body.append(fieldName, file)
+export async function uploadEvfsFile(entityHash, logicalPath, file) {
+	const body = file instanceof Blob ? file : new Blob([file])
 	const url = entityFileUrl(entityHash, logicalPath)
 	const res = await fetch(url, {
 		method: 'PUT',
 		credentials: 'include',
+		headers: { 'Content-Type': 'application/octet-stream' },
 		body,
 	})
 	if (!res.ok) {

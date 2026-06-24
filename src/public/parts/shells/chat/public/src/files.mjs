@@ -7,15 +7,14 @@ import { fetchEvfsFile, getViewerEntityHash, uploadEvfsFile } from './evfs.mjs'
 /**
  * 上传聊天附件到 EVFS。
  * @param {File | Blob} file 文件
- * @param {string} [fieldName] 表单字段名
  * @returns {Promise<{ entityHash: string, path: string, url: string }>} 上传结果
  */
-export async function uploadChatAttachment(file, fieldName = 'file') {
+export async function uploadChatAttachment(file) {
 	const entityHash = await getViewerEntityHash()
 	if (!entityHash) throw new Error('identity required for attachments')
 	const fileId = crypto.randomUUID()
 	const logicalPath = `shells/chat/attachments/${fileId}`
-	return uploadEvfsFile(entityHash, logicalPath, file, fieldName)
+	return uploadEvfsFile(entityHash, logicalPath, file)
 }
 
 /**
