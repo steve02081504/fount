@@ -62,9 +62,9 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
 		FOUNT_TEST_KEEP_GOING: '1',
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
+		// 始终重置 FOUNT_TEST_ONLY，防止外层 shell 环境变量泄漏进子进程影响测试过滤。
+		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 	}
-	if (onlyFiles?.length)
-		env.FOUNT_TEST_ONLY = onlyFiles.join('\n')
 	return { command: [...suite.run], env }
 }
 
@@ -113,7 +113,7 @@ export async function runTests(options = {}) {
 			console.log('manifest 匹配:', manifestIds.join(', '))
 	}
 
-	const trackFailures = shouldTrackFailures(manifestIds, options.suiteSelectors)
+	const trackFailures = shouldTrackFailures(manifestIds)
 
 	const changed = await resolveChangedFiles({
 		repoRoot: REPO_ROOT,

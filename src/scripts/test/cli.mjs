@@ -30,8 +30,7 @@ manifest id 来自各 test/manifest.json 顶层 "id" 字段。
 suite 指名匹配各 suite 的 id 或 name，同样用逗号分隔。
 
 在未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比 commit。
-仅指定单个 manifest id 且未指名 suite 时，启用失败重跑（data/test/failures/）。
-存在失败记录时优先重跑失败项；未提交内容与记录时 hash 不同则额外并集 diff 触发的 suite。
+仅指定单个 manifest id 时启用失败记录（data/test/failures/）；存在失败记录时优先重跑失败项（与 suite 指名取交集）。
 
 examples:
   fount test

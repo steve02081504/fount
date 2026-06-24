@@ -1,6 +1,8 @@
 /**
  * 多阶段 Playwright 前端测试 driver 共用逻辑。
  */
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
@@ -12,6 +14,7 @@ import {
 	writeFailuresOutFile,
 } from '../core/protocol.mjs'
 
+import { failedSpecPathsFromJsonReport } from './report.mjs'
 import { runPlaywrightWithNode } from './run.mjs'
 
 /**
@@ -65,6 +68,25 @@ export function filterPhases(filterList, phases, repoRoot) {
 }
 
 /**
+ * 收集阶段内应记入失败列表的 spec 路径。
+ * @param {object} params 参数
+ * @param {string} params.jsonReportPath Playwright JSON report 路径
+ * @param {string} params.repoRoot 仓库根
+ * @param {FrontendPhase} params.phase 当前阶段
+ * @param {string[]} params.filterList FOUNT_TEST_ONLY 列表
+ * @returns {Promise<string[]>} 失败 spec 仓库相对路径
+ */
+async function collectPhaseFailures({ jsonReportPath, repoRoot, phase, filterList }) {
+	const paths = await failedSpecPathsFromJsonReport(jsonReportPath, repoRoot)
+	if (paths.length)
+		return paths
+
+	if (filterList.length)
+		return phase.specPaths.filter(path => isIncludedInTestOnly(repoRoot, path, filterList))
+	return [...phase.specPaths]
+}
+
+/**
  * 按阶段运行 Playwright，支持失败收集与仅重跑失败 spec。
  * @param {object} options 选项
  * @param {string} options.configPath playwright.config.mjs
@@ -85,6 +107,7 @@ export async function runFrontendPhases({
 	nodeOpts,
 	extraArgs = '',
 }) {
+	const jsonReportDir = await mkdtemp(join(tmpdir(), 'fount-pw-json-'))
 	const filterList = parseTestOnlyEnv()
 	const selected = filterPhases(filterList, phases, repoRoot)
 	const keepGoing = process.env.FOUNT_TEST_KEEP_GOING === '1'
@@ -96,35 +119,44 @@ export async function runFrontendPhases({
 
 	const failed = []
 
-	for (const phase of selected) {
-		const port = basePort + phase.portOffset
-		let playwrightArgs = [extraArgs, `--project=${phase.project}`].filter(Boolean)
+	try {
+		for (const phase of selected) {
+			const port = basePort + phase.portOffset
+			let playwrightArgs = [extraArgs, `--project=${phase.project}`].filter(Boolean)
 
-		if (filterList.length) {
-			const phaseOnly = phase.specBasenames.filter((_, index) =>
-				isIncludedInTestOnly(repoRoot, phase.specPaths[index], filterList),
-			)
-			if (!phaseOnly.length) continue
-			playwrightArgs = [extraArgs, ...phaseOnly].filter(Boolean)
-		}
+			if (filterList.length) {
+				const phaseOnly = phase.specBasenames.filter((_, index) =>
+					isIncludedInTestOnly(repoRoot, phase.specPaths[index], filterList),
+				)
+				if (!phaseOnly.length) continue
+				playwrightArgs = [extraArgs, ...phaseOnly].filter(Boolean)
+			}
 
-		const code = await runPlaywrightWithNode({
-			configPath,
-			playwrightArgs: playwrightArgs.join(' '),
-			env,
-			node: nodeOpts(port),
-		})
-		if (code !== 0) {
-			if (filterList.length)
-				failed.push(...phase.specPaths.filter(path => isIncludedInTestOnly(repoRoot, path, filterList)))
-			else
-				failed.push(...phase.specPaths)
+			const jsonReportPath = join(jsonReportDir, `${phase.project}.json`)
+			const code = await runPlaywrightWithNode({
+				configPath,
+				playwrightArgs: playwrightArgs.join(' '),
+				env,
+				node: nodeOpts(port),
+				jsonReportPath,
+			})
+			if (code !== 0) {
+				failed.push(...await collectPhaseFailures({
+					jsonReportPath,
+					repoRoot,
+					phase,
+					filterList,
+				}))
 
-			if (!keepGoing) {
-				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
-				return code
+				if (!keepGoing) {
+					await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
+					return code
+				}
 			}
 		}
+	}
+	finally {
+		await rm(jsonReportDir, { recursive: true, force: true })
 	}
 
 	if (failed.length) {

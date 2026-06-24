@@ -66,11 +66,10 @@ export async function selectSuites({
 	currentHash,
 	uncommittedFiles,
 }) {
-	const explicitSuites = Boolean(suiteSelectors?.length)
 	const singleManifest = manifestIds?.length === 1 ? manifestIds[0] : undefined
-	const trackFailures = Boolean(singleManifest && !explicitSuites)
+	const trackFailures = Boolean(singleManifest)
 
-	const failureManifestIds = trackFailures && singleManifest
+	const failureManifestIds = singleManifest
 		? [singleManifest]
 		: !manifestIds?.length && !runAll
 			? await listFailedManifests(repoRoot)
@@ -128,9 +127,8 @@ export async function selectSuites({
 /**
  * 是否启用失败列表读写。
  * @param {string[] | undefined} manifestIds manifest id 列表
- * @param {string[] | undefined} suiteSelectors suite 指名
  * @returns {boolean} 是否跟踪失败
  */
-export function shouldTrackFailures(manifestIds, suiteSelectors) {
-	return manifestIds?.length === 1 && !suiteSelectors?.length
+export function shouldTrackFailures(manifestIds) {
+	return manifestIds?.length === 1
 }

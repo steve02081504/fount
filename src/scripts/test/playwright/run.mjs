@@ -17,12 +17,19 @@ const playwrightCli = require.resolve('@playwright/test/cli')
  * @param {string} [options.cwd=REPO_ROOT] 工作目录
  * @param {Record<string, string>} [options.env] 额外环境变量
  * @param {string} [options.playwrightArgs=''] 传给 playwright test 的额外参数
+ * @param {string} [options.jsonReportPath] 写入 Playwright JSON report 的路径
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
-export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = '' }) {
-	const output = await exec(`node ${JSON.stringify(playwrightCli)} test -c ${JSON.stringify(configPath)} ${playwrightArgs}`.trim(), {
+export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = '', jsonReportPath }) {
+	const mergedEnv = { ...process.env, ...env }
+	let args = playwrightArgs
+	if (jsonReportPath) {
+		mergedEnv.PLAYWRIGHT_JSON_OUTPUT_FILE = jsonReportPath
+		args = [args, '--reporter=list,json'].filter(Boolean).join(' ')
+	}
+	const output = await exec(`node ${JSON.stringify(playwrightCli)} test -c ${JSON.stringify(configPath)} ${args}`.trim(), {
 		cwd,
-		env: { ...process.env, ...env },
+		env: mergedEnv,
 		no_output_record: true,
 		/**
 		 * 转发子进程标准输出。
@@ -48,18 +55,19 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, pla
  * @param {Record<string, string>} [options.env] 额外环境变量
  * @param {string} [options.cwd] 工作目录
  * @param {string} [options.playwrightArgs=''] 传给 playwright test 的额外参数
+ * @param {string} [options.jsonReportPath] 写入 Playwright JSON report 的路径
  * @returns {Promise<number>} 进程退出码
  */
-export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd, playwrightArgs = '' }) {
+export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd, playwrightArgs = '', jsonReportPath }) {
 	let launched = null
 	try {
-		const env = { ...process.env, ...extraEnv }
+		const env = { ...extraEnv }
 		if (node) {
 			launched = await launchNode(node)
 			env.FOUNT_TEST_BASE_URL = launched.baseUrl
 			env.FOUNT_API_KEY = launched.apiKey
 		}
-		return await runPlaywright({ configPath, cwd, env, playwrightArgs })
+		return await runPlaywright({ configPath, cwd, env, playwrightArgs, jsonReportPath })
 	}
 	finally {
 		if (launched) await stopNode(launched)
