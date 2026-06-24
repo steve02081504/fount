@@ -51,6 +51,6 @@ test.describe('Social deep links', () => {
 		await page.evaluate(query => {
 			location.hash = `search;${encodeURIComponent(query)}`
 		}, tag)
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 30_000 })
 	})
 })

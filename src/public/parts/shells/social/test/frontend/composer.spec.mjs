@@ -6,6 +6,8 @@ import {
 	findPostCard,
 	createTestGroup,
 	TINY_PNG_BUFFER,
+	waitForFeedLoad,
+	postIdFromResponse,
 } from './fixtures.mjs'
 
 test.describe('Social composer', () => {
@@ -60,9 +62,15 @@ test.describe('Social composer', () => {
 		await expect(page.locator('#quotePreview')).toBeVisible()
 		const text = `quote-child ${Date.now()}`
 		await page.locator('#postText').fill(text)
+		const postResponsePromise = page.waitForResponse(res => {
+			if (res.request().method() !== 'POST' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/profile/post'
+		}, { timeout: 60_000 })
 		await page.locator('#postBtn').click()
+		const [postResponse] = await Promise.all([postResponsePromise, waitForFeedLoad(page)])
+		const childId = postIdFromResponse(await postResponse.json())
 		await expect(page.locator('#postText')).toHaveValue('')
-		await expect(page.locator('#feedList .quote-block').first()).toBeVisible({ timeout: 30_000 })
+		await expectPostInFeed(page, childId)
 	})
 
 	test('mention autocomplete suggests on @', async ({ page }) => {
@@ -104,7 +112,9 @@ test.describe('Social composer', () => {
 		await page.locator('#emojiPickBtn').click()
 		const picker = page.locator('#fount-shared-emoji-picker')
 		await expect(picker).toBeVisible({ timeout: 20_000 })
-		await picker.locator('button').first().click()
+		const gridBtn = picker.locator('.hub-emoji-grid-button').first()
+		await expect(gridBtn).toBeVisible({ timeout: 30_000 })
+		await gridBtn.click()
 		await expect(page.locator('#postText')).not.toHaveValue('hello ')
 	})
 
@@ -127,7 +137,10 @@ test.describe('Social composer', () => {
 		await openSocialHome(page, baseUrl)
 		const groupSelect = page.locator('#linkGroupSelect')
 		await expect(groupSelect).toBeVisible({ timeout: 30_000 })
-		await groupSelect.selectOption(`${groupId}\t${channelId}`)
+		const optionValue = `${groupId}\t${channelId}`
+		await expect(groupSelect.locator(`option[value="${optionValue}"]`)).toHaveCount(1, { timeout: 30_000 })
+		await groupSelect.selectOption(optionValue)
+		await groupSelect.dispatchEvent('change')
 		await expect(page.locator('#groupRefPreview')).toBeVisible({ timeout: 20_000 })
 		const text = `group-ref ${Date.now()}`
 		await page.locator('#postText').fill(text)

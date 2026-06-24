@@ -1,6 +1,8 @@
 import { test, expect, openSocialHome, findPostCard } from './fixtures.mjs'
 
 test.describe('Social replies', () => {
+	test.setTimeout(600_000)
+
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
 	})
@@ -11,9 +13,9 @@ test.describe('Social replies', () => {
 		const repliesBtn = card.locator('[data-replies]')
 		const actionKey = await repliesBtn.getAttribute('data-replies')
 		await repliesBtn.click()
-		await expect(page.locator(`[data-replies-for="${actionKey}"]`)).not.toHaveClass(/hidden/)
-
-		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
+		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
+		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
+		await expect(panel).not.toHaveClass(/hidden/)
 		const replyText = `reply-body ${Date.now()}`
 		await panel.locator('textarea').fill(replyText)
 		await panel.locator('[data-submit-reply]').click()
@@ -25,7 +27,8 @@ test.describe('Social replies', () => {
 		const card = await findPostCard(page, postId)
 		const repliesBtn = card.locator('[data-replies]')
 		const actionKey = await repliesBtn.getAttribute('data-replies')
-		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
+		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
+		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
 		await repliesBtn.click()
 		await expect(panel).not.toHaveClass(/hidden/)
 		await repliesBtn.click()

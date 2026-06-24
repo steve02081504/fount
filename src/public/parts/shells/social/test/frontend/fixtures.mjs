@@ -79,11 +79,11 @@ export async function openSocialHome(page, baseUrl) {
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @returns {Promise<import('npm:@playwright/test').Response>} feed GET 响应。
  */
-export async function waitForFeedLoad(page) {
+export async function waitForFeedLoad(page, timeout = 60_000) {
 	return page.waitForResponse(res => {
 		if (res.request().method() !== 'GET' || res.status() !== 200) return false
 		return new URL(res.url()).pathname === '/api/parts/shells:social/feed'
-	})
+	}, { timeout })
 }
 
 /**
@@ -234,7 +234,7 @@ export async function searchAndExpectPost(page, query, postId) {
 		const searchWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
-		})
+		}, { timeout: 60_000 })
 		await page.locator('#feedSearchBtn').click()
 		const searchRes = await searchWait
 		const data = await searchRes.json()

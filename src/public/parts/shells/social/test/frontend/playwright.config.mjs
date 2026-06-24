@@ -18,8 +18,13 @@ export default await createPlaywrightConfig({
 				testMatch: ['postActions.spec.mjs', 'replies.spec.mjs'],
 			},
 			{
+				// composer 含 Chat 群关联，单独阶段避免拖垮后续 deepLink/feed 节点
+				name: 'composer',
+				testMatch: ['composer.spec.mjs'],
+			},
+			{
 				name: 'core',
-				testMatch: ['composer.spec.mjs', 'deepLink.spec.mjs', 'feed.spec.mjs', 'navigation.spec.mjs', 'profile.spec.mjs', 'saved.spec.mjs'],
+				testMatch: ['deepLink.spec.mjs', 'feed.spec.mjs', 'navigation.spec.mjs', 'profile.spec.mjs', 'saved.spec.mjs'],
 			},
 			{
 				name: 'tail',

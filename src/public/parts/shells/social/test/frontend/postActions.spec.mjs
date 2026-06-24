@@ -32,7 +32,8 @@ test.describe('Social post actions', () => {
 		const { postId: originalId } = await publishPost(`repost-src ${Date.now()}`)
 		const card = await findPostCard(page, originalId)
 		const repostKey = await card.locator('[data-repost]').getAttribute('data-repost')
-		const panel = page.locator(`[data-repost-for="${repostKey}"]`)
+		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
+		const panel = card.locator(`[data-repost-for="${repostKey}"]`)
 		await card.locator('[data-repost]').click()
 		const comment = `repost-comment ${Date.now()}`
 		await panel.locator('textarea').fill(comment)
@@ -77,13 +78,16 @@ test.describe('Social post actions', () => {
 		await expect(card.locator('.like-btn')).toHaveAttribute('data-liked', '1', { timeout: 20_000 })
 
 		await card.locator('button[data-delete]').click()
-		await expect(page.locator(`[data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 20_000 })
+		// 删除后 feed 可能仍短暂保留同 postId 的重复卡片，刷新 feed 再断言
+		await page.locator('#feedRefreshBtn').click()
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 30_000 })
 
 		const { postId: repostPostId } = await publishPost(`repost ${Date.now()}`)
 		const repostCard = await findPostCard(page, repostPostId)
 		const repostBtn = repostCard.locator('[data-repost]')
 		const repostKey = await repostBtn.getAttribute('data-repost')
-		const repostPanel = page.locator(`[data-repost-for="${repostKey}"]`)
+		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
+		const repostPanel = repostCard.locator(`[data-repost-for="${repostKey}"]`)
 		await repostBtn.click()
 		await expect(repostPanel).not.toHaveClass(/hidden/)
 		await repostBtn.click()
