@@ -12,6 +12,7 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 
+import { localhostLocales } from '../../../../../../../scripts/i18n.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth.mjs'
@@ -50,7 +51,10 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 
 	const chatMetadata = await getGroupRuntime(groupId, replicaUsername)
 	const timeSlice = chatMetadata.LastTimeSlice
-	const { locales } = getUserByUsername(replicaUsername)
+	const locales = [...new Set([
+		...getUserByUsername(replicaUsername)?.locales ?? [],
+		...localhostLocales,
+	])]
 
 	const charPart = charname ? await resolveChar(groupId, charname, replicaUsername) : undefined
 	const playerPart = timeSlice.player
