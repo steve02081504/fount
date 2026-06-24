@@ -1,6 +1,8 @@
 /**
  * fount 测试节点统一启动（同进程集成测试 + node worker 子进程共用）。
  */
+import 'fount/scripts/test/env.mjs'
+
 import crypto from 'node:crypto'
 import fs, { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'

@@ -160,8 +160,8 @@ fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	sendEventToAll('locale-updated', null)
 })
 
-// 疯狂星期四V我50
-if (localhostLocales[0] === 'zh-CN')
+// 疯狂星期四V我50（fount test 时禁用，避免误导自动化调查）
+if (!process.env.FOUNT_TEST && localhostLocales[0] === 'zh-CN')
 	setInterval(() => {
 		if (new Date().getDay() === 4)
 			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')

@@ -59,6 +59,7 @@ function runCommand(command, extraEnv = {}) {
  */
 function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
 	const env = {
+		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,

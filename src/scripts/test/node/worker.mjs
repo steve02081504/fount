@@ -2,6 +2,8 @@
  * fount 测试节点 worker：在子进程中启动 Web server 并保持存活。
  * 由 launch.mjs spawn；就绪时向 stdout 打印一行 JSON（含 baseUrl）。
  */
+import 'fount/scripts/test/env.mjs'
+
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 
