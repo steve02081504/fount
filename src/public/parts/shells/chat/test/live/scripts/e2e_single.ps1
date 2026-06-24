@@ -142,14 +142,10 @@ Test-Case 'GET members/page/0' {
 	$r = Api GET "/groups/$gid/members/page/0"
 	$r.status -eq 200 -and @($r.json.members).Count -ge 1
 }
-Test-Case 'POST join rejects invalid pow on pow-policy group' {
-	$pg = Api POST '/groups/' @{ name = 'E2E-pow'; description = 'pow join probe'; joinPolicy = 'pow'; powDifficulty = 8 }
-	if ($pg.status -ne 201) { throw "create $($pg.status): $($pg.raw)" }
-	$pgid = $pg.json.groupId
-	$script:createdGroups += $pgid
-	$j = Api POST "/groups/$pgid/join" @{ pow = @{ anchorRef = 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef'; epoch = 0; nonce = 'bad' } }
-	$j.status -ge 400
-}
+# 单用户 live 无法构造「非 active 成员且仍有本地 replica」的 PoW 入群探测：
+# 创建者已是 active → joinPowExemptAsHistoricalReplay 豁免无效 PoW（200）；
+# 退群会清除 replica，/join 到不了 PoW 校验。新成员无效 PoW 拒绝见 join_policy_pow.test.mjs。
+Skip-Case 'POST join rejects invalid pow on pow-policy group' 'covered by pure join_policy_pow.test.mjs'
 Test-Case 'POST invite-ticket' {
 	$r = Api POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }
 	if ($r.status -ne 201 -and $r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
@@ -326,12 +322,17 @@ Test-Case 'GET chars/plugins/persona/world' {
 }
 # discover an installed char to add
 $charCandidates = @('test_streamer', 'test_char', 'TestChar')
+$script:charAddStatus = $null
 foreach ($cc in $charCandidates) {
 	$r = Api POST "/groups/$gid/char" @{ charname = $cc; deferGreeting = $true }
-	if ($r.status -eq 200 -or $r.status -eq 201) { $availChar = $cc; break }
+	if ($r.status -eq 200 -or $r.status -eq 201) {
+		$availChar = $cc
+		$script:charAddStatus = $r.status
+		break
+	}
 }
 if ($availChar) {
-	T "POST char add ($availChar)" { $true }
+	Test-Case "POST char add ($availChar)" { $script:charAddStatus -in 200, 201 }
 	Test-Case 'PUT char frequency' {
 		$r = Api PUT "/groups/$gid/char/$availChar/frequency" @{ frequency = 0.5 }
 		$r.status -eq 200

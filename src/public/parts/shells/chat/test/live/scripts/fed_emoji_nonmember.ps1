@@ -9,7 +9,8 @@ Test-Case 'A creates group (B stays non-member)' {
 	$g = (Api $FedA POST '/groups/' @{ name = 'FedEmojiNM'; description = 'L4 fed probe' }).json
 	$script:gid = $g.groupId
 	$script:cid = $g.defaultChannelId
-	Api $FedA PUT "/groups/$($script:gid)/settings" @{ joinPolicy = 'invite-only'; discoveryPublic = $false } | Out-Null
+	# 非成员靠 discovery 卡片 + 联邦房间拉 emoji；完全私密群 B 无法建连。
+	Api $FedA PUT "/groups/$($script:gid)/settings" @{ joinPolicy = 'invite-only'; discoveryPublic = $true } | Out-Null
 	[bool]$script:gid
 }
 
@@ -17,6 +18,7 @@ Test-Case 'A uploads group emoji' {
 	$r = ApiMultipart $FedA POST "/groups/$gid/emojis" @{ name = 'nm-emoji' } 'emoji' 'fed.png' $FedPngBytes
 	if ($r.status -ne 201) { throw "upload $($r.status): $($r.raw)" }
 	$script:emojiId = $r.json.entry.emojiId
+	$script:emojiContentHash = $r.json.entry.contentHash
 	[bool]$script:emojiId
 }
 Test-Case 'A seeds channel (federation metadata)' {
@@ -25,12 +27,15 @@ Test-Case 'A seeds channel (federation metadata)' {
 }
 
 Write-Host "`n=== B (non-member) emoji-content ===" -ForegroundColor Cyan
+# 等 A 侧 emoji 联邦推送完成后再让 B 拉取（Windows peer 建连较慢）。
+Start-Sleep 3
 Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
 Test-Case 'B GET /emoji-content without membership' {
-	$ok = PollUntil 90 5 {
+	$hashQ = if ($emojiContentHash) { "?json=1&contentHash=$emojiContentHash" } else { '?json=1' }
+	$ok = PollUntil 120 5 {
 		Api $FedB GET "/groups/$gid/preview" | Out-Null
 		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
-		$r = Api $FedB GET "/emoji-content/$gid/$emojiId"
+		$r = Api $FedB GET "/emoji-content/$gid/$emojiId$hashQ"
 		$r.status -eq 200 -and [bool]$r.json.dataUrl
 	}
 	if (-not $ok) { throw 'non-member B must resolve /emoji-content on B node (not A-side fallback)' }

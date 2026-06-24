@@ -46,15 +46,20 @@ function resolveUserDictionary(root, username) {
 }
 
 /**
- * 从磁盘读取联邦 identity 密钥对。
+ * 从磁盘读取联邦 identity 密钥对（operator.json 为现行存储；federation.json 仅作旧数据回退）。
  * @param {string} userDir 用户目录
  * @returns {{ identityPubKeyHex: string, secretHex: string }} 联邦 identity
  */
 function loadFederationIdentity(userDir) {
-	const data = loadJsonFileIfExists(path.join(userDir, 'settings', 'federation.json'), {})
+	const operator = loadJsonFileIfExists(path.join(userDir, 'settings', 'operator.json'), {})
+	const activePub = normalizeHex64(operator.activePubKeyHex)
+	const activeSecret = normalizeHex64(operator.activeSecretKeyHex)
+	if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)
+		return { identityPubKeyHex: activePub, secretHex: activeSecret }
+	const legacy = loadJsonFileIfExists(path.join(userDir, 'settings', 'federation.json'), {})
 	return {
-		identityPubKeyHex: normalizeHex64(data.identityPubKeyHex),
-		secretHex: normalizeHex64(data.identitySecretKeyHex),
+		identityPubKeyHex: normalizeHex64(legacy.identityPubKeyHex),
+		secretHex: normalizeHex64(legacy.identitySecretKeyHex),
 	}
 }
 

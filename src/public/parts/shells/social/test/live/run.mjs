@@ -27,7 +27,8 @@ const suites = {
 		node: { loadParts: ['shells/social', 'shells/chat'] },
 	},
 	ws_test: {
-		run: ['node', join(liveDir, 'scripts/ws_test.mjs')],
+		// Node 无法解析 deno.json 的 fount/ 别名；改用 deno run 与 live runner 一致。
+		run: ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), join(liveDir, 'scripts/ws_test.mjs')],
 		node: { loadParts: ['shells/social'] },
 	},
 }

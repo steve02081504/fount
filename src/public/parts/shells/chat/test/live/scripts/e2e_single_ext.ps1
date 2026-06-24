@@ -430,23 +430,35 @@ Test-Case 'DELETE /sessions/:groupId' {
 	$r = Api DELETE "/sessions/$($script:importedGid)"
 	$r.status -eq 200
 }
-Test-Case 'PUT /groups/:id/world' {
-	if (-not $worldName) { throw 'no default world from initial-data' }
-	$r = Api PUT "/groups/$gid/world" @{ worldname = $worldName; channelId = $cid }
-	$r.status -eq 200
+# CI-user 仅安装 test_streamer fixture，initial-data 常无默认 world/persona；有值时才测 PUT 写路径。
+if ($worldName) {
+	Test-Case 'PUT /groups/:id/world' {
+		$r = Api PUT "/groups/$gid/world" @{ worldname = $worldName; channelId = $cid }
+		$r.status -eq 200
+	}
+} else {
+	Skip-Case 'PUT /groups/:id/world' 'no default world on CI-user (initial-data.worldname null)'
 }
-Test-Case 'PUT /groups/:id/persona' {
-	if (-not $personaName) { throw 'no default persona from initial-data' }
-	$r = Api PUT "/groups/$gid/persona" @{ personaname = $personaName }
-	$r.status -eq 200
+if ($personaName) {
+	Test-Case 'PUT /groups/:id/persona' {
+		$r = Api PUT "/groups/$gid/persona" @{ personaname = $personaName }
+		$r.status -eq 200
+	}
+} else {
+	Skip-Case 'PUT /groups/:id/persona' 'no default persona on CI-user (initial-data.personaname null)'
 }
 $pluginName = $null
+$script:pluginAddStatus = $null
 foreach ($pn in @('timer', 'file-operations', 'fount-api')) {
 	$pr = Api POST "/groups/$gid/plugin" @{ pluginname = $pn }
-	if ($pr.status -eq 200) { $script:pluginName = $pn; break }
+	if ($pr.status -eq 200) {
+		$script:pluginName = $pn
+		$script:pluginAddStatus = $pr.status
+		break
+	}
 }
 if ($pluginName) {
-	T "POST /groups/:id/plugin ($pluginName)" { $true }
+	Test-Case "POST /groups/:id/plugin ($pluginName)" { $script:pluginAddStatus -eq 200 }
 	Test-Case 'DELETE /groups/:id/plugin/:name' {
 		$r = Api DELETE "/groups/$gid/plugin/$pluginName"
 		$r.status -eq 200
@@ -489,7 +501,7 @@ $agentChar = $fbChar
 $agentKey = $null
 if (-not $agentChar) { $agentChar = EnsureTestChar $gid }
 if ($agentChar) {
-	T "agent member via POST char ($agentChar)" {
+	Test-Case "agent member via POST char ($agentChar)" {
 		$s = Api GET "/groups/$gid/state"
 		$row = @($s.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
 		if (-not $row) { throw 'agent member row missing' }
@@ -560,13 +572,23 @@ if ($agentChar) {
 } else {
 	Skip-Case 'agent member + ban/unban' 'no test char installed'
 }
+# fork/block-opposing 在独立小群上跑 HTTP smoke，避免共享 ext 群 DAG 过大导致超时。
 Test-Case 'POST fork/block-opposing with current tip (HTTP smoke)' {
-	$tips = Api GET "/groups/$gid/dag/tips"
-	if ($tips.status -ne 200) { throw "tips $($tips.status)" }
-	$tip = @($tips.json.tips)[0]
-	if (-not $tip) { throw 'no dag tip' }
-	$r = Api POST "/groups/$gid/fork/block-opposing" @{ acceptedTipId = $tip }
-	$r.status -eq 200 -and $null -ne $r.json
+	$fg = Api POST '/groups/' @{ name = 'E2E-ext-fork'; description = 'fork smoke probe' }
+	if ($fg.status -ne 201) { throw "create $($fg.status): $($fg.raw)" }
+	$fgid = $fg.json.groupId
+	$script:createdGroups += $fgid
+	try {
+		$tips = Api GET "/groups/$fgid/dag/tips"
+		if ($tips.status -ne 200) { throw "tips $($tips.status)" }
+		$tip = @($tips.json.tips)[0]
+		if (-not $tip) { throw 'no dag tip' }
+		$r = Api POST "/groups/$fgid/fork/block-opposing" @{ acceptedTipId = $tip }
+		$r.status -eq 200 -and $null -ne $r.json
+	}
+	finally {
+		Api POST '/groups/leave' @{ groupIds = @($fgid) } | Out-Null
+	}
 }
 # fork/block-opposing 对立分支治理逻辑由 chat/test/fork_block_opposing.test.mjs 覆盖。
 

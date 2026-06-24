@@ -24,7 +24,8 @@ Test-Case 'A POST members/:hash/ban entity' {
 	$true
 }
 Test-Case 'B catchup receives ban (block grace window)' {
-	$ok = PollUntil 60 3 {
+	$ok = PollUntil 120 3 {
+		Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 6000 } | Out-Null
 		$r = Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 }
 		if ($r.status -ne 200) { return $false }
 		$s = Api $FedB GET "/groups/$gid/state"

@@ -203,8 +203,9 @@ Deno.test('chat 3-node E2E', async t => {
 		assertEquals(cReadB?.content?.decryptFailed, true, 'C still cannot decrypt B private message')
 
 		// 未授权写门控（DAG authz 层真断）：C 向私密频道发帖被 SEND_MESSAGES 拒绝。
+		// federation.mjs 的 postMessage 是联邦辅助函数；真实发帖 API 在 channelMessaging 模块。
 		await assertRejects(
-			() => modules.postMessage.postChannelMessage(NODE_C, groupId, PRIVATE_CHANNEL, { text: 'C must not send' }),
+			() => modules.channelMessaging.postChannelMessage(NODE_C, groupId, PRIVATE_CHANNEL, { text: 'C must not send' }),
 			Error,
 		)
 

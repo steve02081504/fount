@@ -21,8 +21,9 @@ function Build-DmIntro($node) {
 	$user = Get-WhoamiUser $node
 	$dataPath = (Resolve-Path $node.dataPath).Path
 	$helper = Join-Path $PSScriptRoot 'fed_dm_intro_helper.mjs'
-	$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-	$out = & deno run -A $helper --data-path $dataPath --user $user 2>&1
+	$repoRoot = $env:FOUNT_TEST_REPO_ROOT
+	if (-not $repoRoot) { throw 'FOUNT_TEST_REPO_ROOT required for dm intro helper' }
+	$out = & deno run -A -c (Join-Path $repoRoot 'deno.json') $helper --data-path $dataPath --user $user 2>&1
 	if ($LASTEXITCODE -ne 0) { throw "dm intro helper failed: $out" }
 	$out | ConvertFrom-Json
 }
