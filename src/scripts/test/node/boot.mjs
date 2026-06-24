@@ -13,6 +13,9 @@ import { init } from 'fount/server/server.mjs'
 
 import { HEADLESS_CONFIG_PORT } from '../core/ports.mjs'
 
+/** 测试节点用户默认 locale（与 `localesFromRequest` 无用户偏好时的回退一致）。 */
+const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
+
 /**
  * server starts 预设选项。
  * @typedef {{ Web?: boolean, IPC?: boolean, Tray?: boolean, DiscordRPC?: boolean, Base?: boolean | object, P2P?: boolean }} TestStarts
@@ -76,7 +79,7 @@ export function writeNodeConfig(dataPath, options) {
 				webauthnCredentials: [],
 			},
 			jobs: {},
-			locales: [],
+			locales: [...DEFAULT_TEST_USER_LOCALES],
 			defaultParts: {},
 			timers: {},
 		}
@@ -93,6 +96,9 @@ export function writeNodeConfig(dataPath, options) {
 
 		config.data.apiKeys[apiKeyHash] = { username, jti: apiJti }
 
+		if (!config.data.users[username].locales?.length)
+			config.data.users[username].locales = [...DEFAULT_TEST_USER_LOCALES]
+
 		fs.mkdirSync(join(dataPath, 'users', username, 'settings'), { recursive: true })
 		fs.mkdirSync(join(dataPath, 'users', username, 'entities'), { recursive: true })
 	}
@@ -107,7 +113,7 @@ export function writeNodeConfig(dataPath, options) {
 				refreshTokens: [],
 			},
 			jobs: {},
-			locales: [],
+			locales: [...DEFAULT_TEST_USER_LOCALES],
 			defaultParts: {},
 			timers: {},
 		}

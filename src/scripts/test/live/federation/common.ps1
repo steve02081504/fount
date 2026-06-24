@@ -1,7 +1,8 @@
 # L4 双节点联邦 live 探针共用库。
 
-if (-not $env:FOUNT_TEST_BASE_URL?.Trim()) { throw 'FOUNT_TEST_BASE_URL is required; run via test/live/run.mjs' }
-if (-not $env:FOUNT_API_KEY?.Trim()) { throw 'FOUNT_API_KEY is required for NodeA; run via test/live/run.mjs.' }
+# PS 将 $env:VAR?.Trim() 里的 ? 解析为通配符而非空值传播，须先取值再 Trim。
+if (-not ($env:FOUNT_TEST_BASE_URL -and $env:FOUNT_TEST_BASE_URL.Trim())) { throw 'FOUNT_TEST_BASE_URL is required; run via test/live/run.mjs' }
+if (-not ($env:FOUNT_API_KEY -and $env:FOUNT_API_KEY.Trim())) { throw 'FOUNT_API_KEY is required for NodeA; run via test/live/run.mjs.' }
 
 $script:FedA = @{
 	base = $env:FOUNT_TEST_BASE_URL.Trim().TrimEnd('/')
@@ -9,7 +10,7 @@ $script:FedA = @{
 	name = 'A'
 	dataPath = $env:FOUNT_NODE_A_DATA
 }
-if (-not $env:FOUNT_TEST_NODE_B_BASE_URL?.Trim()) { throw 'FOUNT_TEST_NODE_B_BASE_URL is required for fed suites; run via test/live/run.mjs' }
+if (-not ($env:FOUNT_TEST_NODE_B_BASE_URL -and $env:FOUNT_TEST_NODE_B_BASE_URL.Trim())) { throw 'FOUNT_TEST_NODE_B_BASE_URL is required for fed suites; run via test/live/run.mjs' }
 $script:FedB = @{
 	base = $env:FOUNT_TEST_NODE_B_BASE_URL.Trim().TrimEnd('/')
 	key = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY.Trim() } else { throw 'FOUNT_TEST_NODE_B_KEY is required' })
@@ -22,7 +23,8 @@ $script:failures = @()
 
 function FedUri($node, $path) {
 	$uri = "$($node.base)$path"
-	if ($uri -match '\?') { "$uri&fount-apikey=$($node.key)" } else { "$uri?fount-apikey=$($node.key)" }
+	# PS 将 "$uri?…" 解析为 $uri? 空值传播；须用 ${uri} 界定变量名。
+	if ($uri -match '\?') { "${uri}&fount-apikey=$($node.key)" } else { "${uri}?fount-apikey=$($node.key)" }
 }
 
 function Invoke-FedRequest($node, $method, $path, $body, $timeoutSec = 180) {

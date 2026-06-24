@@ -36,7 +36,8 @@ function isPortFree(port) {
 		const server = net.createServer()
 		server.unref()
 		server.on('error', () => resolve(false))
-		server.listen(port, '127.0.0.1', () => {
+		// 与 fount server.listen(port)（config.listen 为 null）一致，勿只测 127.0.0.1
+		server.listen(port, () => {
 			server.close(() => resolve(true))
 		})
 	})
