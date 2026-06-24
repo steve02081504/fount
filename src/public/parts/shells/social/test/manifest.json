@@ -13,7 +13,7 @@
 				"--ignore=src/public/parts/shells/social/test/live",
 				"./src/public/parts/shells/social/test/"
 			],
-			"smokeLoad": true,
+			"smokeLoad": false,
 			"trigger": "shellUnit"
 		},
 		{

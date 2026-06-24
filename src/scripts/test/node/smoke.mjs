@@ -18,14 +18,20 @@ await bootInProcess({
 
 const { getPartList, loadPart } = await import('../../../server/parts_loader.mjs')
 
-let exitCode = 0
-for (const shell of getPartList('CI-user', 'shells')) try {
+const shells = getPartList('CI-user', 'shells')
+console.log(`smoke: loading ${shells.length} shells…`)
+const failed = []
+for (const shell of shells) try {
 	await loadPart('CI-user', `shells/${shell}`)
-	console.log('loaded shell:', shell)
 }
 catch (error) {
-	console.error(`failed to load shell: ${shell}`)
+	console.error(`smoke: failed to load shell: ${shell}`)
 	console.error(error)
-	exitCode = 1
+	failed.push(shell)
 }
-process.exit(exitCode)
+if (failed.length) {
+	console.error(`smoke: ${failed.length}/${shells.length} shells failed: ${failed.join(', ')}`)
+	process.exit(1)
+}
+console.log(`smoke: all ${shells.length} shells OK`)
+process.exit(0)

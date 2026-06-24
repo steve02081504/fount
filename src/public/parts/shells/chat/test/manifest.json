@@ -72,7 +72,7 @@
 				"--ignore=src/public/parts/shells/chat/test/live",
 				"./src/public/parts/shells/chat/test/"
 			],
-			"smokeLoad": true
+			"smokeLoad": false
 		},
 		{
 			"name": "e2e_single",
