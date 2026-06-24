@@ -28,7 +28,8 @@ import { ensureCanInChannel, requireGroupMember } from './middleware.mjs'
  * @returns {Promise<void>}
  */
 async function sendEmojiContentResponse(req, res, username, groupId, emojiId) {
-	const local = await resolveGroupEmojiContent(username, groupId, emojiId)
+	const contentHash = String(req.query?.contentHash || '').trim()
+	const local = await resolveGroupEmojiContent(username, groupId, emojiId, { contentHash })
 	if (!local) return res.status(404).json({ error: 'emoji not found' })
 
 	const wantJson = req.query?.json === '1' || String(req.headers.accept || '').includes('application/json')

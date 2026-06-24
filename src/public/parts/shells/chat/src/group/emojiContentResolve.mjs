@@ -4,6 +4,7 @@
 import { Buffer } from 'node:buffer'
 
 import { fetchChunk } from '../../../../../../scripts/p2p/files/chunk_fetch.mjs'
+import { isHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
 import { ensureFederationRoom } from '../chat/federation/room.mjs'
 
 import {
@@ -18,9 +19,10 @@ import {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
+ * @param {{ contentHash?: string }} [options] 可选 contentHash（如 Social mediaRef 或查询参数）
  * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object } | null>} 表情二进制或 null。
  */
-export async function resolveGroupEmojiContent(username, groupId, emojiId) {
+export async function resolveGroupEmojiContent(username, groupId, emojiId, options = {}) {
 	let local = await readGroupEmojiBinary(username, groupId, emojiId)
 	if (local) {
 		if (!local.entry.contentHash) {
@@ -31,9 +33,12 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId) {
 	}
 
 	const entry = await getGroupEmojiEntry(username, groupId, emojiId)
-	const contentHash = entry?.contentHash
+	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
+	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
+	const mimeType = entry?.mimeType || 'image/png'
 
 	if (contentHash) {
+		await ensureFederationRoom(username, groupId).catch(() => null)
 		const chunk = await fetchChunk({
 			username,
 			ciphertextHash: contentHash,
@@ -45,16 +50,16 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId) {
 				username,
 				groupId,
 				emojiId,
-				`data:${entry.mimeType || 'image/png'};base64,${buffer.toString('base64')}`,
-				entry.mimeType || 'image/png',
-				entry.name,
+				`data:${mimeType};base64,${buffer.toString('base64')}`,
+				mimeType,
+				entry?.name,
 			).catch(() => { })
 			local = await readGroupEmojiBinary(username, groupId, emojiId)
 			if (local) return local
 			return {
 				buffer,
-				mimeType: entry.mimeType || 'image/png',
-				entry: { ...entry, contentHash: contentHash || computeEmojiContentHash(buffer) },
+				mimeType,
+				entry: { ...entry || { emojiId }, contentHash: contentHash || computeEmojiContentHash(buffer) },
 			}
 		}
 	}

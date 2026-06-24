@@ -12,6 +12,7 @@ import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rat
 import {
 	bufferToDataUrl,
 	getGroupEmojiEntry,
+	loadGroupEmojiManifest,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
 } from '../../group/groupEmojis.mjs'
@@ -153,6 +154,35 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
 		catch (error) {
 			console.warn('federation: fed_emoji_data replicate failed', error)
 		}
+}
+
+/**
+ * 新 peer 入房时向其推送本群全部表情（供非成员预览 /emoji-content 路径）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} peerId Trystero peer
+ * @param {object | null} slot 联邦槽
+ * @returns {Promise<void>}
+ */
+export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot) {
+	if (!slot?.sendEmojiData || !peerId) return
+	const entries = await loadGroupEmojiManifest(username, groupId)
+	for (const entry of entries) {
+		const emojiId = String(entry?.emojiId || '').trim()
+		if (!emojiId) continue
+		const local = await readGroupEmojiBinary(username, groupId, emojiId)
+		if (!local) continue
+		try {
+			slot.sendEmojiData({
+				emojiId,
+				dataUrl: bufferToDataUrl(local.buffer, local.mimeType),
+				mimeType: local.mimeType,
+			}, peerId)
+		}
+		catch (error) {
+			console.warn('federation: fed_emoji_data peer replicate failed', error)
+		}
+	}
 }
 
 /**

@@ -76,6 +76,12 @@ export function registerIdentityHandlers(roomContext) {
 				.then(body => { identity.send(body, peerId) })
 				.catch(error => console.error('federation: identity_announce failed', error))
 		})
+		fedOut.enqueue(4, () => {
+			void import('../groupEmojiFederation.mjs').then(({ replicateGroupEmojisToPeer }) => {
+				const slot = getSlot()
+				if (slot) return replicateGroupEmojisToPeer(username, groupId, peerId, slot)
+			}).catch(error => console.warn('federation: replicate emojis to peer failed', error))
+		})
 		if (!isFederationActionAllowedUnderLoad(key, 'fed_pex', rtcLimits)) return
 		void (async () => {
 			const stored = loadPeerPoolView( groupId)
