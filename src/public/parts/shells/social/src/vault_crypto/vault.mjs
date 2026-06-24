@@ -114,10 +114,16 @@ export async function maybeEncryptPostContent(username, entityHash, postKeyId, c
  * @returns {object | null} 解密后 content；无法解密返回 null
  */
 export async function maybeDecryptPostContent(username, entityHash, content) {
-	if (content.scheme !== GSH_SCHEME) return null
+	if (!content) return null
+	if (content.scheme !== GSH_SCHEME) return content
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
 	const key = deriveSocialPostKey(masterKey, content.postKeyId)
-	return JSON.parse(decryptAesGcm(content, key))
+	try {
+		return JSON.parse(decryptAesGcm(content, key))
+	}
+	catch {
+		return null
+	}
 }
 
 /**

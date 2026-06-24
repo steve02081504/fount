@@ -27,6 +27,13 @@ Deno.test('maybeEncryptPostContent roundtrips via maybeDecryptPostContent', asyn
 	assertEquals(dec.text, 'vault secret')
 })
 
+Deno.test('maybeDecryptPostContent passes through public plaintext content', async () => {
+	const { username, operator } = await getSession()
+	const plain = { text: 'public hello', visibility: 'public', lang: 'zh-CN' }
+	const dec = await vault.maybeDecryptPostContent(username, operator, plain)
+	assertEquals(dec, plain)
+})
+
 Deno.test('buildFollowApprovePayload + autoApproveFollower emits follow_approve', async () => {
 	const { username, operator } = await getSession()
 	const seed = new Uint8Array(32).fill(7)

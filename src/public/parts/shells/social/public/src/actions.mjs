@@ -245,9 +245,10 @@ export async function handleMainClick(appContext, event) {
 			await loadSaved(appContext)
 		}
 	}
-	if (target.dataset.translate) {
-		const cardBody = target.closest('.post-card')?.querySelector('.body')
-		const card = target.closest('.post-card')
+	const translateBtn = target.closest('[data-translate]')
+	if (translateBtn instanceof HTMLElement) {
+		const cardBody = translateBtn.closest('.post-card')?.querySelector('.body')
+		const card = translateBtn.closest('.post-card')
 		if (!cardBody || !card) return
 		const text = decodeURIComponent(card.dataset.postText || '')
 		const result = await appContext.socialApi('/translate', {
@@ -273,6 +274,7 @@ export async function handleMainClick(appContext, event) {
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}
-	if (target.dataset.dm)
-		window.location.href = formatChatDmFromSocial(target.dataset.dm)
+	const dmBtn = target.closest('[data-dm]')
+	if (dmBtn instanceof HTMLElement && dmBtn.dataset.dm)
+		window.location.href = formatChatDmFromSocial(dmBtn.dataset.dm)
 }

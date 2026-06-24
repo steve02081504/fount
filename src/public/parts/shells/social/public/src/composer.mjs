@@ -26,7 +26,7 @@ export async function refreshQuotePreview(appContext) {
 		return
 	}
 	panel.classList.remove('hidden')
-	await mountTemplate(panel, 'templates/quote_preview', {})
+	await mountTemplate(panel, 'quote_preview', {})
 	if (generation !== quotePreviewGeneration) return
 	const body = panel.querySelector('.quote-preview-body')
 	if (body) body.innerHTML = appContext.renderQuoteBlockHtml(appContext.state.pendingQuoteRef)
@@ -50,7 +50,7 @@ export async function refreshGroupRefPreview(appContext) {
 		return
 	}
 	panel.classList.remove('hidden')
-	await mountTemplate(panel, 'templates/group_ref_preview', {})
+	await mountTemplate(panel, 'group_ref_preview', {})
 	const body = panel.querySelector('.group-ref-preview-body')
 	if (body) body.innerHTML = renderGroupRefBlockHtml(appContext.state.pendingGroupRef)
 	panel.querySelector('.clear-group-ref-btn')?.addEventListener('click', () => {
