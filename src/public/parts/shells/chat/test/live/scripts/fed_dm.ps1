@@ -131,13 +131,25 @@ Test-Case 'joiner join-snapshot + catchup' {
 	$r.status -eq 200
 }
 Test-Case 'creator join-snapshot + catchup sees joiner' {
+	$joinerSt = Api $joiner GET "/groups/$gid/state"
+	if ($joinerSt.status -ne 200) { throw "joiner state $($joinerSt.status)" }
+	$joinerHash = [string]$joinerSt.json.state.viewerMemberPubKeyHash
+	if (-not $joinerHash) { throw 'joiner viewerMemberPubKeyHash missing' }
 	Api $creator POST "/groups/$gid/federation/join-snapshot" @{} | Out-Null
 	$r = Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 25000 }
 	if ($r.status -ne 200) { throw "catchup $($r.status)" }
 	Api $creator POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 	Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 } | Out-Null
 	Api $joiner POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
-	$true
+	[bool](PollUntil 120 3 {
+		Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
+		Api $creator POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
+		$s = Api $creator GET "/groups/$gid/state"
+		if ($s.status -ne 200) { return $false }
+		@($s.json.state.members | Where-Object {
+			$_.pubKeyHash -eq $joinerHash -and $_.status -eq 'active'
+		}).Count -ge 1
+	})
 }
 Test-Case 'creator members>=2 after DM join' {
 	[bool](Wait-FedMembers $creator $gid 2 120)

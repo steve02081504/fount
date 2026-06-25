@@ -10,13 +10,13 @@ import {
 } from './fixtures.mjs'
 
 test.describe('Chat hub navigation', () => {
-	test('switches between groups and friends mode', async ({ page, baseUrl }) => {
-		await waitForHubShell(page, baseUrl)
+	test('switches between groups and friends mode', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await page.locator('.hub-server-item[data-mode="friends"]').click()
 		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 60_000 })
 		await expect(page).toHaveURL(/#friends/)
-		await page.locator('.hub-server-item[data-mode="groups"]').click()
-		await expect(page.locator('#hub-channel-list')).toBeVisible()
+		await page.locator(`.hub-server-item[data-group-id="${groupId}"]`).click()
+		await expect(page.locator('#hub-channel-list')).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('creates a group via hub UI', async ({ page, baseUrl }) => {

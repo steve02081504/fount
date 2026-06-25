@@ -182,18 +182,21 @@ Test-Case 'PUT /timeline delta +1' {
 Test-Case 'GET /timeline after +1' {
 	if ($script:tlDeltaPlus.json.entry) {
 		$g = Api GET "/groups/$gid/timeline"
-		return $g.status -eq 200
+		if ($g.status -ne 200) { return $false }
+		[int]$g.json.current -ne $script:tlBefore.current -or [int]$g.json.total -gt $script:tlBefore.total
 	}
-	$ok = PollUntil {
-		$g = Api GET "/groups/$gid/timeline"
-		$g.status -eq 200 -and (
-			[int]$g.json.current -ne $script:tlBefore.current -or
-			[int]$g.json.total -gt $script:tlBefore.total
-		)
-	} 45
-	if (-not $ok) { throw 'timeline did not change after delta +1' }
-	$script:tlAfterPlus = Api GET "/groups/$gid/timeline"
-	$true
+	else {
+		$ok = PollUntil {
+			$g = Api GET "/groups/$gid/timeline"
+			$g.status -eq 200 -and (
+				[int]$g.json.current -ne $script:tlBefore.current -or
+				[int]$g.json.total -gt $script:tlBefore.total
+			)
+		} 45
+		if (-not $ok) { throw 'timeline did not change after delta +1' }
+		$script:tlAfterPlus = Api GET "/groups/$gid/timeline"
+		$true
+	}
 }
 Test-Case 'PUT /timeline delta -1' {
 	$r = Api PUT "/groups/$gid/timeline" @{ delta = -1; channelId = $cid }

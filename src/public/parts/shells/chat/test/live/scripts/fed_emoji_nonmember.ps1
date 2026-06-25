@@ -5,12 +5,19 @@ $ErrorActionPreference = 'Stop'
 $gid = $null; $cid = $null; $emojiId = $null
 
 Write-Host "`n=== P2P warmup (user-room for fed_chunk_get fanout) ===" -ForegroundColor Cyan
+$script:aNodeHash = $null
 Test-Case 'federation identity ready on A/B' {
 	$fa = P2pApi $FedA GET '/federation'
 	$fb = P2pApi $FedB GET '/federation'
+	$script:aNodeHash = $fa.json.nodeHash
 	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.identityPubKeyHex -and $fb.json.identityPubKeyHex
 }
 Start-Sleep 5
+# B 主动加入 A 的用户房间，使 A 出现在 B 的 TrustGraph 中（非成员 CAS fanout 路径所需）
+if ($script:aNodeHash) {
+	P2pApi $FedB POST '/federation/connect-node' @{ targetNodeHash = $script:aNodeHash } | Out-Null
+	Start-Sleep 4
+}
 
 Write-Host "`n=== Setup: A creates group + emoji (B does not join) ===" -ForegroundColor Cyan
 Test-Case 'A creates group (B stays non-member)' {

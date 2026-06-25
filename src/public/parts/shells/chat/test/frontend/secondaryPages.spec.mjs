@@ -43,7 +43,9 @@ test.describe('Chat secondary pages', () => {
 		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
 			.toBeVisible({ timeout: 30_000 })
 		await page.locator('.tabs .tab[data-tab="emojis"]').click()
-		await expect(page.locator('#group-emojis-container')).not.toBeEmpty({ timeout: 30_000 })
+		await expect(page.locator('#group-emojis-list')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#group-emoji-upload')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#group-emojis-empty')).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('history list filter narrows visible sessions', async ({ page, baseUrl, apiKey }) => {

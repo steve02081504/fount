@@ -368,6 +368,7 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
 		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
 	await expect(page.locator('#group-settings-container')).toBeVisible({ timeout: 60_000 })
+	await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: 60_000 })
 }
 /**
  * 通过 emoji-picker 浮层选取 Unicode 表情（避免穿透 shadow DOM）。

@@ -165,25 +165,7 @@ if ($ownerSuccessionTarget) {
 			if ($s.status -ne 200) { return $false }
 			& $hasTransferredFounder $s.json.state
 		}
-		if (-not $ok) {
-			# 回退路径：若 fanout/catchup 迟迟未到，直接从 A 拉取**完整连续**的签名事件链注入 B。
-			# 注意：不可仅按 owner-succession 类型过滤投递——那会让 role_assign/group_settings_update 成为
-			# 缺父的“断链组件”，被 B 的共识选支排除而无法折叠（gossip 不可用时无法回填父链）。
-			# 投递全量签名行（B 已有的按 dup 跳过），保证 DAG 连续 → 线性折叠 → 确定性收敛。
-			$fromA = Api $FedA GET "/groups/$gid/events?limit=400"
-			if ($fromA.status -eq 200) {
-				$rows = @($fromA.json.events | Where-Object { $_.signature -and $_.id })
-				if ($rows.Count -gt 0) {
-					Api $FedB POST "/groups/$gid/events" @{ events = $rows } | Out-Null
-					$ok = [bool](PollUntil 60 4 {
-						Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
-						Api $FedB POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
-						$s2 = Api $FedB GET "/groups/$gid/state"
-						$s2.status -eq 200 -and (& $hasTransferredFounder $s2.json.state)
-					})
-				}
-			}
-		}
+		if (-not $ok) { throw 'B must see owner succession via federation catchup (no manual A-side inject)' }
 		[bool]$ok
 	}
 }

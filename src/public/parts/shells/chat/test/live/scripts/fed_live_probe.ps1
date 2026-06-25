@@ -20,7 +20,7 @@ $r1 = PollUntil 40 3 { @((Api $FedB GET "/groups/$gid/channels/$cid/messages").j
 Write-Host ("B sees A-msg M1 (live push): {0}" -f [bool]$r1)
 $r2 = PollUntil 40 3 { $s = Api $FedB GET "/groups/$gid/state"; $null -ne $s.json.state.channels.$c1 }
 Write-Host ("B sees A-channel C1 (live push): {0}" -f [bool]$r2)
-$r3 = PollUntil 40 3 { @((Api $FedB GET "/groups/$gid/channels/$cid/messages").json.reactionEvents | Where-Object { $_.content.targetEventId -eq $m1 }).Count -ge 1 }
+$r3 = PollUntil 40 3 { @((Api $FedB GET "/groups/$gid/channels/$cid/messages").json.reactionEvents | Where-Object { $_.content.targetId -eq $m1 }).Count -ge 1 }
 Write-Host ("B sees A-reaction (live push): {0}" -f [bool]$r3)
 $r4 = PollUntil 40 3 { @((Api $FedA GET "/groups/$gid/channels/$cid/messages").json.messages | Where-Object { $_.eventId -eq $m2 }).Count -ge 1 }
 Write-Host ("A sees B-msg M2 (live push): {0}" -f [bool]$r4)
