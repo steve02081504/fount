@@ -559,12 +559,6 @@ main {
 	white-space: pre-wrap;
 }
 
-.feed-toolbar {
-	display: flex;
-	justify-content: flex-end;
-	margin-bottom: 0.5rem;
-}
-
 .saved-folder-header {
 	display: flex;
 	justify-content: space-between;

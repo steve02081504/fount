@@ -109,7 +109,7 @@ export async function buildHomeFeed(username, options = {}) {
 				repPenalty: reputationSortPenalty(entityHash, pickNodeScore),
 			})
 		}
-		candidates.sort(compareFeedItems)
+		candidates.sort((a, b) => -compareFeedItems(a, b))
 		streams.push({ candidates, index: 0 })
 	}
 

@@ -43,7 +43,10 @@ function connectFeedWebSocket(appContext) {
 			clearTimeout(timer)
 			reject(new Error('feed WebSocket failed'))
 		}, { once: true })
-		ws.addEventListener('message', () => {
+		ws.addEventListener('message', event => {
+			let msg = null
+			try { msg = JSON.parse(event.data) } catch { /* ignore */ }
+			if (msg?.type === 'hello') return
 			const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
 			if (feedVisible && !appContext.state.activeFeedSearchQuery)
 				void loadFeed(appContext, false, { skipSync: true })

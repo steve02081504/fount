@@ -114,6 +114,7 @@ test.describe('Social feed', () => {
 		])
 		const data = await feedResponse.json()
 		expect(data).toHaveProperty('items')
+		await expect(page.locator('#feedList [data-post-id]')).not.toHaveCount(initialCount, { timeout: 15_000 })
 		const newCount = await page.locator('#feedList [data-post-id]').count()
 		expect(newCount).toBeGreaterThan(initialCount)
 	})

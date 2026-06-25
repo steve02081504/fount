@@ -27,7 +27,7 @@ test.describe('Social navigation', () => {
 	test('feed search filters posts and clear restores feed', async ({ page, publishPost }) => {
 		const tag = `navsrch${Date.now()}`
 		const { postId } = await publishPost(`nav-filter #${tag}`)
-		await expectPostInFeed(page, postId)
+		await expect(page.locator(`#feedView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 60_000 })
 
 		const input = page.locator('#feedSearchInput')
 		await input.fill(`#${tag}`)

@@ -1,5 +1,4 @@
-import { mountTemplate, renderTemplate } from '../../../../../scripts/template.mjs'
-import { renderFeedItems } from '../feedRender.mjs'
+import { renderTemplate } from '../../../../../scripts/template.mjs'
 import { formatSocialSearchHref } from '../lib/runUri.mjs'
 
 /**
@@ -49,6 +48,8 @@ export async function loadTrendingHashtags(appContext) {
 	aside.appendChild(list)
 }
 
+let feedGeneration = 0
+
 /**
  * 加载首页 feed（分页，可选跳过联邦同步）。
  * @param {object} appContext 应用上下文
@@ -59,14 +60,24 @@ export async function loadTrendingHashtags(appContext) {
  */
 export async function loadFeed(appContext, append = false, options = {}) {
 	if (appContext.state.activeFeedSearchQuery) return
+	const gen = ++feedGeneration
 	const syncParam = options.skipSync ? '&sync=false' : ''
 	const cursorQuery = append && appContext.state.feedCursor
 		? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
 		: ''
 	const data = await appContext.socialApi(`/feed?limit=30${syncParam}${cursorQuery}`)
+	if (feedGeneration !== gen) return
+	const items = data.items || []
+	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
+	if (feedGeneration !== gen) return
 	appContext.state.feedCursor = data.nextCursor || null
 	const list = document.getElementById('feedList')
-	await renderFeedItems(appContext.geti18n, appContext.buildPostCard, list, data.items || [], append)
+	if (!list) return
+	if (append) {
+		for (const card of cards) if (card) list.appendChild(card)
+	} else {
+		list.replaceChildren(...cards.filter(Boolean))
+	}
 	document.getElementById('feedLoadMore')?.classList.toggle('hidden', !appContext.state.feedCursor)
 	void loadTrendingHashtags(appContext)
 }
@@ -81,7 +92,8 @@ export async function runFeedSearch(appContext) {
 	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
 	if (q.length < 2) {
 		const list = document.getElementById('feedList')
-		if (list) await mountTemplate(list, 'feed_empty', { emptyKey: 'social.search.tooShort' })
+		const emptyEl = list ? await renderTemplate('feed_empty', { emptyKey: 'social.search.tooShort' }) : null
+		if (list && emptyEl) list.replaceChildren(emptyEl)
 		appContext.state.activeFeedSearchQuery = null
 		updateFeedSearchChrome(appContext)
 		return
@@ -89,26 +101,23 @@ export async function runFeedSearch(appContext) {
 	appContext.state.activeFeedSearchQuery = q
 	appContext.state.feedCursor = null
 	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=40`)
+	if (appContext.state.activeFeedSearchQuery !== q) return
 	const list = document.getElementById('feedList')
-	if (!(data.items || []).length) {
-		list.replaceChildren()
-		list.appendChild(await renderTemplate('feed_search_hint', {}))
-		list.appendChild(await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' }))
-		updateFeedSearchChrome(appContext)
-		return
+	if (!list) return
+	const items = data.items || []
+	const [hintEl, ...cardEls] = await Promise.all([
+		renderTemplate('feed_search_hint', {}),
+		...items.map(item => appContext.buildPostCard(item).catch(() => null)),
+	])
+	if (appContext.state.activeFeedSearchQuery !== q) return
+	if (!items.length) {
+		const emptyEl = await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' })
+		list.replaceChildren(hintEl, emptyEl)
+	} else {
+		const container = document.createElement('div')
+		for (const card of cardEls) if (card) container.appendChild(card)
+		list.replaceChildren(hintEl, container)
 	}
-	list.replaceChildren()
-	list.appendChild(await renderTemplate('feed_search_hint', {}))
-	const container = document.createElement('div')
-	list.appendChild(container)
-	await renderFeedItems(
-		appContext.geti18n,
-		appContext.buildPostCard,
-		container,
-		data.items || [],
-		false,
-		'social.search.empty',
-	)
 	updateFeedSearchChrome(appContext)
 }
 
