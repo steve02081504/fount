@@ -44,6 +44,32 @@ function isPortFree(port) {
 }
 
 /**
+ * 绑定端口并保持监听，直到调用方显式 close（消除并行测试 TOCTOU 竞态）。
+ * @param {number} port 待持有端口
+ * @returns {Promise<import('node:net').Server>} 已监听的 server
+ */
+function holdPort(port) {
+	return new Promise((resolve, reject) => {
+		const server = net.createServer()
+		server.unref()
+		server.on('error', reject)
+		server.listen(port, () => resolve(server))
+	})
+}
+
+/**
+ * 关闭 holdPort 返回的 server。
+ * @param {import('node:net').Server | undefined} server 待关闭 server
+ * @returns {Promise<void>}
+ */
+async function closeHeldServer(server) {
+	if (!server) return
+	await new Promise((resolve, reject) => {
+		server.close(err => err ? reject(err) : resolve())
+	})
+}
+
+/**
  * 从首选端口起向上扫描，返回第一个空闲口。
  * @param {number} preferred 首选端口
  * @param {number} [scan=50] 扫描宽度
@@ -58,17 +84,84 @@ export async function pickAvailablePort(preferred, scan = 50) {
 }
 
 /**
- * 分配连续空闲端口块的首端口。
+ * 已分配并持有的测试端口块。
+ * @typedef {object} TestPortBlock
+ * @property {number} base 首端口
+ * @property {(port: number) => Promise<void>} releasePort 释放单个端口的持有
+ * @property {() => Promise<void>} releaseAll 释放整块持有
+ */
+
+/**
+ * live 双节点端口解析结果。
+ * @typedef {object} LiveNodePorts
+ * @property {number} nodeAPort 节点 A 端口
+ * @property {number} nodeBPort 节点 B 端口
+ * @property {(port: number) => Promise<void>} releasePort 释放指定端口持有（env 指定时为空操作）
+ */
+
+/** env 指定端口时无持有句柄，释放为空操作。 */
+/** @type {(port: number) => Promise<void>} */
+const noopReleasePort = async () => {}
+
+/**
+ * 由已持有的 server 映射构造端口块句柄。
+ * @param {number} base 首端口
+ * @param {Map<number, import('node:net').Server>} servers 端口 → 持有 server
+ * @returns {TestPortBlock} 释放句柄
+ */
+function createHeldPortBlock(base, servers) {
+	/**
+	 * 释放单个端口的持有。
+	 * @param {number} port 待释放端口
+	 * @returns {Promise<void>}
+	 */
+	async function releasePort(port) {
+		const server = servers.get(port)
+		if (!server) return
+		servers.delete(port)
+		await closeHeldServer(server)
+	}
+
+	/**
+	 * 释放整块端口持有。
+	 * @returns {Promise<void>}
+	 */
+	async function releaseAll() {
+		const closing = [...servers.values()]
+		servers.clear()
+		await Promise.all(closing.map(closeHeldServer))
+	}
+
+	return { base, releasePort, releaseAll }
+}
+
+/**
+ * 分配连续空闲端口块的首端口，并持有至 releasePort / releaseAll。
  * @param {object} options 选项
  * @param {number} options.count 需要的端口数
  * @param {number} [options.step=2] 步长
  * @param {number} [options.preferred=TEST_PORT_BASE] 首选起始端口
- * @returns {Promise<number>} 首端口
+ * @returns {Promise<TestPortBlock>} 首端口与释放句柄
  */
 export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_PORT_BASE }) {
 	for (let base = preferred; base < preferred + 200; base++) {
 		const ports = Array.from({ length: count }, (_, index) => base + index * step)
-		if ((await Promise.all(ports.map(isPortFree))).every(Boolean)) return base
+		/** @type {Map<number, import('node:net').Server>} */
+		const servers = new Map()
+		let failed = false
+		for (const port of ports) try {
+			servers.set(port, await holdPort(port))
+		}
+		catch {
+			failed = true
+			break
+		}
+
+		if (failed) {
+			await Promise.all([...servers.values()].map(closeHeldServer))
+			continue
+		}
+		return createHeldPortBlock(base, servers)
 	}
 	throw new Error(`no free ${count}-port block from ${preferred} step ${step}`)
 }
@@ -77,17 +170,17 @@ export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_
  * 为 live 双节点分配 A/B 端口。
  * @param {object} [options] 选项
  * @param {number} [options.preferred=TEST_PORT_BASE] 节点 A 首选端口
- * @returns {Promise<{ nodeAPort: number, nodeBPort: number }>} 节点 A/B 端口
+ * @returns {Promise<LiveNodePorts>} 节点 A/B 端口与释放句柄
  */
 export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {}) {
-	const nodeAPort = await allocateTestPortBlock({ count: 2, step: 1, preferred })
-	return { nodeAPort, nodeBPort: nodeAPort + 1 }
+	const { base: nodeAPort, releasePort } = await allocateTestPortBlock({ count: 2, step: 1, preferred })
+	return { nodeAPort, nodeBPort: nodeAPort + 1, releasePort }
 }
 
 /**
  * 解析 live 双节点端口：优先读 env，否则分配连续空闲口。
  * @param {NodeJS.ProcessEnv} [env=process.env] 环境变量
- * @returns {Promise<{ nodeAPort: number, nodeBPort: number }>} 节点 A/B 端口
+ * @returns {Promise<LiveNodePorts>} 节点 A/B 端口与释放句柄
  */
 export async function resolveLiveNodePorts(env = process.env) {
 	const rawA = env.FOUNT_TEST_NODE_A_PORT?.trim()
@@ -97,7 +190,7 @@ export async function resolveLiveNodePorts(env = process.env) {
 		const nodeBPort = rawB
 			? Number(rawB)
 			: await pickAvailablePort(nodeAPort + 1)
-		return { nodeAPort, nodeBPort }
+		return { nodeAPort, nodeBPort, releasePort: noopReleasePort }
 	}
 	return allocateLiveNodePorts()
 }
@@ -193,6 +286,7 @@ async function injectFixtures(dataPath, username, copies) {
  * @param {boolean} [options.p2p=false] 是否启用 P2P 子系统
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
+ * @param {(port: number) => Promise<void>} [options.releasePort] spawn 前释放该端口的持有 server
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(options = {}) {
@@ -217,6 +311,8 @@ export async function launchNode(options = {}) {
 		workerArgs.push('--load-part', part)
 	if (options.bootstrap)
 		workerArgs.push('--bootstrap', resolve(options.bootstrap))
+
+	await options.releasePort?.()
 
 	const child = spawn('deno', workerArgs, {
 		cwd: REPO_ROOT,
@@ -265,16 +361,16 @@ export async function launchNode(options = {}) {
  */
 export async function stopNode(node) {
 	if (!node?.process) return
-	const proc = node.process
-	proc.kill('SIGTERM')
+	const { process } = node
+	process.kill('SIGTERM')
 	await Promise.race([
-		new Promise(resolve => proc.once('close', resolve)),
+		new Promise(resolve => process.once('close', resolve)),
 		new Promise(resolve => setTimeout(resolve, 10_000)),
 	])
-	if (proc.exitCode == null)
-		proc.kill('SIGKILL')
+	if (process.exitCode == null)
+		process.kill('SIGKILL')
 	await Promise.race([
-		new Promise(resolve => proc.once('close', resolve)),
+		new Promise(resolve => process.once('close', resolve)),
 		new Promise(resolve => setTimeout(resolve, 5_000)),
 	])
 	if (!node.keepData && node.dataPath)

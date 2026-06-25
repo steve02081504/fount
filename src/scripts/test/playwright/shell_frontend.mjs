@@ -29,10 +29,21 @@ export async function runShellFrontendTests({
 	portStep = 2,
 }) {
 	const phases = await phasesFromPlaywrightConfig(configPath, REPO_ROOT, { portStep })
-	const basePort = await resolveFrontendPort(
-		process.env.FOUNT_TEST_FRONTEND_PORT,
-		() => allocateTestPortBlock({ count: phases.length, step: portStep }),
-	)
+
+	let basePort
+	/** @type {(port: number) => Promise<void>} */
+	let releasePortForPhase = async () => {}
+	const { env: { FOUNT_TEST_FRONTEND_PORT: rawFrontendPort, FOUNT_TEST_FRONTEND_KEY: frontendApiKey } } = process
+	if (rawFrontendPort != null && rawFrontendPort !== '') 
+		basePort = await resolveFrontendPort(rawFrontendPort, async () => {
+			throw new Error('FOUNT_TEST_FRONTEND_PORT fallback should not run')
+		})
+	
+	else {
+		const { base, releasePort } = await allocateTestPortBlock({ count: phases.length, step: portStep })
+		basePort = base
+		releasePortForPhase = releasePort
+	}
 
 	/**
 	 * 为指定端口构造 launchNode 选项。
@@ -40,13 +51,19 @@ export async function runShellFrontendTests({
 	 * @returns {object} launchNode 选项
 	 */
 	function nodeLaunchOptions(port) {
+		/**
+		 * spawn 前释放该阶段端口的持有 server。
+		 * @returns {Promise<void>}
+		 */
+		const releaseHeldPort = () => releasePortForPhase(port)
 		return {
 			port,
 			username: testUsername,
-			apiKey: process.env.FOUNT_TEST_FRONTEND_KEY || `${apiKeyPrefix}-${port}`,
+			apiKey: frontendApiKey || `${apiKeyPrefix}-${port}`,
 			loadParts,
 			p2p: true,
 			bootstrap: bootstrapPath,
+			releasePort: releaseHeldPort,
 		}
 	}
 

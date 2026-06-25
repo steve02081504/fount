@@ -12,7 +12,18 @@ import { resolveLiveNodePorts } from 'fount/scripts/test/node/launch.mjs'
 const liveDir = dirname(fileURLToPath(import.meta.url))
 const socialBootstrap = join(liveDir, '../node_bootstrap.mjs')
 
-const { nodeAPort, nodeBPort } = await resolveLiveNodePorts()
+const { nodeAPort, nodeBPort, releasePort } = await resolveLiveNodePorts()
+
+/**
+ * spawn 前释放节点 A 端口持有。
+ * @returns {Promise<void>}
+ */
+const releaseHeldNodeAPort = () => releasePort(nodeAPort)
+/**
+ * spawn 前释放节点 B 端口持有。
+ * @returns {Promise<void>}
+ */
+const releaseHeldNodeBPort = () => releasePort(nodeBPort)
 
 /** Social live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
@@ -43,6 +54,7 @@ await runLiveSuiteCli({
 		apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-social-key-${nodeAPort}`,
 		p2p: true,
 		bootstrap: socialBootstrap,
+		releasePort: releaseHeldNodeAPort,
 	},
 	nodeB: {
 		port: nodeBPort,
@@ -50,5 +62,6 @@ await runLiveSuiteCli({
 		apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${nodeBPort}`,
 		p2p: true,
 		bootstrap: socialBootstrap,
+		releasePort: releaseHeldNodeBPort,
 	},
 })

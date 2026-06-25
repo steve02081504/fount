@@ -26,6 +26,11 @@ export async function initMdns(port, protocol, config) {
 	const ciao = await import('npm:@homebridge/ciao')
 	const responder = ciao.getResponder()
 	mdns = responder.createService(mdns_config)
+	if (process.env.FOUNT_TEST) {
+		// 并行测试时 ciao 可能将服务名改为 fount (2) 等；静默监听以免未处理事件告警。
+		mdns.on('name-change', () => {})
+		mdns.on('hostname-change', () => {})
+	}
 	mdns.advertise().catch(async error => { // 不应await此操作，会阻塞服务器
 		console.errorI18n('fountConsole.server.mdns.failed', { error })
 		mdns.stop()

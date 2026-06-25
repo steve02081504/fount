@@ -13,7 +13,18 @@ const liveDir = dirname(fileURLToPath(import.meta.url))
 const chatBootstrap = join(liveDir, '../node_bootstrap.mjs')
 const chatFixtures = join(liveDir, 'fixtures/chars')
 
-const { nodeAPort, nodeBPort } = await resolveLiveNodePorts()
+const { nodeAPort, nodeBPort, releasePort } = await resolveLiveNodePorts()
+
+/**
+ * spawn 前释放节点 A 端口持有。
+ * @returns {Promise<void>}
+ */
+const releaseHeldNodeAPort = () => releasePort(nodeAPort)
+/**
+ * spawn 前释放节点 B 端口持有。
+ * @returns {Promise<void>}
+ */
+const releaseHeldNodeBPort = () => releasePort(nodeBPort)
 
 /** Chat live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[] }>} */
@@ -54,6 +65,7 @@ await runLiveSuiteCli({
 			from: join(chatFixtures, 'test_streamer'),
 			to: 'chars/test_streamer',
 		}],
+		releasePort: releaseHeldNodeAPort,
 	},
 	nodeB: {
 		port: nodeBPort,
@@ -62,5 +74,6 @@ await runLiveSuiteCli({
 		loadParts: ['shells/chat'],
 		p2p: true,
 		bootstrap: chatBootstrap,
+		releasePort: releaseHeldNodeBPort,
 	},
 })
