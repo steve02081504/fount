@@ -234,7 +234,8 @@ export function registerChannelRoutes(router, authenticate) {
 		const eventId = String(req.params[2] || '').toLowerCase()
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			return res.status(400).json({ error: 'invalid eventId' })
-		const text = channelMessageText(req.body?.content)
+		const rawContent = req.body?.content
+		const text = typeof rawContent === 'string' ? rawContent : channelMessageText(rawContent)
 		if (!text?.trim())
 			return res.status(400).json({ error: 'content required' })
 

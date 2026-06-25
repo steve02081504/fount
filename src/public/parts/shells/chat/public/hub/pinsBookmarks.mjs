@@ -114,13 +114,16 @@ export async function refreshPinsBookmarks() {
 			channelId: String(bookmark.channelId || '').trim(),
 			targetGroup: bookmark.groupId || hubStore.currentGroupId,
 		}))
-		const bookmarkLabels = await Promise.all(bookmarkRows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
-			if (eventId && channelId && targetGroup)
-				return { text: await resolvePinMessagePreview(targetGroup, channelId, eventId), i18n: false }
-			if (bookmark.title) return { text: bookmark.title, i18n: false }
-			if (eventId) return { text: eventId, i18n: false }
-			return { text: '', i18n: true }
-		}))
+	const bookmarkLabels = await Promise.all(bookmarkRows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
+		if (eventId && channelId && targetGroup) {
+			const preview = await resolvePinMessagePreview(targetGroup, channelId, eventId)
+			if (preview?.i18n) return { text: '', i18n: true }
+			return { text: preview?.text || eventId.slice(0, 12), i18n: false }
+		}
+		if (bookmark.title) return { text: bookmark.title, i18n: false }
+		if (eventId) return { text: eventId, i18n: false }
+		return { text: '', i18n: true }
+	}))
 		for (const [index, { bookmark, eventId, channelId, targetGroup }] of bookmarkRows.entries()) {
 			const label = bookmarkLabels[index] || { text: '', i18n: true }
 			const titleI18nAttr = label.i18n ? ' data-i18n="chat.hub.bookmarkFallback"' : ''

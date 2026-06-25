@@ -12,6 +12,7 @@ import {
 	addChatBookmark,
 	deleteChannelMessage,
 	editChannelMessage,
+	getGroupState,
 	modifyChannelTimeline,
 	pinMessage,
 	unpinMessage,
@@ -20,6 +21,7 @@ import {
 } from '../../src/api/groupApi.mjs'
 import { createShareLink } from '../../src/share.mjs'
 import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
+import { hubStore } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
 import {
@@ -145,6 +147,7 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 			try {
 				if (unpin) await unpinMessage(groupId, channelId, eventId)
 				else await pinMessage(groupId, channelId, eventId)
+				hubStore.currentState = await getGroupState(groupId)
 				await reload?.()
 			}
 			catch (error) {

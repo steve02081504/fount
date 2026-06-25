@@ -38,7 +38,7 @@ test.describe('Chat secondary pages', () => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)
 		await page.locator('.tabs .tab[data-tab="permissions"]').click()
-		await expect(page.locator('#permission-settings-container .overflow-x-auto')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#permission-settings-container #group-settings-create-role-button')).toBeVisible({ timeout: 30_000 })
 		await page.locator('.tabs .tab[data-tab="channel-perms"]').click()
 		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
 			.toBeVisible({ timeout: 30_000 })
