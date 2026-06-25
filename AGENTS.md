@@ -22,8 +22,11 @@
 - **UI (Shells)**: Decoupled from backend. Use API endpoints in `src/server/web_server/endpoints.mjs`.
 - **I18n**: Only modify `src/public/locales/zh-CN.json`; `update-locales.py` handles the rest.
 - **Standards**: Run `eslint --fix --quiet` after changes(NO `npx`, just `eslint`). No logging unless error/warning.
+- **Testing**: `fount test` is self-contained — **no running fount server required**. live/frontend suites spawn ephemeral test nodes and tear them down automatically. With uncommitted changes, bare `fount test` runs diff-triggered suites; on a clean tree use `--since <commit>` or `--all`. Examples: `fount test shells/chat`, `fount test shells/chat unit`, `fount test p2p`.
 - **Debugging**: For live backend logs, run `fount log` in a separate terminal (streams the main-process console; check it before guessing from a browser 404). For ad-hoc dumps, use `debugLog(name, data)` → `debug_logs/` (server `src/scripts/debug_log.mjs`, browser `src/public/pages/scripts/debug_log.mjs`).
-- **Restart server**: `fount reboot` after code/config changes.
+- **Check if running**: `Test-FountRunning` (PowerShell) — returns `True`/`False`; use before starting/rebooting the server — **not** before `fount test`.
+- **Start server**: `fount server` (foreground) or `fount background` (detached background). Bare `fount` = `fount background; fount log`.
+- **Restart server**: `fount reboot` after code/config changes (requires fount already running; check with `Test-FountRunning` first).
 - **curl / API testing**: pass the API key on protected routes, e.g. `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PowerShell `$env:FOUNT_API_KEY`, bash `$FOUNT_API_KEY`).
 
 ## 4. Specialized Guides (read on demand, not loaded by default)

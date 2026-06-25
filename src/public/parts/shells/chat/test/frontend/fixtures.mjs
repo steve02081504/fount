@@ -312,8 +312,10 @@ export async function expectMessageInChat(page, text) {
  * @returns {string | undefined} 消息正文。
  */
 export function messageTextFromPostResponse(postJson) {
-	const text = postJson?.event?.content?.text
-	if (typeof text !== 'string') throw new Error('message POST response missing event.content.text')
+	const content = postJson?.event?.content ?? postJson?.content
+	if (typeof content === 'string') return content
+	const text = content?.content ?? content?.text
+	if (typeof text !== 'string') throw new Error(`message POST response missing text field: ${JSON.stringify(postJson?.event?.content)}`)
 	return text
 }
 

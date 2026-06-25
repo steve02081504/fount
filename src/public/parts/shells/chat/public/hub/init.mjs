@@ -285,7 +285,7 @@ async function wireHubHeavyFeatures() {
 	})
 
 	bindChannelMessageActions(document.getElementById('hub-messages'))
-	void wireHubPickers()
+	await wireHubPickers()
 	void syncTrustedAuthorsFromShell()
 	await wireCustomEmojiResolver()
 	cancelScheduledChannelRefresh()
