@@ -62,6 +62,9 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 				entry: { ...entry || { emojiId }, contentHash: contentHash || computeEmojiContentHash(buffer) },
 			}
 		}
+		// CAS 未命中：A 可能在等待期间已主动推送 fed_emoji_data 并写入本地（replicateGroupEmojisToPeer）
+		local = await readGroupEmojiBinary(username, groupId, emojiId)
+		if (local) return local
 	}
 
 	const slot = await ensureFederationRoom(username, groupId).catch(() => null)
@@ -79,5 +82,7 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 		return readGroupEmojiBinary(username, groupId, emojiId)
 	}
 
-	return null
+	// emoji-want 超时后再做一次本地检查：A 在等待期内推送了 fed_emoji_data 并由 handleFedEmojiData 写盘
+	return readGroupEmojiBinary(username, groupId, emojiId)
+
 }

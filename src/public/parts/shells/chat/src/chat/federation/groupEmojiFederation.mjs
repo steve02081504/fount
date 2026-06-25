@@ -108,8 +108,6 @@ export async function handleFedEmojiData(username, groupId, data) {
  */
 export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slot) {
 	if (!slot) return null
-	const roster = slot.getRoster()
-	if (!roster.length) return null
 	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return null
 	if (!slot.sendEmojiWant) return null
 	const key = waitKey(username, groupId, emojiId)
@@ -119,6 +117,10 @@ export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slo
 			resolve(null)
 		}, FETCH_TIMEOUT_MS)
 		pendingFetches.set(key, { resolve, timer })
+		// 向当前在线的所有 peer 发 want；roster 为空时不提前退出——
+		// A 在新 peer 入房后会主动推送 fed_emoji_data（replicateGroupEmojisToPeer），
+		// handleFedEmojiData 会通过 pending promise 兑现结果（非成员预览路径）。
+		const roster = slot.getRoster()
 		const payload = { emojiId }
 		for (const { peerId } of roster)
 			try {
