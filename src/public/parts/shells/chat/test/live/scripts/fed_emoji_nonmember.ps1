@@ -1,4 +1,4 @@
-# Non-member emoji content via /emoji-content (B never joins).
+﻿# Non-member emoji content via /emoji-content (B never joins).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

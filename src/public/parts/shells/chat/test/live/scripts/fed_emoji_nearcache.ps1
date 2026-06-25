@@ -1,4 +1,4 @@
-# Member B resolves emoji via contentHash /emoji-content (CAS near-cache path).
+﻿# Member B resolves emoji via contentHash /emoji-content (CAS near-cache path).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

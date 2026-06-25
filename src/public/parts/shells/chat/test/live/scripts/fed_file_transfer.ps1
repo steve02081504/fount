@@ -1,4 +1,4 @@
-# Cross-node file transfer: A uploads chunk + registers file; B downloads via federation.
+﻿# Cross-node file transfer: A uploads chunk + registers file; B downloads via federation.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

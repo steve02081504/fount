@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $base = if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL.Trim().TrimEnd('/') } else { throw 'FOUNT_TEST_BASE_URL required; run via test/live/run.mjs' }
 $k = $env:FOUNT_API_KEY
 if (-not $k) { throw 'No FOUNT_API_KEY' }

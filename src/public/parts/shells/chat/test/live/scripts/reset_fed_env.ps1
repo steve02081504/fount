@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 
 $root = $PSScriptRoot
 $nodeBData = Join-Path $root 'node_b_data'

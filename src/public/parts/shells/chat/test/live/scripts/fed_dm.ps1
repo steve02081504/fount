@@ -1,4 +1,4 @@
-# L4 federation: DM identity + intro link + join + bidirectional messages.
+﻿# L4 federation: DM identity + intro link + join + bidirectional messages.
 # Requires dual nodes via test/live/run.mjs (FOUNT_TEST_BASE_URL + FOUNT_TEST_NODE_B_BASE_URL).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')

@@ -1,4 +1,4 @@
-# L4 federation: mailbox summary + room-ready ingest hooks (loopback deliver is best-effort).
+﻿# L4 federation: mailbox summary + room-ready ingest hooks (loopback deliver is best-effort).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

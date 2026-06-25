@@ -1,4 +1,4 @@
-# L4 federation misc: rebind, rotate-room-secret, join-snapshot, history-want,
+﻿# L4 federation misc: rebind, rotate-room-secret, join-snapshot, history-want,
 # discovery, POST events remote verify, reputation slash fanout, owner-succession.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')

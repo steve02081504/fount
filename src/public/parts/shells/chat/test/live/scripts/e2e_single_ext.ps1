@@ -1,4 +1,4 @@
-# Single-node E2E extension: endpoints not covered by e2e_single.ps1.
+﻿# Single-node E2E extension: endpoints not covered by e2e_single.ps1.
 # Complements e2e_single.ps1; shares one primary group to reduce overhead.
 param(
 	[string]$Base = $(if ($env:FOUNT_TEST_BASE_URL) { $env:FOUNT_TEST_BASE_URL } else { throw 'FOUNT_TEST_BASE_URL required' }),

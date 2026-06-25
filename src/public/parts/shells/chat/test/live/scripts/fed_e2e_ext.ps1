@@ -1,4 +1,4 @@
-# Extended 2-node federation E2E: event propagation, file transfer, kick.
+﻿# Extended 2-node federation E2E: event propagation, file transfer, kick.
 # Requires NodeA + NodeB both up (started by test/live/run.mjs).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')

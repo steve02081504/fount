@@ -1,4 +1,4 @@
-# Two-node federation catchup + live message sync (run via test/live/run.mjs).
+﻿# Two-node federation catchup + live message sync (run via test/live/run.mjs).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

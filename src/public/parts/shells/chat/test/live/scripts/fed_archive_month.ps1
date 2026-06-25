@@ -1,4 +1,4 @@
-# L4 federation: cold archive month on A, B syncs via offline-mark + archive/sync.
+﻿# L4 federation: cold archive month on A, B syncs via offline-mark + archive/sync.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

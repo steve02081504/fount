@@ -1,4 +1,4 @@
-# Isolate: given an ESTABLISHED live peer connection, do all event types propagate?
+﻿# Isolate: given an ESTABLISHED live peer connection, do all event types propagate?
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

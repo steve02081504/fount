@@ -1,4 +1,4 @@
-# L4 federation: A bans B (entity scope); B cannot send; roster propagates.
+﻿# L4 federation: A bans B (entity scope); B cannot send; roster propagates.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 

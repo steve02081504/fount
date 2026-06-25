@@ -1,4 +1,4 @@
-# Isolation: does explicit catch-up fill a POST-JOIN gap (event created after join settled)?
+﻿# Isolation: does explicit catch-up fill a POST-JOIN gap (event created after join settled)?
 # Distinguishes "heartbeat didn't trigger" from "P2P connection is down so catch-up also fails".
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')

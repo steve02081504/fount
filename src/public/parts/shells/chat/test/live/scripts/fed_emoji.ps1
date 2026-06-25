@@ -1,4 +1,4 @@
-# L4 federation: A uploads group emoji; B fetches emojis/:id/data.
+﻿# L4 federation: A uploads group emoji; B fetches emojis/:id/data.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
