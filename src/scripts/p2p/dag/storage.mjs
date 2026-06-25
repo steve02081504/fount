@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
-import { appendFile, mkdir, open, readFile, rename, writeFile } from 'node:fs/promises'
+import { appendFile, mkdir, open, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { createInterface } from 'node:readline'
 import { Readable } from 'node:stream'
@@ -90,7 +90,15 @@ export async function rewriteJsonlKeeping(filePath, keep, options = {}) {
 		await flush()
 	}
 	catch { /* source missing */ }
-	if (kept > 0 || dropped > 0) await rename(tmp, filePath)
+	if (kept > 0 || dropped > 0)
+		try {
+			await rename(tmp, filePath)
+		}
+		catch (err) {
+			// 目录已被清理（测试 cleanup 竞态 / 删群路径），清理残余 tmp 文件后静默退出。
+			try { await unlink(tmp) } catch { /* ok */ }
+			if (err?.code !== 'ENOENT') throw err
+		}
 	else 
 		try { await writeFile(filePath, '', 'utf8') }
 		catch { /* ok */ }

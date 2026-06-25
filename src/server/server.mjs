@@ -313,7 +313,7 @@ export async function init(start_config) {
 	}
 	const endtime = new Date(),
 		denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
-	console.log({
+	if (!process.env.FOUNT_TEST) console.log({
 		sessionStartTime: new Date(process.env.FOUNT_SESSION_START_TIME ?? startTime.getTime()),
 		startTime,
 		shellScriptTimeInMs: denoStartTime - startTime,

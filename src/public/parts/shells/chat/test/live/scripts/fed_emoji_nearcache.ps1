@@ -43,3 +43,5 @@ Test-Case 'B GET /emoji-content again (cached local path)' {
 
 Clear-FedGroup $gid
 Write-Host "`n=== DONE fed_emoji_nearcache ===" -ForegroundColor Green
+Write-FedSummary 'FED-EMOJI-NC' $gid
+Complete-LiveScript

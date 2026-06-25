@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
@@ -24,6 +25,7 @@ export async function updateGroupEntityIndex(username, groupId) {
 	const id = String(groupId || '').trim()
 	if (!id) return
 	const filePath = groupEntityIndexPath(username)
+	await fs.mkdir(path.dirname(filePath), { recursive: true })
 	const data = await loadJsonFile(filePath) || { byEntityHash: {} }
 	const entityHash = groupEntityHash(id)
 	data.byEntityHash[String(entityHash).trim().toLowerCase()] = id

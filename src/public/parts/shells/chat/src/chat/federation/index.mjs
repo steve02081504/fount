@@ -154,7 +154,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const nodeHash = federationNodeHash(username)
-	const waitMs = clampNumber(opts.waitMs, 400, 4000, 1600)
+	const waitMs = clampNumber(opts.waitMs, 400, 30000, 1600)
 	/** @type {object[]} */
 	const events = []
 	const eventsById = new Map()
