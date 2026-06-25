@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, findPostCard, expectPostInFeed, fetchViewerEntityHash } from './fixtures.mjs'
+import { test, expect, openSocialHome, expectPostInFeed, fetchViewerEntityHash } from './fixtures.mjs'
 
 test.describe('Social saved posts', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
