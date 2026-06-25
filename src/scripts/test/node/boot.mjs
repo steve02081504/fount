@@ -167,6 +167,7 @@ export function defaultTestStarts({ web = false, p2p = false, jobs = false } = {
  * @returns {Promise<boolean>} init 是否成功
  */
 export async function initFountNode({ dataPath, starts, restarter }) {
+	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
 	set_start()
 	return await init({
 		restartor: restarter ?? (() => process.exit(131)),

@@ -22,7 +22,7 @@ const FEDERATED_TIMELINE_PULL_MAX_ROUNDS = 8
  * @param {string} username 本地用户
  * @param {string} entityHash 时间线 owner
  * @param {object} event 签名事件
- * @returns {Promise<boolean>} 是否新写入
+ * @returns {Promise<boolean>} 是否成功入站（含幂等重复）
  */
 export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	const existing = await readJsonl(timelineEventsPath(username, entityHash))
@@ -31,7 +31,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		priorEvents: existing,
 	})
 	if (!validated.accepted) return false
-	if (existing.some(row => row.id === validated.row.id)) return false
+	if (existing.some(row => row.id === validated.row.id)) return true
 	await appendJsonlSynced(timelineEventsPath(username, entityHash), validated.row)
 	invalidateTimelineMaterializedCache(username, entityHash)
 	invalidateTimelineOwnerIndex(username)
@@ -62,6 +62,7 @@ export async function syncTimelineForEntity(username, entityHash) {
 	let imported = 0
 	let afterEventId = null
 	const local = await readTimelineEvents(username, timelineOwner)
+	const knownIds = new Set(local.map(row => row.id))
 	if (local.length) afterEventId = local[local.length - 1].id
 
 	for (let round = 0; round < FEDERATED_TIMELINE_PULL_MAX_ROUNDS; round++) {
@@ -75,11 +76,14 @@ export async function syncTimelineForEntity(username, entityHash) {
 
 		let roundImported = 0
 		for (const row of responses)
-			for (const event of row.events || [])
-				if (await ingestRemoteTimelineEvent(username, timelineOwner, event)) {
+			for (const event of row.events || []) {
+				if (!await ingestRemoteTimelineEvent(username, timelineOwner, event)) continue
+				if (!knownIds.has(event.id)) {
+					knownIds.add(event.id)
 					roundImported++
-					afterEventId = event.id
 				}
+				afterEventId = event.id
+			}
 
 		imported += roundImported
 		if (!roundImported) break

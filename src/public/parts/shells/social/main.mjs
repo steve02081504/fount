@@ -35,9 +35,8 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
 async function handleTimelinePut(username, data) {
 	const entityHash = data.timelineEntityHash.toLowerCase()
 	if (!parseEntityHash(entityHash)) throw new Error('invalid_timeline_put')
-	if (!await ingestRemoteTimelineEvent(username, entityHash, data.event))
-		throw new Error('ingest_failed')
-	return { result: { ok: true } }
+	const ok = await ingestRemoteTimelineEvent(username, entityHash, data.event)
+	return { result: { ok } }
 }
 
 /**

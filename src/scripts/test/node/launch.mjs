@@ -317,7 +317,11 @@ export async function launchNode(options = {}) {
 	const child = spawn('deno', workerArgs, {
 		cwd: REPO_ROOT,
 		stdio: ['ignore', 'pipe', 'inherit'],
-		env: { ...process.env, FOUNT_TEST: '1' },
+		env: {
+			...process.env,
+			FOUNT_TEST: '1',
+			FOUNT_DENO_START_TIME: new Date().toISOString(),
+		},
 	})
 
 	let readyInfo = null

@@ -49,7 +49,7 @@ Deno.test('valid remote post is ingested and visible', async () => {
 	assert(events.some(e => e.id === event.id))
 })
 
-Deno.test('dedup: re-ingest same event returns false', async () => {
+Deno.test('dedup: re-ingest same event returns true (idempotent)', async () => {
 	const { username } = await getSession()
 	const seed = randomSeed()
 	const owner = ownerForSeed(seed)
@@ -57,7 +57,7 @@ Deno.test('dedup: re-ingest same event returns false', async () => {
 		type: 'post', content: { text: 'dup', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), true)
-	assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), false)
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), true)
 })
 
 Deno.test('non-whitelisted event type is rejected', async () => {
