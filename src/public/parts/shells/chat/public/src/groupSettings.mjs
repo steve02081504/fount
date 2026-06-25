@@ -8,6 +8,7 @@
 import { openDialogFromTemplate } from '../../../../scripts/dialog.mjs'
 import { confirmI18n, initTranslations, promptI18n } from '../../../../scripts/i18n.mjs'
 import {
+	appendTemplate,
 	mountTemplate,
 	usingTemplates,
 } from '../../../../scripts/template.mjs'
@@ -156,8 +157,8 @@ async function loadGroupSettings(groupId) {
 	emojisPanelReady = false
 	disposeAuditLogPanel()
 	currentState = data.state
-	currentStateJson = data
-	settingsCaps = await resolveViewerSettingsCapabilities(currentStateJson, groupId)
+	currentStateJson = data.state
+	settingsCaps = await resolveViewerSettingsCapabilities(currentState, groupId)
 	await updateSettingsTabsVisibility()
 	await renderGroupSettings()
 	await renderArchiveStoragePanel()
@@ -408,19 +409,19 @@ async function renderGroupSettings() {
 	container.replaceChildren()
 
 	if (!settingsCaps.isMember) {
-		await mountTemplate(container, 'group/settings/settings_panel_denied', {
+		await appendTemplate(container, 'group/settings/settings_panel_denied', {
 			messageKey: 'chat.group.settingsPage.notMember',
 		})
 		return
 	}
 
-	await mountTemplate(container, 'group/settings/basic_panel_overview', {
+	await appendTemplate(container, 'group/settings/basic_panel_overview', {
 		currentState,
 		escapeHtml,
 	})
 
 	if (settingsCaps.showGovernancePanel) {
-		await mountTemplate(container, 'group/settings/basic_panel', {
+		await appendTemplate(container, 'group/settings/basic_panel', {
 			currentState,
 			escapeHtml,
 			showFullSettings: settingsCaps.canEditGroupSettings,
@@ -435,7 +436,7 @@ async function renderGroupSettings() {
 	}
 
 	if (settingsCaps.canInviteMembers) {
-		await mountTemplate(container, 'group/settings/invite_panel', {})
+		await appendTemplate(container, 'group/settings/invite_panel', {})
 		wireInvitePanel()
 	}
 

@@ -292,3 +292,16 @@ export async function mountTemplate(parent, template, data = {}) {
 	mountRenderedNode(parent, node)
 	return parent
 }
+
+/**
+ * 渲染模板并追加到父节点（不清空已有内容）。
+ * @param {Element} parent 父节点
+ * @param {string} template 模板路径（相对 templates 根）
+ * @param {object} [data] 模板数据
+ * @returns {Promise<Element>} 父节点
+ */
+export async function appendTemplate(parent, template, data = {}) {
+	const node = await renderTemplate(template, data)
+	mountRenderedNode(parent, node)
+	return parent
+}

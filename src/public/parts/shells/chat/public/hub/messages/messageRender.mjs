@@ -550,6 +550,7 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 		localCharId: renderOpts.localCharIds?.[0] ?? renderOpts.localCharId,
 		canManageMessages: renderOpts.canManageMessages,
 		canPinMessages: renderOpts.canPinMessages,
+		canCreateThreads: renderOpts.canCreateThreads,
 		pinnedEventIds: renderOpts.pinnedEventIds,
 		alwaysVisibleActions: renderOpts.alwaysVisibleActions,
 		isLastMessage: renderOpts.lastMessageEventId === message.eventId,

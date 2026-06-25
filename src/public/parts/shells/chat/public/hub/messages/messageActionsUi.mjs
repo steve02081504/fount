@@ -162,7 +162,7 @@ export async function appendEditArea(rowEl, innerHtml) {
 	const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(wrapHtml)
 	const editWrap = frag.firstElementChild
 	if (!(editWrap instanceof HTMLElement)) return null
-	rowEl.querySelector('.chat, .hub-message-body')?.appendChild(editWrap)
+	rowEl.appendChild(editWrap)
 	requestAnimationFrame(() => { editWrap.style.opacity = '1' })
 	return editWrap
 }

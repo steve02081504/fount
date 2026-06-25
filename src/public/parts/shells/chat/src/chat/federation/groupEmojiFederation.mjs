@@ -11,7 +11,6 @@ import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs
 import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
 import {
 	bufferToDataUrl,
-	getGroupEmojiEntry,
 	loadGroupEmojiManifest,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
@@ -93,9 +92,9 @@ export async function handleFedEmojiData(username, groupId, data) {
 		pendingFetches.delete(key)
 		pending.resolve({ dataUrl, mimeType })
 	}
-	const existing = await getGroupEmojiEntry(username, groupId, emojiId)
-	if (!existing)
-		await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType)
+	// 无论清单条目是否已存在，始终写入本地二进制（防止清单已同步但文件未下载时丢弃 push 数据）
+	await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType)
+		.catch(error => console.warn('federation: fed_emoji_data persist failed', error))
 }
 
 /**

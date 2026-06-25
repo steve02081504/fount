@@ -15,8 +15,6 @@ import {
 
 applyTheme()
 
-await initGroupSettings()
-
 document.querySelectorAll('.tabs .tab').forEach(tab => {
 	tab.addEventListener('click', event => {
 		const target = event.target.closest('.tab')
@@ -30,3 +28,6 @@ document.querySelectorAll('.tabs .tab').forEach(tab => {
 		if (target.dataset.tab === 'emojis') void ensureGroupEmojisPanel()
 	})
 })
+
+await initGroupSettings()
+document.body.dataset.settingsLoaded = '1'

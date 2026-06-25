@@ -62,6 +62,16 @@ export function registerP2pEndpoints(router) {
 		res.status(200).json(await saveFederationViewForUser(username, patch))
 	})
 
+	router.post('/api/p2p/federation/connect-node', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const targetNodeHash = String(req.body?.targetNodeHash || '').trim().toLowerCase()
+		if (!isHex64(targetNodeHash))
+			return res.status(400).json({ error: 'invalid targetNodeHash' })
+		const { ensureRemoteUserRoom } = await import('../../scripts/p2p/remote_user_room.mjs')
+		const slot = await ensureRemoteUserRoom(username, targetNodeHash)
+		res.status(200).json({ ok: !!slot, connected: !!slot })
+	})
+
 	router.post('/api/p2p/federation/rotate', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await rotateOperatorActiveKey(username))

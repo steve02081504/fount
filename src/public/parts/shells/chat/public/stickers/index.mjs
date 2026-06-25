@@ -26,6 +26,7 @@ let currentPackId = null
 async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
+	setupEventListeners()
 	await initTranslations('stickers')
 
 	try {
@@ -38,7 +39,6 @@ async function init() {
 		console.error('Failed to load viewer:', error)
 	}
 
-	setupEventListeners()
 	await loadPacks()
 	await loadUserCollection()
 	await initializeDefaultPacks()
@@ -106,11 +106,8 @@ function setupEventListeners() {
 	document.getElementById('upload-sticker-form').addEventListener('submit', handleUploadSticker)
 	document.getElementById('search-input').addEventListener('input', handleSearch)
 
-	document.querySelectorAll('.tabs .tab').forEach(tab => {
-		tab.addEventListener('click', (clickEvent) => {
-			switchTab(clickEvent.target.dataset.tab)
-		})
-	})
+	for (const tab of document.querySelectorAll('.tabs .tab[data-tab]'))
+		tab.addEventListener('click', () => switchTab(tab.dataset.tab))
 
 	document.getElementById('sticker-install-pack-button').addEventListener('click', handleInstallPack)
 	document.getElementById('sticker-uninstall-pack-button').addEventListener('click', handleUninstallPack)
