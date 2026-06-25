@@ -1,14 +1,17 @@
 /**
- * 串行执行 Deno test。
+ * 并发执行 Deno test（每文件独立子进程）。
  *
  * 目录参数会展开为各 *.test.mjs，每个文件在独立子进程中运行，
  * 避免集成 harness 在同一进程内堆积多个 server 实例导致 OOM。
  */
-import { spawn } from 'node:child_process'
 import { readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
+import { execFile } from 'npm:@steve02081504/exec'
+
+import { computeConcurrency, UNIT_MEM } from '../core/concurrency.mjs'
+import { outputHasNoise } from '../core/output_filter.mjs'
 import {
 	isIncludedInTestOnly,
 	parseTestOnlyEnv,
@@ -39,16 +42,14 @@ function collectTestFiles(directory) {
 }
 
 /**
- * 在子进程中执行命令并返回退出码。
+ * 在子进程中执行 deno test 并捕获 stdall。
  * @param {string[]} command 可执行文件与参数
- * @returns {Promise<number>} 退出码
+ * @returns {Promise<{ code: number, output: string }>} 退出码与合并输出
  */
-function run(command) {
+async function runCaptured(command) {
 	const [executable, ...rest] = command
-	return new Promise(resolve => {
-		const child = spawn(executable, rest, { cwd: REPO_ROOT, stdio: 'inherit' })
-		child.on('close', code => resolve(code ?? 1))
-	})
+	const result = await execFile(executable, rest, { cwd: REPO_ROOT })
+	return { code: result.code ?? 1, output: result.stdall }
 }
 
 if (!args.length) {
@@ -75,18 +76,43 @@ if (filterList.length)
 	testFiles = testFiles.filter(file => isIncludedInTestOnly(REPO_ROOT, toRepoRelative(REPO_ROOT, file), filterList))
 
 const denoBase = ['test', '--no-check', '--allow-all', '-c', './deno.json']
+const concurrency = computeConcurrency(UNIT_MEM, Number(process.env.FOUNT_TEST_UNIT_CONCURRENCY))
 const failed = []
-for (const file of testFiles) {
-	if (ignorePrefix && file.startsWith(ignorePrefix)) continue
-	const code = await run(['deno', ...denoBase, file])
-	if (code !== 0) {
-		failed.push(toRepoRelative(REPO_ROOT, file))
-		if (!keepGoing) {
-			await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
-			process.exit(code)
+let silentPassed = 0
+let stopped = false
+let cursor = 0
+const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith(ignorePrefix)))
+
+/**
+ * worker-pool 消费游标，并发跑单文件 deno test。
+ * @returns {Promise<void>}
+ */
+async function worker() {
+	while (!stopped) {
+		const index = cursor++
+		if (index >= filteredFiles.length) break
+		const file = filteredFiles[index]
+		const { code, output } = await runCaptured(['deno', ...denoBase, file])
+		const noisy = outputHasNoise(output)
+		if (code !== 0 || noisy) process.stdout.write(output)
+		if (code !== 0) {
+			failed.push(toRepoRelative(REPO_ROOT, file))
+			if (!keepGoing) {
+				stopped = true
+				return
+			}
 		}
+		else if (!noisy) silentPassed++
 	}
 }
+
+await Promise.all(Array.from(
+	{ length: Math.min(concurrency, filteredFiles.length) },
+	() => worker(),
+))
+
+if (silentPassed > 0)
+	console.log(`${silentPassed} test file${silentPassed > 1 ? 's' : ''} passed (no output).`)
 
 if (failed.length) {
 	await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)

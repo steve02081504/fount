@@ -24,7 +24,7 @@ async function runCommand(repoRoot, command, env) {
 		cwd: repoRoot,
 		env: { ...process.env, ...env },
 	})
-	return { code: output.code, output: output.stdout + output.stderr }
+	return { code: output.code, output: output.stdall }
 }
 
 /**

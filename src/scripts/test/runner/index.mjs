@@ -1,10 +1,12 @@
-import { spawn } from 'node:child_process'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
 import process from 'node:process'
 
+import { execFile } from 'npm:@steve02081504/exec'
+
 import { computeUncommittedHash, getUncommittedFiles, resolveChangedFiles } from '../core/changed.mjs'
+import { computeConcurrency, SUITE_MEM } from '../core/concurrency.mjs'
 import {
 	mergeSuiteResult,
 	readFailures,
@@ -16,6 +18,7 @@ import {
 	loadAllSuites,
 	resolveManifestSelectors,
 } from '../core/manifest.mjs'
+import { outputHasNoise } from '../core/output_filter.mjs'
 import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
@@ -32,22 +35,18 @@ import { selectSuites, shouldTrackFailures } from './selection.mjs'
  */
 
 /**
- * 执行子进程命令。
+ * 执行子进程命令并捕获 stdall。
  * @param {string[]} command 命令
  * @param {Record<string, string>} [extraEnv] 额外环境变量
- * @returns {Promise<number>} 子进程退出码
+ * @returns {Promise<{ code: number, output: string }>} 子进程退出码与输出
  */
-function runCommand(command, extraEnv = {}) {
-	console.log('\n>>', command.join(' '))
+async function runCommand(command, extraEnv = {}) {
 	const [executable, ...args] = command
-	return new Promise(resolve => {
-		const child = spawn(executable, args, {
-			cwd: REPO_ROOT,
-			stdio: 'inherit',
-			env: { ...process.env, ...extraEnv },
-		})
-		child.on('close', code => resolve(code ?? 1))
+	const result = await execFile(executable, args, {
+		cwd: REPO_ROOT,
+		env: { ...process.env, ...extraEnv },
 	})
+	return { code: result.code ?? 1, output: result.stdall }
 }
 
 /**
@@ -73,17 +72,18 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
  * 运行单个 suite 并返回结果。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {string[] | undefined} onlyFiles 失败重跑文件过滤
- * @returns {Promise<{ passed: boolean, failedFiles: string[] }>} 运行结果
+ * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string }>} 运行结果
  */
 async function runSuite(suite, onlyFiles) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
 	try {
 		const { command, env } = buildSuiteInvocation(suite, onlyFiles, failuresOut)
-		const code = await runCommand(command, env)
+		const { code, output } = await runCommand(command, env)
 		return {
 			passed: code === 0,
 			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
+			output,
 		}
 	}
 	finally {
@@ -159,18 +159,42 @@ export async function runTests(options = {}) {
 	const manifestFailures = new Map()
 	let exitCode = 0
 
-	for (const suite of selected) {
-		console.log(`\n=== ${suite.manifestId}/${suite.name} ===`)
-		const retryMap = retryByManifest.get(suite.manifestId)
-		const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
+	const suiteConcurrency = computeConcurrency(SUITE_MEM, Number(process.env.FOUNT_TEST_SUITE_CONCURRENCY))
+	/** @type {{ suite: import('../core/manifest.mjs').SuiteDef, result: Awaited<ReturnType<typeof runSuite>> }[]} */
+	const suiteResults = new Array(selected.length)
+	let cursor = 0
 
-		const result = await runSuite(suite, onlyFiles)
-		if (result.passed)
-			console.log(`PASSED: ${suite.manifestId}/${suite.name}`)
-		else {
-			console.error(`FAILED: ${suite.manifestId}/${suite.name}`)
-			exitCode = 1
+	/**
+	 * 并发执行 suite，收集有序结果。
+	 * @returns {Promise<void>}
+	 */
+	async function suiteWorker() {
+		while (cursor < selected.length) {
+			const index = cursor++
+			const suite = selected[index]
+			console.log(`\n>>> running ${suite.manifestId}/${suite.name}`)
+			console.log('>>', suite.run.join(' '))
+			const retryMap = retryByManifest.get(suite.manifestId)
+			const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
+			const result = await runSuite(suite, onlyFiles)
+			const label = `${suite.manifestId}/${suite.name}`
+			const noisy = outputHasNoise(result.output)
+			if (!result.passed || noisy) process.stdout.write(result.output)
+			if (result.passed)
+				console.log(`PASSED: ${label}${noisy ? ' (with noise)' : ''}`)
+			else
+				console.error(`FAILED: ${label}`)
+			suiteResults[index] = { suite, result }
 		}
+	}
+
+	await Promise.all(Array.from(
+		{ length: Math.min(suiteConcurrency, selected.length) },
+		() => suiteWorker(),
+	))
+
+	for (const { suite, result } of suiteResults) {
+		if (!result.passed) exitCode = 1
 
 		if (trackFailures || usingFailureRetry) {
 			if (!manifestFailures.has(suite.manifestId)) {
