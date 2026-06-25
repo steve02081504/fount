@@ -807,10 +807,12 @@ export async function loadPartBase(username, partpath, Initargs, {
 				parts_init[partpath] = initPart(username, partpath, Initargs, { pathGetter, Initer, afterInit })
 				parts_init[partpath] = await parts_init[partpath]
 			})
-			console.logI18n('fountConsole.partManager.partInited', {
-				partpath
-			})
-			if (!process.env.FOUNT_TEST) console.log(profile)
+			if (!process.env.FOUNT_TEST) {
+				console.logI18n('fountConsole.partManager.partInited', {
+					partpath
+				})
+				console.log(profile)
+			}
 			parts_init[partpath] = true
 			saveData(username, 'parts_init')
 		}
@@ -840,10 +842,12 @@ export async function loadPartBase(username, partpath, Initargs, {
 				})()
 				parts_set[username][partpath] = await parts_set[username][partpath]
 			})
-			console.logI18n('fountConsole.partManager.partLoaded', {
-				partpath
-			})
-			if (!process.env.FOUNT_TEST) console.log(profile)
+			if (!process.env.FOUNT_TEST) {
+				console.logI18n('fountConsole.partManager.partLoaded', {
+					partpath
+				})
+				console.log(profile)
+			}
 			events.emit('part-loaded', { username, partpath })
 		}
 		if (parts_set[username][partpath] instanceof Promise)
