@@ -128,7 +128,7 @@ Test-Case 'POST /profile/hide + unhide dummy' {
 Test-Case 'GET /profile/personal-lists' {
 	$r = Api GET '/profile/personal-lists'
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
-	$true
+	$null -ne $r.json.blockedEntityHashes -and $null -ne $r.json.hiddenEntityHashes
 }
 
 Write-LiveSection 'D. Saved posts'

@@ -4,6 +4,7 @@ import {
 	openSocialHome,
 	expectPostInFeed,
 	searchAndExpectPost,
+	searchViaEnterAndExpectPost,
 	waitForFeedLoad,
 	findPostCard,
 	seedPostsViaApi,
@@ -37,9 +38,8 @@ test.describe('Social feed', () => {
 
 	test('search via Enter key', async ({ page, publishPost }) => {
 		const tag = `enter${Date.now()}`
-		await publishPost(`enter-search #${tag}`)
-		await page.locator('#feedSearchInput').fill(`#${tag}`)
-		await page.locator('#feedSearchInput').press('Enter')
+		const { postId } = await publishPost(`enter-search #${tag}`)
+		await searchViaEnterAndExpectPost(page, `#${tag}`, postId)
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 	})
 
@@ -51,7 +51,7 @@ test.describe('Social feed', () => {
 
 	test('trending hashtag link opens search', async ({ page, publishPost }) => {
 		const tag = `trend${Date.now()}`
-		await publishPost(`trending-a #${tag}`)
+		const { postId } = await publishPost(`trending-a #${tag}`)
 		await publishPost(`trending-b #${tag}`)
 		await Promise.all([
 			waitForFeedLoad(page),
@@ -63,6 +63,7 @@ test.describe('Social feed', () => {
 		await expect(tagLink).toBeVisible({ timeout: 30_000 })
 		await tagLink.click()
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('search clear restores default feed', async ({ page, publishPost }) => {
@@ -93,6 +94,7 @@ test.describe('Social feed', () => {
 		const card = await findPostCard(page, postId)
 		await card.locator('a[href*="#search"]').filter({ hasText: `#${tag}` }).click()
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('load more fetches next feed page', async ({ page, baseUrl, apiKey }) => {

@@ -77,6 +77,7 @@ export async function openSocialHome(page, baseUrl) {
 /**
  * 等待 feed GET 完成。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {number} [timeout=60000] 等待毫秒数。
  * @returns {Promise<import('npm:@playwright/test').Response>} feed GET 响应。
  */
 export async function waitForFeedLoad(page, timeout = 60_000) {
@@ -237,6 +238,34 @@ export async function searchAndExpectPost(page, query, postId) {
 			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
 		}, { timeout: 60_000 })
 		await page.locator('#feedSearchBtn').click()
+		const searchRes = await searchWait
+		const data = await searchRes.json()
+		if ((data.items || []).some(item => item.postId === postId)) {
+			await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({
+				timeout: 10_000,
+			})
+			return
+		}
+		await page.waitForTimeout(400)
+	}
+	await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 5_000 })
+}
+
+/**
+ * 通过 Enter 触发搜索并断言目标帖可见。
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} query - 搜索词。
+ * @param {string} postId - 期望出现的帖子 id。
+ * @returns {Promise<void>}
+ */
+export async function searchViaEnterAndExpectPost(page, query, postId) {
+	for (let attempt = 0; attempt < 8; attempt++) {
+		await page.locator('#feedSearchInput').fill(query)
+		const searchWait = page.waitForResponse(res => {
+			if (res.request().method() !== 'GET' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
+		}, { timeout: 60_000 })
+		await page.locator('#feedSearchInput').press('Enter')
 		const searchRes = await searchWait
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {

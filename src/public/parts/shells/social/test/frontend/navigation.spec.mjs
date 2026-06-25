@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome } from './fixtures.mjs'
+import { test, expect, openSocialHome, expectPostInFeed } from './fixtures.mjs'
 
 test.describe('Social navigation', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -24,13 +24,23 @@ test.describe('Social navigation', () => {
 		}
 	})
 
-	test('feed search UI toggles clear button', async ({ page }) => {
+	test('feed search filters posts and clear restores feed', async ({ page, publishPost }) => {
+		const tag = `navsrch${Date.now()}`
+		const { postId } = await publishPost(`nav-filter #${tag}`)
+		await expectPostInFeed(page, postId)
+
 		const input = page.locator('#feedSearchInput')
-		await input.fill('ab')
-		await expect(page.locator('#feedSearchClearBtn')).toBeHidden()
+		await input.fill(`#${tag}`)
 		await page.locator('#feedSearchBtn').click()
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
+
+		await input.fill(`__no-match-${Date.now()}__`)
+		await page.locator('#feedSearchBtn').click()
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeHidden({ timeout: 30_000 })
+
 		await page.locator('#feedSearchClearBtn').click()
 		await expect(input).toHaveValue('')
+		await expectPostInFeed(page, postId)
 	})
 })
