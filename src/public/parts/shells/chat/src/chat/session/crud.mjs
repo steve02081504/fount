@@ -16,7 +16,7 @@ import { events } from '../../../../../../../server/events.mjs'
 import { skip_report } from '../../../../../../../server/server.mjs'
 import { createGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
-import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
+import { rebuildAndSaveCheckpoint, getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
@@ -178,13 +178,15 @@ export async function listGroupSessions(username) {
 			registerGroupRuntime(groupId, username)
 			const meta = await getActiveGroupRuntime(groupId)
 			if (!meta) continue
-			const session = await getMaterializedSession(username, groupId)
+			const { state } = await getState(username, groupId)
+			const session = state.session || { chars: {}, world: null, channelWorlds: {}, personas: {}, plugins: {}, charFrequencies: {} }
 			const summary = getSummaryFromMetadata(groupId, meta)
 			if (!summary) continue
 			rows.push({
 				...summary,
 				chars: Object.keys(session.chars || {}),
 				groupId,
+				groupName: state.groupMeta?.name || '',
 			})
 		}
 		catch (error) {

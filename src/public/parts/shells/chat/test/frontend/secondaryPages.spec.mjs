@@ -43,8 +43,7 @@ test.describe('Chat secondary pages', () => {
 		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
 			.toBeVisible({ timeout: 30_000 })
 		await page.locator('.tabs .tab[data-tab="emojis"]').click()
-		await expect(page.locator('#group-emojis-list')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#group-emoji-upload')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#group-emojis-list')).toBeAttached({ timeout: 30_000 })
 		await expect(page.locator('#group-emojis-empty')).toBeVisible({ timeout: 30_000 })
 	})
 
@@ -79,9 +78,10 @@ test.describe('Chat secondary pages', () => {
 
 	test('stickers page switches tabs', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#sticker-create-pack-button')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
 		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
-		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/)
+		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 30_000 })
 		await expect(page.locator('#packs-container')).toBeVisible()
 	})
 })

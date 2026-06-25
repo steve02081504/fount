@@ -67,6 +67,9 @@ export { cancelScheduledChannelRefresh }
 /** @type {HTMLElement | null} */
 let cachedMessagesContainer = null
 
+/** 虚拟列表重建后待高亮的 eventId（等待下次 onRenderComplete 消费）。 */
+let pendingHighlightEventId = null
+
 /**
  * @returns {HTMLElement | null} 消息列表根节点
  */
@@ -111,6 +114,14 @@ function decorateRenderedMessages(container, shouldScroll = false) {
 		gestures.attachLastCharMessageSwipe(container)
 	}
 	if (shouldScroll) scrollToBottom()
+	if (pendingHighlightEventId) {
+		const sel = messageIdSelector(pendingHighlightEventId)
+		const row = sel ? container.querySelector(sel) : null
+		if (row instanceof HTMLElement) {
+			pendingHighlightEventId = null
+			highlightMessageRow(row)
+		}
+	}
 }
 
 /**
@@ -489,11 +500,16 @@ export async function scrollToMessageEventId(eventId) {
 		return
 	}
 
-	if (hubStore.channelMessages.length)
+	if (hubStore.channelMessages.length) {
+		pendingHighlightEventId = norm
 		rebuildVirtualListAtEvent(container, norm)
+	}
 
 	row = sel ? container.querySelector(sel) : null
-	if (row instanceof HTMLElement) highlightMessageRow(row)
+	if (row instanceof HTMLElement) {
+		pendingHighlightEventId = null
+		highlightMessageRow(row)
+	}
 }
 
 /**

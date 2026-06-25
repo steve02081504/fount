@@ -212,12 +212,13 @@ async function renderGroupEmojis() {
 	const container = document.getElementById('group-emojis-container')
 	if (!container || !currentGroupId) return
 	const channelId = currentState?.groupSettings?.defaultChannelId || 'default'
-	const canManage = await viewerCanManageMessages(currentState, currentGroupId, channelId)
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(currentGroupId)}/emojis`, {
-		credentials: 'include',
-	})
-	const data = await resp.json()
-	const entries = Array.isArray(data.entries) ? data.entries : []
+	const [canManage, entries] = await Promise.all([
+		viewerCanManageMessages(currentState, currentGroupId, channelId).catch(() => false),
+		fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(currentGroupId)}/emojis`, { credentials: 'include' })
+			.then(r => r.ok ? r.json() : {})
+			.then(d => Array.isArray(d.entries) ? d.entries : [])
+			.catch(() => []),
+	])
 	const entriesHtml = entries.map(entry => {
 		const src = groupEmojiDataApiPath(currentGroupId, entry.emojiId)
 		const del = canManage

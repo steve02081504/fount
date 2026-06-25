@@ -10,6 +10,9 @@ import { tallyReactionVoters } from '../../src/ui/channelDisplay.mjs'
 import { showEmojiPicker } from '../../src/ui/emojiPicker.mjs'
 import { createReactionHandlers } from '../../src/ui/reactionHandlers.mjs'
 
+/** 已绑定过事件的按钮元素集合，避免 wireMessageReactions 多次调用重复绑定。 */
+const wiredButtons = new WeakSet()
+
 /**
  * 为 Hub 消息列表绑定表情回应点击（含管理员 contextmenu 代删）。
  * @param {HTMLElement} container `#hub-messages` 根节点
@@ -39,6 +42,8 @@ export function wireMessageReactions(container, channelView) {
 
 	container.querySelectorAll('.hub-reactions [data-action="reaction"]').forEach(reactionButton => {
 		if (!(reactionButton instanceof HTMLButtonElement)) return
+		if (wiredButtons.has(reactionButton)) return
+		wiredButtons.add(reactionButton)
 		const eventId = reactionButton.getAttribute('data-event-id')
 		const emoji = reactionButton.getAttribute('data-emoji')
 		if (!eventId || !emoji) return
@@ -72,6 +77,8 @@ export function wireMessageReactions(container, channelView) {
 
 	container.querySelectorAll('.hub-reactions [data-action="addReaction"]').forEach(addReactionButton => {
 		if (!(addReactionButton instanceof HTMLButtonElement)) return
+		if (wiredButtons.has(addReactionButton)) return
+		wiredButtons.add(addReactionButton)
 		const eventId = addReactionButton.getAttribute('data-event-id')
 		if (!eventId) return
 		addReactionButton.addEventListener('click', event => {

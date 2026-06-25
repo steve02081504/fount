@@ -16,7 +16,7 @@ import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mj
 import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { selectChannel, selectGroup } from './groupNav.mjs'
-import { loadMessages, scrollToMessageEventId } from './messages/messages.mjs'
+import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
 
 /**
@@ -144,12 +144,10 @@ export async function refreshPinsBookmarks() {
 					const bookmarkGroup = bookmarkRow.getAttribute('data-bookmark-group')
 					const bookmarkChannelId = bookmarkRow.getAttribute('data-bookmark-channel')
 					const bookmarkEventId = bookmarkRow.getAttribute('data-bookmark-event')
-					if (bookmarkGroup && bookmarkGroup !== hubStore.currentGroupId) 
+					if (bookmarkGroup && bookmarkGroup !== hubStore.currentGroupId)
 						await selectGroup(bookmarkGroup, bookmarkChannelId || undefined)
-					
 					else if (bookmarkChannelId && bookmarkChannelId !== hubStore.currentChannelId)
 						await selectChannel(bookmarkChannelId)
-					else if (bookmarkChannelId) await loadMessages()
 					if (bookmarkEventId) await scrollToMessageEventId(bookmarkEventId)
 				})
 				bookmarksHost.appendChild(bookmarkRow)

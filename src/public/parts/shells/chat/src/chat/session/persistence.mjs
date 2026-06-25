@@ -22,16 +22,15 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  * @returns {object | null} 摘要对象或 null
  */
 export function getSummaryFromMetadata(groupId, chatMetadata) {
-	if (!isVividGroup(chatMetadata)) return null
+	if (!chatMetadata?.LastTimeSlice) return null
 	const lastEntry = chatMetadata.chatLog?.findLast?.(Boolean)
-	if (!lastEntry) return null
 	return {
 		groupId,
 		chars: Object.keys(chatMetadata.LastTimeSlice.chars || {}),
-		lastMessageSender: lastEntry.name,
-		lastMessageSenderAvatar: lastEntry.avatar || null,
-		lastMessageContent: lastEntry.content,
-		lastMessageTime: lastEntry.time_stamp,
+		lastMessageSender: lastEntry?.name || '',
+		lastMessageSenderAvatar: lastEntry?.avatar || null,
+		lastMessageContent: lastEntry?.content || '',
+		lastMessageTime: lastEntry?.time_stamp || null,
 	}
 }
 

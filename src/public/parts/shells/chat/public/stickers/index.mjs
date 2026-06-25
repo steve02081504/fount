@@ -26,7 +26,6 @@ let currentPackId = null
 async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
-	setupEventListeners()
 	await initTranslations('stickers')
 
 	try {
@@ -637,4 +636,5 @@ function escapeHtml(text) {
 		.replaceAll('"', '&quot;')
 }
 
+setupEventListeners()
 init()
