@@ -16,7 +16,7 @@ export function matchGlob(pattern, path) {
 		.replace(/\./g, '\\.')
 		.replace(/\*\*/g, '{{GLOBSTAR}}')
 		.replace(/\*/g, '[^/]*')
-		.replace(/\{\{GLOBSTAR\}\}/g, '.*')
+		.replace(/{{GLOBSTAR}}/g, '.*')
 		+ '$')
 	return re.test(norm)
 }

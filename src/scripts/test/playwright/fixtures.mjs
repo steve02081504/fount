@@ -27,9 +27,9 @@ export function createFountFixtures(options = {}) {
 		 * @param {(key: string) => Promise<void>} use - Playwright fixture use 回调
 		 */
 		apiKey: async ({}, use) => {
-			const key = process.env.FOUNT_API_KEY
-			if (!key) throw new Error('FOUNT_API_KEY is required for fount frontend tests')
-			await use(key)
+			const apiKey = process.env.FOUNT_API_KEY
+			if (!apiKey) throw new Error('FOUNT_API_KEY is required for fount frontend tests')
+			await use(apiKey)
 		},
 		/**
 		 * 创建已登录的 BrowserContext fixture。

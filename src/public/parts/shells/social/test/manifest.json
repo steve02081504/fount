@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "unit",
+			"heavy": true,
 			"run": [
 				"deno",
 				"run",

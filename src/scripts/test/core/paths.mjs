@@ -48,3 +48,30 @@ export function playwrightOutputDir(repoRoot, manifestId = 'default') {
 	const safe = manifestId.replace(/[/\\]/g, '_')
 	return join(testDataRoot(repoRoot), 'playwright', safe)
 }
+
+/**
+ * 返回聚合报告根目录（固定覆盖写）。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/report 绝对路径
+ */
+export function reportDir(repoRoot) {
+	return join(testDataRoot(repoRoot), 'report')
+}
+
+/**
+ * 返回报告内失败日志目录。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/report/logs/failures
+ */
+export function reportFailuresLogDir(repoRoot) {
+	return join(reportDir(repoRoot), 'logs', 'failures')
+}
+
+/**
+ * 返回报告内噪声日志目录。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/report/logs/warnings
+ */
+export function reportWarningsLogDir(repoRoot) {
+	return join(reportDir(repoRoot), 'logs', 'warnings')
+}

@@ -58,18 +58,18 @@ export async function runLiveSuite({
 		if (spec.fed)
 			nodes.push(await launchNode({ ...nodeB, ...spec.node }))
 
-		const nodeAHandle = nodes[0]
+		const [nodeAHandle, nodeBHandle] = nodes
 		const env = {
 			FOUNT_API_KEY: nodeAHandle.apiKey,
 			FOUNT_NODE_A_DATA: nodeAHandle.dataPath,
 			FOUNT_TEST_BASE_URL: nodeAHandle.baseUrl,
 			FOUNT_TEST_REPO_ROOT: repoRoot,
 		}
-		if (nodes[1]) {
-			env.FOUNT_NODE_B_DATA = nodes[1].dataPath
-			env.FOUNT_TEST_NODE_B_BASE_URL = nodes[1].baseUrl
-			env.FOUNT_TEST_NODE_B_PORT = String(nodes[1].port)
-			env.FOUNT_TEST_NODE_B_KEY = nodes[1].apiKey
+		if (nodeBHandle) {
+			env.FOUNT_NODE_B_DATA = nodeBHandle.dataPath
+			env.FOUNT_TEST_NODE_B_BASE_URL = nodeBHandle.baseUrl
+			env.FOUNT_TEST_NODE_B_PORT = String(nodeBHandle.port)
+			env.FOUNT_TEST_NODE_B_KEY = nodeBHandle.apiKey
 		}
 
 		if (spec.fed) {

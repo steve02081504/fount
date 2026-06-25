@@ -130,5 +130,5 @@ export async function selectSuites({
  * @returns {boolean} 是否跟踪失败
  */
 export function shouldTrackFailures(manifestIds) {
-	return manifestIds?.length === 1
+	return (manifestIds?.length ?? 0) >= 1
 }

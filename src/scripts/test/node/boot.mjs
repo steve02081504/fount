@@ -42,7 +42,7 @@ const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
  */
 export function writeNodeConfig(dataPath, options) {
 	const port = options.port ?? HEADLESS_CONFIG_PORT
-	const username = options.username
+	const { username, apiKey, emptyUsers } = options
 	const configPath = join(dataPath, 'config.json')
 	const config = existsSync(configPath) ? JSON.parse(fs.readFileSync(configPath, 'utf8')) : {}
 
@@ -58,13 +58,13 @@ export function writeNodeConfig(dataPath, options) {
 	config.data.apiKeys ??= {}
 	config.data.users ??= {}
 
-	if (options.emptyUsers) {
+	if (emptyUsers) {
 		config.data.users = {}
 		config.data.apiKeys = {}
 		config.data.revokedTokens = {}
 	}
-	else if (options.apiKey) {
-		const key = options.apiKey
+	else if (apiKey) {
+		const key = apiKey
 		const apiKeyHash = crypto.createHash('sha256').update(key).digest('hex')
 		const apiJti = `${username}-test-key-jti`
 

@@ -10,7 +10,7 @@ import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { computeConcurrency, UNIT_MEM } from '../core/concurrency.mjs'
+import { computeConcurrency, readBudgetFromEnv, UNIT_MEM, concurrencyFromBudget } from '../core/concurrency.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {
 	isIncludedInTestOnly,
@@ -76,7 +76,10 @@ if (filterList.length)
 	testFiles = testFiles.filter(file => isIncludedInTestOnly(REPO_ROOT, toRepoRelative(REPO_ROOT, file), filterList))
 
 const denoBase = ['test', '--no-check', '--allow-all', '-c', './deno.json']
-const concurrency = computeConcurrency(UNIT_MEM, Number(process.env.FOUNT_TEST_UNIT_CONCURRENCY))
+const budget = readBudgetFromEnv()
+const concurrency = budget
+	? concurrencyFromBudget(UNIT_MEM, budget.cores, budget.memBytes)
+	: computeConcurrency(UNIT_MEM, Number(process.env.FOUNT_TEST_UNIT_CONCURRENCY))
 const failed = []
 let silentPassed = 0
 let stopped = false

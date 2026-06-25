@@ -6,7 +6,12 @@ import process from 'node:process'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { computeUncommittedHash, getUncommittedFiles, resolveChangedFiles } from '../core/changed.mjs'
-import { computeConcurrency, SUITE_MEM } from '../core/concurrency.mjs'
+import {
+	applyBudgetToEnv,
+	computeConcurrency,
+	computeGlobalBudget,
+	SUITE_MEM,
+} from '../core/concurrency.mjs'
 import {
 	mergeSuiteResult,
 	readFailures,
@@ -18,11 +23,13 @@ import {
 	loadAllSuites,
 	resolveManifestSelectors,
 } from '../core/manifest.mjs'
-import { outputHasNoise } from '../core/output_filter.mjs'
+import { detectNoiseHits, outputHasNoise } from '../core/output_filter.mjs'
 import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
+import { writeTestReport } from './report.mjs'
+import { SuiteRunGate } from './scheduler.mjs'
 import { selectSuites, shouldTrackFailures } from './selection.mjs'
 
 /**
@@ -32,6 +39,8 @@ import { selectSuites, shouldTrackFailures } from './selection.mjs'
  * @property {string} [since] diff 基准 commit
  * @property {string[]} [manifestSelectors] manifest 指名
  * @property {string[]} [suiteSelectors] suite id 或 name
+ * @property {boolean} [genReport] 生成 data/test/report
+ * @property {number} [jobs] 全局并发上限
  */
 
 /**
@@ -54,9 +63,10 @@ async function runCommand(command, extraEnv = {}) {
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite 定义
  * @param {string[] | undefined} onlyFiles 仅跑这些文件
  * @param {string} failuresOut 失败输出临时文件
+ * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
-function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
+function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget) {
 	const env = {
 		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
@@ -65,6 +75,8 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
 		// 始终重置 FOUNT_TEST_ONLY，防止外层 shell 环境变量泄漏进子进程影响测试过滤。
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 	}
+	if (suite.heavy && globalBudget)
+		applyBudgetToEnv(env, globalBudget)
 	return { command: [...suite.run], env }
 }
 
@@ -72,18 +84,21 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut) {
  * 运行单个 suite 并返回结果。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {string[] | undefined} onlyFiles 失败重跑文件过滤
- * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string }>} 运行结果
+ * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
+ * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string, durationMs: number }>} 运行结果
  */
-async function runSuite(suite, onlyFiles) {
+async function runSuite(suite, onlyFiles, globalBudget) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
+	const started = Date.now()
 	try {
-		const { command, env } = buildSuiteInvocation(suite, onlyFiles, failuresOut)
+		const { command, env } = buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget)
 		const { code, output } = await runCommand(command, env)
 		return {
 			passed: code === 0,
 			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
 			output,
+			durationMs: Date.now() - started,
 		}
 	}
 	finally {
@@ -92,11 +107,38 @@ async function runSuite(suite, onlyFiles) {
 }
 
 /**
+ * 打印单个 suite 运行结果摘要。
+ * @param {string} label suite 标签
+ * @param {Awaited<ReturnType<typeof runSuite>>} result 运行结果
+ * @param {boolean} genReport 是否生成报告模式
+ */
+function printSuiteSummary(label, result, genReport) {
+	const noisy = outputHasNoise(result.output)
+	if (genReport) {
+		const parts = [result.passed ? 'PASSED' : 'FAILED', label]
+		if (noisy) parts.push(`(noise: ${detectNoiseHits(result.output).join(', ')})`)
+		const line = parts.join(': ')
+		if (result.passed) console.log(line)
+		else console.error(line)
+		return
+	}
+	if (!result.passed || noisy) process.stdout.write(result.output)
+	if (result.passed)
+		console.log(`PASSED: ${label}${noisy ? ' (with noise)' : ''}`)
+	else
+		console.error(`FAILED: ${label}`)
+}
+
+/**
  * 主测试入口。
  * @param {RunTestsOptions} options 运行选项
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
 export async function runTests(options = {}) {
+	const genReport = options.genReport === true
+	const globalBudget = computeGlobalBudget(options.jobs)
+	const runId = new Date().toISOString().replace(/[.:]/g, '-')
+
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
 
@@ -159,7 +201,11 @@ export async function runTests(options = {}) {
 	const manifestFailures = new Map()
 	let exitCode = 0
 
-	const suiteConcurrency = computeConcurrency(SUITE_MEM, Number(process.env.FOUNT_TEST_SUITE_CONCURRENCY))
+	const suiteConcurrency = computeConcurrency(
+		SUITE_MEM,
+		Number(process.env.FOUNT_TEST_SUITE_CONCURRENCY) || options.jobs,
+	)
+	const gate = new SuiteRunGate(suiteConcurrency)
 	/** @type {{ suite: import('../core/manifest.mjs').SuiteDef, result: Awaited<ReturnType<typeof runSuite>> }[]} */
 	const suiteResults = new Array(selected.length)
 	let cursor = 0
@@ -172,19 +218,20 @@ export async function runTests(options = {}) {
 		while (cursor < selected.length) {
 			const index = cursor++
 			const suite = selected[index]
-			console.log(`\n>>> running ${suite.manifestId}/${suite.name}`)
-			console.log('>>', suite.run.join(' '))
-			const retryMap = retryByManifest.get(suite.manifestId)
-			const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
-			const result = await runSuite(suite, onlyFiles)
-			const label = `${suite.manifestId}/${suite.name}`
-			const noisy = outputHasNoise(result.output)
-			if (!result.passed || noisy) process.stdout.write(result.output)
-			if (result.passed)
-				console.log(`PASSED: ${label}${noisy ? ' (with noise)' : ''}`)
-			else
-				console.error(`FAILED: ${label}`)
-			suiteResults[index] = { suite, result }
+			const release = await gate.acquire(suite)
+			try {
+				console.log(`\n>>> running ${suite.manifestId}/${suite.name}${suite.heavy ? ' (heavy)' : ''}`)
+				if (!genReport) console.log('>>', suite.run.join(' '))
+				const retryMap = retryByManifest.get(suite.manifestId)
+				const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
+				const result = await runSuite(suite, onlyFiles, globalBudget)
+				const label = `${suite.manifestId}/${suite.name}`
+				printSuiteSummary(label, result, genReport)
+				suiteResults[index] = { suite, result }
+			}
+			finally {
+				release()
+			}
 		}
 	}
 
@@ -225,6 +272,33 @@ export async function runTests(options = {}) {
 			else if (retryByManifest.has(manifestId))
 				console.log(`manifest ${manifestId} 全部通过，已清除失败列表。`)
 		}
+	}
+
+	if (genReport) {
+		const commandParts = ['fount test']
+		if (options.runAll) commandParts.push('--all')
+		commandParts.push('--gen-report')
+		if (options.jobs >= 1) commandParts.push('-j', String(options.jobs))
+		if (options.since) commandParts.push('--since', options.since)
+		if (options.manifestSelectors?.length)
+			commandParts.push(options.manifestSelectors.join(','))
+		if (options.suiteSelectors?.length)
+			commandParts.push(options.suiteSelectors.join(','))
+
+		const reportPath = await writeTestReport({
+			repoRoot: REPO_ROOT,
+			results: suiteResults.map(({ suite, result }) => ({
+				suite,
+				passed: result.passed,
+				failedFiles: result.failedFiles,
+				output: result.output,
+				durationMs: result.durationMs,
+			})),
+			runId,
+			command: commandParts.join(' '),
+			exitCode,
+		})
+		console.log(`\n报告: ${reportPath.replace(/\\/g, '/')}`)
 	}
 
 	return exitCode

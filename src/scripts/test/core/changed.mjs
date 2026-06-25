@@ -71,10 +71,16 @@ async function diffRefs(repoRoot, base, head = 'HEAD') {
  * @returns {Promise<{ mode: 'all' | 'diff' | 'none', files: string[] }>} 选择模式与文件列表
  */
 export async function resolveChangedFiles({ repoRoot, runAll = false, since }) {
-	if (runAll || process.env.FOUNT_TEST_RUN_ALL === '1')
+	const {
+		FOUNT_TEST_RUN_ALL,
+		FOUNT_TEST_CHANGED_FILES: changedFilesEnv,
+		GITHUB_EVENT_BEFORE: base,
+		GITHUB_SHA: head,
+	} = process.env
+
+	if (runAll || FOUNT_TEST_RUN_ALL === '1')
 		return { mode: 'all', files: [] }
 
-	const changedFilesEnv = process.env.FOUNT_TEST_CHANGED_FILES
 	if (changedFilesEnv?.trim())
 		return { mode: 'diff', files: changedFilesEnv.split('\n').map(path => path.trim().replace(/\\/g, '/')).filter(Boolean) }
 
@@ -85,8 +91,6 @@ export async function resolveChangedFiles({ repoRoot, runAll = false, since }) {
 	if (uncommitted.length)
 		return { mode: 'diff', files: uncommitted }
 
-	const base = process.env.GITHUB_EVENT_BEFORE
-	const head = process.env.GITHUB_SHA
 	if (base && head && base !== '0000000000000000000000000000000000000000') {
 		const files = await diffRefs(repoRoot, base, head)
 		if (files.length) return { mode: 'diff', files }

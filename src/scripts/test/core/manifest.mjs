@@ -14,6 +14,7 @@ import { matchGlob } from './glob.mjs'
  * @property {string[]} run 执行命令
  * @property {string[]} triggers 触发 glob
  * @property {string} manifestPath 相对仓库根的 manifest 路径
+ * @property {boolean} heavy 独占调度（如 unit 套件，避免 node_modules 竞争）
  */
 
 /**
@@ -113,6 +114,7 @@ export async function loadAllSuites(repoRoot) {
 				run: suite.run,
 				triggers: resolveSuiteTriggers(suite, triggerSets),
 				manifestPath: relManifest,
+				heavy: suite.heavy === true,
 			})
 		}
 	}

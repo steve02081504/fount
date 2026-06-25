@@ -61,6 +61,7 @@
 	"suites": [
 		{
 			"name": "unit",
+			"heavy": true,
 			"trigger": "shellUnit",
 			"run": [
 				"deno",
