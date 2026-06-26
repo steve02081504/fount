@@ -106,7 +106,7 @@ function recordResult(file, code, output) {
 // 预热：deno cache 填充 npm/node_modules，避免 Windows 并行争锁
 if (filteredFiles.length > 0) {
 	const { code, output } = await runCaptured([
-		'deno', 'cache', '--allow-all', '-c', './deno.json', ...filteredFiles,
+		'deno', 'cache', '-c', './deno.json', ...filteredFiles,
 	])
 	if (code !== 0) {
 		process.stdout.write(output)
