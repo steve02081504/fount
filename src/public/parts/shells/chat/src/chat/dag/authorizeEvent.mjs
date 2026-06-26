@@ -58,7 +58,7 @@ export function checkEventPermission(state, event, senderHash) {
 
 	const sender = String(senderHash || '').trim().toLowerCase()
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
-		return { ok: false, reason: 'requires active member sender' }
+		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
 
 	const channelId = eventChannelId(event)
@@ -70,7 +70,7 @@ export function checkEventPermission(state, event, senderHash) {
 			const content = event.content || {}
 			if (content.memberKind === 'agent') {
 				if (state.members[sender]?.status !== 'active')
-					return { ok: false, reason: 'requires active member sender' }
+					return { ok: false, reason: 'requires active member sender', deferrable: true }
 				const agentKey = String(content.agentEntityHash || '').trim().toLowerCase()
 				const charname = String(content.charname || '').trim()
 				const homeNodeHash = content.homeNodeHash

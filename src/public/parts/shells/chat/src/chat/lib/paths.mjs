@@ -210,6 +210,16 @@ export function pendingRelayPath(username, groupId) {
 }
 
 /**
+ * 联邦入站暂缓 ingest 队列（ACL 未就绪 / dag_tip_merge 拓扑未对齐）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @returns {string} `pending_ingest.jsonl` 绝对路径
+ */
+export function pendingIngestPath(username, groupId) {
+	return join(groupDir(username, groupId), 'pending_ingest.jsonl')
+}
+
+/**
  * 实体数据目录：`{userDict}/entities/{entityHash}/`
  * @param {string} replicaUsername replica 磁盘所有者
  * @param {string} entityHash 128 位 entityHash

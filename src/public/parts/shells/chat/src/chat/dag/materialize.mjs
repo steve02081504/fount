@@ -376,6 +376,14 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
 		console.error('federation: flush pending relay failed', error)
 	}
 
+	try {
+		const { releasePendingIngestEvents } = await import('./remoteIngest.mjs')
+		await releasePendingIngestEvents(username, groupId)
+	}
+	catch (error) {
+		console.error('federation: replay pending ingest failed', error)
+	}
+
 	if (!opts.skipChannelGc && state.groupSettings?.autoChannelGc !== false)
 		try {
 			const staleChannelIds = findStaleUnreachableChannels(state, events)

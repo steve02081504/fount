@@ -3,7 +3,7 @@
  * 【职责】物化 ACL 未就绪时暂缓联邦中继的事件持久队列（§2.1），checkpoint/成员快照就绪后批量刷出。
  * 【原理】enqueuePendingRelay 追加 sanitize 后事件到 pending_relay.jsonl；flushPendingRelay 逐条调用 publish 闭包，失败行写回文件。与 acl.shouldDeferFederatedRelay 配对使用，本地落盘仍可进行。
  * 【数据结构】pending_relay.jsonl 行与 events.jsonl 同形的签名事件；刷出返回成功条数。
- * 【关联】acl.mjs、index.mjs publishSignedEventToFederation、lib/paths.mjs pendingRelayPath、dag/storage readJsonl。
+ * 【关联】acl.mjs、pendingIngest.mjs（入站对称队列）、index.mjs publishSignedEventToFederation、lib/paths.mjs pendingRelayPath、dag/storage readJsonl。
  */
 import { mkdir } from 'node:fs/promises'
 import { dirname } from 'node:path'

@@ -18,6 +18,7 @@ import {
 import { appendQuarantinedEvent, replayQuarantinedEvents } from '../events/quarantine.mjs'
 import { canRelayFederatedEvent } from '../federation/acl.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
+import { enqueuePendingIngest, replayPendingIngestEvents } from '../federation/pendingIngest.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
@@ -40,6 +41,24 @@ export async function releaseQuarantinedEvents(username, groupId) {
 			logFailures: false,
 			skipQuarantineRelease: true,
 			skipQuarantineAppend: true,
+			skipPendingIngestAppend: true,
+		}),
+	)
+}
+
+/**
+ * pending_ingest 队列在本地成功落盘或拓扑就绪后重放。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+export async function releasePendingIngestEvents(username, groupId) {
+	await replayPendingIngestEvents(username, groupId, event =>
+		appendValidatedRemoteEvent(username, groupId, event, {
+			logFailures: false,
+			skipQuarantineRelease: true,
+			skipQuarantineAppend: true,
+			skipPendingIngestAppend: true,
 		}),
 	)
 }
@@ -49,8 +68,8 @@ export async function releaseQuarantinedEvents(username, groupId) {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
- * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean }} [opts] 日志、隔离重放与隔离写入选项
- * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined'>} 写入结果
+ * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean }} [opts] 日志、隔离/入站暂缓重放与写入选项
+ * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>} 写入结果
  */
 export async function appendValidatedRemoteEvent(username, groupId, signPayload, opts = {}) {
 	const logFailures = opts.logFailures !== false
@@ -156,13 +175,22 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
 			})
 			return 'quarantined'
 		}
+		if (error?.pendable) {
+			if (opts.skipPendingIngestAppend) return 'pending_ingest'
+			await withGroupWriteLock(username, groupId, async () => {
+				await enqueuePendingIngest(username, groupId, wirePayload, error.message)
+			})
+			return 'pending_ingest'
+		}
 		if (logFailures) console.error('federation: drop remote event (ingest authz)', error)
 		return 'invalid'
 	}
 
 	if (await commitSignedChatEvent(username, groupId, wirePayload) === 'dup') return 'dup'
-	if (!opts.skipQuarantineRelease)
+	if (!opts.skipQuarantineRelease) {
 		await releaseQuarantinedEvents(username, groupId)
+		await releasePendingIngestEvents(username, groupId)
+	}
 	return 'ok'
 }
 
@@ -170,7 +198,7 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {unknown} payload Trystero 载荷（完整签名事件）
- * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | undefined>} 写入结果；无法解析为 undefined
+ * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest' | undefined>} 写入结果；无法解析为 undefined
  */
 export async function ingestRemoteEvent(username, groupId, payload) {
 	const signedEvent = extractInboundSignedEvent(payload, groupId)

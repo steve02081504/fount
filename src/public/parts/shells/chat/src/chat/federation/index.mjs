@@ -248,6 +248,14 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	void maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot)
 	if (localArchive.checkpoint?.local_tips_hash)
 		void markGroupOnlineSynced(username, groupId, localArchive.checkpoint.local_tips_hash).catch(console.error)
+	try {
+		const { releasePendingIngestEvents, releaseQuarantinedEvents } = await import('../dag/remoteIngest.mjs')
+		await releaseQuarantinedEvents(username, groupId)
+		await releasePendingIngestEvents(username, groupId)
+	}
+	catch (error) {
+		console.error('federation: catchup deferred ingest replay failed', error)
+	}
 	return stats
 }
 

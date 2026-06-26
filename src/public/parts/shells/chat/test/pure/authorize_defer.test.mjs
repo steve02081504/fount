@@ -86,3 +86,15 @@ Deno.test('message_edit referencing an already-deleted target is NOT deferrable'
 	assertEquals(result.reason, 'message not found')
 	assertEquals(result.deferrable, false)
 })
+
+Deno.test('member_ban from sender not yet active locally is deferrable', () => {
+	const state = baseState({ members: { [OTHER]: { status: 'active', roles: ['@everyone'] } } })
+	const event = {
+		type: 'member_ban',
+		content: { targetMemberKey: OTHER, banScope: 'entity' },
+	}
+	const result = checkEventPermission(state, event, SENDER)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'requires active member sender')
+	assertEquals(result.deferrable, true)
+})

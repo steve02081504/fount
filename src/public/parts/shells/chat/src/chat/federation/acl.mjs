@@ -1,9 +1,9 @@
 /**
  * 【文件】federation/acl.mjs
  * 【职责】联邦中继与本地落盘的 ACL 门控：区分「可写入 events.jsonl」「可立即中继」「应暂缓入 pending_relay」三类决策。
- * 【原理】授权类事件类型在物化 members 快照为空时：member_join 可落盘，其余 gated 类型拒绝；有快照则 checkEventPermission。batterySaver 且无快照时拒绝中继 gated 事件。shouldDeferFederatedRelay 在快照未就绪时把 gated 事件排队而非丢弃。
+ * 【原理】授权类事件类型在物化 members 快照为空时：member_join 可落盘，其余 gated 类型入站走 pendingIngest、出站走 pendingRelay；有快照则 checkEventPermission。batterySaver 且无快照时拒绝中继 gated 事件。
  * 【数据结构】event：{ type, sender }；state：物化群状态含 members、groupSettings.batterySaver。
- * 【关联】pendingRelay.mjs、index.mjs publishSignedEventToFederation、room ingest；dag/authorizeEvent.mjs、scripts/p2p/event_types.mjs。
+ * 【关联】pendingRelay.mjs、pendingIngest.mjs、index.mjs publishSignedEventToFederation、room ingest；dag/authorizeEvent.mjs、scripts/p2p/event_types.mjs。
  */
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from '../../../../../../../scripts/p2p/event_types.mjs'
 import { checkEventPermission } from '../dag/authorizeEvent.mjs'
@@ -43,12 +43,12 @@ export function shouldDeferFederatedRelay(state, event) {
 }
 
 /**
- * 联邦入站：无成员快照时拒绝 gated 类型（`member_join` 除外）。
+ * 联邦入站：无物化 ACL 时暂缓 ingest（`member_join` 除外，由 pendingIngest 队列承载）。
  * @param {object | null | undefined} state 物化群状态
  * @param {{ type?: string }} event DAG 事件
- * @returns {boolean} 应拒绝落盘则为 true
+ * @returns {boolean} 应入 pending_ingest 则为 true
  */
-export function federationIngestBlockedWithoutSnapshot(state, event) {
+export function shouldDeferInboundIngest(state, event) {
 	const type = event?.type
 	return !hasMaterializedAclSnapshot(state)
 		&& isAuthzGatedEventType(type)

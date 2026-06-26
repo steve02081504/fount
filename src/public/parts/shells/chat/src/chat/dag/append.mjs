@@ -14,7 +14,7 @@ import { commitSignedChatEvent } from './commitSignedEvent.mjs'
 import { validateIngestAuthz } from './ingest.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
-import { releaseQuarantinedEvents } from './remoteIngest.mjs'
+import { releasePendingIngestEvents, releaseQuarantinedEvents } from './remoteIngest.mjs'
 import { signLocalChatEvent } from './signLocalEvent.mjs'
 
 /** §2.1 低功耗模式下禁止本地发起的重量级治理变更类型。 */
@@ -80,8 +80,10 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 	})
 
 	await commitSignedChatEvent(username, groupId, wirePayload, commitOptsFromAppend(secretKey, state, opts))
-	if (opts.skipReleaseQuarantined !== true)
+	if (opts.skipReleaseQuarantined !== true) {
 		await releaseQuarantinedEvents(username, groupId)
+		await releasePendingIngestEvents(username, groupId)
+	}
 
 	return signPayload
 }

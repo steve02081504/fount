@@ -12,8 +12,7 @@ import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/d
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { assertHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import {
-	federationIngestBlockedWithoutSnapshot,
-	shouldDeferFederatedRelay,
+	shouldDeferInboundIngest,
 } from '../federation/acl.mjs'
 import { validateJoinPolicy } from '../governance/joinPolicy.mjs'
 import { eventsPath } from '../lib/paths.mjs'
@@ -48,11 +47,10 @@ const MESSAGE_MUTATION_TYPES = new Set(['message_edit', 'message_delete', 'messa
 export async function validateIngestAuthz(replicaUsername, groupId, event, opts = {}) {
 	const state = opts.state ?? (await getState(replicaUsername, groupId)).state
 
-	if (opts.source === 'federation') {
-		if (federationIngestBlockedWithoutSnapshot(state, event))
-			throw new Error('federated event dropped: no ACL snapshot')
-		if (shouldDeferFederatedRelay(state, event))
-			return
+	if (opts.source === 'federation' && shouldDeferInboundIngest(state, event)) {
+		const error = new Error('federated event pending: no ACL snapshot')
+		error.pendable = true
+		throw error
 	}
 
 	if (event.type?.startsWith('session_') || event.type === 'agent_reply_frequency_set') {
@@ -83,11 +81,18 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 	if (event.type === 'dag_tip_merge') {
 		const rows = await readJsonl(eventsPath(replicaUsername, groupId), { sanitize: stripDagEventLocalExtensions })
 		const tips = computeDagTipIdsFromEvents(rows)
-		if (tips.length < 2) throw new Error('dag_tip_merge: no fork')
+		if (tips.length < 2) {
+			const error = new Error('dag_tip_merge: no fork')
+			error.pendable = true
+			throw error
+		}
 		const expected = sortedPrevEventIds(tips)
 		const got = sortedPrevEventIds(event.prev_event_ids)
-		if (expected.length !== got.length || expected.some((id, index) => id !== got[index]))
-			throw new Error('dag_tip_merge: prev_event_ids must list all current DAG tips')
+		if (expected.length !== got.length || expected.some((id, index) => id !== got[index])) {
+			const error = new Error('dag_tip_merge: prev_event_ids must list all current DAG tips')
+			error.pendable = true
+			throw error
+		}
 	}
 
 	const senderHash = event.sender.trim().toLowerCase()

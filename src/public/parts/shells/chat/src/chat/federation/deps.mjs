@@ -11,7 +11,7 @@ import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
  * @typedef {{
  *   getNodeHash: (username: string) => string
  *   readJsonl: (path: string) => Promise<object[]>
- *   appendValidatedRemoteEvent: (username: string, groupId: string, signPayload: object, opts?: { logFailures?: boolean }) => Promise<'ok' | 'dup' | 'invalid' | 'quarantined'>
+ *   appendValidatedRemoteEvent: (username: string, groupId: string, signPayload: object, opts?: { logFailures?: boolean }) => Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>
  *   ingestRemoteEvent: (username: string, groupId: string, payload: unknown) => Promise<void>
  *   getStateForFederation?: (username: string, groupId: string) => Promise<{ state: object }>
  * }} FederationDagDeps
