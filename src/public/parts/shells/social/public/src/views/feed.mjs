@@ -73,11 +73,10 @@ export async function loadFeed(appContext, append = false, options = {}) {
 	appContext.state.feedCursor = data.nextCursor || null
 	const list = document.getElementById('feedList')
 	if (!list) return
-	if (append) {
-		for (const card of cards) if (card) list.appendChild(card)
-	} else {
-		list.replaceChildren(...cards.filter(Boolean))
-	}
+	if (!append) list.replaceChildren(...cards.filter(Boolean))
+	else for (const card of cards)
+		if (card) list.appendChild(card)
+
 	document.getElementById('feedLoadMore')?.classList.toggle('hidden', !appContext.state.feedCursor)
 	void loadTrendingHashtags(appContext)
 }

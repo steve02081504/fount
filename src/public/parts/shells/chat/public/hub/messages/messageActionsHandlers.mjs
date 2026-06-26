@@ -20,8 +20,8 @@ import {
 	triggerChannelReply,
 } from '../../src/api/groupApi.mjs'
 import { createShareLink } from '../../src/share.mjs'
-import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { hubStore } from '../core/state.mjs'
+import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
 import {
