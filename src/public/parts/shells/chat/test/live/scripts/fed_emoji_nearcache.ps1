@@ -2,7 +2,7 @@
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
-$gid = $null; $emojiId = $null; $contentHash = $null
+$gid = $null; $emojiId = $null; $contentHash = $null; $firstHitDataUrlLen = 0
 
 Write-Host "=== Setup: open group + A/B join ===" -ForegroundColor Cyan
 $setup = Initialize-OpenGroupJoin 'FedEmojiNC' 'emoji-nc-seed'
@@ -27,18 +27,18 @@ Test-Case 'B manifest lists contentHash after federation sync' {
 	})
 }
 Test-Case 'B GET /emoji-content resolves image (first hit)' {
-	$len = 0
+	# 变量须用 ${} 界定再接 ?query，否则 PS7 会把 "$var?..." 解析坏（emojiId 变成 "=1"）。
 	$ok = PollUntil 90 4 {
-		$r = Api $FedB GET "/emoji-content/$gid/$emojiId?json=1"
+		$r = Api $FedB GET "/emoji-content/$gid/${emojiId}?json=1"
 		if ($r.status -ne 200) { return $false }
-		$script:len = $r.json.dataUrl.Length
-		$r.json.contentHash -eq $contentHash -and $script:len -gt 20
+		$script:firstHitDataUrlLen = $r.json.dataUrl.Length
+		$r.json.contentHash -eq $contentHash -and $firstHitDataUrlLen -gt 20
 	}
 	[bool]$ok
 }
 Test-Case 'B GET /emoji-content again (cached local path)' {
-	$r = Api $FedB GET "/emoji-content/$gid/$emojiId?json=1"
-	$r.status -eq 200 -and $r.json.dataUrl.Length -eq $len
+	$r = Api $FedB GET "/emoji-content/$gid/${emojiId}?json=1"
+	$r.status -eq 200 -and $r.json.dataUrl.Length -eq $firstHitDataUrlLen
 }
 
 Clear-FedGroup $gid
