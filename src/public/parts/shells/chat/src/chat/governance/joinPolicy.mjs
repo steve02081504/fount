@@ -41,30 +41,51 @@ export function joinPowBonusFromMemberJoin(state, event) {
 }
 
 /**
+ * 构造 join 策略校验错误；可标记 `pendable` 让联邦入站走 pending_ingest 重放而非永久 drop。
+ * @param {string} message 错误消息
+ * @param {{ pendable?: boolean }} [meta] 错误元数据
+ * @returns {Error & { pendable?: boolean }} 错误实例
+ */
+function joinPolicyError(message, { pendable = false } = {}) {
+	const error = new Error(message)
+	if (pendable) error.pendable = true
+	return error
+}
+
+/**
  * 统一校验 member_join 入群策略（本地 append 与联邦入站共用）。
+ *
+ * 联邦入站（`opts.source === 'federation'`）针对**角色相关**的拒绝抛 `pendable` 错误：
+ *   - "roles only allowed for genesis join"：sender 在本节点尚未 active，但其 join 经 gossip 先于祖先链抵达，
+ *     待 catchup 把 sender 标 active 后重放即可；
+ *   - "unknown role"：role_create 事件可能晚于 member_join 抵达，待重放即可。
+ * 本地 append 路径继续硬拒（防止本地擅自带 roles 提权）。
+ *
+ * 邀请/PoW 等"签名时即固定"的不变量在两条路径上均硬拒。
+ *
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} replicaUsername replica 所有者（PoW 校验用）
+ * @param {{ source?: 'local' | 'federation' }} [opts] 入站来源
  * @returns {Promise<void>}
  */
-export async function validateJoinPolicy(state, event, replicaUsername) {
+export async function validateJoinPolicy(state, event, replicaUsername, opts = {}) {
 	if (event?.type !== 'member_join') return
 	const content = event.content || {}
 	if (content.memberKind === 'agent') return
+	const fromFederation = opts.source === 'federation'
 	const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 	const activeBefore = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const senderKey = String(event.sender || '').trim().toLowerCase()
 	const senderAlreadyActive = state.members?.[senderKey]?.status === 'active'
 	if (Array.isArray(content.roles)) {
-		// adopted-base catch-up 会经 gossip 拉回已知成员的创世 member_join（带 roles）：
-		// 若 sender 在当前 state 中已是 active 成员，则这是历史/重复 join 的幂等重放，
-		// 放行而不视为"新成员擅自带 roles 提权"（后者 sender 未 active，仍被拒）。
 		const allowExtraRoles = activeBefore === 0 || senderAlreadyActive
 		if (!allowExtraRoles)
-			throw new Error('member_join roles only allowed for genesis join')
+			throw joinPolicyError('member_join roles only allowed for genesis join', { pendable: fromFederation })
 		for (const roleId of content.roles) {
 			if (roleId === '@everyone') continue
-			if (!state.roles[roleId]) throw new Error(`member_join unknown role: ${roleId}`)
+			if (!state.roles[roleId])
+				throw joinPolicyError(`member_join unknown role: ${roleId}`, { pendable: fromFederation })
 		}
 	}
 	const hasDmIntroProof = String(content.dmIntroNonce || '').trim().length >= 16

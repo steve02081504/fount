@@ -9,6 +9,17 @@ import { pipeline } from 'node:stream/promises'
 
 import { withAsyncMutex } from '../utils/async_mutex.mjs'
 
+/** 流式重写 JSONL 时分块写入的行数上限 */
+const WRITE_JSONL_CHUNK_LINES = 1000
+
+/**
+ * @param {string} filePath 目标路径
+ * @returns {string} 唯一临时文件路径
+ */
+function atomicTmpPath(filePath) {
+	return `${filePath}.tmp.${process.pid}.${randomUUID()}`
+}
+
 /**
  * 读取 JSONL 文件并解析为对象数组；缺失或读失败时返回空数组。
  * @param {string} filePath 文件系统路径
@@ -27,28 +38,31 @@ export async function readJsonl(filePath, options = {}) {
 }
 
 /**
- * 流式读取 JSONL（避免整文件读入内存）。
+ * 流式读取 JSONL（避免整文件读入内存）。文件缺失（ENOENT）视为空流，
+ * 兼容 cleanup 竞态：群目录被删后台仍在尾巴上读它。
  * @param {string} filePath 文件路径
  * @param {{ sanitize?: (row: object) => object }} [options] 行净化
  * @returns {AsyncGenerator<object>} 逐行事件
  */
 export async function* readJsonlStream(filePath, options = {}) {
 	const sanitize = options.sanitize ?? (row => row)
-	let input
-	try {
-		input = createReadStream(filePath, { encoding: 'utf8' })
-	}
-	catch {
-		return
-	}
+	const input = createReadStream(filePath, { encoding: 'utf8' })
+	// stream 内部异步 open 失败会触发 'error' 事件；提前订阅避免 unhandled error，
+	// 真实错误仍由下方 for-await 抛出，被外层 try/catch 收口。
+	input.on('error', () => {})
 	const lines = createInterface({ input, crlfDelay: Infinity })
-	for await (const line of lines) {
-		const trimmed = String(line).trim()
-		if (!trimmed) continue
-		try {
-			yield sanitize(JSON.parse(trimmed))
+	try {
+		for await (const line of lines) {
+			const trimmed = String(line).trim()
+			if (!trimmed) continue
+			try {
+				yield sanitize(JSON.parse(trimmed))
+			}
+			catch { /* skip bad line */ }
 		}
-		catch { /* skip bad line */ }
+	}
+	catch (error) {
+		if (error?.code !== 'ENOENT') throw error
 	}
 }
 
@@ -67,9 +81,7 @@ export async function rewriteJsonlKeeping(filePath, keep, options = {}) {
 	const buffer = []
 	let kept = 0
 	let dropped = 0
-	/**
-	 *
-	 */
+	/** @returns {Promise<void>} */
 	const flush = async () => {
 		if (!buffer.length) return
 		let block = ''
@@ -99,10 +111,10 @@ export async function rewriteJsonlKeeping(filePath, keep, options = {}) {
 			try { await unlink(tmp) } catch { /* ok */ }
 			if (err?.code !== 'ENOENT') throw err
 		}
-	else 
+	else
 		try { await writeFile(filePath, '', 'utf8') }
 		catch { /* ok */ }
-	
+
 	return { kept, dropped }
 }
 
@@ -147,23 +159,6 @@ export async function appendJsonl(filePath, record) {
 }
 
 /**
- * 追加一行 JSONL 并 `fsync`。
- * @param {string} filePath 目标路径
- * @param {object} record 记录对象
- * @returns {Promise<void>}
- */
-/** 流式重写 JSONL 时分块写入的行数上限 */
-const WRITE_JSONL_CHUNK_LINES = 1000
-
-/**
- * @param {string} filePath 目标路径
- * @returns {string} 唯一临时文件路径
- */
-function atomicTmpPath(filePath) {
-	return `${filePath}.tmp.${process.pid}.${randomUUID()}`
-}
-
-/**
  * 流式重写 JSONL（临时文件 + rename），避免大数组 join 的内存峰值。
  * @param {string} filePath 目标路径
  * @param {object[]} records 行对象列表
@@ -173,9 +168,7 @@ export async function writeJsonl(filePath, records) {
 	const dir = dirname(filePath)
 	await mkdir(dir, { recursive: true })
 	const tmp = atomicTmpPath(filePath)
-	/**
-	 * @returns {Generator<string>} JSONL 行
-	 */
+	/** @returns {Generator<string>} JSONL 行 */
 	function* lines() {
 		for (const rec of records)
 			yield `${JSON.stringify(rec)}\n`
@@ -214,6 +207,7 @@ export async function rewriteJsonlKeepingSynced(filePath, keep, options = {}) {
 }
 
 /**
+ * 追加一行 JSONL 并 `fsync`。
  * @param {string} filePath 目标路径
  * @param {object} record 记录对象
  * @returns {Promise<void>}

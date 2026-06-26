@@ -59,7 +59,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 	}
 
 	if (event.type === 'member_join')
-		await validateJoinPolicy(state, event, replicaUsername)
+		await validateJoinPolicy(state, event, replicaUsername, { source: opts.source })
 
 	if (event.type === 'message' && event.content?.content_ref)
 		validateContentRefPayload(event.content.content_ref)
@@ -74,7 +74,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 
 	if (event.type === 'reputation_reset') {
 		const targetPubKeyHash = event.content?.targetPubKeyHash?.trim().toLowerCase() || ''
-		if (targetPubKeyHash && isPubKeyHashBlocked( targetPubKeyHash))
+		if (targetPubKeyHash && isPubKeyHashBlocked(targetPubKeyHash))
 			throw new Error('reputation_reset ignored for locally blocked target')
 	}
 

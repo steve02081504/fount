@@ -78,7 +78,7 @@ test.describe('Chat secondary pages', () => {
 
 	test('stickers page switches tabs', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#sticker-create-pack-button')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('.tabs .tab[data-tab="all"]')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
 		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
 		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 30_000 })

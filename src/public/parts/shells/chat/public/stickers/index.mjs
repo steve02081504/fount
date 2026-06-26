@@ -105,8 +105,10 @@ function setupEventListeners() {
 	document.getElementById('upload-sticker-form').addEventListener('submit', handleUploadSticker)
 	document.getElementById('search-input').addEventListener('input', handleSearch)
 
-	for (const tab of document.querySelectorAll('.tabs .tab[data-tab]'))
-		tab.addEventListener('click', () => switchTab(tab.dataset.tab))
+	document.querySelector('.tabs[role="tablist"]')?.addEventListener('click', clickEvent => {
+		const tab = clickEvent.target.closest('.tab[data-tab]')
+		if (tab) switchTab(tab.dataset.tab)
+	})
 
 	document.getElementById('sticker-install-pack-button').addEventListener('click', handleInstallPack)
 	document.getElementById('sticker-uninstall-pack-button').addEventListener('click', handleUninstallPack)
@@ -489,7 +491,7 @@ async function handleSearch(e) {
 
 	const filtered = allPacks.filter(pack =>
 		pack.name.toLowerCase().includes(query) ||
-		pack.description.toLowerCase().includes(query)
+		(pack.description || '').toLowerCase().includes(query)
 	)
 
 	await renderPacks(filtered)
