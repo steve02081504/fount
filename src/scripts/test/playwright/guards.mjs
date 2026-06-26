@@ -31,32 +31,3 @@ export async function assertIsolatedFrontendTest({ baseUrl, apiKey, expectedUser
 		await api.dispose()
 	}
 }
-
-/**
- * 拦截 esm.sh 上的 Sentry，避免 E2E 拉外网失败。
- * @param {import('npm:@playwright/test').Page} page Playwright 页面
- * @returns {Promise<void>}
- */
-export async function stubSentryOnPage(page) {
-	await page.route('https://esm.sh/**', async route => {
-		const url = route.request().url()
-		if (url.includes('@sentry/browser')) {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/javascript',
-				body: [
-					'export default {',
-					'  captureException() {},',
-					'  init() {},',
-					'  browserTracingIntegration() { return {} },',
-					'};',
-					'export function captureException() {}',
-					'export function init() {}',
-					'export function browserTracingIntegration() { return {} }',
-				].join('\n'),
-			})
-			return
-		}
-		await route.continue()
-	})
-}

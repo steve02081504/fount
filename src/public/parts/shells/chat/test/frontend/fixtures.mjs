@@ -1,6 +1,6 @@
 import { request as playwrightRequest } from '@playwright/test'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
-import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright/guards.mjs'
+import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForHubShellReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 const HUB_INIT_TIMEOUT = 180_000
@@ -19,7 +19,6 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	page.on('pageerror', err => console.log('[browser:pageerror]', err.message, err.stack))
 	page.on('requestfailed', req => console.log('[browser:requestfailed]', req.url(), req.failure()?.errorText))
 	page.on('response', res => { if (res.status() >= 400) console.log('[browser:http]', res.status(), res.url()) })
-	await stubSentryOnPage(page)
 	await assertIsolatedFrontendTest({
 		baseUrl,
 		apiKey,

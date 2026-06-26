@@ -11,6 +11,7 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
 import { set_start } from 'fount/server/base.mjs'
+import { set_sentry_enabled } from 'fount/server/sentry_state.mjs'
 import { init } from 'fount/server/server.mjs'
 
 import { HEADLESS_CONFIG_PORT } from '../core/ports.mjs'
@@ -168,6 +169,7 @@ export function defaultTestStarts({ web = false, p2p = false, jobs = false } = {
  */
 export async function initFountNode({ dataPath, starts, restarter }) {
 	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
+	set_sentry_enabled(false)
 	set_start()
 	return await init({
 		restartor: restarter ?? (() => process.exit(131)),

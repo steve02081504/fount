@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { request as playwrightRequest } from '@playwright/test'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
-import { assertIsolatedFrontendTest, stubSentryOnPage } from 'fount/scripts/test/playwright/guards.mjs'
+import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
@@ -39,7 +39,6 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
 	baseTest.setTimeout(300_000)
 	page.on('pageerror', err => console.log('[browser:pageerror]', err.message, err.stack))
-	await stubSentryOnPage(page)
 	await page.addInitScript(() => {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
