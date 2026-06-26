@@ -34,7 +34,7 @@ import {
  * @property {boolean} noisy
  * @property {string[]} noiseHits
  * @property {string[]} failedFiles
- * @property {string | null} logPath 相对仓库根
+ * @property {string | null} logPath 相对 report 目录（如 ./logs/warnings/...）
  */
 
 /**
@@ -111,7 +111,7 @@ export async function writeTestReport({
 			await mkdir(manifestDir, { recursive: true })
 			const logAbs = join(manifestDir, logFileName(suite.manifestId, suite.name))
 			await writeFile(logAbs, output, 'utf8')
-			logPath = relative(repoRoot, logAbs).replace(/\\/g, '/')
+			logPath = `./${relative(root, logAbs).replace(/\\/g, '/')}`
 		}
 
 		if (!passed) failedCount++
