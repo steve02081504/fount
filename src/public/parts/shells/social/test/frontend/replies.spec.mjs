@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, findPostCard } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, submitReplyViaPanel } from './fixtures.mjs'
 
 test.describe('Social replies', () => {
 	test.setTimeout(600_000)
@@ -18,7 +18,7 @@ test.describe('Social replies', () => {
 		await expect(panel).not.toHaveClass(/hidden/)
 		const replyText = `reply-body ${Date.now()}`
 		await panel.locator('textarea').fill(replyText)
-		await panel.locator('[data-submit-reply]').click()
+		await submitReplyViaPanel(page, panel)
 		await expect(card.locator('[data-replies]')).toContainText(/\(1\)/, { timeout: 30_000 })
 	})
 

@@ -87,6 +87,34 @@ let cursor = 0
 const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith(ignorePrefix)))
 
 /**
+ * 记录单文件 deno test 结果。
+ * @param {string} file 测试文件绝对路径
+ * @param {number} code 退出码
+ * @param {string} output stdall
+ * @returns {void}
+ */
+function recordResult(file, code, output) {
+	const noisy = outputHasNoise(output)
+	if (code !== 0 || noisy) process.stdout.write(output)
+	if (code !== 0) {
+		failed.push(toRepoRelative(REPO_ROOT, file))
+		if (!keepGoing) stopped = true
+	}
+	else if (!noisy) silentPassed++
+}
+
+// 预热：deno cache 填充 npm/node_modules，避免 Windows 并行争锁
+if (filteredFiles.length > 0) {
+	const { code, output } = await runCaptured([
+		'deno', 'cache', '--allow-all', '-c', './deno.json', ...filteredFiles,
+	])
+	if (code !== 0) {
+		process.stdout.write(output)
+		process.exit(code)
+	}
+}
+
+/**
  * worker-pool 消费游标，并发跑单文件 deno test。
  * @returns {Promise<void>}
  */
@@ -96,16 +124,8 @@ async function worker() {
 		if (index >= filteredFiles.length) break
 		const file = filteredFiles[index]
 		const { code, output } = await runCaptured(['deno', ...denoBase, file])
-		const noisy = outputHasNoise(output)
-		if (code !== 0 || noisy) process.stdout.write(output)
-		if (code !== 0) {
-			failed.push(toRepoRelative(REPO_ROOT, file))
-			if (!keepGoing) {
-				stopped = true
-				return
-			}
-		}
-		else if (!noisy) silentPassed++
+		recordResult(file, code, output)
+		if (stopped) return
 	}
 }
 

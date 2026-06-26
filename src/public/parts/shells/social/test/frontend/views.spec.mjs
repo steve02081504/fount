@@ -1,6 +1,13 @@
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
+import {
+	test,
+	expect,
+	openSocialHome,
+	findPostCard,
+	fetchViewerEntityHash,
+	submitReplyViaPanel,
+} from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -64,7 +71,7 @@ test.describe('Social secondary views', () => {
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
 		await panel.locator('textarea').fill(`notif-reply ${Date.now()}`)
-		await panel.locator('[data-submit-reply]').click()
+		await submitReplyViaPanel(page, panel)
 		await page.locator('.nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView .notification-card').first())
 			.toBeVisible({ timeout: 20_000 })
@@ -77,7 +84,7 @@ test.describe('Social secondary views', () => {
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
 		await panel.locator('textarea').fill(`notif-link-reply ${Date.now()}`)
-		await panel.locator('[data-submit-reply]').click()
+		await submitReplyViaPanel(page, panel)
 		await page.locator('.nav-btn[data-view="feed"]').click()
 		await page.locator('.nav-btn[data-view="notifications"]').click()
 		const notifCard = page.locator('#notificationsView .notification-card').first()
@@ -94,7 +101,7 @@ test.describe('Social secondary views', () => {
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
 		await panel.locator('textarea').fill(`markall-reply ${Date.now()}`)
-		await panel.locator('[data-submit-reply]').click()
+		await submitReplyViaPanel(page, panel)
 		await page.locator('.nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsMarkAllBtn')).toBeVisible({ timeout: 20_000 })
 		await page.locator('#notificationsMarkAllBtn').click()
@@ -107,15 +114,7 @@ test.describe('Social secondary views', () => {
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
 		await panel.locator('textarea').fill(`badge-reply ${Date.now()}`)
-		// 等待回复 POST 响应，确保服务端已创建帖子
-		await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/post')
-				&& res.request().method() === 'POST'
-				&& res.status() === 200,
-			{ timeout: 30_000 }),
-			panel.locator('[data-submit-reply]').click(),
-		])
+		await submitReplyViaPanel(page, panel)
 		// 重载页面：init 阶段会调用 updateNotificationBadge，此时 seenAt=0
 		// 且回复通知已存在，徽章应在打开通知视图之前就显示
 		await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })

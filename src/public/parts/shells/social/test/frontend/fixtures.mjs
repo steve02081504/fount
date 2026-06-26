@@ -140,6 +140,23 @@ export async function publishPostViaComposer(page, text, api = {}) {
 }
 
 /**
+ * 提交回复并等待 POST 完成（避免后续 page.goto 打断在途请求）。
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {import('npm:@playwright/test').Locator} panel - 回复面板定位器。
+ * @returns {Promise<void>}
+ */
+export async function submitReplyViaPanel(page, panel) {
+	await Promise.all([
+		page.waitForResponse(res =>
+			res.url().includes('/api/parts/shells:social/profile/post')
+			&& res.request().method() === 'POST'
+			&& res.status() === 200,
+		{ timeout: 30_000 }),
+		panel.locator('[data-submit-reply]').click(),
+	])
+}
+
+/**
  * 从发帖 API 响应解析 postId。
  * @param {object} postJson - 发帖响应。
  * @returns {string} postId。
