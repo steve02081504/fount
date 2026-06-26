@@ -70,7 +70,11 @@ const codeToMessage = {
  */
 const errorHandler = (err, req, res, next) => {
 	if (!err.skip_report) Sentry.captureException(err)
-	console.error(err)
+	console.error(err, {
+		method: req.method,
+		path: req.path,
+		headers: req.headers,
+	})
 	const status = err.http_code ?? 500
 	res.status(status).json(err.json ?? {
 		message: codeToMessage[status],
