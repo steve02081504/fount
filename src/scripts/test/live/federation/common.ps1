@@ -21,6 +21,24 @@ $script:FedB = @{
 $script:pass = 0; $script:fail = 0; $script:skip = 0
 $script:failures = @()
 
+function Reset-FedNodeBlocklist($node) {
+	try {
+		$dataPath = [string]$node.dataPath
+		if (-not $dataPath.Trim()) { return }
+		$nodeDir = Join-Path $dataPath 'p2p/node'
+		New-Item -ItemType Directory -Path $nodeDir -Force | Out-Null
+		$blocklistPath = Join-Path $nodeDir 'blocklist.json'
+		'{"blocked":[]}' | Set-Content -Path $blocklistPath -Encoding UTF8
+	}
+	catch {
+		Write-Host "  blocklist reset WARN [$($node.name)] $($_.Exception.Message)" -ForegroundColor Yellow
+	}
+}
+
+# live 联邦套件复用同一节点数据目录；每次运行前清空持久化 blocklist，避免跨套件污染。
+Reset-FedNodeBlocklist $script:FedA
+Reset-FedNodeBlocklist $script:FedB
+
 function FedUri($node, $path) {
 	$uri = "$($node.base)$path"
 	# PS 将 "$uri?…" 解析为 $uri? 空值传播；须用 ${uri} 界定变量名。

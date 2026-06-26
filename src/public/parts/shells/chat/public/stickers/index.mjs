@@ -105,10 +105,19 @@ function setupEventListeners() {
 	document.getElementById('upload-sticker-form').addEventListener('submit', handleUploadSticker)
 	document.getElementById('search-input').addEventListener('input', handleSearch)
 
-	document.querySelector('.tabs[role="tablist"]')?.addEventListener('click', clickEvent => {
-		const tab = clickEvent.target.closest('.tab[data-tab]')
-		if (tab) switchTab(tab.dataset.tab)
+	const tabList = document.querySelector('.tabs[role="tablist"]')
+	tabList?.addEventListener('click', clickEvent => {
+		const target = clickEvent.target instanceof Element ? clickEvent.target : null
+		const tab = target?.closest('.tab[data-tab]')
+		if (!tab) return
+		clickEvent.preventDefault()
+		switchTab(tab.dataset.tab)
 	})
+	for (const tab of document.querySelectorAll('.tabs .tab[data-tab]'))
+		tab.addEventListener('click', clickEvent => {
+			clickEvent.preventDefault()
+			switchTab(tab.dataset.tab)
+		})
 
 	document.getElementById('sticker-install-pack-button').addEventListener('click', handleInstallPack)
 	document.getElementById('sticker-uninstall-pack-button').addEventListener('click', handleUninstallPack)
