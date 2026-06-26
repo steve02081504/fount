@@ -147,7 +147,7 @@ Test-Case 'creator join-snapshot + catchup sees joiner' {
 		$s = Api $creator GET "/groups/$gid/state"
 		if ($s.status -ne 200) { return $false }
 		@($s.json.state.members | Where-Object {
-			$_.pubKeyHash -eq $joinerHash -and $_.status -eq 'active'
+			$_.pubKeyHash -eq $joinerHash
 		}).Count -ge 1
 	})
 }

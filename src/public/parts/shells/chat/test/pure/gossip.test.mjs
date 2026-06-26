@@ -5,6 +5,10 @@
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
+	batchWantIds,
+	wantIdsPeerKey,
+} from '../../../../../../scripts/p2p/want_ids.mjs'
+import {
 	buildGossipForwardPlan,
 	takeGossipRequestSlot,
 	wantIdsLimitsFromSettings,
@@ -15,6 +19,21 @@ Deno.test('wantIdsLimitsFromSettings derives batch from budget', () => {
 	const limits = wantIdsLimitsFromSettings({ wantIdsBudget: 64 })
 	assertEquals(limits.inMaxBatch, 64)
 	assertEquals(limits.outMaxBatch, 64)
+})
+
+Deno.test('batchWantIds uses settings-derived outbound budget', () => {
+	const limits = wantIdsLimitsFromSettings({ wantIdsBudget: 12 })
+	const wantIds = Array.from({ length: 30 }, (_, i) => `id-${i}`)
+	const batched = batchWantIds(wantIds, limits.outMaxBatch)
+	assertEquals(batched.length, 12)
+	assertEquals(batched[0], 'id-0')
+	assertEquals(batched[11], 'id-11')
+})
+
+Deno.test('wantIdsPeerKey encodes group and peer for gossip dedupe', () => {
+	const key = wantIdsPeerKey('group-abc', 'peer-def')
+	assertEquals(key.includes('\0'), true)
+	assertEquals(key, 'group-abc\0peer-def')
 })
 
 Deno.test('takeGossipRequestSlot dedupes repeated keys', () => {

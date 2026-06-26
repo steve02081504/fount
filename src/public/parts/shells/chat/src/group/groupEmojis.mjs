@@ -159,7 +159,8 @@ export async function readGroupEmojiBinary(username, groupId, emojiId) {
  * @returns {string} data URL 字符串
  */
 export function bufferToDataUrl(buffer, mimeType) {
-	return `data:${mimeType};base64,${buffer.toString('base64')}`
+	const baseMime = String(mimeType || 'image/png').split(';')[0].trim() || 'image/png'
+	return `data:${baseMime};base64,${buffer.toString('base64')}`
 }
 
 /**

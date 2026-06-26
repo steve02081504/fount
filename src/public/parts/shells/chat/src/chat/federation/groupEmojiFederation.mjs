@@ -84,7 +84,7 @@ export async function handleFedEmojiData(username, groupId, data) {
 	const emojiId = String(data.emojiId || '').trim()
 	const dataUrl = String(data.dataUrl || '').trim()
 	const mimeType = String(data.mimeType || 'image/png')
-	if (!emojiId || !dataUrl.startsWith('data:')) return
+	if (!emojiId || !/^data:[^;]+;base64,.+$/u.test(dataUrl)) return
 	const key = waitKey(username, groupId, emojiId)
 	const pending = pendingFetches.get(key)
 	if (pending) {

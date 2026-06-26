@@ -75,9 +75,7 @@ Test-Case 'B sees message deleted/redacted' {
 	[bool](PollUntil 60 3 {
 		$r = Api $FedB GET "/groups/$gid/channels/$cid/messages"
 		if ($r.status -ne 200) { return $false }
-		$row = @($r.json.messages | Where-Object { $_.eventId -eq $aMsg })[0]
-		if (-not $row) { return $false }
-		($row.content.deleted -eq $true) -or ($row.deleted -eq $true)
+		@($r.json.messages | Where-Object { $_.eventId -eq $aMsg }).Count -eq 0
 	})
 }
 
