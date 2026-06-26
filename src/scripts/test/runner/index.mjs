@@ -28,7 +28,7 @@ import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
-import { writeTestReport } from './report.mjs'
+import { TestReportWriter } from './report.mjs'
 import { SuiteRunGate } from './scheduler.mjs'
 import { selectSuites, shouldTrackFailures } from './selection.mjs'
 
@@ -210,6 +210,29 @@ export async function runTests(options = {}) {
 	const suiteResults = new Array(selected.length)
 	let cursor = 0
 
+	/** @type {TestReportWriter | null} */
+	let reportWriter = null
+	if (genReport) {
+		const commandParts = ['fount test']
+		if (options.runAll) commandParts.push('--all')
+		commandParts.push('--gen-report')
+		if (options.jobs >= 1) commandParts.push('-j', String(options.jobs))
+		if (options.since) commandParts.push('--since', options.since)
+		if (options.manifestSelectors?.length)
+			commandParts.push(options.manifestSelectors.join(','))
+		if (options.suiteSelectors?.length)
+			commandParts.push(options.suiteSelectors.join(','))
+
+		reportWriter = new TestReportWriter({
+			repoRoot: REPO_ROOT,
+			suites: selected,
+			runId,
+			command: commandParts.join(' '),
+		})
+		const reportPath = await reportWriter.init()
+		console.log(`报告: ${reportPath.replace(/\\/g, '/')}`)
+	}
+
 	/**
 	 * 并发执行 suite，收集有序结果。
 	 * @returns {Promise<void>}
@@ -228,6 +251,15 @@ export async function runTests(options = {}) {
 				const label = `${suite.manifestId}/${suite.name}`
 				printSuiteSummary(label, result, genReport)
 				suiteResults[index] = { suite, result }
+				if (reportWriter) 
+					await reportWriter.recordResult(index, {
+						suite,
+						passed: result.passed,
+						failedFiles: result.failedFiles,
+						output: result.output,
+						durationMs: result.durationMs,
+					})
+				
 			}
 			finally {
 				release()
@@ -274,30 +306,8 @@ export async function runTests(options = {}) {
 		}
 	}
 
-	if (genReport) {
-		const commandParts = ['fount test']
-		if (options.runAll) commandParts.push('--all')
-		commandParts.push('--gen-report')
-		if (options.jobs >= 1) commandParts.push('-j', String(options.jobs))
-		if (options.since) commandParts.push('--since', options.since)
-		if (options.manifestSelectors?.length)
-			commandParts.push(options.manifestSelectors.join(','))
-		if (options.suiteSelectors?.length)
-			commandParts.push(options.suiteSelectors.join(','))
-
-		const reportPath = await writeTestReport({
-			repoRoot: REPO_ROOT,
-			results: suiteResults.map(({ suite, result }) => ({
-				suite,
-				passed: result.passed,
-				failedFiles: result.failedFiles,
-				output: result.output,
-				durationMs: result.durationMs,
-			})),
-			runId,
-			command: commandParts.join(' '),
-			exitCode,
-		})
+	if (reportWriter) {
+		const reportPath = await reportWriter.finalize(exitCode)
 		console.log(`\n报告: ${reportPath.replace(/\\/g, '/')}`)
 	}
 
