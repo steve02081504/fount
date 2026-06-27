@@ -35,6 +35,7 @@ let currentServiceSourcePath = 'serviceSources/AI'
 let currentSubtype = 'AI'
 let partBranches = {}
 let desiredGeneratorName = ''
+const displayCaches = {}
 /**
  * 当JSON更新时调用的回调函数。
  * @returns {number} 返回一个数字。
@@ -332,7 +333,8 @@ async function loadGeneratorAddons(generatorName) {
 				geti18n,
 				partpath,
 				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
-				element: generatorDisplayContainer
+				element: generatorDisplayContainer,
+				cache: displayCaches[partpath] ??= {},
 			})
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
@@ -366,6 +368,15 @@ function enableEditor() {
 function syncEditorState() {
 	if (generatorSelect.value) enableEditor()
 	else disableEditor()
+}
+
+/**
+ * 读取 JSON 编辑器中的配置数据。
+ * @returns {object} 当前 JSON 配置。
+ */
+function getEditorData() {
+	const content = jsonEditor.get()
+	return content.json ?? JSON.parse(content.text)
 }
 
 /**
@@ -521,7 +532,7 @@ async function saveFile() {
 	saveButton.disabled = true
 
 	try {
-		const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
+		const config = getEditorData()
 		const generator = generatorSelect.value
 
 		await setServiceSourceFile(activeFile, {
@@ -618,7 +629,7 @@ jsonEditor = createJsonEditor(jsonEditorContainer, {
 		if (error) return
 		isDirty = true
 		let data
-		try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
+		try { data = getEditorData() } catch (e) { return }
 		onJsonUpdate({
 			data,
 			containers: {

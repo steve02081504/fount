@@ -1,9 +1,4 @@
-let cachedCacheKey = ''
-/**
- * 缓存的模型 ID 列表。
- * @type {string[]|null}
- */
-let cachedModelIds = null
+/* global cache */
 let latestModelsRequestId = 0
 
 /**
@@ -17,16 +12,7 @@ function modelsCacheKey(apikey, base_url) {
 }
 
 /**
- * 重置模型 ID 缓存。
- * @returns {void}
- */
-function resetModelIdsCache() {
-	cachedCacheKey = ''
-	cachedModelIds = null
-}
-
-/**
- * 从 Gemini API 拉取模型 ID 列表，并更新模块内缓存。
+ * 从 Gemini API 拉取模型 ID 列表，并更新 cache。
  * @param {string} apikey - API key。
  * @param {string} [base_url] - 自定义 base URL。
  * @param {string} cacheKey - 缓存键。
@@ -44,12 +30,12 @@ async function fetchModelIds(apikey, base_url, cacheKey) {
 	for await (const model of await ai.models.list())
 		model_ids.push(model.name.replace(/^models\//, ''))
 
-	cachedCacheKey = cacheKey
-	return cachedModelIds = model_ids
+	cache.cacheKey = cacheKey
+	return cache.modelIds = model_ids
 }
 
 /**
- * 获取模型 ID 列表；命中模块内缓存则直接返回，否则拉取。
+ * 获取模型 ID 列表；命中 cache 则直接返回，否则拉取。
  * @param {string} apikey - API key。
  * @param {string} [base_url] - 自定义 base URL。
  * @param {() => void} [onLoading] - 即将发起网络请求时调用。
@@ -57,8 +43,8 @@ async function fetchModelIds(apikey, base_url, cacheKey) {
  */
 async function getModelIds(apikey, base_url, onLoading) {
 	const cacheKey = modelsCacheKey(apikey, base_url)
-	if (cacheKey === cachedCacheKey && cachedModelIds)
-		return cachedModelIds
+	if (cache.cacheKey === cacheKey && cache.modelIds)
+		return cache.modelIds
 
 	onLoading?.()
 	return fetchModelIds(apikey, base_url, cacheKey)
@@ -143,7 +129,8 @@ return async function({ data, containers }) {
 	const div = containers.generatorDisplay
 	const { apikey, base_url } = data
 	if (!apikey?.trim()) {
-		resetModelIdsCache()
+		delete cache.cacheKey
+		delete cache.modelIds
 		return showApiKeyRequired(div)
 	}
 

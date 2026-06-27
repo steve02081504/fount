@@ -23,6 +23,8 @@ const saveButton = document.getElementById('saveButton')
 const saveStatusIcon = document.getElementById('saveStatusIcon')
 const disabledIndicator = document.getElementById('disabledIndicator')
 
+const displayCaches = {}
+
 let jsonEditor = null
 let partpathPicker = null
 let activePartPath = ''
@@ -32,6 +34,15 @@ let isDirty = false
  * @returns {number} 返回一个数字。
  */
 let onJsonUpdate = () => 0
+
+/**
+ * 读取 JSON 编辑器中的配置数据。
+ * @returns {object} 当前 JSON 配置。
+ */
+function getEditorData() {
+	const content = jsonEditor.get()
+	return content.json ?? JSON.parse(content.text)
+}
 
 /**
  * 禁用编辑器和保存按钮。
@@ -68,7 +79,8 @@ async function loadPartAddons(partpath) {
 			const eval_result = await async_eval(displayScript, {
 				geti18n, partpath,
 				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
-				element: partDisplayContainer
+				element: partDisplayContainer,
+				cache: displayCaches[partpath] ??= {},
 			})
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
@@ -106,10 +118,10 @@ async function loadEditor(partpath) {
 					if (error) return
 					isDirty = true
 					let data
-					try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
+					try { data = getEditorData() } catch (e) { return }
 					onJsonUpdate({
 						info: {
-							partpath
+							partpath: activePartPath
 						},
 						data,
 						containers: {
@@ -176,7 +188,7 @@ async function saveConfig() {
 	saveButton.disabled = true
 
 	try {
-		const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
+		const data = getEditorData()
 		await saveConfigData(activePartPath, data)
 		isDirty = false
 

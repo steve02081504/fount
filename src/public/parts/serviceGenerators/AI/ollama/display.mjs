@@ -1,9 +1,4 @@
-let cachedCacheKey = ''
-/**
- * 缓存的模型 ID 列表。
- * @type {string[]|null}
- */
-let cachedModelIds = null
+/* global cache */
 let latestModelsRequestId = 0
 
 /**
@@ -32,21 +27,11 @@ function getModelsUrl(host) {
 }
 
 /**
- * 重置模型 ID 缓存。
- * @returns {void}
- */
-function resetModelIdsCache() {
-	cachedCacheKey = ''
-	cachedModelIds = null
-}
-
-/**
- * 从网络拉取模型名称列表，并更新模块内缓存。
+ * 从网络拉取模型名称列表，并更新 cache。
  * @param {string} modelsUrl - 规范化后的 `/api/tags` URL。
- * @param {string} cacheKey - 缓存键。
  * @returns {Promise<string[]>} 模型名称列表。
  */
-async function fetchModelIds(modelsUrl, cacheKey) {
+async function fetchModelIds(modelsUrl) {
 	const response = await fetch(modelsUrl)
 	if (!response.ok) {
 		const errorText = await response.text().catch(() => 'Could not read error body.')
@@ -56,23 +41,22 @@ async function fetchModelIds(modelsUrl, cacheKey) {
 	const { models } = result
 	if (!Array.isArray(models))
 		throw new Error('Response is not an array of models.')
-	cachedCacheKey = cacheKey
-	return cachedModelIds = models.map(m => m.name)
+	cache.cacheKey = modelsUrl
+	return cache.modelIds = models.map(model => model.name)
 }
 
 /**
- * 获取模型名称列表；命中模块内缓存则直接返回，否则拉取。
+ * 获取模型名称列表；命中 cache 则直接返回，否则拉取。
  * @param {string} modelsUrl - 规范化后的 `/api/tags` URL。
  * @param {() => void} [onLoading] - 即将发起网络请求时调用。
  * @returns {Promise<string[]>} 模型名称列表。
  */
 async function getModelIds(modelsUrl, onLoading) {
-	const cacheKey = modelsUrl
-	if (cacheKey === cachedCacheKey && cachedModelIds)
-		return cachedModelIds
+	if (cache.cacheKey === modelsUrl && cache.modelIds)
+		return cache.modelIds
 
 	onLoading?.()
-	return fetchModelIds(modelsUrl, cacheKey)
+	return fetchModelIds(modelsUrl)
 }
 
 /**
@@ -160,7 +144,8 @@ return async function({ data, containers }) {
 	const { host } = data
 	const modelsUrl = getModelsUrl(host)
 	if (!modelsUrl) {
-		resetModelIdsCache()
+		delete cache.cacheKey
+		delete cache.modelIds
 		if (!host?.trim()) return clearDisplay(div)
 		return showInvalidHost(div)
 	}
