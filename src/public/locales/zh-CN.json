@@ -48,7 +48,7 @@
 		"displayName": "显示名称",
 		"name": "名称",
 		"bio": "个人简介",
-		"description": "简介（Markdown）",
+		"descriptionLabel": "简介（Markdown）",
 		"email": "邮箱",
 		"status": "状态",
 		"customStatusLabel": "自定义状态",
@@ -1825,7 +1825,7 @@
 			"syncRateLimited": "联邦同步限速中，请稍后再试",
 			"syncProgress": "联邦同步（${filled}/${total}）",
 			"syncIncomplete": "尚有 ${missing}/${total} 个事件未同步",
-			"fileLoadFailed": "附件加载失败",
+			"attachmentLoadFailed": "附件加载失败",
 			"messageEditUpload": "上传附件",
 			"timeToday": "今天 ${time}",
 			"timeYesterday": "昨天 ${time}",
@@ -2292,9 +2292,7 @@
 			"fileSkippedDedup": "已跳过重复块传输",
 			"fileDownloadFailed": "文件下载失败",
 			"fileNoKey": "无法解密（缺少密钥）",
-			"fileLoadFailed": {
-				"textContent": "文件加载失败"
-			},
+			"fileLoadFailed": "文件加载失败",
 			"createModal": {
 				"title": "创建群组",
 				"subtitle": "群组是你和朋友一起聊天的私密空间",
