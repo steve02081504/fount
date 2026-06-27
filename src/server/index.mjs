@@ -4,6 +4,7 @@
  * 它还通过 IPC 处理向正在运行的服务器实例发送命令。
  */
 import fs from 'node:fs'
+import os from 'node:os'
 import process from 'node:process'
 
 import { console } from '../scripts/i18n.mjs'
@@ -122,6 +123,11 @@ if (args.length) {
 }
 // 初始化应用程序。
 const result = await init(fount_config)
+
+if (process.env.FOUNT_STARTUP_PRIORITY_BOOST) {
+	try { os.setPriority(0, 0) } catch { /* ignore */ }
+	delete process.env.FOUNT_STARTUP_PRIORITY_BOOST
+}
 
 // 如果提供了命令，则通过 IPC 发送到已运行的实例。
 if (command_obj) await (async () => { try {
