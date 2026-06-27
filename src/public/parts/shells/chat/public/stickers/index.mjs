@@ -38,28 +38,11 @@ async function init() {
 		console.error('Failed to load viewer:', error)
 	}
 
-	await loadPacks()
+	const packsLoaded = await loadPacks()
 	await loadUserCollection()
-	await initializeDefaultPacks()
-}
-
-/**
- * 初始化默认贴纸包
- */
-async function initializeDefaultPacks() {
-	try {
-		const response = await fetch('/api/parts/shells:chat/stickers/packs', {
-			credentials: 'include'
-		})
-
-		if (response.ok) {
-			const data = await response.json()
-			if (data.packs?.length === 0)
-				await createDefaultPack()
-		}
-	} catch (error) {
-		console.error('Failed to initialize default packs:', error)
-	}
+	// 仅在确实拉到（空）列表时创建默认包；加载失败时不误建。
+	if (packsLoaded && allPacks.length === 0)
+		await createDefaultPack()
 }
 
 /**
@@ -113,11 +96,6 @@ function setupEventListeners() {
 		clickEvent.preventDefault()
 		switchTab(tab.dataset.tab)
 	})
-	for (const tab of document.querySelectorAll('.tabs .tab[data-tab]'))
-		tab.addEventListener('click', clickEvent => {
-			clickEvent.preventDefault()
-			switchTab(tab.dataset.tab)
-		})
 
 	document.getElementById('sticker-install-pack-button').addEventListener('click', handleInstallPack)
 	document.getElementById('sticker-uninstall-pack-button').addEventListener('click', handleUninstallPack)
@@ -131,7 +109,8 @@ function setupEventListeners() {
 }
 
 /**
- * 加载贴纸包列表
+ * 加载贴纸包列表。
+ * @returns {Promise<boolean>} 是否成功拉到列表（供调用方判断是否需要创建默认包）。
  */
 async function loadPacks() {
 	try {
@@ -143,11 +122,13 @@ async function loadPacks() {
 			const data = await response.json()
 			allPacks = data.packs || []
 			await renderPacks(allPacks)
+			return true
 		}
 	} catch (error) {
 		console.error('Failed to load packs:', error)
 		showToastI18n('error', 'stickers.errors.loadFailed')
 	}
+	return false
 }
 
 /**
