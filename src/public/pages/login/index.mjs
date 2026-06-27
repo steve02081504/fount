@@ -7,13 +7,15 @@ import {
 	webauthnLoginBegin,
 	webauthnLoginComplete,
 } from '../scripts/endpoints.mjs'
-import { initTranslations, console, savePreferredLangs, onLanguageChange, i18nElement } from '../scripts/i18n.mjs'
+import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
 import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
 import { runPreloadIfNotSaveData } from '../scripts/preloadUrls.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
+
+import { initPasswordCharFeedback } from './passwordCharFeedback.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -24,7 +26,10 @@ const errorMessage = document.getElementById('error-message')
 const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
+const usernameInput = document.getElementById('username')
 const passwordInput = document.getElementById('password')
+const confirmPasswordInput = document.getElementById('confirm-password')
+const verificationCodeInput = document.getElementById('verification-code')
 const webauthnLoginRow = document.getElementById('webauthn-login-row')
 const webauthnLoginBtn = document.getElementById('webauthn-login-btn')
 
@@ -42,6 +47,15 @@ let sendCodeCooldown = false
 let powCaptcha = null
 let passwordStrengthMeter = null
 let isWebAuthnInProgress = false
+
+/** @type {{ password: string, username: string } | null} 注册成功或 autologin 注入后的登录密码参照。 */
+let loginPasswordHint = null
+
+/** @type {{ refresh: () => void, clear: () => void } | null} */
+let passwordCharFeedback = null
+
+/** @type {{ refresh: () => void, clear: () => void } | null} */
+let confirmPasswordCharFeedback = null
 
 /**
  * 去掉 `#error-message` 上全部 `data-*`。
@@ -69,7 +83,6 @@ function showLoginMessage(payload) {
 	if (params != null)
 		for (const [paramKey, val] of Object.entries(params))
 			errorMessage.dataset[paramKey] = String(val)
-	i18nElement(errorMessage, { skip_report: true })
 }
 
 /**
@@ -97,11 +110,22 @@ async function parseResponseBodyJson(response) {
 }
 
 /**
- * 初始化表单状态。
+ * 清除登录密码逐字反馈的内存参照。
  * @returns {void}
  */
-function initializeForm() {
-	isLoginForm = true
+function clearLoginPasswordHint() {
+	loginPasswordHint = null
+	passwordCharFeedback?.clear()
+}
+
+/**
+ * 登录密码框逐字反馈的参照密码（注册后 / autologin 注入时有效；用户名不一致则无参照）。
+ * @returns {string | null} 参照密码；无参照或用户名不匹配时为 null。
+ */
+function getLoginPasswordReference() {
+	if (!loginPasswordHint?.password) return null
+	if (loginPasswordHint.username && usernameInput.value !== loginPasswordHint.username) return null
+	return loginPasswordHint.password
 }
 
 /**
@@ -110,6 +134,7 @@ function initializeForm() {
  */
 function toggleForm() {
 	isLoginForm = !isLoginForm
+	if (!isLoginForm) clearLoginPasswordHint()
 	updateFormDisplay()
 }
 
@@ -121,14 +146,6 @@ function toggleForm() {
 function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
-}
-
-/**
- * 刷新 UI 字符串。
- * @returns {void}
- */
-function refreshUIStrings() {
-	updateFormDisplay()
 }
 
 /**
@@ -194,8 +211,7 @@ async function finalizePasskeyLoginRedirect() {
  * @returns {Promise<void>}
  */
 async function finalizePasswordLoginRedirect() {
-	const username = document.getElementById('username').value
-	redirectToLoginInfo(await resolveLoginSuccessTargetUrl(), username, passwordInput.value)
+	redirectToLoginInfo(await resolveLoginSuccessTargetUrl(), usernameInput.value, passwordInput.value)
 }
 
 /**
@@ -286,7 +302,7 @@ async function handleWebAuthnLogin() {
 function generateDeviceId() {
 	let deviceId = localStorage.getItem('deviceId')
 	if (!deviceId) {
-		deviceId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+		deviceId = crypto.randomUUID()
 		localStorage.setItem('deviceId', deviceId)
 	}
 	return deviceId
@@ -311,13 +327,14 @@ async function handleSendVerificationCode() {
 			sendVerificationCodeBtn.textContent = `${timeLeft}s`
 			const countdown = setInterval(() => {
 				timeLeft--
-				sendVerificationCodeBtn.textContent = `${timeLeft}s`
 				if (timeLeft <= 0) {
 					clearInterval(countdown)
 					sendVerificationCodeBtn.disabled = false
 					sendVerificationCodeBtn.dataset.i18n = 'auth.sendCodeButton'
 					sendCodeCooldown = false
 				}
+				else
+					sendVerificationCodeBtn.textContent = `${timeLeft}s`
 			}, 1000)
 		}
 		else if (response.status === 429)
@@ -345,29 +362,28 @@ async function handleFormSubmit(event) {
 		return
 	}
 
-	const username = document.getElementById('username').value
+	const username = usernameInput.value
 	const password = passwordInput.value
 	const deviceid = generateDeviceId()
 
 	let verificationcode = ''
 	if (!isLoginForm) {
-		const confirmPassword = document.getElementById('confirm-password').value
+		const confirmPassword = confirmPasswordInput.value
 		if (password !== confirmPassword) {
 			showLoginMessage({ i18nKey: 'auth.error.passwordMismatch' })
 			return
 		}
-		// Password strength check
 		const { score } = passwordStrengthMeter.evaluate()
 		if (score < 2) {
 			showLoginMessage({ i18nKey: 'auth.error.lowPasswordStrength' })
-			return // Prevent form submission
+			return
 		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
 				showLoginMessage({ i18nKey: 'auth.error.verificationCodeError' })
 				return
 			}
-			verificationcode = document.getElementById('verification-code').value.trim()
+			verificationcode = verificationCodeInput.value.trim()
 			if (!verificationcode) {
 				showLoginMessage({ i18nKey: 'auth.error.verificationCodeError' })
 				return
@@ -383,9 +399,15 @@ async function handleFormSubmit(event) {
 			response = await register(username, password, deviceid, verificationcode, powToken)
 
 		if (response.ok) {
-			if (isLoginForm)
+			if (isLoginForm) {
+				clearLoginPasswordHint()
 				await finalizePasswordLoginRedirect()
-			else toggleForm() // 注册成功后自动切换到登录表单
+			}
+			else {
+				loginPasswordHint = { password, username }
+				toggleForm()
+				passwordCharFeedback?.refresh()
+			}
 			return
 		}
 		const { value: errPayload } = await parseResponseBodyJson(response)
@@ -405,9 +427,15 @@ async function handleFormSubmit(event) {
  */
 function setupEventListeners() {
 	toggleLink.addEventListener('click', handleToggleClick)
-	submitBtn.addEventListener('click', handleFormSubmit)
+	form.addEventListener('submit', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
 	webauthnLoginBtn.addEventListener('click', handleWebAuthnLogin)
+	usernameInput.addEventListener('input', () => passwordCharFeedback?.refresh())
+	passwordInput.addEventListener('input', () => {
+		passwordCharFeedback?.refresh()
+		confirmPasswordCharFeedback?.refresh()
+	})
+	confirmPasswordInput.addEventListener('input', () => confirmPasswordCharFeedback?.refresh())
 }
 
 /**
@@ -432,12 +460,20 @@ async function initializeApp() {
 	}
 
 	passwordStrengthMeter = initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback)
+	passwordCharFeedback = initPasswordCharFeedback(
+		passwordInput,
+		document.getElementById('password-char-feedback'),
+		getLoginPasswordReference,
+	)
+	confirmPasswordCharFeedback = initPasswordCharFeedback(
+		confirmPasswordInput,
+		document.getElementById('confirm-password-char-feedback'),
+		() => passwordInput.value,
+	)
 	setupEventListeners()
 
-	initializeForm()
-	onLanguageChange(refreshUIStrings)
-	const autologinParam = urlParams.get('autologin') || urlParams.has('autologin')
-	const usernameInput = document.getElementById('username')
+	onLanguageChange(updateFormDisplay)
+	const shouldAutoLogin = urlParams.has('autologin') && urlParams.get('autologin') !== 'false'
 
 	try {
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
@@ -451,13 +487,20 @@ async function initializeApp() {
 			const { username, password } = JSON.parse(plaintextCredentials)
 			usernameInput.value = username
 			passwordInput.value = password
+			loginPasswordHint = { password, username }
+			passwordCharFeedback?.refresh()
 		}
 		else {
 			// Legacy plaintext params
 			const usernameParam = urlParams.get('username')
 			const passwordParam = urlParams.get('password')
 			if (usernameParam) usernameInput.value = usernameParam
-			if (passwordParam) passwordInput.value = passwordParam
+			if (passwordParam) {
+				passwordInput.value = passwordParam
+				if (usernameParam)
+					loginPasswordHint = { password: passwordParam, username: usernameParam }
+				passwordCharFeedback?.refresh()
+			}
 		}
 	}
 	catch (e) {
@@ -474,7 +517,7 @@ async function initializeApp() {
 		window.location.hash = hashParams.toString()
 	}
 
-	if (JSON.parse(autologinParam)) {
+	if (shouldAutoLogin) {
 		if (!isLoginForm) toggleForm()
 		if (powCaptcha) try {
 			submitBtn.disabled = true
