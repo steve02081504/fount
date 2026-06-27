@@ -1,7 +1,7 @@
 /**
  * DAG 拓扑序磁盘缓存（events.order.json）：增量合并，避免每次全量 Kahn。
  */
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import {
@@ -111,14 +111,18 @@ export async function readOrderCache(path) {
 }
 
 /**
+ * 写入拓扑序缓存。纯性能缓存：写失败（如群目录在并发清理/拆群时被删，Windows 上 open 报
+ * EPERM、或 ENOENT/EBUSY）不应让物化抛错或上浮告警，静默忽略即可，下次读盘自会重建。
  * @param {string} path 路径
  * @param {object} payload 缓存体
  * @returns {Promise<void>}
  */
 export async function writeOrderCache(path, payload) {
-	const { mkdir } = await import('node:fs/promises')
-	await mkdir(dirname(path), { recursive: true })
-	await writeFile(path, JSON.stringify(payload), 'utf8')
+	try {
+		await mkdir(dirname(path), { recursive: true })
+		await writeFile(path, JSON.stringify(payload), 'utf8')
+	}
+	catch { /* best-effort cache: dir removed mid-teardown / transient FS error */ }
 }
 
 /**
@@ -127,7 +131,6 @@ export async function writeOrderCache(path, payload) {
  */
 export async function deleteOrderCache(path) {
 	try {
-		const { unlink } = await import('node:fs/promises')
 		await unlink(path)
 	}
 	catch { /* absent */ }
