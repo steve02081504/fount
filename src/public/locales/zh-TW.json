@@ -196,6 +196,7 @@
 				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "正在移除桌面捷徑…",
 				"removingTerminalKeybindings": "正在移除終端機按鍵綁定修補…",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 解除安裝完成。",
@@ -1894,7 +1895,30 @@
 			"copied": "已複製！",
 			"apiKeyRequired": "需要 API 金鑰才能列出模型。",
 			"copyModelIdTooltip": "點擊以複製模型 ID",
-			"loadModelsFailed": "載入模型失敗：${message}"
+			"loadModelsFailed": "載入模型失敗：${message}",
+			"modelSearchTitle": "瀏覽模型目錄",
+			"modelSearchPlaceholder": {
+				"placeholder": "搜尋模型名、廠商、能力…"
+			},
+			"modelSearchHint": "點選結果後將自動填入 URL 與模型名稱",
+			"modelsDevLoading": "正在載入目錄…",
+			"modelsDevLoadFailed": "載入目錄失敗：${message}",
+			"noModelsMatched": "找不到符合的模型",
+			"currentModelTitle": "${name}（${model}）",
+			"providerLabel": "廠商：${provider}",
+			"metaContext": "上下文：${context} tokens",
+			"metaOutputLimit": "最大輸出：${output} tokens",
+			"metaInputPrice": "輸入價格：${price} / 1M tokens",
+			"metaOutputPrice": "輸出價格：${price} / 1M tokens",
+			"metaCachePrice": "快取讀/寫：${read} / ${write}",
+			"metaModalities": "模態：輸入 ${input}，輸出 ${output}",
+			"metaReasoning": "支援推理",
+			"metaToolCall": "支援工具呼叫",
+			"metaVision": "支援視覺輸入",
+			"metaOpenWeights": "開放權重",
+			"metaKnowledge": "知識截止：${knowledge}",
+			"metaReleaseDate": "發佈日期：${date}",
+			"providerDocLink": "[查看廠商文件](${url})"
 		},
 		"prompts": {
 			"newFileName": "請輸入新的服務來源檔案名稱 (請勿包含副檔名):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "沒有選擇要儲存的檔案。",
 			"noFileSelectedDelete": "沒有選擇要刪除的檔案。",
 			"noGeneratorSelectedSave": "請選擇產生器後再儲存",
+			"savedAsNewFile": "已儲存為新服務來源：${name}",
 			"invalidFileName": "檔案名稱不能包含以下字元： / \\ : * ? \" < > |"
 		},
 		"achievements": {

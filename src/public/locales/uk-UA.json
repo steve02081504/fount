@@ -196,6 +196,7 @@
 				"editorRemoved": "Конфігурацію fount видалено з прив'язок клавіш термінала редактора: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Видалення ярлика на робочому столі...",
 				"removingTerminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
 				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
@@ -1894,7 +1895,30 @@
 			"copied": "Скопійовано!",
 			"apiKeyRequired": "Для переліку моделей потрібен ключ API.",
 			"copyModelIdTooltip": "Натисніть, щоб скопіювати ідентифікатор моделі",
-			"loadModelsFailed": "Не вдалося завантажити модель: ${message}"
+			"loadModelsFailed": "Не вдалося завантажити модель: ${message}",
+			"modelSearchTitle": "Каталог моделей",
+			"modelSearchPlaceholder": {
+				"placeholder": "Пошук за назвою моделі, провайдером або можливостями…"
+			},
+			"modelSearchHint": "Після вибору результату URL і назву моделі буде заповнено автоматично",
+			"modelsDevLoading": "Завантаження каталогу…",
+			"modelsDevLoadFailed": "Не вдалося завантажити каталог: ${message}",
+			"noModelsMatched": "Відповідних моделей не знайдено",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Провайдер: ${provider}",
+			"metaContext": "Контекст: ${context} токенів",
+			"metaOutputLimit": "Макс. вихід: ${output} токенів",
+			"metaInputPrice": "Ціна входу: ${price} / 1M токенів",
+			"metaOutputPrice": "Ціна виходу: ${price} / 1M токенів",
+			"metaCachePrice": "Кеш читання/запис: ${read} / ${write}",
+			"metaModalities": "Модальності: вхід ${input}, вихід ${output}",
+			"metaReasoning": "Підтримує режим міркувань",
+			"metaToolCall": "Підтримує виклик інструментів",
+			"metaVision": "Підтримує візуальний ввід",
+			"metaOpenWeights": "Відкриті ваги",
+			"metaKnowledge": "Межа знань: ${knowledge}",
+			"metaReleaseDate": "Дата випуску: ${date}",
+			"providerDocLink": "[Переглянути документацію провайдера](${url})"
 		},
 		"prompts": {
 			"newFileName": "Будь ласка, введіть назву нового вихідного файлу служби (не включайте суфікс):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Не вибрано жодного файлу для збереження.",
 			"noFileSelectedDelete": "Файли для видалення не вибрано.",
 			"noGeneratorSelectedSave": "Будь ласка, виберіть генератор перед збереженням",
+			"savedAsNewFile": "Збережено як нове джерело служби: ${name}",
 			"invalidFileName": "Назва файлу не може містити такі символи: / \\ : * ? \" < > |"
 		},
 		"achievements": {

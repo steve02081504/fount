@@ -196,6 +196,7 @@
 				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Rimozione del collegamento sul desktop...",
 				"removingTerminalKeybindings": "Rimozione patch scorciatoie del terminale...",
 				"removingFount": "Rimozione di fount...",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
@@ -1894,7 +1895,30 @@
 			"copied": "Copiato!",
 			"apiKeyRequired": "È necessaria una chiave API per elencare i modelli.",
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
-			"loadModelsFailed": "Impossibile caricare il modello: ${message}"
+			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
+			"modelSearchTitle": "Sfoglia il catalogo modelli",
+			"modelSearchPlaceholder": {
+				"placeholder": "Cerca per nome modello, provider o capacità…"
+			},
+			"modelSearchHint": "Selezionando un risultato, URL e nome del modello verranno compilati automaticamente",
+			"modelsDevLoading": "Caricamento catalogo…",
+			"modelsDevLoadFailed": "Impossibile caricare il catalogo: ${message}",
+			"noModelsMatched": "Nessun modello corrispondente trovato",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Provider: ${provider}",
+			"metaContext": "Contesto: ${context} token",
+			"metaOutputLimit": "Output max: ${output} token",
+			"metaInputPrice": "Prezzo input: ${price} / 1M token",
+			"metaOutputPrice": "Prezzo output: ${price} / 1M token",
+			"metaCachePrice": "Cache lettura/scrittura: ${read} / ${write}",
+			"metaModalities": "Modalità: input ${input}, output ${output}",
+			"metaReasoning": "Supporta il ragionamento",
+			"metaToolCall": "Supporta le chiamate agli strumenti",
+			"metaVision": "Supporta l'input visivo",
+			"metaOpenWeights": "Pesi aperti",
+			"metaKnowledge": "Limite di conoscenza: ${knowledge}",
+			"metaReleaseDate": "Data di rilascio: ${date}",
+			"providerDocLink": "[Visualizza la documentazione del provider](${url})"
 		},
 		"prompts": {
 			"newFileName": "Inserisci il nome del nuovo file di origine del servizio (non includere il suffisso):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Nessun file selezionato da salvare.",
 			"noFileSelectedDelete": "Nessun file selezionato per l'eliminazione.",
 			"noGeneratorSelectedSave": "Seleziona il generatore prima di salvare",
+			"savedAsNewFile": "Salvata come nuova fonte di servizio: ${name}",
 			"invalidFileName": "Il nome del file non può contenere i seguenti caratteri: / \\ : * ? \" < > |"
 		},
 		"achievements": {

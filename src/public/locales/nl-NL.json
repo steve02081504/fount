@@ -196,6 +196,7 @@
 				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Snelkoppeling op het bureaublad verwijderen...",
 				"removingTerminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
 				"removingFount": "fount verwijderen...",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
@@ -1894,7 +1895,30 @@
 			"copied": "Gekopieerd!",
 			"apiKeyRequired": "Om modellen weer te geven is een API-sleutel vereist.",
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
-			"loadModelsFailed": "Kan model niet laden: ${message}"
+			"loadModelsFailed": "Kan model niet laden: ${message}",
+			"modelSearchTitle": "Modelcatalogus doorbladeren",
+			"modelSearchPlaceholder": {
+				"placeholder": "Zoeken op modelnaam, provider of mogelijkheden…"
+			},
+			"modelSearchHint": "Door een resultaat te selecteren worden URL en modelnaam automatisch ingevuld",
+			"modelsDevLoading": "Catalogus laden…",
+			"modelsDevLoadFailed": "Catalogus laden mislukt: ${message}",
+			"noModelsMatched": "Geen overeenkomende modellen gevonden",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Provider: ${provider}",
+			"metaContext": "Context: ${context} tokens",
+			"metaOutputLimit": "Max. output: ${output} tokens",
+			"metaInputPrice": "Invoerprijs: ${price} / 1M tokens",
+			"metaOutputPrice": "Uitvoerprijs: ${price} / 1M tokens",
+			"metaCachePrice": "Cache lezen/schrijven: ${read} / ${write}",
+			"metaModalities": "Modaliteiten: invoer ${input}, uitvoer ${output}",
+			"metaReasoning": "Ondersteunt redenering",
+			"metaToolCall": "Ondersteunt tool-aanroepen",
+			"metaVision": "Ondersteunt visuele invoer",
+			"metaOpenWeights": "Open weights",
+			"metaKnowledge": "Kennisgrens: ${knowledge}",
+			"metaReleaseDate": "Releasedatum: ${date}",
+			"providerDocLink": "[Providerdocumentatie bekijken](${url})"
 		},
 		"prompts": {
 			"newFileName": "Voer de nieuwe bestandsnaam van de servicebron in (zonder het achtervoegsel):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
 			"noFileSelectedDelete": "Geen bestanden geselecteerd voor verwijdering.",
 			"noGeneratorSelectedSave": "Selecteer de generator voordat u opslaat",
+			"savedAsNewFile": "Opgeslagen als nieuwe servicebron: ${name}",
 			"invalidFileName": "De bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |"
 		},
 		"achievements": {

@@ -196,6 +196,7 @@
 				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Fjarlægir skjáborðsflýtileið...",
 				"removingTerminalKeybindings": "Fjarlægir lagfæringu lyklaborðsviðmóts skels...",
 				"removingFount": "Fjarlægir leturgerð...",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
@@ -1894,7 +1895,30 @@
 			"copied": "Afritað!",
 			"apiKeyRequired": "API lykil er nauðsynleg til að skrá gerðir.",
 			"copyModelIdTooltip": "Smelltu til að afrita auðkenni fyrirmyndar",
-			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}"
+			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",
+			"modelSearchTitle": "Skoða líkanaskrá",
+			"modelSearchPlaceholder": {
+				"placeholder": "Leita eftir heiti líkans, veitanda eða getu…"
+			},
+			"modelSearchHint": "Með því að velja niðurstöðu fyllist slóð og heiti líkans sjálfkrafa út",
+			"modelsDevLoading": "Hleður líkanaskrá…",
+			"modelsDevLoadFailed": "Mistókst að hlaða líkanaskrá: ${message}",
+			"noModelsMatched": "Engin samsvarandi líkan fundust",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Veitandi: ${provider}",
+			"metaContext": "Samhengi: ${context} tákn",
+			"metaOutputLimit": "Hámarksúttak: ${output} tákn",
+			"metaInputPrice": "Inntaksverð: ${price} / 1M tákn",
+			"metaOutputPrice": "Úttaksverð: ${price} / 1M tákn",
+			"metaCachePrice": "Les/skrifa í skyndiminni: ${read} / ${write}",
+			"metaModalities": "Aðferðir: inntak ${input}, úttak ${output}",
+			"metaReasoning": "Styður röksemdafærslu",
+			"metaToolCall": "Styður verkfæraköll",
+			"metaVision": "Styður sjónrænt inntak",
+			"metaOpenWeights": "Opnar þyngdir",
+			"metaKnowledge": "Þekkingarmörk: ${knowledge}",
+			"metaReleaseDate": "Útgáfudagur: ${date}",
+			"providerDocLink": "[Skoða skjöl veitanda](${url})"
 		},
 		"prompts": {
 			"newFileName": "Vinsamlega sláðu inn nýja þjónustuupprunaskráarheitið (ekki hafa viðskeyti):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Engin skrá valin til að vista.",
 			"noFileSelectedDelete": "Engar skrár valdar til eyðingar.",
 			"noGeneratorSelectedSave": "Vinsamlegast veldu rafall áður en þú vistar",
+			"savedAsNewFile": "Vistað sem nýr þjónustuuppruni: ${name}",
 			"invalidFileName": "Skráarnafnið má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |"
 		},
 		"achievements": {

@@ -196,6 +196,7 @@
 				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "デスクトップのショートカットを削除しています...",
 				"removingTerminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
 				"removingFount": "フォントを削除しています...",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
@@ -1894,7 +1895,30 @@
 			"copied": "コピーしました！",
 			"apiKeyRequired": "モデルをリストするには API キーが必要です。",
 			"copyModelIdTooltip": "クリックしてモデル ID をコピーします",
-			"loadModelsFailed": "モデルのロードに失敗しました: ${message}"
+			"loadModelsFailed": "モデルの読み込みに失敗しました: ${message}",
+			"modelSearchTitle": "モデルカタログを閲覧",
+			"modelSearchPlaceholder": {
+				"placeholder": "モデル名、プロバイダー、機能で検索…"
+			},
+			"modelSearchHint": "結果をクリックすると、URL とモデル名が自動入力されます",
+			"modelsDevLoading": "カタログを読み込み中…",
+			"modelsDevLoadFailed": "カタログの読み込みに失敗しました: ${message}",
+			"noModelsMatched": "一致するモデルが見つかりません",
+			"currentModelTitle": "${name}（${model}）",
+			"providerLabel": "プロバイダー: ${provider}",
+			"metaContext": "コンテキスト: ${context} トークン",
+			"metaOutputLimit": "最大出力: ${output} トークン",
+			"metaInputPrice": "入力単価: ${price} / 100万トークン",
+			"metaOutputPrice": "出力単価: ${price} / 100万トークン",
+			"metaCachePrice": "キャッシュ読み取り/書き込み: ${read} / ${write}",
+			"metaModalities": "モダリティ: 入力 ${input}、出力 ${output}",
+			"metaReasoning": "推論対応",
+			"metaToolCall": "ツール呼び出し対応",
+			"metaVision": "視覚入力対応",
+			"metaOpenWeights": "オープンウェイト",
+			"metaKnowledge": "知識カットオフ: ${knowledge}",
+			"metaReleaseDate": "リリース日: ${date}",
+			"providerDocLink": "[プロバイダーのドキュメントを表示](${url})"
 		},
 		"prompts": {
 			"newFileName": "新しいサービス ソース ファイル名を入力してください (サフィックスは含めないでください)。"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "保存するファイルが選択されていません。",
 			"noFileSelectedDelete": "削除するファイルが選択されていません。",
 			"noGeneratorSelectedSave": "保存する前にジェネレータを選択してください",
+			"savedAsNewFile": "新しいサービスソースとして保存しました: ${name}",
 			"invalidFileName": "ファイル名には次の文字を含めることはできません: / \\ : * ? \" < > |"
 		},
 		"achievements": {
