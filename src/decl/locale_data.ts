@@ -203,6 +203,7 @@ export type LocaleData = {
 				editorRemoved: string
 			}
 			remove: {
+				removingDesktopShortcut: string
 				removingTerminalKeybindings: string
 				removingFount: string
 				fountUninstallationComplete: string
@@ -1884,6 +1885,29 @@ export type LocaleData = {
 			apiKeyRequired: string
 			copyModelIdTooltip: string
 			loadModelsFailed: string
+			modelSearchTitle: string
+			modelSearchPlaceholder: {
+				placeholder: string
+			}
+			modelSearchHint: string
+			modelsDevLoading: string
+			modelsDevLoadFailed: string
+			noModelsMatched: string
+			currentModelTitle: string
+			providerLabel: string
+			metaContext: string
+			metaOutputLimit: string
+			metaInputPrice: string
+			metaOutputPrice: string
+			metaCachePrice: string
+			metaModalities: string
+			metaReasoning: string
+			metaToolCall: string
+			metaVision: string
+			metaOpenWeights: string
+			metaKnowledge: string
+			metaReleaseDate: string
+			providerDocLink: string
 		}
 		prompts: {
 			newFileName: string
@@ -1921,6 +1945,7 @@ export type LocaleData = {
 			noFileSelectedSave: string
 			noFileSelectedDelete: string
 			noGeneratorSelectedSave: string
+			savedAsNewFile: string
 			invalidFileName: string
 		}
 		achievements: {
@@ -2848,9 +2873,22 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.alerts.fetchFileListFailed': { error: string | number }
 	'serviceSource_manager.alerts.fetchGeneratorListFailed': { error: string | number }
 	'serviceSource_manager.alerts.saveFileFailed': { error: string | number }
+	'serviceSource_manager.alerts.savedAsNewFile': { name: string | number }
 	'serviceSource_manager.alerts.setDefaultFailed': { error: string | number }
 	'serviceSource_manager.buttons.setDefault.checkbox.aria-label': { fileName: string | number }
+	'serviceSource_manager.common_config_interface.currentModelTitle': { model: string | number; name: string | number }
 	'serviceSource_manager.common_config_interface.loadModelsFailed': { message: string | number }
+	'serviceSource_manager.common_config_interface.metaCachePrice': { read: string | number; write: string | number }
+	'serviceSource_manager.common_config_interface.metaContext': { context: string | number }
+	'serviceSource_manager.common_config_interface.metaInputPrice': { price: string | number }
+	'serviceSource_manager.common_config_interface.metaKnowledge': { knowledge: string | number }
+	'serviceSource_manager.common_config_interface.metaModalities': { input: string | number; output: string | number }
+	'serviceSource_manager.common_config_interface.metaOutputLimit': { output: string | number }
+	'serviceSource_manager.common_config_interface.metaOutputPrice': { price: string | number }
+	'serviceSource_manager.common_config_interface.metaReleaseDate': { date: string | number }
+	'serviceSource_manager.common_config_interface.modelsDevLoadFailed': { message: string | number }
+	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
+	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
 	'subfounts.codeExecution.executionFailed': { message: string | number }
 	'subfounts.codeExecution.hostOption': { id: string | number }
 	'subfounts.codeExecution.subfountOption': { deviceId: string | number; id: string | number }

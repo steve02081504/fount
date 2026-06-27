@@ -196,6 +196,7 @@
 				"editorRemoved": "Конфигурация fount удалена из привязок клавиш терминала редактора: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Удаление ярлыка на рабочем столе...",
 				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
 				"removingFount": "Удаление fount...",
 				"fountUninstallationComplete": "Удаление фонта завершено.",
@@ -1894,7 +1895,30 @@
 			"copied": "Скопировано!",
 			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
-			"loadModelsFailed": "Не удалось загрузить модель: `${message}"
+			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
+			"modelSearchTitle": "Каталог моделей",
+			"modelSearchPlaceholder": {
+				"placeholder": "Поиск по названию модели, провайдеру или возможностям…"
+			},
+			"modelSearchHint": "При выборе результата URL и название модели заполнятся автоматически",
+			"modelsDevLoading": "Загрузка каталога…",
+			"modelsDevLoadFailed": "Не удалось загрузить каталог: ${message}",
+			"noModelsMatched": "Подходящие модели не найдены",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Провайдер: ${provider}",
+			"metaContext": "Контекст: ${context} токенов",
+			"metaOutputLimit": "Макс. вывод: ${output} токенов",
+			"metaInputPrice": "Цена входа: ${price} / 1M токенов",
+			"metaOutputPrice": "Цена выхода: ${price} / 1M токенов",
+			"metaCachePrice": "Кэш чтение/запись: ${read} / ${write}",
+			"metaModalities": "Модальности: ввод ${input}, вывод ${output}",
+			"metaReasoning": "Поддерживает режим рассуждений",
+			"metaToolCall": "Поддерживает вызов инструментов",
+			"metaVision": "Поддерживает визуальный ввод",
+			"metaOpenWeights": "Открытые веса",
+			"metaKnowledge": "Граница знаний: ${knowledge}",
+			"metaReleaseDate": "Дата выпуска: ${date}",
+			"providerDocLink": "[Посмотреть документацию провайдера](${url})"
 		},
 		"prompts": {
 			"newFileName": "Введите имя нового исходного файла службы (не включайте суффикс):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Файл для сохранения не выбран.",
 			"noFileSelectedDelete": "Файлы для удаления не выбраны.",
 			"noGeneratorSelectedSave": "Пожалуйста, выберите генератор перед сохранением",
+			"savedAsNewFile": "Сохранено как новый источник сервиса: ${name}",
 			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |"
 		},
 		"achievements": {

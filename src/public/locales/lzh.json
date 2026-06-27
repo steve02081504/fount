@@ -196,6 +196,7 @@
 				"editorRemoved": "已自編輯器終端按鍵對應移除 fount 設定：${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "正移除桌面快捷…",
 				"removingTerminalKeybindings": "正移除終端按鍵綁定之修補…",
 				"removingFount": "正移除 fount...",
 				"fountUninstallationComplete": "fount 卸載已畢",
@@ -1894,7 +1895,30 @@
 			"copied": "已謄。",
 			"apiKeyRequired": "需憑符鑰方可列出模組。",
 			"copyModelIdTooltip": "點此錄模組ID",
-			"loadModelsFailed": "載模組失利：${message}"
+			"loadModelsFailed": "載模組失利：${message}",
+			"modelSearchTitle": "覽模冊",
+			"modelSearchPlaceholder": {
+				"placeholder": "索模名、廠商、之能…"
+			},
+			"modelSearchHint": "點候選項，則自動填 URL 與模名",
+			"modelsDevLoading": "正載模冊…",
+			"modelsDevLoadFailed": "載模冊失利：${message}",
+			"noModelsMatched": "無相符之模",
+			"currentModelTitle": "${name}（${model}）",
+			"providerLabel": "廠商：${provider}",
+			"metaContext": "文脈：${context} tokens",
+			"metaOutputLimit": "最大輸出：${output} tokens",
+			"metaInputPrice": "輸入價：${price} / 1M tokens",
+			"metaOutputPrice": "輸出價：${price} / 1M tokens",
+			"metaCachePrice": "緩存讀寫：${read} / ${write}",
+			"metaModalities": "模態：輸入 ${input}，輸出 ${output}",
+			"metaReasoning": "通推理",
+			"metaToolCall": "通工具喚起",
+			"metaVision": "通視覺輸入",
+			"metaOpenWeights": "權重開放",
+			"metaKnowledge": "見聞止於：${knowledge}",
+			"metaReleaseDate": "發佈之日：${date}",
+			"providerDocLink": "[閱廠商文檔](${url})"
 		},
 		"prompts": {
 			"newFileName": "請為新源流命名（勿含後綴）："
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "未擇欲存之卷。",
 			"noFileSelectedDelete": "未擇欲刪之卷。",
 			"noGeneratorSelectedSave": "請先擇化生器而後存",
+			"savedAsNewFile": "已存為新源流：${name}",
 			"invalidFileName": "名諱不可含 / \\ : * ? \" < > |"
 		},
 		"achievements": {

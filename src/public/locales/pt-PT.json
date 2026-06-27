@@ -196,6 +196,7 @@
 				"editorRemoved": "Configuração fount removida dos atalhos do terminal do editor: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Removendo atalho da área de trabalho...",
 				"removingTerminalKeybindings": "A remover patch de atalhos do terminal...",
 				"removingFount": "Removendo fount...",
 				"fountUninstallationComplete": "desinstalação da fount concluída.",
@@ -1894,7 +1895,30 @@
 			"copied": "Copiado!",
 			"apiKeyRequired": "Uma chave de API é necessária para listar modelos.",
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
-			"loadModelsFailed": "Falha ao carregar modelo: ${message}"
+			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
+			"modelSearchTitle": "Explorar catálogo de modelos",
+			"modelSearchPlaceholder": {
+				"placeholder": "Pesquisar por nome do modelo, fornecedor ou capacidades…"
+			},
+			"modelSearchHint": "Ao clicar num resultado, o URL e o nome do modelo são preenchidos automaticamente",
+			"modelsDevLoading": "A carregar catálogo…",
+			"modelsDevLoadFailed": "Falha ao carregar o catálogo: ${message}",
+			"noModelsMatched": "Nenhum modelo correspondente encontrado",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Fornecedor: ${provider}",
+			"metaContext": "Contexto: ${context} tokens",
+			"metaOutputLimit": "Saída máxima: ${output} tokens",
+			"metaInputPrice": "Preço de entrada: ${price} / 1M tokens",
+			"metaOutputPrice": "Preço de saída: ${price} / 1M tokens",
+			"metaCachePrice": "Cache leitura/escrita: ${read} / ${write}",
+			"metaModalities": "Modalidades: entrada ${input}, saída ${output}",
+			"metaReasoning": "Suporta raciocínio",
+			"metaToolCall": "Suporta chamadas de ferramentas",
+			"metaVision": "Suporta entrada visual",
+			"metaOpenWeights": "Pesos abertos",
+			"metaKnowledge": "Limite de conhecimento: ${knowledge}",
+			"metaReleaseDate": "Data de lançamento: ${date}",
+			"providerDocLink": "[Ver documentação do fornecedor](${url})"
 		},
 		"prompts": {
 			"newFileName": "Insira o novo nome do arquivo de origem do serviço (não inclua o sufixo):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Nenhum arquivo selecionado para salvar.",
 			"noFileSelectedDelete": "Nenhum arquivo selecionado para exclusão.",
 			"noGeneratorSelectedSave": "Selecione o gerador antes de salvar",
+			"savedAsNewFile": "Guardado como nova fonte de serviço: ${name}",
 			"invalidFileName": "O nome do arquivo não pode conter os seguintes caracteres: / \\ : * ? \" < > |"
 		},
 		"achievements": {

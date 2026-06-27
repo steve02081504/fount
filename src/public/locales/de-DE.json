@@ -196,6 +196,7 @@
 				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Desktop-Verknüpfung wird entfernt...",
 				"removingTerminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
 				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
@@ -1894,7 +1895,30 @@
 			"copied": "Kopiert!",
 			"apiKeyRequired": "Zum Auflisten von Modellen ist ein API-Schlüssel erforderlich.",
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
-			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}"
+			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
+			"modelSearchTitle": "Modellkatalog durchstöbern",
+			"modelSearchPlaceholder": {
+				"placeholder": "Nach Modellname, Anbieter oder Fähigkeiten suchen…"
+			},
+			"modelSearchHint": "Ein Klick auf einen Eintrag füllt URL und Modellname automatisch aus",
+			"modelsDevLoading": "Katalog wird geladen…",
+			"modelsDevLoadFailed": "Katalog konnte nicht geladen werden: ${message}",
+			"noModelsMatched": "Keine passenden Modelle gefunden",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Anbieter: ${provider}",
+			"metaContext": "Kontext: ${context} Token",
+			"metaOutputLimit": "Max. Ausgabe: ${output} Token",
+			"metaInputPrice": "Eingabepreis: ${price} / 1 Mio. Token",
+			"metaOutputPrice": "Ausgabepreis: ${price} / 1 Mio. Token",
+			"metaCachePrice": "Cache-Lesen/Schreiben: ${read} / ${write}",
+			"metaModalities": "Modalitäten: Eingabe ${input}, Ausgabe ${output}",
+			"metaReasoning": "Reasoning-fähig",
+			"metaToolCall": "Unterstützt Tool-Aufrufe",
+			"metaVision": "Unterstützt visuelle Eingabe",
+			"metaOpenWeights": "Offene Gewichte",
+			"metaKnowledge": "Wissensstand: ${knowledge}",
+			"metaReleaseDate": "Veröffentlichungsdatum: ${date}",
+			"providerDocLink": "[Anbieterdokumentation anzeigen](${url})"
 		},
 		"prompts": {
 			"newFileName": "Bitte geben Sie den Namen der neuen Dienstquelldatei ein (ohne Suffix):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
 			"noFileSelectedDelete": "Keine Dateien zum Löschen ausgewählt.",
 			"noGeneratorSelectedSave": "Bitte wählen Sie vor dem Speichern den Generator aus",
+			"savedAsNewFile": "Als neue Dienstquelle gespeichert: ${name}",
 			"invalidFileName": "Der Dateiname darf die folgenden Zeichen nicht enthalten: / \\ : * ? \" < > |"
 		},
 		"achievements": {

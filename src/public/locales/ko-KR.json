@@ -196,6 +196,7 @@
 				"editorRemoved": "편집기 터미널 키 바인딩에서 fount 설정을 제거했습니다: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "바탕화면 바로가기 삭제 중...",
 				"removingTerminalKeybindings": "터미널 키 바인딩 패치 제거 중...",
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
@@ -1894,7 +1895,30 @@
 			"copied": "복사되었습니다!",
 			"apiKeyRequired": "모델을 나열하려면 API 키가 필요합니다.",
 			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
-			"loadModelsFailed": "모델 로드 실패: ${message}"
+			"loadModelsFailed": "모델 로드 실패: ${message}",
+			"modelSearchTitle": "모델 카탈로그 탐색",
+			"modelSearchPlaceholder": {
+				"placeholder": "모델명, 제공업체, 기능으로 검색…"
+			},
+			"modelSearchHint": "항목을 클릭하면 URL과 모델명이 자동으로 입력됩니다",
+			"modelsDevLoading": "카탈로그 로딩 중…",
+			"modelsDevLoadFailed": "카탈로그를 불러오지 못했습니다: ${message}",
+			"noModelsMatched": "일치하는 모델이 없습니다",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "제공업체: ${provider}",
+			"metaContext": "컨텍스트: ${context} 토큰",
+			"metaOutputLimit": "최대 출력: ${output} 토큰",
+			"metaInputPrice": "입력 가격: ${price} / 100만 토큰",
+			"metaOutputPrice": "출력 가격: ${price} / 100만 토큰",
+			"metaCachePrice": "캐시 읽기/쓰기: ${read} / ${write}",
+			"metaModalities": "모달리티: 입력 ${input}, 출력 ${output}",
+			"metaReasoning": "추론 지원",
+			"metaToolCall": "도구 호출 지원",
+			"metaVision": "시각 입력 지원",
+			"metaOpenWeights": "오픈 웨이트",
+			"metaKnowledge": "지식 기준일: ${knowledge}",
+			"metaReleaseDate": "출시일: ${date}",
+			"providerDocLink": "[제공업체 문서 보기](${url})"
 		},
 		"prompts": {
 			"newFileName": "새 서비스 소스 파일 이름을 입력하세요(접미사 제외)."
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "저장할 파일을 선택하지 않았습니다.",
 			"noFileSelectedDelete": "삭제할 파일을 선택하지 않았습니다.",
 			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택하십시오",
+			"savedAsNewFile": "새 서비스 소스로 저장했습니다: ${name}",
 			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |"
 		},
 		"achievements": {

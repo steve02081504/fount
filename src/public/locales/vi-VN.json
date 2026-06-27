@@ -196,6 +196,7 @@
 				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Đang xóa lối tắt trên màn hình...",
 				"removingTerminalKeybindings": "Đang gỡ bản vá phím tắt terminal...",
 				"removingFount": "Đang xóa fount...",
 				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
@@ -1894,7 +1895,30 @@
 			"copied": "Đã sao chép!",
 			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
-			"loadModelsFailed": "Không tải được mô hình: ${message}"
+			"loadModelsFailed": "Không tải được mô hình: ${message}",
+			"modelSearchTitle": "Duyệt danh mục mô hình",
+			"modelSearchPlaceholder": {
+				"placeholder": "Tìm theo tên mô hình, nhà cung cấp hoặc khả năng…"
+			},
+			"modelSearchHint": "Nhấp vào kết quả để tự động điền URL và tên mô hình",
+			"modelsDevLoading": "Đang tải danh mục…",
+			"modelsDevLoadFailed": "Không tải được danh mục: ${message}",
+			"noModelsMatched": "Không tìm thấy mô hình phù hợp",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Nhà cung cấp: ${provider}",
+			"metaContext": "Ngữ cảnh: ${context} token",
+			"metaOutputLimit": "Đầu ra tối đa: ${output} token",
+			"metaInputPrice": "Giá đầu vào: ${price} / 1M token",
+			"metaOutputPrice": "Giá đầu ra: ${price} / 1M token",
+			"metaCachePrice": "Đọc/ghi bộ đệm: ${read} / ${write}",
+			"metaModalities": "Phương thức: đầu vào ${input}, đầu ra ${output}",
+			"metaReasoning": "Hỗ trợ suy luận",
+			"metaToolCall": "Hỗ trợ gọi công cụ",
+			"metaVision": "Hỗ trợ đầu vào hình ảnh",
+			"metaOpenWeights": "Trọng số mở",
+			"metaKnowledge": "Giới hạn kiến thức: ${knowledge}",
+			"metaReleaseDate": "Ngày phát hành: ${date}",
+			"providerDocLink": "[Xem tài liệu nhà cung cấp](${url})"
 		},
 		"prompts": {
 			"newFileName": "Vui lòng nhập tên tệp nguồn dịch vụ mới (không bao gồm hậu tố):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Không có tập tin nào được chọn để lưu.",
 			"noFileSelectedDelete": "Không có tập tin nào được chọn để xóa.",
 			"noGeneratorSelectedSave": "Vui lòng chọn trình tạo trước khi lưu",
+			"savedAsNewFile": "Đã lưu dưới dạng nguồn dịch vụ mới: ${name}",
 			"invalidFileName": "Tên tệp không được chứa các ký tự sau: / \\ : * ? \" < > |"
 		},
 		"achievements": {

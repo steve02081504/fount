@@ -196,6 +196,7 @@
 				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "جارٍ إزالة اختصار سطح المكتب...",
 				"removingTerminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
 				"removingFount": "جارٍ إزالة fount...",
 				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
@@ -1894,7 +1895,30 @@
 			"copied": "منسوخ!",
 			"apiKeyRequired": "مطلوب مفتاح API لسرد النماذج.",
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
-			"loadModelsFailed": "فشل تحميل النموذج: ${message}"
+			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
+			"modelSearchTitle": "تصفّح دليل النماذج",
+			"modelSearchPlaceholder": {
+				"placeholder": "ابحث باسم النموذج أو المزوّد أو القدرات…"
+			},
+			"modelSearchHint": "عند اختيار نتيجة، يُملآن عنوان URL واسم النموذج تلقائيًا",
+			"modelsDevLoading": "جارٍ تحميل الدليل…",
+			"modelsDevLoadFailed": "تعذّر تحميل الدليل: ${message}",
+			"noModelsMatched": "لم يُعثر على نماذج مطابقة",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "المزوّد: ${provider}",
+			"metaContext": "السياق: ${context} رمز",
+			"metaOutputLimit": "الحد الأقصى للإخراج: ${output} رمز",
+			"metaInputPrice": "سعر الإدخال: ${price} / مليون رمز",
+			"metaOutputPrice": "سعر الإخراج: ${price} / مليون رمز",
+			"metaCachePrice": "قراءة/كتابة الذاكرة المؤقتة: ${read} / ${write}",
+			"metaModalities": "الأنماط: إدخال ${input}، إخراج ${output}",
+			"metaReasoning": "يدعم الاستدلال",
+			"metaToolCall": "يدعم استدعاء الأدوات",
+			"metaVision": "يدعم الإدخال البصري",
+			"metaOpenWeights": "أوزان مفتوحة",
+			"metaKnowledge": "حد المعرفة: ${knowledge}",
+			"metaReleaseDate": "تاريخ الإصدار: ${date}",
+			"providerDocLink": "[عرض وثائق المزوّد](${url})"
 		},
 		"prompts": {
 			"newFileName": "الرجاء إدخال اسم ملف مصدر الخدمة الجديد (لا تتضمن اللاحقة):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "لم يتم تحديد ملف للحفظ.",
 			"noFileSelectedDelete": "لم يتم تحديد أي ملفات للحذف.",
 			"noGeneratorSelectedSave": "الرجاء تحديد المولد قبل الحفظ",
+			"savedAsNewFile": "تم الحفظ كمصدر خدمة جديد: ${name}",
 			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |"
 		},
 		"achievements": {

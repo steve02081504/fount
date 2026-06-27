@@ -196,6 +196,7 @@
 				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Eliminando acceso directo del escritorio...",
 				"removingTerminalKeybindings": "Eliminando parche de atajos del terminal...",
 				"removingFount": "Eliminando fount...",
 				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
@@ -1894,7 +1895,30 @@
 			"copied": "¡Copiado!",
 			"apiKeyRequired": "Se requiere una clave API para enumerar modelos.",
 			"copyModelIdTooltip": "Haga clic para copiar el ID del modelo",
-			"loadModelsFailed": "No se pudo cargar el modelo: ${message}"
+			"loadModelsFailed": "No se pudo cargar el modelo: ${message}",
+			"modelSearchTitle": "Explorar catálogo de modelos",
+			"modelSearchPlaceholder": {
+				"placeholder": "Buscar por nombre de modelo, proveedor o capacidades…"
+			},
+			"modelSearchHint": "Al seleccionar un resultado, se rellenarán automáticamente la URL y el nombre del modelo",
+			"modelsDevLoading": "Cargando catálogo…",
+			"modelsDevLoadFailed": "No se pudo cargar el catálogo: ${message}",
+			"noModelsMatched": "No se encontraron modelos coincidentes",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Proveedor: ${provider}",
+			"metaContext": "Contexto: ${context} tokens",
+			"metaOutputLimit": "Salida máxima: ${output} tokens",
+			"metaInputPrice": "Precio de entrada: ${price} / 1M tokens",
+			"metaOutputPrice": "Precio de salida: ${price} / 1M tokens",
+			"metaCachePrice": "Caché lectura/escritura: ${read} / ${write}",
+			"metaModalities": "Modalidades: entrada ${input}, salida ${output}",
+			"metaReasoning": "Admite razonamiento",
+			"metaToolCall": "Admite llamadas a herramientas",
+			"metaVision": "Admite entrada visual",
+			"metaOpenWeights": "Pesos abiertos",
+			"metaKnowledge": "Límite de conocimiento: ${knowledge}",
+			"metaReleaseDate": "Fecha de lanzamiento: ${date}",
+			"providerDocLink": "[Ver documentación del proveedor](${url})"
 		},
 		"prompts": {
 			"newFileName": "Ingrese el nuevo nombre del archivo fount del servicio (no incluya el sufijo):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "No se seleccionó ningún archivo para guardar.",
 			"noFileSelectedDelete": "No hay archivos seleccionados para eliminar.",
 			"noGeneratorSelectedSave": "Por favor seleccione el generador antes de guardar",
+			"savedAsNewFile": "Guardado como nueva fuente de servicio: ${name}",
 			"invalidFileName": "El nombre del archivo no puede contener los siguientes caracteres: / \\ : * ? \" < > |"
 		},
 		"achievements": {

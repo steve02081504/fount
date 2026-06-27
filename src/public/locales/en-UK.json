@@ -196,6 +196,7 @@
 				"editorRemoved": "Removed fount configuration from editor terminal keybindings: ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Removing desktop shortcut...",
 				"removingTerminalKeybindings": "Removing terminal keybinding patch...",
 				"removingFount": "Removing fount...",
 				"fountUninstallationComplete": "fount uninstallation completed.",
@@ -1894,7 +1895,30 @@
 			"copied": "Copied!",
 			"apiKeyRequired": "An API key is required to list models.",
 			"copyModelIdTooltip": "Click to copy model ID",
-			"loadModelsFailed": "Failed to load model: ${message}"
+			"loadModelsFailed": "Failed to load model: ${message}",
+			"modelSearchTitle": "Browse model catalog",
+			"modelSearchPlaceholder": {
+				"placeholder": "Search by model name, provider, or capabilities…"
+			},
+			"modelSearchHint": "Clicking a result automatically fills in the URL and model name",
+			"modelsDevLoading": "Loading catalog…",
+			"modelsDevLoadFailed": "Failed to load catalog: ${message}",
+			"noModelsMatched": "No matching models found",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Provider: ${provider}",
+			"metaContext": "Context: ${context} tokens",
+			"metaOutputLimit": "Max output: ${output} tokens",
+			"metaInputPrice": "Input price: ${price} / 1M tokens",
+			"metaOutputPrice": "Output price: ${price} / 1M tokens",
+			"metaCachePrice": "Cache read/write: ${read} / ${write}",
+			"metaModalities": "Modalities: input ${input}, output ${output}",
+			"metaReasoning": "Supports reasoning",
+			"metaToolCall": "Supports tool calling",
+			"metaVision": "Supports vision input",
+			"metaOpenWeights": "Open weights",
+			"metaKnowledge": "Knowledge cutoff: ${knowledge}",
+			"metaReleaseDate": "Release date: ${date}",
+			"providerDocLink": "[View provider documentation](${url})"
 		},
 		"prompts": {
 			"newFileName": "Please enter the new service source file name (do not include the suffix):"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "No file selected to save.",
 			"noFileSelectedDelete": "No files selected for deletion.",
 			"noGeneratorSelectedSave": "Please select the generator before saving",
+			"savedAsNewFile": "Saved as new service source: ${name}",
 			"invalidFileName": "The file name cannot contain the following characters: / \\ : * ? \" < > |"
 		},
 		"achievements": {

@@ -196,6 +196,7 @@
 				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : ${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Suppression du raccourci sur le bureau...",
 				"removingTerminalKeybindings": "Suppression du correctif de raccourcis du terminal...",
 				"removingFount": "Suppression de la fount...",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
@@ -1894,7 +1895,30 @@
 			"copied": "Copié!",
 			"apiKeyRequired": "Une clé API est requise pour répertorier les modèles.",
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
-			"loadModelsFailed": "Échec du chargement du modèle : ${message}"
+			"loadModelsFailed": "Échec du chargement du modèle : ${message}",
+			"modelSearchTitle": "Parcourir le catalogue de modèles",
+			"modelSearchPlaceholder": {
+				"placeholder": "Rechercher par nom de modèle, fournisseur ou capacités…"
+			},
+			"modelSearchHint": "Cliquer sur un résultat remplit automatiquement l'URL et le nom du modèle",
+			"modelsDevLoading": "Chargement du catalogue…",
+			"modelsDevLoadFailed": "Échec du chargement du catalogue : ${message}",
+			"noModelsMatched": "Aucun modèle correspondant trouvé",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Fournisseur : ${provider}",
+			"metaContext": "Contexte : ${context} jetons",
+			"metaOutputLimit": "Sortie max. : ${output} jetons",
+			"metaInputPrice": "Prix d'entrée : ${price} / 1M jetons",
+			"metaOutputPrice": "Prix de sortie : ${price} / 1M jetons",
+			"metaCachePrice": "Cache lecture/écriture : ${read} / ${write}",
+			"metaModalities": "Modalités : entrée ${input}, sortie ${output}",
+			"metaReasoning": "Prend en charge le raisonnement",
+			"metaToolCall": "Prend en charge les appels d'outils",
+			"metaVision": "Prend en charge la saisie visuelle",
+			"metaOpenWeights": "Poids ouverts",
+			"metaKnowledge": "Limite de connaissances : ${knowledge}",
+			"metaReleaseDate": "Date de sortie : ${date}",
+			"providerDocLink": "[Voir la documentation du fournisseur](${url})"
 		},
 		"prompts": {
 			"newFileName": "Veuillez saisir le nouveau nom du fichier source du service (n'incluez pas le suffixe) :"
@@ -1932,6 +1956,7 @@
 			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
 			"noFileSelectedDelete": "Aucun fichier sélectionné pour la suppression.",
 			"noGeneratorSelectedSave": "Veuillez sélectionner le générateur avant de sauvegarder",
+			"savedAsNewFile": "Enregistré en tant que nouvelle source de service : ${name}",
 			"invalidFileName": "Le nom du fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |"
 		},
 		"achievements": {
