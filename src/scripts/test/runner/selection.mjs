@@ -1,3 +1,4 @@
+import { console } from '../../i18n.mjs'
 import {
 	failuresToSuiteMap,
 	listFailedManifests,
@@ -94,32 +95,41 @@ export async function selectSuites({
 
 	if (usingFailureRetry) {
 		selected = suitesFromFailureRetry(filtered, retryByManifest)
-		console.log(`失败重跑: ${[...retryByManifest.keys()].join(', ')} (${selected.length} suites)`)
+		console.logI18n('fountConsole.test.failureRetry', {
+			manifests: [...retryByManifest.keys()].join(', '),
+			count: selected.length,
+		})
 
 		const hashStale = uncommittedFiles.length > 0 && [...failureRecords.values()].some(record =>
 			record.uncommittedHash == null || record.uncommittedHash !== currentHash,
 		)
 		if (hashStale && changed.mode === 'diff' && changed.files.length) {
 			const merged = dedupeSuites([...selected, ...selectSuitesByDiff(changed.mode, changed.files, filtered)])
-			console.log(`未提交 hash 变化，追加 diff: +${merged.length - selected.length} suites`)
+			console.logI18n('fountConsole.test.hashStaleAppendDiff', {
+				count: merged.length - selected.length,
+			})
 			selected = merged
 		}
 	}
 	else if (changed.mode === 'diff' && changed.files.length) {
 		selected = selectSuitesByDiff(changed.mode, changed.files, filtered)
-		console.log('diff 模式:', changed.files.length, 'files —',
-			changed.files.slice(0, 12).join(', '),
-			changed.files.length > 12 ? '...' : '')
+		console.logI18n('fountConsole.test.diffMode', {
+			fileCount: changed.files.length,
+			files: changed.files.slice(0, 12).join(', ')
+				+ (changed.files.length > 12 ? '...' : ''),
+		})
 	}
 	else if (changed.mode === 'none' && !manifestIds?.length) {
-		console.log('无未提交变更且未指定 --since：仅重跑存在失败记录的 suite。')
-		console.log('提示: fount test --all | fount test --since <commit> | fount test shells/chat')
+		console.logI18n('fountConsole.test.noChangesHint')
+		console.logI18n('fountConsole.test.tip')
 		if (!failureManifestIds.length) return { action: 'exit', code: 0 }
 		selected = suitesFromFailureRetry(allSuites, retryByManifest)
 		if (!selected.length) return { action: 'exit', code: 0 }
 	}
 	else if (changed.mode === 'none' && manifestIds?.length)
-		console.log(`manifest ${manifestIds.join(',')} 无 diff 触发项；将运行其全部 suite。`)
+		console.logI18n('fountConsole.test.manifestNoDiffRunAll', {
+			manifestIds: manifestIds.join(','),
+		})
 
 	return { action: 'run', suites: selected, retryByManifest, usingFailureRetry }
 }

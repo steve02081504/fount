@@ -5,6 +5,7 @@ import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { console, geti18n } from '../../i18n.mjs'
 import { computeUncommittedHash, getUncommittedFiles, resolveChangedFiles } from '../core/changed.mjs'
 import {
 	applyBudgetToEnv,
@@ -136,8 +137,15 @@ async function runSuite(suite, onlyFiles, globalBudget, stream = false) {
 function printSuiteSummary(label, result, genReport, streamed = false) {
 	const noisy = outputHasNoise(result.output)
 	if (genReport) {
-		const parts = [result.passed ? 'PASSED' : 'FAILED', label]
-		if (noisy) parts.push(`(noise: ${detectNoiseHits(result.output).join(', ')})`)
+		const parts = [
+			result.passed
+				? geti18n('fountConsole.test.passedLabel')
+				: geti18n('fountConsole.test.failedLabel'),
+			label,
+		]
+		if (noisy) parts.push(geti18n('fountConsole.test.noiseHits', {
+			hits: detectNoiseHits(result.output).join(', '),
+		}))
 		const line = parts.join(': ')
 		if (result.passed) console.log(line)
 		else console.error(line)
@@ -145,9 +153,11 @@ function printSuiteSummary(label, result, genReport, streamed = false) {
 	}
 	if (!streamed && (!result.passed || noisy)) process.stdout.write(result.output)
 	if (result.passed)
-		console.log(`PASSED: ${label}${noisy ? ' (with noise)' : ''}`)
+		console.log(noisy
+			? geti18n('fountConsole.test.passedWithNoise', { label })
+			: geti18n('fountConsole.test.passed', { label }))
 	else
-		console.error(`FAILED: ${label}`)
+		console.error(geti18n('fountConsole.test.failed', { label }))
 }
 
 /**
@@ -167,14 +177,16 @@ export async function runTests(options = {}) {
 	if (options.manifestSelectors?.length) {
 		const resolved = resolveManifestSelectors(options.manifestSelectors, knownIds)
 		if (resolved.unmatched.length) {
-			console.error(`unknown manifest id: ${resolved.unmatched.join(', ')}`)
-			console.error('available:', knownIds.join(', '))
+			console.errorI18n('fountConsole.test.unknownManifestId', {
+				ids: resolved.unmatched.join(', '),
+			})
+			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
 			return 2
 		}
 		manifestIds = resolved.manifestIds
 		if (manifestIds.length !== options.manifestSelectors.length
 			|| options.manifestSelectors.some(selector => !knownIds.includes(selector)))
-			console.log('manifest 匹配:', manifestIds.join(', '))
+			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
 	}
 
 	const trackFailures = shouldTrackFailures(manifestIds)
@@ -212,10 +224,13 @@ export async function runTests(options = {}) {
 
 	const { suites: selected, retryByManifest, usingFailureRetry } = selection
 
-	console.log(`selected ${selected.length}/${allSuites.length} test suites`)
+	console.logI18n('fountConsole.test.selectedSuites', {
+		selected: selected.length,
+		total: allSuites.length,
+	})
 
 	if (!selected.length) {
-		console.log('没有匹配的测试 suite。')
+		console.logI18n('fountConsole.test.noMatchingSuites')
 		return 0
 	}
 
@@ -253,7 +268,9 @@ export async function runTests(options = {}) {
 			command: commandParts.join(' '),
 		})
 		const reportPath = await reportWriter.init()
-		console.log(`报告: ${reportPath.replace(/\\/g, '/')}`)
+		console.logI18n('fountConsole.test.reportPath', {
+			path: reportPath.replace(/\\/g, '/'),
+		})
 	}
 
 	/**
@@ -266,7 +283,13 @@ export async function runTests(options = {}) {
 			const suite = selected[index]
 			const release = await gate.acquire(suite)
 			try {
-				console.log(`\n>>> running ${suite.manifestId}/${suite.name}${suite.heavy ? ' (heavy)' : ''}`)
+				const runningKey = suite.heavy
+					? 'fountConsole.test.runningSuiteHeavy'
+					: 'fountConsole.test.runningSuite'
+				console.logI18n(runningKey, {
+					manifestId: suite.manifestId,
+					name: suite.name,
+				})
 				if (!genReport) console.log('>>', suite.run.join(' '))
 				const retryMap = retryByManifest.get(suite.manifestId)
 				const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
@@ -320,15 +343,20 @@ export async function runTests(options = {}) {
 			const items = manifestFailures.get(manifestId) ?? []
 			await writeFailures(REPO_ROOT, manifestId, items, currentHash)
 			if (items.length)
-				console.log(`已保存失败列表: ${relative(REPO_ROOT, failureFilePath(REPO_ROOT, manifestId)).replace(/\\/g, '/')} (${items.length} suites)`)
+				console.logI18n('fountConsole.test.failuresSaved', {
+					path: relative(REPO_ROOT, failureFilePath(REPO_ROOT, manifestId)).replace(/\\/g, '/'),
+					count: items.length,
+				})
 			else if (retryByManifest.has(manifestId))
-				console.log(`manifest ${manifestId} 全部通过，已清除失败列表。`)
+				console.logI18n('fountConsole.test.failuresCleared', { manifestId })
 		}
 	}
 
 	if (reportWriter) {
 		const reportPath = await reportWriter.finalize(exitCode)
-		console.log(`\n报告: ${reportPath.replace(/\\/g, '/')}`)
+		console.logI18n('fountConsole.test.reportPathFinal', {
+			path: reportPath.replace(/\\/g, '/'),
+		})
 	}
 
 	return exitCode

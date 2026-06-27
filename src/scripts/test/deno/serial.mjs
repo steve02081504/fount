@@ -10,6 +10,7 @@ import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { console } from '../../i18n.mjs'
 import { computeConcurrency, readBudgetFromEnv, UNIT_MEM, concurrencyFromBudget } from '../core/concurrency.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {
@@ -53,7 +54,7 @@ async function runCaptured(command) {
 }
 
 if (!args.length) {
-	console.error('usage: serial.mjs <deno-test-path> [...]')
+	console.errorI18n('fountConsole.test.serialUsage')
 	process.exit(2)
 }
 
@@ -135,7 +136,9 @@ await Promise.all(Array.from(
 ))
 
 if (silentPassed > 0)
-	console.log(`${silentPassed} test file${silentPassed > 1 ? 's' : ''} passed (no output).`)
+	console.logI18n(silentPassed > 1
+		? 'fountConsole.test.silentPassedMany'
+		: 'fountConsole.test.silentPassedOne', silentPassed > 1 ? { count: silentPassed } : undefined)
 
 if (failed.length) {
 	await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)

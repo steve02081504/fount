@@ -7,6 +7,7 @@ import 'fount/scripts/test/env.mjs'
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 
+import { console } from '../../../i18n.mjs'
 import { hosturl } from '../../../server/server.mjs'
 
 import { bootInProcess } from './boot.mjs'
@@ -28,19 +29,19 @@ const username = values.user
 const loadParts = values['load-part'] ?? []
 
 if (!dataPath) {
-	console.error('node worker: --data-path required')
+	console.errorI18n('fountConsole.test.nodeWorker.dataPathRequired')
 	process.exit(2)
 }
 if (!values.port) {
-	console.error('node worker: --port required (launch via launch.mjs)')
+	console.errorI18n('fountConsole.test.nodeWorker.portRequired')
 	process.exit(2)
 }
 if (!values.key) {
-	console.error('node worker: --key required (launch via launch.mjs)')
+	console.errorI18n('fountConsole.test.nodeWorker.keyRequired')
 	process.exit(2)
 }
 if (!username) {
-	console.error('node worker: --user required')
+	console.errorI18n('fountConsole.test.nodeWorker.userRequired')
 	process.exit(2)
 }
 
@@ -57,7 +58,7 @@ try {
 	})
 }
 catch (error) {
-	console.error('node worker:', error)
+	console.errorI18n('fountConsole.test.nodeWorker.error', { error })
 	process.exit(1)
 }
 

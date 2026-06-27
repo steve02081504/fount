@@ -6,6 +6,8 @@
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 
+import { geti18n } from '../i18n.mjs'
+
 import { runTests } from './runner/index.mjs'
 
 const { positionals, values } = parseArgs({
@@ -21,36 +23,7 @@ const { positionals, values } = parseArgs({
 })
 
 if (values.help || positionals.includes('help')) {
-	console.log(`\
-usage: fount test [--all] [--gen-report] [-j <n>] [--since <commit>] [<manifest-ids> [<suite-selectors>]]
-
-manifest id 来自各 test/manifest.json 顶层 "id" 字段。
-多个 manifest id 用逗号分隔（勿用空格）：shells/chat,shells/social
-无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；
-亦支持 glob（*、?、**），例如 shells/*、**。
-
-suite 指名匹配各 suite 的 id 或 name，同样用逗号分隔。
-
-在未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比 commit。
-指定 manifest id 时启用失败记录（data/test/failures/）；未指定 suite 时存在失败记录则仅重跑失败项；显式指名 suite 直接按指名执行（不再求交集）。
-
---gen-report  将失败/噪声 suite 输出落盘并生成 data/test/report/report.md + report.json（每完成一个 suite 即刷新）。
--j, --jobs    全局并发上限（默认 CPU 线程数）。
-
-examples:
-  fount test
-  fount test --all
-  fount test --all --gen-report
-  fount test p2p,shells/chat,shells/social --all --gen-report -j 16
-  fount test shells/chat
-  fount test shells
-  fount test shells/*
-  fount test shells/chat,shells/social
-  fount test shells/chat frontend
-  fount test shells/chat unit,fed_test
-  fount test p2p
-  fount test --since abc1234
-`)
+	console.log(geti18n('fountConsole.test.help'))
 	process.exit(0)
 }
 

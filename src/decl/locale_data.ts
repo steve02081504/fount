@@ -123,6 +123,87 @@ export type LocaleData = {
 		logViewer: {
 			replHint: string
 		}
+		test: {
+			help: string
+			passed: string
+			passedWithNoise: string
+			failed: string
+			passedLabel: string
+			failedLabel: string
+			noiseHits: string
+			unknownManifestId: string
+			available: string
+			manifestMatched: string
+			selectedSuites: string
+			noMatchingSuites: string
+			reportPath: string
+			reportPathFinal: string
+			runningSuite: string
+			runningSuiteHeavy: string
+			failuresSaved: string
+			failuresCleared: string
+			failureRetry: string
+			hashStaleAppendDiff: string
+			diffMode: string
+			noChangesHint: string
+			tip: string
+			manifestNoDiffRunAll: string
+			unknownSuite: string
+			federationCleanupPre: string
+			federationCleanupPost: string
+			suiteHeader: string
+			liveUsage: string
+			serialUsage: string
+			silentPassedOne: string
+			silentPassedMany: string
+			ciNoDiffFallback: string
+			noFrontendPhasesMatched: string
+			nodeWorker: {
+				dataPathRequired: string
+				portRequired: string
+				keyRequired: string
+				userRequired: string
+				error: string
+			}
+			ws: {
+				pass: string
+				fail: string
+			}
+			report: {
+				title: string
+				tableHeaderItem: string
+				tableHeaderValue: string
+				fieldRunId: string
+				fieldCommand: string
+				fieldExit: string
+				fieldProgress: string
+				fieldSuites: string
+				fieldFailed: string
+				fieldNoisyPassed: string
+				fieldDuration: string
+				commandDefault: string
+				exitPassed: string
+				exitFailed: string
+				exitInProgress: string
+				progressFormat: string
+				suitesFormat: string
+				artifacts: string
+				sectionFailed: string
+				sectionNoisyPassed: string
+				sectionSilentPassed: string
+				sectionPending: string
+				columnSuite: string
+				columnDuration: string
+				labelDuration: string
+				labelLog: string
+				labelNoise: string
+				labelFailedFiles: string
+				durationMs: string
+				durationSec: string
+				durationMin: string
+				durationMinSec: string
+			}
+		}
 		path: {
 			protocol: {
 				description: string
@@ -2815,6 +2896,39 @@ export type LocaleKeyParams = {
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
+	'fountConsole.test.available': { ids: string | number }
+	'fountConsole.test.diffMode': { fileCount: string | number; files: string | number }
+	'fountConsole.test.failuresCleared': { manifestId: string | number }
+	'fountConsole.test.failuresSaved': { count: string | number; path: string | number }
+	'fountConsole.test.failed': { label: string | number }
+	'fountConsole.test.failureRetry': { count: string | number; manifests: string | number }
+	'fountConsole.test.federationCleanupPost': { output: string | number }
+	'fountConsole.test.federationCleanupPre': { output: string | number }
+	'fountConsole.test.hashStaleAppendDiff': { count: string | number }
+	'fountConsole.test.manifestMatched': { ids: string | number }
+	'fountConsole.test.manifestNoDiffRunAll': { manifestIds: string | number }
+	'fountConsole.test.noiseHits': { hits: string | number }
+	'fountConsole.test.nodeWorker.error': { error: string | number }
+	'fountConsole.test.passed': { label: string | number }
+	'fountConsole.test.passedWithNoise': { label: string | number }
+	'fountConsole.test.report.artifacts': { path: string | number }
+	'fountConsole.test.report.durationMin': { min: string | number }
+	'fountConsole.test.report.durationMinSec': { min: string | number; sec: string | number }
+	'fountConsole.test.report.durationMs': { ms: string | number }
+	'fountConsole.test.report.durationSec': { sec: string | number }
+	'fountConsole.test.report.progressFormat': { completed: string | number; total: string | number }
+	'fountConsole.test.report.suitesFormat': { completed: string | number; passed: string | number }
+	'fountConsole.test.reportPath': { path: string | number }
+	'fountConsole.test.reportPathFinal': { path: string | number }
+	'fountConsole.test.runningSuite': { manifestId: string | number; name: string | number }
+	'fountConsole.test.runningSuiteHeavy': { manifestId: string | number; name: string | number }
+	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
+	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.suiteHeader': { name: string | number }
+	'fountConsole.test.unknownManifestId': { ids: string | number }
+	'fountConsole.test.unknownSuite': { name: string | number }
+	'fountConsole.test.ws.fail': { detail: string | number }
+	'fountConsole.test.ws.pass': { detail: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }
 	'fountConsole.tray.readIconFailed': { error: string | number }
 	'fountConsole.verification.codeGeneratedLog': { code: string | number }

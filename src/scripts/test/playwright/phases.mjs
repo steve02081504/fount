@@ -7,6 +7,7 @@ import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
+import { console } from '../../i18n.mjs'
 import {
 	isIncludedInTestOnly,
 	parseTestOnlyEnv,
@@ -114,7 +115,7 @@ export async function runFrontendPhases({
 	const keepGoing = process.env.FOUNT_TEST_KEEP_GOING === '1'
 
 	if (!selected.length) {
-		console.error('no frontend phases matched FOUNT_TEST_ONLY')
+		console.errorI18n('fountConsole.test.noFrontendPhasesMatched')
 		return 2
 	}
 

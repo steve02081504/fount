@@ -4,6 +4,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
+import { geti18n } from '../../i18n.mjs'
 import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	reportDir,
@@ -64,12 +65,14 @@ function logFileName(manifestId, suiteName) {
  * @returns {string} 如 "1m 23s"
  */
 function formatDuration(ms) {
-	if (ms < 1000) return `${ms}ms`
+	if (ms < 1000) return geti18n('fountConsole.test.report.durationMs', { ms })
 	const sec = Math.round(ms / 1000)
-	if (sec < 60) return `${sec}s`
+	if (sec < 60) return geti18n('fountConsole.test.report.durationSec', { sec })
 	const min = Math.floor(sec / 60)
 	const rem = sec % 60
-	return rem ? `${min}m ${rem}s` : `${min}m`
+	return rem
+		? geti18n('fountConsole.test.report.durationMinSec', { min, sec: rem })
+		: geti18n('fountConsole.test.report.durationMin', { min })
 }
 
 /**
@@ -291,37 +294,39 @@ export async function writeTestReport({
  */
 function buildMarkdown(summary, entries) {
 	const exitLabel = summary.complete
-		? (summary.exitCode === 0 ? 'PASSED' : 'FAILED') + ` (${summary.exitCode})`
-		: 'IN PROGRESS'
+		? (summary.exitCode === 0
+			? geti18n('fountConsole.test.report.exitPassed')
+			: geti18n('fountConsole.test.report.exitFailed')) + ` (${summary.exitCode})`
+		: geti18n('fountConsole.test.report.exitInProgress')
 	const lines = [
-		'# fount test report',
+		`# ${geti18n('fountConsole.test.report.title')}`,
 		'',
-		'| 项 | 值 |',
+		`| ${geti18n('fountConsole.test.report.tableHeaderItem')} | ${geti18n('fountConsole.test.report.tableHeaderValue')} |`,
 		'| --- | --- |',
-		`| runId | \`${summary.runId}\` |`,
-		`| command | \`${summary.command ?? '(default)'}\` |`,
-		`| exit | ${exitLabel} |`,
-		`| progress | ${summary.completed}/${summary.total} suites |`,
-		`| suites | ${summary.passed}/${summary.completed} passed |`,
-		`| failed | ${summary.failed} |`,
-		`| noisy (passed) | ${summary.noisyPassed} |`,
-		`| duration | ${formatDuration(summary.durationMs)} |`,
+		`| ${geti18n('fountConsole.test.report.fieldRunId')} | \`${summary.runId}\` |`,
+		`| ${geti18n('fountConsole.test.report.fieldCommand')} | \`${summary.command ?? geti18n('fountConsole.test.report.commandDefault')}\` |`,
+		`| ${geti18n('fountConsole.test.report.fieldExit')} | ${exitLabel} |`,
+		`| ${geti18n('fountConsole.test.report.fieldProgress')} | ${geti18n('fountConsole.test.report.progressFormat', { completed: summary.completed, total: summary.total })} |`,
+		`| ${geti18n('fountConsole.test.report.fieldSuites')} | ${geti18n('fountConsole.test.report.suitesFormat', { passed: summary.passed, completed: summary.completed })} |`,
+		`| ${geti18n('fountConsole.test.report.fieldFailed')} | ${summary.failed} |`,
+		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${summary.noisyPassed} |`,
+		`| ${geti18n('fountConsole.test.report.fieldDuration')} | ${formatDuration(summary.durationMs)} |`,
 		'',
-		`Artifacts: \`${TEST_DATA_REL}/report/\``,
+		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report/` }),
 		'',
 	]
 
 	const completed = entries.filter(isCompletedEntry)
 	const failed = completed.filter(e => !e.passed)
 	if (failed.length) {
-		lines.push('## Failed suites', '')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionFailed')}`, '')
 		for (const e of failed) {
 			lines.push(`### ${e.manifestId}/${e.name}`, '')
-			lines.push(`- duration: ${formatDuration(e.durationMs)}`)
-			if (e.logPath) lines.push(`- log: [${e.logPath}](${e.logPath})`)
-			if (e.noiseHits.length) lines.push(`- noise: ${e.noiseHits.join(', ')}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(e.durationMs)}`)
+			if (e.logPath) lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${e.logPath}](${e.logPath})`)
+			if (e.noiseHits.length) lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${e.noiseHits.join(', ')}`)
 			if (e.failedFiles.length) {
-				lines.push('- failed files:')
+				lines.push(`- ${geti18n('fountConsole.test.report.labelFailedFiles')}:`)
 				for (const f of e.failedFiles) lines.push(`  - \`${f}\``)
 			}
 			lines.push('')
@@ -330,20 +335,20 @@ function buildMarkdown(summary, entries) {
 
 	const noisyPassed = completed.filter(e => e.passed && e.noisy)
 	if (noisyPassed.length) {
-		lines.push('## Passed with noise', '')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionNoisyPassed')}`, '')
 		for (const e of noisyPassed) {
 			lines.push(`### ${e.manifestId}/${e.name}`, '')
-			lines.push(`- duration: ${formatDuration(e.durationMs)}`)
-			lines.push(`- noise: ${e.noiseHits.join(', ')}`)
-			if (e.logPath) lines.push(`- log: [${e.logPath}](${e.logPath})`)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(e.durationMs)}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${e.noiseHits.join(', ')}`)
+			if (e.logPath) lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${e.logPath}](${e.logPath})`)
 			lines.push('')
 		}
 	}
 
 	const allPassed = completed.filter(e => e.passed && !e.noisy)
 	if (allPassed.length) {
-		lines.push('## Passed (silent)', '')
-		lines.push('| suite | duration |')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionSilentPassed')}`, '')
+		lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} | ${geti18n('fountConsole.test.report.columnDuration')} |`)
 		lines.push('| --- | --- |')
 		for (const e of allPassed)
 			lines.push(`| ${e.manifestId}/${e.name} | ${formatDuration(e.durationMs)} |`)
@@ -352,8 +357,8 @@ function buildMarkdown(summary, entries) {
 
 	const pending = entries.filter(e => 'pending' in e)
 	if (pending.length) {
-		lines.push('## Pending', '')
-		lines.push('| suite |')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionPending')}`, '')
+		lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} |`)
 		lines.push('| --- |')
 		for (const e of pending)
 			lines.push(`| ${e.manifestId}/${e.name} |`)

@@ -7,6 +7,7 @@ import { parseArgs } from 'node:util'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { console } from '../../../i18n.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
 const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.ps1')
@@ -86,8 +87,8 @@ export async function runLiveSuite({
 }) {
 	const spec = suites[suiteName]
 	if (!spec) {
-		console.error(`unknown suite: ${suiteName}`)
-		console.error('available:', Object.keys(suites).join(', '))
+		console.errorI18n('fountConsole.test.unknownSuite', { name: suiteName })
+		console.errorI18n('fountConsole.test.available', { ids: Object.keys(suites).join(', ') })
 		return 2
 	}
 
@@ -111,16 +112,16 @@ export async function runLiveSuite({
 
 		if (spec.fed) {
 			const pre = await runCommand(repoRoot, ['pwsh', '-NoProfile', '-File', federationCleanup], env)
-			if (pre.code !== 0) console.warn('federation cleanup pre:', pre.output)
+			if (pre.code !== 0) console.warnI18n('fountConsole.test.federationCleanupPre', { output: pre.output })
 		}
 
-		console.log(`\n=== SUITE ${suiteName} ===`)
+		console.logI18n('fountConsole.test.suiteHeader', { name: suiteName })
 		const result = await runCommand(repoRoot, spec.run, env)
 		if (result.output) console.log(result.output)
 
 		if (spec.fed) {
 			const post = await runCommand(repoRoot, ['pwsh', '-NoProfile', '-File', federationCleanup], env)
-			if (post.code !== 0) console.warn('federation cleanup post:', post.output)
+			if (post.code !== 0) console.warnI18n('fountConsole.test.federationCleanupPost', { output: post.output })
 		}
 
 		return result.code
@@ -156,7 +157,7 @@ export async function runLiveSuiteCli({ suites, repoRoot, nodeA, nodeB, nodeFlee
 	}
 
 	if (!values.suite) {
-		console.error('usage: --suite <name> | --list')
+		console.errorI18n('fountConsole.test.liveUsage')
 		process.exit(2)
 	}
 

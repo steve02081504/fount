@@ -1,6 +1,7 @@
 /**
  * Chat live WebSocket 探针共用：CI 路径禁止 skip exit 0。
  */
+import { console, geti18n } from '../../../i18n.mjs'
 
 /**
  * 以通过/失败状态结束进程。
@@ -9,7 +10,7 @@
  * @returns {never} 以 0/1 退出
  */
 export function finishLiveWs(ok, detail) {
-	console.log(`\n${ok ? 'PASS' : 'FAIL'}: ${detail}`)
+	console.log(geti18n(ok ? 'fountConsole.test.ws.pass' : 'fountConsole.test.ws.fail', { detail }))
 	process.exit(ok ? 0 : 1)
 }
 
