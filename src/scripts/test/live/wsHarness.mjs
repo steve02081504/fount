@@ -1,7 +1,7 @@
 /**
  * Chat live WebSocket 探针共用：CI 路径禁止 skip exit 0。
  */
-import { console, geti18n } from '../../../i18n.mjs'
+import { console, geti18n } from '../../i18n.mjs'
 
 /**
  * 以通过/失败状态结束进程。

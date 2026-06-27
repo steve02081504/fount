@@ -7,7 +7,7 @@ import { parseArgs } from 'node:util'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { console } from '../../../i18n.mjs'
+import { console } from '../../i18n.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
 const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.ps1')

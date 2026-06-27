@@ -7,8 +7,8 @@ import 'fount/scripts/test/env.mjs'
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 
-import { console } from '../../../i18n.mjs'
 import { hosturl } from '../../../server/server.mjs'
+import { console } from '../../i18n.mjs'
 
 import { bootInProcess } from './boot.mjs'
 
