@@ -1,8 +1,12 @@
-/** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history_want。 */
+/** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history_want、fed_shun。 */
+import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { parsePullAttestation } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
 import { EVENT_ID_HEX } from './registry.mjs'
+
+/** @type {Set<string>} */
+export const FED_SHUN_REASONS = new Set(['not_a_member', 'blocked'])
 
 /**
  * @param {unknown} payload Trystero 载荷
@@ -44,6 +48,26 @@ export function parseGossipRequest(payload) {
 		if (wantIds.some(id => !attSet.has(id))) return null
 	}
 	return { wantIds, ttl, requesterNodeHash, archiveSummary: payload.archiveSummary, attestation }
+}
+
+/**
+ * @param {unknown} payload channel_history_want 载荷
+ * @param {string} localNodeHash 本节点 hash
+ * @param {string} groupId 群 ID（attestation 校验用）
+ * @returns {{ requesterNodeHash: string, requestId: string, channelId: string, before?: string, limit: number, attestation: import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation } | null} 解析结果
+ */
+/**
+ * @param {unknown} payload fed_shun 载荷
+ * @param {string} groupId 群 ID
+ * @returns {{ groupId: string, nodeHash: string, reason: string } | null} 解析结果
+ */
+export function parseFedShun(payload, groupId) {
+	if (!isPlainObject(payload)) return null
+	if (String(payload.groupId || '').trim() !== groupId) return null
+	const nodeHash = String(payload.nodeHash || '').trim().toLowerCase()
+	const reason = String(payload.reason || '').trim().toLowerCase()
+	if (!isHex64(nodeHash) || !FED_SHUN_REASONS.has(reason)) return null
+	return { groupId, nodeHash, reason }
 }
 
 /**

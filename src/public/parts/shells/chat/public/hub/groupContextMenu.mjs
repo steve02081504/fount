@@ -150,7 +150,7 @@ function runLeaveGroupsInBackground(groupIds) {
  * @param {string[]} groupIds 群 ID 列表
  * @returns {Promise<void>}
  */
-async function leaveGroupsOptimistic(groupIds) {
+export async function leaveGroupsOptimistic(groupIds) {
 	await applyLeaveGroupsLocal(groupIds)
 	if (groupIds.length > 1)
 		showToastI18n('info', 'chat.hub.groupContext.leaveBatchPending', { count: groupIds.length })

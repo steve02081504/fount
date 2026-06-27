@@ -22,6 +22,7 @@ export const FEDERATION_WIRE_ACTION_NAMES = [
 	'fed_volatile',
 	'fed_tip_ping',
 	'fed_tip_pong',
+	'fed_shun',
 	'char_rpc',
 	'char_rpc_response',
 	'part_invoke',

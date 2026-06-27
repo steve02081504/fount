@@ -50,6 +50,7 @@ export function registerRelayHandlers(roomContext) {
 
 	const joinSnapshotRequest = wireAction(roomContext, 'fed_join_snapshot_request')
 	const joinSnapshotResponse = wireAction(roomContext, 'fed_join_snapshot_response')
+	const fedShun = wireAction(roomContext, 'fed_shun')
 
 	joinSnapshotRequest.on((data, peerId) => {
 		const request = parseJoinSnapshotRequest(data)
@@ -59,7 +60,11 @@ export function registerRelayHandlers(roomContext) {
 				try { joinSnapshotResponse.send(payload, targetPeer) }
 				catch (error) { console.error('federation: fed_join_snapshot_response failed', error) }
 			})
-		}, isBlockedPeer).catch(error => console.error('federation: fed_join_snapshot_request failed', error))
+		}, isBlockedPeer, {
+			fedOut,
+			fedShunSend: fedShun.send,
+			localNodeHash: nodeHash,
+		}).catch(error => console.error('federation: fed_join_snapshot_request failed', error))
 	})
 	joinSnapshotResponse.on((data, peerId) => {
 		const response = parseJoinSnapshotResponse(data)

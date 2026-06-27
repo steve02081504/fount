@@ -347,6 +347,8 @@ export async function selectChannel(channelId) {
 
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
+	else if (hubStore.currentState?.suspectedRemoved)
+		disableComposer('chat.hub.banners.suspectedRemovedComposer')
 	else
 		enableComposer()
 	const { loadMessages } = await import('./messages/messages.mjs')

@@ -80,8 +80,13 @@ test.describe('Chat secondary pages', () => {
 		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
-		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
-		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 30_000 })
+		// The tab click handlers are wired up by the page module (index.mjs), which loads
+		// asynchronously (it pulls Sentry from esm.sh). A single click may land before the
+		// listener is attached, so retry the click until the active state actually flips.
+		await expect(async () => {
+			await page.locator('.tabs .tab[data-tab="my-packs"]').click()
+			await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 1_000 })
+		}).toPass({ timeout: 30_000 })
 		await expect(page.locator('#packs-container')).toBeVisible()
 	})
 })

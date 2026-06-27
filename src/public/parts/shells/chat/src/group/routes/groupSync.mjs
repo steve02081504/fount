@@ -27,6 +27,7 @@ import { userHasLocalGroupReplica } from '../../chat/lib/paths.mjs'
 import { getGroupMemberEntityHash } from '../../chat/lib/replica.mjs'
 import { getMaterializedSession } from '../../chat/session/dagSession.mjs'
 import { canGovSlash, canInChannel, governanceChannelId, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
+import { loadGroupShunState, saveGroupShunState } from '../groupShunState.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 
@@ -193,6 +194,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const quarantineRows = active ? await readQuarantineRows(username, groupId) : []
 
 		const hasLocalReplica = await userHasLocalGroupReplica(username, groupId)
+		const shunState = await loadGroupShunState(username, groupId)
 		const serializableState = {
 			groupId: state.groupId,
 			hasLocalReplica,
@@ -208,6 +210,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			membersRoot: state.membersRoot ?? null,
 			membersPagesCount: state.membersPagesCount ?? null,
 			isMember: active,
+			suspectedRemoved: shunState.suspectedRemoved,
+			shunnedBy: shunState.shunnedBy,
+			shunBannerDismissed: shunState.bannerDismissed,
 			myRoles: member?.roles || [],
 			viewerMemberPubKeyHash: active ? memberKey : null,
 			viewerEntityHash: active
@@ -320,14 +325,25 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/catchup$/, authenticate, async (req, res) => {
 		const groupId = req.params[0]
-		const membership = await resolveGroupMember(req, res, groupId)
+		const membership = await resolveGroupMember(req, res, groupId, { allowSuspectedRemoved: true })
 		if (!membership) return
 		const { username } = membership
-		const { state } = await getState(username, groupId)
-		res.status(200).json(await catchUpGroupFromPeers(username, groupId, {
+		const stats = await catchUpGroupFromPeers(username, groupId, {
 			waitMs: req.body.waitMs,
 			extraWantIds: Array.isArray(req.body.extraWantIds) ? req.body.extraWantIds : undefined,
-		}))
+		})
+		const shunState = await loadGroupShunState(username, groupId)
+		res.status(200).json({ ...stats, suspectedRemoved: shunState.suspectedRemoved, shunnedBy: shunState.shunnedBy })
+	})
+
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/shun-dismiss$/, authenticate, async (req, res) => {
+		const groupId = req.params[0]
+		const { username } = await getUserByReq(req)
+		const shunState = await loadGroupShunState(username, groupId)
+		if (!shunState.suspectedRemoved)
+			return res.status(409).json({ error: 'Not suspected removed' })
+		const next = await saveGroupShunState(username, groupId, { bannerDismissed: true })
+		res.status(200).json({ bannerDismissed: next.bannerDismissed })
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/offline-mark$/, authenticate, async (req, res) => {
@@ -341,7 +357,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/join-snapshot$/, authenticate, async (req, res) => {
 		const groupId = req.params[0]
-		const membership = await resolveGroupMember(req, res, groupId)
+		const membership = await resolveGroupMember(req, res, groupId, { allowSuspectedRemoved: true })
 		if (!membership) return
 		const { username } = membership
 		const slot = await ensureFederationRoom(username, groupId)

@@ -8,6 +8,7 @@ import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
+import { loadGroupShunState } from '../groupShunState.mjs'
 
 /**
  * @param {import('npm:express').Response} res HTTP 响应
@@ -25,15 +26,23 @@ export function denyJson(res, status, error) {
  * @param {import('npm:express').Request} req HTTP 请求
  * @param {import('npm:express').Response} res HTTP 响应
  * @param {string} groupId 群 ID
+ * @param {{ allowSuspectedRemoved?: boolean }} [opts] 是否放行疑似出局（catchup/探测）
  * @returns {Promise<{ username: string, state: object, memberKey: string, member: object } | null>} 成员上下文或 null
  */
-export async function resolveGroupMember(req, res, groupId) {
+export async function resolveGroupMember(req, res, groupId, opts = {}) {
 	const { username } = await getUserByReq(req)
 	const { state } = await getState(username, groupId)
 	const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 	if (!memberKey) {
 		res.status(403).json({ error: 'Not a member' })
 		return null
+	}
+	if (!opts.allowSuspectedRemoved) {
+		const shunState = await loadGroupShunState(username, groupId)
+		if (shunState.suspectedRemoved) {
+			res.status(403).json({ error: 'Not a member', suspectedRemoved: true })
+			return null
+		}
 	}
 	return { username, state, memberKey, member: state.members[memberKey] }
 }
@@ -45,9 +54,10 @@ export async function resolveGroupMember(req, res, groupId) {
  */
 export function requireGroupMember(options = {}) {
 	const groupParam = Number.isInteger(options.groupParam) ? options.groupParam : 0
+	const allowSuspectedRemoved = !!options.allowSuspectedRemoved
 	return async (req, res, next) => {
 		const groupId = req.params[groupParam]
-		const membership = await resolveGroupMember(req, res, groupId)
+		const membership = await resolveGroupMember(req, res, groupId, { allowSuspectedRemoved })
 		if (!membership) return
 		req.groupContext = { ...membership, groupId }
 		next()

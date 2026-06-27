@@ -256,6 +256,13 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	catch (error) {
 		console.error('federation: catchup deferred ingest replay failed', error)
 	}
+	try {
+		const { maybeProbeAndEvaluateShunConsensus } = await import('./shun.mjs')
+		await maybeProbeAndEvaluateShunConsensus(username, groupId, slot, { waitMs: Math.min(waitMs, 5000) })
+	}
+	catch (error) {
+		console.error('federation: catchup shun consensus failed', error)
+	}
 	return stats
 }
 

@@ -115,6 +115,27 @@ function syncBannerDataset() {
 	return out
 }
 
+/** @returns {boolean} 是否显示疑似被移出横幅 */
+function shunRemovedBannerVisible() {
+	return hubStore.currentMode === 'groups'
+		&& !!hubStore.currentGroupId
+		&& !!hubStore.currentState?.suspectedRemoved
+		&& !hubStore.currentState?.shunBannerDismissed
+}
+
+/** @returns {string} i18n 键 */
+function shunRemovedBannerI18n() {
+	return 'chat.hub.banners.suspectedRemoved'
+}
+
+/** @returns {Record<string, string>} dataset 插值 */
+function shunRemovedBannerDataset() {
+	const count = Array.isArray(hubStore.currentState?.shunnedBy)
+		? hubStore.currentState.shunnedBy.length
+		: 0
+	return { count: String(count) }
+}
+
 /** @returns {boolean} 是否显示本地视图分叉横幅 */
 function localViewBannerVisible() {
 	const consensus = hubStore.currentState?.consensusBranchTip || ''
@@ -171,6 +192,13 @@ const BANNER_BINDINGS = [
 		i18n: syncBannerI18n,
 		dataset: syncBannerDataset,
 	},
+	{
+		id: 'hub-shun-removed-banner',
+		textId: 'hub-shun-removed-banner-text',
+		visible: shunRemovedBannerVisible,
+		i18n: shunRemovedBannerI18n,
+		dataset: shunRemovedBannerDataset,
+	},
 ]
 
 /**
@@ -220,6 +248,26 @@ export function wireHubBannerBindings() {
 			setHubState('currentState', await getGroupState(groupId))
 			refreshBoundBanners()
 		}).catch(console.error)
+	})
+	document.getElementById('hub-shun-keep-history-btn')?.addEventListener('click', () => {
+		const groupId = hubStore.currentGroupId
+		if (!groupId) return
+		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/federation/shun-dismiss`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: '{}',
+		}).then(async () => {
+			setHubState('currentState', await getGroupState(groupId))
+			refreshBoundBanners()
+		}).catch(console.error)
+	})
+	document.getElementById('hub-shun-leave-btn')?.addEventListener('click', () => {
+		const groupId = hubStore.currentGroupId
+		if (!groupId) return
+		void import('../groupContextMenu.mjs').then(({ leaveGroupsOptimistic }) =>
+			leaveGroupsOptimistic([groupId]),
+		).catch(console.error)
 	})
 	refreshBoundBanners()
 }

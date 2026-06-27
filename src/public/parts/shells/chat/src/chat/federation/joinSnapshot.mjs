@@ -23,12 +23,13 @@ import {
 	penalizeJoinSnapshotMismatches,
 	pickJoinSnapshotByReputation,
 } from './pull/joinSnapshotPick.mjs'
-import { resolveMemberEdPubKeyHex, signPullAttestation, validatePullAttestationForGroup } from './pullAttestation.mjs'
+import { resolveMemberEdPubKeyHex, signPullAttestation, verifyPullAttestationSignatureForMember } from './pullAttestation.mjs'
 import {
 	applyPullInner,
 	buildPullResponseEnvelope,
 	unwrapPullEnvelopeForLocalMember,
 } from './pullEnvelope.mjs'
+import { resolveShunForPubKeyRequester, sendFedShun } from './shun.mjs'
 
 /**
  *
@@ -104,16 +105,25 @@ export async function applyJoinSnapshotResponse(username, groupId, envelope) {
  * @param {string} peerId Trystero peer
  * @param {(payload: unknown, peerId: string) => void} sendResponse 发送响应
  * @param {(subject: string) => boolean} isBlockedPeer 节点/pubKeyHash 拉黑检查
+ * @param {{ fedOut?: object, fedShunSend?: Function, localNodeHash?: string }} [shunCtx] 闭门羹出站
  * @returns {Promise<void>} 无返回值
  */
-export async function handleJoinSnapshotRequest(username, groupId, request, peerId, sendResponse, isBlockedPeer) {
+export async function handleJoinSnapshotRequest(username, groupId, request, peerId, sendResponse, isBlockedPeer, shunCtx = {}) {
 	if (request.groupId !== groupId || !peerId) return
 	const fedState = await loadFederationMaterializedState(username, groupId)
 	if (!fedState) return
-	if (!await validatePullAttestationForGroup(fedState, groupId, request.attestation)) return
-	if (isBlockedPeer(request.requesterPubKeyHash)) return
+	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
+	const requesterNodeHash = String(request.requesterNodeHash || '').trim()
+	const shunDecision = resolveShunForPubKeyRequester(fedState, isBlockedPeer, request.requesterPubKeyHash)
+	if (shunDecision.shun && shunDecision.reason && shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
+		sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, shunDecision.reason)
+	if (shunDecision.shun) return
 	const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, request.requesterPubKeyHash)
-	if (!recipientEdPubKeyHex) return
+	if (!recipientEdPubKeyHex) {
+		if (shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
+			sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, 'not_a_member')
+		return
+	}
 
 	const { readJsonl } = requireDagDeps()
 	const checkpoint = await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })

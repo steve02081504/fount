@@ -18,7 +18,7 @@ import {
 	takeGossipRequestSlot,
 	wantIdsLimitsFromSettings,
 } from '../gossip.mjs'
-import { resolveMemberEdPubKeyHex, validatePullAttestationForGroup } from '../pullAttestation.mjs'
+import { resolveMemberEdPubKeyHex, validatePullAttestationForGroup, verifyPullAttestationSignatureForMember } from '../pullAttestation.mjs'
 import { buildPullResponseEnvelope } from '../pullEnvelope.mjs'
 import { getPendingTipExchange } from '../registry.mjs'
 import {
@@ -26,8 +26,9 @@ import {
 	ingestRemoteTipsForExchange,
 	markSeenFederationEvent,
 } from '../seen.mjs'
+import { handleInboundFedShun, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
 import { handleIncomingFedVolatile } from '../volatile.mjs'
-import { parseChannelHistoryWant, parseFedTipPing, parseFedTipPong, parseGossipRequest } from '../wireSchemas.mjs'
+import { parseChannelHistoryWant, parseFedShun, parseFedTipPing, parseFedTipPong, parseGossipRequest } from '../wireSchemas.mjs'
 
 /**
  * DAG / gossip / 频道历史 / volatile / tip exchange handler。
@@ -136,6 +137,31 @@ export function registerSyncHandlers(roomContext) {
 	const fedVolatile = wireAction(roomContext, 'fed_volatile')
 	const fedTipPing = wireAction(roomContext, 'fed_tip_ping')
 	const fedTipPong = wireAction(roomContext, 'fed_tip_pong')
+	const fedShun = wireAction(roomContext, 'fed_shun')
+
+	/**
+	 * 对带 attestation 的拉取请求方回闭门羹（若应拒绝）。
+	 * @param {object | null | undefined} fedState 物化群状态
+	 * @param {string} requesterPubKeyHash 请求方 pubKeyHash
+	 * @param {string} requesterNodeHash 请求方 nodeHash
+	 * @param {string} peerId Trystero peer
+	 * @returns {boolean} 已 shun 并应中止处理
+	 */
+	const maybeShunPubKeyRequester = (fedState, requesterPubKeyHash, requesterNodeHash, peerId) => {
+		const decision = resolveShunForPubKeyRequester(fedState, isBlockedPeer, requesterPubKeyHash)
+		if (!decision.shun || !decision.reason || !peerId) return false
+		sendFedShun(fedOut, fedShun.send, groupId, nodeHash, requesterNodeHash, peerId, decision.reason)
+		return true
+	}
+
+	fedShun.on((data, peerId) => {
+		void (async () => {
+			const shun = parseFedShun(data, groupId)
+			if (!shun) return
+			const fromNode = peerToNode.get(peerId) || shun.nodeHash
+			await handleInboundFedShun(username, groupId, fromNode, shun.reason)
+		})().catch(error => console.error('federation: fed_shun failed', error))
+	})
 
 	fedVolatile.on((data, peerId) => {
 		void handleIncomingFedVolatile(username, groupId, data, peerId, peerToNode, isBlockedPeer)
@@ -147,7 +173,11 @@ export function registerSyncHandlers(roomContext) {
 			const tipPing = parseFedTipPing(data)
 			if (!tipPing) return
 			const remoteNodeHash = peerToNode.get(peerId) || tipPing.nodeHash
-			if (isBlockedPeer(remoteNodeHash)) return
+			if (isBlockedPeer(remoteNodeHash)) {
+				if (peerId && remoteNodeHash)
+					sendFedShun(fedOut, fedShun.send, groupId, nodeHash, remoteNodeHash, peerId, 'blocked')
+				return
+			}
 			ingestRemoteTipsForExchange(username, groupId, tipPing.tips)
 			const { readJsonl } = requireDagDeps()
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
@@ -192,12 +222,18 @@ export function registerSyncHandlers(roomContext) {
 			const { wantIds, requesterNodeHash, archiveSummary, attestation } = parsed
 			const { readJsonl } = requireDagDeps()
 			if (requesterNodeHash === nodeHash) return
-			if (isBlockedPeer(attestation.requesterPubKeyHash)) return
 			const fedState = await loadFederationMaterializedState(username, groupId)
-			if (!fedState || !await validatePullAttestationForGroup(fedState, groupId, attestation))
+			if (!fedState || !attestation) return
+			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
+			if (maybeShunPubKeyRequester(fedState, attestation.requesterPubKeyHash, requesterNodeHash, peerId))
 				return
+			if (!await validatePullAttestationForGroup(fedState, groupId, attestation)) return
 			const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)
-			if (!recipientEdPubKeyHex) return
+			if (!recipientEdPubKeyHex) {
+				if (peerId)
+					sendFedShun(fedOut, fedShun.send, groupId, nodeHash, requesterNodeHash, peerId, 'not_a_member')
+				return
+			}
 			const dedupeKey = `${username}:${groupId}:${requesterNodeHash}:${wantIds.slice().sort().join(',')}:${parsed.ttl}`
 			if (!takeGossipRequestSlot(dedupeKey)) return
 			if (!takeIncomingWantIdsSlot(
@@ -262,10 +298,17 @@ export function registerSyncHandlers(roomContext) {
 			const historyWant = parseChannelHistoryWant(data, nodeHash, groupId)
 			if (!historyWant) return
 			const { requesterNodeHash, requestId, channelId, before, limit, attestation } = historyWant
-			if (isBlockedPeer(attestation.requesterPubKeyHash)) return
 			const fedState = await loadFederationMaterializedState(username, groupId)
-			if (!fedState || !await validatePullAttestationForGroup(fedState, groupId, attestation)) return
-			if (!resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)) return
+			if (!fedState || !attestation) return
+			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
+			if (maybeShunPubKeyRequester(fedState, attestation.requesterPubKeyHash, requesterNodeHash, peerId))
+				return
+			if (!await validatePullAttestationForGroup(fedState, groupId, attestation)) return
+			if (!resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)) {
+				if (peerId)
+					sendFedShun(fedOut, fedShun.send, groupId, nodeHash, requesterNodeHash, peerId, 'not_a_member')
+				return
+			}
 			const { listChannelMessages } = await import('../../dag/queries.mjs')
 			const messages = await listChannelMessages(username, groupId, channelId, {
 				before,

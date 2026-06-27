@@ -111,6 +111,19 @@ export async function validatePullAttestationForGroup(state, groupId, attestatio
 }
 
 /**
+ * 仅校验 attestation 签名（不要求 active）；被 ban 成员仍可证明身份以接收 fed_shun。
+ * @param {object | null | undefined} state 物化群状态
+ * @param {string} groupId 群 ID
+ * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
+ * @returns {Promise<boolean>} 签名是否有效
+ */
+export async function verifyPullAttestationSignatureForMember(state, groupId, attestation) {
+	const edHex = resolveMemberEdPubKeyHex(state, attestation?.requesterPubKeyHash)
+	if (!edHex) return false
+	return verifyPullAttestation(attestation, groupId, Buffer.from(edHex, 'hex'))
+}
+
+/**
  * 仅 active 成员可拉取/提供冷归档明文（fed_archive_month）。
  * @param {object | null | undefined} state 物化群状态
  * @param {string} requesterPubKeyHash 请求方 pubKeyHash

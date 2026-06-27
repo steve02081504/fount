@@ -1872,7 +1872,11 @@
 				"autoBranch": "信誉自动选支",
 				"mergeDag": "合并分叉",
 				"splitFork": "分裂为新群",
-				"blockOpposing": "对立分支不可接触"
+				"blockOpposing": "对立分支不可接触",
+				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 个认识的节点求证，均被拒之门外。可留念本地历史，或删除本群副本。",
+				"suspectedRemovedKeep": "留念",
+				"suspectedRemovedLeave": "删除群",
+				"suspectedRemovedComposer": "你大概已被移出本群，无法继续发送"
 			},
 			"blockOpposingConfirm": "将非当前选支上的治理签发者加入拉黑表，并拒绝本群联邦中继。继续？",
 			"blockOpposingOk": "已标记 ${count} 个主体为不可接触",
