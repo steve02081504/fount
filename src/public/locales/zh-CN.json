@@ -1894,7 +1894,30 @@
 			"copied": "已复制！",
 			"apiKeyRequired": "需要 API 密钥才能列出模型。",
 			"copyModelIdTooltip": "点击以复制模型 ID",
-			"loadModelsFailed": "加载模型失败：${message}"
+			"loadModelsFailed": "加载模型失败：${message}",
+			"modelSearchTitle": "浏览模型目录",
+			"modelSearchPlaceholder": {
+				"placeholder": "搜索模型名、厂商、能力…"
+			},
+			"modelSearchHint": "点击候选项将自动填入 URL 与模型名",
+			"modelsDevLoading": "正在加载目录…",
+			"modelsDevLoadFailed": "加载目录失败：${message}",
+			"noModelsMatched": "未找到匹配的模型",
+			"currentModelTitle": "${name}（${model}）",
+			"providerLabel": "厂商：${provider}",
+			"metaContext": "上下文：${context} tokens",
+			"metaOutputLimit": "最大输出：${output} tokens",
+			"metaInputPrice": "输入价格：${price} / 1M tokens",
+			"metaOutputPrice": "输出价格：${price} / 1M tokens",
+			"metaCachePrice": "缓存读/写：${read} / ${write}",
+			"metaModalities": "模态：输入 ${input}，输出 ${output}",
+			"metaReasoning": "支持推理",
+			"metaToolCall": "支持工具调用",
+			"metaVision": "支持视觉输入",
+			"metaOpenWeights": "开放权重",
+			"metaKnowledge": "知识截止：${knowledge}",
+			"metaReleaseDate": "发布日期：${date}",
+			"providerDocLink": "[查看厂商文档](${url})"
 		},
 		"prompts": {
 			"newFileName": "请输入新的服务源文件名 (请勿包含后缀名):"

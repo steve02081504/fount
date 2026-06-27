@@ -1,9 +1,4 @@
-let cachedCacheKey = ''
-/**
- * 缓存的模型 ID 列表。
- * @type {string[]|null}
- */
-let cachedModelIds = null
+/* global cache */
 let latestModelsRequestId = 0
 
 /**
@@ -17,16 +12,7 @@ function modelsCacheKey(modelsUrl, apikey) {
 }
 
 /**
- * 重置模型 ID 缓存。
- * @returns {void}
- */
-function resetModelIdsCache() {
-	cachedCacheKey = ''
-	cachedModelIds = null
-}
-
-/**
- * 从网络拉取模型 ID 列表，并更新模块内缓存。
+ * 从网络拉取模型 ID 列表，并更新 cache。
  * @param {string} modelsUrl - 规范化后的 models 端点 URL。
  * @param {string} [apikey] - API key。
  * @param {string} cacheKey - 缓存键。
@@ -44,12 +30,12 @@ async function fetchModelIds(modelsUrl, apikey, cacheKey) {
 	const models = result.data || result
 	if (!Array.isArray(models))
 		throw new Error('Response is not an array of models.')
-	cachedCacheKey = cacheKey
-	return cachedModelIds = models.map(m => m.id)
+	cache.cacheKey = cacheKey
+	return cache.modelIds = models.map(model => model.id)
 }
 
 /**
- * 获取模型 ID 列表；命中模块内缓存则直接返回，否则拉取。
+ * 获取模型 ID 列表；命中 cache 则直接返回，否则拉取。
  * @param {string} modelsUrl - 规范化后的 models 端点 URL。
  * @param {string} [apikey] - API key。
  * @param {() => void} [onLoading] - 即将发起网络请求时调用。
@@ -57,8 +43,8 @@ async function fetchModelIds(modelsUrl, apikey, cacheKey) {
  */
 async function getModelIds(modelsUrl, apikey, onLoading) {
 	const cacheKey = modelsCacheKey(modelsUrl, apikey)
-	if (cacheKey === cachedCacheKey && cachedModelIds)
-		return cachedModelIds
+	if (cache.cacheKey === cacheKey && cache.modelIds)
+		return cache.modelIds
 
 	onLoading?.()
 	return fetchModelIds(modelsUrl, apikey, cacheKey)
@@ -181,7 +167,8 @@ return async function({ data, containers }) {
 	const { url, apikey } = data
 	const modelsUrl = normalizeUrl(url)
 	if (!modelsUrl) {
-		resetModelIdsCache()
+		delete cache.cacheKey
+		delete cache.modelIds
 		return clearDisplay(div)
 	}
 
