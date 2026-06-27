@@ -63,13 +63,42 @@ export async function createChatFederationSim(options = {}) {
 	}
 
 	/**
+	 * @param {string} node 节点用户名
+	 * @param {string} groupId 群组 ID
+	 * @returns {Promise<Set<string>>} 事件 id 集合（小写）
+	 */
+	async function eventIdsOf(node, groupId) {
+		return new Set((await readEvents(node, groupId)).map(event => String(event.id).trim().toLowerCase()))
+	}
+
+	/**
+	 * 断言多节点持有相同事件 id 集合（联邦仿真收敛检查）。
+	 * @param {string[]} nodes 节点列表
+	 * @param {string} groupId 群组 ID
+	 * @returns {Promise<void>}
+	 */
+	async function assertPeersConverged(nodes, groupId) {
+		if (nodes.length < 2) return
+		const baseline = await eventIdsOf(nodes[0], groupId)
+		for (const node of nodes.slice(1)) {
+			const ids = await eventIdsOf(node, groupId)
+			if (ids.size !== baseline.size || [...baseline].some(id => !ids.has(id)))
+				throw new Error(`federation sim divergence: ${nodes[0]} has ${baseline.size} events, ${node} has ${ids.size}`)
+		}
+	}
+
+	/**
 	 * 将源节点事件联邦同步到目标节点。
 	 * @param {string} sourceNode 源节点
 	 * @param {string[]} targetNodes 目标节点列表
 	 * @param {string} groupId 群组 ID
-	 * @returns {Promise<void>}
+	 * @param {{ logFailures?: boolean }} [opts] 选项
+	 * @returns {Promise<{ applied: number, failed: number }>} 同步统计
 	 */
-	async function federate(sourceNode, targetNodes, groupId) {
+	async function federate(sourceNode, targetNodes, groupId, opts = {}) {
+		const logFailures = opts.logFailures !== false
+		let applied = 0
+		let failed = 0
 		for (let round = 0; round < 6; round++) {
 			let progressed = false
 			const sourceEvents = await readEvents(sourceNode, groupId)
@@ -78,24 +107,32 @@ export async function createChatFederationSim(options = {}) {
 				const knownIds = new Set((await readEvents(targetNode, groupId)).map(event => String(event.id).toLowerCase()))
 				for (const event of sourceEvents) {
 					if (knownIds.has(String(event.id).toLowerCase())) continue
-					if (await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures: false }) === 'ok')
+					const status = await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures })
+					if (status === 'ok') {
 						progressed = true
+						applied++
+					}
+					else if (status !== 'dup') failed++
 				}
 			}
 			if (!progressed) break
 		}
+		return { applied, failed }
 	}
 
 	/**
-	 * 多轮全网 gossip 同步。
+	 * 多轮全网 gossip 同步，可选收敛断言。
 	 * @param {string[]} nodes 节点列表
 	 * @param {string} groupId 群组 ID
+	 * @param {{ assertConverged?: boolean }} [opts] 选项
 	 * @returns {Promise<void>}
 	 */
-	async function gossipAll(nodes, groupId) {
+	async function gossipAll(nodes, groupId, opts = {}) {
 		for (let pass = 0; pass < 3; pass++)
 			for (const sourceNode of nodes)
 				await federate(sourceNode, nodes, groupId)
+		if (opts.assertConverged)
+			await assertPeersConverged(nodes, groupId)
 	}
 
 	/**
@@ -143,7 +180,7 @@ export async function createChatFederationSim(options = {}) {
 	async function postMessage(sourceNode, groupId, channelId, text, targetNodes) {
 		const { event } = await modules.channelMessaging.postChannelMessage(sourceNode, groupId, channelId, { text })
 		for (const targetNode of targetNodes)
-			await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures: false })
+			await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event)
 		return event
 	}
 
@@ -216,6 +253,8 @@ export async function createChatFederationSim(options = {}) {
 		groupId: `grp_${runTag}`,
 		nodeName,
 		readEvents,
+		eventIdsOf,
+		assertPeersConverged,
 		federate,
 		gossipAll,
 		adoptSnapshot,

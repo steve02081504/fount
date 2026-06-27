@@ -273,7 +273,7 @@ Deno.test('key_thief and sleeper are containable on dedicated scenarios', () => 
 	const sleeperSnap = runSimulation(resolveScenarios('sleeper_turn')[0], 4, tunables)
 
 	assertEquals(keySnap.compromiseContainmentRate > 0, true)
-	assertEquals(sleeperSnap.sleeperReactionRate >= 0, true)
+	assertEquals(sleeperSnap.sleeperReactionRate > 0, true)
 })
 
 Deno.test('trigger-happy hide threshold raises falsePositive (endogenous mis-hide)', () => {

@@ -1,3 +1,5 @@
+import { waitForStickersPageReady } from 'fount/scripts/test/playwright/ready.mjs'
+
 import {
 	test,
 	expect,
@@ -20,6 +22,7 @@ test.describe('Chat secondary pages', () => {
 
 	test('stickers store page loads', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
+		await waitForStickersPageReady(page)
 		await expect(page.locator('#sticker-create-pack-button')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#packs-container')).toBeVisible()
 		await expect(page.locator('#search-input')).toBeVisible()
@@ -78,15 +81,11 @@ test.describe('Chat secondary pages', () => {
 
 	test('stickers page switches tabs', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
+		await waitForStickersPageReady(page)
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
-		// The tab click handlers are wired up by the page module (index.mjs), which loads
-		// asynchronously (it pulls Sentry from esm.sh). A single click may land before the
-		// listener is attached, so retry the click until the active state actually flips.
-		await expect(async () => {
-			await page.locator('.tabs .tab[data-tab="my-packs"]').click()
-			await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 1_000 })
-		}).toPass({ timeout: 30_000 })
+		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
+		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 10_000 })
 		await expect(page.locator('#packs-container')).toBeVisible()
 	})
 })

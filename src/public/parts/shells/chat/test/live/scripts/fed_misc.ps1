@@ -34,7 +34,11 @@ else {
 }
 
 Write-Host "`n=== 1. Federation control plane ===" -ForegroundColor Cyan
-Test-Case 'A POST federation/rebind' {
+Test-Case 'A POST federation/rebind (first call must ok)' {
+	$r = Api $FedA POST "/groups/$gid/federation/rebind" @{ channelId = $cid }
+	$r.status -eq 200 -and $r.json.ok -eq $true
+}
+Test-Case 'A POST federation/rebind (idempotent second call)' {
 	$r = Api $FedA POST "/groups/$gid/federation/rebind" @{ channelId = $cid }
 	$r.status -eq 200 -and ($r.json.ok -eq $true -or $r.json.skipped -eq $true)
 }
@@ -87,9 +91,13 @@ Test-Case 'B applies signed event from A via POST /events' {
 	if ($ev.status -ne 200) { throw "events $($ev.status)" }
 	$row = @($ev.json.events | Where-Object { $_.signature -and $_.id })[0]
 	if (-not $row) { throw 'no signed event on A' }
+	$eventId = [string]$row.id
 	$r = Api $FedB POST "/groups/$gid/events" @{ events = @($row) }
 	if ($r.status -ne 200) { throw "ingest $($r.status): $($r.raw)" }
-	[int]$r.json.applied -ge 0
+	# applied=1 表示新入队，applied=0 表示已有（dup）；两者都表示事件在 B 上，只断言存在性。
+	$onB = Api $FedB GET "/groups/$gid/events?limit=20"
+	if ($onB.status -ne 200) { throw "B events $($onB.status)" }
+	@($onB.json.events | Where-Object { $_.id -eq $eventId }).Count -eq 1
 }
 
 Write-Host "`n=== 5. Reputation slash fanout ===" -ForegroundColor Cyan

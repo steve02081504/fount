@@ -5,6 +5,7 @@
  * 【数据结构】currentEntityHash、allPacks、userCollection、currentTab、currentPackId。
  * 【关联】/api/parts/shells:chat/stickers/*；template.mjs、i18n；Hub 表情引用。
  */
+import { createReadyGateFor, STICKERS_PAGE_GATE } from '../../../../scripts/readyGate.mjs'
 import { confirmI18n, initTranslations } from '../../../scripts/i18n.mjs'
 import {
 	mountTemplate,
@@ -19,30 +20,39 @@ let allPacks = []
 let userCollection = null
 let currentTab = 'all'
 let currentPackId = null
+const stickersReady = createReadyGateFor(STICKERS_PAGE_GATE, 'Stickers')
 
 /**
  * 初始化贴纸商店页面
  */
 async function init() {
-	usingTemplates('/parts/shells:chat/src/templates')
-	applyTheme()
-	await initTranslations('stickers')
-
+	stickersReady.markPending()
 	try {
-		const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
-		if (resp.ok) {
-			const data = await resp.json()
-			currentEntityHash = data.viewerEntityHash || null
-		}
-	} catch (error) {
-		console.error('Failed to load viewer:', error)
-	}
+		usingTemplates('/parts/shells:chat/src/templates')
+		applyTheme()
+		await initTranslations('stickers')
 
-	const packsLoaded = await loadPacks()
-	await loadUserCollection()
-	// 仅在确实拉到（空）列表时创建默认包；加载失败时不误建。
-	if (packsLoaded && allPacks.length === 0)
-		await createDefaultPack()
+		try {
+			const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
+			if (resp.ok) {
+				const data = await resp.json()
+				currentEntityHash = data.viewerEntityHash || null
+			}
+		} catch (error) {
+			console.error('Failed to load viewer:', error)
+		}
+
+		const packsLoaded = await loadPacks()
+		await loadUserCollection()
+		// 仅在确实拉到（空）列表时创建默认包；加载失败时不误建。
+		if (packsLoaded && allPacks.length === 0)
+			await createDefaultPack()
+		stickersReady.markReady()
+	}
+	catch (error) {
+		stickersReady.markFailed(error)
+		throw error
+	}
 }
 
 /**

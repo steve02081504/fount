@@ -1,5 +1,6 @@
 // Group WebSocket RPC: rpc_call → rpc_end / rpc_error (wire 见 groupWsRpc.mjs)
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
@@ -39,39 +40,6 @@ async function rootApi(method, path) {
 }
 
 /**
- * 从角色列表选取测试用角色。
- * @param {string[]} list 可用角色名列表
- * @returns {string|null} 优先 test_streamer，否则首个
- */
-function pickChar(list) {
-	if (!Array.isArray(list)) return null
-	for (const name of PREFERRED_CHARS)
-		if (list.includes(name)) return name
-	return list[0] ?? null
-}
-
-/**
- * 以跳过状态结束进程。
- * @param {string} reason 跳过原因
- * @returns {never} 以退出码 0 结束
- */
-function skip(reason) {
-	console.log(`\nSKIP: ${reason}`)
-	process.exit(0)
-}
-
-/**
- * 以通过/失败状态结束进程。
- * @param {boolean} ok 是否通过
- * @param {string} detail 结果说明
- * @returns {never} 以 0/1 退出
- */
-function finish(ok, detail) {
-	console.log(`\n${ok ? 'PASS' : 'FAIL'}: ${detail}`)
-	process.exit(ok ? 0 : 1)
-}
-
-/**
  * 判断 HTTP 状态是否为成功。
  * @param {number} status HTTP 状态码
  * @returns {boolean} 是否为 2xx 成功
@@ -82,29 +50,29 @@ function okStatus(status) {
 
 const who = await rootApi('GET', '/api/whoami')
 if (who.status !== 200 || !who.json?.username)
-	finish(false, `server unreachable or auth failed (whoami ${who.status})`)
+	finishLiveWs(false, `server unreachable or auth failed (whoami ${who.status})`)
 
 const username = who.json.username
 const charList = await rootApi('GET', '/api/getlist/chars')
-const charname = pickChar(charList.json)
-if (!charname) skip('no chars in getlist/chars')
+const charname = pickPreferredChar(charList.json, PREFERRED_CHARS)
+if (!charname) failLiveWsPrecondition('no chars in getlist/chars (test_streamer fixture missing?)')
 
 const g = await chatApi('POST', '/groups/', { name: 'WSRpcTest' })
 if (!okStatus(g.status) || !g.json?.groupId)
-	finish(false, `create group failed (${g.status})`)
+	finishLiveWs(false, `create group failed (${g.status})`)
 
 const gid = g.json.groupId
 const add = await chatApi('POST', `/groups/${gid}/char`, { charname, deferGreeting: true })
 if (!okStatus(add.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	skip(`cannot add char ${charname} (${add.status})`)
+	failLiveWsPrecondition(`cannot add char ${charname} (${add.status})`)
 }
 
 const peers = await chatApi('GET', `/groups/${gid}/peers`)
 const nodeHash = peers.json?.selfNodeHash
 if (!nodeHash) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	finish(false, 'missing selfNodeHash')
+	finishLiveWs(false, 'missing selfNodeHash')
 }
 
 const requestId = crypto.randomUUID()
@@ -168,6 +136,6 @@ try { ws.close() } catch { /* ignore */ }
 await chatApi('DELETE', `/groups/${gid}`)
 
 console.log(`result=${result} types=[${[...new Set(received)].join(', ')}]`)
-if (result === 'ok') finish(true, 'rpc_call returned rpc_end')
-if (String(result).startsWith('error:')) finish(false, result)
-finish(false, result)
+if (result === 'ok') finishLiveWs(true, 'rpc_call returned rpc_end')
+if (String(result).startsWith('error:')) finishLiveWs(false, result)
+finishLiveWs(false, result)

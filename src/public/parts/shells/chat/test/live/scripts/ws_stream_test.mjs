@@ -1,5 +1,6 @@
 // Group WebSocket stream: trigger-reply → stream_chunk and/or message_replaced finish
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
@@ -40,18 +41,6 @@ async function rootApi(method, path) {
 }
 
 /**
- * 从角色列表选取测试用角色。
- * @param {string[]} list 可用角色名列表
- * @returns {string|null} 优先 test_streamer，否则首个
- */
-function pickChar(list) {
-	if (!Array.isArray(list)) return null
-	for (const name of PREFERRED_CHARS)
-		if (list.includes(name)) return name
-	return list[0] ?? null
-}
-
-/**
  * 判断 HTTP 状态是否为成功。
  * @param {number} status HTTP 状态码
  * @returns {boolean} 是否为 2xx 成功
@@ -60,42 +49,21 @@ function okStatus(status) {
 	return status === 200 || status === 201
 }
 
-/**
- * 以跳过状态结束进程。
- * @param {string} reason 跳过原因
- * @returns {never} 以退出码 0 结束
- */
-function skip(reason) {
-	console.log(`\nSKIP: ${reason}`)
-	process.exit(0)
-}
-
-/**
- * 以通过/失败状态结束进程。
- * @param {boolean} ok 是否通过
- * @param {string} detail 结果说明
- * @returns {never} 以 0/1 退出
- */
-function finish(ok, detail) {
-	console.log(`\n${ok ? 'PASS' : 'FAIL'}: ${detail}`)
-	process.exit(ok ? 0 : 1)
-}
-
 const who = await rootApi('GET', '/api/whoami')
-if (who.status !== 200) finish(false, `server unreachable (whoami ${who.status})`)
+if (who.status !== 200) finishLiveWs(false, `server unreachable (whoami ${who.status})`)
 
-const charname = pickChar((await rootApi('GET', '/api/getlist/chars')).json)
-if (!charname) skip('no chars in getlist/chars')
+const charname = pickPreferredChar((await rootApi('GET', '/api/getlist/chars')).json, PREFERRED_CHARS)
+if (!charname) failLiveWsPrecondition('no chars in getlist/chars (test_streamer fixture missing?)')
 
 const g = await chatApi('POST', '/groups/', { name: 'WSStreamTest' })
-if (!okStatus(g.status) || !g.json?.groupId) finish(false, `create group failed (${g.status})`)
+if (!okStatus(g.status) || !g.json?.groupId) finishLiveWs(false, `create group failed (${g.status})`)
 
 const gid = g.json.groupId
 const cid = g.json.defaultChannelId
 const add = await chatApi('POST', `/groups/${gid}/char`, { charname, deferGreeting: true })
 if (!okStatus(add.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	skip(`cannot add char ${charname} (${add.status})`)
+	failLiveWsPrecondition(`cannot add char ${charname} (${add.status})`)
 }
 
 const msg = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
@@ -103,14 +71,14 @@ const msg = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
 })
 if (!okStatus(msg.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	finish(false, `post message failed (${msg.status})`)
+	finishLiveWs(false, `post message failed (${msg.status})`)
 }
 
 const peers = await chatApi('GET', `/groups/${gid}/peers`)
 const nodeHash = peers.json?.selfNodeHash
 if (!nodeHash) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	finish(false, 'missing selfNodeHash')
+	finishLiveWs(false, 'missing selfNodeHash')
 }
 
 const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
@@ -208,11 +176,11 @@ await chatApi('DELETE', `/groups/${gid}`)
 
 console.log(`result=${result} stream=${sawStreamChunk} finish=${sawFinish} types=[${[...new Set(received)].join(', ')}]`)
 
-if (result === 'ok') {
-	const detail = sawStreamChunk
-		? 'received stream_chunk' + (sawFinish ? ' + finish' : '')
-		: 'received generation finish without stream_chunk'
-	finish(true, detail)
+if (result === 'ok' && sawStreamChunk) {
+	const detail = 'received stream_chunk' + (sawFinish ? ' + finish' : '')
+	finishLiveWs(true, detail)
 }
-if (String(result).startsWith('trigger:')) finish(false, result)
-finish(false, result)
+if (result === 'ok' && sawFinish)
+	finishLiveWs(false, 'received generation finish without stream_chunk (stream test requires stream_chunk)')
+if (String(result).startsWith('trigger:')) finishLiveWs(false, result)
+finishLiveWs(false, result)

@@ -8,7 +8,7 @@ import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
-/** 无真实 replica 的占位 entityHash（follow/block API 烟测用）。 */
+/** 无真实 replica 的占位 entityHash（follow/block API 烟测专用，不测联邦 fanout）。 */
 export const DUMMY_ENTITY_HASH = 'a'.repeat(128)
 
 /**
@@ -167,6 +167,18 @@ export function postIdFromResponse(postJson) {
 }
 
 /**
+ * 刷新 feed 并等待 GET 完成。
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @returns {Promise<void>}
+ */
+async function refreshFeed(page) {
+	await Promise.all([
+		waitForFeedLoad(page),
+		page.locator('#feedRefreshBtn').click(),
+	])
+}
+
+/**
  * 在 feed 或资料页中按 postId 定位帖子卡片。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} postId - 帖子 id。
@@ -194,34 +206,24 @@ export async function findPostCard(page, postId, opts = {}) {
 		if (onFeed) return onFeed
 	}
 
-	if (preferFeed)
-		for (let attempt = 0; attempt < 4; attempt++) {
+	for (let attempt = 0; attempt < 4; attempt++) {
+		if (preferFeed || attempt > 0) {
 			const feedCard = await cardInView('feedView')
 			if (feedCard) return feedCard
-			await Promise.all([
-				waitForFeedLoad(page),
-				page.locator('#feedRefreshBtn').click(),
-			]).catch(() => { })
-			const refreshed = await cardInView('feedView')
-			if (refreshed) return refreshed
-			await page.waitForTimeout(300)
+			if (preferFeed || attempt === 0) {
+				await refreshFeed(page)
+				const refreshed = await cardInView('feedView')
+				if (refreshed) return refreshed
+			}
 		}
 
-
-	for (let attempt = 0; attempt < 4; attempt++) {
-		const feedCard = await cardInView('feedView')
-		if (feedCard) return feedCard
 		await page.locator('.nav-btn[data-view="profile"]').click()
-		// 等待 profile 帖子真正渲染完成（view 可见 ≠ 帖子已加载）
 		const profileCard = page.locator(`#profileView ${sel}`)
 		const profileFound = await profileCard.isVisible({ timeout: 20_000 }).catch(() => false)
 		if (profileFound) return profileCard
+
 		await page.locator('.nav-btn[data-view="feed"]').click()
-		await Promise.all([
-			waitForFeedLoad(page),
-			page.locator('#feedRefreshBtn').click(),
-		]).catch(() => { })
-		await page.waitForTimeout(300)
+		await refreshFeed(page)
 	}
 
 	const fallback = page.locator(`.view:not(.hidden) ${sel}`)
@@ -240,20 +242,24 @@ export async function expectPostInFeed(page, postId) {
 }
 
 /**
- * 执行 feed 搜索并等待结果中出现指定 postId。
+ * 轮询 feed 搜索直到目标帖出现在 API 结果与 DOM 中。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} query - 搜索词。
  * @param {string} postId - 期望帖子 id。
- * @returns {Promise<void>} 无返回值。
+ * @param {'button' | 'enter'} trigger - 触发搜索的方式。
+ * @returns {Promise<void>}
  */
-export async function searchAndExpectPost(page, query, postId) {
+async function pollSearchForPost(page, query, postId, trigger) {
 	for (let attempt = 0; attempt < 8; attempt++) {
 		await page.locator('#feedSearchInput').fill(query)
 		const searchWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
 		}, { timeout: 60_000 })
-		await page.locator('#feedSearchBtn').click()
+		if (trigger === 'enter')
+			await page.locator('#feedSearchInput').press('Enter')
+		else
+			await page.locator('#feedSearchBtn').click()
 		const searchRes = await searchWait
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {
@@ -268,6 +274,17 @@ export async function searchAndExpectPost(page, query, postId) {
 }
 
 /**
+ * 执行 feed 搜索并等待结果中出现指定 postId。
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} query - 搜索词。
+ * @param {string} postId - 期望帖子 id。
+ * @returns {Promise<void>} 无返回值。
+ */
+export async function searchAndExpectPost(page, query, postId) {
+	await pollSearchForPost(page, query, postId, 'button')
+}
+
+/**
  * 通过 Enter 触发搜索并断言目标帖可见。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} query - 搜索词。
@@ -275,24 +292,7 @@ export async function searchAndExpectPost(page, query, postId) {
  * @returns {Promise<void>}
  */
 export async function searchViaEnterAndExpectPost(page, query, postId) {
-	for (let attempt = 0; attempt < 8; attempt++) {
-		await page.locator('#feedSearchInput').fill(query)
-		const searchWait = page.waitForResponse(res => {
-			if (res.request().method() !== 'GET' || res.status() !== 200) return false
-			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
-		}, { timeout: 60_000 })
-		await page.locator('#feedSearchInput').press('Enter')
-		const searchRes = await searchWait
-		const data = await searchRes.json()
-		if ((data.items || []).some(item => item.postId === postId)) {
-			await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({
-				timeout: 10_000,
-			})
-			return
-		}
-		await page.waitForTimeout(400)
-	}
-	await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 5_000 })
+	await pollSearchForPost(page, query, postId, 'enter')
 }
 
 /**

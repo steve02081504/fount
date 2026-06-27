@@ -47,6 +47,31 @@ Deno.test('enqueuePendingIngest and replay releases ok status', async () => {
 	assertEquals(replay.remaining, 0)
 })
 
+Deno.test('replayPendingIngestEvents keeps rows while tryIngest still pending', async () => {
+	await ensureServer()
+	const groupId = 'g-pending-still'
+	const ev = { id: 'f'.repeat(64), type: 'member_ban', sender: 'a'.repeat(64) }
+	await enqueuePendingIngest(username, groupId, ev, 'waiting for ACL')
+	const replay = await replayPendingIngestEvents(username, groupId, async () => 'pending_ingest')
+	assertEquals(replay, { released: 0, remaining: 1 })
+	assertEquals((await readPendingIngestRows(username, groupId)).length, 1)
+})
+
+Deno.test('replayPendingIngestEvents releases after tryIngest succeeds on a later pass', async () => {
+	await ensureServer()
+	const groupId = 'g-pending-retry'
+	const ev = { id: '0'.repeat(64), type: 'member_ban', sender: 'a'.repeat(64) }
+	await enqueuePendingIngest(username, groupId, ev, 'retry')
+	let attempts = 0
+	/** @returns {Promise<'ok' | 'pending_ingest'>} 首次 pending，第二次 ok */
+	const tryIngest = async () => {
+		attempts++
+		return attempts >= 2 ? 'ok' : 'pending_ingest'
+	}
+	assertEquals(await replayPendingIngestEvents(username, groupId, tryIngest), { released: 0, remaining: 1 })
+	assertEquals(await replayPendingIngestEvents(username, groupId, tryIngest), { released: 1, remaining: 0 })
+})
+
 Deno.test('expired pending_ingest rows are dropped on read', async () => {
 	await ensureServer()
 	const groupId = 'g-pending-expired'

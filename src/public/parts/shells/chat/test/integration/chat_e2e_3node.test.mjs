@@ -72,7 +72,7 @@ Deno.test('chat 3-node E2E', async t => {
 		hash.C = await joinGroup(NODE_C, NODE_A, groupId, 'invite-e2e')
 		await federate(NODE_C, [NODE_A], groupId)
 		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
-		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
+		await gossipAll([NODE_A, NODE_B, NODE_C], groupId, { assertConverged: true })
 
 		for (const node of [NODE_A, NODE_B, NODE_C]) {
 			const members = activeMembers(await stateOf(node, groupId))
@@ -106,7 +106,7 @@ Deno.test('chat 3-node E2E', async t => {
 			timestamp: Date.now(),
 			content: { targetMemberKey: hash.B, roleId: 'moderator' },
 		}, { publishFederation: false })
-		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
+		await gossipAll([NODE_A, NODE_B, NODE_C], groupId, { assertConverged: true })
 
 		for (const node of [NODE_A, NODE_B, NODE_C]) {
 			const perms = modules.state.memberChannelPermissions(await stateOf(node, groupId), hash.B, publicChannelId)
@@ -117,7 +117,7 @@ Deno.test('chat 3-node E2E', async t => {
 	await t.step('step5: 多频道发帖并验证联邦同步到 B/C', async () => {
 		// B/C 加入后旋转所有频道密钥，使其拿到 K_ch wrap（VIEW_CHANNEL 成员）。
 		await modules.schedule.rotateAllChannelKeys(NODE_A, groupId)
-		await gossipAll([NODE_A, NODE_B, NODE_C], groupId)
+		await gossipAll([NODE_A, NODE_B, NODE_C], groupId, { assertConverged: true })
 
 		// 串行发帖 + 实时推送：每条帖即时下发给对端，保持 DAG 线性（避免并发分叉污染后续治理收敛）。
 		const m1 = await postMessage(NODE_A, groupId, publicChannelId, 'hello default from A', [NODE_B, NODE_C])

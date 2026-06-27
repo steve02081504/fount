@@ -1,7 +1,7 @@
 /**
  * Playwright 等待 shell 前端 bootstrap 就绪（轮询 DOM data-fount-* attribute）。
  */
-import { HUB_SHELL_GATE, SOCIAL_APP_GATE } from 'fount/public/pages/scripts/readyGate.mjs'
+import { HUB_SHELL_GATE, SOCIAL_APP_GATE, STICKERS_PAGE_GATE } from 'fount/public/pages/scripts/readyGate.mjs'
 
 /**
  * 在页面内等待 shell 就绪 attribute。
@@ -46,6 +46,20 @@ export function waitForSocialAppReady(page) {
 		readyAttr: SOCIAL_APP_GATE.readyAttr,
 		errorAttr: SOCIAL_APP_GATE.errorAttr,
 		label: 'Social',
+		timeout: 60_000,
+	})
+}
+
+/**
+ * 等待 Chat 贴纸商店页 bootstrap 就绪。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @returns {Promise<void>}
+ */
+export function waitForStickersPageReady(page) {
+	return waitForShellReadyAttr(page, {
+		readyAttr: STICKERS_PAGE_GATE.readyAttr,
+		errorAttr: STICKERS_PAGE_GATE.errorAttr,
+		label: 'Stickers',
 		timeout: 60_000,
 	})
 }

@@ -35,8 +35,8 @@ Deno.test('usage_mix scenario profiles', () => {
 	const tunables = loadDefaultTunables()
 	const scenario = resolveScenarios('usage_mix')[0]
 	const snap = runSimulation(scenario, 7, tunables)
-	assertEquals(snap.profilePreservationRate >= 0, true)
-	assertEquals(snap.relayPreservationRate >= 0, true)
+	assertEquals(snap.profilePreservationRate > 0, true)
+	assertEquals(snap.relayPreservationRate > 0, true)
 })
 
 Deno.test('new endogenous scenarios produce metrics', () => {

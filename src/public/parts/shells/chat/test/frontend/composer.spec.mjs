@@ -18,14 +18,15 @@ test.describe('Chat composer', () => {
 
 	test('does not submit empty composer', async ({ page, groupChannel: _ }) => {
 		await page.locator('#hub-message-input').fill('')
-		let posted = false
-		page.on('request', req => {
-			if (req.method() === 'POST' && req.url().includes('/channels/') && req.url().includes('/messages'))
-				posted = true
-		})
+		const postPromise = page.waitForResponse(
+			res => res.request().method() === 'POST'
+				&& res.url().includes('/channels/')
+				&& res.url().includes('/messages'),
+			{ timeout: 2_000 },
+		).catch(() => null)
 		await page.locator('#hub-send-button').click()
-		await page.waitForTimeout(500)
-		expect(posted).toBe(false)
+		expect(await postPromise).toBeNull()
+		await expect(page.locator('#hub-message-input')).toHaveValue('')
 	})
 
 	test('published message appears in channel', async ({ page, groupChannel }) => {

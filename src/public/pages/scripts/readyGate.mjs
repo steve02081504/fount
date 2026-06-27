@@ -22,6 +22,9 @@ export const HUB_SHELL_GATE = readyGateAttrs('hub-shell')
 /** Social bootstrapSocialApp 完成后的就绪 attribute。 */
 export const SOCIAL_APP_GATE = readyGateAttrs('social-app')
 
+/** Chat 贴纸商店页 init 完成后的就绪 attribute。 */
+export const STICKERS_PAGE_GATE = readyGateAttrs('stickers-page')
+
 /**
  * @param {ReturnType<typeof readyGateAttrs>} gateAttrs 预定义 gate（如 HUB_SHELL_GATE）
  * @param {string} label 人类可读标签（错误消息回退）
