@@ -1920,12 +1920,24 @@ run() {
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
 	set_title "𝓯"
+	local boosted=0
+	if [[ $(id -u) -eq 0 ]]; then
+		renice -n -10 -p $$ >/dev/null 2>&1 && boosted=1
+	fi
+	if [[ "$OS_TYPE" = "Linux" ]] && command -v ionice >/dev/null 2>&1; then
+		ionice -c2 -n0 -p $$ >/dev/null 2>&1 || true
+	fi
+	export FOUNT_STARTUP_PRIORITY_BOOST=1
 	if [[ $$FOUNT_DEBUG -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	exit_code=$?
+	if [[ "$boosted" -eq 1 ]]; then
+		renice -n 0 -p $$ >/dev/null 2>&1 || true
+	fi
+	unset FOUNT_STARTUP_PRIORITY_BOOST
 	set_title "$original_title"
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME

@@ -1429,6 +1429,10 @@ function run {
 	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	Write-TaskbarProgress -Percent 25
 	Set-Title "𝓯"
+	$proc = [System.Diagnostics.Process]::GetCurrentProcess()
+	$prevPriority = $proc.PriorityClass
+	$env:FOUNT_STARTUP_PRIORITY_BOOST = '1'
+	try { $proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::AboveNormal } catch { <# ignore #> }
 	try {
 		if ($env:FOUNT_DEBUG) {
 			deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
@@ -1438,6 +1442,8 @@ function run {
 		}
 	}
 	finally {
+		try { $proc.PriorityClass = $prevPriority } catch { <# ignore #> }
+		Remove-Item Env:\FOUNT_STARTUP_PRIORITY_BOOST -Force -ErrorAction Ignore
 		Set-Title $originalTitle
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
