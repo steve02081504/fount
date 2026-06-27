@@ -202,11 +202,12 @@ function ansiLink(url, text) {
  * 对不含字面义占位符片段的字符串做插值（链接、参数占位符、反引号）。
  * @param {string} segment - 翻译片段。
  * @param {Record<string, any>} params - 插值参数。
+ * @param {boolean} terminal - 是否渲染为终端序列（ANSI 链接与紫色反引号）。
  * @returns {string} 插值后的片段字符串。
  */
-function applyInterpolationToPlainSegment(segment, params) {
+function applyInterpolationToPlainSegment(segment, params, terminal) {
 	let result = segment
-	if (supportsAnsi) {
+	if (terminal && supportsAnsi) {
 		for (const key in params) {
 			const escapedKey = escapeRegExp(key)
 			result = result?.replace?.(
@@ -225,16 +226,19 @@ function applyInterpolationToPlainSegment(segment, params) {
 
 /**
  * 对单条翻译字符串做插值（链接、占位符、反引号）。
- * 若 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色；否则链接仅保留文字，反引号保持原样。
+ * 默认（terminal=false）返回原文：链接保留 markdown 文字，反引号保持原样，不施加 ANSI。
+ * 若 terminal 且 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色。
  * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
+ * 字面义反引号：`\`foo\`` 渲染为 `` `foo` ``，且不施加 ANSI 紫色。
  * 若 translation 非字符串（如嵌套对象），则原样返回。
  * @template TTranslation - 翻译字符串或嵌套对象的类型。
  * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
  * @param {Record<string, any>} params - 插值参数。
+ * @param {boolean} [terminal] - 是否渲染为终端序列（ANSI 链接与紫色反引号）。
  * @returns {TTranslation} 替换后的翻译字符串或原对象。
  */
-function applyParamsToTranslation(translation, params) {
-	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
+function applyParamsToTranslation(translation, params, terminal = false) {
+	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params, terminal)
 	if (!translation || !(Object(translation) instanceof String)) return translation
 	const translationText = translation + ''
 	let result = ''
@@ -244,7 +248,8 @@ function applyParamsToTranslation(translation, params) {
 		const plainSegmentEnd = literalEscapeStart === -1 ? translationText.length : literalEscapeStart
 		result += applyInterpolationToPlainSegment(
 			translationText.slice(scanIndex, plainSegmentEnd),
-			params
+			params,
+			terminal
 		)
 		if (literalEscapeStart === -1) break
 		const closingBraceIndex = translationText.indexOf('}', literalEscapeStart + 3)
@@ -262,9 +267,10 @@ function applyParamsToTranslation(translation, params) {
  * 为翻译数组创建代理：toString 随机选一项并渲染，下标访问返回该项的渲染结果。
  * @param {string[]} arr - 原始翻译字符串数组。
  * @param {Record<string, any>} params - 插值参数。
+ * @param {boolean} [terminal] - 是否渲染为终端序列（ANSI 链接与紫色反引号）。
  * @returns {string[]} 代理后的数组（toString 与下标访问为渲染结果）。
  */
-function createI18nArrayProxy(arr, params) {
+function createI18nArrayProxy(arr, params, terminal = false) {
 	return new Proxy(arr, {
 		/**
 		 * 获取翻译数组代理的值。
@@ -277,12 +283,12 @@ function createI18nArrayProxy(arr, params) {
 				return function toString() {
 					if (!target.length) throw new Error('I18n array is empty')
 					const i = Math.floor(Math.random() * target.length)
-					return applyParamsToTranslation(target[i], params) ?? ''
+					return applyParamsToTranslation(target[i], params, terminal) ?? ''
 				}
 			try {
 				const n = Number(prop)
 				if (Number.isInteger(n) && n >= 0 && n < target.length)
-					return applyParamsToTranslation(target[n], params)
+					return applyParamsToTranslation(target[n], params, terminal)
 			} catch (_) { }
 			return Reflect.get(target, prop)
 		},
@@ -309,15 +315,16 @@ function createI18nArrayProxy(arr, params) {
  * @param {LocaleData} localeData - 区域设置数据。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @param {boolean} [terminal] - 是否渲染为终端序列（ANSI 链接与紫色反引号）。
  * @returns {string} - 翻译后的文本。
  */
-function baseGeti18n(localeData, key, params = {}) {
+function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	const translation = getNestedValue(localeData, key)
 	if (translation === undefined) {
 		console.warn(`Translation key "${key}" not found.`)
 		return undefined
 	}
-	return applyParamsToTranslation(translation, params)
+	return applyParamsToTranslation(translation, params, terminal)
 }
 /**
  * 无参数的本地化键重载
@@ -397,6 +404,32 @@ export function geti18n(key, params = {}) {
 	return baseGeti18n(localhostLocaleData, key, params)
 }
 /**
+ * 无参数的本地化键重载
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {string}
+ */
+/**
+ * 有参数的本地化键重载
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {string}
+ */
+/**
+ * 获取渲染为终端序列的翻译文本（链接用 OSC 8，`xxx` 用 ANSI 紫色）。
+ * 终端不支持 ANSI 时回退为原文。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @returns {string} - 渲染为终端序列的翻译文本。
+ */
+export function geti18nForTerminal(key, params = {}) {
+	return baseGeti18n(localhostLocaleData, key, params, true)
+}
+/**
  * 将值转换为字符串。
  * @param {any} value - 要转换的值。
  * @returns {string} - 转换后的字符串。
@@ -429,7 +462,7 @@ function toString(value) {
 console.infoI18n = (key, params = {}) => {
 	try {
 		console.stackFrameSkipCount++
-		console.info(toString(geti18n(key, params)))
+		console.info(toString(geti18nForTerminal(key, params)))
 	} finally {
 		console.stackFrameSkipCount--
 	}
@@ -459,7 +492,7 @@ console.infoI18n = (key, params = {}) => {
 console.logI18n = (key, params = {}) => {
 	try {
 		console.stackFrameSkipCount++
-		console.log(toString(geti18n(key, params)))
+		console.log(toString(geti18nForTerminal(key, params)))
 	} finally {
 		console.stackFrameSkipCount--
 	}
@@ -489,7 +522,7 @@ console.logI18n = (key, params = {}) => {
 console.warnI18n = (key, params = {}) => {
 	try {
 		console.stackFrameSkipCount++
-		console.warn(toString(geti18n(key, params)))
+		console.warn(toString(geti18nForTerminal(key, params)))
 	} finally {
 		console.stackFrameSkipCount--
 	}
@@ -519,7 +552,7 @@ console.warnI18n = (key, params = {}) => {
 console.errorI18n = (key, params = {}) => {
 	try {
 		console.stackFrameSkipCount++
-		console.error(toString(geti18n(key, params)))
+		console.error(toString(geti18nForTerminal(key, params)))
 	} finally {
 		console.stackFrameSkipCount--
 	}
@@ -550,7 +583,7 @@ console.errorI18n = (key, params = {}) => {
 console.freshLineI18n = (id, key, params = {}) => {
 	try {
 		console.stackFrameSkipCount++
-		console.freshLine(id, toString(geti18n(key, params)))
+		console.freshLine(id, toString(geti18nForTerminal(key, params)))
 	} finally {
 		console.stackFrameSkipCount--
 	}
@@ -578,7 +611,7 @@ console.freshLineI18n = (id, key, params = {}) => {
  * @returns {void}
  */
 export function alertI18n(key, params = {}) {
-	return alert(toString(geti18n(key, params)))
+	return alert(toString(geti18nForTerminal(key, params)))
 }
 /**
  * 无参数的本地化键重载
@@ -603,7 +636,7 @@ export function alertI18n(key, params = {}) {
  * @returns {string | null} 用户输入或null。
  */
 export function promptI18n(key, params = {}) {
-	return prompt(toString(geti18n(key, params)))
+	return prompt(toString(geti18nForTerminal(key, params)))
 }
 /**
  * 无参数的本地化键重载
@@ -628,5 +661,5 @@ export function promptI18n(key, params = {}) {
  * @returns {boolean} 如果用户点击确定则返回true，否则返回false。
  */
 export function confirmI18n(key, params = {}) {
-	return confirm(toString(geti18n(key, params)))
+	return confirm(toString(geti18nForTerminal(key, params)))
 }
