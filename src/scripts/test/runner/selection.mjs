@@ -41,6 +41,8 @@ function suitesFromFailureRetry(candidates, retryByManifest) {
 	)
 }
 
+const EMPTY_SELECTION = { retryByManifest: new Map(), usingFailureRetry: false }
+
 /**
  * 选择本次应执行的 suite 集合。
  * @param {object} params 选择参数
@@ -66,14 +68,16 @@ export async function selectSuites({
 	currentHash,
 	uncommittedFiles,
 }) {
-	const singleManifest = manifestIds?.length === 1 ? manifestIds[0] : undefined
-	const trackFailures = Boolean(singleManifest)
+	// 全量或显式指名 suite 时，按用户给定子集执行，不与失败记录求交集。
+	if (runAll || suiteSelectors?.length)
+		return { action: 'run', suites: filtered, ...EMPTY_SELECTION }
 
+	const singleManifest = manifestIds?.length === 1 ? manifestIds[0] : undefined
 	const failureManifestIds = singleManifest
 		? [singleManifest]
-		: !manifestIds?.length && !runAll
-			? await listFailedManifests(repoRoot)
-			: []
+		: manifestIds?.length
+			? []
+			: await listFailedManifests(repoRoot)
 
 	const retryByManifest = new Map()
 	const failureRecords = new Map()
@@ -86,10 +90,6 @@ export async function selectSuites({
 	}
 
 	const usingFailureRetry = retryByManifest.size > 0
-
-	if (runAll)
-		return { action: 'run', suites: filtered, retryByManifest, usingFailureRetry }
-
 	let selected = filtered
 
 	if (usingFailureRetry) {

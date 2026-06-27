@@ -32,7 +32,7 @@ manifest id 来自各 test/manifest.json 顶层 "id" 字段。
 suite 指名匹配各 suite 的 id 或 name，同样用逗号分隔。
 
 在未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比 commit。
-指定 manifest id 时启用失败记录（data/test/failures/）；存在失败记录时优先重跑失败项（与 suite 指名取交集）。
+指定 manifest id 时启用失败记录（data/test/failures/）；未指定 suite 时存在失败记录则仅重跑失败项；显式指名 suite 直接按指名执行（不再求交集）。
 
 --gen-report  将失败/噪声 suite 输出落盘并生成 data/test/report/report.md + report.json（每完成一个 suite 即刷新）。
 -j, --jobs    全局并发上限（默认 CPU 线程数）。

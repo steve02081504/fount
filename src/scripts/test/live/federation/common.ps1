@@ -1,22 +1,55 @@
-# L4 双节点联邦 live 探针共用库。
+# L4 联邦 live 探针共用库（支持 FOUNT_TEST_NODE_COUNT 个节点）。
 
 # PS 将 $env:VAR?.Trim() 里的 ? 解析为通配符而非空值传播，须先取值再 Trim。
 if (-not ($env:FOUNT_TEST_BASE_URL -and $env:FOUNT_TEST_BASE_URL.Trim())) { throw 'FOUNT_TEST_BASE_URL is required; run via test/live/run.mjs' }
 if (-not ($env:FOUNT_API_KEY -and $env:FOUNT_API_KEY.Trim())) { throw 'FOUNT_API_KEY is required for NodeA; run via test/live/run.mjs.' }
 
-$script:FedA = @{
-	base = $env:FOUNT_TEST_BASE_URL.Trim().TrimEnd('/')
-	key = $env:FOUNT_API_KEY.Trim()
-	name = 'A'
-	dataPath = $env:FOUNT_NODE_A_DATA
+$script:FedNodeCount = 2
+if ($env:FOUNT_TEST_NODE_COUNT) { $script:FedNodeCount = [int]$env:FOUNT_TEST_NODE_COUNT }
+if ($script:FedNodeCount -lt 1) { throw 'FOUNT_TEST_NODE_COUNT must be >= 1' }
+
+function New-FedNodeHandle($index) {
+	$idx = $index + 1
+	$letter = [char]([int][char]'A' + $index)
+	$baseKey = "FOUNT_TEST_NODE_${idx}_BASE_URL"
+	$keyKey = "FOUNT_TEST_NODE_${idx}_KEY"
+	$dataKey = "FOUNT_TEST_NODE_${idx}_DATA"
+	if ($idx -eq 1) {
+		$base = $env:FOUNT_TEST_BASE_URL.Trim().TrimEnd('/')
+		$key = $env:FOUNT_API_KEY.Trim()
+		$data = $env:FOUNT_NODE_A_DATA
+	}
+	elseif ($idx -eq 2) {
+		if (-not ($env:FOUNT_TEST_NODE_B_BASE_URL -and $env:FOUNT_TEST_NODE_B_BASE_URL.Trim())) { throw 'FOUNT_TEST_NODE_B_BASE_URL is required for fed suites; run via test/live/run.mjs' }
+		$base = $env:FOUNT_TEST_NODE_B_BASE_URL.Trim().TrimEnd('/')
+		$key = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY.Trim() } else { throw 'FOUNT_TEST_NODE_B_KEY is required' })
+		$data = $env:FOUNT_NODE_B_DATA
+	}
+	else {
+		$base = [Environment]::GetEnvironmentVariable($baseKey)
+		$key = [Environment]::GetEnvironmentVariable($keyKey)
+		$data = [Environment]::GetEnvironmentVariable($dataKey)
+		if (-not ($base -and $base.Trim())) { throw "${baseKey} is required for node $idx" }
+		if (-not ($key -and $key.Trim())) { throw "${keyKey} is required for node $idx" }
+		$base = $base.Trim().TrimEnd('/')
+		$key = $key.Trim()
+	}
+	[pscustomobject]@{
+		base = $base
+		key = $key
+		name = [string]$letter
+		dataPath = $data
+		index = $idx
+	}
 }
-if (-not ($env:FOUNT_TEST_NODE_B_BASE_URL -and $env:FOUNT_TEST_NODE_B_BASE_URL.Trim())) { throw 'FOUNT_TEST_NODE_B_BASE_URL is required for fed suites; run via test/live/run.mjs' }
-$script:FedB = @{
-	base = $env:FOUNT_TEST_NODE_B_BASE_URL.Trim().TrimEnd('/')
-	key = $(if ($env:FOUNT_TEST_NODE_B_KEY) { $env:FOUNT_TEST_NODE_B_KEY.Trim() } else { throw 'FOUNT_TEST_NODE_B_KEY is required' })
-	name = 'B'
-	dataPath = $env:FOUNT_NODE_B_DATA
+
+$script:FedNodes = @()
+for ($i = 0; $i -lt $script:FedNodeCount; $i++) {
+	$script:FedNodes += New-FedNodeHandle $i
 }
+$script:FedA = $script:FedNodes[0]
+$script:FedB = if ($script:FedNodes.Count -ge 2) { $script:FedNodes[1] } else { $null }
+$script:FedC = if ($script:FedNodes.Count -ge 3) { $script:FedNodes[2] } else { $null }
 
 $script:pass = 0; $script:fail = 0; $script:skip = 0
 $script:failures = @()
@@ -36,8 +69,9 @@ function Reset-FedNodeBlocklist($node) {
 }
 
 # live 联邦套件复用同一节点数据目录；每次运行前清空持久化 blocklist，避免跨套件污染。
-Reset-FedNodeBlocklist $script:FedA
-Reset-FedNodeBlocklist $script:FedB
+foreach ($node in $script:FedNodes) {
+	Reset-FedNodeBlocklist $node
+}
 
 function FedUri($node, $path) {
 	$uri = "$($node.base)$path"
@@ -135,6 +169,45 @@ function Wait-FedMembers($node, $groupId, $minMembers = 2, $timeoutSec = 120) {
 	})
 }
 
+function Initialize-OpenGroupJoinMulti($name, $seedText, $joinNodes) {
+	$group = (Api $script:FedA POST '/groups/' @{ name = $name; description = 'L4 fed probe' }).json
+	$groupId = $group.groupId; $channelId = $group.defaultChannelId
+	Api $script:FedA PUT "/groups/$groupId/settings" @{ joinPolicy = 'open' } | Out-Null
+	$invite = (Api $script:FedA POST "/groups/$groupId/invite-ticket" @{ ttlMs = 3600000 }).json
+	$seedEventId = $null
+	if ($seedText) {
+		$seedEventId = (Api $script:FedA POST "/groups/$groupId/channels/$channelId/messages" @{ content = @{ type = 'text'; content = $seedText } }).json.event.id
+	}
+	$minMembers = 1 + @($joinNodes).Count
+	$joined = 0
+	foreach ($node in $joinNodes) {
+		$join = Api $node POST "/groups/$groupId/join" @{
+			mqttRoomSecret = $invite.mqttRoomSecret
+			mqttAppId = $invite.mqttAppId
+			introducerPubKeyHash = $invite.introducerPubKeyHash
+		}
+		if ($join.status -ne 200) { throw "$($node.name) join failed: $($join.status) $($join.raw)" }
+		$joined++
+		$need = 1 + $joined
+		$okJoin = Wait-FedMembers $script:FedA $groupId $need 120
+		if (-not $okJoin) { throw "federation health gate after $($node.name) join: members>=$need" }
+		Api $node POST "/groups/$groupId/federation/rebind" @{} | Out-Null
+		Api $node POST "/groups/$groupId/federation/catchup" @{ waitMs = 8000 } | Out-Null
+	}
+	foreach ($node in @($script:FedA) + $joinNodes) {
+		Api $node POST "/groups/$groupId/federation/rebind" @{} | Out-Null
+	}
+	$meshOk = PollUntil 90 4 {
+		foreach ($node in @($script:FedA) + $joinNodes) {
+			Api $node POST "/groups/$groupId/federation/catchup" @{ waitMs = 6000 } | Out-Null
+		}
+		$state = Api $script:FedA GET "/groups/$groupId/state"
+		$state.status -eq 200 -and [int]$state.json.state.memberCount -ge $minMembers
+	}
+	if (-not $meshOk) { throw "federation mesh warmup: members>=$minMembers" }
+	[pscustomobject]@{ groupId = $groupId; channelId = $channelId; seedEventId = $seedEventId; invite = $invite }
+}
+
 function Initialize-OpenGroupJoin($name, $seedText) {
 	$group = (Api $script:FedA POST '/groups/' @{ name = $name; description = 'L4 fed probe' }).json
 	$groupId = $group.groupId; $channelId = $group.defaultChannelId
@@ -224,7 +297,7 @@ function Complete-LiveScript {
 
 function Clear-FedTestGroups() {
 	Write-Host "`n=== Cleanup all test groups ===" -ForegroundColor Cyan
-	foreach ($node in @($script:FedA, $script:FedB)) {
+	foreach ($node in $script:FedNodes) {
 		try {
 			$ids = Get-FedTestGroupIds $node
 			if ($ids.Count) { Invoke-GroupLeaveBestEffort $node $ids }
@@ -239,7 +312,7 @@ function Clear-FedTestGroups() {
 function Clear-FedGroup($groupId) {
 	if (-not $groupId) { return }
 	Write-Host "`n=== Cleanup ===" -ForegroundColor Cyan
-	foreach ($node in @($script:FedB, $script:FedA)) {
+	foreach ($node in @($script:FedNodes | Sort-Object { $_.index } -Descending)) {
 		try {
 			Invoke-GroupLeaveBestEffort $node @($groupId)
 			Write-Host "  cleanup[$($node.name)] done for $groupId" -ForegroundColor DarkGray

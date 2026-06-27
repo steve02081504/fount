@@ -7,24 +7,55 @@ import { fileURLToPath } from 'node:url'
 
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
 import { runLiveSuiteCli } from 'fount/scripts/test/live/runner.mjs'
-import { resolveLiveNodePorts } from 'fount/scripts/test/node/launch.mjs'
+import { resolveLiveNodeFleet } from 'fount/scripts/test/node/launch.mjs'
 
 const liveDir = dirname(fileURLToPath(import.meta.url))
 const chatBootstrap = join(liveDir, '../node_bootstrap.mjs')
 const chatFixtures = join(liveDir, 'fixtures/chars')
 
-const { nodeAPort, nodeBPort, releasePort } = await resolveLiveNodePorts()
+/** 联邦 live 套件默认双节点；个别套件可声明更大 fedNodes。 */
+const FED_LIVE_MAX_NODES = 6
+const { ports, releasePort } = await resolveLiveNodeFleet(FED_LIVE_MAX_NODES)
 
 /**
- * spawn 前释放节点 A 端口持有。
- * @returns {Promise<void>}
+ * @param {number} index 0-based 节点序号
+ * @returns {() => Promise<void>} 释放该节点端口
  */
-const releaseHeldNodeAPort = () => releasePort(nodeAPort)
+const releaseHeldPort = index => () => releasePort(ports[index])
+
 /**
- * spawn 前释放节点 B 端口持有。
- * @returns {Promise<void>}
+ * @param {number} index 0-based 节点序号
+ * @param {object} [extra] 覆盖项
+ * @returns {object} launchNode 选项
  */
-const releaseHeldNodeBPort = () => releasePort(nodeBPort)
+function chatFedNodeConfig(index, extra = {}) {
+	const port = ports[index]
+	const nodeIndex = index + 1
+	const username = index === 0 ? 'CI-user' : index === 1 ? 'nodeb' : `node${nodeIndex}`
+	const envKeySuffix = nodeIndex === 1 ? 'A' : nodeIndex === 2 ? 'B' : String(nodeIndex)
+	const apiKey = process.env[`FOUNT_TEST_NODE_${envKeySuffix}_KEY`]
+		|| (index === 0
+			? `fount-ci-test-key-${port}`
+			: `node${nodeIndex}-fed-test-key-${port}`)
+	return {
+		port,
+		username,
+		apiKey,
+		loadParts: ['shells/chat'],
+		p2p: true,
+		bootstrap: chatBootstrap,
+		releasePort: releaseHeldPort(index),
+		...index === 0
+			? {
+				fixtureCopies: [{
+					from: join(chatFixtures, 'test_streamer'),
+					to: 'chars/test_streamer',
+				}],
+			}
+			: {},
+		...extra,
+	}
+}
 
 /** Chat live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[] }>} */
@@ -43,7 +74,7 @@ const suites = {
 	fed_dm: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_dm.ps1')] },
 	fed_archive_month: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_archive_month.ps1')] },
 	fed_mailbox: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_mailbox.ps1')] },
-	fed_ban: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_ban.ps1')] },
+	fed_ban: { fed: true, fedNodes: 3, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_ban.ps1')] },
 	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_emoji.ps1')] },
 	fed_emoji_nonmember: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_emoji_nonmember.ps1')] },
 	fed_emoji_nearcache: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/fed_emoji_nearcache.ps1')] },
@@ -54,26 +85,12 @@ const suites = {
 await runLiveSuiteCli({
 	suites,
 	repoRoot: REPO_ROOT,
-	nodeA: {
-		port: nodeAPort,
-		username: 'CI-user',
-		apiKey: process.env.FOUNT_TEST_NODE_A_KEY || `fount-ci-test-key-${nodeAPort}`,
-		loadParts: ['shells/chat'],
-		p2p: true,
-		bootstrap: chatBootstrap,
-		fixtureCopies: [{
-			from: join(chatFixtures, 'test_streamer'),
-			to: 'chars/test_streamer',
-		}],
-		releasePort: releaseHeldNodeAPort,
-	},
-	nodeB: {
-		port: nodeBPort,
-		username: 'nodeb',
-		apiKey: process.env.FOUNT_TEST_NODE_B_KEY || `nodeb-fed-test-key-${nodeBPort}`,
-		loadParts: ['shells/chat'],
-		p2p: true,
-		bootstrap: chatBootstrap,
-		releasePort: releaseHeldNodeBPort,
-	},
+	nodeA: chatFedNodeConfig(0),
+	nodeB: chatFedNodeConfig(1),
+	/**
+	 * 第 index 个联邦节点的 launch 配置（index ≥ 2）。
+	 * @param {number} index 0-based 节点序号
+	 * @returns {object} launchNode 选项
+	 */
+	nodeFleet: index => chatFedNodeConfig(index),
 })

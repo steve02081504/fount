@@ -178,21 +178,57 @@ export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {})
 }
 
 /**
+ * live 多节点端口解析结果。
+ * @typedef {object} LiveNodeFleet
+ * @property {number[]} ports 各节点端口（长度 = count）
+ * @property {(port: number) => Promise<void>} releasePort 释放指定端口持有
+ */
+
+/**
+ * 为 live 联邦套件分配连续 N 个端口（或读 env）。
+ * @param {number} [count=2] 节点数
+ * @param {NodeJS.ProcessEnv} [env=process.env] 环境变量
+ * @returns {Promise<LiveNodeFleet>} 端口列表与释放句柄
+ */
+export async function resolveLiveNodeFleet(count = 2, env = process.env) {
+	const rawCount = env.FOUNT_TEST_NODE_COUNT?.trim()
+	const nodeCount = rawCount ? Number(rawCount) : count
+	if (!Number.isFinite(nodeCount) || nodeCount < 1)
+		throw new Error(`invalid FOUNT_TEST_NODE_COUNT: ${rawCount}`)
+
+	const rawA = env.FOUNT_TEST_NODE_A_PORT?.trim()
+	if (rawA) {
+		/** @type {number[]} */
+		const ports = []
+		for (let i = 0; i < nodeCount; i++) {
+			const envKey = i === 0
+				? 'FOUNT_TEST_NODE_A_PORT'
+				: i === 1
+					? 'FOUNT_TEST_NODE_B_PORT'
+					: `FOUNT_TEST_NODE_${i + 1}_PORT`
+			const raw = String(env[envKey] || '').trim()
+			if (raw) ports.push(Number(raw))
+			else if (i === 0) ports.push(Number(rawA))
+			else ports.push(await pickAvailablePort(ports[i - 1] + 1))
+		}
+		return { ports, releasePort: noopReleasePort }
+	}
+
+	const { base, releasePort } = await allocateTestPortBlock({ count: nodeCount, step: 1 })
+	return {
+		ports: Array.from({ length: nodeCount }, (_, index) => base + index),
+		releasePort,
+	}
+}
+
+/**
  * 解析 live 双节点端口：优先读 env，否则分配连续空闲口。
  * @param {NodeJS.ProcessEnv} [env=process.env] 环境变量
  * @returns {Promise<LiveNodePorts>} 节点 A/B 端口与释放句柄
  */
 export async function resolveLiveNodePorts(env = process.env) {
-	const rawA = env.FOUNT_TEST_NODE_A_PORT?.trim()
-	if (rawA) {
-		const nodeAPort = Number(rawA)
-		const rawB = env.FOUNT_TEST_NODE_B_PORT?.trim()
-		const nodeBPort = rawB
-			? Number(rawB)
-			: await pickAvailablePort(nodeAPort + 1)
-		return { nodeAPort, nodeBPort, releasePort: noopReleasePort }
-	}
-	return allocateLiveNodePorts()
+	const { ports, releasePort } = await resolveLiveNodeFleet(2, env)
+	return { nodeAPort: ports[0], nodeBPort: ports[1], releasePort }
 }
 
 /** 端口被其它 fount 实例占用（whoami 用户名不符）。 */
