@@ -1065,7 +1065,7 @@ MimeType=x-scheme-handler/fount;
 Categories=Utility;
 EOF
 		chmod +x "$protocol_desktop_file_path"
-		xdg-mime default fount-protocol.desktop x-scheme-handler/fount
+		xdg-mime default fount-protocol.desktop x-scheme-handler/fount 2>/dev/null || true
 		if command -v update-desktop-database &>/dev/null; then
 			update-desktop-database "$HOME/.local/share/applications"
 		fi
@@ -1340,7 +1340,7 @@ register_terminal_keybindings() {
 	done < <(get_fount_editor_keybindings_paths)
 	if ! $patched; then return 0; fi
 	printf '%s\n' "${editor_paths[@]}" | jq -R . | jq -s '{editorKeybindings: ., windowsTerminalSettings: []}' >"$manifest"
-	get_i18n 'install.terminalKeybindings.registered'
+	get_i18n 'terminalKeybindings.registered'
 }
 
 unregister_terminal_keybindings() {
@@ -1364,7 +1364,7 @@ unregister_terminal_keybindings() {
 	done < <(get_fount_editor_keybindings_paths)
 	for kb_path in "${kb_paths[@]}"; do
 		if split_fount_editor_keybindings "$kb_path"; then
-			get_i18n 'install.terminalKeybindings.editorRemoved' 'path' "$kb_path"
+			get_i18n 'terminalKeybindings.editorRemoved' 'path' "$kb_path"
 		fi
 	done
 	rm -f "$manifest"
@@ -1751,13 +1751,14 @@ base_deno_upgrade() {
 		deno_upgrade_channel="rc"
 	fi
 
-	local errorOut
+	local errorOut deno_upgrade_exit_code
 	errorOut=$(deno upgrade -q "$deno_upgrade_channel" 2> >(tee /dev/stderr))
-	if [[ $errorOut == *"USAGE"* ]]; then # wtf deno 1.0?
+	deno_upgrade_exit_code=$?
+	if [[ $errorOut == *"USAGE"* || $errorOut == *"unexpected argument"* ]]; then
 		run_deno upgrade -q
+		deno_upgrade_exit_code=$?
 	fi
-	# shellcheck disable=SC2181
-	if [[ $? -ne 0 ]]; then
+	if [[ $deno_upgrade_exit_code -ne 0 ]]; then
 		if [[ $IN_TERMUX -eq 1 ]]; then
 			get_i18n 'deno.upgradeFailedTermux'
 			rm -rf "$HOME/.deno"
@@ -1928,7 +1929,7 @@ run() {
 		ionice -c2 -n0 -p $$ >/dev/null 2>&1 || true
 	fi
 	export FOUNT_STARTUP_PRIORITY_BOOST=1
-	if [[ $$FOUNT_DEBUG -eq 1 ]]; then
+	if [[ $FOUNT_DEBUG -eq 1 ]]; then
 		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"

@@ -196,6 +196,7 @@
 				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：${path}"
 			},
 			"remove": {
+				"removingDesktopShortcut": "正在移除桌面快捷方式...",
 				"removingTerminalKeybindings": "正在移除终端按键绑定补丁...",
 				"removingFount": "正在移除 fount...",
 				"fountUninstallationComplete": "fount 卸载完成。",
