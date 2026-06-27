@@ -11,6 +11,7 @@ import { readJsonlStream } from '../../../../../../../scripts/p2p/dag/storage.mj
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../../../../../../../scripts/p2p/peer_pool.mjs'
+import { getStalePeerPruneCount } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
@@ -149,12 +150,14 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
  */
 export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot) return { tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false }
+	if (!slot) return { tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const nodeHash = federationNodeHash(username)
 	const waitMs = clampNumber(opts.waitMs, 400, 30000, 1600)
+	// 本轮 catchup 期间因身份映射滞后被自愈剔除的失效 peer 数（观测：>0 说明 onPeerLeave 漏触发/换房残留）。
+	const stalePeersAtStart = getStalePeerPruneCount(groupId)
 	/** @type {object[]} */
 	const events = []
 	const eventsById = new Map()
@@ -244,6 +247,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 		eventsFilled,
 		wantIdsStillMissing,
 		wantIdsRateLimited,
+		stalePeersPruned: getStalePeerPruneCount(groupId) - stalePeersAtStart,
 	}
 	void maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot)
 	if (localArchive.checkpoint?.local_tips_hash)

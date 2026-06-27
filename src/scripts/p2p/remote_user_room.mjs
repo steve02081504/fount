@@ -15,6 +15,7 @@ import { joinMqttRoomWithDefaults } from './mqtt_room.mjs'
 import { getNodeTransportSettings } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
+import { recordStalePeerPrune } from './stale_peer_log.mjs'
 import {
 	attachIdentityAnnounceHandlers,
 	createPeerIdentityMaps,
@@ -67,7 +68,15 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 				return null
 			}
 
-			const maps = createPeerIdentityMaps()
+			const maps = createPeerIdentityMaps({
+				/** @returns {string[]} 当前活连接 peerId */
+				getLivePeerIds: () => Object.keys(room.getPeers?.() || {}),
+				/**
+				 * @param {Array<{ peerId: string, remoteNodeHash?: string }>} stale 被剔除的失效条目
+				 * @returns {void}
+				 */
+				onStalePruned: stale => recordStalePeerPrune(`remote-user-room:${key}`, stale, { room: 'remote-user-room', targetNodeHash: key }),
+			})
 			const actions = createTrysteroActionRegistry(room)
 			attachIdentityAnnounceHandlers(room, maps, actions)
 

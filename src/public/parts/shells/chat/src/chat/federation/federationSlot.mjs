@@ -3,6 +3,8 @@
  */
 import { leaveMqttRoom } from '../../../../../../../scripts/p2p/mqtt_room.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
+import { recordStalePeerPrune } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
+import { pruneStaleRosterEntries } from '../../../../../../../scripts/p2p/trystero_session.mjs'
 
 import { bindFedSender } from './outbound.mjs'
 
@@ -90,6 +92,17 @@ export function buildFederationSlot(roomContext) {
 	// slot 生命周期：失活后 leave 幂等，且 roster 不再被孤儿 handler 读到。
 	let active = true
 
+	/**
+	 * 用 Trystero 实时连接表（room.getPeers）校正身份映射：剔除已无活连接的 peerId（自愈），并记录观测。
+	 * roster/目标解析的唯一可信前置——杜绝向死 peer 发包（"no peer with id ... found" 静默丢失）。
+	 * @returns {void}
+	 */
+	const reconcileLivePeers = () => {
+		const livePeerIds = Object.keys(room?.getPeers?.() || {})
+		const stale = pruneStaleRosterEntries(peerToNode, nodeToPeer, livePeerIds)
+		if (stale.length) recordStalePeerPrune(groupId, stale, { partitionId })
+	}
+
 	// slot 绑定的资源清理回调（如 tip 心跳 setInterval）：leave() 时统一执行，杜绝孤儿定时器。
 	/** @type {Set<() => void>} */
 	const cleanups = new Set()
@@ -121,15 +134,19 @@ export function buildFederationSlot(roomContext) {
 		nodeToPeer,
 		getActionSender,
 		senderRegistry,
-		/** @returns {{ peerId: string, remoteNodeHash: string | undefined }[]} 房内 roster */
+		/** @returns {{ peerId: string, remoteNodeHash: string | undefined }[]} 房内（活连接）roster */
 		getRoster() {
+			reconcileLivePeers()
 			return [...peerToNode.entries()].map(([peerId, remoteNodeHash]) => ({ peerId, remoteNodeHash }))
 		},
 		/**
 		 * @param {string} targetNodeId 目标 nodeHash
-		 * @returns {string | null} Trystero peerId
+		 * @returns {string | null} Trystero peerId（仅在活连接时返回）
 		 */
-		getPeerIdByNodeHash(targetNodeId) { return nodeToPeer.get(targetNodeId) ?? null },
+		getPeerIdByNodeHash(targetNodeId) {
+			reconcileLivePeers()
+			return nodeToPeer.get(targetNodeId) ?? null
+		},
 		/**
 		 * @param {string} peerId 目标 peer
 		 * @param {string} actionName Trystero action

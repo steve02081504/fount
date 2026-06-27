@@ -1,7 +1,7 @@
 /**
  * 【文件】`dag/ingest.mjs` — 入站事件鉴权（本地与联邦共用）。
  * 【职责】在 append/远程入库前校验 join 策略、消息索引、权限矩阵、session 形状与 `dag_tip_merge` 前驱合法性。
- * 【原理】先物化当前群状态再判权；联邦路径要求 ACL 快照就绪且 sender 为 pubKeyHash；消息变更类事件走 `assertEventPermission`；`dag_tip_merge` 要求 `prev_event_ids` 覆盖全部当前 DAG tips。
+ * 【原理】先物化当前群状态再判权；联邦路径要求 ACL 快照就绪且 sender 为 pubKeyHash；消息变更类事件走 `assertEventPermission`；`dag_tip_merge` 要求声明 >= 2 个父且所有 `prev_event_ids` 本地已存在（缺父可延迟，跨节点并发合并下不强求等于本地 frontier）。
  * 【数据结构】入参为 DAG 事件对象；`opts.source` 为 `'local' | 'federation'`。
  * 【关联】`authorizeEvent.mjs`、`materialize.mjs`、`sessionEventValidate.mjs`、`../federation/acl.mjs`。
  */
@@ -9,7 +9,6 @@ import { isPubKeyHashBlocked } from '../../../../../../../scripts/p2p/blocklist.
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { assertHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import {
 	shouldDeferInboundIngest,
@@ -79,17 +78,19 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 	}
 
 	if (event.type === 'dag_tip_merge') {
+		// 合并事件本质是多父汇合：其合法性在于「所有父事件本地已存在」，而非「接收方当前 frontier 恰好等于其 prev」。
+		// 旧逻辑要求 prev_event_ids 必须等于本地当前 DAG tips；在多节点并发场景下，各节点独立创建的 tip_merge
+		// 会互相「吞掉」对方所引用的 tip（A 的 merge 把 X 变为内部节点，B 的 merge 仍把 X 当 tip 引用），
+		// 导致两条 merge 永远互不可入站（no_fork / mismatch），下游事件随之连带 pending，跨节点补齐永久死锁。
+		// 改为：结构上要求 >= 2 个父；父事件齐备即可入站（多余的本地 tip 留待后续 merge 收敛）；缺父则可延迟等 catchup 补齐。
+		const prev = sortedPrevEventIds(event.prev_event_ids)
+		if (prev.length < 2)
+			throw new Error('dag_tip_merge: must reference >= 2 prev tips')
 		const rows = await readJsonl(eventsPath(replicaUsername, groupId), { sanitize: stripDagEventLocalExtensions })
-		const tips = computeDagTipIdsFromEvents(rows)
-		if (tips.length < 2) {
-			const error = new Error('dag_tip_merge: no fork')
-			error.pendable = true
-			throw error
-		}
-		const expected = sortedPrevEventIds(tips)
-		const got = sortedPrevEventIds(event.prev_event_ids)
-		if (expected.length !== got.length || expected.some((id, index) => id !== got[index])) {
-			const error = new Error('dag_tip_merge: prev_event_ids must list all current DAG tips')
+		const presentIds = new Set(rows.map(row => String(row.id).trim().toLowerCase()))
+		const missing = prev.filter(id => !presentIds.has(String(id).trim().toLowerCase()))
+		if (missing.length) {
+			const error = new Error('dag_tip_merge: prev events not present yet')
 			error.pendable = true
 			throw error
 		}

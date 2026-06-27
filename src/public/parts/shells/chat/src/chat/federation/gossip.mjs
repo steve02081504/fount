@@ -32,8 +32,13 @@ import {
 } from './pullEnvelope.mjs'
 import { gossipWaitPrefix, pendingGossipRequests } from './registry.mjs'
 
-const takeGossipRequestDedupeSlot = createDedupeSlot({ maxSize: 2000, ttlMs: 30_000 })
+// gossip_request 去重窗口：仅用于合并极短时间内的重复请求 / 抑制多跳转发风暴，绝不能长于一个补齐重试周期，
+// 否则——当 gossip_response 在抖动的 WebRTC 链路上丢失时——请求方的合法重试会被持续 dedupe_skip 整整一个窗口，
+// 导致特定缺失事件在该窗口内永远无法被重新 serve（实测：30s 窗口下 reputation_slash/owner-succession 跨节点补齐长期失败）。
+// 取值 ≈ GOSSIP_RESPONSE_WAIT_MS：既能合并 ~亚秒级突发（serve 速率 ~20/min，稳居入站限速 32/min 之下），
+// 又能让每个等待周期后的重试被重新 serve，从而在任一“连通窗口”内让请求/响应成对落地、完成补齐。
 const GOSSIP_RESPONSE_WAIT_MS = 3000
+const takeGossipRequestDedupeSlot = createDedupeSlot({ maxSize: 2000, ttlMs: GOSSIP_RESPONSE_WAIT_MS })
 
 /**
  * 从群设置推导 wantIds 限速参数。

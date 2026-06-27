@@ -176,13 +176,66 @@ export function createTrysteroActionRegistry(room) {
 }
 
 /**
+ * 纯逻辑：用「当前确有活连接的 peerId」校正身份 roster，拆成在线与失效两组。
+ *
+ * 身份映射（peerToNode）靠 identity_announce 填、靠 onPeerLeave 删；但异步网络里 onPeerLeave 可能漏触发或迟到
+ * （RTC 超时、换房残留旧 peerId），导致映射滞后于真实连接。失效条目（peerId 不在活连接集合里）若被当作发送目标，
+ * 只会石沉大海（Trystero "no peer with id ... found"），且每轮都重复挑它——故须据实时连接剔除，而非靠兜底广播掩盖。
+ * @param {Array<{ peerId: string, remoteNodeHash?: string }>} rosterEntries 身份 roster 条目
+ * @param {Iterable<string>} livePeerIds 实时连接 peerId（Trystero getPeers 的键集合）
+ * @returns {{ live: Array<{ peerId: string, remoteNodeHash?: string }>, stale: Array<{ peerId: string, remoteNodeHash?: string }> }} 在线/失效分组
+ */
+export function partitionRosterByLiveness(rosterEntries, livePeerIds) {
+	const liveSet = livePeerIds instanceof Set ? livePeerIds : new Set(livePeerIds)
+	/** @type {Array<{ peerId: string, remoteNodeHash?: string }>} */
+	const live = []
+	/** @type {Array<{ peerId: string, remoteNodeHash?: string }>} */
+	const stale = []
+	for (const entry of rosterEntries) {
+		if (!entry?.peerId) continue
+		const bucket = liveSet.has(entry.peerId) ? live : stale
+		bucket.push(entry)
+	}
+	return { live, stale }
+}
+
+/**
+ * 据实时连接剔除身份映射中的失效条目（mutate 传入 maps，自愈滞后状态），返回被剔除的条目。
+ * @param {Map<string, string>} peerToNode peerId → nodeHash
+ * @param {Map<string, string>} nodeToPeer nodeHash → peerId
+ * @param {Iterable<string>} livePeerIds 实时连接 peerId
+ * @returns {Array<{ peerId: string, remoteNodeHash?: string }>} 被剔除的失效条目
+ */
+export function pruneStaleRosterEntries(peerToNode, nodeToPeer, livePeerIds) {
+	const entries = [...peerToNode.entries()].map(([peerId, remoteNodeHash]) => ({ peerId, remoteNodeHash }))
+	const { stale } = partitionRosterByLiveness(entries, livePeerIds)
+	for (const { peerId, remoteNodeHash } of stale) {
+		peerToNode.delete(peerId)
+		if (remoteNodeHash && nodeToPeer.get(remoteNodeHash) === peerId) nodeToPeer.delete(remoteNodeHash)
+	}
+	return stale
+}
+
+/**
+ * @param {object} [opts] 选项
+ * @param {() => Iterable<string>} [opts.getLivePeerIds] 返回实时连接 peerId 的提供者；提供后 getRoster/getPeerIdByNodeHash 会据实自愈剔除失效条目
+ * @param {(stale: Array<{ peerId: string, remoteNodeHash?: string }>) => void} [opts.onStalePruned] 剔除失效条目时的回调（观测用）
  * @returns {{ peerToNode: Map<string, string>, nodeToPeer: Map<string, string>, getRoster: () => Array<{ peerId: string, remoteNodeHash: string | undefined }>, getPeerIdByNodeHash: (nodeHash: string) => string | null, onPeerLeave: (peerId: string) => void }} peer 映射
  */
-export function createPeerIdentityMaps() {
+export function createPeerIdentityMaps(opts = {}) {
 	/** @type {Map<string, string>} */
 	const peerToNode = new Map()
 	/** @type {Map<string, string>} */
 	const nodeToPeer = new Map()
+	const getLivePeerIds = typeof opts.getLivePeerIds === 'function' ? opts.getLivePeerIds : null
+	const onStalePruned = typeof opts.onStalePruned === 'function' ? opts.onStalePruned : null
+
+	/** 据实时连接自愈剔除失效条目（未提供 getLivePeerIds 时为空操作）。 */
+	const reconcile = () => {
+		if (!getLivePeerIds) return
+		const stale = pruneStaleRosterEntries(peerToNode, nodeToPeer, getLivePeerIds())
+		if (stale.length && onStalePruned) onStalePruned(stale)
+	}
 
 	return {
 		peerToNode,
@@ -191,6 +244,7 @@ export function createPeerIdentityMaps() {
 		 * @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} roster
 		 */
 		getRoster() {
+			reconcile()
 			return [...peerToNode.entries()].map(([peerId, remoteNodeHash]) => ({ peerId, remoteNodeHash }))
 		},
 		/**
@@ -198,6 +252,7 @@ export function createPeerIdentityMaps() {
 		 * @returns {string | null} peer id
 		 */
 		getPeerIdByNodeHash(targetNodeHash) {
+			reconcile()
 			return nodeToPeer.get(String(targetNodeHash).trim().toLowerCase()) || null
 		},
 		/**
