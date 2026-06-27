@@ -45,12 +45,14 @@
 							</label>
 							<input type="password" id="password" name="password" class="input" required data-i18n="auth.passwordInput" autocomplete="current-password" />
 							<div id="password-strength-feedback" class="text-xs mt-1"></div>
+							<div id="password-char-feedback" class="text-xs mt-1 font-mono tracking-widest leading-none min-h-[1em]" hidden></div>
 						</div>
 						<div class="form-control" id="confirm-password-group">
 							<label class="label" for="confirm-password">
 								<span class="label-text" data-i18n="auth.confirmPasswordLabel"></span>
 							</label>
 							<input type="password" id="confirm-password" name="confirm-password" class="input" data-i18n="auth.confirmPasswordInput" autocomplete="new-password">
+							<div id="confirm-password-char-feedback" class="text-xs mt-1 font-mono tracking-widest leading-none min-h-[1em]" hidden></div>
 						</div>
 						<div class="form-control" id="verification-code-group">
 							<label class="label" for="verification-code">
