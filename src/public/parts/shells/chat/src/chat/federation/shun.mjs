@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS } from '../../group/groupShunState.mjs'
+import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
 
 import { loadLocalFederationArchive } from './archiveHandshake.mjs'
 import { federationNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
@@ -15,8 +15,12 @@ import { signPullAttestation } from './pullAttestation.mjs'
 /** 出站 fed_shun 限流：同群同请求方 30s 内至多一发。 */
 const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: 30_000 })
 
-/** 主动探测的冷却安全网：没有任何新鲜 shun 信号时，最多每此间隔向全员探测一次。 */
-const SHUN_PROBE_COOLDOWN_MS = SHUN_CONSENSUS_WINDOW_MS
+/**
+ * 主动探测的冷却安全网：尚无任何新鲜 shun 信号时，最多每此间隔向全员探测一次。
+ * 与共识窗口解耦——窗口内的 shun 始终计入，但冷启动探测需更频繁，
+ * 否则一次探测因 P2P 尚未连通而落空后，被移除方要等满共识窗口才会重试，迟迟无法自判出局。
+ */
+const SHUN_PROBE_COOLDOWN_MS = 30_000
 
 /**
  * 从物化 state 收集已知 active 成员 homeNodeHash（去掉本机）。
@@ -118,10 +122,11 @@ export async function recordInboundShun(username, groupId, fromNodeHash, reason)
 	const nodeHash = normalizeHex64(fromNodeHash)
 	if (!isHex64(nodeHash)) return loadGroupShunState(username, groupId)
 	const now = Date.now()
-	const prev = await loadGroupShunState(username, groupId)
-	const shunsByNode = { ...prev.shunsByNode, [nodeHash]: now }
-	const shunnedBy = [...new Set([...prev.shunnedBy, nodeHash])]
-	return saveGroupShunState(username, groupId, { shunsByNode, shunnedBy })
+	// 锁内基于最新状态合并：并发的多个 shun 入站不会互相覆盖 shunsByNode。
+	return updateGroupShunState(username, groupId, prev => ({
+		shunsByNode: { ...prev.shunsByNode, [nodeHash]: now },
+		shunnedBy: [...new Set([...prev.shunnedBy, nodeHash])],
+	}))
 }
 
 /**

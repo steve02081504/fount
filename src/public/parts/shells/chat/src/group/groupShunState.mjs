@@ -4,6 +4,7 @@
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { withAsyncMutex } from '../../../../../../scripts/p2p/utils/async_mutex.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
 
 /** 共识窗口：窗口内收到的 shun 才计入。 */
@@ -16,6 +17,15 @@ export const SHUN_CONSENSUS_WINDOW_MS = 5 * 60 * 1000
  */
 function shunStatePath(username, groupId) {
 	return join(groupDir(username, groupId), 'shun_state.json')
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @returns {string} 进程内写锁键
+ */
+function shunStateLockKey(username, groupId) {
+	return `chat:shun-state:${username}:${groupId}`
 }
 
 /**
@@ -60,18 +70,32 @@ export async function loadGroupShunState(username, groupId) {
 }
 
 /**
+ * 在进程内写锁下原子地 read-modify-write，避免并发 shun 入站互相覆盖 shunsByNode。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {(prev: ReturnType<typeof normalizeShunState>) => Partial<ReturnType<typeof normalizeShunState>> | Promise<Partial<ReturnType<typeof normalizeShunState>>>} updater 基于最新状态计算补丁
+ * @returns {Promise<ReturnType<typeof normalizeShunState>>} 写入后状态
+ */
+export async function updateGroupShunState(username, groupId, updater) {
+	return withAsyncMutex(shunStateLockKey(username, groupId), async () => {
+		const dir = groupDir(username, groupId)
+		await mkdir(dir, { recursive: true })
+		const prev = await loadGroupShunState(username, groupId)
+		const patch = await updater(prev) || {}
+		const next = normalizeShunState({ ...prev, ...patch })
+		await writeFile(shunStatePath(username, groupId), JSON.stringify(next, null, 2), 'utf8')
+		return next
+	})
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {Partial<ReturnType<typeof normalizeShunState>>} patch 补丁
  * @returns {Promise<ReturnType<typeof normalizeShunState>>} 写入后状态
  */
 export async function saveGroupShunState(username, groupId, patch) {
-	const dir = groupDir(username, groupId)
-	await mkdir(dir, { recursive: true })
-	const prev = await loadGroupShunState(username, groupId)
-	const next = normalizeShunState({ ...prev, ...patch })
-	await writeFile(shunStatePath(username, groupId), JSON.stringify(next, null, 2), 'utf8')
-	return next
+	return updateGroupShunState(username, groupId, () => patch)
 }
 
 /**
