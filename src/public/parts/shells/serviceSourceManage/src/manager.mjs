@@ -146,6 +146,18 @@ export default self
 }
 
 /**
+ * 检查服务源配置文件是否已存在。
+ * @param {string} username - 用户名
+ * @param {string} fileName - 文件名
+ * @param {string} serviceSourcePath - 服务源路径
+ * @returns {boolean} - 配置文件是否存在
+ */
+export function serviceSourceExists(username, fileName, serviceSourcePath) {
+	const baseDir = getServiceSourceDir(username, serviceSourcePath, fileName)
+	return fs.existsSync(getConfigPath(baseDir))
+}
+
+/**
  * 读取服务源配置。
  * @param {string} username - 用户名
  * @param {string} fileName - 文件名

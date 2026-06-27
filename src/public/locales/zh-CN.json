@@ -1932,6 +1932,7 @@
 			"noFileSelectedSave": "没有选择要保存的文件。",
 			"noFileSelectedDelete": "没有选择要删除的文件。",
 			"noGeneratorSelectedSave": "请选择生成器后再保存",
+			"savedAsNewFile": "已保存为新服务源：${name}",
 			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |"
 		},
 		"achievements": {

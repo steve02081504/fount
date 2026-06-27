@@ -1,7 +1,7 @@
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import { getAnyPreferredDefaultPart } from '../../../../../server/parts_loader.mjs'
 
-import { getServiceSourceFile, saveServiceSourceFile, addServiceSourceFile, deleteServiceSourceFile, getConfigTemplate, getConfigDisplay } from './manager.mjs'
+import { getServiceSourceFile, saveServiceSourceFile, addServiceSourceFile, deleteServiceSourceFile, getConfigTemplate, getConfigDisplay, serviceSourceExists } from './manager.mjs'
 
 /**
  * 根据类型推断服务源路径。
@@ -42,22 +42,17 @@ export function setEndpoints(router) {
 		const { type = 'AI', name } = req.params
 		const serviceSourcePath = inferServiceSourcePath(type)
 		let { generator, config } = req.body
+		const exists = serviceSourceExists(username, name, serviceSourcePath)
 
-		// 检查服务源是否存在
-		const existing = await getServiceSourceFile(username, name, serviceSourcePath).catch(() => null)
-
-		if (existing && (existing.generator || existing.config)) {
-			// 更新现有服务源
+		if (exists) {
+			const existing = await getServiceSourceFile(username, name, serviceSourcePath)
 			config ||= existing.config
-			generator ||= existing.generator || getAnyPreferredDefaultPart(username, `serviceGenerators/${type}`)
-			const data = { generator, config }
-			await saveServiceSourceFile(username, name, data, serviceSourcePath)
+			generator ||= existing.generator || getAnyPreferredDefaultPart(username, `serviceGenerators/${type}`) || ''
+			await saveServiceSourceFile(username, name, { generator, config }, serviceSourcePath)
 			res.status(200).json({ message: 'Service source updated successfully' })
 		}
 		else {
-			// 创建新服务源
 			await addServiceSourceFile(username, name, serviceSourcePath)
-			generator ||= getAnyPreferredDefaultPart(username, `serviceGenerators/${type}`)
 			if (generator || config) {
 				const data = await getServiceSourceFile(username, name, serviceSourcePath)
 				if (generator) data.generator = generator
