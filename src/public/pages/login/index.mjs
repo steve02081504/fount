@@ -162,7 +162,9 @@ function updateFormDisplay() {
 	toggleButton.dataset.i18n = `auth.${formType}.toggleLink.link`
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
-	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
+	const showVerification = !isLoginForm && !isLocalOrigin
+	verificationCodeGroup.style.display = showVerification ? 'block' : 'none'
+	verificationCodeInput.required = showVerification
 	webauthnLoginRow.style.display = isLoginForm ? 'block' : 'none'
 	passwordInput.autocomplete = isLoginForm ? 'current-password' : 'new-password'
 	clearLoginErrorDisplay()
