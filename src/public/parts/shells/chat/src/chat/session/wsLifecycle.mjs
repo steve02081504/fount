@@ -29,15 +29,19 @@ const GROUP_UNLOAD_TIMEOUT = ms('30m')
 let deleteGroupHook = async () => { }
 /** @type {(metadata: object | null) => boolean} */
 let isVividGroupHook = () => false
+/** @type {(username: string, groupId: string) => Promise<boolean>} */
+let isLocallyOwnedGroupHook = async () => false
 
 /**
  * @param {object} hooks 会话卸载钩子（由 session.mjs 在加载时注入）
  * @param {(groupIds: string[], username: string) => Promise<void>} hooks.deleteGroup 删除会话
  * @param {(metadata: object | null) => boolean} hooks.isVividGroup 是否保留在内存
+ * @param {(username: string, groupId: string) => Promise<boolean>} hooks.isLocallyOwnedGroup 是否本地自建群
  */
-export function bindSessionUnloadHooks({ deleteGroup, isVividGroup }) {
+export function bindSessionUnloadHooks({ deleteGroup, isVividGroup, isLocallyOwnedGroup }) {
 	deleteGroupHook = deleteGroup
 	isVividGroupHook = isVividGroup
+	isLocallyOwnedGroupHook = isLocallyOwnedGroup
 }
 
 /**
@@ -109,7 +113,12 @@ export function onGroupWsClose(groupId) {
 		try {
 			if (countGroupSockets(resolveGroupWsRoomKey(groupId)) > 0) return
 			if (!chatData) return
-			if (isVividGroupHook(chatData.chatMetadata))
+			let owned = true
+			try {
+				owned = await isLocallyOwnedGroupHook(chatData.username, groupId)
+			}
+			catch { /* 判定失败时不删盘 */ }
+			if (owned || isVividGroupHook(chatData.chatMetadata))
 				chatData.chatMetadata = null
 			else await deleteGroupHook([groupId], chatData.username)
 		}
