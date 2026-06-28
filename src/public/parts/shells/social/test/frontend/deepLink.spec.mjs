@@ -41,7 +41,7 @@ test.describe('Social deep links', () => {
 		])
 		expect(profileResponse.ok()).toBe(true)
 		await waitForSocialAppReady(page)
-		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('hashchange navigates to search', async ({ page, baseUrl, publishPost }) => {

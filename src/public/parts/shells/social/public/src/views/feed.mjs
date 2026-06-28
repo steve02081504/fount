@@ -1,5 +1,16 @@
 import { renderTemplate } from '../../../../../scripts/template.mjs'
-import { formatSocialSearchHref } from '../lib/runUri.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { formatSocialSearchHref, formatSocialProfileHref } from '../lib/runUri.mjs'
+
+/**
+ * @param {string} entityHash entity hash
+ * @returns {string} @handle
+ */
+function profileHandle(entityHash) {
+	const hash = String(entityHash || '')
+	if (hash.length <= 12) return `@${hash}`
+	return `@${hash.slice(0, 8)}…${hash.slice(-4)}`
+}
 
 /**
  * 更新 feed 搜索栏与加载更多的 UI 状态。
@@ -9,8 +20,44 @@ import { formatSocialSearchHref } from '../lib/runUri.mjs'
 export function updateFeedSearchChrome(appContext) {
 	const clearBtn = document.getElementById('feedSearchClearBtn')
 	const loadMore = document.getElementById('feedLoadMore')
-	clearBtn?.classList.toggle('hidden', !appContext.state.activeFeedSearchQuery)
-	loadMore?.classList.toggle('hidden', !!appContext.state.activeFeedSearchQuery || !appContext.state.feedCursor)
+	const hasSearch = !!appContext.state.activeFeedSearchQuery
+	clearBtn?.classList.toggle('hidden', !hasSearch)
+	loadMore?.classList.toggle('hidden', hasSearch || !appContext.state.feedCursor)
+}
+
+/**
+ * 加载并渲染右栏推荐关注账户。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+export async function loadSuggestedAccounts(appContext) {
+	const aside = document.getElementById('asideSuggested')
+	const list = document.getElementById('asideSuggestedList')
+	if (!aside || !list) return
+	const data = await appContext.socialApi('/explore?limit=5').catch(() => ({ accounts: [] }))
+	const accounts = (data.accounts || []).filter(
+		row => row.entityHash !== appContext.state.viewerEntityHash,
+	)
+	if (!accounts.length) {
+		aside.classList.add('hidden')
+		list.replaceChildren()
+		return
+	}
+	aside.classList.remove('hidden')
+	list.replaceChildren()
+	for (const account of accounts) {
+		const row = document.createElement('div')
+		row.className = 'suggested-account'
+		row.innerHTML = `
+			${appContext.renderAvatarHtml(account.entityHash, { name: account.name })}
+			<div class="suggested-account-info">
+				<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
+				<span class="suggested-account-handle">${escapeHtml(profileHandle(account.entityHash))}</span>
+			</div>
+			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(appContext.geti18n('social.actions.follow'))}</button>
+		`
+		list.appendChild(row)
+	}
 }
 
 /**
@@ -73,12 +120,17 @@ export async function loadFeed(appContext, append = false, options = {}) {
 	appContext.state.feedCursor = data.nextCursor || null
 	const list = document.getElementById('feedList')
 	if (!list) return
-	if (!append) list.replaceChildren(...cards.filter(Boolean))
+	if (!append && !items.length) {
+		const emptyEl = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
+		list.replaceChildren(emptyEl)
+	}
+	else if (!append) list.replaceChildren(...cards.filter(Boolean))
 	else for (const card of cards)
 		if (card) list.appendChild(card)
 
 	document.getElementById('feedLoadMore')?.classList.toggle('hidden', !appContext.state.feedCursor)
 	void loadTrendingHashtags(appContext)
+	void loadSuggestedAccounts(appContext)
 }
 
 /**

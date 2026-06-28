@@ -16,70 +16,143 @@
 </head>
 
 <body>
-	<div id="app">
-		<header class="topbar">
-			<div class="topbar-inner">
-				<div class="brand">
-					<h1 data-i18n="social.title"></h1>
-				</div>
-				<nav class="main-nav">
-					<button data-view="feed" class="nav-btn active" data-i18n="social.nav.feed"></button>
-					<button data-view="explore" class="nav-btn" data-i18n="social.nav.explore"></button>
-					<button data-view="notifications" class="nav-btn"><span data-i18n="social.nav.notifications"></span><span id="notificationsBadge" class="nav-badge hidden"></span></button>
-					<button data-view="saved" class="nav-btn" data-i18n="social.nav.saved"></button>
-					<button data-view="profile" class="nav-btn" data-i18n="social.nav.profile"></button>
-				</nav>
+	<div id="app" class="app-shell">
+		<aside class="side-nav" aria-label="Social navigation">
+			<div class="side-nav-brand">
+				<h1 class="brand-title" data-i18n="social.title"></h1>
 			</div>
-		</header>
-		<main class="shell-main">
-			<section id="composer" class="composer card">
-				<p class="hint" data-i18n="social.mentionHint"></p>
-				<div id="quotePreview" class="quote-preview hidden"></div>
-				<div id="groupRefPreview" class="group-ref-preview hidden"></div>
-				<textarea id="postText" rows="3" data-i18n="social.composer"></textarea>
-				<div id="mediaPreview" class="media-preview hidden"></div>
-				<div class="composer-actions">
-					<button id="emojiPickBtn" type="button">😀</button>
-					<label class="media-upload-btn link-btn">
-						<span data-i18n="social.composer.addMedia"></span>
-						<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
-					</label>
-					<select id="linkGroupSelect" class="hidden"></select>
-					<select id="postAsEntity" class="hidden"></select>
-					<select id="postVisibility">
-						<option value="public" data-i18n="social.composer.visibilityPublic"></option>
-						<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
-					</select>
-					<input id="postLang" value="zh-CN" />
-					<button id="postBtn" type="button" data-i18n="social.composer.publish"></button>
-				</div>
-			</section>
-			<section id="feedView" class="view">
-				<div class="feed-layout">
-					<aside id="feedTrending" class="feed-trending card hidden"></aside>
-					<div class="feed-main">
-						<div class="feed-toolbar">
-							<div class="feed-search-wrap">
-								<input type="search" id="feedSearchInput" class="feed-search-input" autocomplete="off" data-i18n="social.search" />
-								<button type="button" id="feedSearchBtn" class="link-btn" data-i18n="social.search.submit"></button>
-								<button type="button" id="feedSearchClearBtn" class="link-btn hidden" data-i18n="social.search.clear"></button>
+			<nav class="side-nav-links">
+				<button type="button" data-view="feed" class="nav-btn active">
+					<span class="s-ic s-ic-home" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.feed"></span>
+				</button>
+				<button type="button" data-view="explore" class="nav-btn">
+					<span class="s-ic s-ic-explore" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.explore"></span>
+				</button>
+				<button type="button" data-view="notifications" class="nav-btn">
+					<span class="s-ic s-ic-bell" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.notifications"></span>
+					<span id="notificationsBadge" class="nav-badge hidden"></span>
+				</button>
+				<button type="button" data-view="saved" class="nav-btn">
+					<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.saved"></span>
+				</button>
+				<button type="button" data-view="profile" class="nav-btn">
+					<span class="s-ic s-ic-user" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.profile"></span>
+				</button>
+			</nav>
+			<button type="button" id="composeNavBtn" class="compose-nav-btn">
+				<span class="nav-label" data-i18n="social.composer.composeBtn"></span>
+				<span class="s-ic s-ic-compose compose-nav-icon" aria-hidden="true"></span>
+			</button>
+		</aside>
+
+		<main class="timeline-col">
+			<section id="composer" class="composer">
+				<div class="composer-inner">
+					<div id="viewerComposerAvatar" class="composer-avatar-slot" aria-hidden="true"></div>
+					<div class="composer-body">
+						<p class="hint composer-hint" data-i18n="social.mentionHint"></p>
+						<div id="quotePreview" class="quote-preview hidden"></div>
+						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
+						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
+						<div id="mediaPreview" class="media-preview hidden"></div>
+						<div class="composer-toolbar">
+							<div class="composer-tools">
+								<button id="emojiPickBtn" type="button" class="composer-tool-btn" aria-label="Emoji">
+									<span class="s-ic s-ic-emoji" aria-hidden="true"></span>
+								</button>
+								<label class="composer-tool-btn media-upload-btn" aria-label="Media">
+									<span class="s-ic s-ic-media" aria-hidden="true"></span>
+									<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
+								</label>
+								<select id="linkGroupSelect" class="composer-select hidden"></select>
+								<select id="postAsEntity" class="composer-select hidden"></select>
+								<select id="postVisibility" class="composer-select composer-visibility">
+									<option value="public" data-i18n="social.composer.visibilityPublic"></option>
+									<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
+								</select>
+								<input id="postLang" type="hidden" value="zh-CN" />
 							</div>
-							<button type="button" id="feedRefreshBtn" class="link-btn" data-i18n="social.feed.refresh"></button>
+							<button id="postBtn" type="button" class="composer-post-btn" data-i18n="social.composer.publish"></button>
 						</div>
-						<div id="feedList"></div>
-						<button type="button" id="feedLoadMore" class="load-more hidden" data-i18n="social.feed.loadMore"></button>
 					</div>
 				</div>
 			</section>
-			<section id="exploreView" class="view hidden"></section>
-			<section id="notificationsView" class="view hidden">
-				<div class="notifications-toolbar hidden" id="notificationsToolbar">
-					<button type="button" id="notificationsMarkAllBtn" class="link-btn" data-i18n="social.notifications.markAllRead"></button>
-				</div>
+
+			<section id="feedView" class="view">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.feed"></h2>
+					<button type="button" id="feedRefreshBtn" class="view-header-btn" data-i18n="social.feed.refresh" aria-label="">
+						<span class="s-ic s-ic-refresh" aria-hidden="true"></span>
+					</button>
+				</header>
+				<div id="feedList" class="feed-list"></div>
+				<button type="button" id="feedLoadMore" class="load-more hidden" data-i18n="social.feed.loadMore"></button>
 			</section>
-			<section id="savedView" class="view hidden"></section>
+
+			<section id="exploreView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.explore"></h2>
+				</header>
+			</section>
+
+			<section id="notificationsView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.notifications"></h2>
+					<div class="notifications-toolbar hidden" id="notificationsToolbar">
+						<button type="button" id="notificationsMarkAllBtn" class="view-header-text-btn" data-i18n="social.notifications.markAllRead"></button>
+					</div>
+				</header>
+			</section>
+
+			<section id="savedView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.saved"></h2>
+				</header>
+			</section>
+
 			<section id="profileView" class="view hidden"></section>
 		</main>
+
+		<aside class="aside-col" aria-label="Social sidebar">
+			<div class="aside-search card">
+				<div class="feed-search-wrap">
+					<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
+					<input type="search" id="feedSearchInput" class="feed-search-input" autocomplete="off" data-i18n="social.search" />
+					<button type="button" id="feedSearchBtn" class="search-submit-btn hidden" data-i18n="social.search.submit"></button>
+					<button type="button" id="feedSearchClearBtn" class="search-clear-btn hidden" data-i18n="social.search.clear" aria-label=""></button>
+				</div>
+			</div>
+			<aside id="feedTrending" class="feed-trending card hidden"></aside>
+			<div id="asideSuggested" class="aside-suggested card hidden">
+				<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
+				<div id="asideSuggestedList" class="aside-suggested-list"></div>
+			</div>
+		</aside>
+
+		<nav class="mobile-tabbar" aria-label="Social mobile navigation">
+			<button type="button" data-view="feed" class="nav-btn active">
+				<span class="s-ic s-ic-home" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="explore" class="nav-btn">
+				<span class="s-ic s-ic-explore" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="notifications" class="nav-btn">
+				<span class="s-ic s-ic-bell" aria-hidden="true"></span>
+				<span id="mobileNotificationsBadge" class="nav-badge hidden"></span>
+			</button>
+			<button type="button" data-view="saved" class="nav-btn">
+				<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="profile" class="nav-btn">
+				<span class="s-ic s-ic-user" aria-hidden="true"></span>
+			</button>
+		</nav>
+
 		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
 			<div class="save-modal-card card">
 				<h3 data-i18n="social.saved.pickFolderTitle"></h3>

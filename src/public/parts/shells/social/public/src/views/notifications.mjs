@@ -1,3 +1,4 @@
+import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '../lib/runUri.mjs'
 
 /**
@@ -21,21 +22,36 @@ export function markNotificationsSeen(appContext, at = Date.now()) {
 }
 
 /**
+ * @param {string} type 通知类型
+ * @returns {string} 图标 class
+ */
+function notificationIconClass(type) {
+	if (type === 'reply') return 's-ic-notif-reply'
+	if (type === 'mention') return 's-ic-notif-mention'
+	if (type === 'like') return 's-ic-notif-like'
+	if (type === 'follow') return 's-ic-notif-follow'
+	return 's-ic-bell'
+}
+
+/**
  * 更新导航栏通知未读角标。
  * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
 export async function updateNotificationBadge(appContext) {
-	const badge = document.getElementById('notificationsBadge')
-	if (!badge) return
 	const data = await appContext.socialApi('/notifications?limit=50').catch(() => ({ notifications: [] }))
 	const seenAt = getNotificationsSeenAt(appContext)
 	const unread = (data.notifications || []).filter(row => row.at > seenAt).length
-	if (unread > 0) {
-		badge.textContent = unread > 99 ? '99+' : String(unread)
-		badge.classList.remove('hidden')
+	const label = unread > 99 ? '99+' : String(unread)
+	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {
+		const badge = document.getElementById(badgeId)
+		if (!badge) continue
+		if (unread > 0) {
+			badge.textContent = label
+			badge.classList.remove('hidden')
+		}
+		else badge.classList.add('hidden')
 	}
-	else badge.classList.add('hidden')
 }
 
 /**
@@ -47,6 +63,7 @@ export async function loadNotifications(appContext) {
 	const data = await appContext.socialApi('/notifications?limit=40')
 	const container = document.getElementById('notificationsView')
 	const toolbar = document.getElementById('notificationsToolbar')
+	const seenAt = getNotificationsSeenAt(appContext)
 	const rows = data.notifications || []
 	container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())
 	if (!rows.length) {
@@ -60,8 +77,8 @@ export async function loadNotifications(appContext) {
 	}
 	if (toolbar) toolbar.classList.remove('hidden')
 	for (const row of rows) {
-		const card = document.createElement('div')
-		card.className = 'card notification-card'
+		const card = document.createElement('article')
+		card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
 		const label = row.authorName || `${row.entityHash.slice(0, 8)}…`
 		let message = ''
 		if (row.type === 'reply') message = appContext.geti18n('social.notifications.reply', { author: label })
@@ -72,17 +89,18 @@ export async function loadNotifications(appContext) {
 			? formatSocialProfileHref(row.entityHash, row.postId)
 			: formatSocialProfileHref(row.entityHash)
 		card.innerHTML = `
-			<div class="notification-row">
+			<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
+			<div class="notification-body">
 				<div class="post-header-row">
 					${appContext.renderAvatarHtml(row.entityHash, { name: label })}
 					<div>
-						<span class="notification-type">${message}</span>
-						<span class="post-meta">${appContext.formatTime(row.at)}</span>
+						<div class="notification-type">${escapeHtml(message)}</div>
+						<span class="post-meta">${escapeHtml(appContext.formatTime(row.at))}</span>
 					</div>
 				</div>
+				${row.snippet ? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>` : ''}
+				<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(appContext.geti18n('social.notifications.view'))}</a>
 			</div>
-			${row.snippet ? `<p class="notification-snippet">${row.snippet}</p>` : ''}
-			<a href="${href}" class="link-btn">${appContext.geti18n('social.notifications.view')}</a>
 		`
 		container.appendChild(card)
 	}

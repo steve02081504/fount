@@ -13,7 +13,7 @@ test.describe('Social saved posts', () => {
 			{ data: { entityHash, postId } },
 		)
 		expect(saveRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await expect(page.locator('#savedView')).toBeVisible()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
@@ -22,7 +22,7 @@ test.describe('Social saved posts', () => {
 		const { postId } = await publishPost(`folder-save ${Date.now()}`)
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await expectPostInFeed(page, postId)
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		const folderName = `folder-${Date.now()}`
 		await page.locator('#newFolderName').fill(folderName)
 		const [folderResponse] = await Promise.all([
@@ -45,14 +45,14 @@ test.describe('Social saved posts', () => {
 			{ data: { entityHash, postId, folderId } },
 		)
 		expect(saveRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="feed"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		const [savedLoad] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/saved-posts')
 				&& res.request().method() === 'GET'
 				&& res.status() === 200,
 			),
-			page.locator('.nav-btn[data-view="saved"]').click(),
+			page.locator('.side-nav .nav-btn[data-view="saved"]').click(),
 		])
 		expect(savedLoad.ok()).toBe(true)
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
@@ -66,7 +66,7 @@ test.describe('Social saved posts', () => {
 			{ data: { entityHash, postId } },
 		)
 		expect(saveRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await page.locator(`#savedView a[href*="${postId}"]`).click()
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
@@ -80,14 +80,14 @@ test.describe('Social saved posts', () => {
 			{ data: { entityHash, postId } },
 		)
 		expect(saveRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 		await page.locator(`#savedView .saved-row:has(a[href*="${postId}"]) [data-remove-saved]`).click()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toHaveCount(0, { timeout: 20_000 })
 	})
 
 	test('rename and delete saved folder', async ({ page }) => {
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		const folderName = `rename-folder-${Date.now()}`
 		await page.locator('#newFolderName').fill(folderName)
 		await Promise.all([

@@ -17,14 +17,14 @@ test.describe('Social profile', () => {
 
 	test('profile view shows own posts', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`profile-post ${Date.now()}`)
-		await page.locator('.nav-btn[data-view="profile"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView')).toBeVisible()
-		await expect(page.locator('#profileView .profile-card')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#profilePostsPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('profile explore settings save', async ({ page }) => {
-		await page.locator('.nav-btn[data-view="profile"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
 		const blurb = `explore-blurb ${Date.now()}`
 		await page.locator('#exploreBlurbInput').fill(blurb)
@@ -80,9 +80,10 @@ test.describe('Social profile', () => {
 			followBtn.click(),
 		])
 		await expect(followBtn).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
-		await page.locator('.nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#profileView .profile-following')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileView .following-link')).toContainText(dummy.slice(0, 8))
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		await page.locator('[data-profile-tab="following"]').click()
+		await expect(page.locator('#profileFollowingPanel')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#profileFollowingPanel .following-link')).toContainText(dummy.slice(0, 8))
 		// page.goto 到相同 URL hash 时浏览器不会重新加载，无法触发 applyIncomingNavigation
 		// 先导航到无 hash 的社交首页（触发完整重载），再设置 hash（触发 hashchange）
 		await page.goto(`${baseUrl}/parts/shells:social/`)
@@ -120,7 +121,7 @@ test.describe('Social profile', () => {
 			{ data: { entityHash: dummy, block: true } },
 		)
 		expect(blockRes.ok()).toBe(true)
-		await page.locator('.nav-btn[data-view="profile"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#blocklistSection code.entity-hash')).toContainText(
 			dummy.slice(0, 16),
 			{ timeout: 20_000 },

@@ -19,7 +19,7 @@ test.describe('Social replies', () => {
 		const replyText = `reply-body ${Date.now()}`
 		await panel.locator('textarea').fill(replyText)
 		await submitReplyViaPanel(page, panel)
-		await expect(card.locator('[data-replies]')).toContainText(/\(1\)/, { timeout: 30_000 })
+		await expect(card.locator('[data-replies] .action-count')).toHaveText('1', { timeout: 30_000 })
 	})
 
 	test('replies panel toggles closed', async ({ page, publishPost }) => {

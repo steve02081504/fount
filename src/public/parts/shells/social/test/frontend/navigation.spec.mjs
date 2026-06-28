@@ -15,7 +15,7 @@ test.describe('Social navigation', () => {
 		]
 
 		for (const { name, selector } of views) {
-			await page.locator(`.nav-btn[data-view="${name}"]`).click()
+			await page.locator(`.side-nav .nav-btn[data-view="${name}"]`).click()
 			await expect(page.locator(selector)).toBeVisible()
 			if (name === 'feed')
 				await expect(page.locator('#composer')).toBeVisible()
@@ -31,12 +31,12 @@ test.describe('Social navigation', () => {
 
 		const input = page.locator('#feedSearchInput')
 		await input.fill(`#${tag}`)
-		await page.locator('#feedSearchBtn').click()
+		await input.press('Enter')
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 
 		await input.fill(`__no-match-${Date.now()}__`)
-		await page.locator('#feedSearchBtn').click()
+		await input.press('Enter')
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeHidden({ timeout: 30_000 })
 
 		await page.locator('#feedSearchClearBtn').click()

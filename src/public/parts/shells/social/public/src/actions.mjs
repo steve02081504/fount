@@ -18,6 +18,17 @@ import { renderRepliesPanel } from './views/replies.mjs'
 import { loadSaved, openSaveModal } from './views/saved.mjs'
 
 /**
+ * 关闭所有帖子溢出菜单（可选排除某一菜单）。
+ * @param {HTMLElement | null} [exceptMenu] 保留打开的菜单
+ * @returns {void}
+ */
+function closePostMoreMenus(exceptMenu = null) {
+	for (const menu of document.querySelectorAll('.post-more-menu'))
+		if (menu !== exceptMenu)
+			menu.classList.add('hidden')
+}
+
+/**
  * 将文本复制到系统剪贴板（含降级方案）。
  * @param {string} link 文本
  * @returns {Promise<void>}
@@ -46,6 +57,9 @@ export async function handleMainClick(appContext, event) {
 	const { target } = event
 	if (!(target instanceof HTMLElement)) return
 
+	if (!target.closest('.post-more-dropdown'))
+		closePostMoreMenus()
+
 	if (target.closest('.clear-quote-btn')) {
 		appContext.state.pendingQuoteRef = null
 		await refreshQuotePreview(appContext)
@@ -58,7 +72,7 @@ export async function handleMainClick(appContext, event) {
 		if (groupSelect instanceof HTMLSelectElement)
 			groupSelect.value = ''
 	}
-	if (target.id === 'feedRefreshBtn') {
+	if (target.closest('#feedRefreshBtn')) {
 		appContext.state.activeFeedSearchQuery = null
 		const searchInput = document.getElementById('feedSearchInput')
 		if (searchInput instanceof HTMLInputElement) searchInput.value = ''
@@ -66,21 +80,24 @@ export async function handleMainClick(appContext, event) {
 		await loadFeed(appContext, false, { skipSync: true })
 		updateFeedSearchChrome(appContext)
 	}
-	if (target.id === 'feedSearchBtn')
+	if (target.closest('#feedSearchBtn'))
 		await runFeedSearch(appContext)
-	if (target.id === 'feedSearchClearBtn')
+	if (target.closest('#feedSearchClearBtn'))
 		await clearFeedSearch(appContext)
-	if (target.id === 'notificationsMarkAllBtn')
+	if (target.closest('#notificationsMarkAllBtn'))
 		markNotificationsSeen(appContext)
-	if (target.dataset.renameFolder) {
+
+	const renameFolderBtn = target.closest('[data-rename-folder]')
+	if (renameFolderBtn instanceof HTMLElement && renameFolderBtn.dataset.renameFolder) {
 		const name = window.prompt(appContext.geti18n('social.saved.renameFolderPrompt'), '')
 		if (!name?.trim()) return
 		await appContext.socialApi('/saved-posts/folders/rename', {
 			method: 'POST',
-			body: JSON.stringify({ folderId: target.dataset.renameFolder, name: name.trim() }),
+			body: JSON.stringify({ folderId: renameFolderBtn.dataset.renameFolder, name: name.trim() }),
 		})
 		await loadSaved(appContext)
 	}
+
 	const deleteFolderBtn = target.closest('[data-delete-folder]')
 	if (deleteFolderBtn instanceof HTMLElement && deleteFolderBtn.dataset.deleteFolder) {
 		if (!window.confirm(appContext.geti18n('social.saved.deleteFolderConfirm'))) return
@@ -90,6 +107,7 @@ export async function handleMainClick(appContext, event) {
 		})
 		await loadSaved(appContext)
 	}
+
 	const copyLinkBtn = target.closest('[data-copy-link]')
 	if (copyLinkBtn instanceof HTMLElement && copyLinkBtn.dataset.copyLink) {
 		const parsed = parseActionKey(copyLinkBtn.dataset.copyLink)
@@ -98,11 +116,16 @@ export async function handleMainClick(appContext, event) {
 			const runUri = formatSocialProfileRunUri(entityHash, postId)
 			const pageUrl = `${window.location.origin}${formatSocialProfileHref(entityHash, postId)}`
 			await copyTextToClipboard(`${runUri}\n${pageUrl}`)
-			copyLinkBtn.textContent = appContext.geti18n('social.actions.copied')
-			setTimeout(() => { copyLinkBtn.textContent = appContext.geti18n('social.actions.copyLink') }, 1500)
+			const label = copyLinkBtn.querySelector('[data-i18n="social.actions.copyLink"]')
+			if (label) label.textContent = appContext.geti18n('social.actions.copied')
+			setTimeout(() => {
+				if (label) label.textContent = appContext.geti18n('social.actions.copyLink')
+			}, 1500)
+			closePostMoreMenus()
 		}
 	}
-	if (target.id === 'saveMetaBtn') {
+
+	if (target.closest('#saveMetaBtn')) {
 		await appContext.socialApi('/profile/meta', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -113,12 +136,24 @@ export async function handleMainClick(appContext, event) {
 		if (appContext.state.profileEntityHash)
 			await loadProfileFor(appContext, appContext.state.profileEntityHash)
 	}
-	if (target.id === 'createFolderBtn') {
+	if (target.closest('#createFolderBtn')) {
 		const name = document.getElementById('newFolderName')?.value.trim()
 		if (!name) return
 		await appContext.socialApi('/saved-posts/folders', { method: 'POST', body: JSON.stringify({ name }) })
 		await loadSaved(appContext)
 	}
+
+	const moreToggle = target.closest('[data-more-toggle]')
+	if (moreToggle instanceof HTMLElement && moreToggle.dataset.moreToggle) {
+		const menu = document.querySelector(`[data-more-menu="${moreToggle.dataset.moreToggle}"]`)
+		if (menu instanceof HTMLElement) {
+			const willOpen = menu.classList.contains('hidden')
+			closePostMoreMenus(willOpen ? menu : null)
+			menu.classList.toggle('hidden')
+		}
+		return
+	}
+
 	const followBtn = target.closest('[data-follow]')
 	if (followBtn instanceof HTMLElement && followBtn.dataset.follow) {
 		const entityHash = followBtn.dataset.follow
@@ -132,6 +167,7 @@ export async function handleMainClick(appContext, event) {
 		else
 			await loadExplore(appContext)
 	}
+
 	const likeBtn = target.closest('[data-like]')
 	if (likeBtn instanceof HTMLElement && likeBtn.dataset.like) {
 		const parsed = parseActionKey(likeBtn.dataset.like)
@@ -145,9 +181,11 @@ export async function handleMainClick(appContext, event) {
 			await refreshVisiblePosts(appContext)
 		}
 	}
+
 	const repostBtn = target.closest('[data-repost]')
 	if (repostBtn instanceof HTMLElement && repostBtn.dataset.repost)
 		queryByActionKey('data-repost-for', repostBtn.dataset.repost)?.classList.toggle('hidden')
+
 	const submitRepostBtn = target.closest('[data-submit-repost]')
 	if (submitRepostBtn instanceof HTMLElement && submitRepostBtn.dataset.submitRepost) {
 		const actionKey = submitRepostBtn.dataset.submitRepost
@@ -166,6 +204,7 @@ export async function handleMainClick(appContext, event) {
 			await refreshVisiblePosts(appContext)
 		}
 	}
+
 	const quoteBtn = target.closest('[data-quote]')
 	if (quoteBtn instanceof HTMLElement && quoteBtn.dataset.quote) {
 		const parsed = parseActionKey(quoteBtn.dataset.quote)
@@ -179,8 +218,10 @@ export async function handleMainClick(appContext, event) {
 				await switchView(appContext, 'feed')
 			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
 			document.getElementById('postText')?.focus()
+			closePostMoreMenus()
 		}
 	}
+
 	const deleteBtn = target.closest('button[data-delete]')
 	if (deleteBtn instanceof HTMLElement && deleteBtn.dataset.delete) {
 		await appContext.socialApi('/profile/post-delete', {
@@ -188,7 +229,9 @@ export async function handleMainClick(appContext, event) {
 			body: JSON.stringify({ postId: deleteBtn.dataset.delete }),
 		})
 		await refreshVisiblePosts(appContext)
+		closePostMoreMenus()
 	}
+
 	const repliesBtn = target.closest('[data-replies]')
 	if (repliesBtn instanceof HTMLElement && repliesBtn.dataset.replies) {
 		const actionKey = repliesBtn.dataset.replies
@@ -204,6 +247,7 @@ export async function handleMainClick(appContext, event) {
 			panel.dataset.loaded = '1'
 		}
 	}
+
 	const submitReplyBtn = target.closest('[data-submit-reply]')
 	if (submitReplyBtn instanceof HTMLElement && submitReplyBtn.dataset.submitReply) {
 		const actionKey = submitReplyBtn.dataset.submitReply
@@ -223,17 +267,20 @@ export async function handleMainClick(appContext, event) {
 			await refreshVisiblePosts(appContext)
 		}
 	}
+
 	const saveBtn = target.closest('[data-save]')
 	if (saveBtn instanceof HTMLElement && saveBtn.dataset.save) {
 		const parsed = parseActionKey(saveBtn.dataset.save)
 		if (parsed)
 			await openSaveModal(appContext, parsed.entityHash, parsed.postId, saveBtn)
 	}
-	if (target.dataset.removeSaved) {
-		const parsed = parseActionKey(target.dataset.removeSaved)
+
+	const removeSavedBtn = target.closest('[data-remove-saved]')
+	if (removeSavedBtn instanceof HTMLElement && removeSavedBtn.dataset.removeSaved) {
+		const parsed = parseActionKey(removeSavedBtn.dataset.removeSaved)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const folderId = target.dataset.savedFolder || undefined
+			const folderId = removeSavedBtn.dataset.savedFolder || undefined
 			await appContext.socialApi('/saved-posts/remove', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -245,6 +292,7 @@ export async function handleMainClick(appContext, event) {
 			await loadSaved(appContext)
 		}
 	}
+
 	const translateBtn = target.closest('[data-translate]')
 	if (translateBtn instanceof HTMLElement) {
 		const cardBody = translateBtn.closest('.post-card')?.querySelector('.body')
@@ -259,22 +307,38 @@ export async function handleMainClick(appContext, event) {
 		block.className = 'translation-block'
 		block.innerHTML = `<strong>${appContext.geti18n('social.translate.label')}</strong> ${result.translated}`
 		cardBody.appendChild(block)
+		closePostMoreMenus()
 	}
-	if (target.dataset.block) {
+
+	const blockBtn = target.closest('[data-block]')
+	if (blockBtn instanceof HTMLElement && blockBtn.dataset.block) {
 		await appContext.socialApi('/profile/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: target.dataset.block, block: true }),
+			body: JSON.stringify({ entityHash: blockBtn.dataset.block, block: true }),
 		})
 		await refreshVisiblePosts(appContext)
+		closePostMoreMenus()
 	}
-	if (target.dataset.unblock) {
+
+	const unblockBtn = target.closest('[data-unblock]')
+	if (unblockBtn instanceof HTMLElement && unblockBtn.dataset.unblock) {
 		await appContext.socialApi('/profile/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: target.dataset.unblock, block: false }),
+			body: JSON.stringify({ entityHash: unblockBtn.dataset.unblock, block: false }),
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}
+
 	const dmBtn = target.closest('[data-dm]')
 	if (dmBtn instanceof HTMLElement && dmBtn.dataset.dm)
 		window.location.href = formatChatDmFromSocial(dmBtn.dataset.dm)
+
+	const profileTab = target.closest('[data-profile-tab]')
+	if (profileTab instanceof HTMLElement && profileTab.dataset.profileTab) {
+		const tab = profileTab.dataset.profileTab
+		for (const button of document.querySelectorAll('[data-profile-tab]'))
+			button.classList.toggle('active', button.dataset.profileTab === tab)
+		for (const panel of document.querySelectorAll('[data-profile-panel]'))
+			panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
+	}
 }

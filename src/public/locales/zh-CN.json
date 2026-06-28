@@ -1054,6 +1054,7 @@
 		"composer": {
 			"placeholder": "在想什么？支持 Chat Markdown；输入 @ 可提及",
 			"publish": "发布",
+			"composeBtn": "发布",
 			"addMedia": "添加媒体",
 			"visibilityPublic": "公开",
 			"visibilityFollowers": "仅关注者",
@@ -1079,14 +1080,18 @@
 		},
 		"profile": {
 			"viewPosts": "查看动态",
-			"editInChat": "在 Chat 编辑资料",
+			"editInChat": "编辑资料",
 			"protectedPost": "受保护帖子",
 			"mediaOnly": "[媒体]",
 			"postCount": "${n} 条动态",
 			"following": "正在关注",
 			"exploreSettings": "探索页设置",
 			"hideFromExplore": "从探索页隐藏账户",
-			"saveExplore": "保存探索设置"
+			"saveExplore": "保存探索设置",
+			"tabPosts": "动态",
+			"tabFollowing": "正在关注",
+			"statsPosts": "动态",
+			"statsFollowing": "正在关注"
 		},
 		"actions": {
 			"like": "点赞",
@@ -1104,7 +1109,12 @@
 			"following": "已关注",
 			"replies": "评论",
 			"copyLink": "复制链接",
-			"copied": "已复制"
+			"copied": "已复制",
+			"more": "更多",
+			"share": "分享"
+		},
+		"aside": {
+			"suggested": "推荐关注"
 		},
 		"explore": {
 			"accounts": "推荐账户",
@@ -1177,6 +1187,7 @@
 		"empty": {
 			"feed": "暂无动态，去关注一些人吧",
 			"profilePosts": "暂无动态",
+			"following": "暂未关注任何人",
 			"notifications": "暂无通知",
 			"saved": "暂无收藏",
 			"explorePosts": "暂无探索帖子",

@@ -8,6 +8,7 @@ import {
 	TINY_PNG_BUFFER,
 	waitForFeedLoad,
 	postIdFromResponse,
+	openPostMoreMenu,
 } from './fixtures.mjs'
 
 test.describe('Social composer', () => {
@@ -42,6 +43,7 @@ test.describe('Social composer', () => {
 	test('quote preview opens from post card', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`quote-src ${Date.now()}`)
 		const card = await findPostCard(page, postId)
+		await openPostMoreMenu(card)
 		await card.locator('[data-quote]').click()
 		await expect(page.locator('#quotePreview')).toBeVisible()
 	})
@@ -49,6 +51,7 @@ test.describe('Social composer', () => {
 	test('clears quote preview', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`clear-quote ${Date.now()}`)
 		const card = await findPostCard(page, postId)
+		await openPostMoreMenu(card)
 		await card.locator('[data-quote]').click()
 		await expect(page.locator('#quotePreview')).toBeVisible()
 		await page.locator('.clear-quote-btn').click()
@@ -58,6 +61,7 @@ test.describe('Social composer', () => {
 	test('publishes post with quote reference', async ({ page, publishPost }) => {
 		const { postId: srcId } = await publishPost(`quote-parent ${Date.now()}`)
 		const srcCard = await findPostCard(page, srcId)
+		await openPostMoreMenu(srcCard)
 		await srcCard.locator('[data-quote]').click()
 		await expect(page.locator('#quotePreview')).toBeVisible()
 		const text = `quote-child ${Date.now()}`

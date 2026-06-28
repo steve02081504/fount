@@ -45,7 +45,7 @@ test.describe('Social feed', () => {
 
 	test('short search shows too-short hint', async ({ page }) => {
 		await page.locator('#feedSearchInput').fill('a')
-		await page.locator('#feedSearchBtn').click()
+		await page.locator('#feedSearchInput').press('Enter')
 		await expect(page.locator('#feedList .empty[data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 20_000 })
 	})
 

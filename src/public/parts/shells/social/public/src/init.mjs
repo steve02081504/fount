@@ -11,6 +11,7 @@ import {
 	setPendingGroupRef,
 	syncGroupRefInComposer,
 } from './composer.mjs'
+import { renderAvatarHtml } from './lib/display.mjs'
 import { groupRefLabel } from './lib/groupRef.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
@@ -21,6 +22,17 @@ import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 const socialGate = createReadyGateFor(SOCIAL_APP_GATE, 'Social')
 
 const FEED_WS_TIMEOUT_MS = 30_000
+
+/**
+ * 更新 composer 区当前用户头像。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+function refreshComposerAvatar(appContext) {
+	const slot = document.getElementById('viewerComposerAvatar')
+	if (!slot || !appContext.state.viewerEntityHash) return
+	slot.innerHTML = renderAvatarHtml(appContext.state.viewerEntityHash, null)
+}
 
 /**
  * 建立 feed WebSocket 并等待 open。
@@ -66,6 +78,11 @@ export async function bootstrapSocialApp(appContext) {
 	socialGate.markPending()
 	try {
 		document.getElementById('postBtn')?.addEventListener('click', () => { void afterPublishPost(appContext) })
+		document.getElementById('composeNavBtn')?.addEventListener('click', () => {
+			void switchView(appContext, 'feed')
+			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
+			document.getElementById('postText')?.focus()
+		})
 		const postText = document.getElementById('postText')
 		wireEmojiPickerButton(document.getElementById('emojiPickBtn'), token => {
 			if (!(postText instanceof HTMLTextAreaElement)) return
@@ -83,17 +100,21 @@ export async function bootstrapSocialApp(appContext) {
 			input.value = ''
 		})
 		document.getElementById('feedLoadMore')?.addEventListener('click', () => { void loadFeed(appContext, true) })
-		document.querySelector('main')?.addEventListener('click', event => { void handleMainClick(appContext, event) })
+		document.getElementById('app')?.addEventListener('click', event => { void handleMainClick(appContext, event) })
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return
-			if (target.id === 'saveConfirmBtn')
+			if (target.closest('#saveConfirmBtn'))
 				await confirmSaveModal(appContext)
-			if (target.id === 'saveCancelBtn')
+			if (target.closest('#saveCancelBtn'))
 				closeSaveModal(appContext)
 		})
-		for (const button of document.querySelectorAll('.nav-btn'))
+		for (const button of document.querySelectorAll('.nav-btn[data-view]'))
 			button.addEventListener('click', () => { void switchView(appContext, button.dataset.view) })
+
+		const postLang = document.getElementById('postLang')
+		if (postLang instanceof HTMLInputElement)
+			postLang.value = navigator.language || 'zh-CN'
 
 		await loadPostingEntities(appContext)
 		await loadGroupPickerOptions(appContext)
@@ -101,6 +122,7 @@ export async function bootstrapSocialApp(appContext) {
 
 		const viewer = await appContext.socialApi('/viewer')
 		appContext.state.viewerEntityHash = viewer.viewerEntityHash ?? null
+		refreshComposerAvatar(appContext)
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',
@@ -109,6 +131,8 @@ export async function bootstrapSocialApp(appContext) {
 			postLang: 'social.a11y.postLang',
 			feedTrending: 'social.a11y.trendingHashtags',
 			saveFolderSelect: 'social.a11y.saveFolderSelect',
+			feedRefreshBtn: 'social.feed.refresh',
+			feedSearchClearBtn: 'social.search.clear',
 		})) {
 			const el = document.getElementById(id)
 			if (el) el.setAttribute('aria-label', appContext.geti18n(key))
@@ -139,8 +163,18 @@ export async function bootstrapSocialApp(appContext) {
 		document.getElementById('feedSearchInput')?.addEventListener('keydown', event => {
 			if (event.key === 'Enter') {
 				event.preventDefault()
+				const input = event.target
+				const q = input instanceof HTMLInputElement ? input.value.trim() : ''
+				if (q.length >= 2)
+					void switchView(appContext, 'feed')
 				void runFeedSearch(appContext)
 			}
+		})
+
+		document.getElementById('feedSearchInput')?.addEventListener('input', event => {
+			const input = event.target
+			if (!(input instanceof HTMLInputElement)) return
+			document.getElementById('feedSearchClearBtn')?.classList.toggle('hidden', !input.value.trim())
 		})
 
 		socialGate.markReady()

@@ -1,4 +1,4 @@
-<article class="post-card card" data-post-id="${postId}" data-post-text="${postTextEncoded}" data-visibility="${visibilityCode}">
+<article class="post-card" data-post-id="${postId}" data-post-text="${postTextEncoded}" data-visibility="${visibilityCode}">
 	${repostBanner}
 	${repostCommentHtml}
 	${embeddedWrapStart}
@@ -6,8 +6,26 @@
 		<div class="post-header-row">
 			${headerAvatarHtml}
 			<div class="post-author">
-				<a href="${headerLink}" class="link-btn author-name">${headerAuthor}</a>
-				<span class="post-meta">${postMeta}</span>
+				<div class="post-author-line">
+					<a href="${headerLink}" class="author-name">${headerAuthor}</a>
+					<span class="author-handle">${authorHandle}</span>
+					<span class="post-meta-sep">·</span>
+					<span class="post-meta">${postTime}</span>
+					${visibilityIcon}
+				</div>
+			</div>
+			<div class="post-more-dropdown">
+				<button type="button" class="action-btn action-btn-more" data-more-toggle="${actionKey}" aria-label="${moreLabel}">
+					<span class="s-ic s-ic-more" aria-hidden="true"></span>
+				</button>
+				<div class="post-more-menu hidden" data-more-menu="${actionKey}">
+					<button type="button" data-quote="${actionKey}"><span class="s-ic s-ic-quote" aria-hidden="true"></span><span data-i18n="social.actions.quote"></span></button>
+					<button type="button" data-copy-link="${actionKey}"><span class="s-ic s-ic-link" aria-hidden="true"></span><span data-i18n="social.actions.copyLink"></span></button>
+					<button type="button" data-translate="${actionKey}"><span class="s-ic s-ic-translate" aria-hidden="true"></span><span data-i18n="social.actions.translate"></span></button>
+					<button type="button" class="dm-btn" data-dm="${entityHash}"><span class="s-ic s-ic-dm" aria-hidden="true"></span><span data-i18n="social.actions.dm"></span></button>
+					${blockBtn}
+					${deleteBtn}
+				</div>
 			</div>
 		</div>
 	</header>
@@ -17,16 +35,21 @@
 	<div class="body markdown-body">${bodyHtml}</div>
 	${embeddedWrapEnd}
 	<div class="post-actions">
-		<button type="button" class="action-btn like-btn${likedClass}" data-like="${actionKey}" data-liked="${likedFlag}">${likeLabel} (${likeCount})</button>
-		<button type="button" class="action-btn repost-btn" data-repost="${actionKey}"><span data-i18n="social.actions.repost"></span> (${repostCount})</button>
-		<button type="button" class="action-btn quote-btn" data-quote="${actionKey}"><span data-i18n="social.actions.quote"></span></button>
-		<button type="button" class="action-btn replies-btn" data-replies="${actionKey}"><span data-i18n="social.actions.replies"></span> (${replyCount})</button>
-		<button type="button" class="action-btn" data-save="${actionKey}"><span data-i18n="social.actions.save"></span></button>
-		<button type="button" class="action-btn" data-copy-link="${actionKey}"><span data-i18n="social.actions.copyLink"></span></button>
-		<button type="button" class="action-btn" data-translate="${actionKey}"><span data-i18n="social.actions.translate"></span></button>
-		<button type="button" class="action-btn dm-btn" data-dm="${entityHash}"><span data-i18n="social.actions.dm"></span></button>
-		${blockBtn}
-		${deleteBtn}
+		<button type="button" class="action-btn action-btn-reply replies-btn" data-replies="${actionKey}" aria-label="${replyLabel}">
+			<span class="s-ic s-ic-reply" aria-hidden="true"></span>
+			<span class="action-count">${replyCount}</span>
+		</button>
+		<button type="button" class="action-btn action-btn-repost repost-btn" data-repost="${actionKey}" aria-label="${repostLabel}">
+			<span class="s-ic s-ic-repost" aria-hidden="true"></span>
+			<span class="action-count">${repostCount}</span>
+		</button>
+		<button type="button" class="action-btn action-btn-like like-btn${likedClass}" data-like="${actionKey}" data-liked="${likedFlag}" aria-label="${likeLabel}">
+			<span class="s-ic s-ic-like" aria-hidden="true"></span>
+			<span class="action-count">${likeCount}</span>
+		</button>
+		<button type="button" class="action-btn action-btn-save" data-save="${actionKey}" aria-label="${saveLabel}">
+			<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+		</button>
 	</div>
 	<div class="repost-panel hidden" data-repost-for="${actionKey}">
 		<textarea rows="2" data-i18n="social.repost"></textarea>

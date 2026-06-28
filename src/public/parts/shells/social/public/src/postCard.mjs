@@ -6,6 +6,16 @@ import { formatSocialProfileHref } from './lib/runUri.mjs'
 import { renderMediaHtml } from './media.mjs'
 
 /**
+ * @param {string} entityHash entity hash
+ * @returns {string} @handle 展示
+ */
+function entityHandle(entityHash) {
+	const hash = String(entityHash || '')
+	if (hash.length <= 12) return `@${hash}`
+	return `@${hash.slice(0, 8)}…${hash.slice(-4)}`
+}
+
+/**
  * 创建 feed 帖子卡片构建函数（闭包注入依赖）。
  * @param {object} deps 依赖
  * @param {() => string | null} deps.getViewerEntityHash 当前观看者
@@ -49,9 +59,9 @@ export function createPostCardBuilder(deps) {
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
 		const label = authorLabel(item.entityHash, item.authorProfile)
 		const visibilityCode = item.post?.content?.visibility === 'followers' ? 'followers' : 'public'
-		const visibility = visibilityCode === 'followers'
-			? geti18n('social.composer.visibilityFollowers')
-			: geti18n('social.composer.visibilityPublic')
+		const visibilityIcon = visibilityCode === 'followers'
+			? `<span class="s-ic s-ic-lock post-visibility-icon" title="${geti18n('social.composer.visibilityFollowers')}" aria-label="${geti18n('social.composer.visibilityFollowers')}"></span>`
+			: `<span class="s-ic s-ic-globe post-visibility-icon" title="${geti18n('social.composer.visibilityPublic')}" aria-label="${geti18n('social.composer.visibilityPublic')}"></span>`
 		const mediaHtml = item.post?.content?.protected ? '' : renderMediaHtml(item.post?.content?.mediaRefs)
 		const quoteRef = item.post?.content?.quoteRef
 		const quoteHtml = quoteRef && !item.post?.content?.protected
@@ -66,7 +76,7 @@ export function createPostCardBuilder(deps) {
 			? geti18n('social.actions.unlike')
 			: geti18n('social.actions.like')
 		const repostBanner = isRepost
-			? `<div class="repost-banner">${geti18n('social.feed.repostedBy', { author: label })}</div>`
+			? `<div class="repost-banner"><span class="s-ic s-ic-repost" aria-hidden="true"></span>${geti18n('social.feed.repostedBy', { author: label })}</div>`
 			: ''
 		const repostCommentHtml = isRepost && item.repostComment
 			? `<div class="body markdown-body repost-comment">${await renderMarkdown(item.repostComment, item.entityHash)}</div>`
@@ -81,12 +91,13 @@ export function createPostCardBuilder(deps) {
 			: formatSocialProfileHref(item.entityHash)
 		const headerAvatarEntity = isRepost ? originalAuthor : item.entityHash
 		const headerAvatarProfile = isRepost ? null : item.authorProfile
-		const postMeta = `${formatTime(geti18n, item.post?.hlc?.wall)} · ${visibility}`
+		const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
+		const postTime = formatTime(geti18n, item.post?.hlc?.wall)
 		const blockBtn = isOwn
 			? ''
-			: `<button type="button" class="action-btn moderation-btn" data-block="${item.entityHash}"><span data-i18n="social.actions.block"></span></button>`
+			: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
 		const deleteBtn = isOwn
-			? `<button type="button" class="action-btn danger-btn" data-delete="${item.postId}"><span data-i18n="social.actions.delete"></span></button>`
+			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
 
 		const card = await renderTemplate('post_card', {
@@ -100,7 +111,13 @@ export function createPostCardBuilder(deps) {
 			headerAvatarHtml: renderAvatarHtml(headerAvatarEntity, headerAvatarProfile),
 			headerAuthor,
 			headerLink,
-			postMeta,
+			authorHandle: entityHandle(headerHandleEntity),
+			postTime,
+			visibilityIcon,
+			moreLabel: geti18n('social.actions.more'),
+			replyLabel: geti18n('social.actions.replies'),
+			repostLabel: geti18n('social.actions.repost'),
+			saveLabel: geti18n('social.actions.save'),
 			quoteHtml,
 			groupRefHtml,
 			mediaHtml,

@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash, openPostMoreMenu } from './fixtures.mjs'
 
 test.describe('Social post actions', () => {
 	test.setTimeout(600_000)
@@ -11,6 +11,7 @@ test.describe('Social post actions', () => {
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`dm-card ${Date.now()}`)
 		const card = await findPostCard(page, postId)
+		await openPostMoreMenu(card)
 		await card.locator(`[data-dm="${entityHash}"]`).click()
 		await expect(page).toHaveURL(
 			new RegExp(`/parts/shells:chat/hub/\\?contact=${entityHash}`),
@@ -53,6 +54,7 @@ test.describe('Social post actions', () => {
 	test('translate appends translation block', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`translate-me ${Date.now()}`)
 		const card = await findPostCard(page, postId)
+		await openPostMoreMenu(card)
 		await card.locator('[data-translate]').click()
 		await expect(card.locator('.translation-block')).toBeVisible({ timeout: 20_000 })
 	})
@@ -64,7 +66,7 @@ test.describe('Social post actions', () => {
 		await expect(page.locator('#saveModal')).toBeVisible({ timeout: 20_000 })
 		await page.locator('#saveConfirmBtn').click()
 		await expect(page.locator('#saveModal')).toBeHidden({ timeout: 10_000 })
-		await page.locator('.nav-btn[data-view="saved"]').click()
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
@@ -77,6 +79,7 @@ test.describe('Social post actions', () => {
 		await likeBtn.click()
 		await expect(card.locator('.like-btn')).toHaveAttribute('data-liked', '1', { timeout: 20_000 })
 
+		await openPostMoreMenu(card)
 		await card.locator('button[data-delete]').click()
 		// 删除后 feed 可能仍短暂保留同 postId 的重复卡片，刷新 feed 再断言
 		await page.locator('#feedRefreshBtn').click()
@@ -100,8 +103,9 @@ test.describe('Social post actions', () => {
 		await expect(saveModal).toBeHidden({ timeout: 10_000 })
 
 		const copyBtn = repostCard.locator('[data-copy-link]')
+		await openPostMoreMenu(repostCard)
 		const labelBefore = (await copyBtn.textContent())?.trim() || ''
 		await copyBtn.click()
-		await expect(copyBtn).not.toHaveText(labelBefore, { timeout: 10_000 })
+		await expect(copyBtn.locator('[data-i18n="social.actions.copyLink"]')).not.toHaveText(labelBefore, { timeout: 10_000 })
 	})
 })

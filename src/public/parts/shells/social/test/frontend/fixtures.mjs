@@ -74,6 +74,16 @@ export async function openSocialHome(page, baseUrl) {
 }
 
 /**
+ * 打开帖子卡片溢出菜单。
+ * @param {import('npm:@playwright/test').Locator} card - 帖子卡片定位器。
+ * @returns {Promise<void>}
+ */
+export async function openPostMoreMenu(card) {
+	await card.locator('[data-more-toggle]').click()
+	await expect(card.locator('.post-more-menu')).not.toHaveClass(/hidden/)
+}
+
+/**
  * 等待 feed GET 完成。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {number} [timeout=60000] 等待毫秒数。
@@ -217,12 +227,12 @@ export async function findPostCard(page, postId, opts = {}) {
 			}
 		}
 
-		await page.locator('.nav-btn[data-view="profile"]').click()
+		await page.locator(`.side-nav .nav-btn[data-view="profile"]`).click()
 		const profileCard = page.locator(`#profileView ${sel}`)
 		const profileFound = await profileCard.isVisible({ timeout: 20_000 }).catch(() => false)
 		if (profileFound) return profileCard
 
-		await page.locator('.nav-btn[data-view="feed"]').click()
+		await page.locator(`.side-nav .nav-btn[data-view="feed"]`).click()
 		await refreshFeed(page)
 	}
 
@@ -258,8 +268,10 @@ async function pollSearchForPost(page, query, postId, trigger) {
 		}, { timeout: 60_000 })
 		if (trigger === 'enter')
 			await page.locator('#feedSearchInput').press('Enter')
-		else
+		else if (await page.locator('#feedSearchBtn').isVisible())
 			await page.locator('#feedSearchBtn').click()
+		else
+			await page.locator('#feedSearchInput').press('Enter')
 		const searchRes = await searchWait
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {
