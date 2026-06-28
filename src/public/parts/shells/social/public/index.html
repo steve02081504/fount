@@ -18,16 +18,20 @@
 <body>
 	<div id="app">
 		<header class="topbar">
-			<h1 data-i18n="social.title"></h1>
-			<nav>
-				<button data-view="feed" class="nav-btn active" data-i18n="social.nav.feed"></button>
-				<button data-view="explore" class="nav-btn" data-i18n="social.nav.explore"></button>
-				<button data-view="notifications" class="nav-btn"><span data-i18n="social.nav.notifications"></span><span id="notificationsBadge" class="nav-badge hidden"></span></button>
-				<button data-view="saved" class="nav-btn" data-i18n="social.nav.saved"></button>
-				<button data-view="profile" class="nav-btn" data-i18n="social.nav.profile"></button>
-			</nav>
+			<div class="topbar-inner">
+				<div class="brand">
+					<h1 data-i18n="social.title"></h1>
+				</div>
+				<nav class="main-nav">
+					<button data-view="feed" class="nav-btn active" data-i18n="social.nav.feed"></button>
+					<button data-view="explore" class="nav-btn" data-i18n="social.nav.explore"></button>
+					<button data-view="notifications" class="nav-btn"><span data-i18n="social.nav.notifications"></span><span id="notificationsBadge" class="nav-badge hidden"></span></button>
+					<button data-view="saved" class="nav-btn" data-i18n="social.nav.saved"></button>
+					<button data-view="profile" class="nav-btn" data-i18n="social.nav.profile"></button>
+				</nav>
+			</div>
 		</header>
-		<main>
+		<main class="shell-main">
 			<section id="composer" class="composer card">
 				<p class="hint" data-i18n="social.mentionHint"></p>
 				<div id="quotePreview" class="quote-preview hidden"></div>
@@ -35,7 +39,7 @@
 				<textarea id="postText" rows="3" data-i18n="social.composer"></textarea>
 				<div id="mediaPreview" class="media-preview hidden"></div>
 				<div class="composer-actions">
-					<button id="emojiPickBtn" type="button" title="Emoji">😀</button>
+					<button id="emojiPickBtn" type="button">😀</button>
 					<label class="media-upload-btn link-btn">
 						<span data-i18n="social.composer.addMedia"></span>
 						<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />

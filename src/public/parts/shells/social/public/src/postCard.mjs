@@ -84,9 +84,9 @@ export function createPostCardBuilder(deps) {
 		const postMeta = `${formatTime(geti18n, item.post?.hlc?.wall)} · ${visibility}`
 		const blockBtn = isOwn
 			? ''
-			: `<button type="button" data-block="${item.entityHash}"><span data-i18n="social.actions.block"></span></button>`
+			: `<button type="button" class="action-btn moderation-btn" data-block="${item.entityHash}"><span data-i18n="social.actions.block"></span></button>`
 		const deleteBtn = isOwn
-			? `<button type="button" data-delete="${item.postId}"><span data-i18n="social.actions.delete"></span></button>`
+			? `<button type="button" class="action-btn danger-btn" data-delete="${item.postId}"><span data-i18n="social.actions.delete"></span></button>`
 			: ''
 
 		const card = await renderTemplate('post_card', {

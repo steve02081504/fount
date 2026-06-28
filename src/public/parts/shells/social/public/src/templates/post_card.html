@@ -17,14 +17,14 @@
 	<div class="body markdown-body">${bodyHtml}</div>
 	${embeddedWrapEnd}
 	<div class="post-actions">
-		<button type="button" class="like-btn${likedClass}" data-like="${actionKey}" data-liked="${likedFlag}">${likeLabel} (${likeCount})</button>
-		<button type="button" data-repost="${actionKey}"><span data-i18n="social.actions.repost"></span> (${repostCount})</button>
-		<button type="button" data-quote="${actionKey}"><span data-i18n="social.actions.quote"></span></button>
-		<button type="button" data-replies="${actionKey}"><span data-i18n="social.actions.replies"></span> (${replyCount})</button>
-		<button type="button" data-save="${actionKey}"><span data-i18n="social.actions.save"></span></button>
-		<button type="button" data-copy-link="${actionKey}"><span data-i18n="social.actions.copyLink"></span></button>
-		<button type="button" data-translate="${actionKey}"><span data-i18n="social.actions.translate"></span></button>
-		<button type="button" data-dm="${entityHash}"><span data-i18n="social.actions.dm"></span></button>
+		<button type="button" class="action-btn like-btn${likedClass}" data-like="${actionKey}" data-liked="${likedFlag}">${likeLabel} (${likeCount})</button>
+		<button type="button" class="action-btn repost-btn" data-repost="${actionKey}"><span data-i18n="social.actions.repost"></span> (${repostCount})</button>
+		<button type="button" class="action-btn quote-btn" data-quote="${actionKey}"><span data-i18n="social.actions.quote"></span></button>
+		<button type="button" class="action-btn replies-btn" data-replies="${actionKey}"><span data-i18n="social.actions.replies"></span> (${replyCount})</button>
+		<button type="button" class="action-btn" data-save="${actionKey}"><span data-i18n="social.actions.save"></span></button>
+		<button type="button" class="action-btn" data-copy-link="${actionKey}"><span data-i18n="social.actions.copyLink"></span></button>
+		<button type="button" class="action-btn" data-translate="${actionKey}"><span data-i18n="social.actions.translate"></span></button>
+		<button type="button" class="action-btn dm-btn" data-dm="${entityHash}"><span data-i18n="social.actions.dm"></span></button>
 		${blockBtn}
 		${deleteBtn}
 	</div>
