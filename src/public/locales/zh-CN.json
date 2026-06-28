@@ -1043,7 +1043,6 @@
 		"title": "社交",
 		"description": "P2P 开放社交动态、关注与文件分享",
 		"bootstrapFailed": "社交界面初始化失败：${error}",
-		"identityNote": "Social 与 Chat 共用同一 P2P 实体（联邦 identity），无需单独注册账号。",
 		"mentionHint": "提及：输入 @ 后从列表选择，或直接 @<128位 entityHash>",
 		"nav": {
 			"feed": "首页",

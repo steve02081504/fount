@@ -127,7 +127,6 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 				</div>
 			</div>
 			${isSelf ? `
-				<p class="hint">${appContext.geti18n('social.identityNote')}</p>
 				<p class="hint">${appContext.geti18n('social.mentionHint')}</p>
 				<a class="link-btn" href="/parts/shells:chat/profile/">${appContext.geti18n('social.profile.editInChat')}</a>
 			` : `

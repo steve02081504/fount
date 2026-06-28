@@ -63,7 +63,6 @@ export function registerDiscoverRoutes(router) {
 		res.status(200).json({
 			viewerEntityHash: entityHash,
 			profile,
-			identityNote: 'Social uses the same P2P entity as Chat federation identity; no separate registration.',
 		})
 	})
 
