@@ -3,7 +3,7 @@ import { getNodeHash } from '../../../../../scripts/p2p/node_context.mjs'
 import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
 import { SOCIAL_RPC_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
-import { listLocalTimelineOwners } from './feedHelpers.mjs'
+import { listLocalTimelineOwners, loadViewerContext } from './feedHelpers.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { buildFederatedTimelinePullResponse } from './timeline/sync.mjs'
 
@@ -28,6 +28,7 @@ export async function discoverAccounts(username, options = {}) {
 	for (const entityHash of slice) {
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (view.socialMeta?.isProtected) continue
+		if (!view.posts?.length && !view.socialMeta?.createdAt) continue
 		// listLocalTimelineOwners 含已同步的远端时间线；getProfile 对其返回派生默认资料，
 		// 不可用 ensureLocalEntityProfile（远端会抛错使探索接口 500）。
 		const profile = await getProfile(entityHash, username)
@@ -128,7 +129,10 @@ export async function discoverWithNetwork(username, rpc) {
 		for (const row of remote)
 			for (const account of row.accounts || [])
 				accountMap.set(account.entityHash, account)
-		merged.accounts = [...accountMap.values()].slice(0, rpc.n || 20)
+		const { following } = await loadViewerContext(username)
+		merged.accounts = [...accountMap.values()]
+			.filter(account => !following.has(String(account.entityHash).toLowerCase()))
+			.slice(0, rpc.n || 20)
 	}
 	if (rpc.type === 'social_post_discover_request') {
 		const postMap = new Map((local.posts || []).map(post => [`${post.entityHash}:${post.postId}`, post]))
