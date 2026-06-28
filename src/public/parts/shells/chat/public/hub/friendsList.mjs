@@ -107,23 +107,59 @@ async function friendRowTemplateData(friend, details) {
 }
 
 /**
+ * 删除指定好友会话（永久移除消息记录）。
+ * @param {FriendRow} friend 好友行
+ * @returns {Promise<void>}
+ */
+async function deleteFriendSession(friend) {
+	const name = friend.charname || friend.displayName || friend.groupId
+	if (!confirmI18n('chat.hub.deleteSessionConfirm', { name })) return
+	try {
+		const r = await fetch(
+			`/api/parts/shells:chat/sessions/${encodeURIComponent(friend.groupId)}`,
+			{ method: 'DELETE', credentials: 'include' },
+		)
+		if (!r.ok) {
+			const data = await r.json().catch(() => ({}))
+			throw new Error(data.error || `HTTP ${r.status}`)
+		}
+		showToastI18n('success', 'chat.hub.sessionDeleted')
+		if (hubStore.privateGroup.groupId === friend.groupId) {
+			const { clearPrivateGroupState } = await import('./privateGroup.mjs')
+			clearPrivateGroupState()
+			hubStore.privateGroup.onEnterPrivateGroup(null)
+		}
+		await loadGroups()
+		const friends = await loadFriendsList()
+		await renderFriendsColumn(friends)
+	}
+	catch (err) {
+		showToastI18n('error', 'chat.hub.sessionDeleteFailed', { error: err.message })
+	}
+}
+
+/**
  * @param {MouseEvent} event 指针事件
  * @param {FriendRow} friend 好友行
  * @returns {void}
  */
 function showFriendContextMenu(event, friend) {
-	if (!friend.charname) return
 	event.preventDefault()
 	document.getElementById('hub-friend-context-menu')?.remove()
 
 	const menu = document.createElement('ul')
 	menu.id = 'hub-friend-context-menu'
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	const menuWidth = 180
+	const menuWidth = 192
 	const left = Math.min(event.clientX, window.innerWidth - menuWidth - 8)
-	const top = Math.min(event.clientY, window.innerHeight - 48)
-	menu.style.cssText = `position:fixed;left:${Math.max(8, left)}px;top:${Math.max(8, top)}px;min-width:9rem;`
-	menu.innerHTML = '<li><button type="button" class="w-full text-left" data-action="new-chat" data-i18n="chat.hub.friendsContextNewChat"></button></li>'
+	const top = Math.min(event.clientY, window.innerHeight - 80)
+	menu.style.cssText = `position:fixed;left:${Math.max(8, left)}px;top:${Math.max(8, top)}px;min-width:${menuWidth}px;`
+
+	const items = []
+	if (friend.charname)
+		items.push('<li><button type="button" class="w-full text-left" data-action="new-chat" data-i18n="chat.hub.friendsContextNewChat"></button></li>')
+	items.push('<li><button type="button" class="w-full text-left text-error" data-action="delete-session" data-i18n="chat.hub.deleteSession"></button></li>')
+	menu.innerHTML = items.join('')
 	document.body.appendChild(menu)
 
 	/** @returns {void} */
@@ -154,6 +190,11 @@ function showFriendContextMenu(event, friend) {
 				showToastI18n('error', 'chat.hub.friendsRestartFailed', { error: err.message })
 			}
 		})()
+	})
+
+	menu.querySelector('[data-action="delete-session"]')?.addEventListener('click', () => {
+		dismiss()
+		void deleteFriendSession(friend)
 	})
 }
 
@@ -186,8 +227,7 @@ export async function renderFriendsColumn(friends) {
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
 		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))
-		if (row.charname)
-			el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
+		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
 		if (row.charname)
 			el.addEventListener('mouseenter', async () => {
 				if (hubStore.privateGroup.groupId) return

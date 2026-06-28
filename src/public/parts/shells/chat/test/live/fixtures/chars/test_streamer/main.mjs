@@ -19,7 +19,7 @@ export default {
 	info: {
 		'zh-CN': {
 			name: '测试流输出器',
-			avatar: '',
+			avatar: '🧪',
 			description: '用于测试流式输出的角色，不需要AI源。',
 			description_markdown: '# 测试流输出器\n\nCI fixture：无 AI 源、可流式预览。',
 			version: '1.0.0',

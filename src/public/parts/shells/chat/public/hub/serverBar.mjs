@@ -57,6 +57,25 @@ export function computeOrderedSidebarGroupIds() {
 }
 
 /**
+ * 生成文件夹瓦片内的 2×2 迷你群图标。
+ * @param {{ groupIds?: string[] }} folder 文件夹
+ * @param {Map<string, { name: string }>} byId 群 ID → 群摘要
+ * @returns {{ html: string, modifier: string }} 迷你图标 HTML 与单图标修饰类
+ */
+function folderMiniIconsHtml(folder, byId) {
+	const groups = (folder.groupIds || [])
+		.map(id => byId.get(id))
+		.filter(Boolean)
+		.slice(0, 4)
+	if (!groups.length)
+		return { html: '<span class="hub-folder-mini-icon hub-folder-mini-empty"></span>', modifier: ' hub-folder-mini--single' }
+	const html = groups.map(group =>
+		`<span class="hub-folder-mini-icon" style="background:${avatarColor(group.name)};">${escapeHtml(avatarInitial(group.name))}</span>`,
+	).join('')
+	return { html, modifier: groups.length === 1 ? ' hub-folder-mini--single' : '' }
+}
+
+/**
  * 渲染并挂载单个群组服务器图标。
  * @param {HTMLElement} parent 服务器列表或文件夹容器
  * @param {{ groupId: string, name: string, isLeaving?: boolean }} group 群组摘要
@@ -97,12 +116,15 @@ export async function renderServerBar() {
 	if (folders.length) {
 		for (const [folderIndex, folder] of folders.entries()) {
 			const collapsed = !!folder.collapsed
+			const mini = folderMiniIconsHtml(folder, byId)
 			const folderEl = await renderTemplate('hub/server/folder', {
 				folderIndex,
-				collapsedMark: collapsed ? '▸' : '▾',
+				openClass: collapsed ? '' : ' is-open',
+				ariaExpanded: collapsed ? 'false' : 'true',
+				miniIconsHtml: mini.html,
+				miniModifier: mini.modifier,
 				folderName: escapeHtml(folder.name),
 				folderNameI18nAttr: folder.nameIsDefault ? ' data-i18n="chat.hub.folderDefault"' : '',
-				itemsStyle: collapsed ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:4px;',
 			})
 			list.appendChild(folderEl)
 			if (!collapsed) {
@@ -114,15 +136,13 @@ export async function renderServerBar() {
 					await appendHubServerItem(itemsHost, group)
 				}
 			}
+			else
+				for (const groupId of folder.groupIds)
+					if (byId.has(groupId)) used.add(groupId)
 		}
 		const ungrouped = sidebarGroups.filter(g => !used.has(g.groupId))
-		if (ungrouped.length) {
-			const wrap = await renderTemplate('hub/server/ungrouped', {})
-			list.appendChild(wrap)
-			const itemsHost = list.querySelector('[data-folder-id="ungrouped"] .hub-folder-items')
-			for (const group of ungrouped)
-				await appendHubServerItem(itemsHost, group)
-		}
+		for (const group of ungrouped)
+			await appendHubServerItem(list, group)
 	}
 	else
 		for (const group of sidebarGroups)
@@ -152,7 +172,7 @@ export async function renderServerBar() {
 		})
 	})
 	syncGroupSelectionStyles()
-	list.querySelectorAll('.hub-folder-head[data-folder-idx]').forEach(head => {
+	list.querySelectorAll('.hub-folder-tile[data-folder-idx]').forEach(head => {
 		head.addEventListener('click', (event) => {
 			event.stopPropagation()
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))

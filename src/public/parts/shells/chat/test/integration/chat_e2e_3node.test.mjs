@@ -140,7 +140,7 @@ Deno.test('chat 3-node E2E', async t => {
 	})
 
 	await t.step('step6: 私密频道细粒度写门控（授权角色+owner 可发，未授权与硬禁言不可发）', async () => {
-		// 细粒度权限（Discord 式分层求值 + ADMIN 旁路）：
+		// 细粒度权限（分层覆写求值 + ADMIN 旁路）：
 		//   私密频道对 @everyone 同时 deny VIEW_CHANNEL + SEND_MESSAGES；对 moderator 角色 allow 二者
 		//   （B 在 step4 已获 moderator）。求值优先级：全局基线 < 频道 @everyone 覆写 < 频道角色覆写。
 		// 期望：owner A（admin）旁路一切 → 可见可发；B（moderator allow 覆盖 @everyone deny）→ 可见可发；

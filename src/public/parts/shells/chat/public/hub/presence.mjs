@@ -191,8 +191,18 @@ export function applyAvatarsTo(rootEl) {
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: hubStore.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
-			if (profile.avatar)
-				void mountAvatarCover(av, profile.avatar, escapeHtml(profile.name || authorDisplayLabel(authorKey)))
+			if (profile.avatar) {
+				const avatarVal = String(profile.avatar)
+				const isUrl = avatarVal.startsWith('http') || avatarVal.startsWith('/') || avatarVal.startsWith('data:')
+				if (isUrl)
+					void mountAvatarCover(av, avatarVal, escapeHtml(profile.name || authorDisplayLabel(authorKey)))
+				else {
+					// 表情或文字头像：直接替换为文本内容
+					av.textContent = avatarVal
+					av.style.fontSize = '20px'
+					av.style.background = ''
+				}
+			}
 			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})

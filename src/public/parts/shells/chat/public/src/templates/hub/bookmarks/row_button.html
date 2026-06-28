@@ -1,3 +1,10 @@
-<button type="button" class="hub-side-link hub-bookmark-row inline-flex items-center gap-1" ${dataAttrs}><img src="https://api.iconify.design/mdi/bookmark.svg" class="w-4 h-4 shrink-0" alt="" aria-hidden="true" />
-	<span${titleI18nAttr}>${title}</span>
-</button>
+<div class="hub-saved-line">
+	<button type="button" class="hub-saved-row hub-bookmark-row" ${dataAttrs}>
+		<img src="https://api.iconify.design/mdi/bookmark.svg" class="hub-saved-icon" alt="" aria-hidden="true" />
+		<span class="hub-saved-text">
+			<span class="hub-saved-title"${titleI18nAttr}>${title}</span>
+			<span class="hub-saved-meta">${meta}</span>
+		</span>
+	</button>
+	<button type="button" class="hub-saved-remove hub-bookmark-remove" ${dataAttrs} data-i18n="chat.hub.bookmarkRemove">×</button>
+</div>

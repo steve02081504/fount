@@ -2,6 +2,7 @@
 
 .hub-messages {
 	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .hub-messages::-webkit-scrollbar {
@@ -13,7 +14,7 @@
 	border-radius: 4px;
 }
 
-/* 连续同作者：隐藏重复头像（chat-image） */
+/* 连续同作者：隐藏重复头像（chat-image）与头部 */
 .chat.hub-message-row:not(.first-in-group) .chat-image {
 	visibility: hidden;
 	height: 0;
@@ -71,31 +72,78 @@
 	opacity: 0.5;
 }
 
-/* 消息行 hover 由 .hub-message-row / components.css 承担 */
+/* 消息行 hover 过渡 */
 .chat.hub-message-row {
 	transition: background 0.12s ease;
 }
 
-/* 操作栏展开/收起（非常驻） */
-.hub-message-actions--anim {
+/* =========================================================
+   悬停浮动操作栏
+   ========================================================= */
+.hub-msg-hover-bar {
+	position: absolute;
+	top: 0;
+	right: 1.5rem;
+	transform: translateY(-50%);
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	gap: 1px;
+	background: var(--hub-bg-main);
+	border: 1px solid var(--hub-border-subtle);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px var(--hub-shadow);
+	padding: 2px;
 	opacity: 0;
 	pointer-events: none;
+	transition: opacity 0.12s ease;
+}
+
+.chat-end .hub-msg-hover-bar {
+	right: auto;
+	left: 1.5rem;
+}
+
+.hub-message-row:hover .hub-msg-hover-bar,
+.hub-message-row:focus-within .hub-msg-hover-bar {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 浮动栏内部：始终可见、不换行 */
+.hub-msg-hover-bar .hub-message-actions--anim,
+.hub-msg-hover-bar .hub-message-actions--always {
+	opacity: 1;
+	pointer-events: auto;
 	margin-top: 0;
-	transition: opacity 0.15s ease, margin-top 0.15s ease;
 }
 
-.chat.hub-message-row:hover .hub-message-actions--anim,
-.chat.hub-message-row:focus-within .hub-message-actions--anim {
+.hub-msg-hover-bar .hub-message-actions,
+.hub-msg-hover-bar .hub-message-actions-normal-buttons {
+	flex-wrap: nowrap;
+	margin-top: 0;
+	gap: 0;
+}
+
+/* shift 层在浮动栏内隐藏（shift 操作改在右键菜单或下拉中访问） */
+.hub-msg-hover-bar .hub-message-actions-shift-buttons {
+	display: none;
+}
+
+/* =========================================================
+   常驻内联反馈栏（重新生成 + 👍/👎，仅角色消息）
+   ========================================================= */
+.hub-message-inline-feedback {
+	margin-top: 2px;
+	opacity: 0.65;
+	transition: opacity 0.15s;
+}
+
+.hub-message-row:hover .hub-message-inline-feedback {
 	opacity: 1;
-	pointer-events: auto;
-	margin-top: 4px;
 }
 
-.hub-message-actions--always {
-	opacity: 1;
-	pointer-events: auto;
-}
-
+/* 操作栏按钮尺寸与图标（仅图标按钮为 28px 方形） */
 .hub-message-action {
 	width: 28px;
 	height: 28px;
@@ -113,6 +161,21 @@
 
 .hub-message-action-menu {
 	min-width: 28px;
+}
+
+/* 下拉菜单项：带文字标签，需撑满整行、自适应高度并左对齐（覆盖 28px 方形约束） */
+.dropdown-content .hub-message-action {
+	width: 100%;
+	height: auto;
+	min-height: 1.85rem;
+	padding: 0.25rem 0.5rem;
+	justify-content: flex-start;
+}
+
+/* 菜单项标签 */
+.hub-menu-label {
+	font-size: 13px;
+	white-space: nowrap;
 }
 
 .hub-message-pending {

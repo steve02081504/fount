@@ -9,6 +9,7 @@ import { mountTemplate, renderTemplate } from '../../../../scripts/template.mjs'
 import {
 	getChatBookmarks,
 	getGroupState,
+	removeChatBookmark,
 	unpinMessage,
 } from '../src/api/groupApi.mjs'
 
@@ -18,6 +19,29 @@ import { hubStore } from './core/state.mjs'
 import { selectChannel, selectGroup } from './groupNav.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
+
+const SIDEBAR_LABEL_MAX = 56
+
+/**
+ * 统一群 ID 键，避免大小写不一致导致名称解析失败。
+ * @param {string} value 群 ID
+ * @returns {string} 规范化键
+ */
+function normGroupId(value) {
+	return String(value || '').trim().toLowerCase()
+}
+
+/**
+ * 压缩侧栏文案长度并折叠空白，避免长文本撑坏布局。
+ * @param {string} value 原始文本
+ * @param {number} [max=SIDEBAR_LABEL_MAX] 最大显示长度
+ * @returns {string} 截断后的文案
+ */
+function compactSidebarText(value, max = SIDEBAR_LABEL_MAX) {
+	const text = String(value || '').replace(/\s+/g, ' ').trim()
+	if (!text) return ''
+	return text.length > max ? `${text.slice(0, Math.max(1, max - 1))}…` : text
+}
 
 /**
  * 刷新 Hub 侧栏的置顶消息与书签列表。
@@ -53,7 +77,7 @@ export async function refreshPinsBookmarks() {
 			)
 			pinsHost.appendChild(await renderTemplate('hub/pins/row', {
 				channelId: escapeHtml(channelId),
-				channelName: escapeHtml(channelName),
+				channelName: escapeHtml(compactSidebarText(channelName, 28)),
 				eventId: escapeHtml(eventId),
 				...previewFields,
 			}))
@@ -87,76 +111,78 @@ export async function refreshPinsBookmarks() {
 	const bookmarks = await getChatBookmarks().catch(() => [])
 	const valid = bookmarks.filter(b => b && (b.groupId || b.href))
 	setPinsBookmarksWrapVisible(pinEntries.length > 0 || valid.length > 0)
+	bookmarksHost.replaceChildren()
 	if (!valid.length) {
-		if (!pinEntries.length) return
-		await mountTemplate(bookmarksHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noBookmarks' })
+		if (pinEntries.length)
+			await mountTemplate(bookmarksHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noBookmarks' })
 		return
 	}
-	const groupNames = new Map(hubStore.groups.filter(g => g?.groupId).map(g => [g.groupId, g.name || g.groupId]))
-	for (const bookmark of valid)
-		if (bookmark.groupId && !groupNames.has(bookmark.groupId))
-			groupNames.set(bookmark.groupId, bookmark.groupId)
 
-	const byGroup = new Map()
-	for (const bookmark of valid) {
-		const groupId = bookmark.groupId ?? null
-		if (!byGroup.has(groupId)) byGroup.set(groupId, [])
-		byGroup.get(groupId).push(bookmark)
-	}
-	bookmarksHost.replaceChildren()
-	for (const [groupId, rows] of byGroup) {
-		const label = groupId === null ? '' : escapeHtml(groupNames.get(groupId) || groupId)
-		const groupI18nAttr = groupId === null ? ' data-i18n="chat.hub.bookmarkLocal"' : ''
-		bookmarksHost.appendChild(await renderTemplate('hub/bookmarks/group_head', { label, groupI18nAttr }))
-		const bookmarkRows = rows.map(bookmark => ({
-			bookmark,
-			eventId: String(bookmark.eventId || '').trim(),
-			channelId: String(bookmark.channelId || '').trim(),
-			targetGroup: bookmark.groupId || hubStore.currentGroupId,
-		}))
-		const bookmarkLabels = await Promise.all(bookmarkRows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
-			if (eventId && channelId && targetGroup) {
-				const preview = await resolvePinMessagePreview(targetGroup, channelId, eventId)
-				if (preview?.i18n) return { text: '', i18n: true }
-				return { text: preview?.text || eventId.slice(0, 12), i18n: false }
-			}
-			if (bookmark.title) return { text: bookmark.title, i18n: false }
-			if (eventId) return { text: eventId, i18n: false }
-			return { text: '', i18n: true }
-		}))
-		for (const [index, { bookmark, eventId, channelId, targetGroup }] of bookmarkRows.entries()) {
-			const label = bookmarkLabels[index] || { text: '', i18n: true }
-			const titleI18nAttr = label.i18n ? ' data-i18n="chat.hub.bookmarkFallback"' : ''
-			const title = label.i18n ? '' : escapeHtml(label.text)
-			if (eventId || channelId) {
-				const dataAttrs = [
-					channelId ? ` data-bookmark-channel="${escapeHtml(channelId)}"` : '',
-					eventId ? ` data-bookmark-event="${escapeHtml(eventId)}"` : '',
-					targetGroup ? ` data-bookmark-group="${escapeHtml(targetGroup)}"` : '',
-				].join('')
-				const bookmarkRow = await renderTemplate('hub/bookmarks/row_button', {
-					title,
-					titleI18nAttr,
-					dataAttrs,
-					escapeHtml,
-				})
-				bookmarkRow.addEventListener('click', async () => {
-					const bookmarkGroup = bookmarkRow.getAttribute('data-bookmark-group')
-					const bookmarkChannelId = bookmarkRow.getAttribute('data-bookmark-channel')
-					const bookmarkEventId = bookmarkRow.getAttribute('data-bookmark-event')
-					if (bookmarkGroup && bookmarkGroup !== hubStore.currentGroupId)
-						await selectGroup(bookmarkGroup, bookmarkChannelId || undefined)
-					else if (bookmarkChannelId && bookmarkChannelId !== hubStore.currentChannelId)
-						await selectChannel(bookmarkChannelId)
-					if (bookmarkEventId) await scrollToMessageEventId(bookmarkEventId)
-				})
-				bookmarksHost.appendChild(bookmarkRow)
-			}
-			else {
-				const href = bookmark.href?.trim()
-					|| `#group:${encodeURIComponent(targetGroup || hubStore.currentGroupId)}:${encodeURIComponent(hubStore.currentChannelId || 'default')}`
-				bookmarksHost.appendChild(await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, escapeHtml }))
-			}
+	// 仅收录可解析的真实群名（name 与 groupId 不同），避免侧栏出现裸 UUID。
+	const realGroupNames = new Map(hubStore.groups
+		.filter(g => g?.groupId && g.name && g.name !== g.groupId)
+		.map(g => [normGroupId(g.groupId), g.name]))
+	const currentKey = normGroupId(hubStore.currentGroupId)
+
+	const rows = valid.map(bookmark => ({
+		bookmark,
+		eventId: String(bookmark.eventId || '').trim(),
+		channelId: String(bookmark.channelId || '').trim(),
+		targetGroup: bookmark.groupId || hubStore.currentGroupId,
+	}))
+	const labels = await Promise.all(rows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
+		if (eventId && channelId && targetGroup) {
+			const preview = await resolvePinMessagePreview(targetGroup, channelId, eventId)
+			if (preview?.i18n) return { text: '', i18n: true }
+			return { text: compactSidebarText(preview?.text || eventId.slice(0, 12)), i18n: false }
+		}
+		if (bookmark.title) return { text: compactSidebarText(bookmark.title), i18n: false }
+		if (eventId) return { text: compactSidebarText(eventId), i18n: false }
+		return { text: '', i18n: true }
+	}))
+
+	for (const [index, { bookmark, eventId, channelId, targetGroup }] of rows.entries()) {
+		const label = labels[index] || { text: '', i18n: true }
+		const titleI18nAttr = label.i18n ? ' data-i18n="chat.hub.bookmarkFallback"' : ''
+		const title = label.i18n ? '' : escapeHtml(label.text)
+		const isOtherGroup = !!targetGroup && normGroupId(targetGroup) !== currentKey
+		const groupName = isOtherGroup ? realGroupNames.get(normGroupId(targetGroup)) || '' : ''
+		const channelName = channelId
+			? hubStore.currentState?.channels?.[channelId]?.name || (isOtherGroup ? '' : channelId)
+			: ''
+		const meta = escapeHtml(compactSidebarText([groupName, channelName].filter(Boolean).join(' · '), 40))
+		if (eventId || channelId) {
+			const dataAttrs = [
+				channelId ? ` data-bookmark-channel="${escapeHtml(channelId)}"` : '',
+				eventId ? ` data-bookmark-event="${escapeHtml(eventId)}"` : '',
+				targetGroup ? ` data-bookmark-group="${escapeHtml(targetGroup)}"` : '',
+			].join('')
+			const line = await renderTemplate('hub/bookmarks/row_button', { title, titleI18nAttr, meta, dataAttrs, escapeHtml })
+			line.querySelector('.hub-bookmark-row')?.addEventListener('click', async () => {
+				if (targetGroup && targetGroup !== hubStore.currentGroupId)
+					await selectGroup(targetGroup, channelId || undefined)
+				else if (channelId && channelId !== hubStore.currentChannelId)
+					await selectChannel(channelId)
+				if (eventId) await scrollToMessageEventId(eventId)
+			})
+			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
+				clickEvent.stopPropagation()
+				await removeChatBookmark({ groupId: targetGroup, eventId })
+				await refreshPinsBookmarks()
+			})
+			bookmarksHost.appendChild(line)
+		}
+		else {
+			const href = bookmark.href?.trim()
+				|| `#group:${encodeURIComponent(targetGroup || hubStore.currentGroupId)}:${encodeURIComponent(hubStore.currentChannelId || 'default')}`
+			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta, escapeHtml })
+			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
+				clickEvent.stopPropagation()
+				clickEvent.preventDefault()
+				await removeChatBookmark({ href })
+				await refreshPinsBookmarks()
+			})
+			bookmarksHost.appendChild(line)
 		}
 	}
 }

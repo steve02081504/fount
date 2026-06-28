@@ -47,3 +47,21 @@ export async function addChatBookmark(entry) {
 	await saveChatBookmarks(entries)
 	return true
 }
+
+/**
+ * 删除一条书签（按 groupId + eventId 匹配，回落 href 匹配）。
+ * @param {{ groupId?: string, eventId?: string, href?: string }} entry 书签条目
+ * @returns {Promise<void>}
+ */
+export async function removeChatBookmark(entry) {
+	const entries = await getChatBookmarks()
+	const groupId = String(entry.groupId || '')
+	const eventId = String(entry.eventId || '')
+	const href = String(entry.href || '')
+	const next = entries.filter(bookmark => {
+		if (eventId) return !(String(bookmark?.groupId || '') === groupId && String(bookmark?.eventId || '') === eventId)
+		if (href) return String(bookmark?.href || '') !== href
+		return true
+	})
+	if (next.length !== entries.length) await saveChatBookmarks(next)
+}

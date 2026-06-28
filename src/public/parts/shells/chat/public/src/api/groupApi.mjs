@@ -63,6 +63,7 @@ export { createDirectMessageByPubKeys } from './groupDm.mjs'
 export {
 	addChatBookmark,
 	getChatBookmarks,
+	removeChatBookmark,
 	saveChatBookmarks,
 } from './groupBookmarks.mjs'
 

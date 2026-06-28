@@ -1,6 +1,7 @@
-<div class="hub-folder-wrap" data-folder-idx="${folderIndex}">
-	<div class="hub-folder-head" data-folder-idx="${folderIndex}" style="color:var(--hub-text-muted);font-size:10px;font-weight:700;padding:6px 4px 4px;cursor:pointer;user-select:none;text-align:center;">
-		${collapsedMark} <span${folderNameI18nAttr}>${folderName}</span>
-	</div>
-	<div class="hub-folder-items" style="${itemsStyle}"></div>
+<div class="hub-folder-wrap${openClass}" data-folder-idx="${folderIndex}">
+	<button type="button" class="hub-folder-tile" data-folder-idx="${folderIndex}" aria-expanded="${ariaExpanded}">
+		<span class="hub-folder-mini${miniModifier}">${miniIconsHtml}</span>
+		<span class="hub-server-tooltip"${folderNameI18nAttr}>${folderName}</span>
+	</button>
+	<div class="hub-folder-items"></div>
 </div>

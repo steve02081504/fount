@@ -2064,6 +2064,10 @@
 			"ungrouped": "未分组",
 			"defaultCategory": "对话",
 			"bookmarkFallback": "书签",
+			"bookmarkRemove": {
+				"title": "移除书签",
+				"aria-label": "移除书签"
+			},
 			"loadMessagesFailed": "加载消息失败：${error}",
 			"noUsername": "未获取用户名",
 			"stickersEmpty": "暂无贴纸",
@@ -2200,7 +2204,9 @@
 				"leaveBatchOk": "已退出 ${count} 个群",
 				"leaveBatchPartial": "${failed} / ${total} 个群退出失败，列表已刷新"
 			},
-			"replyInThread": "在子线程中回复",
+			"replyInThread": {
+				"title": "在子线程中回复"
+			},
 			"syncTruncated": "DAG 增量未拉全，可稍后重试或提高 limit",
 			"syncTruncatedHint": "DAG 历史过长，可稍后重试或提高 limit",
 			"newChannelBtn": "新建频道",
@@ -2333,8 +2339,8 @@
 				"cancel": "取消",
 				"submit": "加入群组"
 			},
-			"menuMD": "MD",
-			"menuTXT": "TXT",
+			"menuMD": "Markdown",
+			"menuTXT": "纯文本",
 			"menuHTML": "HTML",
 			"menuPrev": "←",
 			"menuNext": "→",

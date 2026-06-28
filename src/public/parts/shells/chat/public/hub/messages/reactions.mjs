@@ -47,11 +47,20 @@ export function wireMessageReactions(container, channelView) {
 		const eventId = reactionButton.getAttribute('data-event-id')
 		const emoji = reactionButton.getAttribute('data-emoji')
 		if (!eventId || !emoji) return
-		const byMe = reactionButton.classList.contains('badge-primary')
 		reactionButton.addEventListener('click', async event => {
 			event.stopPropagation()
-			await toggleReaction(eventId, emoji, byMe)
-			await reload()
+			if (reactionButton.disabled) return
+			const byMe = reactionButton.classList.contains('badge-primary')
+			reactionButton.disabled = true
+			reactionButton.setAttribute('aria-busy', 'true')
+			try {
+				await toggleReaction(eventId, emoji, byMe)
+				await reload()
+			}
+			finally {
+				reactionButton.disabled = false
+				reactionButton.removeAttribute('aria-busy')
+			}
 		})
 		if (canManageMessages)
 			reactionButton.addEventListener('contextmenu', async event => {

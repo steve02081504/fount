@@ -371,6 +371,7 @@ export async function renderMessageReactionsHtml(message, allMessages, reactionE
 	if (!reactions.size && !opts.canAddReactions) return ''
 	const reactionRows = [...reactions.entries()].map(([emoji, { count, byMe }]) => ({
 		mineClass: byMe ? ' badge-primary' : '',
+		pressedAttr: byMe ? ' aria-pressed="true"' : ' aria-pressed="false"',
 		emoji: escapeHtml(String(emoji)),
 		emojiLabel: escapeHtml(String(emoji)),
 		count,
@@ -392,7 +393,8 @@ export async function renderMessageReactionsHtml(message, allMessages, reactionE
  * @param {string} options.avatarHtml 头像占位文字
  * @param {string} options.headerHtml chat-header 内容
  * @param {string} options.contentHtml chat-bubble 内容
- * @param {string} [options.footerHtml] chat-footer 内容
+ * @param {string} [options.footerHtml] chat-footer 内容（内联反馈 + 表情反应）
+ * @param {string} [options.hoverBarHtml] 悬停浮动操作栏 HTML
  * @param {string} options.align chat-start 或 chat-end
  * @param {string} options.bubbleClass 气泡 DaisyUI 类
  * @param {string} [options.bubbleAttrs] 气泡额外属性
@@ -407,6 +409,7 @@ async function renderMessageRowShell({
 	headerHtml,
 	contentHtml,
 	footerHtml = '',
+	hoverBarHtml = '',
 	align = 'chat-start',
 	bubbleClass = 'chat-bubble-neutral',
 	bubbleAttrs = '',
@@ -427,6 +430,7 @@ async function renderMessageRowShell({
 		bubbleAttrs,
 		contentHtml,
 		footerHtml,
+		hoverBarHtml,
 	})
 }
 
@@ -544,7 +548,7 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 		renderOpts.viewerMemberId || 'local',
 		{ canAddReactions: !!renderOpts.canAddReactions && message.type === 'message' },
 	)
-	const actionsHtml = generating ? '' : await renderMessageActionsHtml(message, {
+	const actionsResult = generating ? null : await renderMessageActionsHtml(message, {
 		viewerPubKeyHash: renderOpts.viewerPubKeyHash,
 		localCharIds: renderOpts.localCharIds,
 		localCharId: renderOpts.localCharIds?.[0] ?? renderOpts.localCharId,
@@ -555,6 +559,8 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 		alwaysVisibleActions: renderOpts.alwaysVisibleActions,
 		isLastMessage: renderOpts.lastMessageEventId === message.eventId,
 	})
+	const hoverBarHtml = actionsResult?.hoverHtml || ''
+	const inlineFeedbackHtml = actionsResult?.inlineHtml || ''
 
 	return {
 		html: await renderMessageRowShell({
@@ -570,7 +576,8 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 			headerHtml,
 			contentHtml: bodyHtml,
 			bubbleAttrs,
-			footerHtml: `${actionsHtml}${reactionsHtml}`,
+			footerHtml: `${inlineFeedbackHtml}${reactionsHtml}`,
+			hoverBarHtml,
 		}),
 		sender: authorKey,
 		time,

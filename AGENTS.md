@@ -29,6 +29,7 @@
 - **Check if running**: `Test-FountRunning` (PowerShell) — returns `True`/`False`; use before starting/rebooting the server — **not** before `fount test`.
 - **Start server**: `fount server` (foreground) or `fount background` (detached background). Bare `fount` = `fount background; fount log`.
 - **Restart server**: `fount reboot` after code/config changes (requires fount already running; check with `Test-FountRunning` first).
+- **Frontend change workflow**: Pure frontend edits (Hub/UI/templates/styles) take effect after browser refresh; server reboot is only needed for backend/runtime changes.
 - **curl / API testing**: pass the API key on protected routes, e.g. `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PowerShell `$env:FOUNT_API_KEY`, bash `$FOUNT_API_KEY`).
 
 ## 4. Specialized Guides (read on demand, not loaded by default)

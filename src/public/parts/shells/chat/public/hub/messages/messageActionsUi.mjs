@@ -11,6 +11,7 @@ import {
 } from '../../../../../scripts/template.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../../src/composerAttachments.mjs'
 import { hubActionMenuIcon } from '../../src/lib/emojiSvg.mjs'
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { bindComposerEditKeys } from '../../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../../src/ui/dragAndDrop.mjs'
 import { escapeHtml } from '../core/domUtils.mjs'
@@ -22,30 +23,55 @@ const FEEDBACK_COLLAPSE_MS = 200
 const DELETE_LINE_THRESHOLD = 30
 
 /**
+ * 从 i18n 值（字符串或对象）中提取 title 字符串。
+ * @param {string|object|undefined} val geti18n 返回值
+ * @returns {string} title 字符串
+ */
+function extractI18nTitle(val) {
+	if (!val) return ''
+	if (typeof val === 'string') return val
+	if (typeof val === 'object') return String(val.title || val['aria-label'] || '')
+	return ''
+}
+
+/**
+ * 生成操作按钮 HTML。
+ * 当有 icon 时使用 title 属性显示 i18n 文本（不替换图标），无图标时用 data-i18n 设置按钮文本。
  * @param {object} opts 按钮选项
  * @param {string} opts.action data-action 值
  * @param {string} [opts.attrs] 额外 HTML 属性
  * @param {string} [opts.icon] 图标 HTML
- * @param {string} [opts.i18nKey] i18n 键
+ * @param {string} [opts.i18nKey] i18n 键（有图标时作 title/tooltip，无图标时作按钮文本）
  * @param {string} [opts.classes] 额外 class
- * @param {string} [opts.label] 无图标时的文本
+ * @param {string} [opts.label] 无图标时的备用文本
  * @returns {string} 按钮 HTML
  */
 export function actionButton({ action, attrs = '', icon = '', i18nKey = '', classes = '', label = '' }) {
-	const i18nAttr = i18nKey ? ` data-i18n="${i18nKey}"` : ''
+	let titleAttr = ''
+	let i18nAttr = ''
+	if (icon && i18nKey) {
+		const raw = geti18n(i18nKey)
+		const title = extractI18nTitle(raw)
+		if (title) titleAttr = ` title="${escapeHtml(title)}"`
+	}
+	else if (i18nKey) {
+		i18nAttr = ` data-i18n="${i18nKey}"`
+	}
 	const content = icon || escapeHtml(label)
-	return `<button type="button" class="btn btn-ghost btn-xs hub-message-action ${classes}" data-action="${action}"${i18nAttr} ${attrs}>${content}</button>`
+	return `<button type="button" class="btn btn-ghost btn-xs hub-message-action ${classes}" data-action="${action}"${titleAttr}${i18nAttr} ${attrs}>${content}</button>`
 }
 
 /**
+ * 生成下拉菜单项 HTML，图标和文字标签并排显示。
  * @param {string} action data-action 值
  * @param {string} attrs 额外属性
  * @param {string} icon 图标 HTML
- * @param {string} [i18nKey] 可选 i18n 键
+ * @param {string} [i18nKey] 可选 i18n 键（菜单文字）
  * @returns {string} 菜单项 HTML
  */
 export function menuActionItem(action, attrs, icon, i18nKey = '') {
-	return `<li>${actionButton({ action, attrs, icon, i18nKey, classes: 'w-full justify-start gap-2' })}</li>`
+	const labelSpan = i18nKey ? `<span class="hub-menu-label" data-i18n="${i18nKey}"></span>` : ''
+	return `<li><button type="button" class="btn btn-ghost btn-xs hub-message-action w-full justify-start gap-2" data-action="${action}" ${attrs}>${icon}${labelSpan}</button></li>`
 }
 
 /**
