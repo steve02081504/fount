@@ -168,7 +168,7 @@
 				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de `patchelf`."
 			},
 			"tempDir": {
-				"blocked": "Erreur\u00a0: impossible d'exécuter `fount` dans un répertoire temporaire\n\nfount est profondément couplé au système et enregistre la commande `PATH` et plusieurs hooks système dans `fount`. Si vous l'exécutez dans un répertoire temporaire, après que le système a effacé les fichiers temporaires, vous ne pourrez plus exécuter `fount remove` pour supprimer fount et ses hooks.\n\nVeuillez déplacer fount vers un répertoire non temporaire avant de l'exécuter. Si vous souhaitez seulement tester brièvement, exécutez manuellement `fount remove` après le test."
+				"blocked": "Erreur : impossible d'exécuter `fount` dans un répertoire temporaire\n\nfount est profondément couplé au système et enregistre la commande `PATH` et plusieurs hooks système dans `fount`. Si vous l'exécutez dans un répertoire temporaire, après que le système a effacé les fichiers temporaires, vous ne pourrez plus exécuter `fount remove` pour supprimer fount et ses hooks.\n\nVeuillez déplacer fount vers un répertoire non temporaire avant de l'exécuter. Si vous souhaitez seulement tester brièvement, exécutez manuellement `fount remove` après le test."
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
