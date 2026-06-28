@@ -10,6 +10,7 @@ import { getGroupList } from '../src/api/groupApi.mjs'
 
 import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
+import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
 import { selectGroup } from './groupNav.mjs'
@@ -194,6 +195,11 @@ export async function renderServerBar() {
 			hubStore.groupFoldersState.folders[folderIndex].collapsed = !hubStore.groupFoldersState.folders[folderIndex].collapsed
 			void persistGroupFolders()
 			void renderServerBar()
+		})
+		head.addEventListener('contextmenu', (event) => {
+			const folderIndex = Number(head.getAttribute('data-folder-idx'))
+			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.groupFoldersState.folders.length) return
+			showFolderContextMenu(event, folderIndex)
 		})
 	})
 	attachServerBarDnd(list)
