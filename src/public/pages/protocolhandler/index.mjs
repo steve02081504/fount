@@ -47,6 +47,7 @@ async function handleRunPart(parts) {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'
 		return
 	}
+	// `:` 是 part 路径分隔符（URL 形如 /parts/shells:chat），还原为 loadPart 路径 shells/chat。
 	const partpath = parts[1].replaceAll(':', '/')
 	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
 

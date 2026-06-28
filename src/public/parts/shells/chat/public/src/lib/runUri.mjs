@@ -4,9 +4,10 @@ import { normalizePubKeyHex } from './pubKeyHex.mjs'
 
 /**
  * chat shell 在 `fount://run/` 协议中的 part 路径标识。
+ * protocolhandler 用 `replaceAll(':', '/')` 还原成 loadPart 路径 `shells/chat`，故必须是 `shells:chat`。
  * @type {string}
  */
-export const CHAT_RUN_PART = 'parts:shells:chat'
+export const CHAT_RUN_PART = 'shells:chat'
 const RUN_PREFIX = `fount://run/${CHAT_RUN_PART}/`
 
 /**

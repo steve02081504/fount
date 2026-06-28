@@ -1,7 +1,10 @@
 /** §9：social runUri 与 chat 互跳。 */
 
-/** Social runUri part 路径前缀。 */
-export const SOCIAL_RUN_PART = 'parts:shells:social'
+/**
+ * Social runUri part 路径前缀。
+ * protocolhandler 用 `replaceAll(':', '/')` 还原成 loadPart 路径 `shells/social`，故必须是 `shells:social`。
+ */
+export const SOCIAL_RUN_PART = 'shells:social'
 const RUN_PREFIX = `fount://run/${SOCIAL_RUN_PART}/`
 
 /**
@@ -67,9 +70,7 @@ export function parseSocialRunUri(raw) {
 	let input = String(raw || '').trim()
 	if (!input) return null
 	if (input.startsWith('fount://run/')) input = input.slice('fount://run/'.length)
-	if (input.startsWith(`${SOCIAL_RUN_PART}/`))
-		input = input.slice(SOCIAL_RUN_PART.length + 1)
-	else if (input.startsWith(`${SOCIAL_RUN_PART};`))
+	if (input.startsWith(`${SOCIAL_RUN_PART}/`) || input.startsWith(`${SOCIAL_RUN_PART};`))
 		input = input.slice(SOCIAL_RUN_PART.length + 1)
 
 	const parts = input.split(';').map(segment => {
