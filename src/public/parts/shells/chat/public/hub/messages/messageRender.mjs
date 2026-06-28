@@ -20,18 +20,12 @@ import {
 } from '../../src/groupMode.mjs'
 import { buildInviteJoinShareUrl } from '../../src/inviteQr.mjs'
 import { channelMessageEditText, channelMessageShowText } from '../../src/lib/channelContent.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
 import { resolveDisplayParentEventId, tallyReactions } from '../../src/ui/channelDisplay.mjs'
 import { mountMdRevealButton } from '../../src/ui/mdRevealBtn.mjs'
-import {
-	authorPresentationKeys,
-	avatarColor,
-	avatarInitial,
-	escapeHtml,
-	formatTimeAttrs,
-	timeI18nAttrFragment,
-} from '../core/domUtils.mjs'
+import { authorPresentationKeys, avatarColor, avatarInitial, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 
 import { renderMessageActionsHtml } from './messageActionsRender.mjs'
@@ -121,7 +115,6 @@ async function renderDecryptBodyHtml(message) {
 		return renderTemplateAsHtmlString('hub/messages/decrypt_body', {
 			mode: pendingGen != null ? 'pending' : 'failed',
 			generation: pendingGen,
-			escapeHtml,
 		})
 	}
 	const content = message?.content
@@ -130,7 +123,6 @@ async function renderDecryptBodyHtml(message) {
 	return renderTemplateAsHtmlString('hub/messages/decrypt_body', {
 		mode: pendingGen != null ? 'pending' : 'failed',
 		generation: pendingGen,
-		escapeHtml,
 	})
 }
 
@@ -333,7 +325,7 @@ async function renderVoteBlock(message, allMessages) {
 	const counts = tallyVoteChoices(allMessages, message.eventId)
 	const total = [...counts.values()].reduce((sum, count) => sum + count, 0)
 	const deadlineHtml = content.deadline
-		? await renderTemplateAsHtmlString('hub/messages/vote_deadline', { deadline: String(content.deadline), escapeHtml })
+		? await renderTemplateAsHtmlString('hub/messages/vote_deadline', { deadline: String(content.deadline) })
 		: ''
 	const voteOptions = options.map(label => {
 		const key = String(label)
@@ -418,7 +410,6 @@ async function renderMessageRowShell({
 		avatarFor,
 		avatarBg: avatarBg ?? avatarColor(avatarFor),
 		avatarHtml,
-		escapeHtml,
 	})
 	return renderTemplateAsHtmlString('hub/messages/message_row', {
 		align,

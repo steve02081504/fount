@@ -6,9 +6,10 @@
  * 【关联】../../../../scripts/template、../src/api/groupApi、core/domUtils、core/state、friendBindings、groupContextMenu、groupNav
  */
 import { renderTemplate } from '../../../../scripts/template.mjs'
-import { getGroupList } from '../src/api/groupApi.mjs'
+import { getChatBookmarks, getGroupList, saveChatBookmarks } from '../src/api/groupApi.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
-import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
@@ -211,6 +212,14 @@ export async function loadGroups() {
 	const foldersResponse = await fetch('/api/parts/shells:chat/group-folders', { credentials: 'include' })
 	const groupList = await groupListPromise
 	hubStore.groups = groupList
+	const knownGroupIds = new Set(groupList.map(g => String(g.groupId || '').trim().toLowerCase()).filter(Boolean))
+	if (knownGroupIds.size) {
+		const bookmarks = await getChatBookmarks().catch(() => [])
+		const liveBookmarks = bookmarks.filter(
+			b => b?.href || (b?.groupId && knownGroupIds.has(String(b.groupId).trim().toLowerCase())),
+		)
+		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
+	}
 	if (foldersResponse.ok) {
 		const payload = await foldersResponse.json()
 		const rawFolders = Array.isArray(payload.folders) ? payload.folders : []

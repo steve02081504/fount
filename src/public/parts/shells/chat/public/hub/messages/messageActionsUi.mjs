@@ -12,9 +12,9 @@ import {
 } from '../../../../../scripts/template.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../../src/composerAttachments.mjs'
 import { hubActionMenuIcon } from '../../src/lib/emojiSvg.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 import { bindComposerEditKeys } from '../../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../../src/ui/dragAndDrop.mjs'
-import { escapeHtml } from '../core/domUtils.mjs'
 /**
  * 消息编辑/反馈/删除动画时长常量。
  */
@@ -129,7 +129,7 @@ export async function editAreaInnerHtml(inner) {
  * @returns {Promise<string>} 频道消息编辑区 HTML
  */
 export async function editChannelBodyHtml(originalText, eventId) {
-	return renderTemplateAsHtmlString('hub/messages/edit_channel_body', { originalText, eventId, escapeHtml })
+	return renderTemplateAsHtmlString('hub/messages/edit_channel_body', { originalText, eventId })
 }
 
 /**

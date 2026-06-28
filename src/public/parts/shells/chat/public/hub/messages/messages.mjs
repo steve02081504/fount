@@ -369,6 +369,11 @@ export async function loadMessages() {
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 	const container = getMessagesContainer()
 	const channel = hubStore.currentState?.channels?.[hubStore.currentChannelId]
+	if (!hubStore.currentChannelId || !channel) {
+		destroyChannelVirtualList()
+		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
+		return
+	}
 	await mountTemplate(container, 'hub/empty/loading', {})
 	destroyChannelVirtualList()
 	if (await loadNonTextChannel(container, channel)) return

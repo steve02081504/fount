@@ -2043,6 +2043,7 @@
 			"voteTotal": "共 ${total} 票",
 			"voteCount": "${count} 票 · ${pct}%",
 			"loadGroupFailed": "加载群组失败：${error}",
+			"groupJoinRequired": "无法打开该群组，请使用邀请链接或邀请码加入",
 			"sendFailed": "发送失败：${error}",
 			"sendFailedPending": "发送失败",
 			"retrySend": "重试",

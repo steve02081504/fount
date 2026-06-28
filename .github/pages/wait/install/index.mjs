@@ -12,6 +12,7 @@ import {
 } from '../../scripts/themeViewTransition.mjs'
 import { showToastI18n } from '../../scripts/toast.mjs'
 import { viewTransition } from '../../scripts/viewTransition.mjs'
+import { escapeHtml } from '../../scripts/escapeHtml.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
@@ -440,17 +441,6 @@ async function renderTestimonial(slideEl, item) {
 		authorName: item.name || geti18n('installer_wait_screen.testimonials.anonymous')
 	})
 	slideEl.replaceChildren(...fragment.childNodes)
-}
-
-/**
- * 转义 HTML 特殊字符，避免注入。
- * @param {string} s - 原始字符串。
- * @returns {string} 转义后的 HTML 字符串。
- */
-function escapeHtml(s) {
-	const div = document.createElement('div')
-	div.textContent = s
-	return div.innerHTML
 }
 
 /**

@@ -12,9 +12,9 @@ import {
 	removeChatBookmark,
 	unpinMessage,
 } from '../src/api/groupApi.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'
-import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { selectChannel, selectGroup } from './groupNav.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
@@ -152,10 +152,10 @@ export async function refreshPinsBookmarks() {
 		if (eventId && channelId && targetGroup) {
 			const preview = await resolvePinMessagePreview(targetGroup, channelId, eventId)
 			if (preview?.i18n) return { text: '', i18n: true }
-			return { text: compactSidebarText(preview?.text || eventId.slice(0, 12)), i18n: false }
+			if (preview?.text?.trim()) return { text: compactSidebarText(preview.text), i18n: false }
 		}
-		if (bookmark.title) return { text: compactSidebarText(bookmark.title), i18n: false }
-		if (eventId) return { text: compactSidebarText(eventId), i18n: false }
+		if (bookmark.title?.trim()) return { text: compactSidebarText(bookmark.title), i18n: false }
+		if (eventId) return { text: compactSidebarText(eventId.slice(0, 12)), i18n: false }
 		return { text: '', i18n: true }
 	}))
 
@@ -175,7 +175,7 @@ export async function refreshPinsBookmarks() {
 				eventId ? ` data-bookmark-event="${escapeHtml(eventId)}"` : '',
 				targetGroup ? ` data-bookmark-group="${escapeHtml(targetGroup)}"` : '',
 			].join('')
-			const line = await renderTemplate('hub/bookmarks/row_button', { title, titleI18nAttr, meta, dataAttrs, escapeHtml })
+			const line = await renderTemplate('hub/bookmarks/row_button', { title, titleI18nAttr, meta, dataAttrs })
 			line.querySelector('.hub-bookmark-row')?.addEventListener('click', async () => {
 				if (targetGroup && targetGroup !== hubStore.currentGroupId)
 					await selectGroup(targetGroup, channelId || undefined)
@@ -193,7 +193,7 @@ export async function refreshPinsBookmarks() {
 		else {
 			const href = bookmark.href?.trim()
 				|| `#group:${encodeURIComponent(targetGroup || hubStore.currentGroupId)}:${encodeURIComponent(hubStore.currentChannelId || 'default')}`
-			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta, escapeHtml })
+			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta })
 			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
 				clickEvent.stopPropagation()
 				clickEvent.preventDefault()

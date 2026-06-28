@@ -1,4 +1,5 @@
 import { createHighlighter } from 'https://esm.sh/shiki'
+import { escapeHtml } from '/scripts/escapeHtml.mjs'
 
 /** 与 {@link module:markdownConvertor} 同源主题。 */
 const SHIKI_THEMES = { light: 'github-light', dark: 'github-dark-dimmed' }
@@ -15,18 +16,6 @@ createHighlighter({
 	highlighter = h
 	resyncHighlight?.()
 }).catch(() => { /* 降级为 escapeHtml */ })
-
-/**
- * HTML 转义。
- * @param {string} text - 原始文本。
- * @returns {string} 转义后文本。
- */
-function escapeHtml(text) {
-	return String(text)
-		.replaceAll('&', '&amp;')
-		.replaceAll('<', '&lt;')
-		.replaceAll('>', '&gt;')
-}
 
 /**
  * 单行 JavaScript 高亮（Shiki `structure: 'inline'`，适配 textarea 叠层）。

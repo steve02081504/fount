@@ -5,8 +5,8 @@ import { openDialogFromTemplate } from '../../../../scripts/dialog.mjs'
 import { renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/api/discoveryApi.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
 import { selectGroup } from './groupNav.mjs'
 
 /**

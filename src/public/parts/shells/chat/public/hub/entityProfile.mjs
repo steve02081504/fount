@@ -7,9 +7,10 @@
  */
 import { renderMarkdown } from '../../../../scripts/markdown.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
 import { mountAvatarCover } from './core/avatarCover.mjs'
-import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { isLocalWritableEntityHash } from './entityResolve.mjs'
 import {

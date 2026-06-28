@@ -11,17 +11,10 @@ import {
 	fetchEntityProfileApi,
 } from '../src/entityProfileApi.mjs'
 import { isEntityHash128 } from '../src/lib/entityHash.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
 import { mountAvatarCover } from './core/avatarCover.mjs'
-import {
-	authorDisplayLabel,
-	authorPresentationKeys,
-	avatarColor,
-	avatarInitial,
-	escapeHtml,
-	resolveEntityHashForAuthorKey,
-	warmCharEntityHashCache,
-} from './core/domUtils.mjs'
+import { authorDisplayLabel, authorPresentationKeys, avatarColor, avatarInitial, resolveEntityHashForAuthorKey, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { dismissProfilePopup, resolveEntityFromAnchor, showProfilePopup } from './profilePopup.mjs'
 

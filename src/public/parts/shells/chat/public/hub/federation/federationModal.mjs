@@ -17,8 +17,8 @@ import {
 	rotateFederationRoomSecret,
 } from '../../src/api/groupApi.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 import { isHex64, normalizeHex64, PUB_KEY_HEX_64 } from '../../src/lib/pubKeyHex.mjs'
-import { escapeHtml } from '../core/domUtils.mjs'
 import { closeOverlayModal, openOverlayModal } from '../core/overlayModal.mjs'
 import { openDiscoveryPanel } from '../discoveryPanel.mjs'
 
@@ -245,7 +245,6 @@ export async function openFederationSettingsModal(getGroupId) {
 		const root = await renderTemplate('hub/federation/modal', {
 			mode: 'error',
 			errorMessage: error.message,
-			escapeHtml,
 		})
 		openOverlayModal({
 			titleKey: 'chat.hub.federationTooltip',
@@ -271,7 +270,6 @@ export async function openFederationSettingsModal(getGroupId) {
 		relayText,
 		batteryChecked: fedSettings.batterySaver ? 'checked' : '',
 		showRotateRoomSecret,
-		escapeHtml,
 	})
 
 	openOverlayModal({

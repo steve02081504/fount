@@ -21,6 +21,7 @@ import {
 	updateChannelListItems,
 	createChannel,
 } from '../src/api/groupApi.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 import { memberDisplaysAsAdmin } from '../src/memberDisplay.mjs'
 import { resolvePowForJoin } from '../src/powJoin.mjs'
 import { handleUIError, toError } from '../src/ui/errors.mjs'
@@ -33,7 +34,7 @@ import {
 } from './banners.mjs'
 import { showChannelContextMenu } from './channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from './channels.mjs'
-import { authorDisplayLabel, avatarColor, avatarInitial, escapeHtml, warmCharEntityHashCache } from './core/domUtils.mjs'
+import { authorDisplayLabel, avatarColor, avatarInitial, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
 import { consumePendingJoin, inviteCodeFromUrl, updateFriendsHash, updateHash } from './core/urlHash.mjs'
 import { resetFilesDrawerWire } from './files.mjs'
@@ -331,17 +332,29 @@ async function syncGroupFromNetwork(groupId) {
  */
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
+	const channel = hubStore.currentState?.channels?.[channelId]
+	if (!channel) {
+		setHubState('currentChannelId', null)
+		updateHash(hubStore.currentGroupId, null)
+		disableComposer('chat.hub.noChannel')
+		await renderHubChannelSidebar(hubStore.currentState)
+		const { mountTemplate } = await import('../../../../scripts/template.mjs')
+		await mountTemplate(document.getElementById('hub-messages'), 'hub/nav/side_muted', {
+			i18nKey: 'chat.hub.noChannels',
+		})
+		updateStatusBanners()
+		return
+	}
 	setHubState('currentChannelId', channelId)
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
 	updateHash(hubStore.currentGroupId, channelId)
 	void warmCharEntityHashCache()
 	await renderHubChannelSidebar(hubStore.currentState)
-	const channel = hubStore.currentState?.channels?.[channelId]
 	if (hubStore.currentGroupId)
 		rebindFederationRoomQuiet(hubStore.currentGroupId, { channelId })
-	const channelType = channel?.type || 'text'
-	document.getElementById('hub-channel-name-display').textContent = channel?.name || channelId
+	const channelType = channel.type || 'text'
+	document.getElementById('hub-channel-name-display').textContent = channel.name || channelId
 	const headerIcon = document.querySelector('.hub-main-header-icon')
 	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
 
@@ -507,6 +520,39 @@ async function refreshMemberDigestBar(state) {
 }
 
 /**
+ * 是否允许在导航时自动入群（需有本地 replica、邀请码或联邦 bootstrap）。
+ * @param {object} state 群状态
+ * @param {{ inviteCode?: string | null, fedBootstrap?: object | null }} pendingJoin session 待消费邀请
+ * @param {string | null} inviteCode URL 或 pending 邀请码
+ * @returns {boolean} 是否应自动尝试入群
+ */
+function canAutoJoinGroup(state, pendingJoin, inviteCode) {
+	if (state.isMember) return false
+	if (state.hasLocalReplica) return true
+	if (inviteCode) return true
+	if (pendingJoin.fedBootstrap) return true
+	return false
+}
+
+/**
+ * 渲染无法入群时的 Hub 主区空态。
+ * @returns {Promise<void>}
+ */
+async function showGroupJoinRequiredState() {
+	const { disableComposer } = await import('./messages/composerController.mjs')
+	const { mountTemplate } = await import('../../../../scripts/template.mjs')
+	setHubState('currentChannelId', null)
+	updateHash(hubStore.currentGroupId, null)
+	disableComposer('chat.hub.noChannel')
+	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
+		i18nKey: 'chat.hub.groupJoinRequired',
+		errorMessage: '',
+	})
+	setPinsBookmarksWrapVisible(false)
+	updateStatusBanners()
+}
+
+/**
  * 选中群组：入群、同步、渲染频道/成员并进入默认频道。
  * @param {string} groupId 群组 ID
  * @param {string | null} [presetChannelId] URL 或深链指定的频道
@@ -528,6 +574,21 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		if (!state.isMember) {
 			const pendingJoin = consumePendingJoin(groupId)
 			const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
+			if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
+				setHubState('currentState', state)
+				hubStore.currentMode = 'groups'
+				document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
+					el.classList.toggle('mode-active', el.dataset.mode === 'groups')
+				})
+				const groupNameEl = document.getElementById('hub-group-name-display')
+				groupNameEl.textContent = ''
+				groupNameEl.dataset.i18n = 'chat.hub.groupTag'
+				await renderChannelList(state)
+				await renderMemberList(state)
+				await renderGroupInfoCard(state)
+				await showGroupJoinRequiredState()
+				return
+			}
 			const pow = await resolvePowForJoin(groupId, state, hubStore.nodeHash || '')
 			await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 			state = await getGroupState(groupId)
@@ -588,7 +649,6 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.loadGroupFailed',
 			errorMessage: err.message,
-			escapeHtml,
 		})
 	}
 }

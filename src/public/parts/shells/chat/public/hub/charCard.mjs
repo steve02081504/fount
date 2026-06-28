@@ -10,8 +10,9 @@ import {
 	renderTemplateAsHtmlString,
 	usingTemplates,
 } from '../../../../scripts/template.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
-import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import {
 	loadEntityProfile,

@@ -2,16 +2,9 @@
  * 共享 emoji picker：消费 registries.emoji 提供商（停靠 / 浮动两种模式）。
  */
 import { importRegistryModules } from './registries.mjs'
+import { escapeHtml } from './escapeHtml.mjs'
 
 const GROUP_EMOJI_LONG_PRESS_MS = 500
-
-/**
- * @param {string} s 原始文本
- * @returns {string} HTML 转义结果
- */
-function escapeHtml(s) {
-	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
-}
 
 /**
  * @param {object} [ctx] picker 上下文

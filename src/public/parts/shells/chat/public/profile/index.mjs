@@ -13,9 +13,9 @@ import {
 } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToastI18n } from '../../../scripts/toast.mjs'
-import { escapeHtml } from '../hub/core/domUtils.mjs'
 import { profileDescriptionText } from '../hub/entityProfile.mjs'
 import { openHubProfileEdit } from '../hub/profileEdit.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
 import { initProfileFederationSettings } from './federationSettingsPanel.mjs'
 import { getProfile } from './src/endpoints.mjs'
@@ -207,7 +207,6 @@ async function renderProfileLinks(links) {
 	const container = document.getElementById('social-links')
 	await mountTemplate(container, 'profile/social_links_shell', {
 		links: Array.isArray(links) ? links : [],
-		escapeHtml,
 	})
 }
 
@@ -245,7 +244,6 @@ async function loadUserGroups() {
 				descriptionI18nAttr: description ? '' : ' data-i18n="profile.groupDescriptionEmpty"',
 				members: String(group.memberCount || 0),
 				channels: String(group.channelCount || 0),
-				escapeHtml,
 			}))
 		}
 
@@ -312,7 +310,6 @@ async function loadUserChannels() {
 				groupName: channel.groupName,
 				privateSpan: channel.isPrivate ? '<span data-i18n="profile.channelPrivate"></span>' : '',
 				name: channel.name,
-				escapeHtml,
 			}))
 
 	}

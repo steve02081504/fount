@@ -10,7 +10,6 @@ import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/t
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { getGroupChatConfig, groupRequest } from '../src/api/groupApi.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
 import { showOverlayNotice } from './core/overlayModal.mjs'
 import { hubStore } from './core/state.mjs'
 
@@ -22,7 +21,6 @@ import { hubStore } from './core/state.mjs'
 async function buildSelectOptions(names, selected) {
 	return renderTemplateAsHtmlString('hub/config/select_options', {
 		options: names.map(name => ({ value: name, label: name, selected: name === selected })),
-		escapeHtml,
 	})
 }
 
@@ -75,7 +73,6 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 			personaOptions: await buildSelectOptions(personas, personaname),
 			worldOptions: await buildSelectOptions(worlds, worldname),
 			availablePlugins,
-			escapeHtml,
 		})
 
 		document.getElementById('hub-character-chat-persona')?.addEventListener('change', async (changeEvent) => {
@@ -184,6 +181,6 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 		})
 	}
 	catch (err) {
-		await mountTemplate(host, 'hub/config/panel_host', { phase: 'error', errorMessage: err.message, escapeHtml })
+		await mountTemplate(host, 'hub/config/panel_host', { phase: 'error', errorMessage: err.message })
 	}
 }

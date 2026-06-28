@@ -13,7 +13,8 @@ import {
 	usingTemplates,
 } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
-import { authorDisplayLabel, escapeHtml } from '../hub/core/domUtils.mjs'
+import { authorDisplayLabel } from '../hub/core/domUtils.mjs'
+
 
 import {
 	createGroupInvite,
@@ -28,6 +29,7 @@ import {
 	resolveViewerSettingsCapabilities,
 	viewerCanManageMessages,
 } from './groupViewerPermissions.mjs'
+import { escapeHtml } from './lib/escapeHtml.mjs'
 import { memberDisplaysAsAdmin } from './memberDisplay.mjs'
 
 let currentGroupId = null
@@ -418,13 +420,11 @@ async function renderGroupSettings() {
 
 	await appendTemplate(container, 'group/settings/basic_panel_overview', {
 		currentState,
-		escapeHtml,
 	})
 
 	if (settingsCaps.showGovernancePanel) {
 		await appendTemplate(container, 'group/settings/basic_panel', {
 			currentState,
-			escapeHtml,
 			showFullSettings: settingsCaps.canEditGroupSettings,
 			showDeleteGroup: settingsCaps.canDeleteGroup,
 			showKeyRotate: settingsCaps.canKeyRotate,
@@ -569,7 +569,6 @@ async function renderChannelPermissionsPanel() {
 		selectedChannelId: selectedChannelPermsId,
 		rolePanels,
 		addableRoles,
-		escapeHtml,
 	})
 
 	container.addEventListener('click', async event => {
@@ -657,7 +656,6 @@ async function renderPermissionSettings() {
 	await mountTemplate(container, 'group/settings/permissions_panel', {
 		currentState,
 		allPermissions: ALL_PERMISSIONS,
-		escapeHtml,
 	})
 
 	document.getElementById('group-settings-create-role-button').addEventListener('click', showCreateRoleModal, { signal })

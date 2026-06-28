@@ -12,9 +12,10 @@ import {
 } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { createVirtualList } from '../../../../scripts/virtualList.mjs'
-import { escapeHtml } from '../hub/core/domUtils.mjs'
 
 import { fetchGroupAuditLog } from './api/groupApi.mjs'
+import { escapeHtml } from './lib/escapeHtml.mjs'
+
 
 /** @type {string | null} */
 let auditGroupId = null

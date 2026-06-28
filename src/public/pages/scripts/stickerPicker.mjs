@@ -2,14 +2,7 @@
  * 共享 sticker picker：消费 registries.sticker 提供商（停靠 / 浮动两种模式）。
  */
 import { importRegistryModules } from './registries.mjs'
-
-/**
- * @param {string} s 原始文本
- * @returns {string} HTML 转义结果
- */
-function escapeHtml(s) {
-	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
-}
+import { escapeHtml } from './escapeHtml.mjs'
 
 /**
  * @param {object} [ctx] picker 上下文

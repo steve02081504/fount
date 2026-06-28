@@ -31,6 +31,18 @@ import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 const MEMBERS_PAGE_SIZE = 500
 
 /**
+ * 本地 replica 是否已有创世/bootstrap 事件物化结果（频道、群名或角色）。
+ * @param {object} state 物化群状态
+ * @returns {boolean} 是否已有 bootstrap 物化结果
+ */
+function groupHasBootstrapGenesis(state) {
+	if (Object.keys(state.channels || {}).length > 0) return true
+	if (String(state.groupMeta?.name || '').trim()) return true
+	if (Object.keys(state.roles || {}).length > 0) return true
+	return false
+}
+
+/**
  * 按用户 locale 生成群邀请剪贴板全文（含 protocol 包装深链）。
  * @param {string} username 签发者
  * @param {string} groupId 群 ID
@@ -150,6 +162,11 @@ export function registerMembershipRoutes(router, authenticate) {
 			if (!accepted)
 				return res.status(400).json({ error: 'invalid or expired inviteCode' })
 		}
+		const hasJoinAuthorization = Boolean(inviteCode)
+			|| Boolean(dmNonce)
+			|| Boolean(String(mqttRoomSecret || '').trim())
+		if (!groupHasBootstrapGenesis(state) && !hasJoinAuthorization)
+			return res.status(404).json({ error: 'Group not found; join with invite or federation bootstrap' })
 		const content = { inviteCode, powSolution: pow, homeNodeHash: getLocalNodeHash() }
 		if (dmNonce) {
 			content.dmIntroNonce = dmNonce

@@ -6,8 +6,7 @@
  * 【关联】../../../../../scripts/template、../core/domUtils。
  */
 import { renderTemplate } from '../../../../../scripts/template.mjs'
-import { escapeHtml } from '../core/domUtils.mjs'
-
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 /** @type {object | null} */
 let channelActionsCtx = null
 

@@ -6,8 +6,8 @@
  */
 import { mountTemplate } from '../../../scripts/template.mjs'
 import { showToastI18n } from '../../../scripts/toast.mjs'
-import { escapeHtml } from '../hub/core/domUtils.mjs'
 import { getFederationSettings, putFederationSettings } from '../src/api/federationSettings.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
 /**
  * 在个人资料页挂载节点级联邦设置面板。

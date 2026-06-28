@@ -6,8 +6,6 @@
  * 【关联】groupWsClient.mjs、groupCore(getStreamingChannelAuth)；Hub 频道 UI。
  */
 import { renderTemplate } from '../../../../scripts/template.mjs'
-import { escapeHtml } from '../../hub/core/domUtils.mjs'
-
 /**
  * 流媒体频道：多方 WebRTC 网状拓扑 + TURN 支持
  *
@@ -70,7 +68,6 @@ async function getOrCreatePeerTile(peerId, avGrid) {
 	tile = await renderTemplate('hub/streaming/webrtc_tile', {
 		peerId,
 		label: peerId.slice(0, 8),
-		escapeHtml,
 	})
 	const video = tile.querySelector('video')
 	if (!(video instanceof HTMLVideoElement)) return null

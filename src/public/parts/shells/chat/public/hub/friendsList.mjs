@@ -8,8 +8,9 @@
 import { confirmI18n } from '../../../../scripts/i18n.mjs'
 import { mountTemplate } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
-import { avatarColor, avatarInitial, escapeHtml } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
@@ -220,7 +221,6 @@ export async function renderFriendsColumn(friends) {
 		count: String(friends.length),
 		countI18nKey: 'chat.hub.friendsCount',
 		items: rows,
-		escapeHtml,
 	})
 	container.querySelectorAll('.hub-char-list-item').forEach((el) => {
 		const { groupId } = el.dataset

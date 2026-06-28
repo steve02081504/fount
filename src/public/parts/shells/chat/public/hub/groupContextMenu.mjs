@@ -18,7 +18,6 @@ import { createGroupInvite, groupRequest, leaveGroups } from '../src/api/groupAp
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { navigateToGroupSettings, selectGroup } from './groupNav.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
@@ -301,7 +300,7 @@ async function showAddCharDialog(groupId) {
 		onReady: async dialog => {
 			const select = dialog.querySelector('#hub-add-char-select')
 			if (select instanceof HTMLSelectElement)
-				select.innerHTML = await renderTemplateAsHtmlString('hub/modals/char_select_options', { chars, escapeHtml })
+				select.innerHTML = await renderTemplateAsHtmlString('hub/modals/char_select_options', { chars })
 			/** @returns {void} */
 			const closeModal = () => dialog.close()
 			dialog.querySelector('.hub-add-char-cancel')?.addEventListener('click', closeModal)

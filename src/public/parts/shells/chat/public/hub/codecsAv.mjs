@@ -10,8 +10,6 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { buildAvRelayWebSocketUrl } from '../src/wsUrl.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
-
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
  *
@@ -195,7 +193,6 @@ export async function joinCodecsAvRoom(opts) {
 			const tile = await renderTemplate('hub/streaming/av_tile', {
 				peerId: senderIdHex,
 				label: `…${senderIdHex.slice(-8)}`,
-				escapeHtml,
 			})
 			tile.querySelector('.hub-streaming-av-canvas-host')?.appendChild(canvas)
 			avGrid.appendChild(tile)

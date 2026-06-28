@@ -128,9 +128,6 @@ export function authorPresentationKeys(authorKey) {
 	return { displayName, profileKey }
 }
 
-/** @deprecated 请从 `../../src/lib/escapeHtml.mjs` 导入；此处保留兼容重导出。 */
-export { escapeHtml }
-
 /** 头像调色板（daisyUI 语义色 CSS 变量名） */
 const AVATAR_COLOR_VARS = [
 	'--color-primary', '--color-error', '--color-warning', '--color-success',

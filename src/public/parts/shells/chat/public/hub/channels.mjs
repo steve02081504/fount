@@ -10,8 +10,8 @@ import {
 	renderTemplateAsHtmlString,
 	renderTemplateNoScriptActivation,
 } from '../../../../scripts/template.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
 import {
 	getHubAvSession,
 	joinHubAvSession,
@@ -97,7 +97,7 @@ async function renderListItems(container, channelId, channel, onOpenChannel, ite
 		})
 		return
 	}
-	await mountTemplate(container, 'hub/channels/list_cards', { items, escapeHtml })
+	await mountTemplate(container, 'hub/channels/list_cards', { items })
 	container.querySelectorAll('.hub-list-jump').forEach(jumpButton => {
 		jumpButton.addEventListener('click', () => {
 			const targetChannelId = jumpButton.getAttribute('data-target-channel')
@@ -208,7 +208,6 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
 			mode: 'iframe',
 			src,
 			streamError: opts.streamError ? escapeHtml(opts.streamError) : '',
-			escapeHtml,
 		})
 		container.querySelector('.hub-stream-refresh-button')?.addEventListener('click', () => {
 			void opts.onRefreshAuth?.()
@@ -227,7 +226,6 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
 		src: '',
 		streamError: opts.streamError ? escapeHtml(opts.streamError) : '',
 		emptyI18nKey,
-		escapeHtml,
 	})
 }
 

@@ -15,7 +15,6 @@ import { isHex64 } from '../src/lib/pubKeyHex.mjs'
 import { handleUIError, toError } from '../src/ui/errors.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
-import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
@@ -276,7 +275,6 @@ export async function enterFriendChat(opts = {}) {
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.createChatFailed',
 			errorMessage: err.message,
-			escapeHtml,
 		})
 	}
 	finally {

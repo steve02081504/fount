@@ -12,7 +12,6 @@ import {
 } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { createGroup, getGroupList } from '../api/groupCore.mjs'
-import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from '../pendingInviteStorage.mjs'
 
 /** 按需注入群组 UI 样式表（幂等）。 */
@@ -37,7 +36,7 @@ export async function renderGroupList(container) {
 	try {
 		const groups = await getGroupList()
 		await mountTemplate(container, 'group/list_view', groups.length
-			? { view: 'list', groups, escapeHtml }
+			? { view: 'list', groups }
 			: { view: 'empty' })
 
 		if (!container.dataset.groupListWired) {
@@ -57,7 +56,6 @@ export async function renderGroupList(container) {
 		await mountTemplate(container, 'group/list_view', {
 			view: 'error',
 			errorMessage: error.message,
-			escapeHtml,
 		})
 	}
 }

@@ -14,7 +14,6 @@ import { buildCharFriendBinding } from '../src/friendBinding.mjs'
 import { initCharCard } from './charCard.mjs'
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { resetChatGestures } from './chatGestures.mjs'
-import { escapeHtml } from './core/domUtils.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
 import { hubStore } from './core/state.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
@@ -137,7 +136,6 @@ export async function openGroupSettingsModal(groupId) {
 		groupId,
 		logLength: hubStore.channelMessages.length,
 		friendBound,
-		escapeHtml,
 	})
 	openOverlayModal({
 		titleKey: 'chat.hub.charChatSettings',

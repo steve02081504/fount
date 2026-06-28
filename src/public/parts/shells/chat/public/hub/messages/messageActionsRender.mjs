@@ -26,7 +26,7 @@ import {
 	hubActionTimelinePrevIcon,
 	hubActionUnpinIcon,
 } from '../../src/lib/emojiSvg.mjs'
-import { escapeHtml } from '../core/domUtils.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 
 import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
 import { isChannelMessageGenerating } from './messageRender.mjs'

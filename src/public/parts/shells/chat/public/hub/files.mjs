@@ -10,8 +10,6 @@ import { mountTemplate, renderTemplate } from '../../../../scripts/template.mjs'
 import { showToastI18n } from '../../../../scripts/toast.mjs'
 import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupApi.mjs'
 
-import { escapeHtml } from './core/domUtils.mjs'
-
 /** @type {string | null} */
 let selectedFolderId = null
 
@@ -63,7 +61,6 @@ export async function refreshFilesDrawer(drawer, handlers = {}) {
 		folderSelect.appendChild(await renderTemplate('hub/files/folder_option', {
 			folderEntries: Object.entries(folders),
 			selectedFolderId: selectedFolderId || '',
-			escapeHtml,
 		}))
 		folderSelect.value = selectedFolderId || ''
 	}
@@ -75,7 +72,6 @@ export async function refreshFilesDrawer(drawer, handlers = {}) {
 	await mountTemplate(host, 'hub/files/drawer', {
 		folders,
 		filteredFiles,
-		escapeHtml,
 	})
 
 	host.querySelectorAll('.hub-files-folder-open').forEach(openButton => {

@@ -7,8 +7,6 @@
  */
 import { svgInliner } from '/scripts/svgInliner.mjs'
 import { renderTemplate } from '/scripts/template.mjs'
-import { escapeHtml } from '../hub/core/domUtils.mjs'
-
 import { entityFileUrl, fetchEvfsFile } from './evfs.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
@@ -109,7 +107,6 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		const previewImg = await renderTemplate('hub/composer/preview_img', {
 			src: base64Data,
 			alt: file.name,
-			escapeHtml,
 		})
 		previewImg.addEventListener('click', () => {
 			openModal(base64Data, 'image')
@@ -133,7 +130,6 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	else {
 		const preview = await renderTemplate('hub/composer/preview_file_icon', {
 			alt: file.name,
-			escapeHtml,
 		})
 		previewContainer.appendChild(preview)
 	}

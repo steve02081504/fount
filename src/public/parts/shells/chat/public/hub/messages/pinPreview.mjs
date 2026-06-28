@@ -5,7 +5,7 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../src/api/groupApi、../core/domUtils、../core/state、messageRender
  */
-import { escapeHtml } from '../core/domUtils.mjs'
+import { escapeHtml } from '../../src/lib/escapeHtml.mjs'
 import { hubStore } from '../core/state.mjs'
 
 import { fetchRowsForMessageEvent } from './channelMessageStore.mjs'

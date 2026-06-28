@@ -7,10 +7,10 @@
  */
 import { sha256HexFromBlob } from '/scripts/digest.mjs'
 import { renderTemplate, usingTemplates } from '../../../../scripts/template.mjs'
-import { escapeHtml } from '../../hub/core/domUtils.mjs'
 import { entityFileUrl } from '../evfs.mjs'
 import { fetchGroupFileAsBlobUrl } from '../groupFileBlob.mjs'
 import { convergentChunkHashes } from '../lib/convergentChunk.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { arrayBufferToBase64, FEDERATION_CHUNK_MAX_BYTES } from '../lib/federationUpload.mjs'
 import { groupEntityHash } from '../lib/groupEntityHash.mjs'
 
@@ -256,7 +256,6 @@ export function createFileHandlers(hub) {
 			isImage,
 			fileName: escapeHtml(file.name),
 			fileNameShort: escapeHtml(file.name.slice(0, 10)),
-			escapeHtml,
 		})
 
 		if (isImage) {

@@ -15,6 +15,7 @@ import {
 } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToastI18n } from '../../../scripts/toast.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 let currentEntityHash = null
 let allPacks = []
 let userCollection = null
@@ -169,7 +170,6 @@ async function loadUserPacks() {
 	const userPacks = allPacks.filter(pack => pack.authorEntityHash === currentEntityHash)
 	select.innerHTML = await renderTemplateAsHtmlString('stickers/pack_select_options', {
 		packs: userPacks.map(pack => ({ packId: pack.packId, name: pack.name })),
-		escapeHtml,
 	})
 }
 
@@ -209,7 +209,6 @@ async function renderPacks(packs) {
 			stickerCount: pack.stickers.length,
 			isInstalled: !!isInstalled,
 			isMine: pack.authorEntityHash === currentEntityHash,
-			escapeHtml,
 		}))
 
 		card.addEventListener('click', () => showPackDetail(pack.packId))
@@ -279,7 +278,6 @@ async function renderPackDetail(pack) {
 			stickerDiv.appendChild(await renderTemplate('stickers/detail_sticker', {
 				url: sticker.url,
 				name: sticker.name,
-				escapeHtml,
 			}))
 			const favoriteButton = document.createElement('button')
 			favoriteButton.type = 'button'
@@ -610,7 +608,6 @@ async function renderFavoriteStickers() {
 		card.appendChild(await renderTemplate('stickers/detail_sticker', {
 			url: sticker.url,
 			name: sticker.name,
-			escapeHtml,
 		}))
 		const favoriteButton = document.createElement('button')
 		favoriteButton.type = 'button'
@@ -623,19 +620,6 @@ async function renderFavoriteStickers() {
 		card.appendChild(favoriteButton)
 		container.appendChild(card)
 	}
-}
-
-/**
- * 转义HTML
- * @param {string} text - 文本
- * @returns {string} 可安全插入 innerHTML 的转义字符串
- */
-function escapeHtml(text) {
-	return String(text ?? '')
-		.replaceAll('&', '&amp;')
-		.replaceAll('<', '&lt;')
-		.replaceAll('>', '&gt;')
-		.replaceAll('"', '&quot;')
 }
 
 setupEventListeners()

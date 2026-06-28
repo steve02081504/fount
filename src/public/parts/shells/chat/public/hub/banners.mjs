@@ -6,10 +6,10 @@
  * 【关联】../../../../scripts/template、../src/lib/pubKeyHex、core/domUtils、core/state
  */
 import { renderTemplateAsHtmlString } from '../../../../scripts/template.mjs'
+import { escapeHtml } from '../src/lib/escapeHtml.mjs'
 import { isHex64 } from '../src/lib/pubKeyHex.mjs'
 
 import { refreshBoundBanners } from './core/bindings.mjs'
-import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 
 /**
