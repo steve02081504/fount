@@ -20,7 +20,7 @@ import { ensureFederationRoom, invalidateFederationRoomCache } from '../federati
 import { buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
 import { initGroupFileMasterKey, getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { buildUserFriendBinding } from '../lib/friendBinding.mjs'
-import { consumeGroupInviteTicket } from '../lib/inviteTickets.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { computeDmRoomLabelFromPubKeys } from './labels.mjs'
@@ -209,37 +209,54 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 }
 
 /**
- * §16 入群深链：消费邀请码并 `member_join`。
- * @param {string} username 用户
+ * 统一入群核心：建联邦房间 → 落 `member_join` → 后台 catch-up 拉取快照/补洞。
+ * 被 HTTP 入群路由与 shell `join` action 共用；邀请码不在加入者侧校验，只随 content 上链，由 owner 入站时按 joinPolicy 验签。
+ * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
- * @param {string} [inviteCode] 邀请码
- * @param {{ mqttAppId?: string, mqttRoomSecret?: string }} [fedBootstrap] 首次联邦 MQTT 口令
+ * @param {object} [opts] 入群参数
+ * @param {string} [opts.inviteCode] 邀请码
+ * @param {object} [opts.powSolution] 入群 PoW 解
+ * @param {string} [opts.introducerPubKeyHash] 邀请人成员 pubKeyHash
+ * @param {string} [opts.dmIntroNonce] DM intro nonce
+ * @param {string} [opts.dmIntroSignatureHex] DM intro 签名 hex
+ * @param {number} [opts.reputationEdge] 入群信誉边 [-1,1]
+ * @param {{ mqttRoomSecret?: string, mqttAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [opts.bootstrap] 首次联邦 bootstrap
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
  */
-export async function orchestrateJoinGroup(username, groupId, inviteCode = '', fedBootstrap = {}) {
+export async function performMemberJoin(username, groupId, opts = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
 
-	if (fedBootstrap.mqttRoomSecret)
-		setFederationBootstrap(username, groupId, fedBootstrap)
-
-	const inviteCodeTrimmed = inviteCode.trim()
-	if (inviteCodeTrimmed && !await consumeGroupInviteTicket(username, groupId, inviteCodeTrimmed))
-		throw new Error('invalid or expired inviteCode')
+	// 首次入群时本地尚无群 state，必须靠 mqttRoomSecret 引导联邦房间凭据才能与对端汇合。
+	if (opts.bootstrap?.mqttRoomSecret)
+		setFederationBootstrap(username, groupId, opts.bootstrap)
 
 	const { state } = await getState(username, groupId)
-	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
-		const defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
-		return { groupId, defaultChannelId }
-	}
+	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state))
+		return { groupId, defaultChannelId: state.groupSettings?.defaultChannelId || 'default' }
 
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'member_join',
-		timestamp: Date.now(),
-		content: inviteCodeTrimmed ? { inviteCode: inviteCodeTrimmed } : {},
+	const content = { homeNodeHash: getLocalNodeHash() }
+	if (opts.inviteCode?.trim()) content.inviteCode = opts.inviteCode.trim()
+	if (opts.powSolution) content.powSolution = opts.powSolution
+	const introducer = normalizePubKeyHex(opts.introducerPubKeyHash || '')
+	if (PUB_KEY_HEX_64.test(introducer)) content.introducerPubKeyHash = introducer
+	if (opts.dmIntroNonce && opts.dmIntroSignatureHex) {
+		content.dmIntroNonce = opts.dmIntroNonce
+		content.dmIntroSignatureHex = opts.dmIntroSignatureHex
+	}
+	if (Number.isFinite(opts.reputationEdge))
+		content.reputationEdge = Math.max(-1, Math.min(1, opts.reputationEdge))
+
+	// 先建联邦房间再 append，确保 member_join 能发布给对端。
+	await ensureFederationRoom(username, groupId).catch(error => {
+		console.error('performMemberJoin ensureFederationRoom:', error)
 	})
+
+	await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content })
 	const { state: afterJoin } = await getState(username, groupId)
 	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
-	const defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
+
+	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds，无需重复触发。
 	void catchUpGroupFromPeers(username, groupId).catch(console.error)
-	return { groupId, defaultChannelId }
+
+	return { groupId, defaultChannelId: afterJoin.groupSettings?.defaultChannelId || 'default' }
 }

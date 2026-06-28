@@ -10,19 +10,17 @@ import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
-import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
+import { performMemberJoin } from '../../chat/dm/index.mjs'
 import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
-import { setFederationBootstrap } from '../../chat/federation/bootstrapStore.mjs'
 import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
-import { consumeGroupInviteTicket, mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
-import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
+import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
 import { governanceChannelId } from '../access.mjs'
 
@@ -147,81 +145,40 @@ export function registerMembershipRoutes(router, authenticate) {
 			return res.status(400).json({ error: 'provide both dmIntroNonce and dmIntroSignatureHex for DM link proof or omit both' })
 		const { state } = await getState(username, groupId)
 		if (dmNonce) {
-			const dmCheck = await validateDmIntroLinkProof(
-				username,
-				state,
-				normalizePubKeyHex(introducerPubKeyHash),
-				dmNonce,
-				dmSignatureHex,
-			)
+			const dmCheck = await validateDmIntroLinkProof(username, state, normalizePubKeyHex(introducerPubKeyHash), dmNonce, dmSignatureHex)
 			if (!dmCheck.ok)
 				return res.status(400).json({ error: dmCheck.error })
 		}
-		if (inviteCode) {
-			const accepted = await consumeGroupInviteTicket(username, groupId, inviteCode)
-			if (!accepted)
-				return res.status(400).json({ error: 'invalid or expired inviteCode' })
-		}
-		const hasJoinAuthorization = Boolean(inviteCode)
-			|| Boolean(dmNonce)
-			|| Boolean(String(mqttRoomSecret || '').trim())
+		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmNonce) || Boolean(String(mqttRoomSecret || '').trim())
 		if (!groupHasBootstrapGenesis(state) && !hasJoinAuthorization)
 			return res.status(404).json({ error: 'Group not found; join with invite or federation bootstrap' })
-		const content = { inviteCode, powSolution: pow, homeNodeHash: getLocalNodeHash() }
-		if (dmNonce) {
-			content.dmIntroNonce = dmNonce
-			content.dmIntroSignatureHex = dmSignatureHex
-		}
-		if (introducerPubKeyHash) {
-			const normalizedIntroducer = normalizePubKeyHex(introducerPubKeyHash)
-			if (PUB_KEY_HEX_64.test(normalizedIntroducer)) content.introducerPubKeyHash = normalizedIntroducer
-		}
-		if (Number.isFinite(reputationEdge))
-			content.reputationEdge = Math.max(-1, Math.min(1, reputationEdge))
 
+		let bootstrap
 		if (mqttRoomSecret) {
-			const bootstrap = { mqttAppId, mqttRoomSecret }
+			bootstrap = { mqttAppId, mqttRoomSecret }
 			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
 			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
 			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()
 			if (PUB_KEY_HEX_64.test(hintedSessionTag))
 				bootstrap.dmSessionTag = hintedSessionTag
-			if (dmNonce) {
+			else if (dmNonce) {
 				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
 				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).identityPubKeyHex)
-				if (!bootstrap.dmSessionTag
-					&& PUB_KEY_HEX_64.test(introPubKeyHex)
-					&& PUB_KEY_HEX_64.test(myPubKeyHex)
-					&& introPubKeyHex !== myPubKeyHex)
+				if (PUB_KEY_HEX_64.test(introPubKeyHex) && PUB_KEY_HEX_64.test(myPubKeyHex) && introPubKeyHex !== myPubKeyHex)
 					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
 			}
-			setFederationBootstrap(username, groupId, bootstrap)
 		}
 
-		const { ensureFederationRoom } = await import('../../chat/federation/room.mjs')
-		const slot = await ensureFederationRoom(username, groupId)
-
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'member_join',
-			timestamp: Date.now(),
-			content,
+		const result = await performMemberJoin(username, groupId, {
+			inviteCode,
+			powSolution: pow,
+			introducerPubKeyHash,
+			dmIntroNonce: dmNonce,
+			dmIntroSignatureHex: dmSignatureHex,
+			reputationEdge,
+			bootstrap,
 		})
-		const { state: stateAfterJoin } = await getState(username, groupId)
-		const { maybeAssignEcdhDmAdmin } = await import('../../chat/dm/index.mjs')
-		await maybeAssignEcdhDmAdmin(username, groupId, stateAfterJoin)
-		void (async () => {
-			if (!slot) return
-			const { requestJoinSnapshotFromPeers } = await import('../../chat/federation/joinSnapshot.mjs')
-			const { catchUpGroupFromPeers } = await import('../../chat/federation/index.mjs')
-			const { syncMissingArchiveMonths } = await import('../../chat/archive/syncMonths.mjs')
-			await requestJoinSnapshotFromPeers(username, groupId, slot)
-			void catchUpGroupFromPeers(username, groupId).catch(console.error)
-			void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
-		})().catch(console.error)
-		res.status(200).json({
-			groupId,
-			defaultChannelId: stateAfterJoin.groupSettings?.defaultChannelId ?? null,
-		})
+		res.status(200).json({ groupId, defaultChannelId: result.defaultChannelId })
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/leave$/, authenticate, async (req, res) => {
