@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL:fount samskiptareglur",
-				"registerFailed": "Mistókst að skrá fount:// samskiptareglur: ${message}",
+				"registerFailed": "Mistókst að skrá `fount://` samskiptareglur: ${message}",
 				"noUrl": "Villa: Vefslóð fyrir samskiptareglu (protocol handler) ekki gefin upp."
 			},
 			"update": {
-				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt"
+				"skippingFountUpdate": "Þar sem `.noupdate` skráin er til er leturuppfærslunni sleppt"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á ${path}",
-				"startMenuShortcutCreated": "Flýtileið fyrir upphafsvalmynd búin til á ${path}",
+				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á `${path}`",
+				"startMenuShortcutCreated": "Flýtileið fyrir upphafsvalmynd búin til á `${path}`",
 				"protocolHandlerRegistered": "fount:// samskiptareglur skráður.",
 				"shortcutNotSupported": "Viðvörun: Stýrikerfið þitt (${os}) styður ekki að búa til flýtileiðir á skjáborðinu.",
 				"osacompileNotFound": "Villa: 'osacompile' fannst ekki. Ekki er hægt að búa til macOS app.",
-				"lsregisterFailed": "Viðvörun: Mistókst að nota lsregister til að skrá forrit hjá LaunchServices.",
+				"lsregisterFailed": "Viðvörun: Mistókst að nota `lsregister` til að skrá forrit hjá LaunchServices.",
 				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit."
 			},
 			"git": {
 				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
 				"fetchingAndResetting": "Sækir úr fjarlægri geymslu og endurstillir í master...",
 				"localChangesDetected": "Staðbundnar breytingar fundnar, munur verður vistaður áður en skrifað er yfir.",
-				"backupSavedTo": "Afrit af staðbundnum breytingum þínum hefur verið vistað á: ${path}",
+				"backupSavedTo": "Afrit af staðbundnum breytingum þínum hefur verið vistað á: `${path}`",
 				"updatingFromRemote": "Uppfærir úr ytri geymslu...",
 				"alreadyUpToDate": "Nú þegar það nýjasta.",
 				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Viðvörun: Engin uppstreymisgrein er stillt fyrir útibú '${branch}'. Stilling andstreymis á 'uppruna/meistara'.",
 				"dirtyWorkingDirectory": "Viðvörun: Vinnuskráin er ekki hrein. Vinsamlegast vistaðu (commit) eða geymdu (stash) breytingar þínar áður en þú uppfærir.",
 				"notInstalled": "Git er ekki uppsett, er að reyna að setja upp...",
-				"notInstalledSkippingPull": "Git er ekki uppsett, slepptu git pull",
-				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu git pull",
+				"notInstalledSkippingPull": "Git er ekki uppsett, slepptu `git pull`",
+				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu `git pull`",
 				"fetchFailed": "Mistókst að fá frá 'uppruna'.",
 				"fetchFailedSkippingUpdate": "Ekki tókst að sækja uppfærslur frá GitHub; uppfærslu sleppt.",
 				"remoteRefUnavailable": "Fjartilvísunin '${ref}' er ekki tiltæk; Git-samstillingu sleppt.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno fannst ekki, fontur er ekki hægt að keyra án Deno",
 				"installingTermux": "Setur upp Deno fyrir Termux...",
 				"installFailedFallback": "Uppsetning Deno mistókst, reynir að setja sjálfkrafa upp í slóðamöppuna á uppsprettu...",
-				"notWorking": "Af einhverjum ástæðum virkar Deno ekki, þú gætir viljað taka þátt https://discord.gg/deno til að fá stuðning",
+				"notWorking": "Af einhverjum ástæðum virkar Deno ekki, þú gætir viljað taka þátt https://github.com/denoland/deno/issues til að fá stuðning",
 				"upgradeFailed": "Viðvörun: Deno uppfærsla gæti hafa mistekist. Vinsamlegast athugaðu hvort villur séu.",
 				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux...",
 				"patchMissing": "Villa: Deno keyrsluskrá fannst ekki fyrir plástur. Ekki hægt að plástra.",
 				"patchUnsupportedArch": "Villa: Óstuddur plásturarkitektúr: ${arch}",
-				"patchFailed": "Villa: Mistókst að laga Deno executable með patchelf."
+				"patchFailed": "Villa: Mistókst að laga Deno executable með `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Villa: ekki hægt að keyra `fount` í tímabundinni möppu\n\nfount tengist kerfinu djúpt og skráir `PATH` skipunina og marga kerfishooks í `fount`. Ef keyrt í tímabundinni möppu, eftir að kerfið hreinsar tímabundnar skrár, geturðu ekki keyrt `fount remove` til að fjarlægja fount og hooks þess.\n\nFærðu fount í varanlega möppu áður en þú keyrir. Ef þú vilt aðeins prófa stutt, keyrðu `fount remove` handvirkt eftir prófið."
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa font...",
-				"autoInitDisabled": "fontur hefur verið endurræstur margoft á síðasta stutta tímabili, en sjálfvirk endurræsing hefur verið gerð óvirk vegna þess að .noautoinit skráin er til staðar. Hætta.",
+				"autoInitDisabled": "fontur hefur verið endurræstur margoft á síðasta stutta tímabili, en sjálfvirk endurræsing hefur verið gerð óvirk vegna þess að `.noautoinit` skráin er til staðar. Hætta.",
 				"restartingTooFast": "lind hefur verið endurræst oft á stuttum tíma. Þvinguð endurræsing...",
 				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
 				"initFailed": "Uppsetning leturs mistókst. Hætta."
 			},
 			"terminalKeybindings": {
 				"registered": "Lagfæring lyklaborðsviðmóts skels stillt.",
-				"wtPatchFailed": "Ekki tókst að lagfæra stillingar Windows Terminal ${path}: ${message}",
-				"wtRemoved": "fount-lyklaborðsstillingum fjarlægt úr Windows Terminal: ${path}",
-				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: ${path}"
+				"wtPatchFailed": "Ekki tókst að lagfæra stillingar Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "fount-lyklaborðsstillingum fjarlægt úr Windows Terminal: `${path}`",
+				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Fjarlægir skjáborðsflýtileið...",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
 				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
 				"removingFountFromPath": "Fjarlægir leturgerð úr PATH...",
-				"removingProtocolHandler": "Fjarlægir fount:// samskiptareglur...",
-				"protocolHandlerRemoved": "The fount:// samskiptareglur hefur verið fjarlægður.",
-				"removeProtocolHandlerFailed": "Mistókst að fjarlægja fount:// samskiptareglur: ${message}",
-				"removingFountFromGitSafeDir": "Fjarlægir leturgerð úr git safe.directory...",
+				"removingProtocolHandler": "Fjarlægir `fount://` samskiptareglur...",
+				"protocolHandlerRemoved": "The `fount://` samskiptareglur hefur verið fjarlægður.",
+				"removeProtocolHandlerFailed": "Mistókst að fjarlægja `fount://` samskiptareglur: ${message}",
+				"removingFountFromGitSafeDir": "Fjarlægir leturgerð úr `git safe.directory`...",
 				"removingInstalledSystemPackages": "Fjarlægir uppsetta kerfispakka...",
 				"uninstallingDeno": "Fjarlægir Deno...",
 				"removeDenoFailed": "Mistókst að fjarlægja Deno: ${message}",
-				"removingFountPwshFromProfile": "Fjarlægir fount-pwsh úr PowerShell prófíl...",
+				"removingFountPwshFromProfile": "Fjarlægir `fount-pwsh` úr PowerShell prófíl...",
 				"fountPwshRemovedFromProfile": "fount-pwsh hefur verið fjarlægt úr PowerShell prófílnum.",
-				"pwshProfileNotFound": "PowerShell prófíllinn fannst ekki, sleppir því að fjarlægja fount-pwsh úr prófílnum.",
-				"uninstallingFountPwsh": "Fjarlægir fount-pwsh...",
-				"uninstallFountPwshFailed": "Mistókst að fjarlægja fount-pwsh: ${message}",
+				"pwshProfileNotFound": "PowerShell prófíllinn fannst ekki, sleppir því að fjarlægja `fount-pwsh` úr prófílnum.",
+				"uninstallingFountPwsh": "Fjarlægir `fount-pwsh`...",
+				"uninstallFountPwshFailed": "Mistókst að fjarlægja `fount-pwsh`: ${message}",
 				"removingTerminalProfile": "Fjarlægir Windows Terminal Profile...",
 				"terminalProfileRemoved": "Windows Terminal Profile mappan hefur verið fjarlægð.",
 				"terminalProfileNotFound": "Windows Terminal Profile mappa fannst ekki.",

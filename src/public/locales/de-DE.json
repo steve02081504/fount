@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL:fount-Protokoll",
-				"registerFailed": "Registrierung des fount://-Protokollhandlers fehlgeschlagen: ${message}",
+				"registerFailed": "Registrierung des `fount://`-Protokollhandlers fehlgeschlagen: ${message}",
 				"noUrl": "Fehler: URL für Protokoll-Handler nicht angegeben."
 			},
 			"update": {
-				"skippingFountUpdate": "Da die Datei .noupdate vorhanden ist, wird die Aktualisierung der fount übersprungen"
+				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung der fount übersprungen"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter ${path}",
-				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter ${path}",
+				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter `${path}`",
+				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter `${path}`",
 				"protocolHandlerRegistered": "fount:// Protokollhandler registriert.",
 				"shortcutNotSupported": "Hinweis: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht.",
 				"osacompileNotFound": "Fehler: „osacompile“ nicht gefunden. Die macOS-App kann nicht erstellt werden.",
-				"lsregisterFailed": "Warnung: Die Verwendung von lsregister zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
+				"lsregisterFailed": "Warnung: Die Verwendung von `lsregister` zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
 				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden."
 			},
 			"git": {
 				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Eine neue initialisieren...",
 				"fetchingAndResetting": "Vom Remote-Repository abrufen und auf Master zurücksetzen ...",
 				"localChangesDetected": "Lokale Änderungen erkannt, Unterschiede werden vor dem Überschreiben gespeichert.",
-				"backupSavedTo": "Eine Sicherung Ihrer lokalen Änderungen wurde gespeichert unter: ${path}",
+				"backupSavedTo": "Eine Sicherung Ihrer lokalen Änderungen wurde gespeichert unter: `${path}`",
 				"updatingFromRemote": "Aktualisierung vom Remote-Repository...",
 				"alreadyUpToDate": "Schon das Neueste.",
 				"localBranchAhead": "Der lokale Zweig ist dem entfernten Zweig voraus. Keine Updates erforderlich.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno nicht gefunden, fount kann nicht ohne Deno ausgeführt werden",
 				"installingTermux": "Deno für Termux installieren...",
 				"installFailedFallback": "Die Deno-Installation ist fehlgeschlagen. Es wurde versucht, automatisch im Pfadordner des Quellcodes zu installieren.",
-				"notWorking": "Aus irgendeinem Grund funktioniert Deno nicht. Möglicherweise möchten Sie https://discord.gg/deno beitreten, um Unterstützung zu erhalten",
+				"notWorking": "Aus irgendeinem Grund funktioniert Deno nicht. Sie können unter https://github.com/denoland/deno/issues Fragen stellen, um Unterstützung zu erhalten",
 				"upgradeFailed": "Warnung: Das Deno-Upgrade ist möglicherweise fehlgeschlagen. Bitte prüfen Sie, ob Fehler vorliegen.",
 				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ...",
 				"patchMissing": "Fehler: Die ausführbare Deno-Datei wurde vor dem Patchen nicht gefunden. Kann nicht gepatcht werden.",
 				"patchUnsupportedArch": "Fehler: Nicht unterstützte Patch-Architektur: ${arch}",
-				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit patchelf gepatcht werden."
+				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit `patchelf` gepatcht werden."
+			},
+			"tempDir": {
+				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt, können Sie nach dem Löschen der temporären Dateien durch das System `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein nicht temporäres Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."
 			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Neuinitialisierung abgeschlossen. Ich versuche, die fount neu zu starten...",
-				"autoInitDisabled": "fount wurde in der letzten kurzen Zeit mehrmals neu gestartet, die automatische Neuinitialisierung wurde jedoch aufgrund des Vorhandenseins der Datei .noautoinit deaktiviert. Verlassen.",
+				"autoInitDisabled": "fount wurde in der letzten kurzen Zeit mehrmals neu gestartet, die automatische Neuinitialisierung wurde jedoch aufgrund des Vorhandenseins der Datei `.noautoinit` deaktiviert. Verlassen.",
 				"restartingTooFast": "Die fount wurde in kurzer Zeit mehrmals neu gestartet. Erzwungene Neuinitialisierung...",
 				"failedToStart": "Selbst nach automatischen Reparaturversuchen startet fount auch nach kurzer Zeit nicht. Bitte überprüfen Sie die Protokolle auf Fehler.",
 				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen."
 			},
 			"terminalKeybindings": {
 				"registered": "Terminal-Tastenkürzel-Patch konfiguriert.",
-				"wtPatchFailed": "Windows-Terminal-Einstellungen konnten nicht gepatcht werden (${path}): ${message}",
-				"wtRemoved": "fount-Tastenkürzel aus Windows-Terminal-Einstellungen entfernt: ${path}",
-				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: ${path}"
+				"wtPatchFailed": "Windows-Terminal-Einstellungen konnten nicht gepatcht werden `${path}`: ${message}",
+				"wtRemoved": "fount-Tastenkürzel aus Windows-Terminal-Einstellungen entfernt: `${path}`",
+				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Desktop-Verknüpfung wird entfernt...",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
 				"fountInstallationDirRemoved": "Das fount-Installationsverzeichnis wurde entfernt.",
 				"removingFountFromPath": "fount wird aus PATH entfernt...",
-				"removingProtocolHandler": "fount://-Protokollhandler wird entfernt...",
-				"protocolHandlerRemoved": "Der fount://-Protokollhandler wurde entfernt.",
-				"removeProtocolHandlerFailed": "fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
+				"removingProtocolHandler": "`fount://`-Protokollhandler wird entfernt...",
+				"protocolHandlerRemoved": "Der `fount://`-Protokollhandler wurde entfernt.",
+				"removeProtocolHandlerFailed": "`fount://`-Protokollhandler konnte nicht entfernt werden: ${message}",
 				"removingFountFromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
 				"removingInstalledSystemPackages": "Installierte Systempakete werden entfernt...",
 				"uninstallingDeno": "Deno deinstallieren...",
 				"removeDenoFailed": "Deno konnte nicht entfernt werden: ${message}",
-				"removingFountPwshFromProfile": "fount-pwsh aus PowerShell-Profil entfernen...",
+				"removingFountPwshFromProfile": "`fount-pwsh` aus PowerShell-Profil entfernen...",
 				"fountPwshRemovedFromProfile": "fount-pwsh wurde aus dem PowerShell-Profil entfernt.",
-				"pwshProfileNotFound": "PowerShell-Profil nicht gefunden, das Entfernen von fount-pwsh aus dem Profil wird übersprungen.",
-				"uninstallingFountPwsh": "fount-pwsh wird deinstalliert...",
-				"uninstallFountPwshFailed": "Die Deinstallation von fount-pwsh ist fehlgeschlagen: ${message}",
+				"pwshProfileNotFound": "PowerShell-Profil nicht gefunden, das Entfernen von `fount-pwsh` aus dem Profil wird übersprungen.",
+				"uninstallingFountPwsh": "`fount-pwsh` wird deinstalliert...",
+				"uninstallFountPwshFailed": "Die Deinstallation von `fount-pwsh` ist fehlgeschlagen: ${message}",
 				"removingTerminalProfile": "Windows-Terminalprofil wird entfernt...",
 				"terminalProfileRemoved": "Das Windows-Terminalprofilverzeichnis wurde entfernt.",
 				"terminalProfileNotFound": "Windows-Terminalprofilverzeichnis nicht gefunden.",

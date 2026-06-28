@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL: protocolo de fount",
-				"registerFailed": "No se pudo registrar el controlador de protocolo fount://: ${message}",
+				"registerFailed": "No se pudo registrar el controlador de protocolo `fount://`: ${message}",
 				"noUrl": "Error: No se proporcionó la URL para el controlador de protocolo."
 			},
 			"update": {
-				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount"
+				"skippingFountUpdate": "Debido a que el archivo `.noupdate` existe, se omite la actualización de la fount"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Acceso directo de escritorio creado en ${path}",
-				"startMenuShortcutCreated": "Acceso directo al menú Inicio creado en ${path}",
+				"desktopShortcutCreated": "Acceso directo de escritorio creado en `${path}`",
+				"startMenuShortcutCreated": "Acceso directo al menú Inicio creado en `${path}`",
 				"protocolHandlerRegistered": "fount:// controlador de protocolo registrado.",
 				"shortcutNotSupported": "Advertencia: Su sistema operativo (${os}) no admite la creación de accesos directos en el escritorio.",
 				"osacompileNotFound": "Error: 'osacompile' no encontrado. No se puede crear la aplicación macOS.",
-				"lsregisterFailed": "Advertencia: Error al utilizar lsregister para registrar una aplicación con LaunchServices.",
+				"lsregisterFailed": "Advertencia: Error al utilizar `lsregister` para registrar una aplicación con LaunchServices.",
 				"createDesktopAppFailed": "Error: no se pudo crear la aplicación de escritorio."
 			},
 			"git": {
 				"repoNotFound": "No se encontró el repositorio git de fount. Inicializando uno nuevo...",
 				"fetchingAndResetting": "Obteniendo desde el repositorio remoto y restableciendo al maestro...",
 				"localChangesDetected": "Se detectaron cambios locales, las diferencias se guardarán antes de sobrescribir.",
-				"backupSavedTo": "Se ha guardado una copia de seguridad de sus cambios locales en: ${path}",
+				"backupSavedTo": "Se ha guardado una copia de seguridad de sus cambios locales en: `${path}`",
 				"updatingFromRemote": "Actualizando desde el repositorio remoto...",
 				"alreadyUpToDate": "Ya lo último.",
 				"localBranchAhead": "La sucursal local está por delante de la sucursal remota. No se requieren actualizaciones.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Advertencia: No hay ninguna rama ascendente configurada para la rama '${branch}'. Configuración ascendente en 'origen/maestro'.",
 				"dirtyWorkingDirectory": "Advertencia: el directorio de trabajo tiene cambios sin confirmar. Por favor, prepare o confirme sus cambios antes de actualizar.",
 				"notInstalled": "Git no está instalado, intentando instalar...",
-				"notInstalledSkippingPull": "Git no está instalado, omita git pull",
-				"repoNotFoundSkippingPull": "Repositorio no encontrado, omita git pull",
+				"notInstalledSkippingPull": "Git no está instalado, omita `git pull`",
+				"repoNotFoundSkippingPull": "Repositorio no encontrado, omita `git pull`",
 				"fetchFailed": "No se pudo obtener del \"origen\".",
 				"fetchFailedSkippingUpdate": "No se pudieron obtener las actualizaciones desde GitHub; actualización omitida.",
 				"remoteRefUnavailable": "La referencia remota «${ref}» no está disponible; sincronización con Git omitida.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno no encontrado, la fount no se puede ejecutar sin Deno",
 				"installingTermux": "Instalando Deno para Termux...",
 				"installFailedFallback": "La instalación de Deno falló, al intentar instalar automáticamente en la carpeta de ruta de la fount...",
-				"notWorking": "Por alguna razón, Deno no funciona, es posible que desees unirte a https://discord.gg/deno para obtener ayuda.",
+				"notWorking": "Por alguna razón, Deno no funciona, es posible que desees unirte a https://github.com/denoland/deno/issues para obtener ayuda.",
 				"upgradeFailed": "Advertencia: Es posible que la actualización de Deno haya fallado. Por favor verifique si hay errores.",
 				"upgradeFailedTermux": "El comando de actualización de Deno falló al intentar reinstalar Deno para Termux...",
 				"patchMissing": "Error: No se encontró el ejecutable de Deno antes de aplicar el parche. No se puede parchear.",
 				"patchUnsupportedArch": "Error: Arquitectura de parche no compatible: ${arch}",
-				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando patchelf."
+				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Error: no se puede ejecutar `fount` en el directorio temporal\n\nfount se acopla profundamente al sistema y registra el comando `PATH` y varios hooks del sistema en `fount`. Si se ejecuta en un directorio temporal, después de que el sistema borre los archivos temporales, no podrá ejecutar `fount remove` para eliminar fount y sus hooks.\n\nMueva fount a un directorio no temporal antes de ejecutarlo. Si solo desea probar brevemente, ejecute manualmente `fount remove` después de la prueba."
 			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Reinicialización completada. Intentando reiniciar la fount...",
-				"autoInitDisabled": "fount se ha reiniciado varias veces en el último breve período de tiempo, pero la reinicialización automática se ha deshabilitado debido a la presencia del archivo .noautoinit. Saliendo.",
+				"autoInitDisabled": "fount se ha reiniciado varias veces en el último breve período de tiempo, pero la reinicialización automática se ha deshabilitado debido a la presencia del archivo `.noautoinit`. Saliendo.",
 				"restartingTooFast": "La fount se ha reiniciado varias veces en un corto período de tiempo. Reinicialización forzada...",
 				"failedToStart": "Incluso después de intentos de reparación automática, la fount no arranca durante un breve período de tiempo. Por favor revise los registros para ver si hay errores.",
 				"initFailed": "Error al inicializar la fount. Saliendo."
 			},
 			"terminalKeybindings": {
 				"registered": "Parche de atajos de teclado del terminal configurado.",
-				"wtPatchFailed": "No se pudo aplicar el parche a la configuración de Windows Terminal ${path}: ${message}",
-				"wtRemoved": "Configuración de atajos de fount eliminada de Windows Terminal: ${path}",
-				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: ${path}"
+				"wtPatchFailed": "No se pudo aplicar el parche a la configuración de Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "Configuración de atajos de fount eliminada de Windows Terminal: `${path}`",
+				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Eliminando acceso directo del escritorio...",
@@ -203,17 +206,17 @@
 				"removingFountInstallationDir": "Eliminando el directorio de instalación de founts...",
 				"fountInstallationDirRemoved": "Se ha eliminado el directorio de instalación de la fount.",
 				"removingFountFromPath": "Eliminando fount de PATH...",
-				"removingProtocolHandler": "Eliminando el controlador de protocolo fount://...",
-				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo fount://.",
-				"removeProtocolHandlerFailed": "No se pudo eliminar el controlador de protocolo fount://: ${message}",
-				"removingFountFromGitSafeDir": "Eliminando la fount de git safe.directory...",
+				"removingProtocolHandler": "Eliminando el controlador de protocolo `fount://`...",
+				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo `fount://`.",
+				"removeProtocolHandlerFailed": "No se pudo eliminar el controlador de protocolo `fount://`: ${message}",
+				"removingFountFromGitSafeDir": "Eliminando la fount de `git safe.directory`...",
 				"removingInstalledSystemPackages": "Eliminando paquetes del sistema instalados...",
 				"uninstallingDeno": "Desinstalando Deno...",
 				"removeDenoFailed": "No se pudo eliminar Deno: ${message}",
 				"removingFountPwshFromProfile": "Eliminando font-pwsh del perfil de PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh se eliminó del perfil de PowerShell.",
-				"pwshProfileNotFound": "Perfil de PowerShell no encontrado, omitiendo la eliminación de fount-pwsh del perfil.",
-				"uninstallingFountPwsh": "Desinstalando fount-pwsh...",
+				"pwshProfileNotFound": "Perfil de PowerShell no encontrado, omitiendo la eliminación de `fount-pwsh` del perfil.",
+				"uninstallingFountPwsh": "Desinstalando `fount-pwsh`...",
 				"uninstallFountPwshFailed": "Error al desinstalar font-pwsh: ${message}",
 				"removingTerminalProfile": "Eliminando el perfil de terminal de Windows...",
 				"terminalProfileRemoved": "Se ha eliminado el directorio de perfil de terminal de Windows.",
