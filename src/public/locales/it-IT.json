@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL: protocollo del fount",
-				"registerFailed": "Impossibile registrare il gestore del protocollo fount://: ${message}",
+				"registerFailed": "Impossibile registrare il gestore del protocollo `fount://`: ${message}",
 				"noUrl": "Errore: URL per il protocollo handle non fornito."
 			},
 			"update": {
-				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato"
+				"skippingFountUpdate": "Poiché il file `.noupdate` esiste, l'aggiornamento del fount viene ignorato"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Collegamento sul desktop creato in ${path}",
-				"startMenuShortcutCreated": "Collegamento al menu Start creato in ${path}",
+				"desktopShortcutCreated": "Collegamento sul desktop creato in `${path}`",
+				"startMenuShortcutCreated": "Collegamento al menu Start creato in `${path}`",
 				"protocolHandlerRegistered": "gestore del protocollo fount:// registrato.",
 				"shortcutNotSupported": "Avviso: il tuo sistema operativo (${os}) non supporta la creazione di collegamenti sul desktop.",
 				"osacompileNotFound": "Errore: 'osacompile' non trovato. Impossibile creare l'app macOS.",
-				"lsregisterFailed": "Avviso: l'utilizzo di lsregister per registrare un'applicazione con LaunchServices non è riuscito.",
+				"lsregisterFailed": "Avviso: l'utilizzo di `lsregister` per registrare un'applicazione con LaunchServices non è riuscito.",
 				"createDesktopAppFailed": "Errore: impossibile creare l'applicazione desktop."
 			},
 			"git": {
 				"repoNotFound": "Impossibile trovare il repository git del fount. Inizializzandone uno nuovo...",
 				"fetchingAndResetting": "Recupero dal repository remoto e ripristino del master...",
 				"localChangesDetected": "Rilevate modifiche locali, le differenze verranno salvate prima della sovrascrittura.",
-				"backupSavedTo": "Un backup delle modifiche locali è stato salvato in: ${path}",
+				"backupSavedTo": "Un backup delle modifiche locali è stato salvato in: `${path}`",
 				"updatingFromRemote": "Aggiornamento dal repository remoto...",
 				"alreadyUpToDate": "Già l'ultimo.",
 				"localBranchAhead": "La filiale locale è prima della filiale remota. Nessun aggiornamento richiesto.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Avviso: nessun ramo upstream è configurato per il ramo '${branch}'. Impostazione upstream su 'origine/master'.",
 				"dirtyWorkingDirectory": "Avvertenza: la directory di lavoro non è pulita. Si prega di fare lo stage o il commit di le modifiche prima dell'aggiornamento.",
 				"notInstalled": "Git non è installato, sto provando a installarlo...",
-				"notInstalledSkippingPull": "Git non è installato, salta git pull",
-				"repoNotFoundSkippingPull": "Repository non trovato, salta git pull",
+				"notInstalledSkippingPull": "Git non è installato, salta `git pull`",
+				"repoNotFoundSkippingPull": "Repository non trovato, salta `git pull`",
 				"fetchFailed": "Impossibile ottenere da \"origine\".",
 				"fetchFailedSkippingUpdate": "Impossibile recuperare gli aggiornamenti da GitHub; aggiornamento ignorato.",
 				"remoteRefUnavailable": "Il riferimento remoto «${ref}» non è disponibile; sincronizzazione Git ignorata.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno non trovato, fount non può essere eseguita senza Deno",
 				"installingTermux": "Installazione di Deno per Termux...",
 				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella del percorso del fount...",
-				"notWorking": "Per qualche motivo Deno non funziona, potresti voler iscriverti a https://discord.gg/deno per ricevere supporto",
+				"notWorking": "Per qualche motivo Deno non funziona, potresti voler iscriverti a https://github.com/denoland/deno/issues per ricevere supporto",
 				"upgradeFailed": "Avvertenza: l'aggiornamento di Deno potrebbe non essere riuscito. Si prega di verificare la presenza di errori.",
 				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux...",
 				"patchMissing": "Errore: eseguibile Deno non trovato prima dell'applicazione della patch. Non può essere patchato.",
 				"patchUnsupportedArch": "Errore: architettura della patch non supportata: ${arch}",
-				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando patchelf."
+				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e più hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSpostare fount in una directory non temporanea prima di eseguirlo. Se si desidera solo un breve test, eseguire manualmente `fount remove` al termine del test."
 			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
@@ -184,28 +187,29 @@
 			},
 			"keepalive": {
 				"initComplete": "Reinizializzazione completata. Tentativo di riavviare fount...",
-				"autoInitDisabled": "fount è stato riavviato più volte nell'ultimo breve periodo di tempo, ma la reinizializzazione automatica è stata disabilitata a causa della presenza del file .noautoinit. In uscita.",
+				"autoInitDisabled": "fount è stato riavviato più volte nell'ultimo breve periodo di tempo, ma la reinizializzazione automatica è stata disabilitata a causa della presenza del file `.noautoinit`. In uscita.",
 				"restartingTooFast": "fount è stato riavviato più volte in un breve periodo di tempo. Reinizializzazione forzata...",
 				"failedToStart": "Anche dopo i tentativi di riparazione automatica, fount non si avvia. Si prega di verificare la presenza di errori nei log.",
 				"initFailed": "Inizializzazione del fount non riuscita. In uscita."
 			},
 			"terminalKeybindings": {
 				"registered": "Patch delle scorciatoie del terminale configurata.",
-				"wtPatchFailed": "Impossibile applicare la patch alle impostazioni di Windows Terminal ${path}: ${message}",
-				"wtRemoved": "Configurazione scorciatoie fount rimossa da Windows Terminal: ${path}",
-				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: ${path}"
+				"wtPatchFailed": "Impossibile applicare la patch alle impostazioni di Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "Configurazione scorciatoie fount rimossa da Windows Terminal: `${path}`",
+				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: `${path}`"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Rimozione del collegamento sul desktop...",
 				"removingTerminalKeybindings": "Rimozione patch scorciatoie del terminale...",
 				"removingFount": "Rimozione di fount...",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
 				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"removingFountFromPath": "Rimozione del fount dal PERCORSO...",
-				"removingProtocolHandler": "Rimozione del gestore del protocollo fount:// in corso...",
-				"protocolHandlerRemoved": "Il gestore del protocollo fount:// è stato rimosso.",
-				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo fount://: ${message}",
-				"removingFountFromGitSafeDir": "Rimozione di fount da git safe.directory...",
+				"removingProtocolHandler": "Rimozione del gestore del protocollo `fount://` in corso...",
+				"protocolHandlerRemoved": "Il gestore del protocollo `fount://` è stato rimosso.",
+				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo `fount://`: ${message}",
+				"removingFountFromGitSafeDir": "Rimozione di fount da `git safe.directory`...",
 				"removingInstalledSystemPackages": "Rimozione dei pacchetti di sistema installati...",
 				"uninstallingDeno": "Disinstallazione di Deno...",
 				"removeDenoFailed": "Impossibile rimuovere Deno: ${message}",
@@ -1894,7 +1898,30 @@
 			"copied": "Copiato!",
 			"apiKeyRequired": "È necessaria una chiave API per elencare i modelli.",
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
-			"loadModelsFailed": "Impossibile caricare il modello: ${message}"
+			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
+			"modelSearchTitle": "Sfoglia il catalogo modelli",
+			"modelSearchPlaceholder": {
+				"placeholder": "Cerca per nome modello, provider o capacità…"
+			},
+			"modelSearchHint": "Selezionando un risultato, URL e nome del modello verranno compilati automaticamente",
+			"modelsDevLoading": "Caricamento catalogo…",
+			"modelsDevLoadFailed": "Impossibile caricare il catalogo: ${message}",
+			"noModelsMatched": "Nessun modello corrispondente trovato",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Provider: ${provider}",
+			"metaContext": "Contesto: ${context} token",
+			"metaOutputLimit": "Output max: ${output} token",
+			"metaInputPrice": "Prezzo input: ${price} / 1M token",
+			"metaOutputPrice": "Prezzo output: ${price} / 1M token",
+			"metaCachePrice": "Cache lettura/scrittura: ${read} / ${write}",
+			"metaModalities": "Modalità: input ${input}, output ${output}",
+			"metaReasoning": "Supporta il ragionamento",
+			"metaToolCall": "Supporta le chiamate agli strumenti",
+			"metaVision": "Supporta l'input visivo",
+			"metaOpenWeights": "Pesi aperti",
+			"metaKnowledge": "Limite di conoscenza: ${knowledge}",
+			"metaReleaseDate": "Data di rilascio: ${date}",
+			"providerDocLink": "[Visualizza la documentazione del provider](${url})"
 		},
 		"prompts": {
 			"newFileName": "Inserisci il nome del nuovo file di origine del servizio (non includere il suffisso):"
@@ -1932,6 +1959,7 @@
 			"noFileSelectedSave": "Nessun file selezionato da salvare.",
 			"noFileSelectedDelete": "Nessun file selezionato per l'eliminazione.",
 			"noGeneratorSelectedSave": "Seleziona il generatore prima di salvare",
+			"savedAsNewFile": "Salvata come nuova fonte di servizio: ${name}",
 			"invalidFileName": "Il nome del file non può contenere i seguenti caratteri: / \\ : * ? \" < > |"
 		},
 		"achievements": {

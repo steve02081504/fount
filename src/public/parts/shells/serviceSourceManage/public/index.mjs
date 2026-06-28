@@ -15,7 +15,7 @@ import { getConfigTemplate, getServiceSourceFile, setServiceSourceFile, deleteSe
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const generatorDisplayContainer = document.getElementById('generatorDisplay')
-const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
+const disabledIndicator = document.getElementById('disabledIndicator')
 
 const fileListContainer = document.getElementById('fileList')
 const generatorSubtypeSelect = document.getElementById('generatorSubtypeSelect')
@@ -29,12 +29,13 @@ let activeFile = null
 let jsonEditor = null
 let fileList = []
 let generatorList = []
-let isDirty = false // 标记是否有未保存的更改
-let defaultParts = {} // Store default parts
+let isDirty = false
+let defaultParts = {}
 let currentServiceSourcePath = 'serviceSources/AI'
 let currentSubtype = 'AI'
 let partBranches = {}
 let desiredGeneratorName = ''
+const displayCaches = {}
 /**
  * 当JSON更新时调用的回调函数。
  * @returns {number} 返回一个数字。
@@ -50,7 +51,7 @@ function handleFetchError(customMessage) {
 	return error => {
 		console.errorI18n(customMessage, { error: error.stack })
 		showToastI18n('error', customMessage, { error: error.stack })
-		throw error // Re-throw the error to be caught by the caller if needed.
+		throw error
 	}
 }
 
@@ -129,6 +130,7 @@ function resolveSubtype(desiredSubtype) {
 	if (subtypes.includes(currentSubtype)) return currentSubtype
 	return subtypes[0] || desiredSubtype
 }
+
 /**
  * 从服务源路径中提取子类型。
  * @param {string} path - 待解析的路径
@@ -141,6 +143,7 @@ function getSubtypeFromPath(path) {
 		return segments[1] || ''
 	return ''
 }
+
 /**
  * 渲染子类型选择器。
  * @param {string} selectedSubtype - 当前选中的子类型
@@ -185,7 +188,7 @@ async function setSubtype(nextSubtype) {
 	generatorSelect.value = ''
 	desiredGeneratorName = ''
 	generatorDisplayContainer.innerHTML = ''
-	disableEditor()
+	syncEditorState()
 	await fetchGeneratorList()
 	await fetchFileList()
 	await fetchDefaultParts()
@@ -231,7 +234,7 @@ async function renderFileList() {
 		const checkboxContainer = listItem.querySelector('.tooltip')
 
 		checkbox.addEventListener('change', async event => {
-			event.stopPropagation() // Prevent click from triggering loadEditor
+			event.stopPropagation()
 			const isChecked = event.target.checked
 
 			try {
@@ -254,25 +257,12 @@ async function renderFileList() {
 			}
 		})
 
-		// Prevent checkbox click from triggering list item click
 		checkboxContainer.addEventListener('click', event => event.stopPropagation())
 		listItem.addEventListener('click', () => loadEditor(fileName))
 		fileListContainer.appendChild(listItem)
 	}
 
-	updateDefaultPartDisplay() // Apply styles for default item
-
-	const urlParams = new URLSearchParams(window.location.search)
-	const fileFromURL = urlParams.get('file')
-
-	let fileToLoad = null
-	if (fileFromURL && fileList.includes(fileFromURL))
-		fileToLoad = fileFromURL
-	else if (fileList.length)
-		fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : await getAnyPreferredDefaultPart(currentServiceSourcePath).catch(() => '') || fileList[0]
-
-	if (fileToLoad)
-		loadEditor(fileToLoad)
+	updateDefaultPartDisplay()
 }
 
 /**
@@ -292,29 +282,18 @@ function updateDefaultPartDisplay() {
  * 根据 `generatorList` 变量渲染生成器选择下拉列表。
  */
 function renderGeneratorSelect() {
-	const previous = generatorSelect.value
 	generatorSelect.innerHTML = '<option disabled value="" data-i18n="serviceSource_manager.generatorSelect.placeholder"></option>'
-	/**
-	 * 确保下拉框存在指定选项。
-	 * @param {string} name - 生成器名称
-	 * @param {{ selected?: boolean }} [options] - 选项配置
-	 * @param {boolean} [options.selected] - 是否预选该项
-	 */
-	const ensureOption = (name, { selected = false } = {}) => {
-		if (!name) return
-		if ([...generatorSelect.options].some(opt => opt.value === name)) return
+	generatorList.forEach(generator => {
 		const option = document.createElement('option')
-		option.value = name
-		option.textContent = name
-		if (selected) option.selected = true
+		option.value = generator
+		option.textContent = generator
 		generatorSelect.appendChild(option)
-	}
-
-	generatorList.forEach(generator => ensureOption(generator))
-	ensureOption(previous, { selected: !generatorList.length && previous })
-	ensureOption(desiredGeneratorName, { selected: true })
-	if (!generatorSelect.value && generatorSelect.options.length)
-		generatorSelect.options[0].selected = true
+	})
+	i18nElement(generatorSelect, { skip_report: true })
+	if (desiredGeneratorName && generatorList.includes(desiredGeneratorName))
+		generatorSelect.value = desiredGeneratorName
+	else
+		generatorSelect.value = ''
 }
 
 /**
@@ -335,8 +314,8 @@ async function fetchConfigTemplate(generatorName) {
 async function loadGeneratorAddons(generatorName) {
 	generatorDisplayContainer.innerHTML = ''
 	/**
-	 * 当JSON更新时调用的回调函数。
-	 * @returns {number} 返回一个数字。
+	 * 重置 JSON 更新回调。
+	 * @returns {number} 零。
 	 */
 	onJsonUpdate = () => 0
 
@@ -344,7 +323,7 @@ async function loadGeneratorAddons(generatorName) {
 
 	try {
 		const { html, js: displayScript } = await getConfigDisplay(generatorName, activeFile, currentServiceSourcePath)
-		await initTranslations() // refresh translations for dynamic content maybe used in part i18n data
+		await initTranslations()
 		generatorDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(generatorDisplayContainer, { skip_report: true }))
 		if (displayScript) {
@@ -353,7 +332,8 @@ async function loadGeneratorAddons(generatorName) {
 				geti18n,
 				partpath,
 				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
-				element: generatorDisplayContainer
+				element: generatorDisplayContainer,
+				cache: displayCaches[partpath] ??= {},
 			})
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
@@ -370,7 +350,7 @@ async function loadGeneratorAddons(generatorName) {
  */
 function disableEditor() {
 	if (jsonEditor) jsonEditor.updateProps({ readOnly: true })
-	disabledIndicator.classList.remove('hidden') // 显示遮罩
+	disabledIndicator.classList.remove('hidden')
 }
 
 /**
@@ -378,7 +358,24 @@ function disableEditor() {
  */
 function enableEditor() {
 	if (jsonEditor) jsonEditor.updateProps({ readOnly: false })
-	disabledIndicator.classList.add('hidden') // 隐藏遮罩
+	disabledIndicator.classList.add('hidden')
+}
+
+/**
+ * 根据是否选中生成器同步编辑器启用状态。
+ */
+function syncEditorState() {
+	if (generatorSelect.value) enableEditor()
+	else disableEditor()
+}
+
+/**
+ * 读取 JSON 编辑器中的配置数据。
+ * @returns {object} 当前 JSON 配置。
+ */
+function getEditorData() {
+	const content = jsonEditor.get()
+	return content.json ?? JSON.parse(content.text)
 }
 
 /**
@@ -399,6 +396,58 @@ async function updateEditorContent(data) {
 				json: jsonEditor
 			}
 		})
+	}
+}
+
+/**
+ * 进入草稿态：无选中文件，清空编辑器。
+ * @returns {Promise<void>}
+ */
+async function enterScratchMode() {
+	activeFile = null
+	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
+	const url = new URL(window.location.toString())
+	url.searchParams.delete('file')
+	window.history.replaceState(null, null, url.toString())
+	await updateEditorContent({})
+	syncEditorState()
+}
+
+/**
+ * 根据 URL 或列表状态加载初始文件，或进入草稿态。
+ * @returns {Promise<void>}
+ */
+async function pickAndLoadInitialFile() {
+	const urlParams = new URLSearchParams(window.location.search)
+	const fileFromURL = urlParams.get('file')
+
+	if (fileFromURL && fileList.includes(fileFromURL))
+		return loadEditor(fileFromURL)
+
+	if (fileList.length) {
+		const fileToLoad = activeFile && fileList.includes(activeFile)
+			? activeFile
+			: await getAnyPreferredDefaultPart(currentServiceSourcePath).catch(() => '') || fileList[0]
+		return loadEditor(fileToLoad)
+	}
+
+	return enterScratchMode()
+}
+
+/**
+ * 将文件设为默认服务源（用于列表中首个文件）。
+ * @param {string} fileName - 文件名
+ * @returns {Promise<void>}
+ */
+async function setDefaultIfFirstFile(fileName) {
+	try {
+		await setDefaultPart(currentServiceSourcePath, fileName)
+		(defaultParts[currentServiceSourcePath] ||= []).push(fileName)
+		unlockAchievement('shells/serviceSourceManage', 'set_default_aisource')
+		updateDefaultPartDisplay()
+	}
+	catch (error) {
+		handleFetchError('serviceSource_manager.alerts.setDefaultFailed')(error)
 	}
 }
 
@@ -434,75 +483,55 @@ async function loadEditor(fileName) {
 	desiredGeneratorName = data?.generator || await getAnyPreferredDefaultPart(`serviceGenerators/${currentSubtype}`).catch(() => '') || ''
 	renderSubtypeSelect()
 	renderGeneratorSelect()
-	generatorSelect.value = desiredGeneratorName
 
 	await loadGeneratorAddons(generatorSelect.value)
-	if (!jsonEditor)
-		jsonEditor = createJsonEditor(jsonEditorContainer, {
-			label: geti18n('serviceSource_manager.configTitle'),
-			/**
-			 * 处理 JSON 更新。
-			 * @param {any} updatedContent - 更新后的内容。
-			 * @param {any} previousContent - 之前的内容。
-			 * @param {object} root0 - 根对象。
-			 * @param {any} root0.error - 错误。
-			 * @param {any} root0.patchResult - 补丁结果。
-			 */
-			onChange: (updatedContent, previousContent, { error, patchResult }) => {
-				if (error) return
-				isDirty = true
-				let data
-				try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
-				onJsonUpdate({
-					data,
-					containers: {
-						generatorDisplay: generatorDisplayContainer,
-						jsonEditor: jsonEditorContainer
-					},
-					editors: {
-						json: jsonEditor
-					}
-				})
-			},
-			onSave: saveFile
-		})
 
-	if (!generatorSelect.value) {
+	if (!generatorSelect.value)
 		await updateEditorContent(data.config)
-		disableEditor()
-	}
-	else {
-		enableEditor()
+	else
 		await updateEditorContent(
 			Object.keys(data.config || {}).length
 				? data.config
 				: await fetchConfigTemplate(generatorSelect.value)
 		)
-	}
+
+	syncEditorState()
 	isDirty = false
 }
-
 
 /**
  * 保存当前活动文件的更改。
  * @returns {Promise<void>}
  */
 async function saveFile() {
-	if (!activeFile) {
-		showToastI18n('error', 'serviceSource_manager.alerts.noFileSelectedSave')
-		return
-	}
 	if (!generatorSelect.value) {
 		showToastI18n('error', 'serviceSource_manager.alerts.noGeneratorSelectedSave')
 		return
 	}
-	// Show loading icon and disable button
+
+	let createdNewFile = false
+
+	if (!activeFile) {
+		const newFileName = promptI18n('serviceSource_manager.prompts.newFileName')
+		if (!newFileName) return
+		if (!isValidFileName(newFileName)) {
+			showToastI18n('error', 'serviceSource_manager.alerts.invalidFileName')
+			return
+		}
+		const wasEmpty = fileList.length === 0
+		await addServiceSourceFile(newFileName, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.addFileFailed'))
+		activeFile = newFileName
+		createdNewFile = true
+		if (wasEmpty)
+			await setDefaultIfFirstFile(newFileName)
+	}
+
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	saveButton.disabled = true
 
 	try {
-		const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
+		const config = getEditorData()
 		const generator = generatorSelect.value
 
 		await setServiceSourceFile(activeFile, {
@@ -512,6 +541,11 @@ async function saveFile() {
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
+
+		await fetchFileList()
+		if (createdNewFile)
+			showToastI18n('success', 'serviceSource_manager.alerts.savedAsNewFile', { name: activeFile })
+		await loadEditor(activeFile)
 	}
 	catch (error) {
 		showToast('error', error.message + '\n' + error.error || error.errors?.join('\n') || '')
@@ -520,11 +554,10 @@ async function saveFile() {
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
 	}
 
-	// Hide icon and re-enable button after a delay
 	setTimeout(() => {
 		saveStatusIcon.classList.add('hidden')
 		saveButton.disabled = false
-	}, 2000) // 2 seconds delay
+	}, 2000)
 }
 
 /**
@@ -540,13 +573,9 @@ async function deleteFile() {
 
 	await deleteServiceSourceFile(activeFile, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.deleteFileFailed'))
 	activeFile = null
+	isDirty = false
 	await fetchFileList()
-
-	//  不清空 jsonEditor，而是禁用并清空
-	if (!fileList.length) {
-		updateEditorContent({})
-		disableEditor()
-	}
+	await pickAndLoadInitialFile()
 }
 
 /**
@@ -562,9 +591,11 @@ async function addFile() {
 		return
 	}
 
+	const wasEmpty = fileList.length === 0
 	await addServiceSourceFile(newFileName, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.addFileFailed'))
 	await fetchFileList()
-
+	if (wasEmpty)
+		await setDefaultIfFirstFile(newFileName)
 	await loadEditor(newFileName)
 }
 
@@ -582,7 +613,37 @@ function isValidFileName(fileName) {
 applyTheme()
 await initTranslations('serviceSource_manager')
 usingTemplates('/parts/shells:serviceSourceManage/src/templates')
+
+jsonEditor = createJsonEditor(jsonEditorContainer, {
+	label: geti18n('serviceSource_manager.configTitle'),
+	/**
+	 * 处理 JSON 更新。
+	 * @param {any} updatedContent - 更新后的内容。
+	 * @param {any} previousContent - 之前的内容。
+	 * @param {object} root0 - 根对象。
+	 * @param {any} root0.error - 错误。
+	 * @param {any} root0.patchResult - 补丁结果。
+	 */
+	onChange: (updatedContent, previousContent, { error, patchResult }) => {
+		if (error) return
+		isDirty = true
+		let data
+		try { data = getEditorData() } catch (e) { return }
+		onJsonUpdate({
+			data,
+			containers: {
+				generatorDisplay: generatorDisplayContainer,
+				jsonEditor: jsonEditorContainer
+			},
+			editors: {
+				json: jsonEditor
+			}
+		})
+	},
+	onSave: saveFile
+})
 disableEditor()
+
 await loadPartBranches()
 
 const urlParamsInit = new URLSearchParams(window.location.search)
@@ -590,9 +651,7 @@ await setSubtype(resolveSubtype(
 	getSubtypeFromPath(urlParamsInit.get('sourcePath'))
 	|| currentSubtype
 ))
-const initialFile = urlParamsInit.get('file')
-if (initialFile && fileList.includes(initialFile))
-	await loadEditor(initialFile)
+await pickAndLoadInitialFile()
 
 saveButton.addEventListener('click', saveFile)
 deleteButton.addEventListener('click', deleteFile)
@@ -603,6 +662,7 @@ generatorSubtypeSelect.addEventListener('change', async () => {
 	const url = new URL(window.location.toString())
 	url.searchParams.set('sourcePath', currentServiceSourcePath)
 	window.history.replaceState(null, null, url.toString())
+	await pickAndLoadInitialFile()
 })
 
 generatorSelect.addEventListener('change', async () => {
@@ -611,11 +671,9 @@ generatorSelect.addEventListener('change', async () => {
 	await loadGeneratorAddons(selectedGenerator)
 	if (selectedGenerator) {
 		const template = await fetchConfigTemplate(selectedGenerator)
-		updateEditorContent(template)
-		enableEditor()
+		await updateEditorContent(template)
 	}
-	else
-		disableEditor()
+	syncEditorState()
 })
 
 window.addEventListener('beforeunload', event => {
@@ -632,7 +690,5 @@ window.addEventListener('popstate', async () => {
 		|| currentSubtype
 	)
 	await setSubtype(nextSubtype)
-	const fileFromURL = urlParams.get('file')
-	if (fileFromURL && fileList.includes(fileFromURL))
-		loadEditor(fileFromURL)
+	await pickAndLoadInitialFile()
 })

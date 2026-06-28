@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL: протокол fount",
-				"registerFailed": "Не удалось зарегистрировать обработчик протокола fount://: `${message}",
+				"registerFailed": "Не удалось зарегистрировать обработчик протокола `fount://`: ${message}",
 				"noUrl": "Ошибка: не указан URL для обработчика протокола."
 			},
 			"update": {
-				"skippingFountUpdate": "Поскольку файл .noupdate существует, обновление fount пропускается."
+				"skippingFountUpdate": "Поскольку файл `.noupdate` существует, обновление fount пропускается."
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Ярлык на рабочем столе создан по адресу ${path}.",
-				"startMenuShortcutCreated": "Ярлык меню «Пуск», созданный по адресу ${path}",
+				"desktopShortcutCreated": "Ярлык на рабочем столе создан по адресу `${path}`.",
+				"startMenuShortcutCreated": "Ярлык меню «Пуск», созданный по адресу `${path}`",
 				"protocolHandlerRegistered": "fount:// зарегистрирован обработчик протокола.",
 				"shortcutNotSupported": "Внимание: ваша операционная система (${os}) не поддерживает создание ярлыков на рабочем столе.",
 				"osacompileNotFound": "Ошибка: «osacompile» не найден. Невозможно создать приложение для MacOS.",
-				"lsregisterFailed": "Предупреждение. Не удалось использовать lsregister для регистрации приложения в LaunchServices.",
+				"lsregisterFailed": "Предупреждение. Не удалось использовать `lsregister` для регистрации приложения в LaunchServices.",
 				"createDesktopAppFailed": "Ошибка: не удалось создать настольное приложение."
 			},
 			"git": {
 				"repoNotFound": "Git-репозиторий fount не найден. Инициализируем новый...",
 				"fetchingAndResetting": "Извлечение из удаленного репозитория и сброс на главный...",
 				"localChangesDetected": "Обнаружены локальные изменения, различия будут сохранены перед перезаписью.",
-				"backupSavedTo": "Резервная копия ваших локальных изменений сохранена по адресу: ${path}.",
+				"backupSavedTo": "Резервная копия ваших локальных изменений сохранена по адресу: `${path}`.",
 				"updatingFromRemote": "Обновление из удаленного репозитория...",
 				"alreadyUpToDate": "Уже самый последний.",
 				"localBranchAhead": "Локальная ветвь опережает удаленную ветвь. Никаких обновлений не требуется.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Предупреждение. Для ветки «${branch}» не настроена ни одна восходящая ветвь. Установка исходного потока на «источник/мастер».",
 				"dirtyWorkingDirectory": "Предупреждение: рабочий каталог не чист. Пожалуйста, добавьте в индекс (stage) или зафиксируйте (commit) изменения перед обновлением.",
 				"notInstalled": "Git не установлен, пытаюсь установить...",
-				"notInstalledSkippingPull": "Git не установлен, пропустите git pull",
-				"repoNotFoundSkippingPull": "Репозиторий не найден, пропустите git pull",
+				"notInstalledSkippingPull": "Git не установлен, пропустите `git pull`",
+				"repoNotFoundSkippingPull": "Репозиторий не найден, пропустите `git pull`",
 				"fetchFailed": "Не удалось получить информацию из «fount».",
 				"fetchFailedSkippingUpdate": "Не удалось получить обновления с GitHub; обновление пропущено.",
 				"remoteRefUnavailable": "Удалённая ссылка «${ref}» недоступна; синхронизация Git пропущена.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno не найден, fount не может быть запущен без Deno",
 				"installingTermux": "Установка Deno для Termux...",
 				"installFailedFallback": "Установка Deno не удалась, попытка автоматической установки в путь к папке с fountом...",
-				"notWorking": "По какой-то причине Deno не работает. Возможно, вы захотите присоединиться к https://discord.gg/deno для получения поддержки.",
+				"notWorking": "По какой-то причине Deno не работает. Возможно, вы захотите присоединиться к https://github.com/denoland/deno/issues для получения поддержки.",
 				"upgradeFailed": "Предупреждение: возможно, обновление Deno не удалось. Пожалуйста, проверьте наличие ошибок.",
 				"upgradeFailedTermux": "Команда обновления Deno не удалась, попытка переустановить Deno для Termux...",
 				"patchMissing": "Ошибка: исполняемый файл Deno не найден перед исправлением. Не подлежит исправлению.",
 				"patchUnsupportedArch": "Ошибка: неподдерживаемая архитектура исправлений: ${arch}.",
-				"patchFailed": "Ошибка: не удалось исправить исполняемый файл Deno с помощью patchelf."
+				"patchFailed": "Ошибка: не удалось исправить исполняемый файл Deno с помощью `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Ошибка: невозможно запустить `fount` во временной директории\n\nfount глубоко интегрируется с системой и регистрирует команду `PATH` и несколько системных hook в `fount`. При запуске во временной директории после очистки временных файлов системой вы не сможете выполнить `fount remove` для удаления fount и его hook.\n\nПереместите fount в постоянную директорию перед запуском. Если вы хотите лишь кратко протестировать, выполните `fount remove` вручную после теста."
 			},
 			"install": {
 				"installingDependencies": "Установка зависимостей...",
@@ -184,34 +187,35 @@
 			},
 			"keepalive": {
 				"initComplete": "Повторная инициализация завершена. Пытаюсь перезапустить fount...",
-				"autoInitDisabled": "За последний короткий промежуток времени fount перезапускался несколько раз, но автоматическая повторная инициализация была отключена из-за наличия файла .noautoinit. Выход.",
+				"autoInitDisabled": "За последний короткий промежуток времени fount перезапускался несколько раз, но автоматическая повторная инициализация была отключена из-за наличия файла `.noautoinit`. Выход.",
 				"restartingTooFast": "fount был перезапущен несколько раз за короткий период времени. Принудительная повторная инициализация...",
 				"failedToStart": "Даже после попыток автоматического ремонта фонтан не запускается в течение короткого периода времени. Пожалуйста, проверьте журналы на наличие ошибок.",
 				"initFailed": "Инициализация fount не удалась. Выход."
 			},
 			"terminalKeybindings": {
 				"registered": "Патч привязок клавиш терминала настроен.",
-				"wtPatchFailed": "Не удалось изменить настройки Windows Terminal ${path}: ${message}",
-				"wtRemoved": "Конфигурация клавиш fount удалена из Windows Terminal: ${path}",
-				"editorRemoved": "Конфигурация fount удалена из привязок клавиш терминала редактора: ${path}"
+				"wtPatchFailed": "Не удалось изменить настройки Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "Конфигурация клавиш fount удалена из Windows Terminal: `${path}`",
+				"editorRemoved": "Конфигурация fount удалена из привязок клавиш терминала редактора: `${path}`"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Удаление ярлыка на рабочем столе...",
 				"removingTerminalKeybindings": "Удаление патча привязки клавиш терминала...",
 				"removingFount": "Удаление fount...",
 				"fountUninstallationComplete": "Удаление фонта завершено.",
 				"removingFountInstallationDir": "Удаление каталога установки fount...",
 				"fountInstallationDirRemoved": "Каталог установки fount был удален.",
 				"removingFountFromPath": "Удаление fount из PATH...",
-				"removingProtocolHandler": "Удаление обработчика протокола fount://...",
-				"protocolHandlerRemoved": "Обработчик протокола fount:// был удален.",
-				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола fount://: `${message}",
+				"removingProtocolHandler": "Удаление обработчика протокола `fount://`...",
+				"protocolHandlerRemoved": "Обработчик протокола `fount://` был удален.",
+				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола `fount://`: `${message}",
 				"removingFountFromGitSafeDir": "Удаление fount из gitsafe.directory...",
 				"removingInstalledSystemPackages": "Удаление установленных системных пакетов...",
 				"uninstallingDeno": "Удаление Дено...",
 				"removeDenoFailed": "Не удалось удалить Deno: ${message}",
-				"removingFountPwshFromProfile": "Удаление fount-pwsh из профиля PowerShell...",
+				"removingFountPwshFromProfile": "Удаление `fount-pwsh` из профиля PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh был удален из профиля PowerShell.",
-				"pwshProfileNotFound": "Профиль PowerShell не найден, удаление fount-pwsh из профиля пропущено.",
+				"pwshProfileNotFound": "Профиль PowerShell не найден, удаление `fount-pwsh` из профиля пропущено.",
 				"uninstallingFountPwsh": "Удаление fount-PWSH...",
 				"uninstallFountPwshFailed": "Не удалось удалить fount-Pwsh: ${message}",
 				"removingTerminalProfile": "Удаление профиля терминала Windows...",
@@ -1894,7 +1898,30 @@
 			"copied": "Скопировано!",
 			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
-			"loadModelsFailed": "Не удалось загрузить модель: `${message}"
+			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
+			"modelSearchTitle": "Каталог моделей",
+			"modelSearchPlaceholder": {
+				"placeholder": "Поиск по названию модели, провайдеру или возможностям…"
+			},
+			"modelSearchHint": "При выборе результата URL и название модели заполнятся автоматически",
+			"modelsDevLoading": "Загрузка каталога…",
+			"modelsDevLoadFailed": "Не удалось загрузить каталог: ${message}",
+			"noModelsMatched": "Подходящие модели не найдены",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Провайдер: ${provider}",
+			"metaContext": "Контекст: ${context} токенов",
+			"metaOutputLimit": "Макс. вывод: ${output} токенов",
+			"metaInputPrice": "Цена входа: ${price} / 1M токенов",
+			"metaOutputPrice": "Цена выхода: ${price} / 1M токенов",
+			"metaCachePrice": "Кэш чтение/запись: ${read} / ${write}",
+			"metaModalities": "Модальности: ввод ${input}, вывод ${output}",
+			"metaReasoning": "Поддерживает режим рассуждений",
+			"metaToolCall": "Поддерживает вызов инструментов",
+			"metaVision": "Поддерживает визуальный ввод",
+			"metaOpenWeights": "Открытые веса",
+			"metaKnowledge": "Граница знаний: ${knowledge}",
+			"metaReleaseDate": "Дата выпуска: ${date}",
+			"providerDocLink": "[Посмотреть документацию провайдера](${url})"
 		},
 		"prompts": {
 			"newFileName": "Введите имя нового исходного файла службы (не включайте суффикс):"
@@ -1932,6 +1959,7 @@
 			"noFileSelectedSave": "Файл для сохранения не выбран.",
 			"noFileSelectedDelete": "Файлы для удаления не выбраны.",
 			"noGeneratorSelectedSave": "Пожалуйста, выберите генератор перед сохранением",
+			"savedAsNewFile": "Сохранено как новый источник сервиса: ${name}",
 			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |"
 		},
 		"achievements": {

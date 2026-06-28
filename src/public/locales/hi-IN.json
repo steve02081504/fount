@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "यूआरएल:फाउंड प्रोटोकॉल",
-				"registerFailed": "fount:// प्रोटोकॉल हैंडलर पंजीकृत करने में विफल: ${message}",
+				"registerFailed": "`fount://` प्रोटोकॉल हैंडलर पंजीकृत करने में विफल: ${message}",
 				"noUrl": "त्रुटि: प्रोटोकॉलहैंडल के लिए यूआरएल प्रदान नहीं किया गया।"
 			},
 			"update": {
-				"skippingFountUpdate": "चूँकि .noupdate फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है"
+				"skippingFountUpdate": "चूँकि `.noupdate` फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "${path} पर डेस्कटॉप शॉर्टकट बनाया गया",
-				"startMenuShortcutCreated": "${path} पर प्रारंभ मेनू शॉर्टकट बनाया गया",
+				"desktopShortcutCreated": "`${path}` पर डेस्कटॉप शॉर्टकट बनाया गया",
+				"startMenuShortcutCreated": "`${path}` पर प्रारंभ मेनू शॉर्टकट बनाया गया",
 				"protocolHandlerRegistered": "fount: // प्रोटोकॉल हैंडलर पंजीकृत।",
 				"shortcutNotSupported": "चेतावनी: आपका ऑपरेटिंग सिस्टम (${os}) डेस्कटॉप शॉर्टकट बनाने का समर्थन नहीं करता है।",
 				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। MacOS ऐप बनाने में असमर्थ.",
-				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए lsregister का उपयोग करना विफल रहा।",
+				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
 				"createDesktopAppFailed": "त्रुटि: डेस्कटॉप एप्लिकेशन बनाने में विफल।"
 			},
 			"git": {
 				"repoNotFound": "fount का गिट भंडार नहीं मिला। एक नया प्रारंभ किया जा रहा है...",
 				"fetchingAndResetting": "दूरस्थ रिपॉजिटरी से प्राप्त किया जा रहा है और मास्टर पर रीसेट किया जा रहा है...",
 				"localChangesDetected": "स्थानीय परिवर्तनों का पता चला, अंतरों को ओवरराइटिंग से पहले सहेजा जाएगा।",
-				"backupSavedTo": "आपके स्थानीय परिवर्तनों का बैकअप यहां सहेजा गया है: ${path}",
+				"backupSavedTo": "आपके स्थानीय परिवर्तनों का बैकअप यहां सहेजा गया है: `${path}`",
 				"updatingFromRemote": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है...",
 				"alreadyUpToDate": "पहले से ही नवीनतम.",
 				"localBranchAhead": "स्थानीय शाखा दूरस्थ शाखा से आगे है. किसी अद्यतन की आवश्यकता नहीं है.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "चेतावनी: शाखा '${branch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं की गई है। अपस्ट्रीम को 'ओरिजिन/मास्टर' पर सेट करना।",
 				"dirtyWorkingDirectory": "चेतावनी: कार्यशील निर्देशिका साफ़ नहीं है. कृपया अद्यतन करने से पहले अपने परिवर्तन stage या commit करें।",
 				"notInstalled": "Git स्थापित नहीं है, स्थापित करने का प्रयास कर रहा हूँ...",
-				"notInstalledSkippingPull": "Git स्थापित नहीं है, git पुल छोड़ें",
-				"repoNotFoundSkippingPull": "रिपॉजिटरी नहीं मिली, गिट पुल छोड़ें",
+				"notInstalledSkippingPull": "Git स्थापित नहीं है, `git pull` छोड़ें",
+				"repoNotFoundSkippingPull": "रिपॉजिटरी नहीं मिली, `git pull` छोड़ें",
 				"fetchFailed": "'उत्पत्ति' से प्राप्त करने में विफल.",
 				"fetchFailedSkippingUpdate": "GitHub से अपडेट प्राप्त करने में विफल; अपडेट छोड़ा गया।",
 				"remoteRefUnavailable": "दूरस्थ संदर्भ '${ref}' उपलब्ध नहीं है; Git समन्वयन छोड़ा गया।",
@@ -160,12 +160,15 @@
 				"isRequired": "डेनो नहीं मिला, डेनो के बिना fount नहीं चलाया जा सकता",
 				"installingTermux": "टर्मक्स के लिए डेनो स्थापित किया जा रहा है...",
 				"installFailedFallback": "डेनो इंस्टॉलेशन विफल रहा, fount के पथ फ़ोल्डर में स्वचालित रूप से इंस्टॉल करने का प्रयास किया जा रहा है...",
-				"notWorking": "किसी कारण से डेनो काम नहीं कर रहा है, आप समर्थन के लिए https://discord.gg/deno से जुड़ना चाह सकते हैं",
+				"notWorking": "किसी कारण से Deno काम नहीं कर रहा है, आप समर्थन के लिए https://github.com/denoland/deno/issues पर प्रश्न पूछ सकते हैं",
 				"upgradeFailed": "चेतावनी: डेनो अपग्रेड विफल हो सकता है। कृपया त्रुटियों की जाँच करें.",
 				"upgradeFailedTermux": "डेनो अपग्रेड कमांड विफल, टर्मक्स के लिए डेनो को पुनः स्थापित करने का प्रयास किया जा रहा है...",
 				"patchMissing": "त्रुटि: पैचिंग से पहले डेनो निष्पादन योग्य नहीं मिला। पैच नहीं किया जा सकता.",
 				"patchUnsupportedArch": "त्रुटि: असमर्थित पैच आर्किटेक्चर: ${arch}",
-				"patchFailed": "त्रुटि: पैचेल्फ़ का उपयोग करके डेनो निष्पादन योग्य को पैच करने में विफल।"
+				"patchFailed": "त्रुटि: `patchelf` का उपयोग करके Deno निष्पादन योग्य को पैच करने में विफल।"
+			},
+			"tempDir": {
+				"blocked": "त्रुटि: अस्थायी निर्देशिका में `fount` नहीं चलाया जा सकता\n\nfount सिस्टम के साथ गहराई से जुड़ा है और `fount` में `PATH` कमांड और कई सिस्टम hook पंजीकृत करता है। यदि अस्थायी निर्देशिका में चलाया जाए, तो सिस्टम द्वारा अस्थायी फ़ाइलें साफ़ करने के बाद, आप fount और उसके hook हटाने के लिए `fount remove` नहीं चला पाएंगे।\n\nकृपया चलाने से पहले fount को गैर-अस्थायी निर्देशिका में ले जाएं। यदि आप केवल संक्षिप्त परीक्षण करना चाहते हैं, तो परीक्षण के बाद मैन्युअल रूप से `fount remove` चलाएं।"
 			},
 			"install": {
 				"installingDependencies": "निर्भरताएँ स्थापित की जा रही हैं...",
@@ -184,18 +187,19 @@
 			},
 			"keepalive": {
 				"initComplete": "पुनः आरंभीकरण पूरा हुआ. फव्वारा पुनः आरंभ करने का प्रयास किया जा रहा है...",
-				"autoInitDisabled": "पिछले थोड़े समय में fount को कई बार पुनः आरंभ किया गया है, लेकिन .noautoinit फ़ाइल की उपस्थिति के कारण स्वचालित पुनः आरंभीकरण अक्षम कर दिया गया है। बाहर निकलना.",
+				"autoInitDisabled": "पिछले थोड़े समय में fount को कई बार पुनः आरंभ किया गया है, लेकिन `.noautoinit` फ़ाइल की उपस्थिति के कारण स्वचालित पुनः आरंभीकरण अक्षम कर दिया गया है। बाहर निकलना.",
 				"restartingTooFast": "थोड़े समय में fount को कई बार पुनः प्रारंभ किया गया है। जबरन पुनर्प्रारंभीकरण...",
 				"failedToStart": "स्वचालित मरम्मत के प्रयासों के बाद भी, फव्वारा थोड़े समय के लिए चालू नहीं हो पाता है। कृपया त्रुटियों के लिए लॉग की जाँच करें।",
 				"initFailed": "फव्वारा आरंभीकरण विफल रहा. बाहर निकलना."
 			},
 			"terminalKeybindings": {
 				"registered": "टर्मिनल की-बाइंडिंग पैच कॉन्फ़िगर किया गया।",
-				"wtPatchFailed": "Windows Terminal सेटिंग ${path} में पैच नहीं लगाया जा सका: ${message}",
-				"wtRemoved": "Windows Terminal सेटिंग से fount की-बाइंडिंग हटाई गई: ${path}",
-				"editorRemoved": "संपादक टर्मिनल की-बाइंडिंग से fount कॉन्फ़िगरेशन हटाया गया: ${path}"
+				"wtPatchFailed": "Windows Terminal सेटिंग `${path}` में पैच नहीं लगाया जा सका: ${message}",
+				"wtRemoved": "Windows Terminal सेटिंग से fount की-बाइंडिंग हटाई गई: `${path}`",
+				"editorRemoved": "संपादक टर्मिनल की-बाइंडिंग से fount कॉन्फ़िगरेशन हटाया गया: `${path}`"
 			},
 			"remove": {
+				"removingDesktopShortcut": "डेस्कटॉप शॉर्टकट हटाया जा रहा है...",
 				"removingTerminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
 				"removingFount": "फव्वारा हटाया जा रहा है...",
 				"fountUninstallationComplete": "fount अनइंस्टॉलेशन पूरा हो गया।",
@@ -203,17 +207,17 @@
 				"fountInstallationDirRemoved": "फव्वारा स्थापना निर्देशिका हटा दी गई है।",
 				"removingFountFromPath": "पथ से फव्वारा हटाया जा रहा है...",
 				"removingProtocolHandler": "फ़ॉन्ट://प्रोटोकॉल हैंडलर हटाया जा रहा है...",
-				"protocolHandlerRemoved": "fount:// प्रोटोकॉल हैंडलर हटा दिया गया है।",
-				"removeProtocolHandlerFailed": "fount:// प्रोटोकॉल हैंडलर को हटाने में विफल: ${message}",
+				"protocolHandlerRemoved": "`fount://` प्रोटोकॉल हैंडलर हटा दिया गया है।",
+				"removeProtocolHandlerFailed": "`fount://` प्रोटोकॉल हैंडलर को हटाने में विफल: ${message}",
 				"removingFountFromGitSafeDir": "Git सुरक्षित.निर्देशिका से फव्वारा हटाया जा रहा है...",
 				"removingInstalledSystemPackages": "स्थापित सिस्टम पैकेजों को हटाया जा रहा है...",
 				"uninstallingDeno": "डेनो को अनइंस्टॉल किया जा रहा है...",
 				"removeDenoFailed": "डेनो को हटाने में विफल: ${message}",
-				"removingFountPwshFromProfile": "PowerShell प्रोफाइल से fount-pwsh हटाया जा रहा है...",
+				"removingFountPwshFromProfile": "PowerShell प्रोफाइल से `fount-pwsh` हटाया जा रहा है...",
 				"fountPwshRemovedFromProfile": "fount-pwsh को पॉवरशेल प्रोफाइल से हटा दिया गया है।",
-				"pwshProfileNotFound": "PowerShell प्रोफ़ाइल नहीं मिली, प्रोफ़ाइल से fount-pwsh को हटाया नहीं जा रहा है।",
-				"uninstallingFountPwsh": "fount-pwsh को अनइंस्टॉल किया जा रहा है...",
-				"uninstallFountPwshFailed": "fount-pwsh को अनइंस्टॉल करना विफल: ${message}",
+				"pwshProfileNotFound": "PowerShell प्रोफ़ाइल नहीं मिली, प्रोफ़ाइल से `fount-pwsh` को हटाया नहीं जा रहा है।",
+				"uninstallingFountPwsh": "`fount-pwsh` को अनइंस्टॉल किया जा रहा है...",
+				"uninstallFountPwshFailed": "`fount-pwsh` को अनइंस्टॉल करना विफल: ${message}",
 				"removingTerminalProfile": "Windows टर्मिनल प्रोफ़ाइल हटाई जा रही है...",
 				"terminalProfileRemoved": "विंडोज़ टर्मिनल प्रोफ़ाइल निर्देशिका हटा दी गई है।",
 				"terminalProfileNotFound": "Windows टर्मिनल प्रोफ़ाइल निर्देशिका नहीं मिली.",
@@ -1894,7 +1898,30 @@
 			"copied": "नकल की गई!",
 			"apiKeyRequired": "मॉडलों को सूचीबद्ध करने के लिए एपीआई कुंजी की आवश्यकता होती है।",
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
-			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}"
+			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
+			"modelSearchTitle": "मॉडल कैटलॉग देखें",
+			"modelSearchPlaceholder": {
+				"placeholder": "मॉडल नाम, प्रदाता या क्षमताओं से खोजें…"
+			},
+			"modelSearchHint": "परिणाम चुनने पर URL और मॉडल नाम स्वतः भर जाएँगे",
+			"modelsDevLoading": "कैटलॉग लोड हो रहा है…",
+			"modelsDevLoadFailed": "कैटलॉग लोड करने में विफल: ${message}",
+			"noModelsMatched": "कोई मेल खाता मॉडल नहीं मिला",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "प्रदाता: ${provider}",
+			"metaContext": "संदर्भ: ${context} टोकन",
+			"metaOutputLimit": "अधिकतम आउटपुट: ${output} टोकन",
+			"metaInputPrice": "इनपुट मूल्य: ${price} / 1M टोकन",
+			"metaOutputPrice": "आउटपुट मूल्य: ${price} / 1M टोकन",
+			"metaCachePrice": "कैश पढ़ना/लिखना: ${read} / ${write}",
+			"metaModalities": "माध्यमिकताएँ: इनपुट ${input}, आउटपुट ${output}",
+			"metaReasoning": "रीज़निंग समर्थित",
+			"metaToolCall": "टूल कॉल समर्थित",
+			"metaVision": "दृश्य इनपुट समर्थित",
+			"metaOpenWeights": "ओपन वेट",
+			"metaKnowledge": "ज्ञान सीमा: ${knowledge}",
+			"metaReleaseDate": "रिलीज़ तिथि: ${date}",
+			"providerDocLink": "[प्रदाता दस्तावेज़ देखें](${url})"
 		},
 		"prompts": {
 			"newFileName": "कृपया नया सेवा स्रोत फ़ाइल नाम दर्ज करें (प्रत्यय शामिल न करें):"
@@ -1932,6 +1959,7 @@
 			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल चयनित नहीं है.",
 			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल चयनित नहीं.",
 			"noGeneratorSelectedSave": "कृपया सहेजने से पहले जनरेटर का चयन करें",
+			"savedAsNewFile": "नए सेवा स्रोत के रूप में सहेजा गया: ${name}",
 			"invalidFileName": "फ़ाइल नाम में निम्नलिखित अक्षर नहीं हो सकते: / \\ : * ? \" < > |"
 		},
 		"achievements": {

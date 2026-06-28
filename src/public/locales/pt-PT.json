@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL:protocolo de fount",
-				"registerFailed": "Falha ao registar o manipulador de protocolo fount://: ${message}",
+				"registerFailed": "Falha ao registar o manipulador de protocolo `fount://`: ${message}",
 				"noUrl": "Erro: URL para o manipulador de protocolo não fornecido."
 			},
 			"update": {
-				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada"
+				"skippingFountUpdate": "Como o arquivo `.noupdate` existe, a atualização da fount é ignorada"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",
-				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em ${path}",
+				"desktopShortcutCreated": "Atalho na área de trabalho criado em `${path}`",
+				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em `${path}`",
 				"protocolHandlerRegistered": "fount:// manipulador de protocolo registrado.",
 				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho.",
 				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar o aplicativo macOS.",
-				"lsregisterFailed": "Aviso: falha ao usar lsregister para registar um aplicativo com LaunchServices.",
+				"lsregisterFailed": "Aviso: falha ao usar `lsregister` para registar um aplicativo com LaunchServices.",
 				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
 			},
 			"git": {
 				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
 				"fetchingAndResetting": "Buscando do repositório remoto e redefinindo para master...",
 				"localChangesDetected": "Alterações locais detectadas, as diferenças serão salvas antes de serem substituídas.",
-				"backupSavedTo": "Um backup das suas alterações locais foi salvo em: ${path}",
+				"backupSavedTo": "Um backup das suas alterações locais foi salvo em: `${path}`",
 				"updatingFromRemote": "Atualizando do repositório remoto...",
 				"alreadyUpToDate": "Já é o mais recente.",
 				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Aviso: nenhuma ramificação upstream está configurada para a ramificação '${branch}'. Configurando o upstream para 'origin/master'.",
 				"dirtyWorkingDirectory": "Aviso: o diretório de trabalho não está limpo. Prepare ou confirme suas alterações antes de atualizar.",
 				"notInstalled": "Git não está instalado, tentando instalar...",
-				"notInstalledSkippingPull": "Git não está instalado, pule git pull",
-				"repoNotFoundSkippingPull": "Repositório não encontrado, pule git pull",
+				"notInstalledSkippingPull": "Git não está instalado, pule `git pull`",
+				"repoNotFoundSkippingPull": "Repositório não encontrado, pule `git pull`",
 				"fetchFailed": "Falha ao obter da 'origem'.",
 				"fetchFailedSkippingUpdate": "Não foi possível obter as atualizações do GitHub; atualização ignorada.",
 				"remoteRefUnavailable": "A referência remota '${ref}' não está disponível; sincronização Git ignorada.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno não encontrado, a fount não pode ser executada sem Deno",
 				"installingTermux": "Instalando Deno para Termux...",
 				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
-				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://discord.gg/deno para obter suporte",
+				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://github.com/denoland/deno/issues para obter suporte",
 				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros.",
 				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
 				"patchMissing": "Erro: executável Deno não encontrado antes do patch. Não pode ser corrigido.",
 				"patchUnsupportedArch": "Erro: Arquitetura de patch não suportada: ${arch}",
-				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando patchelf."
+				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Erro: não é possível executar `fount` no diretório temporário\n\nfount acopla-se profundamente ao sistema e regista o comando `PATH` e vários hooks do sistema em `fount`. Se executado num diretório temporário, após o sistema limpar os ficheiros temporários, não poderá executar `fount remove` para remover fount e os seus hooks.\n\nMova fount para um diretório não temporário antes de executar. Se apenas quiser testar brevemente, execute manualmente `fount remove` após o teste."
 			},
 			"install": {
 				"installingDependencies": "Instalando dependências...",
@@ -184,35 +187,36 @@
 			},
 			"keepalive": {
 				"initComplete": "Reinicialização concluída. Tentando reiniciar a fount...",
-				"autoInitDisabled": "A fount foi reiniciada várias vezes no último curto período de tempo, mas a reinicialização automática foi desativada devido à presença do arquivo .noautoinit. Saindo.",
+				"autoInitDisabled": "A fount foi reiniciada várias vezes no último curto período de tempo, mas a reinicialização automática foi desativada devido à presença do arquivo `.noautoinit`. Saindo.",
 				"restartingTooFast": "A fount foi reiniciada várias vezes em um curto período de tempo. Reinicialização forçada...",
 				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
 				"initFailed": "Falha na inicialização da fount. Saindo."
 			},
 			"terminalKeybindings": {
 				"registered": "Patch de atalhos do terminal configurado.",
-				"wtPatchFailed": "Não foi possível aplicar patch às definições do Windows Terminal ${path}: ${message}",
-				"wtRemoved": "Configuração de atalhos fount removida do Windows Terminal: ${path}",
-				"editorRemoved": "Configuração fount removida dos atalhos do terminal do editor: ${path}"
+				"wtPatchFailed": "Não foi possível aplicar patch às definições do Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "Configuração de atalhos fount removida do Windows Terminal: `${path}`",
+				"editorRemoved": "Configuração fount removida dos atalhos do terminal do editor: `${path}`"
 			},
 			"remove": {
+				"removingDesktopShortcut": "Removendo atalho da área de trabalho...",
 				"removingTerminalKeybindings": "A remover patch de atalhos do terminal...",
 				"removingFount": "Removendo fount...",
 				"fountUninstallationComplete": "desinstalação da fount concluída.",
 				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
 				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
 				"removingFountFromPath": "Removendo fount do PATH...",
-				"removingProtocolHandler": "Removendo o manipulador de protocolo fount://...",
-				"protocolHandlerRemoved": "O manipulador de protocolo fount:// foi removido.",
-				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo fount://: ${message}",
-				"removingFountFromGitSafeDir": "Removendo fount do git safe.directory...",
+				"removingProtocolHandler": "Removendo o manipulador de protocolo `fount://`...",
+				"protocolHandlerRemoved": "O manipulador de protocolo `fount://` foi removido.",
+				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo `fount://`: ${message}",
+				"removingFountFromGitSafeDir": "Removendo fount do `git safe.directory`...",
 				"removingInstalledSystemPackages": "Removendo pacotes de sistema instalados...",
 				"uninstallingDeno": "Desinstalando o Deno...",
 				"removeDenoFailed": "Falha ao remover Deno: ${message}",
-				"removingFountPwshFromProfile": "Removendo fount-pwsh do perfil do PowerShell...",
+				"removingFountPwshFromProfile": "Removendo `fount-pwsh` do perfil do PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh foi removido do perfil do PowerShell.",
-				"pwshProfileNotFound": "Perfil do PowerShell não encontrado, ignorando a remoção do fount-pwsh do perfil.",
-				"uninstallingFountPwsh": "Desinstalando fount-pwsh...",
+				"pwshProfileNotFound": "Perfil do PowerShell não encontrado, ignorando a remoção do `fount-pwsh` do perfil.",
+				"uninstallingFountPwsh": "Desinstalando `fount-pwsh`...",
 				"uninstallFountPwshFailed": "Falha na desinstalação do font-pwsh: ${message}",
 				"removingTerminalProfile": "Removendo o perfil do terminal do Windows...",
 				"terminalProfileRemoved": "O diretório Windows Terminal Profile foi removido.",
@@ -1894,7 +1898,30 @@
 			"copied": "Copiado!",
 			"apiKeyRequired": "Uma chave de API é necessária para listar modelos.",
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
-			"loadModelsFailed": "Falha ao carregar modelo: ${message}"
+			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
+			"modelSearchTitle": "Explorar catálogo de modelos",
+			"modelSearchPlaceholder": {
+				"placeholder": "Pesquisar por nome do modelo, fornecedor ou capacidades…"
+			},
+			"modelSearchHint": "Ao clicar num resultado, o URL e o nome do modelo são preenchidos automaticamente",
+			"modelsDevLoading": "A carregar catálogo…",
+			"modelsDevLoadFailed": "Falha ao carregar o catálogo: ${message}",
+			"noModelsMatched": "Nenhum modelo correspondente encontrado",
+			"currentModelTitle": "${name} (${model})",
+			"providerLabel": "Fornecedor: ${provider}",
+			"metaContext": "Contexto: ${context} tokens",
+			"metaOutputLimit": "Saída máxima: ${output} tokens",
+			"metaInputPrice": "Preço de entrada: ${price} / 1M tokens",
+			"metaOutputPrice": "Preço de saída: ${price} / 1M tokens",
+			"metaCachePrice": "Cache leitura/escrita: ${read} / ${write}",
+			"metaModalities": "Modalidades: entrada ${input}, saída ${output}",
+			"metaReasoning": "Suporta raciocínio",
+			"metaToolCall": "Suporta chamadas de ferramentas",
+			"metaVision": "Suporta entrada visual",
+			"metaOpenWeights": "Pesos abertos",
+			"metaKnowledge": "Limite de conhecimento: ${knowledge}",
+			"metaReleaseDate": "Data de lançamento: ${date}",
+			"providerDocLink": "[Ver documentação do fornecedor](${url})"
 		},
 		"prompts": {
 			"newFileName": "Insira o novo nome do arquivo de origem do serviço (não inclua o sufixo):"
@@ -1932,6 +1959,7 @@
 			"noFileSelectedSave": "Nenhum arquivo selecionado para salvar.",
 			"noFileSelectedDelete": "Nenhum arquivo selecionado para exclusão.",
 			"noGeneratorSelectedSave": "Selecione o gerador antes de salvar",
+			"savedAsNewFile": "Guardado como nova fonte de serviço: ${name}",
 			"invalidFileName": "O nome do arquivo não pode conter os seguintes caracteres: / \\ : * ? \" < > |"
 		},
 		"achievements": {
