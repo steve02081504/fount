@@ -338,6 +338,8 @@ export async function handleMainClick(appContext, event) {
 		const tab = profileTab.dataset.profileTab
 		for (const button of document.querySelectorAll('[data-profile-tab]'))
 			button.classList.toggle('active', button.dataset.profileTab === tab)
+		for (const button of document.querySelectorAll('[data-profile-tab]'))
+			button.classList.toggle('tab-active', button.dataset.profileTab === tab)
 		for (const panel of document.querySelectorAll('[data-profile-panel]'))
 			panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
 	}

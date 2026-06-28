@@ -193,6 +193,44 @@ export async function buildProfileFeedItems(username, entityHash) {
 }
 
 /**
+ * 构建资料页点赞列表（与首页 feed 同构）。
+ * @param {string} username 用户
+ * @param {string} entityHash 资料页 owner
+ * @returns {Promise<{ entityHash: string, items: object[] }>} 点赞过的帖子列表
+ */
+export async function buildLikedFeedItems(username, entityHash) {
+	entityHash = entityHash.trim().toLowerCase()
+	if (!isEntityHash128(entityHash))
+		return { entityHash, items: [] }
+
+	const viewerContext = await loadViewerContext(username)
+	const engagement = await buildEngagementIndex(username)
+	const viewerLiked = await buildViewerLikedSet(username)
+	const authorProfile = createAuthorProfileLoader(username)
+	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
+	const feedItemBuildContext = { authorProfile, engagementForPost }
+
+	const view = await getTimelineMaterialized(username, entityHash)
+	if (!view.likes?.length)
+		return { entityHash, items: [] }
+
+	/** @type {object[]} */
+	const items = []
+
+	for (const like of view.likes) {
+		const targetEntityHash = (like.content?.targetEntityHash || '').toLowerCase()
+		const targetPostId = like.content?.targetPostId
+		if (!isEntityHash128(targetEntityHash) || targetPostId == null) continue
+		const post = await resolveVisiblePost(username, targetEntityHash, String(targetPostId), viewerContext)
+		if (!post) continue
+		items.push(await buildPostFeedItem(username, targetEntityHash, post, feedItemBuildContext))
+	}
+
+	items.sort((left, right) => compareFeedItems(left, right) * -1)
+	return { entityHash, items }
+}
+
+/**
  * 列出指定帖子的可见回复。
  * @param {string} username 用户
  * @param {string} entityHash 作者

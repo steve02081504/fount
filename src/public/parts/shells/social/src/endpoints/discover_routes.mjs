@@ -1,9 +1,8 @@
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
-import { getReplicaFromReq, resolveOperatorEntityHash } from '../../../../../../server/p2p_server/http_glue.mjs'
+import { getReplicaFromReq } from '../../../../../../server/p2p_server/http_glue.mjs'
 import { discoverWithNetwork } from '../discovery.mjs'
 import { getEntityProfile } from '../feed.mjs'
 import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
-import { listLocalAgentEntities } from '../lib/entityResolve.mjs'
 import { suggestMentions } from '../lib/mentionSuggest.mjs'
 import { buildNotifications } from '../notifications.mjs'
 import { searchPosts } from '../search.mjs'
@@ -64,30 +63,5 @@ export function registerDiscoverRoutes(router) {
 			viewerEntityHash: entityHash,
 			profile,
 		})
-	})
-
-	router.get('/api/parts/shells\\:social/posting-entities', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const selfEntityHash = await resolveOperatorEntityHash(username)
-		/** @type {object[]} */
-		const entities = []
-		if (selfEntityHash) {
-			const profile = await getEntityProfile(username, selfEntityHash)
-			entities.push({
-				entityHash: selfEntityHash,
-				displayName: profile?.name || selfEntityHash.slice(0, 8),
-				kind: 'self',
-			})
-		}
-		for (const { entityHash, charPartName } of listLocalAgentEntities(username)) {
-			const profile = await getEntityProfile(username, entityHash)
-			entities.push({
-				entityHash,
-				displayName: profile?.name || charPartName,
-				charPartName,
-				kind: 'agent',
-			})
-		}
-		res.status(200).json({ entities })
 	})
 }

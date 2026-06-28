@@ -23,6 +23,17 @@ test.describe('Social profile', () => {
 		await expect(page.locator(`#profilePostsPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
+	test('profile likes tab shows liked posts', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`like-tab-src ${Date.now()}`)
+		const card = page.locator(`#feedList [data-post-id="${postId}"]`)
+		await expect(card).toBeVisible({ timeout: 30_000 })
+		await card.locator('[data-like]').click()
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		await page.locator('[data-profile-tab="likes"]').click()
+		await expect(page.locator('#profileLikesPanel')).toBeVisible()
+		await expect(page.locator(`#profileLikesPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+	})
+
 	test('profile explore settings save', async ({ page }) => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })

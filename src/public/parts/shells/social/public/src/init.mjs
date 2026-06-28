@@ -6,7 +6,6 @@ import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,
 	loadGroupPickerOptions,
-	loadPostingEntities,
 	refreshGroupRefPreview,
 	setPendingGroupRef,
 	syncGroupRefInComposer,
@@ -116,7 +115,6 @@ export async function bootstrapSocialApp(appContext) {
 		if (postLang instanceof HTMLInputElement)
 			postLang.value = navigator.language || 'zh-CN'
 
-		await loadPostingEntities(appContext)
 		await loadGroupPickerOptions(appContext)
 		await updateNotificationBadge(appContext)
 
@@ -126,7 +124,6 @@ export async function bootstrapSocialApp(appContext) {
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',
-			postAsEntity: 'social.a11y.postAsEntity',
 			postVisibility: 'social.a11y.postVisibility',
 			postLang: 'social.a11y.postLang',
 			feedTrending: 'social.a11y.trendingHashtags',
@@ -136,6 +133,12 @@ export async function bootstrapSocialApp(appContext) {
 		})) {
 			const el = document.getElementById(id)
 			if (el) el.setAttribute('aria-label', appContext.geti18n(key))
+		}
+		const refreshBtn = document.getElementById('feedRefreshBtn')
+		if (refreshBtn) {
+			const refreshLabel = appContext.geti18n('social.feed.refresh')
+			refreshBtn.setAttribute('data-tip', refreshLabel)
+			refreshBtn.setAttribute('title', refreshLabel)
 		}
 
 		document.getElementById('linkGroupSelect')?.addEventListener('change', event => {

@@ -1,4 +1,5 @@
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
+import { getNodeHash } from '../../../../../scripts/p2p/node_context.mjs'
 import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
 import { SOCIAL_RPC_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
@@ -17,7 +18,7 @@ import { buildFederatedTimelinePullResponse } from './timeline/sync.mjs'
 export async function discoverAccounts(username, options = {}) {
 	const accountLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const cursor = (options.cursor || '').toLowerCase()
-	const owners = await listLocalTimelineOwners(username)
+	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix: getNodeHash() })
 	const start = cursor ? Math.max(0, owners.indexOf(cursor) + 1) : 0
 	const slice = owners.slice(start, start + accountLimit)
 	/** @type {object[]} */
@@ -55,7 +56,7 @@ const POST_DISCOVER_SAMPLE_MULTIPLIER = 3
 export async function discoverPosts(username, options = {}) {
 	const postLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const mediaOnly = Boolean(options.mediaOnly)
-	const owners = await listLocalTimelineOwners(username)
+	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix: getNodeHash() })
 	/** @type {object[]} */
 	const posts = []
 

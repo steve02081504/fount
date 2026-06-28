@@ -63,6 +63,25 @@ export async function renderProfilePosts(appContext, entityHash, container, high
 }
 
 /**
+ * 渲染资料页点赞列表。
+ * @param {object} appContext 应用上下文
+ * @param {string} entityHash owner
+ * @param {HTMLElement} container 容器
+ * @returns {Promise<void>}
+ */
+export async function renderProfileLikes(appContext, entityHash, container) {
+	const data = await appContext.socialApi(`/profile/${entityHash}/likes`)
+	container.replaceChildren()
+	const items = data.items || []
+	if (!items.length) {
+		container.innerHTML = `<div class="empty">${escapeHtml(appContext.geti18n('social.empty.likedPosts'))}</div>`
+		return
+	}
+	for (const item of items)
+		container.appendChild(await appContext.buildPostCard(item))
+}
+
+/**
  * 渲染资料页 following 列表。
  * @param {object} appContext 应用上下文
  * @param {string} entityHash owner
@@ -145,12 +164,14 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 					<span class="profile-stat"><strong>${followingCount}</strong> <span>${escapeHtml(appContext.geti18n('social.profile.statsFollowing'))}</span></span>
 				</div>
 			</div>
-			<div class="profile-tabs">
-				<button type="button" class="profile-tab active" data-profile-tab="posts">${escapeHtml(appContext.geti18n('social.profile.tabPosts'))}</button>
-				<button type="button" class="profile-tab" data-profile-tab="following">${escapeHtml(appContext.geti18n('social.profile.tabFollowing'))}</button>
+			<div class="profile-tabs tabs tabs-bordered">
+				<button type="button" class="profile-tab tab tab-active active" data-profile-tab="posts">${escapeHtml(appContext.geti18n('social.profile.tabPosts'))}</button>
+				<button type="button" class="profile-tab tab" data-profile-tab="likes">${escapeHtml(appContext.geti18n('social.profile.tabLikes'))}</button>
+				<button type="button" class="profile-tab tab" data-profile-tab="following">${escapeHtml(appContext.geti18n('social.profile.tabFollowing'))}</button>
 			</div>
 		</div>
 		<div id="profilePostsPanel" class="profile-tab-panel" data-profile-panel="posts"></div>
+		<div id="profileLikesPanel" class="profile-tab-panel hidden" data-profile-panel="likes"></div>
 		<div id="profileFollowingPanel" class="profile-tab-panel hidden" data-profile-panel="following"></div>
 		${isSelf ? `
 			<div class="profile-settings card">
@@ -167,6 +188,7 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 
 	await renderProfilePosts(appContext, entityHash, document.getElementById('profilePostsPanel'), highlightPostId)
+	await renderProfileLikes(appContext, entityHash, document.getElementById('profileLikesPanel'))
 	await renderProfileFollowingList(appContext, entityHash, document.getElementById('profileFollowingPanel'))
 }
 

@@ -1040,7 +1040,7 @@
 		}
 	},
 	"social": {
-		"title": "社交",
+		"title": "广场",
 		"description": "P2P 开放社交动态、关注与文件分享",
 		"bootstrapFailed": "社交界面初始化失败：${error}",
 		"mentionHint": "提及：输入 @ 后从列表选择，或直接 @<128位 entityHash>",
@@ -1052,14 +1052,12 @@
 			"profile": "我的"
 		},
 		"composer": {
-			"placeholder": "在想什么？支持 Chat Markdown；输入 @ 可提及",
+			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
 			"composeBtn": "发布",
 			"addMedia": "添加媒体",
 			"visibilityPublic": "公开",
-			"visibilityFollowers": "仅关注者",
-			"postAsSelf": "本人",
-			"postAsAgent": "角色"
+			"visibilityFollowers": "仅关注者"
 		},
 		"feed": {
 			"loadMore": "加载更多",
@@ -1090,6 +1088,7 @@
 			"saveExplore": "保存探索设置",
 			"tabPosts": "动态",
 			"tabFollowing": "正在关注",
+			"tabLikes": "点赞",
 			"statsPosts": "动态",
 			"statsFollowing": "正在关注"
 		},
@@ -1150,7 +1149,6 @@
 		},
 		"a11y": {
 			"linkGroupSelect": "关联 Chat 群或频道",
-			"postAsEntity": "发帖身份",
 			"postVisibility": "可见范围",
 			"postLang": "内容语言",
 			"trendingHashtags": "热门话题",
@@ -1191,6 +1189,7 @@
 			"notifications": "暂无通知",
 			"saved": "暂无收藏",
 			"explorePosts": "暂无探索帖子",
+			"likedPosts": "暂无点赞",
 			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
 		}
 	},

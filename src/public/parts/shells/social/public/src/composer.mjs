@@ -117,35 +117,11 @@ export async function loadGroupPickerOptions(appContext) {
 }
 
 /**
- * 加载可代发帖的 entity 列表。
- * @param {object} appContext 应用上下文
- * @returns {Promise<void>}
- */
-export async function loadPostingEntities(appContext) {
-	const select = document.getElementById('postAsEntity')
-	if (!select) return
-	const data = await appContext.socialApi('/posting-entities').catch(() => ({ entities: [] }))
-	select.innerHTML = ''
-	for (const entity of data.entities || []) {
-		const option = document.createElement('option')
-		option.value = entity.entityHash
-		const kindLabel = entity.kind === 'agent'
-			? appContext.geti18n('social.composer.postAsAgent')
-			: appContext.geti18n('social.composer.postAsSelf')
-		option.textContent = `${entity.displayName} (${kindLabel})`
-		select.appendChild(option)
-	}
-	select.classList.toggle('hidden', !(data.entities?.length > 1))
-}
-
-/**
  * 从 composer 表单构建发帖 API 请求体。
  * @param {object} appContext 应用上下文
  * @returns {object} 发帖 body
  */
 export function buildPostBody(appContext) {
-	const select = document.getElementById('postAsEntity')
-	const entityHash = select?.value || null
 	const body = {
 		text: document.getElementById('postText').value.trim(),
 		mediaRefs: appContext.state.pendingMediaRefs,
@@ -162,8 +138,6 @@ export function buildPostBody(appContext) {
 			groupId: appContext.state.pendingGroupRef.groupId,
 			channelId: appContext.state.pendingGroupRef.channelId,
 		}
-	if (entityHash && entityHash !== appContext.state.viewerEntityHash)
-		body.entityHash = entityHash
 	return body
 }
 

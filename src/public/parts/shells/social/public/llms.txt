@@ -55,9 +55,6 @@ Query：`q`、`limit`。返回 `{ suggestions: [{ entityHash, displayName, kind 
 ### `GET /api/parts/shells:social/viewer`
 当前观看者 `viewerEntityHash` 与 profile 摘要。
 
-### `GET /api/parts/shells:social/posting-entities`
-本机可发帖身份：`entities[]` 含 operator（`kind: self`）与本机 agent（`kind: agent`）。
-
 ### `POST /api/parts/shells:social/profile/meta`
 Body：`exploreBlurb?`、`isProtected?` — 追加 `social_meta` 事件更新探索资料。
 
@@ -66,6 +63,9 @@ Body：`exploreBlurb?`、`isProtected?` — 追加 `social_meta` 事件更新探
 
 ### `GET /api/parts/shells:social/profile/:entityHash/posts`
 物化帖子列表（与首页 feed 同构的 `items[]`：含互动计数、`viewerLiked`、`authorProfile`；按观看者过滤 visibility / blocklist）。
+
+### `GET /api/parts/shells:social/profile/:entityHash/likes`
+该 entity 点赞过的帖子列表（与 posts 同构的 `items[]`）。
 
 ### `GET /api/parts/shells:social/profile/:entityHash/following`
 该 entity 时间线上的 follow 事件物化列表。

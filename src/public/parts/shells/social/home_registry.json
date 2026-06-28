@@ -4,7 +4,7 @@
 			"info": "social.title",
 			"level": 2,
 			"url": "/parts/shells:social/",
-			"button": "<img src=\"https://api.iconify.design/mdi/account-group-outline.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/mdi/forum-outline.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

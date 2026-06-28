@@ -31,9 +31,9 @@ Test-Case 'GET /viewer' {
 	$script:entityHash = $r.json.viewerEntityHash
 	[bool]$script:entityHash
 }
-Test-Case 'GET /posting-entities' {
-	$r = Api GET '/posting-entities'
-	$r.status -eq 200 -and @($r.json.entities).Count -ge 1
+Test-Case 'GET /profile/likes' {
+	$r = Api GET "/profile/$($script:entityHash)/likes"
+	$r.status -eq 200 -and $null -ne $r.json.items
 }
 Test-Case 'GET /feed' {
 	$r = Api GET '/feed?sync=false&limit=20'

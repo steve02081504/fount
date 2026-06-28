@@ -5,7 +5,7 @@ import { setPersonalHidden } from '../../../../../../scripts/p2p/personal_block.
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
-import { buildProfileFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
+import { buildProfileFeedItems, buildLikedFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
 import { setFollow, loadFollowing } from '../following.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
@@ -74,6 +74,14 @@ export function registerProfileRoutes(router) {
 		if (!isEntityHash128(entityHash))
 			return res.status(400).json({ error: 'invalid entityHash' })
 		res.status(200).json(await buildProfileFeedItems(username, entityHash))
+	})
+
+	router.get('/api/parts/shells\\:social/profile/:entityHash/likes', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const entityHash = String(req.params.entityHash).toLowerCase()
+		if (!isEntityHash128(entityHash))
+			return res.status(400).json({ error: 'invalid entityHash' })
+		res.status(200).json(await buildLikedFeedItems(username, entityHash))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/following', authenticate, async (req, res) => {
