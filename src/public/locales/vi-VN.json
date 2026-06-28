@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL: giao thức fount",
-				"registerFailed": "Không thể đăng ký trình xử lý giao thức fount://: ${message}",
+				"registerFailed": "Không thể đăng ký trình xử lý giao thức `fount://`: ${message}",
 				"noUrl": "Lỗi: URL cho trình xử lý giao thức không được cung cấp."
 			},
 			"update": {
-				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật fount bị bỏ qua"
+				"skippingFountUpdate": "Vì tệp `.noupdate` tồn tại nên bản cập nhật fount bị bỏ qua"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại ${path}",
-				"startMenuShortcutCreated": "Phím tắt menu bắt đầu được tạo tại ${path}",
+				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại `${path}`",
+				"startMenuShortcutCreated": "Phím tắt menu bắt đầu được tạo tại `${path}`",
 				"protocolHandlerRegistered": "fount:// trình xử lý giao thức đã đăng ký.",
 				"shortcutNotSupported": "Cảnh báo: Hệ điều hành của bạn (${os}) không hỗ trợ tạo lối tắt trên màn hình.",
 				"osacompileNotFound": "Lỗi: không tìm thấy 'osacompile'. Không thể tạo ứng dụng macOS.",
-				"lsregisterFailed": "Cảnh báo: Không thể sử dụng lsregister để đăng ký ứng dụng với LaunchServices.",
+				"lsregisterFailed": "Cảnh báo: Không thể sử dụng `lsregister` để đăng ký ứng dụng với LaunchServices.",
 				"createDesktopAppFailed": "Lỗi: Không tạo được ứng dụng dành cho máy tính để bàn."
 			},
 			"git": {
 				"repoNotFound": "Không tìm thấy kho git của fount. Đang khởi tạo một cái mới...",
 				"fetchingAndResetting": "Đang tìm nạp từ kho lưu trữ từ xa và đặt lại về kho chính...",
 				"localChangesDetected": "Những thay đổi cục bộ được phát hiện, những khác biệt sẽ được lưu trước khi ghi đè.",
-				"backupSavedTo": "Bản sao lưu các thay đổi cục bộ của bạn đã được lưu vào: ${path}",
+				"backupSavedTo": "Bản sao lưu các thay đổi cục bộ của bạn đã được lưu vào: `${path}`",
 				"updatingFromRemote": "Đang cập nhật từ kho lưu trữ từ xa...",
 				"alreadyUpToDate": "Đã là mới nhất.",
 				"localBranchAhead": "Chi nhánh địa phương đi trước chi nhánh từ xa. Không cần cập nhật.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}'. Thiết lập ngược dòng thành 'origin/master'.",
 				"dirtyWorkingDirectory": "Cảnh báo: Thư mục làm việc không sạch sẽ. Vui lòng stage hoặc commit các thay đổi của bạn trước khi cập nhật.",
 				"notInstalled": "Git chưa được cài đặt, đang cố gắng cài đặt...",
-				"notInstalledSkippingPull": "Git chưa được cài đặt, bỏ qua git pull",
-				"repoNotFoundSkippingPull": "Không tìm thấy kho lưu trữ, bỏ qua git pull",
+				"notInstalledSkippingPull": "Git chưa được cài đặt, bỏ qua `git pull`",
+				"repoNotFoundSkippingPull": "Không tìm thấy kho lưu trữ, bỏ qua `git pull`",
 				"fetchFailed": "Không thể lấy được từ 'nguồn gốc'.",
 				"fetchFailedSkippingUpdate": "Không thể lấy cập nhật từ GitHub; đã bỏ qua cập nhật.",
 				"remoteRefUnavailable": "Tham chiếu từ xa '${ref}' không khả dụng; đã bỏ qua đồng bộ Git.",
@@ -160,12 +160,15 @@
 				"isRequired": "Không tìm thấy Deno, không thể chạy được nếu không có Deno",
 				"installingTermux": "Đang cài đặt Deno cho Termux...",
 				"installFailedFallback": "Cài đặt Deno không thành công, cố gắng tự động cài đặt vào thư mục đường dẫn của fount...",
-				"notWorking": "Vì lý do nào đó Deno không hoạt động, bạn có thể tham gia https://discord.gg/deno để được hỗ trợ",
+				"notWorking": "Vì lý do nào đó Deno không hoạt động, bạn có thể tham gia https://github.com/denoland/deno/issues để được hỗ trợ",
 				"upgradeFailed": "Cảnh báo: Nâng cấp Deno có thể không thành công. Vui lòng kiểm tra lỗi.",
 				"upgradeFailedTermux": "Lệnh nâng cấp Deno không thành công, đang cố cài đặt lại Deno cho Termux...",
 				"patchMissing": "Lỗi: Không tìm thấy tệp thực thi Deno trước khi vá. Không thể vá được.",
 				"patchUnsupportedArch": "Lỗi: Cấu trúc bản vá không được hỗ trợ: ${arch}",
-				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng patchelf."
+				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Lỗi: không thể chạy `fount` trong thư mục tạm\n\nfount liên kết sâu với hệ thống và đăng ký lệnh `PATH` cùng nhiều hook hệ thống trong `fount`. Nếu chạy trong thư mục tạm, sau khi hệ thống xóa tệp tạm, bạn sẽ không thể thực thi `fount remove` để gỡ fount và các hook của nó.\n\nVui lòng di chuyển fount sang thư mục không tạm trước khi chạy. Nếu chỉ muốn thử nhanh, hãy thực thi `fount remove` thủ công sau khi thử."
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Quá trình khởi tạo lại đã hoàn tất. Đang cố gắng khởi động lại fount...",
-				"autoInitDisabled": "fount đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp .noautoinit. Đang thoát.",
+				"autoInitDisabled": "fount đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp `.noautoinit`. Đang thoát.",
 				"restartingTooFast": "fount đã được khởi động lại nhiều lần trong một khoảng thời gian ngắn. Buộc khởi động lại...",
 				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, fount vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
 				"initFailed": "Khởi tạo fount không thành công. Đang thoát."
 			},
 			"terminalKeybindings": {
 				"registered": "Đã cấu hình bản vá phím tắt terminal.",
-				"wtPatchFailed": "Không thể vá cài đặt Windows Terminal ${path}: ${message}",
-				"wtRemoved": "Đã xóa cấu hình phím tắt fount khỏi Windows Terminal: ${path}",
-				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: ${path}"
+				"wtPatchFailed": "Không thể vá cài đặt Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "Đã xóa cấu hình phím tắt fount khỏi Windows Terminal: `${path}`",
+				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Đang xóa lối tắt trên màn hình...",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "Đang xóa thư mục cài đặt fount...",
 				"fountInstallationDirRemoved": "Thư mục cài đặt fount đã bị xóa.",
 				"removingFountFromPath": "Đang xóa fount khỏi PATH...",
-				"removingProtocolHandler": "Đang xóa trình xử lý giao thức fount://...",
-				"protocolHandlerRemoved": "Trình xử lý giao thức fount:// đã bị xóa.",
-				"removeProtocolHandlerFailed": "Không xóa được trình xử lý giao thức fount://: ${message}",
-				"removingFountFromGitSafeDir": "Xóa fount khỏi git safe.directory...",
+				"removingProtocolHandler": "Đang xóa trình xử lý giao thức `fount://`...",
+				"protocolHandlerRemoved": "Trình xử lý giao thức `fount://` đã bị xóa.",
+				"removeProtocolHandlerFailed": "Không xóa được trình xử lý giao thức `fount://`: ${message}",
+				"removingFountFromGitSafeDir": "Xóa fount khỏi `git safe.directory`...",
 				"removingInstalledSystemPackages": "Đang xóa các gói hệ thống đã cài đặt...",
 				"uninstallingDeno": "Đang gỡ cài đặt Deno...",
 				"removeDenoFailed": "Không xóa được Deno: ${message}",
 				"removingFountPwshFromProfile": "Đang xóa foun-pwsh khỏi Cấu hình PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh đã bị xóa khỏi Hồ sơ PowerShell.",
-				"pwshProfileNotFound": "Không tìm thấy Hồ sơ PowerShell, bỏ qua việc xóa fount-pwsh khỏi hồ sơ.",
-				"uninstallingFountPwsh": "Đang gỡ cài đặt fount-pwsh...",
-				"uninstallFountPwshFailed": "Gỡ cài đặt fount-pwsh không thành công: ${message}",
+				"pwshProfileNotFound": "Không tìm thấy Hồ sơ PowerShell, bỏ qua việc xóa `fount-pwsh` khỏi hồ sơ.",
+				"uninstallingFountPwsh": "Đang gỡ cài đặt `fount-pwsh`...",
+				"uninstallFountPwshFailed": "Gỡ cài đặt `fount-pwsh` không thành công: ${message}",
 				"removingTerminalProfile": "Đang xóa cấu hình thiết bị đầu cuối Windows...",
 				"terminalProfileRemoved": "Thư mục Windows Terminal Profile đã bị xóa.",
 				"terminalProfileNotFound": "Không tìm thấy thư mục Cấu hình thiết bị đầu cuối Windows.",

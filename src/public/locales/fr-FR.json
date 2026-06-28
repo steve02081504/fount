@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",
-				"registerFailed": "Échec de l'enregistrement du gestionnaire de protocole fount:// : ${message}",
+				"registerFailed": "Échec de l'enregistrement du gestionnaire de protocole `fount://` : ${message}",
 				"noUrl": "Erreur : L'URL du gestionnaire de protocole n'est pas fournie."
 			},
 			"update": {
-				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée"
+				"skippingFountUpdate": "Étant donné que le fichier `.noupdate` existe, la mise à jour des founts est ignorée"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Raccourci sur le bureau créé à ${path}",
-				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à ${path}",
+				"desktopShortcutCreated": "Raccourci sur le bureau créé à `${path}`",
+				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à `${path}`",
 				"protocolHandlerRegistered": "gestionnaire de protocole fount:// enregistré.",
 				"shortcutNotSupported": "Avertissement : Votre système d'exploitation (${os}) ne prend pas en charge la création de raccourcis sur le bureau.",
 				"osacompileNotFound": "Erreur : « osacompile » introuvable. Impossible de créer l'application macOS.",
-				"lsregisterFailed": "Avertissement : L'utilisation de lsregister pour enregistrer une application auprès de LaunchServices a échoué.",
+				"lsregisterFailed": "Avertissement : L'utilisation de `lsregister` pour enregistrer une application auprès de LaunchServices a échoué.",
 				"createDesktopAppFailed": "Erreur : échec de la création de l'application de bureau."
 			},
 			"git": {
 				"repoNotFound": "Le dépôt git de la fount est introuvable. Initialisation d'un nouveau...",
 				"fetchingAndResetting": "Récupération à partir du référentiel distant et réinitialisation vers le maître...",
 				"localChangesDetected": "Modifications locales détectées, les différences seront enregistrées avant écrasement.",
-				"backupSavedTo": "Une sauvegarde de vos modifications locales a été enregistrée dans : ${path}",
+				"backupSavedTo": "Une sauvegarde de vos modifications locales a été enregistrée dans : `${path}`",
 				"updatingFromRemote": "Mise à jour à partir du référentiel distant...",
 				"alreadyUpToDate": "Déjà le dernier.",
 				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Attention : Aucune branche amont n'est configurée pour la branche '${branch}'. Réglage en amont sur « origine/maître ».",
 				"dirtyWorkingDirectory": "Attention : le répertoire de travail n'est pas propre. Veuillez stager ou commiter vos modifications avant la mise à jour.",
 				"notInstalled": "Git n'est pas installé, j'essaye de l'installer...",
-				"notInstalledSkippingPull": "Git n'est pas installé, ignorez git pull",
-				"repoNotFoundSkippingPull": "Dépôt introuvable, ignorez git pull",
+				"notInstalledSkippingPull": "Git n'est pas installé, ignorez `git pull`",
+				"repoNotFoundSkippingPull": "Dépôt introuvable, ignorez `git pull`",
 				"fetchFailed": "Échec de l'obtention de « l'origine ».",
 				"fetchFailedSkippingUpdate": "Échec de la récupération des mises à jour depuis GitHub ; mise à jour ignorée.",
 				"remoteRefUnavailable": "La référence distante « ${ref} » est indisponible ; synchronisation Git ignorée.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno introuvable, la fount ne peut pas être exécutée sans Deno",
 				"installingTermux": "Installation de Deno pour Termux...",
 				"installFailedFallback": "L'installation de Deno a échoué, tentative d'installation automatique dans le dossier de chemin de la fount...",
-				"notWorking": "Pour une raison quelconque, Deno ne fonctionne pas, vous souhaiterez peut-être rejoindre https://discord.gg/deno pour obtenir de l'aide.",
+				"notWorking": "Pour une raison quelconque, Deno ne fonctionne pas, vous souhaiterez peut-être rejoindre https://github.com/denoland/deno/issues pour obtenir de l'aide.",
 				"upgradeFailed": "Avertissement : la mise à niveau de Deno a peut-être échoué. Veuillez vérifier les erreurs.",
 				"upgradeFailedTermux": "La commande de mise à niveau Deno a échoué, tentative de réinstallation de Deno pour Termux...",
 				"patchMissing": "Erreur : l'exécutable Deno est introuvable avant l'application du correctif. Ne peut pas être corrigé.",
 				"patchUnsupportedArch": "Erreur : Architecture de correctifs non prise en charge : ${arch}",
-				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de patchelf."
+				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Erreur\u00a0: impossible d'exécuter `fount` dans un répertoire temporaire\n\nfount est profondément couplé au système et enregistre la commande `PATH` et plusieurs hooks système dans `fount`. Si vous l'exécutez dans un répertoire temporaire, après que le système a effacé les fichiers temporaires, vous ne pourrez plus exécuter `fount remove` pour supprimer fount et ses hooks.\n\nVeuillez déplacer fount vers un répertoire non temporaire avant de l'exécuter. Si vous souhaitez seulement tester brièvement, exécutez manuellement `fount remove` après le test."
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Réinitialisation terminée. J'essaie de redémarrer la fount...",
-				"autoInitDisabled": "fount a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier .noautoinit. Sortir.",
+				"autoInitDisabled": "fount a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier `.noautoinit`. Sortir.",
 				"restartingTooFast": "la fount a été redémarrée plusieurs fois en peu de temps. Réinitialisation forcée...",
 				"failedToStart": "Même après des tentatives de réparation automatiques, fount ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
 				"initFailed": "L'initialisation de la fount a échoué. Sortir."
 			},
 			"terminalKeybindings": {
 				"registered": "Correctif des raccourcis du terminal configuré.",
-				"wtPatchFailed": "Impossible de modifier les paramètres de Windows Terminal ${path} : ${message}",
-				"wtRemoved": "Configuration des raccourcis fount supprimée des paramètres de Windows Terminal : ${path}",
-				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : ${path}"
+				"wtPatchFailed": "Impossible de modifier les paramètres de Windows Terminal `${path}` : ${message}",
+				"wtRemoved": "Configuration des raccourcis fount supprimée des paramètres de Windows Terminal : `${path}`",
+				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Suppression du raccourci sur le bureau...",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
 				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
 				"removingFountFromPath": "Suppression de la fount de PATH...",
-				"removingProtocolHandler": "Suppression du gestionnaire de protocole fount://...",
-				"protocolHandlerRemoved": "Le gestionnaire de protocole fount:// a été supprimé.",
-				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole fount:// : ${message}",
-				"removingFountFromGitSafeDir": "Suppression de la fount de git safe.directory...",
+				"removingProtocolHandler": "Suppression du gestionnaire de protocole `fount://`...",
+				"protocolHandlerRemoved": "Le gestionnaire de protocole `fount://` a été supprimé.",
+				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole `fount://` : ${message}",
+				"removingFountFromGitSafeDir": "Suppression de la fount de `git safe.directory`...",
 				"removingInstalledSystemPackages": "Suppression des packages système installés...",
 				"uninstallingDeno": "Désinstallation de Deno...",
 				"removeDenoFailed": "Échec de la suppression de Deno : ${message}",
-				"removingFountPwshFromProfile": "Suppression de fount-pwsh du profil PowerShell...",
+				"removingFountPwshFromProfile": "Suppression de `fount-pwsh` du profil PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh a été supprimé du profil PowerShell.",
-				"pwshProfileNotFound": "Profil PowerShell introuvable, ignorer la suppression de fount-pwsh du profil.",
-				"uninstallingFountPwsh": "Désinstallation de fount-pwsh...",
-				"uninstallFountPwshFailed": "Échec de la désinstallation de fount-pwsh : ${message}",
+				"pwshProfileNotFound": "Profil PowerShell introuvable, ignorer la suppression de `fount-pwsh` du profil.",
+				"uninstallingFountPwsh": "Désinstallation de `fount-pwsh`...",
+				"uninstallFountPwshFailed": "Échec de la désinstallation de `fount-pwsh` : ${message}",
 				"removingTerminalProfile": "Suppression du profil de terminal Windows...",
 				"terminalProfileRemoved": "Le répertoire du profil du terminal Windows a été supprimé.",
 				"terminalProfileNotFound": "Répertoire du profil du terminal Windows introuvable.",

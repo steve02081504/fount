@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "🔗⛲📜",
-				"registerFailed": "❌📝 fount:// 🔗👮: ${message}",
+				"registerFailed": "❌📝 `fount://` 🔗👮: ${message}",
 				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
 				"skippingFountUpdate": "⏭️ ⛲ ⏫"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "🖥️✨ ${path}",
-				"startMenuShortcutCreated": "🏁✨ ${path}",
+				"desktopShortcutCreated": "🖥️✨ `${path}`",
+				"startMenuShortcutCreated": "🏁✨ `${path}`",
 				"protocolHandlerRegistered": "🔗⛲:// ✅",
 				"shortcutNotSupported": "⚠️ ${os} 🚫➡️🖥️",
 				"osacompileNotFound": "❌ 'osacompile' ⁉️ 🍎💻💔",
-				"lsregisterFailed": "⚠️ lsregister 💥",
+				"lsregisterFailed": "⚠️ `lsregister` 💥",
 				"createDesktopAppFailed": "❌ 🖥️💔"
 			},
 			"git": {
 				"repoNotFound": "🤔❓ 🐙🐱... ➡️ ✨",
 				"fetchingAndResetting": "☁️📥 ➡️ 🌳",
 				"localChangesDetected": "📝👀 ➡️ 💾",
-				"backupSavedTo": "💾✅ ➡️ ${path}",
+				"backupSavedTo": "💾✅ ➡️ `${path}`",
 				"updatingFromRemote": "☁️🔄...",
 				"alreadyUpToDate": "👍💯",
 				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
@@ -160,12 +160,15 @@
 				"isRequired": "🚫🦕 ➡️ 🚫⛲",
 				"installingTermux": "📱🦕📥...",
 				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
-				"notWorking": "🦕❓➡️ discord.gg/deno",
+				"notWorking": "🦕❓➡️ github.com/denoland/deno/issues",
 				"upgradeFailed": "⚠️ 🦕⏫❓",
 				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
 				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️. 🚫🩹.",
 				"patchUnsupportedArch": "❌: 🚫🤝 🏗️: ${arch}",
-				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (patchelf) 💥"
+				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (`patchelf`) 💥"
+			},
+			"tempDir": {
+				"blocked": "🚫⛲🏃‍♂️📁🕒\n\n⛲🔗🖥️➡️`PATH`&🪝 in `fount`\n🕒📁🗑️➡️🚫`fount remove`\n\n📦➡️📁✅ | 🧪➡️`fount remove`"
 			},
 			"install": {
 				"installingDependencies": "📥🧩...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "✅✨ ➡️ 🔄⛲...",
-				"autoInitDisabled": "⛲ 🔄🔄🔄 & .noautoinit ➡️ 🛑",
+				"autoInitDisabled": "⛲ 🔄🔄🔄 & `.noautoinit` ➡️ 🛑",
 				"restartingTooFast": "⛲ 🔄🔄🔄 ➡️ 💥",
 				"failedToStart": "❌⏱️ ⛲ ➡️ 📜👀",
 				"initFailed": "❌✨ ⛲ ➡️ 🛑"
 			},
 			"terminalKeybindings": {
 				"registered": "✅ ⌨️🗺️ 🩹",
-				"wtPatchFailed": "❌ 🩹 🪟🖥️ ${path}: ${message}",
-				"wtRemoved": "✅ 👋 ⌨️🗺️ @ 🪟🖥️ ${path}",
-				"editorRemoved": "✅ 👋 ⛲ ⌨️ @ 📝🖥️ ${path}"
+				"wtPatchFailed": "❌ 🩹 🪟🖥️ `${path}`: ${message}",
+				"wtRemoved": "✅ 👋 ⌨️🗺️ @ 🪟🖥️ `${path}`",
+				"editorRemoved": "✅ 👋 ⛲ ⌨️ @ 📝🖥️ `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "🗑️🖥️🔗...",

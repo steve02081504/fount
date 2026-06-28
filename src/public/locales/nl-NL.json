@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL:fount protocol",
-				"registerFailed": "Kan fount:// protocolhandler niet registreren: ${message}",
+				"registerFailed": "Kan `fount://` protocolhandler niet registreren: ${message}",
 				"noUrl": "Fout: URL voor protocolhandler niet opgegeven."
 			},
 			"update": {
-				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de fount-update overgeslagen"
+				"skippingFountUpdate": "Omdat het `.noupdate`-bestand bestaat, wordt de fount-update overgeslagen"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",
-				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op ${path}",
+				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op `${path}`",
+				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op `${path}`",
 				"protocolHandlerRegistered": "fount:// protocolhandler geregistreerd.",
 				"shortcutNotSupported": "Waarschuwing: uw besturingssysteem (${os}) ondersteunt het maken van snelkoppelingen op het bureaublad niet.",
 				"osacompileNotFound": "Fout: 'osacompile' niet gevonden. Kan macOS-app niet maken.",
-				"lsregisterFailed": "Waarschuwing: het gebruik van lsregister om een ​​applicatie te registreren bij LaunchServices is mislukt.",
+				"lsregisterFailed": "Waarschuwing: het gebruik van `lsregister` om een ​​applicatie te registreren bij LaunchServices is mislukt.",
 				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken."
 			},
 			"git": {
 				"repoNotFound": "De git-repository van fount is niet gevonden. Een nieuwe initialiseren...",
 				"fetchingAndResetting": "Ophalen uit externe opslagplaats en opnieuw instellen op master...",
 				"localChangesDetected": "Lokale wijzigingen gedetecteerd, verschillen worden opgeslagen voordat ze worden overschreven.",
-				"backupSavedTo": "Er is een back-up van uw lokale wijzigingen opgeslagen in: ${path}",
+				"backupSavedTo": "Er is een back-up van uw lokale wijzigingen opgeslagen in: `${path}`",
 				"updatingFromRemote": "Updaten vanuit een externe opslagplaats...",
 				"alreadyUpToDate": "Al het nieuwste.",
 				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "Waarschuwing: Er is geen upstream-vertakking geconfigureerd voor vertakking '${branch}'. Upstream instellen op 'origin/master'.",
 				"dirtyWorkingDirectory": "Waarschuwing: de werkmap is niet schoon. Stash of commit uw wijzigingen voordat u deze bijwerkt.",
 				"notInstalled": "Git is niet geïnstalleerd, probeert te installeren...",
-				"notInstalledSkippingPull": "Git is niet geïnstalleerd, sla git pull over",
-				"repoNotFoundSkippingPull": "Repository niet gevonden, sla git pull over",
+				"notInstalledSkippingPull": "Git is niet geïnstalleerd, sla `git pull` over",
+				"repoNotFoundSkippingPull": "Repository niet gevonden, sla `git pull` over",
 				"fetchFailed": "Kan niet vanaf 'oorsprong' komen.",
 				"fetchFailedSkippingUpdate": "Updates van GitHub ophalen mislukt; update overgeslagen.",
 				"remoteRefUnavailable": "Externe referentie '${ref}' niet beschikbaar; Git-synchronisatie overgeslagen.",
@@ -160,12 +160,15 @@
 				"isRequired": "Deno niet gevonden, bron kan niet worden uitgevoerd zonder Deno",
 				"installingTermux": "Deno voor Termux installeren...",
 				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de fount...",
-				"notWorking": "Om de een of andere reden werkt Deno niet. Misschien wil je lid worden van https://discord.gg/deno voor ondersteuning",
+				"notWorking": "Om de een of andere reden werkt Deno niet. Misschien wil je lid worden van https://github.com/denoland/deno/issues voor ondersteuning",
 				"upgradeFailed": "Waarschuwing: Deno-upgrade is mogelijk mislukt. Controleer op fouten.",
 				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren...",
 				"patchMissing": "Fout: Het uitvoerbare bestand van Deno is niet gevonden vóór het patchen. Kan niet worden gepatcht.",
 				"patchUnsupportedArch": "Fout: Niet-ondersteunde patcharchitectuur: ${arch}",
-				"patchFailed": "Fout: Kan het uitvoerbare bestand van Deno niet patchen met patchelf."
+				"patchFailed": "Fout: Kan het uitvoerbare bestand van Deno niet patchen met `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "Fout: kan `fount` niet uitvoeren in de tijdelijke map\n\nfount is diep gekoppeld aan het systeem en registreert het `PATH`-commando en meerdere systeemhooks in `fount`. Bij uitvoering in een tijdelijke map kunt u na het wissen van tijdelijke bestanden door het systeem geen `fount remove` meer uitvoeren om fount en de hooks te verwijderen.\n\nVerplaats fount naar een niet-tijdelijke map voordat u het uitvoert. Als u alleen kort wilt testen, voer `fount remove` handmatig uit na de test."
 			},
 			"install": {
 				"installingDependencies": "Afhankelijkheden installeren...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "Herinitialisatie voltooid. Ik probeer font opnieuw op te starten...",
-				"autoInitDisabled": "font is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand .noautoinit. Afsluiten.",
+				"autoInitDisabled": "font is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand `.noautoinit`. Afsluiten.",
 				"restartingTooFast": "font is in korte tijd meerdere keren opnieuw opgestart. Geforceerde herinitialisatie...",
 				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
 				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
 			"terminalKeybindings": {
 				"registered": "Terminal-toetsenpatch geconfigureerd.",
-				"wtPatchFailed": "Windows Terminal-instelling ${path} kon niet worden gepatcht: ${message}",
-				"wtRemoved": "fount-toetsenconfiguratie verwijderd uit Windows Terminal: ${path}",
-				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: ${path}"
+				"wtPatchFailed": "Windows Terminal-instelling `${path}` kon niet worden gepatcht: ${message}",
+				"wtRemoved": "fount-toetsenconfiguratie verwijderd uit Windows Terminal: `${path}`",
+				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "Snelkoppeling op het bureaublad verwijderen...",
@@ -204,17 +207,17 @@
 				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
 				"removingFountFromPath": "Lettertype uit PATH verwijderen...",
 				"removingProtocolHandler": "Fot:// protocolhandler verwijderen...",
-				"protocolHandlerRemoved": "De protocolhandler fount:// is verwijderd.",
-				"removeProtocolHandlerFailed": "Kan fount:// protocolhandler niet verwijderen: ${message}",
-				"removingFountFromGitSafeDir": "Font verwijderen uit git safe.directory...",
+				"protocolHandlerRemoved": "De protocolhandler `fount://` is verwijderd.",
+				"removeProtocolHandlerFailed": "Kan `fount://` protocolhandler niet verwijderen: ${message}",
+				"removingFountFromGitSafeDir": "Font verwijderen uit `git safe.directory`...",
 				"removingInstalledSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
 				"uninstallingDeno": "Deno verwijderen...",
 				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
 				"removingFountPwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel...",
 				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
-				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van fount-pwsh uit het profiel wordt overgeslagen.",
+				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van `fount-pwsh` uit het profiel wordt overgeslagen.",
 				"uninstallingFountPwsh": "Font-pwsh verwijderen...",
-				"uninstallFountPwshFailed": "Verwijderen van fount-pwsh mislukt: ${message}",
+				"uninstallFountPwshFailed": "Verwijderen van `fount-pwsh` mislukt: ${message}",
 				"removingTerminalProfile": "Windows Terminal-profiel verwijderen...",
 				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
 				"terminalProfileNotFound": "Windows Terminal-profielmap niet gevonden.",

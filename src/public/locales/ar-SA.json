@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "عنوان URL:البروتوكول الموجود",
-				"registerFailed": "فشل تسجيل معالج البروتوكول fount://: ${message}",
+				"registerFailed": "فشل تسجيل معالج البروتوكول `fount://`: ${message}",
 				"noUrl": "خطأ: لم يتم توفير عنوان URL لمعالج البروتوكول."
 			},
 			"update": {
-				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي تحديث fount"
+				"skippingFountUpdate": "نظرًا لوجود الملف ‎`.noupdate`، يتم تخطي تحديث fount"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",
-				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في ${path}",
+				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في `${path}`",
+				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في `${path}`",
 				"protocolHandlerRegistered": "fount:// تم تسجيل معالج البروتوكول.",
 				"shortcutNotSupported": "تحذير: نظام التشغيل لديك (${os}) لا يدعم إنشاء اختصارات لسطح المكتب.",
 				"osacompileNotFound": "خطأ: لم يتم العثور على 'osacompile'. غير قادر على إنشاء تطبيق macOS.",
-				"lsregisterFailed": "تحذير: فشل استخدام lsregister لتسجيل تطبيق في LaunchServices.",
+				"lsregisterFailed": "تحذير: فشل استخدام `lsregister` لتسجيل تطبيق في LaunchServices.",
 				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب."
 			},
 			"git": {
 				"repoNotFound": "لم يتم العثور على مستودع git الخاص بfount. تهيئة واحدة جديدة...",
 				"fetchingAndResetting": "جارٍ الجلب من المستودع البعيد وإعادة التعيين إلى الوضع الرئيسي...",
 				"localChangesDetected": "تم اكتشاف تغييرات محلية، وسيتم حفظ الاختلافات قبل الكتابة فوقها.",
-				"backupSavedTo": "تم حفظ نسخة احتياطية من تغييراتك المحلية في: ${path}",
+				"backupSavedTo": "تم حفظ نسخة احتياطية من تغييراتك المحلية في: `${path}`",
 				"updatingFromRemote": "جارٍ التحديث من المستودع البعيد...",
 				"alreadyUpToDate": "بالفعل الأحدث.",
 				"localBranchAhead": "الفرع المحلي متقدم على الفرع البعيد. لا توجد تحديثات مطلوبة.",
@@ -160,12 +160,15 @@
 				"isRequired": "لم يتم العثور على Deno، لا يمكن تشغيل fount بدون Deno",
 				"installingTermux": "تثبيت Deno على Termux...",
 				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
-				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://discord.gg/deno للحصول على الدعم",
+				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://github.com/denoland/deno/issues للحصول على الدعم",
 				"upgradeFailed": "تحذير: ربما فشلت ترقية Deno. يرجى التحقق من وجود أخطاء.",
 				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux...",
 				"patchMissing": "خطأ: لم يتم العثور على الملف القابل للتنفيذ Deno قبل التصحيح. لا يمكن مصححتها.",
 				"patchUnsupportedArch": "خطأ: بنية التصحيح غير مدعومة: ${arch}",
-				"patchFailed": "خطأ: فشل تصحيح Deno القابل للتنفيذ باستخدام patchelf."
+				"patchFailed": "خطأ: فشل تصحيح Deno القابل للتنفيذ باستخدام `patchelf`."
+			},
+			"tempDir": {
+				"blocked": "خطأ: لا يمكن تشغيل `fount` في الدليل المؤقت\n\nيتكامل fount بعمق مع النظام ويسجل أمر `PATH` وعدة hooks للنظام في `fount`. إذا تم التشغيل في دليل مؤقت، بعد أن يمسح النظام الملفات المؤقتة، لن تتمكن من تنفيذ `fount remove` لإزالة fount وhooks الخاصة به.\n\nيرجى نقل fount إلى دليل غير مؤقت قبل التشغيل. إذا كنت تريد اختبارًا قصيرًا فقط، نفّذ `fount remove` يدويًا بعد الاختبار."
 			},
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "اكتملت عملية إعادة التهيئة. جارٍ محاولة إعادة التشغيل...",
-				"autoInitDisabled": "تمت إعادة تشغيل fount عدة مرات في الفترة القصيرة الأخيرة من الوقت، ولكن تم تعطيل إعادة التهيئة التلقائية بسبب وجود ملف .noautoinit. الخروج.",
+				"autoInitDisabled": "تمت إعادة تشغيل fount عدة مرات في الفترة القصيرة الأخيرة من الوقت، ولكن تم تعطيل إعادة التهيئة التلقائية بسبب وجود ملف `.noautoinit`. الخروج.",
 				"restartingTooFast": "تمت إعادة تشغيل fount عدة مرات في فترة زمنية قصيرة. إعادة التهيئة القسرية...",
 				"failedToStart": "حتى بعد محاولات الإصلاح التلقائي، تفشل fount في العمل لفترة قصيرة من الزمن. يرجى التحقق من السجلات بحثًا عن الأخطاء.",
 				"initFailed": "فشلت تهيئة الخط. الخروج."
 			},
 			"terminalKeybindings": {
 				"registered": "تم تكوين ترقيع اختصارات الطرفية.",
-				"wtPatchFailed": "تعذّر ترقيع إعدادات Windows Terminal ${path}: ${message}",
-				"wtRemoved": "تمت إزالة إعدادات اختصارات fount من Windows Terminal: ${path}",
-				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: ${path}"
+				"wtPatchFailed": "تعذّر ترقيع إعدادات Windows Terminal `${path}`: ${message}",
+				"wtRemoved": "تمت إزالة إعدادات اختصارات fount من Windows Terminal: `${path}`",
+				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: `${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "جارٍ إزالة اختصار سطح المكتب...",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
 				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
 				"removingFountFromPath": "إزالة fount من PATH...",
-				"removingProtocolHandler": "جارٍ إزالة fount:// معالج البروتوكول...",
-				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول fount://.",
-				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول fount://: ${message}",
+				"removingProtocolHandler": "جارٍ إزالة `fount://` معالج البروتوكول...",
+				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول `fount://`.",
+				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول `fount://`: ${message}",
 				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
 				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
 				"uninstallingDeno": "إلغاء تثبيت دينو...",
 				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
-				"removingFountPwshFromProfile": "إزالة fount-pwsh من ملف تعريف PowerShell...",
+				"removingFountPwshFromProfile": "إزالة `fount-pwsh` من ملف تعريف PowerShell...",
 				"fountPwshRemovedFromProfile": "تمت إزالة fount-pwsh من ملف تعريف PowerShell.",
-				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة fount-pwsh من الملف الشخصي.",
-				"uninstallingFountPwsh": "إلغاء تثبيت fount-pwsh...",
-				"uninstallFountPwshFailed": "فشل إلغاء تثبيت fount-pwsh: ${message}",
+				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة `fount-pwsh` من الملف الشخصي.",
+				"uninstallingFountPwsh": "إلغاء تثبيت `fount-pwsh`...",
+				"uninstallFountPwshFailed": "فشل إلغاء تثبيت `fount-pwsh`: ${message}",
 				"removingTerminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows...",
 				"terminalProfileRemoved": "تمت إزالة دليل ملف تعريف Windows Terminal.",
 				"terminalProfileNotFound": "لم يتم العثور على دليل ملف تعريف Windows Terminal.",

@@ -119,26 +119,26 @@
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協定",
-				"registerFailed": "註冊 fount:// 協定處理器失敗：${message}",
+				"registerFailed": "註冊 `fount://` 協定處理器失敗：${message}",
 				"noUrl": "錯誤：未提供協定處理程式的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 .noupdate 檔案存在，跳過 fount 更新"
+				"skippingFountUpdate": "因 `.noupdate` 檔案存在，跳過 fount 更新"
 			},
 			"shortcut": {
-				"desktopShortcutCreated": "已在 ${path} 建立桌面捷徑",
-				"startMenuShortcutCreated": "已在 ${path} 建立開始選單捷徑",
+				"desktopShortcutCreated": "已在 `${path}` 建立桌面捷徑",
+				"startMenuShortcutCreated": "已在 `${path}` 建立開始選單捷徑",
 				"protocolHandlerRegistered": "fount:// 協定處理器已註冊。",
 				"shortcutNotSupported": "警告：您的作業系統 (${os}) 不支援建立桌面捷徑。",
 				"osacompileNotFound": "錯誤：找不到 'osacompile'。無法建立 macOS 應用程式。",
-				"lsregisterFailed": "警告：使用 lsregister 向 LaunchServices 註冊應用程式失敗。",
+				"lsregisterFailed": "警告：使用 `lsregister` 向 LaunchServices 註冊應用程式失敗。",
 				"createDesktopAppFailed": "錯誤：建立桌面應用程式失敗。"
 			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 儲存庫，正在初始化一個新的...",
 				"fetchingAndResetting": "正在從遠端儲存庫擷取並重設到 master...",
 				"localChangesDetected": "檢測到本機變更，將在覆蓋前儲存差異。",
-				"backupSavedTo": "您的本機變更備份已儲存到：${path}",
+				"backupSavedTo": "您的本機變更備份已儲存到：`${path}`",
 				"updatingFromRemote": "正在從遠端儲存庫更新...",
 				"alreadyUpToDate": "已是最新。",
 				"localBranchAhead": "本機分支領先於遠端分支。無需更新。",
@@ -147,8 +147,8 @@
 				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支。正在將上游設定為 'origin/master'。",
 				"dirtyWorkingDirectory": "警告：工作目錄有未提交的變更。請在更新前暫存或提交。",
 				"notInstalled": "未安裝 Git，正在嘗試安裝...",
-				"notInstalledSkippingPull": "未安裝 Git，跳過 git pull",
-				"repoNotFoundSkippingPull": "未找到儲存庫，跳過 git pull",
+				"notInstalledSkippingPull": "未安裝 Git，跳過 `git pull`",
+				"repoNotFoundSkippingPull": "未找到儲存庫，跳過 `git pull`",
 				"fetchFailed": "從 'origin' 獲取失敗。",
 				"fetchFailedSkippingUpdate": "無法從 GitHub 取得更新，已略過更新。",
 				"remoteRefUnavailable": "遠端引用「${ref}」不可用，已略過 Git 同步。",
@@ -160,12 +160,15 @@
 				"isRequired": "未找到 Deno，沒有 Deno 無法執行 fount",
 				"installingTermux": "正在為 Termux 安裝 Deno...",
 				"installFailedFallback": "Deno 安裝失敗，嘗試自動安裝到 fount 的 path 資料夾...",
-				"notWorking": "由於某種原因 Deno 無法工作，您可能需要加入 https://discord.gg/deno 以獲取支援",
+				"notWorking": "由於某種原因 Deno 無法工作，您可能需要前往 https://github.com/denoland/deno/issues 提問獲取支援",
 				"upgradeFailed": "警告：Deno 升級可能已失敗。請檢查錯誤。",
 				"upgradeFailedTermux": "Deno 升級指令失敗，正在嘗試為 Termux 重新安裝 Deno...",
 				"patchMissing": "錯誤：修補前未找到 Deno 執行檔。無法修補。",
 				"patchUnsupportedArch": "錯誤：不支援的修補架構：${arch}",
-				"patchFailed": "錯誤：使用 patchelf 修補 Deno 執行檔失敗。"
+				"patchFailed": "錯誤：使用 `patchelf` 修補 Deno 執行檔失敗。"
+			},
+			"tempDir": {
+				"blocked": "錯誤：無法在臨時目錄中執行 `fount`\n\nfount 會與系統深度耦合，並在 `fount` 中註冊 `PATH` 命令及多項系統 hook。若在臨時目錄執行，系統清空臨時檔案後，您將無法執行 `fount remove` 來移除 fount 及其 hook。\n\n請將 fount 移動到非臨時目錄後再執行。若您只想簡短測試，請在測試完成後手動執行 `fount remove`。"
 			},
 			"install": {
 				"installingDependencies": "正在安裝相依套件...",
@@ -184,16 +187,16 @@
 			},
 			"keepalive": {
 				"initComplete": "重新初始化完成。正在嘗試重啟 fount...",
-				"autoInitDisabled": "fount 在最近短時間內多次重啟，但由於 .noautoinit 檔案存在，自動重新初始化已被停用。正在退出。",
+				"autoInitDisabled": "fount 在最近短時間內多次重啟，但由於 `.noautoinit` 檔案存在，自動重新初始化已被停用。正在退出。",
 				"restartingTooFast": "fount 在最近短時間內多次重啟。正在強制重新初始化...",
 				"failedToStart": "即使在自動修復嘗試後，fount 仍在短時間內啟動失敗。請檢查日誌中的錯誤。",
 				"initFailed": "fount 初始化失敗。正在退出。"
 			},
 			"terminalKeybindings": {
 				"registered": "已設定終端機按鍵對應修補。",
-				"wtPatchFailed": "無法修補 Windows Terminal 設定 ${path}：${message}",
-				"wtRemoved": "已從 Windows Terminal 設定移除 fount 按鍵對應：${path}",
-				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：${path}"
+				"wtPatchFailed": "無法修補 Windows Terminal 設定 `${path}`：${message}",
+				"wtRemoved": "已從 Windows Terminal 設定移除 fount 按鍵對應：`${path}`",
+				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：`${path}`"
 			},
 			"remove": {
 				"removingDesktopShortcut": "正在移除桌面捷徑…",
@@ -203,18 +206,18 @@
 				"removingFountInstallationDir": "正在移除 fount 安裝目錄...",
 				"fountInstallationDirRemoved": "fount 安裝目錄已移除。",
 				"removingFountFromPath": "正在從 PATH 中移除 fount...",
-				"removingProtocolHandler": "正在移除 fount:// 協定處理器...",
-				"protocolHandlerRemoved": "fount:// 協定處理器已移除。",
-				"removeProtocolHandlerFailed": "移除 fount:// 協定處理器失敗：${message}",
-				"removingFountFromGitSafeDir": "正在從 git safe.directory 中移除 fount...",
+				"removingProtocolHandler": "正在移除 `fount://` 協定處理器...",
+				"protocolHandlerRemoved": "`fount://` 協定處理器已移除。",
+				"removeProtocolHandlerFailed": "移除 `fount://` 協定處理器失敗：${message}",
+				"removingFountFromGitSafeDir": "正在從 `git safe.directory` 中移除 fount...",
 				"removingInstalledSystemPackages": "正在移除已安裝的系統套件...",
 				"uninstallingDeno": "正在解除安裝 Deno...",
 				"removeDenoFailed": "移除 Deno 失敗：${message}",
-				"removingFountPwshFromProfile": "正在從 PowerShell Profile 中移除 fount-pwsh...",
+				"removingFountPwshFromProfile": "正在從 PowerShell Profile 中移除 `fount-pwsh`...",
 				"fountPwshRemovedFromProfile": "已從 PowerShell Profile 中移除 fount-pwsh。",
-				"pwshProfileNotFound": "未找到 PowerShell Profile，跳過從 profile 中移除 fount-pwsh。",
-				"uninstallingFountPwsh": "正在解除安裝 fount-pwsh...",
-				"uninstallFountPwshFailed": "解除安裝 fount-pwsh 失敗：${message}",
+				"pwshProfileNotFound": "未找到 PowerShell Profile，跳過從 profile 中移除 `fount-pwsh`。",
+				"uninstallingFountPwsh": "正在解除安裝 `fount-pwsh`...",
+				"uninstallFountPwshFailed": "解除安裝 `fount-pwsh` 失敗：${message}",
 				"removingTerminalProfile": "正在移除 Windows Terminal Profile...",
 				"terminalProfileRemoved": "Windows Terminal Profile 目錄已移除。",
 				"terminalProfileNotFound": "未找到 Windows Terminal Profile 目錄。",

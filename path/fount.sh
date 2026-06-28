@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-FOUNT_SESSION_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+# BSD date（macOS）不支持 %3N（毫秒），会原样输出；降级到秒精度
+_fount_timestamp() {
+	local t
+	t=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null)
+	case "$t" in *%3N*) date -u +"%Y-%m-%dT%H:%M:%SZ" ;; *) printf '%s' "$t" ;; esac
+}
+FOUNT_SESSION_START_TIME=$(_fount_timestamp)
 export FOUNT_SESSION_START_TIME
 if [ -z "$FOUNT_START_TIME" ]; then
-	FOUNT_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")
+	FOUNT_START_TIME=$(_fount_timestamp)
 fi
 export FOUNT_START_TIME
 
@@ -20,7 +26,11 @@ C_RESET='\033[0m'
 C_RED='\033[0;31m'
 C_GREEN='\033[0;32m'
 C_YELLOW='\033[0;33m'
-C_CYAN='\033[0;36m'
+
+# 在顶层检测一次ANSI支持并导出，确保子shell（命令替换）中也能正确读取
+FOUNT_CONSOLE_ANSI=0
+[ -t 1 ] && FOUNT_CONSOLE_ANSI=1
+export FOUNT_CONSOLE_ANSI
 
 # --- 国际化函数 ---
 # 获取系统区域设置
@@ -119,6 +129,97 @@ load_locale_data() {
 }
 
 # 获取翻译后的字符串
+i18n_supports_ansi() { [ "${FOUNT_CONSOLE_ANSI:-0}" = "1" ]; }
+
+i18n_format_param_value() {
+	local param_name="$1"
+	local param_value="$2"
+	if i18n_supports_ansi; then
+		case "$param_name" in
+		path)   printf '\033[36m%s\033[0m' "$param_value" ; return ;;
+		ref)    printf '\033[34m%s\033[0m' "$param_value" ; return ;;
+		branch) printf '\033[33m%s\033[0m' "$param_value" ; return ;;
+		esac
+	fi
+	printf '%s' "$param_value"
+}
+
+i18n_format_backtick_inner() {
+	local inner="$1"
+	if ! i18n_supports_ansi; then
+		printf '%s' "$inner"
+		return
+	fi
+	case "$inner" in
+	# URLs / protocols
+	*://*)
+		printf '\033[34m%s\033[0m' "$inner" ;;
+	# Git remotes
+	origin | origin/* | upstream | upstream/*)
+		printf '\033[34m%s\033[0m' "$inner" ;;
+	# Git branches
+	master | main | HEAD | develop)
+		printf '\033[33m%s\033[0m' "$inner" ;;
+	# Dotfiles / config filenames
+	.*)
+		printf '\033[36m%s\033[0m' "$inner" ;;
+	# Commands with subcommands
+	git\ * | fount\ * | deno\ * | winget\ * | pwsh\ * | patchelf\ * | osacompile\ * | lsregister\ * | chmod\ *)
+		local cmd="${inner%% *}"
+		local rest="${inner#"$cmd "}"
+		printf '\033[35m%s\033[0m \033[33m%s\033[0m' "$cmd" "$rest" ;;
+	# Known single commands
+	git | fount | deno | winget | pwsh | patchelf | osacompile | lsregister | chmod)
+		printf '\033[35m%s\033[0m' "$inner" ;;
+	*)
+		# All-uppercase identifiers → env vars (e.g. PATH)
+		local _upper
+		_upper=$(printf '%s' "$inner" | tr '[:lower:]' '[:upper:]')
+		if [ "$inner" = "$_upper" ] && [ "${#inner}" -ge 2 ]; then
+			printf '\033[36m%s\033[0m' "$inner"
+			return
+		fi
+		# Dot-notation config keys (e.g. safe.directory)
+		case "$inner" in
+		*.*)
+			if printf '%s' "$inner" | grep -qE '^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$'; then
+				printf '\033[36m%s\033[0m' "$inner"
+				return
+			fi ;;
+		esac
+		# Default: code / command identifier
+		printf '\033[35m%s\033[0m' "$inner" ;;
+	esac
+}
+
+apply_i18n_backticks() {
+	local rest="$1" before inner
+	while [ -n "$rest" ]; do
+		case "$rest" in
+		*\`*)
+			before="${rest%%\`*}"
+			rest="${rest#*\`}"
+			case "$rest" in
+			*\`*)
+				inner="${rest%%\`*}"
+				rest="${rest#*\`}"
+				printf '%s' "$before"
+				i18n_format_backtick_inner "$inner"
+				;;
+			*)
+				printf '%s`%s' "$before" "$rest"
+				rest=""
+				;;
+			esac
+			;;
+		*)
+			printf '%s' "$rest"
+			rest=""
+			;;
+		esac
+	done
+}
+
 get_i18n() {
 	local key="$1"
 	if [ -z "$FOUNT_LOCALE_DATA" ]; then
@@ -128,25 +229,73 @@ get_i18n() {
 	local translation
 	translation=$(echo "$FOUNT_LOCALE_DATA" | jq -r ".fountConsole.path.$key // .\"$key\" // \"$key\"")
 
-	# 简单插值
 	shift
 	while [ $# -gt 0 ]; do
 		local param_name="$1"
 		local param_value="$2"
-		# 转义 sed 替换字符串中的特殊字符：\ & 及分隔符 |
-		local escaped_value
-		escaped_value=$(printf '%s' "$param_value" | sed 's/\\/\\\\/g; s/&/\\&/g; s/|/\\|/g')
-		# shellcheck disable=SC2001
-		translation=$(echo "$translation" | sed "s|\\\${${param_name}}|${escaped_value}|g")
+		local formatted_value placeholder backtick_placeholder
+		formatted_value=$(i18n_format_param_value "$param_name" "$param_value")
+		placeholder="\${${param_name}}"
+		backtick_placeholder="\`\${${param_name}}\`"
+		translation=${translation//"${backtick_placeholder}"/"${formatted_value}"}
+		translation=${translation//"${placeholder}"/"${formatted_value}"}
 		shift 2
 	done
+	apply_i18n_backticks "$translation"
+	printf '\n'
+}
 
-	echo "$translation"
+# 以指定外层颜色输出 i18n 消息，确保内部 ANSI 重置后能正确恢复外层颜色
+print_i18n() {
+	local color=""
+	if [ "$1" = "--color" ]; then
+		color="$2"; shift 2
+	fi
+	if ! i18n_supports_ansi || [ -z "$color" ]; then
+		get_i18n "$@"
+		return
+	fi
+	local rst col text
+	rst=$(printf '\033[0m')
+	col=$(printf '\033[%sm' "$color")
+	text=$(get_i18n "$@")
+	# 每个内部重置后恢复外层颜色，避免颜色被截断
+	text="${text//"${rst}"/"${rst}${col}"}"
+	printf '%s%s%s\n' "$col" "$text" "$rst"
+}
+print_i18n_red()    { print_i18n --color "0;31" "$@"; }
+print_i18n_yellow() { print_i18n --color "0;33" "$@"; }
+print_i18n_green()  { print_i18n --color "0;32" "$@"; }
+
+# 检测是否在系统临时目录中运行
+is_in_temp_dir() {
+	local dir="$1"
+	local resolved
+	resolved=$(cd "$dir" 2>/dev/null && pwd -P) || resolved="$dir"
+
+	case "$resolved" in
+	/var/folders/*) return 0 ;;
+	esac
+
+	local tmp_candidate resolved_tmp
+	for tmp_candidate in "${TMPDIR:-}" /tmp /var/tmp /private/tmp; do
+		[ -n "$tmp_candidate" ] || continue
+		resolved_tmp=$(cd "$tmp_candidate" 2>/dev/null && pwd -P) || resolved_tmp="$tmp_candidate"
+		case "$resolved" in
+		"$resolved_tmp" | "$resolved_tmp"/*) return 0 ;;
+		esac
+	done
+	return 1
 }
 
 # 定义常量和路径
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
+
+if [ "${1:-}" != "remove" ] && is_in_temp_dir "$FOUNT_DIR"; then
+	get_i18n 'tempDir.blocked' >&2
+	exit 1
+fi
 
 # 若是 Windows 环境，则使用 fount.ps1
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
@@ -640,7 +789,7 @@ patch_deno() {
 	deno_bin=$(command -v deno)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo -e "${C_RED}$(get_i18n 'deno.patchMissing')${C_RESET}" >&2
+		print_i18n_red 'deno.patchMissing' >&2
 		return 1
 	fi
 
@@ -665,13 +814,13 @@ patch_deno() {
 		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
 		;;
 	*)
-		echo -e "${C_RED}$(get_i18n 'deno.patchUnsupportedArch' 'arch' "$arch")${C_RESET}" >&2
+		print_i18n_red 'deno.patchUnsupportedArch' 'arch' "$arch" >&2
 		return 1
 		;;
 	esac
 
 	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
-		echo -e "${C_RED}$(get_i18n 'deno.patchFailed')${C_RESET}" >&2
+		print_i18n_red 'deno.patchFailed' >&2
 		return 1
 	else
 		mkdir -p ~/.deno/bin
@@ -730,9 +879,9 @@ assert_fount_dir_writable() {
 	local dir="$1"
 	if ! check_dir_writable "$dir"; then
 		if [ "$(id -u)" -eq 0 ]; then
-			echo -e "${C_RED}$(get_i18n 'install.permissionDeniedAsRoot' 'path' "$dir")${C_RESET}" >&2
+			print_i18n_red 'install.permissionDeniedAsRoot' 'path' "$dir" >&2
 		else
-			echo -e "${C_RED}$(get_i18n 'install.permissionDeniedNotRoot' 'path' "$dir")${C_RESET}" >&2
+			print_i18n_red 'install.permissionDeniedNotRoot' 'path' "$dir" >&2
 		fi
 		exit 1
 	fi
@@ -963,14 +1112,14 @@ fount_git_backup_uncommitted() {
 		invoke_git_for_fount reset || return 1
 	fi
 
-	echo -e "${C_YELLOW}$(get_i18n 'git.localChangesDetected')${C_RESET}"
-	echo -e "${C_GREEN}$(get_i18n 'git.backupSavedTo' 'path' "${C_CYAN}$diff_file_path${C_RESET}")"
+	print_i18n_yellow 'git.localChangesDetected'
+	print_i18n_green 'git.backupSavedTo' 'path' "$diff_file_path"
 }
 
 fount_git_sync_to_ref() {
 	local ref="$1"
 	if ! fount_git_ref_exists "$ref"; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' "$ref")${C_RESET}" >&2
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$ref" >&2
 		return 1
 	fi
 	fount_git_backup_uncommitted || return 1
@@ -983,23 +1132,22 @@ git_reset_and_clean() {
 	invoke_git_for_fount config core.autocrlf false
 	local has_head=0 fetch_ok=0
 	if fount_git_ref_exists HEAD; then has_head=1; fi
-	invoke_git_for_fount fetch origin
-	if [ $? -eq 0 ]; then fetch_ok=1; fi
+	if invoke_git_for_fount fetch origin; then fetch_ok=1; fi
 	if ! fount_git_ref_exists origin/master; then
 		if [ "$fetch_ok" -eq 0 ]; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
-			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		fi
 		return 1
 	fi
 	if [ "$has_head" -eq 0 ] && [ "$fetch_ok" -eq 0 ]; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
 	fi
 	if [ "$fetch_ok" -eq 0 ]; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
 	fi
 	if fount_git_sync_to_ref origin/master; then
@@ -1009,14 +1157,14 @@ git_reset_and_clean() {
 
 handle_auto_reinitialization() {
 	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
-		echo -e "${C_YELLOW}$(get_i18n 'keepalive.autoInitDisabled')${C_RESET}" >&2
+		print_i18n_yellow 'keepalive.autoInitDisabled' >&2
 		exit 1
 	fi
-	echo -e "${C_YELLOW}$(get_i18n 'keepalive.restartingTooFast')${C_RESET}" >&2
+	print_i18n_yellow 'keepalive.restartingTooFast' >&2
 	restart_timestamps=()
 
 	if ! ("$0" init); then
-		echo -e "${C_RED}$(get_i18n 'keepalive.initFailed')${C_RESET}" >&2
+		print_i18n_red 'keepalive.initFailed' >&2
 		exit 1
 	fi
 	init_attempted=1
@@ -1048,7 +1196,7 @@ Terminal=true
 Categories=Utility;
 EOF
 		chmod +x "$desktop_file_path"
-		echo -e "$(get_i18n 'shortcut.desktopShortcutCreated' 'path' "${C_CYAN}$desktop_file_path${C_RESET}")"
+		get_i18n 'shortcut.desktopShortcutCreated' 'path' "$desktop_file_path"
 
 		local protocol_desktop_file_path="$HOME/.local/share/applications/fount-protocol.desktop"
 		mkdir -p "$(dirname "$protocol_desktop_file_path")"
@@ -1160,7 +1308,7 @@ EOF
 		if command -v osacompile &>/dev/null; then
 			osacompile -o "$compiled_applescript" "$temp_applescript_file"
 		else
-			echo -e "${C_RED}$(get_i18n 'shortcut.osacompileNotFound')${C_RESET}" >&2
+			print_i18n_red 'shortcut.osacompileNotFound' >&2
 			return 1
 		fi
 
@@ -1176,7 +1324,7 @@ EOF
 		local LSREGISTER_PATH="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
 		if [ -f "$LSREGISTER_PATH" ]; then
 			if ! "$LSREGISTER_PATH" -f "$app_path"; then
-				echo -e "${C_YELLOW}$(get_i18n 'shortcut.lsregisterFailed')${C_RESET}" >&2
+				print_i18n_yellow 'shortcut.lsregisterFailed' >&2
 				# 操你妈，跟你爆了
 				killall lsd
 			fi
@@ -1186,13 +1334,13 @@ EOF
 		fi
 
 		if [ -d "$app_path" ]; then
-			echo -e "$(get_i18n 'shortcut.desktopShortcutCreated' 'path' "${C_CYAN}$app_path${C_RESET}")"
+			get_i18n 'shortcut.desktopShortcutCreated' 'path' "$app_path"
 		else
-			echo -e "${C_RED}$(get_i18n 'shortcut.createDesktopAppFailed')${C_RESET}" >&2
+			print_i18n_red 'shortcut.createDesktopAppFailed' >&2
 			return 1
 		fi
 	else
-		echo -e "${C_YELLOW}$(get_i18n 'shortcut.shortcutNotSupported' 'os' "$OS_TYPE")${C_RESET}"
+		print_i18n_yellow 'shortcut.shortcutNotSupported' 'os' "$OS_TYPE"
 	fi
 	return 0
 }
@@ -1556,8 +1704,8 @@ fount_upgrade() {
 		invoke_git_for_fount remote add origin https://github.com/steve02081504/fount.git || true
 		get_i18n 'git.fetchingAndResetting'
 		if ! invoke_git_for_fount fetch origin master --depth 1; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
-			echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 			return 1
 		fi
 		fount_git_sync_to_ref origin/master || return 1
@@ -1568,12 +1716,12 @@ fount_upgrade() {
 	local has_head=0
 	if fount_git_ref_exists HEAD; then has_head=1; fi
 	if ! invoke_git_for_fount fetch origin; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailed')${C_RESET}" >&2
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
 	fi
 	if [ "$has_head" -eq 0 ] && ! fount_git_ref_exists HEAD; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
 	fi
 
@@ -1581,7 +1729,7 @@ fount_upgrade() {
 	currentBranch=$(invoke_git_for_fount rev-parse --abbrev-ref HEAD 2>/dev/null) || currentBranch=HEAD
 	if [ "$currentBranch" = "HEAD" ]; then
 		if ! fount_git_ref_exists origin/master; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' 'origin/master')${C_RESET}" >&2
+			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
 			return 1
 		fi
 		get_i18n 'git.notOnBranch'
@@ -1591,7 +1739,7 @@ fount_upgrade() {
 	fi
 
 	if ! fount_git_ref_exists HEAD; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.fetchFailedSkippingUpdate')${C_RESET}" >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
 	fi
 
@@ -1599,15 +1747,15 @@ fount_upgrade() {
 	remoteBranch=$(invoke_git_for_fount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 	if [ -z "$remoteBranch" ]; then
 		if ! fount_git_ref_exists origin/master; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' 'origin/master')${C_RESET}" >&2
+			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
 			return 1
 		fi
-		echo -e "${C_YELLOW}$(get_i18n 'git.noUpstreamBranch' 'branch' "$currentBranch")${C_RESET}" >&2
+		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" >&2
 		invoke_git_for_fount branch --set-upstream-to origin/master "$currentBranch"
 		remoteBranch="origin/master"
 	fi
 	if ! fount_git_ref_exists "$remoteBranch"; then
-		echo -e "${C_YELLOW}$(get_i18n 'git.remoteRefUnavailable' 'ref' "$remoteBranch")${C_RESET}" >&2
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$remoteBranch" >&2
 		return 1
 	fi
 
@@ -1627,7 +1775,7 @@ fount_upgrade() {
 		elif [ "$mergeBase" = "$remoteCommit" ]; then
 			get_i18n 'git.localBranchAhead'
 			if [ -n "$git_status" ]; then
-				echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
+				print_i18n_yellow 'git.dirtyWorkingDirectory' >&2
 			fi
 		else
 			get_i18n 'git.branchesDiverged'
@@ -1639,7 +1787,7 @@ fount_upgrade() {
 	else
 		get_i18n 'git.alreadyUpToDate'
 		if [ -n "$git_status" ]; then
-			echo -e "${C_YELLOW}$(get_i18n 'git.dirtyWorkingDirectory')${C_RESET}" >&2
+			print_i18n_yellow 'git.dirtyWorkingDirectory' >&2
 		fi
 	fi
 }
@@ -1712,8 +1860,8 @@ install_deno() {
 				rm "/tmp/deno.zip"
 				chmod +x "$FOUNT_DIR/path/deno"
 				export PATH="$PATH:$FOUNT_DIR/path"
-			else
-				echo -e "${C_RED}$(get_i18n 'deno.isRequired')${C_RESET}" >&2
+		else
+			print_i18n_red 'deno.isRequired' >&2
 				exit 1
 			fi
 		fi
@@ -1723,7 +1871,7 @@ install_deno() {
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	fi
 	if ! command -v deno &>/dev/null; then
-		echo -e "${C_RED}$(get_i18n 'deno.isRequired')${C_RESET}" >&2
+		print_i18n_red 'deno.isRequired' >&2
 		exit 1
 	fi
 }
@@ -1734,7 +1882,7 @@ base_deno_upgrade() {
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
-		echo -e "${C_RED}$(get_i18n 'deno.notWorking')${C_RESET}" >&2
+		print_i18n_red 'deno.notWorking' >&2
 		return 1
 	fi
 
@@ -1765,7 +1913,7 @@ base_deno_upgrade() {
 			install_deno
 			return $?
 		else
-			echo -e "${C_YELLOW}$(get_i18n 'deno.upgradeFailed')${C_RESET}" >&2
+			print_i18n_yellow 'deno.upgradeFailed' >&2
 			return 1
 		fi
 	fi
@@ -1811,6 +1959,7 @@ while i<len(e):c(f,i,e[i:i+4]);i+=4
 sys.exit(g.system("su -c "+shlex.quote("$(printf 'SUDO_USER=%q FOUNT_INIT_FORCE_CACHED_PATH=%q ' "$(id -un)" "$FOUNT_INIT_FORCE_CACHED_PATH"; printf '%q ' "$0" "$@")")) >> 8)
 EOF
 )
+			# shellcheck disable=SC2181
 			if [[ $? -eq 0 ]]; then
 				exit 0
 			fi
@@ -1876,8 +2025,8 @@ exit_code=0
 run() {
 	local original_title
 	if [[ $(id -u) -eq 0 ]]; then
-		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2
-		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning2')${C_RESET}" >&2
+		print_i18n_yellow 'install.rootWarning1' >&2
+		print_i18n_yellow 'install.rootWarning2' >&2
 	fi
 	write_taskbar_progress 5
 	original_title=$(get_title)
@@ -1966,7 +2115,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 		register_terminal_keybindings
 	fi
 	echo -e "${C_GREEN}======================================================${C_RESET}"
-	echo -e "${C_YELLOW}$(get_i18n 'install.untrustedPartsWarning')${C_RESET}"
+	print_i18n_yellow 'install.untrustedPartsWarning'
 	echo -e "${C_GREEN}======================================================${C_RESET}"
 	write_taskbar_progress_clear
 fi
@@ -2009,7 +2158,7 @@ keepalive)
 			current_time=$(date +%s)
 			elapsed_time=$((current_time - start_time))
 			if [ "$elapsed_time" -lt 180 ] && [ "$init_attempted" -eq 1 ]; then
-				echo -e "${C_RED}$(get_i18n 'keepalive.failedToStart')${C_RESET}" >&2
+				print_i18n_red 'keepalive.failedToStart' >&2
 				exit 1
 			else
 				init_attempted=0

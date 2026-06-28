@@ -121,6 +121,53 @@ function Import-LocaleData {
 
 # 获取翻译后的字符串
 $Script:FountLocaleData = $null
+$Script:I18nSupportsAnsi = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
+$Script:I18nParamAnsiColors = @{
+	path   = 36
+	ref    = 34
+	branch = 33
+}
+
+function Format-I18nParamValue {
+	param(
+		[string]$Name,
+		[string]$Value
+	)
+	if (-not $Script:I18nSupportsAnsi) { return $Value }
+	if (-not $Script:I18nParamAnsiColors.ContainsKey($Name)) { return $Value }
+	$esc = [char]27
+	$c = $Script:I18nParamAnsiColors[$Name]
+	return "${esc}[${c}m$Value${esc}[0m"
+}
+
+function Format-I18nBacktickInner {
+	param([string]$Inner)
+	if (-not $Script:I18nSupportsAnsi) { return $Inner }
+	$esc = [char]27
+	$M = "${esc}[35m"; $B = "${esc}[34m"; $Y = "${esc}[33m"; $C = "${esc}[36m"; $R = "${esc}[0m"
+	switch -Regex ($Inner) {
+		'://' { return "$B$Inner$R" }
+		'^(origin|upstream)(/.*)?$' { return "$B$Inner$R" }
+		'^(master|main|HEAD|develop)$' { return "$Y$Inner$R" }
+		'^\.' { return "$C$Inner$R" }
+		'^[A-Z][A-Z0-9_]+$' { return "$C$Inner$R" }
+		'^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$' { return "$C$Inner$R" }
+		'^(git|fount|deno|winget|pwsh|patchelf|osacompile|lsregister|chmod) (.+)$' { return "$M$($Matches[1])$R $Y$($Matches[2])$R" }
+		default { return "$M$Inner$R" }
+	}
+}
+
+function Format-I18nText {
+	param([string]$Text)
+	if ($Script:I18nSupportsAnsi) {
+		return [regex]::Replace($Text, '`([^`]*)`', {
+				param($m)
+				Format-I18nBacktickInner $m.Groups[1].Value
+			})
+	}
+	return [regex]::Replace($Text, '`([^`]*)`', '$1')
+}
+
 function Get-I18n {
 	param(
 		[string]$key,
@@ -147,15 +194,41 @@ function Get-I18n {
 		$translation = $key # 降级为键本身
 	}
 
-	# 简单插值
+	$text = [string]$translation
 	foreach ($paramName in $params.Keys) {
-		$paramValue = $params[$paramName]
-		$translation = $translation.Replace("`${$paramName}", $paramValue)
+		$formatted = Format-I18nParamValue -Name $paramName -Value ([string]$params[$paramName])
+		$text = $text.Replace('`${' + $paramName + '}`', $formatted)
+		$text = $text.Replace('${' + $paramName + '}', $formatted)
 	}
-
-	return $translation
+	return Format-I18nText $text
 }
 
+function Test-FountInTempDirectory {
+	param([string]$Directory)
+	try { $resolved = (Resolve-Path -LiteralPath $Directory).Path }
+	catch { $resolved = $Directory }
+
+	$candidates = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+	[void]$candidates.Add([System.IO.Path]::GetTempPath().TrimEnd('\', '/'))
+	foreach ($v in @($env:TEMP, $env:TMP)) {
+		if ($v) { [void]$candidates.Add($v.TrimEnd('\', '/')) }
+	}
+	if ($env:WINDIR) { [void]$candidates.Add((Join-Path $env:WINDIR 'Temp')) }
+
+	foreach ($temp in $candidates) {
+		try { $resolvedTemp = (Resolve-Path -LiteralPath $temp).Path }
+		catch { $resolvedTemp = $temp }
+		if ($resolved -ieq $resolvedTemp -or $resolved.StartsWith("$resolvedTemp\", [System.StringComparison]::OrdinalIgnoreCase)) {
+			return $true
+		}
+	}
+	return $false
+}
+
+if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
+	Write-Host (Get-I18n -key 'tempDir.blocked')
+	exit 1
+}
 
 $ErrorCount = $Error.Count
 
@@ -312,7 +385,7 @@ function Get-WTfountCmd($ArgumentList = @()) {
 		$ArgumentList = "-p fount powershell.exe $ArgumentList"
 	}
 	return @{
-		FilePath = $FilePath
+		FilePath     = $FilePath
 		ArgumentList = $ArgumentList
 	}
 }
@@ -359,7 +432,7 @@ function Register-FountProtocol {
 		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
 	}
 	catch {
-		Write-Warning (Get-I18n -key 'protocol.registerFailed' -params @{message = $_.Exception.Message})
+		Write-Warning (Get-I18n -key 'protocol.registerFailed' -params @{message = $_.Exception.Message })
 	}
 }
 

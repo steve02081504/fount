@@ -174,6 +174,9 @@ export type LocaleData = {
 				patchUnsupportedArch: string
 				patchFailed: string
 			}
+			tempDir: {
+				blocked: string
+			}
 			install: {
 				installingDependencies: string
 				packageFailed: string
