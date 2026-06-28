@@ -41,16 +41,6 @@
 				<span id="hub-group-name-display"></span>
 				<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
 			</header>
-			<div id="hub-pins-bookmarks-wrap" class="hub-pins-bookmarks-wrap" hidden>
-				<div class="hub-side-block">
-					<div class="hub-side-block-title" data-i18n="chat.hub.pinsTitle"></div>
-					<div id="hub-pins-wrap" class="hub-side-block-body"></div>
-				</div>
-				<div class="hub-side-block">
-					<div class="hub-side-block-title" data-i18n="chat.hub.bookmarksTitle"></div>
-					<div id="hub-bookmarks-wrap" class="hub-side-block-body"></div>
-				</div>
-			</div>
 			<div class="hub-channel-list flex-1 overflow-y-auto py-2" id="hub-channel-list"></div>
 			<div class="hub-user-bar" id="hub-user-bar">
 				<div class="hub-avatar-wrap hub-user-avatar-wrap">
@@ -74,6 +64,26 @@
 				<span class="hub-main-header-icon">#</span>
 				<span class="hub-main-header-title" id="hub-channel-name-display"></span>
 				<div class="flex-1"></div>
+				<div class="hub-header-pop" id="hub-pins-pop" hidden>
+					<button type="button" class="hub-icon-button hub-header-pop-button" id="hub-pins-button" data-i18n="chat.hub.pinsButton" aria-haspopup="dialog" aria-expanded="false">
+						<img src="https://api.iconify.design/mdi/pin.svg" alt="" aria-hidden="true" />
+						<span class="hub-header-pop-count" id="hub-pins-count" hidden></span>
+					</button>
+					<div class="hub-header-panel" id="hub-pins-panel" hidden role="dialog">
+						<div class="hub-header-panel-title" data-i18n="chat.hub.pinsTitle"></div>
+						<div id="hub-pins-wrap" class="hub-header-panel-body"></div>
+					</div>
+				</div>
+				<div class="hub-header-pop" id="hub-bookmarks-pop" hidden>
+					<button type="button" class="hub-icon-button hub-header-pop-button" id="hub-bookmarks-button" data-i18n="chat.hub.bookmarksButton" aria-haspopup="dialog" aria-expanded="false">
+						<img src="https://api.iconify.design/mdi/bookmark-outline.svg" alt="" aria-hidden="true" />
+						<span class="hub-header-pop-count" id="hub-bookmarks-count" hidden></span>
+					</button>
+					<div class="hub-header-panel" id="hub-bookmarks-panel" hidden role="dialog">
+						<div class="hub-header-panel-title" data-i18n="chat.hub.bookmarksTitle"></div>
+						<div id="hub-bookmarks-wrap" class="hub-header-panel-body"></div>
+					</div>
+				</div>
 				<div id="hub-header-search-wrap" class="hub-search-wrap">
 					<input id="hub-header-search" class="hub-search-input" type="search" data-i18n="chat.hub.search" />
 					<img src="https://api.iconify.design/line-md/search.svg" class="hub-search-icon" width="14" height="14" alt="" aria-hidden="true" />
@@ -100,9 +110,6 @@
 			</div>
 			<div id="hub-quarantine-banner" class="alert alert-warning rounded-none py-2 text-sm" hidden>
 				<span id="hub-quarantine-banner-text" data-i18n="chat.hub.banners.quarantine"></span>
-			</div>
-			<div id="hub-mailbox-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
-				<span id="hub-mailbox-banner-text" data-i18n="chat.hub.banners.mailboxPending"></span>
 			</div>
 			<div id="hub-local-view-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
 				<span data-i18n="chat.hub.localMaterializedView"></span>
@@ -147,9 +154,9 @@
 						<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" />
 					</button>
 					<button type="button" class="hub-icon-button" id="hub-upload-button" data-i18n="chat.hub.uploadTitle" disabled>
-						<img src="https://api.iconify.design/line-md/image.svg" alt="" aria-hidden="true" />
+						<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
 					</button>
-					<input type="file" id="hub-image-upload-input" accept="image/*" multiple hidden />
+					<input type="file" id="hub-image-upload-input" multiple hidden />
 					<textarea id="hub-message-input" class="hub-input flex-1 bg-transparent border-none outline-none text-base py-[11px] text-[var(--hub-text-normal)] resize-none min-h-11 max-h-40 leading-normal" rows="1" data-i18n="chat.hub.composerDisabled" disabled></textarea>
 					<button type="button" class="hub-icon-button" id="hub-emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
 						<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />

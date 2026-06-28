@@ -20,6 +20,20 @@ import {
 	primeContextMenuSelection,
 	syncGroupSelectionStyles,
 } from './groupSelection.mjs'
+import { attachServerBarDnd } from './serverBarDnd.mjs'
+
+/**
+ * 持久化当前文件夹布局到后端。
+ * @returns {Promise<void>}
+ */
+export async function persistGroupFolders() {
+	await fetch('/api/parts/shells:chat/group-folders', {
+		method: 'PUT',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ folders: hubStore.groupFoldersState.folders }),
+	}).catch(() => {})
+}
 
 /**
  * 计算侧栏群图标顺序（与 `renderServerBar` DOM 顺序一致，不含好友绑定群）。
@@ -178,15 +192,11 @@ export async function renderServerBar() {
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
 			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.groupFoldersState.folders.length) return
 			hubStore.groupFoldersState.folders[folderIndex].collapsed = !hubStore.groupFoldersState.folders[folderIndex].collapsed
-			void fetch('/api/parts/shells:chat/group-folders', {
-				method: 'PUT',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ folders: hubStore.groupFoldersState.folders }),
-			})
+			void persistGroupFolders()
 			void renderServerBar()
 		})
 	})
+	attachServerBarDnd(list)
 }
 
 /** 拉取群组列表与文件夹布局并刷新服务器栏。 @returns {Promise<void>} */

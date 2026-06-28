@@ -1776,6 +1776,12 @@
 			},
 			"pinsTitle": "置顶",
 			"bookmarksTitle": "书签",
+			"pinsButton": {
+				"title": "置顶消息"
+			},
+			"bookmarksButton": {
+				"title": "书签"
+			},
 			"search": {
 				"placeholder": "搜索消息…"
 			},
@@ -1809,7 +1815,7 @@
 			"filesEmpty": "此目录暂无文件",
 			"filesNoFolders": "暂无子文件夹",
 			"uploadTitle": {
-				"title": "上传图片"
+				"title": "上传文件"
 			},
 			"emojiTitle": {
 				"title": "表情"
@@ -2339,11 +2345,15 @@
 				"cancel": "取消",
 				"submit": "加入群组"
 			},
+			"menuCopy": "复制",
 			"menuMD": "Markdown",
 			"menuTXT": "纯文本",
 			"menuHTML": "HTML",
-			"menuPrev": "←",
-			"menuNext": "→",
+			"menuDownload": "下载 HTML",
+			"menuDelete": "删除",
+			"menuShareGroup": "分享链接",
+			"menuPrev": "上一条",
+			"menuNext": "下一条",
 			"menuShare": {
 				"1h": "分享 1 小时链接",
 				"12h": "分享 12 小时链接",

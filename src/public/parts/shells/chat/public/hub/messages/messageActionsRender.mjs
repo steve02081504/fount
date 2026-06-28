@@ -28,7 +28,7 @@ import {
 } from '../../src/lib/emojiSvg.mjs'
 import { escapeHtml } from '../core/domUtils.mjs'
 
-import { actionButton, menuActionItem, renderActionsBar } from './messageActionsUi.mjs'
+import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
 import { isChannelMessageGenerating } from './messageRender.mjs'
 
 /**
@@ -107,35 +107,49 @@ function renderOwnCharFeedbackInline(eventId, charId, feedbackUpClass, feedbackD
 }
 
 /**
- * 渲染本机角色消息悬停栏的编辑 + 菜单内容。
+ * 复制二级菜单（Markdown / 纯文本 / HTML）。
  * @param {string} eventId 已转义事件 id
- * @param {string} charId 已转义角色 id
- * @returns {{ inlineHover: string, menuItems: string, shiftHtml: string }} 悬停栏各区 HTML
+ * @returns {string} 子菜单 HTML
  */
-function renderOwnCharHoverParts(eventId, charId) {
-	const inlineHover = actionButton({
-		action: 'edit',
-		attrs: `data-event-id="${eventId}"`,
-		icon: hubActionEditIcon,
-		i18nKey: 'chat.hub.messageActionEdit',
-	})
-	const menuItems = [
-		menuActionItem('timeline', `data-event-id="${eventId}" data-delta="-1"`, hubActionTimelinePrevIcon, 'chat.hub.menuPrev'),
-		menuActionItem('timeline', `data-event-id="${eventId}" data-delta="1"`, hubActionTimelineNextIcon, 'chat.hub.menuNext'),
+function copySubmenu(eventId) {
+	const items = [
 		menuActionItem('copy-md', `data-event-id="${eventId}"`, hubActionCopyIcon, 'chat.hub.menuMD'),
 		menuActionItem('copy-text', `data-event-id="${eventId}"`, hubActionCopyTextIcon, 'chat.hub.menuTXT'),
 		menuActionItem('copy-html', `data-event-id="${eventId}"`, hubActionCopyHtmlIcon, 'chat.hub.menuHTML'),
-		menuActionItem('share', `data-event-id="${eventId}" data-time="1h"`, hubActionShareIcon, 'chat.hub.menuShare.1h'),
-		menuActionItem('share', `data-event-id="${eventId}" data-time="12h"`, hubActionShareIcon, 'chat.hub.menuShare.12h'),
-		menuActionItem('share', `data-event-id="${eventId}" data-time="24h"`, hubActionShareIcon, 'chat.hub.menuShare.24h'),
-		menuActionItem('share', `data-event-id="${eventId}" data-time="72h"`, hubActionShareIcon, 'chat.hub.menuShare.72h'),
 	].join('')
-	const shiftHtml = actionButton({
-		action: 'download',
-		attrs: `data-event-id="${eventId}"`,
-		icon: hubActionDownloadIcon,
-	})
-	return { inlineHover, menuItems, shiftHtml }
+	return menuSubmenu('chat.hub.menuCopy', hubActionCopyIcon, items)
+}
+
+/**
+ * 分享链接二级菜单（按有效期）。
+ * @param {string} eventId 已转义事件 id
+ * @returns {string} 子菜单 HTML
+ */
+function shareSubmenu(eventId) {
+	const items = ['1h', '12h', '24h', '72h'].map(time =>
+		menuActionItem('share', `data-event-id="${eventId}" data-time="${time}"`, hubActionShareIcon, `chat.hub.menuShare.${time}`),
+	).join('')
+	return menuSubmenu('chat.hub.menuShareGroup', hubActionShareIcon, items)
+}
+
+/**
+ * 构建消息下拉菜单项：复制/分享/下载（可选删除、时间线）。
+ * @param {string} eventId 已转义事件 id
+ * @param {{ ownChar?: boolean, canDelete?: boolean }} opts 选项
+ * @returns {string} 菜单 `<li>` HTML
+ */
+function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
+	const parts = []
+	if (ownChar) {
+		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="-1"`, hubActionTimelinePrevIcon, 'chat.hub.menuPrev'))
+		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="1"`, hubActionTimelineNextIcon, 'chat.hub.menuNext'))
+	}
+	parts.push(copySubmenu(eventId))
+	parts.push(shareSubmenu(eventId))
+	parts.push(menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'))
+	if (canDelete)
+		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menuDelete', 'text-error'))
+	return parts.join('')
 }
 
 /**
@@ -172,11 +186,10 @@ export async function renderMessageActionsHtml(message, opts) {
 	}
 
 	// ===== 悬停浮动栏 =====
+	// 常驻图标：子线程、书签、置顶、编辑；其余（复制/分享/下载/删除/时间线）收进二级下拉菜单
 	const hoverInlineParts = []
-	let menuItems = ''
-	let shiftHtml = ''
+	const canDelete = canDeleteMessage(message, opts)
 
-	// 子线程回复
 	if (opts.canCreateThreads)
 		hoverInlineParts.push(actionButton({
 			action: 'thread',
@@ -185,7 +198,6 @@ export async function renderMessageActionsHtml(message, opts) {
 			i18nKey: 'chat.hub.replyInThread',
 		}))
 
-	// 书签 + 置顶（本地消息）
 	if (!message.isRemote) {
 		hoverInlineParts.push(actionButton({
 			action: 'bookmark',
@@ -202,41 +214,21 @@ export async function renderMessageActionsHtml(message, opts) {
 			}))
 	}
 
-	if (ownChar) {
-		const { inlineHover, menuItems: ownMenu, shiftHtml: ownShift } = renderOwnCharHoverParts(
-			escapedEventId,
-			escapeHtml(String(message.charId || '')),
-		)
-		hoverInlineParts.push(inlineHover)
-		menuItems = ownMenu
-		const deleteBtn = canDeleteMessage(message, opts)
-			? actionButton({ action: 'delete', attrs: `data-event-id="${escapedEventId}"`, icon: hubActionDeleteIcon, i18nKey: 'chat.hub.messageActionDelete' })
-			: ''
-		shiftHtml = ownShift + deleteBtn
-	}
-	else if (!message.isRemote && canDeleteMessage(message, opts)) {
-		const showEdit = !message.charId && !!channelMessageText(message.content)
-		if (showEdit)
-			hoverInlineParts.push(actionButton({ action: 'edit', attrs: `data-event-id="${escapedEventId}"`, icon: hubActionEditIcon, i18nKey: 'chat.hub.messageActionEdit' }))
-		shiftHtml = actionButton({ action: 'delete', attrs: `data-event-id="${escapedEventId}"`, icon: hubActionDeleteIcon, i18nKey: 'chat.hub.messageActionDelete' })
-	}
-	else if (!ownChar) {
-		menuItems = [
-			menuActionItem('copy-md', `data-event-id="${escapedEventId}"`, hubActionCopyIcon, 'chat.hub.menuMD'),
-			menuActionItem('copy-text', `data-event-id="${escapedEventId}"`, hubActionCopyTextIcon, 'chat.hub.menuTXT'),
-			menuActionItem('copy-html', `data-event-id="${escapedEventId}"`, hubActionCopyHtmlIcon, 'chat.hub.menuHTML'),
-			menuActionItem('share', `data-event-id="${escapedEventId}" data-time="1h"`, hubActionShareIcon, 'chat.hub.menuShare.1h'),
-			menuActionItem('share', `data-event-id="${escapedEventId}" data-time="12h"`, hubActionShareIcon, 'chat.hub.menuShare.12h'),
-			menuActionItem('share', `data-event-id="${escapedEventId}" data-time="24h"`, hubActionShareIcon, 'chat.hub.menuShare.24h'),
-			menuActionItem('share', `data-event-id="${escapedEventId}" data-time="72h"`, hubActionShareIcon, 'chat.hub.menuShare.72h'),
-		].join('')
-		shiftHtml = actionButton({ action: 'download', attrs: `data-event-id="${escapedEventId}"`, icon: hubActionDownloadIcon })
-	}
+	const canEdit = ownChar || (!message.isRemote && canDelete && !message.charId && !!channelMessageText(message.content))
+	if (canEdit)
+		hoverInlineParts.push(actionButton({
+			action: 'edit',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionEditIcon,
+			i18nKey: 'chat.hub.messageActionEdit',
+		}))
+
+	const menuItems = buildMenuItems(escapedEventId, { ownChar, canDelete })
 
 	const hoverHtml = await renderActionsBar(
 		hoverInlineParts.join(''),
 		menuItems,
-		shiftHtml,
+		'',
 		{ alwaysVisible: false },
 	)
 

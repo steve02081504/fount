@@ -8,20 +8,28 @@
 import { renderTemplateAsHtmlString } from '../../../../scripts/template.mjs'
 import { isHex64 } from '../src/lib/pubKeyHex.mjs'
 
-import { refreshBoundBanners, refreshMailboxBannerBound } from './core/bindings.mjs'
+import { refreshBoundBanners } from './core/bindings.mjs'
 import { escapeHtml } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 
 /**
- * 显示或隐藏置顶/书签侧栏容器。
+ * 显示或隐藏顶栏的置顶/书签弹出按钮（搜索栏左侧）。
  * @param {boolean} on 是否显示
  * @returns {void} 无
  */
 export function setPinsBookmarksWrapVisible(on) {
-	const wrap = document.getElementById('hub-pins-bookmarks-wrap')
-	if (!wrap) return
-	if (on) wrap.removeAttribute('hidden')
-	else wrap.setAttribute('hidden', '')
+	for (const id of ['hub-pins-pop', 'hub-bookmarks-pop']) {
+		const pop = document.getElementById(id)
+		if (!pop) continue
+		if (on) pop.removeAttribute('hidden')
+		else {
+			pop.setAttribute('hidden', '')
+			pop.querySelector('.hub-header-panel')?.setAttribute('hidden', '')
+			const button = pop.querySelector('.hub-header-pop-button')
+			button?.classList.remove('is-open')
+			button?.setAttribute('aria-expanded', 'false')
+		}
+	}
 }
 
 /** @returns {void} */
@@ -32,11 +40,6 @@ export function updatePlaintextMainBanner() {
 /** @returns {void} */
 export function refreshQuarantineBanner() {
 	refreshBoundBanners()
-}
-
-/** @returns {Promise<void>} */
-export async function refreshMailboxBanner() {
-	await refreshMailboxBannerBound()
 }
 
 /** @returns {Promise<void>} */
@@ -165,6 +168,5 @@ export function updateStatusBanners() {
 	refreshQuarantineBanner()
 	refreshLocalViewBanner()
 	void refreshChannelPinsBar()
-	void refreshMailboxBanner()
 	void refreshDagForkBanner().then(() => refreshLocalViewBanner())
 }

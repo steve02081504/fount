@@ -340,7 +340,5 @@ export async function init() {
 	setupHubNotifications()
 	wireHubBannerBindings()
 	void loadMe()
-	const { refreshMailboxBanner } = await import('./banners.mjs')
-	void refreshMailboxBanner()
 	await wireHubHeavyFeatures()
 }

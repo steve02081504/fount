@@ -5,13 +5,13 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../../src/composerAttachments、../../src/lib/emojiSvg、../../src/ui/composerKeys、../../src/ui/dragAndDrop、../core/domUtils。
  */
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/template.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../../src/composerAttachments.mjs'
 import { hubActionMenuIcon } from '../../src/lib/emojiSvg.mjs'
-import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { bindComposerEditKeys } from '../../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../../src/ui/dragAndDrop.mjs'
 import { escapeHtml } from '../core/domUtils.mjs'
@@ -54,9 +54,9 @@ export function actionButton({ action, attrs = '', icon = '', i18nKey = '', clas
 		const title = extractI18nTitle(raw)
 		if (title) titleAttr = ` title="${escapeHtml(title)}"`
 	}
-	else if (i18nKey) {
+	else if (i18nKey) 
 		i18nAttr = ` data-i18n="${i18nKey}"`
-	}
+	
 	const content = icon || escapeHtml(label)
 	return `<button type="button" class="btn btn-ghost btn-xs hub-message-action ${classes}" data-action="${action}"${titleAttr}${i18nAttr} ${attrs}>${content}</button>`
 }
@@ -67,11 +67,23 @@ export function actionButton({ action, attrs = '', icon = '', i18nKey = '', clas
  * @param {string} attrs 额外属性
  * @param {string} icon 图标 HTML
  * @param {string} [i18nKey] 可选 i18n 键（菜单文字）
+ * @param {string} [classes] 额外 class
  * @returns {string} 菜单项 HTML
  */
-export function menuActionItem(action, attrs, icon, i18nKey = '') {
+export function menuActionItem(action, attrs, icon, i18nKey = '', classes = '') {
 	const labelSpan = i18nKey ? `<span class="hub-menu-label" data-i18n="${i18nKey}"></span>` : ''
-	return `<li><button type="button" class="btn btn-ghost btn-xs hub-message-action w-full justify-start gap-2" data-action="${action}" ${attrs}>${icon}${labelSpan}</button></li>`
+	return `<li><button type="button" class="btn btn-ghost btn-xs hub-message-action w-full justify-start gap-2 ${classes}" data-action="${action}" ${attrs}>${icon}${labelSpan}</button></li>`
+}
+
+/**
+ * 生成带二级菜单的菜单项（Discord 风格折叠子菜单）。
+ * @param {string} labelI18nKey 父级标签 i18n 键
+ * @param {string} icon 父级图标 HTML
+ * @param {string} innerItemsHtml 子级 `<li>` 菜单项
+ * @returns {string} 二级菜单 HTML
+ */
+export function menuSubmenu(labelI18nKey, icon, innerItemsHtml) {
+	return `<li class="hub-menu-submenu"><details><summary class="hub-menu-submenu-summary gap-2">${icon}<span class="hub-menu-label" data-i18n="${labelI18nKey}"></span></summary><ul class="p-1">${innerItemsHtml}</ul></details></li>`
 }
 
 /**

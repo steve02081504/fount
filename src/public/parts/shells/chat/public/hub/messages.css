@@ -178,6 +178,25 @@
 	white-space: nowrap;
 }
 
+/* 二级菜单（复制 / 分享） */
+.hub-menu-submenu-summary {
+	display: flex;
+	align-items: center;
+	min-height: 1.85rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 13px;
+}
+
+.hub-menu-submenu-summary .hub-action-icon {
+	width: 16px;
+	height: 16px;
+	opacity: 0.8;
+}
+
+.hub-menu-submenu > details > ul {
+	min-width: 9rem;
+}
+
 .hub-message-pending {
 	opacity: 0.55;
 }

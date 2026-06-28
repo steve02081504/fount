@@ -29,12 +29,15 @@ import { wireForkActions } from './federation/forkActions.mjs'
 import { openFilesDrawer, wireFilesDrawerToggle } from './files.mjs'
 import { showGroupHeaderMenu } from './groupContextMenu.mjs'
 import { loadMessages } from './messages/messages.mjs'
+import { wirePinsBookmarksPanels } from './pinsBookmarks.mjs'
 import { openGroupSettingsModal } from './privateGroup.mjs'
 
 /** 注册 Hub 页面 DOM 事件委托。 @returns {void} */
 export function wireEvents() {
 	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-message-input')
 	addDragAndDropSupport(messageInput, selectedFiles, document.getElementById('hub-attachment-preview'))
+
+	wirePinsBookmarksPanels()
 
 	document.getElementById('hub-voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()

@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/pinsBookmarks.mjs
- * 【职责】置顶消息与聊天书签侧栏：拉取列表、取消置顶/删除书签并刷新 Hub 侧栏模板。
- * 【原理】`refreshPinsBookmarks` 更新 `#hub-pins-bookmarks-wrap` 内条目，配合 `banners.setPinsBookmarksWrapVisible`；条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
+ * 【职责】置顶消息与聊天书签：拉取列表、取消置顶/删除书签，渲染到顶栏搜索框左侧的两个弹出面板。
+ * 【原理】`refreshPinsBookmarks` 更新 `#hub-pins-wrap`/`#hub-bookmarks-wrap` 面板内条目与按钮计数徽标，配合 `banners.setPinsBookmarksWrapVisible` 控制按钮可见性；`wirePinsBookmarksPanels` 负责按钮的展开/收起交互。条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、../src/api/groupApi、banners、core/domUtils、core/state、groupNav、messages/messages、messages/pinPreview。
  */
@@ -21,6 +21,22 @@ import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
 
 const SIDEBAR_LABEL_MAX = 56
+
+/**
+ * 更新顶栏弹出按钮的计数徽标。
+ * @param {string} countElId 徽标元素 id
+ * @param {number} count 数量
+ * @returns {void}
+ */
+function setPopCount(countElId, count) {
+	const el = document.getElementById(countElId)
+	if (!el) return
+	if (count > 0) {
+		el.textContent = count > 99 ? '99+' : String(count)
+		el.removeAttribute('hidden')
+	}
+	else el.setAttribute('hidden', '')
+}
 
 /**
  * 统一群 ID 键，避免大小写不一致导致名称解析失败。
@@ -55,6 +71,7 @@ export async function refreshPinsBookmarks() {
 		setPinsBookmarksWrapVisible(false)
 		return
 	}
+	setPinsBookmarksWrapVisible(true)
 	const pinsBy = hubStore.currentState.pinsByChannel || {}
 	const pinEntries = []
 	for (const [channelId, ids] of Object.entries(pinsBy)) {
@@ -83,6 +100,7 @@ export async function refreshPinsBookmarks() {
 			}))
 		}
 	else await mountTemplate(pinsHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noPins' })
+	setPopCount('hub-pins-count', pinEntries.length)
 
 	pinsHost.querySelectorAll('.hub-pinned-message-row').forEach(pinRow => {
 		pinRow.addEventListener('click', async () => {
@@ -110,7 +128,7 @@ export async function refreshPinsBookmarks() {
 
 	const bookmarks = await getChatBookmarks().catch(() => [])
 	const valid = bookmarks.filter(b => b && (b.groupId || b.href))
-	setPinsBookmarksWrapVisible(pinEntries.length > 0 || valid.length > 0)
+	setPopCount('hub-bookmarks-count', valid.length)
 	bookmarksHost.replaceChildren()
 	if (!valid.length) {
 		if (pinEntries.length)
@@ -185,4 +203,59 @@ export async function refreshPinsBookmarks() {
 			bookmarksHost.appendChild(line)
 		}
 	}
+}
+
+/** @type {Array<{ button: string, panel: string }>} 顶栏弹出按钮与其面板的对应 */
+const POP_DEFS = [
+	{ button: 'hub-pins-button', panel: 'hub-pins-panel' },
+	{ button: 'hub-bookmarks-button', panel: 'hub-bookmarks-panel' },
+]
+
+/** 关闭所有顶栏置顶/书签弹出面板。 @returns {void} */
+function closeAllPinsBookmarksPanels() {
+	for (const { button, panel } of POP_DEFS) {
+		document.getElementById(panel)?.setAttribute('hidden', '')
+		const btn = document.getElementById(button)
+		btn?.classList.remove('is-open')
+		btn?.setAttribute('aria-expanded', 'false')
+	}
+}
+
+/**
+ * 切换某个弹出面板，并收起另一个。
+ * @param {string} buttonId 触发按钮 id
+ * @param {string} panelId 面板 id
+ * @returns {void}
+ */
+function togglePinsBookmarksPanel(buttonId, panelId) {
+	const panel = document.getElementById(panelId)
+	const button = document.getElementById(buttonId)
+	if (!panel || !button) return
+	const willOpen = panel.hasAttribute('hidden')
+	closeAllPinsBookmarksPanels()
+	if (willOpen) {
+		panel.removeAttribute('hidden')
+		button.classList.add('is-open')
+		button.setAttribute('aria-expanded', 'true')
+	}
+}
+
+let pinsBookmarksPanelsWired = false
+
+/** 绑定顶栏置顶/书签按钮的展开/收起交互（仅绑定一次）。 @returns {void} */
+export function wirePinsBookmarksPanels() {
+	if (pinsBookmarksPanelsWired) return
+	pinsBookmarksPanelsWired = true
+	for (const { button, panel } of POP_DEFS)
+		document.getElementById(button)?.addEventListener('click', event => {
+			event.stopPropagation()
+			togglePinsBookmarksPanel(button, panel)
+		})
+	document.addEventListener('click', event => {
+		if (event.target instanceof Element && event.target.closest('.hub-header-pop')) return
+		closeAllPinsBookmarksPanels()
+	})
+	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape') closeAllPinsBookmarksPanels()
+	})
 }

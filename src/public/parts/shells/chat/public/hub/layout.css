@@ -82,6 +82,23 @@
 	cursor: wait;
 }
 
+/* —— 群组拖拽 —— */
+.hub-server-item.hub-dragging {
+	opacity: 0.4;
+}
+
+.hub-server-item.hub-drop-into {
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 2px var(--hub-bg-server),
+		0 0 0 4px var(--hub-accent);
+}
+
+.hub-folder-wrap.hub-drop-into {
+	background: color-mix(in srgb, var(--hub-accent) 28%, transparent);
+	box-shadow: inset 0 0 0 2px var(--hub-accent);
+}
+
 .hub-server-item.is-leaving::after {
 	content: '';
 	position: absolute;

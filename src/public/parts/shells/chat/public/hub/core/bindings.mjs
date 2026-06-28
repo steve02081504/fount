@@ -2,7 +2,6 @@
  * Hub 横幅与固定 DOM 节点的声明式绑定（订阅 hubStore / watchHubState）。
  */
 import { getGroupState } from '../../src/api/groupApi.mjs'
-import { getMailboxPendingCount, refreshMailboxPendingCount } from '../hubNotifications.mjs'
 
 import { hubStore, setHubState, watchHubState } from './state.mjs'
 
@@ -64,21 +63,6 @@ function gshBufferBannerI18n() {
 /** @returns {Record<string, string>} dataset 插值 */
 function gshBufferBannerDataset() {
 	return { total: String(Number(hubStore.currentState?.gshBuffer?.total) || 0) }
-}
-
-/** @returns {boolean} 是否显示邮箱待处理横幅 */
-function mailboxBannerVisible() {
-	return (Number(hubStore.mailboxPendingCount) || 0) > 0
-}
-
-/** @returns {string} i18n 键 */
-function mailboxBannerI18n() {
-	return 'chat.hub.banners.mailboxPending'
-}
-
-/** @returns {Record<string, string>} dataset 插值 */
-function mailboxBannerDataset() {
-	return { count: String(Number(hubStore.mailboxPendingCount) || 0) }
 }
 
 /** @returns {boolean} 是否显示冷归档缺口横幅 */
@@ -179,13 +163,6 @@ const BANNER_BINDINGS = [
 		visible: localViewBannerVisible,
 	},
 	{
-		id: 'hub-mailbox-banner',
-		textId: 'hub-mailbox-banner-text',
-		visible: mailboxBannerVisible,
-		i18n: mailboxBannerI18n,
-		dataset: mailboxBannerDataset,
-	},
-	{
 		id: 'hub-sync-banner',
 		textId: 'hub-sync-banner-text',
 		visible: syncBannerVisible,
@@ -269,15 +246,5 @@ export function wireHubBannerBindings() {
 			leaveGroupsOptimistic([groupId]),
 		).catch(console.error)
 	})
-	refreshBoundBanners()
-}
-
-/**
- * 邮箱横幅（异步计数，保留在 banners.mjs 调用）。
- * @returns {Promise<void>}
- */
-export async function refreshMailboxBannerBound() {
-	await refreshMailboxPendingCount()
-	hubStore.mailboxPendingCount = getMailboxPendingCount()
 	refreshBoundBanners()
 }

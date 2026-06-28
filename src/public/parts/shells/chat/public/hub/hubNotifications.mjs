@@ -1,34 +1,7 @@
 /**
  * Hub 浏览器通知：页面在后台时对新频道/DAG 消息弹出 Notification。
  */
-import { fetchMailboxSummary } from '../src/api/mailboxApi.mjs'
-
 import { getMessageText } from './messages/messageRender.mjs'
-
-/** @type {number} */
-let mailboxPendingCount = 0
-
-/**
- * @returns {number} 当前缓存的离线 mailbox 待处理条数
- */
-export function getMailboxPendingCount() {
-	return mailboxPendingCount
-}
-
-/**
- * 拉取并缓存用户级 mailbox 摘要。
- * @returns {Promise<number>} 待处理条数
- */
-export async function refreshMailboxPendingCount() {
-	try {
-		const data = await fetchMailboxSummary()
-		mailboxPendingCount = Number(data.pending) || 0
-	}
-	catch {
-		/* empty */
-	}
-	return mailboxPendingCount
-}
 
 /**
  * 请求通知权限（若尚未授权）。
