@@ -17,9 +17,9 @@ export function setEndpoints(router) {
 	 * @param {object} ws - WebSocket 对象。
 	 * @param {object} req - Express 请求对象。
 	 */
-	router.ws(WS_ACP, authenticate, async (ws, req) => {
+	router.ws(WS_ACP, authenticate, (ws, req) => {
 		try {
-			await handleAcpWs(ws, req)
+			handleAcpWs(ws, req)
 		} catch (error) {
 			ws.close(4500, error.message || 'ACP setup failed')
 		}

@@ -5,7 +5,8 @@
 import { Buffer } from 'node:buffer'
 
 import {
-	AgentSideConnection,
+	agent,
+	methods,
 	ndJsonStream,
 	PROTOCOL_VERSION,
 } from 'npm:@agentclientprotocol/sdk'
@@ -91,6 +92,58 @@ function extractPromptContent(blocks) {
 }
 
 /**
+ * 将新版 AgentContext 包装为向后兼容的连接对象，供 default_interface 中的插件使用。
+ * @param {import('npm:@agentclientprotocol/sdk').AgentContext} client - 新版 AgentContext。
+ * @returns {object} 兼容旧接口的连接代理。
+ */
+function makeConnectionAdapter(client) {
+	return {
+		/**
+		 * 发送会话更新通知。
+		 * @param {object} params - 会话通知参数。
+		 * @returns {void}
+		 */
+		sessionUpdate: (params) => client.notify(methods.client.session.update, params),
+		/**
+		 * 请求用户授权。
+		 * @param {object} params - 授权请求参数。
+		 * @returns {Promise<object>} 授权结果。
+		 */
+		requestPermission: (params) => client.request(methods.client.session.requestPermission, params),
+		/**
+		 * 读取文件内容。
+		 * @param {object} params - 读取参数。
+		 * @returns {Promise<object>} 文件内容。
+		 */
+		readTextFile: (params) => client.request(methods.client.fs.readTextFile, params),
+		/**
+		 * 写入文件内容。
+		 * @param {object} params - 写入参数。
+		 * @returns {Promise<object>} 写入结果。
+		 */
+		writeTextFile: (params) => client.request(methods.client.fs.writeTextFile, params),
+		/**
+		 * 在 IDE 终端中执行命令，返回终端操作句柄。
+		 * @param {object} params - 终端创建参数（含 sessionId）。
+		 * @returns {Promise<{ id: string, waitForExit: Function, currentOutput: Function, release: Function }>} 终端句柄。
+		 */
+		createTerminal: async (params) => {
+			const { terminalId } = await client.request(methods.client.terminal.create, params)
+			const sid = params.sessionId
+			return {
+				id: terminalId,
+				/** @returns {Promise<object>} 退出状态。 */
+				waitForExit: () => client.request(methods.client.terminal.waitForExit, { sessionId: sid, terminalId }),
+				/** @returns {Promise<object>} 当前输出。 */
+				currentOutput: () => client.request(methods.client.terminal.output, { sessionId: sid, terminalId }),
+				/** @returns {Promise<object>} 释放结果。 */
+				release: () => client.request(methods.client.terminal.release, { sessionId: sid, terminalId }),
+			}
+		},
+	}
+}
+
+/**
  * 服务端 ACP Agent：桥接 ACP 协议与角色 ideIntegration 接口。
  * 所有业务逻辑（含 slash 命令、config options、modes）均由接口提供，此处仅转发。
  */
@@ -102,13 +155,17 @@ class ServerFountAgent {
 	#iface = null
 
 	/**
+	 * ACP AgentContext（新版 SDK）。
+	 * @type {import('npm:@agentclientprotocol/sdk').AgentContext|null}
+	 */
+	#client = null
+
+	/**
 	 * 服务端 ACP Agent 构造函数。
-	 * @param {AgentSideConnection} connection - ACP 连接对象。
 	 * @param {string} username - 用户名。
 	 * @param {string} charname - 角色名。
 	 */
-	constructor(connection, username, charname) {
-		this.connection = connection
+	constructor(username, charname) {
 		this.username = username
 		this.charname = charname
 		/**
@@ -121,6 +178,14 @@ class ServerFountAgent {
 		 * @type {import('npm:@agentclientprotocol/sdk').ClientCapabilities|null}
 		 */
 		this.clientCapabilities = null
+	}
+
+	/**
+	 * 绑定 AgentContext（连接建立后由外部调用）。
+	 * @param {import('npm:@agentclientprotocol/sdk').AgentContext|null} client - AgentContext 或 null（断开时）。
+	 */
+	bindClient(client) {
+		this.#client = client
 	}
 
 	/**
@@ -171,7 +236,7 @@ class ServerFountAgent {
 				sessionData = await iface.SetupSession({
 					cwd: params.cwd || '',
 					mcpServers: params.mcpServers || [],
-					connection: this.connection,
+					connection: this.#client ? makeConnectionAdapter(this.#client) : null,
 				})
 		} catch (error) {
 			console.error('SetupSession failed:', error)
@@ -193,7 +258,7 @@ class ServerFountAgent {
 
 		// 发送接口提供的可用命令
 		if (sessionData?.availableCommands?.length)
-			this.connection.sessionUpdate({
+			this.#client?.notify(methods.client.session.update, {
 				sessionId,
 				update: { sessionUpdate: 'available_commands_update', availableCommands: sessionData.availableCommands },
 			})
@@ -224,11 +289,6 @@ class ServerFountAgent {
 	}
 
 	/**
-	 * 忽略未知通知（如客户端发送的 initialized），避免 Method not found 断连。
-	 */
-	async extNotification() { }
-
-	/**
 	 * 处理用户 prompt。
 	 * @param {object} params - Prompt 参数。
 	 * @returns {Promise<{ stopReason: string }>} 停止原因。
@@ -242,11 +302,13 @@ class ServerFountAgent {
 		session.pendingPrompt = new AbortController()
 		const { signal } = session.pendingPrompt
 
+		const connection = this.#client ? makeConnectionAdapter(this.#client) : null
+
 		try {
 			const { text: userText, files } = extractPromptContent(params.prompt || [])
 
 			if (!userText && !files.length) {
-				await this.connection.sessionUpdate({
+				connection?.sessionUpdate({
 					sessionId: params.sessionId,
 					update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: '(Please enter a message before sending.)' } },
 				})
@@ -262,7 +324,7 @@ class ServerFountAgent {
 			const iface = await this.#getInterface()
 			const replyOptions = {
 				sessionId: params.sessionId,
-				connection: this.connection,
+				connection,
 				signal,
 				clientCapabilities: this.clientCapabilities ?? {},
 			}
@@ -274,7 +336,7 @@ class ServerFountAgent {
 			}
 
 			if (!result) {
-				await this.connection.sessionUpdate({
+				connection?.sessionUpdate({
 					sessionId: params.sessionId,
 					update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'Error: no reply' } },
 				})
@@ -318,7 +380,7 @@ class ServerFountAgent {
 	 * 取消当前 prompt。
 	 * @param {object} params - 取消参数。
 	 */
-	async cancel(params) {
+	cancel(params) {
 		this.sessions.get(params.sessionId)?.pendingPrompt?.abort()
 	}
 
@@ -372,7 +434,7 @@ function wsToStream(ws) {
  * @param {import('npm:ws').WebSocket} ws - WebSocket 对象。
  * @param {import('npm:express').Request} req - Express 请求对象。
  */
-export async function handleAcpWs(ws, req) {
+export function handleAcpWs(ws, req) {
 	if (!req.user?.username) {
 		ws.close(4001, 'Unauthorized')
 		return
@@ -386,23 +448,21 @@ export async function handleAcpWs(ws, req) {
 		return
 	}
 
-	/**
-	 * 当前 ACP 会话代理。
-	 * @type {ServerFountAgent|null}
-	 */
-	let agent = null
+	unlockAchievement(req.user.username, 'shells/ideIntegration', 'first_ide_use')
 
-	ws.on('close', async () => {
-		if (agent) await agent.teardownAll()
-	})
+	const impl = new ServerFountAgent(req.user.username, charname)
+
+	const app = agent({ name: 'fount-ide' })
+		.onRequest(methods.agent.initialize, (ctx) => impl.initialize(ctx.params))
+		.onRequest(methods.agent.session.new, (ctx) => impl.newSession(ctx.params))
+		.onRequest(methods.agent.authenticate, () => ({}))
+		.onRequest(methods.agent.session.setMode, (ctx) => impl.setSessionMode(ctx.params))
+		.onRequest(methods.agent.session.setConfigOption, (ctx) => impl.setSessionConfigOption(ctx.params))
+		.onRequest(methods.agent.session.prompt, (ctx) => impl.prompt(ctx.params))
+		.onNotification(methods.agent.session.cancel, (ctx) => impl.cancel(ctx.params))
 
 	const stream = wsToStream(ws)
-	new AgentSideConnection(
-		connection => {
-			agent = new ServerFountAgent(connection, req.user.username, charname)
-			unlockAchievement(req.user.username, 'shells/ideIntegration', 'first_ide_use')
-			return agent
-		},
-		stream,
-	)
+	const conn = app.connect(stream)
+	impl.bindClient(conn.client)
+	conn.closed.then(() => impl.teardownAll())
 }
