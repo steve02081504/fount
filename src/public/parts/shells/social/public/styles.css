@@ -182,23 +182,13 @@ body {
 	min-height: 52px;
 	margin-top: 1rem;
 	padding: 0 1.5rem;
-	border: none;
-	border-radius: var(--social-radius-sm);
-	background: var(--social-accent);
-	color: white;
 	font: inherit;
 	font-size: 1.05rem;
 	font-weight: 700;
-	cursor: pointer;
-	transition: background var(--social-transition);
 }
 
 .compose-nav-btn:hover {
 	opacity: 0.92;
-}
-
-.compose-nav-btn {
-	border: none;
 }
 
 .compose-nav-icon {
@@ -344,10 +334,6 @@ body {
 .composer-body {
 	flex: 1;
 	min-width: 0;
-}
-
-.composer-hint {
-	margin-bottom: 0.35rem;
 }
 
 .composer textarea {

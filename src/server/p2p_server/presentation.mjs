@@ -1,5 +1,7 @@
 import { getLocalizedInfo } from '../../scripts/locale.mjs'
 import { isPlaceholderDisplayName } from '../../scripts/p2p/entity/localized_core.mjs'
+import { parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
+import { getNodeHash } from '../../scripts/p2p/node_context.mjs'
 import { getUserByUsername } from '../auth.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../parts_loader.mjs'
 
@@ -104,6 +106,9 @@ export async function getInfoDefaultsForEntity(replicaUsername, entityHash, loca
 		const defaults = infoLiToDefaults(li)
 		return { ...defaults, name: defaults.name || charname }
 	}
+
+	if (parseEntityHash(entityHash)?.nodeHash !== getNodeHash())
+		return null
 
 	const presentation = await resolvePersonaPresentation(replicaUsername)
 	const personaname = await resolvePersonanameForReplica(replicaUsername)

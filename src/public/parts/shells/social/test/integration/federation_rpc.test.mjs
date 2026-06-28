@@ -169,3 +169,38 @@ Deno.test('remote author profile + posts do not break feed/discover', async () =
 	assert(discovered.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'remote public account discoverable')
 	await following.setFollow(username, remoteOwner, false)
 })
+
+Deno.test('discoverAccounts: ingress RPC lists only self-hosted entities', async () => {
+	const { username } = await getSession()
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
+	await seedRemoteTimeline(username, seed, remoteOwner, [
+		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+	])
+
+	const localView = await discovery.discoverAccounts(username, { n: 50 })
+	assert(localView.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'local explore sees synced remote owner')
+
+	const rpcResp = await discovery.handleSocialRpc(username, {
+		type: 'social_discover_request', n: 50,
+	}, { requesterNodeHash: 'b'.repeat(64) })
+	assert(!rpcResp.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'ingress RPC hides foreign synced timeline')
+})
+
+Deno.test('remote entity profile uses subjectHash placeholder not local persona', async () => {
+	const { username } = await getSession()
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const remoteOwner = encodeEntityHash('5'.repeat(64), subject)
+	await seedRemoteTimeline(username, seed, remoteOwner, [
+		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+	])
+
+	const { resolvePersonaPresentation } = await import('fount/server/p2p_server/presentation.mjs')
+	const personaName = (await resolvePersonaPresentation(username)).displayName
+	const profile = await feed.getEntityProfile(username, remoteOwner)
+	const placeholder = `${subject.slice(0, 8)}…${subject.slice(-4)}`
+	assert(profile?.name === placeholder, 'remote profile falls back to subjectHash placeholder')
+	assert(profile?.name !== personaName, 'remote profile must not reuse local persona name')
+})

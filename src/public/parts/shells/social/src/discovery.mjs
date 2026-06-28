@@ -13,12 +13,14 @@ import { buildFederatedTimelinePullResponse } from './timeline/sync.mjs'
  * @param {object} [options] 探索选项
  * @param {number} [options.n=20] 返回账户数
  * @param {string} [options.cursor] 分页游标（entityHash）
+ * @param {string | null} [options.nodeHashPrefix] 仅该 nodeHash 托管的 entity；缺省为全部已知 owner
  * @returns {Promise<{ accounts: object[], nextCursor: string | null }>} 推荐账户
  */
 export async function discoverAccounts(username, options = {}) {
 	const accountLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const cursor = (options.cursor || '').toLowerCase()
-	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix: getNodeHash() })
+	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix })
 	const start = cursor ? Math.max(0, owners.indexOf(cursor) + 1) : 0
 	const slice = owners.slice(start, start + accountLimit)
 	/** @type {object[]} */
@@ -51,12 +53,14 @@ const POST_DISCOVER_SAMPLE_MULTIPLIER = 3
  * @param {object} [options] 探索选项
  * @param {number} [options.n=20] 返回帖子数
  * @param {boolean} [options.mediaOnly=false] 仅含媒体
+ * @param {string | null} [options.nodeHashPrefix] 仅该 nodeHash 托管的 entity；缺省为全部已知 owner
  * @returns {Promise<{ posts: object[] }>} 随机帖子样本
  */
 export async function discoverPosts(username, options = {}) {
 	const postLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const mediaOnly = Boolean(options.mediaOnly)
-	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix: getNodeHash() })
+	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix })
 	/** @type {object[]} */
 	const posts = []
 
@@ -146,10 +150,18 @@ export async function discoverWithNetwork(username, rpc) {
 export async function handleSocialRpc(username, rpc, ingress = {}) {
 	if (!SOCIAL_RPC_TYPES.has(rpc?.type)) return null
 	switch (rpc?.type) {
-		case 'social_discover_request':
-			return { type: 'social_discover_response', ...await discoverAccounts(username, rpc) }
-		case 'social_post_discover_request':
-			return { type: 'social_post_discover_response', ...await discoverPosts(username, rpc) }
+		case 'social_discover_request': {
+			const scoped = ingress.requesterNodeHash
+				? { ...rpc, nodeHashPrefix: getNodeHash() }
+				: rpc
+			return { type: 'social_discover_response', ...await discoverAccounts(username, scoped) }
+		}
+		case 'social_post_discover_request': {
+			const scoped = ingress.requesterNodeHash
+				? { ...rpc, nodeHashPrefix: getNodeHash() }
+				: rpc
+			return { type: 'social_post_discover_response', ...await discoverPosts(username, scoped) }
+		}
 		case 'social_follow_graph_request':
 			return {
 				type: 'social_follow_graph_response',
