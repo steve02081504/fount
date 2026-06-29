@@ -2152,7 +2152,7 @@ keepalive)
 	restart_timestamps=()
 
 	"$0" server "${runargs[@]}"
-	# shellcheck disable=SC2181
+	exit_code=$?
 	while [ $exit_code -ne 0 ]; do
 		if [ $exit_code -eq 130 ]; then exit 130; fi # ctrl+c
 		if [ $exit_code -ne 131 ]; then
@@ -2182,6 +2182,7 @@ keepalive)
 		fi
 
 		"$0" server
+		exit_code=$?
 	done
 	;;
 server)
@@ -2297,6 +2298,10 @@ shutdown|reboot)
 	original_title=$(get_title)
 	if [ "$1" ]; then
 		run "${@:1}"
+		exit_code=$?
+	elif [ "$IN_TERMUX" -eq 1 ] || [ "$IN_DOCKER" -eq 1 ]; then
+		"$0" keepalive "$@"
+		exit_code=$?
 	else
 		write_taskbar_progress 25
 		set_title "𝓯"
@@ -2304,9 +2309,10 @@ shutdown|reboot)
 		set_title "𝓯𝓸"
 		write_taskbar_progress
 		"$0" log
+		exit_code=$?
 	fi
 	set_title "$original_title"
-	exit $?
+	exit "$exit_code"
 	;;
 esac
 
