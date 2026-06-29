@@ -43,7 +43,8 @@ export const JOIN_SNAPSHOT_PER_CHANNEL = 500
 const SNAPSHOT_WAIT_MS = 8000
 const SNAPSHOT_EMPTY_RETRY_MS = 2000
 const SNAPSHOT_POLL_MS = 500
-const SNAPSHOT_RETRY_MAX = 4
+const SNAPSHOT_RETRY_MAX = 6
+const SNAPSHOT_RETRY_GAP_MS = 1500
 
 /**
  * @param {number} ms 毫秒
@@ -211,8 +212,10 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 	}
 
 	let envelope = await sendOnce()
-	for (let attempt = 0; !envelope && attempt < SNAPSHOT_RETRY_MAX; attempt++)
+	for (let attempt = 0; !envelope && attempt < SNAPSHOT_RETRY_MAX; attempt++) {
+		await sleep(SNAPSHOT_RETRY_GAP_MS)
 		envelope = await sendOnce()
+	}
 	if (!envelope) return { applied: false, channels: 0 }
 	return await applyJoinSnapshotResponse(username, groupId, envelope)
 }

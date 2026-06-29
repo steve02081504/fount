@@ -14,12 +14,12 @@
 import { createCharRpcDispatcher, createWorldRpcDispatcher } from './rpcDispatcher.mjs'
 import { deleteGroup } from './session/crud.mjs'
 import { getChatRequest } from './session/generation.mjs'
-import { getActiveGroupRuntime, isVividGroup } from './session/persistence.mjs'
+import { getActiveGroupRuntime, isLocallyOwnedGroup, isVividGroup } from './session/persistence.mjs'
 import { bindSessionUnloadHooks, initializeGroupMetadatas } from './session/wsLifecycle.mjs'
 
 initializeGroupMetadatas()
 
-bindSessionUnloadHooks({ deleteGroup, isVividGroup })
+bindSessionUnloadHooks({ deleteGroup, isVividGroup, isLocallyOwnedGroup })
 
 /**
  * 在本地群运行时尝试分发 Char RPC（供联邦 `char_rpc` 入站回调）。

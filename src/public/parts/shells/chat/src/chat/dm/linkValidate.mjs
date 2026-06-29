@@ -1,7 +1,7 @@
 /**
  * 【文件】dm/linkValidate.mjs
  * 【职责】§16 DM Link 入站完整校验：签名、介绍方成员解析、本节点 nonce 是否仍有效。
- * 【原理】verifyDmLinkSignature → findMemberIdByPubKeyHex → dmIntroNonceMatches；联邦 identity 公钥兜底比对。通过后才允许 orchestrateJoinGroup / First Contact。
+ * 【原理】verifyDmLinkSignature → findMemberIdByPubKeyHex → dmIntroNonceMatches；联邦 identity 公钥兜底比对。通过后才允许 performMemberJoin / First Contact。
  * 【数据结构】validateDmIntroLinkProof 返回 { ok, error? }；state.members 按 pubKeyHex 索引。
  * 【关联】dm/linkVerify、dm/intro、lib/dmLinkSignature、dm/index；Trystero 房间 dm:{sessionTag}。
  */

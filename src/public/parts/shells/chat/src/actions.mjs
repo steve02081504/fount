@@ -1,12 +1,12 @@
 /**
  * 【文件】src/actions.mjs
  * 【职责】定义 chat shell 可通过 CLI、IPC 与 fount://run 深链调用的命令表 actions，是无 HTTP 时的程序化入口。
- * 【原理】各 action 校验参数后委托 session/crud、messages、partConfig、generation、dm 编排等；默认频道由 getActiveGroupRuntime + getDefaultChannelId 解析；send/tail/trigger-reply 等操作在群 runtime 上读写 chatLog；dm/join 分别调用 orchestrateDmFirstContact / orchestrateJoinGroup 完成联邦入群流程。
+ * 【原理】各 action 校验参数后委托 session/crud、messages、partConfig、generation、dm 编排等；默认频道由 getActiveGroupRuntime + getDefaultChannelId 解析；send/tail/trigger-reply 等操作在群 runtime 上读写 chatLog；dm/join 分别调用 orchestrateDmFirstContact / performMemberJoin 完成联邦入群流程。
  * 【数据结构】actions 对象（键为命令名）、chatInfo（asjson）、message（send）、Serializable 深链字段（introPubKeyHex/dmIntroNonce 等）。
  * 【关联】被 main.mjs handleAction 动态 import；依赖 chat/session、chat/dm、group/queries 等后端模块。
  */
 import { getDefaultChannelId } from './chat/dag/queries.mjs'
-import { orchestrateDmFirstContact, orchestrateJoinGroup } from './chat/dm/index.mjs'
+import { orchestrateDmFirstContact, performMemberJoin } from './chat/dm/index.mjs'
 import { getWorldName } from './chat/session/channelWorld.mjs'
 import { newGroup } from './chat/session/crud.mjs'
 import { triggerCharReply } from './chat/session/generation.mjs'
@@ -232,15 +232,16 @@ export const actions = {
 	 * @param {string} [root0.inviteCode] 邀请码
 	 * @param {string} [root0.mqttRoomSecret] 首次联邦 MQTT 口令
 	 * @param {string} [root0.mqttAppId] MQTT 应用 ID
+	 * @param {string} [root0.introducerPubKeyHash] 邀请人成员 pubKeyHash
+	 * @param {string} [root0.powAnchorRef] 入群 PoW anchor 提示
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群结果
 	 */
-	join: async ({ user, groupId, inviteCode, mqttRoomSecret, mqttAppId }) => {
+	join: async ({ user, groupId, inviteCode, mqttRoomSecret, mqttAppId, introducerPubKeyHash, powAnchorRef }) => {
 		if (!groupId) throw new Error('groupId is required for join action')
-		return orchestrateJoinGroup(
-			user,
-			groupId,
-			inviteCode || '',
-			mqttRoomSecret ? { mqttRoomSecret, mqttAppId } : {},
-		)
+		const bootstrap = {}
+		if (mqttRoomSecret?.trim()) bootstrap.mqttRoomSecret = mqttRoomSecret.trim()
+		if (mqttAppId?.trim()) bootstrap.mqttAppId = mqttAppId.trim()
+		if (powAnchorRef?.trim()) bootstrap.powAnchorRef = powAnchorRef.trim()
+		return performMemberJoin(user, groupId, { inviteCode, introducerPubKeyHash, bootstrap })
 	},
 }

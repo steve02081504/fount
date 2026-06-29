@@ -50,7 +50,7 @@ import { isHubMemberPersonallyFiltered, loadHubPersonalFilter } from './personal
 import { refreshPinsBookmarks } from './pinsBookmarks.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
-import { renderServerBar, loadGroups } from './serverBar.mjs'
+import { loadGroups } from './serverBar.mjs'
 import { isThreadChannel } from './threadDrawer.mjs'
 
 /**
@@ -275,22 +275,23 @@ async function showCreateChannelModal() {
 /**
  * 从联邦网络拉取群组事件并刷新当前频道消息。
  * @param {string} groupId 群组 ID
- * @param {string} [channelId] 限定同步的频道
+ * @param {{ waitMs?: number }} [opts] catch-up 等待毫秒数
  * @returns {Promise<void>}
  */
-async function syncGroupFromNetwork(groupId) {
+async function syncGroupFromNetwork(groupId, opts = {}) {
 	setSyncBanner(true)
 	let catchupOk = true
 	let catchupError = ''
-	/** @type {{ wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean }} */
+	/** @type {{ wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number }} */
 	let catchup = {
 		wantIds: 0,
 		eventsFilled: 0,
 		wantIdsStillMissing: 0,
 		wantIdsRateLimited: false,
+		tipsCollected: 0,
 	}
 	try {
-		catchup = await federationCatchUp(groupId, { waitMs: 1400 })
+		catchup = await federationCatchUp(groupId, { waitMs: opts.waitMs ?? 1400 })
 	}
 	catch (error) {
 		catchupOk = false
@@ -315,11 +316,14 @@ async function syncGroupFromNetwork(groupId) {
 	}
 	if (catchupOk) {
 		const stillMissing = Number(catchup.wantIdsStillMissing) || 0
+		const tipsCollected = Number(catchup.tipsCollected) || 0
 		if (stillMissing > 0)
 			setSyncBanner(true, {
 				i18nKey: 'chat.hub.syncIncomplete',
 				params: { missing: stillMissing, total: catchup.wantIds },
 			})
+		else if (tipsCollected === 0 && !catchup.wantIds && !catchup.eventsFilled)
+			setSyncBanner(true, { i18nKey: 'chat.hub.syncNoPeers' })
 		else if (!catchup.wantIdsRateLimited && !(catchup.wantIds > 0))
 			setSyncBanner(false)
 	}
@@ -568,7 +572,6 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	cancelScheduledChannelRefresh()
 	setHubState('currentGroupId', groupId)
 	updateHash(groupId, presetChannelId)
-	void renderServerBar()
 	try {
 		let state = await getGroupState(groupId)
 		if (!state.isMember) {
@@ -592,6 +595,8 @@ export async function selectGroup(groupId, presetChannelId = null) {
 			const pow = await resolvePowForJoin(groupId, state, hubStore.nodeHash || '')
 			await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 			state = await getGroupState(groupId)
+			const { broadcastHubGroupJoined } = await import('../src/hubBroadcast.mjs')
+			broadcastHubGroupJoined(groupId)
 			await loadGroups()
 		}
 		setHubState('currentState', state)
@@ -607,7 +612,15 @@ export async function selectGroup(groupId, presetChannelId = null) {
 			const { syncViewerPresence } = await import('./hubStatus.mjs')
 			await syncViewerPresence(state.viewerEntityHash)
 		}
-		void syncGroupFromNetwork(groupId)
+		const needsHeavySync = !Object.keys(state.channels || {}).length
+		if (needsHeavySync)
+			await syncGroupFromNetwork(groupId, { waitMs: 8000 })
+		else
+			void syncGroupFromNetwork(groupId)
+		if (needsHeavySync) {
+			state = await getGroupState(groupId)
+			setHubState('currentState', state)
+		}
 		const groupNameEl = document.getElementById('hub-group-name-display')
 		if (state.groupMeta.name) {
 			delete groupNameEl.dataset.i18n

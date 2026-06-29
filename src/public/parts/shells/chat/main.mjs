@@ -142,7 +142,13 @@ export default {
 						break
 					}
 					case 'join': {
-						params = { groupId: args[1], inviteCode: args[2] || '' }
+						params = {
+							groupId: args[1],
+							inviteCode: args[2] || '',
+							mqttRoomSecret: args[3] || '',
+							introducerPubKeyHash: args[4] || '',
+							powAnchorRef: args[5] || '',
+						}
 						result = await handleAction(user, command, params)
 						if (result?.groupId) console.log(JSON.stringify(result))
 						break

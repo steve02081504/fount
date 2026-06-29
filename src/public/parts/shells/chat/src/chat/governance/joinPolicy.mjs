@@ -7,6 +7,7 @@
  */
 import { normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from '../../../../../../../scripts/p2p/join_pow.mjs'
+import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
 
 import { collectJoinPowAnchors, joinPowExemptAsHistoricalReplay } from './joinPowAnchors.mjs'
 
@@ -95,9 +96,14 @@ export async function validateJoinPolicy(state, event, replicaUsername, opts = {
 		.map(v => normalizePubKeyHex(v))
 		.filter(Boolean)
 		.includes(senderKey)
-	if (joinPolicy === 'invite-only' && !content.inviteCode && !hasDmIntroProof && activeBefore > 0
-		&& !senderAlreadyActive && !dmKnownPeer)
-		throw new Error('member_join requires inviteCode')
+	if (joinPolicy === 'invite-only' && !hasDmIntroProof && activeBefore > 0 && !senderAlreadyActive && !dmKnownPeer) {
+		if (!content.inviteCode)
+			throw new Error('member_join requires inviteCode')
+		// 仅签发者（持本群 invite_hmac.key 的节点，通常即 owner）能校验邀请；
+		// 其他节点拿不到密钥，verify 返回 'unverifiable' 即放行，避免可构陷的误拒。
+		if (await verifyGroupInviteTicket(replicaUsername, state.groupId, content.inviteCode) === 'invalid')
+			throw new Error('member_join invite code invalid or expired')
+	}
 	if (joinPolicy === 'pow') {
 		if (joinPowExemptAsHistoricalReplay(state, event)) return
 		const floorBits = Number(state.groupSettings?.powFloorBits)
