@@ -53,6 +53,42 @@ function wireHashNavigation() {
 	})
 }
 
+/** @type {ReturnType<typeof setTimeout> | null} */
+let externalJoinRefreshTimer = null
+
+/** 协议页 / 其他标签入群后刷新侧栏，并在 hash 指向该群时补导航。 @returns {Promise<void>} */
+async function refreshHubAfterExternalJoin() {
+	const { loadGroups } = await import('./serverBar.mjs')
+	const { parseHash } = await import('./core/urlHash.mjs')
+	const { navigateFromHash } = await import('./hashNav.mjs')
+	await loadGroups()
+	const { groupId } = parseHash()
+	if (groupId) await navigateFromHash()
+}
+
+/**
+ * 去抖触发外部入群后的 Hub 刷新。
+ * @returns {void}
+ */
+function scheduleHubGroupsRefresh() {
+	if (externalJoinRefreshTimer) clearTimeout(externalJoinRefreshTimer)
+	externalJoinRefreshTimer = setTimeout(() => {
+		externalJoinRefreshTimer = null
+		void refreshHubAfterExternalJoin()
+	}, 300)
+}
+
+/** 监听 focus / 跨标签入群，覆盖 protocolhandler goBack 与多标签场景。 @returns {void} */
+function wireExternalJoinRefresh() {
+	document.addEventListener('visibilitychange', () => {
+		if (!document.hidden) scheduleHubGroupsRefresh()
+	})
+	window.addEventListener('focus', scheduleHubGroupsRefresh)
+	void import('../src/hubBroadcast.mjs').then(({ wireHubGroupJoinedListener }) => {
+		wireHubGroupJoinedListener(() => { scheduleHubGroupsRefresh() })
+	})
+}
+
 /** 弹出「创建 / 加入群组」选择对话框。 @returns {Promise<void>} */
 async function showServerActionPicker() {
 	usingTemplates('/parts/shells:chat/src/templates')
@@ -83,6 +119,7 @@ export function wireBootstrap() {
 	wireComposerControls()
 	wireModeTabsEarly()
 	wireHashNavigation()
+	wireExternalJoinRefresh()
 	document.getElementById('hub-add-server-button')?.addEventListener('click', showServerActionPicker)
 	document.getElementById('hub-toggle-members-button')?.addEventListener('click', () => {
 		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')

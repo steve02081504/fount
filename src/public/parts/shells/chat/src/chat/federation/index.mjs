@@ -40,6 +40,32 @@ import { maybeJoinSnapshotOnStaleTips } from './staleResync.mjs'
 import { markGroupOnlineSynced } from './syncState.mjs'
 import { collectRemoteTipsFromPeers } from './tipExchange.mjs'
 
+/** 首次入群无 checkpoint 时等待 MQTT roster 出现邻居的上限（毫秒）。 */
+const PEER_ROSTER_WAIT_MS = 12_000
+const PEER_ROSTER_POLL_MS = 400
+
+/**
+ * @param {number} ms 毫秒
+ * @returns {Promise<void>}
+ */
+const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms) })
+
+/**
+ * 等待联邦房间 roster 出现至少一名邻居（新成员 join snapshot 前置条件）。
+ * @param {object} slot FederationSlot
+ * @param {{ maxWaitMs?: number }} [opts] 等待上限
+ * @returns {Promise<boolean>} roster 非空则为 true
+ */
+async function waitForFederationPeers(slot, opts = {}) {
+	const maxWaitMs = clampNumber(opts.maxWaitMs, 500, 60_000, PEER_ROSTER_WAIT_MS)
+	const start = Date.now()
+	while (Date.now() - start < maxWaitMs) {
+		if (slot.getRoster().length > 0) return true
+		await sleep(PEER_ROSTER_POLL_MS)
+	}
+	return slot.getRoster().length > 0
+}
+
 /**
  * 向联邦邻居请求入群快照（wire-only 请求；用于快速补齐 checkpoint/历史）。
  * @see requestJoinSnapshotFromPeers
@@ -167,8 +193,10 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 
 	// 小圈子补洞顺序：① 信誉 joinSnapshot（无 checkpoint 或 tips 错位）② gossip wantIds ③ syncMissingArchiveMonths（digest 仲裁）
-	if (!localArchive.checkpoint?.checkpoint_event_id)
+	if (!localArchive.checkpoint?.checkpoint_event_id) {
+		await waitForFederationPeers(slot, { maxWaitMs: PEER_ROSTER_WAIT_MS })
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries: [] })
+	}
 
 	/** @returns {Promise<string[]>} 目标 peer id 列表 */
 	const pickTargetPeerIds = () => pickFederationTargetPeerIds(groupId,

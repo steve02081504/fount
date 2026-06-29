@@ -7,6 +7,7 @@ import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social
 
 
 import { createDirectMessageByPubKeys, getFederationSettings, getGroupState, joinGroup } from './api/groupApi.mjs'
+import { broadcastHubGroupJoined } from './hubBroadcast.mjs'
 import { isHex64 } from './lib/pubKeyHex.mjs'
 import { parseDmRunUri, parseJoinRunUri } from './lib/runUri.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
@@ -63,6 +64,7 @@ export async function applyChatRunUri(raw) {
 				}
 				: null)
 		sessionStorage.removeItem(PENDING_INVITE_STORAGE_KEY)
+		broadcastHubGroupJoined(join.groupId)
 		return { kind: 'join', groupId: join.groupId, channelId: 'default' }
 	}
 

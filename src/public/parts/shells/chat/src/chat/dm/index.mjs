@@ -255,8 +255,10 @@ export async function performMemberJoin(username, groupId, opts = {}) {
 	const { state: afterJoin } = await getState(username, groupId)
 	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 
-	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds，无需重复触发。
-	void catchUpGroupFromPeers(username, groupId).catch(console.error)
+	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds；延长 waitMs 并调度防抖重试以覆盖 MQTT 会合与 member_join 传播竞态。
+	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')
+	void catchUpGroupFromPeers(username, groupId, { waitMs: 8000 }).catch(console.error)
+	scheduleCatchUp(username, groupId)
 
 	return { groupId, defaultChannelId: afterJoin.groupSettings?.defaultChannelId || 'default' }
 }

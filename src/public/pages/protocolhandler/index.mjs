@@ -127,6 +127,10 @@ async function handleRunPart(parts) {
 	const doRun = async () => {
 		try {
 			await runPart(partpath, args)
+			if (partpath === 'shells/chat' && args[0] === 'join' && args[1]) {
+				const { broadcastHubGroupJoined } = await import('/parts/shells:chat/public/src/hubBroadcast.mjs')
+				broadcastHubGroupJoined(args[1])
+			}
 			progressEl.style.display = 'none'
 			messageEl.dataset.i18n = 'protocolhandler.runPart.commandSent'
 			setTimeout(goBack, 2000)
