@@ -128,7 +128,7 @@ async function handleRunPart(parts) {
 		try {
 			await runPart(partpath, args)
 			if (partpath === 'shells/chat' && args[0] === 'join' && args[1]) {
-				const { broadcastHubGroupJoined } = await import('/parts/shells:chat/public/src/hubBroadcast.mjs')
+				const { broadcastHubGroupJoined } = await import('/parts/shells:chat/src/hubBroadcast.mjs')
 				broadcastHubGroupJoined(args[1])
 			}
 			progressEl.style.display = 'none'

@@ -280,53 +280,40 @@ async function showCreateChannelModal() {
  */
 async function syncGroupFromNetwork(groupId, opts = {}) {
 	setSyncBanner(true)
-	let catchupOk = true
-	let catchupError = ''
-	/** @type {{ wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number }} */
-	let catchup = {
-		wantIds: 0,
-		eventsFilled: 0,
-		wantIdsStillMissing: 0,
-		wantIdsRateLimited: false,
-		tipsCollected: 0,
-	}
+	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number }} */
+	let catchup
 	try {
 		catchup = await federationCatchUp(groupId, { waitMs: opts.waitMs ?? 1400 })
 	}
 	catch (error) {
-		catchupOk = false
-		catchupError = handleUIError(error, 'chat.hub.syncFailed').message
+		const catchupError = handleUIError(error, 'chat.hub.syncFailed').message
 		setSyncBanner(true, { i18nKey: 'chat.hub.syncFailed', params: { error: catchupError } })
+		return
 	}
-
-	if (catchupOk)
-		if (catchup.wantIdsRateLimited)
-			setSyncBanner(true, { i18nKey: 'chat.hub.syncRateLimited' })
-		else if (catchup.wantIds > 0) {
-			const stillMissing = Number(catchup.wantIdsStillMissing) || 0
-			const filled = Math.max(0, catchup.wantIds - stillMissing)
-			setSyncBanner(true, { i18nKey: 'chat.hub.syncProgress', params: { filled, total: catchup.wantIds } })
-		}
-
 
 	if (hubStore.currentGroupId === groupId && hubStore.currentChannelId) {
 		setHubState('currentState', await getGroupState(groupId))
 		const { loadMessages } = await import('./messages/messages.mjs')
 		await loadMessages()
 	}
-	if (catchupOk) {
-		const stillMissing = Number(catchup.wantIdsStillMissing) || 0
-		const tipsCollected = Number(catchup.tipsCollected) || 0
-		if (stillMissing > 0)
-			setSyncBanner(true, {
-				i18nKey: 'chat.hub.syncIncomplete',
-				params: { missing: stillMissing, total: catchup.wantIds },
-			})
-		else if (tipsCollected === 0 && !catchup.wantIds && !catchup.eventsFilled)
-			setSyncBanner(true, { i18nKey: 'chat.hub.syncNoPeers' })
-		else if (!catchup.wantIdsRateLimited && !(catchup.wantIds > 0))
-			setSyncBanner(false)
+
+	if (!catchup.federationActive) {
+		setSyncBanner(false)
+		return
 	}
+	const stillMissing = Number(catchup.wantIdsStillMissing) || 0
+	const tipsCollected = Number(catchup.tipsCollected) || 0
+	if (catchup.wantIdsRateLimited)
+		setSyncBanner(true, { i18nKey: 'chat.hub.syncRateLimited' })
+	else if (stillMissing > 0)
+		setSyncBanner(true, {
+			i18nKey: 'chat.hub.syncIncomplete',
+			params: { missing: stillMissing, total: catchup.wantIds },
+		})
+	else if (tipsCollected === 0 && !catchup.wantIds && !catchup.eventsFilled)
+		setSyncBanner(true, { i18nKey: 'chat.hub.syncNoPeers' })
+	else
+		setSyncBanner(false)
 }
 
 /**
@@ -615,8 +602,10 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		const needsHeavySync = !Object.keys(state.channels || {}).length
 		if (needsHeavySync)
 			await syncGroupFromNetwork(groupId, { waitMs: 8000 })
-		else
+		else if (state.federationActive)
 			void syncGroupFromNetwork(groupId)
+		else
+			setSyncBanner(false)
 		if (needsHeavySync) {
 			state = await getGroupState(groupId)
 			setHubState('currentState', state)

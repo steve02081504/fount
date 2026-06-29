@@ -198,6 +198,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const serializableState = {
 			groupId: state.groupId,
 			hasLocalReplica,
+			federationActive: isGroupFederationActive(state.groupSettings),
 			groupMeta: state.groupMeta,
 			delegatedOwnerPubKeyHash: state.delegatedOwnerPubKeyHash ?? null,
 			groupSettings,

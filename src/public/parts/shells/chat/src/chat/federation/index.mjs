@@ -172,11 +172,11 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean }>} 补洞统计
+ * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot) return { tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
+	if (!slot) return { federationActive: false, tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
@@ -270,6 +270,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 		if (wantIdsRateLimited || filledThisIter <= 0) break
 	}
 	const stats = {
+		federationActive: true,
 		tipsCollected: remoteTips.size,
 		wantIds: wantedEver.size,
 		eventsFilled,
