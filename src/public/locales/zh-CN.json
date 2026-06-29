@@ -1841,7 +1841,6 @@
 			"inviteCardMembers": "${count} 名成员",
 			"syncFailed": "联邦同步失败：${error}",
 			"syncRateLimited": "联邦同步限速中，请稍后再试",
-			"syncProgress": "联邦同步（${filled}/${total}）",
 			"syncIncomplete": "尚有 ${missing}/${total} 个事件未同步",
 			"syncNoPeers": "未连接到联邦邻居，历史消息暂无法同步；请使用完整邀请链接并稍后重试",
 			"attachmentLoadFailed": "附件加载失败",
