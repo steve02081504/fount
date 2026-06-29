@@ -125,7 +125,7 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 		let link
 		if (copyOnly && fountJson?.share_link)
 			// Case 1: Just copy the pre-existing share link
-			link = `https://steve02081504.github.io/fount/protocol?url=fount://run/parts/shells:install/install;${fountJson.share_link}`
+			link = `https://steve02081504.github.io/fount/protocol?url=fount://run/shells:install/install;${fountJson.share_link}`
 		else if (expiration)
 			// Case 2: Generate a new share link
 			link = await createShareLink(activePartPath, expiration, withData)

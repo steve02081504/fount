@@ -64,7 +64,7 @@ export function wrapProtocolHttpsUrl(fountRunUri) {
 }
 
 /**
- * 解析 canonical `fount://run/parts:shells:chat/{subcommand};…`。
+ * 解析 canonical `fount://run/shells:chat/{subcommand};…`。
  * @param {string} raw 输入 URI
  * @returns {{ subcommand: string, args: string[] } | null} 解析结果，非 chat run URI 则 null
  */
