@@ -859,9 +859,17 @@ urlencode() {
 	echo "${encoded}"
 }
 
+handle_docker_passthrough() {
+	if [[ $IN_DOCKER -eq 1 ]]; then
+		shift # Remove the command itself (e.g., "open")
+		"$0" "$@"
+		exit $?
+	fi
+}
+
 handle_docker_termux_passthrough() {
 	if [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
-		shift # Remove the command itself (e.g., "open")
+		shift # Remove the command itself (e.g., "background")
 		"$0" "$@"
 		exit $?
 	fi
@@ -1071,7 +1079,13 @@ invoke_fount_init_force() {
 
 open_url_in_browser() {
 	local url="$1"
-	if [ "$OS_TYPE" = "Linux" ]; then
+	if [[ $IN_TERMUX -eq 0 ]]; then
+		test_browser
+	fi
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		termux-open-url "$url" >/dev/null 2>&1 &
+	elif [ "$OS_TYPE" = "Linux" ]; then
+		install_package "xdg-open" "xdg-utils" || return 1
 		xdg-open "$url" >/dev/null 2>&1 &
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		open "$url" >/dev/null 2>&1 &
@@ -1550,30 +1564,6 @@ ensure_fount_path() {
 }
 ensure_fount_path
 
-# 函数: 确保核心依赖可用
-ensure_dependencies() {
-	case "$1" in
-	nop) return 0 ;;
-	open | protocolhandle)
-		test_browser
-		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
-		install_package "jq" "jq"
-		if [[ "$OS_TYPE" == "Linux" ]]; then install_package "xdg-open" "xdg-utils"; fi
-		;;
-	upgrade)
-		install_package "git" "git"
-		;;
-	deno_install)
-		install_package "curl" "curl"
-		;;
-	deno_install_fallback)
-		install_package "unzip" "unzip"
-		;;
-	*) return 1 ;;
-	esac
-	return $?
-}
-
 # 提取 'open' 和 'protocolhandle' 的后台任务脚本
 read -r -d '' BACKGROUND_IPC_JOB <<'EOF'
 fount_ipc_internal() {
@@ -1598,7 +1588,9 @@ while ! test_fount_running_internal; do
 	fi
 done
 os_type=$(uname -s)
-if [ "$os_type" = "Linux" ]; then
+if [[ -d "/data/data/com.termux" ]]; then
+	termux-open-url "$TARGET_URL" >/dev/null 2>&1
+elif [ "$os_type" = "Linux" ]; then
 	xdg-open "$TARGET_URL" >/dev/null 2>&1
 elif [ "$os_type" = "Darwin" ]; then
 	open "$TARGET_URL" >/dev/null 2>&1
@@ -1612,10 +1604,9 @@ if [[ $# -gt 0 ]]; then
 		exit 0
 		;;
 	open)
-		handle_docker_termux_passthrough "$@"
+		handle_docker_passthrough "$@"
 		# 若 $FOUNT_DIR/data 是目录
 		if [ -d "$FOUNT_DIR/data" ]; then
-			ensure_dependencies "open" || exit 1
 			TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
 			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
@@ -1681,7 +1672,12 @@ if [[ $# -gt 0 ]]; then
 			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
 		fi
-		ensure_dependencies "protocolhandle" || exit 1
+		if [[ $IN_TERMUX -eq 0 ]]; then
+			test_browser
+		fi
+		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat" || exit 1
+		install_package "jq" "jq" || exit 1
+		if [[ "$OS_TYPE" == "Linux" ]]; then install_package "xdg-open" "xdg-utils"; fi
 		TARGET_URL="https://steve02081504.github.io/fount/protocol/?url=$(urlencode "$protocolUrl")"
 		export TARGET_URL
 		nohup bash -c "$BACKGROUND_IPC_JOB" >/dev/null 2>&1 &
@@ -1693,7 +1689,7 @@ fi
 
 # 函数: 升级 fount
 fount_upgrade() {
-	ensure_dependencies "upgrade" || return 0
+	install_package "git" "git" || return 0
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
 		git config --global --add safe.directory "$FOUNT_DIR"
 	fi
@@ -1807,7 +1803,7 @@ install_deno() {
 	fi
 
 	# 包管理器安装失败，回退到官方脚本
-	ensure_dependencies "deno_install" || exit 1
+	install_package "curl" "curl" || exit 1
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		get_i18n 'deno.installingTermux'
 		set -e
@@ -1844,7 +1840,7 @@ install_deno() {
 		get_i18n 'deno.missing'
 		if ! curl -fsSL https://deno.land/install.sh | sh -s -- -y; then
 			get_i18n 'deno.installFailedFallback'
-			ensure_dependencies "deno_install_fallback" || exit 1
+			install_package "unzip" "unzip" || exit 1
 			local deno_dl_url
 			deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
 			local arch_target
@@ -2152,7 +2148,7 @@ keepalive)
 	restart_timestamps=()
 
 	"$0" server "${runargs[@]}"
-	# shellcheck disable=SC2181
+	exit_code=$?
 	while [ $exit_code -ne 0 ]; do
 		if [ $exit_code -eq 130 ]; then exit 130; fi # ctrl+c
 		if [ $exit_code -ne 131 ]; then
@@ -2182,6 +2178,7 @@ keepalive)
 		fi
 
 		"$0" server
+		exit_code=$?
 	done
 	;;
 server)
@@ -2297,6 +2294,10 @@ shutdown|reboot)
 	original_title=$(get_title)
 	if [ "$1" ]; then
 		run "${@:1}"
+		exit_code=$?
+	elif [ "$IN_TERMUX" -eq 1 ] || [ "$IN_DOCKER" -eq 1 ]; then
+		"$0" keepalive "$@"
+		exit_code=$?
 	else
 		write_taskbar_progress 25
 		set_title "𝓯"
@@ -2304,9 +2305,10 @@ shutdown|reboot)
 		set_title "𝓯𝓸"
 		write_taskbar_progress
 		"$0" log
+		exit_code=$?
 	fi
 	set_title "$original_title"
-	exit $?
+	exit "$exit_code"
 	;;
 esac
 
