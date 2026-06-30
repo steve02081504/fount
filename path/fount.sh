@@ -727,6 +727,9 @@ uninstall_package() {
 }
 
 test_browser() {
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		return 0
+	fi
 	local run_as_user=""
 	local user_home=$HOME
 
@@ -1079,9 +1082,7 @@ invoke_fount_init_force() {
 
 open_url_in_browser() {
 	local url="$1"
-	if [[ $IN_TERMUX -eq 0 ]]; then
-		test_browser
-	fi
+	test_browser
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		termux-open-url "$url" >/dev/null 2>&1 &
 	elif [ "$OS_TYPE" = "Linux" ]; then
@@ -1587,12 +1588,12 @@ while ! test_fount_running_internal; do
 		echo "Error: fount server did not start in time." >&2; exit 1
 	fi
 done
-os_type=$(uname -s)
+OS_TYPE=$(uname -s)
 if [[ -d "/data/data/com.termux" ]]; then
 	termux-open-url "$TARGET_URL" >/dev/null 2>&1
-elif [ "$os_type" = "Linux" ]; then
+elif [ "$OS_TYPE" = "Linux" ]; then
 	xdg-open "$TARGET_URL" >/dev/null 2>&1
-elif [ "$os_type" = "Darwin" ]; then
+elif [ "$OS_TYPE" = "Darwin" ]; then
 	open "$TARGET_URL" >/dev/null 2>&1
 fi
 EOF
@@ -1672,12 +1673,10 @@ if [[ $# -gt 0 ]]; then
 			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
 		fi
-		if [[ $IN_TERMUX -eq 0 ]]; then
-			test_browser
-		fi
+		test_browser
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat" || exit 1
 		install_package "jq" "jq" || exit 1
-		if [[ "$OS_TYPE" == "Linux" ]]; then install_package "xdg-open" "xdg-utils"; fi
+		if [[ "$OS_TYPE" == "Linux" && $IN_TERMUX -eq 0 ]]; then install_package "xdg-open" "xdg-utils"; fi
 		TARGET_URL="https://steve02081504.github.io/fount/protocol/?url=$(urlencode "$protocolUrl")"
 		export TARGET_URL
 		nohup bash -c "$BACKGROUND_IPC_JOB" >/dev/null 2>&1 &

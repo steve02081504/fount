@@ -57,6 +57,10 @@ fi
 
 STATUS_SERVER_PID=""
 OS_TYPE=$(uname -s)
+IN_TERMUX=0
+if [[ -d "/data/data/com.termux" ]]; then
+	IN_TERMUX=1
+fi
 
 # 确保在脚本退出时，状态服务器进程能被清理，并清除任务栏进度
 cleanup() {
@@ -147,6 +151,9 @@ install_package() {
 }
 
 test_browser() {
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		return 0
+	fi
 	local run_as_user=""
 	local user_home=$HOME
 
@@ -220,12 +227,8 @@ else
 	if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
 		IN_DOCKER=1
 	fi
-	IN_TERMUX=0
-	if [[ -d "/data/data/com.termux" ]]; then
-		IN_TERMUX=1
-	fi
 
-	if [[ $IN_DOCKER -eq 0 && $IN_TERMUX -eq 0 && "${new_args[*]}" == *'open'* ]]; then
+	if [[ $IN_DOCKER -eq 0 && "${new_args[*]}" == *'open'* ]]; then
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 		write_taskbar_progress 5
 
@@ -244,10 +247,13 @@ else
 		if [[ -n "$STATUS_SERVER_PID" ]]; then
 			test_browser
 			URL='https://steve02081504.github.io/fount/wait/install'
-			if [[ "$(uname -s)" == "Linux" ]]; then
-				(xdg-open "$URL" &)
-			elif [[ "$(uname -s)" == "Darwin" ]]; then
-				(open "$URL" &)
+			if [[ $IN_TERMUX -eq 1 ]]; then
+				termux-open-url "$URL" >/dev/null 2>&1 &
+			elif [[ "$OS_TYPE" == "Linux" ]]; then
+				install_package "xdg-open" "xdg-utils"
+				xdg-open "$URL" >/dev/null 2>&1 &
+			elif [[ "$OS_TYPE" == "Darwin" ]]; then
+				open "$URL" >/dev/null 2>&1 &
 			fi
 			temp_args=()
 			for arg in "${new_args[@]}"; do
