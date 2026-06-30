@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="stickers.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body class="bg-base-100">
+	<div class="navbar bg-base-200 shadow-lg">
+		<div class="flex-1">
+			<span class="text-2xl font-bold px-4" data-i18n="stickers.store"></span>
+		</div>
+		<div class="flex-none gap-2">
+			<button id="sticker-create-pack-button" class="btn btn-primary" data-i18n="stickers.create"></button>
+			<button id="sticker-upload-button" class="btn btn-secondary" data-i18n="stickers.upload"></button>
+		</div>
+	</div>
+
+	<div class="container mx-auto p-6">
+		<div class="mb-6">
+			<input type="text" id="search-input" class="input input-bordered w-full max-w-md" data-i18n="stickers.search" />
+		</div>
+
+		<div role="tablist" class="tabs tabs-boxed mb-6">
+			<a role="tab" class="tab tab-active" data-tab="all" data-i18n="stickers.tabAll"></a>
+			<a role="tab" class="tab" data-tab="installed" data-i18n="stickers.installed"></a>
+			<a role="tab" class="tab" data-tab="favorites" data-i18n="stickers.favorites"></a>
+			<a role="tab" class="tab" data-tab="my-packs" data-i18n="stickers.myPacks"></a>
+		</div>
+
+		<div id="packs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+		<div id="empty-state" class="text-center py-12 hidden">
+			<img src="https://api.iconify.design/line-md/inbox.svg" class="h-24 w-24 mx-auto text-base-300" alt="" aria-hidden="true" />
+			<p class="text-xl text-base-content opacity-50 mt-4" data-i18n="stickers.emptyPacks"></p>
+		</div>
+	</div>
+
+	<dialog id="create-pack-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-4" data-i18n="stickers.create"></h3>
+			<form id="create-pack-form">
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.packNameLabel"></span>
+					</label>
+					<input type="text" id="pack-name" class="input input-bordered" data-i18n="stickers.packName" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.packDescriptionLabel"></span>
+					</label>
+					<textarea id="pack-description" class="textarea textarea-bordered" rows="3" data-i18n="stickers.packDescription"></textarea>
+				</div>
+				<div class="form-control mb-4">
+					<label class="label cursor-pointer">
+						<span class="label-text" data-i18n="stickers.public"></span>
+						<input type="checkbox" id="pack-public" class="checkbox" checked />
+					</label>
+				</div>
+				<div class="modal-action">
+					<button type="button" class="btn" data-close-modal="create-pack-modal" data-i18n="stickers.cancel"></button>
+					<button type="submit" class="btn btn-primary" data-i18n="stickers.create"></button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+
+	<dialog id="upload-sticker-modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-4" data-i18n="stickers.upload"></h3>
+			<form id="upload-sticker-form">
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.selectPack"></span>
+					</label>
+					<select id="select-pack" class="select select-bordered" required>
+						<option value="" data-i18n="stickers.selectPackOption"></option>
+					</select>
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.stickerNameLabel"></span>
+					</label>
+					<input type="text" id="sticker-name" class="input input-bordered" data-i18n="stickers.stickerName" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.selectImage"></span>
+					</label>
+					<input type="file" id="sticker-file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" class="file-input file-input-bordered" required />
+				</div>
+				<div class="form-control mb-4">
+					<label class="label">
+						<span class="label-text" data-i18n="stickers.tagsLabel"></span>
+					</label>
+					<input type="text" id="sticker-tags" class="input input-bordered" data-i18n="stickers.tags" />
+				</div>
+				<div class="modal-action">
+					<button type="button" class="btn" data-close-modal="upload-sticker-modal" data-i18n="stickers.cancel"></button>
+					<button type="submit" class="btn btn-primary" data-i18n="stickers.upload"></button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+
+	<dialog id="pack-detail-modal" class="modal">
+		<div class="modal-box max-w-4xl">
+			<h3 class="font-bold text-lg mb-4" id="detail-pack-name"></h3>
+			<p class="text-sm opacity-70 mb-4" id="detail-pack-description"></p>
+			<div class="mb-4">
+				<span class="badge badge-primary" id="detail-pack-author"></span>
+				<span class="badge badge-secondary ml-2" id="detail-pack-count"></span>
+			</div>
+			<div class="divider"></div>
+			<div id="detail-stickers-container" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 max-h-96 overflow-y-auto"></div>
+			<div class="modal-action">
+				<button type="button" id="sticker-delete-pack-button" class="btn btn-error hidden" data-i18n="stickers.deletePack"></button>
+				<button type="button" class="btn" data-close-modal="pack-detail-modal" data-i18n="stickers.close"></button>
+				<button type="button" id="sticker-install-pack-button" class="btn btn-primary" data-i18n="stickers.install"></button>
+				<button type="button" id="sticker-uninstall-pack-button" class="btn btn-warning hidden" data-i18n="stickers.uninstall"></button>
+			</div>
+		</div>
+	</dialog>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

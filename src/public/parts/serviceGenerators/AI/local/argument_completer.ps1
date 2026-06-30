@@ -51,9 +51,9 @@ try {
 				'install' {
 					# 本地 .gguf 文件补全。
 					Get-ChildItem -Path "$($WordToComplete)*" -File -Filter '*.gguf' -ErrorAction SilentlyContinue |
-						ForEach-Object {
-							[System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'ProviderItem', $_.FullName)
-						}
+					ForEach-Object {
+						[System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'ProviderItem', $_.FullName)
+					}
 					# URI 格式示例提示（仅在未输入任何内容或以 hf/http 开头时显示）。
 					if (-not $WordToComplete -or $WordToComplete -match '^(hf|http)') {
 						@(
@@ -70,9 +70,9 @@ try {
 				'create-from-path' {
 					# 补全本地 .gguf 文件路径。
 					Get-ChildItem -Path "$($WordToComplete)*" -File -Filter '*.gguf' -ErrorAction SilentlyContinue |
-						ForEach-Object {
-							[System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'ProviderItem', $_.FullName)
-						}
+					ForEach-Object {
+						[System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'ProviderItem', $_.FullName)
+					}
 					break
 				}
 			}

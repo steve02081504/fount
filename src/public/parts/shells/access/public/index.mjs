@@ -7,11 +7,11 @@ import {
 	redirectToLoginInfo,
 	retrieveAndDecryptCredentials,
 	generateLoginInfoUrl,
-} from '../../scripts/credentialManager.mjs'
-import { hosturl_in_local_ip, ping } from '../../scripts/endpoints.mjs'
-import { initTranslations } from '../../scripts/i18n.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast, showToastI18n } from '../../scripts/toast.mjs'
+} from '../../scripts/host/credentialManager.mjs'
+import { hosturl_in_local_ip, ping } from '../../scripts/api/base.mjs'
+import { initTranslations } from '../../scripts/i18n/index.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
+import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 
 applyTheme()
 await initTranslations('access')

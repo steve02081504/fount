@@ -1,0 +1,16 @@
+<div class="card bg-base-200 shadow-xl">
+	<div class="card-body">
+		<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+			<h2 class="card-title" data-i18n="chat.group.settingsPage.emojisTitle"></h2>
+			${canManage ? `<label class="btn btn-primary btn-sm">
+				<span data-i18n="chat.group.settingsPage.emojisUpload"></span>
+				<input type="file" id="group-emoji-upload" accept="image/png,image/jpeg,image/gif,image/webp" hidden />
+			</label>` : ''}
+		</div>
+		<p class="text-sm opacity-70 mb-4" data-i18n="chat.group.settingsPage.emojisHint"></p>
+		<div id="group-emojis-list" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+			${entriesHtml}
+		</div>
+		<p id="group-emojis-empty" class="text-sm opacity-60 py-6 text-center ${entriesEmpty ? '' : 'hidden'}" data-i18n="chat.group.settingsPage.emojisEmpty"></p>
+	</div>
+</div>

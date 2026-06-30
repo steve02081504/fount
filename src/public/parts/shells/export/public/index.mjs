@@ -1,10 +1,10 @@
 /**
  * 导出 shell 的客户端逻辑。
  */
-import { initTranslations } from '/scripts/i18n.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { createPartpathPicker } from '/scripts/components/partpath_picker.mjs'
 import { getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
 
 // --- DOM Elements ---
@@ -125,7 +125,7 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 		let link
 		if (copyOnly && fountJson?.share_link)
 			// Case 1: Just copy the pre-existing share link
-			link = `https://steve02081504.github.io/fount/protocol?url=fount://run/parts/shells:install/install;${fountJson.share_link}`
+			link = `https://steve02081504.github.io/fount/protocol?url=fount://run/shells:install/install;${fountJson.share_link}`
 		else if (expiration)
 			// Case 2: Generate a new share link
 			link = await createShareLink(activePartPath, expiration, withData)

@@ -1,0 +1,7 @@
+{
+	"powFloorBits": 18,
+	"powVoluntaryBonusCap": 0.12,
+	"powVoluntaryBonusScaleBits": 6,
+	"powEpochMs": 3600000,
+	"powEpochSkew": 1
+}

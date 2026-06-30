@@ -1,11 +1,11 @@
 /**
  * 语言设置 shell 的客户端逻辑。
  */
-import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { createSearchableDropdown } from '/scripts/search.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
+import { initTranslations, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n/index.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { createSearchableDropdown } from '/scripts/components/search.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 // --- DOM Elements ---
 const availableLanguagesDropdown = document.getElementById('availableLanguagesDropdown')
@@ -71,7 +71,6 @@ async function renderPreferredLanguages() {
 
 	if (!userPreferredLocales.length) {
 		preferredLanguagesList.innerHTML = /* html */ '<p class="text-center text-base-content-secondary" data-i18n="languageSettings.noPreferredLanguages"></p>'
-		i18nElement(preferredLanguagesList)
 		if (availableLocales.length)
 			await updateAvailableLanguagesDropdown()
 		return

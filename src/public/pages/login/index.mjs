@@ -1,4 +1,3 @@
-import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import {
 	ping,
 	generateVerificationCode,
@@ -6,14 +5,15 @@ import {
 	register,
 	webauthnLoginBegin,
 	webauthnLoginComplete,
-} from '../scripts/endpoints.mjs'
-import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
-import { getAnyDefaultPart } from '../scripts/parts.mjs'
-import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
-import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
-import { runPreloadIfNotSaveData } from '../scripts/preloadUrls.mjs'
-import { applyTheme, setTheme } from '../scripts/theme.mjs'
-import { showToast } from '../scripts/toast.mjs'
+} from '../scripts/api/base.mjs'
+import { getAnyDefaultPart } from '../scripts/api/parts.mjs'
+import { initPasswordStrengthMeter } from '../scripts/components/passwordStrength.mjs'
+import { createPOWCaptcha } from '../scripts/components/POWcaptcha.mjs'
+import { showToast } from '../scripts/features/toast.mjs'
+import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/host/credentialManager.mjs'
+import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n/index.mjs'
+import { runPreloadIfNotSaveData } from '../scripts/lib/preloadUrls.mjs'
+import { applyTheme, setTheme } from '../scripts/theme/index.mjs'
 
 import { initPasswordCharFeedback } from './passwordCharFeedback.mjs'
 

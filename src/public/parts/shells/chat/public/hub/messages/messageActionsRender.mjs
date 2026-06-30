@@ -1,0 +1,236 @@
+/**
+ * 【文件】public/hub/messages/messageActionsRender.mjs
+ * 【职责】根据权限与消息类型生成消息行内操作按钮 HTML（回复、编辑、删除、反馈、置顶等）。
+ * 【原理】输出两个区域：
+ *   - hoverHtml：悬停时显示的浮动操作栏（绝对定位）；
+ *   - inlineHtml：常驻显示的紧凑反馈栏（重新生成 + 点赞/点踩，仅角色消息）。
+ * 【数据结构】见函数入参与返回值 JSDoc。
+ * 【关联】../../src/lib/channelContent、../../src/lib/emojiSvg、../core/domUtils、messageActionsUi、messageRender
+ */
+import { channelMessageText } from '../../src/lib/channelContent.mjs'
+import {
+	hubActionBookmarkIcon,
+	hubActionCopyHtmlIcon,
+	hubActionCopyIcon,
+	hubActionCopyTextIcon,
+	hubActionDeleteIcon,
+	hubActionDownloadIcon,
+	hubActionEditIcon,
+	hubActionPinIcon,
+	hubActionRegenIcon,
+	hubActionShareIcon,
+	hubActionThreadIcon,
+	hubActionThumbDownIcon,
+	hubActionThumbUpIcon,
+	hubActionTimelineNextIcon,
+	hubActionTimelinePrevIcon,
+	hubActionUnpinIcon,
+} from '../../src/lib/emojiSvg.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+
+import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
+import { isChannelMessageGenerating } from './messageRender.mjs'
+
+/**
+ * 是否为本节点发出的角色消息。
+ * @param {object} message 消息行
+ * @param {object} opts 查看者上下文
+ * @returns {boolean} 是否己方角色
+ */
+function isOwnCharMessage(message, opts) {
+	if (!message?.charId) return false
+	if (message.isRemote) return false
+	const localCharIds = opts.localCharIds?.length
+		? opts.localCharIds
+		: opts.localCharId
+			? [opts.localCharId]
+			: []
+	if (localCharIds.includes(message.charId)) return true
+	const viewer = String(opts.viewerPubKeyHash || '').trim().toLowerCase()
+	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
+	return !!(viewer && sender && viewer === sender)
+}
+
+/**
+ * 是否允许删除该消息。
+ * @param {object} message 消息行
+ * @param {object} opts 权限上下文
+ * @returns {boolean} 可删除
+ */
+function canDeleteMessage(message, opts) {
+	if (!message?.eventId) return false
+	if (isOwnCharMessage(message, opts)) return true
+	if (message.charId && opts.canManageMessages) return true
+	if (!message.charId) {
+		const viewer = String(opts.viewerPubKeyHash || '').toLowerCase()
+		const sender = String(message.authorPubKeyHash || '').toLowerCase()
+		if (viewer && sender && viewer === sender) return true
+	}
+	return false
+}
+
+/**
+ * 渲染本机角色消息的常驻内联反馈按钮（重新生成 + 👍/👎）。
+ * @param {string} eventId 已转义事件 id
+ * @param {string} charId 已转义角色 id
+ * @param {string} feedbackUpClass 点赞高亮 class
+ * @param {string} feedbackDownClass 点踩高亮 class
+ * @param {boolean} showRegen 是否显示重新生成按钮
+ * @returns {string} 内联反馈 HTML
+ */
+function renderOwnCharFeedbackInline(eventId, charId, feedbackUpClass, feedbackDownClass, showRegen) {
+	const parts = []
+	if (showRegen)
+		parts.push(actionButton({
+			action: 'regen',
+			attrs: `data-event-id="${eventId}" data-char-id="${charId}"`,
+			icon: hubActionRegenIcon,
+			i18nKey: 'chat.hub.messageActionRegen',
+		}))
+	parts.push(
+		actionButton({
+			action: 'feedback-up',
+			attrs: `data-event-id="${eventId}"`,
+			icon: hubActionThumbUpIcon,
+			i18nKey: 'chat.hub.messageActionFeedbackUp',
+			classes: feedbackUpClass,
+		}),
+		actionButton({
+			action: 'feedback-down',
+			attrs: `data-event-id="${eventId}"`,
+			icon: hubActionThumbDownIcon,
+			i18nKey: 'chat.hub.messageActionFeedbackDown',
+			classes: feedbackDownClass,
+		}),
+	)
+	return parts.join('')
+}
+
+/**
+ * 复制二级菜单（Markdown / 纯文本 / HTML）。
+ * @param {string} eventId 已转义事件 id
+ * @returns {string} 子菜单 HTML
+ */
+function copySubmenu(eventId) {
+	const items = [
+		menuActionItem('copy-md', `data-event-id="${eventId}"`, hubActionCopyIcon, 'chat.hub.menuMD'),
+		menuActionItem('copy-text', `data-event-id="${eventId}"`, hubActionCopyTextIcon, 'chat.hub.menuTXT'),
+		menuActionItem('copy-html', `data-event-id="${eventId}"`, hubActionCopyHtmlIcon, 'chat.hub.menuHTML'),
+	].join('')
+	return menuSubmenu('chat.hub.menuCopy', hubActionCopyIcon, items)
+}
+
+/**
+ * 分享链接二级菜单（按有效期）。
+ * @param {string} eventId 已转义事件 id
+ * @returns {string} 子菜单 HTML
+ */
+function shareSubmenu(eventId) {
+	const items = ['1h', '12h', '24h', '72h'].map(time =>
+		menuActionItem('share', `data-event-id="${eventId}" data-time="${time}"`, hubActionShareIcon, `chat.hub.menuShare.${time}`),
+	).join('')
+	return menuSubmenu('chat.hub.menuShareGroup', hubActionShareIcon, items)
+}
+
+/**
+ * 构建消息下拉菜单项：复制/分享/下载（可选删除、时间线）。
+ * @param {string} eventId 已转义事件 id
+ * @param {{ ownChar?: boolean, canDelete?: boolean }} opts 选项
+ * @returns {string} 菜单 `<li>` HTML
+ */
+function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
+	const parts = []
+	if (ownChar) {
+		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="-1"`, hubActionTimelinePrevIcon, 'chat.hub.menuPrev'))
+		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="1"`, hubActionTimelineNextIcon, 'chat.hub.menuNext'))
+	}
+	parts.push(copySubmenu(eventId))
+	parts.push(shareSubmenu(eventId))
+	parts.push(menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'))
+	if (canDelete)
+		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menuDelete', 'text-error'))
+	return parts.join('')
+}
+
+/**
+ * 渲染消息操作 HTML，返回悬停浮动栏与常驻内联反馈栏两个区域。
+ * @param {object} message 消息行
+ * @param {object} opts 权限上下文
+ * @returns {Promise<{ hoverHtml: string, inlineHtml: string }>} 两个区域 HTML
+ */
+export async function renderMessageActionsHtml(message, opts) {
+	const eventId = String(message.eventId)
+	if (!eventId || message.type !== 'message') return { hoverHtml: '', inlineHtml: '' }
+
+	const ownChar = !message.isRemote && isOwnCharMessage(message, opts)
+	const generating = isChannelMessageGenerating(message)
+	if (generating) return { hoverHtml: '', inlineHtml: '' }
+
+	const feedbackType = message.extension?.feedback?.type
+	const pinnedIds = Array.isArray(opts.pinnedEventIds) ? opts.pinnedEventIds : []
+	const isPinned = pinnedIds.includes(eventId)
+	const alwaysVisible = !!opts.alwaysVisibleActions && !!(message.charId || ownChar)
+	const escapedEventId = escapeHtml(eventId)
+
+	// ===== 常驻内联反馈栏（仅本机角色消息在双人对话中显示） =====
+	let inlineHtml = ''
+	if (alwaysVisible && ownChar) {
+		const feedbackHtml = renderOwnCharFeedbackInline(
+			escapedEventId,
+			escapeHtml(String(message.charId || '')),
+			feedbackType === 'up' ? 'text-success' : '',
+			feedbackType === 'down' ? 'text-error' : '',
+			!!opts.isLastMessage,
+		)
+		inlineHtml = `<div class="hub-message-inline-feedback flex items-center gap-0.5">${feedbackHtml}</div>`
+	}
+
+	// ===== 悬停浮动栏 =====
+	// 常驻图标：子线程、书签、置顶、编辑；其余（复制/分享/下载/删除/时间线）收进二级下拉菜单
+	const hoverInlineParts = []
+	const canDelete = canDeleteMessage(message, opts)
+
+	if (opts.canCreateThreads)
+		hoverInlineParts.push(actionButton({
+			action: 'thread',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionThreadIcon,
+			i18nKey: 'chat.hub.replyInThread',
+		}))
+
+	if (!message.isRemote) {
+		hoverInlineParts.push(actionButton({
+			action: 'bookmark',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionBookmarkIcon,
+			i18nKey: 'chat.hub.messageActionBookmark',
+		}))
+		if (opts.canPinMessages)
+			hoverInlineParts.push(actionButton({
+				action: 'pin',
+				attrs: `data-event-id="${escapedEventId}" data-pinned="${isPinned ? '1' : '0'}"`,
+				icon: isPinned ? hubActionUnpinIcon : hubActionPinIcon,
+				i18nKey: isPinned ? 'chat.hub.messageActionUnpin' : 'chat.hub.messageActionPin',
+			}))
+	}
+
+	const canEdit = ownChar || (!message.isRemote && canDelete && !message.charId && !!channelMessageText(message.content))
+	if (canEdit)
+		hoverInlineParts.push(actionButton({
+			action: 'edit',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionEditIcon,
+			i18nKey: 'chat.hub.messageActionEdit',
+		}))
+
+	const menuItems = buildMenuItems(escapedEventId, { ownChar, canDelete })
+
+	const hoverHtml = await renderActionsBar(
+		hoverInlineParts.join(''),
+		menuItems,
+		'',
+		{ alwaysVisible: false },
+	)
+
+	return { hoverHtml, inlineHtml }
+}

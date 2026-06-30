@@ -14,15 +14,20 @@
 
 - **`theme.mjs`**: DaisyUI theme management. Always call `applyTheme()` first.
 - **`template.mjs`**: HTML templating with i18n support. Use `renderTemplate(name, data)` and `parent.appendChild(await renderTemplate(...))` to append; `mountTemplate(parent, name, data)` to replace a container; `renderTemplateAsHtmlString` for HTML fragments.
+- **`dialog.mjs`**: `openDialogFromTemplate(templateName, data, { onReady })` and `pickFromDialog` for `<dialog class="modal">` lifecycle.
+- **`memo.mjs`**: `memoizePromise` / `createLruMap` for browser-side dedupe caches.
 - **`toast.mjs`**: Notifications (`showToast`, `showToastI18n`).
 - **`cssValues.mjs`**: Dynamic CSS variable manipulation.
 
 ## 3. Rendering & Content
 
 - **`markdown.mjs`**: Markdown to HTML with KaTeX, Mermaid, and Shiki support.
+- **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry modules (remark/rehype plugins, CSS, init hooks).
+- **`registries.mjs`**: Frontend helper for `GET /api/registries/:name` and dynamic `import()` of registry modules.
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared docked/floating pickers consuming `emoji` / `sticker` registries; Chat Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`.
 - **`svgInliner.mjs`**: Inlines SVGs to allow CSS styling (`currentColor`).
 - **`i18n.mjs`**: Sole public entry point. Call `initTranslations()` early on each page. Use `data-i18n` attributes and APIs such as `geti18n`, `loadPreferredLangs`, and `savePreferredLangs`.
-- **`i18n_base.mjs`**: Internal implementation (imported only by `i18n.mjs`): loads locale bundles per environment and registers listeners such as `languagechange`. Uses `userPreferredLanguages` on the host app and `fountUserPreferredLanguages` on static Pages.
+- **`i18n_base.mjs`**: Internal implementation (imported only by `i18n.mjs`): loads locale bundles per environment. Host app uses `userPreferredLanguages`; static GitHub Pages use a separate `i18n_base.mjs` with `fountUserPreferredLanguages`.
 
 ## 4. Components & Utilities
 

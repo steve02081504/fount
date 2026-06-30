@@ -1,11 +1,11 @@
 /**
  * 成就页面的主要客户端逻辑。
  */
-import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n.mjs'
-import { unlockAchievement, loadPart } from '../../../scripts/parts.mjs'
-import { onServerEvent } from '../../../scripts/server_events.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
+import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n/index.mjs'
+import { unlockAchievement, loadPart } from '../../../scripts/api/parts.mjs'
+import { onServerEvent } from '../../../scripts/api/server_events.mjs'
+import { renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
 
 import * as api from './src/endpoints.mjs'
 

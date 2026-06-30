@@ -1,0 +1,9 @@
+# Cold archive (Chat)
+
+- **Month bucketing**: the only standard is the **UTC** calendar month `YYYY-MM` (`archiveMonthKey` uses `getUTCFullYear` / `getUTCMonth`; never bucket with local-time `getMonth()` etc.).
+- **Two axes**: admin axis = DAG/HTTP governance (kick, delete post, channel permissions, etc.); small-circle axis = federation multi-peer + `monthDigests` reputation arbitration (body truth = digest, not an admin Seal). **Local cold-archive cleanup** is replica disk hygiene — any user with a local group replica may delete their own `archive/*.jsonl` in settings; ADMIN is not required.
+- **Not in DAG**: `archive_manifest.json` holds `monthDigests`, `archivedEventIds` (materialized after the winner lands on disk), `channels[].months` (backfill hints). Materialized hot/checkpoint state lives in `snapshot.json` (`checkpoint_event_id`, `hot_posts`).
+- **Local disk read**: Hub/reader verifies `monthDigests` matches the month JSONL; federation serve streams encrypted chunks, never whole-file `readFile`.
+- **Federation**: joining carries a wire manifest (month/digest hints only); `syncMissingArchiveMonths` backfills per manifest; `fed_archive_month_want` requires PullAttestation + active membership; multiple peers arbitrate digests via `pickArchiveMonthByReputation` / `pickNodeScoreFromReputation`, then write and `syncArchivedEventIdsFromMonthBody`; response collection ends early at quorum (same digest from ≥2 peers, `ARCHIVE_QUORUM_PEER_MIN`) or when target peers are all collected (`federationCollect.mjs`).
+- **digest**: each disk JSONL line must be a `canonicalArchiveMonthLine`; `digestCanonicalMonthLines` hashes lines in eventId order; `mutateArchiveManifest` does a mutually-exclusive R-M-W; federation reassembly writes a temp file then `rename`, never whole-month `Buffer.concat`.
+- **Hot zone**: `hot_posts.latestByChannel` in `snapshot.json` (latest N per channel, `hotLatestMessageCount`).

@@ -5,6 +5,7 @@ import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/dec
 
 import { info_t, locale_t, role_t, timeStamp_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
+import { SocialCharInterface } from './socialAPI.ts'
 
 
 /**
@@ -169,11 +170,13 @@ export class CharAPI_t {
 			 */
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
 			/**
-			 * 获取回复频率。
-			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @returns {Promise<number>} - 回复频率。
+			 * 新消息到达时触发（event hook，非 PascalCase RPC 方法），角色决定是否主动发言。
+			 * 返回 true 表示发言，false 表示不发言。
+			 * 典型实现：return Math.random() < (1 / onlineCount) * talkativeness * 2
+			 * @param {object} event - 事件上下文 { chatReplyRequest: chatReplyRequest_t, onlineCount: number }
+			 * @returns {Promise<boolean>}
 			 */
-			GetReplyFrequency?: (arg: chatReplyRequest_t) => Promise<number>
+			onMessage?: (event: { chatReplyRequest: chatReplyRequest_t, onlineCount: number }) => Promise<boolean>
 			/**
 			 * 编辑消息。
 			 * @param {object} arg - 参数对象。
@@ -334,6 +337,13 @@ export class CharAPI_t {
 				chat_scoped_char_memory: object
 			}>
 		},
+		/**
+		 * Social 动态接口（fount Social shell）。
+		 * 账号即 P2P entityHash，与 Chat 联邦身份 / agent 实体同一套，无需单独注册。
+		 * 跨节点调用走 Trystero `social_rpc`（如 `social_on_mention`），不经 `char_rpc` / remoteProxy。
+		 * 未实现 OnMention 时，shell 默认调用 chat.GetReply 生成公开回复（参考 bot 流水线）。
+		 */
+		social?: SocialCharInterface,
 		/**
 		 * 桌面宠物接口。
 		 */

@@ -1,12 +1,12 @@
 /**
  * IDE 集成配置页：API 密钥、角色选择、一站式 Agent 脚本 URL（Zed 用 deno 跑远端脚本）。
  */
-import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
-import { getPartList } from '/scripts/parts.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations } from '/scripts/i18n.mjs'
-import { renderMarkdown } from '/scripts/markdown.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
+import { verifyApiKey, createApiKey } from '/scripts/api/base.mjs'
+import { getPartList } from '/scripts/api/parts.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
+import { renderMarkdown } from '/scripts/features/markdown/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 applyTheme()
 await initTranslations('ide_integration')

@@ -1,7 +1,7 @@
-import { authenticate } from '../scripts/endpoints.mjs'
-import { initTranslations, console } from '../scripts/i18n.mjs'
-import { runPart } from '../scripts/parts.mjs'
-import { applyTheme } from '../scripts/theme.mjs'
+import { authenticate } from '../scripts/api/base.mjs'
+import { runPart } from '../scripts/api/parts.mjs'
+import { initTranslations, console } from '../scripts/i18n/index.mjs'
+import { applyTheme } from '../scripts/theme/index.mjs'
 
 const urlParams = new URL(window.location.href)
 const gobackNum = Number(urlParams.searchParams.get('gobackNum') || 1)
@@ -47,6 +47,7 @@ async function handleRunPart(parts) {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'
 		return
 	}
+	// `:` 是 part 路径分隔符（URL 形如 /parts/shells:chat），还原为 runPart/loadPart 路径 shells/chat。
 	const partpath = parts[1].replaceAll(':', '/')
 	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
 

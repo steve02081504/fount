@@ -1,4 +1,62 @@
 {
 	"type": "shells",
-	"dirname": "chat"
+	"dirname": "chat",
+	"registries": {
+		"markdown_extensions": [
+			{
+				"id": "chatMarkdown",
+				"level": 0,
+				"path": "markdown_ext/index.mjs"
+			}
+		],
+		"emoji": [
+			{
+				"id": "chatEmoji",
+				"level": 0,
+				"path": "providers/emoji.mjs"
+			}
+		],
+		"sticker": [
+			{
+				"id": "chatSticker",
+				"level": 0,
+				"path": "providers/sticker.mjs"
+			}
+		],
+		"home_function_buttons": [
+			{
+				"id": "function_buttons",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_drag_in_handlers": [
+			{
+				"id": "drag_in_handlers",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_drag_out_generators": [
+			{
+				"id": "drag_out_generators",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_interfaces": [
+			{
+				"id": "interfaces",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"achievements": [
+			{
+				"id": "achievements",
+				"level": 0,
+				"path": "achievements_registry.json"
+			}
+		]
+	}
 }

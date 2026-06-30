@@ -2,16 +2,17 @@ import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SV
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
+import { makeSearchable } from '../../scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n.mjs'
-import { makeSearchable } from '../../scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
+import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n/index.mjs'
+import { escapeHtml } from '../../scripts/lib/escapeHtml.mjs'
+import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
-} from '../../scripts/themeViewTransition.mjs'
-import { showToastI18n } from '../../scripts/toast.mjs'
-import { viewTransition } from '../../scripts/viewTransition.mjs'
+} from '../../scripts/theme/viewTransition.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
@@ -440,17 +441,6 @@ async function renderTestimonial(slideEl, item) {
 		authorName: item.name || geti18n('installer_wait_screen.testimonials.anonymous')
 	})
 	slideEl.replaceChildren(...fragment.childNodes)
-}
-
-/**
- * 转义 HTML 特殊字符，避免注入。
- * @param {string} s - 原始字符串。
- * @returns {string} 转义后的 HTML 字符串。
- */
-function escapeHtml(s) {
-	const div = document.createElement('div')
-	div.textContent = s
-	return div.innerHTML
 }
 
 /**

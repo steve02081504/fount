@@ -1,0 +1,110 @@
+/**
+ * repost / reply / followers-only 可见性。
+ */
+/* global Deno */
+import { randomUUID } from 'node:crypto'
+
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
+import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
+import { createTestSession } from '../harness.mjs'
+
+const getSession = createTestSession()
+
+const append = await import('../../src/timeline/append.mjs')
+const materialize = await import('../../src/timeline/materialize.mjs')
+const feed = await import('../../src/feed.mjs')
+const following = await import('../../src/following.mjs')
+const { loadViewerContext } = await import('../../src/feedHelpers.mjs')
+const { canViewPost } = await import('../../src/feedVisibility.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
+const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+
+Deno.test('repost materializes and appears in home feed', async () => {
+	const { username, operator } = await getSession()
+	const signed = await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: 'original for repost', visibility: 'public', lang: 'zh-CN' },
+	}, { fanout: false })
+	await append.commitTimelineEvent(username, operator, {
+		type: 'repost',
+		content: {
+			targetEntityHash: operator,
+			targetPostId: signed.id,
+			comment: 'boosting',
+		},
+	}, { fanout: false })
+
+	const view = await materialize.getTimelineMaterialized(username, operator)
+	assertEquals(view.reposts.length, 1)
+	assertEquals(view.reposts[0].content.comment, 'boosting')
+
+	await following.setFollow(username, operator, true)
+	const { items } = await feed.buildHomeFeed(username, { limit: 50 })
+	assert(items.some(row => row.kind === 'repost' && row.postId === view.reposts[0].id))
+})
+
+Deno.test('reply chain surfaces via listReplies', async () => {
+	const { username, operator } = await getSession()
+	const parent = await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: 'parent thread', visibility: 'public' },
+	}, { fanout: false })
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: {
+			text: 'child reply',
+			visibility: 'public',
+			replyTo: { entityHash: operator, postId: parent.id },
+		},
+	}, { fanout: false })
+
+	const replies = await feed.listReplies(username, operator, parent.id)
+	assertEquals(replies.length, 1)
+	assertEquals(replies[0].post.content.text, 'child reply')
+})
+
+Deno.test('followers-only post hidden when viewer does not follow author', async () => {
+	const { username, operator } = await getSession()
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const foreignOwner = encodeEntityHash('3'.repeat(64), subject)
+	await seedRemoteTimeline(username, seed, foreignOwner, [
+		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'post', content: { text: 'secret followers', visibility: 'followers' } },
+	])
+
+	const viewerContext = await loadViewerContext(username)
+	viewerContext.following = new Set([operator])
+	const view = await materialize.getTimelineMaterialized(username, foreignOwner)
+	const secret = view.posts[0]
+	assert(!canViewPost({ ...secret, entityHash: foreignOwner }, viewerContext))
+
+	viewerContext.following = new Set([operator, foreignOwner])
+	assert(canViewPost({ ...secret, entityHash: foreignOwner }, viewerContext))
+})
+
+Deno.test('owner sees own followers-only post on profile feed (decrypted or protected)', async () => {
+	const { username, operator } = await getSession()
+	const postKeyId = randomUUID()
+	const encrypted = await import('../../src/vault_crypto/vault.mjs')
+	const encContent = await encrypted.maybeEncryptPostContent(
+		username, operator, postKeyId,
+		{ text: 'followers encrypted', visibility: 'followers', lang: 'zh-CN' },
+		'followers',
+	)
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: encContent,
+	}, { fanout: false })
+
+	const { items } = await feed.buildProfileFeedItems(username, operator)
+	// owner can decrypt their own vault posts → decrypted content has text + visibility;
+	// if decryption somehow failed the item would carry { protected: true } or raw scheme marker
+	const followersItem = items.find(row =>
+		row.post?.content?.text === 'followers encrypted' ||
+		row.post?.content?.protected ||
+		row.post?.content?.scheme === 'gsh',
+	)
+	assert(followersItem, 'owner should see decrypted or protected marker on profile feed')
+})

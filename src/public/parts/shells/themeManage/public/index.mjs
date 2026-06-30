@@ -1,19 +1,19 @@
-import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { makeSearchable } from '/scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { unlockAchievement } from '/scripts/parts.mjs'
+import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { makeSearchable } from '/scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { unlockAchievement } from '/scripts/api/parts.mjs'
 import {
 	applyTheme,
 	builtin_themes,
 	getCurrentTheme,
 	setCustomTheme,
 	setTheme,
-} from '/scripts/theme.mjs'
+} from '/scripts/theme/index.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
-} from '/scripts/themeViewTransition.mjs'
+} from '/scripts/theme/viewTransition.mjs'
 
 import { extractColorsFromImage } from './colorUtils.mjs'
 import { deleteCustomTheme, getCustomTheme, listCustomThemes, saveCustomTheme } from './src/endpoints.mjs'

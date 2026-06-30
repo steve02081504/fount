@@ -32,7 +32,9 @@ export function loadData(username, dataname) {
  * @returns {void}
  */
 export function saveData(username, dataname) {
-	saveJsonFile(getUserDictionary(username) + '/settings/' + dataname + '.json', userDataSet[username][dataname])
+	const settingsDir = getUserDictionary(username) + '/settings'
+	fs.mkdirSync(settingsDir, { recursive: true })
+	saveJsonFile(settingsDir + '/' + dataname + '.json', userDataSet[username][dataname])
 }
 on_shutdown(() => {
 	for (const username in userDataSet)

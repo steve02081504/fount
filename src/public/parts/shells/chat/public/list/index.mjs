@@ -1,18 +1,26 @@
 /**
- * 聊天历史列表页面的客户端逻辑。
+ * 【文件】public/list/index.mjs
+ * 【职责】聊天历史列表页 UI：虚拟列表展示、排序筛选、多选批量操作与导入。
+ * 【原理】getGroupSessionList 拉全量后本地 filter/sort；createVirtualList 渲染行；模板 chat-list-item；操作委托 endpoints.mjs。
+ * 【数据结构】fullGroupSessionList、currentFilteredList、selectedChats(Set)、virtualList 实例。
+ * 【关联】list/endpoints.mjs；virtualList.mjs、template.mjs；Hub 跳转链接。
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n.mjs'
-import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
-import { makeSearchable } from '../../../scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
-import { createVirtualList } from '../../../scripts/virtualList.mjs'
-import { processTimeStampForId } from '../src/utils.mjs'
+import { initTranslations, confirmI18n, console, onLanguageChange } from '../../../scripts/i18n/index.mjs'
+import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/features/markdown/index.mjs'
+import { makeSearchable } from '../../../scripts/components/search.mjs'
+import {
+	mountTemplate,
+	renderTemplate,
+	usingTemplates,
+} from '../../../scripts/features/template.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
+import { showToast, showToastI18n } from '../../../scripts/features/toast.mjs'
+import { createVirtualList } from '../../../scripts/lib/virtualList.mjs'
+import { processTimeStampForId } from '../src/lib/timestampId.mjs'
 
-import { getChatList, getCharDetails, copyChats, exportChats, deleteChats, importChat } from './endpoints.mjs'
+import { getGroupSessionList, getCharDetails, copyGroupSessions, exportGroupSessions, deleteGroupSessions, importGroupSession } from './endpoints.mjs'
 
 usingTemplates('/parts/shells:chat/src/templates')
 
@@ -27,21 +35,38 @@ const exportSelectedButton = document.getElementById('export-selected-button')
 const importButton = document.getElementById('import-button')
 const importFileInput = document.getElementById('import-file-input')
 
-let fullChatList = []
+let fullGroupSessionList = []
 let currentFilteredList = []
 const selectedChats = new Set()
 
 let virtualList = null
 
 /**
+ * 从 JSON 文件导入会话并刷新列表。
+ * @param {File} file 用户选择的 JSON 文件
+ * @returns {Promise<boolean>} 导入成功为 true
+ */
+async function importGroupSessionFromFile(file) {
+	const result = await importGroupSession(JSON.parse(await file.text()))
+	if (!result.error) {
+		showToastI18n('success', 'chat_history.alerts.importSuccess')
+		fullGroupSessionList.splice(0, fullGroupSessionList.length, ...await getGroupSessionList())
+		filterInput.dispatchEvent(new Event('input'))
+		return true
+	}
+	showToast('error', result.error || result.message)
+	return false
+}
+
+/**
  * 仅更新选择相关的 UI（全选 checkbox 与各列表项的 checkbox），不重新渲染列表。
  */
 function updateSelectionUI() {
-	selectAllCheckbox.checked = currentFilteredList.every(c => selectedChats.has(c.chatid))
+	selectAllCheckbox.checked = currentFilteredList.every(c => selectedChats.has(c.groupId))
 	for (const checkbox of chatListContainer.querySelectorAll('.select-checkbox')) {
 		const chatElement = checkbox.closest('.chat-list-item')
-		const chatid = chatElement?.dataset?.chatid
-		checkbox.checked = selectedChats.has(chatid)
+		const groupId = chatElement?.dataset?.groupId
+		checkbox.checked = selectedChats.has(groupId)
 	}
 }
 
@@ -51,11 +76,11 @@ function updateSelectionUI() {
  * @returns {Promise<void>}
  */
 async function renderUI() {
+	const ascending = sortSelect.value === 'time_asc'
 	const fullSortedList = [...currentFilteredList].sort((a, b) => {
-		const sortValue = sortSelect.value
 		const timeA = new Date(a.lastMessageTime).getTime()
 		const timeB = new Date(b.lastMessageTime).getTime()
-		return sortValue === 'time_asc' ? timeA - timeB : timeB - timeA
+		return ascending ? timeA - timeB : timeB - timeA
 	})
 
 	// Clear selection state
@@ -136,20 +161,17 @@ async function hydrateChatListItem(chatElement, chat) {
 		lastMessageTime: lastMsgTime,
 		lastMessageRowContent: chat.lastMessageContent,
 		lastMessageContent: await renderMarkdownAsString(chat.lastMessageContent),
-		avatars: await Promise.all(chat.chars.map(async charName => {
+		avatars: await Promise.all((chat.chars || []).map(async charName => {
 			const details = await getCharDetails(charName)
 			return { name: details.info.name, url: details.info.avatar }
 		})),
 		renderMarkdownPreview
 	}
 
-	const realElement = await renderTemplate('list/chat_list_view', data)
-
-	// 替换内容
-	chatElement.innerHTML = realElement.innerHTML
-	chatElement.className = realElement.className
+	const realElement = await mountTemplate(chatElement, 'list/chat_list_view', data)
+	chatElement.className = realElement.className || chatElement.className
 	chatElement.removeAttribute('data-template-type')
-	chatElement.dataset.chatid = chat.chatid
+	chatElement.dataset.groupId = chat.groupId
 
 	// Drag-and-drop functionality
 	chatElement.addEventListener('mousedown', e => {
@@ -173,12 +195,12 @@ async function hydrateChatListItem(chatElement, chat) {
 
 	chatElement.addEventListener('dragstart', event => {
 		try {
-			const downloadUrl = `/virtual_files/parts/shells:chat/${chat.chatid}`
+			const downloadUrl = `/api/parts/shells:chat/groups/${encodeURIComponent(chat.groupId)}/export`
 			const fullDownloadUrl = `${window.location.origin}${downloadUrl}`
-			const fileName = `chat-${chat.chatid}.json`
+			const fileName = `chat-${chat.groupId}.json`
 			event.dataTransfer.setData('DownloadURL', `application/json:${fileName}:${fullDownloadUrl}`)
 
-			const chatUrl = new URL(`/shells/chat#${chat.chatid}`, window.location.origin)
+			const chatUrl = new URL(`/parts/shells:chat/hub/#group:${chat.groupId}:default`, window.location.origin)
 			event.dataTransfer.setData('text/uri-list', chatUrl.href)
 		}
 		catch (error) {
@@ -189,24 +211,23 @@ async function hydrateChatListItem(chatElement, chat) {
 
 	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
-	// for i18n
-	Object.assign(selectCheckbox.dataset, { chars: chat.chars.join(', ') })
-	i18nElement(selectCheckbox)
-	selectCheckbox.checked = selectedChats.has(chat.chatid)
+	Object.assign(selectCheckbox.dataset, { chars: (chat.chars || []).join(', ') })
+	selectCheckbox.checked = selectedChats.has(chat.groupId)
 	selectCheckbox.addEventListener('change', () => {
-		if (selectCheckbox.checked) selectedChats.add(chat.chatid)
-		else selectedChats.delete(chat.chatid)
-		selectAllCheckbox.checked = selectCheckbox.checked && currentFilteredList.every(c => selectedChats.has(c.chatid))
+		if (selectCheckbox.checked) selectedChats.add(chat.groupId)
+		else selectedChats.delete(chat.groupId)
+		selectAllCheckbox.checked = selectCheckbox.checked && currentFilteredList.every(c => selectedChats.has(c.groupId))
 	})
 
 	// Button listeners
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
 		try {
-			const datas = await copyChats([chat.chatid])
-			if (datas[0]?.success) {
-				fullChatList = await getChatList()
-				renderUI() // 触发重绘
-			} else showToast('error', datas[0]?.message)
+			const datas = await copyGroupSessions([chat.groupId])
+			if (!datas[0]?.error) {
+				fullGroupSessionList = await getGroupSessionList()
+				renderUI()
+			}
+			else showToast('error', datas[0]?.error || datas[0]?.message)
 		} catch (error) {
 			console.error('Error copying chat:', error)
 			showToastI18n('error', 'chat_history.alerts.copyError')
@@ -215,17 +236,17 @@ async function hydrateChatListItem(chatElement, chat) {
 
 	chatElement.querySelector('.export-button').addEventListener('click', async () => {
 		try {
-			const datas = await exportChats([chat.chatid])
-			for (const data of datas) if (data.success) {
+			const datas = await exportGroupSessions([chat.groupId])
+			for (const data of datas) if (!data.error) {
 				const blob = new Blob([JSON.stringify(data.data, null, '\t')], { type: 'application/json' })
 				const url = URL.createObjectURL(blob)
 				const a = document.createElement('a')
 				a.href = url
-				a.download = `chat-${chat.chatid}.json`
+				a.download = `chat-${data.groupId}.json`
 				a.click()
 				URL.revokeObjectURL(url)
 			}
-			else showToast('error', data.message)
+			else showToast('error', data.error)
 		} catch (error) {
 			console.error('Error exporting chat:', error)
 			showToastI18n('error', 'chat_history.alerts.exportError')
@@ -234,18 +255,19 @@ async function hydrateChatListItem(chatElement, chat) {
 
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
 		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
-			const data = await deleteChats([chat.chatid])
-			if (data[0].success) {
-				const index = fullChatList.findIndex(c => c.chatid === chat.chatid)
-				if (index > -1) fullChatList.splice(index, 1)
+			const data = await deleteGroupSessions([chat.groupId])
+			if (!data[0]?.error) {
+				const index = fullGroupSessionList.findIndex(c => c.groupId === chat.groupId)
+				if (index > -1) fullGroupSessionList.splice(index, 1)
 				filterInput.dispatchEvent(new Event('input'))
-			} else showToast('error', data[0].message)
+			}
+			else showToast('error', data[0].error || data[0].message)
 		} catch (error) {
 			console.error('Error deleting chat:', error)
 			showToastI18n('error', 'chat_history.alerts.deleteError')
 		}
 	})
-	chatItemDOMCache.set(chat.chatid, {
+	chatItemDOMCache.set(chat.groupId, {
 		element: chatElement,
 		lastMessageTime: chat.lastMessageTime,
 	})
@@ -258,18 +280,18 @@ async function hydrateChatListItem(chatElement, chat) {
  * @returns {Promise<HTMLElement>} - 渲染后的聊天列表项元素。
  */
 async function renderChatListItem(chat) {
-	if (chatItemDOMCache.has(chat.chatid)) {
-		const cachedData = chatItemDOMCache.get(chat.chatid)
+	if (chatItemDOMCache.has(chat.groupId)) {
+		const cachedData = chatItemDOMCache.get(chat.groupId)
 		if (cachedData.lastMessageTime === chat.lastMessageTime) {
 			const chatElement = cachedData.element
 			const selectCheckbox = chatElement.querySelector('.select-checkbox')
 			// 检查 selectCheckbox 是否存在，因为骨架屏可能还没 hydrate
-			if (selectCheckbox) selectCheckbox.checked = selectedChats.has(chat.chatid)
+			if (selectCheckbox) selectCheckbox.checked = selectedChats.has(chat.groupId)
 			return chatElement
 		}
 	}
 
-	const chatElement = await renderTemplate('list/chat_list_skeleton', { chatid: chat.chatid })
+	const chatElement = await renderTemplate('list/chat_list_skeleton', { groupId: chat.groupId })
 
 	// 绑定数据以供 hydrate 使用
 	chatElement.chatData = chat
@@ -287,18 +309,18 @@ selectAllCheckbox.addEventListener('change', () => {
 	const isChecked = selectAllCheckbox.checked
 	for (const chat of currentFilteredList)
 		if (isChecked)
-			selectedChats.add(chat.chatid)
+			selectedChats.add(chat.groupId)
 		else
-			selectedChats.delete(chat.chatid)
+			selectedChats.delete(chat.groupId)
 	updateSelectionUI()
 })
 
 reverseSelectButton.addEventListener('click', () => {
 	for (const chat of currentFilteredList)
-		if (selectedChats.has(chat.chatid))
-			selectedChats.delete(chat.chatid)
+		if (selectedChats.has(chat.groupId))
+			selectedChats.delete(chat.groupId)
 		else
-			selectedChats.add(chat.chatid)
+			selectedChats.add(chat.groupId)
 	updateSelectionUI()
 })
 deleteSelectedButton.addEventListener('click', async () => {
@@ -308,21 +330,19 @@ deleteSelectedButton.addEventListener('click', async () => {
 	}
 	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
 		const chatsToDelete = Array.from(selectedChats)
-		const results = await deleteChats(chatsToDelete)
+		const results = await deleteGroupSessions(chatsToDelete)
 
 		const successfullyDeletedIds = new Set()
-		results.forEach(result => {
-			if (result.success) {
-				successfullyDeletedIds.add(result.chatid)
-				selectedChats.delete(result.chatid)
-			} else showToast('error', result.message)
-		})
+		for (const result of results)
+			if (!result.error) {
+				successfullyDeletedIds.add(result.groupId)
+				selectedChats.delete(result.groupId)
+			}
+			else showToast('error', result.error || result.message)
+
 
 		if (successfullyDeletedIds.size) {
-			let i = fullChatList.length
-			while (i--)
-				if (successfullyDeletedIds.has(fullChatList[i].chatid))
-					fullChatList.splice(i, 1)
+			fullGroupSessionList = fullGroupSessionList.filter(chat => !successfullyDeletedIds.has(chat.groupId))
 			filterInput.dispatchEvent(new Event('input'))
 		}
 	} catch (error) {
@@ -337,13 +357,13 @@ exportSelectedButton.addEventListener('click', async () => {
 		return
 	}
 	try {
-		const results = await exportChats(Array.from(selectedChats))
-		for (const result of results) if (result.success) {
+		const results = await exportGroupSessions(Array.from(selectedChats))
+		for (const result of results) if (!result.error) {
 			const blob = new Blob([JSON.stringify(result.data, null, '\t')], { type: 'application/json' })
 			const url = URL.createObjectURL(blob)
 			const a = document.createElement('a')
 			a.href = url
-			a.download = `chat-${result.chatid}.json`
+			a.download = `chat-${result.groupId}.json`
 			a.click()
 			URL.revokeObjectURL(url)
 		} else showToast('error', result.message)
@@ -360,26 +380,14 @@ importButton.addEventListener('click', () => {
 importFileInput.addEventListener('change', async event => {
 	const file = event.target.files[0]
 	if (!file) return
-
 	try {
-		const fileContent = await file.text()
-		const chatData = JSON.parse(fileContent)
-		const result = await importChat(chatData)
-		if (result.success) {
-			showToastI18n('success', 'chat_history.alerts.importSuccess')
-			const newList = await getChatList()
-			fullChatList.splice(0, fullChatList.length, ...newList)
-			filterInput.dispatchEvent(new Event('input'))
-		}
-		else
-			showToast('error', result.message)
+		await importGroupSessionFromFile(file)
 	}
 	catch (error) {
 		console.error('Error importing chat:', error)
 		showToastI18n('error', 'chat_history.alerts.importError')
 	}
 	finally {
-		// Reset the input so the same file can be selected again
 		importFileInput.value = ''
 	}
 })
@@ -392,12 +400,15 @@ async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history')
 
-	fullChatList = await getChatList()
-	currentFilteredList = fullChatList
+	fullGroupSessionList = (await getGroupSessionList()).map(c => ({
+		...c,
+		chars: Array.isArray(c.chars) ? c.chars : [],
+	}))
+	currentFilteredList = fullGroupSessionList
 
 	makeSearchable({
 		searchInput: filterInput,
-		data: fullChatList,
+		data: fullGroupSessionList,
 		/**
 		 * 更新过滤后的数据。
 		 * @param {Array<object>} filtered - 过滤后的数据。
@@ -437,17 +448,7 @@ async function initializeApp() {
 		}
 
 		try {
-			const fileContent = await file.text()
-			const chatData = JSON.parse(fileContent)
-			const result = await importChat(chatData)
-			if (result.success) {
-				showToastI18n('success', 'chat_history.alerts.importSuccess')
-				const newList = await getChatList()
-				fullChatList.splice(0, fullChatList.length, ...newList)
-				filterInput.dispatchEvent(new Event('input'))
-			}
-			else
-				showToast('error', result.message)
+			await importGroupSessionFromFile(file)
 		}
 		catch (error) {
 			console.error('Error importing chat:', error)
@@ -460,5 +461,5 @@ initializeApp().catch(error => {
 	Sentry.captureException(error)
 	showToast('error', error.message)
 	console.error('Initialization failed:', error)
-	setTimeout(() => globalThis.location.href = '/shells/home', 5000)
+	setTimeout(() => window.location.href = '/shells/home', 5000)
 })

@@ -1,10 +1,10 @@
 /**
  * 浏览器集成页面的主要客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
-import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToast, showToastI18n } from '/scripts/toast.mjs'
+import { initTranslations, geti18n, i18nElement } from '/scripts/i18n/index.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToast, showToastI18n } from '/scripts/features/toast.mjs'
 
 import * as api from './src/endpoints.mjs'
 

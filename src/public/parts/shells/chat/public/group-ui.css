@@ -1,0 +1,18 @@
+/* 建群/加群模态：主体已改用 DaisyUI；此处仅保留权限矩阵等少量补丁 */
+
+.group-create-perm-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 8px;
+}
+
+.group-create-perm-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.group-join-modal-box .modal-box {
+	max-width: 480px;
+}

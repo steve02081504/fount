@@ -5,7 +5,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { svgInliner } from './scripts/svgInliner.mjs'
+import { svgInliner } from './scripts/lib/svgInliner.mjs'
 
 let skipBreadcrumb = false
 try { Sentry.init({

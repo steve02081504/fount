@@ -1,0 +1,199 @@
+/**
+ * 【文件】group/routes/membership.mjs
+ * 【职责】成员分页、入群/退群、邀请票等成员关系 HTTP 路由。
+ * 【原理】成员页从物化 state.members 切片；join 消费 inviteCode 或 DM intro 证明后 append member_join；leave 追加 member_leave 并 removeLocalGroupReplica；邀请票需 INVITE_MEMBERS。
+ * 【数据结构】成员页 {members,membersPagesCount}、invite ticket、powSolution、join content（introducerPubKeyHash/reputationEdge）。
+ * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
+ */
+import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
+import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
+import { getState } from '../../chat/dag/materialize.mjs'
+import { performMemberJoin } from '../../chat/dm/index.mjs'
+import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
+import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
+import { getFederationSettings } from '../../chat/federation/config.mjs'
+import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
+import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
+import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
+import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
+import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
+import { governanceChannelId } from '../access.mjs'
+
+import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
+
+const MEMBERS_PAGE_SIZE = 500
+
+/**
+ * 本地 replica 是否已有创世/bootstrap 事件物化结果（频道、群名或角色）。
+ * @param {object} state 物化群状态
+ * @returns {boolean} 是否已有 bootstrap 物化结果
+ */
+function groupHasBootstrapGenesis(state) {
+	if (Object.keys(state.channels || {}).length > 0) return true
+	if (String(state.groupMeta?.name || '').trim()) return true
+	if (Object.keys(state.roles || {}).length > 0) return true
+	return false
+}
+
+/**
+ * 按用户 locale 生成群邀请剪贴板全文（含 protocol 包装深链）。
+ * @param {string} username 签发者
+ * @param {string} groupId 群 ID
+ * @param {string} code 邀请码
+ * @param {string} mqttRoomSecret 群 MQTT 传输密钥（写入 join 深链）
+ * @param {string} introducerPubKeyHash 邀请人成员 pubKeyHash
+ * @param {string | null} [powAnchorRef] PoW anchor 提示（写入 join 深链）
+ * @returns {Promise<string>} 本地化剪贴板文本
+ */
+async function buildInviteClipboardText(username, groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef) {
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef))
+	return geti18nForUser(username, 'chat.group.settingsPage.inviteClipboard', {
+		groupId,
+		code,
+		url,
+	})
+}
+
+/**
+ * 注册成员分页、入群、邀请路由。
+ * @param {import('npm:websocket-express').Router} router Express 路由
+ * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
+ * @returns {void}
+ */
+export function registerMembershipRoutes(router, authenticate) {
+	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/members\/page\/(\d+)$/, authenticate, requireGroupMember(), async (req, res) => {
+		const { groupId, state } = req.groupContext
+		const pageIndex = Math.max(0, Number(req.params[1]) || 0)
+
+		const activeMembers = Object.entries(state.members).filter(([, member]) => member?.status === 'active')
+		const pageCount = Math.max(1, Math.ceil(activeMembers.length / MEMBERS_PAGE_SIZE))
+		const pageSlice = activeMembers.slice(pageIndex * MEMBERS_PAGE_SIZE, (pageIndex + 1) * MEMBERS_PAGE_SIZE)
+		const members = pageSlice.map(([memberKey, member]) => {
+			const pubKeyHash = memberKey
+			const entityHash = memberEntityHash(member) || null
+			return {
+				pubKeyHash,
+				nodeHash: member.homeNodeHash,
+				subjectHash: pubKeyHash,
+				entityHash,
+				memberId: pubKeyHash,
+				roles: member.roles || [],
+				joinedAt: member.joinedAt,
+				profile: { name: member.displayName || `${pubKeyHash.slice(0, 8)}…${pubKeyHash.slice(-4)}` },
+			}
+		})
+		res.status(200).json({
+			members,
+			membersPagesCount: pageCount,
+			membersRoot: state.membersRoot ?? null,
+		})
+	})
+
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/invite-ticket$/, authenticate, async (req, res) => {
+		const groupId = req.params[0]
+		const membership = await resolveGroupMember(req, res, groupId)
+		if (!membership) return
+		const { username, state, member } = membership
+		const permissionsChannelId = governanceChannelId(state)
+		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
+		if (!perms[PERMISSIONS.INVITE_MEMBERS] && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ADMINS])
+			return res.status(403).json({ error: 'INVITE_MEMBERS denied' })
+		const ttlMs = Number(req.body?.ttlMs)
+		const ticket = await mintGroupInviteTicket(username, groupId, {
+			ttlMs: Number.isFinite(ttlMs) && ttlMs > 0 ? ttlMs : undefined,
+		})
+		const mqttCreds = isGroupFederationActive(state.groupSettings)
+			? mqttCredentialsFromGroupSettings(state.groupSettings)
+			: await activateGroupFederation(username, groupId)
+		const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(username, groupId)
+		const powAnchors = collectJoinPowAnchors(state)
+		const powAnchorRef = powAnchors[0] ?? null
+		const clipboardText = await buildInviteClipboardText(
+			username,
+			groupId,
+			ticket.code,
+			mqttCreds.mqttRoomSecret,
+			introducerPubKeyHash,
+			powAnchorRef,
+		)
+		res.status(201).json({
+			...ticket,
+			clipboardText,
+			mqttAppId: mqttCreds.mqttAppId,
+			mqttRoomSecret: mqttCreds.mqttRoomSecret,
+			introducerPubKeyHash,
+			powAnchors,
+			powAnchorRef,
+			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
+				? String(state.groupMeta.dmSessionTag || '').trim().toLowerCase() || null
+				: null,
+		})
+	})
+
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/join$/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const groupId = req.params[0]
+		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
+		const dmNonce = dmIntroNonce?.trim()
+		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
+		if (!!dmNonce !== !!dmSignatureHex)
+			return res.status(400).json({ error: 'provide both dmIntroNonce and dmIntroSignatureHex for DM link proof or omit both' })
+		const { state } = await getState(username, groupId)
+		if (dmNonce) {
+			const dmCheck = await validateDmIntroLinkProof(username, state, normalizePubKeyHex(introducerPubKeyHash), dmNonce, dmSignatureHex)
+			if (!dmCheck.ok)
+				return res.status(400).json({ error: dmCheck.error })
+		}
+		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmNonce) || Boolean(String(mqttRoomSecret || '').trim())
+		if (!groupHasBootstrapGenesis(state) && !hasJoinAuthorization)
+			return res.status(404).json({ error: 'Group not found; join with invite or federation bootstrap' })
+
+		let bootstrap
+		if (mqttRoomSecret) {
+			bootstrap = { mqttAppId, mqttRoomSecret }
+			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
+			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
+			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()
+			if (PUB_KEY_HEX_64.test(hintedSessionTag))
+				bootstrap.dmSessionTag = hintedSessionTag
+			else if (dmNonce) {
+				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
+				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).identityPubKeyHex)
+				if (PUB_KEY_HEX_64.test(introPubKeyHex) && PUB_KEY_HEX_64.test(myPubKeyHex) && introPubKeyHex !== myPubKeyHex)
+					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
+			}
+		}
+
+		const result = await performMemberJoin(username, groupId, {
+			inviteCode,
+			powSolution: pow,
+			introducerPubKeyHash,
+			dmIntroNonce: dmNonce,
+			dmIntroSignatureHex: dmSignatureHex,
+			reputationEdge,
+			bootstrap,
+		})
+		res.status(200).json({ groupId, defaultChannelId: result.defaultChannelId })
+	})
+
+	router.post(/^\/api\/parts\/shells:chat\/groups\/leave$/, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const groupIds = req.body?.groupIds
+		if (!Array.isArray(groupIds) || !groupIds.length)
+			return res.status(400).json({ error: 'groupIds array required' })
+		try {
+			const result = await leaveManyGroupsForUser(username, groupIds)
+			res.status(200).json(result)
+		}
+		catch (err) {
+			if (err?.code === 'BATCH_LIMIT')
+				return res.status(400).json({ error: err.message })
+			throw err
+		}
+	})
+}

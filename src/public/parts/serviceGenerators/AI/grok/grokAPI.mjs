@@ -378,7 +378,6 @@ export class GrokAPI {
 		const response = await this.makeGrokRequest(grokPayload, stream, 0, isThinkModel)
 		if (stream)
 			return this.processStream(response, model, onDelta, signal)
-
 		else
 			return this.handleNonStreamResponse(response, isThinkModel)
 	}

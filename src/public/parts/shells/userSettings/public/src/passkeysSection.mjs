@@ -1,8 +1,8 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { confirmI18n } from '/scripts/i18n.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { mountTemplate, renderTemplate } from '/scripts/template.mjs'
+import { confirmI18n } from '/scripts/i18n/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,

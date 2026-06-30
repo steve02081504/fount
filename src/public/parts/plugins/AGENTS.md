@@ -16,7 +16,7 @@
 ## 3. Guidelines
 
 - **Logic**: Use `async/await`. Single process only (no child processes).
-- **I18n**: Add user-facing strings to `src/locales/zh-CN.json`.
+- **I18n**: Add global UI strings to `src/public/locales/zh-CN.json`; plugin-specific copy may use a part-local `locales.json`.
 - **Logging**: No console logs unless it's an error or warning.
 - **Standards**: Run `eslint --fix --quiet` after changes.
 

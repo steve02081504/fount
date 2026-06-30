@@ -384,7 +384,7 @@ async function refresh(refreshTokenValue, req) {
  */
 export async function logout(req, res) {
 	const { cookies: { accessToken, refreshToken } } = req
-	const user = await getUserByReq(req)
+	const user = getUserByReq(req)
 
 	if (accessToken) await revokeToken(accessToken, 'access-logout')
 
@@ -877,11 +877,10 @@ export async function renameUser(currentUsername, newUsername, password) {
 /**
  * 从请求中获取用户信息。依赖于 authenticate 中间件已填充 req.user。
  * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {Promise<object>} 用户对象。
- * @throws {Error} 如果请求未经过身份验证。
+ * @returns {object} 用户对象。
  */
-export async function getUserByReq(req) {
-	if (!req.user) throw new Error('Request is not authenticated. Use authenticate middleware first.')
+export function getUserByReq(req) {
+	if (!req.user) throw httpError(401, 'Unauthorized')
 	return req.user
 }
 
@@ -923,6 +922,23 @@ export function bumpUserFailedLoginAttempts(user) {
 	}
 	save_config()
 	return { locked: false }
+}
+
+/**
+ * 使用 API Key 登录并签发会话 Cookie（供自动化 / 前端 E2E 测试使用）。
+ * @param {string} apiKey - API Key 明文。
+ * @param {string} [deviceId='unknown'] - 设备标识符。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
+ */
+export async function loginWithApiKey(apiKey, deviceId = 'unknown', req) {
+	const key = String(apiKey ?? '').trim()
+	if (!key) return { status: 400, i18nKey: 'userSettings.apiKeys.verifyMissingApiKey' }
+
+	const user = await verifyApiKey(key)
+	if (!user) return { status: 401, i18nKey: 'auth.error.invalidCredentials' }
+
+	return await completeSuccessfulLogin(user, deviceId, req)
 }
 
 /**

@@ -1,122 +1,93 @@
-import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
-
 /**
- * 用于实现流式渲染的类。
+ * Hub 单条流式消息：对展示文本做 rAF 平滑逼近并渲染 Markdown。
  */
-class StreamRenderer {
+import { renderMarkdownAsString } from '../../../../scripts/features/markdown/index.mjs'
+
+/** Hub 流式消息 Markdown 渲染器。 */
+export class StreamRenderer {
+	/** @type {HTMLElement} */
+	#bodyElement
+	#targetText = ''
+	#displayedText = ''
+	#markdownCache = {}
+	#lastRendered = null
+	#animationFrameId = null
+
 	/**
-	 * 创建一个新的 StreamRenderer 实例。
+	 * @param {HTMLElement} bodyElement 流式正文容器
 	 */
-	constructor() {
-		this.streamingMessages = new Map()
-		this.animationFrameId = null
+	constructor(bodyElement) {
+		if (!(bodyElement instanceof HTMLElement))
+			throw new TypeError('StreamRenderer requires an HTMLElement')
+		this.#bodyElement = bodyElement
+		this.attachedTo = bodyElement
 	}
 
 	/**
-	 * 注册一个正在进行流式传输的消息。
-	 * @param {string} id - 消息的唯一 ID。
-	 * @param {string} initialContent - 消息的初始内容。
+	 * @param {string} text 新的完整展示文本
+	 * @returns {void}
 	 */
-	register(id, initialContent) {
-		this.streamingMessages.set(id, {
-			targetContent: initialContent || '',
-			displayedContent: initialContent || '',
-			lastRendered: null,
-			domElement: document.getElementById(id), // 缓存引用
-			cache: {}
-		})
-		this.startLoop()
+	setTarget(text) {
+		this.#targetText = text
+		this.#startLoop()
 	}
 
 	/**
-	 * 更新指定消息的目标内容，用于平滑渲染。
-	 * @param {string} id - 消息的唯一 ID。
-	 * @param {string} newContent - 消息的新内容。
+	 * @returns {Promise<void>}
 	 */
-	updateTarget(id, newContent) {
-		const state = this.streamingMessages.get(id)
-		if (state) state.targetContent = newContent
-		this.startLoop()
+	async finish() {
+		if (this.#animationFrameId) {
+			cancelAnimationFrame(this.#animationFrameId)
+			this.#animationFrameId = null
+		}
+		this.#displayedText = this.#targetText
+		await this.#renderFrame()
 	}
 
 	/**
-	 * 停止对指定消息的流式渲染。
-	 * @param {string} id - 消息的唯一 ID。
+	 * @returns {void}
 	 */
-	stop(id) {
-		this.streamingMessages.delete(id)
-	}
-
-	/**
-	 * 开始循环渲染。
-	 */
-	startLoop() {
-		if (this.animationFrameId || !this.streamingMessages.size) return
+	#startLoop() {
+		if (this.#animationFrameId) return
 		/**
-		 * 一个帧的渲染逻辑
+		 * @returns {Promise<void>}
 		 */
 		const loop = async () => {
-			if (!this.streamingMessages.size) {
-				this.animationFrameId = null
+			if (!this.#bodyElement.isConnected) {
+				this.#animationFrameId = null
 				return
 			}
-			await this.renderFrame()
-			this.animationFrameId = requestAnimationFrame(loop)
+			if (this.#targetText.startsWith(this.#displayedText)) {
+				const lag = this.#targetText.length - this.#displayedText.length
+				const step = Math.max(1, Math.ceil(lag / 5))
+				this.#displayedText = this.#targetText.substring(0, this.#displayedText.length + step)
+			}
+			else
+				this.#displayedText = this.#targetText
+
+			await this.#renderFrame()
+
+			if (this.#displayedText !== this.#targetText) {
+				this.#animationFrameId = requestAnimationFrame(() => { void loop() })
+				return
+			}
+			this.#animationFrameId = null
 		}
-		this.animationFrameId = requestAnimationFrame(loop)
+		this.#animationFrameId = requestAnimationFrame(() => { void loop() })
 	}
 
 	/**
-	 * 渲染一帧。
+	 * @returns {Promise<void>}
 	 */
-	async renderFrame() {
-		const chatContainer = document.getElementById('chat-messages')
-		const wasNearBottom = chatContainer &&
-			chatContainer.scrollTop >= chatContainer.scrollHeight - chatContainer.clientHeight - 150
+	async #renderFrame() {
+		if (this.#displayedText === this.#lastRendered) return
+		const text = this.#displayedText
+		this.#lastRendered = text
+		this.#bodyElement.innerHTML = await renderMarkdownAsString(text, this.#markdownCache)
+		if (text.trim())
+			this.#bodyElement.parentElement
+				?.querySelector('.hub-streaming-skeleton')
+				?.classList.add('hidden')
 
-		let anyContentUpdated = false
-
-		for (const [id, state] of this.streamingMessages) {
-			// 重新获取 DOM，防止虚拟列表滚动导致元素重建
-			if (!state.domElement || !state.domElement.isConnected) {
-				state.domElement = document.getElementById(id)
-				if (!state.domElement) continue
-			}
-
-			// 纯追加时平滑逼近；内容重写（包括 HTML 整帧替换）直接跳到目标避免无谓闪烁
-			const { targetContent, displayedContent } = state
-			if (targetContent.startsWith(displayedContent)) {
-				const lag = targetContent.length - displayedContent.length
-				const step = Math.max(1, Math.ceil(lag / 5))
-				state.displayedContent = targetContent.substring(0, displayedContent.length + step)
-			} else
-				state.displayedContent = targetContent
-
-
-			// 只有内容变化才操作 DOM
-			if (state.displayedContent !== state.lastRendered) {
-				const contentEl = state.domElement.querySelector('.message-content')
-				if (contentEl) {
-					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent, state.cache)
-
-					if (state.displayedContent.trim()) {
-						const skeletonEl = state.domElement.querySelector('.skeleton-loader')
-						skeletonEl.classList.add('hidden')
-						contentEl.classList.remove('hidden')
-					}
-				}
-
-				state.lastRendered = state.displayedContent
-				anyContentUpdated = true
-			}
-		}
-
-		if (anyContentUpdated && wasNearBottom && chatContainer)
-			chatContainer.scrollTop = chatContainer.scrollHeight
 	}
 }
-
-/**
- * 流式渲染器的单例
- */
-export const streamRenderer = new StreamRenderer()

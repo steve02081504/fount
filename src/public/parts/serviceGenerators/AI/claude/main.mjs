@@ -1,5 +1,5 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 
 import { ClaudeAPI } from './claude_api.mjs'
 

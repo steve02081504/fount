@@ -1,0 +1,16 @@
+{
+	"id": "p2p",
+	"suites": [
+		{
+			"name": "unit",
+			"run": [
+				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/p2p/test/"
+			],
+			"triggers": [
+				"src/scripts/p2p/**",
+				"src/server/p2p_server/**"
+			]
+		}
+	]
+}

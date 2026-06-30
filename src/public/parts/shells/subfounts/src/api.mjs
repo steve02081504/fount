@@ -1,6 +1,20 @@
 import { randomUUID } from 'node:crypto'
-import { deserialize } from 'node:v8'
+import EventEmitter from 'node:events'
+import process from 'node:process'
+// V8 serialize/deserialize 不兼容 Trystero 的 JSON 传输，已改用直接传递
 
+// Trystero MQTT 客户端在重连时会累加 listeners，提高上限避免警告
+EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
+
+// 捕获 Trystero MQTT 内部的 ECONNRESET 等网络瞬断错误，防止进程崩溃
+process.on('uncaughtException', (err) => {
+	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
+		return // 网络瞬断，Trystero 会自动重连
+	console.error('Uncaught exception:', err)
+	process.exit(1)
+})
+
+import { isNodeInitialized } from '../../../../../scripts/p2p/node/instance.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
@@ -255,15 +269,15 @@ class UserSubfountManager {
 				this.actions.clear()
 			}
 
-			const { joinRoom } = await import('npm:trystero/mqtt')
-			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
-			const config = {
+			const { joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs')
+			if (!isNodeInitialized())
+				throw new Error('P2P node not initialized — ensure initP2PServer ran before subfounts')
+			this.room = await joinMqttRoomWithDefaults({
 				appId: 'fount-subfounts',
-				rtcPolyfill: RTCPeerConnection,
-				password: codesData.password, // 使用连接密码进行加密
-			}
-			this.room = joinRoom(config, this.hostPeerId)
+				password: codesData.password,
+				roomId: this.hostPeerId,
+			})
 
 			// 设置操作处理程序
 			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']
@@ -311,7 +325,6 @@ class UserSubfountManager {
 				if (subfount)
 					// 更新现有分机
 					this.updateSubfountConnection(subfount, peerId, remoteDeviceId)
-
 				else
 					// 创建新分机
 					subfount = this.addSubfount(peerId, remoteDeviceId)
@@ -342,7 +355,7 @@ class UserSubfountManager {
 					if (data.isError)
 						pending.reject(new Error(data.payload?.error || data.payload || 'Unknown error'))
 					else
-						pending.resolve(deserialize(data.payload))
+						pending.resolve(data.payload)
 				}
 			}
 
@@ -425,7 +438,7 @@ class UserSubfountManager {
 		const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 		const part = await loadPart(this.username, normalizedPartpath)
 		if (part.interfaces?.subfount?.RemoteCallBack)
-			await part.interfaces.subfount.RemoteCallBack({ data: deserialize(data), username: this.username, partpath })
+			await part.interfaces.subfount.RemoteCallBack({ data, username: this.username, partpath })
 	}
 
 	/**

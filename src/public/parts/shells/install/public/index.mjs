@@ -1,10 +1,10 @@
 /**
  * 安装 shell 的客户端逻辑。
  */
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToastI18n } from '../../scripts/toast.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
 
 import { importFiles, importText } from './src/endpoints.mjs'
 

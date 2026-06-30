@@ -1,0 +1,7 @@
+<div class="flex flex-wrap gap-1">
+	${links.length ? links.map(link => `
+	<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-circle btn-sm btn-ghost" title="${escapeHtml(link.name || link.url)}">
+		<img src="${escapeHtml(link.icon || 'https://api.iconify.design/line-md/link.svg')}" class="h-5 w-5" alt="" aria-hidden="true" />
+	</a>
+	`).join('') : '<p class="text-sm opacity-50" data-i18n="profile.noSocialLinks"></p>'}
+</div>

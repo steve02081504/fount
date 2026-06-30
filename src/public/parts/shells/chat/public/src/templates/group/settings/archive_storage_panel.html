@@ -1,0 +1,21 @@
+<div class="card bg-base-200 shadow-xl mb-6">
+	<div class="card-body">
+		<h2 class="card-title" data-i18n="chat.group.settingsArchiveTitle"></h2>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settingsArchiveHint"></p>
+
+		${canManageArchive ? `
+		<div class="mt-4">
+			<h3 class="font-semibold text-sm mb-2" data-i18n="chat.group.settingsArchiveFilesTitle"></h3>
+			${archiveRowsHtml || `<p class="text-sm opacity-60" data-i18n="chat.group.settingsArchiveEmpty"></p>`}
+			<div class="flex flex-wrap items-end gap-3 mt-4">
+				<div class="form-control">
+					<label class="label"><span class="label-text" data-i18n="chat.group.settingsArchiveDeleteBefore"></span></label>
+					<input type="month" id="archive-delete-before-month" class="input input-bordered input-sm">
+				</div>
+				<button type="button" id="archive-delete-button" class="btn btn-error btn-sm" data-i18n="chat.group.settingsArchiveDeleteButton"></button>
+			</div>
+			<p class="text-xs opacity-60 mt-2" data-i18n="chat.group.settingsArchiveDeleteHint"></p>
+		</div>
+		` : `<p class="text-sm opacity-60 mt-3" data-i18n="chat.group.settingsArchiveAdminOnly"></p>`}
+	</div>
+</div>

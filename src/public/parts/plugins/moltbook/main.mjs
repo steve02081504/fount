@@ -1,4 +1,4 @@
-import { defineToolUseBlocks } from '../../shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../shells/chat/src/stream/index.mjs'
 
 import { moltbookReplyHandler } from './handler.mjs'
 import { getMoltbookPrompt } from './prompt.mjs'

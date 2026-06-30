@@ -1,11 +1,45 @@
-import { hosturl } from '../../../../server/server.mjs'
+/**
+ * 【文件】main.mjs
+ * 【职责】chat shell 的 Part 入口：向 parts_loader 导出 shellAPI_t，注册 HTTP/群路由与文件 GC，并分发 CLI/IPC 动作。
+ * 【原理】side-effect 预加载 dag/index；Load 调用 setGroupEndpoints + setEndpoints。
+ *   handleAction 动态 import actions 表；ArgumentsHandler 解析 dm/join/start/send 等；IPCInvokeHandler 透传 command。
+ * 【数据结构】loadCount、shellAPI_t（info/Load/Unload/interfaces）、actions 命令键。
+ * 【关联】parts_loader 加载；import endpoints、group/endpoints、files、locales。
+ */
+import './src/chat/dag/index.mjs'
+import './src/chat/federation/config.mjs'
 
+import {
+	registerDefaultAgentHosting,
+	unregisterDefaultAgentHosting,
+} from '../../../../scripts/p2p/entity/hosting.mjs'
+import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from '../../../../scripts/p2p/entity/session_snapshot_registry.mjs'
+import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from '../../../../scripts/p2p/p2p_viewer_registry.mjs'
+import {
+	registerShellPartpath,
+	unregisterShellPartpath,
+} from '../../../../scripts/p2p/part_path_registry.mjs'
+import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
+
+import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
+import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
+import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
+import { registerChatGroupEmojiPostEmbed, unregisterChatGroupEmojiPostEmbed } from './src/chat/groupEmojiPostEmbed.mjs'
+import { registerChatGroupEntityIndex, unregisterChatGroupEntityIndex } from './src/chat/groupEntityIndex.mjs'
+import { getGroupMemberEntityHash } from './src/chat/lib/replica.mjs'
+import {
+	registerChatMailboxConsumer,
+	unregisterChatMailboxConsumer,
+} from './src/chat/mailbox/ingest.mjs'
+import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
+import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
+import { getMaterializedSession } from './src/chat/session/dagSession.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
-import { cleanFilesInterval } from './src/files.mjs'
+import { setGroupEndpoints } from './src/group/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-let loading_count = 0
+let loadCount = 0
 
 /**
  * 处理传入的聊天动作请求。
@@ -16,10 +50,29 @@ let loading_count = 0
  */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
-	if (!actions[action])
-		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
+	if (actions[action])
+		return actions[action]({ user, ...params })
 
-	return actions[action]({ user, ...params })
+	const { actions: profileActions } = await import('./src/profile/actions.mjs')
+	if (profileActions[action])
+		return profileActions[action]({ user, ...params })
+
+	const stickerActionMap = {
+		'sticker-list': 'list',
+		'sticker-create': 'create',
+		'sticker-info': 'info',
+		'sticker-install': 'install',
+		'sticker-uninstall': 'uninstall',
+		'sticker-delete': 'delete',
+	}
+	const stickerKey = stickerActionMap[action]
+	if (stickerKey) {
+		const { actions: stickerActions } = await import('./src/stickers/actions.mjs')
+		if (stickerActions[stickerKey])
+			return stickerActions[stickerKey]({ user, ...params })
+	}
+
+	throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 }
 
 /**
@@ -33,17 +86,44 @@ export default {
 	 * @param {object} root0 - 参数对象。
 	 * @param {object} root0.router - Express的路由实例。
 	 */
-	Load: ({ router }) => {
-		loading_count++
-		setEndpoints(router)
+	Load: async ({ router }) => {
+		loadCount++
+		registerShellPartpath('chat', 'shells/chat')
+		registerChatEventTypeDefs()
+		registerChatGroupEmojiPostEmbed()
+		registerChatManifestAcl()
+		registerChatManifestTransfer()
+		registerChatChunkProviders()
+		registerChatGroupEntityIndex()
+		registerGroupMemberEntityResolver('chat', getGroupMemberEntityHash)
+		registerMaterializedSessionProvider('chat', getMaterializedSession)
+		registerChatFederationRoomProvider()
+		registerChatMailboxConsumer()
+		await registerDefaultAgentHosting()
+		if (loadCount === 1) {
+			setGroupEndpoints(router)
+			setEndpoints(router)
+		}
 	},
 	/**
 	 * 卸载聊天Shell，减少加载计数并在必要时清理定时器。
 	 */
 	Unload: () => {
-		loading_count--
-		if (!loading_count)
-			clearInterval(cleanFilesInterval)
+		loadCount--
+		if (!loadCount) {
+			unregisterShellPartpath('chat')
+			unregisterChatEventTypeDefs()
+			unregisterChatGroupEmojiPostEmbed()
+			unregisterChatManifestAcl()
+			unregisterGroupMemberEntityResolver('chat')
+			unregisterChatManifestTransfer()
+			unregisterChatChunkProviders()
+			unregisterChatGroupEntityIndex()
+			unregisterMaterializedSessionProvider('chat')
+			unregisterChatFederationRoomProvider()
+			unregisterChatMailboxConsumer()
+			unregisterDefaultAgentHosting()
+		}
 	},
 	interfaces: {
 		web: {},
@@ -60,50 +140,64 @@ export default {
 				let result
 
 				switch (command) {
+					case 'dm': {
+						params = {
+							introPubKeyHex: args[1],
+							dmIntroNonce: args[2],
+							dmIntroSignatureHex: args[3],
+						}
+						result = await handleAction(user, command, params)
+						if (result?.groupId) console.log(JSON.stringify(result))
+						return result
+					}
+					case 'join': {
+						params = {
+							groupId: args[1],
+							inviteCode: args[2] || '',
+							mqttRoomSecret: args[3] || '',
+							introducerPubKeyHash: args[4] || '',
+							powAnchorRef: args[5] || '',
+						}
+						result = await handleAction(user, command, params)
+						const groupId = result?.groupId || args[1]
+						if (groupId)
+							sendEventToUser(user, 'chat-group-joined', { groupId: String(groupId) })
+						if (result?.groupId) console.log(JSON.stringify(result))
+						return result
+					}
 					case 'start':
 						params = { charName: args[1] }
 						result = await handleAction(user, command, params)
-						console.log(`Started new chat at: ${hosturl}/parts/shells:chat/#${result}`)
 						break
 					case 'asjson':
 						params = { chatInfo: JSON.parse(args[1]) }
 						result = await handleAction(user, command, params)
-						console.log(`Loaded chat from JSON: ${args[1]}`)
 						break
 					case 'load':
-						params = { chatId: args[1] }
+						params = { groupId: args[1] }
 						result = await handleAction(user, command, params)
-						console.log(`Continue chat at: ${hosturl}/parts/shells:chat/#${result}`)
 						break
 					case 'tail':
-						params = { chatId: args[1], n: Number(args[2] || '5') }
+						params = { groupId: args[1], n: Number(args[2] || '5') }
 						result = await handleAction(user, command, params)
 						result.forEach(log => {
 							console.log(`[${new Date(log.time_stamp).toLocaleString()}] ${log.name}: ${log.content}`)
 						})
 						break
 					case 'send':
-						params = { chatId: args[1], message: { content: args[2] } }
+						params = { groupId: args[1], message: { content: args[2] } }
 						await handleAction(user, command, params)
-						console.log(`Message sent to chat ${args[1]}`)
-						break
-					case 'edit-message':
-						params = { chatId: args[1], index: Number(args[2]), newContent: { content: args.slice(3).join(' ') } }
-						await handleAction(user, command, params)
-						console.log(`Message at index ${args[2]} in chat ${args[1]} edited.`)
 						break
 					default: {
-						const [chatId, ...rest] = args.slice(1)
+						const [groupId, ...rest] = args.slice(1)
 						const paramMap = {
 							'remove-char': { charName: rest[0] },
 							'set-persona': { personaName: rest[0] },
 							'set-world': { worldName: rest[0] },
 							'set-char-frequency': { charName: rest[0], frequency: parseFloat(rest[1]) },
 							'trigger-reply': { charName: rest[0] },
-							'delete-message': { index: Number(rest[0]) },
-							'modify-timeline': { delta: Number(rest[0]) }
 						}
-						params = { chatId, ...paramMap[command] }
+						params = { groupId, ...paramMap[command] }
 						result = await handleAction(user, command, params)
 						if (result !== undefined) console.log(result)
 						break
@@ -119,7 +213,7 @@ export default {
 			IPCInvokeHandler: async (user, data) => {
 				const { command, ...params } = data
 				return handleAction(user, command, params)
-			}
+			},
 		}
 	}
 }

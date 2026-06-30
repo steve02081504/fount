@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-cpp'
 
-import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 

@@ -53,6 +53,8 @@ export function registerResources(router) {
 		}
 		return next()
 	})
+	watchFrontendChanges('/scripts/test', __dirname + '/src/scripts/test')
+	router.use('/scripts/test', express.static(__dirname + '/src/scripts/test'))
 	watchFrontendChanges('/', __dirname + '/src/public/pages')
 	router.use(express.static(__dirname + '/src/public/pages'))
 }

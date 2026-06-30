@@ -3,18 +3,18 @@
 ## 1. URL & Filesystem Mapping
 
 - **URL Pattern**: `/parts/<partpath>/<filepath_within_public>`
-  - Example: `/parts/shells:chat/chat.css` -> `src/public/parts/shells/chat/public/chat.css`
+  - Example: `/parts/shells:chat/hub/messages.css` -> `src/public/parts/shells/chat/public/hub/messages.css`
   - Default: `/parts/shells:chat` -> `.../public/index.html`
 
 ## 2. Standard Structure
 
-- `main.mjs`: Backend entry. Must export `Load({ router })` to register routes.
+- `main.mjs`: Backend entry. Default export must include `Load({ router })` to register routes.
 - `public/`: Frontend assets (HTML, JS, CSS).
   - `llms.txt`: AI-readable API documentation.
 - `src/`: Backend logic.
   - `endpoints.mjs`: Define routes using `router.get/post/ws`. Path format: `/api/parts/shells\\:<name>/...`.
-  - **HTTP API**: Success = 2xx JSON body without a `success` wrapper; expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs` (global `errorHandler` uses `err.code` / `err.json`). Avoid route-level try/catch that only maps errors to 500.
-- `home_registry.json`: Registers the shell on the Home page.
+  - **HTTP API**: Success = 2xx JSON body without a `success` wrapper; expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs` (global `errorHandler` uses `err.http_code` / `err.json`). Avoid route-level try/catch that only maps errors to 500.
+- **`fount.json` → `registries`**: Declare part-relative entries `{ id, level, path }` for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`, etc. Consumed via `GET /api/registries/:name` and `@src/public/pages/scripts/api/registries.mjs` (frontend) / `@src/server/registries.mjs` (backend). Legacy `home_registry.json` files remain valid as registry `path` targets until fully split.
 
 ## 3. Implementation Checklist
 
@@ -24,4 +24,6 @@
 4. **Docs**: Add `public/llms.txt` for AI discovery.
 
 **Example**: See `src/public/parts/shells/shellassist/` for a complete reference.
+**Chat Hub** (federation UI): [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md) — local trust domain vs external ingress.
+
 **See also**: [Root AGENTS.md](../../../../AGENTS.md)

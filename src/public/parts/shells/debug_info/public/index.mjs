@@ -1,10 +1,10 @@
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { initTranslations } from '/scripts/i18n.mjs'
-import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { onServerEvent } from '/scripts/server_events.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
+import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { onServerEvent } from '/scripts/api/server_events.mjs'
 
-import { ping } from '/scripts/endpoints.mjs'
+import { ping } from '/scripts/api/base.mjs'
 import { getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
 
 applyTheme()

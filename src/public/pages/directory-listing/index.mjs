@@ -1,16 +1,6 @@
-import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations, setLocalizeLogic } from '/scripts/i18n.mjs'
-
-/**
- * 转义 HTML 字符串。
- * @param {string} str - 要转义的字符串。
- * @returns {string} - 转义后的 HTML 字符串。
- */
-function escapeHtml(str) {
-	const div = document.createElement('div')
-	div.textContent = str
-	return div.innerHTML
-}
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 applyTheme()
 const headingEl = document.getElementById('directory-listing-heading')

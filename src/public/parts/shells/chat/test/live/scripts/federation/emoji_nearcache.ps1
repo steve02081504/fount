@@ -1,0 +1,47 @@
+﻿# Member B resolves emoji via contentHash /emoji-content (CAS near-cache path).
+$ErrorActionPreference = 'Stop'
+. (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
+
+$gid = $null; $emojiId = $null; $contentHash = $null; $firstHitDataUrlLen = 0
+
+Write-Host "=== Setup: open group + A/B join ===" -ForegroundColor Cyan
+$setup = Initialize-OpenGroupJoin 'FedEmojiNC' 'emoji-nc-seed'
+$gid = $setup.groupId
+
+Write-Host "`n=== A uploads emoji (contentHash in manifest) ===" -ForegroundColor Cyan
+Test-Case 'A POST /groups/:id/emojis' {
+	$r = ApiMultipart $FedA POST "/groups/$gid/emojis" @{ name = 'nc-emoji' } 'emoji' 'fed.png' $FedPngBytes
+	if ($r.status -ne 201) { throw "upload $($r.status): $($r.raw)" }
+	$script:emojiId = $r.json.entry.emojiId
+	$script:contentHash = $r.json.entry.contentHash
+	[bool]$script:emojiId -and [bool]$script:contentHash
+}
+
+Write-Host "`n=== B near-cache via /emoji-content ===" -ForegroundColor Cyan
+Test-Case 'B manifest lists contentHash after federation sync' {
+	[bool](PollUntil 90 3 {
+		$r = Api $FedB GET "/groups/$gid/emojis"
+		if ($r.status -ne 200) { return $false }
+		$e = @($r.json.entries | Where-Object { $_.emojiId -eq $script:emojiId })[0]
+		$e -and $e.contentHash -eq $script:contentHash
+	})
+}
+Test-Case 'B GET /emoji-content resolves image (first hit)' {
+	# 变量须用 ${} 界定再接 ?query，否则 PS7 会把 "$var?..." 解析坏（emojiId 变成 "=1"）。
+	$ok = PollUntil 90 4 {
+		$r = Api $FedB GET "/emoji-content/$gid/${emojiId}?json=1"
+		if ($r.status -ne 200) { return $false }
+		$script:firstHitDataUrlLen = $r.json.dataUrl.Length
+		$r.json.contentHash -eq $contentHash -and $firstHitDataUrlLen -gt 20
+	}
+	[bool]$ok
+}
+Test-Case 'B GET /emoji-content again (cached local path)' {
+	$r = Api $FedB GET "/emoji-content/$gid/${emojiId}?json=1"
+	$r.status -eq 200 -and $r.json.dataUrl.Length -eq $firstHitDataUrlLen
+}
+
+Clear-FedGroup $gid
+Write-Host "`n=== DONE fed_emoji_nearcache ===" -ForegroundColor Green
+Write-FedSummary 'FED-EMOJI-NC' $gid
+Complete-LiveScript

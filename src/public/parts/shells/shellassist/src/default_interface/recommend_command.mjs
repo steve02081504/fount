@@ -1,4 +1,4 @@
-import { defineToolUseBlocks } from '../../../chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../chat/src/stream/index.mjs'
 
 /**
  * shell推荐命令插件

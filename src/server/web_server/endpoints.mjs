@@ -7,7 +7,7 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -25,12 +25,15 @@ import {
 	getAllCachedPartDetails,
 	getPartBranches
 } from '../parts_loader.mjs'
+import { getRegistry } from '../registries.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
+import { loadTrustedAuthorHashes, saveTrustedAuthorHashes } from '../trustedAuthors.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
+import { registerP2pEndpoints } from './p2p_endpoints.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -62,6 +65,8 @@ async function ensurePowTokenOr401(req, res) {
  * @returns {void}
  */
 export function registerEndpoints(router) {
+	registerP2pEndpoints(router)
+
 	router.ws('/ws/test/echo', (ws, req) => {
 		console.log('WebSocket test connection established.')
 		ws.on('message', message => {
@@ -84,7 +89,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.ws('/ws/notify', authenticate, async (ws, req) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		registerNotifier(username, ws)
 	})
 
@@ -155,7 +160,7 @@ export function registerEndpoints(router) {
 
 		let username
 		if (await auth_request(req, res)) try {
-			const user = await getUserByReq(req)
+			const user = getUserByReq(req)
 			user.locales = preferredLanguages
 			username = user.username
 			console.logI18n('fountConsole.route.setLanguagePreference', { username, preferredLanguages: preferredLanguages.join(', ') })
@@ -171,9 +176,11 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!await ensurePowTokenOr401(req, res)) return
-		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid, req)
+		const { username, password, deviceid, apiKey } = req.body
+		if (!apiKey && !await ensurePowTokenOr401(req, res)) return
+		const result = apiKey
+			? await loginWithApiKey(apiKey, deviceid, req)
+			: await login(username, password, deviceid, req)
 		const { status, accessToken, refreshToken, ...json } = result
 		if (status === 200 && accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
@@ -230,14 +237,14 @@ export function registerEndpoints(router) {
 	router.post('/api/logout', authenticate, logout)
 
 	router.post('/api/apikey/create', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { description } = req.body
 		const { apiKey, jti } = await generateApiKey(user.username, description)
 		res.status(201).json({ apiKey, jti })
 	})
 
 	router.get('/api/apikey/list', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const apiKeys = (user.auth.apiKeys || []).map(key => ({
 			jti: key.jti,
 			prefix: key.prefix,
@@ -249,7 +256,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { jti, password } = req.body
 		if (!jti) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
 		if (!password) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
@@ -272,8 +279,18 @@ export function registerEndpoints(router) {
 		res.status(200).json({ valid: !!user })
 	})
 
+	router.get('/api/user/trusted-authors', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json({ hashes: loadTrustedAuthorHashes(username) })
+	})
+	router.put('/api/user/trusted-authors', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const hashes = saveTrustedAuthorHashes(username, req.body.hashes)
+		res.status(200).json({ hashes })
+	})
+
 	router.get('/api/whoami', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.status(200).json({ username })
 	})
 
@@ -282,41 +299,40 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/runpart', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { partpath, args } = req.body
 		await processIPCCommand('runpart', { username, partpath, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
 	router.post('/api/loadpart', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { partpath } = req.body
-		const normalized = partpath?.replace?.(/:/g, '/')
-		if (!normalized) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
-		await loadPart(username, normalized)
-		res.status(200).json({ message: `Part ${normalized} loaded successfully.` })
+		if (!partpath) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
+		await loadPart(username, String(partpath).replace(/:/g, '/'))
+		res.status(200).json({ message: `Part ${partpath} loaded successfully.` })
 	})
 
 	// Generic path handlers
 	// Capture remaining path as request param 0.
 	router.get(/^\/api\/getlist\/(.*)/, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const path = req.params[0].replace(/:/g, '/')
 		res.status(200).json(getPartList(username, path))
 	})
 	router.get(/^\/api\/getloadedlist\/(.*)/, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const path = req.params[0].replace(/:/g, '/')
 		res.status(200).json(getLoadedPartList(username, path))
 	})
 	router.get(/^\/api\/getallcacheddetails\/(.*)/, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const path = req.params[0].replace(/:/g, '/')
 		const details = await getAllCachedPartDetails(username, path)
 		res.status(200).json(details)
 	})
 	router.get(/^\/api\/getdetails\/(.*)/, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const path = req.params[0].replace(/:/g, '/')
 		// name param from query is optional override? Or should invalid?
 		// Usually details are for a specific part path.
@@ -328,14 +344,22 @@ export function registerEndpoints(router) {
 	})
 
 	router.get('/api/getpartbranches', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
 		res.status(200).json(getPartBranches(username, { nocache }))
 	})
 
+	router.get('/api/registries/:name', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		const name = String(req.params.name ?? '').trim()
+		if (!name) return res.status(400).json({ error: 'registry name required' })
+		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
+	})
+
 	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
 	router.get(/^\/parts\/([^/]+)(.*)$/, authenticate, async (req, res, next) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = req.params[0]
 		const filepath = req.params[1].split('?')[0]
 		// Convert partpath colons to slashes for filesystem access
@@ -366,50 +390,50 @@ export function registerEndpoints(router) {
 	})
 
 	router.get('/api/defaultpart/getall', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		res.status(200).json(getDefaultParts(user))
 	})
 
 	router.post('/api/defaultpart/add', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { parent, child } = req.body
 		setDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
 	router.post('/api/defaultpart/unset', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { parent, child } = req.body
 		unsetDefaultPart(user, parent, child)
 		res.status(200).json({ message: 'success' })
 	})
 
 	router.get(/^\/api\/defaultpart\/getany\/(.*)/, authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const parent = req.params[0]
 		res.status(200).json(getAnyDefaultPart(user, parent) || '')
 	})
 
 	router.get(/^\/api\/defaultpart\/getallbytype\/(.*)/, authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const parent = req.params[0]
 		res.status(200).json(getAllDefaultPartsFromLoader(user, parent))
 	})
 
 	router.get(/^\/api\/defaultpart\/getanypreferred\/(.*)/, authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const parent = req.params[0]
 		res.status(200).json(getAnyPreferredDefaultPart(user, parent) || '')
 	})
 
 	router.get('/api/getusersetting', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { key } = req.query
 		res.status(200).json({ key, value: user[key] })
 	})
 
 	router.post('/api/setusersetting', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		const { key, value } = req.body
 		if (key === null) delete user[key]
 		else user[key] = value
