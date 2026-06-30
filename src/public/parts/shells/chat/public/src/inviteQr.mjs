@@ -16,10 +16,10 @@ export function inviteJoinQrImageUrl(url, size = 200) {
 /**
  * @param {string} groupId 群 ID
  * @param {string} [inviteCode] 邀请码
- * @param {string} [mqttRoomSecret] 群 MQTT 传输密钥
+ * @param {string} [roomSecret] 群房间传输密钥
  * @param {string} [introducerPubKeyHash] 邀请人公钥 hex（64 字符）
  * @returns {string} `https://steve02081504.github.io/fount/protocol?url=…`
  */
-export function buildInviteJoinShareUrl(groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash) {
-	return wrapProtocolHttpsUrl(formatJoinRunUri(groupId, inviteCode, mqttRoomSecret, introducerPubKeyHash))
+export function buildInviteJoinShareUrl(groupId, inviteCode, roomSecret, introducerPubKeyHash) {
+	return wrapProtocolHttpsUrl(formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash))
 }

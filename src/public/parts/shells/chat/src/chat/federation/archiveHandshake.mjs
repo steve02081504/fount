@@ -7,10 +7,10 @@
  */
 import { readFile } from 'node:fs/promises'
 
-import { computeArchiveSummary } from '../archive/summary.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { computeArchiveSummary } from '../archive/summary.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 
 /**

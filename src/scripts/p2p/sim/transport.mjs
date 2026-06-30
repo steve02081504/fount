@@ -16,7 +16,7 @@ export function createTransportState() {
 		sourceByPeer: new Map(),
 		trustedPeers: new Set(),
 		hintsByObserver: new Map(),
-		signalingSources: ['tracker', 'nostr', 'mqtt'],
+		signalingSources: ['tracker', 'nostr'],
 	}
 }
 

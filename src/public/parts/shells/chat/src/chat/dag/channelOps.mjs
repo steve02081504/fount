@@ -7,10 +7,10 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { memberChannelPermissions } from './groupMaterializedState.mjs'
 import { governanceChannelId } from '../../group/access.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'
+import { memberChannelPermissions } from './groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 import { setStreamingSession } from './streamingState.mjs'

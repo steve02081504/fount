@@ -1,6 +1,6 @@
-import { materializeFromCheckpoint } from '../dag/groupMaterializedState.mjs'
 import { appendEvent } from '../dag/append.mjs'
 import { checkEventPermission } from '../dag/authorizeEvent.mjs'
+import { materializeFromCheckpoint } from '../dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { snapshotPath } from '../lib/paths.mjs'

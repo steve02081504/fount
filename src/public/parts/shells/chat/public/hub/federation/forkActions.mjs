@@ -5,8 +5,8 @@
  * 【数据结构】hubStore 当前群/频道上下文与 WS 连接状态；见模块内变量 JSDoc。
  * 【关联】../../../../../scripts/i18n、../../../../../scripts/toast、../../src/api/groupApi、../banners、../core/state、../messages/messages。
  */
-import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import {
 	blockOpposingForkBranch,
 	forkGroupAsNew,

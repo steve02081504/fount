@@ -1,7 +1,7 @@
 import { buildIdentityAnnounce, verifyIdentityAnnounce } from './identity_announce.mjs'
 
 /**
- * 将 @trystero-p2p 0.25 原生 room 适配为 fount 内部统一契约（适配集中在 joinMqttRoom 单一边界，
+ * 将 @trystero-p2p 0.25 原生 room 适配为 fount 内部统一契约（适配集中在 joinSignalingRoom 单一边界，
  * 房间消费方无需感知底层 API 形态）：
  * - 原生 `makeAction(name)` 返回对象 `{ send, onMessage }`、`send(data, { target })`、入站 handler 第二参为 `{ peerId }`；
  *   适配为 `[send(payload, peerId?), onMessage(handler)]`，handler 签名 `(payload, peerId)`。

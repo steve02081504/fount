@@ -5,9 +5,9 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/i18n、../../../../../scripts/markdown、../../../../../scripts/toast、../../src/api/groupApi、../../src/share、../threadDrawer、messageActionsState、messageActionsUi。
  */
-import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/features/markdown/index.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import {
 	addChatBookmark,
 	deleteChannelMessage,

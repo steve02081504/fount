@@ -24,7 +24,7 @@ const SHUN_PROBE_COOLDOWN_MS = 30_000
 
 /**
  * 从物化 state 收集已知 active 成员 homeNodeHash（去掉本机）。
- * 若提供 rosterNodeHashes，优先取与 MQTT 房内可见节点的交集；交集为空时退化为 roster 内除己外的节点。
+ * 若提供 rosterNodeHashes，优先取与 信令房内可见节点的交集；交集为空时退化为 roster 内除己外的节点。
  * @param {object | null | undefined} state 物化群状态
  * @param {string} selfNodeHash 本机 nodeHash
  * @param {string[] | null | undefined} [rosterNodeHashes] 联邦房内可见 nodeHash

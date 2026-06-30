@@ -18,8 +18,8 @@ import { getState } from '../../chat/dag/materialize.mjs'
 import { compactGroup } from '../../chat/dag/queries.mjs'
 import { isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import { catchUpGroupFromPeers, listFederationPeersForGroup, requestJoinSnapshotFromPeers } from '../../chat/federation/index.mjs'
-import { mintMqttRoomSecret } from '../../chat/federation/mqttCredentials.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
+import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import { markGroupOfflineStarted } from '../../chat/federation/syncState.mjs'
 import { getPendingDecryptBufferStats } from '../../chat/file_keys/buffer.mjs'
 import { listActiveFilesFromState } from '../../chat/files/groupFiles.mjs'
@@ -283,15 +283,15 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (!isGroupFederationActive(state.groupSettings))
 			return res.status(409).json({ error: 'federation not active; invite a member first' })
 
-		const mqttRoomSecret = mintMqttRoomSecret()
+		const roomSecret = mintRoomSecret()
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
-			content: { mqttRoomSecret },
+			content: { roomSecret },
 		})
 		invalidateFederationRoomCache(username, groupId)
 		void catchUpGroupFromPeers(username, groupId).catch(console.error)
-		res.status(200).json({ mqttRoomSecret })
+		res.status(200).json({ roomSecret })
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/tuning$/, authenticate, async (req, res) => {

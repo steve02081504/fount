@@ -1,12 +1,12 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { PERMISSION_ANCHOR_TYPES } from '../../../public/parts/shells/chat/src/chat/dag/eventTypes.mjs'
 import { topologicalCanonicalOrder } from '../dag/index.mjs'
 import {
 	descendantClosureFromTip,
 } from '../governance_branch.mjs'
 import { computeRetentionKeepIds } from '../retention_policy.mjs'
-import { PERMISSION_ANCHOR_TYPES } from '../../../public/parts/shells/chat/src/chat/dag/eventTypes.mjs'
 
 /**
  * 构造固定长度十六进制串。

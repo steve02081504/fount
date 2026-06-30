@@ -37,7 +37,7 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opts
 	recordMessageRate(username, groupId, wirePayload, opts.federationState?.groupSettings)
 	if (opts.publishFederation) {
 		// 本地落盘/物化/WS 广播已在上面的写锁内同步完成（前端即时可见）。
-		// 出站到 MQTT relay 是 best-effort：仅当调用方显式要求有界等待（leaveFast / 邀请激活）时才 await；
+		// 出站到 Nostr relay 是 best-effort：仅当调用方显式要求有界等待（leaveFast / 邀请激活）时才 await；
 		// 常规写路径 fire-and-forget，绝不让 relay 不可达/慢拖慢 HTTP；漏传事件由联邦 catch-up 最终补齐。
 		const publish = publishSignedEventToFederation(username, groupId, wirePayload, {
 			state: opts.federationState,

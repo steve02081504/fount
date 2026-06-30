@@ -19,7 +19,7 @@ Test-Case 'A POST federation/rebind (idempotent second call)' {
 }
 Test-Case 'A POST federation/rotate-room-secret' {
 	$response = Api $FedA POST "/groups/$groupId/federation/rotate-room-secret" @{}
-	$response.status -eq 200 -and [bool]$response.json.mqttRoomSecret
+	$response.status -eq 200 -and [bool]$response.json.roomSecret
 }
 Test-Case 'B POST federation/join-snapshot' {
 	$response = Api $FedB POST "/groups/$groupId/federation/join-snapshot" @{}

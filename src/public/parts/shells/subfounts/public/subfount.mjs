@@ -23,7 +23,7 @@ import { setInterval, clearInterval, setTimeout } from 'node:timers'
 import { fileURLToPath } from 'node:url'
 // V8 serialize 不兼容 Trystero 的 JSON 传输，直接传递原始值
 
-// 捕获 MQTT 内部网络瞬断错误，防止刷屏
+// 捕获 信令内部网络瞬断错误，防止刷屏
 process.on('uncaughtException', (err) => {
 	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
 		return
@@ -56,7 +56,7 @@ else
 // node_modules 检查已不再需要（werift 是纯 JS，无需原生构建）
 
 // --- 动态加载 npm 依赖 ---
-let exec, inquirer, on_shutdown, joinMqttRoomWithDefaults
+let exec, inquirer, on_shutdown, joinSignalingRoomWithDefaults
 try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
@@ -64,7 +64,7 @@ try {
 	const { initNode, isNodeInitialized } = await import('../../../../../scripts/p2p/node/instance.mjs')
 	if (!isNodeInitialized())
 		initNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
-	;({ joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs'))
+	;({ joinSignalingRoomWithDefaults } = await import('../../../../../scripts/p2p/signaling_room.mjs'))
 }
 catch (error) {
 	console.error('\nFailed to load dependencies:', error.message)
@@ -401,7 +401,7 @@ async function connectViaTrystero() {
 		// 生成机器 ID（用于分配数字 ID）
 		deviceId = await generateDeviceId()
 
-		room = await joinMqttRoomWithDefaults({
+		room = await joinSignalingRoomWithDefaults({
 			appId: 'fount-subfounts',
 			password,
 			roomId: hostRoomId,

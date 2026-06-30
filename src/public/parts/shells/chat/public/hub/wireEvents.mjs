@@ -5,8 +5,8 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】hashNav、groupNav、messages、mode；依赖 i18n、template、groupApi、composerFiles 等。
  */
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import {
 	castChannelVote,
 	createChannelVote,

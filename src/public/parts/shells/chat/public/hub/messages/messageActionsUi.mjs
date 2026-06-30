@@ -5,11 +5,11 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../../src/composerAttachments、../../src/lib/emojiSvg、../../src/ui/composerKeys、../../src/ui/dragAndDrop、../core/domUtils。
  */
-import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/features/template.mjs'
+import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../../src/composerAttachments.mjs'
 import { hubActionMenuIcon } from '../../src/lib/emojiSvg.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'

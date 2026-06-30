@@ -2,16 +2,16 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
+	createSocialTimelineState,
+	finalizeSocialTimelineView,
+	SOCIAL_TIMELINE_REDUCERS,
+} from '../../../public/parts/shells/social/src/timeline/reducers.mjs'
+import {
 	entriesForTargetEntityHash,
 	isAuthorFilteredByPersonalSets,
 	matchesPersonalListEntries,
 	normalizePersonalListEntries,
 } from '../personal_block.mjs'
-import {
-	createSocialTimelineState,
-	finalizeSocialTimelineView,
-	SOCIAL_TIMELINE_REDUCERS,
-} from '../../../public/parts/shells/social/src/timeline/reducers.mjs'
 import { applyFollowedBlockSignal, applyFollowedSuspectSignal } from '../reputation_social.mjs'
 
 const NODE_A = 'a'.repeat(64)

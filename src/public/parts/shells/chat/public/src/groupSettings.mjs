@@ -6,13 +6,13 @@
  * 【关联】auditLogPanel.mjs、groupApi、groupViewerPermissions；Hub 设置路由。
  */
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
-import { confirmI18n, initTranslations, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import {
 	appendTemplate,
 	mountTemplate,
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n, initTranslations, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import { authorDisplayLabel } from '../hub/core/domUtils.mjs'
 
 

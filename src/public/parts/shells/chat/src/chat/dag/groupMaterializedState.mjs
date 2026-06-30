@@ -39,7 +39,7 @@ export const DEFAULT_GROUP_SETTINGS = {
 	explorePeerSlots: 4,
 	gossipTtl: 2,
 	wantIdsBudget: 16,
-	/** 静态 MQTT 频道分区数（含 sync 逻辑分区，至少 2） */
+	/** 静态信令频道分区数（含 sync 逻辑分区，至少 2） */
 	federationPartitionCount: 8,
 	rtcConnectionBudgetMax: 32,
 	rtcJoinRatePerMin: 12,
@@ -64,7 +64,7 @@ export const DEFAULT_GROUP_SETTINGS = {
 	messageRateLimitPerMin: 10,
 	messageRateLimitWindowMs: 60_000,
 	iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-	/** 是否在联邦发现 gossip 中公开此群（不含 mqtt 口令） */
+	/** 是否在联邦发现 gossip 中公开此群（不含 roomSecret） */
 	discoveryPublic: false,
 	discoveryTitle: null,
 	discoveryBlurb: null,

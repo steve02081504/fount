@@ -1,25 +1,25 @@
 /**
- * 群级 Trystero MQTT 凭证：从物化 groupSettings 读取，入群 bootstrap / peer hint 作 catch-up 覆盖。
+ * 群级 Trystero 房间凭证：从物化 groupSettings 读取，入群 bootstrap / peer hint 作 catch-up 覆盖。
  */
 import { randomUUID } from 'node:crypto'
 
 import {
 	clearFederationBootstrap,
 	peekFederationBootstrap,
-	peekPeerMqttHint,
-	peekPreferredMqttOverride,
+	peekPeerRoomHint,
+	peekPreferredRoomOverride,
 } from './bootstrapStore.mjs'
 import { loadFederationGroupSettings, requireDagDeps } from './deps.mjs'
-import { isMqttCredentialsStale } from './mqttStale.mjs'
 import { LOGIC_SYNC_PARTITION, partitionRoomName } from './partitions.mjs'
+import { isRoomCredentialsStale } from './roomCredentialsStale.mjs'
 
-/** 默认 MQTT App ID（创世 group_settings 写入同值）。 */
-export const DEFAULT_MQTT_APP_ID = 'fount-group-fed'
+/** 默认信令 App ID（创世 group_settings 写入同值）。 */
+export const DEFAULT_SIGNALING_APP_ID = 'fount-group-fed'
 
 /**
  * @returns {string} 新房间口令
  */
-export function mintMqttRoomSecret() {
+export function mintRoomSecret() {
 	return randomUUID()
 }
 
@@ -27,7 +27,7 @@ export function mintMqttRoomSecret() {
  * Trystero 房间名：ECDH DM 用 `dm:<tag>`，否则 `fount-fed-<groupId>`。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @returns {Promise<string>} MQTT 房间 id
+ * @returns {Promise<string>} 信令房间 id
  */
 export async function resolveTrysteroFedRoomName(username, groupId) {
 	const dag = requireDagDeps()
@@ -37,7 +37,7 @@ export async function resolveTrysteroFedRoomName(username, groupId) {
 	const { groupMeta } = state
 	if (groupMeta?.dmKind === 'ecdh' && groupMeta.dmSessionTag)
 		return `dm:${groupMeta.dmSessionTag.trim().toLowerCase()}`
-	const override = peekPreferredMqttOverride(username, groupId)
+	const override = peekPreferredRoomOverride(username, groupId)
 	if (override?.dmSessionTag)
 		return `dm:${String(override.dmSessionTag).trim().toLowerCase()}`
 	return `fount-fed-${groupId}`
@@ -45,40 +45,40 @@ export async function resolveTrysteroFedRoomName(username, groupId) {
 
 /**
  * @param {object} settings 物化 groupSettings
- * @returns {{ mqttAppId: string, mqttRoomSecret: string } | null} 物化凭证或 null
+ * @returns {{ signalingAppId: string, roomSecret: string } | null} 物化凭证或 null
  */
-export function mqttCredentialsFromGroupSettings(settings) {
-	if (!settings?.mqttRoomSecret) return null
+export function roomCredentialsFromGroupSettings(settings) {
+	if (!settings?.roomSecret) return null
 	return {
-		mqttAppId: settings.mqttAppId || DEFAULT_MQTT_APP_ID,
-		mqttRoomSecret: settings.mqttRoomSecret,
+		signalingAppId: settings.signalingAppId || DEFAULT_SIGNALING_APP_ID,
+		roomSecret: settings.roomSecret,
 	}
 }
 
 /**
- * @param {{ mqttAppId: string, mqttRoomSecret: string }} a 凭证 A
- * @param {{ mqttAppId: string, mqttRoomSecret: string }} b 凭证 B
+ * @param {{ signalingAppId: string, roomSecret: string }} a 凭证 A
+ * @param {{ signalingAppId: string, roomSecret: string }} b 凭证 B
  * @returns {boolean} 是否相同口令
  */
 function credsEqual(a, b) {
-	return a.mqttRoomSecret === b.mqttRoomSecret && a.mqttAppId === b.mqttAppId
+	return a.roomSecret === b.roomSecret && a.signalingAppId === b.signalingAppId
 }
 
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {string} [partitionId] MQTT 分区 id（默认 sync）
+ * @param {string} [partitionId] 分区 id（默认 sync）
  * @returns {Promise<{ appId: string, password: string, roomId: string, source: 'dag' | 'bootstrap' | 'peer_hint' }>} Trystero 连接参数
  */
-export async function resolveGroupMqttCredentials(username, groupId, partitionId = LOGIC_SYNC_PARTITION) {
+export async function resolveGroupRoomCredentials(username, groupId, partitionId = LOGIC_SYNC_PARTITION) {
 	const baseRoomId = await resolveTrysteroFedRoomName(username, groupId)
 	const roomId = partitionRoomName(baseRoomId, partitionId || LOGIC_SYNC_PARTITION)
 	const settings = await loadFederationGroupSettings(username, groupId)
-	const fromDag = mqttCredentialsFromGroupSettings(settings)
-	const override = peekPreferredMqttOverride(username, groupId)
-	const stale = isMqttCredentialsStale(username, groupId)
+	const fromDag = roomCredentialsFromGroupSettings(settings)
+	const override = peekPreferredRoomOverride(username, groupId)
+	const stale = isRoomCredentialsStale(username, groupId)
 
-	const useOverride = override?.mqttRoomSecret && (
+	const useOverride = override?.roomSecret && (
 		stale
 		|| !fromDag
 		|| !credsEqual(fromDag, override)
@@ -87,8 +87,8 @@ export async function resolveGroupMqttCredentials(username, groupId, partitionId
 	if (useOverride) {
 		const source = peekFederationBootstrap(username, groupId) ? 'bootstrap' : 'peer_hint'
 		return {
-			appId: override.mqttAppId || DEFAULT_MQTT_APP_ID,
-			password: override.mqttRoomSecret,
+			appId: override.signalingAppId || DEFAULT_SIGNALING_APP_ID,
+			password: override.roomSecret,
 			roomId,
 			source,
 			partitionId,
@@ -96,11 +96,11 @@ export async function resolveGroupMqttCredentials(username, groupId, partitionId
 	}
 
 	if (fromDag) {
-		if (!stale && !peekPeerMqttHint(username, groupId))
+		if (!stale && !peekPeerRoomHint(username, groupId))
 			clearFederationBootstrap(username, groupId)
 		return {
-			appId: fromDag.mqttAppId,
-			password: fromDag.mqttRoomSecret,
+			appId: fromDag.signalingAppId,
+			password: fromDag.roomSecret,
 			roomId,
 			source: 'dag',
 			partitionId,
@@ -108,36 +108,36 @@ export async function resolveGroupMqttCredentials(username, groupId, partitionId
 	}
 
 	const bootstrap = peekFederationBootstrap(username, groupId)
-	if (bootstrap?.mqttRoomSecret)
+	if (bootstrap?.roomSecret)
 		return {
-			appId: bootstrap.mqttAppId,
-			password: bootstrap.mqttRoomSecret,
+			appId: bootstrap.signalingAppId,
+			password: bootstrap.roomSecret,
 			roomId,
 			source: 'bootstrap',
 			partitionId,
 		}
 
-	throw new Error(`group ${groupId} has no mqttRoomSecret in settings; use a fresh invite link or rotate room secret`)
+	throw new Error(`group ${groupId} has no roomSecret in settings; use a fresh invite link or rotate room secret`)
 }
 
 /**
  * DAG 已 ingest 新口令且与 override 一致时调用。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ mqttAppId?: string, mqttRoomSecret: string }} dagCreds 物化口令
+ * @param {{ signalingAppId?: string, roomSecret: string }} dagCreds 物化口令
  * @returns {void}
  */
-export async function onMqttCredentialsSyncedFromDag(username, groupId, dagCreds) {
-	if (!dagCreds?.mqttRoomSecret) return
-	const override = peekPreferredMqttOverride(username, groupId)
+export async function onRoomCredentialsSyncedFromDag(username, groupId, dagCreds) {
+	if (!dagCreds?.roomSecret) return
+	const override = peekPreferredRoomOverride(username, groupId)
 	if (!override || credsEqual(dagCreds, override))
 		clearFederationBootstrap(username, groupId)
-	const { clearMqttCredentialsStale } = await import('./mqttStale.mjs')
-	clearMqttCredentialsStale(username, groupId)
+	const { clearRoomCredentialsStale } = await import('./roomCredentialsStale.mjs')
+	clearRoomCredentialsStale(username, groupId)
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const existing = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-	if (existing && existing.mqttPassword !== dagCreds.mqttRoomSecret) {
+	if (existing && existing.roomSecret !== dagCreds.roomSecret) {
 		const { invalidateFederationRoomCache } = await import('./room.mjs')
 		invalidateFederationRoomCache(username, groupId)
 	}

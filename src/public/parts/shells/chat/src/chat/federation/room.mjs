@@ -1,5 +1,5 @@
 /**
- * 联邦房间生命周期：按需 join MQTT 分区、注册 handler、暴露 FederationSlot。
+ * 联邦房间生命周期：按需 join 信令分区、注册 handler、暴露 FederationSlot。
  */
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { createTrysteroActionRegistry } from '../../../../../../../scripts/p2p/trystero_session.mjs'
@@ -14,7 +14,6 @@ import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
 import { attachFedGroupCardHandlers } from './groupCardFederation.mjs'
 import { attachFedEmojiHandlers } from './groupEmojiFederation.mjs'
-import { resolveGroupMqttCredentials } from './mqttCredentials.mjs'
 import { createFedOutQueue } from './outbound.mjs'
 import { LOGIC_SYNC_PARTITION, partitionForOutboundEvent, resolveNodePartitionIds } from './partitions.mjs'
 import {
@@ -31,6 +30,7 @@ import {
 	setFederationPartitionInflight,
 	setFederationPartitionSlot,
 } from './registry.mjs'
+import { resolveGroupRoomCredentials } from './roomCredentials.mjs'
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'
 import { warmSeenFromLocalEvents } from './seen.mjs'
@@ -80,7 +80,7 @@ export async function teardownFederationRoomForGroup(username, groupId, opts = {
 }
 
 /**
- * 按需加入本群所需 MQTT 分区（频道 + 逻辑慢同步）。
+ * 按需加入本群所需 信令分区（频道 + 逻辑慢同步）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {{ channelId?: string }} [opts] 当前活跃频道
@@ -131,19 +131,19 @@ export async function resolveFederationSlotForAction(username, groupId, opts = {
  */
 export async function ensureFederationPartitionRoom(username, groupId, partitionId = LOGIC_SYNC_PARTITION, opts = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	let mqttCreds
+	let roomCreds
 	try {
-		mqttCreds = await resolveGroupMqttCredentials(username, groupId, partitionId)
+		roomCreds = await resolveGroupRoomCredentials(username, groupId, partitionId)
 	}
 	catch {
 		return null
 	}
 	const rtcRoomKey = `${username}:${groupId}:${partitionId}`
-	const desiredRoomName = mqttCreds.roomId
-	const desiredPassword = mqttCreds.password
+	const desiredRoomName = roomCreds.roomId
+	const desiredPassword = roomCreds.password
 	if (hasFederationPartitionSlot(username, groupId, partitionId)) {
 		const existing = getFederationPartitionSlot(username, groupId, partitionId)
-		if (existing?.trysteroRoomName === desiredRoomName && existing?.mqttPassword === desiredPassword)
+		if (existing?.trysteroRoomName === desiredRoomName && existing?.roomSecret === desiredPassword)
 			return existing
 		deleteFederationPartitionSlot(username, groupId, partitionId)
 		bumpFederationPartitionRebindGen(username, groupId, partitionId)
@@ -155,7 +155,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		const genAtJoin = getFederationPartitionRebindGen(username, groupId, partitionId)
 		const { readJsonl } = requireDagDeps()
 		const nodeHash = federationNodeHash(username)
-		const trysteroRoomName = mqttCreds.roomId
+		const trysteroRoomName = roomCreds.roomId
 		try {
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
@@ -163,13 +163,13 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			const customRelays = Array.isArray(data.relayUrls)
 				? data.relayUrls.map(url => String(url).trim()).filter(url => url.startsWith('wss://'))
 				: []
-			// 空 = 用默认中继（传 undefined 触发 buildTrysteroMqttConfig 的默认回退）。
+			// 空 = 用默认中继（传 undefined 触发 buildTrysteroSignalingConfig 的默认回退）。
 			const relayUrls = customRelays.length ? customRelays : undefined
-			const { joinMqttRoomWithDefaults } = await import('../../../../../../../scripts/p2p/mqtt_room.mjs')
+			const { joinSignalingRoomWithDefaults } = await import('../../../../../../../scripts/p2p/signaling_room.mjs')
 			const { resolveIceServers } = await import('../../../../../../../scripts/p2p/ice_servers.mjs')
-			const room = await joinMqttRoomWithDefaults({
-				appId: mqttCreds.appId,
-				password: mqttCreds.password,
+			const room = await joinSignalingRoomWithDefaults({
+				appId: roomCreds.appId,
+				password: roomCreds.password,
 				roomId: trysteroRoomName,
 				relayUrls,
 				iceServers: resolveIceServers(groupSettings),
@@ -241,7 +241,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				partitionId,
 				trysteroRoomName,
 				room,
-				mqttPassword: mqttCreds.password,
+				roomSecret: roomCreds.password,
 				groupId,
 				roomKey: rtcRoomKey,
 				rtcLimits,
@@ -309,7 +309,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			return slot
 		}
 		catch (error) {
-			console.error('federation: joinMqttRoom failed', error)
+			console.error('federation: joinSignalingRoom failed', error)
 			return null
 		}
 		finally {

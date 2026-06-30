@@ -1,8 +1,8 @@
 /**
  * 联邦房间 FederationSlot：roomContext + 统一 send(action, payload, peerId)。
  */
-import { leaveMqttRoom } from '../../../../../../../scripts/p2p/mqtt_room.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
+import { leaveSignalingRoom } from '../../../../../../../scripts/p2p/signaling_room.mjs'
 import { recordStalePeerPrune } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
 import { pruneStaleRosterEntries } from '../../../../../../../scripts/p2p/trystero_session.mjs'
 
@@ -43,7 +43,7 @@ function requireRegistrySender(senderRegistry, actionName) {
  * @property {string} partitionId
  * @property {string} trysteroRoomName
  * @property {object} room
- * @property {string} mqttPassword
+ * @property {string} roomSecret
  * @property {string} groupId
  * @property {string} roomKey
  * @property {object} rtcLimits
@@ -75,7 +75,7 @@ export function buildFederationSlot(roomContext) {
 		partitionId,
 		trysteroRoomName,
 		room,
-		mqttPassword,
+		roomSecret,
 		groupId,
 		roomKey,
 		rtcLimits,
@@ -125,7 +125,7 @@ export function buildFederationSlot(roomContext) {
 		partitionId,
 		trysteroRoomName,
 		room,
-		mqttPassword,
+		roomSecret,
 		groupId,
 		roomKey,
 		rtcLimits,
@@ -192,7 +192,7 @@ export function buildFederationSlot(roomContext) {
 				catch (error) { console.error('federation: slot cleanup failed', error) }
 			cleanups.clear()
 			try {
-				await leaveMqttRoom(room)
+				await leaveSignalingRoom(room)
 			}
 			catch (error) {
 				console.error('federation: room leave failed', error)

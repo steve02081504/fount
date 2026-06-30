@@ -1,5 +1,5 @@
 /**
- * 联邦 MQTT bootstrap 线消息解析（入站）。
+ * 联邦房间凭证 bootstrap 线消息解析（入站）。
  */
 import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
@@ -26,17 +26,17 @@ export function parseFedBootstrapRequest(payload) {
 
 /**
  * @param {unknown} payload 载荷
- * @returns {{ requestId: string, responderNodeHash: string, encryptedMqttSecret: object, settingsEventId?: string } | null} 解析结果
+ * @returns {{ requestId: string, responderNodeHash: string, encryptedRoomSecret: object, settingsEventId?: string } | null} 解析结果
  */
 export function parseFedBootstrapResponse(payload) {
 	if (!isPlainObject(payload)) return null
 	const requestId = String(payload.requestId || '').trim()
 	const responderNodeHash = String(payload.responderNodeHash || '').trim()
-	if (!requestId || !responderNodeHash || !isPlainObject(payload.encryptedMqttSecret)) return null
+	if (!requestId || !responderNodeHash || !isPlainObject(payload.encryptedRoomSecret)) return null
 	return {
 		requestId,
 		responderNodeHash,
-		encryptedMqttSecret: payload.encryptedMqttSecret,
+		encryptedRoomSecret: payload.encryptedRoomSecret,
 		settingsEventId: String(payload.settingsEventId || '').trim() || undefined,
 	}
 }

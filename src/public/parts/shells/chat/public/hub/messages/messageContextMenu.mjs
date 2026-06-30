@@ -5,13 +5,13 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/i18n、../../../../../scripts/markdown、../../../../../scripts/template、../../../../../scripts/toast、../../src/share、../core/state、../threadDrawer、messageActionsState。
  */
-import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/features/markdown/index.mjs'
 import {
 	renderTemplate,
 	usingTemplates,
 } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { createShareLink } from '../../src/share.mjs'
 import { hubStore } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'

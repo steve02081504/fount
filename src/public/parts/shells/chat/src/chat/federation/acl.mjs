@@ -5,8 +5,8 @@
  * 【数据结构】event：{ type, sender }；state：物化群状态含 members、groupSettings.batterySaver。
  * 【关联】pendingRelay.mjs、pendingIngest.mjs、index.mjs publishSignedEventToFederation、room ingest；dag/authorizeEvent.mjs、scripts/p2p/event_types.mjs。
  */
-import { FEDERATION_ACL_GATED_EVENT_TYPES } from '../dag/eventTypes.mjs'
 import { checkEventPermission } from '../dag/authorizeEvent.mjs'
+import { FEDERATION_ACL_GATED_EVENT_TYPES } from '../dag/eventTypes.mjs'
 import { PUB_KEY_HASH_HEX } from '../dag/validator.mjs'
 
 /**

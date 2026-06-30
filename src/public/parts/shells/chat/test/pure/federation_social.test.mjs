@@ -1,25 +1,25 @@
 /**
- * 联邦发现 / MQTT bootstrap 单元测试（Deno）。
+ * 联邦发现 / room bootstrap 单元测试（Deno）。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { parseFedBootstrapRequest } from '../../src/chat/federation/bootstrap/wire.mjs'
-import { peekPreferredMqttOverride, setFederationBootstrap, clearFederationBootstrap } from '../../src/chat/federation/bootstrapStore.mjs'
-import { mqttCredentialsFromGroupSettings } from '../../src/chat/federation/mqttCredentials.mjs'
-import { markMqttCredentialsStale, isMqttCredentialsStale } from '../../src/chat/federation/mqttStale.mjs'
+import { peekPreferredRoomOverride, setFederationBootstrap, clearFederationBootstrap } from '../../src/chat/federation/bootstrapStore.mjs'
+import { roomCredentialsFromGroupSettings } from '../../src/chat/federation/roomCredentials.mjs'
+import { markRoomCredentialsStale, isRoomCredentialsStale } from '../../src/chat/federation/roomCredentialsStale.mjs'
 
 const TEST_USER = '__fed_test_user__'
 
-Deno.test('mqtt bootstrap override when stale', () => {
+Deno.test('room bootstrap override when stale', () => {
 	clearFederationBootstrap(TEST_USER, 'g1')
-	setFederationBootstrap(TEST_USER, 'g1', { mqttRoomSecret: 'new-secret' })
-	markMqttCredentialsStale(TEST_USER, 'g1')
-	assertEquals(isMqttCredentialsStale(TEST_USER, 'g1'), true)
-	const dag = mqttCredentialsFromGroupSettings({ mqttRoomSecret: 'old-secret' })
-	const override = peekPreferredMqttOverride(TEST_USER, 'g1')
-	assertEquals(override?.mqttRoomSecret, 'new-secret')
-	assertEquals(dag?.mqttRoomSecret, 'old-secret')
+	setFederationBootstrap(TEST_USER, 'g1', { roomSecret: 'new-secret' })
+	markRoomCredentialsStale(TEST_USER, 'g1')
+	assertEquals(isRoomCredentialsStale(TEST_USER, 'g1'), true)
+	const dag = roomCredentialsFromGroupSettings({ roomSecret: 'old-secret' })
+	const override = peekPreferredRoomOverride(TEST_USER, 'g1')
+	assertEquals(override?.roomSecret, 'new-secret')
+	assertEquals(dag?.roomSecret, 'old-secret')
 	clearFederationBootstrap(TEST_USER, 'g1')
 })
 

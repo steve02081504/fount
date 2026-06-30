@@ -1,5 +1,5 @@
 /**
- * 本机 MQTT 联邦「可能过期」标记（口令轮换后 catchup 失败时置位）。
+ * 本机联邦房间凭证「可能过期」标记（口令轮换后 catchup 失败时置位）。
  */
 import { federationBootstrapKey } from './bootstrapStore.mjs'
 
@@ -11,7 +11,7 @@ const staleByKey = new Map()
  * @param {string} groupId 群 ID
  * @returns {void}
  */
-export function markMqttCredentialsStale(username, groupId) {
+export function markRoomCredentialsStale(username, groupId) {
 	const staleKey = federationBootstrapKey(username, groupId)
 	const previous = staleByKey.get(staleKey)
 	staleByKey.set(staleKey, {
@@ -25,7 +25,7 @@ export function markMqttCredentialsStale(username, groupId) {
  * @param {string} groupId 群 ID
  * @returns {boolean} 是否已标记 stale
  */
-export function isMqttCredentialsStale(username, groupId) {
+export function isRoomCredentialsStale(username, groupId) {
 	return staleByKey.has(federationBootstrapKey(username, groupId))
 }
 
@@ -34,6 +34,6 @@ export function isMqttCredentialsStale(username, groupId) {
  * @param {string} groupId 群 ID
  * @returns {void}
  */
-export function clearMqttCredentialsStale(username, groupId) {
+export function clearRoomCredentialsStale(username, groupId) {
 	staleByKey.delete(federationBootstrapKey(username, groupId))
 }

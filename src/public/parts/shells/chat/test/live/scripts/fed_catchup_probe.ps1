@@ -1,4 +1,4 @@
-﻿# Isolation: does explicit catch-up fill a POST-JOIN gap (event created after join settled)?
+# Isolation: does explicit catch-up fill a POST-JOIN gap (event created after join settled)?
 # Distinguishes "heartbeat didn't trigger" from "P2P connection is down so catch-up also fails".
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
@@ -7,7 +7,7 @@ $g = (Api $FedA POST '/groups/' @{ name = 'CatchupProbe' }).json
 $gid = $g.groupId; $cid = $g.defaultChannelId
 Api $FedA PUT "/groups/$gid/settings" @{ joinPolicy = 'open' } | Out-Null
 $inv = (Api $FedA POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }).json
-Api $FedB POST "/groups/$gid/join" @{ mqttRoomSecret = $inv.mqttRoomSecret; mqttAppId = $inv.mqttAppId; introducerPubKeyHash = $inv.introducerPubKeyHash } | Out-Null
+Api $FedB POST "/groups/$gid/join" @{ roomSecret = $inv.roomSecret; signalingAppId = $inv.signalingAppId; introducerPubKeyHash = $inv.introducerPubKeyHash } | Out-Null
 Write-Host "group=$gid joined; waiting 14s for join-time catch-up to settle..." -ForegroundColor Cyan
 Start-Sleep 14
 

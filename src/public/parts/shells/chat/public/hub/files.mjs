@@ -5,9 +5,9 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、core/domUtils
  */
-import { confirmI18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupApi.mjs'
 
 /** @type {string | null} */

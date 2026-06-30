@@ -230,17 +230,17 @@ export const actions = {
 	 * @param {string} root0.user 当前用户
 	 * @param {string} root0.groupId 群 ID
 	 * @param {string} [root0.inviteCode] 邀请码
-	 * @param {string} [root0.mqttRoomSecret] 首次联邦 MQTT 口令
-	 * @param {string} [root0.mqttAppId] MQTT 应用 ID
+	 * @param {string} [root0.roomSecret] 首次联邦房间凭证 口令
+	 * @param {string} [root0.signalingAppId] 信令应用 ID
 	 * @param {string} [root0.introducerPubKeyHash] 邀请人成员 pubKeyHash
 	 * @param {string} [root0.powAnchorRef] 入群 PoW anchor 提示
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群结果
 	 */
-	join: async ({ user, groupId, inviteCode, mqttRoomSecret, mqttAppId, introducerPubKeyHash, powAnchorRef }) => {
+	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, powAnchorRef }) => {
 		if (!groupId) throw new Error('groupId is required for join action')
 		const bootstrap = {}
-		if (mqttRoomSecret?.trim()) bootstrap.mqttRoomSecret = mqttRoomSecret.trim()
-		if (mqttAppId?.trim()) bootstrap.mqttAppId = mqttAppId.trim()
+		if (roomSecret?.trim()) bootstrap.roomSecret = roomSecret.trim()
+		if (signalingAppId?.trim()) bootstrap.signalingAppId = signalingAppId.trim()
 		if (powAnchorRef?.trim()) bootstrap.powAnchorRef = powAnchorRef.trim()
 		return performMemberJoin(user, groupId, { inviteCode, introducerPubKeyHash, bootstrap })
 	},

@@ -5,7 +5,6 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../../src/chatMarkdown、../../src/chatMarkdownConvertor、../../src/customEmojis、../../src/groupFileBlob、../../src/groupMode、../../src/inviteQr、../../src/lib/channelContent。
  */
-import { getFountMessageMarkdownConvertor } from '../../src/lib/fountMessageMarkdown.mjs'
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
@@ -20,6 +19,7 @@ import {
 } from '../../src/groupMode.mjs'
 import { buildInviteJoinShareUrl } from '../../src/inviteQr.mjs'
 import { channelMessageEditText, channelMessageShowText } from '../../src/lib/channelContent.mjs'
+import { getFountMessageMarkdownConvertor } from '../../src/lib/fountMessageMarkdown.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
@@ -292,11 +292,11 @@ async function renderGroupInviteBlock(message) {
 		? await renderTemplateAsHtmlString('hub/messages/invite_member_count', { count: memberCount })
 		: ''
 	const settings = hubStore.currentState?.groupSettings
-	const mqttSecret = content.groupId === hubStore.currentGroupId
-		? settings?.mqttRoomSecret?.trim()
+	const roomSecret = content.groupId === hubStore.currentGroupId
+		? settings?.roomSecret?.trim()
 		: ''
-	const joinUrl = mqttSecret
-		? escapeHtml(buildInviteJoinShareUrl(content.groupId, content.inviteCode, mqttSecret))
+	const joinUrl = roomSecret
+		? escapeHtml(buildInviteJoinShareUrl(content.groupId, content.inviteCode, roomSecret))
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/group_invite_card', {
 		groupId,
@@ -307,7 +307,7 @@ async function renderGroupInviteBlock(message) {
 			: '',
 		countHtml,
 		joinUrl,
-		inviteLinkUnavailable: mqttSecret ? '' : '1',
+		inviteLinkUnavailable: roomSecret ? '' : '1',
 	})
 }
 

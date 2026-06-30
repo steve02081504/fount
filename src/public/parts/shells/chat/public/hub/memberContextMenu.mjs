@@ -2,9 +2,9 @@
  * 【文件】public/hub/memberContextMenu.mjs
  * 【职责】成员列表项右键菜单：查看资料、私信、踢出、封禁（含 `banScopePicker`）等成员操作。
  */
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 

@@ -1,8 +1,8 @@
 /**
  * 聚合各模块 tunables（运行时默认值 + 挖矿候选）。
  */
-import archiveTunables from '../archive.tunables.json' with { type: 'json' }
 import admissionTunables from '../admission.tunables.json' with { type: 'json' }
+import archiveTunables from '../archive.tunables.json' with { type: 'json' }
 import mailboxTunables from '../mailbox/mailbox.tunables.json' with { type: 'json' }
 import reputationTunables from '../reputation.tunables.json' with { type: 'json' }
 import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }

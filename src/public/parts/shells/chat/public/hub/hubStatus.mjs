@@ -5,8 +5,8 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/toast、core/state、presence
  */
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
 
 import { hubStore } from './core/state.mjs'
 import {

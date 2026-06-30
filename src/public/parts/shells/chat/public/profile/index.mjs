@@ -5,14 +5,14 @@
  * 【数据结构】currentEntityHash、currentProfile；localized 各 locale 字段。
  * 【关联】profile/src/endpoints.mjs、federationSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
-import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import {
 	mountTemplate,
 	renderTemplate,
 	usingTemplates,
 } from '../../../scripts/features/template.mjs'
-import { applyTheme } from '../../../scripts/theme/index.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
+import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
 import { profileDescriptionText } from '../hub/entityProfile.mjs'
 import { openHubProfileEdit } from '../hub/profileEdit.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'

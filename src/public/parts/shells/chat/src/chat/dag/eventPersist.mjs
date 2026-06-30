@@ -23,7 +23,7 @@ import {
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
 import { applyChannelKeyRotateEvent } from '../channel_keys/store.mjs'
 import { getEventReceivedAt } from '../events/meta.mjs'
-import { onMqttCredentialsSyncedFromDag, mqttCredentialsFromGroupSettings } from '../federation/mqttCredentials.mjs'
+import { onRoomCredentialsSyncedFromDag, roomCredentialsFromGroupSettings } from '../federation/roomCredentials.mjs'
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
@@ -213,9 +213,9 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		).catch(error => {
 			console.error('maybeAutoTriggerCharReply failed:', error)
 		})
-	if (signPayload.type === 'group_settings_update' && signPayload.content?.mqttRoomSecret) {
+	if (signPayload.type === 'group_settings_update' && signPayload.content?.roomSecret) {
 		const state = await materializedState()
-		const creds = mqttCredentialsFromGroupSettings({ ...state.groupSettings, ...signPayload.content })
-		if (creds) await onMqttCredentialsSyncedFromDag(username, groupId, creds)
+		const creds = roomCredentialsFromGroupSettings({ ...state.groupSettings, ...signPayload.content })
+		if (creds) await onRoomCredentialsSyncedFromDag(username, groupId, creds)
 	}
 }

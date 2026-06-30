@@ -11,10 +11,10 @@ import { createHash } from 'node:crypto'
 import { handleIncomingChunkGet, resolvePendingChunkFetch } from './files/chunk_fetch.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
-import { joinMqttRoomWithDefaults } from './mqtt_room.mjs'
 import { getNodeTransportSettings } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
+import { joinSignalingRoomWithDefaults } from './signaling_room.mjs'
 import { recordStalePeerPrune } from './stale_peer_log.mjs'
 import {
 	attachIdentityAnnounceHandlers,
@@ -57,7 +57,7 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 		const password = createHash('sha256').update(`fount-user-room:${key}`).digest('hex')
 		const roomId = `fount-node-${key}`
 		try {
-			const room = await joinMqttRoomWithDefaults({
+			const room = await joinSignalingRoomWithDefaults({
 				appId: 'fount-user-fed',
 				password,
 				roomId,

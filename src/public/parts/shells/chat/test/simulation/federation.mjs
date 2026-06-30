@@ -1,5 +1,5 @@
 /**
- * Chat 多节点联邦仿真：单进程、多 fount 用户、无 MQTT relay。
+ * Chat 多节点联邦仿真：单进程、多 fount 用户、无 Nostr relay。
  */
 import { copyFile, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

@@ -220,14 +220,14 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
  * @param {string} [opts.dmIntroNonce] DM intro nonce
  * @param {string} [opts.dmIntroSignatureHex] DM intro 签名 hex
  * @param {number} [opts.reputationEdge] 入群信誉边 [-1,1]
- * @param {{ mqttRoomSecret?: string, mqttAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [opts.bootstrap] 首次联邦 bootstrap
+ * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [opts.bootstrap] 首次联邦 bootstrap
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
  */
 export async function performMemberJoin(username, groupId, opts = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
 
-	// 首次入群时本地尚无群 state，必须靠 mqttRoomSecret 引导联邦房间凭据才能与对端汇合。
-	if (opts.bootstrap?.mqttRoomSecret)
+	// 首次入群时本地尚无群 state，必须靠 roomSecret 引导联邦房间凭据才能与对端汇合。
+	if (opts.bootstrap?.roomSecret)
 		setFederationBootstrap(username, groupId, opts.bootstrap)
 
 	const { state } = await getState(username, groupId)
@@ -255,7 +255,7 @@ export async function performMemberJoin(username, groupId, opts = {}) {
 	const { state: afterJoin } = await getState(username, groupId)
 	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 
-	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds；延长 waitMs 并调度防抖重试以覆盖 MQTT 会合与 member_join 传播竞态。
+	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds；延长 waitMs 并调度防抖重试以覆盖 信令会合与 member_join 传播竞态。
 	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')
 	void catchUpGroupFromPeers(username, groupId, { waitMs: 8000 }).catch(console.error)
 	scheduleCatchUp(username, groupId)

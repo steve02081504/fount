@@ -1,5 +1,5 @@
 /**
- * 联邦 MQTT 口令 bootstrap：离线/轮换后向邻居索要当前传输密钥。
+ * 联邦房间凭证 口令 bootstrap：离线/轮换后向邻居索要当前传输密钥。
  */
 import { randomUUID } from 'node:crypto'
 
@@ -11,13 +11,13 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import {
 	setFederationBootstrap,
-	setPeerMqttHint,
+	setPeerRoomHint,
 } from './bootstrapStore.mjs'
 import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
-import { mqttCredentialsFromGroupSettings } from './mqttCredentials.mjs'
-import { markMqttCredentialsStale } from './mqttStale.mjs'
 import { invalidateFederationRoomCache } from './room.mjs'
+import { roomCredentialsFromGroupSettings } from './roomCredentials.mjs'
+import { markRoomCredentialsStale } from './roomCredentialsStale.mjs'
 
 /** @type {Map<string, { createdAt: number }>} */
 const recentBootstrapRequests = new Map()
@@ -50,15 +50,15 @@ export async function handleFedBootstrapRequest(username, groupId, nodeHash, req
 	const state = await loadFederationMaterializedState(username, groupId)
 	if (state?.members?.[request.requesterPubKeyHash]?.status !== 'active') return
 
-	const creds = mqttCredentialsFromGroupSettings(state.groupSettings)
-	if (!creds?.mqttRoomSecret) return
+	const creds = roomCredentialsFromGroupSettings(state.groupSettings)
+	if (!creds?.roomSecret) return
 
 	let settingsEventId
 	const { readJsonl } = requireDagDeps()
 	const events = await readJsonl(eventsPath(username, groupId))
 	for (let index = events.length - 1; index >= 0; index--) {
 		const event = events[index]
-		if (event?.type === 'group_settings_update' && event.content?.mqttRoomSecret === creds.mqttRoomSecret) {
+		if (event?.type === 'group_settings_update' && event.content?.roomSecret === creds.roomSecret) {
 			settingsEventId = event.id
 			break
 		}
@@ -70,9 +70,9 @@ export async function handleFedBootstrapRequest(username, groupId, nodeHash, req
 		requestId: request.requestId,
 		responderNodeHash: nodeHash,
 		settingsEventId,
-		encryptedMqttSecret: encryptUtf8ForMember(JSON.stringify({
-			mqttAppId: creds.mqttAppId,
-			mqttRoomSecret: creds.mqttRoomSecret,
+		encryptedRoomSecret: encryptUtf8ForMember(JSON.stringify({
+			signalingAppId: creds.signalingAppId,
+			roomSecret: creds.roomSecret,
 		}), memberPubHex),
 	}, peerId)
 }
@@ -84,19 +84,19 @@ export async function handleFedBootstrapRequest(username, groupId, nodeHash, req
  * @returns {Promise<boolean>} 是否已应用
  */
 export async function applyFedBootstrapResponse(username, groupId, response) {
-	const plain = decryptUtf8ForMember(response.encryptedMqttSecret, (await resolveLocalEventSigner(username, groupId)).secretKey)
+	const plain = decryptUtf8ForMember(response.encryptedRoomSecret, (await resolveLocalEventSigner(username, groupId)).secretKey)
 	if (!plain) return false
 
 	const parsed = JSON.parse(plain)
-	if (!parsed.mqttRoomSecret) return false
+	if (!parsed.roomSecret) return false
 
 	const creds = {
-		mqttAppId: parsed.mqttAppId || 'fount-group-fed',
-		mqttRoomSecret: String(parsed.mqttRoomSecret),
+		signalingAppId: parsed.signalingAppId || 'fount-group-fed',
+		roomSecret: String(parsed.roomSecret),
 		settingsEventId: response.settingsEventId,
 	}
 
-	setPeerMqttHint(username, groupId, {
+	setPeerRoomHint(username, groupId, {
 		...creds,
 		fromNodeId: response.responderNodeHash,
 	})
@@ -159,7 +159,7 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 		&& catchupResult.wantIds > 0
 	if (!syncFailed) return
 
-	markMqttCredentialsStale(username, groupId)
+	markRoomCredentialsStale(username, groupId)
 	if (!slot) return
 
 	const nodeHash = federationNodeHash(username)

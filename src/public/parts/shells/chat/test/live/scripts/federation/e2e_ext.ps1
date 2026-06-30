@@ -1,4 +1,4 @@
-﻿# Extended 2-node federation E2E: event propagation, file transfer, kick.
+# Extended 2-node federation E2E: event propagation, file transfer, kick.
 # Requires NodeA + NodeB both up (started by test/live/run.mjs).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
@@ -10,7 +10,7 @@ Api $FedA PUT "/groups/$gid/settings" @{ joinPolicy = 'open' } | Out-Null
 $inv = (Api $FedA POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }).json
 # Seed message before join so catchup has content
 $seedMsg = (Api $FedA POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'seed-A' } }).json.event.id
-$jr = Api $FedB POST "/groups/$gid/join" @{ mqttRoomSecret = $inv.mqttRoomSecret; mqttAppId = $inv.mqttAppId; introducerPubKeyHash = $inv.introducerPubKeyHash }
+$jr = Api $FedB POST "/groups/$gid/join" @{ roomSecret = $inv.roomSecret; signalingAppId = $inv.signalingAppId; introducerPubKeyHash = $inv.introducerPubKeyHash }
 Write-Host "join -> $($jr.status)"
 # Wait for B to catch up membership + seed message
 $caught = PollUntil 90 3 {

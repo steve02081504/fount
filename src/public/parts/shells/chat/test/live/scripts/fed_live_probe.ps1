@@ -1,4 +1,4 @@
-﻿# Isolate: given an ESTABLISHED live peer connection, do all event types propagate?
+# Isolate: given an ESTABLISHED live peer connection, do all event types propagate?
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
@@ -6,7 +6,7 @@ $g = (Api $FedA POST '/groups/' @{ name = 'LiveProbe' }).json
 $gid = $g.groupId; $cid = $g.defaultChannelId
 Api $FedA PUT "/groups/$gid/settings" @{ joinPolicy = 'open' } | Out-Null
 $inv = (Api $FedA POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }).json
-Api $FedB POST "/groups/$gid/join" @{ mqttRoomSecret = $inv.mqttRoomSecret; mqttAppId = $inv.mqttAppId; introducerPubKeyHash = $inv.introducerPubKeyHash } | Out-Null
+Api $FedB POST "/groups/$gid/join" @{ roomSecret = $inv.roomSecret; signalingAppId = $inv.signalingAppId; introducerPubKeyHash = $inv.introducerPubKeyHash } | Out-Null
 Write-Host "group=$gid joined; firing events in warm window (fed_test-style timing)..." -ForegroundColor Cyan
 # Mimic fed_test timing: wait a short settle for the join-time connection, then fire ALL event types.
 Start-Sleep 8

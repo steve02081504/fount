@@ -4,11 +4,11 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { isSignedBaseCheckpoint } from '../dag/checkpointPayload.mjs'
+import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
+import { isSignedBaseCheckpoint } from '../dag/checkpointPayload.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
 

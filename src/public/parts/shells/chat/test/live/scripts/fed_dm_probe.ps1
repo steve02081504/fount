@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
 function Get-Identity($node) {
@@ -51,8 +51,8 @@ $inv = Api $creator POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }
 Write-Host "invite status=$($inv.status)" -ForegroundColor Cyan
 
 $joinBody = @{
-	mqttRoomSecret = $inv.json.mqttRoomSecret
-	mqttAppId = $inv.json.mqttAppId
+	roomSecret = $inv.json.roomSecret
+	signalingAppId = $inv.json.signalingAppId
 	introducerPubKeyHash = $intro.pubKeyHex
 	dmIntroNonce = $intro.dmIntroNonce
 	dmIntroSignatureHex = $intro.dmIntroSignatureHex

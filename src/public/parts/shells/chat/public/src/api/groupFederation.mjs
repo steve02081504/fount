@@ -46,9 +46,9 @@ export async function postFederationTuning(groupId, patch = {}) {
 }
 
 /**
- * 轮换群 MQTT 房间口令（需 ADMIN / MANAGE_ADMINS）。
+ * 轮换群 房间口令（需 ADMIN / MANAGE_ADMINS）。
  * @param {string} groupId 群 ID
- * @returns {Promise<{ mqttRoomSecret: string }>} 新口令
+ * @returns {Promise<{ roomSecret: string }>} 新口令
  */
 export async function rotateFederationRoomSecret(groupId) {
 	return groupFetch(groupPath(groupId, 'federation', 'rotate-room-secret'), { method: 'POST', json: {} })

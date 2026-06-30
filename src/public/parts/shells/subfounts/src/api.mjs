@@ -3,10 +3,10 @@ import EventEmitter from 'node:events'
 import process from 'node:process'
 // V8 serialize/deserialize 不兼容 Trystero 的 JSON 传输，已改用直接传递
 
-// Trystero MQTT 客户端在重连时会累加 listeners，提高上限避免警告
+// Trystero Nostr 客户端在重连时会累加 listeners，提高上限避免警告
 EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
 
-// 捕获 Trystero MQTT 内部的 ECONNRESET 等网络瞬断错误，防止进程崩溃
+// 捕获 Trystero Nostr 内部的 ECONNRESET 等网络瞬断错误，防止进程崩溃
 process.on('uncaughtException', (err) => {
 	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
 		return // 网络瞬断，Trystero 会自动重连
@@ -270,10 +270,10 @@ class UserSubfountManager {
 			}
 
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
-			const { joinMqttRoomWithDefaults } = await import('../../../../../scripts/p2p/mqtt_room.mjs')
+			const { joinSignalingRoomWithDefaults } = await import('../../../../../scripts/p2p/signaling_room.mjs')
 			if (!isNodeInitialized())
 				throw new Error('P2P node not initialized — ensure initP2PServer ran before subfounts')
-			this.room = await joinMqttRoomWithDefaults({
+			this.room = await joinSignalingRoomWithDefaults({
 				appId: 'fount-subfounts',
 				password: codesData.password,
 				roomId: this.hostPeerId,

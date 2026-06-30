@@ -16,14 +16,13 @@ import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.m
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { applyEvent, emptyMaterializedState } from './groupMaterializedState.mjs'
 import { createDefaultRoles } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'
 import { isGroupFederationActive } from '../federation/groupFederation.mjs'
-import { DEFAULT_MQTT_APP_ID, mintMqttRoomSecret } from '../federation/mqttCredentials.mjs'
 import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federation/room.mjs'
+import { DEFAULT_SIGNALING_APP_ID, mintRoomSecret } from '../federation/roomCredentials.mjs'
 import { initGroupFileMasterKey } from '../file_keys/store.mjs'
 import { releaseFileStorageRefs } from '../files/groupFiles.mjs'
 import { groupDir, eventsPath, localSignerSeedPath } from '../lib/paths.mjs'
@@ -35,6 +34,7 @@ import { dropGroupReplicaRegistration } from '../stream/groupWsRooms.mjs'
 
 import { appendEvent } from './append.mjs'
 import { checkEventPermission } from './authorizeEvent.mjs'
+import { applyEvent, emptyMaterializedState } from './groupMaterializedState.mjs'
 import { getLocalSignerForNewGroup, resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 
@@ -161,8 +161,8 @@ export async function createGroup(username, body) {
 			event_retention_ms: 365 * 24 * 3600 * 1000,
 			message_content_retention_ms: 0,
 			...body.enableGroupFederation ? {
-				mqttAppId: DEFAULT_MQTT_APP_ID,
-				mqttRoomSecret: mintMqttRoomSecret(),
+				signalingAppId: DEFAULT_SIGNALING_APP_ID,
+				roomSecret: mintRoomSecret(),
 				federationPartitionCount: 8,
 				rtcConnectionBudgetMax: 32,
 				rtcJoinRatePerMin: 12,

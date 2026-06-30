@@ -1,4 +1,4 @@
-﻿# L4 federation: DM identity + intro link + join + bidirectional messages.
+# L4 federation: DM identity + intro link + join + bidirectional messages.
 # Requires dual nodes via test/live/run.mjs (FOUNT_TEST_NODE_1_* + FOUNT_TEST_NODE_2_*).
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
@@ -85,18 +85,18 @@ Test-Case 'lower-pubkey node POST template=dm' {
 	[bool]($script:gid -and $script:cid)
 }
 
-Write-Host "`n=== 2. Peer joins DM (intro + mqtt) ===" -ForegroundColor Cyan
-Test-Case 'invite-ticket mqtt creds on creator' {
+Write-Host "`n=== 2. Peer joins DM (intro + room creds) ===" -ForegroundColor Cyan
+Test-Case 'invite-ticket room creds on creator' {
 	$inv = Api $creator POST "/groups/$gid/invite-ticket" @{ ttlMs = 3600000 }
 	if ($inv.status -ne 201 -and $inv.status -ne 200) { throw "invite $($inv.status)" }
 	$script:dmInv = $inv.json
-	[bool]$script:dmInv.mqttRoomSecret
+	[bool]$script:dmInv.roomSecret
 }
 Test-Case 'peer join with dmIntro proof' {
 	$joined = PollUntil 120 4 {
 		$jr = Api $joiner POST "/groups/$gid/join" @{
-			mqttRoomSecret = $script:dmInv.mqttRoomSecret
-			mqttAppId = $script:dmInv.mqttAppId
+			roomSecret = $script:dmInv.roomSecret
+			signalingAppId = $script:dmInv.signalingAppId
 				dmSessionTag = $script:dmInv.dmSessionTag
 			introducerPubKeyHash = $intro.pubKeyHex
 			dmIntroNonce = $intro.dmIntroNonce

@@ -7,7 +7,6 @@
  */
 import { mkdir, stat } from 'node:fs/promises'
 
-import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint, signCheckpoint } from './checkpointPayload.mjs'
 import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
@@ -28,14 +27,6 @@ import {
 	selectAuthzBranchTip,
 	selectConsensusBranchTip,
 } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import {
-	applyEvent,
-	checkpointSignerPubKeyHashes,
-	emptyMaterializedState,
-	materializeFromCheckpoint,
-	serializeReactionsOverlay,
-	serializeVotesOverlay,
-} from './groupMaterializedState.mjs'
 import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
 import {
 	invalidateTopologicalOrderMemo,
@@ -52,7 +43,16 @@ import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
 import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 
+import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint, signCheckpoint } from './checkpointPayload.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'
+import {
+	applyEvent,
+	checkpointSignerPubKeyHashes,
+	emptyMaterializedState,
+	materializeFromCheckpoint,
+	serializeReactionsOverlay,
+	serializeVotesOverlay,
+} from './groupMaterializedState.mjs'
 import { verifyEventsSnapshotWAL } from './wal.mjs'
 
 /**

@@ -7,11 +7,11 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
+import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { sign, verify } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickNodeScore } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { discoveryIndexPath } from '../lib/paths.mjs'

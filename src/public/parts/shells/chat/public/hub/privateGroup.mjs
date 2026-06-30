@@ -5,9 +5,9 @@
  * 【数据结构】hubStore.privateGroup 回调引用与当前私聊 charname。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、groupApi。
  */
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/api/groupFriendBinding.mjs'
 import { buildCharFriendBinding } from '../src/friendBinding.mjs'
 

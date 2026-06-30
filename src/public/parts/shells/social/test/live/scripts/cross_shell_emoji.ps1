@@ -40,7 +40,7 @@ Test-Case 'A creates invite-only group' {
 	$g = (Api $FedA POST '/groups/' @{ name = $groupTitle; description = 'L4 fed probe' }).json
 	$script:gid = $g.groupId
 	$script:cid = $g.defaultChannelId
-	# discoveryPublic 便于非成员通过联邦发现 MQTT 口令；joinPolicy 仍为 invite-only（canJoin=false）。
+	# discoveryPublic 便于非成员通过联邦发现 roomSecret 口令；joinPolicy 仍为 invite-only（canJoin=false）。
 	Api $FedA PUT "/groups/$($script:gid)/settings" @{ joinPolicy = 'invite-only'; discoveryPublic = $true } | Out-Null
 	[bool]$script:gid
 }

@@ -19,5 +19,5 @@ Deno.test('formatJoinRunUri uses shells:chat prefix', () => {
 Deno.test('parseJoinRunUri round-trips join payload', () => {
 	const uri = formatJoinRunUri('gid', 'code', 'secret', 'a'.repeat(64))
 	assertEquals(parseJoinRunUri(uri)?.groupId, 'gid')
-	assertEquals(parseJoinRunUri(uri)?.mqttRoomSecret, 'secret')
+	assertEquals(parseJoinRunUri(uri)?.roomSecret, 'secret')
 })

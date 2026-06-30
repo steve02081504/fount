@@ -18,7 +18,7 @@ import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
-import { mqttCredentialsFromGroupSettings } from '../../chat/federation/mqttCredentials.mjs'
+import { roomCredentialsFromGroupSettings } from '../../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mjs'
@@ -45,13 +45,13 @@ function groupHasBootstrapGenesis(state) {
  * @param {string} username 签发者
  * @param {string} groupId 群 ID
  * @param {string} code 邀请码
- * @param {string} mqttRoomSecret 群 MQTT 传输密钥（写入 join 深链）
+ * @param {string} roomSecret 群房间传输密钥（写入 join 深链）
  * @param {string} introducerPubKeyHash 邀请人成员 pubKeyHash
  * @param {string | null} [powAnchorRef] PoW anchor 提示（写入 join 深链）
  * @returns {Promise<string>} 本地化剪贴板文本
  */
-async function buildInviteClipboardText(username, groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, mqttRoomSecret, introducerPubKeyHash, powAnchorRef))
+async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef) {
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef))
 	return geti18nForUser(username, 'chat.group.settingsPage.inviteClipboard', {
 		groupId,
 		code,
@@ -107,8 +107,8 @@ export function registerMembershipRoutes(router, authenticate) {
 		const ticket = await mintGroupInviteTicket(username, groupId, {
 			ttlMs: Number.isFinite(ttlMs) && ttlMs > 0 ? ttlMs : undefined,
 		})
-		const mqttCreds = isGroupFederationActive(state.groupSettings)
-			? mqttCredentialsFromGroupSettings(state.groupSettings)
+		const roomCreds = isGroupFederationActive(state.groupSettings)
+			? roomCredentialsFromGroupSettings(state.groupSettings)
 			: await activateGroupFederation(username, groupId)
 		const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 		const powAnchors = collectJoinPowAnchors(state)
@@ -117,15 +117,15 @@ export function registerMembershipRoutes(router, authenticate) {
 			username,
 			groupId,
 			ticket.code,
-			mqttCreds.mqttRoomSecret,
+			roomCreds.roomSecret,
 			introducerPubKeyHash,
 			powAnchorRef,
 		)
 		res.status(201).json({
 			...ticket,
 			clipboardText,
-			mqttAppId: mqttCreds.mqttAppId,
-			mqttRoomSecret: mqttCreds.mqttRoomSecret,
+			signalingAppId: roomCreds.signalingAppId,
+			roomSecret: roomCreds.roomSecret,
 			introducerPubKeyHash,
 			powAnchors,
 			powAnchorRef,
@@ -138,7 +138,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/join$/, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const groupId = req.params[0]
-		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, mqttRoomSecret, mqttAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
+		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
 		const dmNonce = dmIntroNonce?.trim()
 		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
 		if (!!dmNonce !== !!dmSignatureHex)
@@ -149,13 +149,13 @@ export function registerMembershipRoutes(router, authenticate) {
 			if (!dmCheck.ok)
 				return res.status(400).json({ error: dmCheck.error })
 		}
-		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmNonce) || Boolean(String(mqttRoomSecret || '').trim())
+		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmNonce) || Boolean(String(roomSecret || '').trim())
 		if (!groupHasBootstrapGenesis(state) && !hasJoinAuthorization)
 			return res.status(404).json({ error: 'Group not found; join with invite or federation bootstrap' })
 
 		let bootstrap
-		if (mqttRoomSecret) {
-			bootstrap = { mqttAppId, mqttRoomSecret }
+		if (roomSecret) {
+			bootstrap = { signalingAppId, roomSecret }
 			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
 			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
 			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()

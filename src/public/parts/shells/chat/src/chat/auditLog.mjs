@@ -9,9 +9,9 @@
 import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { GOVERNANCE_AUTHZ_TYPES } from './dag/eventTypes.mjs'
 import { authzFoldOrderIds } from '../../../../../../scripts/p2p/governance_branch.mjs'
 
+import { GOVERNANCE_AUTHZ_TYPES } from './dag/eventTypes.mjs'
 import { getState } from './dag/materialize.mjs'
 import { eventsPath } from './lib/paths.mjs'
 

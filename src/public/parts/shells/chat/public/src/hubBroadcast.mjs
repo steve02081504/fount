@@ -30,6 +30,10 @@ export function broadcastHubGroupJoined(groupId) {
 	ch.postMessage({ type: 'group-joined', groupId: id })
 }
 
+/**
+ *
+ * @param groupId
+ */
 export function notifyHubGroupJoined(groupId) {
 	broadcastHubGroupJoined(groupId)
 }

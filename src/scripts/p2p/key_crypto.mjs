@@ -244,7 +244,7 @@ export function unwrapKeyEcies(encryptedH, myEdPrivKeySeed) {
 }
 
 /**
- * ECIES 封装任意 UTF-8 载荷（联邦 MQTT bootstrap 等）。
+ * ECIES 封装任意 UTF-8 载荷（联邦房间凭证 bootstrap 等）。
  * @param {string} utf8Text 明文
  * @param {string} memberEdPubKeyHex 成员 Ed25519 公钥 hex
  * @returns {{ ephemPub: string, iv: string, ciphertext: string, authTag: string }} ECIES 加密结果

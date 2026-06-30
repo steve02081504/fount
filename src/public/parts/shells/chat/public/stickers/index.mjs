@@ -6,15 +6,15 @@
  * 【关联】/api/parts/shells:chat/stickers/*；template.mjs、i18n；Hub 表情引用。
  */
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
-import { confirmI18n, initTranslations } from '../../../scripts/i18n/index.mjs'
 import {
 	mountTemplate,
 	renderTemplate,
 	renderTemplateAsHtmlString,
 	usingTemplates,
 } from '../../../scripts/features/template.mjs'
-import { applyTheme } from '../../../scripts/theme/index.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
+import { confirmI18n, initTranslations } from '../../../scripts/i18n/index.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
 
 import { STICKERS_PAGE_GATE } from './gate.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'

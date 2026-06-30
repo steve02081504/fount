@@ -5,9 +5,9 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】打开频道时可能触发 `updateHash`（由 `groupNav.selectChannel` 完成）；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、../src/api/groupChannel、core/state、groupNav。
  */
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
 import {
 	deleteChannel,

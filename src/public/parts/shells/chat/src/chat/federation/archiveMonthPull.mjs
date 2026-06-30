@@ -5,10 +5,10 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, rename, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
+import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,

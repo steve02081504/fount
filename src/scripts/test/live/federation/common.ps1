@@ -167,8 +167,8 @@ function Initialize-OpenGroupJoinMulti($name, $seedText, $joinNodes) {
 	$joined = 0
 	foreach ($node in $joinNodes) {
 		$join = Api $node POST "/groups/$groupId/join" @{
-			mqttRoomSecret = $invite.mqttRoomSecret
-			mqttAppId = $invite.mqttAppId
+			roomSecret = $invite.roomSecret
+			signalingAppId = $invite.signalingAppId
 			introducerPubKeyHash = $invite.introducerPubKeyHash
 		}
 		if ($join.status -ne 200) { throw "$($node.name) join failed: $($join.status) $($join.raw)" }
@@ -203,8 +203,8 @@ function Initialize-OpenGroupJoin($name, $seedText) {
 		$seedEventId = (Api $script:FedA POST "/groups/$groupId/channels/$channelId/messages" @{ content = @{ type = 'text'; content = $seedText } }).json.event.id
 	}
 	$join = Api $script:FedB POST "/groups/$groupId/join" @{
-		mqttRoomSecret = $invite.mqttRoomSecret
-		mqttAppId = $invite.mqttAppId
+		roomSecret = $invite.roomSecret
+		signalingAppId = $invite.signalingAppId
 		introducerPubKeyHash = $invite.introducerPubKeyHash
 	}
 	if ($join.status -ne 200) { throw "B join failed: $($join.status) $($join.raw)" }
@@ -222,8 +222,8 @@ function Initialize-OpenGroupJoin($name, $seedText) {
 	if (-not $ok) {
 		$inviteRetry = (Api $script:FedA POST "/groups/$groupId/invite-ticket" @{ ttlMs = 3600000 }).json
 		Api $script:FedB POST "/groups/$groupId/join" @{
-			mqttRoomSecret = $inviteRetry.mqttRoomSecret
-			mqttAppId = $inviteRetry.mqttAppId
+			roomSecret = $inviteRetry.roomSecret
+			signalingAppId = $inviteRetry.signalingAppId
 			introducerPubKeyHash = $inviteRetry.introducerPubKeyHash
 		} | Out-Null
 		$ok = Wait-FedMembers $script:FedB $groupId 2 120

@@ -1,7 +1,8 @@
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
-import { walk } from 'https://deno.land/std@0.224.0/fs/walk.ts'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { walk } from 'https://deno.land/std@0.224.0/fs/walk.ts'
 
 const P2P_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 

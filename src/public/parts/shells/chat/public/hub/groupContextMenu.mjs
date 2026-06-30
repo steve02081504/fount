@@ -5,15 +5,15 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、../src/inviteQr、chat、core/domUtils。
  */
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { getPartList } from '../../../../scripts/api/parts.mjs'
+import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import {
 	renderTemplate,
 	renderTemplateAsHtmlString,
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { createGroupInvite, groupRequest, leaveGroups } from '../src/api/groupApi.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
@@ -219,7 +219,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 				|| buildInviteJoinShareUrl(
 					groupId,
 					ticket.code,
-					ticket.mqttRoomSecret,
+					ticket.roomSecret,
 					ticket.introducerPubKeyHash,
 				)
 			await navigator.clipboard.writeText(url)

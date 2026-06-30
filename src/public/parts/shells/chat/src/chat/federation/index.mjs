@@ -1,7 +1,7 @@
 /**
  * 【文件】federation/index.mjs
  * 【职责】联邦对外门面：已签名 DAG 事件出站中继、与邻居交换 DAG 叶并触发 wantIds 补洞、gossip 拉取缺失事件，以及列出当前 Trystero 房内对等端。
- * 【原理】出站经 ensureFederationRoom 取得 Trystero MQTT 房间槽，由 peerPool 稀疏选取目标 peer（无邻居时房内广播）；入站补洞先发 fed_tip_ping/pong 收集远端 tips，再 requestMissingEventsGossip。ACL 门控事件在物化快照未就绪时入 pendingRelay 队列而非立即中继。
+ * 【原理】出站经 ensureFederationRoom 取得 Trystero Nostr 房间槽，由 peerPool 稀疏选取目标 peer（无邻居时房内广播）；入站补洞先发 fed_tip_ping/pong 收集远端 tips，再 requestMissingEventsGossip。ACL 门控事件在物化快照未就绪时入 pendingRelay 队列而非立即中继。
  * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、deps.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
@@ -40,7 +40,7 @@ import { maybeJoinSnapshotOnStaleTips } from './staleResync.mjs'
 import { markGroupOnlineSynced } from './syncState.mjs'
 import { collectRemoteTipsFromPeers } from './tipExchange.mjs'
 
-/** 首次入群无 checkpoint 时等待 MQTT roster 出现邻居的上限（毫秒）。 */
+/** 首次入群无 checkpoint 时等待 信令 roster 出现邻居的上限（毫秒）。 */
 const PEER_ROSTER_WAIT_MS = 12_000
 const PEER_ROSTER_POLL_MS = 400
 
@@ -300,7 +300,7 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 }
 
 /**
- * `GET .../peers`：本群 MQTT 房内可见对等端。
+ * `GET .../peers`：本群 信令房内可见对等端。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @returns {Promise<{ selfNodeHash: string, federationEnabled: boolean, peers: object[] }>} 本机节点与对等端列表

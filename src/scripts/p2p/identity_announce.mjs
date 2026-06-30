@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { selfId } from 'npm:@trystero-p2p/mqtt'
+import { selfId } from 'npm:@trystero-p2p/nostr'
 
 import { keyPairFromSeed, pubKeyHash, sign, verify } from './crypto.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'

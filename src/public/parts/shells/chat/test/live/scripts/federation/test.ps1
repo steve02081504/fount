@@ -1,4 +1,4 @@
-﻿# Two-node federation: catchup (A1→B), live push (B1→A), catchup recovery fallback.
+# Two-node federation: catchup (A1→B), live push (B1→A), catchup recovery fallback.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
@@ -14,21 +14,21 @@ Write-Host "groupId=$groupId  channelId=$channelId" -ForegroundColor Cyan
 Write-Host "`n=== 2. NodeA: set joinPolicy=open ===" -ForegroundColor Cyan
 Api $FedA PUT "/groups/$groupId/settings" @{ joinPolicy = 'open' } | Out-Null
 
-Write-Host "`n=== 3. NodeA: create invite-ticket (get mqtt creds) ===" -ForegroundColor Cyan
+Write-Host "`n=== 3. NodeA: create invite-ticket (get room creds) ===" -ForegroundColor Cyan
 $inv = Api $FedA POST "/groups/$groupId/invite-ticket" @{ ttlMs = 3600000 }
 if ($inv.status -ne 200 -and $inv.status -ne 201) { throw "invite-ticket failed: $($inv.status)" }
-$mqttAppId = $inv.json.mqttAppId
-$mqttRoomSecret = $inv.json.mqttRoomSecret
+$signalingAppId = $inv.json.signalingAppId
+$roomSecret = $inv.json.roomSecret
 $introducer = $inv.json.introducerPubKeyHash
-Write-Host "mqttAppId=$mqttAppId" -ForegroundColor Cyan
-Write-Host "mqttRoomSecret=$($mqttRoomSecret.Substring(0,[Math]::Min(16,$mqttRoomSecret.Length)))..." -ForegroundColor Cyan
+Write-Host "signalingAppId=$signalingAppId" -ForegroundColor Cyan
+Write-Host "roomSecret=$($roomSecret.Substring(0,[Math]::Min(16,$roomSecret.Length)))..." -ForegroundColor Cyan
 Write-Host "introducer=$introducer" -ForegroundColor Cyan
 
 Write-Host "`n=== 4. NodeA: send message #A1 ===" -ForegroundColor Cyan
 Api $FedA POST "/groups/$groupId/channels/$channelId/messages" @{ content = @{ type = 'text'; content = 'A1: hello from NodeA' } } | Out-Null
 
-Write-Host "`n=== 5. NodeB: join group (no inviteCode, with mqtt creds) ===" -ForegroundColor Cyan
-$joinBody = @{ mqttRoomSecret = $mqttRoomSecret; mqttAppId = $mqttAppId; introducerPubKeyHash = $introducer }
+Write-Host "`n=== 5. NodeB: join group (no inviteCode, with room creds) ===" -ForegroundColor Cyan
+$joinBody = @{ roomSecret = $roomSecret; signalingAppId = $signalingAppId; introducerPubKeyHash = $introducer }
 $jr = Api $FedB POST "/groups/$groupId/join" $joinBody
 if ($jr.status -ne 200) { throw "join failed: $($jr.status) $($jr.raw)" }
 Write-Host "join result: $($jr.json | ConvertTo-Json -Compress)" -ForegroundColor Cyan

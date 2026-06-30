@@ -53,7 +53,7 @@ export async function getGroupList() {
  * @param {string | null} [inviteCode] 邀请码
  * @param {{ dmIntroNonce?: string, dmIntroSignatureHex?: string, introducerPubKeyHash?: string }} [dmLinkProof] DM 深链引荐字段
  * @param {{ challenge: string, nonce: string } | null} [pow] PoW 入群证明
- * @param {{ mqttAppId?: string, mqttRoomSecret?: string, introducerPubKeyHash?: string } | null} [fedBootstrap] 首次联邦 MQTT 口令与邀请人
+ * @param {{ signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string } | null} [fedBootstrap] 首次联邦房间凭证 口令与邀请人
  * @returns {Promise<void>}
  */
 export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, pow = null, fedBootstrap = null) {
@@ -62,9 +62,9 @@ export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, 
 		pow: pow || undefined,
 		...dmLinkProof || {},
 	}
-	if (fedBootstrap?.mqttRoomSecret) {
-		json.mqttRoomSecret = fedBootstrap.mqttRoomSecret
-		if (fedBootstrap.mqttAppId) json.mqttAppId = fedBootstrap.mqttAppId
+	if (fedBootstrap?.roomSecret) {
+		json.roomSecret = fedBootstrap.roomSecret
+		if (fedBootstrap.signalingAppId) json.signalingAppId = fedBootstrap.signalingAppId
 	}
 	if (fedBootstrap?.introducerPubKeyHash)
 		json.introducerPubKeyHash = fedBootstrap.introducerPubKeyHash

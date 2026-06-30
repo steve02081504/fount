@@ -1,12 +1,12 @@
 /**
  * 入群 checkpoint 多 peer 信誉仲裁（与冷归档月拉同构）。
  */
-import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
+import archiveTunables from '../../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
-import archiveTunables from '../../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
+import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
 import { federationNodeHash } from '../deps.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
 import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'

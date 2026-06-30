@@ -3,8 +3,8 @@
  * 【职责】Hub 轻量事件绑定：不依赖 messages/init 重模块图，保证建群、composer、hash 导航等壳层交互尽快可用。
  * 【关联】groupModals、dialog、wireEvents（其余绑定延后加载）
  */
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import { onServerEvent } from '../../../../scripts/api/server_events.mjs'
+import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import { usingTemplates } from '../../../../scripts/features/template.mjs'
 import { iconifyImg } from '../src/lib/emojiSvg.mjs'
 import { bindComposerSubmit } from '../src/ui/composerKeys.mjs'

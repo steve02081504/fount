@@ -154,7 +154,7 @@ export default {
 						params = {
 							groupId: args[1],
 							inviteCode: args[2] || '',
-							mqttRoomSecret: args[3] || '',
+							roomSecret: args[3] || '',
 							introducerPubKeyHash: args[4] || '',
 							powAnchorRef: args[5] || '',
 						}

@@ -57,7 +57,7 @@ export function updateFriendsHash() {
 /**
  * 读取并消费 sessionStorage 中待用的入群邀请与联邦 bootstrap。
  * @param {string} groupId 群组 ID
- * @returns {{ inviteCode: string | null, fedBootstrap: { mqttAppId?: string, mqttRoomSecret?: string, introducerPubKeyHash?: string } | null }} 待消费邀请与 bootstrap
+ * @returns {{ inviteCode: string | null, fedBootstrap: { signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string } | null }} 待消费邀请与 bootstrap
  */
 export function consumePendingJoin(groupId) {
 	const empty = { inviteCode: null, fedBootstrap: null }
@@ -69,12 +69,12 @@ export function consumePendingJoin(groupId) {
 	if (pending?.groupId !== groupId) return empty
 	sessionStorage.removeItem(PENDING_INVITE_STORAGE_KEY)
 	const inviteCode = pending.inviteCode?.trim() || null
-	const mqttRoomSecret = pending.mqttRoomSecret?.trim()
+	const roomSecret = pending.roomSecret?.trim()
 	const introducerPubKeyHash = pending.introducerPubKeyHash?.trim()
-	const fedBootstrap = mqttRoomSecret || introducerPubKeyHash
+	const fedBootstrap = roomSecret || introducerPubKeyHash
 		? {
-			...mqttRoomSecret ? { mqttRoomSecret } : {},
-			...pending.mqttAppId?.trim() ? { mqttAppId: pending.mqttAppId.trim() } : {},
+			...roomSecret ? { roomSecret } : {},
+			...pending.signalingAppId?.trim() ? { signalingAppId: pending.signalingAppId.trim() } : {},
 			...introducerPubKeyHash ? { introducerPubKeyHash } : {},
 		}
 		: null

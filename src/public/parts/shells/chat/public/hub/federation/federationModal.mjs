@@ -1,6 +1,6 @@
 /**
  * 【文件】public/hub/federation/federationModal.mjs
- * 【职责】Hub 联邦设置浮层：节点 relay/省电、群 MQTT 口令轮换、入群快照修复、信誉与 DM 链接。
+ * 【职责】Hub 联邦设置浮层：节点 relay/省电、群 房间口令轮换、入群快照修复、信誉与 DM 链接。
  * 【原理】`openFederationSettingsModal` 渲染 `hub/federation/modal` 模板并绑定 `#hub-settings-modal` 控件。
  * 【关联】wireEvents.mjs、discoveryPanel.mjs、core/overlayModal.mjs、src/api/groupApi.mjs、src/dmLink.mjs。
  */
@@ -259,7 +259,7 @@ export async function openFederationSettingsModal(getGroupId) {
 	if (groupId) 
 		try {
 			const state = await getGroupState(groupId)
-			showRotateRoomSecret = !!state?.groupSettings?.mqttRoomSecret?.trim()
+			showRotateRoomSecret = !!state?.groupSettings?.roomSecret?.trim()
 		}
 		catch { /* group sections stay hidden below */ }
 	

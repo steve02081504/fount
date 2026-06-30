@@ -4,11 +4,11 @@ import {
 	USER_ROOM_SCOPE,
 } from './identity_announce.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
-import { joinMqttRoomWithDefaults, leaveMqttRoom } from './mqtt_room.mjs'
 import { recordExplorePeersFromRoster } from './network.mjs'
 import { ensureNodeDefaults, getNodeHash, getNodeTransportSettings } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
+import { joinSignalingRoomWithDefaults, leaveSignalingRoom } from './signaling_room.mjs'
 import { recordStalePeerPrune } from './stale_peer_log.mjs'
 import {
 	attachIdentityAnnounceHandlers,
@@ -49,7 +49,7 @@ export let userRoomSlot = null
  *
  * @typedef {{
  *   trysteroRoomName: string
- *   mqttPassword: string
+ *   roomSecret: string
  *   room: object
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void
  *   getRoster: () => Array<{ peerId: string, remoteNodeHash: string | undefined }>
@@ -81,7 +81,7 @@ registerFederationRoomProvider('user-room', () => {
 /**
  * @returns {{ appId: string, password: string, roomId: string, nodeHash: string }} Trystero 参数
  */
-export function resolveUserMqttCredentials() {
+export function resolveUserRoomCredentials() {
 	const nodeHash = getNodeHash()
 	const password = createHash('sha256').update(`fount-user-room:${nodeHash}`).digest('hex')
 	return {
@@ -102,9 +102,9 @@ export async function ensureUserRoom(ctx = {}) {
 
 	userRoomInflight = (async () => {
 		ensureNodeDefaults()
-		const creds = resolveUserMqttCredentials()
+		const creds = resolveUserRoomCredentials()
 		try {
-			const room = await joinMqttRoomWithDefaults({
+			const room = await joinSignalingRoomWithDefaults({
 				appId: creds.appId,
 				password: creds.password,
 				roomId: creds.roomId,
@@ -126,7 +126,7 @@ export async function ensureUserRoom(ctx = {}) {
 			/** @type {UserRoomSlot} */
 			const slot = {
 				trysteroRoomName: creds.roomId,
-				mqttPassword: creds.password,
+				roomSecret: creds.password,
 				room,
 				/**
 				 * @param {string} peerId 目标 peer
@@ -174,7 +174,7 @@ export async function ensureUserRoom(ctx = {}) {
 export function invalidateUserRoom() {
 	const slot = userRoomSlot
 	if (slot?.room && typeof slot.room.leave === 'function')
-		void Promise.resolve(leaveMqttRoom(slot.room)).catch(error => console.error('p2p: user room leave failed', error))
+		void Promise.resolve(leaveSignalingRoom(slot.room)).catch(error => console.error('p2p: user room leave failed', error))
 	userRoomSlot = null
 	userRoomInflight = null
 }

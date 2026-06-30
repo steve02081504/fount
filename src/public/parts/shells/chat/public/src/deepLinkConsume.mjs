@@ -57,9 +57,9 @@ export async function applyChatRunUri(raw) {
 		const viewer = viewerResp?.ok ? await viewerResp.json() : {}
 		const pow = await resolvePowForJoin(join.groupId, groupState, viewer.nodeHash || '')
 		await joinGroup(join.groupId, join.inviteCode, null, pow,
-			join.mqttRoomSecret || join.introducerPubKeyHash
+			join.roomSecret || join.introducerPubKeyHash
 				? {
-					...join.mqttRoomSecret && { mqttRoomSecret: join.mqttRoomSecret },
+					...join.roomSecret && { roomSecret: join.roomSecret },
 					...join.introducerPubKeyHash && { introducerPubKeyHash: join.introducerPubKeyHash },
 				}
 				: null)

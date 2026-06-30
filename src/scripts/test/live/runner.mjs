@@ -10,7 +10,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 import { console } from '../../i18n.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
-import { startTestMqttBroker, stopTestMqttBroker } from './mqtt_broker.mjs'
+import { startTestNostrRelay, stopTestNostrRelay } from './nostr_relay.mjs'
 
 const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.ps1')
 
@@ -128,8 +128,8 @@ export async function runLiveSuite({
 		/** @type {Record<string, string>} 各 fed 节点额外注入的环境变量（不污染父进程 env） */
 		const nodeExtraEnv = {}
 		if (spec.fed) {
-			const { relayUrl } = await startTestMqttBroker()
-			nodeExtraEnv.FOUNT_TEST_MQTT_RELAY_URLS = relayUrl
+			const { relayUrl } = await startTestNostrRelay()
+			nodeExtraEnv.FOUNT_TEST_RELAY_URLS = relayUrl
 		}
 
 		for (let i = 0; i < fedNodeCount; i++) {
@@ -165,7 +165,7 @@ export async function runLiveSuite({
 		for (const node of nodes.reverse())
 			await stopNode(node)
 		if (spec.fed)
-			await stopTestMqttBroker()
+			await stopTestNostrRelay()
 	}
 }
 
