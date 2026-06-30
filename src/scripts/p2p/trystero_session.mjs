@@ -50,6 +50,18 @@ export function wrapTrysteroRoom(raw) {
 			 * @returns {void}
 			 */
 			const send = (payload, peerId = null) => {
+				if (peerId != null) {
+					const livePeers = raw.getPeers?.() || {}
+					if (Array.isArray(peerId)) {
+						const live = peerId.filter(id => id != null && id in livePeers)
+						if (!live.length) return
+						for (const id of live)
+							Promise.resolve(action.send(payload, { target: id }))
+								.catch(error => console.warn(`trystero action "${name}" send failed`, error))
+						return
+					}
+					// 单播：peerId 多来自入站上下文（如 fed_shun 应答），不因 getPeers 滞后静默丢包。
+				}
 				Promise.resolve(action.send(payload, peerId == null ? undefined : { target: peerId }))
 					.catch(error => console.warn(`trystero action "${name}" send failed`, error))
 			}

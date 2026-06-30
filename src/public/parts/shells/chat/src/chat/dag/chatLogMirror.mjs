@@ -180,6 +180,28 @@ export async function cancelGeneratingPlaceholder(groupId, entry, username, dagE
 }
 
 /**
+ * 写入 DAG message_edit 终稿；deferrable 权限错误时刷新物化 state 并重试。
+ * @param {string} username 所有者
+ * @param {string} groupId 群 ID
+ * @param {object} eventBody message_edit 事件体
+ * @param {number} [attempt] 重试次数
+ * @returns {Promise<object>} 已签名事件
+ */
+async function appendFinalEditWithRetry(username, groupId, eventBody, attempt = 0) {
+	try {
+		return await appendSignedLocalEvent(username, groupId, eventBody)
+	}
+	catch (error) {
+		if (error?.deferrable && attempt < 4) {
+			await getState(username, groupId, { forceFullReplay: attempt >= 2 })
+			await new Promise(resolve => { setTimeout(resolve, 40 * (attempt + 1)) })
+			return appendFinalEditWithRetry(username, groupId, eventBody, attempt + 1)
+		}
+		throw error
+	}
+}
+
+/**
  * §6.4 / §13：流式结束 — DAG `message_edit` 写入终稿。
  * @param {string} groupId 聊天 ID
  * @param {object} entry 最终条目
@@ -201,7 +223,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 		}
 		const { channelIdForDag, sender } = await resolveMirrorContext(entry, username, groupId)
 		const newContent = await buildFinalMessageContent(username, groupId, entry, text, sender)
-		const editEvent = await appendSignedLocalEvent(username, groupId, {
+		await appendFinalEditWithRetry(username, groupId, {
 			type: 'message_edit',
 			channelId: channelIdForDag,
 			timestamp: Date.now(),
@@ -214,7 +236,8 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 		})
 	}
 	catch (error) {
-		console.error('finalizeDagGeneratingMessage failed:', error)
+		if (!error?.deferrable)
+			console.error('finalizeDagGeneratingMessage failed:', error)
 	}
 }
 

@@ -319,6 +319,7 @@ async function injectFixtures(dataPath, username, copies) {
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
  * @param {(port: number) => Promise<void>} [options.releasePort] spawn 前释放该端口的持有 server
+ * @param {Record<string, string>} [options.extraEnv] 额外注入子进程的环境变量（不影响父进程 process.env）
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(options = {}) {
@@ -353,6 +354,7 @@ export async function launchNode(options = {}) {
 			...process.env,
 			FOUNT_TEST: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
+			...options.extraEnv,
 		},
 	})
 

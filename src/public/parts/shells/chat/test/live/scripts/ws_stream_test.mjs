@@ -172,14 +172,31 @@ if (pendingStreamId) {
 	console.log(`stream-buffer ${pendingStreamId.slice(0, 12)}… -> ${buf.status} chunks=${Array.isArray(chunks) ? chunks.length : 'n/a'}`)
 }
 
+let dagFinalized = false
+if (result === 'ok' && sawStreamChunk) {
+	dagFinalized = await (async () => {
+		for (let i = 0; i < 20; i++) {
+			await new Promise(r => { setTimeout(r, 500) })
+			const msgs = await chatApi('GET', `/groups/${gid}/channels/${cid}/messages`)
+			if (msgs.status !== 200) continue
+			const charRow = (msgs.json?.messages || []).find(m => m.charId && !m.content?.is_generating)
+			if (charRow) return true
+		}
+		return false
+	})()
+	console.log(`dagFinalized=${dagFinalized}`)
+}
+
 await chatApi('DELETE', `/groups/${gid}`)
 
 console.log(`result=${result} stream=${sawStreamChunk} finish=${sawFinish} types=[${[...new Set(received)].join(', ')}]`)
 
-if (result === 'ok' && sawStreamChunk) {
-	const detail = 'received stream_chunk' + (sawFinish ? ' + finish' : '')
+if (result === 'ok' && sawStreamChunk && dagFinalized) {
+	const detail = 'received stream_chunk' + (sawFinish ? ' + finish' : '') + ' + dag finalized'
 	finishLiveWs(true, detail)
 }
+if (result === 'ok' && sawStreamChunk && !dagFinalized)
+	finishLiveWs(false, 'stream_chunk ok but DAG message still generating')
 if (result === 'ok' && sawFinish)
 	finishLiveWs(false, 'received generation finish without stream_chunk (stream test requires stream_chunk)')
 if (String(result).startsWith('trigger:')) finishLiveWs(false, result)

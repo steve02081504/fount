@@ -48,9 +48,13 @@ Test-Case 'A sees B message (live)' {
 
 Write-Host "`n=== 4. Reaction propagation A->B ===" -ForegroundColor Cyan
 $emoji = "$([char]0xD83D)$([char]0xDC4D)"
-Api $FedA POST "/groups/$gid/channels/$cid/reactions" @{ targetEventId = $bMsg; emoji = $emoji } | Out-Null
+$reactResp = Api $FedA POST "/groups/$gid/channels/$cid/reactions" @{ targetEventId = $bMsg; emoji = $emoji }
+Test-Case 'A POST reaction succeeds' {
+	$reactResp.status -eq 200
+}
 Test-Case 'B sees reaction on B-msg' {
 	[bool](PollUntil 60 3 {
+		Api $FedB POST "/groups/$gid/federation/catchup" @{ waitMs = 3000 } | Out-Null
 		$r = Api $FedB GET "/groups/$gid/channels/$cid/messages"
 		@($r.json.reactionEvents | Where-Object { $_.content.targetId -eq $bMsg }).Count -ge 1
 	})

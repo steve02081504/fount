@@ -103,7 +103,7 @@ export async function validateJoinPolicy(state, event, replicaUsername, opts = {
 		.includes(senderKey)
 	if (joinPolicy === 'invite-only' && !hasDmIntroProof && activeBefore > 0 && !senderAlreadyActive && !dmKnownPeer) {
 		if (!content.inviteCode)
-			throw new Error('member_join requires inviteCode')
+			throw joinPolicyError('member_join requires inviteCode', { pendable: fromFederation })
 		// 仅签发者（持本群 invite_hmac.key 的节点，通常即 owner）能校验邀请；
 		// 其他节点拿不到密钥，verify 返回 'unverifiable' 即放行，避免可构陷的误拒。
 		if (await verifyGroupInviteTicket(replicaUsername, state.groupId, content.inviteCode) === 'invalid')

@@ -1,6 +1,8 @@
 /**
  * Trystero MQTT 房间共享配置（chat 联邦 / subfounts 分机共用，§0.4）。
  */
+import process from 'node:process'
+
 import { wrapTrysteroRoom } from './trystero_session.mjs'
 
 /**
@@ -31,6 +33,18 @@ export async function loadRtcPeerConnectionPolyfill() {
 }
 
 /**
+ * 测试环境下从 FOUNT_TEST_MQTT_RELAY_URLS 读取本地 broker（逗号分隔 ws/wss URL）。
+ * @returns {string[] | null} 解析后的 relay URL 列表；非测试环境或无配置时为 null
+ */
+function parseTestRelayUrlsFromEnv() {
+	if (process.env.FOUNT_TEST !== '1') return null
+	const raw = String(process.env.FOUNT_TEST_MQTT_RELAY_URLS || '').trim()
+	if (!raw) return null
+	const urls = raw.split(',').map(url => url.trim()).filter(Boolean)
+	return urls.length ? urls : null
+}
+
+/**
  * 构造 Trystero `joinRoom` 配置（不含 `rtcPolyfill`，由调用方注入）。
  * @param {object} opts 参数
  * @param {string} opts.appId MQTT 应用 id
@@ -39,8 +53,10 @@ export async function loadRtcPeerConnectionPolyfill() {
  * @returns {{ appId: string, password: string, relayConfig: { urls: string[] } }} Trystero 配置片段
  */
 export function buildTrysteroMqttConfig({ appId, password, relayUrls }) {
+	const testUrls = parseTestRelayUrlsFromEnv()
 	// 空数组也回退到默认中继：没有中继 = 没有信令 = 无法会合。
-	const urls = Array.isArray(relayUrls) && relayUrls.length ? relayUrls : DEFAULT_MQTT_RELAY_URLS
+	const urls = testUrls
+		?? (Array.isArray(relayUrls) && relayUrls.length ? relayUrls : DEFAULT_MQTT_RELAY_URLS)
 	return {
 		appId: String(appId || '').trim() || 'fount-p2p',
 		password: String(password || ''),

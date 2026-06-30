@@ -1,8 +1,6 @@
-/** 归档后可从 DAG 删除的过程事件类型。 */
+/** 归档后可从 DAG 删除的过程事件类型。reaction_* 保留在 events.jsonl 以便联邦 gossip 按 id 补洞。 */
 export const FOLDABLE_PROCESS_EVENT_TYPES = new Set([
 	'message_edit',
-	'reaction_add',
-	'reaction_remove',
 	'pin_message',
 	'unpin_message',
 ])
