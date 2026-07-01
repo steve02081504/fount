@@ -3,6 +3,8 @@
  *
  *   fount test [--all] [--since <commit>] [<manifest-ids> [<suite-selectors>]]
  */
+import 'fount/scripts/test/env.mjs'
+
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 

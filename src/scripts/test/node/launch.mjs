@@ -1,6 +1,8 @@
 /**
  * 测试用 fount 节点启动工具（编程 API + CLI）。
  */
+import 'fount/scripts/test/env.mjs'
+
 import { spawn } from 'node:child_process'
 import { cp, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises'
 import net from 'node:net'
@@ -50,7 +52,7 @@ function resolveHeapSnapshotCount() {
 
 /**
  * 构造 deno run 的 --v8-flags 参数（低内存上限）。
- * 近 OOM 快照由 worker 内 v8.setHeapSnapshotNearHeapLimit 触发（Deno 不接受该 CLI flag）。
+ * 近 OOM 快照由 worker 轮询 used_heap / FOUNT_TEST_NODE_HEAP_MB（Deno 无 setHeapSnapshotNearHeapLimit）。
  * @returns {string | null} --v8-flags=... 或 null
  */
 function buildTestNodeV8FlagsArg() {
@@ -445,6 +447,7 @@ export async function launchNode(options = {}) {
 			...process.env,
 			FOUNT_TEST: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
+			FOUNT_TEST_NODE_HEAP_MB: String(resolveTestNodeHeapMb()),
 			FOUNT_TEST_HEAP_SNAPSHOT_COUNT: String(resolveHeapSnapshotCount()),
 			...extraEnv,
 		},

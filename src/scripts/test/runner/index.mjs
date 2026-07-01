@@ -1,3 +1,5 @@
+import 'fount/scripts/test/env.mjs'
+
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
