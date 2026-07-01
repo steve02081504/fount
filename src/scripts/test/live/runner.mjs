@@ -10,8 +10,6 @@ import { execFile } from 'npm:@steve02081504/exec'
 import { console } from '../../i18n.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
-import { startTestNostrRelay, stopTestNostrRelay } from './nostr_relay.mjs'
-
 const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.ps1')
 
 /**
@@ -125,20 +123,13 @@ export async function runLiveSuite({
 	const nodes = []
 	const federationCleanup = join(repoRoot, FEDERATION_CLEANUP)
 	try {
-		/** @type {Record<string, string>} 各 fed 节点额外注入的环境变量（不污染父进程 env） */
-		const nodeExtraEnv = {}
-		if (spec.fed) {
-			const { relayUrl } = await startTestNostrRelay()
-			nodeExtraEnv.FOUNT_TEST_RELAY_URLS = relayUrl
-		}
-
 		for (let i = 0; i < fedNodeCount; i++) {
 			const base = i === 0
 				? nodeA
 				: i === 1
 					? nodeB
 					: nodeFleet?.(i) ?? nodeB
-			nodes.push(await launchNode({ ...base, ...spec.node, extraEnv: nodeExtraEnv }))
+			nodes.push(await launchNode({ ...base, ...spec.node }))
 		}
 
 		if (fedNodeCount > 1)
@@ -164,8 +155,6 @@ export async function runLiveSuite({
 	finally {
 		for (const node of nodes.reverse())
 			await stopNode(node)
-		if (spec.fed)
-			await stopTestNostrRelay()
 	}
 }
 

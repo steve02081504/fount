@@ -48,6 +48,11 @@ export function createFountFixtures(options = {}) {
 			await context.addInitScript(language => {
 				localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
 			}, locale)
+			await context.addInitScript(() => {
+				globalThis.fount ??= {}
+				globalThis.fount.test ??= {}
+				globalThis.fount.test.enabled = true
+			})
 			await use(context)
 			await context.close()
 		},

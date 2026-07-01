@@ -13,6 +13,7 @@ import { parseArgs } from 'node:util'
 
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 
 const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
@@ -23,7 +24,7 @@ const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
 /**
  * launchNode 返回的已就绪节点句柄。
- * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number }} LaunchedNode
+ * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number, usedTestRelay?: boolean }} LaunchedNode
  */
 
 /**
@@ -328,6 +329,14 @@ export async function launchNode(options = {}) {
 	const apiKey = options.apiKey ?? `fount-test-key-${port}`
 	const keepData = options.keepData ?? false
 	const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+	/** @type {Record<string, string>} */
+	const extraEnv = { ...options.extraEnv }
+	let usedTestRelay = false
+	if (options.p2p) {
+		const { relayUrl } = await startTestNostrRelay()
+		extraEnv.FOUNT_TEST_RELAY_URLS = relayUrl
+		usedTestRelay = true
+	}
 
 	await injectFixtures(dataPath, username, options.fixtureCopies ?? [])
 
@@ -354,7 +363,7 @@ export async function launchNode(options = {}) {
 			...process.env,
 			FOUNT_TEST: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
-			...options.extraEnv,
+			...extraEnv,
 		},
 	})
 
@@ -389,6 +398,7 @@ export async function launchNode(options = {}) {
 		process: child,
 		pid: child.pid,
 		keepData,
+		usedTestRelay,
 	}
 }
 
@@ -413,6 +423,8 @@ export async function stopNode(node) {
 	])
 	if (!node.keepData && node.dataPath)
 		await rm(node.dataPath, { recursive: true, force: true })
+	if (node.usedTestRelay)
+		await stopTestNostrRelay()
 }
 
 if (import.meta.main) {

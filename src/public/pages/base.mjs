@@ -9,7 +9,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { onServerEvent } from './scripts/api/server_events.mjs'
 
 let skipBreadcrumb = false
-try {
+if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 		/**
