@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto'
 import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { isSignedBaseCheckpoint } from '../dag/checkpointPayload.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
@@ -45,12 +46,6 @@ const SNAPSHOT_EMPTY_RETRY_MS = 2000
 const SNAPSHOT_POLL_MS = 500
 const SNAPSHOT_RETRY_MAX = 6
 const SNAPSHOT_RETRY_GAP_MS = 1500
-
-/**
- * @param {number} ms 毫秒
- * @returns {Promise<void>} 定时
- */
-const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms) })
 
 /**
  * 自适应等待入群快照应答：分片轮询收集桶。

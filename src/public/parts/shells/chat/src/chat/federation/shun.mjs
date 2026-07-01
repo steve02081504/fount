@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
 
 import { loadLocalFederationArchive } from './archiveHandshake.mjs'
@@ -13,18 +14,19 @@ import { federationNodeHash, loadFederationMaterializedState, requireDagDeps } f
 import { signPullAttestation } from './pullAttestation.mjs'
 
 /** 出站 fed_shun 限流：同群同请求方 30s 内至多一发。 */
-const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: 30_000 })
+const OUTBOUND_SHUN_DEDUPE_MS = 30_000
+const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: OUTBOUND_SHUN_DEDUPE_MS })
 
 /**
  * 主动探测的冷却安全网：尚无任何新鲜 shun 信号时，最多每此间隔向全员探测一次。
  * 与共识窗口解耦——窗口内的 shun 始终计入，但冷启动探测需更频繁，
  * 否则一次探测因 P2P 尚未连通而落空后，被移除方要等满共识窗口才会重试，迟迟无法自判出局。
+ * 略长于出站 dedupe TTL，降低探测撞上对端 shun 静默窗的概率。
  */
-const SHUN_PROBE_COOLDOWN_MS = 30_000
+const SHUN_PROBE_COOLDOWN_MS = OUTBOUND_SHUN_DEDUPE_MS + 5_000
 
 /**
- * 从物化 state 收集已知 active 成员 homeNodeHash（去掉本机）。
- * 若提供 rosterNodeHashes，优先取与 信令房内可见节点的交集；交集为空时退化为 roster 内除己外的节点。
+ * 共识判定的已知对端 nodeHash：优先信令房 roster（除己），无 roster 时回落物化 active 成员的 homeNodeHash。
  * @param {object | null | undefined} state 物化群状态
  * @param {string} selfNodeHash 本机 nodeHash
  * @param {string[] | null | undefined} [rosterNodeHashes] 联邦房内可见 nodeHash
@@ -32,19 +34,17 @@ const SHUN_PROBE_COOLDOWN_MS = 30_000
  */
 export function collectKnownPeerNodeHashes(state, selfNodeHash, rosterNodeHashes = null) {
 	const self = normalizeHex64(selfNodeHash) || ''
-	const rosterSet = rosterNodeHashes?.length
-		? new Set(rosterNodeHashes.map(id => normalizeHex64(id)).filter(isHex64))
-		: null
 	const fromMembers = new Set()
 	for (const member of Object.values(state?.members || {})) {
 		if (member?.status !== 'active') continue
 		const home = normalizeHex64(member.homeNodeHash)
 		if (isHex64(home) && home !== self) fromMembers.add(home)
 	}
-	if (!rosterSet?.size) return [...fromMembers]
-	const fromRoster = [...rosterSet].filter(h => h !== self)
-	if (fromRoster.length) return fromRoster
-	return [...fromMembers]
+	if (!rosterNodeHashes?.length) return [...fromMembers]
+	const fromRoster = [...new Set(
+		rosterNodeHashes.map(id => normalizeHex64(id)).filter(isHex64),
+	)].filter(h => h !== self)
+	return fromRoster.length ? fromRoster : [...fromMembers]
 }
 
 /**
@@ -141,7 +141,7 @@ async function loadRosterNodeHashes(username, groupId) {
 		const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 		const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 		return slot
-			? slot.getRoster().map(peer => normalizeHex64(peer?.nodeHash)).filter(isHex64)
+			? slot.getRoster().map(peer => normalizeHex64(peer?.remoteNodeHash)).filter(isHex64)
 			: null
 	}
 	catch { return null /* federation room may be unavailable in unit tests */ }
@@ -227,12 +227,6 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 	}
 	return evaluateShunConsensus(username, groupId, { shunState })
 }
-
-/**
- * @param {number} ms 毫秒
- * @returns {Promise<void>}
- */
-const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms) })
 
 /**
  * 向联邦邻居发送带 attestation 的 join-snapshot 探测以触发 fed_shun（不应用应答）。

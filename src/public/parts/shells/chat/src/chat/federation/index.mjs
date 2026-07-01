@@ -13,6 +13,7 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/gov
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { getStalePeerPruneCount } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
 import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
+import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
 import { eventsPath } from '../lib/paths.mjs'
@@ -46,12 +47,6 @@ const catchUpInflight = new Map()
 /** 首次入群无 checkpoint 时等待 信令 roster 出现邻居的上限（毫秒）。 */
 const PEER_ROSTER_WAIT_MS = 12_000
 const PEER_ROSTER_POLL_MS = 400
-
-/**
- * @param {number} ms 毫秒
- * @returns {Promise<void>}
- */
-const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms) })
 
 /**
  * 等待联邦房间 roster 出现至少一名邻居（新成员 join snapshot 前置条件）。
