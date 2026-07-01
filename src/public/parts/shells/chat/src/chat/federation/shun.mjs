@@ -5,11 +5,12 @@ import { randomUUID } from 'node:crypto'
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
+import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
 
-import { loadLocalFederationArchive } from './archiveHandshake.mjs'
+import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { federationNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 
@@ -78,6 +79,7 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
 	const pk = normalizeHex64(requesterPubKeyHash)
 	if (!pk) return { shun: false, reason: null }
 	if (isBlockedPeer(pk)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedMembers?.has?.(pk)) return { shun: true, reason: 'not_a_member' }
 	const member = fedState?.members?.[pk]
 	if (!member || member.status !== 'active') return { shun: true, reason: 'not_a_member' }
 	return { shun: false, reason: null }
@@ -94,6 +96,7 @@ export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, request
 	const node = normalizeHex64(requesterNodeHash)
 	if (!node) return { shun: false, reason: null }
 	if (isBlockedPeer(node)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedNodes?.has?.(node)) return { shun: true, reason: 'not_a_member' }
 	let matched = false
 	for (const member of Object.values(fedState?.members || {})) {
 		if (normalizeHex64(member?.homeNodeHash) !== node) continue
@@ -253,11 +256,37 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 	let rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	if (shouldProbe) {
 		shunState = await saveGroupShunState(username, groupId, { lastProbeAt: now })
+		await probeShunViaTipPingToRosterPeers(username, groupId, slot)
 		await probeShunFromFederationPeers(username, groupId, slot, opts)
 		shunState = await loadGroupShunState(username, groupId)
 		rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	}
 	return evaluateShunConsensus(username, groupId, { shunState, rosterNodeHashes: rosterSnapshot })
+}
+
+/**
+ * 向 roster 全员发 fed_tip_ping 触发 fed_shun（稀疏 peer pool 可能漏选，shun 探测必须全覆盖）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} slot FederationSlot
+ * @returns {Promise<void>}
+ */
+export async function probeShunViaTipPingToRosterPeers(username, groupId, slot) {
+	if (!slot?.send) return
+	const { readJsonl } = requireDagDeps()
+	const nodeHash = federationNodeHash(username)
+	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
+	const ping = {
+		nodeHash,
+		tips: computeDagTipIdsFromEvents(localArchive.events),
+		archiveSummary: wireArchiveSummary(localArchive.summary),
+	}
+	const peerIds = slot.getRoster().map(peer => peer?.peerId).filter(Boolean)
+	if (peerIds.length)
+		for (const peerId of peerIds)
+			slot.send('fed_tip_ping', ping, peerId)
+	else
+		slot.send('fed_tip_ping', ping, null)
 }
 
 /**

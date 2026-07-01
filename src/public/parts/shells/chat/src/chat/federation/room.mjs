@@ -217,7 +217,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			 * @param {string} subject 节点 id 或 pubKeyHash
 			 * @returns {boolean} 是否已拉黑
 			 */
-			const isBlockedPeer = subject => isPeerPoolKeyBlocked(peersSnap, subject)
+			const isBlockedPeer = subject => isPeerPoolKeyBlocked(loadPeerPoolView(groupId), subject)
 
 			attachFederationRoomHandlers(createFederationRoomHandlerBundle({
 				username,
