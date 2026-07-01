@@ -75,8 +75,13 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		await applySubjectiveSlashFromEvent(username, groupId, signPayload, async (u, g) => readJsonl(eventsPath(u, g), { sanitize: stripDagEventLocalExtensions }))
 		await decayAfterSlash()
 	}
-	else if (['member_kick', 'member_ban'].includes(signPayload.type))
+	else if (['member_kick', 'member_ban'].includes(signPayload.type)) {
 		await decayAfterSlash()
+		if (signPayload.type === 'member_ban')
+			void import('../federation/shun.mjs')
+				.then(({ notifyFedShunAfterMemberBan }) => notifyFedShunAfterMemberBan(username, groupId, signPayload))
+				.catch(console.error)
+	}
 	else if (signPayload.type === 'reputation_reset') {
 		const target = slashTargetPubKeyHash(signPayload)
 		if (target) await applyReputationResetToScores( target)

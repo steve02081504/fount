@@ -9,6 +9,7 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/gov
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
+import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { federationNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
@@ -131,6 +132,43 @@ export function sendFedShun(fedOut, fedShunSend, groupId, localNodeHash, request
 		try { fedShunSend(payload, peerId) }
 		catch (error) { console.error('federation: fed_shun send failed', error) }
 	})
+}
+
+/**
+ * member_ban 落盘后向被封成员 home 节点主动推送 fed_shun（不等待对端探测）。
+ * @param {string} username  replica 用户
+ * @param {string} groupId 群 ID
+ * @param {string | null | undefined} targetHomeNodeHash 目标 homeNodeHash
+ * @param {'not_a_member' | 'blocked'} [reason] 原因
+ * @returns {Promise<void>}
+ */
+export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHash, reason = 'not_a_member') {
+	const home = normalizeHex64(targetHomeNodeHash)
+	if (!isHex64(home)) return
+	const { getFederationPartitionSlot } = await import('./registry.mjs')
+	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
+	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
+	if (!slot?.send || !slot.fedOut) return
+	const peerId = slot.getPeerIdByNodeHash?.(home)
+		|| slot.getRoster().find(peer => normalizeHex64(peer?.remoteNodeHash) === home)?.peerId
+	if (!peerId) return
+	/** @type {(payload: unknown, peerId: string) => void} */
+	const fedShunSend = (payload, peerId) => { slot.send('fed_shun', payload, peerId) }
+	sendFedShun(slot.fedOut, fedShunSend, groupId, federationNodeHash(username), home, peerId, reason)
+}
+
+/**
+ * member_ban 事件 hook：向被封成员的 home 节点推送 fed_shun。
+ * @param {string} username replica 用户
+ * @param {string} groupId 群 ID
+ * @param {object} banEvent member_ban 事件
+ * @returns {Promise<void>}
+ */
+export async function notifyFedShunAfterMemberBan(username, groupId, banEvent) {
+	const targetKey = resolveTargetMemberKey(banEvent?.content)
+	if (!targetKey) return
+	const state = await loadFederationMaterializedState(username, groupId)
+	await pushFedShunToHomeNode(username, groupId, state?.members?.[targetKey]?.homeNodeHash)
 }
 
 /**
