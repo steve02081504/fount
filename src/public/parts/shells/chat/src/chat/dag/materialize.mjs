@@ -5,6 +5,7 @@
  * 【数据结构】`state`（成员/频道/消息 overlay 等物化视图）、`order`（拓扑序 id 列表）、`checkpoint`（含 `checkpoint_event_id`、`dag_tip_ids`、`epoch_chain`）。
  * 【关联】`wal.mjs`、`storage.mjs`、`events/retention.mjs`、`queries.mjs`、`remoteIngest.mjs`。
  */
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdir, stat } from 'node:fs/promises'
 
 import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
@@ -55,6 +56,9 @@ import {
 } from './groupMaterializedState.mjs'
 import { verifyEventsSnapshotWAL } from './wal.mjs'
 
+/** @type {AsyncLocalStorage<boolean>} 当前异步上下文中是否正在执行 WAL 修复，防止 rebuild 内嵌 getState 无限递归 OOM。 */
+const walRepairContext = new AsyncLocalStorage()
+
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
@@ -103,12 +107,14 @@ export async function getState(username, groupId, opts = {}) {
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 
 	let wal = { ok: true }
+	const repairing = opts.skipWalRepair || walRepairContext.getStore() === true
 	if (!opts.forceFullReplay && events.length > 0) {
 		wal = await verifyEventsSnapshotWAL(username, groupId, checkpoint, events)
-		if (!opts.skipWalRepair && (!wal.ok || wal.forceFullReplay === true)) {
-			await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
-			return getState(username, groupId, { ...opts, skipWalRepair: true })
-		}
+		if (!repairing && (!wal.ok || wal.forceFullReplay === true))
+			return walRepairContext.run(true, async () => {
+				await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
+				return getState(username, groupId, { ...opts, skipWalRepair: true })
+			})
 	}
 	const forceReplay = opts.forceFullReplay || wal.forceFullReplay === true
 
