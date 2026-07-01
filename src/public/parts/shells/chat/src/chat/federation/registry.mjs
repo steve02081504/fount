@@ -86,6 +86,19 @@ function teardownFederationSlot(slot) {
 }
 
 /**
+ * 从注册表移除分区槽但不 leave 底层 Trystero room（join-before-leave 替换时用）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} partitionId 分区 id
+ * @returns {object | null | undefined} 被移除的 slot
+ */
+export function detachFederationPartitionSlot(username, groupId, partitionId) {
+	const slot = mapGet(federationPartitionSlots, username, groupId, partitionId)
+	mapDelete(federationPartitionSlots, username, groupId, partitionId)
+	return slot
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} partitionId 分区 id

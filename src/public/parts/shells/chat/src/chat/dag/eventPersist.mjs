@@ -165,6 +165,11 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 				await rotateAllChannelKeys(username, groupId)
 		
 
+		if (signPayload.type === 'group_settings_update' && signPayload.content?.roomSecret) {
+			const state = await materializedState()
+			const creds = roomCredentialsFromGroupSettings({ ...state.groupSettings, ...signPayload.content })
+			if (creds) await onRoomCredentialsSyncedFromDag(username, groupId, creds)
+		}
 		return
 	}
 	const channelId = signPayload.channelId || 'default'
@@ -213,9 +218,4 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		).catch(error => {
 			console.error('maybeAutoTriggerCharReply failed:', error)
 		})
-	if (signPayload.type === 'group_settings_update' && signPayload.content?.roomSecret) {
-		const state = await materializedState()
-		const creds = roomCredentialsFromGroupSettings({ ...state.groupSettings, ...signPayload.content })
-		if (creds) await onRoomCredentialsSyncedFromDag(username, groupId, creds)
-	}
 }

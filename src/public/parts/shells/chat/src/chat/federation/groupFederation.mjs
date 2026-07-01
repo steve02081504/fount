@@ -4,7 +4,7 @@
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { getState } from '../dag/materialize.mjs'
 
-import { ensureFederationRoom, invalidateFederationRoomCache } from './room.mjs'
+import { ensureFederationRoom } from './room.mjs'
 import { DEFAULT_SIGNALING_APP_ID, mintRoomSecret, roomCredentialsFromGroupSettings } from './roomCredentials.mjs'
 
 /**
@@ -47,10 +47,10 @@ export async function activateGroupFederation(username, groupId) {
 			...gs.rtcJoinRatePerMin == null ? { rtcJoinRatePerMin: 12 } : {},
 		},
 	}, { federationJoinTimeoutMs: ACTIVATE_FEDERATION_JOIN_TIMEOUT_MS })
-	invalidateFederationRoomCache(username, groupId)
 	const { state: after } = await getState(username, groupId)
 	const creds = roomCredentialsFromGroupSettings(after.groupSettings)
 	if (!creds) throw new Error('failed to activate group federation')
-	void ensureFederationRoom(username, groupId).catch(console.error)
+	// append 已通过 publishSignedEventToFederation 有界 join 建好 slot；切勿 invalidate 后 teardown 再异步 rejoin（会断链）。
+	await ensureFederationRoom(username, groupId)
 	return creds
 }

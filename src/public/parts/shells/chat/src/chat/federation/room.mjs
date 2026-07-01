@@ -19,7 +19,7 @@ import { LOGIC_SYNC_PARTITION, partitionForOutboundEvent, resolveNodePartitionId
 import {
 	bumpFederationPartitionRebindGen,
 	deleteFederationPartitionInflight,
-	deleteFederationPartitionSlot,
+	detachFederationPartitionSlot,
 	getFederationPartitionInflight,
 	forEachFederationRoomSlotInGroup,
 	getFederationPartitionRebindGen,
@@ -141,11 +141,14 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 	const rtcRoomKey = `${username}:${groupId}:${partitionId}`
 	const desiredRoomName = roomCreds.roomId
 	const desiredPassword = roomCreds.password
+	/** @type {import('./federationSlot.mjs').FederationSlot | null | undefined} */
+	let supersededSlot = null
 	if (hasFederationPartitionSlot(username, groupId, partitionId)) {
 		const existing = getFederationPartitionSlot(username, groupId, partitionId)
 		if (existing?.trysteroRoomName === desiredRoomName && existing?.roomSecret === desiredPassword)
 			return existing
-		deleteFederationPartitionSlot(username, groupId, partitionId)
+		// join-before-leave 以 slot 粒度实现：先 detach 旧 slot、join 新 room，成功后再 leave 旧 slot，避免 offerPool 归零销毁。
+		supersededSlot = detachFederationPartitionSlot(username, groupId, partitionId) ?? null
 		bumpFederationPartitionRebindGen(username, groupId, partitionId)
 	}
 	const inflight = getFederationPartitionInflight(username, groupId, partitionId)
@@ -297,6 +300,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				return null
 			}
 			setFederationPartitionSlot(username, groupId, partitionId, slot)
+			if (supersededSlot?.isActive?.() && supersededSlot !== slot)
+				void supersededSlot.leave().catch(error => console.error('federation: superseded slot leave failed', error))
 			groupFederationOwner.set(groupId, username)
 			// 方案3：tip 心跳仅在逻辑同步分区 slot 上启动——catch-up 本身也只走 sync 分区，
 			// 避免每个频道分区 slot 都读盘+广播全群 tips 的 N 倍冗余。入站补齐 hook（sync.mjs）仍对所有分区生效。
@@ -310,6 +315,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		}
 		catch (error) {
 			console.error('federation: joinSignalingRoom failed', error)
+			if (supersededSlot?.isActive?.())
+				setFederationPartitionSlot(username, groupId, partitionId, supersededSlot)
 			return null
 		}
 		finally {

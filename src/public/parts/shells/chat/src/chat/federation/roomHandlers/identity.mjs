@@ -46,7 +46,13 @@ export function registerIdentityHandlers(roomContext) {
 	const identity = wireAction(roomContext, 'identity_announce')
 	identity.on((data, peerId) => {
 		void verifyIdentityAnnounce(data, peerId).then(remoteNodeHash => {
-			if (!remoteNodeHash) return
+			if (!remoteNodeHash) {
+				if (process.env.FOUNT_TEST === '1')
+					console.warn('federation: identity_announce verify failed', { groupId, peerId })
+				return
+			}
+			if (process.env.FOUNT_TEST === '1')
+				console.warn('federation: identity_announce ok', { groupId, peerId, remoteNodeHash: remoteNodeHash.slice(0, 16) })
 			const previousNodeId = peerToNode.get(peerId)
 			if (previousNodeId) nodeToPeer.delete(previousNodeId)
 			peerToNode.set(peerId, remoteNodeHash)
@@ -74,7 +80,13 @@ export function registerIdentityHandlers(roomContext) {
 	})
 
 	room.onPeerJoin(peerId => {
-		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) return
+		if (process.env.FOUNT_TEST === '1')
+			console.warn('federation: onPeerJoin', { groupId, peerId })
+		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) {
+			if (process.env.FOUNT_TEST === '1')
+				console.warn('federation: onPeerJoin rtc slot denied', { groupId, peerId })
+			return
+		}
 		fedOut.enqueue(3, () => {
 			void buildIdentityAnnounce()
 				.then(body => { identity.send(body, peerId) })

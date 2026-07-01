@@ -1,7 +1,7 @@
 import { buildIdentityAnnounce, verifyIdentityAnnounce } from './identity_announce.mjs'
 
 /**
- * 将 @trystero-p2p 0.25 原生 room 适配为 fount 内部统一契约（适配集中在 joinSignalingRoom 单一边界，
+ * 将 @trystero-p2p 0.25 原生 room 适配为 fount 内部统一契约（适配集中在 joinSignalingRoomWithDefaults 单一边界，
  * 房间消费方无需感知底层 API 形态）：
  * - 原生 `makeAction(name)` 返回对象 `{ send, onMessage }`、`send(data, { target })`、入站 handler 第二参为 `{ peerId }`；
  *   适配为 `[send(payload, peerId?), onMessage(handler)]`，handler 签名 `(payload, peerId)`。
@@ -14,6 +14,8 @@ export function wrapTrysteroRoom(raw) {
 	const joinCbs = new Set()
 	/** @type {Set<(peerId: string) => void>} */
 	const leaveCbs = new Set()
+	/** @type {Set<string>} 已投递 onPeerJoin 的 peerId，防底层重复触发与补发双扣限流 */
+	const announcedPeers = new Set()
 	/**
 	 * 单槽 onPeer* 属性 → 多订阅 fan-out 派发。
 	 * @param {Set<(peerId: string) => void>} cbs 订阅集合
@@ -27,12 +29,19 @@ export function wrapTrysteroRoom(raw) {
 	 * @param {string} peerId 加入的 peer id
 	 * @returns {void}
 	 */
-	function onPeerJoinDispatch(peerId) { dispatchPeerEvent(joinCbs, peerId) }
+	function onPeerJoinDispatch(peerId) {
+		if (announcedPeers.has(peerId)) return
+		announcedPeers.add(peerId)
+		dispatchPeerEvent(joinCbs, peerId)
+	}
 	/**
 	 * @param {string} peerId 离开的 peer id
 	 * @returns {void}
 	 */
-	function onPeerLeaveDispatch(peerId) { dispatchPeerEvent(leaveCbs, peerId) }
+	function onPeerLeaveDispatch(peerId) {
+		announcedPeers.delete(peerId)
+		dispatchPeerEvent(leaveCbs, peerId)
+	}
 	raw.onPeerJoin = onPeerJoinDispatch
 	raw.onPeerLeave = onPeerLeaveDispatch
 
@@ -84,7 +93,15 @@ export function wrapTrysteroRoom(raw) {
 		 * @param {(peerId: string) => void} cb 订阅回调
 		 * @returns {() => void} 取消订阅
 		 */
-		onPeerJoin(cb) { joinCbs.add(cb); return () => joinCbs.delete(cb) },
+		onPeerJoin(cb) {
+			joinCbs.add(cb)
+			// join 返回后 WebRTC 可能已激活；补发已连接 peer，避免 handler 注册晚于 onPeerJoin 丢事件。
+			for (const peerId of Object.keys(raw.getPeers?.() || {})) {
+				if (!announcedPeers.has(peerId)) announcedPeers.add(peerId)
+				try { cb(peerId) } catch (error) { console.error('trystero peer event handler failed', error) }
+			}
+			return () => joinCbs.delete(cb)
+		},
 		/**
 		 * @param {(peerId: string) => void} cb 订阅回调
 		 * @returns {() => void} 取消订阅

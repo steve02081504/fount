@@ -34,6 +34,19 @@ if ($jr.status -ne 200) { throw "join failed: $($jr.status) $($jr.raw)" }
 Write-Host "join result: $($jr.json | ConvertTo-Json -Compress)" -ForegroundColor Cyan
 
 Write-Host "`n=== 6. NodeB: federation health gate (members>=2) ===" -ForegroundColor Cyan
+try {
+	$peersA = Api $FedA GET "/groups/$groupId/peers"
+	$peersB = Api $FedB GET "/groups/$groupId/peers"
+	Write-Host "  NodeA peers: $($peersA.json.peers.Count) federationEnabled=$($peersA.json.federationEnabled)" -ForegroundColor DarkGray
+	Write-Host "  NodeB peers: $($peersB.json.peers.Count) federationEnabled=$($peersB.json.federationEnabled)" -ForegroundColor DarkGray
+	$catchA = Api $FedA POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
+	Write-Host "  NodeA catchup: federationActive=$($catchA.json.federationActive) tips=$($catchA.json.tipsCollected)" -ForegroundColor DarkGray
+	$catchB = Api $FedB POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
+	Write-Host "  NodeB catchup: federationActive=$($catchB.json.federationActive) tips=$($catchB.json.tipsCollected)" -ForegroundColor DarkGray
+}
+catch {
+	Write-Host "  peer/catchup probe failed: $_" -ForegroundColor Yellow
+}
 $bReady = Wait-FedMembers $FedB $groupId 2 120
 if (-not $bReady) { throw 'NodeB never materialized group state (members>=2)' }
 

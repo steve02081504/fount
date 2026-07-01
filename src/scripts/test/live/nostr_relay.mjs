@@ -26,22 +26,29 @@ function eventMatchesFilter(event, filter) {
 	if (Array.isArray(filter.ids) && filter.ids.length && !filter.ids.includes(event.id)) return false
 	if (Array.isArray(filter.authors) && filter.authors.length && !filter.authors.includes(event.pubkey)) return false
 	if (Array.isArray(filter.kinds) && filter.kinds.length && !filter.kinds.includes(event.kind)) return false
+	if (filter.since != null && Number(event.created_at) < Number(filter.since)) return false
 	if (Array.isArray(filter['#p']) && filter['#p'].length) {
 		const tags = Array.isArray(event.tags) ? event.tags : []
 		const pTags = tags.filter(tag => tag[0] === 'p').map(tag => tag[1])
 		if (!filter['#p'].some(p => pTags.includes(p))) return false
+	}
+	if (Array.isArray(filter['#x']) && filter['#x'].length) {
+		const tags = Array.isArray(event.tags) ? event.tags : []
+		const xTags = tags.filter(tag => tag[0] === 'x').map(tag => tag[1])
+		if (!filter['#x'].some(x => xTags.includes(x))) return false
 	}
 	return true
 }
 
 /**
  * @param {import('npm:ws').WebSocket} ws 客户端
+ * @param {string} subId 订阅 id（NIP-01 EVENT 第二字段）
  * @param {object} event Nostr event
  * @returns {void}
  */
-function broadcastEvent(ws, event) {
+function broadcastEvent(ws, subId, event) {
 	if (ws.readyState !== ws.OPEN) return
-	ws.send(JSON.stringify(['EVENT', event]))
+	ws.send(JSON.stringify(['EVENT', subId, event]))
 }
 
 /**
@@ -51,10 +58,17 @@ function broadcastEvent(ws, event) {
 function relayEvent(event) {
 	storedEvents.push(event)
 	if (storedEvents.length > 5000) storedEvents = storedEvents.slice(-2500)
+	if (process.env.FOUNT_TEST === '1') {
+		const xTag = event.tags?.find(t => t[0] === 'x')?.[1]
+		console.warn('test-relay: ingest EVENT', { kind: event.kind, xTag, clients: activeRelay?.wss?.clients?.size ?? 0 })
+	}
 	for (const client of activeRelay?.wss?.clients || [])
 		for (const sub of client.subscriptions || [])
-			if (sub.filters.some(filter => eventMatchesFilter(event, filter)))
-				broadcastEvent(client, event)
+			if (sub.filters.some(filter => eventMatchesFilter(event, filter))) {
+				if (process.env.FOUNT_TEST === '1')
+					console.warn('test-relay: forward EVENT', { subId: sub.id, kind: event.kind })
+				broadcastEvent(client, sub.id, event)
+			}
 }
 
 /**
@@ -74,17 +88,23 @@ function handleClientMessage(ws, raw) {
 	const [type, ...rest] = message
 	if (type === 'EVENT') {
 		const event = rest[0]
-		if (event && typeof event === 'object') relayEvent(event)
+		if (event && typeof event === 'object') {
+			relayEvent(event)
+			if (ws.readyState === ws.OPEN)
+				ws.send(JSON.stringify(['OK', event.id || '', true, '']))
+		}
 		return
 	}
 	if (type === 'REQ') {
 		const subId = String(rest[0] || '')
 		const filters = rest.slice(1).filter(item => item && typeof item === 'object')
+		if (process.env.FOUNT_TEST === '1')
+			console.warn('test-relay: REQ', { subId, filterCount: filters.length, kinds: filters.flatMap(f => f.kinds || []) })
 		if (!ws.subscriptions) ws.subscriptions = []
 		ws.subscriptions.push({ id: subId, filters: filters.length ? filters : [{}] })
 		for (const event of storedEvents)
 			if (filters.some(filter => eventMatchesFilter(event, filter)))
-				broadcastEvent(ws, event)
+				broadcastEvent(ws, subId, event)
 		ws.send(JSON.stringify(['EOSE', subId]))
 		return
 	}

@@ -5,6 +5,7 @@ import process from 'node:process'
 
 import { defaultRelayUrls as trysteroDefaultRelayUrls } from 'npm:@trystero-p2p/nostr'
 
+import { wrapRtcPeerConnectionForMdns } from './rtc_mdns_filter.mjs'
 import { wrapTrysteroRoom } from './trystero_session.mjs'
 
 /**
@@ -39,17 +40,33 @@ export function mergeSignalingRelayUrls(userRelayUrls) {
 }
 
 /**
+ * Windows/Deno 服务端 WebRTC 常产出 .local mDNS host candidate，对端无法解析。
+ * @returns {boolean} 是否应在 ICE 层过滤 mDNS host candidate
+ */
+function shouldFilterMdnsCandidates() {
+	return process.env.FOUNT_TEST === '1' || process.platform === 'win32'
+}
+
+/**
  * 加载 WebRTC 构造函数 polyfill（优先 werift，回退 node-datachannel）。
+ * win32 / 测试环境下在 ICE candidate 层过滤 mDNS host candidate。
  * @returns {Promise<typeof import('npm:node-datachannel/polyfill').RTCPeerConnection>} RTCPeerConnection 类
  */
 export async function loadRtcPeerConnectionPolyfill() {
+	const filterMdns = shouldFilterMdnsCandidates()
 	try {
-		const { RTCPeerConnection } = await import('npm:werift')
-		return RTCPeerConnection
+		const werift = await import('npm:werift')
+		const BaseRTC = werift.RTCPeerConnection
+		return filterMdns
+			? wrapRtcPeerConnectionForMdns(BaseRTC, werift.RTCIceCandidate)
+			: BaseRTC
 	}
 	catch {
-		const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
-		return RTCPeerConnection
+		const ndc = await import('npm:node-datachannel/polyfill')
+		const BaseRTC = ndc.RTCPeerConnection
+		return filterMdns
+			? wrapRtcPeerConnectionForMdns(BaseRTC, ndc.RTCIceCandidate)
+			: BaseRTC
 	}
 }
 
@@ -103,7 +120,10 @@ export async function attachTrysteroRelayErrorHandlers() {
 		const sockets = nostr.getRelaySockets()
 		for (const [, socket] of Object.entries(sockets))
 			if (socket && typeof socket.on === 'function' && !relaySocketsWithErrorHandler.has(socket)) {
-				socket.on('error', () => { })
+				socket.on('error', error => {
+					if (process.env.FOUNT_TEST === '1')
+						console.warn('p2p: nostr relay socket error', error)
+				})
 				relaySocketsWithErrorHandler.add(socket)
 			}
 	}
@@ -111,81 +131,195 @@ export async function attachTrysteroRelayErrorHandlers() {
 }
 
 /**
- * 房间加入串行化的落定窗口（毫秒）。
- *
- * trystero strategy 的 offerPool / didInit / SharedPeerManager 都是**进程级单例**：同一进程并发加入多个
- * room 时，后加入的 room 会与首个 room 的 offerPool warmup（一次性创建 20 个 WebRTC offer 连接）相互竞争，
- * 结果这些 room 全部协商失败、彼此发现不了对端（实测：0 延迟并发双 room 必失败；串行 + 落定延迟必成功）。
- * fount 单进程要同时持有 user room + 多个群联邦 room + subfounts，故所有 joinSignalingRoom 必须经队列串行，
- * 且每次加入后留出该窗口让 warmup 落定再放行下一个。
+ * 首次 join 后的落定窗口（毫秒）：Trystero 0.25 仅在 `!pool.isActive` 时 warmup offerPool。
+ * 进程内尚无活跃信令 room 时，需留出该窗口让首次 warmup 落定。
+ * 两常量设为相等即回退为固定窗口行为。
  */
-const JOIN_SETTLE_MS = 8000
+const JOIN_SETTLE_FIRST_MS = 8000
 
 /**
- * 单次 join 的硬超时（毫秒）。
+ * 后续 join 的落定窗口（毫秒）：offerPool 已 active 时缩短等待。
+ */
+const JOIN_SETTLE_SUBSEQUENT_MS = 1500
+
+/**
+ * 单次 join 的硬超时（毫秒，不含串行队列等待）。
  *
- * join 经进程级串行队列（每次落定窗口 JOIN_SETTLE_MS），队列积压时单次 join 的等待可被前序 join 无界拖长。
- * 后台 join（联邦写路径触发）若永久挂起会堆积成 OOM。故对每次 join 设硬上限：超时即放弃本次（返回 null），
- * 让上层走 catch-up 最终一致；底层 join 若在超时后才落定，则 leave 该孤儿房间，杜绝 werift 持连泄漏。
- * 取值需 > JOIN_SETTLE_MS，且需覆盖「串行队列等待 + 实际 join + ICE」的背靠背叠加，避免多房间连续 join 时被误杀。
+ * 后台 join（联邦写路径触发）若永久挂起会堆积成 OOM。超时只覆盖实际 Trystero joinRoom + ICE，
+ * 不含 acquireJoinQueueSlot 的排队等待；超时即放弃本次（返回 null），上层走 catch-up 兜底。
+ * 若底层 join 在超时后才落定，则 leave 该孤儿房间，杜绝 werift 持连泄漏。
  */
 const SIGNALING_JOIN_HARD_TIMEOUT_MS = 30_000
+
 /**
  * 进程内 join/leave 串行队列尾。
  *
- * 不再通过 globalThis 注入，避免跨模块全局污染；同一模块实例内仍保持严格串行。
- * 若未来需要跨载入域（file:// 与 http://）统一队列，改为专用 runtime 单例模块而非全局注入。
+ * Trystero 0.25 的 offerPool / relay socket / SharedPeerManager 均为进程级单例；
+ * fount 单进程同时持有 user room + 多个群联邦 room，join/leave 须串行，
+ * 且活跃 room 归零时 offerPool 会被销毁——换房须 join-before-leave（见 federation room.mjs）。
  * @type {Promise<void>}
  */
 let joinQueueTail = Promise.resolve()
 
-/**
- * 静默中继连接错误回调（避免 ECONNRESET 刷屏）。
- * @returns {void}
- */
-function silentJoinError() { }
+/** @type {Map<object, { appId: string, roomId: string }>} 进程内仍持有引用的 Trystero room */
+const activeSignalingRooms = new Map()
+
+/** 正在 join 的 room 数（含排队等待 acquireJoinQueueSlot） */
+let pendingSignalingJoinCount = 0
 
 /**
- * 串行执行一次房间加入，并在其后等待 warmup 落定窗口再放行队列中的下一个加入。
- * @template T
- * @param {() => T} createRoom 同步创建并包装 room 的函数
- * @returns {Promise<T>} 创建的 room
+ * @param {...unknown} args 日志参数
+ * @returns {void}
  */
-function enqueueRoomJoin(createRoom) {
-	const result = Promise.resolve(joinQueueTail).then(createRoom)
-	/**
-	 * 无论本次加入成功与否，都等待落定窗口再放行下一个（warmup 竞争窗口）。
-	 * @returns {Promise<void>} 落定后兑现
-	 */
-	const settle = () => new Promise(resolve => setTimeout(resolve, JOIN_SETTLE_MS))
-	joinQueueTail = result.then(settle, settle)
-	return result
+function testLogSignaling(...args) {
+	if (process.env.FOUNT_TEST === '1')
+		console.warn('p2p: signaling', ...args)
 }
 
 /**
- * 加入 Trystero Nostr 房间（经进程级串行队列，规避 offerPool warmup 竞争）。
- * @param {object} config Trystero `joinRoom` 配置（含 `rtcPolyfill`、`rtcConfig`）
+ * @param {object} room 已包装 room
+ * @param {string} appId 应用 id
  * @param {string} roomId 房间 id
- * @returns {Promise<unknown>} Trystero room
+ * @returns {void}
  */
-export async function joinSignalingRoom(config, roomId) {
-	const { joinRoom } = await import('npm:@trystero-p2p/nostr')
-	return enqueueRoomJoin(() => wrapTrysteroRoom(joinRoom(config, roomId, { onJoinError: silentJoinError })))
+function registerActiveSignalingRoom(room, appId, roomId) {
+	activeSignalingRooms.set(room, { appId, roomId: String(roomId || '') })
+	testLogSignaling('register', { appId, roomId, activeCount: activeSignalingRooms.size })
+}
+
+/**
+ * @param {object | null | undefined} room 已包装 room
+ * @returns {void}
+ */
+function unregisterActiveSignalingRoom(room) {
+	if (!room) return
+	const meta = activeSignalingRooms.get(room)
+	activeSignalingRooms.delete(room)
+	if (meta)
+		testLogSignaling('unregister', { ...meta, activeCount: activeSignalingRooms.size, pendingJoins: pendingSignalingJoinCount })
+	if (activeSignalingRooms.size === 0 && pendingSignalingJoinCount === 0)
+		testLogSignaling('zero active rooms')
+}
+
+/**
+ * @returns {number} 当前活跃信令 room 数
+ */
+export function getActiveSignalingRoomCount() {
+	return activeSignalingRooms.size
+}
+
+/**
+ * Trystero join / handshake 错误回调（生产环境静默；测试环境打 warn 便于定位联邦失败）。
+ * @param {{ error?: string, appId?: string, peerId?: string, roomId?: string } | unknown} detail 错误详情
+ * @returns {void}
+ */
+function onSignalingJoinError(detail) {
+	if (process.env.FOUNT_TEST === '1')
+		console.warn('p2p: signaling join error', detail)
+}
+
+/**
+ * 等待进程级 join/leave 串行队列轮到本调用方。
+ * @returns {Promise<() => Promise<void>>} 释放函数（落定窗口结束后放行下一项）
+ */
+async function acquireJoinQueueSlot() {
+	await joinQueueTail
+	const settleMs = getActiveSignalingRoomCount() > 0
+		? JOIN_SETTLE_SUBSEQUENT_MS
+		: JOIN_SETTLE_FIRST_MS
+	/** @type {() => void} */
+	let releaseSlot
+	const slotDone = new Promise(resolve => { releaseSlot = resolve })
+	joinQueueTail = slotDone
+	return async () => {
+		await new Promise(resolve => setTimeout(resolve, settleMs))
+		releaseSlot()
+	}
+}
+
+/**
+ * 经进程级串行队列执行 Trystero join（硬超时、孤儿房间回收、早返回）。
+ * @param {object} opts 参数
+ * @param {string} opts.appId 应用 id
+ * @param {string} opts.roomId 房间 id
+ * @param {() => object | Promise<object>} opts.buildJoinConfig Trystero joinRoom 配置（含 rtcPolyfill）
+ * @returns {Promise<unknown | null>} 包装后的 room；超时返回 null
+ */
+async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
+	const normalizedAppId = String(appId || '').trim() || 'fount-p2p'
+	const normalizedRoomId = String(roomId || '')
+	testLogSignaling('join start', {
+		appId: normalizedAppId,
+		roomId: normalizedRoomId,
+		activeCount: activeSignalingRooms.size,
+	})
+	pendingSignalingJoinCount++
+	const release = await acquireJoinQueueSlot()
+	let timeoutTimer
+	/** @type {Promise<unknown> | null} */
+	let joinPromise = null
+	try {
+		const { joinRoom } = await import('npm:@trystero-p2p/nostr')
+		joinPromise = Promise.resolve().then(async () => {
+			const config = await buildJoinConfig()
+			return wrapTrysteroRoom(joinRoom(config, normalizedRoomId, { onJoinError: onSignalingJoinError }))
+		})
+		const timeoutPromise = new Promise(resolve => {
+			timeoutTimer = setTimeout(() => resolve(null), SIGNALING_JOIN_HARD_TIMEOUT_MS)
+		})
+		const room = await Promise.race([joinPromise, timeoutPromise])
+		clearTimeout(timeoutTimer)
+		if (!room) {
+			if (process.env.FOUNT_TEST === '1')
+				console.warn('p2p: signaling join timed out', { roomId: normalizedRoomId, appId: normalizedAppId })
+			void joinPromise.then(lateRoom => lateRoom ? leaveSignalingRoom(lateRoom) : undefined).catch(() => { })
+			await release()
+			return null
+		}
+		registerActiveSignalingRoom(room, normalizedAppId, normalizedRoomId)
+		if (process.env.FOUNT_TEST === '1') {
+			const peerCount = Object.keys(room.getPeers?.() || {}).length
+			console.warn('p2p: signaling join ok', { roomId: normalizedRoomId, appId: normalizedAppId, peerCount })
+		}
+		await attachTrysteroRelayErrorHandlers()
+		// 立即返回 room 供调用方注册 onPeerJoin；落定窗口在后台释放队列，避免 peer 已连上时 handler 尚未挂载。
+		void release()
+		return room
+	}
+	catch (error) {
+		await release()
+		throw error
+	}
+	finally {
+		pendingSignalingJoinCount = Math.max(0, pendingSignalingJoinCount - 1)
+	}
 }
 
 /**
  * 离开 Trystero Nostr 房间，复用 join 的进程级串行队列。
  *
  * 与 join 同队列串行可保证「旧房间 leave 先于后续 join 落定」：trystero 的 offerPool 是进程级单例，
- * 旧房间 teardown 若与新房间 warmup 并发会撞上同一 offerPool；串行化后新 join 必等本次 leave 完成再排队。
+ * 旧房间 teardown 若与新房间 join 并发会撞上同一 offerPool；串行化后新 join 必等本次 leave 完成再排队。
  * @param {{ leave?: () => Promise<void> | void } | null | undefined} room 已加入的房间
  * @returns {Promise<void>} leave 完成
  */
-export function leaveSignalingRoom(room) {
-	if (!room || typeof room.leave !== 'function') return Promise.resolve()
-	const result = Promise.resolve(joinQueueTail).then(() => room.leave())
-	joinQueueTail = result.then(() => { }, () => { })
-	return result
+export async function leaveSignalingRoom(room) {
+	if (!room || typeof room.leave !== 'function') return
+	const meta = activeSignalingRooms.get(room)
+	testLogSignaling('leave start', {
+		appId: meta?.appId,
+		roomId: meta?.roomId,
+		activeCount: activeSignalingRooms.size,
+		pendingJoins: pendingSignalingJoinCount,
+	})
+	const release = await acquireJoinQueueSlot()
+	try {
+		await room.leave()
+		unregisterActiveSignalingRoom(room)
+	}
+	finally {
+		await release()
+	}
 }
 
 /**
@@ -196,29 +330,20 @@ export function leaveSignalingRoom(room) {
  * @param {string} opts.roomId 房间名
  * @param {string[]} [opts.relayUrls] 用户自定义 relay
  * @param {{ urls: string, username?: string, credential?: string }[]} [opts.iceServers] ICE/TURN
- * @returns {Promise<unknown>} Trystero room
+ * @returns {Promise<unknown>} Trystero room；超时返回 null
  */
 export async function joinSignalingRoomWithDefaults({ appId, password, roomId, relayUrls, iceServers }) {
 	const rtcPolyfill = await loadRtcPeerConnectionPolyfill()
 	const base = buildTrysteroSignalingConfig({ appId, password, relayUrls })
 	const rtcConfig = iceServers?.length ? { iceServers } : undefined
-	const joinPromise = joinSignalingRoom({
+	// win32/测试：mDNS 过滤在 rtcPolyfill 包装层；trickleIce:false 减少协商碎片、利于同机联邦。
+	const useTrickleIceOff = shouldFilterMdnsCandidates()
+	/** @returns {Promise<object>} Trystero joinRoom 配置 */
+	const buildJoinConfig = async () => ({
 		...base,
 		rtcPolyfill,
 		...rtcConfig ? { rtcConfig } : {},
-	}, roomId)
-	let timeoutTimer
-	const timeoutPromise = new Promise(resolve => {
-		timeoutTimer = setTimeout(() => resolve(null), SIGNALING_JOIN_HARD_TIMEOUT_MS)
+		...useTrickleIceOff ? { trickleIce: false } : {},
 	})
-	const room = await Promise.race([joinPromise, timeoutPromise])
-	clearTimeout(timeoutTimer)
-	if (!room) {
-		// 串行队列积压导致本次 join 超时：放弃本次（上层走 catch-up 兜底），避免后台 join 永久挂起堆积；
-		// 若底层 join 在超时后才落定，leave 这个无人引用的孤儿房间，杜绝 werift 持连泄漏。
-		void joinPromise.then(lateRoom => lateRoom ? leaveSignalingRoom(lateRoom) : undefined).catch(() => { })
-		return null
-	}
-	await attachTrysteroRelayErrorHandlers()
-	return room
+	return runSerializedJoin({ appId, roomId, buildJoinConfig })
 }

@@ -110,7 +110,10 @@ export async function ensureUserRoom(ctx = {}) {
 				roomId: creds.roomId,
 				relayUrls: parseRelayUrls(getNodeTransportSettings()),
 			})
-
+			if (!room) {
+				console.error('p2p: user room join failed (timeout or signaling error)')
+				return null
+			}
 			const maps = createPeerIdentityMaps({
 				/** @returns {string[]} 当前活连接 peerId */
 				getLivePeerIds: () => Object.keys(room.getPeers?.() || {}),

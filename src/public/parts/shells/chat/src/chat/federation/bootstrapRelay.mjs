@@ -15,9 +15,11 @@ import {
 } from './bootstrapStore.mjs'
 import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
+import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
+import { getFederationPartitionSlot } from './registry.mjs'
 import { invalidateFederationRoomCache } from './room.mjs'
 import { roomCredentialsFromGroupSettings } from './roomCredentials.mjs'
-import { markRoomCredentialsStale } from './roomCredentialsStale.mjs'
+import { clearRoomCredentialsStale, markRoomCredentialsStale } from './roomCredentialsStale.mjs'
 
 /** @type {Map<string, { createdAt: number }>} */
 const recentBootstrapRequests = new Map()
@@ -35,6 +37,33 @@ function bootstrapCooldownKey(username, groupId) {
 
 /** 重导出 bootstrap wire 解析函数。 */
 export { parseFedBootstrapRequest, parseFedBootstrapResponse } from './bootstrap/wire.mjs'
+
+/**
+ * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} a 凭证 A
+ * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} b 凭证 B
+ * @returns {boolean} 是否相同口令
+ */
+function bootstrapCredsEqual(a, b) {
+	if (!a?.roomSecret || !b?.roomSecret) return false
+	return a.roomSecret === b.roomSecret
+		&& (a.signalingAppId || 'fount-group-fed') === (b.signalingAppId || 'fount-group-fed')
+}
+
+/**
+ * @param {{ roomSecret?: string } | null | undefined} activeSlot 当前联邦槽
+ * @param {{ roomSecret?: string } | null | undefined} dagCreds DAG 物化口令
+ * @param {{ roomSecret?: string } | null | undefined} bootstrap 暂存 bootstrap 口令
+ * @returns {boolean} slot 口令已与 DAG/bootstrap 一致，无需 mark stale
+ */
+function slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap) {
+	if (dagCreds?.roomSecret && activeSlot?.roomSecret === dagCreds.roomSecret)
+		return true
+	if (bootstrap?.roomSecret && activeSlot?.roomSecret === bootstrap.roomSecret)
+		return true
+	if (bootstrapCredsEqual(dagCreds, bootstrap) && activeSlot?.roomSecret === bootstrap?.roomSecret)
+		return true
+	return false
+}
 
 /**
  * @param {string} username 用户
@@ -101,6 +130,28 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 		fromNodeId: response.responderNodeHash,
 	})
 	setFederationBootstrap(username, groupId, creds)
+
+	const existingSlot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
+	const dagCreds = roomCredentialsFromGroupSettings(
+		(await loadFederationMaterializedState(username, groupId))?.groupSettings,
+	)
+	const slotAlreadyMatches = existingSlot?.roomSecret === creds.roomSecret
+	const dagAlreadyMatches = dagCreds?.roomSecret === creds.roomSecret
+
+	// 口令未变时切勿 invalidate+rejoin：会断已有 WebRTC 且 offerPool 在负载下难以重握手。
+	if (slotAlreadyMatches) {
+		clearRoomCredentialsStale(username, groupId)
+		if (dagAlreadyMatches) {
+			const { clearFederationBootstrap } = await import('./bootstrapStore.mjs')
+			clearFederationBootstrap(username, groupId)
+		}
+		void catchUpGroupFromPeers(username, groupId, {
+			waitMs: 2000,
+			extraWantIds: creds.settingsEventId ? [creds.settingsEventId] : undefined,
+		})
+		return true
+	}
+
 	invalidateFederationRoomCache(username, groupId)
 	void catchUpGroupFromPeers(username, groupId, {
 		waitMs: 2000,
@@ -159,10 +210,18 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 		&& catchupResult.wantIds > 0
 	if (!syncFailed) return
 
+	const activeSlot = slot || getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
+	const dagCreds = roomCredentialsFromGroupSettings(await loadFederationGroupSettings(username, groupId))
+	const { peekFederationBootstrap } = await import('./bootstrapStore.mjs')
+	const bootstrap = peekFederationBootstrap(username, groupId)
+	// DAG 与当前 slot 口令一致：补洞滞后是 gossip/拓扑问题，不是换房口令问题。
+	if (slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap))
+		return
+
 	markRoomCredentialsStale(username, groupId)
-	if (!slot) return
+	if (!activeSlot) return
 
 	const nodeHash = federationNodeHash(username)
 	const { sender: requesterPubKeyHash } = await resolveLocalEventSigner(username, groupId)
-	await broadcastFedBootstrapRequest(slot, username, groupId, nodeHash, requesterPubKeyHash)
+	await broadcastFedBootstrapRequest(activeSlot, username, groupId, nodeHash, requesterPubKeyHash)
 }
