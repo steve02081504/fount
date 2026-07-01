@@ -306,7 +306,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 	}
 	try {
 		const { maybeProbeAndEvaluateShunConsensus } = await import('./shun.mjs')
-		await maybeProbeAndEvaluateShunConsensus(username, groupId, slot, { waitMs: Math.min(waitMs, 5000) })
+		await maybeProbeAndEvaluateShunConsensus(username, groupId, slot, { waitMs })
 	}
 	catch (error) {
 		console.error('federation: catchup shun consensus failed', error)

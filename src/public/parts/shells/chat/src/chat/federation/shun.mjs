@@ -130,6 +130,16 @@ export async function recordInboundShun(username, groupId, fromNodeHash, reason)
 }
 
 /**
+ * 从 FederationSlot roster 提取对端 nodeHash（与 peerToNode / shunsByNode 键一致）。
+ * @param {object | null | undefined} slot FederationSlot
+ * @returns {string[] | null} nodeHash 列表；slot 不可用时 null
+ */
+export function rosterNodeHashesFromSlot(slot) {
+	if (!slot?.getRoster) return null
+	return slot.getRoster().map(peer => normalizeHex64(peer?.remoteNodeHash)).filter(isHex64)
+}
+
+/**
  * 读取联邦同步房名册中可见对端的 nodeHash（联邦房不可用/单测环境下返回 null）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
@@ -140,9 +150,7 @@ async function loadRosterNodeHashes(username, groupId) {
 		const { getFederationPartitionSlot } = await import('./registry.mjs')
 		const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 		const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-		return slot
-			? slot.getRoster().map(peer => normalizeHex64(peer?.remoteNodeHash)).filter(isHex64)
-			: null
+		return slot ? rosterNodeHashesFromSlot(slot) : null
 	}
 	catch { return null /* federation room may be unavailable in unit tests */ }
 }
@@ -162,7 +170,7 @@ function hasFreshShun(shunsByNode, nowMs) {
  * 根据本地物化成员名册与 shun 记录评估是否疑似出局。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ shunState?: Awaited<ReturnType<typeof loadGroupShunState>> }} [opts] 复用已加载的 shun 状态，省去重复读盘
+ * @param {{ shunState?: Awaited<ReturnType<typeof loadGroupShunState>>, rosterNodeHashes?: string[] | null }} [opts] 复用 shun 状态 / catchup 期 roster 快照
  * @returns {Promise<ReturnType<typeof loadGroupShunState>>} 更新后状态
  */
 export async function evaluateShunConsensus(username, groupId, opts = {}) {
@@ -171,7 +179,9 @@ export async function evaluateShunConsensus(username, groupId, opts = {}) {
 	if (!prev.suspectedRemoved && !Object.keys(prev.shunsByNode).length) return prev
 	const selfNodeHash = federationNodeHash(username)
 	const fedState = await loadFederationMaterializedState(username, groupId)
-	const rosterNodeHashes = await loadRosterNodeHashes(username, groupId)
+	const rosterNodeHashes = opts.rosterNodeHashes !== undefined
+		? opts.rosterNodeHashes
+		: await loadRosterNodeHashes(username, groupId)
 	const knownPeers = collectKnownPeerNodeHashes(fedState, selfNodeHash, rosterNodeHashes)
 	const { suspected, shunnedBy } = evaluateShunConsensusPure(knownPeers, prev.shunsByNode)
 	if (!suspected) {
@@ -206,8 +216,7 @@ export async function handleInboundFedShun(username, groupId, fromNodeHash, reas
 
 /**
  * catchup 收尾：按需向全员探测“是否仍被招待”，再评估共识。
- * 探测仅在“窗口内已有新鲜 shun 待确认”或“冷却安全网到期”时触发，与 catchup 频率解耦，
- * 健康成员平时既不广播探测、也不做物化（evaluateShunConsensus 自会短路）。
+ * 尚无 shun 时每轮 catchup 均可重探（P2P 会合前单次落空很常见）；有 shun 后按新鲜度/冷却节流。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} slot FederationSlot
@@ -217,15 +226,18 @@ export async function handleInboundFedShun(username, groupId, fromNodeHash, reas
 export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot, opts = {}) {
 	let shunState = await loadGroupShunState(username, groupId)
 	const now = Date.now()
+	const noShunsYet = !Object.keys(shunState.shunsByNode).length
 	const shouldProbe = !!slot?.send
 		&& !shunState.suspectedRemoved
-		&& (hasFreshShun(shunState.shunsByNode, now) || now - shunState.lastProbeAt >= SHUN_PROBE_COOLDOWN_MS)
+		&& (noShunsYet || hasFreshShun(shunState.shunsByNode, now) || now - shunState.lastProbeAt >= SHUN_PROBE_COOLDOWN_MS)
+	let rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	if (shouldProbe) {
 		shunState = await saveGroupShunState(username, groupId, { lastProbeAt: now })
 		await probeShunFromFederationPeers(username, groupId, slot, opts)
 		shunState = await loadGroupShunState(username, groupId)
+		rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	}
-	return evaluateShunConsensus(username, groupId, { shunState })
+	return evaluateShunConsensus(username, groupId, { shunState, rosterNodeHashes: rosterSnapshot })
 }
 
 /**
@@ -238,7 +250,7 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
  */
 export async function probeShunFromFederationPeers(username, groupId, slot, opts = {}) {
 	if (!slot?.send) return
-	const waitMs = clampNumber(opts.waitMs ?? 1800, 200, 8000)
+	const waitMs = clampNumber(opts.waitMs ?? 1800, 200, 15_000)
 	const { readJsonl } = requireDagDeps()
 	const nodeHash = federationNodeHash(username)
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
