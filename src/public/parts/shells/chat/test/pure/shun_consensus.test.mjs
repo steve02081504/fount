@@ -4,6 +4,7 @@ import { describe, it } from 'node:test'
 import {
 	collectKnownPeerNodeHashes,
 	evaluateShunConsensusPure,
+	resolveShunForNodeHashRequester,
 } from '../../src/chat/federation/shun.mjs'
 import { SHUN_CONSENSUS_WINDOW_MS } from '../../src/group/groupShunState.mjs'
 
@@ -77,5 +78,33 @@ describe('collectKnownPeerNodeHashes', () => {
 		}
 		const nodes = collectKnownPeerNodeHashes(state, self, [self, online])
 		assert.deepEqual(nodes, [online])
+	})
+})
+
+describe('resolveShunForNodeHashRequester', () => {
+	const nodeA = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+	const nodeB = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const pkB = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+
+	it('active member home node => no shun', () => {
+		const state = {
+			members: {
+				[pkB]: { status: 'active', homeNodeHash: nodeB, memberKind: 'user' },
+			},
+		}
+		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: false, reason: null })
+	})
+
+	it('banned member home node => shun not_a_member', () => {
+		const state = {
+			members: {
+				[pkB]: { status: 'banned', homeNodeHash: nodeB, memberKind: 'user' },
+			},
+		}
+		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
+	})
+
+	it('unknown node => no shun', () => {
+		assert.deepEqual(resolveShunForNodeHashRequester({ members: {} }, () => false, nodeA), { shun: false, reason: null })
 	})
 })

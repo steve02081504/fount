@@ -84,6 +84,26 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
 }
 
 /**
+ * 按请求方 homeNodeHash 判断是否应回闭门羹（tip ping 等仅带 nodeHash 的帧）。
+ * @param {object | null | undefined} fedState 物化群状态
+ * @param {(subject: string) => boolean} isBlockedPeer 拉黑检查
+ * @param {string} requesterNodeHash 请求方 nodeHash
+ * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
+ */
+export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, requesterNodeHash) {
+	const node = normalizeHex64(requesterNodeHash)
+	if (!node) return { shun: false, reason: null }
+	if (isBlockedPeer(node)) return { shun: true, reason: 'blocked' }
+	let matched = false
+	for (const member of Object.values(fedState?.members || {})) {
+		if (normalizeHex64(member?.homeNodeHash) !== node) continue
+		matched = true
+		if (member.status === 'active') return { shun: false, reason: null }
+	}
+	return matched ? { shun: true, reason: 'not_a_member' } : { shun: false, reason: null }
+}
+
+/**
  * 向对端发送 fed_shun（限流、无签名、最小载荷）。
  * @param {{ enqueue: (priority: number, run: () => void) => void }} fedOut 出站队列
  * @param {(payload: unknown, peerId: string) => void} fedShunSend Trystero send

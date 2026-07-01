@@ -26,7 +26,7 @@ import {
 	ingestRemoteTipsForExchange,
 	tryMarkSeenFederationEvent,
 } from '../seen.mjs'
-import { handleInboundFedShun, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
+import { handleInboundFedShun, resolveShunForNodeHashRequester, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
 import { handleIncomingFedVolatile } from '../volatile.mjs'
 import { parseChannelHistoryWant, parseFedShun, parseFedTipPing, parseFedTipPong, parseGossipRequest } from '../wireSchemas.mjs'
 
@@ -176,6 +176,14 @@ export function registerSyncHandlers(roomContext) {
 				if (peerId && remoteNodeHash)
 					sendFedShun(fedOut, fedShun.send, groupId, nodeHash, remoteNodeHash, peerId, 'blocked')
 				return
+			}
+			const fedState = await loadFederationMaterializedState(username, groupId)
+			if (fedState) {
+				const nodeDecision = resolveShunForNodeHashRequester(fedState, isBlockedPeer, remoteNodeHash)
+				if (nodeDecision.shun && nodeDecision.reason && peerId && remoteNodeHash) {
+					sendFedShun(fedOut, fedShun.send, groupId, nodeHash, remoteNodeHash, peerId, nodeDecision.reason)
+					return
+				}
 			}
 			ingestRemoteTipsForExchange(username, groupId, tipPing.tips)
 			const { readJsonl } = requireDagDeps()
