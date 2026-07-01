@@ -11,9 +11,11 @@ import {
 Deno.test('shouldDropDagEvent folds process events always', () => {
 	const archived = new Set(['m1'])
 	const hot = new Set(['m2'])
-	assertEquals(shouldDropDagEvent({ type: 'reaction_add', id: 'r1' }, archived, hot, true), true)
+	// reaction_* 保留在 events.jsonl 供联邦 gossip 按 id 补洞（foldPolicy.mjs）
+	assertEquals(shouldDropDagEvent({ type: 'reaction_add', id: 'r1' }, archived, hot, true), false)
 	assertEquals(shouldDropDagEvent({ type: 'message_edit', id: 'e1' }, archived, hot, true), true)
 	assertEquals(FOLDABLE_PROCESS_EVENT_TYPES.has('pin_message'), true)
+	assertEquals(FOLDABLE_PROCESS_EVENT_TYPES.has('reaction_add'), false)
 })
 
 Deno.test('shouldDropDagEvent keeps hot and unarchived messages', () => {

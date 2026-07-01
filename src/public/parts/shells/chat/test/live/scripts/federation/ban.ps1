@@ -27,6 +27,7 @@ Test-Case 'A POST members/:hash/ban entity' {
 	$k = Api $FedA POST "/groups/$gid/members/$($script:bPub)/ban" @{ banScope = 'entity' }
 	if ($k.status -ne 200) { throw "ban $($k.status): $($k.raw)" }
 	Api $FedA POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
+	Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 6000 } | Out-Null
 	$true
 }
 Test-Case 'A state lists B in bannedMembers' {
@@ -40,18 +41,19 @@ Test-Case 'A state lists B in bannedMembers' {
 Write-Host "`n=== 3. C receives ban via federation ===" -ForegroundColor Cyan
 Test-Case 'C catchup receives ban (third-party sync)' {
 	$ok = PollUntil 180 4 {
-		foreach ($node in $script:FedNodes) {
+		# 仅 A/C 需 rebind；B 已被封禁，反复 rebind 会徒增 P2P 负载且与「C 收 ban」无关
+		foreach ($node in @($script:FedA, $script:FedC)) {
 			Api $node POST "/groups/$gid/federation/rebind" @{} | Out-Null
 		}
 		Api $FedA POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
-		Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 12000 } | Out-Null
+		Api $FedA POST "/groups/$gid/federation/catchup" @{ waitMs = 8000 } | Out-Null
 		$ev = Api $FedA GET "/groups/$gid/events?limit=40"
 		if ($ev.status -eq 200) {
 			$banRow = @($ev.json.events | Where-Object { $_.type -eq 'member_ban' } | Select-Object -Last 1)
 			if ($banRow) { $script:banEventId = $banRow.id }
 		}
 		Api $FedC POST "/groups/$gid/federation/join-snapshot" @{} | Out-Null
-		$body = @{ waitMs = 15000 }
+		$body = @{ waitMs = 10000 }
 		if ($script:banEventId) { $body.extraWantIds = @($script:banEventId) }
 		Api $FedC POST "/groups/$gid/federation/catchup" $body | Out-Null
 		Api $FedC POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
