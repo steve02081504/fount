@@ -164,18 +164,6 @@ let joinQueueTail = Promise.resolve()
 /** @type {Map<object, { appId: string, roomId: string }>} 进程内仍持有引用的 Trystero room */
 const activeSignalingRooms = new Map()
 
-/** 正在 join 的 room 数（含排队等待 acquireJoinQueueSlot） */
-let pendingSignalingJoinCount = 0
-
-/**
- * @param {...unknown} args 日志参数
- * @returns {void}
- */
-function testLogSignaling(...args) {
-	if (process.env.FOUNT_TEST === '1')
-		console.warn('p2p: signaling', ...args)
-}
-
 /**
  * @param {object} room 已包装 room
  * @param {string} appId 应用 id
@@ -184,7 +172,6 @@ function testLogSignaling(...args) {
  */
 function registerActiveSignalingRoom(room, appId, roomId) {
 	activeSignalingRooms.set(room, { appId, roomId: String(roomId || '') })
-	testLogSignaling('register', { appId, roomId, activeCount: activeSignalingRooms.size })
 }
 
 /**
@@ -193,12 +180,7 @@ function registerActiveSignalingRoom(room, appId, roomId) {
  */
 function unregisterActiveSignalingRoom(room) {
 	if (!room) return
-	const meta = activeSignalingRooms.get(room)
 	activeSignalingRooms.delete(room)
-	if (meta)
-		testLogSignaling('unregister', { ...meta, activeCount: activeSignalingRooms.size, pendingJoins: pendingSignalingJoinCount })
-	if (activeSignalingRooms.size === 0 && pendingSignalingJoinCount === 0)
-		testLogSignaling('zero active rooms')
 }
 
 /**
@@ -248,12 +230,6 @@ async function acquireJoinQueueSlot() {
 async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
 	const normalizedAppId = String(appId || '').trim() || 'fount-p2p'
 	const normalizedRoomId = String(roomId || '')
-	testLogSignaling('join start', {
-		appId: normalizedAppId,
-		roomId: normalizedRoomId,
-		activeCount: activeSignalingRooms.size,
-	})
-	pendingSignalingJoinCount++
 	const release = await acquireJoinQueueSlot()
 	let timeoutTimer
 	/** @type {Promise<unknown> | null} */
@@ -277,10 +253,6 @@ async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
 			return null
 		}
 		registerActiveSignalingRoom(room, normalizedAppId, normalizedRoomId)
-		if (process.env.FOUNT_TEST === '1') {
-			const peerCount = Object.keys(room.getPeers?.() || {}).length
-			console.warn('p2p: signaling join ok', { roomId: normalizedRoomId, appId: normalizedAppId, peerCount })
-		}
 		await attachTrysteroRelayErrorHandlers()
 		// 立即返回 room 供调用方注册 onPeerJoin；落定窗口在后台释放队列，避免 peer 已连上时 handler 尚未挂载。
 		void release()
@@ -289,9 +261,6 @@ async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
 	catch (error) {
 		await release()
 		throw error
-	}
-	finally {
-		pendingSignalingJoinCount = Math.max(0, pendingSignalingJoinCount - 1)
 	}
 }
 
@@ -305,13 +274,6 @@ async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
  */
 export async function leaveSignalingRoom(room) {
 	if (!room || typeof room.leave !== 'function') return
-	const meta = activeSignalingRooms.get(room)
-	testLogSignaling('leave start', {
-		appId: meta?.appId,
-		roomId: meta?.roomId,
-		activeCount: activeSignalingRooms.size,
-		pendingJoins: pendingSignalingJoinCount,
-	})
 	const release = await acquireJoinQueueSlot()
 	try {
 		await room.leave()

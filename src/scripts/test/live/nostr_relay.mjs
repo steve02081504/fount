@@ -58,17 +58,10 @@ function broadcastEvent(ws, subId, event) {
 function relayEvent(event) {
 	storedEvents.push(event)
 	if (storedEvents.length > 5000) storedEvents = storedEvents.slice(-2500)
-	if (process.env.FOUNT_TEST === '1') {
-		const xTag = event.tags?.find(t => t[0] === 'x')?.[1]
-		console.warn('test-relay: ingest EVENT', { kind: event.kind, xTag, clients: activeRelay?.wss?.clients?.size ?? 0 })
-	}
 	for (const client of activeRelay?.wss?.clients || [])
 		for (const sub of client.subscriptions || [])
-			if (sub.filters.some(filter => eventMatchesFilter(event, filter))) {
-				if (process.env.FOUNT_TEST === '1')
-					console.warn('test-relay: forward EVENT', { subId: sub.id, kind: event.kind })
+			if (sub.filters.some(filter => eventMatchesFilter(event, filter)))
 				broadcastEvent(client, sub.id, event)
-			}
 }
 
 /**
@@ -98,8 +91,6 @@ function handleClientMessage(ws, raw) {
 	if (type === 'REQ') {
 		const subId = String(rest[0] || '')
 		const filters = rest.slice(1).filter(item => item && typeof item === 'object')
-		if (process.env.FOUNT_TEST === '1')
-			console.warn('test-relay: REQ', { subId, filterCount: filters.length, kinds: filters.flatMap(f => f.kinds || []) })
 		if (!ws.subscriptions) ws.subscriptions = []
 		ws.subscriptions.push({ id: subId, filters: filters.length ? filters : [{}] })
 		for (const event of storedEvents)
