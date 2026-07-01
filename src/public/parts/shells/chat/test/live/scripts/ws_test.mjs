@@ -1,7 +1,6 @@
-// Single-node WebSocket E2E: invalid apikey rejected; valid key receives live push.
+// Single-node WebSocket E2E: valid key receives live push on group channel.
 import process from 'node:process'
 
-import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const baseUrl = requireLiveBaseUrl()
@@ -31,26 +30,6 @@ const channelId = createdGroup.json.defaultChannelId
 const peers = await chatApi('GET', `/groups/${groupId}/peers`)
 const nodeHash = peers.json.selfNodeHash
 console.log(`group=${groupId} node=${nodeHash}`)
-
-const invalidKeyUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${groupId}?fount-apikey=invalid-key-on-purpose`
-const invalidKeyResult = await allowNoise(
-	['WebSocket connection rejected', 'invalid-key-on-purpose'],
-	() => new Promise(resolve => {
-		const socket = new WebSocket(invalidKeyUrl)
-		const timer = setTimeout(() => { socket.close(); resolve('timeout') }, 5000)
-		/** @returns {void} */
-		socket.onopen = () => { clearTimeout(timer); socket.close(); resolve('opened') }
-		/** @returns {void} */
-		socket.onerror = () => { clearTimeout(timer); resolve('error') }
-		/** @returns {void} */
-		socket.onclose = () => { clearTimeout(timer); resolve('closed') }
-	}),
-)
-if (invalidKeyResult === 'opened') {
-	console.error('FAIL: ws accepted invalid apikey')
-	process.exit(1)
-}
-console.log(`PASS: invalid apikey ws result=${invalidKeyResult}`)
 
 const websocketUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${groupId}?fount-apikey=${encodeURIComponent(apiKey)}`
 const websocket = new WebSocket(websocketUrl)

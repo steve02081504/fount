@@ -9,6 +9,9 @@
 			],
 			"triggers": [
 				"src/test/**",
+				"src/server/auth.mjs",
+				"src/server/web_server/endpoints.mjs",
+				"src/scripts/WsAbleRouter.mjs",
 				"src/server/registries.mjs",
 				"src/server/parts_loader.mjs",
 				"src/public/pages/scripts/api/registries.mjs",
