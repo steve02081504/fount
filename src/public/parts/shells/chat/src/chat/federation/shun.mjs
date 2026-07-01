@@ -26,6 +26,25 @@ const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: OUTBOUND_S
  * 略长于出站 dedupe TTL，降低探测撞上对端 shun 静默窗的概率。
  */
 const SHUN_PROBE_COOLDOWN_MS = OUTBOUND_SHUN_DEDUPE_MS + 5_000
+const SHUN_PROBE_ROSTER_WAIT_MS = 12_000
+const SHUN_PROBE_ROSTER_POLL_MS = 400
+const SHUN_PROBE_INBOUND_SETTLE_MS = 800
+
+/**
+ * 探测前等待联邦 roster 出现邻居（P2P 会合未完成时 probe 会落空）。
+ * @param {object | null | undefined} slot FederationSlot
+ * @param {number} [maxWaitMs] 等待上限
+ * @returns {Promise<boolean>} roster 非空
+ */
+async function waitForRosterPeers(slot, maxWaitMs = SHUN_PROBE_ROSTER_WAIT_MS) {
+	if (!slot?.getRoster) return false
+	const deadline = Date.now() + maxWaitMs
+	while (Date.now() < deadline) {
+		if (slot.getRoster().length > 0) return true
+		await sleep(SHUN_PROBE_ROSTER_POLL_MS)
+	}
+	return slot.getRoster().length > 0
+}
 
 /**
  * 共识判定的已知对端 nodeHash：优先信令房 roster（除己），无 roster 时回落物化 active 成员的 homeNodeHash。
@@ -278,7 +297,8 @@ export async function evaluateShunConsensus(username, groupId, opts = {}) {
  */
 export async function handleInboundFedShun(username, groupId, fromNodeHash, reason) {
 	const shunState = await recordInboundShun(username, groupId, fromNodeHash, reason)
-	await evaluateShunConsensus(username, groupId, { shunState })
+	const rosterNodeHashes = await loadRosterNodeHashes(username, groupId)
+	await evaluateShunConsensus(username, groupId, { shunState, rosterNodeHashes })
 }
 
 /**
@@ -299,9 +319,11 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 		&& (noShunsYet || hasFreshShun(shunState.shunsByNode, now) || now - shunState.lastProbeAt >= SHUN_PROBE_COOLDOWN_MS)
 	let rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	if (shouldProbe) {
+		await waitForRosterPeers(slot, Math.min(SHUN_PROBE_ROSTER_WAIT_MS, clampNumber(opts.waitMs ?? 1800, 200, 15_000)))
 		shunState = await saveGroupShunState(username, groupId, { lastProbeAt: now })
 		await probeShunViaTipPingToRosterPeers(username, groupId, slot)
 		await probeShunFromFederationPeers(username, groupId, slot, opts)
+		await sleep(SHUN_PROBE_INBOUND_SETTLE_MS)
 		shunState = await loadGroupShunState(username, groupId)
 		rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	}

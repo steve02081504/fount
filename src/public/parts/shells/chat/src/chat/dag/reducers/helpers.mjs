@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 
 import { MEMBERS_PAGE_SIZE } from '../../../../../../../../scripts/p2p/constants.mjs'
 import { isEntityHash128 } from '../../../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { sanitizeIceServersForSettings } from '../../../../../../../../scripts/p2p/ice_servers.mjs'
 
 const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
@@ -146,6 +146,8 @@ export function applyBanContent(state, content) {
 	const entityHash = String(content.targetEntityHash || '').trim().toLowerCase()
 	if (isEntityHash128(entityHash)) state.bannedEntities.add(entityHash)
 	if (isHex64(content.targetNodeHash)) state.bannedNodes.add(content.targetNodeHash)
+	const homeNode = normalizeHex64(member?.homeNodeHash)
+	if (isHex64(homeNode)) state.bannedNodes.add(homeNode)
 }
 
 /**

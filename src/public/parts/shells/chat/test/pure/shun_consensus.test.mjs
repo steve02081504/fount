@@ -104,6 +104,11 @@ describe('resolveShunForNodeHashRequester', () => {
 		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
 	})
 
+	it('bannedNodes set => shun not_a_member', () => {
+		const state = { members: {}, bannedNodes: new Set([nodeB]) }
+		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
+	})
+
 	it('unknown node => no shun', () => {
 		assert.deepEqual(resolveShunForNodeHashRequester({ members: {} }, () => false, nodeA), { shun: false, reason: null })
 	})

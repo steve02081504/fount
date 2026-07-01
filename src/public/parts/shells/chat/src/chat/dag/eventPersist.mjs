@@ -8,7 +8,7 @@
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { applyNetworkHint, mergeNetworkPeerPools } from '../../../../../../../scripts/p2p/network.mjs'
 import {
 	applyDecayCollusionAfterSlash,
@@ -36,6 +36,7 @@ import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
 import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from './materialize.mjs'
+import { resolveTargetMemberKey } from './reducers/helpers.mjs'
 
 /** 写入频道消息流 JSONL 的事件类型。 */
 const PERSIST_MESSAGE_TYPES = new Set([
@@ -77,10 +78,21 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 	}
 	else if (['member_kick', 'member_ban'].includes(signPayload.type)) {
 		await decayAfterSlash()
-		if (signPayload.type === 'member_ban')
+		if (signPayload.type === 'member_ban') {
+			const { blockEntriesFromBanContent } = await import('../governance/banRules.mjs')
+			const { addGroupBlockedPeers, addBlocklistFromBanContent } = await import('../../../../../../../scripts/p2p/blocklist.mjs')
+			const state = await materializedState()
+			const entries = blockEntriesFromBanContent(signPayload.content)
+			const targetKey = resolveTargetMemberKey(signPayload.content)
+			const home = normalizeHex64(state.members?.[targetKey]?.homeNodeHash)
+			if (isHex64(home) && !entries.some(entry => entry.scope === 'node' && entry.value === home))
+				entries.push({ scope: 'node', value: home })
+			addGroupBlockedPeers(groupId, entries)
+			await addBlocklistFromBanContent(signPayload.content, groupId)
 			void import('../federation/shun.mjs')
 				.then(({ notifyFedShunAfterMemberBan }) => notifyFedShunAfterMemberBan(username, groupId, signPayload))
 				.catch(console.error)
+		}
 	}
 	else if (signPayload.type === 'reputation_reset') {
 		const target = slashTargetPubKeyHash(signPayload)
