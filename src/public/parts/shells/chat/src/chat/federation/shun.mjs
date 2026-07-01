@@ -148,13 +148,19 @@ export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHas
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot?.send || !slot.fedOut) return
+	if (!slot?.sendToPeer || !slot.fedOut) return
 	const peerId = slot.getPeerIdByNodeHash?.(home)
 		|| slot.getRoster().find(peer => normalizeHex64(peer?.remoteNodeHash) === home)?.peerId
 	if (!peerId) return
-	/** @type {(payload: unknown, peerId: string) => void} */
-	const fedShunSend = (payload, peerId) => { slot.send('fed_shun', payload, peerId) }
-	sendFedShun(slot.fedOut, fedShunSend, groupId, federationNodeHash(username), home, peerId, reason)
+	sendFedShun(
+		slot.fedOut,
+		(payload, targetPeerId) => slot.sendToPeer(targetPeerId, 'fed_shun', payload),
+		groupId,
+		federationNodeHash(username),
+		home,
+		peerId,
+		reason,
+	)
 }
 
 /**
