@@ -16,6 +16,10 @@ import {
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { runTests } from './runner/index.mjs'
 
+// 后台异步错误（P2P/MQTT 瞬断等）不应中断测试编排进程
+for (const event of ['uncaughtException', 'unhandledRejection'])
+	process.on(event, err => console.error(`${event}: `, err))
+
 const { positionals, values } = parseArgs({
 	args: process.argv.slice(2),
 	allowPositionals: true,
