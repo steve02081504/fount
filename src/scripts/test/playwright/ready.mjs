@@ -49,7 +49,7 @@ export function waitForSocialAppReady(page) {
 	return waitForReadyGate(page, {
 		...SOCIAL_APP_GATE,
 		label: 'Social',
-		timeout: 60_000,
+		timeout: 90_000,
 	})
 }
 

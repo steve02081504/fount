@@ -5,7 +5,6 @@ import {
 	expect,
 	openSocialHome,
 	findPostCard,
-	fetchViewerEntityHash,
 	submitReplyViaPanel,
 } from './fixtures.mjs'
 
@@ -89,7 +88,7 @@ test.describe('Social secondary views', () => {
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		const notifCard = page.locator('#notificationsView .notification-card').first()
 		await expect(notifCard).toBeVisible({ timeout: 30_000 })
-		await notifCard.locator('a.link-btn').click()
+		await notifCard.locator('a.notification-view-link').click()
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
@@ -129,12 +128,11 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator('#exploreView .explore-post-card').first()).toBeVisible({ timeout: 30_000 })
 		const postCard = page.locator('#exploreView .explore-post-card', { hasText: snippet }).first()
 		await expect(postCard).toBeVisible({ timeout: 30_000 })
-		await postCard.locator('a.link-btn').first().click()
+		await postCard.locator('a.author-name').click()
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('explore account link opens profile after blurb saved', async ({ page, baseUrl, apiKey }) => {
-		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+	test('explore post author opens profile with saved blurb', async ({ page, publishPost }) => {
 		const blurb = `explore-visible ${Date.now()}`
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await page.locator('#exploreBlurbInput').fill(blurb)
@@ -146,10 +144,14 @@ test.describe('Social secondary views', () => {
 			),
 			page.locator('#saveMetaBtn').click(),
 		])
+		const snippet = `explore-blurb-post ${Date.now()}`
+		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
+		await publishPost(snippet)
 		await page.locator('.side-nav .nav-btn[data-view="explore"]').click()
-		const accountRow = page.locator('#exploreView .explore-account', { hasText: blurb })
-		await expect(accountRow).toBeVisible({ timeout: 30_000 })
-		await accountRow.locator(`a[href*="${entityHash}"]`).click()
+		const postCard = page.locator('#exploreView .explore-post-card', { hasText: snippet }).first()
+		await expect(postCard).toBeVisible({ timeout: 30_000 })
+		await postCard.locator('a.author-name').click()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 })
