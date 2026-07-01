@@ -1,5 +1,6 @@
 import {
 	deletePendingTipExchange,
+	getPendingTipExchange,
 	setPendingTipExchange,
 } from './registry.mjs'
 
@@ -17,6 +18,9 @@ import {
  * @returns {Promise<{ tipIds: Set<string>, remoteSummaries: object[] }>} 收集结果
  */
 export async function collectRemoteTipsFromPeers(username, groupId, opts) {
+	const prior = getPendingTipExchange(username, groupId)
+	if (prior?.resolve) prior.resolve()
+
 	const collected = new Set()
 	/** @type {object[]} */
 	const remoteSummaries = []

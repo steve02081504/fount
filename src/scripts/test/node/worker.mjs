@@ -6,11 +6,27 @@ import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
 import { parseArgs } from 'node:util'
+import v8 from 'node:v8'
 
 import { hosturl } from '../../../server/server.mjs'
 import { console } from '../../i18n.mjs'
 
 import { bootInProcess } from './boot.mjs'
+
+const heapSnapshotCount = Number(process.env.FOUNT_TEST_HEAP_SNAPSHOT_COUNT ?? 2)
+if (Number.isFinite(heapSnapshotCount) && heapSnapshotCount > 0) {
+	let snapshotsWritten = 0
+	const timer = setInterval(() => {
+		const stats = v8.getHeapStatistics()
+		if (!stats.heap_size_limit) return
+		const ratio = stats.used_heap_size / stats.heap_size_limit
+		if (ratio < 0.95 || snapshotsWritten >= heapSnapshotCount) return
+		snapshotsWritten++
+		const path = v8.writeHeapSnapshot()
+		console.warn(`test-node: near-OOM heap snapshot ${snapshotsWritten}/${heapSnapshotCount}: ${path}`)
+	}, 2000)
+	timer.unref?.()
+}
 
 const { values } = parseArgs({
 	options: {

@@ -260,9 +260,9 @@ export async function probeShunFromFederationPeers(username, groupId, slot, opts
 		attestation,
 	}
 	const peerIds = roster.map(peer => peer?.peerId).filter(Boolean)
-	if (peerIds.length) 
+	if (peerIds.length)
 		for (const peerId of peerIds)
 			slot.send('fed_join_snapshot_request', request, peerId)
-	
+
 	await sleep(waitMs)
 }

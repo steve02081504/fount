@@ -2,7 +2,7 @@
  * 测试用 fount 节点启动工具（编程 API + CLI）。
  */
 import { spawn } from 'node:child_process'
-import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises'
 import net from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -11,11 +11,90 @@ import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
+import { console } from '../../i18n.mjs'
+import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 
 const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
+
+/** 测试节点默认 V8 老生代上限（MB）；0 表示不限制。 */
+const DEFAULT_TEST_NODE_HEAP_MB = 1024
+
+/** 近 OOM 时默认写入的堆快照份数。 */
+const DEFAULT_HEAP_SNAPSHOT_COUNT = 2
+
+/**
+ * 解析测试节点 V8 堆上限（MB）；0 表示不注入 --max-old-space-size。
+ * @returns {number} 堆上限 MB
+ */
+function resolveTestNodeHeapMb() {
+	const raw = process.env.FOUNT_TEST_NODE_HEAP_MB
+	if (raw === '' || raw === '0') return 0
+	const parsed = Number(raw)
+	if (Number.isFinite(parsed) && parsed > 0) return parsed
+	return DEFAULT_TEST_NODE_HEAP_MB
+}
+
+/**
+ * 解析近 OOM 堆快照份数。
+ * @returns {number} 快照份数；0 表示禁用
+ */
+function resolveHeapSnapshotCount() {
+	const raw = process.env.FOUNT_TEST_HEAP_SNAPSHOT_COUNT
+	if (raw === '' || raw === '0') return 0
+	const parsed = Number(raw ?? DEFAULT_HEAP_SNAPSHOT_COUNT)
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_HEAP_SNAPSHOT_COUNT
+}
+
+/**
+ * 构造 deno run 的 --v8-flags 参数（低内存上限）。
+ * 近 OOM 快照由 worker 内 v8.setHeapSnapshotNearHeapLimit 触发（Deno 不接受该 CLI flag）。
+ * @returns {string | null} --v8-flags=... 或 null
+ */
+function buildTestNodeV8FlagsArg() {
+	const heapMb = resolveTestNodeHeapMb()
+	if (heapMb <= 0) return null
+	return `--v8-flags=--max-old-space-size=${heapMb}`
+}
+
+/**
+ * 回收子进程在仓库根目录产出的堆快照，并打印绝对路径。
+ * @param {number} pid 子进程 pid
+ * @returns {Promise<string[]>} 已搬运的快照绝对路径
+ */
+async function collectNodeHeapSnapshots(pid) {
+	if (!Number.isFinite(pid) || pid <= 0) return []
+	const needle = `.${pid}.`
+	/** @type {string[]} */
+	const matched = []
+	try {
+		for (const name of await readdir(REPO_ROOT)) {
+			if (!name.startsWith('Heap.') || !name.endsWith('.heapsnapshot')) continue
+			if (!name.includes(needle)) continue
+			matched.push(join(REPO_ROOT, name))
+		}
+	}
+	catch { return [] }
+	if (!matched.length) return []
+
+	const destDir = heapSnapshotDir(REPO_ROOT)
+	await mkdir(destDir, { recursive: true })
+	/** @type {string[]} */
+	const saved = []
+	for (const src of matched) {
+		const base = src.slice(REPO_ROOT.length + 1)
+		const dest = join(destDir, base)
+		try {
+			await rename(src, dest)
+			saved.push(dest)
+			console.warnI18n('fountConsole.test.heapSnapshotSaved', { path: dest })
+		}
+		catch { /* snapshot may have been removed already */ }
+	}
+	return saved
+}
 
 /**
  * fixture 目录复制条目。
@@ -340,8 +419,11 @@ export async function launchNode(options = {}) {
 
 	await injectFixtures(dataPath, username, options.fixtureCopies ?? [])
 
+	const v8FlagsArg = buildTestNodeV8FlagsArg()
 	const workerArgs = [
-		'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'),
+		'run', '--allow-all',
+		...v8FlagsArg ? [v8FlagsArg] : [],
+		'-c', join(REPO_ROOT, 'deno.json'),
 		workerPath,
 		'--data-path', dataPath,
 		'--port', String(port),
@@ -363,6 +445,7 @@ export async function launchNode(options = {}) {
 			...process.env,
 			FOUNT_TEST: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
+			FOUNT_TEST_HEAP_SNAPSHOT_COUNT: String(resolveHeapSnapshotCount()),
 			...extraEnv,
 		},
 	})
@@ -409,6 +492,7 @@ export async function launchNode(options = {}) {
  */
 export async function stopNode(node) {
 	if (!node?.process) return
+	const pid = node.pid ?? node.process.pid
 	const { process } = node
 	process.kill('SIGTERM')
 	await Promise.race([
@@ -421,6 +505,7 @@ export async function stopNode(node) {
 		new Promise(resolve => process.once('close', resolve)),
 		new Promise(resolve => setTimeout(resolve, 5_000)),
 	])
+	await collectNodeHeapSnapshots(pid)
 	if (!node.keepData && node.dataPath)
 		await rm(node.dataPath, { recursive: true, force: true })
 	if (node.usedTestRelay)

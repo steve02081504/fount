@@ -24,7 +24,7 @@ import { getPendingTipExchange } from '../registry.mjs'
 import {
 	hasSeenFederationEvent,
 	ingestRemoteTipsForExchange,
-	markSeenFederationEvent,
+	tryMarkSeenFederationEvent,
 } from '../seen.mjs'
 import { handleInboundFedShun, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
 import { handleIncomingFedVolatile } from '../volatile.mjs'
@@ -89,15 +89,14 @@ export function registerSyncHandlers(roomContext) {
 
 	const dag = wireAction(roomContext, 'dag_event')
 	dag.on((data, peerId) => {
+		const signedEvent = extractInboundSignedEvent(data, groupId)
+		if (!signedEvent) return
+		if (!tryMarkSeenFederationEvent(username, groupId, signedEvent.id)) return
 		void (async () => {
-			const signedEvent = extractInboundSignedEvent(data, groupId)
-			if (!signedEvent) return
 			const eventId = signedEvent.id
-			if (hasSeenFederationEvent(username, groupId, eventId)) return
 			const { ingestRemoteEvent } = requireDagDeps()
-			const result = await ingestRemoteEvent(username, groupId, signedEvent)
+			const result = await ingestRemoteEvent(username, groupId, signedEvent, { skipSeenDedup: true })
 			if (result === 'ok') {
-				markSeenFederationEvent(username, groupId, eventId)
 				const remoteNodeHash = peerToNode.get(peerId)
 				if (remoteNodeHash)
 					await bumpReputationOnRelay( remoteNodeHash, `dag:${eventId}`)
@@ -224,9 +223,9 @@ export function registerSyncHandlers(roomContext) {
 			if (requesterNodeHash === nodeHash) return
 			const fedState = await loadFederationMaterializedState(username, groupId)
 			if (!fedState || !attestation) return
-			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
 			if (maybeShunPubKeyRequester(fedState, attestation.requesterPubKeyHash, requesterNodeHash, peerId))
 				return
+			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
 			if (!await validatePullAttestationForGroup(fedState, groupId, attestation)) return
 			const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)
 			if (!recipientEdPubKeyHex) {
@@ -300,9 +299,9 @@ export function registerSyncHandlers(roomContext) {
 			const { requesterNodeHash, requestId, channelId, before, limit, attestation } = historyWant
 			const fedState = await loadFederationMaterializedState(username, groupId)
 			if (!fedState || !attestation) return
-			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
 			if (maybeShunPubKeyRequester(fedState, attestation.requesterPubKeyHash, requesterNodeHash, peerId))
 				return
+			if (!await verifyPullAttestationSignatureForMember(fedState, groupId, attestation)) return
 			if (!await validatePullAttestationForGroup(fedState, groupId, attestation)) return
 			if (!resolveMemberEdPubKeyHex(fedState, attestation.requesterPubKeyHash)) {
 				if (peerId)

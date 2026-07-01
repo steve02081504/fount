@@ -67,6 +67,22 @@ export function markSeenFederationEvent(username, groupId, eventId) {
 }
 
 /**
+ * 原子性「未见则记入 seen」；并发入站同一 id 仅首个返回 true。
+ * @param {string} username 用户
+ * @param {string} groupId 群
+ * @param {string} eventId 事件 id
+ * @returns {boolean} 本次为首次见到
+ */
+export function tryMarkSeenFederationEvent(username, groupId, eventId) {
+	if (!isHex64(eventId)) return false
+	const bucket = bucketFor(username, groupId)
+	if (bucket.set.has(eventId)) return false
+	bucket.set.add(eventId)
+	bucket.order.push(eventId)
+	return true
+}
+
+/**
  * 从本地 events.jsonl 预热 LRU（房间重连时调用）。
  * @param {string} username 用户
  * @param {string} groupId 群

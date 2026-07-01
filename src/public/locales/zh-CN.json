@@ -376,6 +376,7 @@
 			"federationCleanupPre": "联邦测试清理（运行前）失败：${output}",
 			"federationCleanupPost": "联邦测试清理（运行后）失败：${output}",
 			"suiteHeader": "\n=== 套件 ${name} ===",
+			"heapSnapshotSaved": "测试节点近 OOM 堆快照：${path}",
 			"liveUsage": "用法：--suite <名称> | --list",
 			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 个测试文件通过。",

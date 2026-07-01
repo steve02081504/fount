@@ -113,12 +113,12 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 	if (request.groupId !== groupId || !peerId) return
 	const fedState = await loadFederationMaterializedState(username, groupId)
 	if (!fedState) return
-	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
 	const requesterNodeHash = String(request.requesterNodeHash || '').trim()
 	const shunDecision = resolveShunForPubKeyRequester(fedState, isBlockedPeer, request.requesterPubKeyHash)
 	if (shunDecision.shun && shunDecision.reason && shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
 		sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, shunDecision.reason)
 	if (shunDecision.shun) return
+	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
 	const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, request.requesterPubKeyHash)
 	if (!recipientEdPubKeyHex) {
 		if (shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)

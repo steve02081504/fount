@@ -75,3 +75,12 @@ export function reportFailuresLogDir(repoRoot) {
 export function reportWarningsLogDir(repoRoot) {
 	return join(reportDir(repoRoot), 'logs', 'warnings')
 }
+
+/**
+ * 返回测试节点近 OOM 堆快照目录。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/heapsnapshots 绝对路径
+ */
+export function heapSnapshotDir(repoRoot) {
+	return join(testDataRoot(repoRoot), 'heapsnapshots')
+}

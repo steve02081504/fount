@@ -40,6 +40,9 @@ import { maybeJoinSnapshotOnStaleTips } from './staleResync.mjs'
 import { markGroupOnlineSynced } from './syncState.mjs'
 import { collectRemoteTipsFromPeers } from './tipExchange.mjs'
 
+/** @type {Map<string, Promise<object>>} 同群并发 catchup 合并为单次执行，避免重叠读盘/补洞占满堆。 */
+const catchUpInflight = new Map()
+
 /** 首次入群无 checkpoint 时等待 信令 roster 出现邻居的上限（毫秒）。 */
 const PEER_ROSTER_WAIT_MS = 12_000
 const PEER_ROSTER_POLL_MS = 400
@@ -175,6 +178,23 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
  * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
+	const key = `${username}\0${groupId}`
+	const inflight = catchUpInflight.get(key)
+	if (inflight) return inflight
+	const task = catchUpGroupFromPeersImpl(username, groupId, opts).finally(() => {
+		if (catchUpInflight.get(key) === task) catchUpInflight.delete(key)
+	})
+	catchUpInflight.set(key, task)
+	return task
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] 等待邻居 pong 毫秒数、额外索要 id
+ * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ */
+async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot) return { federationActive: false, tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
 
