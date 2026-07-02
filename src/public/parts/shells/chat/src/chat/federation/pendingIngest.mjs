@@ -90,7 +90,7 @@ export async function enqueuePendingIngest(username, groupId, signPayload, reaso
  * 拓扑/ACL 就绪后重放 pending_ingest 队列。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {(ev: object) => Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>} tryIngest 入库函数
+ * @param {(ev: object) => Promise<import('../dag/remoteIngest.mjs').RemoteIngestResult>} tryIngest 入库函数
  * @returns {Promise<{ released: number, remaining: number }>} 释放条数与剩余条数
  */
 export async function replayPendingIngestEvents(username, groupId, tryIngest) {
@@ -104,7 +104,7 @@ export async function replayPendingIngestEvents(username, groupId, tryIngest) {
 		const ev = row?.event
 		if (!ev || typeof ev !== 'object') continue
 		const status = await tryIngest(ev)
-		if (status === 'ok' || status === 'dup') {
+		if (status?.status === 'applied' || status?.status === 'duplicate') {
 			released++
 			continue
 		}

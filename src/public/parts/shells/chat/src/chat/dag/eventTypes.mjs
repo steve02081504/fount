@@ -38,7 +38,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	group_settings_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	reputation_slash: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	reputation_reset: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
-	key_rotate: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
+	file_master_key_rotate: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	peer_invite: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	dag_tip_merge: { aclGated: true, governance: true, permissionAnchor: true },
 	list_item_update: { aclGated: true },

@@ -23,7 +23,7 @@ const BATTERY_SAVER_BLOCKED_LOCAL_TYPES = new Set([
 	'role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke',
 	'channel_create', 'channel_update', 'channel_delete', 'channel_permissions_update',
 	'group_settings_update',
-	'key_rotate',
+	'file_master_key_rotate',
 ])
 
 /**

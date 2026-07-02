@@ -4,9 +4,9 @@
  * 【原理】computeDagTipIdsFromEvents 枚举 tips；ancestorClosureFromTip 收集 GOVERNANCE_AUTHZ_TYPES 发送者 pubKeyHash。
  * 【关联】blocklist addDenylistEntry、governance_branch；fork 后用户确认选支。
  */
-import { addDenylistEntry } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { addDenylistEntry } from '../../../../../../../scripts/p2p/denylist.mjs'
 import {
 	ancestorClosureFromTip,
 	computeDagTipIdsFromEvents,

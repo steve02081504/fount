@@ -6,7 +6,7 @@ import {
 } from '../../../../../../../scripts/p2p/mailbox/store.mjs'
 import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
-import { appendValidatedRemoteEvent } from '../dag/remoteIngest.mjs'
+import { appendValidatedRemoteEvent, isRemoteIngestAccepted } from '../dag/remoteIngest.mjs'
 
 const MAILBOX_APP_CHAT = 'chat'
 
@@ -23,7 +23,7 @@ async function consumeChatDagMailbox(username, records) {
 		const groupId = String(row.groupId || '').trim()
 		if (!groupId) continue
 		const status = await appendValidatedRemoteEvent(username, groupId, row.envelope, { logFailures: false })
-		if (status === 'ok' || status === 'dup') delivered.push(row.id)
+		if (isRemoteIngestAccepted(status)) delivered.push(row.id)
 	}
 	return delivered
 }

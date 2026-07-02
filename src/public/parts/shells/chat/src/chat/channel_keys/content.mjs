@@ -166,9 +166,10 @@ export async function decryptChannelMessageLines(username, groupId, channelId, l
 		if (result.ok) return { ...line, content: result.content }
 		return {
 			...line,
-			content: {
-				decryptFailed: true,
-				pendingGeneration: result.generation ?? null,
+			content: null,
+			decryptView: {
+				failed: true,
+				...result.generation != null ? { pendingGeneration: result.generation } : {},
 			},
 		}
 	}))

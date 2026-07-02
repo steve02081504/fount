@@ -193,18 +193,16 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	const storedContent = signPayload.content
 	let displayContent = storedContent
 	let sidecarContent = storedContent
+	let decryptResult = null
 	if (CKG_ENCRYPT_EVENT_TYPES.has(signPayload.type)) {
-		const result = await decryptEventContent(username, groupId, channelId, storedContent)
-		if (result.ok) {
-			displayContent = result.content
-			sidecarContent = result.content
+		decryptResult = await decryptEventContent(username, groupId, channelId, storedContent)
+		if (decryptResult.ok) {
+			displayContent = decryptResult.content
+			sidecarContent = decryptResult.content
 		}
 		else {
-			displayContent = {
-				decryptFailed: true,
-				pendingGeneration: result.generation ?? null,
-			}
-			sidecarContent = displayContent
+			displayContent = null
+			sidecarContent = null
 		}
 	}
 	const messageLine = {
@@ -217,6 +215,14 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		hlc: signPayload.hlc,
 		prev_event_ids: sortedPrevEventIds(signPayload.prev_event_ids),
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
+		...decryptResult && !decryptResult.ok
+			? {
+				decryptView: {
+					failed: true,
+					...decryptResult.generation != null ? { pendingGeneration: decryptResult.generation } : {},
+				},
+			}
+			: {},
 	}
 	const channelMessagesPath = messagesPath(username, groupId, channelId)
 	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })

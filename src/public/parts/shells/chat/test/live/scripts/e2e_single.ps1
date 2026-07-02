@@ -205,8 +205,8 @@ Test-Case 'POST fork' {
 
 # ---------------------------------------------------------------------------
 Write-LiveSection 'E. Channel key rotate'
-Test-Case 'POST key-rotate' {
-	$r = Api POST "/groups/$gid/key-rotate" @{}
+Test-Case 'POST file-key-rotate' {
+	$r = Api POST "/groups/$gid/file-key-rotate" @{}
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$r.json.generation -ge 1
 }

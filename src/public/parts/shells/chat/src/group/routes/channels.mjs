@@ -28,11 +28,11 @@ import {
 } from '../../chat/dag/channelOps.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
-import { channelMessageText } from '../../chat/lib/channelContent.mjs'
+import { channelMessageContentObject } from '../../chat/lib/channelContent.mjs'
 import { EVENT_ID_ROUTE_SEGMENT } from '../../chat/lib/hexRoute.mjs'
 import { triggerCharReply } from '../../chat/session/generation.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/stream/auth.mjs'
-import { readChannelReactionEvents, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
+import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
 import {
 	ensureCanInChannel,
@@ -77,13 +77,11 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.delete(groupRouteRegex('channels/([^/]+)/reactions/(.+)'), authenticate, requireGroupChannel(), async (req, res) => {
+	router.delete(groupRouteRegex('channels/([^/]+)/reactions'), authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, memberKey } = req.groupContext
-		const emoji = decodeURIComponent(req.params[2])
-		const targetPubKeyHash = String(req.query.targetPubKeyHash || '').trim() || undefined
-		const targetEventId = String(req.query.targetEventId || '').trim()
+		const { targetEventId, emoji, targetPubKeyHash } = req.body || {}
 		if (!targetEventId || !emoji)
-			return res.status(400).json({ error: 'targetEventId query and emoji path required' })
+			return res.status(400).json({ error: 'targetEventId and emoji required' })
 
 		const myPubKeyHash = memberKey.toLowerCase()
 		await appendReactionEvent(username, groupId, {
@@ -91,7 +89,7 @@ export function registerChannelRoutes(router, authenticate) {
 			channelId,
 			targetEventId,
 			emoji,
-			targetPubKeyHash,
+			targetPubKeyHash: String(targetPubKeyHash || '').trim() || undefined,
 		})
 		res.status(200).json({})
 	})
@@ -241,16 +239,16 @@ export function registerChannelRoutes(router, authenticate) {
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			return res.status(400).json({ error: 'invalid eventId' })
 		const rawContent = req.body?.content
-		const text = channelMessageText(rawContent)
-		if (!text?.trim())
-			return res.status(400).json({ error: 'content required' })
+		if (!rawContent || typeof rawContent !== 'object' || Array.isArray(rawContent))
+			return res.status(400).json({ error: 'content object required' })
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
 		const { username, state } = membership
 		if (!ensureChannel(res, state, channelId)) return
 
-		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, text)
+		const contentObj = channelMessageContentObject(rawContent)
+		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, contentObj)
 		res.status(200).json({ event })
 	})
 
@@ -340,8 +338,10 @@ export function registerChannelRoutes(router, authenticate) {
 			before: before || undefined,
 			limit,
 		})
-		const reactionEvents = await readChannelReactionEvents(username, groupId, channelId)
-		res.status(200).json({ messages, reactionEvents })
+		const reactions = await readChannelReactionsForMessages(
+			username, groupId, channelId, messages.map(m => m.eventId).filter(Boolean),
+		)
+		res.status(200).json({ messages, reactions })
 	})
 
 	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/messages\/batch-get$/, authenticate, async (req, res) => {
@@ -369,8 +369,8 @@ export function registerChannelRoutes(router, authenticate) {
 		}
 
 		const messages = await readChannelMessagesForUser(username, groupId, channelId, { eventIds })
-		const reactionEvents = await readChannelReactionEvents(username, groupId, channelId)
-		res.status(200).json({ messages, reactionEvents })
+		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, eventIds)
+		res.status(200).json({ messages, reactions })
 	})
 
 	router.get(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/pin-context/(${EVENT_ID_ROUTE_SEGMENT})$`, 'i'), authenticate, async (req, res) => {
@@ -611,12 +611,21 @@ export function registerChannelRoutes(router, authenticate) {
 		})
 		const { decryptEventContent } = await import('../../chat/channel_keys/content.mjs')
 		const result = await decryptEventContent(username, groupId, channelId, event.content)
-		const displayContent = result.ok
-			? result.content
-			: { decryptFailed: true, pendingGeneration: result.generation ?? null }
-		const content = displayContent || {}
+		/** @type {object} */
+		const responseEvent = { ...event }
+		if (result.ok) 
+			responseEvent.content = result.content
+		
+		else {
+			responseEvent.content = null
+			responseEvent.decryptView = {
+				failed: true,
+				...result.generation != null ? { pendingGeneration: result.generation } : {},
+			}
+		}
+		const content = responseEvent.content || {}
 		const { recordEmojiUsageFromMessageContent } = await import('../../emojiUsage.mjs')
 		recordEmojiUsageFromMessageContent(username, content)
-		res.status(201).json({ event: { ...event, content: displayContent } })
+		res.status(201).json({ event: responseEvent })
 	})
 }

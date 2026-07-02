@@ -13,21 +13,21 @@ import { loadChannelKeysFile } from './store.mjs'
  * @param {string} recipientEdPubKeyHex 接收方 Ed25519 公钥 hex（用于 HPKE 封装）
  * @param {string} recipientPubKeyHash 接收方 pubKeyHash（用于频道可见性校验）
  * @param {object} state 响应方物化群状态（用于判定接收方能查看哪些频道）
- * @returns {Promise<Record<string, { generation: number, wrap: object }>>} 频道 → 当前密钥 wrap
+ * @returns {Promise<Record<string, Array<{ generation: number, wrap: object }>>>} 频道 → 当前密钥 wrap 数组
  */
 export async function collectChannelKeyWrapsForRecipient(username, groupId, recipientEdPubKeyHex, recipientPubKeyHash, state) {
 	const edPubHex = String(recipientEdPubKeyHex || '').trim().toLowerCase()
 	if (!PUB_KEY_HEX_64.test(edPubHex)) return {}
 	const recipient = normalizeHex64(recipientPubKeyHash)
 	const file = await loadChannelKeysFile(username, groupId)
-	/** @type {Record<string, { generation: number, wrap: object }>} */
+	/** @type {Record<string, Array<{ generation: number, wrap: object }>>} */
 	const out = {}
 	for (const [channelId, ch] of Object.entries(file.channels)) {
 		if (!ch?.generations?.length) continue
 		if (recipient && state && !listChannelViewerPubKeys(state, channelId).includes(recipient)) continue
 		const row = ch.generations.find(g => g.gen === ch.current) || ch.generations.at(-1)
 		if (!row?.keyHex) continue
-		out[channelId] = { generation: row.gen, wrap: wrapChannelKey(row.keyHex, edPubHex) }
+		out[channelId] = [{ generation: row.gen, wrap: wrapChannelKey(row.keyHex, edPubHex) }]
 	}
 	return out
 }

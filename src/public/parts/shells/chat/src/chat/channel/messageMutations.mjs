@@ -14,6 +14,7 @@ import { readArchiveMonth } from '../archive/reader.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
+import { channelMessageContentObject } from '../lib/channelContent.mjs'
 import { messagesPath } from '../lib/paths.mjs'
 
 /**
@@ -73,12 +74,12 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 目标消息 eventId
- * @param {string} newText 新正文
+ * @param {object} newContent 新正文对象
  * @returns {Promise<object>} 签名后事件
  */
-export async function appendChannelMessageEdit(username, groupId, channelId, eventId, newText) {
-	const text = String(newText ?? '').trim()
-	if (!text) throw new Error('content required')
+export async function appendChannelMessageEdit(username, groupId, channelId, eventId, newContent) {
+	const contentObj = channelMessageContentObject(newContent)
+	if (!contentObj?.content && !contentObj?.type) throw new Error('content required')
 	const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 	if (!row) throw new Error('message not found')
 	const targetId = channelMessageTargetId(row)
@@ -88,7 +89,7 @@ export async function appendChannelMessageEdit(username, groupId, channelId, eve
 		timestamp: Date.now(),
 		content: {
 			targetId,
-			newContent: { type: 'text', content: text.slice(0, 200_000) },
+			newContent: contentObj,
 			chatLogEntryId: row.content?.chatLogEntryId,
 		},
 	})

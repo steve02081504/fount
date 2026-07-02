@@ -7,8 +7,8 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { pubKeyHash } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from '../../../../../../../scripts/p2p/key_crypto.mjs'
 import { verifyOwnerSuccessionThreshold } from '../../../../../../../scripts/p2p/owner_succession_ballot.mjs'
@@ -336,7 +336,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/key-rotate$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/file-key-rotate$/, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, member, groupId } = req.groupContext
 
 		const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
@@ -344,7 +344,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const perms = calculateMemberPermissions(member, state.roles, governanceChannel, state.channelPermissions)
 		const isDmPair = activeCount === 2
 		if (!isDmPair && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ROLES])
-			return res.status(403).json({ error: 'key_rotate requires ADMIN or MANAGE_ROLES' })
+			return res.status(403).json({ error: 'file_master_key_rotate requires ADMIN or MANAGE_ROLES' })
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)
 		if (!keyEntry)

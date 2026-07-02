@@ -197,7 +197,11 @@ function Test-FedMessageDeleted($node, $groupId, $channelId, $eventId) {
 function Test-FedHasReaction($node, $groupId, $channelId, $targetEventId) {
 	$r = Api $node GET "/groups/$groupId/channels/$channelId/messages"
 	if ($r.status -ne 200) { return $false }
-	@($r.json.reactionEvents | Where-Object { $_.content.targetId -eq $targetEventId }).Count -ge 1
+	$rx = $r.json.reactions
+	if (-not $rx) { return $false }
+	$entry = $rx.$targetEventId
+	if (-not $entry) { return $false }
+	@($entry.PSObject.Properties | ForEach-Object { $_.Value.voters }).Count -ge 1
 }
 
 function Test-FedHasChannel($node, $groupId, $channelId) {

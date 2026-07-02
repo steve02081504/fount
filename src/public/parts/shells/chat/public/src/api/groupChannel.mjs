@@ -126,7 +126,7 @@ export async function requestChannelHistoryFromPeers(groupId, channelId, options
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: number, eventIds?: string[] }} [options] 游标与条数限制
- * @returns {Promise<{ messages: object[], reactionEvents: object[] }>} 消息与反应
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>> }>} 消息与反应
  */
 export async function getChannelMessages(groupId, channelId, options = {}) {
 	if (Array.isArray(options.eventIds) && options.eventIds.length) {
@@ -136,7 +136,7 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
 		)
 		return {
 			messages: data.messages || [],
-			reactionEvents: data.reactionEvents || [],
+			reactions: data.reactions || {},
 		}
 	}
 	const params = new URLSearchParams()
@@ -150,7 +150,7 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
 	)
 	return {
 		messages: data.messages || [],
-		reactionEvents: data.reactionEvents || [],
+		reactions: data.reactions || {},
 	}
 }
 
@@ -232,13 +232,16 @@ export async function triggerChannelReply(groupId, channelId, charname) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息事件 ID
- * @param {string} text 新正文
+ * @param {string|object} content 富内容对象（与 POST 对称）
  * @returns {Promise<void>}
  */
-export async function editChannelMessage(groupId, channelId, eventId, text) {
+export async function editChannelMessage(groupId, channelId, eventId, content) {
+	const bodyContent = channelMessageContentObject(
+		typeof content === 'string' ? textChannelContent(content) : content,
+	)
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId), {
 		method: 'PUT',
-		json: { content: text },
+		json: { content: bodyContent },
 	})
 }
 

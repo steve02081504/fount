@@ -168,12 +168,12 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | POST | `/messages` | 发 DAG `message`；需 `SEND_MESSAGES` |
-| GET | `/messages` | 查询 `since`、`before`、`limit`；合并 `message_edit` / `message_delete` / `message_feedback`；解析 `content_ref` |
-| PUT | `/messages/:eventId` | DAG `message_edit` |
+| GET | `/messages` | 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（当前页消息的 emoji 聚合） |
+| PUT | `/messages/:eventId` | DAG `message_edit`；body `{ content: object }` |
 | DELETE | `/messages/:eventId` | DAG `message_delete` |
 | PUT | `/messages/:eventId/feedback` | DAG `message_feedback`（`up`/`down`） |
 | POST | `/reactions` | `{ targetEventId, emoji }` — 添加反应 |
-| DELETE | `/reactions/:emoji` | Query：`targetEventId`（必填）、`targetPubKeyHash?` — 移除反应 |
+| DELETE | `/reactions` | body `{ targetEventId, emoji, targetPubKeyHash? }` — 移除反应 |
 | POST | `/pins` | `{ targetEventId }`；需 `PIN_MESSAGES` |
 | DELETE | `/pins/:eventId` | 取消置顶；需 `PIN_MESSAGES` |
 | POST | `/votes` | 创建投票 `message`（`content.type: 'vote'`） |
@@ -207,7 +207,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | POST | `…/groups/:groupId/members/:pubKeyHash/ban` |
 | POST | `…/groups/leave` | 退群（body `{ groupIds }`；`member_leave` + 删除本机群数据，服务端有限并发） |
 | POST | `…/groups/:groupId/members/:pubKeyHash/unban` |
-| POST | `…/groups/:groupId/key-rotate` |
+| POST | `…/groups/:groupId/file-key-rotate` | 轮换群文件主密钥 GSH |
 | POST | `…/groups/:groupId/owner-succession` | 多管理员联署接替群主（MANAGE_ADMINS 转移）；body: `{ proposedOwnerPubKeyHash, ballotId, adminSignatures: [{ pubKeyHex, signature }], thresholdRatio? }` |
 
 ---

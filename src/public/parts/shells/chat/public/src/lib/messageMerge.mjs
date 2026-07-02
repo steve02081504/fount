@@ -36,13 +36,27 @@ function overlayTargetId(row) {
  * @returns {object} 带 decryptView 的行
  */
 function attachDecryptView(row) {
+	if (row.decryptView?.failed) {
+		const { pendingGeneration, pending, ...rest } = row.decryptView
+		const gen = pendingGeneration ?? pending ?? undefined
+		return {
+			...row,
+			decryptView: {
+				failed: true,
+				...gen != null ? { pendingGeneration: gen } : {},
+			},
+		}
+	}
 	const content = row.content
 	if (!content?.decryptFailed) return row
 	const { decryptFailed, pendingGeneration, ...rest } = content
 	return {
 		...row,
 		content: Object.keys(rest).length ? rest : null,
-		decryptView: { pending: pendingGeneration ?? null },
+		decryptView: {
+			failed: true,
+			...pendingGeneration != null ? { pendingGeneration } : {},
+		},
 	}
 }
 

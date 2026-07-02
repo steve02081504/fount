@@ -53,7 +53,7 @@ async function writeQuarantineRows(username, groupId, rows) {
  * 尝试将隔离区事件重放进主 DAG（时钟/skew 恢复后）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {(ev: object) => Promise<'ok' | 'dup' | 'invalid' | 'quarantined'>} tryIngest 入库函数
+ * @param {(ev: object) => Promise<import('../dag/remoteIngest.mjs').RemoteIngestResult>} tryIngest 入库函数
  * @returns {Promise<{ released: number, remaining: number }>} 释放条数与剩余隔离条数
  */
 export async function replayQuarantinedEvents(username, groupId, tryIngest) {
@@ -67,7 +67,7 @@ export async function replayQuarantinedEvents(username, groupId, tryIngest) {
 		const ev = row?.event
 		if (!ev || typeof ev !== 'object') continue
 		const status = await tryIngest(ev)
-		if (status === 'ok' || status === 'dup') {
+		if (status?.status === 'applied' || status?.status === 'duplicate') {
 			released++
 			continue
 		}

@@ -2,8 +2,8 @@
  * 【文件】`dag/remoteIngest.mjs` — 联邦/远程 DAG 事件入库。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
-import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
+import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation.mjs'
@@ -27,16 +27,36 @@ import { validateIngestAuthz } from './ingest.mjs'
 import { getState } from './materialize.mjs'
 import { unsignedEventFields, validateSignature } from './validator.mjs'
 
-/** @type {Map<string, Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>>} */
+/** @typedef {{ status: 'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending', reason?: string }} RemoteIngestResult */
+
+/** @type {Map<string, Promise<RemoteIngestResult>>} */
 const ingestInflight = new Map()
+
+/**
+ * @param {'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending'} status 入库状态
+ * @param {string} [reason] 可选原因
+ * @returns {RemoteIngestResult} 结构化入库结果
+ */
+function ingestResult(status, reason) {
+	return reason ? { status, reason } : { status }
+}
+
+/**
+ * 摄入被接受（含链上重复）：mailbox 可标记 delivered；duplicate 表示已见过或未追加新链节。
+ * @param {RemoteIngestResult | undefined} result 入库结果
+ * @returns {boolean} 是否视为摄入成功
+ */
+export function isRemoteIngestAccepted(result) {
+	return result?.status === 'applied' || result?.status === 'duplicate'
+}
 
 /**
  * @param {string} username 用户
  * @param {string} groupId 群
  * @param {string} eventId 事件 id
- * @param {'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'} result 入库结果
+ * @param {RemoteIngestResult} result 入库结果
  * @param {boolean} skipSeenDedup 是否跳过 seen
- * @returns {'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'} 原样返回 result
+ * @returns {RemoteIngestResult} 结构化入库结果 原样返回 result
  */
 function finishIngestSeen(username, groupId, eventId, result, skipSeenDedup) {
 	if (!skipSeenDedup)
@@ -63,7 +83,7 @@ export async function releaseQuarantinedEvents(username, groupId) {
 }
 
 /**
- * pending_ingest 队列在本地成功落盘或拓扑就绪后重放。
+ * pending 队列在本地成功落盘或拓扑就绪后重放。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @returns {Promise<void>}
@@ -86,13 +106,13 @@ export async function releasePendingIngestEvents(username, groupId) {
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
  * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean }} [opts] 日志、隔离/入站暂缓重放与写入选项
- * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>} 写入结果
+ * @returns {Promise<RemoteIngestResult>} 写入结果；`applied` 为新链节落盘，`duplicate` 为已摄入
  */
 export async function appendValidatedRemoteEvent(username, groupId, signPayload, opts = {}) {
-	if (!signPayload?.id) return 'invalid'
+	if (!signPayload?.id) return ingestResult('invalid', 'missing_id')
 	const eventId = signPayload.id
 	if (!opts.skipSeenDedup) {
-		if (hasSeenFederationEvent(username, groupId, eventId)) return 'dup'
+		if (hasSeenFederationEvent(username, groupId, eventId)) return ingestResult('duplicate', 'seen')
 		const inflightKey = `${username}\0${groupId}\0${eventId}`
 		const inflight = ingestInflight.get(inflightKey)
 		if (inflight) return inflight
@@ -110,17 +130,17 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
  * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean }} opts 选项
- * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'>} 写入结果
+ * @returns {Promise<RemoteIngestResult>} 写入结果
  */
 async function appendValidatedRemoteEventImpl(username, groupId, signPayload, opts) {
 	const logFailures = opts.logFailures !== false
 	const eventId = signPayload.id
 	/**
-	 * @param {'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'} ingestResult 入库结果
-	 * @returns {'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest'} 原样返回
+	 * @param {RemoteIngestResult} ingestOutcome 入库结果
+	 * @returns {RemoteIngestResult} 结构化入库结果
 	 */
-	function finish(ingestResult) {
-		return finishIngestSeen(username, groupId, eventId, ingestResult, opts.skipSeenDedup)
+	function finish(ingestOutcome) {
+		return finishIngestSeen(username, groupId, eventId, ingestOutcome, opts.skipSeenDedup)
 	}
 
 	let wirePayload
@@ -129,7 +149,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 	catch (error) {
 		if (logFailures) console.error('federation: drop remote event (shape)', error)
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'shape'))
 	}
 
 	const bodyForId = unsignedEventFields(wirePayload)
@@ -138,7 +158,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 			console.error('federation: drop remote event (id mismatch)')
 			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'id_mismatch', eventId: wirePayload.id }).catch(() => {})
 		}
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'id_mismatch'))
 	}
 
 	const { state } = await getState(username, groupId)
@@ -150,14 +170,14 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 			console.error('federation: drop remote event (signature)', error)
 			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'signature', eventId: wirePayload.id, message: error?.message }).catch(() => {})
 		}
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'signature'))
 	}
 
 	const maxSkewMs = resolveHlcMaxSkewMs(state)
 	const hlcAction = classifyHlcSkewAction(wirePayload, maxSkewMs, { source: 'federation' })
 	if (hlcAction === 'reject') {
 		if (logFailures) console.error('federation: drop remote event (HLC skew)', wirePayload.type)
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'hlc_skew'))
 	}
 
 	const senderKey = wirePayload.sender.trim().toLowerCase()
@@ -169,22 +189,22 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 	if (isSubjectBannedByState(state, subject) || isSubjectBlocked( subject)) {
 		if (logFailures) console.error('federation: drop remote event (banned/blocked subject)')
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'banned'))
 	}
 	const peers = loadPeerPoolView( groupId)
 	if (isPeerPoolKeyBlocked(peers, senderKey)
 		|| (subject.nodeHash && isPeerPoolKeyBlocked(peers, subject.nodeHash))
 		|| (subject.entityHash && isPeerPoolKeyBlocked(peers, subject.entityHash))) {
 		if (logFailures) console.error('federation: drop remote event (blocked peer)')
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'blocked_peer'))
 	}
 
 	if (hlcAction === 'quarantine') {
-		if (opts.skipQuarantineAppend) return finish('quarantined')
+		if (opts.skipQuarantineAppend) return finish(ingestResult('quarantined', 'hlc_skew'))
 		await withGroupWriteLock(username, groupId, async () => {
 			await appendQuarantinedEvent(username, groupId, wirePayload, 'hlc_skew')
 		})
-		return finish('quarantined')
+		return finish(ingestResult('quarantined', 'hlc_skew'))
 	}
 
 	try {
@@ -192,7 +212,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 	catch (error) {
 		if (logFailures) console.error('federation: drop remote event (GSH required)', error)
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'gsh_required'))
 	}
 
 	if (wirePayload.type === 'message') {
@@ -202,7 +222,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 			if (remoteNode)
 				recordMessageRateViolation(remoteNode, rateCheck.excessRatio ?? 1)
 			if (logFailures) console.error('federation: drop remote event (rate limit)')
-			return finish('invalid')
+			return finish(ingestResult('invalid', 'rate_limit'))
 		}
 	}
 
@@ -210,31 +230,31 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		await validateIngestAuthz(username, groupId, wirePayload, { source: 'federation', state })
 	}
 	catch (error) {
-		// 暂时性失败（引用的 target/父事件尚未到达）：隔离待补齐后由 releaseQuarantinedEvents 重放，而非永久 drop。
 		if (error?.deferrable) {
-			if (opts.skipQuarantineAppend) return finish('quarantined')
+			if (opts.skipQuarantineAppend) return finish(ingestResult('quarantined', 'missing_target'))
 			await withGroupWriteLock(username, groupId, async () => {
 				await appendQuarantinedEvent(username, groupId, wirePayload, 'missing_target')
 			})
-			return finish('quarantined')
+			return finish(ingestResult('quarantined', 'missing_target'))
 		}
 		if (error?.pendable) {
-			if (opts.skipPendingIngestAppend) return finish('pending_ingest')
+			if (opts.skipPendingIngestAppend) return finish(ingestResult('pending', error.message))
 			await withGroupWriteLock(username, groupId, async () => {
 				await enqueuePendingIngest(username, groupId, wirePayload, error.message)
 			})
-			return finish('pending_ingest')
+			return finish(ingestResult('pending', error.message))
 		}
 		if (logFailures) console.error('federation: drop remote event (ingest authz)', error)
-		return finish('invalid')
+		return finish(ingestResult('invalid', 'authz'))
 	}
 
-	if (await commitSignedChatEvent(username, groupId, wirePayload) === 'dup') return finish('dup')
+	if (await commitSignedChatEvent(username, groupId, wirePayload) === 'dup')
+		return finish(ingestResult('duplicate', 'event_id'))
 	if (!opts.skipQuarantineRelease) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
 	}
-	return finish('ok')
+	return finish(ingestResult('applied'))
 }
 
 /**
@@ -242,7 +262,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
  * @param {string} groupId 群组 ID
  * @param {unknown} payload Trystero 载荷（完整签名事件）
  * @param {{ skipSeenDedup?: boolean, logFailures?: boolean }} [opts] ingest 选项
- * @returns {Promise<'ok' | 'dup' | 'invalid' | 'quarantined' | 'pending_ingest' | undefined>} 写入结果；无法解析为 undefined
+ * @returns {Promise<RemoteIngestResult | undefined>} 写入结果；无法解析为 undefined
  */
 export async function ingestRemoteEvent(username, groupId, payload, opts = {}) {
 	const signedEvent = extractInboundSignedEvent(payload, groupId)

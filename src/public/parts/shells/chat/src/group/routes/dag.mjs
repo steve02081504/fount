@@ -156,7 +156,7 @@ export function registerDagRoutes(router, authenticate) {
 				continue
 			}
 			if (isSignedDagEventRow(event)) {
-				if (await appendValidatedRemoteEvent(username, groupId, event, { logFailures: false }) === 'ok')
+				if ((await appendValidatedRemoteEvent(username, groupId, event, { logFailures: false })).status === 'applied')
 					applied++
 				continue
 			}

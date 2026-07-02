@@ -22,10 +22,10 @@ export const hubStore = {
 	currentGroupId: null,
 	currentChannelId: null,
 	currentState: null,
-	channelReactionEvents: [],
+	channelReactions: {},
 	channelMessagesSource: [],
 	channelMessages: [],
-	reactionEventsEtag: '',
+	reactionsEtag: '',
 	reactionRenderOpts: {
 		viewerMemberId: 'local',
 		canAddReactions: false,

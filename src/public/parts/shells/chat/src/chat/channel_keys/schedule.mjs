@@ -35,7 +35,10 @@ async function loadStateForChannelKeys(username, groupId) {
 }
 
 /**
- * 若本地尚无 K_ch：先导入本机 wrap（发消息立即可用），再后台追加 DAG 轮换事件。
+ * 若本地尚无 K_ch：先写侧车（发消息立即可用），再静默追加 DAG 轮换事件。
+ *
+ * 顺序 intentional：侧车是读密钥真相源；DAG 事件可能因 `publishFederation: false` 晚于侧车，
+ * 联邦同伴不可见此次 bootstrap 轮换，但本机可立即加密/解密。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

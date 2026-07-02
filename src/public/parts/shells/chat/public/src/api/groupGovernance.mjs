@@ -122,10 +122,10 @@ export async function mergeDagTips(groupId) {
 /**
  * 手动轮换群 GSH 密钥。
  * @param {string} groupId 群 ID
- * @returns {Promise<object>} key-rotate 响应
+ * @returns {Promise<object>} file-key-rotate 响应
  */
 export async function rotateGroupKey(groupId) {
-	return groupFetch(groupPath(groupId, 'key-rotate'), { method: 'POST', json: {} })
+	return groupFetch(groupPath(groupId, 'file-key-rotate'), { method: 'POST', json: {} })
 }
 
 /**
