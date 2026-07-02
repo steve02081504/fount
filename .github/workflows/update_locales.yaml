@@ -14,6 +14,8 @@ on:
     tags-ignore:
       - '*'
   pull_request:
+    branches:
+      - master
     types: [opened, synchronize, reopened]
     paths:
       - 'src/public/locales/**.json'
