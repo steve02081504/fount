@@ -61,7 +61,7 @@ function connectFeedWebSocket(appContext) {
 			if (message?.type === 'hello') return
 			const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
 			if (feedVisible && !appContext.state.activeFeedSearchQuery)
-				void loadFeed(appContext, false, { skipSync: true })
+				void loadFeed(appContext, false)
 			else if (feedVisible && appContext.state.activeFeedSearchQuery)
 				void runFeedSearch(appContext)
 			void updateNotificationBadge(appContext)

@@ -31,17 +31,17 @@ function canViewPostForFederationExport(post, requesterEntityHash, blocked, foll
  * @param {string} username replica
  * @param {string | null | undefined} requesterNodeHash 64 hex
  * @param {string} ownerEntityHash 时间线 owner
- * @returns {Promise<{ requesterEntityHash: string | null, followsOwner: boolean, isOwner: boolean, isProtected: boolean }>} 请求者上下文
+ * @returns {Promise<{ requesterEntityHash: string | null, followsOwner: boolean, isOwner: boolean, hideFromDiscovery: boolean }>} 请求者上下文
  */
 async function resolveFederationRequesterContext(username, requesterNodeHash, ownerEntityHash) {
 	const owner = String(ownerEntityHash).toLowerCase()
 	const localNode = getNodeHash()
 	const requesterNode = requesterNodeHash?.trim().toLowerCase() || null
 	const ownerView = await getTimelineMaterialized(username, owner)
-	const isProtected = Boolean(ownerView.socialMeta?.isProtected)
+	const hideFromDiscovery = Boolean(ownerView.socialMeta?.hideFromDiscovery)
 
 	if (!requesterNode)
-		return { requesterEntityHash: null, followsOwner: false, isOwner: false, isProtected }
+		return { requesterEntityHash: null, followsOwner: false, isOwner: false, hideFromDiscovery }
 
 	if (requesterNode === localNode) {
 		const resolveOperator = getOperatorEntityHashProvider()
@@ -51,7 +51,7 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 			requesterEntityHash: operator,
 			followsOwner: operatorView?.following?.includes(owner) ?? false,
 			isOwner: operator?.toLowerCase() === owner,
-			isProtected,
+			hideFromDiscovery,
 		}
 	}
 
@@ -61,11 +61,11 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 			requesterEntityHash: entityHash,
 			followsOwner: view.following.includes(owner),
 			isOwner: entityHash === owner,
-			isProtected,
+			hideFromDiscovery,
 		}
 	}
 
-	return { requesterEntityHash: null, followsOwner: false, isOwner: false, isProtected }
+	return { requesterEntityHash: null, followsOwner: false, isOwner: false, hideFromDiscovery }
 }
 
 /**

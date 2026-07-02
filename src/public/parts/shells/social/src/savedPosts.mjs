@@ -24,7 +24,7 @@ async function enrichPostRef(username, ref) {
 	const content = await maybeDecryptPostContent(username, entityHash, post.content)
 	const profile = await getEntityProfile(username, entityHash)
 	let preview = ''
-	if (content?.protected) preview = '[protected]'
+	if (!content) preview = '[unavailable]'
 	else if (content?.text) preview = content.text.slice(0, 120)
 	else if (content?.mediaRefs?.length) preview = '[media]'
 	return {

@@ -7,7 +7,6 @@ import {
 	deleteSavedFolder,
 	removeSavedPost,
 	renameSavedFolder,
-	saveSavedPosts,
 } from '../savedPosts.mjs'
 
 /**
@@ -19,11 +18,6 @@ export function registerSavedRoutes(router) {
 	router.get('/api/parts/shells\\:social/saved-posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await enrichSavedPosts(username, await loadSavedPosts(username)))
-	})
-
-	router.put('/api/parts/shells\\:social/saved-posts', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json(await saveSavedPosts(username, req.body))
 	})
 
 	router.post('/api/parts/shells\\:social/saved-posts/add', authenticate, async (req, res) => {

@@ -203,7 +203,7 @@ Deno.test('operator-signed write to a locally-hosted agent timeline is accepted'
 	// 用 operator 的 federation identity 私钥代签（sender === operator subjectHash，而非 agent subjectHash）
 	const operatorSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
 	const event = await makeRemoteSignedEvent(operatorSecret, agentOwner, {
-		type: 'post', charId: charPartName, content: { text: 'agent post by operator', visibility: 'public' },
+		type: 'post', charPartName, content: { text: 'agent post by operator', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), true)
 })
@@ -217,7 +217,7 @@ Deno.test('foreign-key injection into a locally-hosted agent timeline is rejecte
 	const agentOwner = agentEntityHash(nodeHash, `chars/${charPartName}`)
 	const attackerSeed = randomSeed()
 	const event = await makeRemoteSignedEvent(attackerSeed, agentOwner, {
-		type: 'post', charId: charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
+		type: 'post', charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), false)
 })

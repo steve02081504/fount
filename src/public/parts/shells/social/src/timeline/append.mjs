@@ -107,7 +107,7 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 		type: event.type,
 		groupId,
 		sender,
-		charId: event.charId ?? null,
+		charPartName: event.charPartName ?? null,
 		timestamp: event.timestamp ?? Date.now(),
 		hlc,
 		prev_event_ids,
@@ -152,7 +152,7 @@ export async function ensureSocialMeta(username, entityHash) {
 	await appendSignedTimelineEvent(username, entityHash, {
 		type: 'social_meta',
 		content: {
-			isProtected: false,
+			hideFromDiscovery: false,
 			exploreBlurb: '',
 			createdAt: Date.now(),
 			recoveryPubKeyHex,

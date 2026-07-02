@@ -29,6 +29,7 @@ function notificationIconClass(type) {
 	if (type === 'reply') return 's-ic-notif-reply'
 	if (type === 'mention') return 's-ic-notif-mention'
 	if (type === 'like') return 's-ic-notif-like'
+	if (type === 'repost') return 's-ic-notif-repost'
 	if (type === 'follow') return 's-ic-notif-follow'
 	return 's-ic-bell'
 }
@@ -52,6 +53,20 @@ export async function updateNotificationBadge(appContext) {
 		}
 		else badge.classList.add('hidden')
 	}
+}
+
+/**
+ * 通知条目跳转链接。
+ * @param {object} appContext 应用上下文
+ * @param {object} row 通知条目
+ * @returns {string} profile 链接
+ */
+function notificationHref(appContext, row) {
+	if (row.type === 'reply' || row.type === 'mention')
+		return formatSocialProfileHref(row.actorEntityHash, row.postId)
+	if ((row.type === 'like' || row.type === 'repost') && row.targetPostId && appContext.state.viewerEntityHash)
+		return formatSocialProfileHref(appContext.state.viewerEntityHash, row.targetPostId)
+	return formatSocialProfileHref(row.actorEntityHash)
 }
 
 /**
@@ -79,26 +94,24 @@ export async function loadNotifications(appContext) {
 	for (const row of rows) {
 		const card = document.createElement('article')
 		card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
-		const label = row.authorName || `${row.entityHash.slice(0, 8)}…`
+		const label = appContext.authorLabel(row.actorEntityHash)
 		let message = ''
 		if (row.type === 'reply') message = appContext.geti18n('social.notifications.reply', { author: label })
 		else if (row.type === 'mention') message = appContext.geti18n('social.notifications.mention', { author: label })
 		else if (row.type === 'like') message = appContext.geti18n('social.notifications.like', { author: label })
+		else if (row.type === 'repost') message = appContext.geti18n('social.notifications.repost', { author: label })
 		else if (row.type === 'follow') message = appContext.geti18n('social.notifications.follow', { author: label })
-		const href = row.postId
-			? formatSocialProfileHref(row.entityHash, row.postId)
-			: formatSocialProfileHref(row.entityHash)
+		const href = notificationHref(appContext, row)
 		card.innerHTML = `
 			<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
 			<div class="notification-body">
 				<div class="post-header-row">
-					${appContext.renderAvatarHtml(row.entityHash, { name: label })}
+					${appContext.renderAvatarHtml(row.actorEntityHash, { name: label })}
 					<div>
 						<div class="notification-type">${escapeHtml(message)}</div>
 						<span class="post-meta">${escapeHtml(appContext.formatTime(row.at))}</span>
 					</div>
 				</div>
-				${row.snippet ? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>` : ''}
 				<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(appContext.geti18n('social.notifications.view'))}</a>
 			</div>
 		`

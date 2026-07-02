@@ -14,8 +14,6 @@ export function createEngagementForPost(engagement, viewerLiked) {
 			repostCount: engagement.reposts.get(key) || 0,
 			replyCount: engagement.replies.get(key) || 0,
 			viewerLiked: viewerLiked.has(key),
-			targetEntityHash: targetEntityHash.toLowerCase(),
-			targetPostId,
 		}
 	}
 }
@@ -28,7 +26,9 @@ export function createEngagementForPost(engagement, viewerLiked) {
  */
 export async function withDecryptedPostContent(username, entityHash, post) {
 	const decrypted = await maybeDecryptPostContent(username, entityHash, post.content)
-	return { ...post, content: decrypted ?? { protected: true } }
+	if (decrypted)
+		return { ...post, content: decrypted }
+	return { ...post, content: null, decryptView: { failed: true } }
 }
 
 /**
@@ -69,6 +69,8 @@ export async function buildRepostFeedItem(head, originalPost, feedContext) {
 		entityHash: head.entityHash,
 		postId: head.postId,
 		post: originalPost,
+		targetEntityHash: head.originalEntityHash,
+		targetPostId: head.originalPostId,
 		repostComment: String(head.repost.content?.comment || ''),
 		hlc: head.hlc,
 		authorProfile: await feedContext.authorProfile(head.entityHash),

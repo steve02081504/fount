@@ -48,7 +48,7 @@ export async function buildTrendingHashtags(username, options = {}) {
 			const enriched = { ...post, entityHash }
 			if (!canViewPost(enriched, viewerContext))
 				continue
-			if (post.content?.protected) continue
+			if (!post.content?.text) continue
 			for (const tag of extractHashtagsFromText(post.content?.text))
 				counts.set(tag, (counts.get(tag) || 0) + 1)
 		}

@@ -91,21 +91,18 @@ export async function loadTrendingHashtags(appContext) {
 let feedGeneration = 0
 
 /**
- * 加载首页 feed（分页，可选跳过联邦同步）。
+ * 加载首页 feed（分页）。
  * @param {object} appContext 应用上下文
  * @param {boolean} [append=false] 追加
- * @param {object} [options] 选项
- * @param {boolean} [options.skipSync=false] 跳过同步
  * @returns {Promise<void>}
  */
-export async function loadFeed(appContext, append = false, options = {}) {
+export async function loadFeed(appContext, append = false) {
 	if (appContext.state.activeFeedSearchQuery) return
 	const gen = ++feedGeneration
-	const syncParam = options.skipSync ? '&sync=false' : ''
 	const cursorQuery = append && appContext.state.feedCursor
 		? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
 		: ''
-	const data = await appContext.socialApi(`/feed?limit=30${syncParam}${cursorQuery}`)
+	const data = await appContext.socialApi(`/feed?limit=30${cursorQuery}`)
 	if (feedGeneration !== gen) return
 	const items = data.items || []
 	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))

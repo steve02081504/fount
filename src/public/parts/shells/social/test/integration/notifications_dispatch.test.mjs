@@ -29,7 +29,7 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'follow', content: { targetEntityHash: operator, rep_edge: 1 } },
 		{ type: 'like', content: { targetEntityHash: operator, targetPostId: parent.id } },
 		{ type: 'repost', content: { targetEntityHash: operator, targetPostId: parent.id, comment: 'nice' } },
@@ -54,6 +54,7 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	assert(types.has('follow'))
 	assert(types.has('reply'))
 	assert(types.has('mention'))
+	assert(rows.every(row => 'actorEntityHash' in row && row.postId !== undefined && row.targetPostId !== undefined))
 })
 
 Deno.test('dispatchPostMentions no-op when post has no mentions', async () => {

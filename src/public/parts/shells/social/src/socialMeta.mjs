@@ -7,14 +7,14 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @param {string} entityHash 时间线 owner
  * @param {object} patch 可写字段
  * @param {string} [patch.exploreBlurb] 探索页简介
- * @param {boolean} [patch.isProtected] 是否从探索隐藏
+ * @param {boolean} [patch.hideFromDiscovery] 是否从探索隐藏
  * @returns {Promise<object>} 物化后的 socialMeta
  */
 export async function updateSocialMeta(username, entityHash, patch) {
 	/** @type {Record<string, unknown>} */
 	const content = {}
 	if (patch.exploreBlurb !== undefined) content.exploreBlurb = patch.exploreBlurb
-	if (patch.isProtected !== undefined) content.isProtected = patch.isProtected
+	if (patch.hideFromDiscovery !== undefined) content.hideFromDiscovery = patch.hideFromDiscovery
 	if (!Object.keys(content).length)
 		return (await getTimelineMaterialized(username, entityHash)).socialMeta
 

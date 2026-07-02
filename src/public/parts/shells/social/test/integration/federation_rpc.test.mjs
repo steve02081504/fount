@@ -81,11 +81,11 @@ Deno.test('federation export: followers-only post hidden from anonymous requeste
 
 Deno.test('federation export: social_meta hidden when timeline protected', async () => {
 	const { username, operator } = await getSession()
-	await socialMeta.updateSocialMeta(username, operator, { isProtected: true })
+	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: true })
 	const all = await append.readTimelineEvents(username, operator)
 	const exported = await fedExport.filterEventsForFederatedPull(username, operator, all, null)
 	assert(!exported.some(e => e.type === 'social_meta'), 'social_meta hidden for protected timeline to anon')
-	await socialMeta.updateSocialMeta(username, operator, { isProtected: false })
+	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: false })
 })
 
 Deno.test('buildFederatedTimelinePullResponse honors afterEventId cursor', async () => {
@@ -103,7 +103,7 @@ Deno.test('discoverFollowGraph: protected foreign timeline hides following from 
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const foreignOwner = encodeEntityHash('1'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, foreignOwner, [
-		{ type: 'social_meta', content: { isProtected: true, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: true, createdAt: 1 } },
 		{ type: 'follow', content: { targetEntityHash: TARGET, rep_edge: 1 } },
 	])
 
@@ -117,7 +117,7 @@ Deno.test('discoverFollowGraph: public foreign timeline exposes following', asyn
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const foreignOwner = encodeEntityHash('2'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, foreignOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'follow', content: { targetEntityHash: TARGET, rep_edge: 1 } },
 	])
 
@@ -129,10 +129,10 @@ Deno.test('discoverAccounts skips protected timelines', async () => {
 	const { username, operator } = await getSession()
 	const before = await discovery.discoverAccounts(username, { n: 50 })
 	assert(before.accounts.some(a => a.entityHash === operator.toLowerCase()), 'operator listed when public')
-	await socialMeta.updateSocialMeta(username, operator, { isProtected: true })
+	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: true })
 	const after = await discovery.discoverAccounts(username, { n: 50 })
 	assert(!after.accounts.some(a => a.entityHash === operator.toLowerCase()), 'protected operator hidden')
-	await socialMeta.updateSocialMeta(username, operator, { isProtected: false })
+	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: false })
 })
 
 Deno.test('buildProfileFeedItems returns own posts', async () => {
@@ -171,7 +171,7 @@ Deno.test('remote author profile + posts do not break feed/discover', async () =
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('3'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'post', content: { text: 'remote authored post', visibility: 'public' } },
 	])
 
@@ -193,7 +193,7 @@ Deno.test('discoverAccounts: ingress RPC lists only self-hosted entities', async
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 	])
 
 	const localView = await discovery.discoverAccounts(username, { n: 50 })
@@ -211,7 +211,7 @@ Deno.test('remote entity profile uses subjectHash placeholder not local persona'
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('5'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 	])
 
 	const { resolvePersonaPresentation } = await import('fount/server/p2p_server/presentation.mjs')

@@ -6,9 +6,9 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { normalizeSearchQuery, postMatchesQuery } from '../../src/lib/postQuery.mjs'
 
-Deno.test('postMatchesQuery requires min length and skips protected', () => {
+Deno.test('postMatchesQuery requires min length and skips textless posts', () => {
 	assertEquals(postMatchesQuery({ content: { text: 'hello world' } }, 'h'), false)
-	assertEquals(postMatchesQuery({ content: { protected: true } }, 'hello'), false)
+	assertEquals(postMatchesQuery({ content: { scheme: 'gsh' } }, 'hello'), false)
 	assertEquals(postMatchesQuery({ content: { text: 'hello world' } }, 'world'), true)
 })
 

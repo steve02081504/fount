@@ -36,8 +36,12 @@ Test-Case 'GET /profile/likes' {
 	$r.status -eq 200 -and $null -ne $r.json.items
 }
 Test-Case 'GET /feed' {
-	$r = Api GET '/feed?sync=false&limit=20'
+	$r = Api GET '/feed?limit=20'
 	$r.status -eq 200 -and $null -ne $r.json.items
+}
+Test-Case 'POST /feed/sync' {
+	$r = Api POST '/feed/sync' $null
+	$r.status -eq 200 -and $r.json.synced -eq $true
 }
 Test-Case 'GET /explore/posts' {
 	$r = Api GET '/explore/posts?limit=10'
@@ -65,8 +69,8 @@ Test-Case 'GET /search short query 400' {
 }
 
 Write-LiveSection 'B. Profile read & post'
-Test-Case 'POST /profile/post' {
-	$r = Api POST '/profile/post' @{ entityHash = $entityHash; text = 'social e2e post'; visibility = 'public'; lang = 'zh-CN' }
+Test-Case 'POST /posts' {
+	$r = Api POST '/posts' @{ entityHash = $entityHash; text = 'social e2e post'; visibility = 'public'; lang = 'zh-CN' }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$script:postId = $r.json.event.id
 	[bool]$script:postId
@@ -93,42 +97,42 @@ Test-Case 'GET /search hashtag' {
 }
 
 Write-LiveSection 'C. Interactions'
-Test-Case 'POST /profile/like' {
-	$r = Api POST '/profile/like' @{ entityHash = $entityHash; postId = $postId; like = $true }
+Test-Case 'POST /posts/:hash/:id/like' {
+	$r = Api POST "/posts/$entityHash/$postId/like" @{ like = $true }
 	$r.status -eq 200 -and $r.json.event.type -eq 'like'
 }
-Test-Case 'POST /profile/repost' {
-	$r = Api POST '/profile/repost' @{ entityHash = $entityHash; postId = $postId; comment = 'e2e repost' }
+Test-Case 'POST /posts/:hash/:id/repost' {
+	$r = Api POST "/posts/$entityHash/$postId/repost" @{ comment = 'e2e repost' }
 	$r.status -eq 200 -and $r.json.event.type -eq 'repost'
 }
-Test-Case 'POST /profile/follow seeded test target' {
-	$r = Api POST '/profile/follow' @{ entityHash = $dummyTarget; follow = $true }
-	$r.status -eq 200
+Test-Case 'POST /relationships/follow seeded test target' {
+	$r = Api POST '/relationships/follow' @{ entityHash = $dummyTarget; follow = $true }
+	$r.status -eq 200 -and $r.json.isFollowing -eq $true
 }
-Test-Case 'POST /profile/follow unfollow seeded test target' {
-	$r = Api POST '/profile/follow' @{ entityHash = $dummyTarget; follow = $false }
-	$r.status -eq 200
+Test-Case 'POST /relationships/follow unfollow seeded test target' {
+	$r = Api POST '/relationships/follow' @{ entityHash = $dummyTarget; follow = $false }
+	$r.status -eq 200 -and $r.json.isFollowing -eq $false
 }
 Test-Case 'POST /profile/meta' {
-	$r = Api POST '/profile/meta' @{ exploreBlurb = 'e2e blurb'; isProtected = $false }
+	$r = Api POST '/profile/meta' @{ exploreBlurb = 'e2e blurb'; hideFromDiscovery = $false }
 	$r.status -eq 200
 }
-Test-Case 'POST /profile/block + unblock seeded test target' {
-	$b = Api POST '/profile/block' @{ entityHash = $dummyTarget; block = $true }
+Test-Case 'POST /relationships/block + unblock seeded test target' {
+	$b = Api POST '/relationships/block' @{ entityHash = $dummyTarget; block = $true }
 	if ($b.status -ne 200) { throw "block $($b.status)" }
-	$u = Api POST '/profile/block' @{ entityHash = $dummyTarget; block = $false }
+	$u = Api POST '/relationships/block' @{ entityHash = $dummyTarget; block = $false }
 	$u.status -eq 200
 }
-Test-Case 'POST /profile/hide + unhide seeded test target' {
-	$h = Api POST '/profile/hide' @{ entityHash = $dummyTarget; hide = $true }
+Test-Case 'POST /relationships/hide + unhide seeded test target' {
+	$h = Api POST '/relationships/hide' @{ entityHash = $dummyTarget; hide = $true }
 	if ($h.status -ne 200) { throw "hide $($h.status)" }
-	$u = Api POST '/profile/hide' @{ entityHash = $dummyTarget; hide = $false }
+	$u = Api POST '/relationships/hide' @{ entityHash = $dummyTarget; hide = $false }
 	$u.status -eq 200
 }
 Test-Case 'GET /profile/personal-lists' {
 	$r = Api GET '/profile/personal-lists'
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
-	$null -ne $r.json.blockedEntityHashes -and $null -ne $r.json.hiddenEntityHashes
+	$null -ne $r.json.entries
 }
 
 Write-LiveSection 'D. Saved posts'
@@ -184,8 +188,8 @@ Test-Case 'GET /files/:shareId' {
 }
 
 Write-LiveSection 'F. Cleanup'
-Test-Case 'POST /profile/post-delete' {
-	$r = Api POST '/profile/post-delete' @{ postId = $postId }
+Test-Case 'DELETE /posts' {
+	$r = Api DELETE '/posts' @{ postId = $postId }
 	$r.status -eq 200 -and $r.json.event.type -eq 'post_delete'
 }
 

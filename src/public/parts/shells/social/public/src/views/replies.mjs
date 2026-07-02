@@ -17,8 +17,8 @@ export async function renderRepliesPanel(appContext, panel, replies) {
 			const row = document.createElement('div')
 			row.className = 'reply'
 			const text = reply.post?.content?.text || ''
-			const bodyHtml = reply.post?.content?.protected
-				? `<em>${appContext.geti18n('social.profile.protectedPost')}</em>`
+			const bodyHtml = reply.post?.decryptView?.failed
+				? `<em>${appContext.geti18n('social.feed.decryptFailed')}</em>`
 				: await appContext.renderMarkdown(text, reply.entityHash)
 			row.innerHTML = `
 				<div class="reply-header">
