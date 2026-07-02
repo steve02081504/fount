@@ -703,7 +703,7 @@ async function renderMembers() {
 
 	const bannedRows = Array.isArray(currentState.bannedMembers) ? currentState.bannedMembers : []
 	const bannedMembers = bannedRows.map(member => ({
-		pubKeyHash: escapeHtml(member.pubKeyHash || ''),
+		memberKey: escapeHtml(member.memberKey || ''),
 	}))
 
 	await mountTemplate(container, 'group/settings/members_list', {

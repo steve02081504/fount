@@ -29,7 +29,6 @@ import {
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { channelMessageContentObject } from '../../chat/lib/channelContent.mjs'
-import { EVENT_ID_ROUTE_SEGMENT } from '../../chat/lib/hexRoute.mjs'
 import { triggerCharReply } from '../../chat/session/generation.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/stream/auth.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
@@ -43,7 +42,7 @@ import {
 	requireGroupMember,
 	resolveGroupMember,
 } from './middleware.mjs'
-import { groupRouteRegex } from './path.mjs'
+import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
 
 /**
  * 注册频道相关 HTTP 路由。
@@ -52,7 +51,7 @@ import { groupRouteRegex } from './path.mjs'
  * @returns {void}
  */
 export function registerChannelRoutes(router, authenticate) {
-	router.post(groupRouteRegex('channels/([^/]+)/trigger-reply'), authenticate, requireGroupChannel(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/trigger-reply`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { groupId, channelId } = req.groupContext
 
 		const { charname } = req.body || {}
@@ -62,7 +61,7 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(groupRouteRegex('channels/([^/]+)/reactions'), authenticate, requireGroupChannel(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/reactions`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId } = req.groupContext
 		const { targetEventId, emoji } = req.body || {}
 		if (!targetEventId || !emoji)
@@ -77,7 +76,7 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.delete(groupRouteRegex('channels/([^/]+)/reactions'), authenticate, requireGroupChannel(), async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/reactions`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, memberKey } = req.groupContext
 		const { targetEventId, emoji, targetPubKeyHash } = req.body || {}
 		if (!targetEventId || !emoji)
@@ -94,7 +93,7 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(groupRouteRegex('channels/([^/]+)/pins'), authenticate, requireGroupChannel(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pins`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, state, member } = req.groupContext
 		const { targetEventId } = req.body || {}
 		if (!targetEventId)
@@ -105,16 +104,16 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.delete(groupRouteRegex(`channels/([^/]+)/pins/(${EVENT_ID_ROUTE_SEGMENT})`), authenticate, requireGroupChannel(), async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pins/${EVENT_ID_PARAM}`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, state, member } = req.groupContext
-		const targetEventId = String(req.params[2] || '').toLowerCase()
+		const targetEventId = String(req.params.eventId || '').toLowerCase()
 		if (!ensurePinPermission(res, state, member, channelId)) return
 
 		await appendUnpinEvent(username, groupId, channelId, targetEventId)
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/list-items$/, authenticate, requireGroupChannel(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/list-items`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, state } = req.groupContext
 		const { items } = req.body || {}
 		if (!Array.isArray(items))
@@ -140,9 +139,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/streaming-view$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/streaming-view`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, member, groupId } = req.groupContext
-		const channelId = req.params[1]
+		const { channelId } = req.params
 		const channel = state.channels[channelId]
 		if (!channel)
 			return res.status(404).send('Channel not found')
@@ -171,9 +170,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).send(html)
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/streaming-auth$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/streaming-auth`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, member, groupId } = req.groupContext
-		const channelId = req.params[1]
+		const { channelId } = req.params
 		const channel = state.channels[channelId]
 		if (!channel)
 			return res.status(404).json({ error: 'Channel not found' })
@@ -205,9 +204,9 @@ export function registerChannelRoutes(router, authenticate) {
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/threads$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const parentChannelId = req.params[1]
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/threads`, authenticate, async (req, res) => {
+		const { groupId } = req.params
+		const { channelId: parentChannelId } = req.params
 		const { parentEventId } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -232,10 +231,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(201).json({ channelId: newChannelId })
 	})
 
-	router.put(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/messages/(${EVENT_ID_ROUTE_SEGMENT})$`, 'i'), authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const eventId = String(req.params[2] || '').toLowerCase()
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const eventId = String(req.params.eventId || '').toLowerCase()
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			return res.status(400).json({ error: 'invalid eventId' })
 		const rawContent = req.body?.content
@@ -252,10 +250,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ event })
 	})
 
-	router.delete(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/messages/(${EVENT_ID_ROUTE_SEGMENT})$`, 'i'), authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const eventId = String(req.params[2] || '').toLowerCase()
+	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const eventId = String(req.params.eventId || '').toLowerCase()
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			return res.status(400).json({ error: 'invalid eventId' })
 
@@ -268,10 +265,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ event })
 	})
 
-	router.put(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/messages/(${EVENT_ID_ROUTE_SEGMENT})/feedback$`, 'i'), authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const eventId = String(req.params[2] || '').toLowerCase()
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}/feedback`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const eventId = String(req.params.eventId || '').toLowerCase()
 		const { type, content } = req.body || {}
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			return res.status(400).json({ error: 'invalid eventId' })
@@ -287,9 +283,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ event })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/history-want$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/history-want`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const { before: rawBefore, limit: rawLimit } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -306,10 +301,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ messages })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/stream-buffer\/([^/]+)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const pendingStreamId = req.params[2]
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/stream-buffer/:pendingStreamId`, authenticate, async (req, res) => {
+		const { groupId, channelId, pendingStreamId } = req.params
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -321,9 +314,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ chunks: getBufferedStreamChunks(groupId, pendingStreamId) })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/messages$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const { since, before, limit } = req.query
 
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -344,9 +336,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ messages, reactions })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/messages\/batch-get$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/batch-get`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const rawIds = req.body?.eventIds
 
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -373,10 +364,9 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ messages, reactions })
 	})
 
-	router.get(new RegExp(`^/api/parts/shells:chat/groups/([^/]+)/channels/([^/]+)/pin-context/(${EVENT_ID_ROUTE_SEGMENT})$`, 'i'), authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const pinEventId = String(req.params[2] || '').toLowerCase()
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pin-context/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const pinEventId = String(req.params.eventId || '').toLowerCase()
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(pinEventId))
 			return res.status(400).json({ error: 'invalid eventId' })
 
@@ -390,8 +380,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({ messages })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/default-channel$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.put(`${GROUPS_PREFIX}/:groupId/default-channel`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const channelId = String(req.body?.channelId || '').trim()
 		if (!channelId)
 			return res.status(400).json({ error: 'channelId required' })
@@ -409,8 +399,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/meta$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.put(`${GROUPS_PREFIX}/:groupId/meta`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const { name, description, friendBinding } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -441,8 +431,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/settings$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.put(`${GROUPS_PREFIX}/:groupId/settings`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
 		const { username } = membership
@@ -455,7 +445,7 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
 			groupContext: { username, groupId },
 			body: { type, name, description, isPrivate }
@@ -479,9 +469,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(201).json({ channelId })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const { name, description, type, isPrivate, parentChannelId } = req.body
 
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -516,9 +505,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -533,13 +521,12 @@ export function registerChannelRoutes(router, authenticate) {
 			timestamp: Date.now(),
 			content: { channelId },
 		})
-		res.status(200).json({})
+		res.status(200).json({ channelId, deleted: true })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/votes\/([^/]+)\/cast$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
-		const ballotId = decodeURIComponent(req.params[2])
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/votes/:ballotId/cast`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const ballotId = decodeURIComponent(req.params.ballotId)
 		const { choice } = req.body || {}
 		if (choice == null)
 			return res.status(400).json({ error: 'choice required' })
@@ -557,9 +544,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(201).json({ event })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/votes$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/votes`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const { question: rawQuestion, options: rawOptions, deadline, deadlineMs } = req.body || {}
 		const question = String(rawQuestion || '').trim()
 		const options = Array.isArray(rawOptions)
@@ -588,9 +574,8 @@ export function registerChannelRoutes(router, authenticate) {
 		res.status(201).json({ event, ballotId: event.id })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/messages$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
 		const { content: rawContent, reply, files: rawFiles } = req.body || {}
 
 		const membership = await resolveGroupMember(req, res, groupId)

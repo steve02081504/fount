@@ -17,6 +17,7 @@ import {
 } from '../groupEmojis.mjs'
 
 import { ensureCanInChannel, requireGroupMember } from './middleware.mjs'
+import { CHAT_API_PREFIX, GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 发送表情二进制响应（JSON dataUrl 或文件流）。
@@ -55,13 +56,13 @@ async function sendEmojiContentResponse(req, res, username, groupId, emojiId) {
  * @returns {void}
  */
 export function registerGroupEmojiRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/emojis$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		const entries = await loadGroupEmojiManifest(username, groupId)
 		res.status(200).json({ entries })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/emojis$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		const channelId = governanceChannelId(state)
 		if (!ensureCanInChannel(res, state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')) return
@@ -82,27 +83,25 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		res.status(201).json({ entry })
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/emojis\/([^/]+)$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/emojis/:emojiId`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
-		const emojiId = req.params[1]
+		const { emojiId } = req.params
 		const channelId = governanceChannelId(state)
 		if (!ensureCanInChannel(res, state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')) return
 		const ok = await deleteGroupEmoji(username, groupId, emojiId)
 		if (!ok) return res.status(404).json({ error: 'emoji not found' })
-		res.status(200).json({})
+		res.status(200).json({ emojiId, deleted: true })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/emoji-content\/([^/]+)\/([^/]+)$/, authenticate, async (req, res) => {
+	router.get(`${CHAT_API_PREFIX}/emoji-content/:groupId/:emojiId`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const emojiId = req.params[1]
+		const { groupId, emojiId } = req.params
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId)
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/emojis\/([^/]+)\/data$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/emojis/:emojiId/data`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const emojiId = req.params[1]
+		const { groupId, emojiId } = req.params
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId)
 	})
 }

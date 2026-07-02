@@ -189,8 +189,8 @@ export async function getStreamBufferChunks(groupId, channelId, pendingStreamId)
  * @param {string} groupId 群 ID
  * @returns {Promise<{ current: number, total: number }>} 当前索引与分支总数
  */
-export async function getChatTimeline(groupId) {
-	const data = await groupFetch(groupPath(groupId, 'timeline'), {
+export async function getChatBranch(groupId) {
+	const data = await groupFetch(groupPath(groupId, 'branch'), {
 		method: 'GET',
 	})
 	return {
@@ -200,16 +200,20 @@ export async function getChatTimeline(groupId) {
 }
 
 /**
- * 调整频道时间线（前移/回退 DAG 叶）。
+ * 调整 RPG 分支（前移/回退/跳到最新）。
  * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {number} delta 时间线偏移步数
+ * @param {string} channelId 频道 ID（生成上下文）
+ * @param {number} [delta] 分支偏移步数
+ * @param {{ latest?: boolean }} [opts] `latest: true` 跳到最新分支
  * @returns {Promise<void>}
  */
-export async function modifyChannelTimeline(groupId, channelId, delta) {
-	await groupFetch(groupPath(groupId, 'timeline'), {
+export async function modifyBranch(groupId, channelId, delta, opts = {}) {
+	const body = { channelId }
+	if (opts.latest) body.latest = true
+	else body.delta = delta
+	await groupFetch(groupPath(groupId, 'branch'), {
 		method: 'PUT',
-		json: { delta, channelId },
+		json: body,
 	})
 }
 

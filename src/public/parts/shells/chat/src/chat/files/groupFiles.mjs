@@ -26,6 +26,7 @@ import {
 import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
+import { GROUPS_PREFIX } from '../../group/routes/path.mjs'
 import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../dag/channelOps.mjs'
 import { getState } from '../dag/materialize.mjs'
 import {
@@ -679,9 +680,9 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
  * @returns {void}
  */
 export function registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS) {
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/chunks\/have$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/chunks/have`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const groupId = req.params.groupId
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })
@@ -713,9 +714,9 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/chunks$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/chunks`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const groupId = req.params.groupId
 		const { fileId, data } = parseChunkBody(req.body)
 		const { state } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
@@ -746,9 +747,9 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/files$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/files`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const groupId = req.params.groupId
 		const { body } = req
 		const fileId = body.fileId?.trim()
 		if (!fileId) return res.status(400).json({ error: 'fileId required' })
@@ -789,9 +790,9 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		res.status(201).json({ event })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/file-system$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/file-system`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const groupId = req.params.groupId
 		const body = req.body || {}
 		const { operation } = body
 		const folderId = body.folderId?.trim()
@@ -818,10 +819,10 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		res.status(201).json({ event })
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/files\/([^/]+)$/, authenticate, async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/files/:fileId`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const fileId = decodeURIComponent(req.params[1])
+		const groupId = req.params.groupId
+		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
@@ -838,10 +839,10 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		res.status(200).json({ event })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/files\/([^/]+)\/meta$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/meta`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const fileId = decodeURIComponent(req.params[1])
+		const groupId = req.params.groupId
+		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })
@@ -870,10 +871,10 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		})
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/files\/([^/]+)\/download-status$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-status`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const fileId = decodeURIComponent(req.params[1])
+		const groupId = req.params.groupId
+		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })
@@ -887,10 +888,10 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/files\/([^/]+)\/download-resume$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-resume`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
-		const fileId = decodeURIComponent(req.params[1])
+		const groupId = req.params.groupId
+		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })

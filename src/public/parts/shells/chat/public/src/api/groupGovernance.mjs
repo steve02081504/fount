@@ -71,8 +71,8 @@ export async function setGovernanceBranch(groupId, tipId) {
  * @param {string} groupId 群 ID
  * @returns {Promise<object>} `{ reputation }`
  */
-export async function getGroupReputation(groupId) {
-	return groupFetch(groupPath(groupId, 'reputation'))
+export async function getGroupReputation() {
+	return groupFetch('/api/parts/shells:chat/reputation')
 }
 
 /**

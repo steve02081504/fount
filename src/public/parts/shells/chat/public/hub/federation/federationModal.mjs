@@ -64,7 +64,7 @@ async function refreshReputationDump(groupId) {
 	const dump = document.getElementById('federation-rep-dump')
 	if (!dump) return
 	try {
-		const { reputation } = await getGroupReputation(groupId)
+		const { reputation } = await getGroupReputation()
 		const text = formatReputationDump(reputation)
 		if (text) {
 			delete dump.dataset.i18n

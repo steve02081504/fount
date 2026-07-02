@@ -154,7 +154,7 @@ function Wait-FedMembers($node, $groupId, $minMembers = 2, $timeoutSec = 120) {
 	[bool](PollUntil $timeoutSec 3 {
 		Invoke-FedCatchupSync $node $groupId 5000
 		$state = Api $node GET "/groups/$groupId/state"
-		$state.status -eq 200 -and $state.json.state.isMember -eq $true -and [int]$state.json.state.memberCount -ge $minMembers
+		$state.status -eq 200 -and $state.json.viewer.isMember -eq $true -and [int]$state.json.meta.memberCount -ge $minMembers
 	})
 }
 
@@ -206,7 +206,7 @@ function Test-FedHasReaction($node, $groupId, $channelId, $targetEventId) {
 
 function Test-FedHasChannel($node, $groupId, $channelId) {
 	$s = Api $node GET "/groups/$groupId/state"
-	$s.status -eq 200 -and $null -ne $s.json.state.channels.$channelId
+	$s.status -eq 200 -and $null -ne $s.json.meta.channels.$channelId
 }
 
 function Assert-FedPeersReady($groupId) {
@@ -257,7 +257,7 @@ function Initialize-OpenGroupJoinMulti($name, $seedText, $joinNodes) {
 			Api $node POST "/groups/$groupId/federation/catchup" @{ waitMs = 6000 } | Out-Null
 		}
 		$state = Api $script:FedA GET "/groups/$groupId/state"
-		$state.status -eq 200 -and [int]$state.json.state.memberCount -ge $minMembers
+		$state.status -eq 200 -and [int]$state.json.meta.memberCount -ge $minMembers
 	}
 	if (-not $meshOk) { throw "federation mesh warmup: members>=$minMembers" }
 	[pscustomobject]@{ groupId = $groupId; channelId = $channelId; seedEventId = $seedEventId; invite = $invite }
@@ -286,7 +286,7 @@ function Initialize-OpenGroupJoin($name, $seedText) {
 			Api $script:FedB POST "/groups/$groupId/federation/catchup" @{ waitMs = 6000 } | Out-Null
 			Api $script:FedB POST "/groups/$groupId/dag/merge-tips" @{} | Out-Null
 			$state = Api $script:FedB GET "/groups/$groupId/state"
-			$state.status -eq 200 -and [int]$state.json.state.memberCount -ge 2
+			$state.status -eq 200 -and [int]$state.json.meta.memberCount -ge 2
 		})
 	}
 	if (-not $ok) {

@@ -70,11 +70,11 @@ for ($i = 0; $i -lt 8; $i++) {
 $sA = Api $creator GET "/groups/$gid/state"
 $sB = Api $joiner GET "/groups/$gid/state"
 Write-Host "`n=== A state ===" -ForegroundColor Magenta
-Write-Host "status=$($sA.status) isMember=$($sA.json.state.isMember) memberCount=$($sA.json.state.memberCount) defaultChannel=$($sA.json.state.groupSettings.defaultChannelId)"
-foreach ($m in @($sA.json.state.members)) { Write-Host " A-member $($m.pubKeyHash) roles=$($m.roles -join ',') status=$($m.status)" }
+Write-Host "status=$($sA.status) isMember=$($sA.json.viewer.isMember) memberCount=$($sA.json.meta.memberCount) defaultChannel=$($sA.json.meta.groupSettings.defaultChannelId)"
+foreach ($m in @($sA.json.meta.members)) { Write-Host " A-member $($m.memberKey) roles=$($m.roles -join ',') status=$($m.status)" }
 Write-Host "`n=== B state ===" -ForegroundColor Magenta
-Write-Host "status=$($sB.status) isMember=$($sB.json.state.isMember) memberCount=$($sB.json.state.memberCount) defaultChannel=$($sB.json.state.groupSettings.defaultChannelId)"
-foreach ($m in @($sB.json.state.members)) { Write-Host " B-member $($m.pubKeyHash) roles=$($m.roles -join ',') status=$($m.status)" }
+Write-Host "status=$($sB.status) isMember=$($sB.json.viewer.isMember) memberCount=$($sB.json.meta.memberCount) defaultChannel=$($sB.json.meta.groupSettings.defaultChannelId)"
+foreach ($m in @($sB.json.meta.members)) { Write-Host " B-member $($m.memberKey) roles=$($m.roles -join ',') status=$($m.status)" }
 
 $evA = Api $creator GET "/groups/$gid/events?limit=200"
 $evB = Api $joiner GET "/groups/$gid/events?limit=200"

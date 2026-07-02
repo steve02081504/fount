@@ -53,7 +53,7 @@ export async function resolveGroupMember(req, res, groupId, opts = {}) {
  * @returns {import('npm:express').RequestHandler} 中间件
  */
 export function requireGroupMember(options = {}) {
-	const groupParam = Number.isInteger(options.groupParam) ? options.groupParam : 0
+	const groupParam = options.groupParam ?? 'groupId'
 	const allowSuspectedRemoved = !!options.allowSuspectedRemoved
 	return async (req, res, next) => {
 		const groupId = req.params[groupParam]
@@ -70,8 +70,8 @@ export function requireGroupMember(options = {}) {
  * @returns {import('npm:express').RequestHandler} 中间件
  */
 export function requireGroupChannel(options = {}) {
-	const groupParam = Number.isInteger(options.groupParam) ? options.groupParam : 0
-	const channelParam = Number.isInteger(options.channelParam) ? options.channelParam : 1
+	const groupParam = options.groupParam ?? 'groupId'
+	const channelParam = options.channelParam ?? 'channelId'
 	const permission = options.permission || null
 	return async (req, res, next) => {
 		const groupId = req.params[groupParam]

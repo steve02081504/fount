@@ -30,7 +30,7 @@ Test-Case 'GET /groups list contains new group' {
 Test-Case 'GET /groups/:id/state isMember+channels' {
 	$r = Api GET "/groups/$gid/state"
 	if ($r.status -ne 200) { throw "status $($r.status)" }
-	$r.json.state.isMember -eq $true -and $null -ne $r.json.state.channels.$cid
+	$r.json.viewer.isMember -eq $true -and $null -ne $r.json.meta.channels.$cid
 }
 Test-Case 'GET /groups/:id/snapshot' {
 	$r = Api GET "/groups/$gid/snapshot"
@@ -40,7 +40,7 @@ Test-Case 'PUT /groups/:id/meta' {
 	$r = Api PUT "/groups/$gid/meta" @{ name = 'E2E-renamed'; description = 'd2' }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$s = Api GET "/groups/$gid/state"
-	$s.json.state.groupMeta.name -eq 'E2E-renamed'
+	$s.json.meta.groupMeta.name -eq 'E2E-renamed'
 }
 Test-Case 'PUT /groups/:id/settings joinPolicy+rate' {
 	$r = Api PUT "/groups/$gid/settings" @{ joinPolicy = 'open'; messageRateLimitPerMin = 120; hotLatestMessageCount = 40 }
@@ -269,7 +269,7 @@ Test-Case 'GET peers' {
 	$r.status -eq 200 -and [bool]$r.json.selfNodeHash
 }
 Test-Case 'GET reputation' {
-	$r = Api GET "/groups/$gid/reputation"
+	$r = Api GET '/reputation'
 	$r.status -eq 200
 }
 Test-Case 'POST federation/tuning' {
@@ -282,7 +282,7 @@ Test-Case 'POST federation/offline-mark' {
 }
 Test-Case 'POST reputation/slash verified (DAG)' {
 	$members = Api GET "/groups/$gid/members/page/0"
-	$self = @($members.json.members)[0].pubKeyHash
+	$self = @($members.json.members)[0].memberKey
 	$tip = (Api GET "/groups/$gid/dag/tips").json.tips[0]
 	$r = Api POST "/groups/$gid/reputation/slash" @{
 		targetPubKeyHash = $self; claim = 0.1; verified = $true; proof = @{ eventId = $tip }
@@ -292,7 +292,7 @@ Test-Case 'POST reputation/slash verified (DAG)' {
 }
 Test-Case 'POST reputation/reset (DAG)' {
 	$members = Api GET "/groups/$gid/members/page/0"
-	$self = @($members.json.members)[0].pubKeyHash
+	$self = @($members.json.members)[0].memberKey
 	$r = Api POST "/groups/$gid/reputation/reset" @{ targetPubKeyHash = $self }
 	if ($r.status -ne 200) { throw "reset $($r.status): $($r.raw)" }
 	$true
@@ -345,7 +345,7 @@ Test-Case 'GET sessions/list' {
 }
 Test-Case 'GET/PUT bookmarks' {
 	$g = Api GET '/bookmarks'
-	if ($g.status -ne 200) { throw "get $($g.status)" }
+	if ($g.status -ne 200 -or -not $g.json.entries) { throw "get $($g.status)" }
 	$p = Api PUT '/bookmarks' @{ entries = @(@{ groupId = $gid; channelId = $cid; eventId = ('a' * 64); title = 'bm' }) }
 	$p.status -eq 200
 }

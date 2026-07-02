@@ -18,7 +18,7 @@ $m2 = (Api $FedB POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type
 
 $r1 = PollUntil 40 3 { @((Api $FedB GET "/groups/$gid/channels/$cid/messages").json.messages | Where-Object { $_.eventId -eq $m1 }).Count -ge 1 }
 Write-Host ("B sees A-msg M1 (live push): {0}" -f [bool]$r1)
-$r2 = PollUntil 40 3 { $s = Api $FedB GET "/groups/$gid/state"; $null -ne $s.json.state.channels.$c1 }
+$r2 = PollUntil 40 3 { $s = Api $FedB GET "/groups/$gid/state"; $null -ne $s.json.meta.channels.$c1 }
 Write-Host ("B sees A-channel C1 (live push): {0}" -f [bool]$r2)
 $r3 = PollUntil 40 3 { Test-FedHasReaction $FedB $gid $cid $m1 }
 Write-Host ("B sees A-reaction (live push): {0}" -f [bool]$r3)

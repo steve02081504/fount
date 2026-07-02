@@ -72,7 +72,7 @@ export function resolveEntityHashForAuthorKey(key) {
 		return null
 	}
 	const members = hubStore.currentState?.members || []
-	const member = members.find(m => String(m.pubKeyHash || '').toLowerCase() === raw)
+	const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw)
 	if (member?.entityHash && isEntityHash128(member.entityHash))
 		return String(member.entityHash).toLowerCase()
 	const viewerPub = String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
@@ -91,7 +91,7 @@ export function memberDisplayNameForAuthorKey(key) {
 	if (!raw) return null
 	const members = hubStore.currentState?.members || []
 	if (isHex64(raw)) {
-		const member = members.find(m => String(m.pubKeyHash || '').toLowerCase() === raw.toLowerCase())
+		const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw.toLowerCase())
 		if (member?.displayName) return String(member.displayName).trim()
 	}
 	return null

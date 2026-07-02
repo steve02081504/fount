@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { locale_t, role_t, timeStamp_t } from '../../../../../decl/basedefs.ts'
 import { CharAPI_t } from '../../../../../decl/charAPI.ts'
+import type { GenerationOptions_t } from '../../../../../decl/chatLog.ts'
 import { PluginAPI_t } from '../../../../../decl/pluginAPI.ts'
 import { UserAPI_t } from '../../../../../decl/userAPI.ts'
 import { WorldAPI_t } from '../../../../../decl/worldAPI.ts'
@@ -181,45 +182,10 @@ export class chatLogEntry_t {
 export type chatLog_t = chatLogEntry_t[];
 
 /**
- * 定义了角色处理中回复预览更新器的标准类型。
- * @param {chatReply_t} reply - 聊天回复。
- * @returns {void}
+ *
  */
-export type CharReplyPreviewUpdater_t = (args: chatReplyRequest_t, reply: chatReply_t) => void
-/**
- * 定义了最终AI源处理的回复预览更新器的类型。
- * @param {chatReply_t} reply - 聊天回复。
- * @returns {void}
- */
-export type ReplyPreviewUpdater_t = (reply: chatReply_t) => void
-
-/**
- * 生成选项类型
- * @class GenerationOptions_t
- * 定义了生成时可以传递的选项。
- */
-export class GenerationOptions_t {
-	replyPreviewUpdater?: ReplyPreviewUpdater_t
-	signal?: AbortSignal
-	supported_functions?: {
-		markdown?: boolean
-		mathjax?: boolean
-		html?: boolean
-		unsafe_html?: boolean
-		files?: boolean
-		add_message?: boolean
-		fount_i18nkeys?: boolean
-		fount_assets?: boolean
-		fount_themes?: boolean
-	}
-	base_result?: {
-		content: string,
-		files: {
-			name: string
-			mime_type: string
-			buffer: Buffer,
-			description: string
-		}[],
-		extension?: object
-	}
-}
+export type {
+	ReplyPreviewUpdater_t,
+	CharReplyPreviewUpdater_t,
+	GenerationOptions_t,
+} from '../../../../../decl/chatLog.ts'

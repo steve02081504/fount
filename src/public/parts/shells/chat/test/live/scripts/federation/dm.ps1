@@ -33,10 +33,10 @@ function Resolve-UsableChannelId($node, $gid, $currentCid) {
 	$resolved = PollUntil 120 3 {
 		$st = Api $node GET "/groups/$gid/state"
 		if ($st.status -ne 200) { return $null }
-		$defaultCid = $st.json.state.groupSettings.defaultChannelId
+		$defaultCid = $st.json.meta.groupSettings.defaultChannelId
 		if ($defaultCid) { return $defaultCid }
-		if ($st.json.state.channels) {
-			$chNames = @($st.json.state.channels.PSObject.Properties.Name)
+		if ($st.json.meta.channels) {
+			$chNames = @($st.json.meta.channels.PSObject.Properties.Name)
 			if ($chNames.Count -ge 1) { return $chNames[0] }
 		}
 		$null
@@ -117,14 +117,14 @@ Test-Case 'peer join with dmIntro proof' {
 		Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 6000 } | Out-Null
 		Api $joiner POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 		$st = Api $joiner GET "/groups/$gid/state"
-		if ($st.json.state.groupSettings.defaultChannelId) {
-			$script:cid = $st.json.state.groupSettings.defaultChannelId
+		if ($st.json.meta.groupSettings.defaultChannelId) {
+			$script:cid = $st.json.meta.groupSettings.defaultChannelId
 		}
-		elseif ($st.json.state.channels) {
-			$chNames = @($st.json.state.channels.PSObject.Properties.Name)
+		elseif ($st.json.meta.channels) {
+			$chNames = @($st.json.meta.channels.PSObject.Properties.Name)
 			if ($chNames.Count -ge 1) { $script:cid = $chNames[0] }
 		}
-		($st.json.state.channels.PSObject.Properties | Measure-Object).Count -ge 1
+		($st.json.meta.channels.PSObject.Properties | Measure-Object).Count -ge 1
 	})
 }
 
@@ -137,7 +137,7 @@ Test-Case 'joiner join-snapshot + catchup' {
 Test-Case 'creator join-snapshot + catchup sees joiner' {
 	$joinerSt = Api $joiner GET "/groups/$gid/state"
 	if ($joinerSt.status -ne 200) { throw "joiner state $($joinerSt.status)" }
-	$joinerHash = [string]$joinerSt.json.state.viewerMemberPubKeyHash
+	$joinerHash = [string]$joinerSt.json.viewer.memberKey
 	if (-not $joinerHash) { throw 'joiner viewerMemberPubKeyHash missing' }
 	Api $creator POST "/groups/$gid/federation/join-snapshot" @{} | Out-Null
 	$r = Api $creator POST "/groups/$gid/federation/catchup" @{ waitMs = 25000 }
@@ -150,8 +150,8 @@ Test-Case 'creator join-snapshot + catchup sees joiner' {
 		Api $creator POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 		$s = Api $creator GET "/groups/$gid/state"
 		if ($s.status -ne 200) { return $false }
-		@($s.json.state.members | Where-Object {
-			$_.pubKeyHash -eq $joinerHash
+		@($s.json.meta.members | Where-Object {
+			$_.memberKey -eq $joinerHash
 		}).Count -ge 1
 	})
 }
@@ -162,14 +162,14 @@ Test-Case 'joiner state has default channel' {
 	[bool](PollUntil 90 3 {
 		Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
 		$s = Api $joiner GET "/groups/$gid/state"
-		if ($s.json.state.groupSettings.defaultChannelId) {
-			$script:cid = $s.json.state.groupSettings.defaultChannelId
+		if ($s.json.meta.groupSettings.defaultChannelId) {
+			$script:cid = $s.json.meta.groupSettings.defaultChannelId
 		}
-		elseif ($s.json.state.channels) {
-			$chNames = @($s.json.state.channels.PSObject.Properties.Name)
+		elseif ($s.json.meta.channels) {
+			$chNames = @($s.json.meta.channels.PSObject.Properties.Name)
 			if ($chNames.Count -ge 1) { $script:cid = $chNames[0] }
 		}
-		$s.status -eq 200 -and ($s.json.state.channels.PSObject.Properties | Measure-Object).Count -ge 1
+		$s.status -eq 200 -and ($s.json.meta.channels.PSObject.Properties | Measure-Object).Count -ge 1
 	})
 }
 
@@ -194,14 +194,14 @@ Test-Case 'joiner sends DM-B' {
 	$ready = PollUntil 90 3 {
 		Api $joiner POST "/groups/$gid/federation/catchup" @{ waitMs = 4000 } | Out-Null
 		$s = Api $joiner GET "/groups/$gid/state"
-		if ($s.json.state.groupSettings.defaultChannelId) {
-			$script:cid = $s.json.state.groupSettings.defaultChannelId
+		if ($s.json.meta.groupSettings.defaultChannelId) {
+			$script:cid = $s.json.meta.groupSettings.defaultChannelId
 		}
-		elseif ($s.json.state.channels) {
-			$chNames = @($s.json.state.channels.PSObject.Properties.Name)
+		elseif ($s.json.meta.channels) {
+			$chNames = @($s.json.meta.channels.PSObject.Properties.Name)
 			if ($chNames.Count -ge 1) { $script:cid = $chNames[0] }
 		}
-		$s.status -eq 200 -and ($s.json.state.channels.PSObject.Properties | Measure-Object).Count -ge 1
+		$s.status -eq 200 -and ($s.json.meta.channels.PSObject.Properties | Measure-Object).Count -ge 1
 	}
 	if (-not $ready) { throw 'joiner channels not materialized' }
 	$r = Api $joiner POST "/groups/$gid/channels/$script:cid/messages" @{ content = @{ type = 'text'; content = 'dm-B-to-A' } }
