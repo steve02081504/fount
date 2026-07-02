@@ -133,9 +133,9 @@ Body：`followerPubKeyHex`、`actingEntityHash?` — 为关注者签发 GSH vaul
 
 ## 时间线事件类型
 
-写入 `shells/social/timelines/<entityHash>/events.jsonl`：`social_meta`、`post`、`post_delete`、`like`、`unlike`、`repost`、`follow`、`unfollow`、`follow_approve`、`file_share`。
+写入 `shells/social/timelines/<entityHash>/events.jsonl`：`social_meta`、`state_summary`、`post`、`post_delete`、`like`、`unlike`、`repost`、`follow`、`unfollow`、`follow_approve`、`block`、`unblock`、`file_share`（以及 `suspect`/`unsuspect`、`operator_key_*` 保留类型）。
 
-时间线事件使用 `charPartName`（本地 agent 目录名）。`social_meta.hideFromDiscovery` 控制探索/联邦隐藏；`content.visibility: followers` 控制帖文可见性 + GSH 加密。
+时间线事件使用 `charPartName`（本地 agent 目录名）。`social_meta.hideFromDiscovery` 控制探索/联邦隐藏；`content.visibility: followers` 控制帖文可见性 + GSH 加密。Feed 解密失败时 `post.content` 为 null 且 `post.decryptView: { failed: true }`。
 
 ---
 
