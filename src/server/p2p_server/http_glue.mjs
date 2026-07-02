@@ -3,7 +3,7 @@ import { resolveGroupIdFromEntityHash } from '../../scripts/p2p/entity/group_ent
 import {
 	resolveLocalOperatorEntityHash,
 } from '../../scripts/p2p/entity/replica.mjs'
-import { getNodeHash } from '../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
 import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_registry.mjs'
 import { getUserByReq } from '../auth.mjs'
 

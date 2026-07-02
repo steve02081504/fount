@@ -172,7 +172,7 @@ export async function addComposerMedia(appContext, files) {
 export async function publishPost(appContext) {
 	const body = buildPostBody(appContext)
 	if (!body.text && !appContext.state.pendingMediaRefs.length) return
-	await appContext.socialApi('/profile/post', { method: 'POST', body: JSON.stringify(body) })
+	await appContext.socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''

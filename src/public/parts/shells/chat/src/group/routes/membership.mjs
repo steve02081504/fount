@@ -25,6 +25,7 @@ import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../chat/lib/runUri.mj
 import { governanceChannelId } from '../access.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 const MEMBERS_PAGE_SIZE = 500
 
@@ -66,25 +67,25 @@ async function buildInviteClipboardText(username, groupId, code, roomSecret, int
  * @returns {void}
  */
 export function registerMembershipRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/members\/page\/(\d+)$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/members/page/:pageIdx`, authenticate, requireGroupMember(), async (req, res) => {
 		const { groupId, state } = req.groupContext
-		const pageIndex = Math.max(0, Number(req.params[1]) || 0)
+		const pageIndex = Math.max(0, Number(req.params.pageIdx) || 0)
 
 		const activeMembers = Object.entries(state.members).filter(([, member]) => member?.status === 'active')
 		const pageCount = Math.max(1, Math.ceil(activeMembers.length / MEMBERS_PAGE_SIZE))
 		const pageSlice = activeMembers.slice(pageIndex * MEMBERS_PAGE_SIZE, (pageIndex + 1) * MEMBERS_PAGE_SIZE)
 		const members = pageSlice.map(([memberKey, member]) => {
-			const pubKeyHash = memberKey
 			const entityHash = memberEntityHash(member) || null
+			const isAgent = member.memberKind === 'agent'
 			return {
-				pubKeyHash,
+				memberKey,
+				kind: isAgent ? 'agent' : 'user',
+				ownerPubKeyHash: isAgent ? member.ownerPubKeyHash : undefined,
 				nodeHash: member.homeNodeHash,
-				subjectHash: pubKeyHash,
 				entityHash,
-				memberId: pubKeyHash,
 				roles: member.roles || [],
 				joinedAt: member.joinedAt,
-				profile: { name: member.displayName || `${pubKeyHash.slice(0, 8)}…${pubKeyHash.slice(-4)}` },
+				profile: { name: member.displayName || `${memberKey.slice(0, 8)}…${memberKey.slice(-4)}` },
 			}
 		})
 		res.status(200).json({
@@ -94,8 +95,8 @@ export function registerMembershipRoutes(router, authenticate) {
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/invite-ticket$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/invite-ticket`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
 		const { username, state, member } = membership
@@ -135,9 +136,9 @@ export function registerMembershipRoutes(router, authenticate) {
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/join$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/join`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
 		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
 		const dmNonce = dmIntroNonce?.trim()
 		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
@@ -163,7 +164,7 @@ export function registerMembershipRoutes(router, authenticate) {
 				bootstrap.dmSessionTag = hintedSessionTag
 			else if (dmNonce) {
 				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
-				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).identityPubKeyHex)
+				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).activePubKeyHex)
 				if (PUB_KEY_HEX_64.test(introPubKeyHex) && PUB_KEY_HEX_64.test(myPubKeyHex) && introPubKeyHex !== myPubKeyHex)
 					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
 			}
@@ -181,7 +182,7 @@ export function registerMembershipRoutes(router, authenticate) {
 		res.status(200).json({ groupId, defaultChannelId: result.defaultChannelId })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/leave$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/leave`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const groupIds = req.body?.groupIds
 		if (!Array.isArray(groupIds) || !groupIds.length)

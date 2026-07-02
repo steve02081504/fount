@@ -1,9 +1,17 @@
-/** @type {Map<string, Record<string, { aclGated?: boolean, gcExclude?: boolean, governance?: boolean, permissionAnchor?: boolean }>>} */
+/**
+ * @typedef {object} EventTypeFlags
+ * @property {boolean} [aclGated]
+ * @property {boolean} [gcExclude]
+ * @property {boolean} [governance]
+ * @property {boolean} [permissionAnchor]
+ */
+
+/** @type {Map<string, Record<string, EventTypeFlags>>} */
 const defsByOwner = new Map()
 
 /**
  * @param {string} ownerId 注册方
- * @param {Record<string, { aclGated?: boolean, gcExclude?: boolean, governance?: boolean, permissionAnchor?: boolean }>} defs 事件 type 元数据
+ * @param {Record<string, EventTypeFlags>} defs 事件 type 元数据
  * @returns {void}
  */
 export function registerEventTypeDefs(ownerId, defs) {
@@ -24,10 +32,10 @@ export function clearEventTypeRegistry() {
 }
 
 /**
- * @returns {Record<string, { aclGated?: boolean, gcExclude?: boolean, governance?: boolean, permissionAnchor?: boolean }>} 合并后的 defs
+ * @returns {Record<string, EventTypeFlags>} 合并后的 defs
  */
 export function mergedEventTypeDefs() {
-	/** @type {Record<string, import('./event_types.mjs').EventTypeFlags>} */
+	/** @type {Record<string, EventTypeFlags>} */
 	const merged = {}
 	for (const defs of defsByOwner.values())
 		Object.assign(merged, defs)

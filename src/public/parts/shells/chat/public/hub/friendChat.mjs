@@ -304,7 +304,7 @@ export async function dispatchFriendChat(entity) {
 	if (entity.type !== 'user') return
 
 	const fed = await getFederationSettings()
-	const myPubKeyHex = String(fed?.identityPubKeyHex || '').trim().toLowerCase()
+	const myPubKeyHex = String(fed?.activePubKeyHex || '').trim().toLowerCase()
 	if (!isHex64(myPubKeyHex)) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return

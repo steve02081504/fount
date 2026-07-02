@@ -1,38 +1,51 @@
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
-import { getEntityProfile } from './feed.mjs'
-import { listKnownTimelineOwners } from './feedHelpers.mjs'
-import { extractMentionEntityHashes } from './lib/mentions.mjs'
-import { getTimelineMaterialized } from './timeline/materialize.mjs'
+/**
+ * @param {object} row 通知条目
+ * @returns {string} 分页游标
+ */
+export function notificationCursor(row) {
+	return `${row.at}:${row.actorEntityHash}:${row.type}:${row.postId ?? ''}:${row.targetPostId ?? ''}`
+}
+
+/**
+ * @param {string} type 通知类型
+ * @param {string} actorEntityHash 动作来源
+ * @param {number} at 时间戳
+ * @param {string | null | undefined} postId 相关帖 id
+ * @param {string | null | undefined} targetPostId 目标帖 id
+ * @returns {object} 规范化通知条目
+ */
+function notificationRow(type, actorEntityHash, at, postId, targetPostId) {
+	return {
+		type,
+		actorEntityHash: actorEntityHash.toLowerCase(),
+		postId: postId ?? null,
+		targetPostId: targetPostId ?? null,
+		at,
+	}
+}
 
 /**
  * 构建观看者的 Social 通知列表。
  * @param {string} username 用户
- * @param {number} [limit=30] 条数上限
- * @returns {Promise<{ notifications: object[], viewerEntityHash: string | null }>} 通知列表
+ * @param {object} [options] 分页选项
+ * @param {number} [options.limit=30] 条数上限
+ * @param {string} [options.cursor] 分页游标
+ * @returns {Promise<{ notifications: object[], nextCursor: string | null, viewerEntityHash: string | null }>} 通知列表
  */
-export async function buildNotifications(username, limit = 30) {
+export async function buildNotifications(username, options = {}) {
+	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
+	const cursor = options.cursor ? String(options.cursor) : null
 	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
-	if (!viewerEntityHash) return { notifications: [], viewerEntityHash: null }
+	if (!viewerEntityHash)
+		return { notifications: [], nextCursor: null, viewerEntityHash: null }
 
-	/** @type {Map<string, string>} */
-	const authorNameCache = new Map()
-
-	/**
-	 * 解析通知来源 entity 的展示名（带缓存）。
-	 * @param {string} entityHash 通知来源
-	 * @returns {Promise<string>} 展示名
-	 */
-	async function authorName(entityHash) {
-		const normalizedEntityHash = entityHash.toLowerCase()
-		if (authorNameCache.has(normalizedEntityHash)) return authorNameCache.get(normalizedEntityHash)
-		const profile = await getEntityProfile(username, normalizedEntityHash)
-		const displayName = profile?.name
-			|| `${normalizedEntityHash.slice(0, 8)}…${normalizedEntityHash.slice(-4)}`
-		authorNameCache.set(normalizedEntityHash, displayName)
-		return displayName
-	}
+	const { getEntityProfile } = await import('./feed.mjs')
+	const { listKnownTimelineOwners } = await import('./feedHelpers.mjs')
+	const { extractMentionEntityHashes } = await import('./lib/mentions.mjs')
+	const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
 
 	/** @type {object[]} */
 	const notifications = []
@@ -41,73 +54,60 @@ export async function buildNotifications(username, limit = 30) {
 		const view = await getTimelineMaterialized(username, owner)
 		for (const post of view.posts) {
 			const at = Number(post.hlc.wall)
-			const snippet = (post.content?.text || '').slice(0, 120)
 			const replyTo = post.content?.replyTo
 			if (replyTo?.entityHash?.toLowerCase() === viewerEntityHash)
-				notifications.push({
-					type: 'reply',
-					entityHash: owner,
-					authorName: await authorName(owner),
-					postId: post.id,
-					targetPostId: replyTo.postId,
-					at,
-					snippet,
-				})
+				notifications.push(notificationRow('reply', owner, at, post.id, replyTo.postId))
 
 			if (owner !== viewerEntityHash && extractMentionEntityHashes(post.content?.text || '').includes(viewerEntityHash))
-				notifications.push({
-					type: 'mention',
-					entityHash: owner,
-					authorName: await authorName(owner),
-					postId: post.id,
-					at,
-					snippet,
-				})
+				notifications.push(notificationRow('mention', owner, at, post.id, null))
 		}
 		for (const like of view.likes) {
 			if ((like.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) continue
-			notifications.push({
-				type: 'like',
-				entityHash: owner,
-				authorName: await authorName(owner),
-				targetPostId: like.content?.targetPostId,
-				at: Number(like.hlc.wall),
-			})
+			notifications.push(notificationRow(
+				'like',
+				owner,
+				Number(like.hlc.wall),
+				null,
+				like.content?.targetPostId ?? null,
+			))
 		}
 		for (const repost of view.reposts) {
 			if ((repost.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) continue
-			notifications.push({
-				type: 'repost',
-				entityHash: owner,
-				authorName: await authorName(owner),
-				targetPostId: repost.content?.targetPostId,
-				at: Number(repost.hlc.wall),
-				snippet: String(repost.content?.comment || '').slice(0, 120),
-			})
+			notifications.push(notificationRow(
+				'repost',
+				owner,
+				Number(repost.hlc.wall),
+				null,
+				repost.content?.targetPostId ?? null,
+			))
 		}
 		if (owner !== viewerEntityHash && view.following.includes(viewerEntityHash)) {
 			const at = (view.followEvents || []).reduce((max, follow) => {
 				if (String(follow.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) return max
 				return Math.max(max, Number(follow.hlc.wall))
 			}, 0)
-			notifications.push({
-				type: 'follow',
-				entityHash: owner,
-				authorName: await authorName(owner),
-				at,
-			})
+			notifications.push(notificationRow('follow', owner, at, null, null))
 		}
 	}
 
 	const deduped = []
 	const seen = new Set()
 	for (const row of notifications.sort((left, right) => right.at - left.at)) {
-		const key = `${row.type}:${row.entityHash}:${row.postId || ''}:${row.targetPostId || ''}:${row.at}`
+		const key = notificationCursor(row)
 		if (seen.has(key)) continue
 		seen.add(key)
 		deduped.push(row)
-		if (deduped.length >= limit) break
 	}
 
-	return { notifications: deduped, viewerEntityHash }
+	let startIndex = 0
+	if (cursor) {
+		startIndex = deduped.findIndex(row => notificationCursor(row) === cursor) + 1
+		if (startIndex <= 0) startIndex = deduped.length
+	}
+	const page = deduped.slice(startIndex, startIndex + limit)
+	const nextCursor = page.length === limit && startIndex + limit < deduped.length
+		? notificationCursor(page[page.length - 1])
+		: null
+
+	return { notifications: page, nextCursor, viewerEntityHash }
 }

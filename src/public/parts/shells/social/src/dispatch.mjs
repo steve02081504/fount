@@ -66,7 +66,7 @@ function normalizeSocialHandlerResult(result) {
 async function publishEntityReply(username, authorEntityHash, content, charPartName = null) {
 	return commitTimelineEvent(username, authorEntityHash, {
 		type: 'post',
-		charId: charPartName,
+		charPartName,
 		content,
 	})
 }

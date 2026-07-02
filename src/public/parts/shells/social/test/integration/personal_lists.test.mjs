@@ -38,7 +38,7 @@ Deno.test('handleInboundPersonalBlockEvent syncs followed owner block index', as
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const foreignOwner = encodeEntityHash('2'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, foreignOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'block', content: { targetEntityHash: TARGET } },
 	])
 

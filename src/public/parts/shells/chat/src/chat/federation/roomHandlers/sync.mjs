@@ -96,12 +96,12 @@ export function registerSyncHandlers(roomContext) {
 			const eventId = signedEvent.id
 			const { ingestRemoteEvent } = requireDagDeps()
 			const result = await ingestRemoteEvent(username, groupId, signedEvent, { skipSeenDedup: true })
-			if (result === 'ok') {
+			if (result?.status === 'applied') {
 				const remoteNodeHash = peerToNode.get(peerId)
 				if (remoteNodeHash)
 					await bumpReputationOnRelay( remoteNodeHash, `dag:${eventId}`)
 			}
-			if (result === 'quarantined' || result === 'pending_ingest')
+			if (result?.status === 'quarantined' || result?.status === 'pending')
 				scheduleCatchUp(username, groupId)
 			// live 漏帧快速补洞：该事件引用了本地缺失的父事件 ⇒ 调度有界补齐（scheduler 自带防抖/冷却/退避硬闸，dag_event 高频也不放大负载）。
 			if (remoteTipsRevealLocalGap(signedEvent.prev_event_ids))

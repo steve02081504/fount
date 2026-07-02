@@ -194,7 +194,7 @@ Deno.test('ingestMailboxGive ignores quarantine wire records', async () => {
 		 * @type {string[]}
 		 */
 		let seen = []
-		registerMailboxConsumer('test/give', 'chat', async (_username, records) => {
+		registerMailboxConsumer('chat', async (_username, records) => {
 			seen = records.map(r => r.id)
 			return records.map(r => r.id)
 		})
@@ -221,14 +221,14 @@ Deno.test('ingestMailboxGive ignores quarantine wire records', async () => {
 			assertEquals(count, 1)
 		}
 		finally {
-			unregisterMailboxConsumer('test/give')
+			unregisterMailboxConsumer('chat')
 		}
 	})
 })
 
 Deno.test('ingestMailboxGive dispatches trusted records to consumers', async () => {
 	await withTempNodeDir(async () => {
-		registerMailboxConsumer('test/chat', 'chat', async (_username, records) => records.map(r => r.id))
+		registerMailboxConsumer('chat', async (_username, records) => records.map(r => r.id))
 		try {
 			const delivered = await dispatchMailboxRecordsToConsumers(USER, [
 				{
@@ -242,7 +242,7 @@ Deno.test('ingestMailboxGive dispatches trusted records to consumers', async () 
 			assertEquals(delivered, ['c1'])
 		}
 		finally {
-			unregisterMailboxConsumer('test/chat')
+			unregisterMailboxConsumer('chat')
 		}
 	})
 })

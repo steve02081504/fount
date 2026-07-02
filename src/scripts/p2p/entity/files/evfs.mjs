@@ -136,7 +136,7 @@ export async function putFileManifest(params) {
 		name,
 		mimeType,
 		ceMode,
-		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(),
 		meta,
 	}, enc)
 	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
@@ -181,7 +181,7 @@ export async function putFileManifestFromStream(params) {
 		contentHash: enc.contentHash,
 		ceMode,
 		parts: enc.parts,
-		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(),
 		meta,
 	})
 	if (!manifest) throw new Error('invalid manifest')

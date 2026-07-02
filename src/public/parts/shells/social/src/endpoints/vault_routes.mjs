@@ -2,28 +2,15 @@ import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
-import { cacheTranslation, getCachedTranslation, translatePostText } from '../translate.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../vault.mjs'
 
 
 /**
- * 注册翻译与 vault 文件相关路由。
+ * 注册 vault 文件相关路由。
  * @param {import('npm:express').Router} router Express 路由
  * @returns {void}
  */
 export function registerVaultRoutes(router) {
-	router.post('/api/parts/shells\\:social/translate', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const text = String(req.body?.text || '')
-		const targetLang = String(req.body?.targetLang || 'zh-CN')
-		const cacheKey = `${targetLang}:${text.slice(0, 2000)}`
-		const cached = getCachedTranslation(username, cacheKey)
-		if (cached) return res.status(200).json({ translated: cached, cached: true })
-		const translated = await translatePostText(text, targetLang)
-		cacheTranslation(username, cacheKey, translated)
-		res.status(200).json({ translated, cached: false })
-	})
-
 	router.post('/api/parts/shells\\:social/files', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const self = await resolveOperatorEntityHash(username)

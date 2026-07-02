@@ -7,8 +7,8 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { addBlocklistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/blocklist.mjs'
 import { pubKeyHash } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from '../../../../../../../scripts/p2p/key_crypto.mjs'
 import { verifyOwnerSuccessionThreshold } from '../../../../../../../scripts/p2p/owner_succession_ballot.mjs'
@@ -36,6 +36,7 @@ import {
 } from '../access.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 注册权限/治理/成员管理相关 HTTP 路由。
@@ -44,9 +45,9 @@ import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerGovernanceRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/permissions$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/permissions`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const groupId = req.params.groupId
 		const subject = (req.query.pubKeyHash || '').trim()
 		const channelId = (req.query.channelId || '').trim() || 'default'
 
@@ -64,10 +65,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json(flat)
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/permissions$/, authenticate, requireGroupMember(), async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
 		const { state, member } = req.groupContext
+		const { channelId } = req.params
 		if (!state.channels[channelId])
 			return res.status(404).json({ error: 'Channel not found' })
 
@@ -80,14 +80,13 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({ permissions })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/channels\/([^/]+)\/permissions$/, authenticate, requireGroupMember(), async (req, res) => {
-		const groupId = req.params[0]
-		const channelId = req.params[1]
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
+		const { channelId } = req.params
 		const { roleId, allow, deny } = req.body
 		if (!roleId)
 			return res.status(400).json({ error: 'roleId is required' })
 
-		const { username, state, member } = req.groupContext
+		const { username, state, member, groupId } = req.groupContext
 		if (!state.channels[channelId])
 			return res.status(404).json({ error: 'Channel not found' })
 		if (!state.roles[roleId])
@@ -105,11 +104,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/roles$/, authenticate, requireGroupMember(), async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/roles`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
 			body: { name, color },
-			groupContext: { username, state, member }
+			groupContext: { username, state, member, groupId }
 		} = req
 
 		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
@@ -137,9 +135,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(201).json({ roleId })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/roles\/([^/]+)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const roleId = decodeURIComponent(req.params[1])
+	router.put(`${GROUPS_PREFIX}/:groupId/roles/:roleId`, authenticate, async (req, res) => {
+		const { groupId, roleId: roleIdRaw } = req.params
+		const roleId = decodeURIComponent(roleIdRaw)
 		const { name, color, position, isHoisted } = req.body || {}
 
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -171,9 +169,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/roles\/([^/]+)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const roleId = decodeURIComponent(req.params[1])
+	router.delete(`${GROUPS_PREFIX}/:groupId/roles/:roleId`, authenticate, async (req, res) => {
+		const { groupId, roleId: roleIdRaw } = req.params
+		const roleId = decodeURIComponent(roleIdRaw)
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -197,9 +195,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/roles\/([^/]+)\/permissions$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const roleId = decodeURIComponent(req.params[1])
+	router.put(`${GROUPS_PREFIX}/:groupId/roles/:roleId/permissions`, authenticate, async (req, res) => {
+		const { groupId, roleId: roleIdRaw } = req.params
+		const roleId = decodeURIComponent(roleIdRaw)
 		const { permission, enabled, permissions: bulkPermissions } = req.body
 
 		const membership = await resolveGroupMember(req, res, groupId)
@@ -229,10 +227,11 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/members\/([^/]+)\/(kick|ban|unban)$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
-		const targetMemberKey = decodeURIComponent(req.params[1])
-		const action = req.params[2]
+	router.post(`${GROUPS_PREFIX}/:groupId/members/:memberKey/:action`, authenticate, async (req, res) => {
+		const { groupId, action } = req.params
+		if (!['kick', 'ban', 'unban'].includes(action))
+			return res.status(404).json({ error: 'Unknown member action' })
+		const targetMemberKey = decodeURIComponent(req.params.memberKey)
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return
@@ -299,7 +298,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				content: banContent,
 			})
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
-			await addBlocklistFromBanContent(banContent, groupId)
+			await addDenylistFromBanContent(banContent, groupId)
 			return res.status(200).json({})
 		}
 
@@ -336,7 +335,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/key-rotate$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/file-key-rotate`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, member, groupId } = req.groupContext
 
 		const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
@@ -344,7 +343,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const perms = calculateMemberPermissions(member, state.roles, governanceChannel, state.channelPermissions)
 		const isDmPair = activeCount === 2
 		if (!isDmPair && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ROLES])
-			return res.status(403).json({ error: 'key_rotate requires ADMIN or MANAGE_ROLES' })
+			return res.status(403).json({ error: 'file_master_key_rotate requires ADMIN or MANAGE_ROLES' })
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)
 		if (!keyEntry)
@@ -367,8 +366,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 	 *
 	 * 已登录管理员提交时，服务端用本机 `local_signer_seed` 自动追加联署；亦可附带其他管理员的签名。
 	 */
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/owner-succession$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/owner-succession`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		if (!membership) return

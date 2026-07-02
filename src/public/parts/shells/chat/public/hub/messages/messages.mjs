@@ -58,6 +58,15 @@ import {
 } from './messageRender.mjs'
 import { wireMessageReactions } from './reactions.mjs'
 
+/**
+ * @param {Record<string, Record<string, { voters?: string[] }>> | undefined} reactions 聚合反应
+ * @returns {string} etag 签名
+ */
+function reactionsSignature(reactions) {
+	if (!reactions || !Object.keys(reactions).length) return ''
+	return JSON.stringify(reactions, Object.keys(reactions).sort())
+}
+
 /** @type {HTMLElement | null} */
 let cachedMessagesContainer = null
 
@@ -120,11 +129,11 @@ function decorateRenderedMessages(container, shouldScroll = false) {
 
 /**
  * @param {HTMLElement} container 消息列表根节点
- * @param {object[]} reactionEvents 本轮 reaction DAG 行
+ * @param {Record<string, Record<string, { voters?: string[] }>>} reactions 当前页聚合反应
  * @returns {Promise<void>}
  */
-async function patchReactionRows(container, reactionEvents) {
-	hubStore.channelReactionEvents = reactionEvents
+async function patchReactionRows(container, reactions) {
+	hubStore.channelReactions = reactions
 	const opts = messageRenderOpts()
 	for (const message of hubStore.channelMessages) {
 		if (message.type !== 'message' || !message.eventId) continue
@@ -133,8 +142,7 @@ async function patchReactionRows(container, reactionEvents) {
 		if (!row) continue
 		const html = await renderMessageReactionsHtml(
 			message,
-			hubStore.channelMessages,
-			reactionEvents,
+			reactions,
 			opts.viewerMemberId,
 			{ canAddReactions: opts.canAddReactions },
 		)
@@ -297,7 +305,7 @@ export function messageRenderOpts() {
 		? [...hubStore.currentState.pinsByChannel[hubStore.currentChannelId]]
 		: []
 	return {
-		reactionEvents: hubStore.channelReactionEvents,
+		reactions: hubStore.channelReactions,
 		viewerMemberId: hubStore.reactionRenderOpts.viewerMemberId,
 		canAddReactions: hubStore.reactionRenderOpts.canAddReactions,
 		viewerPubKeyHash: hubStore.currentState?.viewerMemberPubKeyHash || null,
@@ -326,7 +334,7 @@ export function bindReactions(container) {
 		groupId: hubStore.currentGroupId,
 		channelId: hubStore.currentChannelId,
 		messages: hubStore.channelMessages,
-		reactionEvents: hubStore.channelReactionEvents,
+		reactions: hubStore.channelReactions,
 		viewerMemberId: hubStore.reactionRenderOpts.viewerMemberId,
 		canManageMessages: hubStore.reactionRenderOpts.canManageMessages,
 		reload: loadMessages,
@@ -374,13 +382,13 @@ export async function loadMessages() {
 	try {
 		hubStore.composerPendingId = null
 		hubStore.channelOlderExhausted.value = false
-		const { messages, reactionEvents } = await getChannelMessages(
+		const { messages, reactions } = await getChannelMessages(
 			hubStore.currentGroupId,
 			hubStore.currentChannelId,
 			{ limit: 50 },
 		)
-		hubStore.channelReactionEvents = reactionEvents
-		hubStore.reactionEventsEtag = reactionEvents.map(e => e.eventId).sort().join(',')
+		hubStore.channelReactions = reactions || {}
+		hubStore.reactionsEtag = reactionsSignature(reactions)
 		hubStore.channelMessagesSource = messages
 		refreshChannelView()
 		await refreshReactionPerms()
@@ -843,18 +851,18 @@ export async function refreshChannelMessagesIncremental() {
 	if (hubStore.lastMessageId)
 		options.since = hubStore.lastMessageId
 
-	const { messages, reactionEvents } = await getChannelMessages(
+	const { messages, reactions } = await getChannelMessages(
 		hubStore.currentGroupId,
 		hubStore.currentChannelId,
 		options,
 	)
-	const reactionSig = reactionEvents.map(e => e.eventId).sort().join(',')
+	const reactionSig = reactionsSignature(reactions)
 	if (!messages.length && !reactionSig) return
 
 	if (searchActive) {
-		if (reactionSig !== hubStore.reactionEventsEtag) {
-			hubStore.reactionEventsEtag = reactionSig
-			hubStore.channelReactionEvents = reactionEvents
+		if (reactionSig !== hubStore.reactionsEtag) {
+			hubStore.reactionsEtag = reactionSig
+			hubStore.channelReactions = reactions || {}
 		}
 		if (messages.length) {
 			hubStore.channelMessagesSource = mergeIncrementalChannelBatch(
@@ -869,12 +877,12 @@ export async function refreshChannelMessagesIncremental() {
 	if (container.querySelector('.hub-empty')) container.innerHTML = ''
 
 	const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
-	if (reactionSig !== hubStore.reactionEventsEtag) {
-		hubStore.reactionEventsEtag = reactionSig
-		await patchReactionRows(container, reactionEvents)
+	if (reactionSig !== hubStore.reactionsEtag) {
+		hubStore.reactionsEtag = reactionSig
+		await patchReactionRows(container, reactions || {})
 		if (!messages.length) return
 	}
-	hubStore.channelReactionEvents = reactionEvents
+	hubStore.channelReactions = reactions || {}
 	await applyIncomingMessageBatch(messages, { scroll: nearBottom })
 }
 

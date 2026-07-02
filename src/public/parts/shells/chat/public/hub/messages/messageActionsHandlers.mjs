@@ -13,7 +13,7 @@ import {
 	deleteChannelMessage,
 	editChannelMessage,
 	getGroupState,
-	modifyChannelTimeline,
+	modifyBranch,
 	pinMessage,
 	unpinMessage,
 	setChannelMessageFeedback,
@@ -86,7 +86,7 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 		if (!Number.isFinite(delta)) return true
 		button.disabled = true
 		try {
-			await modifyChannelTimeline(groupId, channelId, delta)
+			await modifyBranch(groupId, channelId, delta)
 			await reload?.()
 		}
 		catch (error) {
@@ -101,7 +101,7 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 		const eventId = button.dataset.eventId?.trim()
 		button.disabled = true
 		try {
-			await modifyChannelTimeline(groupId, channelId, Number.POSITIVE_INFINITY)
+			await modifyBranch(groupId, channelId, undefined, { latest: true })
 			if (eventId)
 				await deleteChannelMessage(groupId, channelId, eventId)
 			const charId = button.dataset.charId?.trim()

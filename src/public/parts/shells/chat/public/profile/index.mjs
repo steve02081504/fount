@@ -275,9 +275,9 @@ async function loadUserChannels() {
 				})
 				if (!stateRes.ok) continue
 				const stateData = await stateRes.json()
-				if (!stateData.state?.channels) continue
+				if (!stateData.meta?.channels) continue
 
-				for (const [channelId, channel] of Object.entries(stateData.state.channels))
+				for (const [channelId, channel] of Object.entries(stateData.meta.channels))
 					allChannels.push({
 						channelId,
 						name: channel.name || channelId,

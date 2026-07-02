@@ -30,7 +30,7 @@ export function normalizeSearchQuery(query) {
 export function postMatchesQuery(post, query) {
 	const norm = normalizeSearchQuery(query)
 	if (norm.kind === 'none' || norm.value.length < 2) return false
-	if (post?.content?.protected) return false
+	if (!post?.content?.text) return false
 	const text = (post.content?.text || '').toLowerCase()
 	if (norm.kind === 'hashtag')
 		return extractHashtagsFromText(text).includes(norm.value)

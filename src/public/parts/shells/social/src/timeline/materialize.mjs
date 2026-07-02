@@ -1,15 +1,15 @@
 import { createLruMap } from '../../../../../../scripts/memo.mjs'
 import { readJsonlTipId } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { materializeFromEvents } from '../../../../../../scripts/p2p/timeline/materialize_runner.mjs'
+import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
+
+import { readTimelineEvents } from './append.mjs'
 import {
 	createSocialTimelineState,
 	finalizeSocialTimelineView,
 	SOCIAL_TIMELINE_REDUCERS,
 } from './reducers.mjs'
-import { materializeFromEvents } from '../../../../../../scripts/p2p/timeline/materialize_runner.mjs'
-import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
-
-import { readTimelineEvents } from './append.mjs'
 
 const TIMELINE_VIEW_CACHE_MAX = 256
 

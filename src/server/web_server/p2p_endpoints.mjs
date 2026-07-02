@@ -1,7 +1,7 @@
 import {
-	addBlocklistEntry,
-	loadBlocklist,
-} from '../../scripts/p2p/blocklist.mjs'
+	addDenylistEntry,
+	loadDenylist,
+} from '../../scripts/p2p/denylist.mjs'
 import { localesFromRequest } from '../../scripts/p2p/entity/presentation_registry.mjs'
 import {
 	computeEffectiveStatus,
@@ -16,7 +16,6 @@ import { isEntityHash128 } from '../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../scripts/p2p/hexIds.mjs'
 import { loadNetwork } from '../../scripts/p2p/network.mjs'
 import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_registry.mjs'
-import '../../scripts/p2p/trust_graph.mjs'
 import { authenticate, getUserByReq } from '../auth.mjs'
 import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } from '../p2p_server/http_glue.mjs'
 import {
@@ -55,8 +54,6 @@ export function registerP2pEndpoints(router) {
 		if (body.batterySaver != null) patch.batterySaver = !!body.batterySaver
 		if (Array.isArray(body.relayUrls)) patch.relayUrls = body.relayUrls
 		if (body.mailbox) patch.mailbox = body.mailbox
-		const identityPubKeyHex = String(body.identityPubKeyHex || '').trim().toLowerCase().replace(/^0x/iu, '')
-		if (isHex64(identityPubKeyHex)) patch.identityPubKeyHex = identityPubKeyHex
 		const dmIntroNonce = String(body.dmIntroNonce || '').trim()
 		if (dmIntroNonce.length >= 16) patch.dmIntroNonce = dmIntroNonce
 		res.status(200).json(await saveFederationViewForUser(username, patch))
@@ -69,7 +66,7 @@ export function registerP2pEndpoints(router) {
 			return res.status(400).json({ error: 'invalid targetNodeHash' })
 		const { ensureRemoteUserRoom } = await import('../../scripts/p2p/remote_user_room.mjs')
 		const slot = await ensureRemoteUserRoom(username, targetNodeHash)
-		res.status(200).json({ ok: !!slot, connected: !!slot })
+		res.status(200).json({ targetNodeHash, connected: !!slot })
 	})
 
 	router.post('/api/p2p/federation/rotate', authenticate, async (req, res) => {
@@ -109,39 +106,24 @@ export function registerP2pEndpoints(router) {
 		})
 	})
 
-	router.post('/api/p2p/personal-block', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const targetEntityHash = String(req.body?.entityHash || '').trim().toLowerCase()
-		const actingEntityHash = String(req.body?.actingEntityHash || '').trim().toLowerCase()
-		const block = req.body?.block !== false
-		if (!isEntityHash128(targetEntityHash))
-			return res.status(400).json({ error: 'invalid entityHash' })
-		const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
-		if (!actingEntityHash || !operatorEntityHash || actingEntityHash !== operatorEntityHash.toLowerCase())
-			return res.status(403).json({ error: 'invalid actingEntityHash' })
-		const { setPersonalBlock } = await import('../../public/parts/shells/social/src/personalBlock.mjs')
-		const blocked = await setPersonalBlock(username, actingEntityHash, targetEntityHash, block)
-		res.status(200).json({ blockedEntityHashes: blocked })
-	})
-
-	router.get('/api/p2p/blocklist', authenticate, async (req, res) => {
+	router.get('/api/p2p/denylist', authenticate, async (req, res) => {
 		void getUserByReq(req)
-		res.status(200).json(loadBlocklist())
+		res.status(200).json(loadDenylist())
 	})
 
-	router.post('/api/p2p/blocklist', authenticate, async (req, res) => {
+	router.post('/api/p2p/denylist', authenticate, async (req, res) => {
 		void getUserByReq(req)
 		const body = req.body || {}
 		const scope = String(body.scope || '').trim().toLowerCase()
 		const value = String(body.value || '').trim()
 		if (!scope || !value)
 			return res.status(400).json({ error: 'scope and value required' })
-		await addBlocklistEntry({
+		await addDenylistEntry({
 			scope,
 			value,
 			groupId: body.groupId,
 		})
-		res.status(200).json(loadBlocklist())
+		res.status(200).json(loadDenylist())
 	})
 
 	router.get('/api/p2p/viewer', authenticate, async (req, res) => {
@@ -174,7 +156,8 @@ export function registerP2pEndpoints(router) {
 	router.get('/api/p2p/mailbox/summary', authenticate, async (req, res) => {
 		void getUserByReq(req)
 		const { countMailboxPending } = await import('../../scripts/p2p/mailbox/store.mjs')
-		res.status(200).json({ pending: await countMailboxPending() })
+		const pending = await countMailboxPending()
+		res.status(200).json({ pendingCount: pending })
 	})
 
 	registerP2pFileEndpoints(router, authenticate, getUserByReq)
@@ -192,20 +175,29 @@ export function registerP2pEndpoints(router) {
 
 	router.post(entityPathRegex('/heartbeat$'), authenticate, async (req, res) => {
 		const entityHash = req.params[0].toLowerCase()
-		const { replicaUsername } = await getReplicaFromReq(req)
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			return res.status(403).json({ error: 'Permission denied' })
-		await recordHeartbeat(replicaUsername, entityHash)
-		res.status(200).json({})
+		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
+		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
+		res.status(200).json({
+			lastSeenAt,
+			effectiveStatus: computeEffectiveStatus(profile, operatorEntityHash, { isSelf: entityHash === operatorEntityHash }),
+		})
 	})
 
 	router.post(entityPathRegex('/status$'), authenticate, async (req, res) => {
 		const entityHash = req.params[0].toLowerCase()
-		const { replicaUsername } = await getReplicaFromReq(req)
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			return res.status(403).json({ error: 'Permission denied' })
-		await updateStatus(replicaUsername, entityHash, req.body.status, req.body.customStatus)
-		res.status(200).json({})
+		const updated = await updateStatus(replicaUsername, entityHash, req.body.status, req.body.customStatus)
+		res.status(200).json({
+			status: updated.status,
+			customStatus: updated.customStatus,
+			lastSeenAt: updated.lastSeenAt,
+			effectiveStatus: computeEffectiveStatus(updated, operatorEntityHash, { isSelf: entityHash === operatorEntityHash }),
+		})
 	})
 
 	router.get(entityPathRegex('$'), authenticate, async (req, res) => {

@@ -4,7 +4,7 @@ import { extname, join } from 'node:path'
 const patterns = [
 	[/loadReputation\(\s*username\s*\)/g, 'loadReputation()'],
 	[/loadReputation\(\s*replicaUsername\s*\)/g, 'loadReputation()'],
-	[/loadBlocklist\(\s*username\s*\)/g, 'loadBlocklist()'],
+	[/loadDenylist\(\s*username\s*\)/g, 'loadDenylist()'],
 	[/loadNetwork\(\s*username\s*\)/g, 'loadNetwork()'],
 	[/saveNetwork\(\s*username\s*,/g, 'saveNetwork('],
 	[/getNodeHash\(\s*username\s*\)/g, 'getNodeHash()'],
@@ -14,10 +14,10 @@ const patterns = [
 	[/isPeerKeyBlocked\(\s*username\s*,/g, 'isPeerKeyBlocked('],
 	[/isWritableLocalEntity\(\s*replicaUsername\s*,/g, 'isWritableLocalEntity('],
 	[/isWritableLocalEntity\(\s*username\s*,/g, 'isWritableLocalEntity('],
-	[/addBlocklistEntry\(\s*username\s*,/g, 'addBlocklistEntry('],
-	[/addBlocklistFromBanContent\(\s*username\s*,/g, 'addBlocklistFromBanContent('],
+	[/addDenylistEntry\(\s*username\s*,/g, 'addDenylistEntry('],
+	[/addDenylistFromBanContent\(\s*username\s*,/g, 'addDenylistFromBanContent('],
 	[/setEntityBlocked\(\s*username\s*,/g, 'setEntityBlocked('],
-	[/invalidateBlocklistIndex\(\s*username\s*\)/g, 'invalidateBlocklistIndex()'],
+	[/invalidateDenylistIndex\(\s*username\s*\)/g, 'invalidateDenylistIndex()'],
 	[/resolveOperatorEntityHash\(\s*replicaUsername\s*\)/g, 'resolveOperatorEntityHash(replicaUsername)'],
 ]
 

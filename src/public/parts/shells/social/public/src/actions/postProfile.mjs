@@ -24,7 +24,7 @@ export async function handleProfileClick(appContext, target) {
 			method: 'POST',
 			body: JSON.stringify({
 				exploreBlurb: document.getElementById('exploreBlurbInput')?.value ?? '',
-				isProtected: document.getElementById('exploreProtectedInput')?.checked ?? false,
+				hideFromDiscovery: document.getElementById('exploreProtectedInput')?.checked ?? false,
 			}),
 		})
 		if (appContext.state.profileEntityHash)
@@ -35,7 +35,7 @@ export async function handleProfileClick(appContext, target) {
 	if (followBtn instanceof HTMLElement && followBtn.dataset.follow) {
 		const entityHash = followBtn.dataset.follow
 		const wasFollowing = followBtn.dataset.isFollowing === '1'
-		await appContext.socialApi('/profile/follow', {
+		await appContext.socialApi('/relationships/follow', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, follow: !wasFollowing }),
 		})
@@ -47,7 +47,7 @@ export async function handleProfileClick(appContext, target) {
 
 	const blockBtn = target.closest('[data-block]')
 	if (blockBtn instanceof HTMLElement && blockBtn.dataset.block) {
-		await appContext.socialApi('/profile/block', {
+		await appContext.socialApi('/relationships/block', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash: blockBtn.dataset.block, block: true }),
 		})
@@ -57,7 +57,7 @@ export async function handleProfileClick(appContext, target) {
 
 	const unblockBtn = target.closest('[data-unblock]')
 	if (unblockBtn instanceof HTMLElement && unblockBtn.dataset.unblock) {
-		await appContext.socialApi('/profile/block', {
+		await appContext.socialApi('/relationships/block', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash: unblockBtn.dataset.unblock, block: false }),
 		})
@@ -121,9 +121,9 @@ export async function handlePostClick(appContext, target) {
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			const liked = likeBtn.dataset.liked === '1'
-			await appContext.socialApi('/profile/like', {
+			await appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
 				method: 'POST',
-				body: JSON.stringify({ entityHash, postId, like: !liked }),
+				body: JSON.stringify({ like: !liked }),
 			})
 			await refreshVisiblePosts(appContext)
 		}
@@ -142,9 +142,9 @@ export async function handlePostClick(appContext, target) {
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			await appContext.socialApi('/profile/repost', {
+			await appContext.socialApi(`/posts/${entityHash}/${postId}/repost`, {
 				method: 'POST',
-				body: JSON.stringify({ entityHash, postId, comment }),
+				body: JSON.stringify({ comment }),
 			})
 			if (textarea) textarea.value = ''
 			panel?.classList.add('hidden')
@@ -171,8 +171,8 @@ export async function handlePostClick(appContext, target) {
 
 	const deleteBtn = target.closest('button[data-delete]')
 	if (deleteBtn instanceof HTMLElement && deleteBtn.dataset.delete) {
-		await appContext.socialApi('/profile/post-delete', {
-			method: 'POST',
+		await appContext.socialApi('/posts', {
+			method: 'DELETE',
 			body: JSON.stringify({ postId: deleteBtn.dataset.delete }),
 		})
 		await refreshVisiblePosts(appContext)

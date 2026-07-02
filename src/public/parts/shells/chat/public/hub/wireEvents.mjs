@@ -234,7 +234,7 @@ export function wireEvents() {
 		const blockAuthorButton = event.target.closest('.hub-block-author-button')
 		if (blockAuthorButton?.dataset?.blockPub && hubStore.currentGroupId) {
 			if (!confirmI18n('chat.hub.blockConfirm')) return
-			const response = await fetch('/api/p2p/blocklist', {
+			const response = await fetch('/api/p2p/denylist', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',

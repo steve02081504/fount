@@ -27,7 +27,7 @@ test.describe('Social composer', () => {
 		await page.locator('#postText').fill('')
 		let posted = false
 		page.on('request', req => {
-			if (req.url().includes('/profile/post') && req.method() === 'POST')
+			if (req.url().includes('/posts') && req.method() === 'POST')
 				posted = true
 		})
 		await page.locator('#postBtn').click()
@@ -68,7 +68,7 @@ test.describe('Social composer', () => {
 		await page.locator('#postText').fill(text)
 		const postResponsePromise = page.waitForResponse(res => {
 			if (res.request().method() !== 'POST' || res.status() !== 200) return false
-			return new URL(res.url()).pathname === '/api/parts/shells:social/profile/post'
+			return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
 		}, { timeout: 60_000 })
 		await page.locator('#postBtn').click()
 		const [postResponse] = await Promise.all([postResponsePromise, waitForFeedLoad(page)])

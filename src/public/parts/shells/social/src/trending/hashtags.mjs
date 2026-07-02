@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 
-import { isEntityHashBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
+import { isEntityHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { pickNodeScore, shouldHideAuthorByReputation } from '../../../../../../scripts/p2p/reputation.mjs'
 import { getUserDictionary } from '../../../../../../server/auth.mjs'
@@ -48,7 +48,7 @@ export async function buildTrendingHashtags(username, options = {}) {
 			const enriched = { ...post, entityHash }
 			if (!canViewPost(enriched, viewerContext))
 				continue
-			if (post.content?.protected) continue
+			if (!post.content?.text) continue
 			for (const tag of extractHashtagsFromText(post.content?.text))
 				counts.set(tag, (counts.get(tag) || 0) + 1)
 		}

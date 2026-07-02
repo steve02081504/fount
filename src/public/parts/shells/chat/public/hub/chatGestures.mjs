@@ -5,7 +5,7 @@
  * 【关联】../../../../scripts/template、../src/api/groupApi、core/state
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
-import { modifyChannelTimeline } from '../src/api/groupApi.mjs'
+import { modifyBranch } from '../src/api/groupApi.mjs'
 
 import { hubStore } from './core/state.mjs'
 
@@ -68,7 +68,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 		 */
 		const goTimeline = async delta => {
 			try {
-				await modifyChannelTimeline(groupId, channelId, delta)
+				await modifyBranch(groupId, channelId, delta)
 				await reloadMessages()
 			}
 			catch (err) {
@@ -150,7 +150,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 			if (Math.abs(deltaX) > CHAT_SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) && groupId && channelId) {
 				state.handled = true
 				try {
-					await modifyChannelTimeline(groupId, channelId, deltaX > 0 ? -1 : 1)
+					await modifyBranch(groupId, channelId, deltaX > 0 ? -1 : 1)
 					await reloadMessages()
 				}
 				catch (err) {

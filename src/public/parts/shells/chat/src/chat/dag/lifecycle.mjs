@@ -157,9 +157,9 @@ export async function createGroup(username, body) {
 			gossipTtl: 2,
 			wantIdsBudget: 16,
 			batterySaver: false,
-			event_retention_depth: 200_000,
-			event_retention_ms: 365 * 24 * 3600 * 1000,
-			message_content_retention_ms: 0,
+			eventRetentionDepth: 200_000,
+			eventRetentionMs: 365 * 24 * 3600 * 1000,
+			messageContentRetentionMs: 0,
 			...body.enableGroupFederation ? {
 				signalingAppId: DEFAULT_SIGNALING_APP_ID,
 				roomSecret: mintRoomSecret(),

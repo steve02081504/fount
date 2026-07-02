@@ -124,7 +124,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
 	if (ref && !content.contentRefResolved)
 		return contentRefPlaceholder?.trim()
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
-	if (content?.decryptFailed || isCkgEncryptedContent(content))
+	if (content?.decryptView?.failed || content?.decryptFailed || isCkgEncryptedContent(content))
 		return decryptUnavailableText
 	if (content?.type === 'vote')
 		return content.question?.trim() || decryptUnavailableText

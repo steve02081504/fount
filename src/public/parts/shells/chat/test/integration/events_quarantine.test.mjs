@@ -20,11 +20,11 @@ const { ensureServer, username } = createIntegrationBoot({
 
 Deno.test('replayQuarantinedEvents on empty quarantine returns zero', async () => {
 	await ensureServer()
-	const result = await replayQuarantinedEvents(username, 'empty-group', async () => 'ok')
+	const result = await replayQuarantinedEvents(username, 'empty-group', async () => ({ status: 'applied' }))
 	assertEquals(result, { released: 0, remaining: 0 })
 })
 
-Deno.test('appendQuarantinedEvent and replay releases ok status', async () => {
+Deno.test('appendQuarantinedEvent and replay releases applied status', async () => {
 	await ensureServer()
 	const groupId = 'g-quarantine'
 	const ev = { id: 'd'.repeat(64), type: 'message', groupId, sender: 'e'.repeat(64) }
@@ -32,7 +32,7 @@ Deno.test('appendQuarantinedEvent and replay releases ok status', async () => {
 	const rows = await readQuarantineRows(username, groupId)
 	assertEquals(rows.length, 1)
 
-	const replay = await replayQuarantinedEvents(username, groupId, async () => 'ok')
+	const replay = await replayQuarantinedEvents(username, groupId, async () => ({ status: 'applied' }))
 	assertEquals(replay.released, 1)
 	assertEquals(replay.remaining, 0)
 })

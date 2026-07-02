@@ -23,7 +23,7 @@ Write-Host "`n=== Setup: B follows A (TrustGraph CAS fanout for non-member emoji
 Test-Case 'B follows A operator entity' {
 	$viewerA = (ShellApi $FedA 'social' GET '/viewer').json.viewerEntityHash
 	if (-not $viewerA) { throw 'no viewerEntityHash on A' }
-	$r = ShellApi $FedB 'social' POST '/profile/follow' @{ entityHash = $viewerA; follow = $true }
+	$r = ShellApi $FedB 'social' POST '/relationships/follow' @{ entityHash = $viewerA; follow = $true }
 	$r.status -eq 200
 }
 
@@ -31,7 +31,7 @@ Write-Host "`n=== P2P warmup ===" -ForegroundColor Cyan
 Test-Case 'federation identity ready on A/B' {
 	$fa = P2pApi $FedA GET '/federation'
 	$fb = P2pApi $FedB GET '/federation'
-	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.identityPubKeyHex -and $fb.json.identityPubKeyHex
+	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.activePubKeyHex -and $fb.json.activePubKeyHex
 }
 Start-Sleep 5
 
@@ -60,11 +60,11 @@ Test-Case 'A seeds channel (federation metadata)' {
 }
 
 Write-Host "`n=== A posts Social feed with emoji token ===" -ForegroundColor Cyan
-Test-Case 'A POST /profile/post with group emoji token' {
+Test-Case 'A POST /posts with group emoji token' {
 	$viewer = (ShellApi $FedA 'social' GET '/viewer').json.viewerEntityHash
 	if (-not $viewer) { throw 'no viewerEntityHash' }
 	$text = "cross-shell feed $emojiToken"
-	$r = ShellApi $FedA 'social' POST '/profile/post' @{
+	$r = ShellApi $FedA 'social' POST '/posts' @{
 		entityHash = $viewer
 		text = $text
 		visibility = 'public'

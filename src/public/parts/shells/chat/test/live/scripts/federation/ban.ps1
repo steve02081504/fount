@@ -14,14 +14,14 @@ Write-Host "`n=== 1. Resolve B member pubkey ===" -ForegroundColor Cyan
 Test-Case 'resolve B pubKeyHash from B state' {
 	$st = Api $FedB GET "/groups/$gid/state"
 	if ($st.status -ne 200) { throw "state $($st.status)" }
-	$script:bPub = $st.json.state.viewerMemberPubKeyHash
+	$script:bPub = $st.json.viewer.memberKey
 	[bool]$script:bPub
 }
 
 Write-Host "`n=== 2. A bans B (entity) ===" -ForegroundColor Cyan
 Test-Case 'A memberCount >= 3 before ban' {
 	$s = Api $FedA GET "/groups/$gid/state"
-	$s.status -eq 200 -and [int]$s.json.state.memberCount -ge 3
+	$s.status -eq 200 -and [int]$s.json.meta.memberCount -ge 3
 }
 Test-Case 'A POST members/:hash/ban entity' {
 	$k = Api $FedA POST "/groups/$gid/members/$($script:bPub)/ban" @{ banScope = 'entity' }
@@ -33,7 +33,7 @@ Test-Case 'A POST members/:hash/ban entity' {
 Test-Case 'A state lists B in bannedMembers' {
 	$ok = PollUntil 30 2 {
 		$s = Api $FedA GET "/groups/$gid/state"
-		@($s.json.state.bannedMembers | Where-Object { $_.pubKeyHash -eq $script:bPub }).Count -ge 1
+		@($s.json.meta.bannedMembers | Where-Object { $_.memberKey -eq $script:bPub }).Count -ge 1
 	}
 	[bool]$ok
 }
@@ -59,7 +59,7 @@ Test-Case 'C catchup receives ban (third-party sync)' {
 		Api $FedC POST "/groups/$gid/dag/merge-tips" @{} | Out-Null
 		$s = Api $FedC GET "/groups/$gid/state"
 		if ($s.status -ne 200) { return $false }
-		@($s.json.state.bannedMembers | Where-Object { $_.pubKeyHash -eq $script:bPub }).Count -ge 1
+		@($s.json.meta.bannedMembers | Where-Object { $_.memberKey -eq $script:bPub }).Count -ge 1
 	}
 	if (-not $ok) { throw 'C must receive member_ban via normal federation catchup' }
 	$true
@@ -75,21 +75,21 @@ Test-Case 'B catchup probes shunned by A and C -> suspectedRemoved' {
 		if ($r.status -ne 200) { return $false }
 		if ($r.json.suspectedRemoved -eq $true) { return $true }
 		$s = Api $FedB GET "/groups/$gid/state"
-		$s.status -eq 200 -and $s.json.state.suspectedRemoved -eq $true
+		$s.status -eq 200 -and $s.json.viewer.suspectedRemoved -eq $true
 	}
 	if (-not $ok) { throw 'B must suspect removal after shuns from known member nodes' }
 	$true
 }
 Test-Case 'B state does not materialize ban event locally' {
 	$s = Api $FedB GET "/groups/$gid/state"
-	@($s.json.state.bannedMembers | Where-Object { $_.pubKeyHash -eq $script:bPub }).Count -eq 0
+	@($s.json.meta.bannedMembers | Where-Object { $_.memberKey -eq $script:bPub }).Count -eq 0
 }
 
 Write-Host "`n=== 5. B cannot send; A roster clean ===" -ForegroundColor Cyan
 Test-Case 'B POST message rejected after suspectedRemoved (403)' {
 	$ok = PollUntil 30 2 {
 		$s = Api $FedB GET "/groups/$gid/state"
-		if ($s.status -ne 200 -or $s.json.state.suspectedRemoved -ne $true) { return $false }
+		if ($s.status -ne 200 -or $s.json.viewer.suspectedRemoved -ne $true) { return $false }
 		$r = Api $FedB POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'banned-attempt' } }
 		$r.status -eq 403
 	}

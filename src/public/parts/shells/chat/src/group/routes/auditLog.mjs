@@ -10,6 +10,7 @@ import { AUDIT_LOG_EVENT_TYPES, listAuditLogEntries } from '../../chat/auditLog.
 import { canInChannel, governanceChannelId } from '../access.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 注册群审计日志路由（仅管理员可读）。
@@ -18,7 +19,7 @@ import { requireGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerAuditLogRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/audit-log$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/audit-log`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannelId(state)))
 			return res.status(403).json({ error: 'ADMIN required' })

@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
 import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
@@ -107,7 +107,7 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 		type: event.type,
 		groupId,
 		sender,
-		charId: event.charId ?? null,
+		charPartName: event.charPartName ?? null,
 		timestamp: event.timestamp ?? Date.now(),
 		hlc,
 		prev_event_ids,
@@ -152,7 +152,7 @@ export async function ensureSocialMeta(username, entityHash) {
 	await appendSignedTimelineEvent(username, entityHash, {
 		type: 'social_meta',
 		content: {
-			isProtected: false,
+			hideFromDiscovery: false,
 			exploreBlurb: '',
 			createdAt: Date.now(),
 			recoveryPubKeyHex,

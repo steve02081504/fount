@@ -1,7 +1,7 @@
 /**
  * 【文件】group/routes/dag.mjs
- * 【职责】DAG 同步、tip 查询、治理分支、分叉、merge-tips 与批量 events 推送的 HTTP 入口。
- * 【原理】tips 从 events.jsonl 计算并附带 reputation 计分；fork/block-opposing 委托 governance；POST events 区分远程签名行与本地授权行，slash 可走 volatile alert。
+ * 【职责】DAG 同步、tip 查询、治理分支、分叉、merge-tips 与联邦/本地 events 推送的 HTTP 入口。
+ * 【原理】tips 从 events.jsonl 计算并附带 reputation 计分；fork/block-opposing 委托 governance；POST events/signed 与 events/local 分离契约。
  * 【数据结构】DAG tips/tipScores、events 数组、governance-branch tipId、applied/skipped 计数。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/*、chat/governance、localAuthz.mjs、access.mjs。
  */
@@ -31,6 +31,89 @@ import { canGovSlash, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 import { validateLocalAuthzBatch } from '../localAuthz.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
+
+/**
+ * 摄入已签名联邦 DAG 事件行。
+ * @param {string} username 副本用户
+ * @param {string} groupId 群 ID
+ * @param {object[]} events 签名事件行
+ * @returns {Promise<{ applied: number, skipped: number }>} 成功与跳过计数
+ */
+async function ingestSignedEvents(username, groupId, events) {
+	let applied = 0
+	let skipped = 0
+	for (const event of events) {
+		if (event?.groupId && event.groupId !== groupId) {
+			skipped++
+			continue
+		}
+		if (!isSignedDagEventRow(event)) {
+			skipped++
+			continue
+		}
+		if ((await appendValidatedRemoteEvent(username, groupId, event, { logFailures: false })).status === 'applied')
+			applied++
+	}
+	return { applied, skipped }
+}
+
+/**
+ * 追加本地未签名授权类 DAG 事件。
+ * @param {string} username 副本用户
+ * @param {string} groupId 群 ID
+ * @param {object[]} events 本地简体形
+ * @returns {Promise<{ applied: number, skipped: number }>} 成功与跳过计数
+ */
+async function appendLocalEvents(username, groupId, events) {
+	let applied = 0
+	let skipped = 0
+	for (const event of events) {
+		if (event?.groupId && event.groupId !== groupId) {
+			skipped++
+			continue
+		}
+		const content = { ...event.content }
+
+		if (event.type === 'reputation_slash' && !content.verified && !content.proof) {
+			const { state: slashState } = await getState(username, groupId)
+			const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, slashState)
+			if (!memberKey) throw httpError(403, 'Not a member')
+			if (!canGovSlash(slashState, slashState.members[memberKey]))
+				throw httpError(403, 'ADMIN or MANAGE_ROLES required')
+			const { sender } = await resolveLocalEventSigner(username, groupId)
+			const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
+			const { broadcastEvent } = await import('../../chat/stream/groupWsHub.mjs')
+			const { groupWsRoomKeyForReplica } = await import('../../chat/stream/groupWsRooms.mjs')
+			const alert = buildAndApplyUnverifiedSlashAlert(
+				sender,
+				content,
+				slashState.groupSettings || {},
+			)
+			broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
+			await publishVolatileToFederation(groupId, alert)
+			applied++
+			continue
+		}
+
+		if (event.type === 'peer_invite' && !content.fileKeyWraps) {
+			const peerPubKeyHex = normalizePubKeyHex(content.to || '')
+			if (PUB_KEY_HEX_64.test(peerPubKeyHex)) {
+				const keyEntry = await getCurrentFileMasterKey(username, groupId)
+				if (keyEntry)
+					content.fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKeyHex)
+			}
+		}
+
+		await appendSignedLocalEvent(username, groupId, {
+			type: event.type,
+			timestamp: Number.isFinite(event.timestamp) ? event.timestamp : Date.now(),
+			content,
+		})
+		applied++
+	}
+	return { applied, skipped }
+}
 
 /**
  * 注册 DAG 同步、分叉与事件推送路由。
@@ -39,7 +122,7 @@ import { requireGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerDagRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/tips$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/dag/tips`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
 
 		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
@@ -68,11 +151,10 @@ export function registerDagRoutes(router, authenticate) {
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/fork$/, authenticate, requireGroupMember(), async (req, res) => {
-		const sourceGroupId = req.params[0]
-		const { username } = req.groupContext
+	router.post(`${GROUPS_PREFIX}/:groupId/fork`, authenticate, requireGroupMember(), async (req, res) => {
+		const { username, groupId } = req.groupContext
 		const body = req.body || {}
-		const result = await forkGroupFromBranch(username, sourceGroupId, {
+		const result = await forkGroupFromBranch(username, groupId, {
 			tipId: body.tipId ? String(body.tipId) : undefined,
 			name: body.name ? String(body.name) : undefined,
 		})
@@ -83,7 +165,7 @@ export function registerDagRoutes(router, authenticate) {
 		res.status(201).json({ ...result })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/fork\/block-opposing$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/fork/block-opposing`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		const acceptedTipId = String(req.body?.acceptedTipId || '')
 		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
@@ -91,7 +173,7 @@ export function registerDagRoutes(router, authenticate) {
 		res.status(200).json({ ...result })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/governance-branch$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
 		const tipId = req.body?.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
 		if (tipId && !isHex64(tipId))
@@ -108,7 +190,7 @@ export function registerDagRoutes(router, authenticate) {
 		})
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/dag\/merge-tips$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/dag/merge-tips`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		try {
 			const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
@@ -123,7 +205,7 @@ export function registerDagRoutes(router, authenticate) {
 		}
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/events$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/events`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		const channelId = String(req.query.channelId || '').trim() || undefined
 		const { events, truncated } = await syncEvents(username, groupId, {
@@ -134,9 +216,18 @@ export function registerDagRoutes(router, authenticate) {
 		res.status(200).json({ events, truncated })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/events$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/events/signed`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
+		const events = req.body?.events
+		if (!Array.isArray(events))
+			return res.status(400).json({ error: 'events array required' })
+		res.status(200).json(await ingestSignedEvents(username, groupId, events))
+	})
+
+	router.post(`${GROUPS_PREFIX}/:groupId/events/local`, authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { groupId } = req.params
 		const events = req.body?.events
 		if (!Array.isArray(events))
 			return res.status(400).json({ error: 'events array required' })
@@ -148,57 +239,6 @@ export function registerDagRoutes(router, authenticate) {
 			return res.status(400).json({ error: error.message })
 		}
 
-		let applied = 0
-		let skipped = 0
-		for (const event of events) {
-			if (event?.groupId && event.groupId !== groupId) {
-				skipped++
-				continue
-			}
-			if (isSignedDagEventRow(event)) {
-				if (await appendValidatedRemoteEvent(username, groupId, event, { logFailures: false }) === 'ok')
-					applied++
-				continue
-			}
-			const content = { ...event.content }
-
-			if (event.type === 'reputation_slash' && !content.verified && !content.proof) {
-				const { state: slashState } = await getState(username, groupId)
-				const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, slashState)
-				if (!memberKey) throw httpError(403, 'Not a member')
-				if (!canGovSlash(slashState, slashState.members[memberKey]))
-					throw httpError(403, 'ADMIN or MANAGE_ROLES required')
-				const { sender } = await resolveLocalEventSigner(username, groupId)
-				const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
-				const { broadcastEvent } = await import('../../chat/stream/groupWsHub.mjs')
-				const { groupWsRoomKeyForReplica } = await import('../../chat/stream/groupWsRooms.mjs')
-				const alert = buildAndApplyUnverifiedSlashAlert(
-					sender,
-					content,
-					slashState.groupSettings || {},
-				)
-				broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
-				await publishVolatileToFederation(groupId, alert)
-				applied++
-				continue
-			}
-
-			if (event.type === 'peer_invite' && !content.fileKeyWraps) {
-				const peerPubKeyHex = normalizePubKeyHex(content.to || '')
-				if (PUB_KEY_HEX_64.test(peerPubKeyHex)) {
-					const keyEntry = await getCurrentFileMasterKey(username, groupId)
-					if (keyEntry)
-						content.fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKeyHex)
-				}
-			}
-
-			await appendSignedLocalEvent(username, groupId, {
-				type: event.type,
-				timestamp: Number.isFinite(event.timestamp) ? event.timestamp : Date.now(),
-				content,
-			})
-			applied++
-		}
-		res.status(200).json({ applied, skipped })
+		res.status(200).json(await appendLocalEvents(username, groupId, events))
 	})
 }

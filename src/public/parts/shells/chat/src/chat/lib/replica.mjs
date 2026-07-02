@@ -5,7 +5,7 @@
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { isWritableLocalEntity } from '../../../../../../../scripts/p2p/entity/replica.mjs'
 import { encodeEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../../../../../../server/p2p_server/http_glue.mjs'
 import {
 	getOperatorEntityHash,

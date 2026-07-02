@@ -30,7 +30,8 @@ export async function handleComposerFeedClick(appContext, target) {
 		const searchInput = document.getElementById('feedSearchInput')
 		if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 		appContext.state.feedCursor = null
-		await loadFeed(appContext, false, { skipSync: true })
+		await appContext.socialApi('/feed/sync', { method: 'POST' })
+		await loadFeed(appContext, false)
 		updateFeedSearchChrome(appContext)
 	}
 	if (target.closest('#feedSearchBtn'))

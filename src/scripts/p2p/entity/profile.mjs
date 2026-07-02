@@ -138,6 +138,7 @@ export async function recordHeartbeat(replicaUsername, entityHash) {
 	const profile = await getProfile(entityHash, null, { skipPresentation: true })
 	profile.lastSeenAt = Date.now()
 	await getEntityStore().writeEntityJson(entityHash, PROFILE_JSON, toStoredProfile(profile))
+	return { lastSeenAt: profile.lastSeenAt }
 }
 
 /**
@@ -224,16 +225,21 @@ export async function getStats(entityHash) {
  * @param {string} entityHash 128 位 entityHash
  * @param {string} status 状态
  * @param {string} [customStatus] 自定义状态
- * @returns {Promise<void>}
+ * @returns {Promise<{ status: string, customStatus: string, lastSeenAt: number }>} 更新后的状态字段
  */
 export async function updateStatus(replicaUsername, entityHash, status, customStatus = '') {
 	if (!MANUAL_STATUSES.has(status))
 		throw new Error('invalid status')
-	await updateProfile(replicaUsername, entityHash, {
+	const updated = await updateProfile(replicaUsername, entityHash, {
 		status,
 		customStatus,
 		lastSeenAt: Date.now(),
 	}, { skipPresentation: true })
+	return {
+		status: updated.status,
+		customStatus: updated.customStatus,
+		lastSeenAt: updated.lastSeenAt,
+	}
 }
 
 /**

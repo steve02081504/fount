@@ -10,7 +10,9 @@ import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri
  */
 export async function renderBlocklist(appContext, container) {
 	const data = await appContext.socialApi('/profile/personal-lists')
-	const blocked = data.blockedEntityHashes || []
+	const blocked = (data.entries || [])
+		.filter(entry => entry.kind === 'block' && entry.scope === 'entity')
+		.map(entry => entry.value)
 	if (!blocked.length) {
 		container.innerHTML = `<p class="hint">${escapeHtml(appContext.geti18n('social.blocklist.empty'))}</p>`
 		return
@@ -168,7 +170,7 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 			<div class="profile-settings card">
 				<h3>${escapeHtml(appContext.geti18n('social.profile.exploreSettings'))}</h3>
 				<textarea id="exploreBlurbInput" rows="3">${escapeHtml(data.socialMeta?.exploreBlurb || '')}</textarea>
-				<label><input type="checkbox" id="exploreProtectedInput" ${data.socialMeta?.isProtected ? 'checked' : ''} /> ${escapeHtml(appContext.geti18n('social.profile.hideFromExplore'))}</label>
+				<label><input type="checkbox" id="exploreProtectedInput" ${data.socialMeta?.hideFromDiscovery ? 'checked' : ''} /> ${escapeHtml(appContext.geti18n('social.profile.hideFromExplore'))}</label>
 				<button type="button" id="saveMetaBtn" class="profile-action-btn primary">${escapeHtml(appContext.geti18n('social.profile.saveExplore'))}</button>
 			</div>
 			<div id="blocklistSection" class="profile-settings card"></div>
@@ -207,7 +209,7 @@ export async function loadProfile(appContext) {
  * @returns {Promise<void>}
  */
 export async function submitReply(appContext, entityHash, postId, text) {
-	await appContext.socialApi('/profile/post', {
+	await appContext.socialApi('/posts', {
 		method: 'POST',
 		body: JSON.stringify({
 			text,

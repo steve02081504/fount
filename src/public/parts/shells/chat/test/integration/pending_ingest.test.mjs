@@ -20,9 +20,18 @@ const { ensureServer, username } = createIntegrationBoot({
 	loadParts: [],
 })
 
+/**
+ *
+ */
+const applied = () => ({ status: 'applied' })
+/**
+ *
+ */
+const pending = () => ({ status: 'pending' })
+
 Deno.test('replayPendingIngestEvents on empty file returns zero', async () => {
 	await ensureServer()
-	const result = await replayPendingIngestEvents(username, '__empty_group__', async () => 'ok')
+	const result = await replayPendingIngestEvents(username, '__empty_group__', async () => applied())
 	assertEquals(result, { released: 0, remaining: 0 })
 })
 
@@ -33,7 +42,7 @@ Deno.test('enqueuePendingIngest skips payload without id', async () => {
 	assertEquals(rows.length, 0)
 })
 
-Deno.test('enqueuePendingIngest and replay releases ok status', async () => {
+Deno.test('enqueuePendingIngest and replay releases applied status', async () => {
 	await ensureServer()
 	const groupId = 'g-pending-ingest'
 	const ev = { id: 'e'.repeat(64), type: 'member_ban', groupId, sender: 'f'.repeat(64) }
@@ -42,7 +51,7 @@ Deno.test('enqueuePendingIngest and replay releases ok status', async () => {
 	assertEquals(rows.length, 1)
 	assertEquals(rows[0].reason, 'federated event pending: no ACL snapshot')
 
-	const replay = await replayPendingIngestEvents(username, groupId, async () => 'ok')
+	const replay = await replayPendingIngestEvents(username, groupId, async () => applied())
 	assertEquals(replay.released, 1)
 	assertEquals(replay.remaining, 0)
 })
@@ -52,7 +61,7 @@ Deno.test('replayPendingIngestEvents keeps rows while tryIngest still pending', 
 	const groupId = 'g-pending-still'
 	const ev = { id: 'f'.repeat(64), type: 'member_ban', sender: 'a'.repeat(64) }
 	await enqueuePendingIngest(username, groupId, ev, 'waiting for ACL')
-	const replay = await replayPendingIngestEvents(username, groupId, async () => 'pending_ingest')
+	const replay = await replayPendingIngestEvents(username, groupId, async () => pending())
 	assertEquals(replay, { released: 0, remaining: 1 })
 	assertEquals((await readPendingIngestRows(username, groupId)).length, 1)
 })
@@ -63,10 +72,12 @@ Deno.test('replayPendingIngestEvents releases after tryIngest succeeds on a late
 	const ev = { id: '0'.repeat(64), type: 'member_ban', sender: 'a'.repeat(64) }
 	await enqueuePendingIngest(username, groupId, ev, 'retry')
 	let attempts = 0
-	/** @returns {Promise<'ok' | 'pending_ingest'>} 首次 pending，第二次 ok */
+	/**
+	 *
+	 */
 	const tryIngest = async () => {
 		attempts++
-		return attempts >= 2 ? 'ok' : 'pending_ingest'
+		return attempts >= 2 ? applied() : pending()
 	}
 	assertEquals(await replayPendingIngestEvents(username, groupId, tryIngest), { released: 0, remaining: 1 })
 	assertEquals(await replayPendingIngestEvents(username, groupId, tryIngest), { released: 1, remaining: 0 })

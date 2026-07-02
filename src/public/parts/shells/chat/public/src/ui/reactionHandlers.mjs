@@ -1,6 +1,6 @@
 /**
  * 【文件】public/src/ui/reactionHandlers.mjs
- * 【职责】群消息表情回应 toggle：POST 频道 reaction API 并 handleUIError。
+ * 【职责】群消息表情回应 toggle：POST/DELETE 频道 reaction API 并 handleUIError。
  * 【原理】createReactionHandlers({ groupId, channelId }) 返回 toggleReaction；groupPath 拼 REST。
  * 【数据结构】targetEventId、emoji、remove 布尔、targetPubKeyHash 可选。
  * 【关联】groupClient.mjs、channelDisplay.mjs、errors.mjs。
@@ -27,26 +27,28 @@ export function createReactionHandlers(channelScope) {
 	 */
 	const toggleReaction = async (targetEventId, emoji, remove, targetPubKeyHash) => {
 		try {
+			const url = `/api/parts/shells:chat/groups/${groupPath(groupId, 'channels', channelId, 'reactions')}`
 			if (remove) {
-				const params = new URLSearchParams({ targetEventId })
-				if (targetPubKeyHash) params.set('targetPubKeyHash', targetPubKeyHash)
-				const response = await fetch(
-					`/api/parts/shells:chat/groups/${groupPath(groupId, 'channels', channelId, 'reactions', emoji)}?${params}`,
-					{ method: 'DELETE', credentials: 'include' },
-				)
+				const response = await fetch(url, {
+					method: 'DELETE',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({
+						targetEventId,
+						emoji,
+						...targetPubKeyHash ? { targetPubKeyHash } : {},
+					}),
+				})
 				if (!response.ok)
 					return handleUIError(new Error(`toggleReaction HTTP ${response.status}`), 'chat.hub.reactionFailed')
 			}
 			else {
-				const response = await fetch(
-					`/api/parts/shells:chat/groups/${groupPath(groupId, 'channels', channelId, 'reactions')}`,
-					{
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						credentials: 'include',
-						body: JSON.stringify({ targetEventId, emoji }),
-					},
-				)
+				const response = await fetch(url, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({ targetEventId, emoji }),
+				})
 				if (!response.ok)
 					handleUIError(new Error(`toggleReaction HTTP ${response.status}`), 'chat.hub.reactionFailed')
 			}

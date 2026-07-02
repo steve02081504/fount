@@ -61,13 +61,13 @@ Test-Case 'B GET /discovery sees index' {
 }
 
 Write-Host "`n=== 4. POST events remote verify (B ingests A-signed row) ===" -ForegroundColor Cyan
-Test-Case 'B applies signed event from A via POST /events' {
+Test-Case 'B applies signed event from A via POST /events/signed' {
 	$events = Api $FedA GET "/groups/$groupId/events?limit=5"
 	if ($events.status -ne 200) { throw "events $($events.status)" }
 	$row = @($events.json.events | Where-Object { $_.signature -and $_.id })[0]
 	if (-not $row) { throw 'no signed event on A' }
 	$eventId = [string]$row.id
-	$response = Api $FedB POST "/groups/$groupId/events" @{ events = @($row) }
+	$response = Api $FedB POST "/groups/$groupId/events/signed" @{ events = @($row) }
 	if ($response.status -ne 200) { throw "ingest $($response.status): $($response.raw)" }
 	$onB = Api $FedB GET "/groups/$groupId/events?limit=20"
 	if ($onB.status -ne 200) { throw "B events $($onB.status)" }

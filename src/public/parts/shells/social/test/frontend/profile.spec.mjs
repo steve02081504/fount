@@ -52,7 +52,7 @@ test.describe('Social profile', () => {
 		])
 		const metaJson = await metaResponse.json()
 		expect(metaJson).toHaveProperty('socialMeta')
-		expect(metaJson.socialMeta?.isProtected).toBe(!wasProtected)
+		expect(metaJson.socialMeta?.hideFromDiscovery).toBe(!wasProtected)
 		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 
@@ -84,7 +84,7 @@ test.describe('Social profile', () => {
 		await expect(followBtn).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/follow')
+				res.url().includes('/api/parts/shells:social/relationships/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
@@ -105,7 +105,7 @@ test.describe('Social profile', () => {
 		await expect(unfollowBtn).toHaveAttribute('data-is-following', '1', { timeout: 10_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/follow')
+				res.url().includes('/api/parts/shells:social/relationships/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			{ timeout: 60_000 }),
@@ -128,7 +128,7 @@ test.describe('Social profile', () => {
 	test('blocklist shows blocked entity and unblocks smoke', async ({ page, baseUrl, apiKey }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		const blockRes = await page.request.post(
-			`${baseUrl}/api/parts/shells:social/profile/block?fount-apikey=${encodeURIComponent(apiKey)}`,
+			`${baseUrl}/api/parts/shells:social/relationships/block?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { entityHash: dummy, block: true } },
 		)
 		expect(blockRes.ok()).toBe(true)
@@ -139,7 +139,7 @@ test.describe('Social profile', () => {
 		)
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/block')
+				res.url().includes('/api/parts/shells:social/relationships/block')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),

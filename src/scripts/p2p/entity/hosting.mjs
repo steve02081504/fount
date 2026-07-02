@@ -6,7 +6,7 @@ import {
 	isEntityHash128,
 	parseEntityHash,
 } from '../entity_id.mjs'
-import { getNodeHash } from '../node_context.mjs'
+import { getNodeHash } from '../node/identity.mjs'
 import {
 	getOperatorEntityHashProvider,
 	getReplicaUsernamesProvider,

@@ -80,7 +80,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		await decayAfterSlash()
 		if (signPayload.type === 'member_ban') {
 			const { blockEntriesFromBanContent } = await import('../governance/banRules.mjs')
-			const { addGroupBlockedPeers, addBlocklistFromBanContent } = await import('../../../../../../../scripts/p2p/blocklist.mjs')
+			const { addGroupBlockedPeers, addDenylistFromBanContent } = await import('../../../../../../../scripts/p2p/denylist.mjs')
 			const state = await materializedState()
 			const entries = blockEntriesFromBanContent(signPayload.content)
 			const targetKey = resolveTargetMemberKey(signPayload.content)
@@ -88,7 +88,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 			if (isHex64(home) && !entries.some(entry => entry.scope === 'node' && entry.value === home))
 				entries.push({ scope: 'node', value: home })
 			addGroupBlockedPeers(groupId, entries)
-			await addBlocklistFromBanContent(signPayload.content, groupId)
+			await addDenylistFromBanContent(signPayload.content, groupId)
 			void import('../federation/shun.mjs')
 				.then(({ notifyFedShunAfterMemberBan }) => notifyFedShunAfterMemberBan(username, groupId, signPayload))
 				.catch(console.error)
@@ -193,18 +193,16 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	const storedContent = signPayload.content
 	let displayContent = storedContent
 	let sidecarContent = storedContent
+	let decryptResult = null
 	if (CKG_ENCRYPT_EVENT_TYPES.has(signPayload.type)) {
-		const result = await decryptEventContent(username, groupId, channelId, storedContent)
-		if (result.ok) {
-			displayContent = result.content
-			sidecarContent = result.content
+		decryptResult = await decryptEventContent(username, groupId, channelId, storedContent)
+		if (decryptResult.ok) {
+			displayContent = decryptResult.content
+			sidecarContent = decryptResult.content
 		}
 		else {
-			displayContent = {
-				decryptFailed: true,
-				pendingGeneration: result.generation ?? null,
-			}
-			sidecarContent = displayContent
+			displayContent = null
+			sidecarContent = null
 		}
 	}
 	const messageLine = {
@@ -217,6 +215,14 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		hlc: signPayload.hlc,
 		prev_event_ids: sortedPrevEventIds(signPayload.prev_event_ids),
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
+		...decryptResult && !decryptResult.ok
+			? {
+				decryptView: {
+					failed: true,
+					...decryptResult.generation != null ? { pendingGeneration: decryptResult.generation } : {},
+				},
+			}
+			: {},
 	}
 	const channelMessagesPath = messagesPath(username, groupId, channelId)
 	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })

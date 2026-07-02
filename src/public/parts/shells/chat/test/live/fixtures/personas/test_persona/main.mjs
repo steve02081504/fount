@@ -6,6 +6,9 @@ export default {
 	},
 	interfaces: {
 		chat: {
+			/**
+			 *
+			 */
 			GetPrompt: async () => ({
 				text: [{ content: 'test persona fixture', important: 0 }],
 				additional_chat_log: [],

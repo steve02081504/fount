@@ -1,4 +1,4 @@
-import { isEntityHashBlocked } from '../../../../../scripts/p2p/blocklist.mjs'
+import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 import {
@@ -23,6 +23,20 @@ import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing } from './following.mjs'
 import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
+
+/**
+ * @param {object} item feed 条目
+ * @returns {string} 分页游标（始终指向原帖 entityHash:postId）
+ */
+export function feedItemCursorKey(item) {
+	if (item.kind === 'repost') {
+		const originalEntity = item.targetEntityHash || item.post?.entityHash
+		const originalPostId = item.targetPostId || item.post?.id
+		if (originalEntity && originalPostId)
+			return `${originalEntity}:${originalPostId}`
+	}
+	return `${item.entityHash}:${item.postId}`
+}
 
 /**
  * @param {string} entityHash 作者实体
@@ -137,7 +151,7 @@ export async function buildHomeFeed(username, options = {}) {
 			item = await buildPostFeedItem(username, candidate.entityHash, candidate.post, feedItemBuildContext)
 
 		if (!item) continue
-		const key = `${item.entityHash}:${item.postId}`
+		const key = feedItemCursorKey(item)
 		if (!collecting) {
 			if (key === options.cursor) collecting = true
 			continue
@@ -151,7 +165,7 @@ export async function buildHomeFeed(username, options = {}) {
 	}
 
 	const next = hasMore && items.length
-		? `${items[items.length - 1].entityHash}:${items[items.length - 1].postId}`
+		? feedItemCursorKey(items[items.length - 1])
 		: null
 	return { items, nextCursor: next }
 }

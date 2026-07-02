@@ -70,7 +70,7 @@ Deno.test('followers-only post hidden when viewer does not follow author', async
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const foreignOwner = encodeEntityHash('3'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, foreignOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'post', content: { text: 'secret followers', visibility: 'followers' } },
 	])
 

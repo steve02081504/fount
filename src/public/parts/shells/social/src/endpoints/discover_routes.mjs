@@ -6,10 +6,11 @@ import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { suggestMentions } from '../lib/mentionSuggest.mjs'
 import { buildNotifications } from '../notifications.mjs'
 import { searchPosts } from '../search.mjs'
+import { cacheTranslation, getCachedTranslation, translatePostText } from '../translate.mjs'
 import { buildTrendingHashtags } from '../trending/hashtags.mjs'
 
 /**
- * 注册探索、搜索、通知与 @ 建议路由。
+ * 注册探索、搜索、通知、翻译与 @ 建议路由。
  * @param {import('npm:express').Router} router Express 路由
  * @returns {void}
  */
@@ -42,8 +43,22 @@ export function registerDiscoverRoutes(router) {
 
 	router.get('/api/parts/shells\\:social/notifications', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100)
-		res.status(200).json(await buildNotifications(username, limit))
+		res.status(200).json(await buildNotifications(username, {
+			limit: Number(req.query.limit) || 30,
+			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+		}))
+	})
+
+	router.post('/api/parts/shells\\:social/translate', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const text = String(req.body?.text || '')
+		const targetLang = String(req.body?.targetLang || 'zh-CN')
+		const cacheKey = `${targetLang}:${text.slice(0, 2000)}`
+		const cached = getCachedTranslation(username, cacheKey)
+		if (cached) return res.status(200).json({ translated: cached, cached: true })
+		const translated = await translatePostText(text, targetLang)
+		cacheTranslation(username, cacheKey, translated)
+		res.status(200).json({ translated, cached: false })
 	})
 
 	router.get('/api/parts/shells\\:social/mentions/suggest', authenticate, async (req, res) => {

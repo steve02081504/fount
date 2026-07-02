@@ -3,7 +3,7 @@ import { encodeEntityHash, parseEntityHash } from '../entity_id.mjs'
 
 const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
 
-/** 逻辑群实体 sentinel nodeHash（非物理节点绑定） */
+/** @type {string} 逻辑群实体 sentinel nodeHash（非物理节点绑定） */
 export const GROUP_SENTINEL_NODE_HASH = '0'.repeat(64)
 
 /**

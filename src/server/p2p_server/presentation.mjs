@@ -1,7 +1,7 @@
 import { getLocalizedInfo } from '../../scripts/locale.mjs'
 import { isPlaceholderDisplayName } from '../../scripts/p2p/entity/localized_core.mjs'
 import { parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
 import { getUserByUsername } from '../auth.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../parts_loader.mjs'
 

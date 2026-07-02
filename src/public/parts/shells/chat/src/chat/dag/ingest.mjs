@@ -5,10 +5,10 @@
  * 【数据结构】入参为 DAG 事件对象；`opts.source` 为 `'local' | 'federation'`。
  * 【关联】`authorizeEvent.mjs`、`materialize.mjs`、`sessionEventValidate.mjs`、`../federation/acl.mjs`。
  */
-import { isPubKeyHashBlocked } from '../../../../../../../scripts/p2p/blocklist.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { isPubKeyHashBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { assertHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import {
 	shouldDeferInboundIngest,

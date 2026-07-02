@@ -237,6 +237,16 @@ export async function takeMailboxForRecipient(toPubKeyHash) {
 }
 
 /**
+ * @param {string} toPubKeyHash 收件人 pubKeyHash
+ * @returns {Promise<number>} 未过期条数
+ */
+export async function countMailboxPendingForRecipient(toPubKeyHash) {
+	const recipient = normalizeHex64(toPubKeyHash)
+	const now = Date.now()
+	return (await readAll()).filter(record => record.toPubKeyHash === recipient && record.expiresAt > now).length
+}
+
+/**
  * @returns {Promise<number>} 未过期条数
  */
 export async function countMailboxPending() {

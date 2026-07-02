@@ -1,10 +1,10 @@
 /**
- * P2P network / blocklist 纯函数单元测试（Deno）。
+ * P2P network / denylist 纯函数单元测试（Deno）。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { normalizeBlocklist } from '../blocklist.mjs'
+import { normalizeDenylist } from '../denylist.mjs'
 import { normalizeNetwork } from '../network.mjs'
 
 const NODE_A = `${'a'.repeat(64)}`
@@ -26,8 +26,8 @@ Deno.test('normalizeNetwork dedupes peers and trims hints', () => {
 	assertEquals(net.hints[0].nodeHash, NODE_B)
 })
 
-Deno.test('normalizeBlocklist entity scope requires 128 hex', () => {
-	const list = normalizeBlocklist({
+Deno.test('normalizeDenylist entity scope requires 128 hex', () => {
+	const list = normalizeDenylist({
 		blocked: [
 			{ scope: 'entity', value: ENTITY },
 			{ scope: 'entity', value: 'not-valid' },
@@ -38,4 +38,12 @@ Deno.test('normalizeBlocklist entity scope requires 128 hex', () => {
 	assertEquals(list.blocked[0].scope, 'entity')
 	assertEquals(list.blocked[0].value, ENTITY)
 	assertEquals(list.blocked[1].scope, 'node')
+})
+
+Deno.test('normalizeDenylist drops entity scope groupId', () => {
+	const list = normalizeDenylist({
+		blocked: [{ scope: 'entity', value: ENTITY, groupId: 'g1' }],
+	})
+	assertEquals(list.blocked.length, 1)
+	assertEquals(list.blocked[0].groupId, undefined)
 })

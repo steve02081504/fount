@@ -4,8 +4,7 @@ import { selfId } from 'npm:@trystero-p2p/nostr'
 
 import { keyPairFromSeed, pubKeyHash, sign, verify } from './crypto.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
-import { ensureNodeSeed } from './node/identity.mjs'
-import { getNodeHash } from './node_context.mjs'
+import { ensureNodeSeed, getNodeHash } from './node/identity.mjs'
 
 /** user room 在 trust graph / room provider 中的 scope id */
 export const USER_ROOM_SCOPE = 'user-room'

@@ -36,13 +36,13 @@ async function readCheckpoint(username, groupId, checkpoint) {
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object | null} [checkpointHint] 刚写入的检查点
- * @param {{ event_retention_depth?: unknown, event_retention_ms?: unknown }} [groupSettings] 群设置
+ * @param {{ eventRetentionDepth?: unknown, eventRetentionMs?: unknown }} [groupSettings] 群设置
  * @returns {Promise<{ pruned: boolean, kept: number, dropped: number }>} 裁剪统计
  */
 export async function enforceEventRetention(username, groupId, checkpointHint = null, groupSettings = {}) {
 	const eventsFilePath = eventsPath(username, groupId)
-	const maxDepth = Math.max(256, Number(groupSettings.event_retention_depth) || 200_000)
-	const maxMs = Math.max(3_600_000, Number(groupSettings.event_retention_ms) || 365 * 24 * 3600 * 1000)
+	const maxDepth = Math.max(256, Number(groupSettings.eventRetentionDepth) || 200_000)
+	const maxMs = Math.max(3_600_000, Number(groupSettings.eventRetentionMs) || 365 * 24 * 3600 * 1000)
 	return enforceDagRetention({
 		eventsFilePath,
 		/** @returns {Promise<object | null>} 检查点 */

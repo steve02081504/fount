@@ -12,11 +12,11 @@ $script:resolvedTarget = $null
 $found = Wait-FedConverged $FedA $groupId {
 	$state = Api $FedA GET "/groups/$groupId/state"
 	if ($state.status -ne 200) { return $false }
-	$candidate = @($state.json.state.members | Where-Object {
-		$_.status -eq 'active' -and $_.pubKeyHash -and ($_.roles -notcontains 'founder')
+	$candidate = @($state.json.meta.members | Where-Object {
+		$_.status -eq 'active' -and $_.memberKey -and ($_.roles -notcontains 'founder')
 	})[0]
 	if ($candidate) {
-		$script:resolvedTarget = [string]$candidate.pubKeyHash
+		$script:resolvedTarget = [string]$candidate.memberKey
 		return $true
 	}
 	$false
@@ -59,7 +59,7 @@ Write-Host "`n=== 2. Owner-succession cross-node ===" -ForegroundColor Cyan
 Test-Case 'A POST owner-succession → B' {
 	$state = Api $FedA GET "/groups/$groupId/state"
 	if ($state.status -ne 200) { throw "state $($state.status)" }
-	$activeOnA = @($state.json.state.members | Where-Object { $_.pubKeyHash -eq $ownerSuccessionTarget }).Count -ge 1
+	$activeOnA = @($state.json.meta.members | Where-Object { $_.memberKey -eq $ownerSuccessionTarget }).Count -ge 1
 	if (-not $activeOnA) { throw "proposed owner not active on A" }
 	$ballotId = "fed-rep-owner-os-$([guid]::NewGuid().ToString('N').Substring(0, 12))"
 	$response = Api $FedA POST "/groups/$groupId/owner-succession" @{
@@ -76,18 +76,18 @@ Test-Case 'B state sees new owner (federation)' {
 		if ($state.groupMeta.ownerPubKeyHash -eq $ownerSuccessionTarget) { return $true }
 		if ($state.delegatedOwnerPubKeyHash -eq $ownerSuccessionTarget) { return $true }
 		$rows = @($state.members)
-		$target = @($rows | Where-Object { $_.pubKeyHash -eq $ownerSuccessionTarget })[0]
+		$target = @($rows | Where-Object { $_.memberKey -eq $ownerSuccessionTarget })[0]
 		if (-not $target) { return $false }
 		$targetIsFounder = @($target.roles) -contains 'founder'
 		$otherFounders = @($rows | Where-Object {
-			$_.status -eq 'active' -and $_.pubKeyHash -ne $ownerSuccessionTarget -and (@($_.roles) -contains 'founder')
+			$_.status -eq 'active' -and $_.memberKey -ne $ownerSuccessionTarget -and (@($_.roles) -contains 'founder')
 		}).Count
 		$targetIsFounder -and $otherFounders -eq 0
 	}
 	$ok = Wait-FedConverged $FedB $groupId {
 		$stateResponse = Api $FedB GET "/groups/$groupId/state"
 		if ($stateResponse.status -ne 200) { return $false }
-		& $hasTransferredFounder $stateResponse.json.state
+		& $hasTransferredFounder $stateResponse.json.meta
 	} 120 4 8000
 	if (-not $ok) { throw 'B must see owner succession via federation catchup (no manual A-side inject)' }
 	[bool]$ok

@@ -175,6 +175,49 @@ function replayReactions(channelMessages, targetEventId) {
 }
 
 /**
+ * @param {Record<string, Record<string, { voters?: string[] }>> | undefined} reactionsMap 聚合反应
+ * @param {string} targetEventId 目标消息 eventId
+ * @param {string} [viewerId='local'] 本机成员标识
+ * @returns {Map<string, { count: number, byMe: boolean }>} emoji → 计票
+ */
+export function tallyReactionsFromMap(reactionsMap, targetEventId, viewerId = 'local') {
+	const emojiMap = reactionsMap?.[targetEventId]
+		|| reactionsMap?.[String(targetEventId).trim()]
+	const tallies = new Map()
+	if (!emojiMap) return tallies
+	for (const [emoji, detail] of Object.entries(emojiMap)) {
+		const voters = Array.isArray(detail?.voters) ? detail.voters : []
+		tallies.set(emoji, {
+			count: voters.length,
+			byMe: voters.some(voter => voter === viewerId),
+		})
+	}
+	return tallies
+}
+
+/**
+ * @param {Record<string, Record<string, { voters?: string[] }>> | undefined} reactionsMap 聚合反应
+ * @param {string} targetEventId 目标消息 eventId
+ * @param {string} [viewerId='local'] 本机成员标识
+ * @returns {Map<string, { count: number, byMe: boolean, voters: string[] }>} emoji → 计票与投票者
+ */
+export function tallyReactionVotersFromMap(reactionsMap, targetEventId, viewerId = 'local') {
+	const emojiMap = reactionsMap?.[targetEventId]
+		|| reactionsMap?.[String(targetEventId).trim()]
+	const tallies = new Map()
+	if (!emojiMap) return tallies
+	for (const [emoji, detail] of Object.entries(emojiMap)) {
+		const voters = Array.isArray(detail?.voters) ? detail.voters : []
+		tallies.set(emoji, {
+			count: voters.length,
+			byMe: voters.some(voter => voter === viewerId),
+			voters: [...voters],
+		})
+	}
+	return tallies
+}
+
+/**
  * @param {object[]} channelMessages 频道全部事件行
  * @param {string} targetEventId 目标消息 eventId
  * @param {string} [viewerId='local'] 本机成员标识
