@@ -8,8 +8,10 @@ import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
-/** 无真实 replica 的占位 entityHash（follow/block API 烟测专用，不测联邦 fanout）。 */
-export const DUMMY_ENTITY_HASH = 'a'.repeat(128)
+import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
+
+/** 经 bootstrap 注册 network hint 的可发现测试目标（follow/block 烟测）。 */
+export const DUMMY_ENTITY_HASH = SEEDED_TEST_TARGET_HASH
 
 /**
  * Social 前端 E2E 测试套件（扩展 publishPost fixture）。
@@ -227,12 +229,12 @@ export async function findPostCard(page, postId, opts = {}) {
 			}
 		}
 
-		await page.locator(`.side-nav .nav-btn[data-view="profile"]`).click()
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		const profileCard = page.locator(`#profileView ${sel}`)
 		const profileFound = await profileCard.isVisible({ timeout: 20_000 }).catch(() => false)
 		if (profileFound) return profileCard
 
-		await page.locator(`.side-nav .nav-btn[data-view="feed"]`).click()
+		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		await refreshFeed(page)
 	}
 

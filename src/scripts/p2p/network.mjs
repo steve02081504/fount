@@ -1,5 +1,6 @@
 import { loadBlocklist } from './blocklist.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
+import { isNodeInitialized } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 
@@ -193,6 +194,7 @@ export function recordExplorePeersFromRoster(roster, groupId = '', source = 'ros
  * @returns {void}
  */
 export function widenExploreFromTrustedAnchors() {
+	if (!isNodeInitialized()) return
 	const net = loadNetwork()
 	const now = Date.now()
 	for (const raw of net.trustedPeers.slice(0, 12)) {

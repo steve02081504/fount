@@ -2,13 +2,18 @@ import path from 'node:path'
 
 import { createFsEntityStore } from '../entity_store.mjs'
 
+import { defaultSignalingRuntimeConfig, resolveSignalingRuntimeConfig } from './signaling_config.mjs'
+
 /** @typedef {{ warn?: (...args: unknown[]) => void, error?: (...args: unknown[]) => void }} NodeLogger */
+
+/** @typedef {import('./signaling_config.mjs').SignalingRuntimeConfig} SignalingRuntimeConfig */
 
 /**
  * @typedef {{
  *   nodeDir: string
  *   entityStore: import('../entity_store.mjs').EntityStore
  *   logger: NodeLogger
+ *   signaling: SignalingRuntimeConfig
  * }} NodeRuntime
  */
 
@@ -18,8 +23,20 @@ let runtime = null
 /** @type {Set<(event: string, payload?: unknown) => void>} */
 const changeListeners = new Set()
 
+/** @type {NodeLogger} */
+const noopLogger = {
+	/**
+	 *
+	 */
+	warn() { },
+	/**
+	 *
+	 */
+	error() { },
+}
+
 /**
- * @param {{ nodeDir: string, entityStore?: import('../entity_store.mjs').EntityStore, logger?: NodeLogger }} options 节点目录与可选注入
+ * @param {{ nodeDir: string, entityStore?: import('../entity_store.mjs').EntityStore, logger?: NodeLogger, signaling?: SignalingRuntimeConfig }} options 节点目录与可选注入
  * @returns {NodeRuntime} 单节点运行时句柄
  */
 export function initNode(options) {
@@ -30,6 +47,7 @@ export function initNode(options) {
 		nodeDir,
 		entityStore,
 		logger: options.logger ?? console,
+		signaling: options.signaling ?? resolveSignalingRuntimeConfig(),
 	}
 	return runtime
 }
@@ -50,6 +68,13 @@ export function isNodeInitialized() {
 }
 
 /**
+ * @returns {SignalingRuntimeConfig} 信令传输策略（未 init 时返回生产默认，不读测试 env）
+ */
+export function getSignalingRuntimeConfig() {
+	return runtime?.signaling ?? defaultSignalingRuntimeConfig()
+}
+
+/**
  * @returns {string} 节点数据目录绝对路径
  */
 export function getNodeDir() {
@@ -64,10 +89,10 @@ export function getEntityStore() {
 }
 
 /**
- * @returns {NodeLogger} 节点日志器
+ * @returns {NodeLogger} 节点日志器（未 init 时为 no-op）
  */
 export function getNodeLogger() {
-	return getNode().logger
+	return runtime?.logger ?? noopLogger
 }
 
 /**
@@ -76,10 +101,9 @@ export function getNodeLogger() {
  * @returns {void}
  */
 export function emitNodeChange(event, payload) {
-	for (const listener of changeListeners) 
+	for (const listener of changeListeners)
 		try { listener(event, payload) }
 		catch { /* ignore */ }
-	
 }
 
 /**

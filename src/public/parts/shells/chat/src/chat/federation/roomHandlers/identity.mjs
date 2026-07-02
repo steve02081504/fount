@@ -1,3 +1,4 @@
+import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { buildIdentityAnnounce, verifyIdentityAnnounce } from '../../../../../../../../scripts/p2p/identity_announce.mjs'
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
@@ -47,8 +48,11 @@ export function registerIdentityHandlers(roomContext) {
 	identity.on((data, peerId) => {
 		void verifyIdentityAnnounce(data, peerId).then(remoteNodeHash => {
 			if (!remoteNodeHash) {
-				if (process.env.FOUNT_TEST === '1')
-					console.warn('federation: identity_announce verify failed', { groupId, peerId })
+				void debugLog('federation', {
+					event: 'identity_announce_verify_failed',
+					groupId,
+					peerId,
+				})
 				return
 			}
 			const previousNodeId = peerToNode.get(peerId)
@@ -79,8 +83,11 @@ export function registerIdentityHandlers(roomContext) {
 
 	room.onPeerJoin(peerId => {
 		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) {
-			if (process.env.FOUNT_TEST === '1')
-				console.warn('federation: onPeerJoin rtc slot denied', { groupId, peerId })
+			void debugLog('federation', {
+				event: 'onPeerJoin_rtc_slot_denied',
+				groupId,
+				peerId,
+			})
 			return
 		}
 		fedOut.enqueue(3, () => {

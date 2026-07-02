@@ -1,10 +1,11 @@
 /**
  * Trystero Nostr 房间共享配置（chat 联邦 / subfounts 分机共用，§0.4）。
  */
-import process from 'node:process'
-
 import { defaultRelayUrls as trysteroDefaultRelayUrls } from 'npm:@trystero-p2p/nostr'
 
+import { debugLog } from '../debug_log.mjs'
+
+import { getSignalingRuntimeConfig } from './node/instance.mjs'
 import { wrapRtcPeerConnectionForMdns } from './rtc_mdns_filter.mjs'
 import { wrapTrysteroRoom } from './trystero_session.mjs'
 
@@ -40,46 +41,22 @@ export function mergeSignalingRelayUrls(userRelayUrls) {
 }
 
 /**
- * Windows/Deno 服务端 WebRTC 常产出 .local mDNS host candidate，对端无法解析。
- * @returns {boolean} 是否应在 ICE 层过滤 mDNS host candidate
- */
-function shouldFilterMdnsCandidates() {
-	return process.env.FOUNT_TEST === '1' || process.platform === 'win32'
-}
-
-/**
  * 加载 WebRTC 构造函数 polyfill（优先 werift，回退 node-datachannel）。
- * win32 / 测试环境下在 ICE candidate 层过滤 mDNS host candidate。
+ * mDNS 策略由 node runtime 信令配置决定。
  * @returns {Promise<typeof import('npm:node-datachannel/polyfill').RTCPeerConnection>} RTCPeerConnection 类
  */
 export async function loadRtcPeerConnectionPolyfill() {
-	const filterMdns = shouldFilterMdnsCandidates()
+	const { mdnsPolicy } = getSignalingRuntimeConfig()
 	try {
 		const werift = await import('npm:werift')
 		const BaseRTC = werift.RTCPeerConnection
-		return filterMdns
-			? wrapRtcPeerConnectionForMdns(BaseRTC, werift.RTCIceCandidate)
-			: BaseRTC
+		return wrapRtcPeerConnectionForMdns(BaseRTC, werift.RTCIceCandidate, mdnsPolicy)
 	}
 	catch {
 		const ndc = await import('npm:node-datachannel/polyfill')
 		const BaseRTC = ndc.RTCPeerConnection
-		return filterMdns
-			? wrapRtcPeerConnectionForMdns(BaseRTC, ndc.RTCIceCandidate)
-			: BaseRTC
+		return wrapRtcPeerConnectionForMdns(BaseRTC, ndc.RTCIceCandidate, mdnsPolicy)
 	}
-}
-
-/**
- * 测试环境下从 FOUNT_TEST_RELAY_URLS 读取本地 relay（逗号分隔 ws/wss URL）。
- * @returns {string[] | null} 解析后的 relay URL 列表；非测试环境或无配置时为 null
- */
-function parseTestRelayUrlsFromEnv() {
-	if (process.env.FOUNT_TEST !== '1') return null
-	const raw = String(process.env.FOUNT_TEST_RELAY_URLS || '').trim()
-	if (!raw) return null
-	const urls = raw.split(',').map(url => url.trim()).filter(Boolean)
-	return urls.length ? urls : null
 }
 
 /**
@@ -91,8 +68,8 @@ function parseTestRelayUrlsFromEnv() {
  * @returns {{ appId: string, password: string, relayConfig: { urls: string[] } }} Trystero 配置片段
  */
 export function buildTrysteroSignalingConfig({ appId, password, relayUrls }) {
-	const testUrls = parseTestRelayUrlsFromEnv()
-	const urls = testUrls ?? mergeSignalingRelayUrls(relayUrls)
+	const { relayOverride } = getSignalingRuntimeConfig()
+	const urls = relayOverride ?? mergeSignalingRelayUrls(relayUrls)
 	return {
 		appId: String(appId || '').trim() || 'fount-p2p',
 		password: String(password || ''),
@@ -121,8 +98,7 @@ export async function attachTrysteroRelayErrorHandlers() {
 		for (const [, socket] of Object.entries(sockets))
 			if (socket && typeof socket.on === 'function' && !relaySocketsWithErrorHandler.has(socket)) {
 				socket.on('error', error => {
-					if (process.env.FOUNT_TEST === '1')
-						console.warn('p2p: nostr relay socket error', error)
+					void debugLog('p2p', { event: 'nostr_relay_socket_error', error: String(error) })
 				})
 				relaySocketsWithErrorHandler.add(socket)
 			}
@@ -191,13 +167,12 @@ export function getActiveSignalingRoomCount() {
 }
 
 /**
- * Trystero join / handshake 错误回调（生产环境静默；测试环境打 warn 便于定位联邦失败）。
+ * Trystero join / handshake 错误回调。
  * @param {{ error?: string, appId?: string, peerId?: string, roomId?: string } | unknown} detail 错误详情
  * @returns {void}
  */
 function onSignalingJoinError(detail) {
-	if (process.env.FOUNT_TEST === '1')
-		console.warn('p2p: signaling join error', detail)
+	void debugLog('p2p', { event: 'signaling_join_error', detail })
 }
 
 /**
@@ -246,15 +221,17 @@ async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
 		const room = await Promise.race([joinPromise, timeoutPromise])
 		clearTimeout(timeoutTimer)
 		if (!room) {
-			if (process.env.FOUNT_TEST === '1')
-				console.warn('p2p: signaling join timed out', { roomId: normalizedRoomId, appId: normalizedAppId })
+			void debugLog('p2p', {
+				event: 'signaling_join_timed_out',
+				roomId: normalizedRoomId,
+				appId: normalizedAppId,
+			})
 			void joinPromise.then(lateRoom => lateRoom ? leaveSignalingRoom(lateRoom) : undefined).catch(() => { })
 			await release()
 			return null
 		}
 		registerActiveSignalingRoom(room, normalizedAppId, normalizedRoomId)
 		await attachTrysteroRelayErrorHandlers()
-		// 立即返回 room 供调用方注册 onPeerJoin；落定窗口在后台释放队列，避免 peer 已连上时 handler 尚未挂载。
 		void release()
 		return room
 	}
@@ -298,14 +275,13 @@ export async function joinSignalingRoomWithDefaults({ appId, password, roomId, r
 	const rtcPolyfill = await loadRtcPeerConnectionPolyfill()
 	const base = buildTrysteroSignalingConfig({ appId, password, relayUrls })
 	const rtcConfig = iceServers?.length ? { iceServers } : undefined
-	// win32/测试：mDNS 过滤在 rtcPolyfill 包装层；trickleIce:false 减少协商碎片、利于同机联邦。
-	const useTrickleIceOff = shouldFilterMdnsCandidates()
+	const { trickleIceOff } = getSignalingRuntimeConfig()
 	/** @returns {Promise<object>} Trystero joinRoom 配置 */
 	const buildJoinConfig = async () => ({
 		...base,
 		rtcPolyfill,
 		...rtcConfig ? { rtcConfig } : {},
-		...useTrickleIceOff ? { trickleIce: false } : {},
+		...trickleIceOff ? { trickleIce: false } : {},
 	})
 	return runSerializedJoin({ appId, roomId, buildJoinConfig })
 }

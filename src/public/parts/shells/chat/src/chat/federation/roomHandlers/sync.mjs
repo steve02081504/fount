@@ -264,7 +264,7 @@ export function registerSyncHandlers(roomContext) {
 			const allUnknown = wantIds.length > 0 && wantIds.every(id => !byId.has(id))
 			if (allUnknown && localEvents.length > 0 && handshake.strictAligned) {
 				void recordGossipAllUnknownWant(groupId, requesterNodeHash).catch(console.error)
-				try { widenExploreFromTrustedAnchors() } catch { /* node dir unavailable in tests */ }
+				widenExploreFromTrustedAnchors()
 			}
 
 			const events = wantIds.map(id => byId.get(id)).filter(Boolean)

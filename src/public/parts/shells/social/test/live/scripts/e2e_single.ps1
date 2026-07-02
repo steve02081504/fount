@@ -101,11 +101,11 @@ Test-Case 'POST /profile/repost' {
 	$r = Api POST '/profile/repost' @{ entityHash = $entityHash; postId = $postId; comment = 'e2e repost' }
 	$r.status -eq 200 -and $r.json.event.type -eq 'repost'
 }
-Test-Case 'POST /profile/follow dummy (no-op target)' {
+Test-Case 'POST /profile/follow seeded test target' {
 	$r = Api POST '/profile/follow' @{ entityHash = $dummyTarget; follow = $true }
 	$r.status -eq 200
 }
-Test-Case 'POST /profile/follow unfollow dummy' {
+Test-Case 'POST /profile/follow unfollow seeded test target' {
 	$r = Api POST '/profile/follow' @{ entityHash = $dummyTarget; follow = $false }
 	$r.status -eq 200
 }
@@ -113,13 +113,13 @@ Test-Case 'POST /profile/meta' {
 	$r = Api POST '/profile/meta' @{ exploreBlurb = 'e2e blurb'; isProtected = $false }
 	$r.status -eq 200
 }
-Test-Case 'POST /profile/block + unblock dummy' {
+Test-Case 'POST /profile/block + unblock seeded test target' {
 	$b = Api POST '/profile/block' @{ entityHash = $dummyTarget; block = $true }
 	if ($b.status -ne 200) { throw "block $($b.status)" }
 	$u = Api POST '/profile/block' @{ entityHash = $dummyTarget; block = $false }
 	$u.status -eq 200
 }
-Test-Case 'POST /profile/hide + unhide dummy' {
+Test-Case 'POST /profile/hide + unhide seeded test target' {
 	$h = Api POST '/profile/hide' @{ entityHash = $dummyTarget; hide = $true }
 	if ($h.status -ne 200) { throw "hide $($h.status)" }
 	$u = Api POST '/profile/hide' @{ entityHash = $dummyTarget; hide = $false }

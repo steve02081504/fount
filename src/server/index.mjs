@@ -11,6 +11,18 @@ import { console } from '../scripts/i18n.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
 
+/**
+ * 生产 CLI 入口禁止继承测试 env，避免 P2P 信令静默切到测试 relay。
+ * @returns {void}
+ */
+function rejectTestEnvInProductionEntry() {
+	if (process.env.FOUNT_TEST === '1' || String(process.env.FOUNT_TEST_RELAY_URLS || '').trim()) {
+		console.error('FOUNT_TEST / FOUNT_TEST_RELAY_URLS must not be set when starting production server (src/server/index.mjs)')
+		process.exit(1)
+	}
+}
+rejectTestEnvInProductionEntry()
+
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
 import { startIdleCheck, stopIdleCheck } from './idle.mjs'

@@ -226,19 +226,18 @@ export function rosterNodeHashesFromSlot(slot) {
 }
 
 /**
- * 读取联邦同步房名册中可见对端的 nodeHash（联邦房不可用/单测环境下返回 null）。
+ * 读取联邦同步房名册中可见对端的 nodeHash（联邦房不可用或未 init P2P 时返回 null）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @returns {Promise<string[] | null>} nodeHash 列表或 null
  */
 async function loadRosterNodeHashes(username, groupId) {
-	try {
-		const { getFederationPartitionSlot } = await import('./registry.mjs')
-		const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
-		const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-		return slot ? rosterNodeHashesFromSlot(slot) : null
-	}
-	catch { return null /* federation room may be unavailable in unit tests */ }
+	const { isNodeInitialized } = await import('../../../../../../../scripts/p2p/node/instance.mjs')
+	if (!isNodeInitialized()) return null
+	const { getFederationPartitionSlot } = await import('./registry.mjs')
+	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
+	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
+	return slot ? rosterNodeHashesFromSlot(slot) : null
 }
 
 /**

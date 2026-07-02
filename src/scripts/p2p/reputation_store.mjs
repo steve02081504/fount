@@ -264,14 +264,11 @@ export function applyDecayCollusionAfterSlash(targetPubKeyHash, inviteEdges) {
 	void mutateReputation(data => {
 		const applied = applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, inviteEdges)
 		if (applied.length)
-			try {
-				getNodeLogger().warn?.('reputation: collusion decay after slash', {
-					target: targetPubKeyHash.trim().toLowerCase(),
-					upstreamCount: applied.length,
-					hops: applied.map(row => row.hop),
-				})
-			}
-			catch { /* node not initialized in tests */ }
+			getNodeLogger().warn?.('reputation: collusion decay after slash', {
+				target: targetPubKeyHash.trim().toLowerCase(),
+				upstreamCount: applied.length,
+				hops: applied.map(row => row.hop),
+			})
 	})
 }
 

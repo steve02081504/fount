@@ -3,14 +3,14 @@ import { randomUUID } from 'node:crypto'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { setPersonalHidden } from '../../../../../../scripts/p2p/personal_block.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
-import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getFederationViewForUser, resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { dispatchFollowEvent, dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { buildProfileFeedItems, buildLikedFeedItems, getEntityProfile, listReplies } from '../feed.mjs'
 import { setFollow, loadFollowing } from '../following.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { resolveSocialEntity } from '../lib/entityResolve.mjs'
+import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { setPersonalBlock } from '../personalBlock.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
@@ -151,6 +151,8 @@ export function registerProfileRoutes(router) {
 		const target = String(req.body?.entityHash).toLowerCase()
 		if (!isEntityHash128(target))
 			return res.status(400).json({ error: 'invalid entityHash' })
+		if (!await isKnownSocialTarget(username, target))
+			return res.status(400).json({ error: 'unknown entity' })
 		const follow = req.body?.follow !== false
 		await setFollow(username, target, follow)
 		const self = await resolveOperatorEntityHash(username)
@@ -174,10 +176,15 @@ export function registerProfileRoutes(router) {
 		if (!self) return res.status(403).json({ error: 'identity required' })
 		const body = req.body
 		const like = body.like !== false
+		const targetEntityHash = String(body.entityHash).toLowerCase()
+		if (!isEntityHash128(targetEntityHash))
+			return res.status(400).json({ error: 'invalid entityHash' })
+		if (!await isKnownSocialTarget(username, targetEntityHash))
+			return res.status(400).json({ error: 'unknown entity' })
 		const event = await commitTimelineEvent(username, self, {
 			type: like ? 'like' : 'unlike',
 			content: {
-				targetEntityHash: String(body.entityHash).toLowerCase(),
+				targetEntityHash,
 				targetPostId: String(body.postId),
 			},
 		})
@@ -193,6 +200,8 @@ export function registerProfileRoutes(router) {
 		const targetPostId = String(body.postId)
 		if (!isEntityHash128(targetEntityHash) || !targetPostId)
 			return res.status(400).json({ error: 'invalid params' })
+		if (!await isKnownSocialTarget(username, targetEntityHash))
+			return res.status(400).json({ error: 'unknown entity' })
 		const event = await commitTimelineEvent(username, self, {
 			type: 'repost',
 			content: { targetEntityHash, targetPostId, comment: String(body.comment) },
@@ -218,6 +227,8 @@ export function registerProfileRoutes(router) {
 		const target = String(req.body?.entityHash).toLowerCase()
 		if (!isEntityHash128(target))
 			return res.status(400).json({ error: 'invalid entityHash' })
+		if (!await isKnownSocialTarget(username, target))
+			return res.status(400).json({ error: 'unknown entity' })
 		const block = req.body?.block !== false
 		const operator = await resolveOperatorEntityHash(username)
 		let actingEntity = operator
@@ -240,6 +251,8 @@ export function registerProfileRoutes(router) {
 		const target = String(req.body?.entityHash).toLowerCase()
 		if (!isEntityHash128(target))
 			return res.status(400).json({ error: 'invalid entityHash' })
+		if (!await isKnownSocialTarget(username, target))
+			return res.status(400).json({ error: 'unknown entity' })
 		const hide = req.body?.hide !== false
 		const operator = await resolveOperatorEntityHash(username)
 		let actingEntity = operator
