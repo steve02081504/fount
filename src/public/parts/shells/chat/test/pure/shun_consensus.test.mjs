@@ -1,5 +1,5 @@
-import assert from 'node:assert/strict'
-import { describe, it } from 'node:test'
+/* global Deno */
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
 	collectKnownPeerNodeHashes,
@@ -8,108 +8,107 @@ import {
 } from '../../src/chat/federation/shun.mjs'
 import { SHUN_CONSENSUS_WINDOW_MS } from '../../src/group/groupShunState.mjs'
 
-describe('evaluateShunConsensusPure', () => {
-	const peers = ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
-	const self = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
-	const now = 1_000_000
+const peers = [
+	'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+	'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+]
+const self = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+const now = 1_000_000
 
-	it('all known peers shunned within window => suspected', () => {
-		const shuns = {
-			[peers[0]]: now - 1000,
-			[peers[1]]: now - 2000,
-		}
-		const { suspected, shunnedBy } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
-		assert.equal(suspected, true)
-		assert.equal(shunnedBy.length, 2)
-	})
-
-	it('missing one peer shun => not suspected', () => {
-		const shuns = { [peers[0]]: now - 1000 }
-		const { suspected } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
-		assert.equal(suspected, false)
-	})
-
-	it('expired shun outside window => not suspected', () => {
-		const shuns = {
-			[peers[0]]: now - SHUN_CONSENSUS_WINDOW_MS - 1,
-			[peers[1]]: now - 1000,
-		}
-		const { suspected } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
-		assert.equal(suspected, false)
-	})
-
-	it('single peer group: one shun => suspected', () => {
-		const single = [peers[0]]
-		const { suspected } = evaluateShunConsensusPure(single, { [peers[0]]: now }, now, SHUN_CONSENSUS_WINDOW_MS)
-		assert.equal(suspected, true)
-	})
-
-	it('no known peers => not suspected', () => {
-		const { suspected } = evaluateShunConsensusPure([], { [peers[0]]: now }, now, SHUN_CONSENSUS_WINDOW_MS)
-		assert.equal(suspected, false)
-	})
+Deno.test('evaluateShunConsensusPure: all known peers shunned within window => suspected', () => {
+	const shuns = {
+		[peers[0]]: now - 1000,
+		[peers[1]]: now - 2000,
+	}
+	const { suspected, shunnedBy } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, true)
+	assertEquals(shunnedBy.length, 2)
 })
 
-describe('collectKnownPeerNodeHashes', () => {
-	it('collects active member home nodes excluding self', () => {
-		const self = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-		const other = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-		const state = {
-			members: {
-				[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
-				ccc: { status: 'active', homeNodeHash: other, memberKind: 'user' },
-				ddd: { status: 'banned', homeNodeHash: 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', memberKind: 'user' },
-			},
-		}
-		const nodes = collectKnownPeerNodeHashes(state, self)
-		assert.deepEqual(nodes, [other])
-	})
-
-	it('prefers roster peers over stale member home nodes', () => {
-		const self = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-		const stale = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-		const online = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
-		const state = {
-			members: {
-				[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
-				ccc: { status: 'active', homeNodeHash: stale, memberKind: 'user' },
-				ddd: { status: 'active', homeNodeHash: online, memberKind: 'user' },
-			},
-		}
-		const nodes = collectKnownPeerNodeHashes(state, self, [self, online])
-		assert.deepEqual(nodes, [online])
-	})
+Deno.test('evaluateShunConsensusPure: missing one peer shun => not suspected', () => {
+	const shuns = { [peers[0]]: now - 1000 }
+	const { suspected } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, false)
 })
 
-describe('resolveShunForNodeHashRequester', () => {
-	const nodeA = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-	const nodeB = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+Deno.test('evaluateShunConsensusPure: expired shun outside window => not suspected', () => {
+	const shuns = {
+		[peers[0]]: now - SHUN_CONSENSUS_WINDOW_MS - 1,
+		[peers[1]]: now - 1000,
+	}
+	const { suspected } = evaluateShunConsensusPure(peers, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, false)
+})
+
+Deno.test('evaluateShunConsensusPure: single peer group one shun => suspected', () => {
+	const single = [peers[0]]
+	const { suspected } = evaluateShunConsensusPure(single, { [peers[0]]: now }, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, true)
+})
+
+Deno.test('evaluateShunConsensusPure: no known peers => not suspected', () => {
+	const { suspected } = evaluateShunConsensusPure([], { [peers[0]]: now }, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, false)
+})
+
+Deno.test('collectKnownPeerNodeHashes collects active member home nodes excluding self', () => {
+	const other = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const state = {
+		members: {
+			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
+			ccc: { status: 'active', homeNodeHash: other, memberKind: 'user' },
+			ddd: {
+				status: 'banned',
+				homeNodeHash: 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+				memberKind: 'user',
+			},
+		},
+	}
+	assertEquals(collectKnownPeerNodeHashes(state, self), [other])
+})
+
+Deno.test('collectKnownPeerNodeHashes prefers roster peers over stale member home nodes', () => {
+	const stale = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const online = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+	const state = {
+		members: {
+			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
+			ccc: { status: 'active', homeNodeHash: stale, memberKind: 'user' },
+			ddd: { status: 'active', homeNodeHash: online, memberKind: 'user' },
+		},
+	}
+	assertEquals(collectKnownPeerNodeHashes(state, self, [self, online]), [online])
+})
+
+Deno.test('resolveShunForNodeHashRequester: active member home node => no shun', () => {
+	const nodeB = peers[1]
 	const pkB = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+	const state = {
+		members: {
+			[pkB]: { status: 'active', homeNodeHash: nodeB, memberKind: 'user' },
+		},
+	}
+	assertEquals(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: false, reason: null })
+})
 
-	it('active member home node => no shun', () => {
-		const state = {
-			members: {
-				[pkB]: { status: 'active', homeNodeHash: nodeB, memberKind: 'user' },
-			},
-		}
-		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: false, reason: null })
-	})
+Deno.test('resolveShunForNodeHashRequester: banned member home node => shun not_a_member', () => {
+	const nodeB = peers[1]
+	const pkB = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+	const state = {
+		members: {
+			[pkB]: { status: 'banned', homeNodeHash: nodeB, memberKind: 'user' },
+		},
+	}
+	assertEquals(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
+})
 
-	it('banned member home node => shun not_a_member', () => {
-		const state = {
-			members: {
-				[pkB]: { status: 'banned', homeNodeHash: nodeB, memberKind: 'user' },
-			},
-		}
-		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
-	})
+Deno.test('resolveShunForNodeHashRequester: bannedNodes set => shun not_a_member', () => {
+	const nodeB = peers[1]
+	const state = { members: {}, bannedNodes: new Set([nodeB]) }
+	assertEquals(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
+})
 
-	it('bannedNodes set => shun not_a_member', () => {
-		const state = { members: {}, bannedNodes: new Set([nodeB]) }
-		assert.deepEqual(resolveShunForNodeHashRequester(state, () => false, nodeB), { shun: true, reason: 'not_a_member' })
-	})
-
-	it('unknown node => no shun', () => {
-		assert.deepEqual(resolveShunForNodeHashRequester({ members: {} }, () => false, nodeA), { shun: false, reason: null })
-	})
+Deno.test('resolveShunForNodeHashRequester: unknown node => no shun', () => {
+	const nodeA = peers[0]
+	assertEquals(resolveShunForNodeHashRequester({ members: {} }, () => false, nodeA), { shun: false, reason: null })
 })

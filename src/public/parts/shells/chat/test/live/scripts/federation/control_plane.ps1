@@ -15,7 +15,7 @@ Test-Case 'A POST federation/rebind (first call must ok)' {
 }
 Test-Case 'A POST federation/rebind (idempotent second call)' {
 	$response = Api $FedA POST "/groups/$groupId/federation/rebind" @{ channelId = $channelId }
-	$response.status -eq 200 -and ($response.json.ok -eq $true -or $response.json.skipped -eq $true)
+	$response.status -eq 200 -and $response.json.ok -eq $true -and $response.json.skipped -eq $true
 }
 Test-Case 'A POST federation/rotate-room-secret' {
 	$response = Api $FedA POST "/groups/$groupId/federation/rotate-room-secret" @{}

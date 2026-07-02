@@ -93,7 +93,7 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('notifications mark all read button is available', async ({ page, publishPost }) => {
+	test('notifications mark all read clears badge', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`markall-parent ${Date.now()}`)
 		const card = await findPostCard(page, postId)
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
@@ -104,6 +104,7 @@ test.describe('Social secondary views', () => {
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsMarkAllBtn')).toBeVisible({ timeout: 20_000 })
 		await page.locator('#notificationsMarkAllBtn').click()
+		await expect(page.locator('#notificationsBadge')).toHaveClass(/hidden/, { timeout: 20_000 })
 	})
 
 	test('notification badge shows unread count before opening view', async ({ page, baseUrl, publishPost }) => {

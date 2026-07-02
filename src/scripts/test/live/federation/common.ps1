@@ -145,13 +145,79 @@ function PollUntil($timeoutSec, $intervalSec, $probe) {
 	return $last
 }
 
+function Invoke-FedCatchupSync($node, $groupId, $waitMs = 6000) {
+	Api $node POST "/groups/$groupId/federation/catchup" @{ waitMs = $waitMs } | Out-Null
+	Api $node POST "/groups/$groupId/dag/merge-tips" @{} | Out-Null
+}
+
 function Wait-FedMembers($node, $groupId, $minMembers = 2, $timeoutSec = 120) {
 	[bool](PollUntil $timeoutSec 3 {
-		Api $node POST "/groups/$groupId/federation/catchup" @{ waitMs = 5000 } | Out-Null
-		Api $node POST "/groups/$groupId/dag/merge-tips" @{} | Out-Null
+		Invoke-FedCatchupSync $node $groupId 5000
 		$state = Api $node GET "/groups/$groupId/state"
 		$state.status -eq 200 -and $state.json.state.isMember -eq $true -and [int]$state.json.state.memberCount -ge $minMembers
 	})
+}
+
+# Join / history catchup: poll with explicit catchup+merge-tips until probe succeeds.
+function Wait-FedConverged($node, $groupId, $probe, $timeoutSec = 120, $intervalSec = 3, $catchupWaitMs = 6000) {
+	[bool](PollUntil $timeoutSec $intervalSec {
+		Invoke-FedCatchupSync $node $groupId $catchupWaitMs
+		& $probe
+	})
+}
+
+# Live push: GET-only poll — no catchup (masks real-time propagation failures).
+function Wait-FedLive($node, $groupId, $probe, $timeoutSec = 90, $intervalSec = 3) {
+	[bool](PollUntil $timeoutSec $intervalSec {
+		& $probe
+	})
+}
+
+function Test-FedHasMessage($node, $groupId, $channelId, $eventId) {
+	$r = Api $node GET "/groups/$groupId/channels/$channelId/messages"
+	if ($r.status -ne 200) { return $false }
+	@($r.json.messages | Where-Object { $_.eventId -eq $eventId }).Count -ge 1
+}
+
+function Test-FedMessageContent($node, $groupId, $channelId, $eventId, $pattern) {
+	$r = Api $node GET "/groups/$groupId/channels/$channelId/messages"
+	if ($r.status -ne 200) { return $false }
+	$row = @($r.json.messages | Where-Object { $_.eventId -eq $eventId })[0]
+	if (-not $row) { return $false }
+	$txt = $row.content.content_for_show; if (-not $txt) { $txt = $row.content.content }
+	$txt -match $pattern
+}
+
+function Test-FedMessageDeleted($node, $groupId, $channelId, $eventId) {
+	$r = Api $node GET "/groups/$groupId/channels/$channelId/messages"
+	if ($r.status -ne 200) { return $false }
+	@($r.json.messages | Where-Object { $_.eventId -eq $eventId }).Count -eq 0
+}
+
+function Test-FedHasReaction($node, $groupId, $channelId, $targetEventId) {
+	$r = Api $node GET "/groups/$groupId/channels/$channelId/messages"
+	if ($r.status -ne 200) { return $false }
+	@($r.json.reactionEvents | Where-Object { $_.content.targetId -eq $targetEventId }).Count -ge 1
+}
+
+function Test-FedHasChannel($node, $groupId, $channelId) {
+	$s = Api $node GET "/groups/$groupId/state"
+	$s.status -eq 200 -and $null -ne $s.json.state.channels.$channelId
+}
+
+function Assert-FedPeersReady($groupId) {
+	$peersA = Api $script:FedA GET "/groups/$groupId/peers"
+	$peersB = Api $script:FedB GET "/groups/$groupId/peers"
+	if ($peersA.status -ne 200) { throw "NodeA peers probe failed: $($peersA.status)" }
+	if ($peersB.status -ne 200) { throw "NodeB peers probe failed: $($peersB.status)" }
+	Write-Host "  NodeA peers: $($peersA.json.peers.Count) federationEnabled=$($peersA.json.federationEnabled)" -ForegroundColor DarkGray
+	Write-Host "  NodeB peers: $($peersB.json.peers.Count) federationEnabled=$($peersB.json.federationEnabled)" -ForegroundColor DarkGray
+	$catchA = Api $script:FedA POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
+	$catchB = Api $script:FedB POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
+	if ($catchA.status -ne 200) { throw "NodeA catchup probe failed: $($catchA.status)" }
+	if ($catchB.status -ne 200) { throw "NodeB catchup probe failed: $($catchB.status)" }
+	Write-Host "  NodeA catchup: federationActive=$($catchA.json.federationActive) tips=$($catchA.json.tipsCollected)" -ForegroundColor DarkGray
+	Write-Host "  NodeB catchup: federationActive=$($catchB.json.federationActive) tips=$($catchB.json.tipsCollected)" -ForegroundColor DarkGray
 }
 
 function Initialize-OpenGroupJoinMulti($name, $seedText, $joinNodes) {

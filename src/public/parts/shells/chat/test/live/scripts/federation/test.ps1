@@ -1,4 +1,4 @@
-# Two-node federation: catchup (A1→B), live push (B1→A), catchup recovery fallback.
+# Two-node federation: catchup (A1→B), live push (B1→A) — no catchup recovery fallback.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $env:FOUNT_TEST_REPO_ROOT 'src/scripts/test/live/federation/common.ps1')
 
@@ -34,76 +34,40 @@ if ($jr.status -ne 200) { throw "join failed: $($jr.status) $($jr.raw)" }
 Write-Host "join result: $($jr.json | ConvertTo-Json -Compress)" -ForegroundColor Cyan
 
 Write-Host "`n=== 6. NodeB: federation health gate (members>=2) ===" -ForegroundColor Cyan
-try {
-	$peersA = Api $FedA GET "/groups/$groupId/peers"
-	$peersB = Api $FedB GET "/groups/$groupId/peers"
-	Write-Host "  NodeA peers: $($peersA.json.peers.Count) federationEnabled=$($peersA.json.federationEnabled)" -ForegroundColor DarkGray
-	Write-Host "  NodeB peers: $($peersB.json.peers.Count) federationEnabled=$($peersB.json.federationEnabled)" -ForegroundColor DarkGray
-	$catchA = Api $FedA POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
-	Write-Host "  NodeA catchup: federationActive=$($catchA.json.federationActive) tips=$($catchA.json.tipsCollected)" -ForegroundColor DarkGray
-	$catchB = Api $FedB POST "/groups/$groupId/federation/catchup" @{ waitMs = 3000 }
-	Write-Host "  NodeB catchup: federationActive=$($catchB.json.federationActive) tips=$($catchB.json.tipsCollected)" -ForegroundColor DarkGray
-}
-catch {
-	Write-Host "  peer/catchup probe failed: $_" -ForegroundColor Yellow
-}
+Assert-FedPeersReady $groupId
 $bReady = Wait-FedMembers $FedB $groupId 2 120
 if (-not $bReady) { throw 'NodeB never materialized group state (members>=2)' }
 
 Write-Host "`n=== 7. NodeB: read messages (expect A1 via catchup) ===" -ForegroundColor Cyan
-$gotA1 = [bool](PollUntil 120 3 {
-	try {
-		Api $FedB POST "/groups/$groupId/federation/catchup" @{ waitMs = 6000 } | Out-Null
-		$msgs = Api $FedB GET "/groups/$groupId/channels/$channelId/messages?limit=50"
-		if ($msgs.status -ne 200) { return $false }
-		$texts = @($msgs.json.messages | ForEach-Object { $_.content.content })
-		Write-Host "  NodeB sees $($texts.Count) msgs: $($texts -join ' | ')" -ForegroundColor DarkGray
-		$texts -match 'A1:'
-	}
-	catch { $false }
-})
+$gotA1 = Wait-FedConverged $FedB $groupId {
+	$msgs = Api $FedB GET "/groups/$groupId/channels/$channelId/messages?limit=50"
+	if ($msgs.status -ne 200) { return $false }
+	$texts = @($msgs.json.messages | ForEach-Object { $_.content.content })
+	Write-Host "  NodeB sees $($texts.Count) msgs: $($texts -join ' | ')" -ForegroundColor DarkGray
+	$texts -match 'A1:'
+} 120 3 6000
 Write-Host ("NodeB received A1: " + $(if ($gotA1) { 'YES' } else { 'NO' })) -ForegroundColor $(if ($gotA1) { 'Green' } else { 'Red' })
 
 Write-Host "`n=== 8. NodeB: send message #B1 ===" -ForegroundColor Cyan
 $b1 = Api $FedB POST "/groups/$groupId/channels/$channelId/messages" @{ content = @{ type = 'text'; content = 'B1: reply from NodeB' } }
 if ($b1.status -ne 201) { throw "B1 send failed: $($b1.status) $($b1.raw)" }
 
-Write-Host "`n=== 9. NodeA: live push (no catchup during poll) ===" -ForegroundColor Cyan
-$gotB1Live = [bool](PollUntil 90 3 {
-	try {
-		$msgs = Api $FedA GET "/groups/$groupId/channels/$channelId/messages?limit=50"
-		if ($msgs.status -ne 200) { return $false }
-		$texts = @($msgs.json.messages | ForEach-Object { $_.content.content })
-		Write-Host "  NodeA live sees $($texts.Count) msgs: $($texts -join ' | ')" -ForegroundColor DarkGray
-		$texts -match 'B1:'
-	}
-	catch { $false }
-})
-Write-Host ("NodeA received B1 via live push: " + $(if ($gotB1Live) { 'YES' } else { 'NO' })) -ForegroundColor $(if ($gotB1Live) { 'Green' } else { 'Yellow' })
-
-$gotB1 = $gotB1Live
-if (-not $gotB1) {
-	Write-Host "`n=== 10. NodeA: catchup recovery (explicit catchup allowed) ===" -ForegroundColor Cyan
-	$gotB1 = [bool](PollUntil 120 3 {
-		try {
-			Api $FedA POST "/groups/$groupId/federation/catchup" @{ waitMs = 12000 } | Out-Null
-			Api $FedA POST "/groups/$groupId/dag/merge-tips" @{} | Out-Null
-			$msgs = Api $FedA GET "/groups/$groupId/channels/$channelId/messages?limit=50"
-			if ($msgs.status -ne 200) { return $false }
-			@($msgs.json.messages | ForEach-Object { $_.content.content }) -match 'B1:'
-		}
-		catch { $false }
-	})
-	Write-Host ("NodeA received B1 via catchup recovery: " + $(if ($gotB1) { 'YES' } else { 'NO' })) -ForegroundColor $(if ($gotB1) { 'Green' } else { 'Red' })
-}
+Write-Host "`n=== 9. NodeA: live push (GET-only, no catchup) ===" -ForegroundColor Cyan
+$gotB1Live = Wait-FedLive $FedA $groupId {
+	$msgs = Api $FedA GET "/groups/$groupId/channels/$channelId/messages?limit=50"
+	if ($msgs.status -ne 200) { return $false }
+	$texts = @($msgs.json.messages | ForEach-Object { $_.content.content })
+	Write-Host "  NodeA live sees $($texts.Count) msgs: $($texts -join ' | ')" -ForegroundColor DarkGray
+	$texts -match 'B1:'
+} 90 3
+Write-Host ("NodeA received B1 via live push: " + $(if ($gotB1Live) { 'YES' } else { 'NO' })) -ForegroundColor $(if ($gotB1Live) { 'Green' } else { 'Red' })
 
 Write-Host "`n=== SUMMARY ===" -ForegroundColor Cyan
 Write-Host "groupId=$groupId" -ForegroundColor Cyan
 Write-Host ("catchup(A1->B): " + $(if ($gotA1) { 'PASS' } else { 'FAIL' }))
-Write-Host ("live(B1->A):    " + $(if ($gotB1Live) { 'PASS' } else { 'WARN (catchup may recover)' }))
-Write-Host ("B1 on A (any):  " + $(if ($gotB1) { 'PASS' } else { 'FAIL' }))
+Write-Host ("live(B1->A):    " + $(if ($gotB1Live) { 'PASS' } else { 'FAIL' }))
 
 if (-not $gotA1) { $script:fail++ }
-if (-not $gotB1) { $script:fail++ }
+if (-not $gotB1Live) { $script:fail++ }
 Clear-FedGroup $groupId
 Complete-LiveScript

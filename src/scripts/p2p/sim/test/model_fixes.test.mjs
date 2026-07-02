@@ -44,7 +44,7 @@ Deno.test('newcomers excluded from falsePositiveRate', () => {
 	const snapWith = runSimulation(withNewcomers, 11, tunables)
 	const snapWithout = runSimulation(withoutNewcomers, 11, tunables)
 	assert(
-		snapWith.falsePositiveRate <= snapWithout.falsePositiveRate + 0.05,
+		snapWith.falsePositiveRate <= snapWithout.falsePositiveRate,
 		`newcomers inflated falsePositive: with=${snapWith.falsePositiveRate} without=${snapWithout.falsePositiveRate}`,
 	)
 })

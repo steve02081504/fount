@@ -1,7 +1,6 @@
 import { test, expect, openSocialHome, findPostCard, submitReplyViaPanel } from './fixtures.mjs'
 
 test.describe('Social replies', () => {
-	test.setTimeout(600_000)
 
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)

@@ -148,6 +148,23 @@ Deno.test('buildHomeFeed includes own public posts', async () => {
 	assert(items.length >= 1, 'home feed should include operator self posts')
 })
 
+Deno.test('follow then seeded remote post is pullable via federation RPC', async () => {
+	const { username } = await getSession()
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const remoteOwner = encodeEntityHash('f'.repeat(64), subject)
+	await following.setFollow(username, remoteOwner, true)
+	const [post] = await seedRemoteTimeline(username, seed, remoteOwner, [
+		{ type: 'post', content: { text: 'follow fanout replica', visibility: 'public' } },
+	])
+	const resp = await discovery.handleSocialRpc(username, {
+		type: 'social_timeline_pull_request', entityHash: remoteOwner, afterEventId: null,
+	}, { requesterNodeHash: null })
+	assertEquals(resp.type, 'social_timeline_pull_response')
+	assert(resp.events.some(e => e.id === post.id), 'followed remote post reachable after replica ingest')
+	await following.setFollow(username, remoteOwner, false)
+})
+
 Deno.test('remote author profile + posts do not break feed/discover', async () => {
 	const { username } = await getSession()
 	const seed = randomSeed()

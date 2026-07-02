@@ -5,10 +5,10 @@ import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
+import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
+
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
-
-import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
 
 /** 经 bootstrap 注册 network hint 的可发现测试目标（follow/block 烟测）。 */
 export const DUMMY_ENTITY_HASH = SEEDED_TEST_TARGET_HASH
@@ -36,11 +36,15 @@ export const test = baseTest.extend({
 	},
 })
 
+/** @type {string[]} 当前用例收集的浏览器 pageerror（afterEach 断言为空）。 */
+const collectedPageErrors = []
+
 baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	baseTest.setTimeout(300_000)
-	page.on('pageerror', err => console.log('[browser:pageerror]', err.message, err.stack))
+	baseTest.setTimeout(180_000)
+	collectedPageErrors.length = 0
+	page.on('pageerror', err => collectedPageErrors.push(String(err?.message || err)))
 	await page.addInitScript(() => {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
@@ -59,6 +63,10 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 		expectedUsername: TEST_USERNAME,
 		shellLabel: 'Social',
 	})
+})
+
+baseTest.afterEach(async () => {
+	expect(collectedPageErrors, 'unexpected browser page errors').toEqual([])
 })
 
 /**
@@ -110,18 +118,19 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 	try {
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const key = encodeURIComponent(apiKey)
-		for (let attempt = 0; attempt < 40; attempt++) {
-			const res = await req.get(
+		for (let attempt = 0; attempt < 15; attempt++) {
+			const profileRes = await req.get(
 				`${baseUrl}/api/parts/shells:social/profile/${entityHash}/posts?fount-apikey=${key}`,
 			)
-			if (res.ok()) {
-				const data = await res.json()
-				const found = (data.items || []).some(item => item.postId === postId)
-				if (found) return entityHash
-			}
-			await new Promise(resolve => setTimeout(resolve, 250))
+			const feedRes = await req.get(`${baseUrl}/api/parts/shells:social/feed?fount-apikey=${key}`)
+			const inProfile = profileRes.ok()
+				&& (await profileRes.json()).items?.some(item => item.postId === postId)
+			const inFeed = feedRes.ok()
+				&& (await feedRes.json()).items?.some(item => item.postId === postId)
+			if (inProfile && inFeed) return entityHash
+			await new Promise(resolve => setTimeout(resolve, 200))
 		}
-		throw new Error(`post not materialized within timeout: ${postId}`)
+		throw new Error(`post not materialized in profile+feed: ${postId}`)
 	}
 	finally {
 		await req.dispose()
@@ -198,49 +207,23 @@ async function refreshFeed(page) {
  * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
 export async function findPostCard(page, postId, opts = {}) {
-	const preferFeed = opts.preferFeed === true
+	const allowProfileFallback = opts.allowProfileFallback === true
 	const sel = `[data-post-id="${postId}"]`
-
-	/**
-	 * 在指定视图中查找帖子卡片。
-	 * @param {string} viewId - 视图元素 id。
-	 * @returns {Promise<import('npm:@playwright/test').Locator | null>} 定位器或 null。
-	 */
-	const cardInView = async viewId => {
-		const view = page.locator(`#${viewId}`)
-		if (await view.evaluate(el => el.classList.contains('hidden'))) return null
-		const card = view.locator(sel)
-		return await card.count() > 0 ? card.first() : null
-	}
-
-	if (!preferFeed) {
-		const onFeed = await cardInView('feedView')
-		if (onFeed) return onFeed
-	}
-
-	for (let attempt = 0; attempt < 4; attempt++) {
-		if (preferFeed || attempt > 0) {
-			const feedCard = await cardInView('feedView')
-			if (feedCard) return feedCard
-			if (preferFeed || attempt === 0) {
-				await refreshFeed(page)
-				const refreshed = await cardInView('feedView')
-				if (refreshed) return refreshed
-			}
+	const feedCard = page.locator(`#feedView ${sel}`)
+	for (let attempt = 0; attempt < 2; attempt++) {
+		if (await feedCard.count() > 0) {
+			await expect(feedCard.first()).toBeVisible({ timeout: 15_000 })
+			return feedCard.first()
 		}
-
-		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
-		const profileCard = page.locator(`#profileView ${sel}`)
-		const profileFound = await profileCard.isVisible({ timeout: 20_000 }).catch(() => false)
-		if (profileFound) return profileCard
-
-		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		await refreshFeed(page)
 	}
-
-	const fallback = page.locator(`.view:not(.hidden) ${sel}`)
-	await expect(fallback.first()).toBeVisible({ timeout: 15_000 })
-	return fallback.first()
+	if (allowProfileFallback) {
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		const profileCard = page.locator(`#profileView ${sel}`)
+		await expect(profileCard.first()).toBeVisible({ timeout: 15_000 })
+		return profileCard.first()
+	}
+	throw new Error(`post ${postId} not found in feed (set allowProfileFallback to search profile)`)
 }
 
 /**
@@ -250,7 +233,7 @@ export async function findPostCard(page, postId, opts = {}) {
  * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
 export async function expectPostInFeed(page, postId) {
-	return findPostCard(page, postId, { preferFeed: true })
+	return findPostCard(page, postId)
 }
 
 /**
@@ -262,7 +245,7 @@ export async function expectPostInFeed(page, postId) {
  * @returns {Promise<void>}
  */
 async function pollSearchForPost(page, query, postId, trigger) {
-	for (let attempt = 0; attempt < 8; attempt++) {
+	for (let attempt = 0; attempt < 2; attempt++) {
 		await page.locator('#feedSearchInput').fill(query)
 		const searchWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
@@ -282,9 +265,10 @@ async function pollSearchForPost(page, query, postId, trigger) {
 			})
 			return
 		}
-		await page.waitForTimeout(400)
+		if (attempt === 0)
+			await page.waitForTimeout(300)
 	}
-	await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 5_000 })
+	throw new Error(`search did not return post ${postId} for query ${query}`)
 }
 
 /**

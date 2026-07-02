@@ -68,7 +68,11 @@ foreach ($node in @($creator, $joiner)) {
 		}
 	}
 }
-Start-Sleep 2
+$dmReady = PollUntil 10 0.5 {
+	$list = Api $creator GET '/groups/'
+	$list.status -eq 200 -and @($list.json | Where-Object { $_.name -like 'DM ·*' }).Count -eq 0
+}
+if (-not $dmReady) { throw 'stale DM groups not cleaned up before test' }
 
 # 较低公钥方先建群（无需 dmIntro）；较高公钥方 join 时携带较低方的 intro 签名。
 $intro = Build-DmIntro $creator

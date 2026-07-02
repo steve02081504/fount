@@ -4,12 +4,23 @@
 		{
 			"name": "unit",
 			"run": [
-				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
+				"deno", "test", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/p2p/test/"
 			],
 			"triggers": [
 				"src/scripts/p2p/**",
 				"src/server/p2p_server/**"
+			]
+		},
+		{
+			"name": "sim",
+			"heavy": true,
+			"run": [
+				"deno", "test", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/p2p/sim/test/"
+			],
+			"triggers": [
+				"src/scripts/p2p/sim/**"
 			]
 		}
 	]

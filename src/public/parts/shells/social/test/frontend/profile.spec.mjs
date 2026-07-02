@@ -76,7 +76,7 @@ test.describe('Social profile', () => {
 		await expect(highlighted).toHaveClass(/highlight-post/)
 	})
 
-	test('follow and unfollow other profile', async ({ page, baseUrl }) => {
+	test('follow and unfollow seeded target smoke', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
 		await waitForSocialAppReady(page)
@@ -114,7 +114,7 @@ test.describe('Social profile', () => {
 		await expect(unfollowBtn).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
 	})
 
-	test('dm button navigates to chat contact link', async ({ page, baseUrl }) => {
+	test('dm button navigates to chat contact link smoke', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
 		await waitForSocialAppReady(page)
@@ -125,7 +125,7 @@ test.describe('Social profile', () => {
 		)
 	})
 
-	test('blocklist shows blocked entity and unblocks', async ({ page, baseUrl, apiKey }) => {
+	test('blocklist shows blocked entity and unblocks smoke', async ({ page, baseUrl, apiKey }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		const blockRes = await page.request.post(
 			`${baseUrl}/api/parts/shells:social/profile/block?fount-apikey=${encodeURIComponent(apiKey)}`,

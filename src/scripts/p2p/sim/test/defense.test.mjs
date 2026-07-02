@@ -66,18 +66,21 @@ Deno.test('default tunables improve sybil containment vs disabled', () => {
 		defaultSybil += runSimulation(scenario, seed, defaults).sybilContainmentRate
 		disabledSybil += runSimulation(scenario, seed, disabled).sybilContainmentRate
 	}
+	const defaultAvg = defaultSybil / 3
+	const disabledAvg = disabledSybil / 3
 	assertEquals(
-		defaultSybil / 3 >= disabledSybil / 3,
+		defaultAvg > disabledAvg,
 		true,
-		`default sybil ${defaultSybil / 3} vs disabled ${disabledSybil / 3}`,
+		`default sybil ${defaultAvg} must exceed disabled ${disabledAvg}`,
 	)
+	assertEquals(defaultAvg - disabledAvg >= 0.05, true)
 })
 
 Deno.test('sybilContainmentRate is non-trivial on sybil_heavy', () => {
 	const tunables = loadDefaultTunables()
 	const scenario = resolveScenarios('sybil_heavy')[0]
 	const snap = runSimulation(scenario, 1, tunables)
-	assertEquals(snap.sybilContainmentRate > 0, true)
+	assertEquals(snap.sybilContainmentRate >= 0.1, true)
 })
 
 /**
@@ -240,7 +243,8 @@ Deno.test('archive quorum strictMin improves defense vs permissive strictMin', (
 		strictDef += runSimulation(scenario, seed, strict).archiveDefenseRate
 	}
 
-	assertEquals(strictDef >= permissiveDef, true, `strict ${strictDef} vs permissive ${permissiveDef}`)
+	assertEquals(strictDef / 5 > permissiveDef / 5, true, `strict ${strictDef / 5} vs permissive ${permissiveDef / 5}`)
+	assertEquals((strictDef - permissiveDef) / 5 >= 0.05, true)
 })
 
 Deno.test('strictMin=1 loses archiveDefense on digest_equivocation (endogenous byzantine)', () => {

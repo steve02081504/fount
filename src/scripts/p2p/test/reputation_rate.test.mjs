@@ -17,7 +17,7 @@ Deno.test('recordMessageRateViolation awaits persistence before returning', asyn
 	try {
 		await recordMessageRateViolation(PEER, 1)
 		const score = loadReputation().byNodeHash[PEER]?.score ?? 0
-		assertEquals(score < 0, true)
+		assertEquals(score < -0.01, true)
 	}
 	finally {
 		await rm(dir, { recursive: true, force: true })

@@ -69,6 +69,12 @@ function EnsureTestChar($groupId) {
 	return $null
 }
 
+function RequireTestChar($groupId) {
+	$char = EnsureTestChar $groupId
+	if (-not $char) { throw 'test_streamer char must be available (live fixture copy failed)' }
+	return $char
+}
+
 function TriggerCharReply($groupId, $channelId, $charname) {
 	if (-not $charname) { return $false }
 	$r = Api POST "/groups/$groupId/channels/$channelId/trigger-reply" @{ charname = $charname }
@@ -112,24 +118,17 @@ Test-Case 'warm runtime (initial-data)' {
 # ---------------------------------------------------------------------------
 Write-LiveSection 'A. Channels & messages (gaps)'
 $delChId = $null
-$fbChar = EnsureTestChar $gid
-$fbMsgId = $null
-if ($fbChar) {
-	$script:fbMsgId = WaitForCharMessageId $gid $cid $fbChar 90
+$fbChar = RequireTestChar $gid
+$fbMsgId = WaitForCharMessageId $gid $cid $fbChar 90
+if (-not $fbMsgId) { throw "char message required for feedback tests (char=$fbChar)" }
+Test-Case 'PUT messages/:id/feedback up' {
+	$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'up'; content = 'helpful' }
+	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
+	[bool]$r.json.event
 }
-if ($fbMsgId) {
-	Test-Case 'PUT messages/:id/feedback up' {
-		$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'up'; content = 'helpful' }
-		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
-		[bool]$r.json.event
-	}
-	Test-Case 'PUT messages/:id/feedback down' {
-		$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'down' }
-		$r.status -eq 200 -and [bool]$r.json.event
-	}
-} else {
-	Skip-Case 'PUT messages/:id/feedback up' 'no char message for feedback'
-	Skip-Case 'PUT messages/:id/feedback down' 'no char message for feedback'
+Test-Case 'PUT messages/:id/feedback down' {
+	$r = Api PUT "/groups/$gid/channels/$cid/messages/$fbMsgId/feedback" @{ type = 'down' }
+	$r.status -eq 200 -and [bool]$r.json.event
 }
 Test-Case 'POST message (user)' {
 	$r = Api POST "/groups/$gid/channels/$cid/messages" @{ content = @{ type = 'text'; content = 'ext user msg' } }
@@ -425,22 +424,14 @@ Test-Case 'DELETE /sessions/:groupId' {
 	$r = Api DELETE "/sessions/$($script:importedGid)"
 	$r.status -eq 200
 }
-# CI-user 仅安装 test_streamer fixture，initial-data 常无默认 world/persona；有值时才测 PUT 写路径。
-if ($worldName) {
-	Test-Case 'PUT /groups/:id/world' {
-		$r = Api PUT "/groups/$gid/world" @{ worldname = $worldName; channelId = $cid }
-		$r.status -eq 200
-	}
-} else {
-	Skip-Case 'PUT /groups/:id/world' 'no default world on CI-user (initial-data.worldname null)'
+# live fixtures: worlds/test_world, personas/test_persona copied by run.mjs
+Test-Case 'PUT /groups/:id/world' {
+	$r = Api PUT "/groups/$gid/world" @{ worldname = 'test_world'; channelId = $cid }
+	$r.status -eq 200
 }
-if ($personaName) {
-	Test-Case 'PUT /groups/:id/persona' {
-		$r = Api PUT "/groups/$gid/persona" @{ personaname = $personaName }
-		$r.status -eq 200
-	}
-} else {
-	Skip-Case 'PUT /groups/:id/persona' 'no default persona on CI-user (initial-data.personaname null)'
+Test-Case 'PUT /groups/:id/persona' {
+	$r = Api PUT "/groups/$gid/persona" @{ personaname = 'test_persona' }
+	$r.status -eq 200
 }
 $pluginName = $null
 $script:pluginAddStatus = $null
@@ -452,14 +443,11 @@ foreach ($pn in @('timer', 'file-operations', 'fount-api')) {
 		break
 	}
 }
-if ($pluginName) {
-	Test-Case "POST /groups/:id/plugin ($pluginName)" { $script:pluginAddStatus -eq 200 }
-	Test-Case 'DELETE /groups/:id/plugin/:name' {
-		$r = Api DELETE "/groups/$gid/plugin/$pluginName"
-		$r.status -eq 200
-	}
-} else {
-	Skip-Case 'POST/DELETE plugin' 'no installable test plugin found'
+if (-not $pluginName) { throw 'no installable plugin (timer/file-operations/fount-api)' }
+Test-Case "POST /groups/:id/plugin ($pluginName)" { $script:pluginAddStatus -eq 200 }
+Test-Case 'DELETE /groups/:id/plugin/:name' {
+	$r = Api DELETE "/groups/$gid/plugin/$pluginName"
+	$r.status -eq 200
 }
 Test-Case 'POST /groups/leave (copy group)' {
 	if (-not $script:copyGid) { throw 'copy group missing' }
@@ -483,91 +471,76 @@ Test-Case 'POST /channels/:id/streaming-auth' {
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$r.json.mode -in @('webrtc', 'sfu')
 }
-Test-Case 'GET /channels/:id/streaming-view' {
+Test-Case 'GET /channels/:id/streaming-view (unconfigured SFU → 404)' {
 	$r = Api GET "/groups/$gid/channels/$streamChId/streaming-view"
-	# Without streamingSfuWss configured, handler returns 404 — assert expected branch
-	if ($r.status -eq 404) { return $r.raw -match 'SFU|not configured' }
-	$r.status -eq 200 -and $r.raw -match 'streaming-embed-frame|DOCTYPE'
+	$r.status -eq 404 -and $r.raw -match 'SFU|not configured'
 }
 
 # ---------------------------------------------------------------------------
 Write-LiveSection 'B. Governance — ban / unban / owner-succession / fork'
-$agentChar = $fbChar
+$agentChar = RequireTestChar $gid
 $agentKey = $null
-if (-not $agentChar) { $agentChar = EnsureTestChar $gid }
-if ($agentChar) {
-	Test-Case "agent member via POST char ($agentChar)" {
+Test-Case "agent member via POST char ($agentChar)" {
+	$s = Api GET "/groups/$gid/state"
+	$row = @($s.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
+	if (-not $row) { throw 'agent member row missing' }
+	$script:agentKey = $row.memberKey
+	[bool]$script:agentKey
+}
+Test-Case 'POST members/:key/ban (entity scope)' {
+	$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/ban" @{ banScope = 'entity' }
+	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
+	$s = Api GET "/groups/$gid/state"
+	@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
+}
+Test-Case 'ban blocks agent trigger-reply' {
+	Invoke-WithAllowedNoise -Patterns 'char not found' -Script {
+		$r = Api POST "/groups/$gid/channels/$cid/trigger-reply" @{ charname = $agentChar }
+		$r.status -ne 200
+	}
+}
+Test-Case 'POST members/:key/unban restores agent active' {
+	$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/unban" @{}
+	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
+	$ok = PollUntil {
 		$s = Api GET "/groups/$gid/state"
-		$row = @($s.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
-		if (-not $row) { throw 'agent member row missing' }
-		$script:agentKey = $row.memberKey
-		[bool]$script:agentKey
-	}
-	Test-Case 'POST members/:key/ban (entity scope)' {
-		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/ban" @{ banScope = 'entity' }
-		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
-		$s = Api GET "/groups/$gid/state"
-		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
-	}
-	Test-Case 'ban blocks agent trigger-reply' {
-		Invoke-WithAllowedNoise -Patterns 'char not found' -Script {
-			$r = Api POST "/groups/$gid/channels/$cid/trigger-reply" @{ charname = $agentChar }
-			$r.status -ne 200
+		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -ge 1
+	} 20
+	if (-not $ok) { throw 'agent not active after unban' }
+	$true
+}
+Test-Case 'POST members/:key/kick removes agent member (owner may kick own agent)' {
+	$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
+	if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
+	$s = Api GET "/groups/$gid/state"
+	@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
+}
+# 非管理员踢人（403）由 chat/test/authorize_governance.test.mjs 覆盖；单用户 live 无法构造无 ADMIN 且非 owner 的踢人场景。
+# 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
+Test-Case 'POST owner-succession (single admin → agent)' {
+	$og = Api POST '/groups/' @{ name = 'E2E-ext-os'; description = 'owner succession probe' }
+	if ($og.status -ne 201) { throw "create $($og.status): $($og.raw)" }
+	$ogid = $og.json.groupId
+	$script:createdGroups += $ogid
+	try {
+		$ac = Api POST "/groups/$ogid/char" @{ charname = $agentChar; deferGreeting = $true }
+		if (-not (OkStatus $ac.status)) { throw "char add $($ac.status)" }
+		$s0 = Api GET "/groups/$ogid/state"
+		$agentRow = @($s0.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
+		if (-not $agentRow.pubKeyHash) { throw 'agent pubKeyHash missing' }
+		$ballotId = "e2e-ext-os-$([guid]::NewGuid().ToString('N').Substring(0, 12))"
+		$r = Api POST "/groups/$ogid/owner-succession" @{
+			proposedOwnerPubKeyHash = $agentRow.pubKeyHash
+			ballotId                = $ballotId
 		}
+		if ($r.status -ne 200) { throw "succession $($r.status): $($r.raw)" }
+		if ($r.json.newOwnerPubKeyHash -ne $agentRow.pubKeyHash) { throw 'newOwnerPubKeyHash mismatch' }
+		$s1 = Api GET "/groups/$ogid/state"
+		$s1.json.state.delegatedOwnerPubKeyHash -eq $agentRow.pubKeyHash
 	}
-	Test-Case 'POST members/:key/unban' {
-		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/unban" @{}
-		if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
-		$ok = PollUntil {
-			$s = Api GET "/groups/$gid/state"
-			@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -ge 1
-		} 20
-		if (-not $ok) { throw 'agent not visible after unban' }
-		$true
+	finally {
+		Api POST '/groups/leave' @{ groupIds = @($ogid) } | Out-Null
 	}
-	Test-Case 'unban restores agent active' {
-		$ok = PollUntil {
-			$s = Api GET "/groups/$gid/state"
-			@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -ge 1
-		} 20
-		if (-not $ok) { throw 'agent member not visible after unban' }
-		$true
-	}
-	Test-Case 'POST members/:key/kick removes agent member (owner may kick own agent)' {
-		$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
-		if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
-		$s = Api GET "/groups/$gid/state"
-		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
-	}
-	# 非管理员踢人（403）由 chat/test/authorize_governance.test.mjs 覆盖；单用户 live 无法构造无 ADMIN 且非 owner 的踢人场景。
-	# 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
-	Test-Case 'POST owner-succession (single admin → agent)' {
-		$og = Api POST '/groups/' @{ name = 'E2E-ext-os'; description = 'owner succession probe' }
-		if ($og.status -ne 201) { throw "create $($og.status): $($og.raw)" }
-		$ogid = $og.json.groupId
-		$script:createdGroups += $ogid
-		try {
-			$ac = Api POST "/groups/$ogid/char" @{ charname = $agentChar; deferGreeting = $true }
-			if (-not (OkStatus $ac.status)) { throw "char add $($ac.status)" }
-			$s0 = Api GET "/groups/$ogid/state"
-			$agentRow = @($s0.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
-			if (-not $agentRow.pubKeyHash) { throw 'agent pubKeyHash missing' }
-			$ballotId = "e2e-ext-os-$([guid]::NewGuid().ToString('N').Substring(0, 12))"
-			$r = Api POST "/groups/$ogid/owner-succession" @{
-				proposedOwnerPubKeyHash = $agentRow.pubKeyHash
-				ballotId                = $ballotId
-			}
-			if ($r.status -ne 200) { throw "succession $($r.status): $($r.raw)" }
-			if ($r.json.newOwnerPubKeyHash -ne $agentRow.pubKeyHash) { throw 'newOwnerPubKeyHash mismatch' }
-			$s1 = Api GET "/groups/$ogid/state"
-			$s1.json.state.delegatedOwnerPubKeyHash -eq $agentRow.pubKeyHash
-		}
-		finally {
-			Api POST '/groups/leave' @{ groupIds = @($ogid) } | Out-Null
-		}
-	}
-} else {
-	Skip-Case 'agent member + ban/unban' 'no test char installed'
 }
 # fork/block-opposing 在独立小群上跑 HTTP smoke，避免共享 ext 群 DAG 过大导致超时。
 Test-Case 'POST fork/block-opposing with current tip (HTTP smoke)' {

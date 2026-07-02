@@ -63,6 +63,6 @@ Deno.test('reachCollapse attributed only to reach-type attacks', () => {
 	const eclipseReach = snap.byAttackImpact?.eclipse?.reachCollapse ?? 0
 	const sybilReach = snap.byAttackImpact?.sybil?.reachCollapse ?? 0
 	assertEquals(sybilReach, 0)
-	if (eclipseReach > 0)
-		assertEquals(eclipseReach > sybilReach, true)
+	assertEquals(eclipseReach > 0, true, 'spam_eclipse must produce measurable reach collapse')
+	assertEquals(eclipseReach > sybilReach, true)
 })

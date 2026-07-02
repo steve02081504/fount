@@ -12,6 +12,7 @@ import { resolveLiveNodeFleet } from 'fount/scripts/test/node/launch.mjs'
 const liveDir = dirname(fileURLToPath(import.meta.url))
 const chatBootstrap = join(liveDir, '../node_bootstrap.mjs')
 const chatFixtures = join(liveDir, 'fixtures/chars')
+const liveFixtures = join(liveDir, 'fixtures')
 
 /** 联邦 live 套件默认双节点；个别套件可声明更大 fedNodes。 */
 const FED_LIVE_MAX_NODES = 6
@@ -47,10 +48,11 @@ function chatFedNodeConfig(index, extra = {}) {
 		releasePort: releaseHeldPort(index),
 		...index === 0
 			? {
-				fixtureCopies: [{
-					from: join(chatFixtures, 'test_streamer'),
-					to: 'chars/test_streamer',
-				}],
+				fixtureCopies: [
+					{ from: join(chatFixtures, 'test_streamer'), to: 'chars/test_streamer' },
+					{ from: join(liveFixtures, 'worlds/test_world'), to: 'worlds/test_world' },
+					{ from: join(liveFixtures, 'personas/test_persona'), to: 'personas/test_persona' },
+				],
 			}
 			: {},
 		...extra,

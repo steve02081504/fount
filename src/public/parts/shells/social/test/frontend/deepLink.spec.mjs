@@ -20,13 +20,14 @@ test.describe('Social deep links', () => {
 		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
-	test('query param q opens search', async ({ page, baseUrl, publishPost }) => {
+	test('query param q opens search with target post', async ({ page, baseUrl, publishPost }) => {
 		await openSocialHome(page, baseUrl)
 		const tag = `qparam${Date.now()}`
-		await publishPost(`query search #${tag}`)
+		const { postId } = await publishPost(`query search #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/?q=${encodeURIComponent(`#${tag}`)}`)
 		await waitForSocialAppReady(page)
 		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
 	test('profile hash without post id', async ({ page, baseUrl, apiKey }) => {
