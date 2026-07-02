@@ -69,7 +69,7 @@ Deno.test('collectKnownPeerNodeHashes collects active member home nodes excludin
 
 Deno.test('collectKnownPeerNodeHashes prefers roster peers over stale member home nodes', () => {
 	const stale = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-	const online = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+	const online = 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'
 	const state = {
 		members: {
 			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
