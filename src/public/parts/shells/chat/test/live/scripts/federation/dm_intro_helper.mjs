@@ -47,21 +47,17 @@ function resolveUserDictionary(root, username) {
 }
 
 /**
- * 从磁盘读取联邦 identity 密钥对（operator.json 为现行存储；federation.json 仅作旧数据回退）。
+ * 从磁盘读取联邦活跃 operator 密钥对（operator.json）。
  * @param {string} userDir 用户目录
- * @returns {{ identityPubKeyHex: string, secretHex: string }} 联邦 identity
+ * @returns {{ activePubKeyHex: string, secretHex: string }} 联邦活跃钥
  */
 function loadFederationIdentity(userDir) {
 	const operator = loadJsonFileIfExists(path.join(userDir, 'settings', 'operator.json'), {})
 	const activePub = normalizeHex64(operator.activePubKeyHex)
 	const activeSecret = normalizeHex64(operator.activeSecretKeyHex)
 	if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)
-		return { identityPubKeyHex: activePub, secretHex: activeSecret }
-	const legacy = loadJsonFileIfExists(path.join(userDir, 'settings', 'federation.json'), {})
-	return {
-		identityPubKeyHex: normalizeHex64(legacy.identityPubKeyHex),
-		secretHex: normalizeHex64(legacy.identitySecretKeyHex),
-	}
+		return { activePubKeyHex: activePub, secretHex: activeSecret }
+	throw new Error('operator active key missing')
 }
 
 /**
@@ -81,25 +77,25 @@ function loadOrCreateDmIntroNonce(userDir) {
 }
 
 const userDir = resolveUserDictionary(dataPath, user)
-const { identityPubKeyHex, secretHex } = loadFederationIdentity(userDir)
-if (!HEX_ID_64.test(identityPubKeyHex) || secretHex.length < 64) {
-	console.error('identity secret missing for user', user)
+const { activePubKeyHex, secretHex } = loadFederationIdentity(userDir)
+if (!HEX_ID_64.test(activePubKeyHex) || secretHex.length < 64) {
+	console.error('active operator secret missing for user', user)
 	process.exit(1)
 }
 
 const nonce = loadOrCreateDmIntroNonce(userDir)
 const secretKey32 = Buffer.from(secretHex, 'hex').subarray(0, 32)
 const introSignatureHex = Buffer.from(
-	await sign(dmLinkSignableBytes(identityPubKeyHex, nonce), secretKey32),
+	await sign(dmLinkSignableBytes(activePubKeyHex, nonce), secretKey32),
 ).toString('hex')
 const url = formatDmRunUri({
-	pubKeyHex: identityPubKeyHex,
+	pubKeyHex: activePubKeyHex,
 	nonceBase64Url: nonce,
 	introSignatureHex,
 })
 
 console.log(JSON.stringify({
-	pubKeyHex: identityPubKeyHex,
+	pubKeyHex: activePubKeyHex,
 	dmIntroNonce: nonce,
 	dmIntroSignatureHex: introSignatureHex,
 	url,

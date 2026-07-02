@@ -8,7 +8,7 @@ $gid = $null; $cid = $null
 function Get-Identity($node) {
 	$r = P2pApi $node GET '/federation'
 	if ($r.status -ne 200) { throw "federation GET $($r.status)" }
-	$r.json.identityPubKeyHex.ToLower()
+	$r.json.activePubKeyHex.ToLower()
 }
 
 function Get-WhoamiUser($node) {

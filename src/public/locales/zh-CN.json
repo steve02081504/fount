@@ -2276,7 +2276,7 @@
 				"dmChar": "与角色私聊",
 				"dmUser": "发送私信",
 				"dmFed": "联邦私信",
-				"noFedIdentity": "请先在联邦设置中配置本机 identityPubKeyHex",
+				"noFedIdentity": "请先在联邦设置中配置本机 activePubKeyHex",
 				"peerNoIdentity": "对方无联邦身份，无法发起联邦私信",
 				"dmFailed": "无法打开私信：${error}",
 				"tagChar": "AI 角色",

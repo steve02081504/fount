@@ -163,7 +163,7 @@ export function registerMembershipRoutes(router, authenticate) {
 				bootstrap.dmSessionTag = hintedSessionTag
 			else if (dmNonce) {
 				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
-				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).identityPubKeyHex)
+				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).activePubKeyHex)
 				if (PUB_KEY_HEX_64.test(introPubKeyHex) && PUB_KEY_HEX_64.test(myPubKeyHex) && introPubKeyHex !== myPubKeyHex)
 					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
 			}

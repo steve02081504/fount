@@ -55,8 +55,6 @@ export function registerP2pEndpoints(router) {
 		if (body.batterySaver != null) patch.batterySaver = !!body.batterySaver
 		if (Array.isArray(body.relayUrls)) patch.relayUrls = body.relayUrls
 		if (body.mailbox) patch.mailbox = body.mailbox
-		const identityPubKeyHex = String(body.identityPubKeyHex || '').trim().toLowerCase().replace(/^0x/iu, '')
-		if (isHex64(identityPubKeyHex)) patch.identityPubKeyHex = identityPubKeyHex
 		const dmIntroNonce = String(body.dmIntroNonce || '').trim()
 		if (dmIntroNonce.length >= 16) patch.dmIntroNonce = dmIntroNonce
 		res.status(200).json(await saveFederationViewForUser(username, patch))

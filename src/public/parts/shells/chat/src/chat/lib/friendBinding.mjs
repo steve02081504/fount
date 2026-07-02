@@ -2,7 +2,12 @@
  * 服务端好友绑定（与 `public/src/friendBinding.mjs` 同源，digest 走 entityIdCore）。
  */
 import { isEntityHash128 } from './entityHash.mjs'
-import { agentEntityHash, userEntityHashFromPubKeyHex } from './entityIdCore.mjs'
+import {
+	agentEntityHash,
+	hashFromPubKeyHex,
+	userEntityHashFromRecoveryPubKeyHex,
+	userEntityHashFromSubjectHash,
+} from './entityIdCore.mjs'
 import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
 
 
@@ -45,7 +50,11 @@ export async function buildCharFriendBinding(nodeHash, charname, displayName) {
 /**
  * @param {object} peer 对端
  * @param {string} [peer.entityHash] 已有 128 位 entityHash
- * @param {string} [peer.pubKeyHex] 对端公钥（无 entityHash 时推导）
+ * @param {string} [peer.nodeHash] 对端 nodeHash（64 hex）
+ * @param {string} [peer.recoveryPubKeyHex] recovery 公钥 hex
+ * @param {string} [peer.subjectHash] 成员 pubKeyHash（64 hex）
+ * @param {string} [peer.pubKeyHash] 同 subjectHash
+ * @param {string} [peer.pubKeyHex] 活跃公钥 hex（与 nodeHash 组合时派生 subjectHash）
  * @param {string} [peer.displayName] 展示名
  * @returns {Promise<FriendBinding>} 用户 federation 绑定（无 `charname`）
  */
@@ -57,10 +66,24 @@ export async function buildUserFriendBinding(peer) {
 			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
 		}
 
-	const pubKeyHex = normalizeHex64(peer?.pubKeyHex || '')
-	if (!isHex64(pubKeyHex)) throw new Error('peer entityHash or pubKeyHex required')
-	return {
-		entityHash: await userEntityHashFromPubKeyHex(pubKeyHex, pubKeyHex),
-		...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
+	const nodeHash = normalizeHex64(peer?.nodeHash || '')
+	const recoveryPubKeyHex = normalizeHex64(peer?.recoveryPubKeyHex || '')
+	if (isHex64(nodeHash) && isHex64(recoveryPubKeyHex))
+		return {
+			entityHash: await userEntityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex),
+			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
+		}
+
+	let subjectHash = normalizeHex64(peer?.subjectHash || peer?.pubKeyHash || '')
+	if (!isHex64(subjectHash)) {
+		const pubKeyHex = normalizeHex64(peer?.pubKeyHex || '')
+		if (isHex64(pubKeyHex)) subjectHash = await hashFromPubKeyHex(pubKeyHex)
 	}
+	if (isHex64(nodeHash) && isHex64(subjectHash))
+		return {
+			entityHash: userEntityHashFromSubjectHash(nodeHash, subjectHash),
+			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
+		}
+
+	throw new Error('peer entityHash, or nodeHash with recoveryPubKeyHex/subjectHash required')
 }

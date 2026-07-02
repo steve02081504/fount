@@ -187,7 +187,7 @@ function wireFederationModalEvents(groupId) {
 	document.getElementById('federation-dm-rotate')?.addEventListener('click', async () => {
 		const pubKeyHex = normalizeHex64(document.getElementById('federation-dm-pubkey')?.value || '')
 		try {
-			const nonce = await rotateDmLinkAndSync({ identityPubKeyHex: pubKeyHex || undefined })
+			const nonce = await rotateDmLinkAndSync()
 			showToastI18n('success', 'chat.hub.fedNonceRotated', { nonce: nonce.slice(0, 12) })
 		}
 		catch (error) {

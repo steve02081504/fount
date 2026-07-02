@@ -31,7 +31,7 @@ Write-Host "`n=== P2P warmup ===" -ForegroundColor Cyan
 Test-Case 'federation identity ready on A/B' {
 	$fa = P2pApi $FedA GET '/federation'
 	$fb = P2pApi $FedB GET '/federation'
-	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.identityPubKeyHex -and $fb.json.identityPubKeyHex
+	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.activePubKeyHex -and $fb.json.activePubKeyHex
 }
 Start-Sleep 5
 

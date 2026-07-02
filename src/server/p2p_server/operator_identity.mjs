@@ -214,15 +214,6 @@ export async function commitActiveKeyRotation(username, patch) {
 
 /**
  * @param {string} username fount 登录名
- * @param {object} patch revoke 后新活跃钥
- * @returns {Promise<object>} 更新后的 operator.json
- */
-export async function commitActiveKeyRevoke(username, patch) {
-	return commitActiveKeyRotation(username, patch)
-}
-
-/**
- * @param {string} username fount 登录名
  * @returns {object} 节点传输 + operator 公钥（HTTP federation GET 体）
  */
 export async function getFederationViewForUser(username) {
@@ -236,7 +227,6 @@ export async function getFederationViewForUser(username) {
 		mailbox: transport.mailbox,
 		recoveryPubKeyHex: normalizeHex64(row.recoveryPubKeyHex),
 		activePubKeyHex: normalizeHex64(row.activePubKeyHex),
-		identityPubKeyHex: normalizeHex64(row.activePubKeyHex),
 		keyGeneration: Number(row.keyGeneration ?? 0),
 	}
 }

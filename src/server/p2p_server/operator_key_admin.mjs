@@ -9,7 +9,6 @@ import {
 } from '../../scripts/p2p/timeline/operator_key_commit.mjs'
 
 import {
-	commitActiveKeyRevoke,
 	commitActiveKeyRotation as persistActiveRotation,
 	generateNextActiveKeyPair,
 	getFederationViewForUser,
@@ -59,6 +58,6 @@ export async function revokeOperatorActiveKey(username, body) {
 		...revokeBody,
 		recoverySignature: Buffer.from(signature).toString('hex'),
 	}, recoverySecret)
-	await commitActiveKeyRevoke(username, rotation)
+	await persistActiveRotation(username, rotation)
 	return getFederationViewForUser(username)
 }

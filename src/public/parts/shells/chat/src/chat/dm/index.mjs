@@ -19,7 +19,6 @@ import { catchUpGroupFromPeers } from '../federation/index.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
 import { buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
 import { initGroupFileMasterKey, getCurrentFileMasterKey } from '../file_keys/store.mjs'
-import { buildUserFriendBinding } from '../lib/friendBinding.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
@@ -92,10 +91,6 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 			dmPubKeyHigh: high,
 			dmPeerPubKeyHex: peerPubKey,
 			dmMyPubKeyHex: myPubKey,
-			friendBinding: buildUserFriendBinding({
-				pubKeyHex: peerPubKey,
-				displayName: `DM · ${dmRoomLabelPrefix}`,
-			}),
 		},
 	}, batchOpts)
 
@@ -168,9 +163,9 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 	const dmCheck = await validateDmIntroLinkProof(username, { members: {} }, introPubKey, nonce, signatureHex)
 	if (!dmCheck.ok) throw new Error(dmCheck.error)
 
-	const { identityPubKeyHex: myPubKey } = await getFederationSettings(username)
+	const { activePubKeyHex: myPubKey } = await getFederationSettings(username)
 	if (!PUB_KEY_HEX_64.test(myPubKey))
-		throw new Error('configure identityPubKeyHex in federation settings before opening DM links')
+		throw new Error('configure activePubKeyHex in federation settings before opening DM links')
 
 	const myPubKeyNormalized = normalizePubKeyHex(myPubKey)
 	const { dmSessionTag } = computeDmRoomLabelFromPubKeys(myPubKeyNormalized, introPubKey)

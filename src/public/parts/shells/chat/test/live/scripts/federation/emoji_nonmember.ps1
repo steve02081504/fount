@@ -10,7 +10,7 @@ Test-Case 'federation identity ready on A/B' {
 	$fa = P2pApi $FedA GET '/federation'
 	$fb = P2pApi $FedB GET '/federation'
 	$script:aNodeHash = $fa.json.nodeHash
-	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.identityPubKeyHex -and $fb.json.identityPubKeyHex
+	$fa.status -eq 200 -and $fb.status -eq 200 -and $fa.json.activePubKeyHex -and $fb.json.activePubKeyHex
 }
 	if ($script:aNodeHash) {
 		P2pApi $FedB POST '/federation/connect-node' @{ targetNodeHash = $script:aNodeHash } | Out-Null

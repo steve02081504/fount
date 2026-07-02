@@ -56,9 +56,18 @@ export async function agentEntityHash(nodeHash, charPartPath) {
 
 /**
  * @param {string} nodeHash 成员所属节点 hash
- * @param {string} pubKeyHex 32 字节公钥 hex
+ * @param {string} recoveryPubKeyHex 32 字节 recovery 公钥 hex（稳定身份锚）
  * @returns {Promise<string>} user entityHash
  */
-export async function userEntityHashFromPubKeyHex(nodeHash, pubKeyHex) {
-	return encodeEntityHash(nodeHash, await hashFromPubKeyHex(pubKeyHex))
+export async function userEntityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex) {
+	return encodeEntityHash(nodeHash, await hashFromPubKeyHex(recoveryPubKeyHex))
+}
+
+/**
+ * @param {string} nodeHash 成员所属节点 hash
+ * @param {string} subjectHash 成员签名 pubKeyHash（64 hex）
+ * @returns {string} user entityHash
+ */
+export function userEntityHashFromSubjectHash(nodeHash, subjectHash) {
+	return encodeEntityHash(nodeHash, subjectHash)
 }

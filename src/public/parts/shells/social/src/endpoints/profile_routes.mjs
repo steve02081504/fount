@@ -160,7 +160,7 @@ export function registerProfileRoutes(router) {
 			await dispatchFollowEvent(username, self, target)
 			const targetEntity = await resolveSocialEntity(target)
 			if (targetEntity?.local && targetEntity.replicaUsername) {
-				const followerPubKeyHex = (await getFederationViewForUser(username)).identityPubKeyHex
+				const followerPubKeyHex = (await getFederationViewForUser(username)).activePubKeyHex
 				if (followerPubKeyHex)
 					await autoApproveFollower(targetEntity.replicaUsername, target, followerPubKeyHex)
 			}
