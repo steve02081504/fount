@@ -236,6 +236,15 @@ export async function runTests(options = {}) {
 
 	if (!selected.length) {
 		console.logI18n('fountConsole.test.noMatchingSuites')
+		if (options.suiteSelectors?.length) {
+			const scope = manifestIds?.length
+				? allSuites.filter(s => manifestIds.includes(s.manifestId))
+				: allSuites
+			console.errorI18n('fountConsole.test.available', {
+				ids: scope.map(s => s.id).join(', '),
+			})
+			return 2
+		}
 		return 0
 	}
 

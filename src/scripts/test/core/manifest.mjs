@@ -150,13 +150,26 @@ export function selectSuitesByDiff(mode, files, allSuites) {
 }
 
 /**
- * suite 是否匹配指名 selector（id 或 name）。
+ * suite 是否匹配指名 selector（id 或 name；支持 glob 与前缀展开）。
  * @param {SuiteDef} suite suite
  * @param {string} selector 指名
  * @returns {boolean} 是否匹配
  */
 export function suiteMatchesSelector(suite, selector) {
-	return suite.id === selector || suite.name === selector
+	const sel = selector.trim()
+	if (!sel) return false
+
+	const fields = [suite.id, suite.name]
+	if (fields.some(field => field === sel)) return true
+
+	/** @type {string[]} */
+	const patterns = []
+	if (sel.includes('*') || sel.includes('?'))
+		patterns.push(sel)
+	else
+		patterns.push(`${sel}*`, `${sel}_*`)
+
+	return patterns.some(pat => fields.some(field => matchGlob(pat, field)))
 }
 
 /**
