@@ -101,5 +101,5 @@ Deno.test('owner sees own followers-only post decrypted on profile feed', async 
 	const { items } = await feed.buildProfileFeedItems(username, operator)
 	const followersItem = items.find(row => row.post?.content?.text === 'followers encrypted')
 	assert(followersItem, 'owner must decrypt followers-only post to plaintext on profile feed')
-	assert.equal(followersItem.post.content.visibility, 'followers')
+	assertEquals(followersItem.post.content.visibility, 'followers')
 })

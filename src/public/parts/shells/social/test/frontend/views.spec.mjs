@@ -65,7 +65,7 @@ test.describe('Social secondary views', () => {
 
 	test('reply generates notification', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`notif-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId)
+		const card = await findPostCard(page, postId, { allowProfileFallback: true })
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
@@ -78,7 +78,7 @@ test.describe('Social secondary views', () => {
 
 	test('notification view link opens profile', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`notif-link ${Date.now()}`)
-		const card = await findPostCard(page, postId)
+		const card = await findPostCard(page, postId, { allowProfileFallback: true })
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
@@ -95,7 +95,7 @@ test.describe('Social secondary views', () => {
 
 	test('notifications mark all read clears badge', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`markall-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId)
+		const card = await findPostCard(page, postId, { allowProfileFallback: true })
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
@@ -109,7 +109,7 @@ test.describe('Social secondary views', () => {
 
 	test('notification badge shows unread count before opening view', async ({ page, baseUrl, publishPost }) => {
 		const { postId } = await publishPost(`badge-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId)
+		const card = await findPostCard(page, postId, { allowProfileFallback: true })
 		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
 		await card.locator('[data-replies]').click()
 		const panel = page.locator(`[data-replies-for="${actionKey}"]`)
