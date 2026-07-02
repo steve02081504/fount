@@ -80,7 +80,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		await decayAfterSlash()
 		if (signPayload.type === 'member_ban') {
 			const { blockEntriesFromBanContent } = await import('../governance/banRules.mjs')
-			const { addGroupBlockedPeers, addBlocklistFromBanContent } = await import('../../../../../../../scripts/p2p/blocklist.mjs')
+			const { addGroupBlockedPeers, addDenylistFromBanContent } = await import('../../../../../../../scripts/p2p/denylist.mjs')
 			const state = await materializedState()
 			const entries = blockEntriesFromBanContent(signPayload.content)
 			const targetKey = resolveTargetMemberKey(signPayload.content)
@@ -88,7 +88,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 			if (isHex64(home) && !entries.some(entry => entry.scope === 'node' && entry.value === home))
 				entries.push({ scope: 'node', value: home })
 			addGroupBlockedPeers(groupId, entries)
-			await addBlocklistFromBanContent(signPayload.content, groupId)
+			await addDenylistFromBanContent(signPayload.content, groupId)
 			void import('../federation/shun.mjs')
 				.then(({ notifyFedShunAfterMemberBan }) => notifyFedShunAfterMemberBan(username, groupId, signPayload))
 				.catch(console.error)

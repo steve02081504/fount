@@ -8,7 +8,7 @@ import {
 	computeEventId,
 	signPayloadBytes,
 } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import {
 	classifyHlcSkewAction,
 	resolveHlcMaxSkewMs,

@@ -8,7 +8,7 @@ import { SOCIAL_TIMELINE_ROW_OPTS } from '../dag/canonicalize_presets.mjs'
 import { canonicalizeSignedRow } from '../dag/canonicalizeRow.mjs'
 import { appendJsonlSynced, readJsonl } from '../dag/storage.mjs'
 import { parseEntityHash } from '../entity_id.mjs'
-import { getNodeHash } from '../node_context.mjs'
+import { getNodeHash } from '../node/identity.mjs'
 import { publishTimelineEvent } from '../part_wire.mjs'
 import { timelineGroupId } from '../social_namespace.mjs'
 

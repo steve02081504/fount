@@ -5,7 +5,7 @@
  * 【数据结构】FederationDagDeps：nodeId、readJsonl、appendValidatedRemoteEvent、ingestRemoteEvent、可选 getStateForFederation；物化 state 含 members、groupSettings、channels。
  * 【关联】dag/index.mjs、materialize.mjs、remoteIngest.mjs；被 room、gossip、index、volatile 等广泛引用。
  */
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 
 /**
  * @typedef {{

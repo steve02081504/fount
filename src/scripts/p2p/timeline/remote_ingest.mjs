@@ -1,8 +1,8 @@
 /**
  * Social 时间线远程入站验证链（不含磁盘写入）。
  */
-import { isPubKeyHashBlocked } from '../blocklist.mjs'
 import { computeEventId, eventBodyForSign } from '../dag/index.mjs'
+import { isPubKeyHashBlocked } from '../denylist.mjs'
 import { SOCIAL_TIMELINE_EVENT_TYPES, timelineGroupId } from '../social_namespace.mjs'
 
 import { verifyTimelineRemoteSignature } from './verify_remote.mjs'

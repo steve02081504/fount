@@ -1,4 +1,4 @@
-import { loadBlocklist } from './blocklist.mjs'
+import { loadDenylist } from './denylist.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 import { isNodeInitialized } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
@@ -19,25 +19,6 @@ const MAX_EXPLORE = 500
 const MAX_HINTS = 256
 const MAX_HINTS_PER_SOURCE = 12
 const DEFAULT_EXPLORE_TTL_MS = 7 * 24 * 60 * 60 * 1000
-const NETWORK_SAVE_DEBOUNCE_MS = 300
-
-/** @type {ReturnType<typeof setTimeout> | null} */
-let networkSaveTimer = null
-
-/**
- * 防抖落盘 network.json，避免 roster 高频变动阻塞主线程。
- * @returns {void}
- */
-function scheduleNetworkSave() {
-	if (networkSaveTimer) return
-	networkSaveTimer = setTimeout(() => {
-		networkSaveTimer = null
-		const data = readNodeJsonSync(DATA_NAME)
-		if (data) writeNodeJsonSync(DATA_NAME, data)
-		invalidateTrustGraphCache()
-	}, NETWORK_SAVE_DEBOUNCE_MS)
-	if (typeof networkSaveTimer.unref === 'function') networkSaveTimer.unref()
-}
 
 /**
  * @typedef {{ nodeHash: string, source: string, kind: string, weight?: number, expiresAt: number, groupId?: string }} NetworkHint
@@ -113,7 +94,7 @@ export function saveNetwork(data) {
 	clean.hints = capHintsBySource(clean.hints.filter(h => !h.expiresAt || h.expiresAt > now)).slice(-MAX_HINTS)
 	clean.explorePeers = clean.explorePeers.slice(-MAX_EXPLORE)
 	writeNodeJsonSync(DATA_NAME, clean)
-	scheduleNetworkSave()
+	invalidateTrustGraphCache()
 }
 
 /**
@@ -243,14 +224,14 @@ export function mergeTrustedPeers(nodeHashes) {
 }
 
 /**
- * 节点级 network + 群 scope blocklist 视图（供 peer_pool 选取）。
+ * 节点级 network + 群 scope denylist 视图（供 peer_pool 选取）。
  * @param {string} [groupId] 群 scope；空则仅全局拉黑
  * @returns {PeerPoolView} 连接池视图
  */
 export function loadPeerPoolView(groupId = '') {
 	const net = loadNetwork()
 	const gid = String(groupId || '').trim()
-	const blockedPeers = loadBlocklist().blocked
+	const blockedPeers = loadDenylist().blocked
 		.filter(entry => !entry.groupId || !gid || entry.groupId === gid)
 		.map(entry => entry.value)
 	/** @type {Map<string, string>} */

@@ -4,7 +4,7 @@ import {
 	deleteMailboxRecords,
 	takeMailboxForRecipient,
 } from '../../../../../../../scripts/p2p/mailbox/store.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { appendValidatedRemoteEvent } from '../dag/remoteIngest.mjs'
 

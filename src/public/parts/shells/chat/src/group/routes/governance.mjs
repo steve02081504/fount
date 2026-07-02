@@ -7,7 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { addBlocklistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/blocklist.mjs'
+import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { pubKeyHash } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from '../../../../../../../scripts/p2p/key_crypto.mjs'
@@ -299,7 +299,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				content: banContent,
 			})
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
-			await addBlocklistFromBanContent(banContent, groupId)
+			await addDenylistFromBanContent(banContent, groupId)
 			return res.status(200).json({})
 		}
 

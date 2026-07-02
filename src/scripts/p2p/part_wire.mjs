@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { dispatchDeliveryInbound, dispatchRpcInbound } from './inbound_registry.mjs'
-import { getNodeHash } from './node_context.mjs'
+import { getNodeHash } from './node/identity.mjs'
 import {
 	isPartInvoke,
 	isPartInvokeResponse,
@@ -12,6 +12,13 @@ import { getShellPartpath } from './part_path_registry.mjs'
 import { isPlainObject } from './wire_ingress.mjs'
 
 /** @typedef {import('./part_invoke.mjs').PartInvokeResponse} PartInvokeResponse */
+
+/** 时间线 part_timeline_put fanout 上限 */
+export const TIMELINE_FANOUT_LIMIT = 8
+/** part_invoke RPC collect 默认响应数 */
+export const PART_INVOKE_FANOUT_DEFAULT = 6
+/** User Room 随机 peer 转发默认上限 */
+export const USER_ROOM_PEER_FANOUT_DEFAULT = 6
 
 /** @type {Map<string, { responses: PartInvokeResponse[], finish: () => void, maxResponses: number, respondedPeers: Set<string> }>} */
 const pendingPartInvoke = new Map()
@@ -227,7 +234,7 @@ export function partInvokeErrorMessages(results) {
  * @param {number} [maxResponses=6] 最多响应数
  * @returns {Promise<PartInvokeResponse[]>} 邻居 PartInvokeResponse（含 error）
  */
-export async function collectPartInvokeResponses(username, partpath, invoke, timeoutMs = 2500, maxResponses = 6) {
+export async function collectPartInvokeResponses(username, partpath, invoke, timeoutMs = 2500, maxResponses = PART_INVOKE_FANOUT_DEFAULT) {
 	const { fanoutToTopNodes } = await import('./trust_graph.mjs')
 	const requestId = randomUUID()
 	const nodeHash = getNodeHash()
@@ -267,7 +274,7 @@ export async function collectPartInvokeResponses(username, partpath, invoke, tim
  * @param {number} [maxResponses=6] 最多响应数
  * @returns {Promise<PartInvokeResponse[]>} 邻居 PartInvokeResponse
  */
-export function collectSocialRpcResponses(username, rpc, timeoutMs = 2500, maxResponses = 6) {
+export function collectSocialRpcResponses(username, rpc, timeoutMs = 2500, maxResponses = PART_INVOKE_FANOUT_DEFAULT) {
 	return collectPartInvokeResponses(username, getShellPartpath('social'), wrapSocialRpc(rpc), timeoutMs, maxResponses)
 }
 
@@ -278,7 +285,7 @@ export function collectSocialRpcResponses(username, rpc, timeoutMs = 2500, maxRe
  * @param {number} [maxResponses=6] 最多响应数
  * @returns {Promise<{ data: object[], errors: string[] }>} 成功 data 与邻居 error
  */
-export async function collectSocialRpcMerged(username, rpc, timeoutMs = 2500, maxResponses = 6) {
+export async function collectSocialRpcMerged(username, rpc, timeoutMs = 2500, maxResponses = PART_INVOKE_FANOUT_DEFAULT) {
 	const results = await collectSocialRpcResponses(username, rpc, timeoutMs, maxResponses)
 	return { data: partInvokeDataRows(results), errors: partInvokeErrorMessages(results) }
 }
@@ -304,7 +311,7 @@ export async function publishTimelineEvent(username, entityHash, signedEvent) {
 		partpath: getShellPartpath('social'),
 		timelineEntityHash: entityHash.toLowerCase(),
 		event: signedEvent,
-	}, 8)
+	}, TIMELINE_FANOUT_LIMIT)
 }
 
 /**

@@ -6,7 +6,7 @@
  * 【关联】`../federation/deps.mjs`、`materialize.mjs`、`remoteIngest.mjs`、`storage.mjs`。
  */
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import { initFederationDagDeps } from '../federation/deps.mjs'
 
 

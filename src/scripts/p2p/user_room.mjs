@@ -181,3 +181,37 @@ export function invalidateUserRoom() {
 	userRoomSlot = null
 	userRoomInflight = null
 }
+
+/**
+ * @param {string} username replica
+ * @param {string} actionName Trystero action
+ * @param {unknown} payload 载荷
+ * @param {string | null} [exceptPeerId] 跳过的 peer
+ * @param {number} [limit] 最多转发 peer 数
+ * @returns {Promise<number>} 实际转发的 peer 数
+ */
+export async function deliverToUserRoomPeers(username, actionName, payload, exceptPeerId = null, limit) {
+	const { USER_ROOM_PEER_FANOUT_DEFAULT } = await import('./part_wire.mjs')
+	const fanoutLimit = limit ?? USER_ROOM_PEER_FANOUT_DEFAULT
+	const slot = await ensureUserRoom({ replicaUsername: username })
+	if (!slot) return 0
+	const body = { ...payload, nodeHash: getNodeHash() }
+	let sent = 0
+	const peers = [...slot.getRoster()
+		.filter(({ peerId }) => peerId && peerId !== exceptPeerId)]
+	for (let swapIndex = peers.length - 1; swapIndex > 0; swapIndex--) {
+		const pickIndex = Math.floor(Math.random() * (swapIndex + 1))
+		const tmp = peers[swapIndex]
+		peers[swapIndex] = peers[pickIndex]
+		peers[pickIndex] = tmp
+	}
+	for (const { peerId } of peers)
+		try {
+			slot.sendToPeer(peerId, actionName, body)
+			sent++
+			if (sent >= fanoutLimit) break
+		}
+		catch { /* disconnected */ }
+
+	return sent
+}

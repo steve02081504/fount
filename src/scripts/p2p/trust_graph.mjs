@@ -1,14 +1,14 @@
-import { isPeerKeyBlocked, isSubjectBlocked } from './blocklist.mjs'
+import { isPeerKeyBlocked, isSubjectBlocked } from './denylist.mjs'
+import { isHex64, normalizeHex64 } from './hexIds.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
 import { loadNetwork } from './network.mjs'
-import { getNodeHash } from './node_context.mjs'
+import { getNodeHash } from './node/identity.mjs'
 import { isQuarantinedPure } from './reputation_engine.mjs'
 import { loadReputation } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
 import { getCachedTrustGraph } from './trust_graph_cache.mjs'
 import { mergeGraph, pickTopFromGraph } from './trust_graph_engine.mjs'
-import { registerTrustGraphProvider } from './trust_graph_registry.mjs'
 import { resolveFederationFanoutTopK } from './tunables_resolve.mjs'
 import { ensureUserRoom } from './user_room.mjs'
 
@@ -95,8 +95,10 @@ export async function buildMergedGraph(username) {
  * @returns {Promise<boolean>} 是否已发送
  */
 export async function sendToNode(username, targetNodeHash, actionName, payload) {
+	const target = normalizeHex64(targetNodeHash) || String(targetNodeHash || '').trim().toLowerCase()
+	if (!isHex64(target)) return false
 	await ensureUserRoom({ replicaUsername: username })
-	const targetNode = (await buildMergedGraph(username)).get(targetNodeHash)
+	const targetNode = (await buildMergedGraph(username)).get(target)
 	if (!targetNode?.scopeIds.length) return false
 	const selfNodeHash = getNodeHash()
 
@@ -105,7 +107,7 @@ export async function sendToNode(username, targetNodeHash, actionName, payload) 
 	const groupRooms = rooms.filter(room => room.groupId !== USER_ROOM_SCOPE)
 
 	for (const userRoom of userRooms) {
-		const peerId = userRoom.getPeerIdByNodeHash(targetNodeHash)
+		const peerId = userRoom.getPeerIdByNodeHash(target)
 		if (peerId) {
 			userRoom.sendToPeer(peerId, actionName, payload)
 			return true
@@ -173,4 +175,3 @@ export function createDefaultTrustGraphProvider() {
 	}
 }
 
-registerTrustGraphProvider('default', createDefaultTrustGraphProvider())

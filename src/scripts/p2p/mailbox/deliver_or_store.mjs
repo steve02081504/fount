@@ -1,10 +1,9 @@
-import { deliver, deliverToUserRoomPeers } from '../deliver.mjs'
 import { normalizeHex64 } from '../hexIds.mjs'
 import { allowMailboxRelayForTier } from '../mailbox_importance.mjs'
 import { takeIncomingMailboxPutSlot } from '../mailbox_rate.mjs'
-import { getNodeTransportSettings } from '../node/identity.mjs'
-import { getNodeHash } from '../node_context.mjs'
-import { ensureUserRoom } from '../user_room.mjs'
+import { getNodeTransportSettings, getNodeHash } from '../node/identity.mjs'
+import { sendToNode } from '../trust_graph.mjs'
+import { deliverToUserRoomPeers, ensureUserRoom } from '../user_room.mjs'
 
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
 import {
@@ -81,7 +80,7 @@ export async function deliverOrStoreMailboxPut(username, opts) {
 	const stored = await storeMailboxRecord(record)
 	const toNodeHash = opts.toNodeHash?.trim().toLowerCase()
 	const delivered = toNodeHash && isMailboxRecordWithinSizeLimit(record)
-		? await deliver(username, toNodeHash, 'mailbox_put', { nodeHash, record })
+		? await sendToNode(username, toNodeHash, 'mailbox_put', { nodeHash, record })
 		: false
 
 	let relayed = 0

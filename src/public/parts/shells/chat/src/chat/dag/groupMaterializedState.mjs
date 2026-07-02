@@ -46,10 +46,10 @@ export const DEFAULT_GROUP_SETTINGS = {
 	slashAlertTtl: 86_400_000,
 	batterySaver: false,
 	autoReplyFrequency: 0,
-	event_retention_depth: 200_000,
-	event_retention_ms: 365 * 24 * 3600 * 1000,
+	eventRetentionDepth: 200_000,
+	eventRetentionMs: 365 * 24 * 3600 * 1000,
 	/** 0 = 不自动删除消息正文；>0 时按毫秒裁 `messages/*.jsonl` */
-	message_content_retention_ms: 0,
+	messageContentRetentionMs: 0,
 	compactTriggerEventDepth: 100_000,
 	/** 热区：每频道保留时间最新的 N 帖 eventId */
 	hotLatestMessageCount: 50,

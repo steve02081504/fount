@@ -45,7 +45,7 @@ function Reset-FedNodeBlocklist($node) {
 		if (-not $dataPath.Trim()) { return }
 		$nodeDir = Join-Path $dataPath 'p2p/node'
 		New-Item -ItemType Directory -Path $nodeDir -Force | Out-Null
-		$blocklistPath = Join-Path $nodeDir 'blocklist.json'
+		$blocklistPath = Join-Path $nodeDir 'denylist.json'
 		'{"blocked":[]}' | Set-Content -Path $blocklistPath -Encoding UTF8
 	}
 	catch {

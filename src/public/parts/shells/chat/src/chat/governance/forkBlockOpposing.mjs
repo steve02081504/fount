@@ -2,9 +2,9 @@
  * 【文件】governance/forkBlockOpposing.mjs
  * 【职责】采纳某 DAG tip 后，对立分支上治理授权类事件签发者批量写入 blocklist。
  * 【原理】computeDagTipIdsFromEvents 枚举 tips；ancestorClosureFromTip 收集 GOVERNANCE_AUTHZ_TYPES 发送者 pubKeyHash。
- * 【关联】blocklist addBlocklistEntry、governance_branch；fork 后用户确认选支。
+ * 【关联】blocklist addDenylistEntry、governance_branch；fork 后用户确认选支。
  */
-import { addBlocklistEntry } from '../../../../../../../scripts/p2p/blocklist.mjs'
+import { addDenylistEntry } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import {
@@ -65,7 +65,7 @@ export async function blockOpposingForkBranch(username, groupId, acceptedTipId, 
 	const targets = computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKeyHash)
 
 	for (const pubKeyHash of targets)
-		await addBlocklistEntry({ scope: 'subject', value: pubKeyHash, groupId })
+		await addDenylistEntry({ scope: 'subject', value: pubKeyHash, groupId })
 
 	return { blocked: targets }
 }

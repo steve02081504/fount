@@ -1,5 +1,5 @@
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
-import { getNodeHash } from '../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../scripts/p2p/node/identity.mjs'
 import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
 import { SOCIAL_RPC_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
@@ -102,7 +102,7 @@ export async function discoverFollowGraph(username, entityHash, ingress = {}) {
 	const id = entityHash.toLowerCase()
 	const view = await getTimelineMaterialized(username, id)
 	if (view.socialMeta?.isProtected) {
-		const { getNodeHash } = await import('../../../../../scripts/p2p/node_context.mjs')
+		const { getNodeHash } = await import('../../../../../scripts/p2p/node/identity.mjs')
 		const { resolveOperatorEntityHashForUser } = await import('../../../../../server/p2p_server/operator_identity.mjs')
 		const requesterNode = (ingress.requesterNodeHash || '').trim().toLowerCase()
 		const operator = await resolveOperatorEntityHashForUser(username)

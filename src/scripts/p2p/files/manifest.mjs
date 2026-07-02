@@ -92,9 +92,8 @@ export function normalizeTransferKeyDescriptor(input) {
 }
 
 /**
- * @param {CeMode} ceMode 加密模式
  * @returns {TransferKeyDescriptor} public 描述符
  */
-export function publicTransferKeyDescriptor(ceMode = 'convergent') {
+export function publicTransferKeyDescriptor() {
 	return { type: 'public' }
 }

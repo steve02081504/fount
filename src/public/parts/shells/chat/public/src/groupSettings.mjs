@@ -809,12 +809,12 @@ async function saveGroupSettings() {
 			wantIdsBudget: Number.parseInt(document.getElementById('want-ids-budget')?.value, 10) || 16,
 			hlcMaxSkewMs: Number.parseInt(document.getElementById('hlc-max-skew-ms')?.value, 10) || 3_600_000,
 			streamingSfuWss: document.getElementById('streaming-sfu-wss')?.value?.trim() || null,
-			message_content_retention_ms: Number.parseInt(
+			messageContentRetentionMs: Number.parseInt(
 				document.getElementById('message-content-retention-ms')?.value,
 				10,
 			) || 0,
-			event_retention_depth: Number.parseInt(document.getElementById('event-retention-depth')?.value, 10) || 200_000,
-			event_retention_ms: Number.parseInt(document.getElementById('event-retention-ms')?.value, 10) || 0,
+			eventRetentionDepth: Number.parseInt(document.getElementById('event-retention-depth')?.value, 10) || 200_000,
+			eventRetentionMs: Number.parseInt(document.getElementById('event-retention-ms')?.value, 10) || 0,
 			compactTriggerEventDepth: Number.parseInt(document.getElementById('compact-trigger-event-depth')?.value, 10) || 100_000,
 			messageRateLimitPerMin: Math.max(1, Math.min(120,
 				Number.parseInt(document.getElementById('message-rate-limit-per-min')?.value, 10) || 10)),

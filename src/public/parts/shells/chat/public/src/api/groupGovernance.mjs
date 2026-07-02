@@ -29,7 +29,7 @@ export async function blockOpposingForkBranch(groupId, acceptedTipId) {
 }
 
 /**
- * 追加用户级拉黑（`blocklist.json`）。
+ * 追加用户级拉黑（`denylist.json`）。
  * @param {string|{ scope: string, value: string, groupId?: string }} entry 主体或 `{ scope, value }`
  * @param {string} [groupId] 来源群 ID（`entry` 为字符串时使用）
  * @returns {Promise<void>}
@@ -38,14 +38,14 @@ export async function blockUser(entry, groupId) {
 	const body = entry?.scope
 		? { scope: entry.scope, value: entry.value, groupId: entry.groupId || groupId }
 		: { scope: 'subject', value: entry, groupId }
-	const response = await fetch('/api/p2p/blocklist', {
+	const response = await fetch('/api/p2p/denylist', {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body),
 	})
 	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'blocklist failed')
+	if (!response.ok) throw new Error(data.error || 'denylist failed')
 }
 
 /**

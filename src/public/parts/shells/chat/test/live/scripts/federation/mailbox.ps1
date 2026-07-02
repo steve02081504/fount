@@ -15,11 +15,11 @@ Test-Case 'B GET chat/mailbox/summary' {
 }
 Test-Case 'A GET p2p/mailbox/summary' {
 	$r = P2pApi $FedA GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 Test-Case 'B GET p2p/mailbox/summary' {
 	$r = P2pApi $FedB GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 
 Write-Host "`n=== Setup: federated group ===" -ForegroundColor Cyan

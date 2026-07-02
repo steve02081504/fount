@@ -1,4 +1,4 @@
-import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { getOperatorEntityHashProvider } from '../../../../../../scripts/p2p/social/follower_index_registry.mjs'
 import { filterTimelineEventsForFederation } from '../../../../../../scripts/p2p/timeline/federation_visibility.mjs'
 import { canViewPost } from '../feedVisibility.mjs'

@@ -2,7 +2,7 @@ import { isEntityHash128, parseEntityHash } from '../../../../../../scripts/p2p/
 import { isHex64, normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
 import { loadNetwork } from '../../../../../../scripts/p2p/network.mjs'
 import { getEntityStore, isNodeInitialized } from '../../../../../../scripts/p2p/node/instance.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 
 import { findHostingReplicaUsername, resolveSocialEntity } from './entityResolve.mjs'
 

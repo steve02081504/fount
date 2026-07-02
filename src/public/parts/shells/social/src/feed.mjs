@@ -1,4 +1,4 @@
-import { isEntityHashBlocked } from '../../../../../scripts/p2p/blocklist.mjs'
+import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 import {

@@ -209,13 +209,13 @@ export interface GroupSettings {
 	gossipTtl?: number
 	wantIdsBudget?: number
 	batterySaver?: boolean
-	event_retention_depth?: number
-	event_retention_ms?: number
+	eventRetentionDepth?: number
+	eventRetentionMs?: number
 	slashAlertTtl?: number
 	federationPartitionCount?: number
 	rtcConnectionBudgetMax?: number
 	rtcJoinRatePerMin?: number
-	message_content_retention_ms?: number
+	messageContentRetentionMs?: number
 	compactTriggerEventDepth?: number
 	hotLatestMessageCount?: number
 	pinContextMessageCount?: number

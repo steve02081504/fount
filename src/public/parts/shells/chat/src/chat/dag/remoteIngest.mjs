@@ -2,7 +2,7 @@
  * 【文件】`dag/remoteIngest.mjs` — 联邦/远程 DAG 事件入库。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
-import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/blocklist.mjs'
+import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
