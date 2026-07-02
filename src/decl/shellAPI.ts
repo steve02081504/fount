@@ -3,7 +3,9 @@ import { Router } from 'npm:websocket-express'
 import { locale_t, info_t } from './basedefs.ts'
 
 /** part_invoke 响应体（与 `part_invoke.mjs` 一致） */
-export type PartInvokeResponse = { result?: unknown, error?: { message: string, code?: string } }
+export type PartInvokeResponse =
+	| { result: unknown }
+	| { error: { message: string, code: string } }
 
 /**
  * Shell API 接口

@@ -6,57 +6,68 @@ import {
 import { isPlainObject } from '../wire_ingress.mjs'
 
 /**
+ * @typedef {import('../schemas/mailbox_wire.mjs').MailboxWireErr} MailboxParseErr
+ * @typedef {{ ok: true, value: object }} MailboxParseOk
+ * @typedef {MailboxParseOk | MailboxParseErr} MailboxParseResult
+ */
+
+/**
  * @param {unknown} payload 载荷
- * @returns {object | null} 解析结果
+ * @returns {MailboxParseResult} 解析结果
  */
 export function parseMailboxPut(payload) {
-	if (!isPlainObject(payload) || !isPlainObject(payload.record)) return null
-	try {
-		assertMailboxRecordShape(payload.record)
-		if (payload.nodeHash != null)
+	if (!isPlainObject(payload))
+		return { ok: false, code: 'invalid_payload', field: 'payload' }
+	if (!isPlainObject(payload.record))
+		return { ok: false, code: 'required', field: 'record' }
+	const shape = assertMailboxRecordShape(payload.record)
+	if (!shape.ok) return shape
+	if (payload.nodeHash != null) 
+		try {
 			assertHex64(payload.nodeHash, 'mailbox_put.nodeHash')
-		return payload
-	}
-	catch {
-		return null
-	}
+		}
+		catch {
+			return { ok: false, code: 'invalid_hex64', field: 'nodeHash' }
+		}
+	
+	return { ok: true, value: payload }
 }
 
 /**
  * @param {unknown} payload 载荷
- * @returns {object | null} 解析结果
+ * @returns {MailboxParseResult} 解析结果
  */
 export function parseMailboxWant(payload) {
-	if (!isPlainObject(payload)) return null
-	try {
-		return {
-			...payload,
-			toPubKeyHash: assertMailboxPubKeyHash(payload.toPubKeyHash),
-		}
-	}
-	catch {
-		return null
-	}
+	if (!isPlainObject(payload))
+		return { ok: false, code: 'invalid_payload', field: 'payload' }
+	const pubKey = assertMailboxPubKeyHash(payload.toPubKeyHash)
+	if (!pubKey.ok)
+		return { ok: false, code: pubKey.code, field: 'toPubKeyHash' }
+	return { ok: true, value: { ...payload, toPubKeyHash: pubKey.value } }
 }
 
 /**
  * @param {unknown} payload 载荷
- * @returns {object | null} 解析结果
+ * @returns {MailboxParseResult} 解析结果
  */
 export function parseMailboxGive(payload) {
-	if (!isPlainObject(payload) || !Array.isArray(payload.records)) return null
-	try {
-		const records = payload.records.map(record => {
-			assertMailboxRecordShape(record)
-			if (!record.envelope || typeof record.envelope !== 'object')
-				throw new Error('mailbox.record.envelope required')
-			const app = String(record.app || '').trim()
-			if (!app) throw new Error('mailbox.record.app required')
-			return record
-		})
-		return { ...payload, records }
+	if (!isPlainObject(payload))
+		return { ok: false, code: 'invalid_payload', field: 'payload' }
+	if (!Array.isArray(payload.records))
+		return { ok: false, code: 'required', field: 'records' }
+	/** @type {object[]} */
+	const records = []
+	for (let i = 0; i < payload.records.length; i++) {
+		const record = payload.records[i]
+		const shape = assertMailboxRecordShape(record)
+		if (!shape.ok)
+			return { ok: false, code: shape.code, field: `records[${i}].${shape.field}` }
+		if (!record.envelope || typeof record.envelope !== 'object')
+			return { ok: false, code: 'required', field: `records[${i}].envelope` }
+		const app = String(record.app || '').trim()
+		if (!app)
+			return { ok: false, code: 'required', field: `records[${i}].app` }
+		records.push(record)
 	}
-	catch {
-		return null
-	}
+	return { ok: true, value: { ...payload, records } }
 }

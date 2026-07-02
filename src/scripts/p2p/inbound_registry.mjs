@@ -10,43 +10,81 @@
  */
 
 /**
- * @typedef {(ctx: InboundContext, message: object) => Promise<PartInvokeResponse | null | void>} InboundHandler
+ * @typedef {(ctx: InboundContext, message: object) => Promise<PartInvokeResponse | null>} RpcInboundHandler
  */
-
-/** @type {Map<string, InboundHandler>} */
-const handlers = new Map()
 
 /**
- * @param {string} type 入站类型（part_invoke、part_timeline_put、mailbox_give 等）
- * @param {InboundHandler} handler 处理器
+ * @typedef {(ctx: InboundContext, message: object) => Promise<void>} DeliveryInboundHandler
+ */
+
+/** @type {Map<string, RpcInboundHandler>} */
+const rpcHandlers = new Map()
+
+/** @type {Map<string, DeliveryInboundHandler>} */
+const deliveryHandlers = new Map()
+
+/**
+ * @param {string} type 入站 RPC 类型（part_invoke 等）
+ * @param {RpcInboundHandler} handler 处理器
  * @returns {void}
  */
-export function registerInboundHandler(type, handler) {
-	handlers.set(String(type || '').trim(), handler)
+export function registerRpcInboundHandler(type, handler) {
+	rpcHandlers.set(String(type || '').trim(), handler)
+}
+
+/**
+ * @param {string} type 入站投递类型（part_timeline_put 等）
+ * @param {DeliveryInboundHandler} handler 处理器
+ * @returns {void}
+ */
+export function registerDeliveryInboundHandler(type, handler) {
+	deliveryHandlers.set(String(type || '').trim(), handler)
 }
 
 /**
  * @param {string} type 入站类型
  * @returns {void}
  */
-export function unregisterInboundHandler(type) {
-	handlers.delete(String(type || '').trim())
+export function unregisterRpcInboundHandler(type) {
+	rpcHandlers.delete(String(type || '').trim())
+}
+
+/**
+ * @param {string} type 入站类型
+ * @returns {void}
+ */
+export function unregisterDeliveryInboundHandler(type) {
+	deliveryHandlers.delete(String(type || '').trim())
 }
 
 /**
  * @param {InboundContext} ctx 入站上下文
  * @param {object} message 已校验的线载荷（含 type）
- * @returns {Promise<PartInvokeResponse | null | void>} 处理器返回值
+ * @returns {Promise<PartInvokeResponse | null>} 处理器返回值
  */
-export async function dispatchInbound(ctx, message) {
+export async function dispatchRpcInbound(ctx, message) {
 	const type = String(message?.type || '').trim()
 	if (!type) return null
-	const handler = handlers.get(type)
+	const handler = rpcHandlers.get(type)
 	if (!handler) return null
 	return handler(ctx, message)
 }
 
+/**
+ * @param {InboundContext} ctx 入站上下文
+ * @param {object} message 已校验的线载荷（含 type）
+ * @returns {Promise<void>}
+ */
+export async function dispatchDeliveryInbound(ctx, message) {
+	const type = String(message?.type || '').trim()
+	if (!type) return
+	const handler = deliveryHandlers.get(type)
+	if (!handler) return
+	await handler(ctx, message)
+}
+
 /** @returns {void} 测试用 */
 export function clearInboundHandlers() {
-	handlers.clear()
+	rpcHandlers.clear()
+	deliveryHandlers.clear()
 }

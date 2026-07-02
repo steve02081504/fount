@@ -1,4 +1,7 @@
-import { registerInboundHandler } from '../../scripts/p2p/inbound_registry.mjs'
+import {
+	registerDeliveryInboundHandler,
+	registerRpcInboundHandler,
+} from '../../scripts/p2p/inbound_registry.mjs'
 import { isPartInvokeResponse, normalizePartpath } from '../../scripts/p2p/part_invoke.mjs'
 import { isPlainObject } from '../../scripts/p2p/wire_ingress.mjs'
 import { getAllUserNames } from '../auth.mjs'
@@ -29,7 +32,7 @@ async function invokePartForUser(username, partpath, data, ingress = {}) {
 		const response = await handler(username, data, ingress)
 		if (response == null) return null
 		if (!isPartInvokeResponse(response))
-			throw new Error('P2PInvokeHandler must return { result } or { error }')
+			throw new Error('P2PInvokeHandler must return { result } or { error: { message, code } }')
 		return response
 	}
 	catch (err) {
@@ -59,7 +62,7 @@ async function resolveUsernameForPartpath(preferredUsername, partpath) {
  * @returns {void}
  */
 export function registerP2PInboundHandlers() {
-	registerInboundHandler('part_invoke', async (ctx, message) => {
+	registerRpcInboundHandler('part_invoke', async (ctx, message) => {
 		const partpath = normalizePartpath(message.partpath)
 		if (!partpath || !isPlainObject(message.invoke)) return null
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
@@ -69,14 +72,13 @@ export function registerP2PInboundHandlers() {
 		})
 	})
 
-	registerInboundHandler('part_timeline_put', async (ctx, message) => {
+	registerDeliveryInboundHandler('part_timeline_put', async (ctx, message) => {
 		const partpath = normalizePartpath(message.partpath)
-		if (!partpath) return null
+		if (!partpath) return
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
-		if (!username) return null
+		if (!username) return
 		await invokePartForUser(username, partpath, { kind: 'timeline_put', ...message }, {
 			requesterNodeHash: ctx.requesterNodeHash ?? message.nodeHash ?? null,
 		})
-		return null
 	})
 }
