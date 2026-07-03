@@ -12,6 +12,9 @@ export {
 	seedReputationFromIntro,
 } from './reputation_math.mjs'
 
+/**
+ *
+ */
 export {
 	loadReputation,
 	saveReputation,
@@ -33,6 +36,9 @@ export {
 	applySocialBlockReputationSignal,
 } from './reputation_store.mjs'
 
+/**
+ *
+ */
 export {
 	SOCIAL_BLOCK_CLAIM,
 	SOCIAL_REP_HIDE_THRESHOLD,

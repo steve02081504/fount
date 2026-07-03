@@ -6,9 +6,7 @@ export default {
 	},
 	interfaces: {
 		chat: {
-			/**
-			 *
-			 */
+			/** @returns {import('../../../../../../../../../decl/prompt_struct.ts').prompt_struct_t} live 探针用最小 prompt */
 			GetPrompt: () => ({ text: [{ content: 'test world fixture', important: 0 }] }),
 		},
 	},

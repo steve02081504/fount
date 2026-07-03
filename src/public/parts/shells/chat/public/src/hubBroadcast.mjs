@@ -31,8 +31,8 @@ export function broadcastHubGroupJoined(groupId) {
 }
 
 /**
- *
- * @param groupId
+ * 通知当前 Hub 标签页（及同源其他标签）用户已加入群组。
+ * @param {string} groupId 群组 id
  */
 export function notifyHubGroupJoined(groupId) {
 	broadcastHubGroupJoined(groupId)

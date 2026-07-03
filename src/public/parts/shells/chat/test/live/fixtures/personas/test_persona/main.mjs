@@ -6,9 +6,7 @@ export default {
 	},
 	interfaces: {
 		chat: {
-			/**
-			 *
-			 */
+			/** @returns {Promise<import('../../../../../../../../../decl/prompt_struct.ts').prompt_struct_t>} live 探针用最小 prompt */
 			GetPrompt: async () => ({
 				text: [{ content: 'test persona fixture', important: 0 }],
 				additional_chat_log: [],

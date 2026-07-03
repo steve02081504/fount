@@ -4,6 +4,9 @@ import { verifiedChunkBytes } from './files/chunk_fetch_verify.mjs'
 /** @type {Map<string, { expectedHash: string, timer: ReturnType<typeof setTimeout>, resolve: (v: Uint8Array | null) => void, reject?: (e: Error) => void }>} */
 export const pendingChunkFetches = new Map()
 
+/**
+ *
+ */
 export const MAX_PENDING_CHUNK_FETCHES = 2048
 
 /**
@@ -16,7 +19,10 @@ export const MAX_PENDING_CHUNK_FETCHES = 2048
  */
 export function registerChunkFetchWait(key, expectedHash, timeoutMs, opts = {}) {
 	if (!key || pendingChunkFetches.size >= MAX_PENDING_CHUNK_FETCHES)
-		return { done: Promise.resolve(null), cancel: () => {} }
+		return { done: Promise.resolve(null), /**
+		 *
+		 */
+			cancel: () => {} }
 
 	/** @type {(value: Uint8Array | null | Error) => void} */
 	let settle
@@ -66,6 +72,9 @@ export function registerChunkFetchWait(key, expectedHash, timeoutMs, opts = {}) 
 
 	return {
 		done,
+		/**
+		 *
+		 */
 		cancel: () => {
 			clearTimeout(timer)
 			pendingChunkFetches.delete(key)

@@ -7,6 +7,9 @@ import { canonicalStringify } from './canonical_json.mjs'
 import { hashFromPubKeyHex } from './entity_id.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 
+/**
+ *
+ */
 export const OPERATOR_KEY_REVOKE_DOMAIN = 'fount-operator-key-revoke'
 
 /**

@@ -8,7 +8,6 @@
  * 【关联】endpoints 暴露 list API；发送消息路径调用 record；依赖 channelContent 取文本。
  */
 import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
-
 import { channelMessageText } from '../public/shared/channelContent.mjs'
 
 const SHELL_DATANAME = 'emoji_usage'

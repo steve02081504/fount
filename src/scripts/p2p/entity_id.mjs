@@ -1,8 +1,7 @@
 import { Buffer } from 'node:buffer'
 
-import { ENTITY_HASH_RE, entityHashLabel, formatHashShort, isEntityHash128, parseEntityHash } from './entity_hash.mjs'
-
 import { pubKeyHash, sha256TextHex } from './crypto.mjs'
+import { ENTITY_HASH_RE, entityHashLabel, formatHashShort, isEntityHash128, parseEntityHash } from './entity_hash.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 
 /**

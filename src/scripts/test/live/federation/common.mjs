@@ -71,38 +71,85 @@ export const FedA = FedNodes[0]
 export const FedB = FedNodes[1] ?? null
 /** @type {LiveNodeHandle | null} */
 export const FedC = FedNodes[2] ?? null
+/**
+ *
+ */
 export const FedPngBytes = TEST_PNG_BYTES
 
-/** @param {LiveNodeHandle} node @param {string} method @param {string} p2pPath @param {unknown} [body] */
+/**
+ * @param {LiveNodeHandle} node @param {string} method @param {string} p2pPath @param {unknown} [body]
+ * @param method
+ * @param p2pPath
+ * @param body
+ */
 export async function P2pApi(node, method, p2pPath, body) {
 	return invokeRequest(node, method, `/api/p2p${p2pPath}`, body)
 }
 
-/** @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {unknown} [body] */
+/**
+ * @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {unknown} [body]
+ * @param method
+ * @param chatPath
+ * @param body
+ */
 export async function Api(node, method, chatPath, body) {
 	return invokeRequest(node, method, chatPath, body, { shell: 'chat' })
 }
 
-/** @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {unknown} [body] */
+/**
+ * @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {unknown} [body]
+ * @param shell
+ * @param method
+ * @param shellPath
+ * @param body
+ */
 export async function ShellApi(node, shell, method, shellPath, body) {
 	return invokeRequest(node, method, shellPath, body, { shell })
 }
 
-/** @param {LiveNodeHandle} node @param {string} method @param {string} rootPath @param {unknown} [body] */
+/**
+ * @param {LiveNodeHandle} node @param {string} method @param {string} rootPath @param {unknown} [body]
+ * @param method
+ * @param rootPath
+ * @param body
+ */
 export async function RootApi(node, method, rootPath, body) {
 	return invokeRequest(node, method, rootPath, body, { timeoutSec: 60 })
 }
 
-/** @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType] */
+/**
+ * @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType]
+ * @param method
+ * @param chatPath
+ * @param fields
+ * @param fileField
+ * @param fileName
+ * @param fileBytes
+ * @param contentType
+ */
 export async function ApiMultipart(node, method, chatPath, fields, fileField, fileName, fileBytes, contentType = 'image/png') {
 	return invokeMultipart(node, 'chat', method, chatPath, fields, fileField, fileName, fileBytes, contentType)
 }
 
-/** @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType] */
+/**
+ * @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType]
+ * @param shell
+ * @param method
+ * @param shellPath
+ * @param fields
+ * @param fileField
+ * @param fileName
+ * @param fileBytes
+ * @param contentType
+ */
 export const ShellApiMultipart = (node, shell, method, shellPath, fields, fileField, fileName, fileBytes, contentType = 'image/png') =>
 	invokeMultipart(node, shell, method, shellPath, fields, fileField, fileName, fileBytes, contentType)
 
-/** @param {number} timeoutSec @param {number} intervalSec @param {() => Promise<boolean>} probe */
+/**
+ * @param {number} timeoutSec @param {number} intervalSec @param {() => Promise<boolean>} probe
+ * @param intervalSec
+ * @param probe
+ */
 export async function PollUntil(timeoutSec, intervalSec, probe) {
 	const deadline = Date.now() + timeoutSec * 1000
 	let last = false
@@ -114,13 +161,22 @@ export async function PollUntil(timeoutSec, intervalSec, probe) {
 	return last
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {number} [waitMs] */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {number} [waitMs]
+ * @param groupId
+ * @param waitMs
+ */
 export async function InvokeFedCatchupSync(node, groupId, waitMs = 6000) {
 	await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs })
 	await Api(node, 'POST', `/groups/${groupId}/dag/merge-tips`, {})
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {number} [minMembers] @param {number} [timeoutSec] */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {number} [minMembers] @param {number} [timeoutSec]
+ * @param groupId
+ * @param minMembers
+ * @param timeoutSec
+ */
 export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec = 120) {
 	return PollUntil(timeoutSec, 3, async () => {
 		await InvokeFedCatchupSync(node, groupId, 5000)
@@ -131,7 +187,14 @@ export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec =
 	})
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec] @param {number} [catchupWaitMs] */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec] @param {number} [catchupWaitMs]
+ * @param groupId
+ * @param probe
+ * @param timeoutSec
+ * @param intervalSec
+ * @param catchupWaitMs
+ */
 export async function WaitFedConverged(node, groupId, probe, timeoutSec = 120, intervalSec = 3, catchupWaitMs = 6000) {
 	const deadline = Date.now() + timeoutSec * 1000
 	do {
@@ -142,19 +205,34 @@ export async function WaitFedConverged(node, groupId, probe, timeoutSec = 120, i
 	return false
 }
 
-/** @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec] */
+/**
+ * @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec]
+ * @param timeoutSec
+ * @param intervalSec
+ */
 export async function WaitFedLive(probe, timeoutSec = 90, intervalSec = 3) {
 	return PollUntil(timeoutSec, intervalSec, probe)
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId
+ * @param groupId
+ * @param channelId
+ * @param eventId
+ */
 export async function TestFedHasMessage(node, groupId, channelId, eventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
 	if (response.status !== 200) return false
 	return response.json?.messages?.some(row => row.eventId === eventId) ?? false
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId @param {string | RegExp} pattern */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId @param {string | RegExp} pattern
+ * @param groupId
+ * @param channelId
+ * @param eventId
+ * @param pattern
+ */
 export async function TestFedMessageContent(node, groupId, channelId, eventId, pattern) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
 	if (response.status !== 200) return false
@@ -164,14 +242,24 @@ export async function TestFedMessageContent(node, groupId, channelId, eventId, p
 	return typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text)
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId
+ * @param groupId
+ * @param channelId
+ * @param eventId
+ */
 export async function TestFedMessageDeleted(node, groupId, channelId, eventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
 	if (response.status !== 200) return false
 	return !response.json?.messages?.some(row => row.eventId === eventId)
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} targetEventId */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} targetEventId
+ * @param groupId
+ * @param channelId
+ * @param targetEventId
+ */
 export async function TestFedHasReaction(node, groupId, channelId, targetEventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
 	if (response.status !== 200) return false
@@ -180,7 +268,11 @@ export async function TestFedHasReaction(node, groupId, channelId, targetEventId
 	return Object.values(entry).some(row => row?.voters?.length >= 1)
 }
 
-/** @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId */
+/**
+ * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId
+ * @param groupId
+ * @param channelId
+ */
 export async function TestFedHasChannel(node, groupId, channelId) {
 	const state = await Api(node, 'GET', `/groups/${groupId}/state`)
 	return state.status === 200 && state.json?.meta?.channels?.[channelId] != null
@@ -202,7 +294,11 @@ export async function AssertFedPeersReady(groupId) {
 	console.log(`  NodeB catchup: federationActive=${catchB.json?.federationActive} tips=${catchB.json?.tipsCollected}`)
 }
 
-/** @param {string} name @param {string | null} seedText @param {LiveNodeHandle[]} joinNodes */
+/**
+ * @param {string} name @param {string | null} seedText @param {LiveNodeHandle[]} joinNodes
+ * @param seedText
+ * @param joinNodes
+ */
 export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 	const group = (await Api(FedA, 'POST', '/groups/', { name, description: 'L4 fed probe' })).json
 	const groupId = group.groupId
@@ -245,7 +341,10 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 	return { groupId, channelId, seedEventId, invite }
 }
 
-/** @param {string} name @param {string | null} seedText */
+/**
+ * @param {string} name @param {string | null} seedText
+ * @param seedText
+ */
 export async function InitializeOpenGroupJoin(name, seedText) {
 	const group = (await Api(FedA, 'POST', '/groups/', { name, description: 'L4 fed probe' })).json
 	const groupId = group.groupId
@@ -307,7 +406,10 @@ async function getFedTestGroupIds(node) {
 	return list.json?.filter(testFedTestGroup).map(row => String(row.groupId)).filter(Boolean) ?? []
 }
 
-/** @param {LiveNodeHandle} node @param {string[]} groupIds */
+/**
+ * @param {LiveNodeHandle} node @param {string[]} groupIds
+ * @param groupIds
+ */
 async function invokeGroupLeaveBestEffort(node, groupIds) {
 	const ids = [...new Set(groupIds.filter(Boolean))]
 	if (!ids.length) return
@@ -323,14 +425,23 @@ async function invokeGroupLeaveBestEffort(node, groupIds) {
 		try { await Api(node, 'DELETE', `/groups/${id}`) } catch { /* ignore */ }
 }
 
-/** @param {string} tag @param {string} [groupId] */
+/**
+ * @param {string} tag @param {string} [groupId]
+ * @param groupId
+ */
 export function WriteFedSummary(tag, groupId) {
 	writeLiveSummary(tag)
 	if (groupId) console.log(`groupId=${groupId}`)
 }
 
+/**
+ *
+ */
 export { completeLiveScript, skipCase, testCase }
 
+/**
+ *
+ */
 export async function ClearFedTestGroups() {
 	console.log('\n=== Cleanup all test groups ===')
 	for (const node of FedNodes)

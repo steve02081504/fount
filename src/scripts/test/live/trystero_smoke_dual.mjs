@@ -10,7 +10,11 @@ import { startTestNostrRelay, stopTestNostrRelay } from './nostr_relay.mjs'
 process.env.FOUNT_TEST = '1'
 const { relayUrl } = await startTestNostrRelay()
 
-/** @param {number} index 0|1 */
+/**
+ * 启动单个 Trystero 烟测 worker 子进程。
+ * @param {number} index 0|1
+ * @returns {Promise<string>} worker 标准输出（含连通成功标记）
+ */
 function spawnPeer(index) {
 	return new Promise((resolve, reject) => {
 		const child = spawn('deno', [

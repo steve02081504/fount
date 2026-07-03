@@ -136,9 +136,9 @@ export async function isFederationRoomAlreadyBound(username, groupId, opts = {})
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const partitionIds = resolveNodePartitionIds(groupSettings, opts.channelId)
 	if (!partitionIds.length) return false
-	for (const partitionId of partitionIds) {
+	for (const partitionId of partitionIds) 
 		if (!await isFederationPartitionAlreadyBound(username, groupId, partitionId)) return false
-	}
+	
 	return true
 }
 

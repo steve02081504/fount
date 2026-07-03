@@ -34,12 +34,22 @@ export function createSingleNodeProbe(options = {}) {
 	const key = options.key ?? requireLiveApiKey()
 	const node = nodeHandle(base, key)
 
-	/** @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec] */
+	/**
+	 * @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec]
+	 * @param path
+	 * @param body
+	 * @param timeoutSec
+	 */
 	function chatApi(method, path, body, timeoutSec = 60) {
 		return invokeRequest(node, method, path, body, { timeoutSec, shell: 'chat' })
 	}
 
-	/** @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec] */
+	/**
+	 * @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec]
+	 * @param path
+	 * @param body
+	 * @param timeoutSec
+	 */
 	async function chatApiJson(method, path, body, timeoutSec = 90) {
 		const response = await chatApi(method, path, body, timeoutSec)
 		if (response.status < 200 || response.status >= 300) {
@@ -49,12 +59,24 @@ export function createSingleNodeProbe(options = {}) {
 		return response.json
 	}
 
-	/** @param {string} method @param {string} path @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType] */
+	/**
+	 * @param {string} method @param {string} path @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType]
+	 * @param path
+	 * @param fields
+	 * @param fileField
+	 * @param fileName
+	 * @param fileBytes
+	 * @param contentType
+	 */
 	function chatApiMultipart(method, path, fields, fileField, fileName, fileBytes, contentType = 'image/png') {
 		return invokeMultipart(node, 'chat', method, path, fields, fileField, fileName, fileBytes, contentType)
 	}
 
-	/** @param {() => boolean | Promise<boolean>} predicate @param {number} [timeoutSec] @param {number} [intervalSec] */
+	/**
+	 * @param {() => boolean | Promise<boolean>} predicate @param {number} [timeoutSec] @param {number} [intervalSec]
+	 * @param timeoutSec
+	 * @param intervalSec
+	 */
 	async function pollUntil(predicate, timeoutSec = 30, intervalSec = 0.4) {
 		const deadline = Date.now() + timeoutSec * 1000
 		while (Date.now() < deadline) {
@@ -90,7 +112,12 @@ export function createShellProbe(shell, options = {}) {
 	const key = options.key ?? requireLiveApiKey()
 	const node = nodeHandle(base, key)
 
-	/** @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec] */
+	/**
+	 * @param {string} method @param {string} path @param {unknown} [body] @param {number} [timeoutSec]
+	 * @param path
+	 * @param body
+	 * @param timeoutSec
+	 */
 	function shellApi(method, path, body, timeoutSec = 60) {
 		return invokeRequest(node, method, path, body, { timeoutSec, shell })
 	}

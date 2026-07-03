@@ -20,13 +20,9 @@ const { ensureServer, username } = createIntegrationBoot({
 	loadParts: [],
 })
 
-/**
- *
- */
+/** @returns {import('../../src/chat/dag/remoteIngest.mjs').RemoteIngestResult} 模拟入库成功 */
 const applied = () => ({ status: 'applied' })
-/**
- *
- */
+/** @returns {import('../../src/chat/dag/remoteIngest.mjs').RemoteIngestResult} 模拟 ACL 未就绪，暂不入库 */
 const pending = () => ({ status: 'pending' })
 
 Deno.test('replayPendingIngestEvents on empty file returns zero', async () => {
@@ -72,9 +68,7 @@ Deno.test('replayPendingIngestEvents releases after tryIngest succeeds on a late
 	const ev = { id: '0'.repeat(64), type: 'member_ban', sender: 'a'.repeat(64) }
 	await enqueuePendingIngest(username, groupId, ev, 'retry')
 	let attempts = 0
-	/**
-	 *
-	 */
+	/** @returns {Promise<import('../../src/chat/dag/remoteIngest.mjs').RemoteIngestResult>} 首次 pending，第二次 applied */
 	const tryIngest = async () => {
 		attempts++
 		return attempts >= 2 ? applied() : pending()

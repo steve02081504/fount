@@ -19,7 +19,7 @@ export function unregisterGroupEmojiPostEmbedProvider(ownerId) {
 }
 
 /**
- * @returns {{ resolveGroupEmojiContent?: (username: string, groupId: string, emojiId: string) => Promise<object | null>, storeEmojiInCas?: (buffer: Buffer | Uint8Array) => Promise<string> }}
+ * @returns {{ resolveGroupEmojiContent?: (username: string, groupId: string, emojiId: string) => Promise<object | null>, storeEmojiInCas?: (buffer: Buffer | Uint8Array) => Promise<string> }} 首个同时具备解析与 CAS 写入能力的注册方；无则空对象
  */
 export function resolveGroupEmojiPostEmbedProvider() {
 	for (const provider of providersByOwner.values())

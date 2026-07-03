@@ -58,4 +58,7 @@ export async function setFollow(username, actingEntityHash, entityHash, follow) 
 	return following.filter(hash => hash !== id)
 }
 
+/**
+ *
+ */
 export { listFollowersFromIndex as listReplicaUsernamesFollowing }
