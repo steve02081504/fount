@@ -90,7 +90,7 @@ Test-Case 'POST reaction add' {
 }
 Test-Case 'DELETE reaction' {
 	$emoji = "$([char]0xD83D)$([char]0xDC4D)"
-	$r = Api DELETE "/groups/$gid/channels/$cid/reactions/$([uri]::EscapeDataString($emoji))?targetEventId=$msgId"
+	$r = Api DELETE "/groups/$gid/channels/$cid/reactions" @{ targetEventId = $msgId; emoji = $emoji }
 	$r.status -eq 200 -or $r.status -eq 204
 }
 Test-Case 'POST pin' {
@@ -345,7 +345,7 @@ Test-Case 'GET sessions/list' {
 }
 Test-Case 'GET/PUT bookmarks' {
 	$g = Api GET '/bookmarks'
-	if ($g.status -ne 200 -or -not $g.json.entries) { throw "get $($g.status)" }
+	if ($g.status -ne 200 -or $null -eq $g.json.entries) { throw "get $($g.status)" }
 	$p = Api PUT '/bookmarks' @{ entries = @(@{ groupId = $gid; channelId = $cid; eventId = ('a' * 64); title = 'bm' }) }
 	$p.status -eq 200
 }

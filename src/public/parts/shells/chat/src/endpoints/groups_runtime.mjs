@@ -34,40 +34,40 @@ export function registerGroupsRuntimeRoutes(router) {
 		res.status(200).json(await getInitialData(groupId))
 	})
 
-	router.get('${GROUPS_PREFIX}/:groupId/chars', authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/chars`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		await registerGroupRuntime(groupId, username)
 		res.status(200).json(await getCharListOfGroup(groupId, username))
 	})
 
-	router.get('${GROUPS_PREFIX}/:groupId/plugins', authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/plugins`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		res.status(200).json(await getPluginListOfGroup(groupId, username))
 	})
 
-	router.get('${GROUPS_PREFIX}/:groupId/persona', authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/persona`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		res.status(200).json(await getUserPersonaName(groupId, username))
 	})
 
-	router.get('${GROUPS_PREFIX}/:groupId/world', authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/world`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		const channelId = await resolveGroupChannel(groupId, optionalChannelId(req.query.channelId), username)
 		res.status(200).json(await getWorldName(groupId, channelId))
 	})
 
-	router.put('${GROUPS_PREFIX}/:groupId/char/:charname/frequency', authenticate, async (req, res) => {
+	router.put(`${GROUPS_PREFIX}/:groupId/char/:charname/frequency`, authenticate, async (req, res) => {
 		const { params: { groupId, charname }, body: { frequency } } = req
 		const { username } = getUserByReq(req)
 		await setCharSpeakingFrequency(groupId, charname, frequency, username)
 		res.status(200).json({})
 	})
 
-	router.put('${GROUPS_PREFIX}/:groupId/world', authenticate, async (req, res) => {
+	router.put(`${GROUPS_PREFIX}/:groupId/world`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { worldname, channelId: requestedChannelId } } = req
 		const { username } = getUserByReq(req)
 		const channelId = await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
@@ -75,33 +75,33 @@ export function registerGroupsRuntimeRoutes(router) {
 		res.status(200).json({})
 	})
 
-	router.put('${GROUPS_PREFIX}/:groupId/persona', authenticate, async (req, res) => {
+	router.put(`${GROUPS_PREFIX}/:groupId/persona`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { personaname } } = req
 		const { username } = getUserByReq(req)
 		await setPersona(groupId, personaname, username)
 		res.status(200).json({})
 	})
 
-	router.post('${GROUPS_PREFIX}/:groupId/char', authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/char`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { charname, deferGreeting } } = req
 		const { username } = getUserByReq(req)
 		await addchar(groupId, charname, username, { deferGreeting: !!deferGreeting })
 		res.status(200).json({})
 	})
 
-	router.delete('${GROUPS_PREFIX}/:groupId/char/:charname', authenticate, async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/char/:charname`, authenticate, async (req, res) => {
 		const { groupId, charname } = req.params
 		await removechar(groupId, charname)
 		res.status(200).json({})
 	})
 
-	router.post('${GROUPS_PREFIX}/:groupId/plugin', authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/plugin`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { pluginname } } = req
 		await addplugin(groupId, pluginname)
 		res.status(200).json({})
 	})
 
-	router.delete('${GROUPS_PREFIX}/:groupId/plugin/:pluginname', authenticate, async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId/plugin/:pluginname`, authenticate, async (req, res) => {
 		const { groupId, pluginname } = req.params
 		await removeplugin(groupId, pluginname)
 		res.status(200).json({})

@@ -268,7 +268,10 @@ export async function setEntityBlocked(entityHash, block) {
  * @returns {Promise<void>}
  */
 export function addGroupBlockedPeer(groupId, scope, value) {
-	return addDenylistEntry({ scope, value, groupId })
+	const normScope = String(scope || '').trim().toLowerCase()
+	if (normScope === 'entity')
+		return addDenylistEntry({ scope: normScope, value })
+	return addDenylistEntry({ scope: normScope, value, groupId })
 }
 
 /**

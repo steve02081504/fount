@@ -39,7 +39,7 @@ Deno.test('member_leave triggers checkpoint rebuild without fast-path flags', as
 		sender: memberB,
 		timestamp: Date.now(),
 		content: {},
-	}, (await modules.localSigner.getLocalSigner(NODE_B, groupId)).secretKey)
+	}, (await modules.localSigner.resolveLocalEventSigner(NODE_B, groupId)).secretKey)
 
 	await federate(NODE_B, [NODE_A], groupId)
 
