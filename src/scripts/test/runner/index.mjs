@@ -5,8 +5,6 @@ import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
 import process from 'node:process'
 
-import { execFile } from 'npm:@steve02081504/exec'
-
 import { console, geti18n } from '../../i18n.mjs'
 import { computeUncommittedHash, getUncommittedFiles, resolveChangedFiles } from '../core/changed.mjs'
 import {
@@ -30,8 +28,14 @@ import { detectNoiseHits, filterTestOutput, stripNoiseMarkers } from '../core/ou
 import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import {
+	loadTimingsForSuites,
+	recordSuiteSuccessTiming,
+	writeTimings,
+} from '../core/timings.mjs'
 
 import { TestReportWriter } from './report.mjs'
+import { runCommand } from './run_command.mjs'
 import { SuiteRunGate } from './scheduler.mjs'
 import { selectSuites, shouldTrackFailures } from './selection.mjs'
 
@@ -45,42 +49,6 @@ import { selectSuites, shouldTrackFailures } from './selection.mjs'
  * @property {boolean} [genReport] 生成 data/test/report
  * @property {number} [jobs] 全局并发上限
  */
-
-/**
- * 执行子进程命令并捕获 stdall。
- * @param {string[]} command 命令
- * @param {Record<string, string>} [extraEnv] 额外环境变量
- * @param {object} [options] 执行选项
- * @param {boolean} [options.stream=false] 是否实时转发 stdout/stderr
- * @returns {Promise<{ code: number, output: string }>} 子进程退出码与输出
- */
-async function runCommand(command, extraEnv = {}, options = {}) {
-	const { stream = false } = options
-	const [executable, ...args] = command
-	/** @type {import('npm:@steve02081504/exec').ExecOptions & object} */
-	const execOptions = {
-		cwd: REPO_ROOT,
-		env: { ...process.env, ...extraEnv },
-	}
-	if (stream) 
-		Object.assign(execOptions, {
-			/**
-			 * 转发子进程标准输出。
-			 * @param {string | Uint8Array} data 标准输出片段
-			 * @returns {void}
-			 */
-			on_stdout: data => process.stdout.write(data),
-			/**
-			 * 转发子进程标准错误。
-			 * @param {string | Uint8Array} data 标准错误片段
-			 * @returns {void}
-			 */
-			on_stderr: data => process.stderr.write(data),
-		})
-	
-	const result = await execFile(executable, args, execOptions)
-	return { code: result.code ?? 1, output: result.stdall }
-}
 
 /**
  * 构造 suite 运行命令与环境变量。
@@ -110,20 +78,30 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget) {
  * @param {string[] | undefined} onlyFiles 失败重跑文件过滤
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
- * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string, durationMs: number }>} 运行结果
+ * @param {object} [watchdog] watchdog 选项
+ * @param {string} [watchdog.label] suite 标签
+ * @param {number | undefined} [watchdog.baselineDurationMs] 上次成功耗时
+ * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string, durationMs: number, terminated?: boolean, terminateReason?: string }>} 运行结果
  */
-async function runSuite(suite, onlyFiles, globalBudget, stream = false) {
+async function runSuite(suite, onlyFiles, globalBudget, stream = false, watchdog = {}) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
 	const started = Date.now()
 	try {
 		const { command, env } = buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget)
-		const { code, output: rawOutput } = await runCommand(command, env, { stream })
+		const { code, output: rawOutput, terminated, terminateReason } = await runCommand(command, env, {
+			stream,
+			cwd: REPO_ROOT,
+			label: watchdog.label,
+			baselineDurationMs: watchdog.baselineDurationMs,
+		})
 		return {
-			passed: code === 0,
+			passed: code === 0 && !terminated,
 			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
 			output: filterTestOutput(rawOutput),
 			durationMs: Date.now() - started,
+			terminated,
+			terminateReason,
 		}
 	}
 	finally {
@@ -141,6 +119,11 @@ async function runSuite(suite, onlyFiles, globalBudget, stream = false) {
 function printSuiteSummary(label, result, genReport, streamed = false) {
 	const noiseHits = detectNoiseHits(result.output)
 	const noisy = noiseHits.length > 0
+	if (result.terminated && result.terminateReason)
+		console.errorI18n('fountConsole.test.terminated', {
+			label,
+			reason: result.terminateReason,
+		})
 	if (genReport) {
 		const parts = [
 			result.passed
@@ -250,6 +233,9 @@ export async function runTests(options = {}) {
 
 	const streamLive = !genReport && selected.length === 1
 
+	const timingsByManifest = await loadTimingsForSuites(REPO_ROOT, selected)
+	const timingsDirty = new Set()
+
 	const manifestFailures = new Map()
 	let exitCode = 0
 
@@ -307,8 +293,12 @@ export async function runTests(options = {}) {
 				if (!genReport) console.log('>>', suite.run.join(' '))
 				const retryMap = retryByManifest.get(suite.manifestId)
 				const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
-				const result = await runSuite(suite, onlyFiles, globalBudget, streamLive)
 				const label = `${suite.manifestId}/${suite.name}`
+				const baselineDurationMs = timingsByManifest.get(suite.manifestId)?.items?.[suite.name]?.durationMs
+				const result = await runSuite(suite, onlyFiles, globalBudget, streamLive, {
+					label,
+					baselineDurationMs,
+				})
 				printSuiteSummary(label, result, genReport, streamLive)
 				suiteResults[index] = { suite, result }
 				if (reportWriter) 
@@ -318,6 +308,8 @@ export async function runTests(options = {}) {
 						failedFiles: result.failedFiles,
 						output: result.output,
 						durationMs: result.durationMs,
+						terminated: result.terminated,
+						terminateReason: result.terminateReason,
 					})
 				
 			}
@@ -334,6 +326,15 @@ export async function runTests(options = {}) {
 
 	for (const { suite, result } of suiteResults) {
 		if (!result.passed) exitCode = 1
+
+		if (result.passed) {
+			const record = timingsByManifest.get(suite.manifestId) ?? { items: {} }
+			timingsByManifest.set(
+				suite.manifestId,
+				recordSuiteSuccessTiming(record, suite.name, result.durationMs),
+			)
+			timingsDirty.add(suite.manifestId)
+		}
 
 		if (trackFailures || usingFailureRetry) {
 			if (!manifestFailures.has(suite.manifestId))
@@ -365,6 +366,9 @@ export async function runTests(options = {}) {
 				console.logI18n('fountConsole.test.failuresCleared', { manifestId })
 		}
 	}
+
+	for (const manifestId of timingsDirty)
+		await writeTimings(REPO_ROOT, manifestId, timingsByManifest.get(manifestId) ?? { items: {} })
 
 	if (reportWriter) {
 		const reportPath = await reportWriter.finalize(exitCode)

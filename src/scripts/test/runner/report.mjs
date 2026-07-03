@@ -24,6 +24,8 @@ import {
  * @property {string[]} failedFiles
  * @property {string} output
  * @property {number} durationMs
+ * @property {boolean} [terminated]
+ * @property {string} [terminateReason]
  */
 
 /**
@@ -43,6 +45,8 @@ import {
  * @property {string[]} noiseHits
  * @property {string[]} failedFiles
  * @property {string | null} logPath 相对 report 目录（如 ./logs/warnings/...）
+ * @property {boolean} [terminated]
+ * @property {string} [terminateReason]
  */
 
 /** @typedef {PendingSuiteEntry | ReportSuiteEntry} ReportSuiteSlot */
@@ -90,7 +94,9 @@ function isCompletedEntry(entry) {
  * @param {SuiteRunRecord} record 运行记录
  * @returns {Promise<ReportSuiteEntry>} 报告条目
  */
-async function buildSuiteEntry(repoRoot, root, { suite, passed, failedFiles, output, durationMs }) {
+async function buildSuiteEntry(repoRoot, root, {
+	suite, passed, failedFiles, output, durationMs, terminated, terminateReason,
+}) {
 	const noiseHits = detectNoiseHits(output)
 	const noisy = noiseHits.length > 0
 	const noteworthy = !passed || noisy
@@ -115,6 +121,8 @@ async function buildSuiteEntry(repoRoot, root, { suite, passed, failedFiles, out
 		noiseHits,
 		failedFiles,
 		logPath,
+		terminated,
+		terminateReason,
 	}
 }
 
@@ -354,6 +362,8 @@ function buildMarkdown(summary, entries) {
 		for (const e of failed) {
 			lines.push(`### ${e.manifestId}/${e.name}`, '')
 			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(e.durationMs)}`)
+			if (e.terminateReason)
+				lines.push(`- ${geti18n('fountConsole.test.report.labelTerminateReason')}: ${e.terminateReason}`)
 			if (e.logPath) lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${e.logPath}](${e.logPath})`)
 			if (e.noiseHits.length) lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${e.noiseHits.join(', ')}`)
 			if (e.failedFiles.length) {

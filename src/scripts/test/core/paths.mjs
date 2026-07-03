@@ -39,6 +39,26 @@ export function failureFilePath(repoRoot, manifestId) {
 }
 
 /**
+ * 返回 suite 成功耗时记录目录路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} 耗时记录目录
+ */
+export function timingsDir(repoRoot) {
+	return join(testDataRoot(repoRoot), 'timings')
+}
+
+/**
+ * 返回指定 manifest 的成功耗时记录 JSON 路径。
+ * @param {string} repoRoot 仓库根
+ * @param {string} manifestId manifest id
+ * @returns {string} 耗时记录 JSON 路径
+ */
+export function timingFilePath(repoRoot, manifestId) {
+	const segments = manifestId.split('/')
+	return join(timingsDir(repoRoot), ...segments.slice(0, -1), `${segments.at(-1)}.json`)
+}
+
+/**
  * 返回 Playwright 产物输出目录。
  * @param {string} repoRoot 仓库根
  * @param {string} [manifestId='default'] manifest id
