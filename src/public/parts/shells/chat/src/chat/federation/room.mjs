@@ -42,6 +42,33 @@ import { startTipHeartbeat } from './tipHeartbeat.mjs'
 const DEFAULT_ROOM_LEAVE_TIMEOUT_MS = 4000
 
 /**
+ * @param {import('./federationSlot.mjs').FederationSlot | null | undefined} slot 已注册槽
+ * @param {{ roomId: string, password: string }} roomCreds 期望凭证
+ * @returns {boolean} slot 是否仍绑定同一 room
+ */
+function partitionSlotMatchesCredentials(slot, roomCreds) {
+	return slot?.trysteroRoomName === roomCreds.roomId && slot?.roomSecret === roomCreds.password
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} partitionId 分区 id
+ * @returns {Promise<boolean>} 分区已绑定且凭证未变
+ */
+async function isFederationPartitionAlreadyBound(username, groupId, partitionId) {
+	if (!hasFederationPartitionSlot(username, groupId, partitionId)) return false
+	let roomCreds
+	try {
+		roomCreds = await resolveGroupRoomCredentials(username, groupId, partitionId)
+	}
+	catch {
+		return false
+	}
+	return partitionSlotMatchesCredentials(getFederationPartitionSlot(username, groupId, partitionId), roomCreds)
+}
+
+/**
  * 群联邦连接缓存失效（房间名或成员变更后调用；fire-and-forget leave）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
@@ -99,6 +126,23 @@ export async function ensureFederationRoom(username, groupId, opts = {}) {
 }
 
 /**
+ * 本群所需分区均已绑定且 room 凭证未变（rebind 幂等跳过）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {{ channelId?: string }} [opts] 当前活跃频道
+ * @returns {Promise<boolean>} 是否已全部绑定且凭证未变
+ */
+export async function isFederationRoomAlreadyBound(username, groupId, opts = {}) {
+	const groupSettings = await loadFederationGroupSettings(username, groupId)
+	const partitionIds = resolveNodePartitionIds(groupSettings, opts.channelId)
+	if (!partitionIds.length) return false
+	for (const partitionId of partitionIds) {
+		if (!await isFederationPartitionAlreadyBound(username, groupId, partitionId)) return false
+	}
+	return true
+}
+
+/**
  * 按 action 决定联邦出站槽（频道事件优先走 ch-XX；其他走 sync）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
@@ -139,13 +183,11 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		return null
 	}
 	const rtcRoomKey = `${username}:${groupId}:${partitionId}`
-	const desiredRoomName = roomCreds.roomId
-	const desiredPassword = roomCreds.password
 	/** @type {import('./federationSlot.mjs').FederationSlot | null | undefined} */
 	let supersededSlot = null
 	if (hasFederationPartitionSlot(username, groupId, partitionId)) {
 		const existing = getFederationPartitionSlot(username, groupId, partitionId)
-		if (existing?.trysteroRoomName === desiredRoomName && existing?.roomSecret === desiredPassword)
+		if (partitionSlotMatchesCredentials(existing, roomCreds))
 			return existing
 		// join-before-leave 以 slot 粒度实现：先 detach 旧 slot、join 新 room，成功后再 leave 旧 slot，避免 offerPool 归零销毁。
 		supersededSlot = detachFederationPartitionSlot(username, groupId, partitionId) ?? null

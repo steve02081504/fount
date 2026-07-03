@@ -1,6 +1,5 @@
+import { parseEntityHash } from '../../shared/entityHash.mjs'
 import { filterSetsFromPersonalListEntries } from '../../shared/personalFilter.mjs'
-
-import { parseEntityHash } from './entityHash.mjs'
 
 const EMPTY = filterSetsFromPersonalListEntries([])
 

@@ -5,7 +5,7 @@
  * 【数据结构】pubKeyHex64、nonceBase64Url、Uint8Array signable。
  * 【关联】dmLink.mjs、signer.mjs；后端 DM 建群验签。
  */
-import { normalizePubKeyHex } from './pubKeyHex.mjs'
+import { normalizePubKeyHex } from '../../shared/pubKeyHex.mjs'
 
 /** §16 DM Link 验签域前缀。 */
 export const DM_LINK_SIGNATURE_PREFIX = 'fount-dm-link'

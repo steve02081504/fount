@@ -32,7 +32,7 @@ import {
 	publishVolatileToFederation,
 	requestJoinSnapshotFromPeers,
 } from '../../chat/federation/index.mjs'
-import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
+import { ensureFederationRoom, invalidateFederationRoomCache, isFederationRoomAlreadyBound } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import { markGroupOfflineStarted } from '../../chat/federation/syncState.mjs'
 import { getPendingDecryptBufferStats } from '../../chat/file_keys/buffer.mjs'
@@ -415,6 +415,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username } = membership
 		const channelId = String(req.body?.channelId || '').trim() || null
+		if (await isFederationRoomAlreadyBound(username, groupId, { channelId: channelId || undefined }))
+			return res.status(200).json({ ok: true, skipped: true, channelId })
 		const slot = await ensureFederationRoom(username, groupId, { channelId: channelId || undefined })
 		if (!slot)
 			return res.status(200).json({ ok: true, skipped: true, reason: 'federation_inactive', channelId })

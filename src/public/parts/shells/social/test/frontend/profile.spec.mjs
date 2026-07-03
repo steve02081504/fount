@@ -133,10 +133,7 @@ test.describe('Social profile', () => {
 		)
 		expect(blockRes.ok()).toBe(true)
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#blocklistSection code.entity-hash')).toContainText(
-			dummy.slice(0, 16),
-			{ timeout: 20_000 },
-		)
+		await expect(page.locator(`#blocklistSection [data-unblock="${dummy}"]`)).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/relationships/block')

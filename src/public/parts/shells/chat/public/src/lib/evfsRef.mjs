@@ -1,5 +1,5 @@
 /** 浏览器端 evfs: 引用解析（与 `scripts/p2p/entity/files/evfs_ref.mjs` 一致）。 */
-import { isEntityHash128 } from './entityHash.mjs'
+import { isEntityHash128 } from '../../shared/entityHash.mjs'
 
 /** @type {string} */
 export const EVFS_SCHEME = 'evfs:'
