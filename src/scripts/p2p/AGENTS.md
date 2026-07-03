@@ -1,3 +1,9 @@
+---
+description: P2P federation, trust graph, Mailbox, Chat crypto, EVFS, and reputation
+globs: src/scripts/p2p/**, src/decl/p2pAPI.ts, src/server/web_server/p2p_endpoints.mjs
+alwaysApply: false
+---
+
 # P2P / Federation / Entity Files Guide
 
 > Read this when working on P2P, federation, trust graph, Mailbox, Chat crypto/archive, Social federation, or EVFS. No need to load it otherwise.

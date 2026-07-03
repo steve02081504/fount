@@ -1,3 +1,9 @@
+---
+description: Creating or modifying fount plugins (GetPrompt, TweakPrompt, ReplyHandler) and PluginAPI_t
+globs: src/public/parts/plugins/**, src/decl/pluginAPI.ts
+alwaysApply: false
+---
+
 # Plugin Architecture & Creation Guide
 
 ## 1. Plugin Structure

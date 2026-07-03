@@ -1,3 +1,9 @@
+---
+description: Social Shell frontend (follow/block, federated notifications, timeline UI)
+globs: src/public/parts/shells/social/**, src/decl/socialAPI.ts
+alwaysApply: false
+---
+
 # Social Shell Frontend Guide
 
 ## Trust model

@@ -1,3 +1,9 @@
+---
+description: Creating or modifying Shell parts (URL mapping, Load, endpoints, registries)
+globs: src/public/parts/shells/**, src/decl/shellAPI.ts
+alwaysApply: false
+---
+
 # Shell Architecture & Creation Guide
 
 ## 1. URL & Filesystem Mapping

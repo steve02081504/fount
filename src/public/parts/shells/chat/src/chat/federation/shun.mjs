@@ -101,7 +101,11 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
 	if (isBlockedPeer(pk)) return { shun: true, reason: 'blocked' }
 	if (fedState?.bannedMembers?.has?.(pk)) return { shun: true, reason: 'not_a_member' }
 	const member = fedState?.members?.[pk]
-	if (!member || member.status !== 'active') return { shun: true, reason: 'not_a_member' }
+	// 已知成员但非 active（被移除）→ 闭门羹。但“从未见过该 pubKey”不等于“已出局”：入群 bootstrap 期
+	// 新成员的 member_join 尚未物化到本端时，若对未知 pubKey 回 fed_shun('not_a_member')，会让新成员因“对端
+	// 还不认识我”被 shun 共识误判出局（suspectedRemoved 自锁 5 分钟）。故未知 pubKey 一律放行不 shun，与
+	// resolveShunForNodeHashRequester 对未匹配节点的放行语义保持一致；真正的非成员由后续 attestation 校验静默拦截。
+	if (member && member.status !== 'active') return { shun: true, reason: 'not_a_member' }
 	return { shun: false, reason: null }
 }
 

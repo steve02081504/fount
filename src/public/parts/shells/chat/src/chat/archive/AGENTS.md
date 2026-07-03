@@ -1,3 +1,9 @@
+---
+description: Chat cold archive (UTC month bucketing, digest, federation backfill)
+globs: src/public/parts/shells/chat/src/chat/archive/**, src/public/parts/shells/chat/test/**/post_archive*.test.mjs
+alwaysApply: false
+---
+
 # Cold archive (Chat)
 
 - **Month bucketing**: the only standard is the **UTC** calendar month `YYYY-MM` (`archiveMonthKey` uses `getUTCFullYear` / `getUTCMonth`; never bucket with local-time `getMonth()` etc.).

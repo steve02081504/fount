@@ -1,3 +1,9 @@
+---
+description: Frontend shared page utilities (API, i18n, theming, templates, markdown)
+globs: src/public/pages/**
+alwaysApply: false
+---
+
 # Frontend Common Functions Guide
 
 **Location**: `@src/public/pages/scripts/`

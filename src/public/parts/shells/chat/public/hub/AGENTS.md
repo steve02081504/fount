@@ -1,3 +1,9 @@
+---
+description: Chat Hub frontend (trust model, streaming AV, message storage UI)
+globs: src/public/parts/shells/chat/public/hub/**
+alwaysApply: false
+---
+
 # Chat Hub Frontend Guide
 
 ## Trust model
