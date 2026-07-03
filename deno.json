@@ -1,6 +1,11 @@
 {
 	"nodeModulesDir": "auto",
 	"lock": false,
+	"minimumDependencyAge": {
+		"exclude": [
+			"npm:@steve02081504/*"
+		]
+	},
 	"unstable": [
 		"npm-lazy-caching"
 	],
