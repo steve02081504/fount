@@ -4,6 +4,8 @@
  * 目录参数会展开为各 *.test.mjs，每个文件在独立子进程中运行，
  * 避免集成 harness 在同一进程内堆积多个 server 实例导致 OOM。
  */
+import 'fount/scripts/test/env.mjs'
+
 import { readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
