@@ -33,8 +33,8 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  * @returns {Promise<void>}
  */
 async function appendLogCore(groupId, chatMetadata, entry) {
-	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
-		await entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), entry)
+	if (entry.extension.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
+		await entry.extension.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), entry)
 	else
 		chatMetadata.chatLog.push(entry)
 
@@ -43,7 +43,7 @@ async function appendLogCore(groupId, chatMetadata, entry) {
 
 	chatMetadata.timeLines = [entry]
 	chatMetadata.timeLineIndex = 0
-	chatMetadata.LastTimeSlice = entry.timeSlice
+	chatMetadata.LastTimeSlice = entry.extension.timeSlice
 }
 
 /**
@@ -56,8 +56,8 @@ export async function addChatLogEntry(groupId, entry) {
 	const chatMetadata = await getActiveGroupRuntime(groupId)
 	await appendLogCore(groupId, chatMetadata, entry)
 
-	if (entry.role === 'char' && entry.timeSlice.charname) {
-		const spokenChars = new Set(chatMetadata.chatLog.filter(e => e.role === 'char' && e.timeSlice.charname).map(e => e.timeSlice.charname))
+	if (entry.role === 'char' && entry.extension.timeSlice.charname) {
+		const spokenChars = new Set(chatMetadata.chatLog.filter(e => e.role === 'char' && e.extension.timeSlice.charname).map(e => e.extension.timeSlice.charname))
 		if (spokenChars.size >= 2)
 			void unlockAchievement(chatMetadata.username, 'shells/chat', 'multiplayer_chat')
 	}
@@ -75,8 +75,8 @@ export async function addChatLogEntry(groupId, entry) {
 		}, `/parts/shells:chat/hub/#group:${groupId}:default`)
 
 	const replyFrequency = await getCharReplyFrequency(groupId)
-	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), replyFrequency)
+	if (entry.extension.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
+		await entry.extension.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), replyFrequency)
 
 	return entry
 }

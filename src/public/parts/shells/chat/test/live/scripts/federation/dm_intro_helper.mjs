@@ -1,5 +1,5 @@
 /**
- * Emit signed DM intro link fields for fed_dm.ps1 (no HTTP signing endpoint).
+ * Emit signed DM intro link fields for fed_dm.mjs (no HTTP signing endpoint).
  * Usage: deno run dm_intro_helper.mjs --data-path <root> --user <username>
  *
  * Lightweight: reads federation identity + dmIntro directly from disk (no server init).
@@ -11,8 +11,8 @@ import path from 'node:path'
 import process from 'node:process'
 import { parseArgs } from 'node:util'
 
-import { dmLinkSignableBytes } from 'fount/public/parts/shells/chat/src/chat/lib/dmLinkSignature.mjs'
 import { formatDmRunUri } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
+import { dmLinkSignableBytes } from 'fount/public/parts/shells/chat/src/chat/lib/dmLinkSignature.mjs'
 import { loadJsonFileIfExists, saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { sign } from 'fount/scripts/p2p/crypto.mjs'
 import { HEX_ID_64, normalizeHex64 } from 'fount/scripts/p2p/hexIds.mjs'

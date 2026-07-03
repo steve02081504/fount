@@ -185,16 +185,16 @@ async function buildChatLogEntryFromDagMessage(
 
 	if (entry.role === 'char') {
 		entry.name = charId || 'char'
-		entry.timeSlice = slice.copy()
-		entry.timeSlice.charname = charId
+		entry.extension.timeSlice = slice.copy()
+		entry.extension.timeSlice.charname = charId
 	}
 	else if (entry.role === 'user') {
 		entry.name = 'user'
-		entry.timeSlice = slice.copy()
+		entry.extension.timeSlice = slice.copy()
 	}
 	else {
 		entry.name = line.sender || entry.role || 'system'
-		entry.timeSlice = slice.copy()
+		entry.extension.timeSlice = slice.copy()
 	}
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
 	const fileCount = editOverride?.fileCount != null ? editOverride.fileCount : content.fileCount
@@ -215,7 +215,7 @@ export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const defaultChannelId = await resolveGroupChannelId(username, groupId, null)
 	const lines = await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
 	const i18n = await loadDagHydrationI18n(username)
-	const prelude = chatMetadata.chatLog.filter(entry => entry.timeSlice?.greeting_type)
+	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
 	const dagEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
 		chatMetadata.LastTimeSlice,
@@ -232,7 +232,7 @@ export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 		: []
 	chatMetadata.timeLineIndex = 0
 	if (chatMetadata.chatLog.length)
-		chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1].timeSlice
+		chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1].extension.timeSlice
 
 	await reconcileContextSidecarsWithChatLog(username, groupId, chatMetadata.chatLog)
 }

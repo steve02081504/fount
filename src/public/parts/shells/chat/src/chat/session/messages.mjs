@@ -100,7 +100,7 @@ export async function deleteMessage(groupId, index) {
 	}
 
 	if (chatMetadata.chatLog.length)
-		chatMetadata.LastTimeSlice = last.timeSlice
+		chatMetadata.LastTimeSlice = last.extension.timeSlice
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()
 
@@ -136,12 +136,12 @@ export async function editMessage(groupId, index, newContent) {
 		editedContent = await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEdit(editRequest)
 	else {
 		const entry = chatMetadata.chatLog[index]
-		if (entry.timeSlice.charname) {
-			const char = entry.timeSlice.chars[entry.timeSlice.charname]
+		if (entry.extension.timeSlice.charname) {
+			const char = entry.extension.timeSlice.chars[entry.extension.timeSlice.charname]
 			editedContent = await char.interfaces.chat?.MessageEdit?.(editRequest)
 		}
-		else if (entry.timeSlice.playername)
-			editedContent = await entry.timeSlice?.player?.interfaces?.chat?.MessageEdit?.(editRequest)
+		else if (entry.extension.timeSlice.playername)
+			editedContent = await entry.extension.timeSlice?.player?.interfaces?.chat?.MessageEdit?.(editRequest)
 		editedContent ??= newContent
 
 		if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageEditing)
@@ -154,7 +154,7 @@ export async function editMessage(groupId, index, newContent) {
 		}
 	}
 
-	const { timeSlice } = chatMetadata.chatLog[index]
+	const timeSlice = chatMetadata.chatLog[index].extension.timeSlice
 	const entry = timeSlice.charname
 		? await buildChatLogEntryFromCharReply(
 			editedContent,

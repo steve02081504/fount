@@ -62,14 +62,14 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
-		const { timeSlice } = previousEntry
+		const timeSlice = previousEntry.extension.timeSlice
 		const { greeting_type } = timeSlice
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID()
-		newEntry.timeSlice = timeSlice.copy()
-		newEntry.timeSlice.greeting_type = greeting_type
-		newEntry.timeSlice.charname = timeSlice.charname
+		newEntry.extension.timeSlice = timeSlice.copy()
+		newEntry.extension.timeSlice.greeting_type = greeting_type
+		newEntry.extension.timeSlice.charname = timeSlice.charname
 
 		newEntry.role = previousEntry.role
 		newEntry.name = previousEntry.name
@@ -136,7 +136,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 
 				chatMetadata.timeLines[newTimeLineIndex] = newEntry
 				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry
-				chatMetadata.LastTimeSlice = newEntry.timeSlice
+				chatMetadata.LastTimeSlice = newEntry.extension.timeSlice
 
 				broadcastGroupEvent(groupId, {
 					type: 'message_replaced',
@@ -147,7 +147,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				newEntry.content = `\`\`\`\nError generating greeting:\n${e.message}\n\`\`\``
 				newEntry.is_generating = false
 				newEntry.id = entry.id
-				newEntry.timeSlice = timeSlice
+				newEntry.extension.timeSlice = timeSlice
 				broadcastGroupEvent(groupId, {
 					type: 'message_replaced',
 					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
@@ -163,7 +163,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 	} else {
 		entry = chatMetadata.timeLines[newTimeLineIndex]
 		chatMetadata.timeLineIndex = newTimeLineIndex
-		chatMetadata.LastTimeSlice = entry.timeSlice
+		chatMetadata.LastTimeSlice = entry.extension.timeSlice
 		chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
 
 		broadcastGroupEvent(groupId, {

@@ -21,8 +21,11 @@ export async function appendLocalSystemChatLog(groupId, channelId, text) {
 		name: await geti18nForUser(owner, 'chat.group.systemSenderName').catch(() => 'System'),
 		content: text,
 		content_for_show: text,
-		timeSlice: chatMetadata.LastTimeSlice || { personas: {}, chars: {}, plugins: {} },
-		extension: { groupChannelId: channelId || 'default', localOnly: true },
+		extension: {
+			groupChannelId: channelId || 'default',
+			localOnly: true,
+			timeSlice: chatMetadata.LastTimeSlice || { personas: {}, chars: {}, plugins: {} },
+		},
 	}
 	chatMetadata.chatLog.push(entry)
 	chatMetadata.timeLines = [entry]

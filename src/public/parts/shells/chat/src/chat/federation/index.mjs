@@ -207,7 +207,10 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 	const localTips = computeDagTipIdsFromEvents(events)
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 
-	// 小圈子补洞顺序：① 信誉 joinSnapshot（无 checkpoint 或 tips 错位）② gossip wantIds ③ syncMissingArchiveMonths（digest 仲裁）
+	// 小圈子补洞顺序：① 首入群（无 checkpoint）信誉 joinSnapshot 引导 ② gossip wantIds 增量补洞
+	// ③ 仅当 gossip 仍补不齐远端 tip（真落后/事件已归档）才升级为 joinSnapshot ④ syncMissingArchiveMonths（digest 仲裁）。
+	// 注意：不能仅凭 tipsHash 与对端不一致就每轮发起完整 joinSnapshot——活跃 DAG 下两端 tip 天然瞬时相异
+	// （本端 merge-tips 产生对端没有的 merge 事件时更是永久相异），那会让每次 catchup 都空转 ~8s 死等快照仲裁。
 	if (!localArchive.checkpoint?.checkpoint_event_id) {
 		await waitForFederationPeers(slot, { maxWaitMs: PEER_ROSTER_WAIT_MS })
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries: [] })
@@ -234,7 +237,6 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 		pickTargetPeerIds,
 	})
 
-	await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries })
 	void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
 
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
@@ -284,6 +286,10 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 		// 无进展（本轮未补回任何已索要 id）或命中退避：停止迭代，余量交由调度器/心跳后续兜底。
 		if (wantIdsRateLimited || filledThisIter <= 0) break
 	}
+	// gossip 补洞后仍存在无法拉齐的远端 tip（真落后：缺链事件已被对端归档/GC，gossip 拿不到）→ 升级 joinSnapshot。
+	// 本端领先或已同步时 wantIdsStillMissing===0，跳过昂贵的快照仲裁，避免活跃 DAG 下每轮 catchup 空转死等。
+	if (wantIdsStillMissing > 0 && !wantIdsRateLimited && localArchive.checkpoint?.checkpoint_event_id)
+		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries })
 	const stats = {
 		federationActive: true,
 		tipsCollected: remoteTips.size,

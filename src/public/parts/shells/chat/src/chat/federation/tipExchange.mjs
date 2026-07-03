@@ -4,6 +4,9 @@ import {
 	setPendingTipExchange,
 } from './registry.mjs'
 
+/** 定向 tip 交换提前收窗后，为迟到 pong 分片保留的宽限毫秒数。 */
+const EARLY_SETTLE_GRACE_MS = 150
+
 /**
  * 注册 tip 交换槽、向邻居发 ping，等待 pong 回填远端 DAG 叶 id。
  * @param {string} username 用户
@@ -26,25 +29,39 @@ export async function collectRemoteTipsFromPeers(username, groupId, opts) {
 	const remoteSummaries = []
 
 	return new Promise(resolve => {
-		/**
-		 *
-		 */
+		let graceTimer = null
 		const finish = () => {
 			clearTimeout(timer)
+			clearTimeout(graceTimer)
 			deletePendingTipExchange(username, groupId)
 			resolve({ tipIds: collected, remoteSummaries })
 		}
+		// 已定向到的目标全部回 pong 即可提前收窗（再留一小段宽限收尾迟到分片），无需死等满 waitMs。
+		// onResponse 由 pong handler 每次收到 pong 后调用（无论是否携带 archiveSummary）。
+		const onResponse = () => {
+			pending.responded++
+			const expected = pending.expectedPeers
+			if (!expected || pending.responded < expected) return
+			if (graceTimer) return
+			graceTimer = setTimeout(finish, EARLY_SETTLE_GRACE_MS)
+		}
 		const timer = setTimeout(finish, opts.waitMs)
-		setPendingTipExchange(username, groupId, {
+		const pending = {
 			collected,
 			remoteSummaries,
 			timer,
 			resolve: finish,
-		})
+			onResponse,
+			expectedPeers: 0,
+			responded: 0,
+		}
+		setPendingTipExchange(username, groupId, pending)
 
 		void (async () => {
 			if (!opts.sendTipPing) return
 			const targets = await opts.pickTargetPeerIds()
+			// 仅在定向发送（已知目标数）时启用提前收窗；广播（targets 为空、对端数未知）仍走满 waitMs。
+			pending.expectedPeers = targets.length
 			const ping = {
 				nodeHash: opts.nodeHash,
 				tips: opts.localTips,

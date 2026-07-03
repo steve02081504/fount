@@ -2,7 +2,7 @@
  * 【文件】logEntries.mjs — 聊天日志条目装配工具
  * 【职责】buildChatLogEntryFromCharReply / buildChatLogEntryFromUserMessage 将部件接口返回值转为 chatLogEntry_t；getChannelForCharStream 推断流式回复所属频道。
  * 【原理】角色条目合并 getPartDetails 的 name/avatar；用户条目写入 extension.groupChannelId；getChannelForCharStream 向前扫描 chatLog 找最近 user 消息的频道。
- * 【数据结构】chatLogEntry_t 字段（role/content/timeSlice/files/extension/logContext*）。
+ * 【数据结构】chatLogEntry_t 字段（role/content/extension.timeSlice/files/extension/logContext*）。
  * 【关联】models、channelContent、messages、triggerReply、chatRequest.AddChatLogEntry。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -47,6 +47,7 @@ export function getChannelForCharStream(chatMetadata, placeholderEntry) {
 export async function buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username) {
 	timeSlice.charname = charname
 	const { info } = await getPartDetails(username, `chars/${charname}`) || {}
+	const { timeSlice: _drop, ...extensionRest } = result.extension || {}
 
 	const entry = new chatLogEntry_t()
 
@@ -56,16 +57,15 @@ export async function buildChatLogEntryFromCharReply(result, timeSlice, char, ch
 		content: result.content,
 		content_for_show: result.content_for_show,
 		content_for_edit: result.content_for_edit,
-		timeSlice,
 		role: 'char',
 		time_stamp: new Date(),
 		files: result.files || [],
-		extension: result.extension || {},
 		logContextBefore: result.logContextBefore,
 		logContextAfter: result.logContextAfter,
 		charVisibility: result.charVisibility,
 		visibility: result.visibility,
 	})
+	entry.extension = { ...extensionRest, timeSlice }
 	return entry
 }
 
@@ -81,21 +81,20 @@ export async function buildChatLogEntryFromCharReply(result, timeSlice, char, ch
 export async function buildChatLogEntryFromUserMessage(result, timeSlice, user, personaname, username) {
 	timeSlice.playername = timeSlice.player_id
 	const { info } = (personaname ? await getPartDetails(username, `personas/${personaname}`) : undefined) || {}
-	const entry = new chatLogEntry_t()
-	const extension = { ...result.extension || {} }
+	const { timeSlice: _drop, ...extension } = result.extension || {}
 	const groupChannelId = resolveChannelId(result.groupChannelId, '')
 	if (groupChannelId) extension.groupChannelId = groupChannelId
+	const entry = new chatLogEntry_t()
 	Object.assign(entry, {
 		name: result.name || info?.name || timeSlice.player_id || username,
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
-		timeSlice,
 		role: 'user',
 		time_stamp: new Date(),
 		files: result.files || [],
-		extension,
 		charVisibility: result.charVisibility,
 		visibility: result.visibility,
 	})
+	entry.extension = { ...extension, timeSlice }
 	return entry
 }

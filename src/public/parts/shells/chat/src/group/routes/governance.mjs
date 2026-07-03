@@ -377,6 +377,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 			throw httpError(400, 'ballotId required')
 
 		const targetHash = proposedOwnerPubKeyHash.trim().toLowerCase()
+		// 委托群主须能签 checkpoint（authorizeEvent/物化层均只认 64-hex pubKeyHash）；
+		// agent 的 128-hex entityHash 无独立签名密钥，提前拒绝，避免 role_assign 落盘后中途 500。
+		if (!isHex64(targetHash))
+			throw httpError(400, 'proposed owner must be a user pubKeyHash (agents cannot hold group ownership)')
 		if (!resolveActiveMemberKey(state, targetHash))
 			throw httpError(400, 'proposed owner is not an active member')
 

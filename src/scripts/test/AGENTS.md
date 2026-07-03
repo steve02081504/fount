@@ -1,0 +1,31 @@
+---
+description: fount test framework, live probes, debugging hung runs, and operator diagnostics
+globs: src/scripts/test/**, **/test/live/**, **/test/manifest.mjs
+alwaysApply: false
+---
+
+# Test Framework & Debugging Guide
+
+## Architecture
+
+- **Entry**: `fount test` → `src/scripts/test/runner/index.mjs` → per-suite manifest → Deno unit / Node integration / live drivers.
+- **Live driver**: `src/scripts/test/live/runner.mjs` spawns ephemeral fount nodes, injects `FOUNT_TEST_NODE_*_BASE_URL/KEY/DATA` env, runs suite via `deno run -c deno.json`, tears down after.
+- **Chat live suites**: `src/public/parts/shells/chat/test/live/run.mjs`; `denoLiveRun()` in `src/scripts/test/live/deno_run.mjs` builds argv.
+- **Shared libs**:
+  - `src/scripts/test/live/http.mjs` — fetch, multipart, `PollUntil`/`sleep`, test PNG bytes
+  - `src/scripts/test/live/singleNode/helpers.mjs` — `chatApi`, `testCase`, `allowNoise`
+  - `src/scripts/test/live/federation/common.mjs` — multi-node env, `Api`/`Wait-FedConverged`, group setup/cleanup
+  - `src/scripts/test/live/federation/cleanup.mjs` — pre/post fed suite group purge (invoked by `runner.mjs`)
+  - `src/scripts/test/live/env.mjs` — `FOUNT_TEST_BASE_URL` / `FOUNT_API_KEY` helpers
+
+## PowerShell banned for new tests
+
+**All new HTTP/WebSocket live tests must be Deno `.mjs` via `denoLiveRun(path)`.** PS is banned: dynamic scoping bugs (scriptblock variable resolution against invoker's stack causes infinite recursion in wrapped helpers), cross-platform incompatibility, inability to import `fount/*` modules (crypto, dm intro, p2p helpers), and PS footguns (`"$uri?foo"` null-conditional, `$env:VAR?.Trim()` wildcard, hung-run requiring attach-to-`pwsh`).
+
+Hand-rerun: `deno run --allow-all -c deno.json <probe.mjs>` with env from a prior `fount test` log, or `deno run … src/public/parts/shells/chat/test/live/run.mjs --suite smoke_chat`.
+
+## Diagnosing a hung live test
+
+- **Logs**: `fount log` on ephemeral test nodes; runner streams probe stdout/stderr.
+- **Hung Deno probe**: inspect the fetch poll loop — federation helpers use explicit `while` + `await probe()` (never nested scriptblock wrappers).
+- **Stuck TCP**: `Get-NetTCPConnection -OwningProcess $pid` (Windows) shows which node/port an in-flight HTTP call targets.

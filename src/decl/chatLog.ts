@@ -128,7 +128,7 @@ export class chatReplyRequest_t {
 
 /**
  * 聊天日志条目。
- * `timeSlice` 运行时经 getter 映射到 `extension.timeSlice`（见 `models.mjs`）。
+ * RPG 分支上下文存于 `extension.timeSlice`。
  */
 export class chatLogEntry_t {
 	id: string

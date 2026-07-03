@@ -212,8 +212,11 @@ export function registerSyncHandlers(roomContext) {
 			if (!tipPong) return
 			ingestRemoteTipsForExchange(username, groupId, tipPong.tips)
 			const pending = getPendingTipExchange(username, groupId)
-			if (pending && tipPong.archiveSummary)
-				pending.remoteSummaries.push(tipPong.archiveSummary)
+			if (pending) {
+				if (tipPong.archiveSummary)
+					pending.remoteSummaries.push(tipPong.archiveSummary)
+				pending.onResponse?.()
+			}
 			// 远端 pong 的 tips 集合与本地不一致（任何 DAG 分歧）⇒ 调度补齐（心跳/被动 pong 也能驱动兜底）。
 			const { readJsonl } = requireDagDeps()
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)

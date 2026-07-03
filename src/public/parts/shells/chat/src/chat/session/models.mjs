@@ -2,7 +2,7 @@
  * 【文件】models.mjs — 聊天会话领域模型（时间切片、日志条目、元数据）
  * 【职责】定义 timeSlice_t（某时刻的角色/世界/人格/插件上下文）、chatLogEntry_t（单条消息）、chatMetadata_t（会话容器）；提供 JSON/磁盘 toData/fromJSON 与 StartNewAs 默认部件装配。
  * 【原理】timeSlice 运行时持有部件 API 引用，持久化仅存 ID 列表；chatLogEntry 文件 buffer 在 toJSON 中转 base64、在 toData 中落为 file: 句柄；chatMetadata 正文 chatLog 由 DAG 水合，磁盘只保留 greetingLog 与 persistedTimeSlice。
- * 【数据结构】timeSlice_t、chatLogEntry_t（id/role/content/timeSlice/files/extension/is_generating）、chatMetadata_t（username/chatLog/timeLines/LastTimeSlice）。
+ * 【数据结构】timeSlice_t、chatLogEntry_t（id/role/content/extension.timeSlice/files/extension/is_generating）、chatMetadata_t（username/chatLog/timeLines/LastTimeSlice）。
  * 【关联】parts_loader、entity/files/evfs、runtime.buildTimeSliceFromSession、dag/hydration。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -132,18 +132,6 @@ export class chatLogEntry_t {
 	/** @type {boolean} */
 	is_generating = false
 
-	/** @returns {timeSlice_t} RPG 分支上下文（持久化在 extension.timeSlice） */
-	get timeSlice() {
-		if (!this.extension.timeSlice)
-			this.extension.timeSlice = new timeSlice_t()
-		return this.extension.timeSlice
-	}
-
-	/** @param {timeSlice_t} value RPG 分支上下文 */
-	set timeSlice(value) {
-		this.extension.timeSlice = value
-	}
-
 	/**
 	 * 创建空聊天日志条目并分配新 UUID。
 	 * @returns {void}
@@ -176,7 +164,7 @@ export class chatLogEntry_t {
 			})),
 			extension: {
 				...this.extension,
-				timeSlice: this.timeSlice.toJSON(),
+				timeSlice: this.extension.timeSlice?.toJSON?.() ?? {},
 			},
 		}
 	}
@@ -200,7 +188,7 @@ export class chatLogEntry_t {
 			is_generating: this.is_generating,
 			extension: {
 				...this.extension,
-				timeSlice: await this.timeSlice.toData(),
+				timeSlice: this.extension.timeSlice ? await this.extension.timeSlice.toData() : {},
 			},
 			files: await Promise.all(this.files.map(async file => {
 				if (typeof file.buffer === 'string' && parseEvfsRef(file.buffer))
@@ -304,7 +292,7 @@ export class chatMetadata_t {
 	toJSON() {
 		return {
 			username: this.username,
-			greetingLog: this.chatLog.filter(e => e.timeSlice?.greeting_type).map(log => log.toJSON()),
+			greetingLog: this.chatLog.filter(e => e.extension.timeSlice?.greeting_type).map(log => log.toJSON()),
 			persistedTimeSlice: this.LastTimeSlice.toJSON?.() ?? {},
 			chatLog: [],
 			timeLines: [],
@@ -317,7 +305,7 @@ export class chatMetadata_t {
 	 * @returns {Promise<object>} 持久化数据对象
 	 */
 	async toData() {
-		const prelude = this.chatLog.filter(e => e.timeSlice?.greeting_type)
+		const prelude = this.chatLog.filter(e => e.extension.timeSlice?.greeting_type)
 		return {
 			username: this.username,
 			greetingLog: await Promise.all(prelude.map(async log => log.toData(this.username))),
@@ -341,7 +329,7 @@ export class chatMetadata_t {
 
 		const LastTimeSlice = json.persistedTimeSlice
 			? await timeSlice_t.fromJSON(json.persistedTimeSlice, json.username)
-			: chatLog.length ? chatLog[chatLog.length - 1].timeSlice : new timeSlice_t()
+			: chatLog.length ? chatLog[chatLog.length - 1].extension.timeSlice : new timeSlice_t()
 
 		return Object.assign(new chatMetadata_t(), {
 			username: json.username,

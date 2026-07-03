@@ -53,7 +53,7 @@ export async function getActiveGroupRuntime(groupId) {
  * @returns {number|undefined} 非问候消息条数
  */
 export function isVividGroup(chatMetadata) {
-	return chatMetadata?.chatLog?.filter?.(entry => entry && !entry.timeSlice?.greeting_type)?.length
+	return chatMetadata?.chatLog?.filter?.(entry => entry && !entry.extension.timeSlice?.greeting_type)?.length
 }
 
 /**

@@ -64,7 +64,7 @@ async function resolveMirrorContext(entry, username, groupId) {
 	if (!Number.isFinite(timestamp)) timestamp = Date.now()
 	const { sender } = await resolveLocalEventSigner(username, groupId)
 	const charId = entry.role === 'char'
-		? entry.timeSlice?.charname || entry.name || null
+		? entry.extension.timeSlice?.charname || entry.name || null
 		: null
 	const groupChannelId = entry.extension?.groupChannelId
 	const channelIdForDag = await resolveGroupChannelId(username, groupId, groupChannelId)
@@ -94,7 +94,7 @@ function withDagEventId(entry, eventId) {
 export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
 	try {
 		if (!username || !entry?.id) return null
-		if (entry.timeSlice?.greeting_type) return null
+		if (entry.extension.timeSlice?.greeting_type) return null
 		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const sessionSnapshot = await exportSessionSnapshot(username, groupId, channelIdForDag)
 		const event = await appendSignedLocalEvent(username, groupId, {
@@ -212,7 +212,7 @@ async function appendFinalEditWithRetry(username, groupId, eventBody, attempt = 
 export async function finalizeDagGeneratingMessage(groupId, entry, username, dagEventId) {
 	try {
 		if (!username) return
-		if (entry.extension?.isGreeting || entry.timeSlice?.greeting_type) return
+		if (entry.extension?.isGreeting || entry.extension.timeSlice?.greeting_type) return
 		const targetId = dagEventId ?? entry.extension?.dagEventId
 		if (!targetId) return
 		const text = entryContentToMirrorText(entry)
@@ -251,7 +251,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 export async function syncChatLogEntryToDag(groupId, entry, username) {
 	try {
 		if (entry.is_generating) return
-		if (entry.timeSlice?.greeting_type) return
+		if (entry.extension.timeSlice?.greeting_type) return
 		if (!username) return
 		const text = entryContentToMirrorText(entry)
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
@@ -282,7 +282,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 	try {
 		if (!deletedEntry?.id || !username) return
-		if (deletedEntry.timeSlice?.greeting_type) return
+		if (deletedEntry.extension.timeSlice?.greeting_type) return
 		await ensureGroup(username, groupId)
 		const targetId = deletedEntry.extension?.dagEventId
 		if (!targetId) return
@@ -310,7 +310,7 @@ export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 export async function mirrorEditToDag(groupId, originalEntryId, entry, username) {
 	try {
 		if (!originalEntryId || !username) return
-		if (entry.timeSlice?.greeting_type) return
+		if (entry.extension.timeSlice?.greeting_type) return
 		const targetId = entry.extension?.dagEventId
 		if (!targetId) return
 		const { channelIdForDag, sender } = await resolveMirrorContext(entry, username, groupId)

@@ -27,7 +27,7 @@ import { resolveGroupChannelId } from '../lib/channelId.mjs'
 export async function mirrorFeedbackToDag(groupId, entry, feedback, username) {
 	try {
 		if (!entry?.id || !username) return
-		if (entry.timeSlice?.greeting_type) return
+		if (entry.extension.timeSlice?.greeting_type) return
 		if (!feedback?.type) return
 		const targetId = entry.extension?.dagEventId
 		if (!targetId) return

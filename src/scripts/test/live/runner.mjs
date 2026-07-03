@@ -10,7 +10,9 @@ import { execFile } from 'npm:@steve02081504/exec'
 import { console } from '../../i18n.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
-const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.ps1')
+import { denoLiveRun } from './deno_run.mjs'
+
+const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 'cleanup.mjs')
 
 /**
  * 在仓库根目录执行子进程命令。
@@ -138,7 +140,7 @@ export async function runLiveSuite({
 		const env = buildLiveNodeEnv(nodes, repoRoot)
 
 		if (spec.fed) {
-			const pre = await runCommand(repoRoot, ['pwsh', '-NoProfile', '-File', federationCleanup], env)
+			const pre = await runCommand(repoRoot, denoLiveRun(federationCleanup), env)
 			if (pre.code !== 0) console.warnI18n('fountConsole.test.federationCleanupPre', { output: pre.output })
 		}
 
@@ -146,7 +148,7 @@ export async function runLiveSuite({
 		const result = await runCommand(repoRoot, spec.run, env, { stream: true })
 
 		if (spec.fed) {
-			const post = await runCommand(repoRoot, ['pwsh', '-NoProfile', '-File', federationCleanup], env)
+			const post = await runCommand(repoRoot, denoLiveRun(federationCleanup), env)
 			if (post.code !== 0) console.warnI18n('fountConsole.test.federationCleanupPost', { output: post.output })
 		}
 

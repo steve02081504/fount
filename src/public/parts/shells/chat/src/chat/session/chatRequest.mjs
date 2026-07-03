@@ -89,7 +89,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	let chatLogForRequest = chatMetadata.chatLog
 	const lines = await readChannelMessagesForUser(replicaUsername, groupId, effectiveChannelId, { limit: 500 })
 	const i18n = await loadDagHydrationI18n(replicaUsername)
-	const prelude = chatMetadata.chatLog.filter(entry => entry.timeSlice?.greeting_type)
+	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
 	const channelEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
 		chatMetadata.LastTimeSlice,

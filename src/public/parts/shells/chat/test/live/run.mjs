@@ -6,6 +6,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
+import { denoLiveRun } from 'fount/scripts/test/live/deno_run.mjs'
 import { runLiveSuiteCli } from 'fount/scripts/test/live/runner.mjs'
 import { resolveLiveNodeFleet } from 'fount/scripts/test/node/launch.mjs'
 
@@ -13,6 +14,8 @@ const liveDir = dirname(fileURLToPath(import.meta.url))
 const chatBootstrap = join(liveDir, '../node_bootstrap.mjs')
 const chatFixtures = join(liveDir, 'fixtures/chars')
 const liveFixtures = join(liveDir, 'fixtures')
+const scriptsDir = join(liveDir, 'scripts')
+const fedScripts = join(scriptsDir, 'federation')
 
 /** 联邦 live 套件默认双节点；个别套件可声明更大 fedNodes。 */
 const FED_LIVE_MAX_NODES = 6
@@ -59,32 +62,29 @@ function chatFedNodeConfig(index, extra = {}) {
 	}
 }
 
-const fedScripts = join(liveDir, 'scripts/federation')
-
 /** Chat live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[] }>} */
 const suites = {
-	e2e_single: { run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/e2e_single.ps1')] },
-	e2e_single_ext: { run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/e2e_single_ext.ps1')] },
-	smoke_chat: { run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/smoke_chat.ps1')] },
-	smoke_ai: { run: ['pwsh', '-NoProfile', '-File', join(liveDir, 'scripts/smoke_ai.ps1')] },
-	// 脚本 import fount/*，须 deno -c deno.json；node 无法解析 import map。
-	ws_test: { run: ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), join(liveDir, 'scripts/ws_test.mjs')] },
-	ws_rpc_test: { run: ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), join(liveDir, 'scripts/ws_rpc_test.mjs')] },
-	ws_stream_test: { run: ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), join(liveDir, 'scripts/ws_stream_test.mjs')] },
-	av_relay_test: { run: ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), join(liveDir, 'scripts/av_relay_test.mjs')] },
-	fed_test: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'test.ps1')] },
-	fed_e2e_ext: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'e2e_ext.ps1')] },
-	fed_dm: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'dm.ps1')] },
-	fed_archive_month: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'archive_month.ps1')] },
-	fed_mailbox: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'mailbox.ps1')] },
-	fed_ban: { fed: true, fedNodes: 3, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'ban.ps1')] },
-	fed_emoji: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'emoji.ps1')] },
-	fed_emoji_nonmember: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'emoji_nonmember.ps1')] },
-	fed_emoji_nearcache: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'emoji_nearcache.ps1')] },
-	fed_file_transfer: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'file_transfer.ps1')] },
-	fed_control_plane: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'control_plane.ps1')] },
-	fed_reputation_owner: { fed: true, run: ['pwsh', '-NoProfile', '-File', join(fedScripts, 'reputation_owner.ps1')] },
+	e2e_single: { run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')) },
+	e2e_single_ext: { run: denoLiveRun(join(scriptsDir, 'e2e_single_ext.mjs')) },
+	smoke_chat: { run: denoLiveRun(join(scriptsDir, 'smoke_chat.mjs')) },
+	smoke_ai: { run: denoLiveRun(join(scriptsDir, 'smoke_ai.mjs')) },
+	ws_test: { run: denoLiveRun(join(scriptsDir, 'ws_test.mjs')) },
+	ws_rpc_test: { run: denoLiveRun(join(scriptsDir, 'ws_rpc_test.mjs')) },
+	ws_stream_test: { run: denoLiveRun(join(scriptsDir, 'ws_stream_test.mjs')) },
+	av_relay_test: { run: denoLiveRun(join(scriptsDir, 'av_relay_test.mjs')) },
+	fed_test: { fed: true, run: denoLiveRun(join(fedScripts, 'test.mjs')) },
+	fed_e2e_ext: { fed: true, run: denoLiveRun(join(fedScripts, 'e2e_ext.mjs')) },
+	fed_dm: { fed: true, run: denoLiveRun(join(fedScripts, 'dm.mjs')) },
+	fed_archive_month: { fed: true, run: denoLiveRun(join(fedScripts, 'archive_month.mjs')) },
+	fed_mailbox: { fed: true, run: denoLiveRun(join(fedScripts, 'mailbox.mjs')) },
+	fed_ban: { fed: true, fedNodes: 3, run: denoLiveRun(join(fedScripts, 'ban.mjs')) },
+	fed_emoji: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji.mjs')) },
+	fed_emoji_nonmember: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji_nonmember.mjs')) },
+	fed_emoji_nearcache: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji_nearcache.mjs')) },
+	fed_file_transfer: { fed: true, run: denoLiveRun(join(fedScripts, 'file_transfer.mjs')) },
+	fed_control_plane: { fed: true, run: denoLiveRun(join(fedScripts, 'control_plane.mjs')) },
+	fed_reputation_owner: { fed: true, run: denoLiveRun(join(fedScripts, 'reputation_owner.mjs')) },
 }
 
 await runLiveSuiteCli({

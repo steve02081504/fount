@@ -198,7 +198,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 				chatMetadata.timeLines[timelineIndex] = finalEntry
 		}
 
-		chatMetadata.LastTimeSlice = finalEntry.timeSlice
+		chatMetadata.LastTimeSlice = finalEntry.extension.timeSlice
 
 		const owner = groupMetadatas.get(groupId)?.username
 		if (owner && placeholderEntry.extension?.dagEventId)
@@ -240,7 +240,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 
 		const finalEntry = await buildChatLogEntryFromCharReply(
 			charReply,
-			placeholderEntry.timeSlice,
+			placeholderEntry.extension.timeSlice,
 			request.char,
 			request.char_id,
 			chatMetadata.username,
@@ -260,10 +260,10 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		const savedEntry = await finalizeEntry(finalEntry, false)
 		const replyFrequency = await getCharReplyFrequency(groupId)
 		const savedChannelId = savedEntry.extension?.groupChannelId || null
-		if (savedEntry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-			await savedEntry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, savedChannelId), replyFrequency)
+		if (savedEntry.extension.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
+			await savedEntry.extension.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, savedChannelId), replyFrequency)
 		else
-			await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.timeSlice.charname ?? null)
+			await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.extension.timeSlice.charname ?? null)
 	}
 	catch (error) {
 		if (error.name === 'AbortError') {
@@ -390,17 +390,15 @@ async function buildCharReplyPlaceholder(chatMetadata, groupId, charname, channe
 	const placeholder = new chatLogEntry_t()
 	placeholder.role = 'char'
 	placeholder.is_generating = true
-	placeholder.timeSlice = chatMetadata.LastTimeSlice.copy()
-	delete placeholder.timeSlice.greeting_type
+	placeholder.extension.timeSlice = chatMetadata.LastTimeSlice.copy()
+	delete placeholder.extension.timeSlice.greeting_type
 	placeholder.time_stamp = new Date()
 	const { info } = await getPartDetails(chatMetadata.username, `chars/${charname}`) || {}
 	placeholder.name = info?.name || charname
 	placeholder.avatar = info?.avatar
-	placeholder.timeSlice.charname = charname
+	placeholder.extension.timeSlice.charname = charname
 	placeholder.content = ''
-	placeholder.extension = {
-		groupChannelId: await resolveGroupChannelId(chatMetadata.username, groupId, channelId),
-	}
+	placeholder.extension.groupChannelId = await resolveGroupChannelId(chatMetadata.username, groupId, channelId)
 	return placeholder
 }
 

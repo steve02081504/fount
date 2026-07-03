@@ -199,13 +199,13 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		}
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		if (greetingEntry.timeSlice?.greeting_type) {
+		if (greetingEntry.extension.timeSlice?.greeting_type) {
 			greetingEntry.extension = {
 				...greetingEntry.extension || {},
 				isGreeting: true,
-				greetingType: greetingEntry.timeSlice.greeting_type,
+				greetingType: greetingEntry.extension.timeSlice.greeting_type,
 			}
-			delete greetingEntry.timeSlice.greeting_type
+			delete greetingEntry.extension.timeSlice.greeting_type
 		}
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
